@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -69,12 +70,16 @@ class SyncUserSettingsImplTest : public testing::Test {
   }
 
   std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
-      ModelTypeSet registered_types) {
+      ModelTypeSet registered_types,
+      bool in_transport_mode = false) {
     return std::make_unique<SyncUserSettingsImpl>(
         sync_service_crypto_.get(), sync_prefs_.get(),
         /*preference_provider=*/nullptr, registered_types,
-        base::BindRepeating(
-            [] { return SyncPrefs::SyncAccountState::kSyncing; }));
+        base::BindLambdaForTesting([in_transport_mode] {
+          return in_transport_mode
+                     ? SyncPrefs::SyncAccountState::kSignedInNotSyncing
+                     : SyncPrefs::SyncAccountState::kSyncing;
+        }));
   }
 
   // The order of fields matters because it determines destruction order and
@@ -100,6 +105,35 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
     sync_user_settings->SetSelectedTypes(/*sync_everything=*/true, {type});
     EXPECT_EQ(expected_types, GetPreferredUserTypes(*sync_user_settings));
   }
+}
+
+TEST_F(SyncUserSettingsImplTest, SetSelectedType) {
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes(), /*in_transport_mode=*/true);
+
+  UserSelectableTypeSet registered_types =
+      sync_user_settings->GetRegisteredSelectableTypes();
+  UserSelectableTypeSet selected_types = sync_user_settings->GetSelectedTypes();
+  UserSelectableTypeSet expected_disabled_types = {};
+#if BUILDFLAG(IS_IOS)
+  expected_disabled_types = {UserSelectableType::kBookmarks,
+                             UserSelectableType::kReadingList};
+#endif  // BUILDFLAG(IS_IOS)
+
+  EXPECT_EQ(selected_types,
+            Difference(registered_types, expected_disabled_types));
+
+  sync_user_settings->SetSelectedType(UserSelectableType::kPasswords, false);
+  expected_disabled_types.Put(UserSelectableType::kPasswords);
+  selected_types = sync_user_settings->GetSelectedTypes();
+  EXPECT_EQ(selected_types,
+            Difference(registered_types, expected_disabled_types));
+
+  sync_user_settings->SetSelectedType(UserSelectableType::kPasswords, true);
+  expected_disabled_types.Remove(UserSelectableType::kPasswords);
+  selected_types = sync_user_settings->GetSelectedTypes();
+  EXPECT_EQ(selected_types,
+            Difference(registered_types, expected_disabled_types));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

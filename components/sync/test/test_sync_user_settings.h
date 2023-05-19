@@ -34,6 +34,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsTypeManagedByPolicy(UserSelectableType type) const override;
   void SetSelectedTypes(bool sync_everything,
                         UserSelectableTypeSet types) override;
+  void SetSelectedType(UserSelectableType type, bool is_type_on) override;
 #if BUILDFLAG(IS_IOS)
   void SetBookmarksAndReadingListAccountStorageOptIn(bool value) override;
 #endif  // BUILDFLAG(IS_IOS)

@@ -278,6 +278,33 @@ TEST_F(SyncPrefsTest, SelectedTypesInTransportMode) {
   }
 }
 
+TEST_F(SyncPrefsTest, SetSelectedTypeInTransportMode) {
+  UserSelectableTypeSet default_selected_types = UserSelectableTypeSet::All();
+
+#if BUILDFLAG(IS_IOS)
+  // In transport-only mode, bookmarks and reading list require an
+  // additional opt-in.
+  // TODO(crbug.com/1440628): Cleanup the temporary behaviour of an
+  // additional opt in for Bookmarks and Reading Lists.
+  default_selected_types.Remove(UserSelectableType::kBookmarks);
+  default_selected_types.Remove(UserSelectableType::kReadingList);
+#endif  // BUILDFLAG(IS_IOS)
+
+  // Get default values of selected types in transport-mode.
+  UserSelectableTypeSet selected_types = sync_prefs_->GetSelectedTypes(
+      SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  EXPECT_EQ(default_selected_types, selected_types);
+
+  // Change one of the default values for example kPasswords.
+  sync_prefs_->SetSelectedType(UserSelectableType::kPasswords, false);
+  selected_types = sync_prefs_->GetSelectedTypes(
+      SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+  // kPasswords should be disabled, other default values should be unaffected.
+  EXPECT_EQ(selected_types, Difference(default_selected_types,
+                                       {UserSelectableType::kPasswords}));
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncPrefsTest, IsSyncAllOsTypesEnabled) {
   EXPECT_TRUE(sync_prefs_->IsSyncAllOsTypesEnabled());

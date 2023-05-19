@@ -71,6 +71,15 @@ void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
   }
 }
 
+void TestSyncUserSettings::SetSelectedType(UserSelectableType type,
+                                           bool is_type_on) {
+  if (is_type_on) {
+    selected_types_.Put(type);
+  } else {
+    selected_types_.Remove(type);
+  }
+}
+
 #if BUILDFLAG(IS_IOS)
 void TestSyncUserSettings::SetBookmarksAndReadingListAccountStorageOptIn(
     bool value) {}

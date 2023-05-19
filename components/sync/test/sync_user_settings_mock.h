@@ -34,6 +34,7 @@ class SyncUserSettingsMock : public SyncUserSettings {
               SetSelectedTypes,
               (bool, UserSelectableTypeSet),
               (override));
+  MOCK_METHOD(void, SetSelectedType, (UserSelectableType, bool), (override));
 #if BUILDFLAG(IS_IOS)
   MOCK_METHOD(void,
               SetBookmarksAndReadingListAccountStorageOptIn,

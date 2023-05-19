@@ -217,6 +217,14 @@ void SyncPrefs::SetSelectedTypes(bool keep_everything_synced,
   }
 }
 
+void SyncPrefs::SetSelectedType(UserSelectableType type, bool is_type_on) {
+  pref_service_->SetBoolean(GetPrefNameForType(type), is_type_on);
+
+  for (SyncPrefObserver& observer : sync_pref_observers_) {
+    observer.OnPreferredDataTypesPrefChange();
+  }
+}
+
 #if BUILDFLAG(IS_IOS)
 void SyncPrefs::SetBookmarksAndReadingListAccountStorageOptIn(bool value) {
   pref_service_->SetBoolean(

@@ -44,18 +44,30 @@ class SyncUserSettings {
   virtual void SetInitialSyncFeatureSetupComplete(
       SyncFirstSetupCompleteSource source) = 0;
 
+  // Getting selected types, for both Sync-the-feature and Sync-the-transport
+  // users.
+  virtual UserSelectableTypeSet GetSelectedTypes() const = 0;
+  virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
+
+  // Setting selected types for Sync-the-feature users.
+  // Sets user's selected types. Must only be called if Sync-the-feature is
+  // active, or in the process of being configured.
   // Whether the "Sync everything" is enabled. This only has an effect if
   // Sync-the-feature is enabled. Note that even if this is true, some types may
   // be disabled e.g. due to enterprise policy.
   virtual bool IsSyncEverythingEnabled() const = 0;
-  virtual UserSelectableTypeSet GetSelectedTypes() const = 0;
-  virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
   virtual void SetSelectedTypes(bool sync_everything,
                                 UserSelectableTypeSet types) = 0;
+
+  // Setting selected types for Sync-the-transport users.
+  // Sets user's selected types. Must only be called if Sync-the-transport is
+  // active.
+  virtual void SetSelectedType(UserSelectableType type, bool is_type_on) = 0;
 #if BUILDFLAG(IS_IOS)
   // Enables the account storage for bookmark and reading list datatype.
   virtual void SetBookmarksAndReadingListAccountStorageOptIn(bool value) = 0;
 #endif  // BUILDFLAG(IS_IOS)
+
   // Registered user selectable types are derived from registered model types.
   // A UserSelectableType is registered if any of its ModelTypes is registered.
   virtual UserSelectableTypeSet GetRegisteredSelectableTypes() const = 0;

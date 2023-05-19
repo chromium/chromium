@@ -105,6 +105,8 @@ class SyncPrefs {
   void SetSelectedTypes(bool keep_everything_synced,
                         UserSelectableTypeSet registered_types,
                         UserSelectableTypeSet selected_types);
+  // Used to set user's selected types prefs in Sync-the-transport mode.
+  void SetSelectedType(UserSelectableType type, bool is_type_on);
 
 #if BUILDFLAG(IS_IOS)
   // Sets the transport bookmarks & reading list pref on opt in/out.

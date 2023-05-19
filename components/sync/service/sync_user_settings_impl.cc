@@ -114,11 +114,23 @@ bool SyncUserSettingsImpl::IsTypeManagedByPolicy(
 
 void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
+  // TODO(crbug.com/1429254): Add check to insure this setter is only used when
+  // sync-the-feature is running.
   UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();
   DCHECK(registered_types.HasAll(types))
       << "\n registered: " << UserSelectableTypeSetToString(registered_types)
       << "\n setting to: " << UserSelectableTypeSetToString(types);
   prefs_->SetSelectedTypes(sync_everything, registered_types, types);
+}
+
+void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
+                                           bool is_type_on) {
+  UserSelectableTypeSet registered_types = GetRegisteredSelectableTypes();
+  CHECK(registered_types.Has(type));
+  // To insure this setter is used in transport-mode only.
+  CHECK(sync_account_state_for_prefs_callback_.Run() ==
+        SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  prefs_->SetSelectedType(type, is_type_on);
 }
 
 #if BUILDFLAG(IS_IOS)
