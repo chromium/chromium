@@ -58,6 +58,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       AdjustHighlightColorForContrast(ui::kColorSysPrimary, kColorToolbar);
   mixer[kColorBookmarkBarBackground] = {ui::kColorSysBase};
   mixer[kColorBookmarkBarForeground] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorBookmarkBarSeparatorChromeRefresh] = {ui::kColorSysOnBaseDivider};
   mixer[kColorBookmarkButtonIcon] = {kColorBookmarkBarForeground};
   mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
   mixer[kColorBookmarkDragImageBackground] = {ui::kColorSysPrimary};

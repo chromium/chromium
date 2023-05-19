@@ -186,6 +186,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       gfx::kGoogleGrey500, kColorBookmarkBarBackground, 6.0f);
   mixer[kColorBookmarkFolderIcon] = {ui::kColorIcon};
   mixer[kColorBookmarkBarSeparator] = {kColorToolbarSeparator};
+  mixer[kColorBookmarkBarSeparatorChromeRefresh] = {
+      kColorTabBackgroundInactiveFrameActive};
   mixer[kColorBookmarkDragImageBackground] = {ui::kColorAccent};
   mixer[kColorBookmarkDragImageCountBackground] = {ui::kColorAlertHighSeverity};
   mixer[kColorBookmarkDragImageCountForeground] =

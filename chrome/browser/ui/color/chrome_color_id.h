@@ -33,6 +33,7 @@
   E_CPONLY(kColorBookmarkBarBackground) \
   E_CPONLY(kColorBookmarkBarForeground) \
   E_CPONLY(kColorBookmarkBarSeparator) \
+  E_CPONLY(kColorBookmarkBarSeparatorChromeRefresh) \
   E_CPONLY(kColorBookmarkButtonIcon) \
   E_CPONLY(kColorBookmarkDragImageBackground) \
   E_CPONLY(kColorBookmarkDragImageCountBackground) \
