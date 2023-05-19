@@ -225,7 +225,7 @@ TEST_F(
               getRouter()
                   .shadowRoot.querySelector('personalization-main')
                   .shadowRoot.querySelector('ambient-preview-large')
-                  .shadowRoot.querySelector('#ambientSubpageLink');
+                  .shadowRoot.querySelector('cr-icon-button');
           assertTrue(!!ambientSubpageLink);
         });
       });
@@ -262,7 +262,7 @@ TEST_F(
           const ambientSubpageLink =
               getRouter()
                   .shadowRoot.querySelector('personalization-main')
-                  .shadowRoot.getElementById('ambientSubpageLink');
+                  .shadowRoot.querySelector('cr-icon-button');
           assertFalse(!!ambientSubpageLink);
         });
       });
@@ -286,7 +286,7 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
     getRouter()
         .shadowRoot.querySelector('personalization-main')
         .shadowRoot.querySelector('wallpaper-preview')
-        .shadowRoot.getElementById('wallpaperButton')
+        .shadowRoot.querySelector('cr-icon-button')
         .click();
     assertEquals(
         ROOT_PAGE + 'wallpaper', window.location.href,
