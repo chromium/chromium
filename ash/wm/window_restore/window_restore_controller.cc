@@ -14,6 +14,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/float_controller.h"
@@ -343,9 +344,18 @@ void WindowRestoreController::OnParentWindowToValidContainer(
 
   app_restore::WindowInfo* window_info = GetWindowInfo(window);
   if (window_info) {
-    const int desk_id = window_info->desk_id
-                            ? int{*window_info->desk_id}
-                            : aura::client::kWindowWorkspaceUnassignedWorkspace;
+    int desk_id = -1;
+    if (window_info->desk_guid.is_valid()) {
+      desk_id =
+          DesksController::Get()->GetDeskIndexByUuid(window_info->desk_guid);
+    }
+    // Its possible that the uuid is valid but it is not the uuid of any current
+    // desk.
+    if (desk_id == -1) {
+      desk_id = window_info->desk_id
+                    ? static_cast<int>(*window_info->desk_id)
+                    : aura::client::kWindowWorkspaceUnassignedWorkspace;
+    }
     window->SetProperty(aura::client::kWindowWorkspaceKey, desk_id);
   }
 

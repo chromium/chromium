@@ -82,9 +82,9 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   return desk_template;
 }
 
-void DeskTemplate::SetDeskIndex(int desk_index) {
+void DeskTemplate::SetDeskUuid(base::Uuid desk_uuid) {
   DCHECK(desk_restore_data_);
-  desk_restore_data_->SetDeskIndex(desk_index);
+  desk_restore_data_->SetDeskUuid(desk_uuid);
 }
 
 std::string DeskTemplate::ToString() const {

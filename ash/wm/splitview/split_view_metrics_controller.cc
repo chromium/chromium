@@ -411,9 +411,8 @@ void SplitViewMetricsController::OnWindowInitialized(aura::Window* window) {
   }
 
   // Check if the recovered window is in the current desk.
-  if (!window_info->desk_id.has_value() ||
-      window_info->desk_id.value() !=
-          DesksController::Get()->GetDeskIndex(current_desk_)) {
+  if (!window_info->desk_guid.is_valid() ||
+      window_info->desk_guid != current_desk_->uuid()) {
     return;
   }
 

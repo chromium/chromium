@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
@@ -58,14 +59,28 @@ aura::Window* AlwaysOnTopController::GetContainer(aura::Window* window) const {
       ui::ZOrderLevel::kNormal) {
     aura::Window* root = always_on_top_container_->GetRootWindow();
 
-    // TODO(afakhry): Do we need to worry about the context of |window| here? Or
-    // is it safe to assume that |window| should always be parented to the
-    // active desks' container.
+    DesksController* desks_controller = DesksController::Get();
+    const std::string* desk_uuid_string =
+        window->GetProperty(aura::client::kDeskUuidKey);
+    if (desk_uuid_string) {
+      const base::Uuid desk_guid =
+          base::Uuid::ParseLowercase(*desk_uuid_string);
+      if (desk_guid.is_valid()) {
+        if (Desk* target_desk = desks_controller->GetDeskByUuid(desk_guid)) {
+          if (auto* container = target_desk->GetDeskContainerForRoot(root)) {
+            return container;
+          }
+        }
+      }
+    }
+
     const int window_workspace =
         window->GetProperty(aura::client::kWindowWorkspaceKey);
     if (window_workspace != aura::client::kWindowWorkspaceUnassignedWorkspace) {
+      LOG(ERROR) << "AlwaysOnTopController::GetContainer 2";
       auto* desk_container =
-          DesksController::Get()->GetDeskContainer(root, window_workspace);
+          desks_controller->GetDeskContainer(root, window_workspace);
+      LOG(ERROR) << "AlwaysOnTopController::GetContainer 3";
       if (desk_container)
         return desk_container;
     }

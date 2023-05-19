@@ -1376,7 +1376,8 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
     }
     return;
   }
-  if (key == aura::client::kWindowWorkspaceKey || key == kDeskGuidKey) {
+  if (key == aura::client::kWindowWorkspaceKey ||
+      key == aura::client::kDeskUuidKey) {
     // Save the window for window restore purposes unless
     // |ignore_property_change_| is true. Note that moving windows across
     // displays will also trigger a kWindowWorkspaceKey change, even if the

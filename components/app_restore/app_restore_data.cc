@@ -32,7 +32,7 @@ constexpr char kAppNameKey[] = "app_name";
 constexpr char kActivationIndexKey[] = "index";
 constexpr char kFirstNonPinnedTabIndexKey[] = "first_non_pinned_tab_index";
 constexpr char kDeskIdKey[] = "desk_id";
-constexpr char kDeskGuidKey[] = "desk_guid";
+constexpr char kDeskUuidKey[] = "desk_guid";
 constexpr char kCurrentBoundsKey[] = "current_bounds";
 constexpr char kWindowStateTypeKey[] = "window_state_type";
 constexpr char kPreMinimizedShowStateTypeKey[] = "pre_min_state";
@@ -247,7 +247,7 @@ AppRestoreData::AppRestoreData(base::Value::Dict&& data) {
   first_non_pinned_tab_index =
       GetIntValueFromDict(data, kFirstNonPinnedTabIndexKey);
   desk_id = GetIntValueFromDict(data, kDeskIdKey);
-  desk_guid = GetGuidValueFromDict(data, kDeskGuidKey);
+  desk_guid = GetGuidValueFromDict(data, kDeskUuidKey);
   current_bounds = GetBoundsRectFromDict(data, kCurrentBoundsKey);
   window_state_type = GetWindowStateTypeFromDict(data);
   pre_minimized_show_state_type = GetPreMinimizedShowStateTypeFromDict(data);
@@ -443,7 +443,7 @@ base::Value AppRestoreData::ConvertToValue() const {
     launch_info_dict.Set(kDeskIdKey, desk_id.value());
 
   if (desk_guid.is_valid()) {
-    launch_info_dict.Set(kDeskGuidKey, desk_guid.AsLowercaseString());
+    launch_info_dict.Set(kDeskUuidKey, desk_guid.AsLowercaseString());
   }
 
   if (current_bounds.has_value()) {

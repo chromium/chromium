@@ -11,6 +11,8 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/uuid.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -873,6 +875,45 @@ TEST_F(NativeWidgetAuraTest, MinimizedWidgetRestoreBounds) {
 
   widget->Restore();
   EXPECT_EQ(restore_bounds, window->bounds());
+}
+
+// Tests that the `kDeskUuidKey` is set if the `workspace` parameter is
+// a uuid, and that the `kWindowWorkspaceKey` is set if it's a string
+// representation of an integer.
+TEST_F(NativeWidgetAuraTest, WorkspaceUuid) {
+  // If the `workspace` param is a uuid, `kDeskUuidKey` should be set.
+  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+  params.parent = nullptr;
+  params.context = root_window();
+  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.bounds.SetRect(0, 0, 1024, 800);
+  const std::string uuid = "e1b6731b-2a99-48be-bcb7-54e3ba274d05";
+  params.workspace = base::Uuid::ParseLowercase(uuid).AsLowercaseString();
+  UniqueWidgetPtr widget = std::make_unique<Widget>();
+  widget->Init(std::move(params));
+  widget->Show();
+
+  EXPECT_EQ(-1, widget->GetNativeWindow()->GetProperty(
+                    aura::client::kWindowWorkspaceKey));
+  EXPECT_THAT(
+      widget->GetNativeWindow()->GetProperty(aura::client::kDeskUuidKey),
+      testing::Pointee(uuid));
+
+  // If the `workspace` param is an int, `kWindowWorkspaceKey` should be set.
+  Widget::InitParams params2(Widget::InitParams::TYPE_WINDOW);
+  params2.parent = nullptr;
+  params2.context = root_window();
+  params2.show_state = ui::SHOW_STATE_MINIMIZED;
+  params2.bounds.SetRect(0, 0, 1024, 800);
+  params2.workspace = "2";
+  UniqueWidgetPtr widget2 = std::make_unique<Widget>();
+  widget2->Init(std::move(params2));
+  widget2->Show();
+
+  EXPECT_EQ(2, widget2->GetNativeWindow()->GetProperty(
+                   aura::client::kWindowWorkspaceKey));
+  EXPECT_FALSE(
+      widget2->GetNativeWindow()->GetProperty(aura::client::kDeskUuidKey));
 }
 
 // NativeWidgetAura has a protected destructor.

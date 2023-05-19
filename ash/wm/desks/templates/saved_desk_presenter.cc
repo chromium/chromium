@@ -572,10 +572,9 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
     }
   }
 
-  // Copy the index of the newly created desk to the saved desk. This ensures
+  // Copy the uuid of the newly created desk to the saved desk. This ensures
   // that apps appear on the right desk even if the user switches to another.
-  const int desk_index = DesksController::Get()->GetDeskIndex(new_desk);
-  saved_desk->SetDeskIndex(desk_index);
+  saved_desk->SetDeskUuid(new_desk->uuid());
 
   Shell::Get()->saved_desk_delegate()->LaunchAppsFromSavedDesk(
       std::move(saved_desk));
@@ -601,7 +600,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
 
   overview_session_->GetGridWithRootWindow(root_window)
       ->desks_bar_view()
-      ->NudgeDeskName(desk_index);
+      ->NudgeDeskName(DesksController::Get()->GetDeskIndex(new_desk));
 
   if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
     // Passing nullopt as type since this indicates that we don't want to record

@@ -82,6 +82,9 @@ AURA_EXPORT extern const WindowProperty<bool>* const kConstrainedWindowKey;
 // A property key to store if a window was created by a user gesture.
 AURA_EXPORT extern const WindowProperty<bool>* const kCreatedByUserGesture;
 
+// A property key to indicate the uuid of the desk this window belongs to.
+AURA_EXPORT extern const WindowProperty<std::string*>* const kDeskUuidKey;
+
 // A property key to indicate that a window should show that it deserves
 // attention.
 AURA_EXPORT extern const WindowProperty<bool>* const kDrawAttentionKey;

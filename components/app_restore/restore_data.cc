@@ -303,10 +303,10 @@ const AppRestoreData* RestoreData::GetAppRestoreData(const std::string& app_id,
   return data_it->second.get();
 }
 
-void RestoreData::SetDeskIndex(int desk_index) {
+void RestoreData::SetDeskUuid(const base::Uuid& desk_uuid) {
   for (auto& [app_id, launch_list] : app_id_to_launch_list_) {
     for (auto& [window_id, app_restore_data] : launch_list) {
-      app_restore_data->desk_id = desk_index;
+      app_restore_data->desk_guid = desk_uuid;
     }
   }
 }

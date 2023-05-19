@@ -108,8 +108,11 @@ void ModifyWidgetParams(int32_t restore_window_id,
 
   ApplyProperties(window_info.get(), &out_params->init_properties_container);
 
-  if (window_info->desk_id)
+  if (window_info->desk_guid.is_valid()) {
+    out_params->workspace = window_info->desk_guid.AsLowercaseString();
+  } else if (window_info->desk_id) {
     out_params->workspace = base::NumberToString(*window_info->desk_id);
+  }
   if (window_info->current_bounds)
     out_params->bounds = *window_info->current_bounds;
   if (window_info->window_state_type) {
