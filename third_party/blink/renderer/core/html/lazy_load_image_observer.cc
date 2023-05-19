@@ -200,7 +200,7 @@ void LazyLoadImageObserver::LoadIfNearViewport(
     // If the loading_attr is 'lazy' explicitly, we'd better to wait for
     // intersection.
     if (!entry->isIntersecting() && image_element &&
-        !EqualIgnoringASCIICase(image_element->FastGetAttribute(html_names::kLoadingAttr), "lazy")) {
+        !image_element->HasLazyLoadingAttribute()) {
       // Fully load the invisible image elements. The elements can be invisible
       // by style such as display:none, visibility: hidden, or hidden via
       // attribute, etc. Style might also not be calculated if the ancestors

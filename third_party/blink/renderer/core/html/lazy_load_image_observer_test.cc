@@ -685,6 +685,58 @@ TEST_F(LazyLoadImagesTest, AboveTheFoldImageLoadedBeforeVisible) {
       "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
 }
 
+// An image that loads immediately due to being cached should not report
+// Blink.VisibleBeforeLoaded.LazyLoadImages metrics.
+TEST_F(LazyLoadImagesTest, CachedImageVisibleBeforeLoadedMetrics) {
+  HistogramTester histogram_tester;
+  SimRequest main_resource("https://a.com/", "text/html");
+  SimSubresourceRequest image_resource("https://a.com/image.png", "image/png");
+  LoadURL("https://a.com/");
+
+  // Load a page with a non-lazy image that loads immediately, inserting the
+  // image into the cache.
+  main_resource.Complete(
+      String::Format(R"HTML(
+        <!doctype html>
+        <div id='spacer' style='height: %dpx;'></div>
+        <div id='container'></div>
+        <!-- This non-lazy image will load immediately. -->
+        <img src='https://a.com/image.png' />
+      )HTML",
+                     kViewportHeight + kLoadingDistanceThreshold - 50));
+  image_resource.Complete(TestImage());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Insert a lazy loaded image with a src that is already cached.
+  auto* container = GetDocument().getElementById("container");
+  container->setInnerHTML("<img src='https://a.com/image.png' loading='lazy'>");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // VisibleBeforeLoaded should not be recorded since the image is not visible.
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+
+  // Scroll down so that the image is in the viewport.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, kViewportHeight + kLoadingDistanceThreshold + 50),
+      mojom::blink::ScrollType::kProgrammatic);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // The image is now visible but loaded before being visible, so no
+  // VisibleBeforeLoaded metrics should have been recorded.
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+}
+
 TEST_F(LazyLoadImagesTest, AboveTheFoldImageVisibleBeforeLoaded) {
   HistogramTester histogram_tester;
 
