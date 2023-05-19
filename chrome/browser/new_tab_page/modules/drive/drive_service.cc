@@ -356,6 +356,8 @@ void DriveService::OnJsonParsed(
   }
   base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
                                 request_result);
+  base::UmaHistogramCounts100("NewTabPage.Drive.FileCount",
+                              document_list.size());
   for (auto& callback : callbacks_) {
     std::move(callback).Run(mojo::Clone(document_list));
   }
