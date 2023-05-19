@@ -1610,6 +1610,11 @@ BASE_FEATURE(kOobeDrivePinning,
              "OobeDrivePinning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Consumer Software Screen will be shown during OOBE.
+BASE_FEATURE(kOobeSoftwareUpdate,
+             "OobeSoftwareUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Gaia info screen in OOBE.
 BASE_FEATURE(kOobeGaiaInfoScreen,
              "OobeGaiaInfoScreen",
@@ -3201,6 +3206,10 @@ bool IsOobeChoobeEnabled() {
 bool IsOobeDrivePinningEnabled() {
   return base::FeatureList::IsEnabled(kOobeDrivePinning) &&
          IsOobeChoobeEnabled() && IsDriveFsBulkPinningEnabled();
+}
+
+bool IsOobeSoftwareUpdateEnabled() {
+  return base::FeatureList::IsEnabled(kOobeSoftwareUpdate);
 }
 
 bool IsOobeQuickStartEnabled() {
