@@ -57,6 +57,7 @@
   border-bottom-right-radius: 12px;
   box-sizing: border-box;
   margin-inline-end: calc(-1 * var(--sp-body-padding));
+  padding-block-end: var(--sp-card-block-padding);
 }
 
 :host-context([chrome-refresh-2023]) .sp-scroller .sp-card,
