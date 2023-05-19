@@ -8338,6 +8338,23 @@
             ]
         }
     ],
+    "MediaRemotingWithoutFullscreen": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MediaRemotingWithoutFullscreen"
+                    ]
+                }
+            ]
+        }
+    ],
     "MeetDevicesMojoServices": [
         {
             "platforms": [
