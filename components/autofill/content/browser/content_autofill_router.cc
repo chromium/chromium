@@ -50,7 +50,8 @@ void ForEachFrame(internal::FormForest& form_forest, UnaryFunction fun) {
     auto MainUrlForDebugging = []() { return std::string(); };
     AFCHECK(some_frame, continue);
     if (some_frame->driver)
-      base::invoke(fun, some_frame->driver);
+      base::invoke(fun,
+                   static_cast<ContentAutofillDriver*>(some_frame->driver));
   }
 }
 
@@ -64,8 +65,10 @@ std::string ContentAutofillRouter::MainUrlForDebugging() const {
       content::RenderFrameHost::FromID(some_rfh_for_debugging_);
   if (!some_rfh) {
     for (const auto& frame_data : form_forest_.frame_datas()) {
-      if (frame_data && frame_data->driver)
-        some_rfh = frame_data->driver->render_frame_host();
+      if (frame_data && frame_data->driver) {
+        some_rfh = static_cast<ContentAutofillDriver*>(frame_data->driver)
+                       ->render_frame_host();
+      }
     }
   }
   if (!some_rfh)
@@ -78,7 +81,9 @@ ContentAutofillDriver* ContentAutofillRouter::DriverOfFrame(
   DCHECK(base::FeatureList::IsEnabled(features::kAutofillAcrossIframes));
   const auto& frames = form_forest_.frame_datas();
   auto it = frames.find(frame);
-  return it != frames.end() ? (*it)->driver.get() : nullptr;
+  return it != frames.end()
+             ? static_cast<ContentAutofillDriver*>((*it)->driver.get())
+             : nullptr;
 }
 
 void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver,
@@ -197,21 +202,16 @@ void ContentAutofillRouter::TriggerReparseExcept(
     ContentAutofillDriver* exception) {
   DCHECK(base::FeatureList::IsEnabled(features::kAutofillAcrossIframes));
 
-  base::flat_set<ContentAutofillDriver*> already_triggered;
-  ForEachFrame(form_forest_, [&](ContentAutofillDriver* driver) mutable {
-    content::RenderFrameHost* rfh = driver->render_frame_host();
+  base::flat_set<AutofillDriver*> already_triggered;
+  ForEachFrame(form_forest_, [&](AutofillDriver* driver) mutable {
     do {
-      // Trigger reparse for |rfh| and all its ancestors (as some
-      // ancestors may not be in the forest).
-      ContentAutofillDriver* rfh_driver =
-          ContentAutofillDriver::GetForRenderFrameHost(rfh);
-      AFCHECK(rfh_driver, continue);
-      if (rfh_driver != exception &&
-          !base::Contains(already_triggered, rfh_driver)) {
-        rfh_driver->TriggerReparse();
-        already_triggered.insert(rfh_driver);
+      // Trigger reparse for |driver| and all its ancestors (as some ancestors
+      // may not be in the forest).
+      if (driver != exception && !base::Contains(already_triggered, driver)) {
+        driver->TriggerReparse();
+        already_triggered.insert(driver);
       }
-    } while ((rfh = rfh->GetParent()) != nullptr);
+    } while ((driver = driver->GetParent()) != nullptr);
   });
 }
 

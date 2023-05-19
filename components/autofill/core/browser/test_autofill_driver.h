@@ -42,9 +42,16 @@ class TestAutofillDriverTemplate : public T {
   ~TestAutofillDriverTemplate() override = default;
 
   // AutofillDriver:
+  LocalFrameToken GetFrameToken() const override { return {}; }
+  TestAutofillDriverTemplate* GetParent() override { return nullptr; }
+  absl::optional<LocalFrameToken> Resolve(FrameToken query) override {
+    return absl::nullopt;
+  }
   bool IsInActiveFrame() const override { return is_in_active_frame_; }
   bool IsInAnyMainFrame() const override { return is_in_any_main_frame_; }
+  bool IsInFencedFrameRoot() const override { return false; }
   bool IsPrerendering() const override { return false; }
+  bool HasSharedAutofillPermission() const override { return false; }
   bool CanShowAutofillUi() const override { return true; }
   ui::AXTreeID GetAxTreeId() const override {
     NOTIMPLEMENTED() << "See https://crbug.com/985933";
@@ -72,6 +79,7 @@ class TestAutofillDriverTemplate : public T {
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override {}
   void SetShouldSuppressKeyboard(bool suppress) override {}
+  void TriggerReparse() override {}
   void TriggerReparseInAllFrames(
       base::OnceCallback<void(bool)> trigger_reparse_finished_callback)
       override {}

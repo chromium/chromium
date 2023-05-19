@@ -17,11 +17,6 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "content/public/browser/render_process_host.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 // AFCHECK(condition[, error_handler]) creates a crash dump and executes
 // |error_handler| if |condition| is false.
@@ -40,30 +35,6 @@
 
 namespace autofill::internal {
 
-namespace {
-
-// Indicates if |rfh| is a fenced frame (https://crbug.com/1111084).
-//
-// We do not want to fill across the boundary of a fenced frame. Hence, a fenced
-// frame's FrameData must be disconnected (in terms of FormData::child_frames
-// and FrameData::parent_form) from its parent form. This is already guaranteed
-// because FormData::child_frames does not contain fenced frames. However,
-// UpdateTreeOfRendererForm() would still invoke TriggerReparse() to detect the
-// parent form. IsFencedFrameRoot() should be implemented to suppress this.
-//
-// We also do not want to fill across iframes with the disallowdocumentaccess
-// attribute (https://crbug.com/961448). Since disallowdocumentaccess is
-// currently not going to ship and supporting it requires significant additional
-// work in UpdateTreeOfRendererForm() to remove FormData::child_frame and unset
-// FrameData::parent_form for frames that disallow document access, there is no
-// immediate need to support it. See https://crrev.com/c/3055422 for a draft
-// implementation.
-bool IsFencedFrameRoot(content::RenderFrameHost* rfh) {
-  return rfh->IsFencedFrameRoot();
-}
-
-}  // namespace
-
 FormForest::FrameData::FrameData(LocalFrameToken frame_token)
     : frame_token(frame_token) {}
 FormForest::FrameData::~FrameData() = default;
@@ -77,35 +48,13 @@ std::string FormForest::MainUrlForDebugging() const {
   if (!some_rfh) {
     for (const auto& frame_data : frame_datas_) {
       if (frame_data && frame_data->driver)
-        some_rfh = frame_data->driver->render_frame_host();
+        some_rfh = static_cast<ContentAutofillDriver*>(frame_data->driver)
+                       ->render_frame_host();
     }
   }
   if (!some_rfh)
     return std::string();
   return some_rfh->GetMainFrame()->GetLastCommittedURL().spec();
-}
-
-absl::optional<LocalFrameToken> FormForest::Resolve(const FrameData& reference,
-                                                    FrameToken query) {
-  if (absl::holds_alternative<LocalFrameToken>(query))
-    return absl::get<LocalFrameToken>(query);
-  DCHECK(absl::holds_alternative<RemoteFrameToken>(query));
-  AFCHECK(reference.driver, return absl::nullopt);
-  content::RenderFrameHost* rfh = reference.driver->render_frame_host();
-  AFCHECK(rfh, return absl::nullopt);
-  content::RenderProcessHost* rph = rfh->GetProcess();
-  AFCHECK(rph, return absl::nullopt);
-  blink::RemoteFrameToken blink_remote_token(
-      absl::get<RemoteFrameToken>(query).value());
-  content::RenderFrameHost* remote_rfh =
-      content::RenderFrameHost::FromPlaceholderToken(rph->GetID(),
-                                                     blink_remote_token);
-  if (!remote_rfh)
-    return absl::nullopt;
-  // TODO(https://crbug.com/1310047): The RFH is a child and we will not
-  // flatten fenced frames, so the RFH cannot be a fenced frame.
-  CHECK(!remote_rfh->IsFencedFrameRoot());
-  return LocalFrameToken(remote_rfh->GetFrameToken().value());
 }
 
 FormForest::FrameData* FormForest::GetOrCreateFrameData(LocalFrameToken frame) {
@@ -225,23 +174,21 @@ void FormForest::EraseFormsOfFrame(LocalFrameToken frame, bool keep_frame) {
 // trigger an UpdateTreeOfRendererForm() for the true parent form (amongst
 // others), which will then also set the child frame's FrameData::parent_form.
 void FormForest::UpdateTreeOfRendererForm(FormData* form,
-                                          ContentAutofillDriver* driver) {
+                                          AutofillDriver* driver) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.UpdateTreeOfRendererForm.Duration");
   AFCHECK(form, return );
   AFCHECK(driver, return );
   AFCHECK(form->host_frame, return );
-  some_rfh_for_debugging_ = driver->render_frame_host()->GetGlobalId();
+  AFCHECK(form->host_frame == driver->GetFrameToken(), return);
+  some_rfh_for_debugging_ = static_cast<ContentAutofillDriver*>(driver)
+                                ->render_frame_host()
+                                ->GetGlobalId();
 
   FrameData* frame = GetOrCreateFrameData(form->host_frame);
   AFCHECK(frame, return );
   AFCHECK(!frame->driver || frame->driver == driver, return );
   frame->driver = driver;
-
-  content::RenderFrameHost* rfh = driver->render_frame_host();
-  AFCHECK(rfh, return );
-  AFCHECK(form->host_frame == LocalFrameToken(rfh->GetFrameToken().value()),
-          return );
 
   // Moves |form| into its |frame|'s FrameData::child_forms, with a special
   // treatment of the fields: |form|'s fields are replaced with |old_form|'s
@@ -266,7 +213,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         old_form->child_frames, form->child_frames,
         [this, frame](FrameToken removed_child_token) {
           absl::optional<LocalFrameToken> local_child =
-              Resolve(*frame, removed_child_token);
+              frame->driver->Resolve(removed_child_token);
           FrameData* child_frame;
           if (local_child && (child_frame = GetFrameData(*local_child)))
             child_frame->parent_form = absl::nullopt;
@@ -519,7 +466,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         // kMaxVisits limit, we disconnect the |child_frame| from `n.form` by
         // unsetting FrameData::parent_form.
         absl::optional<LocalFrameToken> local_child =
-            Resolve(*n.frame, n.form->child_frames[n.next_frame].token);
+            n.frame->driver->Resolve(n.form->child_frames[n.next_frame].token);
         FrameData* child_frame;
         if (local_child && (child_frame = GetOrCreateFrameData(*local_child))) {
           num_will_visit += NumChildrenOfFrame(*child_frame);
@@ -562,11 +509,22 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // In this case, we trigger a reparse in the parent frame. As a result,
   // UpdateTreeOfRendererForm() will be called for the parent form, whose
   // FormData::child_frames now include |frame|.
-  content::RenderFrameHost* parent_rfh = rfh->GetParent();
-  if (!frame->parent_form && parent_rfh && !IsFencedFrameRoot(rfh)) {
-    ContentAutofillDriver* parent_driver =
-        ContentAutofillDriver::GetForRenderFrameHost(parent_rfh);
-    if (parent_driver) {
+  //
+  // We do not want to fill across the boundary of a fenced frame. Hence, a
+  // fenced frame's FrameData must be disconnected (in terms of
+  // FormData::child_frames and FrameData::parent_form) from its parent form.
+  // This is already guaranteed because FormData::child_frames does not contain
+  // fenced frames.
+  //
+  // We also do not want to fill across iframes with the disallowdocumentaccess
+  // attribute (https://crbug.com/961448). Since disallowdocumentaccess is
+  // currently not going to ship and supporting it requires significant
+  // additional work in UpdateTreeOfRendererForm() to remove
+  // FormData::child_frame and unset FrameData::parent_form for frames that
+  // disallow document access, there is no immediate need to support it. See
+  // https://crrev.com/c/3055422 for a draft implementation.
+  if (!frame->parent_form && !driver->IsInFencedFrameRoot()) {
+    if (AutofillDriver* parent_driver = driver->GetParent()) {
       parent_driver->TriggerReparse();
     }
   }
@@ -653,9 +611,8 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
       auto HasSharedAutofillPermission = [&mutable_this](
                                              LocalFrameToken frame_token) {
         FrameData* frame = mutable_this.GetFrameData(frame_token);
-        return frame && frame->driver && frame->driver->render_frame_host() &&
-               frame->driver->render_frame_host()->IsFeatureEnabled(
-                   blink::mojom::PermissionsPolicyFeature::kSharedAutofill);
+        return frame && frame->driver &&
+               frame->driver->HasSharedAutofillPermission();
       };
 
       const url::Origin& main_origin = browser_form.main_frame_origin;

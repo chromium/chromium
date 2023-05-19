@@ -46,6 +46,21 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
 
 AutofillDriverIOS::~AutofillDriverIOS() = default;
 
+LocalFrameToken AutofillDriverIOS::GetFrameToken() const {
+  NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
+  return LocalFrameToken();
+}
+
+AutofillDriverIOS* AutofillDriverIOS::GetParent() {
+  NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
+  return nullptr;
+}
+
+absl::optional<LocalFrameToken> AutofillDriverIOS::Resolve(FrameToken query) {
+  NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
+  return absl::nullopt;
+}
+
 // Return true as iOS has no MPArch.
 bool AutofillDriverIOS::IsInActiveFrame() const {
   return true;
@@ -56,7 +71,16 @@ bool AutofillDriverIOS::IsInAnyMainFrame() const {
   return frame ? frame->IsMainFrame() : true;
 }
 
+// iOS has no fenced frames.
+bool AutofillDriverIOS::IsInFencedFrameRoot() const {
+  return false;
+}
+
 bool AutofillDriverIOS::IsPrerendering() const {
+  return false;
+}
+
+bool AutofillDriverIOS::HasSharedAutofillPermission() const {
   return false;
 }
 
@@ -125,6 +149,10 @@ void AutofillDriverIOS::SendFieldsEligibleForManualFillingToRenderer(
 
 void AutofillDriverIOS::SetShouldSuppressKeyboard(bool suppress) {
   NOTIMPLEMENTED();
+}
+
+void AutofillDriverIOS::TriggerReparse() {
+  NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
 }
 
 void AutofillDriverIOS::TriggerReparseInAllFrames(
