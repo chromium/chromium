@@ -9,18 +9,20 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread_checker.h"
+#include "media/audio/android/aaudio_stream_wrapper.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
 
-class AAudioDestructionHelper;
 class AudioManagerAndroid;
 
-class AAudioOutputStream : public MuteableAudioOutputStream {
+// Class which uses the AAudio library to playback output.
+class AAudioOutputStream : public MuteableAudioOutputStream,
+                           public AAudioStreamWrapper::DataCallback {
  public:
   AAudioOutputStream(AudioManagerAndroid* manager,
                      const AudioParameters& params,
@@ -41,37 +43,20 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
   void GetVolume(double* volume) override;
   void SetMute(bool muted) override;
 
-  // Public callbacks.
-  aaudio_data_callback_result_t OnAudioDataRequested(void* audio_data,
-                                                     int32_t num_frames);
-  void OnStreamError(aaudio_result_t error);
+  // AAudioStreamWrapper::DataCallback implementation.
+  bool OnAudioDataRequested(void* audio_data, int32_t num_frames) override;
+  void OnError() override;
+  void OnDeviceChange() override;
 
  private:
-  // Returns the amount of unplayed audio relative to |delay_timestamp|. See the
-  // definition for AudioOutputStream::AudioSourceCallback::OnMoreData() for
-  // more information on these terms.
-  base::TimeDelta GetDelay(base::TimeTicks delay_timestamp);
-
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   const raw_ptr<AudioManagerAndroid> audio_manager_;
   const AudioParameters params_;
 
-  aaudio_usage_t usage_;
-  aaudio_performance_mode_t performance_mode_;
-
-  // Constant used for calculating latency. Amount of nanoseconds per frame.
-  const double ns_per_frame_;
-
   std::unique_ptr<AudioBus> audio_bus_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AAudioStream* aaudio_stream_ = nullptr;
-
-  // Bound to the audio data callback. Outlives |this| in case the callbacks
-  // continue after |this| is destroyed. See crbug.com/1183255.
-  std::unique_ptr<AAudioDestructionHelper> destruction_helper_;
+  AAudioStreamWrapper stream_wrapper_;
 
   // Lock protects all members below which may be read concurrently from the
   // audio manager thread and the OS provided audio thread.

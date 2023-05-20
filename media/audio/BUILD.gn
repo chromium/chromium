@@ -248,6 +248,8 @@ source_set("audio") {
     sources += [
       "android/aaudio_output.cc",
       "android/aaudio_output.h",
+      "android/aaudio_stream_wrapper.cc",
+      "android/aaudio_stream_wrapper.h",
       "android/audio_manager_android.cc",
       "android/audio_manager_android.h",
       "android/audio_track_output_stream.cc",
