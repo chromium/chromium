@@ -66,9 +66,6 @@ public class TranslateCompactInfoBar
     private long mNativeTranslateInfoBarPtr;
     private TranslateTabLayout mTabLayout;
 
-    // Metric to track the total number of translations in a page, including reverts to original.
-    private int mTotalTranslationCount;
-
     private static final String INFOBAR_HISTOGRAM = "Translate.CompactInfobar.Event";
 
     // Need 2 instances of TranslateMenuHelper to prevent a race condition bug which happens when

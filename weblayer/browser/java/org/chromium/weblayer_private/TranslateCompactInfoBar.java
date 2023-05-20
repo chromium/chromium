@@ -59,9 +59,6 @@ public class TranslateCompactInfoBar extends InfoBar
     private long mNativeTranslateInfoBarPtr;
     private TranslateTabLayout mTabLayout;
 
-    // Metric to track the total number of translations in a page, including reverts to original.
-    private int mTotalTranslationCount;
-
     // Histogram names for logging metrics.
     private static final String INFOBAR_HISTOGRAM = "Translate.CompactInfobar.Event";
 

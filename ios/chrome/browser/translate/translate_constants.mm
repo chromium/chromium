@@ -9,5 +9,3 @@
 #endif
 
 const char kEventHistogram[] = "Translate.CompactInfobar.Event";
-const char kTranslationCountHistogram[] =
-    "Translate.CompactInfobar.TranslationsPerPage";
