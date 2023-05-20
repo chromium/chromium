@@ -152,10 +152,7 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
   }
 #else
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kVideoCaptureUseGpuMemoryBuffer)) {
+  if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
     new_params.buffer_type = media::VideoCaptureBufferType::kGpuMemoryBuffer;
   }
 #endif
