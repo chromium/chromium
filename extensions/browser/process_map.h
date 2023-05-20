@@ -90,13 +90,8 @@ class ProcessMap : public KeyedService {
 
   size_t size() const { return items_.size(); }
 
-  bool Insert(const std::string& extension_id,
-              int process_id,
-              content::SiteInstanceId site_instance_id);
+  bool Insert(const std::string& extension_id, int process_id);
 
-  bool Remove(const std::string& extension_id,
-              int process_id,
-              content::SiteInstanceId site_instance_id);
   int RemoveAllFromProcess(int process_id);
 
   bool Contains(const std::string& extension_id, int process_id) const;

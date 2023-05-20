@@ -163,26 +163,7 @@ void ShellContentBrowserClient::SiteInstanceGotProcess(
     return;
 
   ProcessMap::Get(browser_main_parts_->browser_context())
-      ->Insert(extension->id(),
-               site_instance->GetProcess()->GetID(),
-               site_instance->GetId());
-}
-
-void ShellContentBrowserClient::SiteInstanceDeleting(
-    content::SiteInstance* site_instance) {
-  // Don't do anything if we're shutting down.
-  if (content::BrowserMainRunner::ExitedMainMessageLoop())
-    return;
-
-  // If this isn't an extension renderer there's nothing to do.
-  const Extension* extension = GetExtension(site_instance);
-  if (!extension)
-    return;
-
-  ProcessMap::Get(browser_main_parts_->browser_context())
-      ->Remove(extension->id(),
-               site_instance->GetProcess()->GetID(),
-               site_instance->GetId());
+      ->Insert(extension->id(), site_instance->GetProcess()->GetID());
 }
 
 void ShellContentBrowserClient::AppendExtraCommandLineSwitches(

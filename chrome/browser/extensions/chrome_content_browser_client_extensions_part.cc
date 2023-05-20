@@ -727,27 +727,13 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcess(
   if (site_instance->IsGuest())
     return;
 
+  // Note that this may be called more than once for multiple instances
+  // of the same extension, such as when the same hosted app is opened in
+  // unrelated tabs. This call will ignore duplicate insertions, which is fine,
+  // since we only need to track if the extension is in the process, rather
+  // than how many instances it has in that process.
   ProcessMap::Get(context)->Insert(extension->id(),
-                                   site_instance->GetProcess()->GetID(),
-                                   site_instance->GetId());
-}
-
-void ChromeContentBrowserClientExtensionsPart::SiteInstanceDeleting(
-    SiteInstance* site_instance) {
-  BrowserContext* context = site_instance->GetBrowserContext();
-  ExtensionRegistry* registry = ExtensionRegistry::Get(context);
-  if (!registry)
-    return;
-
-  const Extension* extension =
-      registry->enabled_extensions().GetExtensionOrAppByURL(
-          site_instance->GetSiteURL());
-  if (!extension)
-    return;
-
-  ProcessMap::Get(context)->Remove(extension->id(),
-                                   site_instance->GetProcess()->GetID(),
-                                   site_instance->GetId());
+                                   site_instance->GetProcess()->GetID());
 }
 
 bool ChromeContentBrowserClientExtensionsPart::

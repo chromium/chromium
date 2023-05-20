@@ -272,8 +272,8 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
         rph_factory->CreateRenderProcessHost(profile_, site_instance.get());
 
     // Fake that the RenderProcessHost is hosting the gcm app.
-    extensions::ProcessMap::Get(profile_)
-        ->Insert(extension->id(), rph->GetID(), site_instance->GetId());
+    extensions::ProcessMap::Get(profile_)->Insert(extension->id(),
+                                                  rph->GetID());
 
     SimulateRenderProcessHostCreated(rph);
   }
