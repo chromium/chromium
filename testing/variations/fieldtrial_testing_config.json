@@ -10547,6 +10547,26 @@
             ]
         }
     ],
+    "PriceTrackingChipStudy": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithChipDelay_20230428",
+                    "params": {
+                        "price-tracking-chip-experiment-variation": "1"
+                    },
+                    "enable_features": [
+                        "CommercePriceTrackingChipExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "PriceTrackingPageActionIconLabelFeatureIPH": [
         {
             "platforms": [
