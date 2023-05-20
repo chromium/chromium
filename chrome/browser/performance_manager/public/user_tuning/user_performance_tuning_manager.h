@@ -120,6 +120,11 @@ class UserPerformanceTuningManager {
       return memory_footprint_estimate_;
     }
 
+    void SetMemoryFootprintEstimateKbForTesting(
+        uint64_t memory_footprint_estimate) {
+      memory_footprint_estimate_ = memory_footprint_estimate;
+    }
+
     ::mojom::LifecycleUnitDiscardReason discard_reason() const {
       return discard_reason_;
     }
