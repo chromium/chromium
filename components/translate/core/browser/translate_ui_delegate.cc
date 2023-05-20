@@ -27,7 +27,6 @@ const char kNeverTranslateLang[] = "Translate.NeverTranslateLang";
 const char kNeverTranslateSite[] = "Translate.NeverTranslateSite";
 const char kAlwaysTranslateLang[] = "Translate.AlwaysTranslateLang";
 const char kModifySourceLang[] = "Translate.ModifyOriginalLang";
-const char kModifyTargetLang[] = "Translate.ModifyTargetLang";
 const char kShowErrorUI[] = "Translate.ShowErrorUI";
 
 // Returns whether |url| fits pattern of an AMP cache url.
@@ -124,8 +123,6 @@ void TranslateUIDelegate::UpdateAndRecordTargetLanguageIndex(
           language_index)) {
     return;
   }
-
-  UMA_HISTOGRAM_BOOLEAN(kModifyTargetLang, true);
 
   if (translate_manager_) {
     translate_manager_->GetActiveTranslateMetricsLogger()->LogTargetLanguage(
