@@ -1750,6 +1750,9 @@ extern const char kSyncInvalidationsWalletAndOfferDescription[];
 extern const char kSystemProxyForSystemServicesName[];
 extern const char kSystemProxyForSystemServicesDescription[];
 
+extern const char kTabDragDropName[];
+extern const char kTabDragDropDescription[];
+
 extern const char kTabEngagementReportingName[];
 extern const char kTabEngagementReportingDescription[];
 

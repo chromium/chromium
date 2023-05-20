@@ -164,6 +164,7 @@ BASE_DECLARE_FEATURE(kSplitCompositorTask);
 BASE_DECLARE_FEATURE(kStoreHoursAndroid);
 BASE_DECLARE_FEATURE(kSuppressToolbarCaptures);
 BASE_DECLARE_FEATURE(kSwapPixelFormatToFixConvertFromTranslucent);
+BASE_DECLARE_FEATURE(kTabDragDropAndroid);
 BASE_DECLARE_FEATURE(kTabEngagementReportingAndroid);
 BASE_DECLARE_FEATURE(kTabGroupsAndroid);
 BASE_DECLARE_FEATURE(kTabGroupsContinuationAndroid);

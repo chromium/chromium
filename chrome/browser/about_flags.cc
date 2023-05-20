@@ -6776,6 +6776,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kStartSurfaceReturnTimeVariations,
                                     "StartSurfaceReturnTime")},
 
+    {"tab-drag-drop", flag_descriptions::kTabDragDropName,
+     flag_descriptions::kTabDragDropDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabDragDropAndroid)},
+
     {"enable-tab-engagement-reporting",
      flag_descriptions::kTabEngagementReportingName,
      flag_descriptions::kTabEngagementReportingDescription, kOsAndroid,

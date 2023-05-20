@@ -59696,6 +59696,7 @@ from previous Chrome versions.
   <int value="-1573468162" label="ClientStorageAccessContextAuditing:enabled"/>
   <int value="-1572374515"
       label="SafeSitesFilterBehaviorPolicyAndroid:disabled"/>
+  <int value="-1572246329" label="TabDragDropAndroid:enabled"/>
   <int value="-1572010356" label="enable-privet-v3"/>
   <int value="-1571841513" label="enable-devtools-experiments"/>
   <int value="-1571525676" label="FilesSWA:disabled"/>
@@ -65625,6 +65626,7 @@ from previous Chrome versions.
   <int value="1594993731" label="BluetoothRevamp:enabled"/>
   <int value="1595208893" label="AudioWorkletRealtimeThread:enabled"/>
   <int value="1595796800" label="CameraAppLowStorageWarning:disabled"/>
+  <int value="1595840275" label="TabDragDropAndroid:disabled"/>
   <int value="1596615083"
       label="AutofillFillCreditCardAsPerFormatString:disabled"/>
   <int value="1596689942" label="OmniboxRevertModelBeforeClosingPopup:enabled"/>

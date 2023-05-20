@@ -7181,6 +7181,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "tab-drag-drop",
+    "owners": [ "ranjithkagathi@google.com", "gurmeetk@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "tab-grid-new-transitions",
     "owners": [ "pakzhygitov", "bling-flags@google.com" ],
     "expiry_milestone": 120
