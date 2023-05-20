@@ -273,11 +273,16 @@ template("build_webui") {
   }
 
   if (defined(invoker.mojo_files_deps)) {
+    mojo_base_path = "."
+    if (defined(invoker.mojo_base_path)) {
+      mojo_base_path = invoker.mojo_base_path
+    }
+
     copy("copy_mojo") {
       visibility = [ ":build_ts" ]
       deps = invoker.mojo_files_deps
       sources = invoker.mojo_files
-      outputs = [ "${preprocess_dir}/{{source_file_part}}" ]
+      outputs = [ "${preprocess_dir}/${mojo_base_path}/{{source_file_part}}" ]
     }
   }
 

@@ -518,6 +518,14 @@ mojo_files: List of Mojo JS generated files. These will be copied to a temporary
 mojo_files_deps: List of Mojo targets that generate |mojo_files|. Must be
                  defined if |mojo_files| is defined.
 
+mojo_base_path: Specifies the directory under which Mojo files will be served at
+                runtime. Optional parameter. Defaults to the top level folder
+                '.', which results in Mojo files being served from
+                'chrome://<webui_name>/foo.mojom-webui.js'.
+                Example: Passing 'mojom-webui' would result in Mojo files being
+                served from
+                'chrome://<webui_name>/mojom-webui/foo.mojom-webui.js'.
+
 TypeScript (ts_library()) related params:
 ts_composite: See |composite| in ts_library(). Defaults to false, optional.
 ts_out_dir: See |out_dir| in ts_library(). Optional parameter, defaults
