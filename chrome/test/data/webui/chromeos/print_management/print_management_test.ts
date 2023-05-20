@@ -1141,6 +1141,30 @@ suite('PrinterSetupInfoTest', () => {
     return flushTasks();
   }
 
+  /**
+   * Gets the trimmed text content for the requested element in the
+   * PrinterSetupInfoElement shadowDOM. Both `printerSetupInfoElement` and the
+   * element being looked up cannot be null.
+   */
+  function getElementTextContent(selector: string): string {
+    assertTrue(!!printerSetupInfoElement);
+    const element =
+        querySelector<HTMLElement>(printerSetupInfoElement!, selector);
+    assertTrue(!!element);
+
+    return element!.textContent?.trim() ?? '';
+  }
+
+  /**
+   * Gets the localized string matching the provided localization key using the
+   * `i18n` function on `PrinterSetupInfoElement`.
+   */
+  function getLocalizedString(localizationKey: string): string {
+    assertTrue(!!printerSetupInfoElement);
+
+    return printerSetupInfoElement!.i18n(localizationKey);
+  }
+
   // Verify core elements of element rendered.
   test('ensureBasicLayoutRenders', async () => {
     await initPrinterSetupInfoElement();
@@ -1153,5 +1177,23 @@ suite('PrinterSetupInfoTest', () => {
         printerSetupInfoElement!, '.message-detail')));
     assertTrue(isVisible(
         querySelector<CrButtonElement>(printerSetupInfoElement!, 'cr-button')));
+  });
+
+  // Verify expected localized strings are used in UI.
+  test('ensureLocalizedStringsMatch', async () => {
+    await initPrinterSetupInfoElement();
+
+    const expectedNoJobsMessage = getLocalizedString('emptyStateNoJobsMessage');
+    const expectedOpenPrinterSettingsMessage =
+        getLocalizedString('emptyStatePrinterSettingsMessage');
+    const expectedButtonLabel = getLocalizedString('managePrintersButtonLabel');
+
+    // Assert text content matches localized strings.
+    assertEquals(
+        expectedNoJobsMessage, getElementTextContent('.message-heading'));
+    assertEquals(
+        expectedOpenPrinterSettingsMessage,
+        getElementTextContent('.message-detail'));
+    assertEquals(expectedButtonLabel, getElementTextContent('cr-button'));
   });
 });

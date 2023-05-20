@@ -111,7 +111,13 @@ void AddPrintManagementStrings(content::WebUIDataSource* html_source) {
        IDS_PRINT_MANAGEMENT_CANCEL_PRINT_JOB_BUTTON_LABEL},
       {"cancelledPrintJob",
        IDS_PRINT_MANAGEMENT_CANCELED_PRINT_JOB_ARIA_ANNOUNCEMENT},
-      {"collapsedPrintingText", IDS_PRINT_MANAGEMENT_COLLAPSE_PRINTING_STATUS}};
+      {"collapsedPrintingText", IDS_PRINT_MANAGEMENT_COLLAPSE_PRINTING_STATUS},
+      {"emptyStateNoJobsMessage",
+       IDS_PRINT_MANAGEMENT_EMPTY_STATE_NO_JOBS_MESSAGE},
+      {"emptyStatePrinterSettingsMessage",
+       IDS_PRINT_MANAGEMENT_EMPTY_STATE_PRINTER_SETTINGS_MESSAGE},
+      {"managePrintersButtonLabel",
+       IDS_PRINT_MANAGEMENT_EMPTY_STATE_MANAGE_PRINTERS_LABEL}};
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->UseStringsJs();

@@ -8,6 +8,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './print_management_fonts.css.js';
 import './print_management_shared.css.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './printer_setup_info.html.js';
@@ -20,7 +21,9 @@ import {getTemplate} from './printer_setup_info.html.js';
 
 const PrinterSetupInfoElementIs = 'printer-setup-info';
 
-export class PrinterSetupInfoElement extends PolymerElement {
+const PrinterSetupInfoElementBase = I18nMixin(PolymerElement);
+
+export class PrinterSetupInfoElement extends PrinterSetupInfoElementBase {
   static get is(): string {
     return PrinterSetupInfoElementIs;
   }
