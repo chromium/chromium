@@ -374,13 +374,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `OnUrlScoringModelDone()` callback which is called once the model is done
   // for all the eligible matches, whether successfully or not.
   void RunUrlScoringModel(base::OnceClosure completion_callback);
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
-  // Tries to cancel any pending requests to the scoring model and prevents
-  // `OnUrlScoringModelDone()` and its completion callback from being called.
-  void CancelUrlScoringModel();
+  // Runs the async batch scoring for all the eligible matches in
+  // `results_.matches_`. Passes `completion_callback` to
+  // `OnBatchUrlScoringModelDone()` callback upon finishing scoring.
+  void RunBatchUrlScoringModel(base::OnceClosure completion_callback);
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Called when the async scoring model is done running for all the eligible
   // matches in `results_.matches_`. Redistributes the existing relevance scores
   // to the matches based on the model output (i.e. highest relevance now
@@ -391,6 +390,10 @@ class AutocompleteController : public AutocompleteProviderListener,
       base::OnceClosure completion_callback,
       std::vector<AutocompleteScoringModelService::Result> results);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+  // Tries to cancel any pending requests to the scoring model and prevents
+  // `OnUrlScoringModelDone()` and its completion callback from being called.
+  void CancelUrlScoringModel();
 
   base::ObserverList<Observer> observers_;
 

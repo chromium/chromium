@@ -1045,11 +1045,19 @@ void AutocompleteController::UpdateResult(
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     // Use a WeakPtr since the model is not owned and `this` may no longer be
     // alive. `SortCullAndAnnotateResult()` is called when the model is done.
-    RunUrlScoringModel(base::BindOnce(
-        &AutocompleteController::SortCullAndAnnotateResult,
-        weak_ptr_factory_.GetWeakPtr(), last_default_match,
-        last_default_associated_keyword, force_notify_default_match_changed,
-        default_match_to_preserve));
+    if (OmniboxFieldTrial::IsMlBatchUrlScoringEnabled()) {
+      RunBatchUrlScoringModel(base::BindOnce(
+          &AutocompleteController::SortCullAndAnnotateResult,
+          weak_ptr_factory_.GetWeakPtr(), last_default_match,
+          last_default_associated_keyword, force_notify_default_match_changed,
+          default_match_to_preserve));
+    } else {
+      RunUrlScoringModel(base::BindOnce(
+          &AutocompleteController::SortCullAndAnnotateResult,
+          weak_ptr_factory_.GetWeakPtr(), last_default_match,
+          last_default_associated_keyword, force_notify_default_match_changed,
+          default_match_to_preserve));
+    }
     return;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   }
@@ -1575,16 +1583,38 @@ void AutocompleteController::RunUrlScoringModel(
             match.stripped_destination_url.spec(), barrier_callback);
   }
 }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
-void AutocompleteController::CancelUrlScoringModel() {
-  // Try to cancel any pending requests to the scoring model and invalidate the
-  // WeakPtr to prevent its callbacks from being called.
-  scoring_model_task_tracker_.TryCancelAll();
-  weak_ptr_factory_.InvalidateWeakPtrs();
+void AutocompleteController::RunBatchUrlScoringModel(
+    base::OnceClosure completion_callback) {
+  TRACE_EVENT0("omnibox", "AutocompleteController::RunBatchUrlScoringModel");
+
+  std::vector<const metrics::OmniboxEventProto::Suggestion::ScoringSignals*>
+      batch_scoring_signals;
+  std::vector<std::string> stripped_destination_urls;
+  // Run the model for the eligible matches.
+  for (auto& match : result_) {
+    if (!match.scoring_signals.has_value()) {
+      continue;
+    }
+    batch_scoring_signals.push_back(&match.scoring_signals.value());
+    stripped_destination_urls.push_back(match.stripped_destination_url.spec());
+  }
+
+  // If no eligible matches to score, call `completion_callback` immediately.
+  if (batch_scoring_signals.empty()) {
+    std::move(completion_callback).Run();
+    return;
+  }
+
+  provider_client_->GetAutocompleteScoringModelService()
+      ->BatchScoreAutocompleteUrlMatches(
+          &scoring_model_task_tracker_, batch_scoring_signals,
+          stripped_destination_urls,
+          base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
+                         weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
+                         std::move(completion_callback)));
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void AutocompleteController::OnUrlScoringModelDone(
     const base::ElapsedTimer elapsed_timer,
     base::OnceClosure completion_callback,
@@ -1669,3 +1699,10 @@ void AutocompleteController::OnUrlScoringModelDone(
   std::move(completion_callback).Run();
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+void AutocompleteController::CancelUrlScoringModel() {
+  // Try to cancel any pending requests to the scoring model and invalidate the
+  // WeakPtr to prevent its callbacks from being called.
+  scoring_model_task_tracker_.TryCancelAll();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}

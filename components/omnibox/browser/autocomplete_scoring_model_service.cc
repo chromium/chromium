@@ -72,24 +72,30 @@ bool AutocompleteScoringModelService::UrlScoringModelAvailable() {
 void AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches(
     base::CancelableTaskTracker* tracker,
     const std::vector<const ScoringSignals*>& batch_scoring_signals,
-    const std::vector<size_t>& match_indexes,
-    const std::vector<GURL>& match_destination_urls,
+    const std::vector<std::string>& stripped_destination_urls,
     BatchResultCallback batch_result_callback) {
   TRACE_EVENT0(
       "omnibox",
       "AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches");
 
+  // Function for creating a result vector with null scores.
+  auto create_null_results = [&]() {
+    std::vector<Result> results;
+    for (size_t i = 0; i < batch_scoring_signals.size(); i++) {
+      results.emplace_back(absl::nullopt, stripped_destination_urls.at(i));
+    }
+    return results;
+  };
+
   if (!UrlScoringModelAvailable()) {
-    std::move(batch_result_callback)
-        .Run(absl::nullopt, match_indexes, match_destination_urls);
+    std::move(batch_result_callback).Run(create_null_results());
     return;
   }
 
   absl::optional<std::vector<std::vector<float>>> batch_input =
       url_scoring_model_handler_->GetBatchModelInput(batch_scoring_signals);
   if (!batch_input) {
-    std::move(batch_result_callback)
-        .Run(absl::nullopt, match_indexes, match_destination_urls);
+    std::move(batch_result_callback).Run(create_null_results());
     return;
   }
 
@@ -97,8 +103,8 @@ void AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches(
       tracker,
       base::BindOnce(&AutocompleteScoringModelService::ProcessBatchModelOutput,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(batch_result_callback), match_indexes,
-                     match_destination_urls),
+                     std::move(batch_result_callback),
+                     stripped_destination_urls),
       *batch_input);
 }
 
@@ -124,23 +130,18 @@ void AutocompleteScoringModelService::ProcessModelOutput(
 
 void AutocompleteScoringModelService::ProcessBatchModelOutput(
     BatchResultCallback batch_result_callback,
-    const std::vector<size_t>& match_indexes,
-    const std::vector<GURL>& match_destination_urls,
-    const std::vector<
-        absl::optional<AutocompleteScoringModelExecutor::ModelOutput>>&
-        batch_model_output) {
+    const std::vector<std::string>& stripped_destination_urls,
+    const std::vector<absl::optional<ModelOutput>>& batch_model_output) {
   TRACE_EVENT0("omnibox",
                "AutocompleteScoringModelService::ProcessBatchModelOutput");
 
-  std::vector<absl::optional<float>> batch_output_scores;
-  for (const auto& output : batch_model_output) {
-    if (output) {
-      batch_output_scores.push_back(output.value()[0]);
-    } else {
-      batch_output_scores.push_back(absl::nullopt);
-    }
+  std::vector<Result> batch_results;
+  for (size_t i = 0; i < stripped_destination_urls.size(); i++) {
+    const auto& output = batch_model_output.at(i);
+    batch_results.emplace_back(
+        output ? absl::optional<float>(output->at(0)) : absl::nullopt,
+        stripped_destination_urls.at(i));
   }
 
-  std::move(batch_result_callback)
-      .Run(batch_output_scores, match_indexes, match_destination_urls);
+  std::move(batch_result_callback).Run(std::move(batch_results));
 }

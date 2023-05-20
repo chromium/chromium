@@ -1053,11 +1053,17 @@ const base::FeatureParam<bool> kMlUrlScoringPreserveDefault(
     "MlUrlScoringPreserveDefault",
     false);
 
+// If true, the ML model scores a batch of urls.
+const base::FeatureParam<bool> kMlBatchUrlScoring(&omnibox::kMlUrlScoring,
+                                                  "MlBatchUrlScoring",
+                                                  false);
+
 MLConfig::MLConfig() {
   log_url_scoring_signals =
       base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);
   enable_scoring_signals_annotators = kEnableScoringSignalsAnnotators.Get();
   ml_url_scoring = base::FeatureList::IsEnabled(omnibox::kMlUrlScoring);
+  ml_batch_url_scoring = kMlBatchUrlScoring.Get();
   ml_url_scoring_counterfactual = kMlUrlScoringCounterfactual.Get();
   ml_url_scoring_increase_num_candidates =
       kMlUrlScoringIncreaseNumCandidates.Get();
@@ -1094,6 +1100,9 @@ bool IsMlUrlScoringEnabled() {
 #else
   return false;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+}
+bool IsMlBatchUrlScoringEnabled() {
+  return IsMlUrlScoringEnabled() && GetMLConfig().ml_batch_url_scoring;
 }
 bool IsMlUrlScoringCounterfactual() {
   return IsMlUrlScoringEnabled() && GetMLConfig().ml_url_scoring_counterfactual;
