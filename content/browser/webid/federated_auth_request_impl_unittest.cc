@@ -705,7 +705,7 @@ class TestAutoReauthnPermissionDelegate
  public:
   std::set<url::Origin> embargoed_origins_;
 
-  void RecordDisplayAndEmbargo(const url::Origin& origin) override {
+  void RecordEmbargoForAutoReauthn(const url::Origin& origin) override {
     embargoed_origins_.insert(origin);
   }
 };

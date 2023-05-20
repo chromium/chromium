@@ -75,7 +75,10 @@ base::Time ShellFederatedPermissionContext::GetAutoReauthnEmbargoStartTime(
   return base::Time();
 }
 
-void ShellFederatedPermissionContext::RecordDisplayAndEmbargo(
+void ShellFederatedPermissionContext::RecordEmbargoForAutoReauthn(
+    const url::Origin& relying_party_embedder) {}
+
+void ShellFederatedPermissionContext::RemoveEmbargoForAutoReauthn(
     const url::Origin& relying_party_embedder) {}
 
 void ShellFederatedPermissionContext::AddIdpSigninStatusObserver(

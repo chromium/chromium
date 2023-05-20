@@ -43,7 +43,12 @@ class CONTENT_EXPORT FederatedIdentityAutoReauthnPermissionContextDelegate {
 
   // Records that an auto re-authn prompt was displayed to the user and places
   // the permission under embargo for the passed-in |relying_party_embedder|.
-  virtual void RecordDisplayAndEmbargo(
+  virtual void RecordEmbargoForAutoReauthn(
+      const url::Origin& relying_party_embedder) = 0;
+
+  // Remove embargo for auto re-authn for the passed-in
+  // |relying_party_embedder|.
+  virtual void RemoveEmbargoForAutoReauthn(
       const url::Origin& relying_party_embedder) = 0;
 
   // Updates the "RequiresUserMediation" bit for the site. It's set to true when

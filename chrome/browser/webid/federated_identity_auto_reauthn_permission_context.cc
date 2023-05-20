@@ -54,10 +54,18 @@ FederatedIdentityAutoReauthnPermissionContext::GetAutoReauthnEmbargoStartTime(
       ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
 }
 
-void FederatedIdentityAutoReauthnPermissionContext::RecordDisplayAndEmbargo(
+void FederatedIdentityAutoReauthnPermissionContext::RecordEmbargoForAutoReauthn(
     const url::Origin& relying_party_embedder) {
   const GURL rp_embedder_url = relying_party_embedder.GetURL();
   permission_autoblocker_->RecordDisplayAndEmbargo(
+      rp_embedder_url,
+      ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
+}
+
+void FederatedIdentityAutoReauthnPermissionContext::RemoveEmbargoForAutoReauthn(
+    const url::Origin& relying_party_embedder) {
+  const GURL rp_embedder_url = relying_party_embedder.GetURL();
+  permission_autoblocker_->RemoveEmbargoAndResetCounts(
       rp_embedder_url,
       ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION);
 }

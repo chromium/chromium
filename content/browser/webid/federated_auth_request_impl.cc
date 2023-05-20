@@ -1508,7 +1508,12 @@ void FederatedAuthRequestImpl::OnAccountSelected(bool auto_reauthn,
     // Embargo auto re-authn to mitigate a deadloop where an auto
     // re-authenticated user gets auto re-authenticated again soon after logging
     // out of the active session.
-    auto_reauthn_permission_delegate_->RecordDisplayAndEmbargo(
+    auto_reauthn_permission_delegate_->RecordEmbargoForAutoReauthn(
+        GetEmbeddingOrigin());
+  } else {
+    // Once a user has explicitly selected an account, there is no need to block
+    // auto re-authn with embargo.
+    auto_reauthn_permission_delegate_->RemoveEmbargoForAutoReauthn(
         GetEmbeddingOrigin());
   }
 

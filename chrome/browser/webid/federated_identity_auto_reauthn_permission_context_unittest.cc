@@ -67,14 +67,14 @@ TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
 }
 
 // Test that
-// FederatedIdentityAutoReauthnPermissionContext::RecordDisplayAndEmbargo()
+// FederatedIdentityAutoReauthnPermissionContext::RecordEmbargoForAutoReauthn()
 // blocks the permission if it is enabled.
 TEST_F(FederatedIdentityAutoReauthnPermissionContextTest, EnabledEmbargo) {
   GURL rp_url("https://rp.com");
   EXPECT_FALSE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 
   // Embargoing `rp_url` should block the content setting for `rp_url`.
-  context_->RecordDisplayAndEmbargo(url::Origin::Create(rp_url));
+  context_->RecordEmbargoForAutoReauthn(url::Origin::Create(rp_url));
   EXPECT_TRUE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 }
 
@@ -86,7 +86,7 @@ TEST_F(FederatedIdentityAutoReauthnPermissionContextTest, EmbargoAutoReset) {
   EXPECT_FALSE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 
   // Auto re-authn flow triggers embargo.
-  context_->RecordDisplayAndEmbargo(url::Origin::Create(rp_url));
+  context_->RecordEmbargoForAutoReauthn(url::Origin::Create(rp_url));
   EXPECT_TRUE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 
   // Auto re-authn is still in embargo state after 9 mins.
@@ -109,7 +109,7 @@ TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
   EXPECT_FALSE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 
   // Auto re-authn flow triggers embargo.
-  context_->RecordDisplayAndEmbargo(url::Origin::Create(rp_url));
+  context_->RecordEmbargoForAutoReauthn(url::Origin::Create(rp_url));
   EXPECT_TRUE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 
   // User signing out sets the `RequiresUserMediation` bit.
@@ -127,28 +127,14 @@ TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(rp_url));
 }
 
-// Test that successful re-authn resets `RequiresUserMediation` bit but not
-// embargo bit.
-TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
-       SuccessfulReAuthnDoesNotResetEmbargo) {
+// Test that auto re-authn embargo can be reset.
+TEST_F(FederatedIdentityAutoReauthnPermissionContextTest, ResetEmbargo) {
   GURL rp_url("https://rp.com");
-  host_content_settings_map_->SetDefaultContentSetting(
-      ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
-      CONTENT_SETTING_ALLOW);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(rp_url));
 
   // Auto re-authn flow triggers embargo.
-  context_->RecordDisplayAndEmbargo(url::Origin::Create(rp_url));
+  context_->RecordEmbargoForAutoReauthn(url::Origin::Create(rp_url));
   EXPECT_TRUE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 
-  // User signing out sets the `RequiresUserMediation` bit.
-  context_->SetRequiresUserMediation(rp_url, true);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(rp_url));
-
-  // User signing back in resets the `RequiresUserMediation` bit.
-  context_->SetRequiresUserMediation(rp_url, false);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(rp_url));
-
-  // Auto re-authn is still in embargo state.
-  EXPECT_TRUE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
+  context_->RemoveEmbargoForAutoReauthn(url::Origin::Create(rp_url));
+  EXPECT_FALSE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 }
