@@ -183,6 +183,14 @@ class WebAppCommandScheduler {
       base::OnceCallback<void(base::flat_map<url::Origin, int64_t>)> callback,
       const base::Location& call_location = FROM_HERE);
 
+  // Registers a <controlledframe>'s StoragePartition with the given Isolated
+  // Web App.
+  void RegisterControlledFramePartition(
+      const AppId& app_id,
+      const std::string& partition_name,
+      base::OnceClosure callback,
+      const base::Location& location = FROM_HERE);
+
   // Scheduler a command that installs a web app from sync.
   void InstallFromSync(const WebApp& web_app,
                        OnceInstallCallback callback,

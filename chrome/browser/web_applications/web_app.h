@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_H_
 
 #include <iosfwd>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -332,6 +333,8 @@ class WebApp {
   // IWA-specific information like bundle location.
   struct IsolationData {
     explicit IsolationData(IsolatedWebAppLocation location);
+    IsolationData(IsolatedWebAppLocation location,
+                  const std::set<std::string>& controlled_frame_partitions);
     ~IsolationData();
     IsolationData(const IsolationData&);
     IsolationData& operator=(const IsolationData&);
@@ -343,6 +346,7 @@ class WebApp {
     base::Value AsDebugValue() const;
 
     IsolatedWebAppLocation location;
+    std::set<std::string> controlled_frame_partitions;
   };
   const absl::optional<IsolationData>& isolation_data() const {
     return isolation_data_;

@@ -742,6 +742,11 @@ base::Value::Dict WebApp::ExternalManagementConfig::AsDebugValue() const {
 
 WebApp::IsolationData::IsolationData(IsolatedWebAppLocation location)
     : location(location) {}
+WebApp::IsolationData::IsolationData(
+    IsolatedWebAppLocation location,
+    const std::set<std::string>& controlled_frame_partitions)
+    : location(location),
+      controlled_frame_partitions(controlled_frame_partitions) {}
 WebApp::IsolationData::~IsolationData() = default;
 WebApp::IsolationData::IsolationData(const WebApp::IsolationData&) = default;
 WebApp::IsolationData& WebApp::IsolationData::operator=(
@@ -752,7 +757,8 @@ WebApp::IsolationData& WebApp::IsolationData::operator=(
 
 bool WebApp::IsolationData::operator==(
     const WebApp::IsolationData& other) const {
-  return location == other.location;
+  return location == other.location &&
+         controlled_frame_partitions == other.controlled_frame_partitions;
 }
 bool WebApp::IsolationData::operator!=(
     const WebApp::IsolationData& other) const {
@@ -763,6 +769,11 @@ base::Value WebApp::IsolationData::AsDebugValue() const {
   base::Value::Dict value;
   value.Set("isolated_web_app_location",
             IsolatedWebAppLocationAsDebugValue(location));
+  base::Value::List* partitions =
+      value.EnsureList("controlled_frame_partitions");
+  for (const std::string& partition : controlled_frame_partitions) {
+    partitions->Append(partition);
+  }
   return base::Value(std::move(value));
 }
 

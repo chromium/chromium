@@ -918,9 +918,12 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     };
     static_assert(std::size(location_types) == kNumLocationTypes);
 
-    IsolatedWebAppLocation location(
+    WebApp::IsolationData isolation_data(
         location_types[random.next_uint(kNumLocationTypes)]);
-    app->SetIsolationData(WebApp::IsolationData(location));
+    if (random.next_bool()) {
+      isolation_data.controlled_frame_partitions.insert("partition_name");
+    }
+    app->SetIsolationData(isolation_data);
   }
 
   return app;

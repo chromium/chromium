@@ -189,6 +189,7 @@
    "is_locally_installed": true,
    "is_uninstalling": false,
    "isolation_data": {
+      "controlled_frame_partitions": [ "partition_name" ],
       "isolated_web_app_location": {
          "dev_mode_bundle": {
             "path": "1234"

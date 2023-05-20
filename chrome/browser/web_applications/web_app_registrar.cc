@@ -884,8 +884,14 @@ WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
     return {};
   }
 
-  // TODO(crbug.com/1311065): Include Controlled Frame StoragePartitions.
-  return {url_info->storage_partition_config(profile_)};
+  std::vector<content::StoragePartitionConfig> partitions = {
+      url_info->storage_partition_config(profile_)};
+  for (const std::string& partition :
+       isolated_web_app->isolation_data()->controlled_frame_partitions) {
+    partitions.push_back(url_info->GetStoragePartitionConfigForControlledFrame(
+        profile_, partition, /*in_memory=*/false));
+  }
+  return partitions;
 }
 
 std::string WebAppRegistrar::GetAppShortName(const AppId& app_id) const {

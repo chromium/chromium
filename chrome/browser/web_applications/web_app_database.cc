@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_database.h"
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -812,6 +813,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   if (web_app.isolation_data().has_value()) {
     auto* mutable_data = local_data->mutable_isolation_data();
+    for (const std::string& partition :
+         web_app.isolation_data()->controlled_frame_partitions) {
+      mutable_data->add_controlled_frame_partitions(partition);
+    }
+
     absl::visit(
         base::Overloaded{
             [&mutable_data](const InstalledBundle& bundle) {
@@ -1502,6 +1508,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   if (local_data.has_isolation_data()) {
+    const google::protobuf::RepeatedPtrField<std::string>& partitions =
+        local_data.isolation_data().controlled_frame_partitions();
+    std::set<std::string> controlled_frame_partitions(partitions.begin(),
+                                                      partitions.end());
+
     switch (local_data.isolation_data().location_case()) {
       case IsolationDataProto::LocationCase::kInstalledBundle: {
         absl::optional<base::FilePath> path = ProtoToFilePath(
@@ -1511,8 +1522,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                          "parse error: cannot deserialize file path";
           return nullptr;
         }
-        web_app->SetIsolationData(
-            WebApp::IsolationData(InstalledBundle{.path = *path}));
+        web_app->SetIsolationData(WebApp::IsolationData(
+            InstalledBundle{.path = *path}, controlled_frame_partitions));
         break;
       }
 
@@ -1524,8 +1535,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                          "parse error: cannot deserialize file path";
           return nullptr;
         }
-        web_app->SetIsolationData(
-            WebApp::IsolationData(DevModeBundle{.path = *path}));
+        web_app->SetIsolationData(WebApp::IsolationData(
+            DevModeBundle{.path = *path}, controlled_frame_partitions));
         break;
       }
 
@@ -1540,8 +1551,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                      local_data.isolation_data().dev_mode_proxy().proxy_url();
           return nullptr;
         }
-        web_app->SetIsolationData(
-            WebApp::IsolationData(DevModeProxy{.proxy_url = proxy_url}));
+        web_app->SetIsolationData(WebApp::IsolationData(
+            DevModeProxy{.proxy_url = proxy_url}, controlled_frame_partitions));
         break;
       }
 

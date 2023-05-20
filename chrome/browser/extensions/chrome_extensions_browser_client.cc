@@ -62,6 +62,8 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -76,6 +78,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
@@ -948,8 +952,25 @@ ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
         web_app::IsolatedWebAppUrlInfo::Create(owner_site_url);
     DCHECK(url_info.has_value()) << url_info.error();
-    return url_info->GetStoragePartitionConfigForControlledFrame(
-        browser_context, partition_name, in_memory);
+
+    content::StoragePartitionConfig storage_partition_config =
+        url_info->GetStoragePartitionConfigForControlledFrame(
+            browser_context, partition_name, in_memory);
+
+    // If persisted and not already loaded, register the StoragePartition with
+    // the web_app system.
+    content::StoragePartition* storage_partition =
+        browser_context->GetStoragePartition(storage_partition_config,
+                                             /*can_create=*/false);
+    if (!in_memory && storage_partition == nullptr) {
+      auto* profile = Profile::FromBrowserContext(browser_context);
+      auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
+      CHECK(web_app_provider);
+      web_app_provider->scheduler().RegisterControlledFramePartition(
+          url_info->app_id(), partition_name, base::DoNothing());
+    }
+
+    return storage_partition_config;
   }
 
   return ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(

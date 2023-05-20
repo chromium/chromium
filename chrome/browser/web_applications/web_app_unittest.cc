@@ -343,7 +343,8 @@ TEST(WebAppTest, IsolationDataDebugValue) {
           "installed_bundle": {
             "path": "random_path"
           }
-        }
+        },
+        "controlled_frame_partitions": []
       })")
                                             .value();
 
