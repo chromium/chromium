@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/browser/translate_ui_languages_manager.h"

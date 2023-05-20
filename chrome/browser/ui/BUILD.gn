@@ -305,8 +305,6 @@ static_library("ui") {
     "translate/translate_bubble_model.h",
     "translate/translate_bubble_model_impl.cc",
     "translate/translate_bubble_model_impl.h",
-    "translate/translate_bubble_ui_action_logger.cc",
-    "translate/translate_bubble_ui_action_logger.h",
     "translate/translate_language_list_model.h",
     "ui_features.cc",
     "ui_features.h",

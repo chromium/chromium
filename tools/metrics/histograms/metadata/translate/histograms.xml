@@ -96,13 +96,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.BubbleUiEvent" enum="TranslateBubbleUiEvent"
-    expires_after="2023-10-01">
-  <owner>groby@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>Tracks UI events related to the Full Page Translate bubble.</summary>
-</histogram>
-
 <histogram name="Translate.CaptureText" units="ms" expires_after="2023-01-15">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
