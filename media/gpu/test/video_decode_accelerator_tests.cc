@@ -304,8 +304,18 @@ TEST_F(VideoDecoderTest, GetSupportedConfigs) {
 #else
       media::VideoDecoderType::kUnknown;
 #endif
-  ASSERT_TRUE(VideoDecoderPipeline::GetSupportedConfigs(
-      decoder_type, gpu::GpuDriverBugWorkarounds()));
+  const auto supported_configs = VideoDecoderPipeline::GetSupportedConfigs(
+      decoder_type, gpu::GpuDriverBugWorkarounds());
+  ASSERT_FALSE(supported_configs->empty());
+
+  const bool contains_h264 =
+      std::find_if(supported_configs->begin(), supported_configs->end(),
+                   [](SupportedVideoDecoderConfig config) {
+                     return config.profile_min >= H264PROFILE_MIN &&
+                            config.profile_max <= H264PROFILE_MAX;
+                   }) != supported_configs->end();
+  // Every hardware video decoder in ChromeOS supports some kind of H.264.
+  EXPECT_TRUE(contains_h264);
 }
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
