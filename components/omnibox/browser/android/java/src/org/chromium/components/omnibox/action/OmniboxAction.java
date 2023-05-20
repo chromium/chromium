@@ -34,7 +34,7 @@ public abstract class OmniboxAction {
     }
     /** The default action icon. */
     @VisibleForTesting
-    static final ChipIcon DEFAULT_ICON =
+    public static final ChipIcon DEFAULT_ICON =
             new ChipIcon(R.drawable.action_default, /*tintWithTextColor=*/false);
     /** The type of an underlying action. */
     public final @OmniboxActionType int actionId;

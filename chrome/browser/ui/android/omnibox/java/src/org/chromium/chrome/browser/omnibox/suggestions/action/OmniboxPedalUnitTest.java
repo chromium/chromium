@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.omnibox.action;
+package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -22,6 +22,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.components.omnibox.action.OmniboxActionType;
+import org.chromium.components.omnibox.action.OmniboxPedalType;
 
 import java.util.List;
 
@@ -77,8 +81,9 @@ public class OmniboxPedalUnitTest {
     }
 
     @Test
-    public void safeCasting_successWithPedal() {
-        OmniboxPedal.from(OmniboxActionFactory.buildOmniboxPedal("hint", OmniboxPedalType.NONE));
+    public void safeCasting_successWithFactoryBuiltAction() {
+        OmniboxPedal.from(
+                OmniboxActionFactoryImpl.get().buildOmniboxPedal("hint", OmniboxPedalType.NONE));
     }
 
     /**

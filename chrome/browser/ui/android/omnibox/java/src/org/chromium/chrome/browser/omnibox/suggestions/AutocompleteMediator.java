@@ -26,10 +26,13 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactoryImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -44,8 +47,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.OmniboxMetrics;
-import org.chromium.components.omnibox.OmniboxMetrics.RefineActionUsage;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -203,6 +204,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             stopAutocomplete(false);
             mAutocomplete.removeOnSuggestionsReceivedListener(this);
         }
+        if (mNativeInitialized) {
+            OmniboxActionFactoryImpl.get().destroyNativeFactory();
+        }
         mHandler.removeCallbacks(mClearFocusCallback);
         mDropdownViewInfoListBuilder.destroy();
     }
@@ -282,6 +286,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      */
     void onNativeInitialized() {
         mNativeInitialized = true;
+        OmniboxActionFactoryImpl.get().initNativeFactory();
         // TODO(b/277805322): remove this Feature and parameter once we've run a holdback
         // experiment.
         mClearFocusAfterNavigation =

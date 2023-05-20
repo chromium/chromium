@@ -45,6 +45,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
 import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor;
@@ -61,9 +62,9 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -106,8 +107,8 @@ public class AutocompleteMediatorUnitTest {
     private @Mock WindowAndroid mMockWindowAndroid;
     private @Mock OmniboxActionDelegate mOmniboxActionDelegate;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeJniMock;
-    @Mock
-    private HistoryClustersProcessor.OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
+    private @Mock HistoryClustersProcessor.OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
+    private @Mock OmniboxActionFactoryJni mActionFactoryJni;
 
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
@@ -119,6 +120,7 @@ public class AutocompleteMediatorUnitTest {
     @Before
     public void setUp() {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJniMock);
+        mJniMocker.mock(OmniboxActionFactoryJni.TEST_HOOKS, mActionFactoryJni);
 
         doReturn(mAutocompleteController).when(mAutocompleteProvider).get(any());
 

@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/lazy_instance.h"
 #include "components/omnibox/browser/jni_headers/OmniboxActionFactory_jni.h"
 #include "omnibox_action.h"
 #include "url/android/gurl_android.h"
@@ -26,7 +27,16 @@ inline jclass org_chromium_components_omnibox_action_OmniboxAction_clazz(
       env, kOmniboxActionClass,
       &g_org_chromium_components_omnibox_action_OmniboxAction_clazz);
 }
+
+base::LazyInstance<base::android::ScopedJavaGlobalRef<jobject>>::
+    DestructorAtExit g_java_factory = LAZY_INSTANCE_INITIALIZER;
 }  // namespace
+
+/* static */ void JNI_OmniboxActionFactory_SetFactory(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& factory) {
+  g_java_factory.Get().Reset(factory);
+}
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     JNIEnv* env,
@@ -34,7 +44,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     OmniboxPedalId pedal_id) {
   return base::android::ScopedJavaGlobalRef(
       Java_OmniboxActionFactory_buildOmniboxPedal(
-          env, base::android::ConvertUTF16ToJavaString(env, hint),
+          env, g_java_factory.Get(),
+          base::android::ConvertUTF16ToJavaString(env, hint),
           static_cast<int32_t>(pedal_id)));
 }
 
@@ -44,7 +55,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
     const std::string& query) {
   return base::android::ScopedJavaGlobalRef(
       Java_OmniboxActionFactory_buildHistoryClustersAction(
-          env, base::android::ConvertUTF16ToJavaString(env, hint),
+          env, g_java_factory.Get(),
+          base::android::ConvertUTF16ToJavaString(env, hint),
           base::android::ConvertUTF8ToJavaString(env, query)));
 }
 
@@ -55,7 +67,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     const std::string& action_uri) {
   return base::android::ScopedJavaGlobalRef(
       Java_OmniboxActionFactory_buildActionInSuggest(
-          env, base::android::ConvertUTF16ToJavaString(env, hint), action_type,
+          env, g_java_factory.Get(),
+          base::android::ConvertUTF16ToJavaString(env, hint), action_type,
           base::android::ConvertUTF8ToJavaString(env, action_uri)));
 }
 

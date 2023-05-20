@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.omnibox.action;
+package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import android.text.TextUtils;
 
@@ -10,6 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.omnibox.R;
+import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.components.omnibox.action.OmniboxActionType;
 
 /**
  * Omnibox action for showing the history clusters (journeys) UI. This exists as a separate class so

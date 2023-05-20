@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.omnibox.action;
+package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import android.content.Intent;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.EntityInfoProto;
-import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.R;
+import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.components.omnibox.action.OmniboxActionType;
 
 import java.net.URISyntaxException;
 

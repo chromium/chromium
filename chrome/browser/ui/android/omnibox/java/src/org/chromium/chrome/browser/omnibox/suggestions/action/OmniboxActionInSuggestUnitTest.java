@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.omnibox.action;
+package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -29,9 +29,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.EntityInfoProto;
-import org.chromium.components.omnibox.OmniboxMetrics;
+import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.components.omnibox.action.OmniboxActionType;
 
 import java.util.List;
 
@@ -104,7 +107,7 @@ public class OmniboxActionInSuggestUnitTest {
 
     @Test
     public void safeCasting_successWithFactoryBuiltAction() {
-        OmniboxActionInSuggest.from(OmniboxActionFactory.buildActionInSuggest(
+        OmniboxActionInSuggest.from(OmniboxActionFactoryImpl.get().buildActionInSuggest(
                 "hint", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
     }
 

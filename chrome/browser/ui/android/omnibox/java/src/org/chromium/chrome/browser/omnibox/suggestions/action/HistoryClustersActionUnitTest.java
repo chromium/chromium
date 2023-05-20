@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.omnibox.action;
+package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -18,6 +18,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
+import org.chromium.components.omnibox.action.OmniboxActionType;
 
 /**
  * Tests for {@link HistoryClustersAction}.
@@ -71,9 +74,9 @@ public class HistoryClustersActionUnitTest {
     }
 
     @Test
-    public void safeCasting_successWithHistoryClusters() {
+    public void safeCasting_successWithFactoryBuiltAction() {
         HistoryClustersAction.from(
-                OmniboxActionFactory.buildHistoryClustersAction("hint", "query"));
+                OmniboxActionFactoryImpl.get().buildHistoryClustersAction("hint", "query"));
     }
 
     @Test
