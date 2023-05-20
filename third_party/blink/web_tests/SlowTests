@@ -370,7 +370,6 @@ crbug.com/1312081 [ Linux ] virtual/gpu/fast/canvas/canvas-blend-solid.html [ Sl
 crbug.com/1221326 virtual/gpu/fast/canvas/canvas-composite-image.html [ Slow ]
 
 # Media controls tests have to wait for panel to fade out.
-crbug.com/722825 [ Debug Mac12 ] media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Slow ]
 crbug.com/722825 [ Release ] media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Slow ]
 
 crbug.com/719298 fast/dnd/dropEffect-for-effectAllowed.html [ Slow ]
@@ -429,13 +428,15 @@ crbug.com/866850 [ Release Win ] virtual/gpu/fast/canvas/canvas-blend-image.html
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-color-over-image.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-color-over-pattern.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-image.html [ Slow ]
-crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-image.html [ Slow ]
+crbug.com/866850 [ Debug Mac12 ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-image.html [ Slow ]
+crbug.com/866850 [ Debug Mac13 ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-image.html [ Slow ]
+crbug.com/866850 [ Mac10.15 Release ] virtual/gpu/fast/canvas/canvas-blending-gradient-over-image.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/866850 [ Mac12 Release ] virtual/gpu/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-image-over-image.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-image-over-pattern.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-color.html [ Slow ]
-crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-color.html [ Slow ]
+crbug.com/866850 [ Debug Mac13 ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-color.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-gradient.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-gradient.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/canvas-blending-pattern-over-image.html [ Slow ]

@@ -97,8 +97,6 @@ crbug.com/1179544 compositing/overflow/composited-sticky-element-with-non-intege
 crbug.com/1179544 compositing/overflow/non-reparented-overlay-scrollbars.html [ Failure ]
 crbug.com/1179544 compositing/overflow/overflow-scroll-background-fractional-offset.html [ Failure ]
 crbug.com/1179544 compositing/overflow/overflow-scroll-content-fractional-offset.html [ Failure ]
-crbug.com/1179544 compositing/overflow/reflected-overlay-scrollbars-should-appear-without-compositing.html [ Failure ]
-crbug.com/1179544 compositing/overflow/reflected-overlay-scrollbars-should-respect-ancestor-clip.html [ Failure ]
 crbug.com/1179544 compositing/overflow/reparented-unclipped-overlay-scrollbars-with-offset-from-renderer.html [ Failure ]
 
 crbug.com/1191214 css2.1/20110323/c541-word-sp-001.htm [ Failure ]

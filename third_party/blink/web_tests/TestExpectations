@@ -887,7 +887,7 @@ crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1c.ht
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-4.html [ Failure Pass ]
 
 # Off-by-one in some components.
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-7.html [ Failure Pass ]
+crbug.com/1175040 [ Mac10.15 Release ] external/wpt/css/css-backgrounds/background-repeat-space-7.html [ Failure Pass ]
 
 # Failures due to pointerMove building synthetic events without button information (main thread only).
 crbug.com/1056778 fast/scrolling/scrollbars/scrollbar-thumb-snapping.html [ Failure ]
@@ -2909,7 +2909,6 @@ crbug.com/626703 external/wpt/clipboard-apis/async-navigator-clipboard-write-mul
 crbug.com/626703 external/wpt/preload/modulepreload-as.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/preload/modulepreload.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/access-reporting-post-message.https.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
@@ -5961,7 +5960,7 @@ crbug.com/1395840 [ Mac12 Release ] http/tests/accessibility/slow-document-load.
 crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-menu-hide-on-resize.html [ Failure ]
 crbug.com/1289607 [ Linux ] external/wpt/cookie-store/cookieStore_subscribe_arguments.https.any.html [ Failure ]
 crbug.com/1408294 [ Debug Linux ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
-crbug.com/1392781 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/cors-preflight2-base-https-other-https.html [ Crash Failure Pass Timeout ]
+crbug.com/1392781 [ Win10.20h2 ] http/tests/fetch/serviceworker-proxied/thorough/cors-preflight2-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1392781 [ Win ] http/tests/fetch/serviceworker/thorough/auth-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1392781 [ Win ] http/tests/fetch/window/thorough/auth-nocors-base-https-other-https.html [ Crash Failure Pass Timeout ]
 crbug.com/1392781 [ Win ] http/tests/fetch/workers/thorough/cors-preflight-base-https-other-https.html [ Crash Failure Pass Timeout ]
