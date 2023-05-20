@@ -2115,34 +2115,6 @@ std::vector<uint32_t> V4L2Device::PreferredInputFormat(Type type) const {
   return {};
 }
 
-void V4L2Device::GetSupportedResolution(uint32_t pixelformat,
-                                        gfx::Size* min_resolution,
-                                        gfx::Size* max_resolution) {
-  constexpr gfx::Size kDefaultMaxCodedSize(1920, 1088);
-  *max_resolution = kDefaultMaxCodedSize;
-  constexpr gfx::Size kDefaultMinCodedSize(16, 16);
-  *min_resolution = kDefaultMinCodedSize;
-
-  v4l2_frmsizeenum frame_size;
-  memset(&frame_size, 0, sizeof(frame_size));
-  frame_size.pixel_format = pixelformat;
-  if (Ioctl(VIDIOC_ENUM_FRAMESIZES, &frame_size) == 0) {
-    if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
-      max_resolution->SetSize(frame_size.stepwise.max_width,
-                              frame_size.stepwise.max_height);
-      min_resolution->SetSize(frame_size.stepwise.min_width,
-                              frame_size.stepwise.min_height);
-    } else {
-#if BUILDFLAG(IS_CHROMEOS)
-      // All of Chrome-supported implementations support STEPWISE only.
-      CHECK_EQ(frame_size.type, V4L2_FRMSIZE_TYPE_STEPWISE);
-#endif
-    }
-  } else {
-    DLOGF(INFO) << "VIDIOC_ENUM_FRAMESIZES failed, using default values";
-  }
-}
-
 VideoEncodeAccelerator::SupportedRateControlMode
 V4L2Device::GetSupportedRateControlMode() {
   auto rate_control_mode = VideoEncodeAccelerator::kNoMode;
@@ -2285,7 +2257,8 @@ V4L2Device::EnumerateSupportedDecodeProfiles(
     }
 
     VideoDecodeAccelerator::SupportedProfile profile;
-    GetSupportedResolution(pixelformat, &profile.min_resolution,
+    GetSupportedResolution(base::BindRepeating(&V4L2Device::Ioctl, this),
+                           pixelformat, &profile.min_resolution,
                            &profile.max_resolution);
 
     const auto video_codec_profiles = EnumerateSupportedProfilesForV4L2Codec(
@@ -2324,7 +2297,8 @@ V4L2Device::EnumerateSupportedEncodeProfiles() {
       continue;
     }
     gfx::Size min_resolution;
-    GetSupportedResolution(pixelformat, &min_resolution,
+    GetSupportedResolution(base::BindRepeating(&V4L2Device::Ioctl, this),
+                           pixelformat, &min_resolution,
                            &profile.max_resolution);
     const auto video_codec_profiles = EnumerateSupportedProfilesForV4L2Codec(
         base::BindRepeating(&V4L2Device::Ioctl, this), pixelformat);

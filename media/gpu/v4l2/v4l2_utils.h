@@ -12,6 +12,9 @@
 #include "base/functional/callback.h"
 #include "media/base/video_codecs.h"
 
+namespace gfx {
+class Size;
+}
 namespace media {
 
 // Returns a human readable description of |memory|.
@@ -48,6 +51,14 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
 std::vector<uint32_t> EnumerateSupportedPixFmts(
     base::RepeatingCallback<int(int, void*)> ioctl_cb,
     v4l2_buf_type buf_type);
+
+// Gets minimum and maximum resolution for fourcc |pixelformat|. If the driver
+// doesn't support enumeration, default values are returned instead.
+void GetSupportedResolution(
+    const base::RepeatingCallback<int(int, void*)>& ioctl_cb,
+    uint32_t pixelformat,
+    gfx::Size* min_resolution,
+    gfx::Size* max_resolution);
 
 }  // namespace media
 

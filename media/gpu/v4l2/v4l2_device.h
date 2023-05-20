@@ -785,12 +785,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Returns the preferred V4L2 input formats for |type| or empty if none.
   std::vector<uint32_t> PreferredInputFormat(Type type) const;
 
-  // Get minimum and maximum resolution for fourcc |pixelformat| and store to
-  // |min_resolution| and |max_resolution|.
-  void GetSupportedResolution(uint32_t pixelformat,
-                              gfx::Size* min_resolution,
-                              gfx::Size* max_resolution);
-
   // Get the supported bitrate control modes. This function should be called
   // when V4L2Device opens an encoder driver node.
   VideoEncodeAccelerator::SupportedRateControlMode
