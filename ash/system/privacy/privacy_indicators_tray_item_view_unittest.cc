@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
@@ -387,6 +388,44 @@ TEST_P(PrivacyIndicatorsTrayItemViewTest, ShelfAlignmentChanged) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottomLocked);
   EXPECT_EQ(views::BoxLayout::Orientation::kHorizontal,
             GetLayoutManager(view)->GetOrientation());
+}
+
+// Tests that the privacy indicators tray item is visible when its show
+// animation finishes running after the notification center tray has been
+// hidden. This test was added in response to b/283091001.
+TEST_P(PrivacyIndicatorsTrayItemViewTest,
+       ShowAnimationAfterNotificationCenterTrayHidden) {
+  // The notification center tray only exists when the QS revamp is enabled.
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  // Verify that the privacy indicators are hidden and not animating.
+  ASSERT_FALSE(privacy_indicators_view()->GetVisible());
+  ASSERT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kIdle,
+            animation_state());
+
+  // Show the notification center tray.
+  GetPrimaryNotificationCenterTray()->SetVisiblePreferred(true);
+  ASSERT_TRUE(GetPrimaryNotificationCenterTray()->IsDrawn());
+  ASSERT_EQ(GetPrimaryNotificationCenterTray()->layer()->opacity(), 1.0f);
+
+  // Hide the notification center tray.
+  GetPrimaryNotificationCenterTray()->SetVisiblePreferred(false);
+  ASSERT_FALSE(GetPrimaryNotificationCenterTray()->IsDrawn());
+  ASSERT_EQ(GetPrimaryNotificationCenterTray()->layer()->opacity(), 0.0f);
+
+  // Show privacy indicators and let the animation end.
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true);
+  SimulateAnimationEnded();
+  ASSERT_EQ(PrivacyIndicatorsTrayItemView::AnimationState::kIdle,
+            animation_state());
+
+  // Verify that the privacy indicators tray item is visible.
+  EXPECT_TRUE(privacy_indicators_view()->IsDrawn());
+  EXPECT_EQ(privacy_indicators_view()->layer()->opacity(), 1.0f);
 }
 
 TEST_P(PrivacyIndicatorsTrayItemViewTest, VisibilityAnimation) {
