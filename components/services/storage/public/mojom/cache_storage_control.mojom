@@ -19,16 +19,14 @@ enum CacheStorageOwner {
   kBackgroundFetch,
 };
 
-// Observer interface for receiving callbacks after cache storage changes.
+// Observer interface for receiving callbacks after cache storage changes. This
+// is used by Devtools.
 interface CacheStorageObserver {
   // Called when caches are created or deleted.
-  // TODO(crbug.com/1218097): Pass bucket information also.
-  OnCacheListChanged(blink.mojom.StorageKey storage_key);
+  OnCacheListChanged(BucketLocator bucket_locator);
 
   // Called when the content of a cache has been modified.
-  // TODO(crbug.com/1218097): Pass bucket information also.
-  OnCacheContentChanged(blink.mojom.StorageKey storage_key,
-                        string cache_name);
+  OnCacheContentChanged(BucketLocator bucket_locator, string cache_name);
 };
 
 // Controls the state of CacheStorage within a partition. This is a privileged

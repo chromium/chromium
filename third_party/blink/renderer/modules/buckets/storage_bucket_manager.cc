@@ -265,42 +265,22 @@ void StorageBucketManager::DidDelete(ScriptPromiseResolver* resolver,
   resolver->Resolve();
 }
 
-void StorageBucketManager::GetBucketForDevtools(
+StorageBucket* StorageBucketManager::GetBucketForDevtools(
     ScriptState* script_state,
-    const String& name,
-    base::OnceCallback<void(StorageBucket*)> callback) {
+    const String& name) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->GetSecurityOrigin()->CanAccessStorageBuckets()) {
-    std::move(callback).Run(nullptr);
-    return;
+    return nullptr;
   }
+
+  mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote;
 
   GetBucketManager(script_state)
-      ->GetBucketForDevtools(
-          name,
-          WTF::BindOnce(&StorageBucketManager::DidGetBucketForDevtools,
-                        WrapPersistent(this), WrapPersistent(script_state),
-                        name, std::move(callback)));
-}
+      ->GetBucketForDevtools(name,
+                             bucket_remote.InitWithNewPipeAndPassReceiver());
 
-void StorageBucketManager::DidGetBucketForDevtools(
-    ScriptState* script_state,
-    const String& name,
-    base::OnceCallback<void(StorageBucket*)> callback,
-    mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
-    mojom::blink::BucketError) {
-  if (!script_state->ContextIsValid()) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  ScriptState::Scope scope(script_state);
-
-  if (!bucket_remote) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-  std::move(callback).Run(MakeGarbageCollected<StorageBucket>(
-      navigator_base_, name, std::move(bucket_remote)));
+  return MakeGarbageCollected<StorageBucket>(navigator_base_, name,
+                                             std::move(bucket_remote));
 }
 
 void StorageBucketManager::Trace(Visitor* visitor) const {

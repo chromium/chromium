@@ -196,14 +196,10 @@ class ExecutableWithIdbFactory
     Navigator* navigator = dom_window->navigator();
     StorageBucketManager* storage_bucket_manager =
         StorageBucketManager::storageBuckets(*navigator);
-    storage_bucket_manager->GetBucketForDevtools(
-        script_state, storage_bucket_name,
-        WTF::BindOnce(&ExecutableWithIdbFactory::GotBucketIDBFactory,
-                      WrapPersistent(this)));
-  }
-
-  void GotBucketIDBFactory(StorageBucket* storage_bucket) {
-    if (storage_bucket != nullptr) {
+    StorageBucket* storage_bucket =
+        storage_bucket_manager->GetBucketForDevtools(script_state,
+                                                     storage_bucket_name);
+    if (storage_bucket) {
       OnSuccess(storage_bucket->indexedDB());
     } else {
       OnFailure(protocol::Response::ServerError("Couldn't retrieve bucket"));

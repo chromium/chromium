@@ -133,8 +133,9 @@ class DelayedBlob : public storage::FakeBlob {
 
  private:
   void MaybeComplete() {
-    if (paused_ || !client_)
+    if (paused_ || !client_) {
       return;
+    }
     client_->OnComplete(net::OK, data_.length());
     client_.reset();
     producer_handle_.reset();
@@ -168,8 +169,9 @@ class CallbackScheduler : public CacheStorageScheduler {
  private:
   void ExecuteTask(base::OnceClosure task) {
     std::move(task).Run();
-    if (callback_)
+    if (callback_) {
       std::move(callback_).Run();
+    }
   }
 
   base::OnceClosure callback_;
@@ -199,18 +201,21 @@ bool IsIndexFileCurrent(const base::FilePath& cache_dir) {
   base::File::Info info;
   const base::FilePath index_path =
       cache_dir.AppendASCII(CacheStorage::kIndexFileName);
-  if (!GetFileInfo(index_path, &info))
+  if (!GetFileInfo(index_path, &info)) {
     return false;
+  }
   base::Time index_last_modified = info.last_modified;
 
   base::FileEnumerator enumerator(cache_dir, false,
                                   base::FileEnumerator::DIRECTORIES);
   for (base::FilePath file_path = enumerator.Next(); !file_path.empty();
        file_path = enumerator.Next()) {
-    if (!GetFileInfo(file_path, &info))
+    if (!GetFileInfo(file_path, &info)) {
       return false;
-    if (index_last_modified <= info.last_modified)
+    }
+    if (index_last_modified <= info.last_modified) {
       return false;
+    }
   }
 
   return true;
@@ -223,12 +228,13 @@ class TestCacheStorageObserver : public storage::mojom::CacheStorageObserver {
       : receiver_(this, std::move(observer)),
         loop_(std::make_unique<base::RunLoop>()) {}
 
-  void OnCacheListChanged(const blink::StorageKey& storage_key) override {
+  void OnCacheListChanged(
+      const storage::BucketLocator& bucket_locator) override {
     ++notify_list_changed_count;
     loop_->Quit();
   }
 
-  void OnCacheContentChanged(const blink::StorageKey& storage_key,
+  void OnCacheContentChanged(const storage::BucketLocator& bucket_locator,
                              const std::string& cache_name) override {
     ++notify_content_changed_count;
     loop_->Quit();
@@ -262,8 +268,9 @@ class CacheStorageManagerTest : public testing::Test {
 
   void SetUp() override {
     base::FilePath temp_dir_path;
-    if (!MemoryOnly())
+    if (!MemoryOnly()) {
       ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    }
 
     CreateStorageManager();
   }
@@ -362,8 +369,9 @@ class CacheStorageManagerTest : public testing::Test {
         base::MakeRefCounted<BlobStorageContextWrapper>(std::move(remote));
 
     base::FilePath temp_dir_path;
-    if (!MemoryOnly())
+    if (!MemoryOnly()) {
       temp_dir_path = temp_dir_.GetPath();
+    }
 
     quota_policy_ = base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
     mock_quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
@@ -549,8 +557,9 @@ class CacheStorageManagerTest : public testing::Test {
         base::BindOnce(&CacheStorageManagerTest::CacheMatchCallback,
                        base::Unretained(this), base::Unretained(&loop)));
     loop.Run();
-    if (callback_error_ == CacheStorageError::kSuccess)
+    if (callback_error_ == CacheStorageError::kSuccess) {
       CheckOpHistograms(histogram_tester, "Match");
+    }
     return callback_error_ == CacheStorageError::kSuccess;
   }
 
@@ -580,8 +589,9 @@ class CacheStorageManagerTest : public testing::Test {
         base::BindOnce(&CacheStorageManagerTest::CacheMatchCallback,
                        base::Unretained(this), base::Unretained(&loop)));
     loop.Run();
-    if (callback_error_ == CacheStorageError::kSuccess)
+    if (callback_error_ == CacheStorageError::kSuccess) {
       CheckOpHistograms(histogram_tester, "MatchAll");
+    }
     return callback_error_ == CacheStorageError::kSuccess;
   }
 
@@ -844,8 +854,9 @@ class CacheStorageManagerTest : public testing::Test {
                               blink::mojom::QuotaStatusCode status_code,
                               int64_t usage,
                               int64_t quota) {
-    if (status_code == blink::mojom::QuotaStatusCode::kOk)
+    if (status_code == blink::mojom::QuotaStatusCode::kOk) {
       *out_usage = usage;
+    }
     run_loop->Quit();
   }
 
@@ -1575,8 +1586,9 @@ TEST_F(CacheStorageManagerTest, DeletedCacheIgnoredInIndex) {
 }
 
 TEST_F(CacheStorageManagerTest, TestErrorInitializingCache) {
-  if (MemoryOnly())
+  if (MemoryOnly()) {
     return;
+  }
   const GURL kFooURL("http://example.com/foo");
   const std::string kCacheName = "foo";
 

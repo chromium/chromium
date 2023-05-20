@@ -2047,6 +2047,7 @@ experimental domain CSS
       StyleSheetId styleSheetId
 
 experimental domain CacheStorage
+  depends on Storage
 
   # Unique identifier of the Cache object.
   type CacheId extends string
@@ -2090,6 +2091,8 @@ experimental domain CacheStorage
       string securityOrigin
       # Storage key of the cache.
       string storageKey
+      # Storage bucket of the cache.
+      optional Storage.StorageBucket storageBucket
       # The name of the cache.
       string cacheName
 
@@ -2121,11 +2124,13 @@ experimental domain CacheStorage
   # Requests cache names.
   command requestCacheNames
     parameters
-      # At least and at most one of securityOrigin, storageKey must be specified.
+      # At least and at most one of securityOrigin, storageKey, storageBucket must be specified.
       # Security origin.
       optional string securityOrigin
       # Storage key.
       optional string storageKey
+      # Storage bucket. If not specified, it uses the default bucket.
+      optional Storage.StorageBucket storageBucket
     returns
       # Caches for the security origin.
       array of Cache caches
@@ -9432,6 +9437,8 @@ experimental domain Storage
       string origin
       # Storage key to update.
       string storageKey
+      # Storage bucket to update.
+      string bucketId
       # Name of cache in origin.
       string cacheName
 
@@ -9442,6 +9449,8 @@ experimental domain Storage
       string origin
       # Storage key to update.
       string storageKey
+      # Storage bucket to update.
+      string bucketId
 
   # The origin's IndexedDB object store has been modified.
   event indexedDBContentUpdated

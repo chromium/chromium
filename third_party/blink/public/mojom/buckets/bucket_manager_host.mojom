@@ -104,8 +104,7 @@ interface BucketManagerHost {
       => (pending_remote<BucketHost>? remote, BucketError error);
 
   // Gets bucket without creating or updating it.
-  GetBucketForDevtools(string name)
-      => (pending_remote<BucketHost>? remote, BucketError error);
+  GetBucketForDevtools(string name, pending_receiver<BucketHost> receiver);
 
   // Returns a list of stored bucket names in alphabetical order.
   Keys() => (array<string> buckets, bool success);

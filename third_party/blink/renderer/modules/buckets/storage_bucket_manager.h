@@ -49,18 +49,10 @@ class MODULES_EXPORT StorageBucketManager final
   void Trace(Visitor*) const override;
 
   // These are not exposed to the web applications and only used by DevTools.
-  void GetBucketForDevtools(ScriptState* script_state,
-                            const String& name,
-                            base::OnceCallback<void(StorageBucket*)> callback);
+  StorageBucket* GetBucketForDevtools(ScriptState* script_state,
+                                      const String& name);
 
  private:
-  void DidGetBucketForDevtools(
-      ScriptState* script_state,
-      const String& name,
-      base::OnceCallback<void(StorageBucket*)> callback,
-      mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
-      mojom::blink::BucketError);
-
   mojom::blink::BucketManagerHost* GetBucketManager(ScriptState* script_state);
 
   void DidOpen(ScriptPromiseResolver* resolver,

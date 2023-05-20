@@ -56,6 +56,9 @@ class CacheStorage final : public ScriptWrappable,
   bool HasPendingActivity() const override;
   void Trace(Visitor*) const override;
 
+  mojom::blink::CacheStorage* GetRemoteForDevtools(
+      base::OnceClosure disconnect_handler);
+
  private:
   void MaybeInit();
 
