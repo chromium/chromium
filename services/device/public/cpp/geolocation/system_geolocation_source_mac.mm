@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -109,6 +110,14 @@ LocationSystemPermissionStatus SystemGeolocationSourceMac::GetSystemPermission()
   return LocationSystemPermissionStatus::kDenied;
 }
 
+void SystemGeolocationSourceMac::AppAttemptsToUseGeolocation() {
+#if BUILDFLAG(IS_IOS)
+  if (@available(ios 8.0, macOS 10.15, *)) {
+    [location_manager_ requestWhenInUseAuthorization];
+  }
+#endif
+}
+
 }  // namespace device
 
 @implementation GeolocationManagerDelegate
@@ -131,6 +140,15 @@ LocationSystemPermissionStatus SystemGeolocationSourceMac::GetSystemPermission()
   } else {
     _hasPermission = NO;
   }
+
+#if BUILDFLAG(IS_IOS)
+  if (@available(iOS 8.0, *)) {
+    if (status == kCLAuthorizationStatusAuthorizedWhenInUse) {
+      _hasPermission = YES;
+    }
+  }
+#endif
+
   _manager->PermissionUpdated();
 }
 

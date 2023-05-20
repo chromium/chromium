@@ -12,6 +12,10 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "content/shell/browser/shell_browser_context.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#endif
+
 namespace performance_manager {
 class PerformanceManagerLifetime;
 }  // namespace performance_manager
@@ -52,6 +56,9 @@ class ShellBrowserMainParts : public BrowserMainParts {
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
   void PostDestroyThreads() override;
+#if BUILDFLAG(IS_IOS)
+  device::GeolocationManager* GetGeolocationManager();
+#endif
 
   ShellBrowserContext* browser_context() { return browser_context_.get(); }
   ShellBrowserContext* off_the_record_browser_context() {
@@ -83,6 +90,9 @@ class ShellBrowserMainParts : public BrowserMainParts {
 #endif
 #if BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<FuchsiaViewPresenter> fuchsia_view_presenter_;
+#endif
+#if BUILDFLAG(IS_IOS)
+  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
 #endif
 };
 
