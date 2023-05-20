@@ -326,36 +326,6 @@ TEST(TranslateBrowserMetricsTest, ReportedUnsupportedLanguageAtInitiation) {
   EXPECT_EQ(1, recorder.GetCount(ENGLISH));
 }
 
-TEST(TranslateBrowserMetricsTest, ReportedTranslateSourceLanguage) {
-  const int ENGLISH = -74147910;
-  const int FRENCH = 1704315002;
-
-  MetricsRecorder recorder("Translate.SourceLanguage");
-  EXPECT_EQ(0, recorder.GetTotalCount());
-
-  TranslateBrowserMetrics::ReportTranslateSourceLanguage("en");
-  TranslateBrowserMetrics::ReportTranslateSourceLanguage("fr");
-  TranslateBrowserMetrics::ReportTranslateSourceLanguage("en");
-
-  EXPECT_EQ(2, recorder.GetCount(ENGLISH));
-  EXPECT_EQ(1, recorder.GetCount(FRENCH));
-}
-
-TEST(TranslateBrowserMetricsTest, ReportedTranslateTargetLanguage) {
-  const int ENGLISH = -74147910;
-  const int FRENCH = 1704315002;
-
-  MetricsRecorder recorder("Translate.TargetLanguage");
-  EXPECT_EQ(0, recorder.GetTotalCount());
-
-  TranslateBrowserMetrics::ReportTranslateTargetLanguage("en");
-  TranslateBrowserMetrics::ReportTranslateTargetLanguage("fr");
-  TranslateBrowserMetrics::ReportTranslateTargetLanguage("en");
-
-  EXPECT_EQ(2, recorder.GetCount(ENGLISH));
-  EXPECT_EQ(1, recorder.GetCount(FRENCH));
-}
-
 TEST(TranslateBrowserMetricsTest, ReportTranslateHrefHintStatus) {
   MetricsRecorder recorder("Translate.HrefHint.Status");
   recorder.CheckTranslateHrefHintStatus(0, 0, 0, 0);

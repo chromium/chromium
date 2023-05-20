@@ -696,26 +696,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.SourceLanguage" enum="LocaleCodeISO639"
-    expires_after="2023-10-01">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of requests sent to the Translate server, grouped by source
-    language.
-  </summary>
-</histogram>
-
-<histogram name="Translate.TargetLanguage" enum="LocaleCodeISO639"
-    expires_after="2023-10-08">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of requests sent to the Translate server, grouped by target
-    language.
-  </summary>
-</histogram>
-
 <histogram name="Translate.Translate" enum="BooleanTranslate"
     expires_after="2023-10-01">
   <owner>megjablon@google.com</owner>
