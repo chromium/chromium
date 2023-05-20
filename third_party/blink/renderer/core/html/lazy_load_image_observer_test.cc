@@ -685,6 +685,57 @@ TEST_F(LazyLoadImagesTest, AboveTheFoldImageLoadedBeforeVisible) {
       "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
 }
 
+// A fully above-the-fold cached image should not report below-the-fold metrics.
+TEST_F(LazyLoadImagesTest, AboveTheFoldCachedImageMetrics) {
+  HistogramTester histogram_tester;
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimSubresourceRequest image_resource("https://example.com/image.png",
+                                       "image/png");
+  LoadURL("https://example.com/");
+  // Load a page with a non-lazy image that loads immediately, inserting the
+  // image into the cache.
+  main_resource.Complete(R"HTML(
+        <!doctype html>
+        <img id='image' src='https://example.com/image.png'/>
+        <div id='container'></div>
+      )HTML");
+  image_resource.Complete(TestImage());
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* image = To<HTMLImageElement>(GetDocument().getElementById("image"));
+  EXPECT_TRUE(image->CachedImage()->IsLoaded());
+
+  // Insert a lazy loaded image with a src that is already cached.
+  auto* container = GetDocument().getElementById("container");
+  container->setInnerHTML(R"HTML(
+    <img src='https://example.com/image.png' loading='lazy' id='lazy'/>
+  )HTML");
+
+  // The lazy image should have completed loading.
+  auto* lazy_image = To<HTMLImageElement>(GetDocument().getElementById("lazy"));
+  EXPECT_TRUE(lazy_image->CachedImage()->IsLoaded());
+
+  // We should have a load time, but not yet `is_initially_intersecting`.
+  auto& visible_load_time = lazy_image->EnsureVisibleLoadTimeMetrics();
+  EXPECT_FALSE(visible_load_time.time_when_first_load_finished.is_null());
+  EXPECT_FALSE(visible_load_time.has_initial_intersection_been_set);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // After a frame, the visibility metrics observer should fire and correctly
+  // set `is_initially_intersecting`.
+  EXPECT_TRUE(visible_load_time.has_initial_intersection_been_set);
+  EXPECT_TRUE(visible_load_time.is_initially_intersecting);
+
+  // Nothing was below the fold so no BelowTheFold metrics should be reported.
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2", 0);
+  histogram_tester.ExpectTotalCount(
+      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
+}
+
 // An image that loads immediately due to being cached should not report
 // Blink.VisibleBeforeLoaded.LazyLoadImages metrics.
 TEST_F(LazyLoadImagesTest, CachedImageVisibleBeforeLoadedMetrics) {

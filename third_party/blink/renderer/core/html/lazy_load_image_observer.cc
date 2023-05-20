@@ -243,7 +243,15 @@ void LazyLoadImageObserver::StartMonitoringVisibility(
         {}, {std::numeric_limits<float>::min()}, root_document,
         WTF::BindRepeating(&LazyLoadImageObserver::OnVisibilityChanged,
                            WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
+        IntersectionObserver::kDeliverDuringPostLifecycleSteps,
+        IntersectionObserver::kFractionOfTarget,
+        /* delay */ 0,
+        /* track_visibility */ false,
+        /* always_report_root_bounds */ false,
+        IntersectionObserver::kApplyMarginToRoot,
+        /* use_overflow_clip_edge */ false,
+        /* needs_initial_observation_with_detached_target */ false);
   }
   visibility_metrics_observer_->observe(image_element);
 }
