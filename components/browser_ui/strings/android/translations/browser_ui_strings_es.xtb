@@ -372,7 +372,7 @@
 <translation id="7882806643839505685">Permite que se reproduzcan sonidos en un sitio específico.</translation>
 <translation id="789180354981963912">Bloquea cookies de terceros en incógnito:</translation>
 <translation id="7940722705963108451">Recuérdamelo</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sitio incluido en el grupo de sitios de <ph name="FPS_OWNER" /> que puede ver tu actividad en el grupo}other{<ph name="FPS_MEMBERS_COUNT" /> sitios incluidos en el grupo de sitios de <ph name="FPS_OWNER" /> que puede ver tu actividad en el grupo}}</translation>
+<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sitio incluido en el grupo de sitios de <ph name="FPS_OWNER" /> que puede ver tu actividad en el grupo}other{<ph name="FPS_MEMBERS_COUNT" /> sitios incluidos en el grupo de sitios de <ph name="FPS_OWNER" /> que pueden ver tu actividad en el grupo}}</translation>
 <translation id="7986741934819883144">Selecciona un contacto</translation>
 <translation id="7999064672810608036">¿Seguro que quieres borrar todos los datos locales, incluidas las cookies, y restablecer todos los permisos para este sitio web?</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
