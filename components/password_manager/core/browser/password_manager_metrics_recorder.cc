@@ -47,7 +47,7 @@ void PasswordManagerMetricsRecorder::RecordProvisionalSaveFailure(
     const GURL& main_frame_url,
     const GURL& form_origin,
     BrowserSavePasswordProgressLogger* logger) {
-  UMA_HISTOGRAM_ENUMERATION("PasswordManager.ProvisionalSaveFailure", failure,
+  UMA_HISTOGRAM_ENUMERATION("PasswordManager.ProvisionalSaveFailure2", failure,
                             MAX_FAILURE_VALUE);
   ukm_entry_builder_->SetProvisionalSaveFailure(static_cast<int64_t>(failure));
 

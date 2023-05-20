@@ -192,6 +192,15 @@ export class UntrustedProjectorBrowserProxyImpl {
     const {accounts} = await this.pageHandlerRemote.getAccounts();
     return accounts;
   }
+
+  async getVideo(videoFileId, resourceKey) {
+    const {result} =
+        await this.pageHandlerRemote.getVideo(videoFileId, resourceKey);
+    if ('errorMessage' in result) {
+      return Promise.reject(result.errorMessage);
+    }
+    return result.video;
+  }
 }
 
 /**

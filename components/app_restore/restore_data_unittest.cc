@@ -399,7 +399,7 @@ class RestoreDataTest : public testing::Test {
         kCurrentBounds1, kWindowStateType1, kPreMinimizedWindowStateType1,
         /*snap_percentage=*/0, kMaxSize1, kMinSize1, std::u16string(kTitle1),
         kBoundsInRoot1, kPrimaryColor1, kStatusBarColor1,
-        /*tab_group_infos=*/{});
+        /*expected_tab_group_infos=*/{});
 
     const auto app_restore_data_it2 = launch_list_it1->second.find(kWindowId2);
     std::vector<tab_groups::TabGroupInfo> expected_tab_group_infos;
@@ -498,7 +498,8 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
       kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, kDeskGuid2,
       kCurrentBounds2, kWindowStateType2, kPreMinimizedWindowStateType2,
       /*snap_percentage=*/0, absl::nullopt, kMinSize2, std::u16string(kTitle2),
-      kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2, /*tab_group_infos=*/{});
+      kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2,
+      /*expected_tab_group_infos=*/{});
 
   // Verify the restore data for |kAppId2| still exists.
   const auto launch_list_it2 =
@@ -921,6 +922,48 @@ TEST_F(RestoreDataTest, CompareAppRestoreDataIntent) {
   app_restore_data_2->intent =
       MakeIntent(kIntentActionView, kMimeType, kShareText1);
   EXPECT_TRUE(*app_restore_data_1 == *app_restore_data_2);
+}
+
+TEST_F(RestoreDataTest, ToString) {
+  AddAppLaunchInfos();
+  ModifyWindowInfos();
+  ModifyThemeColors();
+  VerifyRestoreData(restore_data());
+  const std::string expected_string = base::StringPrintf(
+      "( (App ID: %s, Count: 2)(Window ID: %d)Activation index: %d \n"
+      "Desk: 1 \n"
+      "Desk guid: %s \n"
+      "Current bounds: %s \n"
+      "Window state: %d \n"
+      "Pre minimized show state: -1 \n"
+      "Snap percentage: -1 \n"
+      "Display id: -1 \n"
+      "App Title: %s(Window ID: %d)Activation index: %d \n"
+      "Desk: 2 \n"
+      "Desk guid: %s \n"
+      "Current bounds: %s \n"
+      "Window state: %d \n"
+      "Pre minimized show state: 3 \n"
+      "Snap percentage: -1 \n"
+      "Display id: -1 \n"
+      "App Title: %s(App ID: %s, Count: 1)(Window ID: %d)Activation index: %d "
+      "\n"
+      "Desk: -2 \nDesk guid: %s \n"
+      "Current bounds: %s \n"
+      "Window state: %d \n"
+      "Pre minimized show state: -1 \n"
+      "Snap percentage: 75 \n"
+      "Display id: -1 \nApp Title:  )",
+      kAppId1, kWindowId1, kActivationIndex1,
+      kDeskGuid1.AsLowercaseString().c_str(),
+      kCurrentBounds1.ToString().c_str(), kWindowStateType1,
+      base::UTF16ToUTF8(kTitle1).c_str(), kWindowId2, kActivationIndex2,
+      kDeskGuid2.AsLowercaseString().c_str(),
+      kCurrentBounds2.ToString().c_str(), kWindowStateType2,
+      base::UTF16ToUTF8(kTitle2).c_str(), kAppId2, kWindowId3,
+      kActivationIndex3, kDeskGuid3.AsLowercaseString().c_str(),
+      kCurrentBounds3.ToString().c_str(), kWindowStateType3);
+  EXPECT_EQ(restore_data().ToString(), expected_string);
 }
 
 }  // namespace app_restore

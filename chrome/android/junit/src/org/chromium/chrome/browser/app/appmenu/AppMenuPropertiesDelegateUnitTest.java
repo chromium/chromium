@@ -767,8 +767,8 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .when(mBookmarkModel)
                 .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
         Long clusterId = 1L;
-        doReturn(new ShoppingService.ProductInfo(
-                         "", new GURL(""), clusterId, 0, "", 0, "", Optional.empty()))
+        doReturn(new ShoppingService.ProductInfo("", new GURL(""), Optional.of(clusterId),
+                         Optional.empty(), "", 0, "", Optional.empty()))
                 .when(mShoppingService)
                 .getAvailableProductInfoForUrl(any());
         doReturn(true).when(mShoppingService).isSubscribedFromCache(any());

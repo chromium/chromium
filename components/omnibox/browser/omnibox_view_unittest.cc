@@ -41,13 +41,11 @@ class OmniboxViewTest : public testing::Test {
  public:
   OmniboxViewTest() {
     edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
-    auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    auto* omnibox_client_ptr = omnibox_client.get();
-    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get(),
-                                              std::move(omnibox_client));
+    view_ = std::make_unique<TestOmniboxView>(
+        edit_model_delegate_.get(), std::make_unique<TestOmniboxClient>());
 
-    view_->SetEditModel(std::make_unique<TestOmniboxEditModel>(
-        view_.get(), edit_model_delegate_.get(), omnibox_client_ptr, nullptr));
+    view_->controller()->set_edit_model(std::make_unique<TestOmniboxEditModel>(
+        view_->controller(), view_.get(), edit_model_delegate_.get(), nullptr));
 
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     client()->SetBookmarkModel(bookmark_model_.get());

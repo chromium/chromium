@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
@@ -47,13 +48,21 @@ constexpr char kPrivacyIndicatorsLaunchSettingsHistogramName[] =
 
 // Check the visibility of privacy indicators and their camera/microphone icons
 // in all displays.
+ash::PrivacyIndicatorsTrayItemView* GetPrivacyIndicatorsView(
+    ash::RootWindowController* root_window_controller) {
+  return ash::features::IsQsRevampEnabled()
+             ? root_window_controller->GetStatusAreaWidget()
+                   ->notification_center_tray()
+                   ->privacy_indicators_view()
+             : root_window_controller->GetStatusAreaWidget()
+                   ->unified_system_tray()
+                   ->privacy_indicators_view();
+}
+
 void ExpectPrivacyIndicatorsVisible(bool visible) {
   for (auto* root_window_controller :
        ash::Shell::Get()->GetAllRootWindowControllers()) {
-    EXPECT_EQ(root_window_controller->GetStatusAreaWidget()
-                  ->unified_system_tray()
-                  ->privacy_indicators_view()
-                  ->GetVisible(),
+    EXPECT_EQ(GetPrivacyIndicatorsView(root_window_controller)->GetVisible(),
               visible);
   }
 }
@@ -61,9 +70,7 @@ void ExpectPrivacyIndicatorsVisible(bool visible) {
 void ExpectPrivacyIndicatorsCameraIconVisible(bool visible) {
   for (auto* root_window_controller :
        ash::Shell::Get()->GetAllRootWindowControllers()) {
-    EXPECT_EQ(root_window_controller->GetStatusAreaWidget()
-                  ->unified_system_tray()
-                  ->privacy_indicators_view()
+    EXPECT_EQ(GetPrivacyIndicatorsView(root_window_controller)
                   ->camera_icon()
                   ->GetVisible(),
               visible);
@@ -73,9 +80,7 @@ void ExpectPrivacyIndicatorsCameraIconVisible(bool visible) {
 void ExpectPrivacyIndicatorsMicrophoneIconVisible(bool visible) {
   for (auto* root_window_controller :
        ash::Shell::Get()->GetAllRootWindowControllers()) {
-    EXPECT_EQ(root_window_controller->GetStatusAreaWidget()
-                  ->unified_system_tray()
-                  ->privacy_indicators_view()
+    EXPECT_EQ(GetPrivacyIndicatorsView(root_window_controller)
                   ->microphone_icon()
                   ->GetVisible(),
               visible);
@@ -300,7 +305,9 @@ class AppAccessNotifierParameterizedTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class AppAccessNotifierPrivacyIndicatorTest : public AppAccessNotifierBaseTest {
+class AppAccessNotifierPrivacyIndicatorTest
+    : public AppAccessNotifierBaseTest,
+      public testing::WithParamInterface<bool> {
  public:
   AppAccessNotifierPrivacyIndicatorTest() = default;
   AppAccessNotifierPrivacyIndicatorTest(
@@ -311,10 +318,18 @@ class AppAccessNotifierPrivacyIndicatorTest : public AppAccessNotifierBaseTest {
 
   // AppAccessNotifierBaseTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({ash::features::kPrivacyIndicators},
-                                          {});
+    if (IsQsRevampEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {ash::features::kPrivacyIndicators, ash::features::kQsRevamp}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({ash::features::kPrivacyIndicators},
+                                            {});
+    }
+
     AppAccessNotifierBaseTest::SetUp();
   }
+
+  bool IsQsRevampEnabled() { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -551,7 +566,11 @@ TEST_P(AppAccessNotifierParameterizedTest, GetShortNameFromAppId) {
   EXPECT_EQ(AppAccessNotifier::GetAppShortNameFromAppId(id), u"test_app_name");
 }
 
-TEST_F(AppAccessNotifierPrivacyIndicatorTest, AppAccessNotification) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppAccessNotifierPrivacyIndicatorTest,
+                         /*IsQsEnabled*/ testing::Bool());
+
+TEST_P(AppAccessNotifierPrivacyIndicatorTest, AppAccessNotification) {
   // Test that notifications get created/removed when an app is accessing camera
   // or microphone.
   const std::string id1 = "test_app_id_1";
@@ -585,7 +604,7 @@ TEST_F(AppAccessNotifierPrivacyIndicatorTest, AppAccessNotification) {
       notification_id1));
 }
 
-TEST_F(AppAccessNotifierPrivacyIndicatorTest, PrivacyIndicatorsVisibility) {
+TEST_P(AppAccessNotifierPrivacyIndicatorTest, PrivacyIndicatorsVisibility) {
   // Uses normal animation duration so that the icons would not be immediately
   // hidden after the animation.
   ui::ScopedAnimationDurationScaleMode animation_scale(
@@ -593,7 +612,7 @@ TEST_F(AppAccessNotifierPrivacyIndicatorTest, PrivacyIndicatorsVisibility) {
 
   // Make sure privacy indicators work on multiple displays.
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-      .UpdateDisplay("800x800,801+0-800x800");
+      .UpdateDisplay("800x700,801+0-800x700");
 
   ExpectPrivacyIndicatorsVisible(/*visible=*/false);
 
@@ -627,7 +646,7 @@ TEST_F(AppAccessNotifierPrivacyIndicatorTest, PrivacyIndicatorsVisibility) {
   ExpectPrivacyIndicatorsMicrophoneIconVisible(/*visible=*/true);
 }
 
-TEST_F(AppAccessNotifierPrivacyIndicatorTest, RecordAppType) {
+TEST_P(AppAccessNotifierPrivacyIndicatorTest, RecordAppType) {
   base::HistogramTester histograms;
   LaunchAppUsingCameraOrMicrophone("test_app_id1", "test_app_name",
                                    /*use_camera=*/true,
@@ -658,7 +677,7 @@ TEST_F(AppAccessNotifierPrivacyIndicatorTest, RecordAppType) {
                                apps::AppType::kSystemWeb, 1);
 }
 
-TEST_F(AppAccessNotifierPrivacyIndicatorTest, RecordLaunchSettings) {
+TEST_P(AppAccessNotifierPrivacyIndicatorTest, RecordLaunchSettings) {
   // Make sure histograms with app type is being recorded after launching
   // settings.
   base::HistogramTester histograms;

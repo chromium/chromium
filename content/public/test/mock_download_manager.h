@@ -159,7 +159,7 @@ class MockDownloadManager : public DownloadManager {
                void(DownloadInitializationDependency dependency));
   MOCK_METHOD0(IsManagerInitialized, bool());
   MOCK_METHOD0(InProgressCount, int());
-  MOCK_METHOD0(NonMaliciousInProgressCount, int());
+  MOCK_METHOD0(BlockingShutdownCount, int());
   MOCK_METHOD0(GetBrowserContext, BrowserContext*());
   MOCK_METHOD0(CheckForHistoryFilesRemoval, void());
   MOCK_METHOD1(GetDownload, download::DownloadItem*(uint32_t id));

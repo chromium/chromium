@@ -57,7 +57,7 @@ GCMClient::ChromeChannel GetChannel(version_info::Channel channel) {
 }
 
 std::string GetVersion() {
-  return version_info::GetVersionNumber();
+  return std::string(version_info::GetVersionNumber());
 }
 
 GCMClient::ChromeBuildInfo GetChromeBuildInfo(

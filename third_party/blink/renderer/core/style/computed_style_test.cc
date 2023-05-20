@@ -1846,10 +1846,8 @@ TEST_F(ComputedStyleTest, ScrollTimelineAxisNoDiff) {
   ComputedStyleBuilder builder1(*InitialComputedStyle());
   ComputedStyleBuilder builder2(*InitialComputedStyle());
 
-  builder1.SetScrollTimelineAxis(
-      Vector<TimelineAxis>(1u, TimelineAxis::kVertical));
-  builder2.SetScrollTimelineAxis(
-      Vector<TimelineAxis>(1u, TimelineAxis::kVertical));
+  builder1.SetScrollTimelineAxis(Vector<TimelineAxis>(1u, TimelineAxis::kY));
+  builder2.SetScrollTimelineAxis(Vector<TimelineAxis>(1u, TimelineAxis::kY));
 
   scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
   scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();
@@ -1898,10 +1896,8 @@ TEST_F(ComputedStyleTest, ViewTimelineAxisNoDiff) {
   ComputedStyleBuilder builder1(*InitialComputedStyle());
   ComputedStyleBuilder builder2(*InitialComputedStyle());
 
-  builder1.SetViewTimelineAxis(
-      Vector<TimelineAxis>(1u, TimelineAxis::kVertical));
-  builder2.SetViewTimelineAxis(
-      Vector<TimelineAxis>(1u, TimelineAxis::kVertical));
+  builder1.SetViewTimelineAxis(Vector<TimelineAxis>(1u, TimelineAxis::kY));
+  builder2.SetViewTimelineAxis(Vector<TimelineAxis>(1u, TimelineAxis::kY));
 
   scoped_refptr<const ComputedStyle> style1 = builder1.TakeStyle();
   scoped_refptr<const ComputedStyle> style2 = builder2.TakeStyle();

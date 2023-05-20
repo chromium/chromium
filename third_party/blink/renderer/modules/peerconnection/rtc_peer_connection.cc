@@ -1661,8 +1661,7 @@ ScriptPromise RTCPeerConnection::getStats(ScriptState* script_state,
     V8RTCStatsCallback* success_callback =
         V8RTCStatsCallback::Create(first_argument.As<v8::Function>());
     MediaStreamTrack* selector_or_null =
-        V8MediaStreamTrack::ToImplWithTypeCheck(isolate,
-                                                legacy_selector.V8Value());
+        V8MediaStreamTrack::ToWrappable(isolate, legacy_selector.V8Value());
     return LegacyCallbackBasedGetStats(script_state, success_callback,
                                        selector_or_null, exception_state);
   }
@@ -1673,7 +1672,7 @@ ScriptPromise RTCPeerConnection::getStats(ScriptState* script_state,
     return PromiseBasedGetStats(script_state, nullptr, exception_state);
 
   MediaStreamTrack* track =
-      V8MediaStreamTrack::ToImplWithTypeCheck(isolate, first_argument);
+      V8MediaStreamTrack::ToWrappable(isolate, first_argument);
   if (track)
     return PromiseBasedGetStats(script_state, track, exception_state);
 

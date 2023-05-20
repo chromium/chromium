@@ -448,13 +448,8 @@ void ExtensionsMenuView::OnToolbarActionRemoved(
   DCHECK(iter != extensions_menu_items_.end());
   ExtensionMenuItemView* const view = *iter;
   DCHECK(Contains(view));
-  view->parent()->RemoveChildView(view);
-  DCHECK(!Contains(view));
+  view->parent()->RemoveChildViewT(view);
   extensions_menu_items_.erase(iter);
-
-  // Removing the child view take it out of the view hierarchy, but means we
-  // have to manually delete it.
-  delete view;
 
   UpdateSectionVisibility();
 

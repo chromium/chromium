@@ -17,13 +17,13 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent_observer_bridge.h"
-#import "ios/chrome/browser/prefs/browser_prefs.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
@@ -73,9 +73,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
     agent_ = PolicyWatcherBrowserAgent::FromBrowser(browser_.get());
 
     // SceneState Browser Agent.
-    app_state_ = [[AppState alloc] initWithBrowserLauncher:nil
-                                        startupInformation:nil
-                                       applicationDelegate:nil];
+    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
     scene_state_ =
         [[FakeSceneState alloc] initWithAppState:app_state_
                                     browserState:chrome_browser_state_.get()];
@@ -279,12 +277,8 @@ TEST_F(PolicyWatcherBrowserAgentTest, SignOutIfPolicyChangedAtColdStart) {
   PolicyWatcherBrowserAgent* agent =
       PolicyWatcherBrowserAgent::FromBrowser(browser.get());
 
-  // SceneState Browser Agent.
-  AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
-                                               startupInformation:nil
-                                              applicationDelegate:nil];
   FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithAppState:app_state
+      [[FakeSceneState alloc] initWithAppState:app_state_
                                   browserState:chrome_browser_state_.get()];
   scene_state.activationLevel = SceneActivationLevelForegroundActive;
   SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
@@ -392,13 +386,9 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
   PolicyWatcherBrowserAgent* agent =
       PolicyWatcherBrowserAgent::FromBrowser(browser.get());
 
-  // SceneState Browser Agent.
-  AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
-                                               startupInformation:nil
-                                              applicationDelegate:nil];
   @autoreleasepool {
     FakeSceneState* scene_state =
-        [[FakeSceneState alloc] initWithAppState:app_state
+        [[FakeSceneState alloc] initWithAppState:app_state_
                                     browserState:chrome_browser_state_.get()];
     scene_state.activationLevel = SceneActivationLevelForegroundActive;
     SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
@@ -443,13 +433,9 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
   PolicyWatcherBrowserAgent* agent =
       PolicyWatcherBrowserAgent::FromBrowser(browser.get());
 
-  // SceneState Browser Agent.
-  AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
-                                               startupInformation:nil
-                                              applicationDelegate:nil];
   @autoreleasepool {
     FakeSceneState* scene_state =
-        [[FakeSceneState alloc] initWithAppState:app_state
+        [[FakeSceneState alloc] initWithAppState:app_state_
                                     browserState:chrome_browser_state_.get()];
     scene_state.activationLevel = SceneActivationLevelForegroundActive;
     SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);

@@ -40,6 +40,7 @@ class MockPermissionDelegate
                     const url::Origin&,
                     const url::Origin& identity_provider,
                     const absl::optional<std::string>& account_id));
+  MOCK_METHOD1(HasSharingPermission, bool(const url::Origin&));
   MOCK_METHOD4(GrantSharingPermission,
                void(const url::Origin&,
                     const url::Origin&,

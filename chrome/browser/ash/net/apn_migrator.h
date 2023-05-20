@@ -40,13 +40,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
 
+  void OnClearPropertiesSuccess(const std::string iccid);
+  void OnClearPropertiesFailure(const std::string iccid,
+                                const std::string guid,
+                                const std::string& error_name);
+
   // Creates an ONC configuration object for the custom APN list Shill property
   // containing |apn_list|, and applies it for the cellular |network|.
   void SetShillCustomApnListForNetwork(const NetworkState& network,
                                        const base::Value::List* apn_list);
 
   void OnSetShillCustomApnListSuccess(const std::string iccid);
-
   void OnSetShillCustomApnListFailure(const std::string iccid,
                                       const std::string guid,
                                       const std::string& error_name);
@@ -67,10 +71,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   // ICCIDs that are currently being migrated.
   base::flat_set<std::string> iccids_in_migration_;
 
-  // ICCIDs of networks that have been configured in shill with the revamped APN
-  // list. Networks must be updated in shill with the migrated APNs each time
-  // the revamp flag is enabled.
-  base::flat_set<std::string> iccids_shill_updated_with_migrated_apns_;
+  // ICCIDs of networks that have been configured in shill with the appropriate
+  // CustomAPNList. Networks must be updated in shill with the CustomAPNList
+  // property each time the revamp flag is toggled.
+  base::flat_set<std::string> shill_updated_iccids_;
 
   raw_ptr<ManagedCellularPrefHandler, ExperimentalAsh>
       managed_cellular_pref_handler_ = nullptr;

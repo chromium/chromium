@@ -63,9 +63,9 @@ static constexpr base::TimeDelta kIgnoreEarlyClicksOnPopupDuration =
 
 // Returns true if the given id refers to an element that can be accepted.
 bool CanAccept(PopupItemId id) {
-  return id != POPUP_ITEM_ID_SEPARATOR &&
-         id != POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE &&
-         id != POPUP_ITEM_ID_MIXED_FORM_MESSAGE && id != POPUP_ITEM_ID_TITLE;
+  return id != PopupItemId::kSeparator &&
+         id != PopupItemId::kInsecureContextPaymentDisabledMessage &&
+         id != PopupItemId::kMixedFormMessage && id != PopupItemId::kTitle;
 }
 
 }  // namespace
@@ -173,7 +173,7 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   // Remove all the old data list values, which should always be at the top of
   // the list if they are present.
   while (!suggestions_.empty() &&
-         suggestions_[0].frontend_id == POPUP_ITEM_ID_DATALIST_ENTRY) {
+         suggestions_[0].frontend_id == PopupItemId::kDatalistEntry) {
     suggestions_.erase(suggestions_.begin());
   }
 
@@ -181,7 +181,7 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   // is one).
   if (values.empty()) {
     if (!suggestions_.empty() &&
-        suggestions_[0].frontend_id == POPUP_ITEM_ID_SEPARATOR) {
+        suggestions_[0].frontend_id == PopupItemId::kSeparator) {
       suggestions_.erase(suggestions_.begin());
     }
 
@@ -196,9 +196,9 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
 
   // Add a separator if there are any other values.
   if (!suggestions_.empty() &&
-      suggestions_[0].frontend_id != POPUP_ITEM_ID_SEPARATOR) {
+      suggestions_[0].frontend_id != PopupItemId::kSeparator) {
     suggestions_.insert(suggestions_.begin(),
-                        Suggestion(POPUP_ITEM_ID_SEPARATOR));
+                        Suggestion(PopupItemId::kSeparator));
   }
 
   // Prepend the parameters to the suggestions we already have.
@@ -207,7 +207,7 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
     suggestions_[i].main_text =
         Suggestion::Text(values[i], Suggestion::Text::IsPrimary(true));
     suggestions_[i].labels = {{Suggestion::Text(labels[i])}};
-    suggestions_[i].frontend_id = POPUP_ITEM_ID_DATALIST_ENTRY;
+    suggestions_[i].frontend_id = PopupItemId::kDatalistEntry;
   }
 
   OnSuggestionsChanged();
@@ -318,7 +318,7 @@ void AutofillPopupControllerImpl::AcceptSuggestionWithoutThreshold(int index) {
 #endif
 
   if (web_contents_ &&
-      suggestion.frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
+      suggestion.frontend_id == PopupItemId::kVirtualCreditCardEntry) {
     feature_engagement::TrackerFactory::GetForBrowserContext(
         web_contents_->GetBrowserContext())
         ->NotifyEvent("autofill_virtual_card_suggestion_accepted");
@@ -463,7 +463,7 @@ bool AutofillPopupControllerImpl::HasSuggestions() const {
   }
   Suggestion::FrontendId id = suggestions_[0].frontend_id;
   return id.as_int() > 0 || base::Contains(kItemsTriggeringFieldFilling, id) ||
-         id == POPUP_ITEM_ID_SCAN_CREDIT_CARD;
+         id == PopupItemId::kScanCreditCard;
 }
 
 void AutofillPopupControllerImpl::SetSuggestions(

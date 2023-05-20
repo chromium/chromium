@@ -251,12 +251,12 @@ void FetchRespondWithObserver::OnResponseFulfilled(
     const ScriptValue& value,
     const ExceptionContext& exception_context) {
   DCHECK(GetExecutionContext());
-  if (!V8Response::HasInstance(value.V8Value(), script_state->GetIsolate())) {
+  Response* response =
+      V8Response::ToWrappable(script_state->GetIsolate(), value.V8Value());
+  if (!response) {
     OnResponseRejected(ServiceWorkerResponseError::kNoV8Instance);
     return;
   }
-  Response* response = V8Response::ToImplWithTypeCheck(
-      script_state->GetIsolate(), value.V8Value());
   // "If one of the following conditions is true, return a network error:
   //   - |response|'s type is |error|.
   //   - |request|'s mode is |same-origin| and |response|'s type is |cors|.

@@ -15,6 +15,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -98,7 +99,7 @@ UserTypeByDeviceTypeMetricsProvider::GetUserSegment(Profile* profile) {
     return UserSegment::kManagedGuestSession;
   }
 
-  if (profiles::IsKioskSession()) {
+  if (chromeos::IsKioskSession()) {
     return UserSegment::kKioskApp;
   }
 

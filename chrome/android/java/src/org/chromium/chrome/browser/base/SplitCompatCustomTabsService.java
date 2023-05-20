@@ -122,11 +122,6 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
         return mImpl.setEngagementSignalsCallback(sessionToken, callback, extras);
     }
 
-    @Override
-    protected int getGreatestScrollPercentage(CustomTabsSessionToken sessionToken, Bundle extras) {
-        return mImpl.getGreatestScrollPercentage(sessionToken, extras);
-    }
-
     /**
      * Holds the implementation of service logic. Will be called by {@link
      * SplitCompatCustomTabsService}.
@@ -170,7 +165,5 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
                 CustomTabsSessionToken sessionToken, Bundle extras);
         protected abstract boolean setEngagementSignalsCallback(CustomTabsSessionToken sessionToken,
                 EngagementSignalsCallback callback, Bundle extras);
-        protected abstract int getGreatestScrollPercentage(
-                CustomTabsSessionToken sessionToken, Bundle extras);
     }
 }

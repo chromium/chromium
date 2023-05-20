@@ -46,7 +46,9 @@ class ShellFederatedPermissionContext
       const url::Origin& relying_party_embedder) override;
   base::Time GetAutoReauthnEmbargoStartTime(
       const url::Origin& relying_party_embedder) override;
-  void RecordDisplayAndEmbargo(
+  void RecordEmbargoForAutoReauthn(
+      const url::Origin& relying_party_embedder) override;
+  void RemoveEmbargoForAutoReauthn(
       const url::Origin& relying_party_embedder) override;
   void SetRequiresUserMediation(const GURL& rp_url,
                                 bool requires_user_mediation) override;
@@ -70,6 +72,8 @@ class ShellFederatedPermissionContext
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
       const absl::optional<std::string>& account_id) override;
+  bool HasSharingPermission(
+      const url::Origin& relying_party_requester) override;
   void GrantSharingPermission(const url::Origin& relying_party_requester,
                               const url::Origin& relying_party_embedder,
                               const url::Origin& identity_provider,
@@ -105,7 +109,8 @@ class ShellFederatedPermissionContext
   // A vector of registered IdPs.
   std::vector<GURL> idp_registry_;
 
-  // A set of embargoed origins.
+  // A set of embargoed origins which have a FedCM embargo. An origin is added
+  // to the set when the user dismisses the FedCM UI.
   std::set<url::Origin> embargoed_origins_;
 
   // A set of urls that require user mediation.

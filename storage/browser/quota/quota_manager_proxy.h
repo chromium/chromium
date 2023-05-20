@@ -50,6 +50,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
     : public base::RefCountedThreadSafe<QuotaManagerProxy> {
  public:
   using UsageAndQuotaCallback = QuotaManagerImpl::UsageAndQuotaCallback;
+  using UsageAndQuotaWithBreakdownCallback =
+      QuotaManagerImpl::UsageAndQuotaWithBreakdownCallback;
 
   // The caller is responsible for calling InvalidateQuotaManagerImpl() before
   // `quota_manager_impl` is destroyed. `quota_manager_impl_task_runner` must be
@@ -213,6 +215,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
+
+  void GetUsageAndQuotaWithBreakdown(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaWithBreakdownCallback callback);
 
   void GetBucketUsageAndQuota(
       BucketId bucket,

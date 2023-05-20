@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_token_management/token_management_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -60,6 +61,7 @@ std::unique_ptr<ProfileTokenNavigationThrottle>
 ProfileTokenNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle) {
   if (!base::FeatureList::IsEnabled(features::kEnableProfileTokenManagement) ||
+      !g_browser_process->local_state() ||
       !profiles::IsProfileCreationAllowed()) {
     return nullptr;
   }

@@ -4,7 +4,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,6 +19,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using TabAppleScriptTest = InProcessBrowserTest;
 
 namespace AppleScript {
@@ -29,21 +32,19 @@ namespace {
 // Calls the method that handles the "Execute Javascript" command and returns
 // the script error number.
 int ExecuteJavascriptCommand(TabAppleScript* tab_applescript) {
-  base::scoped_nsobject<FakeScriptCommand> fakeScriptCommand(
-      [[FakeScriptCommand alloc] init]);
+  FakeScriptCommand* fakeScriptCommand = [[FakeScriptCommand alloc] init];
   [tab_applescript handlesExecuteJavascriptScriptCommand:nil];
-  return [NSScriptCommand currentCommand].scriptErrorNumber;
+  return fakeScriptCommand.scriptErrorNumber;
 }
 
 IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, Creation) {
-  base::scoped_nsobject<TabAppleScript> tab_applescript(
-      [[TabAppleScript alloc] initWithWebContents:nullptr]);
+  TabAppleScript* tab_applescript =
+      [[TabAppleScript alloc] initWithWebContents:nullptr];
   EXPECT_FALSE(tab_applescript);
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  tab_applescript.reset(
-      [[TabAppleScript alloc] initWithWebContents:web_contents]);
+  tab_applescript = [[TabAppleScript alloc] initWithWebContents:web_contents];
   EXPECT_TRUE(tab_applescript);
 }
 
@@ -51,16 +52,16 @@ IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ExecuteJavascript) {
   Profile* profile = browser()->profile();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  base::scoped_nsobject<TabAppleScript> tab_applescript(
-      [[TabAppleScript alloc] initWithWebContents:web_contents]);
+  TabAppleScript* tab_applescript =
+      [[TabAppleScript alloc] initWithWebContents:web_contents];
 
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents, false);
   EXPECT_EQ(static_cast<int>(Error::kJavaScriptUnsupported),
-            ExecuteJavascriptCommand(tab_applescript.get()));
+            ExecuteJavascriptCommand(tab_applescript));
 
   prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents, true);
-  EXPECT_EQ(0, ExecuteJavascriptCommand(tab_applescript.get()));
+  EXPECT_EQ(0, ExecuteJavascriptCommand(tab_applescript));
 }
 
 }  // namespace

@@ -99,6 +99,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
                              base::OnceClosure callback,
                              network_handler::ErrorCallback error_callback) = 0;
 
+  // Clears Shill properties in |names| of a network with |service_path|.
+  virtual void ClearShillProperties(
+      const std::string& service_path,
+      const std::vector<std::string>& names,
+      base::OnceClosure callback,
+      network_handler::ErrorCallback error_callback) = 0;
+
   // Initially configures an unconfigured network with the given user settings
   // and returns the new identifier to |callback| if successful. Fails if the
   // network was already configured by a call to this function or because of a

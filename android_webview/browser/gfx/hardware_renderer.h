@@ -21,6 +21,7 @@ namespace android_webview {
 class AwVulkanContextProvider;
 class RenderThreadManager;
 
+// Lifetime: Temporary
 struct OverlaysParams {
   enum class Mode {
     Disabled,
@@ -35,6 +36,7 @@ struct OverlaysParams {
   MergeTransactionFn merge_transaction = nullptr;
 };
 
+// Lifetime: Temporary
 struct HardwareRendererDrawParams {
   bool operator==(const HardwareRendererDrawParams& other) const;
   bool operator!=(const HardwareRendererDrawParams& other) const;
@@ -49,6 +51,7 @@ struct HardwareRendererDrawParams {
   gfx::ColorSpace color_space;
 };
 
+// Lifetime: WebView
 class HardwareRenderer {
  public:
   // Two rules:

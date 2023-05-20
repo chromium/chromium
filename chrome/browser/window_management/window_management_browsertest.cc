@@ -413,12 +413,12 @@ IN_PROC_BROWSER_TEST_F(WindowManagementTest,
 IN_PROC_BROWSER_TEST_P(WindowManagementTest, MAYBE_ScreenDetailedOnChange) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-      .UpdateDisplay("100+100-801x802,901+100-802x802");
+      .UpdateDisplay("100+100-801x802,901+100-802x803");
 #else
   display::ScreenBase screen;
   screen.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                    display::DisplayList::Type::PRIMARY);
-  screen.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 802)},
+  screen.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 803)},
                                    display::DisplayList::Type::NOT_PRIMARY);
   display::Screen::SetScreenInstance(&screen);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_P(WindowManagementTest, MAYBE_ScreenDetailedOnChange) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-      .UpdateDisplay("100+100-801x301,901+100-802x802");
+      .UpdateDisplay("100+100-801x301,901+100-802x803");
 #else
   screen.display_list().UpdateDisplay({1, gfx::Rect(100, 100, 801, 301)},
                                       display::DisplayList::Type::PRIMARY);

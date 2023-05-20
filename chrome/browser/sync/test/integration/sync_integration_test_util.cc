@@ -8,7 +8,7 @@
 #include "chrome/browser/sync/test/integration/themes_helper.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/test_utils.h"
 
 void SetCustomTheme(Profile* profile, int theme_index) {

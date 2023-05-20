@@ -29,6 +29,7 @@ struct OverflowMenuActionSection: View {
         Spacer()
           .frame(height: Dimensions.headerFooterHeight)
           .listRowInsets(EdgeInsets())
+          .accessibilityHidden(true)
       },
       footer: {
         if let actionFooter = actionGroup.footer {
@@ -39,6 +40,7 @@ struct OverflowMenuActionSection: View {
             // it uses a default height.
             .frame(height: CGFloat.leastNonzeroMagnitude)
             .listRowInsets(EdgeInsets())
+            .accessibilityHidden(true)
         }
       })
   }

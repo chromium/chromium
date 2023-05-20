@@ -554,6 +554,34 @@ XrResult xrEnumerateViewConfigurationViews(
   return XR_SUCCESS;
 }
 
+XrResult xrEnumerateSwapchainFormats(XrSession session,
+                                     uint32_t format_capacity_input,
+                                     uint32_t* format_count_output,
+                                     int64_t* formats) {
+  DVLOG(2) << __FUNCTION__;
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF(format_capacity_input != 1 && format_capacity_input != 0,
+            XR_ERROR_SIZE_INSUFFICIENT,
+            "xrEnumerateSwapchainFormats does not equal length returned by "
+            "previous call");
+  RETURN_IF(format_count_output == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "format_count_output is nullptr");
+  *format_count_output = 1;
+  if (format_capacity_input == 0) {
+    return XR_SUCCESS;
+  }
+
+  RETURN_IF(format_capacity_input < *format_count_output,
+            XR_ERROR_SIZE_INSUFFICIENT,
+            "format_capacity_input is less than required size");
+  RETURN_IF(formats == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "Formats Array is nullptr");
+  // This is what is hardcoded in `OpenXrGraphicsBindingD3D11`.
+  formats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+
+  return XR_SUCCESS;
+}
+
 XrResult xrEnumerateSwapchainImages(XrSwapchain swapchain,
                                     uint32_t image_capacity_input,
                                     uint32_t* image_count_output,
@@ -1131,6 +1159,9 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
   } else if (strcmp(name, "xrEnumerateInstanceExtensionProperties") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(
         xrEnumerateInstanceExtensionProperties);
+  } else if (strcmp(name, "xrEnumerateSwapchainFormats") == 0) {
+    *function =
+        reinterpret_cast<PFN_xrVoidFunction>(xrEnumerateSwapchainFormats);
   } else if (strcmp(name, "xrEnumerateSwapchainImages") == 0) {
     *function =
         reinterpret_cast<PFN_xrVoidFunction>(xrEnumerateSwapchainImages);

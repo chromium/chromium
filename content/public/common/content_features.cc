@@ -29,6 +29,14 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
              "AndroidDownloadableFontsMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Use chromim's implementation of selection magnifier built using surface
+// control APIs, instead of using the system-provided magnifier.
+BASE_FEATURE(kAndroidSurfaceControlMagnifier,
+             "AndroidSurfaceControlMagnifier",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Enables FLEDGE and Attribution Reporting API integration.
 BASE_FEATURE(kAttributionFencedFrameReportingBeacon,
              "AttributionFencedFrameReportingBeacon",
@@ -279,13 +287,6 @@ BASE_FEATURE(kDesktopCaptureChangeSource,
              "DesktopCaptureChangeSource",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Enables the alternative, improved desktop/window capturer for LaCrOS
-BASE_FEATURE(kDesktopCaptureLacrosV2,
-             "DesktopCaptureLacrosV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Adds a tab strip to PWA windows.
 // TODO(crbug.com/897314): Enable this feature.
 BASE_FEATURE(kDesktopPWAsTabStrip,
@@ -339,14 +340,6 @@ BASE_FEATURE(kEnableCanvas2DLayers,
 // https://github.com/webmachinelearning/model-loader/blob/main/explainer.md
 BASE_FEATURE(kEnableMachineLearningModelLoaderWebPlatformApi,
              "EnableMachineLearningModelLoaderWebPlatformApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables support for the PPB_VideoDecoder(Dev) API. If this feature is
-// false (and the command-line override is not set in the renderer), the API
-// will appear as unsupported if asked for by a plugin.
-// See crbug.com/1382469 for details.
-BASE_FEATURE(kSupportPepperVideoDecoderDevAPI,
-             "SupportPepperVideoDecoderDevAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables service workers on chrome-untrusted:// urls.
@@ -651,6 +644,11 @@ BASE_FEATURE(kLowerV8MemoryLimitForNonMainRenderers,
              "LowerV8MemoryLimitForNonMainRenderers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a fix for a macOS IME Live Conversion issue. crbug.com/1328530.
+BASE_FEATURE(kMacImeLiveConversionFix,
+             "MacImeLiveConversionFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Uses ThreadType::kCompositing for the main thread
 BASE_FEATURE(kMainThreadCompositingPriority,
              "MainThreadCompositingPriority",
@@ -942,16 +940,6 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-// Causes RenderAccessibilityHost messages to be handled initially on a thread
-// pool before being forwarded to the browser main thread to avoid so the
-// deserialization does not block it.
-//
-// TODO(nuskos): Once we've conducted a retroactive study of chrometto
-// improvements clean up this feature.
-BASE_FEATURE(kRenderAccessibilityHostDeserializationOffMainThread,
-             "RenderAccessibilityHostDeserializationOffMainThread",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // RenderDocument:
 //

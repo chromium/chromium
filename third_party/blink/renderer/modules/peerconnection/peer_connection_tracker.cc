@@ -840,6 +840,14 @@ void PeerConnectionTracker::GetLegacyStats() {
   }
 }
 
+void PeerConnectionTracker::GetCurrentState() {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
+
+  for (const auto& pair : peer_connection_local_id_map_) {
+    pair.key->EmitCurrentStateForTracker();
+  }
+}
+
 void PeerConnectionTracker::RegisterPeerConnection(
     RTCPeerConnectionHandler* pc_handler,
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,

@@ -100,14 +100,19 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // the queue will remain throttled as long as the handle is alive.
   class ThrottleHandle {
    public:
-    explicit ThrottleHandle(base::WeakPtr<MainThreadTaskQueue> task_queue)
-        : task_queue_(std::move(task_queue)) {
-      if (task_queue_)
-        task_queue_->throttler_->IncreaseThrottleRefCount();
+    explicit ThrottleHandle(MainThreadTaskQueue& task_queue)
+        : task_queue_(task_queue.AsWeakPtr()) {
+      // The throttler is reset for detached task queues, which we shouldn't be
+      // attempting to throttle.
+      CHECK(task_queue_->throttler_);
+      task_queue_->throttler_->IncreaseThrottleRefCount();
     }
+
     ~ThrottleHandle() {
-      if (task_queue_)
+      // The throttler is reset for detached task queues.
+      if (task_queue_ && task_queue_->throttler_) {
         task_queue_->throttler_->DecreaseThrottleRefCount();
+      }
     }
 
     // Move-only.
@@ -442,8 +447,11 @@ class PLATFORM_EXPORT MainThreadTaskQueue
           on_ipc_task_posted_callback);
   void DetachOnIPCTaskPostedWhileInBackForwardCache();
 
-  void DetachFromMainThreadScheduler();
+  // Called when the underlying scheduler is destroyed. Tasks in this queue will
+  // continue to run until the queue becomes empty.
+  void DetachTaskQueue();
 
+  // Shuts down the task queue. No tasks will run after this is called.
   void ShutdownTaskQueue();
 
   AgentGroupScheduler* GetAgentGroupScheduler();
@@ -544,11 +552,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   friend class blink::scheduler::main_thread_scheduler_impl_unittest::
       MainThreadSchedulerImplTest;
 
-  // Clear references to main thread scheduler and frame scheduler and dispatch
-  // appropriate notifications. This is the common part of ShutdownTaskQueue and
-  // DetachFromMainThreadScheduler.
-  void ClearReferencesToSchedulers();
-
   scoped_refptr<BlinkSchedulerSingleThreadTaskRunner> WrapTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner>);
 
@@ -574,8 +577,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
 
   WeakPersistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
 
-  // Set in the constructor. Cleared in ClearReferencesToSchedulers(). Can never
-  // be set to a different value afterwards (except in tests).
+  // Set in the constructor. Cleared in `DetachTaskQueue()` and
+  // `ShutdownTaskQueue()`. Can never be set to a different value afterwards
+  // (except in tests).
   FrameSchedulerImpl* frame_scheduler_;  // NOT OWNED
 
   // The WakeUpBudgetPool for this TaskQueue, if any.

@@ -127,60 +127,63 @@ bool StructTraits<media::stable::mojom::ColorSpaceDataView, gfx::ColorSpace>::
 
 // static
 gfx::PointF StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
-                         gfx::ColorVolumeMetadata>::
-    primary_r(const gfx::ColorVolumeMetadata& input) {
+                         gfx::HdrMetadataSmpteSt2086>::
+    primary_r(const gfx::HdrMetadataSmpteSt2086& input) {
   gfx::PointF primary_r(input.primaries.fRX, input.primaries.fRY);
   static_assert(
       std::is_same<decltype(primary_r),
                    decltype(media::stable::mojom::ColorVolumeMetadata::
                                 primary_r)>::value,
-      "Unexpected type for gfx::ColorVolumeMetadata::primary_r. If you need to "
-      "change this assertion, please contact chromeos-gfx-video@google.com.");
+      "Unexpected type for gfx::HdrMetadataSmpteSt2086::primary_r. If you need "
+      "to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
 
   return primary_r;
 }
 
 // static
 gfx::PointF StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
-                         gfx::ColorVolumeMetadata>::
-    primary_g(const gfx::ColorVolumeMetadata& input) {
+                         gfx::HdrMetadataSmpteSt2086>::
+    primary_g(const gfx::HdrMetadataSmpteSt2086& input) {
   gfx::PointF primary_g(input.primaries.fGX, input.primaries.fGY);
   static_assert(
       std::is_same<decltype(primary_g),
                    decltype(media::stable::mojom::ColorVolumeMetadata::
                                 primary_g)>::value,
-      "Unexpected type for gfx::ColorVolumeMetadata::primary_g. If you need to "
-      "change this assertion, please contact chromeos-gfx-video@google.com.");
+      "Unexpected type for gfx::HdrMetadataSmpteSt2086::primary_g. If you need "
+      "to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
 
   return primary_g;
 }
 
 // static
 gfx::PointF StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
-                         gfx::ColorVolumeMetadata>::
-    primary_b(const gfx::ColorVolumeMetadata& input) {
+                         gfx::HdrMetadataSmpteSt2086>::
+    primary_b(const gfx::HdrMetadataSmpteSt2086& input) {
   gfx::PointF primary_b(input.primaries.fBX, input.primaries.fBY);
   static_assert(
       std::is_same<decltype(primary_b),
                    decltype(media::stable::mojom::ColorVolumeMetadata::
                                 primary_b)>::value,
-      "Unexpected type for gfx::ColorVolumeMetadata::primary_b. If you need to "
-      "change this assertion, please contact chromeos-gfx-video@google.com.");
+      "Unexpected type for gfx::HdrMetadataSmpteSt2086::primary_b. If you need "
+      "to change this assertion, please contact "
+      "chromeos-gfx-video@google.com.");
 
   return primary_b;
 }
 
 // static
 gfx::PointF StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
-                         gfx::ColorVolumeMetadata>::
-    white_point(const gfx::ColorVolumeMetadata& input) {
+                         gfx::HdrMetadataSmpteSt2086>::
+    white_point(const gfx::HdrMetadataSmpteSt2086& input) {
   gfx::PointF white_point(input.primaries.fWX, input.primaries.fWY);
   static_assert(
       std::is_same<decltype(white_point),
                    decltype(media::stable::mojom::ColorVolumeMetadata::
                                 white_point)>::value,
-      "Unexpected type for gfx::ColorVolumeMetadata::white_point. If you need "
-      "to change this assertion, please contact "
+      "Unexpected type for gfx::HdrMetadataSmpteSt2086::white_point. If you "
+      "need to change this assertion, please contact "
       "chromeos-gfx-video@google.com.");
 
   return white_point;
@@ -188,14 +191,13 @@ gfx::PointF StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
 
 // static
 float StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
-                   gfx::ColorVolumeMetadata>::
-    luminance_max(const gfx::ColorVolumeMetadata& input) {
+                   gfx::HdrMetadataSmpteSt2086>::
+    luminance_max(const gfx::HdrMetadataSmpteSt2086& input) {
   static_assert(
-      std::is_same<
-          decltype(::gfx::ColorVolumeMetadata::luminance_max),
-          decltype(
-              media::stable::mojom::ColorVolumeMetadata::luminance_max)>::value,
-      "Unexpected type for gfx::ColorVolumeMetadata::luminance_max. If you "
+      std::is_same<decltype(::gfx::HdrMetadataSmpteSt2086::luminance_max),
+                   decltype(media::stable::mojom::ColorVolumeMetadata::
+                                luminance_max)>::value,
+      "Unexpected type for gfx::HdrMetadataSmpteSt2086::luminance_max. If you "
       "need to change this assertion, please contact "
       "chromeos-gfx-video@google.com.");
 
@@ -204,14 +206,13 @@ float StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
 
 // static
 float StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
-                   gfx::ColorVolumeMetadata>::
-    luminance_min(const gfx::ColorVolumeMetadata& input) {
+                   gfx::HdrMetadataSmpteSt2086>::
+    luminance_min(const gfx::HdrMetadataSmpteSt2086& input) {
   static_assert(
-      std::is_same<
-          decltype(::gfx::ColorVolumeMetadata::luminance_min),
-          decltype(
-              media::stable::mojom::ColorVolumeMetadata::luminance_min)>::value,
-      "Unexpected type for gfx::ColorVolumeMetadata::luminance_min. If you "
+      std::is_same<decltype(::gfx::HdrMetadataSmpteSt2086::luminance_min),
+                   decltype(media::stable::mojom::ColorVolumeMetadata::
+                                luminance_min)>::value,
+      "Unexpected type for gfx::HdrMetadataSmpteSt2086::luminance_min. If you "
       "need to change this assertion, please contact "
       "chromeos-gfx-video@google.com.");
 
@@ -220,9 +221,9 @@ float StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
 
 // static
 bool StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
-                  gfx::ColorVolumeMetadata>::
+                  gfx::HdrMetadataSmpteSt2086>::
     Read(media::stable::mojom::ColorVolumeMetadataDataView data,
-         gfx::ColorVolumeMetadata* output) {
+         gfx::HdrMetadataSmpteSt2086* output) {
   output->luminance_max = data.luminance_max();
   output->luminance_min = data.luminance_min();
   gfx::PointF primary_r;
@@ -535,11 +536,10 @@ StructTraits<media::stable::mojom::DecryptConfigDataView,
              std::unique_ptr<media::DecryptConfig>>::
     encryption_pattern(const std::unique_ptr<media::DecryptConfig>& input) {
   static_assert(
-      std::is_same<
-          decltype(input->encryption_pattern()),
-          std::add_lvalue_reference<std::add_const<decltype(
-              media::stable::mojom::DecryptConfig::encryption_pattern)>::type>::
-              type>::value,
+      std::is_same<decltype(input->encryption_pattern()),
+                   std::add_lvalue_reference<std::add_const<
+                       decltype(media::stable::mojom::DecryptConfig::
+                                    encryption_pattern)>::type>::type>::value,
       "Unexpected type for media::DecryptConfig::encryption_pattern(). If you "
       "need to change this assertion, please contact "
       "chromeos-gfx-video@google.com.");
@@ -582,14 +582,14 @@ uint32_t StructTraits<
     media::stable::mojom::HDRMetadataDataView,
     gfx::HDRMetadata>::max_content_light_level(const gfx::HDRMetadata& input) {
   static_assert(
-      std::is_same<decltype(::gfx::HDRMetadata::max_content_light_level),
+      std::is_same<decltype(input.cta_861_3.max_content_light_level),
                    decltype(media::stable::mojom::HDRMetadata::
                                 max_content_light_level)>::value,
-      "Unexpected type for gfx::HDRMetadata::max_content_light_level. If you "
-      "need to change this assertion, please contact "
+      "Unexpected type for gfx::HdrMetadataCta861_3::max_content_light_level. "
+      "If you need to change this assertion, please contact "
       "chromeos-gfx-video@google.com.");
 
-  return input.max_content_light_level;
+  return input.cta_861_3.max_content_light_level;
 }
 
 // static
@@ -597,40 +597,40 @@ uint32_t
 StructTraits<media::stable::mojom::HDRMetadataDataView, gfx::HDRMetadata>::
     max_frame_average_light_level(const gfx::HDRMetadata& input) {
   static_assert(
-      std::is_same<decltype(::gfx::HDRMetadata::max_frame_average_light_level),
+      std::is_same<decltype(input.cta_861_3.max_frame_average_light_level),
                    decltype(media::stable::mojom::HDRMetadata::
                                 max_frame_average_light_level)>::value,
-      "Unexpected type for gfx::HDRMetadata::max_frame_average_light_level. If "
-      "you need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
+      "Unexpected type for "
+      "gfx::HdrMetadataCta861_3::max_frame_average_light_level. If you need to "
+      "change this assertion, please contact chromeos-gfx-video@google.com.");
 
-  return input.max_frame_average_light_level;
+  return input.cta_861_3.max_frame_average_light_level;
 }
 
 // static
-const gfx::ColorVolumeMetadata& StructTraits<
+const gfx::HdrMetadataSmpteSt2086& StructTraits<
     media::stable::mojom::HDRMetadataDataView,
     gfx::HDRMetadata>::color_volume_metadata(const gfx::HDRMetadata& input) {
   static_assert(
-      std::is_same<
-          decltype(::gfx::HDRMetadata::color_volume_metadata),
-          decltype(
-              media::stable::mojom::HDRMetadata::color_volume_metadata)>::value,
-      "Unexpected type for gfx::HDRMetadata::color_volume_metadata. If you "
-      "need to change this assertion, please contact "
-      "chromeos-gfx-video@google.com.");
+      std::is_same<decltype(input.smpte_st_2086),
+                   decltype(media::stable::mojom::HDRMetadata::
+                                color_volume_metadata)>::value,
+      "Unexpected type for gfx::HDRMetadata::smpte_st_2086. If you need to "
+      "change this assertion, please contact chromeos-gfx-video@google.com.");
 
-  return input.color_volume_metadata;
+  return input.smpte_st_2086;
 }
 
 // static
 bool StructTraits<media::stable::mojom::HDRMetadataDataView, gfx::HDRMetadata>::
     Read(media::stable::mojom::HDRMetadataDataView data,
          gfx::HDRMetadata* output) {
-  output->max_content_light_level = data.max_content_light_level();
-  output->max_frame_average_light_level = data.max_frame_average_light_level();
-  if (!data.ReadColorVolumeMetadata(&output->color_volume_metadata))
+  output->cta_861_3.max_content_light_level = data.max_content_light_level();
+  output->cta_861_3.max_frame_average_light_level =
+      data.max_frame_average_light_level();
+  if (!data.ReadColorVolumeMetadata(&output->smpte_st_2086)) {
     return false;
+  }
   return true;
 }
 
@@ -1288,8 +1288,7 @@ bool StructTraits<media::stable::mojom::VideoDecoderConfigDataView,
       return false;
   }
 
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 // static

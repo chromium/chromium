@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_model.h"
-#include "chrome/common/accessibility/read_anything_constants.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingMenuModel
@@ -50,20 +49,4 @@ absl::optional<ui::ColorId> ReadAnythingMenuModel::GetSubmenuBackgroundColorId(
 absl::optional<ui::ColorId> ReadAnythingMenuModel::GetSelectedBackgroundColorId(
     size_t index) {
   return selected_color_id_;
-}
-
-const gfx::FontList* ReadAnythingMenuModel::GetLabelFontListAt(
-    size_t index) const {
-  if (font_.has_value()) {
-    return &font_.value();
-  }
-
-  return nullptr;
-}
-
-void ReadAnythingMenuModel::SetLabelFontList(const std::string& font_string) {
-  std::vector<std::string> font_names = {
-      font_string, string_constants::kReadAnythingDefaultFontName};
-  font_ = gfx::FontList(font_names, gfx::Font::FontStyle::NORMAL,
-                        kMenuLabelFontSizePx, gfx::Font::Weight::NORMAL);
 }

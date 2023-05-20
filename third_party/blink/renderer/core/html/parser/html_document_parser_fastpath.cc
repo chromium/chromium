@@ -222,6 +222,7 @@ class HTMLFastPathParser {
 
   bool failed_ = false;
   bool inside_of_tag_a_ = false;
+  bool inside_of_tag_li_ = false;
   // Used to limit how deep a hierarchy can be created. Also note that
   // HTMLConstructionSite ends up flattening when this depth is reached.
   unsigned element_depth_ = 0;
@@ -363,7 +364,7 @@ class HTMLFastPathParser {
       }
     };
 
-    struct Li : ContainerTag<HTMLLIElement, PermittedParents::kSpecial> {
+    struct Li : ContainerTag<HTMLLIElement, PermittedParents::kFlowContent> {
       static constexpr const char tagname[] = "li";
     };
 
@@ -991,39 +992,68 @@ class HTMLFastPathParser {
     //
     // If this switch has duplicate cases, then `TagnameHash()` needs to be
     // updated.
-    switch (TagnameHash(tagname)) {
-#define TAG_CASE(Tagname)                                                     \
-  case TagnameHash(TagInfo::Tagname::tagname):                                \
-    if (std::is_same_v<typename TagInfo::A, typename TagInfo::Tagname>) {     \
-      goto case_a;                                                            \
-    }                                                                         \
-    if constexpr (non_phrasing_content                                        \
-                      ? TagInfo::Tagname::AllowedInFlowContent()              \
-                      : TagInfo::Tagname::AllowedInPhrasingOrFlowContent()) { \
-      /* See comment in Run() for details on why equality is checked */       \
-      /* here. */                                                             \
-      if (tagname == TagInfo::Tagname::tagname) {                             \
-        return ParseElementAfterTagname<typename TagInfo::Tagname>();         \
-      }                                                                       \
-    }                                                                         \
-    break;
-
-      SUPPORTED_TAGS(TAG_CASE)
-#undef TAG_CASE
-
-    case_a:
-      // <a> tags must not be nested, because HTML parsing would auto-close
-      // the outer one when encountering a nested one.
-      if (tagname == TagInfo::A::tagname && !inside_of_tag_a_) {
-        return non_phrasing_content
-                   ? ParseElementAfterTagname<typename TagInfo::A>()
-                   : ParseElementAfterTagname<
-                         typename TagInfo::AWithPhrasingContent>();
-      }
+    // Clang has a hard time formatting this, disable clang format.
+    // clang-format off
+#define TAG_CASE(Tagname)                                                      \
+    case TagnameHash(TagInfo::Tagname::tagname):                               \
+      if constexpr (non_phrasing_content                                       \
+                      ? TagInfo::Tagname::AllowedInFlowContent()               \
+                      : TagInfo::Tagname::AllowedInPhrasingOrFlowContent()) {  \
+        /* See comment in Run() for details on why equality is checked */      \
+        /* here. */                                                            \
+        if (tagname == TagInfo::Tagname::tagname) {                            \
+          return ParseElementAfterTagname<typename TagInfo::Tagname>();        \
+        }                                                                      \
+      }                                                                        \
       break;
+
+    switch (TagnameHash(tagname)) {
+      case TagnameHash(TagInfo::A::tagname):
+        // <a> tags must not be nested, because HTML parsing would auto-close
+        // the outer one when encountering a nested one.
+        if (tagname == TagInfo::A::tagname && !inside_of_tag_a_) {
+          return non_phrasing_content
+                     ? ParseElementAfterTagname<typename TagInfo::A>()
+                     : ParseElementAfterTagname<
+                           typename TagInfo::AWithPhrasingContent>();
+        }
+        break;
+      TAG_CASE(B)
+      TAG_CASE(Br)
+      TAG_CASE(Button)
+      TAG_CASE(Div)
+      TAG_CASE(Footer)
+      TAG_CASE(I)
+      TAG_CASE(Input)
+      case TagnameHash(TagInfo::Li::tagname):
+        if constexpr (non_phrasing_content
+                          ? TagInfo::Li::AllowedInFlowContent()
+                          : TagInfo::Li::AllowedInPhrasingOrFlowContent()) {
+          // See comment in Run() for details on why equality is checked here.
+          // <li>s autoclose when multiple are encountered. For example,
+          // <li><li></li></li> results in sibling <li>s, not nested <li>s. Fail
+          // in such a case.
+          if (tagname == TagInfo::Li::tagname && !inside_of_tag_li_) {
+            inside_of_tag_li_ = true;
+            Element* result = ParseElementAfterTagname<typename TagInfo::Li>();
+            inside_of_tag_li_ = false;
+            return result;
+          }
+        }
+        break;
+      TAG_CASE(Label)
+      TAG_CASE(Option)
+      TAG_CASE(Ol)
+      TAG_CASE(P)
+      TAG_CASE(Select)
+      TAG_CASE(Span)
+      TAG_CASE(Strong)
+      TAG_CASE(Ul)
+#undef TAG_CASE
       default:
         break;
     }
+    // clang-format on
     return Fail(HtmlFastPathResult::kFailedUnsupportedTag, nullptr);
   }
 

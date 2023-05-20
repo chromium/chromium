@@ -35,6 +35,7 @@ namespace extensions_features {
 // make sense to have their own file.
 
 BASE_DECLARE_FEATURE(kApiRuntimeGetContexts);
+BASE_DECLARE_FEATURE(kApiSidePanelOpen);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features

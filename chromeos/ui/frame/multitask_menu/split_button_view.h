@@ -59,7 +59,7 @@ class SplitButtonView : public views::BoxLayoutView {
 
   const SplitButtonType type_;
 
-  SkColor border_color_ = kMultitaskButtonDefaultColor;
+  SkColor border_color_ = SK_ColorTRANSPARENT;
   SkColor fill_color_ = SK_ColorTRANSPARENT;
 };
 

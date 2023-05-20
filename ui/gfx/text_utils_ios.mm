@@ -9,9 +9,13 @@
 
 #include <cmath>
 
-#include "base/mac/foundation_util.h"
+#include "base/apple/bridging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/gfx/font_list.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace gfx {
 
@@ -23,7 +27,7 @@ float GetStringWidthF(const std::u16string& text, const FontList& font_list) {
   NSString* ns_text = base::SysUTF16ToNSString(text);
   CTFontRef font = font_list.GetPrimaryFont().GetCTFont();
   NSDictionary* attributes =
-      @{NSFontAttributeName : base::mac::CFToNSCast(font)};
+      @{NSFontAttributeName : base::apple::CFToNSPtrCast(font)};
   return [ns_text sizeWithAttributes:attributes].width;
 }
 

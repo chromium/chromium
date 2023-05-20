@@ -1,0 +1,236 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("config/config.gni")
+import("package_tool.gni")
+
+# Define a Fuchsia component package target.
+#
+# Parameters
+#
+#   package_name: [Optional]
+#     Name of the package. Defaults to target_name.
+#
+#     Type: string
+#
+#   excluded_paths: [Optional]
+#     List of glob expressions which, when matched, excludes files or
+#     directories from the package.
+#
+#     Examples:
+#        */foo    Matches files named "foo" in any subdirectory.
+#        foo      Matches a file named "foo" in the root directory.
+#        *.foo    Matches any file ending with ".foo"
+#
+#     Type: list of paths, wildcards supported.
+#
+#   excluded_files: [Optional] [Deprecated]
+#     List of files to exclude from the package.
+#
+#     Type: list of file paths
+#
+#   excluded_dirs: [Optional] [Deprecated]
+#     List of directories to exclude from the package.
+#
+#     Type: list of file paths
+#
+#   fidl_ref_out_dir: [Optional]
+#     Directory for writing out $package_name_all_fidl_refs.txt
+#       that contains the paths to the internal representation (IR) of every
+#       FIDL interface referenced in the package. Defaults to $root_build_dir/fidl_refs.
+#
+#   ids_txt_output_path: [Optional]
+#     Path to write out the ids.txt file for the symbols in the binaries.
+#     Defaults to `${target_gen_dir}/${package_name}/ids.txt`
+#
+#     Type: file path
+#
+#   deps
+#     Required: List of fuchsia_component() targets that this
+#              package contains.
+#
+template("fuchsia_package") {
+  if (!defined(invoker.package_name)) {
+    package_name = target_name
+  } else {
+    package_name = invoker.package_name
+  }
+  if (!defined(invoker.excluded_paths)) {
+    excluded_paths = []
+  } else {
+    excluded_paths = invoker.excluded_paths
+  }
+  if (defined(invoker.excluded_files)) {
+    foreach(exclusion, invoker.excluded_files) {
+      excluded_paths += [ "${exclusion}" ]
+    }
+  }
+  if (defined(invoker.excluded_dirs)) {
+    foreach(exclusion, invoker.excluded_dirs) {
+      excluded_paths += [ "${exclusion}/*" ]
+    }
+  }
+
+  if (!defined(invoker.fidl_ref_out_dir)) {
+    fidl_ref_out_dir = "$root_build_dir/fidl_refs"
+  } else {
+    fidl_ref_out_dir = invoker.fidl_ref_out_dir
+  }
+
+  _depfile = "${target_gen_dir}/${target_name}_stamp.d"
+
+  # target names
+  _manifest_target = "${target_name}__archive-manifest"
+  _metadata_target = "${target_name}__archive-metadata"
+  _packaged_components_metadata_target =
+      "${target_name}__packaged_components_metadata"
+  _symbol_index_target = "${target_name}__symbol_index"
+
+  # output values
+  _pkg_out_dir = "${target_gen_dir}/${package_name}"
+  _runtime_deps_file = "$_pkg_out_dir/${package_name}.runtime_deps"
+  _archive_manifest = "$_pkg_out_dir/${package_name}.manifest"
+  _build_ids_file = "$_pkg_out_dir/ids.txt"
+  if (defined(invoker.ids_txt_output_path)) {
+    _build_ids_file = invoker.ids_txt_output_path
+  }
+  _package_file = "$_pkg_out_dir/package"
+  _fidl_json_refs_file = "${fidl_ref_out_dir}/${package_name}_all_fidl_refs.txt"
+  _symbol_index_file = "$_pkg_out_dir/${package_name}.symbol-index.json"
+
+  _packaged_components_metadata_file =
+      "${target_gen_dir}/${package_name}_packaged_components_metadata.json"
+
+  _package_deps = []
+  if (defined(invoker.deps)) {
+    _package_deps += invoker.deps
+  }
+  if (defined(invoker.data_deps)) {
+    _package_deps += invoker.data_deps
+  }
+
+  # Generates a JSON file containing the contents of each of the
+  # components being included in this package.
+  generated_file(_packaged_components_metadata_target) {
+    forward_variables_from(invoker, [ "testonly" ])
+    outputs = [ _packaged_components_metadata_file ]
+    data_keys = [ "contents" ]
+    output_conversion = "json"
+    deps = _package_deps
+  }
+
+  #
+  # A generated file that lists all of the .fidl.json files
+  # used in this package. This is useful for tools that need
+  # to decode fidl.
+  generated_file("${package_name}_all_fidl_refs") {
+    testonly = true
+    deps = _package_deps
+
+    outputs = [ _fidl_json_refs_file ]
+    data_keys = [ "fidl_json" ]
+  }
+
+  action(_manifest_target) {
+    forward_variables_from(invoker, [ "testonly" ])
+    script = "${fuchsia_sdk}/build/prepare_package_inputs.py"
+
+    inputs = [
+      _runtime_deps_file,
+      _packaged_components_metadata_file,
+    ]
+
+    outputs = [
+      _archive_manifest,
+      _build_ids_file,
+      _package_file,
+    ]
+
+    data_deps = _package_deps
+
+    deps = _package_deps
+    deps += [ ":${_packaged_components_metadata_target}" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+
+    # Use a depfile to trigger package rebuilds if any of the files (static
+    # assets, shared libraries, etc.) included by the package have changed.
+    depfile = _depfile
+
+    args = [
+      "--root-dir",
+      rebase_path("//", root_build_dir),
+      "--out-dir",
+      rebase_path(root_out_dir, root_build_dir),
+      "--app-name",
+      package_name,
+      "--runtime-deps-file",
+      rebase_path(_runtime_deps_file, root_build_dir),
+      "--depfile-path",
+      rebase_path(_depfile, root_build_dir),
+      "--manifest-path",
+      rebase_path(_archive_manifest, root_build_dir),
+      "--build-ids-file",
+      rebase_path(_build_ids_file, root_build_dir),
+      "--json-file",
+      rebase_path(_packaged_components_metadata_file),
+    ]
+    if (fuchsia_sdk_readelf_exec != "") {
+      args += [
+        "--readelf-exec",
+        rebase_path(fuchsia_sdk_readelf_exec, root_build_dir),
+      ]
+    }
+
+    foreach(exclusion, excluded_paths) {
+      args += [
+        "--exclude-path",
+        exclusion,
+      ]
+    }
+    write_runtime_deps = _runtime_deps_file
+
+    # Allows ids.txt paths to be collected by dependent targets.
+    metadata = {
+      ids_txt_paths = [ _build_ids_file ]
+    }
+  }
+
+  # Creates a Fuchsia metadata package.
+  fuchsia_package_tool(_metadata_target) {
+    forward_variables_from(invoker, [ "testonly" ])
+    package_name = package_name
+    command = "build"
+    archive_manifest = _archive_manifest
+    public_deps = [ ":$_manifest_target" ]
+  }
+
+  # Creates a Fuchsia metadata package archive.
+  fuchsia_package_tool(target_name) {
+    forward_variables_from(invoker, [ "testonly" ])
+    package_name = package_name
+    command = "archive"
+    archive_manifest = _archive_manifest
+    public_deps = [
+      ":$_metadata_target",
+      ":$_symbol_index_target",
+    ]
+  }
+
+  # Create a .symbol-index.json that indexes the ids.txt above. This file will be registered
+  # automatically during the publishing of the package.
+  generated_file(_symbol_index_target) {
+    outputs = [ _symbol_index_file ]
+    output_conversion = "json"
+    contents = {
+      ids_txts = [
+        {
+          path = rebase_path(_build_ids_file, _pkg_out_dir)
+          build_dir = rebase_path(root_build_dir, _pkg_out_dir)
+        },
+      ]
+    }
+  }
+}

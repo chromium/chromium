@@ -277,6 +277,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
                          uint32_t cod,
                          FlossAdapterClient::BluetoothSspVariant variant,
                          uint32_t passkey) override;
+  void AdapterPinDisplay(const FlossDeviceId& remote_device,
+                         std::string pincode) override;
+  void AdapterPinRequest(const FlossDeviceId& remote_device,
+                         uint32_t cod,
+                         bool min_16_digit) override;
   void DeviceBondStateChanged(
       const FlossDeviceId& remote_device,
       uint32_t status,

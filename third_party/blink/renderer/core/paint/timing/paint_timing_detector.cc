@@ -402,6 +402,10 @@ bool PaintTimingDetector::NotifyMetricsIfLargestImagePaintChanged(
           image_record->media_timing->LoadStart();
       lcp_details_.largest_image_load_end_ =
           image_record->media_timing->LoadEnd();
+      lcp_details_.is_loaded_from_memory_cache_ =
+          image_record->media_timing->IsLoadedFromMemoryCache();
+      lcp_details_.is_preloaded_with_early_hints_ =
+          image_record->media_timing->IsPreloadedWithEarlyHints();
     }
   }
   lcp_details_.largest_image_paint_time_ = image_paint_time;

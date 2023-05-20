@@ -371,24 +371,6 @@ void UnlockManagerImpl::OnRemoteStatusUpdate(
   SetIsPerformingInitialScan(false /* is_performing_initial_scan */);
 }
 
-void UnlockManagerImpl::OnDecryptResponse(const std::string& decrypted_bytes) {
-  if (!is_attempting_auth_) {
-    PA_LOG(ERROR) << "Decrypt response received but not attempting auth.";
-    return;
-  }
-
-  if (decrypted_bytes.empty()) {
-    PA_LOG(WARNING) << "Failed to decrypt sign-in challenge.";
-    FinalizeAuthAttempt(
-        SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
-            kFailedToDecryptSignInChallenge);
-  } else {
-    sign_in_secret_ = std::make_unique<std::string>(decrypted_bytes);
-    if (GetMessenger())
-      GetMessenger()->DispatchUnlockEvent();
-  }
-}
-
 void UnlockManagerImpl::OnUnlockResponse(bool success) {
   if (!is_attempting_auth_) {
     FinalizeAuthAttempt(

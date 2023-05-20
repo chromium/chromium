@@ -14,6 +14,7 @@
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_for_testing.h"  // nogncheck
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/functional/callback.h"
 #include "base/functional/disallow_unretained.h"
 #include "base/memory/ptr_util.h"
@@ -1859,13 +1860,9 @@ void HandleOOM(size_t unused_size) {
 // testing purpose.
 static constexpr partition_alloc::PartitionOptions
     kOnlyEnableBackupRefPtrOptions = {
-        partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
-        partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-        partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-        partition_alloc::PartitionOptions::Cookie::kAllowed,
-        partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
-        partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled,
-        partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+        .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
+        .backup_ref_ptr =
+            partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
 };
 
 class BindUnretainedDanglingInternalFixture : public BindTest {

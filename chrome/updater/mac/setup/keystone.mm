@@ -269,8 +269,6 @@ void UninstallKeystone(UpdaterScope scope) {
           .Append(FILE_PATH_LITERAL("ksinstall"));
   base::CommandLine command_line(ksinstall_path);
   command_line.AppendSwitch("uninstall");
-  if (IsSystemInstall(scope))
-    command_line = MakeElevated(command_line);
   base::Process process = base::LaunchProcess(command_line, {});
   if (!process.IsValid()) {
     LOG(ERROR) << "Failed to launch ksinstall.";

@@ -34,7 +34,7 @@ class ScreencastManager {
   // gain access to link-shared files. Since the `resource_key` is currently
   // only used by Googlers, the `resource_key` might be empty.
   void GetVideo(const std::string& video_file_id,
-                const std::string& resource_key,
+                const absl::optional<std::string>& resource_key,
                 ProjectorAppClient::OnGetVideoCallback callback) const;
 
   // Resets `suppress_drive_notifications_for_path_`. Called when the app UI is

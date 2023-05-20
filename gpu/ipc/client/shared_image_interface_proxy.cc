@@ -173,7 +173,6 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     base::StringPiece debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   // TODO(kylechar): Verify buffer_handle works for size+format.
-
   auto mailbox = Mailbox::GenerateForSharedImage();
 
   auto params = mojom::CreateSharedImageWithBufferParams::New();

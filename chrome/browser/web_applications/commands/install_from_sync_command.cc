@@ -54,8 +54,8 @@ WebAppInstallFinalizer::FinalizeOptions GetFinalizerOptionForSyncInstall() {
 InstallFromSyncCommand::Params::~Params() = default;
 
 InstallFromSyncCommand::Params::Params(
-    AppId app_id,
-    const absl::optional<std::string>& manifest_id,
+    const AppId& app_id,
+    const ManifestId& manifest_id,
     const GURL& start_url,
     const std::string& title,
     const GURL& scope,
@@ -69,7 +69,11 @@ InstallFromSyncCommand::Params::Params(
       scope(scope),
       theme_color(theme_color),
       user_display_mode(user_display_mode),
-      icons(icons) {}
+      icons(icons) {
+  CHECK(!app_id.empty());
+  CHECK(manifest_id.is_valid());
+  CHECK(!manifest_id.is_empty());
+}
 
 InstallFromSyncCommand::Params::Params(const Params&) = default;
 
@@ -94,8 +98,8 @@ InstallFromSyncCommand::InstallFromSyncCommand(
   DCHECK(AreAppsLocallyInstalledBySync());
 #endif
   DCHECK(params_.start_url.is_valid());
-  fallback_install_info_ = std::make_unique<WebAppInstallInfo>();
-  fallback_install_info_->manifest_id = params_.manifest_id;
+  fallback_install_info_ =
+      std::make_unique<WebAppInstallInfo>(params_.manifest_id);
   fallback_install_info_->start_url = params_.start_url;
   fallback_install_info_->title = base::UTF8ToUTF16(params_.title);
   fallback_install_info_->user_display_mode = params_.user_display_mode;
@@ -103,7 +107,7 @@ InstallFromSyncCommand::InstallFromSyncCommand(
   fallback_install_info_->theme_color = params_.theme_color;
   fallback_install_info_->manifest_icons = params_.icons;
   debug_value_.Set("app_id", params_.app_id);
-  debug_value_.Set("manifest_id", params_.manifest_id.value_or("<unset>"));
+  debug_value_.Set("manifest_id", params_.manifest_id.spec());
   debug_value_.Set("title", params_.title);
   debug_value_.Set("user_display_mode",
                    params_.user_display_mode
@@ -220,7 +224,7 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
 
   // Ensure that the manifest linked is the right one.
   AppId generated_app_id =
-      GenerateAppId(install_info_->manifest_id, install_info_->start_url);
+      GenerateAppIdFromManifestId(install_info_->manifest_id);
   if (params_.app_id != generated_app_id) {
     // Add the error to the log.
     base::Value::Dict expected_id_error;

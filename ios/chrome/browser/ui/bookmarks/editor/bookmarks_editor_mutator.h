@@ -25,7 +25,6 @@ class BookmarkModel;
 // TODO(crbug.com/1404311): Remove those accessor and setters.
 // We temporarily use them to facilitate code migration.
 - (const bookmarks::BookmarkNode*)bookmark;
-- (void)setBookmark:(const bookmarks::BookmarkNode*)bookmark;
 - (bookmarks::BookmarkModel*)bookmarkModel;
 - (const bookmarks::BookmarkNode*)folder;
 - (BOOL)ignoresBookmarkModelChanges;

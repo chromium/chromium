@@ -184,13 +184,16 @@ BASE_FEATURE(kAutofillEnableSelectMenu,
              "AutofillEnableSelectMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, autofill will support the following field types:
-//   - ADDRESS_HOME_LANDMARK
-//   - ADDRESS_HOME_BETWEEN_STREETS
-//   - ADDRESS_HOME_ADMIN_LEVEL2
+// Controls if Chrome support filling and importing between streets.
 // TODO(crbug.com/1441904) Remove once launched.
-BASE_FEATURE(kAutofillEnableNewStreetLevelFieldTypes,
-             "AutofillEnableNewStreetLevelFieldTypes",
+BASE_FEATURE(kAutofillEnableSupportForBetweenStreets,
+             "AutofillEnableSupportForBetweenStreets",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls if Chrome support filling and importing landmarks.
+// TODO(crbug.com/1441904) Remove once launched.
+BASE_FEATURE(kAutofillEnableSupportForLandmark,
+             "AutofillEnableSupportForLandmark",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls if the heuristic field parsing utilizes shared labels.
@@ -221,6 +224,15 @@ BASE_FEATURE(kAutofillEnableDependentLocalityParsing,
 // Controls if Autofill emits form issues to devtools.
 BASE_FEATURE(kAutofillEnableDevtoolsIssues,
              "AutofillEnableDevtoolsIssues",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a couple of improvements to credit card expiration date handling:
+// - The autocomplete attribute values are rationalized with format strings
+//   like MM/YY from placeholders and labels in mind.
+// - more fill follow.
+// TODO(crbug.com/1441057): Remove once launched.
+BASE_FEATURE(kAutofillEnableExpirationDateImprovements,
+             "AutofillEnableExpirationDateImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to save the first number in a form with multiple phone

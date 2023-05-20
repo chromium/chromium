@@ -26,16 +26,18 @@ import os
 import pathlib
 import subprocess
 import sys
-import zipfile
 from typing import Dict, Iterator, List, Set
 
 _SRC_DIR = pathlib.Path(__file__).resolve().parents[4]
 
-sys.path.append(str(_SRC_DIR / 'build' / 'android'))
+sys.path.append(str(_SRC_DIR / 'build/android'))
 from pylib import constants
 
 # Import list_java_targets so that the dependency is found by print_python_deps.
 import list_java_targets
+
+sys.path.append(str(_SRC_DIR / 'build/android/gyp'))
+from util import jar_utils
 
 
 def main():
@@ -190,11 +192,9 @@ class ClassLookupIndex:
     return matches
 
   def _entries_for(self, class_name) -> List[ClassEntry]:
-    class_entries = self._class_index.get(class_name)
-    assert class_entries is not None
-    return sorted(class_entries)
+    return sorted(self._class_index[class_name])
 
-  def _index_root(self) -> Dict[str, List[ClassEntry]]:
+  def _index_root(self) -> Dict[str, Set[ClassEntry]]:
     """Create the class to target index."""
     logging.debug('Running list_java_targets.py...')
     list_java_targets_command = [
@@ -263,10 +263,10 @@ class ClassLookupIndex:
           build_config.full_class_names.update(
               dep_build_config.full_class_names)
 
-    class_index = collections.defaultdict(list)
+    class_index = collections.defaultdict(set)
     for build_config in path_to_build_config.values():
       for full_class_name in build_config.full_class_names:
-        class_index[full_class_name].append(
+        class_index[full_class_name].add(
             ClassEntry(full_class_name=full_class_name,
                        target=build_config.target_name,
                        preferred_dep=build_config.preferred_dep))
@@ -286,7 +286,7 @@ class ClassLookupIndex:
       with open(self._abs_build_output_dir / sources_path) as sources_contents:
         for source_line in sources_contents:
           source_path = pathlib.Path(source_line.strip())
-          java_class = self._parse_full_java_class(source_path)
+          java_class = jar_utils.parse_full_java_class(source_path)
           if java_class:
             full_class_names.add(java_class)
 
@@ -304,97 +304,10 @@ class ClassLookupIndex:
                                     abs_unprocessed_jar_path.name)
 
         full_class_names.update(
-            self._extract_full_class_names_from_jar(self._abs_build_output_dir,
-                                                    abs_unprocessed_jar_path))
+            jar_utils.extract_full_class_names_from_jar(
+                self._abs_build_output_dir, abs_unprocessed_jar_path))
 
     return full_class_names
-
-  @staticmethod
-  def _extract_full_class_names_from_jar(abs_build_output_dir: pathlib.Path,
-                                         abs_jar_path: pathlib.Path
-                                         ) -> Set[str]:
-    """Returns set of fully qualified class names in passed-in jar."""
-    out = set()
-    jar_namelist = ClassLookupIndex._read_jar_namelist(abs_build_output_dir,
-                                                       abs_jar_path)
-    for zip_entry_name in jar_namelist:
-      if not zip_entry_name.endswith('.class'):
-        continue
-      # Remove .class suffix
-      full_java_class = zip_entry_name[:-6]
-
-      full_java_class = full_java_class.replace('/', '.')
-      dollar_index = full_java_class.find('$')
-      if dollar_index >= 0:
-        full_java_class[0:dollar_index]
-
-      out.add(full_java_class)
-    return out
-
-  @staticmethod
-  def _read_jar_namelist(abs_build_output_dir: pathlib.Path,
-                         abs_jar_path: pathlib.Path) -> List[str]:
-    """Returns list of jar members by name."""
-
-    # Caching namelist speeds up lookup_dep.py runtime by 1.5s.
-    cache_path = abs_jar_path.with_suffix(abs_jar_path.suffix +
-                                          '.namelist_cache')
-    if ClassLookupIndex._is_path_relative_to(cache_path, abs_build_output_dir):
-      # already in the outdir, no need to adjust cache path
-      pass
-    elif ClassLookupIndex._is_path_relative_to(abs_jar_path, _SRC_DIR):
-      cache_path = (abs_build_output_dir / 'gen' /
-                    cache_path.relative_to(_SRC_DIR))
-    else:
-      cache_path = (abs_build_output_dir / 'gen' / 'abs' /
-                    cache_path.relative_to(cache_path.anchor))
-
-    if (cache_path.exists()
-        and os.path.getmtime(cache_path) > os.path.getmtime(abs_jar_path)):
-      with open(cache_path) as f:
-        return [s.strip() for s in f.readlines()]
-
-    with zipfile.ZipFile(abs_jar_path) as z:
-      namelist = z.namelist()
-
-    cache_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(cache_path, 'w') as f:
-      f.write('\n'.join(namelist))
-
-    return namelist
-
-  @staticmethod
-  def _is_path_relative_to(path: pathlib.Path, other: pathlib.Path) -> bool:
-    # PurePath.is_relative_to() was introduced in Python 3.9
-    try:
-      path.relative_to(other)
-      return True
-    except ValueError:
-      return False
-
-  @staticmethod
-  def _parse_full_java_class(source_path: pathlib.Path) -> str:
-    """Guess the fully qualified class name from the path to the source file."""
-    if source_path.suffix not in ('.java', '.kt'):
-      logging.warning(f'"{source_path}" does not end in .java or .kt.')
-      return ''
-
-    directory_path: pathlib.Path = source_path.parent
-    package_list_reversed = []
-    for part in reversed(directory_path.parts):
-      if part == 'java':
-        break
-      package_list_reversed.append(part)
-      if part in ('com', 'org'):
-        break
-    else:
-      logging.debug(f'File {source_path} not in a subdir of "org" or "com", '
-                    'cannot detect package heuristically.')
-      return ''
-
-    package = '.'.join(reversed(package_list_reversed))
-    class_name = source_path.stem
-    return f'{package}.{class_name}'
 
 
 if __name__ == '__main__':

@@ -200,7 +200,7 @@ void LazyLoadImageObserver::LoadIfNearViewport(
     // If the loading_attr is 'lazy' explicitly, we'd better to wait for
     // intersection.
     if (!entry->isIntersecting() && image_element &&
-        !EqualIgnoringASCIICase(image_element->FastGetAttribute(html_names::kLoadingAttr), "lazy")) {
+        !image_element->HasLazyLoadingAttribute()) {
       // Fully load the invisible image elements. The elements can be invisible
       // by style such as display:none, visibility: hidden, or hidden via
       // attribute, etc. Style might also not be calculated if the ancestors
@@ -243,7 +243,15 @@ void LazyLoadImageObserver::StartMonitoringVisibility(
         {}, {std::numeric_limits<float>::min()}, root_document,
         WTF::BindRepeating(&LazyLoadImageObserver::OnVisibilityChanged,
                            WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
+        IntersectionObserver::kDeliverDuringPostLifecycleSteps,
+        IntersectionObserver::kFractionOfTarget,
+        /* delay */ 0,
+        /* track_visibility */ false,
+        /* always_report_root_bounds */ false,
+        IntersectionObserver::kApplyMarginToRoot,
+        /* use_overflow_clip_edge */ false,
+        /* needs_initial_observation_with_detached_target */ false);
   }
   visibility_metrics_observer_->observe(image_element);
 }

@@ -2162,29 +2162,31 @@ void WallpaperControllerImpl::ShowOobeWallpaper() {
           simon_file_path);
     }
   } else {
-    ShowOneShotWallpaper(CreateSolidColorWallpaper(kOobeWallpaperColor));
+    OnOobeWallpaperDecoded(base::FilePath(),
+                           CreateSolidColorWallpaper(kOobeWallpaperColor));
   }
 }
 
 void WallpaperControllerImpl::OnOobeWallpaperDecoded(
     const base::FilePath& path,
     const gfx::ImageSkia& image) {
+  // TODO (b/268463435) also check for path.empty when solid wallpaper is
+  // removed from ShowOobeWallpaper
   if (image.isNull()) {
     LOG(ERROR) << "Failed to decode OOBE wallpaper.";
     cached_oobe_wallpaper_.image =
         CreateSolidColorWallpaper(kOobeWallpaperColor);
     cached_oobe_wallpaper_.file_path.clear();
-
-    ShowOneShotWallpaper(cached_oobe_wallpaper_.image);
   } else {
     cached_oobe_wallpaper_.image = image;
     cached_oobe_wallpaper_.file_path = path;
-
-    WallpaperInfo info = {path.value(), WALLPAPER_LAYOUT_CENTER_CROPPED,
-                          WallpaperType::kOobe, base::Time::Now()};
-    ShowWallpaperImage(image, info,
-                       /*preview_mode=*/false, /*is_override=*/false);
   }
+
+  WallpaperInfo info(cached_oobe_wallpaper_.file_path.value(),
+                     WALLPAPER_LAYOUT_CENTER_CROPPED, WallpaperType::kOobe,
+                     base::Time::Now());
+  ShowWallpaperImage(cached_oobe_wallpaper_.image, info,
+                     /*preview_mode=*/false, /*is_override=*/false);
 }
 
 bool WallpaperControllerImpl::IsOobeWallpaper() const {

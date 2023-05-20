@@ -27,6 +27,8 @@ blink_modules_sources("mediarecorder") {
     "audio_track_recorder.h",
     "blob_event.cc",
     "blob_event.h",
+    "key_frame_request_processor.cc",
+    "key_frame_request_processor.h",
     "media_recorder.cc",
     "media_recorder.h",
     "media_recorder_encoder_wrapper.cc",

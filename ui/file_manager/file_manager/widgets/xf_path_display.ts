@@ -38,9 +38,9 @@ export class XfPathDisplayElement extends XfBase {
     const tail = parts[parts.length - 1];
     return html`
       ${repeat(head, (e) => html`
-              <div class="folder mid-folder" tabindex="0">${e}</div>
+              <div class="folder mid-folder" tabindex="-1">${e}</div>
               <div class="separator"></div>`)}
-      <div class="folder last-folder" tabindex="0">${tail}</div>
+      <div class="folder last-folder" tabindex="-1">${tail}</div>
     `;
   }
 }

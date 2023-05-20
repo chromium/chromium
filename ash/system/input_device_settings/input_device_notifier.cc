@@ -41,7 +41,7 @@ bool IsDeviceASuspectedImposter<mojom::KeyboardPtr>(
     return false;
   }
 
-  return device.suspected_imposter;
+  return device.type != ui::INPUT_DEVICE_BLUETOOTH && device.suspected_imposter;
 }
 
 template <>
@@ -53,7 +53,7 @@ bool IsDeviceASuspectedImposter<mojom::MousePtr>(
     return true;
   }
 
-  return device.suspected_imposter;
+  return device.type != ui::INPUT_DEVICE_BLUETOOTH && device.suspected_imposter;
 }
 
 template <typename T>

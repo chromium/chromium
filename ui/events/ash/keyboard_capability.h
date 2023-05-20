@@ -18,6 +18,7 @@
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ui {
@@ -169,6 +170,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
   enum class DeviceType {
     kDeviceUnknown = 0,
     kDeviceInternalKeyboard,
+    kDeviceInternalRevenKeyboard,
     kDeviceExternalAppleKeyboard,
     kDeviceExternalChromeOsKeyboard,
     kDeviceExternalGenericKeyboard,
@@ -298,9 +300,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
       const KeyboardDevice& keyboard) const;
 
   // Check if a keyboard has a launcher button rather than a search button.
-  // TODO(zhangwenyu): Handle command key and window key cases.
-  bool HasLauncherButton(
-      const absl::optional<KeyboardDevice>& keyboard = absl::nullopt);
+  bool HasLauncherButton(const KeyboardDevice& keyboard) const;
+  bool HasLauncherButtonOnAnyKeyboard() const;
 
   // Check if a keyboard has a six pack key.
   static bool HasSixPackKey(const KeyboardDevice& keyboard);
@@ -389,6 +390,9 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Check if the assistant key exists on the given keyboard.
   bool HasAssistantKey(const KeyboardDevice& keyboard) const;
   bool HasAssistantKeyOnAnyKeyboard() const;
+
+  // Check if the CapsLock key exists on the given keyboard.
+  bool HasCapsLockKey(const KeyboardDevice& keyboard) const;
 
   // Gets the corresponding function key for the given `action_key` on the
   // given `keyboard`.

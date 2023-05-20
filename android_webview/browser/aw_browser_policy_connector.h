@@ -11,6 +11,7 @@ namespace android_webview {
 
 // Sets up and keeps the browser-global policy objects such as the PolicyService
 // and the platform-specific PolicyProvider.
+// Lifetime: Singleton
 class AwBrowserPolicyConnector : public policy::BrowserPolicyConnectorBase {
  public:
   AwBrowserPolicyConnector();

@@ -11,6 +11,7 @@
 #include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
@@ -23,10 +24,6 @@ class SuitableOrigin;
 namespace net {
 class HttpResponseHeaders;
 }  // namespace net
-
-namespace network {
-struct AttributionReportingRuntimeFeatures;
-}  // namespace network
 
 namespace url {
 class Origin;

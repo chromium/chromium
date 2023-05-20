@@ -25,6 +25,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -36,7 +37,7 @@ struct Context {
   const std::vector<sk_sp<SkImage>> sk_planes_;
 };
 
-void ReleaseContext(SkImage::ReleaseContext context) {
+void ReleaseContext(SkImages::ReleaseContext context) {
   auto* texture_context = static_cast<Context*>(context);
   delete texture_context;
 }
@@ -263,18 +264,18 @@ size_t SafeSizeForTargetColorParams(
     target_color_params_size += PaintOpWriter::SerializedSize<bool>();
     if (auto& hdr_metadata = target_color_params->hdr_metadata) {
       // The minimum and maximum luminance.
-      target_color_params_size +=
-          PaintOpWriter::SerializedSize(hdr_metadata->max_content_light_level);
       target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->max_frame_average_light_level);
+          hdr_metadata->cta_861_3.max_content_light_level);
+      target_color_params_size += PaintOpWriter::SerializedSize(
+          hdr_metadata->cta_861_3.max_frame_average_light_level);
       // The x and y coordinates for primaries and white point.
       target_color_params_size += PaintOpWriter::SerializedSizeOfElements(
-          &hdr_metadata->color_volume_metadata.primaries.fRX, 4 * 2);
+          &hdr_metadata->smpte_st_2086.primaries.fRX, 4 * 2);
       // The CLL and FALL
       target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->color_volume_metadata.luminance_max);
+          hdr_metadata->smpte_st_2086.luminance_max);
       target_color_params_size += PaintOpWriter::SerializedSize(
-          hdr_metadata->color_volume_metadata.luminance_min);
+          hdr_metadata->smpte_st_2086.luminance_min);
     }
   }
   return target_color_params_size;
@@ -295,20 +296,22 @@ void WriteTargetColorParams(
     writer.Write(has_hdr_metadata);
     if (target_color_params->hdr_metadata) {
       const auto& hdr_metadata = target_color_params->hdr_metadata;
-      writer.Write(hdr_metadata->max_content_light_level);
-      writer.Write(hdr_metadata->max_frame_average_light_level);
 
-      const auto& color_volume = hdr_metadata->color_volume_metadata;
-      writer.Write(color_volume.primaries.fRX);
-      writer.Write(color_volume.primaries.fRY);
-      writer.Write(color_volume.primaries.fGX);
-      writer.Write(color_volume.primaries.fGY);
-      writer.Write(color_volume.primaries.fBX);
-      writer.Write(color_volume.primaries.fBY);
-      writer.Write(color_volume.primaries.fWX);
-      writer.Write(color_volume.primaries.fWY);
-      writer.Write(color_volume.luminance_max);
-      writer.Write(color_volume.luminance_min);
+      const auto& cta_861_3 = hdr_metadata->cta_861_3;
+      writer.Write(cta_861_3.max_content_light_level);
+      writer.Write(cta_861_3.max_frame_average_light_level);
+
+      const auto& smpte_st_2086 = hdr_metadata->smpte_st_2086;
+      writer.Write(smpte_st_2086.primaries.fRX);
+      writer.Write(smpte_st_2086.primaries.fRY);
+      writer.Write(smpte_st_2086.primaries.fGX);
+      writer.Write(smpte_st_2086.primaries.fGY);
+      writer.Write(smpte_st_2086.primaries.fBX);
+      writer.Write(smpte_st_2086.primaries.fBY);
+      writer.Write(smpte_st_2086.primaries.fWX);
+      writer.Write(smpte_st_2086.primaries.fWY);
+      writer.Write(smpte_st_2086.luminance_max);
+      writer.Write(smpte_st_2086.luminance_min);
     }
   }
 }
@@ -358,8 +361,9 @@ bool ReadTargetColorParams(
     reader.Read(&luminance_min);
 
     target_color_params->hdr_metadata = gfx::HDRMetadata(
-        gfx::ColorVolumeMetadata(primaries, luminance_max, luminance_min),
-        max_content_light_level, max_frame_average_light_level);
+        gfx::HdrMetadataSmpteSt2086(primaries, luminance_max, luminance_min),
+        gfx::HdrMetadataCta861_3(max_content_light_level,
+                                 max_frame_average_light_level));
   }
   return true;
 }
@@ -448,10 +452,8 @@ sk_sp<SkImage> ReadImage(
             skgpu::Budgeted::kNo);
       } else {
         CHECK(graphite_recorder);
-        SkImage::RequiredImageProperties props{
-            .fMipmapped = mip_mapped_for_upload ? skgpu::Mipmapped::kYes
-                                                : skgpu::Mipmapped::kNo};
-        image = image->makeTextureImage(graphite_recorder, props);
+        SkImage::RequiredProperties props{.fMipmapped = mip_mapped_for_upload};
+        image = SkImages::TextureFromImage(graphite_recorder, image, props);
       }
 
       if (!image) {
@@ -493,10 +495,8 @@ sk_sp<SkImage> ReadImage(
                                              /*flushPendingGrContextIO=*/true);
       } else {
         CHECK(graphite_recorder);
-        SkImage::RequiredImageProperties props{
-            .fMipmapped = mip_mapped_for_upload ? skgpu::Mipmapped::kYes
-                                                : skgpu::Mipmapped::kNo};
-        plane = plane->makeTextureImage(graphite_recorder, props);
+        SkImage::RequiredProperties props{.fMipmapped = mip_mapped_for_upload};
+        plane = SkImages::TextureFromImage(graphite_recorder, plane, props);
         // TODO(crbug.com/1434141): Should we flush the graphite recorder here?
       }
       if (!plane) {
@@ -834,9 +834,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
             gr_context, image_, GrMipMapped::kYes, skgpu::Budgeted::kNo);
       } else {
         CHECK(graphite_recorder);
-        SkImage::RequiredImageProperties props{.fMipmapped =
-                                                   skgpu::Mipmapped::kYes};
-        image_ = image_->makeTextureImage(graphite_recorder, props);
+        SkImage::RequiredProperties props{.fMipmapped = true};
+        image_ = SkImages::TextureFromImage(graphite_recorder, image_, props);
       }
       if (!image_) {
         DLOG(ERROR) << "Failed to generate mipmaps after color conversion";
@@ -901,10 +900,9 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
                                        GrMipMapped::kYes, skgpu::Budgeted::kNo);
       } else {
         CHECK(graphite_recorder_);
-        SkImage::RequiredImageProperties props{.fMipmapped =
-                                                   skgpu::Mipmapped::kYes};
-        mipped_plane = plane_images_.at(plane)->makeTextureImage(
-            graphite_recorder_, props);
+        SkImage::RequiredProperties props{.fMipmapped = true};
+        mipped_plane = SkImages::TextureFromImage(
+            graphite_recorder_, plane_images_.at(plane), props);
       }
       if (!mipped_plane) {
         return;
@@ -932,9 +930,9 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
           gr_context_, image_, GrMipMapped::kYes, skgpu::Budgeted::kNo);
     } else {
       CHECK(graphite_recorder_);
-      SkImage::RequiredImageProperties props{.fMipmapped =
-                                                 skgpu::Mipmapped::kYes};
-      mipped_image = image_->makeTextureImage(graphite_recorder_, props);
+      SkImage::RequiredProperties props{.fMipmapped = true};
+      mipped_image =
+          SkImages::TextureFromImage(graphite_recorder_, image_, props);
     }
     if (!mipped_image) {
       DLOG(ERROR) << "Failed to mipmapped image";

@@ -70,7 +70,6 @@ static_library("base") {
     "//base",
     "//components/invalidation/public",
     "//components/sync/protocol",
-    "//third_party/metrics_proto",
     "//url",
   ]
   deps = [
@@ -86,10 +85,6 @@ static_library("base") {
     "//third_party/zlib",
     "//ui/base",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
-  }
 
   defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]
 }

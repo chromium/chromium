@@ -67,6 +67,13 @@ void PopupMenuHelper::ShowPopupMenu(
   base::scoped_nsobject<RenderWidgetHostViewCocoa> cocoa_view(
       [rwhvm->GetInProcessNSView() retain]);
 
+  // Check if the underlying native window is visible and if not, avoid
+  // showing the popup menu. This only happens when running in headless mode.
+  NSWindow* window = [cocoa_view window];
+  if (window && ![window isVisible]) {
+    return;
+  }
+
   // Display the menu.
   base::scoped_nsobject<WebMenuRunner> runner([[WebMenuRunner alloc]
       initWithItems:items

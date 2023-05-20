@@ -22,13 +22,18 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data_predictions.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -107,6 +112,13 @@ void ContentAutofillDriver::TriggerReparseInAllFrames(
   }
 }
 
+void ContentAutofillDriver::GetFourDigitCombinationsFromDOM(
+    base::OnceCallback<void(const std::vector<std::string>&)>
+        potential_matches) {
+  GetAutofillAgent()->GetPotentialLastFourCombinationsForStandaloneCvc(
+      std::move(potential_matches));
+}
+
 // static
 ContentAutofillDriver* ContentAutofillDriver::GetForRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {
@@ -121,6 +133,36 @@ void ContentAutofillDriver::BindPendingReceiver(
   receiver_.Bind(std::move(pending_receiver));
 }
 
+LocalFrameToken ContentAutofillDriver::GetFrameToken() const {
+  return LocalFrameToken(render_frame_host_->GetFrameToken().value());
+}
+
+ContentAutofillDriver* ContentAutofillDriver::GetParent() {
+  content::RenderFrameHost* parent_rfh = render_frame_host_->GetParent();
+  if (!parent_rfh) {
+    return nullptr;
+  }
+  return owner_->DriverForFrame(parent_rfh);
+}
+
+absl::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
+    FrameToken query) {
+  if (absl::holds_alternative<LocalFrameToken>(query)) {
+    return absl::get<LocalFrameToken>(query);
+  }
+  DCHECK(absl::holds_alternative<RemoteFrameToken>(query));
+  content::RenderProcessHost* rph = render_frame_host_->GetProcess();
+  blink::RemoteFrameToken blink_remote_token(
+      absl::get<RemoteFrameToken>(query).value());
+  content::RenderFrameHost* remote_rfh =
+      content::RenderFrameHost::FromPlaceholderToken(rph->GetID(),
+                                                     blink_remote_token);
+  if (!remote_rfh) {
+    return absl::nullopt;
+  }
+  return LocalFrameToken(remote_rfh->GetFrameToken().value());
+}
+
 bool ContentAutofillDriver::IsInActiveFrame() const {
   return render_frame_host_->IsActive();
 }
@@ -129,9 +171,18 @@ bool ContentAutofillDriver::IsInAnyMainFrame() const {
   return render_frame_host_->GetMainFrame() == render_frame_host_;
 }
 
+bool ContentAutofillDriver::IsInFencedFrameRoot() const {
+  return render_frame_host_->IsFencedFrameRoot();
+}
+
 bool ContentAutofillDriver::IsPrerendering() const {
   return render_frame_host_->IsInLifecycleState(
       content::RenderFrameHost::LifecycleState::kPrerendering);
+}
+
+bool ContentAutofillDriver::HasSharedAutofillPermission() const {
+  return render_frame_host_->IsFeatureEnabled(
+      blink::mojom::PermissionsPolicyFeature::kSharedAutofill);
 }
 
 bool ContentAutofillDriver::CanShowAutofillUi() const {
@@ -324,11 +375,10 @@ void ContentAutofillDriver::FormsSeen(
   for (FormData& form : updated_forms)
     SetFrameAndFormMetaData(form, nullptr);
 
-  LocalFrameToken frame_token(render_frame_host_->GetFrameToken().value());
   std::vector<FormGlobalId> removed_forms;
   removed_forms.reserve(raw_removed_forms.size());
   for (FormRendererId form_id : raw_removed_forms)
-    removed_forms.push_back({frame_token, form_id});
+    removed_forms.push_back({GetFrameToken(), form_id});
 
   autofill_router().FormsSeen(
       this, std::move(updated_forms), removed_forms,

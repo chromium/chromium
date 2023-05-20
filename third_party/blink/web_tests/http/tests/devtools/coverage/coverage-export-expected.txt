@@ -46,6 +46,6 @@ Usage: [43, 69]
 
 File: test://evaluations/0/coverage-export.js
 
-Usage: [0, 79]
+Usage: [0, 82]
 performActions()//# sourceURL=test://evaluations/0/coverage-export.js
 

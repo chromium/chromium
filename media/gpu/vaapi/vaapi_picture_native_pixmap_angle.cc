@@ -129,8 +129,7 @@ VaapiStatus VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {
 bool VaapiPictureNativePixmapAngle::ImportGpuMemoryBufferHandle(
     gfx::BufferFormat format,
     gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) {
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 bool VaapiPictureNativePixmapAngle::DownloadFromSurface(

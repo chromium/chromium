@@ -50,7 +50,7 @@ BASE_FEATURE(kDisableVoiceMatch,
 
 BASE_FEATURE(kEnableLibAssistantV2,
              "LibAssistantV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableLibAssistantDLC,
              "LibAssistantDLC",

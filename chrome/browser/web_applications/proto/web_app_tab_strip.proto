@@ -5,6 +5,7 @@
 syntax = "proto2";
 
 import "content/browser/background_fetch/background_fetch.proto";
+import "chrome/browser/web_applications/proto/web_app_url_pattern.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -12,6 +13,7 @@ package web_app.proto;
 
 message HomeTabParams {
   repeated content.proto.ImageResource icons = 1;
+  repeated UrlPattern scope_patterns = 2;
 }
 
 message NewTabButtonParams {

@@ -30,9 +30,10 @@ def download_chrome_symbols(version, channel, arch, dest_dir):
 
     Args:
         version: The version to download symbols for.
-        channel: The release channel to download symbols for. If None, attempts
-                 to guess the channel.
-        arch: The CPU architecture to download symbols for.
+        channel: The release channel (stable, beta, dev, canary) to download
+                 symbols for. If None, attempts to guess the channel.
+        arch: The CPU architecture (x86_64, arm64 / aarch64) to download
+              symbols for.
         dest_dir: The location to download symbols to. The dSYMs will be
                   extracted to a subdirectory of this directory.
 
@@ -168,13 +169,15 @@ def main():
     parser.add_argument(
         '--channel',
         '-c',
-        help='Chrome release channel for the version. The channel will be ' \
+        choices=['stable', 'beta', 'dev', 'canary'],
+        help='Chrome release channel for the version The channel will be ' \
              'guessed if not specified.'
     )
     parser.add_argument(
         '--arch',
         '-a',
-        help='CPU architecture to download, defaults to that of the current OS.'
+        choices=['aarch64', 'arm64', 'x86_64'],
+        help='CPU architecture to download. Defaults to that of the current OS.'
     )
     parser.add_argument('--out',
                         '-o',

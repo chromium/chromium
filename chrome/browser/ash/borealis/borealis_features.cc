@@ -96,26 +96,29 @@ BorealisFeatures::~BorealisFeatures() = default;
 
 void BorealisFeatures::IsAllowed(
     base::OnceCallback<void(AllowStatus)> callback) {
-  AllowStatus partial_status = MightBeAllowed();
+  AllowStatus partial_status = PreTokenHardwareChecks();
   if (partial_status != AllowStatus::kAllowed) {
     std::move(callback).Run(partial_status);
     return;
   }
-  async_checker_->Get(base::BindOnce(
-      [](base::OnceCallback<void(AllowStatus)> callback,
-         AsyncAllowChecker::Result result) {
-        std::move(callback).Run(
-            result.transform([](AllowStatus* status) { return *status; })
-                .value_or(AllowStatus::kFailedToDetermine));
-      },
-      std::move(callback)));
+  async_checker_->Get(base::BindOnce(&BorealisFeatures::OnTokenHardwareChecked,
+                                     weak_factory_.GetWeakPtr(),
+                                     std::move(callback)));
 }
 
-AllowStatus BorealisFeatures::MightBeAllowed() {
+AllowStatus BorealisFeatures::PreTokenHardwareChecks() {
+  // Only put failures here if the user has no means of changing them.  I.e.
+  // failures here should be as set-in-stone as hardware.
   if (!base::FeatureList::IsEnabled(features::kBorealis)) {
     return AllowStatus::kFeatureDisabled;
   }
 
+  return AllowStatus::kAllowed;
+}
+
+AllowStatus BorealisFeatures::PostTokenHardwareChecks() {
+  // Failures here should be avoidable (in some sense) without users going and
+  // replacing their hardware.
   if (!virtual_machines::AreVirtualMachinesAllowedByPolicy()) {
     return AllowStatus::kVmPolicyBlocked;
   }
@@ -161,10 +164,21 @@ AllowStatus BorealisFeatures::MightBeAllowed() {
   return AllowStatus::kAllowed;
 }
 
-bool BorealisFeatures::IsEnabled() {
-  if (MightBeAllowed() != AllowStatus::kAllowed) {
-    return false;
+void BorealisFeatures::OnTokenHardwareChecked(
+    base::OnceCallback<void(AllowStatus)> callback,
+    AsyncAllowChecker::Result token_hardware_status) {
+  if (!token_hardware_status.has_value()) {
+    std::move(callback).Run(AllowStatus::kFailedToDetermine);
+    return;
   }
+  if (*token_hardware_status.value() != AllowStatus::kAllowed) {
+    std::move(callback).Run(*token_hardware_status.value());
+    return;
+  }
+  std::move(callback).Run(PostTokenHardwareChecks());
+}
+
+bool BorealisFeatures::IsEnabled() {
   return profile_->GetPrefs()->GetBoolean(prefs::kBorealisInstalledOnDevice);
 }
 

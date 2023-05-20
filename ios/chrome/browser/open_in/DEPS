@@ -1,7 +1,0 @@
-specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
-  "^open_in_tab_helper.mm": [
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
-  ],
-}
-

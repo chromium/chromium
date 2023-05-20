@@ -5,6 +5,7 @@
 #include <iomanip>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_is_test.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/drive_pinning_screen.h"
@@ -72,7 +73,7 @@ bool DrivePinningScreen::ShouldBeSkipped(const WizardContext& context) const {
     }
   }
 
-  return drive_pinning_available_;
+  return !drive_pinning_available_;
 }
 
 bool DrivePinningScreen::MaybeSkip(WizardContext& context) {
@@ -91,6 +92,12 @@ void DrivePinningScreen::CalculateRequiredSpace() {
     pin_manager->AddObserver(this);
     pin_manager->CalculateRequiredSpace();
   }
+}
+
+void DrivePinningScreen::OnProgressForTest(
+    const drivefs::pinning::Progress& progress) {
+  CHECK_IS_TEST();
+  OnProgress(progress);
 }
 
 void DrivePinningScreen::OnProgress(const Progress& progress) {

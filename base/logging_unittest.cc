@@ -91,7 +91,7 @@ TEST_F(LoggingTest, BasicLogging) {
   // 4 base logs: LOG, LOG_IF, PLOG, and PLOG_IF
   int expected_logs = 4;
 
-  // 4 verbose logs: VLOG, VLOG_IF, PVLOG, PVLOG_IF.
+  // 4 verbose logs: VLOG, VLOG_IF, VPLOG, VPLOG_IF.
   if (VLOG_IS_ON(0))
     expected_logs += 4;
 

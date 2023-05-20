@@ -12,18 +12,40 @@
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 
+namespace {
+
+void ApplyDefaultChromeRefreshToolbarColors(
+    ui::ColorMixer& mixer,
+    const ui::ColorProviderManager::Key& key) {
+  mixer[kColorAppMenuHighlightDefault] = {
+      kColorTabBackgroundInactiveFrameActive};
+  mixer[kColorAppMenuExpandedForegroundDefault] = {
+      kColorTabForegroundInactiveFrameActive};
+  mixer[kColorAppMenuHighlightSeverityLow] = {kColorAppMenuHighlightDefault};
+  mixer[kColorAppMenuHighlightSeverityMedium] = {kColorAppMenuHighlightDefault};
+  mixer[kColorAppMenuHighlightSeverityHigh] = {kColorAppMenuHighlightDefault};
+}
+
+}  // namespace
+
 void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
                                  const ui::ColorProviderManager::Key& key) {
-  if (!ShouldApplyChromeMaterialOverrides(key)) {
-    return;
-  }
-
   // Adds the color recipes for browser UI colors (toolbar, bookmarks bar,
   // downloads bar etc). While both design systems continue to exist, the
   // material recipes are intended to leverage the existing chrome color mixers,
   // overriding when required to do so according to the new material spec.
   // TODO(crbug.com/1408542): Update color recipes to match UX mocks.
   ui::ColorMixer& mixer = provider->AddMixer();
+
+  // Apply default color transformations irrespective of whether a custom theme
+  // is enabled. This is a necessary first pass with chrome refresh flag on to
+  // make themes work with the feature.
+  ApplyDefaultChromeRefreshToolbarColors(mixer, key);
+
+  if (!ShouldApplyChromeMaterialOverrides(key)) {
+    return;
+  }
+
   mixer[kColorAppMenuHighlightDefault] = {ui::kColorSysTonalContainer};
   mixer[kColorAppMenuHighlightSeverityLow] = {kColorAppMenuHighlightDefault};
   mixer[kColorAppMenuHighlightSeverityMedium] = {kColorAppMenuHighlightDefault};
@@ -36,6 +58,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       AdjustHighlightColorForContrast(ui::kColorSysPrimary, kColorToolbar);
   mixer[kColorBookmarkBarBackground] = {ui::kColorSysBase};
   mixer[kColorBookmarkBarForeground] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorBookmarkBarSeparatorChromeRefresh] = {ui::kColorSysOnBaseDivider};
   mixer[kColorBookmarkButtonIcon] = {kColorBookmarkBarForeground};
   mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
   mixer[kColorBookmarkDragImageBackground] = {ui::kColorSysPrimary};

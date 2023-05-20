@@ -33,6 +33,9 @@ class P2PSocketClient {
                         base::span<const uint8_t> data,
                         const rtc::PacketOptions& options) = 0;
 
+  // Call to complete sending of any batched packets.
+  virtual void FlushBatch() = 0;
+
   virtual void SetOption(network::P2PSocketOption option, int value) = 0;
 
   // Must be called before the socket is destroyed.

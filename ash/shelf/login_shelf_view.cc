@@ -45,6 +45,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "skia/ext/image_operations.h"
@@ -53,6 +54,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/manager/display_configurator.h"
@@ -113,6 +115,11 @@ ui::ColorId GetButtonTextColorId() {
 
 ui::ColorId GetButtonIconColorId() {
   return IsOobe() ? kColorAshButtonIconColorLight : kColorAshButtonIconColor;
+}
+
+ui::ColorId GetButtonBackgroundColorId() {
+  return IsOobe() ? cros_tokens::kCrosSysSystemOnBase
+                  : cros_tokens::kCrosSysSystemOnBase1;
 }
 
 LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
@@ -207,6 +214,9 @@ class LoginShelfButton : public PillButton {
 
   void UpdateButtonColors() {
     SetEnabledTextColorIds(GetButtonTextColorId());
+    if (chromeos::features::IsJellyrollEnabled()) {
+      SetBackgroundColorId(GetButtonBackgroundColorId());
+    }
     SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(*icon_, GetButtonIconColorId()));

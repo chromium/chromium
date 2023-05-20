@@ -165,6 +165,9 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ImeFinishComposingText(bool keep_selection);
   void OnFirstResponderChanged();
 
+  bool CanBecomeFirstResponderForTesting() const;
+  bool CanResignFirstResponderForTesting() const;
+
  private:
   friend class MockPointerLockRenderWidgetHostView;
 
@@ -175,6 +178,8 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   bool ShouldRouteEvents() const;
 
   void SendGestureEvent(const blink::WebGestureEvent& event);
+
+  bool ComputeIsViewOrSubviewFirstResponder() const;
 
   // Provides gesture synthesis given a stream of touch events and touch event
   // acks. This is for generating gesture events from injected touch events.

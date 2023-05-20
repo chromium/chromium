@@ -42,6 +42,8 @@ source_set("lib") {
       "features/text_decoder.h",
       "features/text_encoder.cc",
       "features/text_encoder.h",
+      "features/tts_interface_binder.cc",
+      "features/tts_interface_binder.h",
       "features/v8_bindings_utils.cc",
       "features/v8_bindings_utils.h",
       "features/v8_manager.cc",
@@ -50,9 +52,11 @@ source_set("lib") {
       "os_accessibility_service.h",
     ]
     public_deps += [
+      "public/mojom:os_service_mojom",
       "//gin",
       "//ui/accessibility:accessibility",
     ]
+    deps = [ "public/mojom:os_service_mojom_js__generator" ]
     configs += [ "//v8:external_startup_data" ]
   } else {
     sources = [
@@ -72,7 +76,10 @@ static_library("test_support") {
     "fake_service_client.h",
   ]
 
-  deps = [ ":lib" ]
+  deps = [
+    ":buildflags",
+    ":lib",
+  ]
 
   if (supports_os_accessibility_service) {
     sources += [
@@ -82,6 +89,7 @@ static_library("test_support") {
     deps += [
       "//base/test:test_support",
       "//services/accessibility/features/mojo/test:mojom_js_api",
+      "//services/accessibility/public/mojom:os_service_mojom",
     ]
   }
 }
@@ -105,8 +113,19 @@ source_set("tests") {
       "os_accessibility_service_unittest.cc",
     ]
     deps += [ "//base" ]
-    data_deps =
-        [ "//services/accessibility/features/mojo/test:test_support_data" ]
+    if (!is_fuchsia) {
+      # TODO(b:262637320): Get this working on Fuchsia, which cannot
+      # currently ReadFileToString and therefore can't run tests which
+      # load JS files.
+      sources += [ "features/atp_js_api_test.cc" ]
+      deps +=
+          [ "//services/accessibility/features/javascript:js_api_copied_files" ]
+      data_deps = [
+        "//services/accessibility/features/javascript:js_api_files",
+        "//services/accessibility/features/mojo/test:test_support_data",
+        "//services/accessibility/public/mojom:os_accessibility_service_js",
+      ]
+    }
   } else {
     sources = [ "browser_accessibility_service_unittest.cc" ]
   }

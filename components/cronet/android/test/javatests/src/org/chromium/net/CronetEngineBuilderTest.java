@@ -4,7 +4,8 @@
 
 package org.chromium.net;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.fail;
 
 import static org.chromium.net.CronetProvider.PROVIDER_NAME_APP_PACKAGED;
@@ -15,6 +16,8 @@ import android.content.Context;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
+
+import com.google.common.truth.Correspondence;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,9 +71,10 @@ public class CronetEngineBuilderTest {
                 CronetEngine.Builder.getEnabledCronetProviders(getContext(), providers);
 
         // Check the result
-        assertEquals(availableProviders[2], orderedProviders.get(0));
-        assertEquals(availableProviders[0], orderedProviders.get(1));
-        assertEquals(availableProviders[1], orderedProviders.get(2));
+        assertThat(orderedProviders)
+                .containsExactly(
+                        availableProviders[2], availableProviders[0], availableProviders[1])
+                .inOrder();
     }
 
     /**
@@ -90,21 +94,25 @@ public class CronetEngineBuilderTest {
         List<CronetProvider> orderedProviders =
                 CronetEngine.Builder.getEnabledCronetProviders(getContext(), providers);
 
-        assertEquals("Unexpected number of providers in the list", 2, orderedProviders.size());
-        assertEquals(PROVIDER_NAME_APP_PACKAGED, orderedProviders.get(0).getName());
-        assertEquals(PROVIDER_NAME_FALLBACK, orderedProviders.get(1).getName());
+        Correspondence<CronetProvider, String> providerName = Correspondence.transforming(
+                provider -> provider.getName(), "The name of the provider");
+
+        assertThat(orderedProviders)
+                .comparingElementsUsing(providerName)
+                .containsExactly(PROVIDER_NAME_APP_PACKAGED, PROVIDER_NAME_FALLBACK)
+                .inOrder();
     }
 
     private void assertVersionIsHigher(String s1, String s2) {
-        assertEquals(1, CronetEngine.Builder.compareVersions(s1, s2));
+        assertThat(CronetEngine.Builder.compareVersions(s1, s2)).isEqualTo(1);
     }
 
     private void assertVersionIsLower(String s1, String s2) {
-        assertEquals(-1, CronetEngine.Builder.compareVersions(s1, s2));
+        assertThat(CronetEngine.Builder.compareVersions(s1, s2)).isEqualTo(-1);
     }
 
     private void assertVersionIsEqual(String s1, String s2) {
-        assertEquals(0, CronetEngine.Builder.compareVersions(s1, s2));
+        assertThat(CronetEngine.Builder.compareVersions(s1, s2)).isEqualTo(0);
     }
 
     private void assertIllegalArgumentException(String s1, String s2) {

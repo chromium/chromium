@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/android/modules/buildflags.gni")
 
@@ -19,16 +20,6 @@ generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/modules/stack_unwinder/StackUnwinderModuleContentsImpl.java" ]
 }
 
-if (current_toolchain == default_toolchain) {
-  generate_jni_registration("jni_registration") {
-    targets = [ ":java" ]
-    manual_jni_registration = true
-    namespace = "stack_unwinder"
-    module_name = "stack_unwinder"
-    no_transitive_deps = true
-  }
-}
-
 # This group is effectively an alias representing the module's native code,
 # allowing it to be named "native" for clarity in module descriptors. The
 # component target must be named according to the feature, so that the component
@@ -37,14 +28,14 @@ group("native") {
   deps = [ ":stack_unwinder" ]
 }
 
-component("stack_unwinder") {
+component_with_jni("stack_unwinder") {
+  java_targets = [ ":java" ]
   sources = [
     "entrypoints.cc",
     "stack_unwinder_module_contents_impl.cc",
   ]
   deps = [
     ":jni_headers",
-    ":jni_registration($default_toolchain)",
     "//base",
     "//base:native_unwinder_android",
     "//chrome/android/features/stack_unwinder/public:native",
@@ -54,6 +45,9 @@ component("stack_unwinder") {
   if (use_native_partitions) {
     cflags = [ "-fsymbol-partition=stack_unwinder_partition" ]
   }
+  manual_jni_registration = true
+  namespace = "stack_unwinder"
+  module_name = "stack_unwinder"
 }
 
 # Since loading of a partitioned library is not supported in an APK, a separate

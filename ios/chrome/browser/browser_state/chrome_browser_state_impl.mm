@@ -36,10 +36,10 @@
 #import "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector_factory.h"
 #import "ios/chrome/browser/policy/schema_registry_factory.h"
-#import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -134,8 +134,6 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   user_prefs::UserPrefs::Set(this, prefs_.get());
 
   // Migrate obsolete prefs.
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-  MigrateObsoleteLocalStatePrefs(local_state);
   MigrateObsoleteBrowserStatePrefs(prefs_.get());
 
   BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(

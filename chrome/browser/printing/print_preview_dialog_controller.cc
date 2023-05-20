@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/printing/print_view_manager.h"
+#include "chrome/browser/printing/print_view_manager_base.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -205,7 +206,7 @@ PrintPreviewDialogController* PrintPreviewDialogController::GetInstance() {
 
 void PrintPreviewDialogController::PrintPreview(WebContents* initiator) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  ModuleDatabase::DisableThirdPartyBlocking();
+  PrintViewManagerBase::DisableThirdPartyBlocking();
 #endif
 
   if (initiator->IsCrashed()) {

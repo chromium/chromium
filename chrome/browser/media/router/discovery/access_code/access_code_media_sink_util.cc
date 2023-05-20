@@ -138,7 +138,7 @@ CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device) {
   return std::make_pair(cast_sink, CreateCastMediaSinkResult::kOk);
 }
 
-base::Value CreateValueDictFromMediaSinkInternal(
+base::Value::Dict CreateValueDictFromMediaSinkInternal(
     const MediaSinkInternal& sink) {
   const CastSinkExtraData& extra_data = sink.cast_data();
 
@@ -157,7 +157,7 @@ base::Value CreateValueDictFromMediaSinkInternal(
   value_dict.Set(kSinkDictKey, std::move(sink_dict));
   value_dict.Set(kExtraDataDictKey, std::move(extra_data_dict));
 
-  return base::Value(std::move(value_dict));
+  return value_dict;
 }
 
 // This stored dict looks like:
@@ -256,10 +256,8 @@ AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
       return AccessCodeCastAddSinkResult::kProfileSyncError;
     case AddSinkResultCode::INTERNAL_MEDIA_ROUTER_ERROR:
       return AccessCodeCastAddSinkResult::kInternalMediaRouterError;
-    default:
-      NOTREACHED();
-      return AccessCodeCastAddSinkResult::kUnknownError;
   }
+  NOTREACHED_NORETURN();
 }
 
 absl::optional<net::IPEndPoint> GetIPEndPointFromValueDict(

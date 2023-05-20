@@ -122,6 +122,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
                                    BluetoothSspVariant variant,
                                    uint32_t passkey) {}
 
+    // Notification sent for legacy pairing to display auto-gen pin code.
+    virtual void AdapterPinDisplay(const FlossDeviceId& remote_device,
+                                   std::string pincode) {}
+
+    // Notification sent for legacy pairing to ask user input pin code.
+    virtual void AdapterPinRequest(const FlossDeviceId& remote_device,
+                                   uint32_t cod,
+                                   bool min_16_digit) {}
+
     // Notification sent when a bonding state changes for a remote device.
     // TODO(b:202334519): Change status type to enum once Floss has the enum.
     virtual void DeviceBondStateChanged(const FlossDeviceId& remote_device,
@@ -324,6 +333,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Handle callback |OnSspRequest| on exported object path.
   void OnSspRequest(dbus::MethodCall* method_call,
+                    dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnPinDisplay| on exported object path.
+  void OnPinDisplay(dbus::MethodCall* method_call,
+                    dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnPinRequest| on exported object path.
+  void OnPinRequest(dbus::MethodCall* method_call,
                     dbus::ExportedObject::ResponseSender response_sender);
 
   // Handle callback |OnBondStateChanged| on exported object path.

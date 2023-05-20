@@ -40,13 +40,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.signin.SyncConsentActivity;
@@ -83,27 +83,19 @@ public class IdentityDiscControllerTest {
     private static final String EMAIL = "email@gmail.com";
     private static final String NAME = "Email Emailson";
     private static final String FULL_NAME = NAME + ".full";
-    private static final ActivityLifecycleDispatcher EMPTY_DISPATCHER =
-            new ActivityLifecycleDispatcher() {
+    private static final ObservableSupplier<Profile> EMPTY_PROFILE_SUPPLIER =
+            new ObservableSupplier<>() {
                 @Override
-                public void register(LifecycleObserver observer) {}
-
-                @Override
-                public void unregister(LifecycleObserver observer) {}
-
-                @Override
-                public int getCurrentActivityState() {
-                    return 0;
+                public Profile addObserver(Callback<Profile> obs) {
+                    return null;
                 }
 
                 @Override
-                public boolean isNativeInitializationFinished() {
-                    return false;
-                }
+                public void removeObserver(Callback<Profile> obs) {}
 
                 @Override
-                public boolean isActivityFinishingOrDestroyed() {
-                    return false;
+                public Profile get() {
+                    return null;
                 }
             };
 
@@ -134,6 +126,8 @@ public class IdentityDiscControllerTest {
     private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
     @Mock
     private Tracker mTracker;
+    @Mock
+    private ActivityLifecycleDispatcher mDispatcher;
 
     @Before
     public void setUp() {
@@ -361,7 +355,6 @@ public class IdentityDiscControllerTest {
                 buildControllerWithObserver(mButtonDataObserver);
         PrimaryAccountChangeEvent accountClearedEvent =
                 newSigninEvent(PrimaryAccountChangeEvent.Type.CLEARED);
-
         identityDiscController.onPrimaryAccountChanged(accountClearedEvent);
 
         verify(mButtonDataObserver).buttonDataChanged(false);
@@ -370,12 +363,24 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    public void onClick_nativeNotYetInitialized_doesNothing() {
+    public void onClick_profileSupplierNotYetInitialized_doesNothing() {
         TrackerFactory.setTrackerForTests(mTracker);
         IdentityDiscController identityDiscController = new IdentityDiscController(
-                mActivityTestRule.getActivity(), EMPTY_DISPATCHER, mProfileSupplier);
+                mActivityTestRule.getActivity(), mDispatcher, /*profileSupplier=*/null);
 
-        // If the button is tapped before native is initialized, the click shouldn't be recorded.
+        // If the button is tapped before the profile is set, the click shouldn't be recorded.
+        identityDiscController.onClick();
+        verifyNoMoreInteractions(mTracker);
+    }
+
+    @Test
+    @MediumTest
+    public void onClick_profileNotYetInitialized_doesNothing() {
+        TrackerFactory.setTrackerForTests(mTracker);
+        IdentityDiscController identityDiscController = new IdentityDiscController(
+                mActivityTestRule.getActivity(), mDispatcher, EMPTY_PROFILE_SUPPLIER);
+
+        // If the button is tapped before the profile is set, the click shouldn't be recorded.
         identityDiscController.onClick();
         verifyNoMoreInteractions(mTracker);
     }
@@ -395,7 +400,7 @@ public class IdentityDiscControllerTest {
     private IdentityDiscController buildControllerWithObserver(
             ButtonDataProvider.ButtonDataObserver observer) {
         IdentityDiscController controller = new IdentityDiscController(
-                mActivityTestRule.getActivity(), EMPTY_DISPATCHER, mProfileSupplier);
+                mActivityTestRule.getActivity(), mDispatcher, EMPTY_PROFILE_SUPPLIER);
         controller.addObserver(observer);
 
         return controller;

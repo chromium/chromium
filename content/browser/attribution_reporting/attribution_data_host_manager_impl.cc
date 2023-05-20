@@ -578,7 +578,9 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
     network::AttributionReportingRuntimeFeatures runtime_features,
     bool is_final_response) {
   if (auto header = RegistrarAndHeader::Get(
-          headers, runtime_features.cross_app_web_enabled)) {
+          headers,
+          runtime_features.Has(
+              network::AttributionReportingRuntimeFeature::kCrossAppWeb))) {
     auto [it, inserted] = registrations_.emplace(
         source_origin, is_within_fenced_frame, std::move(input_event),
         render_frame_id,
@@ -688,29 +690,33 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::OsSourceDataAvailable(
-    const GURL& registration_url) {
+    std::vector<GURL> registration_urls) {
   const ReceiverContext* context = GetReceiverContextForSource();
   if (!context) {
     return;
   }
 
-  attribution_manager_->HandleOsRegistration(
-      OsRegistration(registration_url, context->context_origin(),
-                     context->input_event()),
-      context->render_frame_id());
+  for (GURL& url : registration_urls) {
+    attribution_manager_->HandleOsRegistration(
+        OsRegistration(std::move(url), context->context_origin(),
+                       context->input_event()),
+        context->render_frame_id());
+  }
 }
 
 void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
-    const GURL& registration_url) {
+    std::vector<GURL> registration_urls) {
   const ReceiverContext* context = GetReceiverContextForTrigger();
   if (!context) {
     return;
   }
 
-  attribution_manager_->HandleOsRegistration(
-      OsRegistration(registration_url, context->context_origin(),
-                     /*input_event=*/absl::nullopt),
-      context->render_frame_id());
+  for (GURL& url : registration_urls) {
+    attribution_manager_->HandleOsRegistration(
+        OsRegistration(std::move(url), context->context_origin(),
+                       /*input_event=*/absl::nullopt),
+        context->render_frame_id());
+  }
 }
 
 void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
@@ -774,8 +780,9 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     return;
   }
 
-  auto attribution_header =
-      RegistrarAndHeader::Get(headers, runtime_features.cross_app_web_enabled);
+  auto attribution_header = RegistrarAndHeader::Get(
+      headers, runtime_features.Has(
+                   network::AttributionReportingRuntimeFeature::kCrossAppWeb));
   if (!attribution_header) {
     MaybeOnRegistrationsFinished(it);
     return;

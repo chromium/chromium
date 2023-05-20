@@ -228,8 +228,10 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
           continue;
         Element* elem = To<Element>(child);
         if (elem->IsHTMLWithTagName("SCRIPT")) {
-          if (elem->getAttribute("type") != "application/ld+json")
+          if (elem->getAttribute(html_names::kTypeAttr) !=
+              "application/ld+json") {
             continue;
+          }
         } else if (!elem->IsHTMLWithTagName("LINK") &&
                    !elem->IsHTMLWithTagName("TITLE") &&
                    !elem->IsHTMLWithTagName("META")) {

@@ -12,6 +12,7 @@
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/throttle_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -77,8 +78,12 @@ class ArcIdleManager : public KeyedService,
   bool is_connected_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   SEQUENCE_CHECKER(sequence_checker_);
 
+  void LogScreenOffTimer(bool should_throttle);
+
   // Owned by ArcServiceManager.
   const raw_ptr<ArcBridgeService, ExperimentalAsh> bridge_;
+
+  base::ElapsedTimer interactive_off_span_;
 };
 
 }  // namespace arc

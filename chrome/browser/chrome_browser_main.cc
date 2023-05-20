@@ -122,6 +122,7 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
+#include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/embedder_support/switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/google/core/common/google_util.h"
@@ -190,6 +191,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -872,8 +874,13 @@ int ChromeBrowserMainParts::OnLocalStateLoaded(
   if (apply_first_run_result != content::RESULT_CODE_NORMAL_EXIT)
     return apply_first_run_result;
 
-  embedder_support::SetupOriginTrialsCommandLine(
-      browser_process_->local_state());
+  embedder_support::OriginTrialsSettingsStorage*
+      origin_trials_settings_storage =
+          browser_process_->GetOriginTrialsSettingsStorage();
+  embedder_support::SetupOriginTrialsCommandLineAndSettings(
+      browser_process_->local_state(), origin_trials_settings_storage);
+  blink::OriginTrialsSettingsProvider::Get()->SetSettings(
+      origin_trials_settings_storage->GetSettings());
 
   metrics::EnableExpiryChecker(chrome_metrics::kExpiredHistogramsHashes,
                                chrome_metrics::kNumExpiredHistograms);

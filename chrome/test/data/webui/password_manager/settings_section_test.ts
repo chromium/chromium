@@ -441,4 +441,14 @@ suite('SettingsSectionTest', function() {
     assertEquals('chrome://settings/passkeys', url);
   });
   // </if>
+
+  test('blockedSites section hidden when no blocked sites', async function() {
+    passwordManager.data.blockedSites = [];
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await flushTasks();
+    await passwordManager.whenCalled('getBlockedSitesList');
+
+    assertFalse(isVisible(settings.$.blockedSitesList));
+  });
 });

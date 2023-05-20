@@ -1202,7 +1202,7 @@
     Remember your desktop background across devices
   </message>
   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_TEXT" desc="Text of the disclaimer to the toggle of the Apps item in sync screen option." >
-    Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account.  Web apps will be synced through Chrome even if other browser sync features are turned off.
+    Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account. Web apps installed from Chrome browser will be synced even if browser sync is turned off.
   </message>
    <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_ADDITIONAL_TEXT" desc="Additional text of the disclaimer to the toggle of the Apps item in sync screen option.">
     If you also chose to send diagnostic and usage data in the previous step, this data will be collected for installed apps.
@@ -6339,7 +6339,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     <ph name="EMOJI_NAME">$1<ex>Party popper</ex></ph>. <ph name="EMOJI_INDEX">$2<ex>5</ex></ph> of <ph name="EMOJI_COUNT">$3<ex>5</ex></ph>.
   </message>
   <message name="IDS_SUGGESTION_DIACRITICS_OPEN" desc="String announced by screenreader when diacritics suggestion pops up.">
-    Accent marks menu open. Press left or right to navigate and enter to insert.
+    Accent marks menu open. Press left, right, or number keys to navigate and enter to insert.
   </message>
   <message name="IDS_SUGGESTION_DIACRITICS_INSERTED" desc="String announced by screenreader when diacritics are inserted.">
     Accent mark inserted.
@@ -6380,7 +6380,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     Emoji Picker
   </message>
   <message name="IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD" translateable="false" desc="Message shown to users when they click a gif in emoji picker.">
-    GIF copied to clipboard
+    GIF not supported. Copied to clipboard.
   </message>
 
   <!-- Strings for Custom Tab UI -->
@@ -6693,8 +6693,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Use your Google Account on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_GAIA_INFO_DESCRIPTION" desc="Description of the Gaia Info screen.">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>On the next screen, sign in with your Google Account.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>This is the same account you use for Gmail, YouTube, Chrome, and other Google services. Use your account for a personalized experience and easy access to all of your information.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>If you don't have a Google Account, you'll be able to create one on the next screen.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+    Your Google Account is the same account you use for Gmail, YouTube, Chrome, and other Google products.
+    Use your account to easily access all of your bookmarks, files, and more. If you don't have an account, you can create one on the next screen.
   </message>
 </grit-part>

@@ -33,7 +33,7 @@ source_set("unit_tests") {
   deps = [
     ":trusted_vault_reauthentication",
     "//base/test:test_support",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

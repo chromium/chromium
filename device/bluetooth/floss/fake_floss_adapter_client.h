@@ -28,8 +28,11 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   static const char kPhoneAddress[];
   static const char kOldDeviceAddress[];
   static const char kClassicAddress[];
+  static const char kPinCodeDisplayAddress[];
+  static const char kPinCodeRequestAddress[];
   static const char kClassicName[];
   static const uint32_t kPasskey;
+  static const char kPinCode[];
   static const uint32_t kHeadsetClassOfDevice;
   static const uint32_t kKeyboardClassofDevice;
 

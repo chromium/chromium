@@ -4,29 +4,29 @@
 
 #import "ios/web_view/internal/sync/web_view_sync_client.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/feature_list.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/scoped_refptr.h"
-#include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
-#include "components/history/core/common/pref_names.h"
-#include "components/invalidation/impl/fake_invalidation_service.h"
-#include "components/password_manager/core/browser/test_password_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/driver/data_type_controller.h"
+#import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
+#import "base/memory/scoped_refptr.h"
+#import "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
+#import "components/history/core/common/pref_names.h"
+#import "components/invalidation/impl/fake_invalidation_service.h"
+#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/sync/base/model_type.h"
+#import "components/sync/service/data_type_controller.h"
 #import "components/sync/test/test_model_type_store_service.h"
 #import "components/sync/test/test_sync_service.h"
-#include "components/sync_device_info/fake_device_info_sync_service.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "components/sync_device_info/fake_device_info_sync_service.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -96,10 +96,12 @@ TEST_F(WebViewSyncClientTest, CreateDataTypeControllers) {
   syncer::TestSyncService sync_service;
   syncer::DataTypeController::TypeVector data_type_controllers =
       client_.CreateDataTypeControllers(&sync_service);
-  syncer::ModelTypeSet allowed_types = syncer::ModelTypeSet(
-      syncer::DEVICE_INFO, syncer::AUTOFILL, syncer::AUTOFILL_PROFILE,
-      syncer::AUTOFILL_WALLET_DATA, syncer::AUTOFILL_WALLET_METADATA,
-      syncer::PASSWORDS);
+  syncer::ModelTypeSet allowed_types = {syncer::DEVICE_INFO,
+                                        syncer::AUTOFILL,
+                                        syncer::AUTOFILL_PROFILE,
+                                        syncer::AUTOFILL_WALLET_DATA,
+                                        syncer::AUTOFILL_WALLET_METADATA,
+                                        syncer::PASSWORDS};
   for (const auto& data_type_controller : data_type_controllers) {
     ASSERT_TRUE(allowed_types.Has(data_type_controller->type()));
     allowed_types.Remove(data_type_controller->type());

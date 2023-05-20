@@ -10,7 +10,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -41,14 +40,7 @@ public final class BaseCarouselSuggestionViewBinder {
         } else if (key == BaseCarouselSuggestionViewProperties.SHOW_TITLE) {
             final boolean showTitle = model.get(BaseCarouselSuggestionViewProperties.SHOW_TITLE);
             final View headerView = view.getHeaderView();
-            boolean modernizeVisualUpdate =
-                    OmniboxFeatures.shouldShowModernizeVisualUpdate(view.getContext());
-            int topPadding = view.getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_carousel_suggestion_padding);
-            if (modernizeVisualUpdate) {
-                topPadding -= view.getResources().getDimensionPixelSize(
-                        R.dimen.tile_view_icon_background_margin_top_modern);
-            }
+            int topPadding = OmniboxResourceProvider.getCarouselTopPadding(view.getContext());
             final int bottomPadding =
                     OmniboxResourceProvider.getCarouselBottomPadding(view.getContext());
             if (showTitle) {

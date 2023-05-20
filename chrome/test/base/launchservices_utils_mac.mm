@@ -6,11 +6,16 @@
 
 #include <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/mac/foundation_util.h"
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace test {
 
@@ -24,19 +29,22 @@ bool RegisterAppWithLaunchServices() {
   // Try to guess the path to the real org.chromium.Chromium and/or
   // org.google.Chrome bundle if the current main bundle's path isn't already a
   // .app directory:
-  NSURL* bundleURL = [[NSBundle mainBundle] bundleURL];
+  NSURL* bundleURL = NSBundle.mainBundle.bundleURL;
   if (![bundleURL.lastPathComponent hasSuffix:@".app"]) {
     base::FilePath bundle_path;
-    if (!base::PathService::Get(base::DIR_EXE, &bundle_path))
+    if (!base::PathService::Get(base::DIR_EXE, &bundle_path)) {
       return false;
+    }
     bundle_path = bundle_path.Append(kAppSuffix);
     bundleURL = base::mac::FilePathToNSURL(bundle_path);
   }
 
-  if (![NSFileManager.defaultManager fileExistsAtPath:bundleURL.path])
+  if (![bundleURL checkResourceIsReachableAndReturnError:nil]) {
     return false;
+  }
 
-  return LSRegisterURL(base::mac::NSToCFCast(bundleURL), false) == noErr;
+  return LSRegisterURL(base::apple::NSToCFPtrCast(bundleURL),
+                       /*inUpdate=*/false) == noErr;
 }
 
 }  // namespace test

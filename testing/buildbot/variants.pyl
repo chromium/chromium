@@ -22,16 +22,16 @@
   },
   'LACROS_VERSION_SKEW_CANARY': {
     'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v115.0.5771.0/test_ash_chrome',
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v115.0.5782.0/test_ash_chrome',
     ],
-    'description': 'Run with ash-chrome version 115.0.5771.0',
+    'description': 'Run with ash-chrome version 115.0.5782.0',
     'identifier': 'Lacros version skew testing ash canary',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v115.0.5771.0',
-          'revision': 'version:115.0.5771.0',
+          'location': 'lacros_version_skew_tests_v115.0.5782.0',
+          'revision': 'version:115.0.5782.0',
         },
       ],
     },
@@ -54,32 +54,32 @@
   },
   'LACROS_VERSION_SKEW_BETA': {
     'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v114.0.5735.18/test_ash_chrome',
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v114.0.5735.31/test_ash_chrome',
     ],
-    'description': 'Run with ash-chrome version 114.0.5735.18',
+    'description': 'Run with ash-chrome version 114.0.5735.31',
     'identifier': 'Lacros version skew testing ash beta',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v114.0.5735.18',
-          'revision': 'version:114.0.5735.18',
+          'location': 'lacros_version_skew_tests_v114.0.5735.31',
+          'revision': 'version:114.0.5735.31',
         },
       ],
     },
   },
   'LACROS_VERSION_SKEW_STABLE': {
     'args': [
-      '--ash-chrome-path-override=../../lacros_version_skew_tests_v113.0.5672.114/test_ash_chrome',
+      '--ash-chrome-path-override=../../lacros_version_skew_tests_v113.0.5672.134/test_ash_chrome',
     ],
-    'description': 'Run with ash-chrome version 113.0.5672.114',
+    'description': 'Run with ash-chrome version 113.0.5672.134',
     'identifier': 'Lacros version skew testing ash stable',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/linux-ash-chromium/x86_64/ash.zip',
-          'location': 'lacros_version_skew_tests_v113.0.5672.114',
-          'revision': 'version:113.0.5672.114',
+          'location': 'lacros_version_skew_tests_v113.0.5672.134',
+          'revision': 'version:113.0.5672.134',
         },
       ],
     },
@@ -382,8 +382,8 @@
   'CROS_BRYA_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'brya',
-      'cros_chrome_version': '114.0.5685.0',
-      'cros_img': 'brya-release/R114-15407.0.0',
+      'cros_chrome_version': '115.0.5762.0',
+      'cros_img': 'brya-release/R115-15460.0.0',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
     },
@@ -550,15 +550,6 @@
     'enabled': True,
     'identifier': 'HANA_RELEASE_STABLE',
   },
-  'CROS_HEROBRINE_RELEASE_LKGM': {
-    'skylab': {
-      'cros_board': 'herobrine',
-      'cros_chrome_version': '114.0.5692.0',
-      'cros_img': 'herobrine-release/R114-15410.0.0',
-    },
-    'enabled': True,
-    'identifier': 'HEROBRINE_RELEASE_LKGM',
-  },
   'CROS_JACUZZI_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
@@ -589,8 +580,8 @@
   'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '114.0.5707.0',
-      'cros_img': 'jacuzzi-release/R114-15419.0.0',
+      'cros_chrome_version': '115.0.5762.0',
+      'cros_img': 'jacuzzi-release/R115-15460.0.0',
       'tast_expr': '("group:mainline" && !informational)',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
@@ -662,8 +653,8 @@
   'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '114.0.5689.0',
-      'cros_img': 'octopus-release/R114-15408.0.0',
+      'cros_chrome_version': '115.0.5762.0',
+      'cros_img': 'octopus-release/R115-15460.0.0',
       'tast_expr': '("group:mainline" && !informational)',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
@@ -746,8 +737,8 @@
   'CROS_TROGDOR_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_chrome_version': '114.0.5685.0',
-      'cros_img': 'trogdor-release/R114-15407.0.0',
+      'cros_chrome_version': '115.0.5762.0',
+      'cros_img': 'trogdor-release/R115-15460.0.0',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
     },
@@ -757,8 +748,8 @@
   'CROS_VOLTEER_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'volteer',
-      'cros_chrome_version': '114.0.5685.0',
-      'cros_img': 'volteer-release/R114-15407.0.0',
+      'cros_chrome_version': '115.0.5762.0',
+      'cros_img': 'volteer-release/R115-15460.0.0',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
     },
@@ -786,22 +777,6 @@
       '--deploy-lacros',
     ],
     'identifier': 'Ash ToT',
-  },
-  'LACROS_BETTY_PI_ARC': {
-    'args': [
-      '--board=betty-pi-arc',
-      '--use-vm',
-    ],
-    'identifier': 'betty-pi-arc',
-    'swarming': {
-       'dimension_sets': [
-        {
-          'cpu': 'x86',
-          'kvm': '1',
-          'os': 'Ubuntu-18.04',
-        }
-      ],
-    },
   },
   'LACROS_EVE': {
     'args': [

@@ -14,7 +14,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/omnibox/browser/actions/omnibox_pedal_jni_wrapper.h"
+#include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
 #include "url/android/gurl_android.h"
 #endif
 
@@ -47,8 +47,6 @@ constexpr ActionInSuggestUmaType ToUmaActionType(
       return ActionInSuggestUmaType::kCall;
     case omnibox::ActionInfo_ActionType_DIRECTIONS:
       return ActionInSuggestUmaType::kDirections;
-    case omnibox::ActionInfo_ActionType_WEBSITE:
-      return ActionInSuggestUmaType::kWebsite;
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return ActionInSuggestUmaType::kReviews;
   }
@@ -63,8 +61,6 @@ constexpr int ToActionHint(omnibox::ActionInfo::ActionType action_type) {
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT;
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT;
-    case omnibox::ActionInfo_ActionType_WEBSITE:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_HINT;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
@@ -77,8 +73,6 @@ constexpr int ToActionContents(omnibox::ActionInfo::ActionType action_type) {
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS;
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS;
-    case omnibox::ActionInfo_ActionType_WEBSITE:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_CONTENTS;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
@@ -99,12 +93,9 @@ OmniboxActionInSuggest::~OmniboxActionInSuggest() = default;
 base::android::ScopedJavaLocalRef<jobject>
 OmniboxActionInSuggest::GetOrCreateJavaObject(JNIEnv* env) const {
   if (!j_omnibox_action_) {
-    std::string serialized_action;
-    if (!action_info_.SerializeToString(&serialized_action)) {
-      serialized_action.clear();
-    }
-    j_omnibox_action_.Reset(
-        BuildOmniboxActionInSuggest(env, strings_.hint, serialized_action));
+    j_omnibox_action_.Reset(BuildOmniboxActionInSuggest(
+        env, strings_.hint, action_info_.action_type(),
+        action_info_.action_uri()));
   }
   return base::android::ScopedJavaLocalRef<jobject>(j_omnibox_action_);
 }

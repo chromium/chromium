@@ -30,6 +30,7 @@
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
+#include "third_party/blink/public/mojom/navigation/system_entropy.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -298,6 +299,11 @@ class NavigationController {
 
     // Indicates the reload type of this navigation.
     ReloadType reload_type = ReloadType::NONE;
+
+    // Indicates the suggested system entropy captured when the navigation
+    // began.
+    blink::mojom::SystemEntropy suggested_system_entropy =
+        blink::mojom::SystemEntropy::kNormal;
 
     // Indicates a form submission created this navigation.
     bool is_form_submission = false;

@@ -566,9 +566,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                      JsReplace("createAttributionSrcImg($1);", register_url)));
 
   register_response1->WaitForRequest();
-  ASSERT_EQ(register_response1->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source, trigger");
+  ExpectValidAttributionReportingEligibleHeaderForImg(
+      register_response1->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   ASSERT_FALSE(base::Contains(register_response1->http_request()->headers,
                               "Attribution-Reporting-Support"));
 
@@ -580,9 +580,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Ensure that redirect requests also contain the header.
   register_response2->WaitForRequest();
-  ASSERT_EQ(register_response2->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source, trigger");
+  ExpectValidAttributionReportingEligibleHeaderForImg(
+      register_response2->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   ASSERT_FALSE(base::Contains(register_response2->http_request()->headers,
                               "Attribution-Reporting-Support"));
 }
@@ -710,7 +710,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
           attribution_reporting::AggregatableValues(),
           ::aggregation_service::mojom::AggregationCoordinator::kDefault,
           attribution_reporting::mojom::SourceRegistrationTimeConfig::
-              kInclude))));
+              kExclude))));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -1192,9 +1192,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebRuntimeDisabledBrowserTest,
                      JsReplace("createAttributionSrcImg($1);", register_url)));
 
   register_response1->WaitForRequest();
-  ASSERT_EQ(register_response1->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source, trigger");
+  ExpectValidAttributionReportingEligibleHeaderForImg(
+      register_response1->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   ASSERT_FALSE(base::Contains(register_response1->http_request()->headers,
                               "Attribution-Reporting-Support"));
 
@@ -1207,9 +1207,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebRuntimeDisabledBrowserTest,
   // Ensure that redirect requests also don't contain the
   // Attribution-Reporting-Support header.
   register_response2->WaitForRequest();
-  ASSERT_EQ(register_response2->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source, trigger");
+  ExpectValidAttributionReportingEligibleHeaderForImg(
+      register_response2->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   ASSERT_FALSE(base::Contains(register_response2->http_request()->headers,
                               "Attribution-Reporting-Support"));
 }
@@ -1396,8 +1396,8 @@ IN_PROC_BROWSER_TEST_F(
 struct OsRegistrationTestCase {
   const char* name;
   const char* header;
-  std::vector<GURL> expected_os_sources;
-  std::vector<GURL> expected_os_triggers;
+  std::vector<std::vector<GURL>> expected_os_sources;
+  std::vector<std::vector<GURL>> expected_os_triggers;
 };
 
 class AttributionSrcCrossAppWebEnabledOsRegistrationBrowserTest
@@ -1413,8 +1413,10 @@ INSTANTIATE_TEST_SUITE_P(
             .header = "Attribution-Reporting-Register-OS-Source",
             .expected_os_sources =
                 {
-                    GURL("https://r1.test/x"),
-                    GURL("https://r2.test/y"),
+                    {
+                        GURL("https://r1.test/x"),
+                        GURL("https://r2.test/y"),
+                    },
                 },
         },
         OsRegistrationTestCase{
@@ -1422,8 +1424,10 @@ INSTANTIATE_TEST_SUITE_P(
             .header = "Attribution-Reporting-Register-OS-Trigger",
             .expected_os_triggers =
                 {
-                    GURL("https://r1.test/x"),
-                    GURL("https://r2.test/y"),
+                    {
+                        GURL("https://r1.test/x"),
+                        GURL("https://r2.test/y"),
+                    },
                 },
         }),
     [](const auto& info) { return info.param.name; });  // test name generator

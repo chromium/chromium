@@ -216,7 +216,8 @@ public class AutocompleteController implements Destroyable {
     }
 
     @CalledByNative
-    private void onSuggestionsReceived(@NonNull AutocompleteResult autocompleteResult,
+    @VisibleForTesting
+    public void onSuggestionsReceived(@NonNull AutocompleteResult autocompleteResult,
             @NonNull String inlineAutocompleteText, boolean isFinal) {
         mAutocompleteResult = autocompleteResult;
         // Notify callbacks of suggestions.
@@ -348,7 +349,7 @@ public class AutocompleteController implements Destroyable {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void start(long nativeAutocompleteControllerAndroid, String text, int cursorPosition,
                 String desiredTld, String currentUrl, int pageClassification,
                 boolean preventInlineAutocomplete, boolean preferKeyword,

@@ -65,12 +65,7 @@ device_signals::SignalsAggregator* SignalsAggregatorFactory::GetForProfile(
 SignalsAggregatorFactory::SignalsAggregatorFactory()
     : ProfileKeyedServiceFactory(
           "SignalsAggregator",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(SystemSignalsServiceHostFactory::GetInstance());
   DependsOn(UserPermissionServiceFactory::GetInstance());
 }
@@ -83,6 +78,11 @@ KeyedService* SignalsAggregatorFactory::BuildServiceInstanceFor(
 
   auto* user_permission_service =
       UserPermissionServiceFactory::GetForProfile(profile);
+  if (!user_permission_service) {
+    // Unsupported configuration (e.g. CrOS login Profile supported, but not
+    // incognito).
+    return nullptr;
+  }
 
   std::vector<std::unique_ptr<device_signals::SignalsCollector>> collectors;
   auto* service_host = SystemSignalsServiceHostFactory::GetForProfile(profile);

@@ -24,11 +24,9 @@
 
 namespace {
 
-// Updates `policy_cache` by adding entries from the session policy cache in
-// `web_state`.
-void UpdateCertificatePolicyCacheFromWebState(
-    const scoped_refptr<web::CertificatePolicyCache>& policy_cache,
-    const web::WebState* web_state) {
+// Updates the BrowserState's policy cache from the `web_state` session policy
+// cache.
+void UpdateCertificatePolicyCacheFromWebState(const web::WebState* web_state) {
   DCHECK(web_state);
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
@@ -37,8 +35,7 @@ void UpdateCertificatePolicyCacheFromWebState(
   if (!web_state->IsRealized())
     return;
 
-  web_state->GetSessionCertificatePolicyCache()->UpdateCertificatePolicyCache(
-      policy_cache);
+  web_state->GetSessionCertificatePolicyCache()->UpdateCertificatePolicyCache();
 }
 
 // Populates the certificate policy cache based on all of the WebStates in
@@ -46,7 +43,6 @@ void UpdateCertificatePolicyCacheFromWebState(
 // asynchronously, it needs to be resilient to shutdown having happened before
 // it is invoked.
 void RestoreCertificatePolicyCacheFromBrowsers(
-    const scoped_refptr<web::CertificatePolicyCache>& policy_cache,
     base::WeakPtr<ChromeBrowserState> weak_browser_state,
     bool incognito) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
@@ -66,7 +62,7 @@ void RestoreCertificatePolicyCacheFromBrowsers(
     WebStateList* web_state_list = browser->GetWebStateList();
     for (int index = 0; index < web_state_list->count(); ++index) {
       UpdateCertificatePolicyCacheFromWebState(
-          policy_cache, web_state_list->GetWebStateAt(index));
+          web_state_list->GetWebStateAt(index));
     }
   }
 }
@@ -87,7 +83,7 @@ void CleanCertificatePolicyCache(
       task_runner.get(), FROM_HERE,
       base::BindOnce(&web::CertificatePolicyCache::ClearCertificatePolicies,
                      policy_cache),
-      base::BindOnce(&RestoreCertificatePolicyCacheFromBrowsers, policy_cache,
+      base::BindOnce(&RestoreCertificatePolicyCacheFromBrowsers,
                      std::move(weak_browser_state), incognito));
 }
 

@@ -42,6 +42,8 @@ build_webui("build") {
       "cr_radio_button/cr_radio_button.ts",
       "cr_radio_group/cr_radio_group.ts",
       "cr_search_field/cr_search_field.ts",
+      "cr_segmented_button/cr_segmented_button.ts",
+      "cr_segmented_button/cr_segmented_button_option.ts",
       "cr_slider/cr_slider.ts",
       "cr_tabs/cr_tabs.ts",
       "cr_toast/cr_toast_manager.ts",

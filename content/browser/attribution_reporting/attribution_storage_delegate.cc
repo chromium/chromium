@@ -51,10 +51,10 @@ int AttributionStorageDelegate::GetMaxReportsPerDestination(
   }
 }
 
-int AttributionStorageDelegate::GetMaxDestinationsPerSourceSiteReportingOrigin()
+int AttributionStorageDelegate::GetMaxDestinationsPerSourceSiteReportingSite()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return config_.max_destinations_per_source_site_reporting_origin;
+  return config_.max_destinations_per_source_site_reporting_site;
 }
 
 AttributionConfig::RateLimitConfig AttributionStorageDelegate::GetRateLimits()

@@ -33,8 +33,8 @@ def ProcessDump(dump_file, minidump_file):
     print('Could not find minidump file in dump.')
     return
 
-  f = open(minidump_file, 'w')
-  f.write("\r\n".join(data['upload_file_minidump']))
+  f = open(minidump_file, 'wb')
+  f.write(b"\r\n".join(data['upload_file_minidump']))
   f.close()
 
 

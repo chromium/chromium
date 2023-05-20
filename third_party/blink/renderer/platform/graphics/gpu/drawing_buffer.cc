@@ -1850,13 +1850,12 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     front_buffer_mailbox = mailboxes.front_buffer;
   } else {
     if (ShouldUseChromiumImage()) {
-      gfx::BufferFormat buffer_format =
-          BufferFormat(color_buffer_format_.resource_format());
-      if (buffer_format == gfx::BufferFormat::RGBX_8888 &&
+      viz::SharedImageFormat si_format = color_buffer_format_;
+      if (si_format == viz::SinglePlaneFormat::kRGBX_8888 &&
           gpu::IsImageFromGpuMemoryBufferFormatSupported(
               gfx::BufferFormat::BGRX_8888,
               ContextProvider()->GetCapabilities())) {
-        buffer_format = gfx::BufferFormat::BGRX_8888;
+        si_format = viz::SinglePlaneFormat::kBGRX_8888;
       }
       // TODO(crbug.com/911176): When RGB emulation is not needed, we should use
       // the non-GMB CreateSharedImage with gpu::SHARED_IMAGE_USAGE_SCANOUT in
@@ -1870,16 +1869,17 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       }
 
       if (gpu::IsImageFromGpuMemoryBufferFormatSupported(
-              buffer_format, ContextProvider()->GetCapabilities())) {
+              viz::BufferFormat(si_format.resource_format()),
+              ContextProvider()->GetCapabilities())) {
         gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
-            size, buffer_format, buffer_usage, gpu::kNullSurfaceHandle,
-            nullptr);
+            size, viz::BufferFormat(si_format.resource_format()), buffer_usage,
+            gpu::kNullSurfaceHandle, nullptr);
         if (gpu_memory_buffer) {
           gpu_memory_buffer->SetColorSpace(color_space_);
           back_buffer_mailbox = sii->CreateSharedImage(
-              gpu_memory_buffer.get(), gpu_memory_buffer_manager, color_space_,
-              origin, back_buffer_alpha_type, usage | additional_usage_flags,
-              "WebGLDrawingBuffer");
+              si_format, size, color_space_, origin, back_buffer_alpha_type,
+              usage | additional_usage_flags, "WebGLDrawingBuffer",
+              gpu_memory_buffer->CloneHandle());
 #if BUILDFLAG(IS_MAC)
           // A CHROMIUM_image backed texture requires a specialized set of
           // parameters on OSX.

@@ -5,10 +5,12 @@
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/liburlpattern/pattern.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace web_app {
@@ -53,6 +55,75 @@ ManifestImageResourcePurposeToImageResoucePurposeProto(
       return content::proto::ImageResource_Purpose_MONOCHROME;
     case blink::mojom::ManifestImageResource_Purpose::MASKABLE:
       return content::proto::ImageResource_Purpose_MASKABLE;
+  }
+}
+
+proto::UrlPatternPart::Modifier UrlPatternModifierToProto(
+    liburlpattern::Modifier modifier) {
+  switch (modifier) {
+    case liburlpattern::Modifier::kZeroOrMore:
+      return proto::UrlPatternPart_Modifier_ZERO_OR_MORE;
+    case liburlpattern::Modifier::kOptional:
+      return proto::UrlPatternPart_Modifier_OPTIONAL;
+    case liburlpattern::Modifier::kOneOrMore:
+      return proto::UrlPatternPart_Modifier_ONE_OR_MORE;
+    case liburlpattern::Modifier::kNone:
+      return proto::UrlPatternPart_Modifier_NONE;
+  }
+}
+
+absl::optional<liburlpattern::Modifier> ProtoToUrlPatternModifier(
+    proto::UrlPatternPart::Modifier modifier) {
+  switch (modifier) {
+    case proto::UrlPatternPart_Modifier_UNKNOWN_MODIFIER:
+      return absl::nullopt;
+    case proto::UrlPatternPart_Modifier_ZERO_OR_MORE:
+      return liburlpattern::Modifier::kZeroOrMore;
+    case proto::UrlPatternPart_Modifier_OPTIONAL:
+      return liburlpattern::Modifier::kOptional;
+    case proto::UrlPatternPart_Modifier_ONE_OR_MORE:
+      return liburlpattern::Modifier::kOneOrMore;
+    case proto::UrlPatternPart_Modifier_NONE:
+      return liburlpattern::Modifier::kNone;
+  }
+}
+
+proto::UrlPatternPart::PartType UrlPatternPartTypeToProto(
+    liburlpattern::PartType part_type) {
+  switch (part_type) {
+    case liburlpattern::PartType::kRegex:
+      NOTREACHED();
+      [[fallthrough]];
+    case liburlpattern::PartType::kFullWildcard:
+      return proto::UrlPatternPart_PartType_FULL_WILDCARD;
+    case liburlpattern::PartType::kSegmentWildcard:
+      return proto::UrlPatternPart_PartType_SEGMENT_WILDCARD;
+    case liburlpattern::PartType::kFixed:
+      return proto::UrlPatternPart_PartType_FIXED;
+  }
+}
+
+absl::optional<liburlpattern::PartType> ProtoToUrlPatternPartType(
+    proto::UrlPatternPart::PartType part_type) {
+  switch (part_type) {
+    case proto::UrlPatternPart_PartType_UNKNOWN_PART_TYPE:
+      return absl::nullopt;
+    case proto::UrlPatternPart_PartType_FULL_WILDCARD:
+      return liburlpattern::PartType::kFullWildcard;
+    case proto::UrlPatternPart_PartType_SEGMENT_WILDCARD:
+      return liburlpattern::PartType::kSegmentWildcard;
+    case proto::UrlPatternPart_PartType_FIXED:
+      return liburlpattern::PartType::kFixed;
+  }
+}
+
+TabStrip::Visibility ProtoToTabStripVisibility(
+    proto::TabStrip::Visibility visibility) {
+  switch (visibility) {
+    case proto::TabStrip_Visibility_AUTO:
+      return TabStrip::Visibility::kAuto;
+    case proto::TabStrip_Visibility_ABSENT:
+      return TabStrip::Visibility::kAbsent;
   }
 }
 
@@ -162,8 +233,12 @@ sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
   DCHECK(app.start_url().is_valid());
 
   sync_pb::WebAppSpecifics sync_proto;
-  if (app.manifest_id().has_value())
-    sync_proto.set_manifest_id(app.manifest_id().value());
+  // The relative id does not include the initial '/' character.
+  std::string relative_manifest_id_path = app.manifest_id().PathForRequest();
+  if (relative_manifest_id_path.starts_with("/")) {
+    relative_manifest_id_path = relative_manifest_id_path.substr(1);
+  }
+  sync_proto.set_relative_manifest_id(relative_manifest_id_path);
   sync_proto.set_start_url(app.start_url().spec());
   sync_proto.set_user_display_mode(
       ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
@@ -291,6 +366,120 @@ WebAppProto::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
     case RunOnOsLoginMode::kNotRun:
       return WebAppProto::NOT_RUN;
   }
+}
+
+absl::optional<blink::UrlPattern> ToUrlPattern(
+    const proto::UrlPattern& proto_url_pattern) {
+  blink::UrlPattern url_pattern;
+
+  for (const proto::UrlPatternPart& proto_part : proto_url_pattern.pathname()) {
+    liburlpattern::Part part;
+
+    if (!proto_part.has_part_type()) {
+      DLOG(ERROR) << "WebApp UrlPattern Part has missing type";
+      continue;
+    }
+    absl::optional<liburlpattern::PartType> opt_part_type =
+        ProtoToUrlPatternPartType(proto_part.part_type());
+    if (!opt_part_type.has_value()) {
+      return absl::nullopt;
+    }
+    part.type = opt_part_type.value();
+
+    if (!proto_part.has_value()) {
+      DLOG(ERROR) << "WebApp UrlPattern Part has missing value";
+      continue;
+    }
+    part.value = proto_part.value();
+
+    if (!proto_part.has_modifier()) {
+      DLOG(ERROR) << "WebApp UrlPattern Part has missing type";
+      continue;
+    }
+
+    absl::optional<liburlpattern::Modifier> opt_modifier =
+        ProtoToUrlPatternModifier(proto_part.modifier());
+    if (!opt_modifier.has_value()) {
+      return absl::nullopt;
+    }
+    part.modifier = opt_modifier.value();
+
+    if (proto_part.has_name()) {
+      part.name = proto_part.name();
+    }
+
+    if (proto_part.has_prefix()) {
+      part.prefix = proto_part.prefix();
+    }
+
+    if (proto_part.has_suffix()) {
+      part.suffix = proto_part.suffix();
+    }
+
+    url_pattern.pathname.push_back(std::move(part));
+  }
+  return url_pattern;
+}
+
+proto::UrlPattern ToUrlPatternProto(const blink::UrlPattern& url_pattern) {
+  proto::UrlPattern url_pattern_proto;
+  for (const auto& part : url_pattern.pathname) {
+    proto::UrlPatternPart* url_pattern_part_proto =
+        url_pattern_proto.add_pathname();
+
+    url_pattern_part_proto->set_name(part.name);
+    url_pattern_part_proto->set_prefix(part.prefix);
+    url_pattern_part_proto->set_value(part.value);
+    url_pattern_part_proto->set_suffix(part.suffix);
+
+    url_pattern_part_proto->set_part_type(UrlPatternPartTypeToProto(part.type));
+    url_pattern_part_proto->set_modifier(
+        UrlPatternModifierToProto(part.modifier));
+  }
+  return url_pattern_proto;
+}
+
+absl::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto) {
+  TabStrip tab_strip;
+  if (tab_strip_proto.has_home_tab_visibility()) {
+    tab_strip.home_tab =
+        ProtoToTabStripVisibility(tab_strip_proto.home_tab_visibility());
+  } else {
+    absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
+        ParseAppImageResource("WebApp",
+                              tab_strip_proto.home_tab_params().icons());
+    blink::Manifest::HomeTabParams home_tab_params;
+    if (!icons->empty()) {
+      home_tab_params.icons = std::move(*icons);
+    }
+
+    std::vector<blink::UrlPattern> scope_patterns;
+    for (const proto::UrlPattern& proto_url_pattern :
+         tab_strip_proto.home_tab_params().scope_patterns()) {
+      absl::optional<blink::UrlPattern> url_pattern =
+          ToUrlPattern(proto_url_pattern);
+      if (!url_pattern) {
+        return absl::nullopt;
+      }
+      scope_patterns.push_back(url_pattern.value());
+    }
+    home_tab_params.scope_patterns = std::move(scope_patterns);
+
+    tab_strip.home_tab = std::move(home_tab_params);
+  }
+
+  if (tab_strip_proto.has_new_tab_button_visibility()) {
+    tab_strip.new_tab_button =
+        ProtoToTabStripVisibility(tab_strip_proto.new_tab_button_visibility());
+  } else {
+    blink::Manifest::NewTabButtonParams new_tab_button_params;
+    if (tab_strip_proto.new_tab_button_params().has_url()) {
+      new_tab_button_params.url =
+          GURL(tab_strip_proto.new_tab_button_params().url());
+    }
+    tab_strip.new_tab_button = new_tab_button_params;
+  }
+  return tab_strip;
 }
 
 }  // namespace web_app

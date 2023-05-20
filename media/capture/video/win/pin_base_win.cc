@@ -185,8 +185,7 @@ HRESULT PinBase::QueryDirection(PIN_DIRECTION* pin_dir) {
 }
 
 HRESULT PinBase::QueryId(LPWSTR* id) {
-  NOTREACHED();
-  return E_OUTOFMEMORY;
+  NOTREACHED_NORETURN();
 }
 
 HRESULT PinBase::QueryAccept(const AM_MEDIA_TYPE* media_type) {
@@ -218,8 +217,7 @@ HRESULT PinBase::EndFlush() {
 HRESULT PinBase::NewSegment(REFERENCE_TIME start,
                             REFERENCE_TIME stop,
                             double rate) {
-  NOTREACHED();
-  return E_NOTIMPL;
+  NOTREACHED_NORETURN();
 }
 
 // Inherited from IMemInputPin.

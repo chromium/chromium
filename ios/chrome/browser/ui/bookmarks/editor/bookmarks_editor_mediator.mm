@@ -13,7 +13,7 @@
 #import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
@@ -183,7 +183,7 @@
   }
 
   if (self.bookmark == node) {
-    self.bookmark = nullptr;
+    _bookmark = nullptr;
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
   } else if (self.folder == node) {
     [self changeFolder:self.bookmarkModel->mobile_node()];
@@ -192,7 +192,7 @@
 
 - (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
   CHECK(!self.ignoresBookmarkModelChanges);
-  self.bookmark = nullptr;
+  _bookmark = nullptr;
   self.folder = nullptr;
   [self.delegate bookmarkEditorMediatorWantsDismissal:self];
 }
@@ -219,7 +219,8 @@
   [self.delegate showSnackbarMessage:
                      bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
                          [self bookmark], name, url, [self folder],
-                         [self bookmarkModel], _browserState)];
+                         _profileBookmarkModel.get(),
+                         _accountBookmarkModel.get(), _browserState)];
   if (_manuallyChangedTheFolder) {
     bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
         _folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
@@ -245,7 +246,7 @@
   [self.delegate
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                               nodes, {[self bookmarkModel]}, _browserState)];
-  [self setBookmark:nil];
+  _bookmark = nullptr;
 }
 
 #pragma mark - SyncObserverModelBridge

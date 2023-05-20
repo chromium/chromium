@@ -13,13 +13,4 @@ ScrollSnapshotClient::ScrollSnapshotClient(LocalFrame* frame) {
     frame->AddScrollSnapshotClient(*this);
 }
 
-bool ScrollSnapshotClient::ValidateSnapshotIfNeeded() {
-  bool valid = true;
-  if (force_validation_ || CheckIfNeedsValidation()) {
-    valid = ValidateSnapshot();
-  }
-  force_validation_ = false;
-  return valid;
-}
-
 }  // namespace blink

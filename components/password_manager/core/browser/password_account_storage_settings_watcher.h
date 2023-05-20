@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service_observer.h"
 
 class PrefService;
 

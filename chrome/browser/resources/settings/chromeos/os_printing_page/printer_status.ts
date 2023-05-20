@@ -39,13 +39,14 @@ export enum PrinterStatusSeverity {
 }
 
 /**
- * Enumeration giving a local Chrome OS printer 3 different state possibilities
+ * Enumeration giving a local Chrome OS printer 4 different state possibilities
  * depending on its current status.
  */
 export enum PrinterState {
-  GOOD = 0,
-  ERROR = 1,
-  UNKNOWN = 2,
+  UNKNOWN = 0,
+  GOOD = 1,
+  LOW_SEVERITY_ERROR = 2,
+  HIGH_SEVERITY_ERROR = 3,
 }
 
 interface StatusReasonEntry {
@@ -106,12 +107,38 @@ export function getStatusReasonFromPrinterStatus(printerStatus: PrinterStatus):
 
 export function computePrinterState(
     printerStatusReason: (PrinterStatusReason|null)): PrinterState {
-  if (printerStatusReason === null ||
-      printerStatusReason === PrinterStatusReason.UNKNOWN_REASON) {
+  if (printerStatusReason === null) {
     return PrinterState.UNKNOWN;
   }
-  if (printerStatusReason === PrinterStatusReason.NO_ERROR) {
-    return PrinterState.GOOD;
+
+  switch (printerStatusReason) {
+    case PrinterStatusReason.NO_ERROR:
+    case PrinterStatusReason.UNKNOWN_REASON:
+      return PrinterState.GOOD;
+    case PrinterStatusReason.PRINTER_UNREACHABLE:
+      return PrinterState.HIGH_SEVERITY_ERROR;
+    default:
+      return PrinterState.LOW_SEVERITY_ERROR;
   }
-  return PrinterState.ERROR;
 }
+
+export const STATUS_REASON_STRING_KEY_MAP: Map<PrinterStatusReason, string> =
+    new Map([
+      [PrinterStatusReason.DEVICE_ERROR, 'printerStatusDeviceError'],
+      [PrinterStatusReason.DOOR_OPEN, 'printerStatusDoorOpen'],
+      [PrinterStatusReason.LOW_ON_INK, 'printerStatusLowOnInk'],
+      [PrinterStatusReason.LOW_ON_PAPER, 'printerStatusLowOnPaper'],
+      [PrinterStatusReason.OUT_OF_INK, 'printerStatusOutOfInk'],
+      [PrinterStatusReason.OUT_OF_PAPER, 'printerStatusOutOfPaper'],
+      [PrinterStatusReason.OUTPUT_ALMOST_FULL, 'printerStatusOutputAlmostFull'],
+      [PrinterStatusReason.OUTPUT_FULL, 'printerStatusOutputFull'],
+      [PrinterStatusReason.PAPER_JAM, 'printerStatusPaperJam'],
+      [PrinterStatusReason.PAUSED, 'printerStatusPaused'],
+      [PrinterStatusReason.PRINTER_QUEUE_FULL, 'printerStatusPrinterQueueFull'],
+      [
+        PrinterStatusReason.PRINTER_UNREACHABLE,
+        'printerStatusPrinterUnreachable',
+      ],
+      [PrinterStatusReason.STOPPED, 'printerStatusStopped'],
+      [PrinterStatusReason.TRAY_MISSING, 'printerStatusTrayMissing'],
+    ]);

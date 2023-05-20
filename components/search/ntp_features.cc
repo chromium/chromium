@@ -28,13 +28,13 @@ BASE_FEATURE(kCacheOneGoogleBar,
 // on NTP Customize Chrome background change.
 BASE_FEATURE(kCustomizeChromeColorExtraction,
              "CustomizeChromeColorExtraction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Customize Chrome will be an option in the Unified Side Panel
 // when on the New Tab Page.
 BASE_FEATURE(kCustomizeChromeSidePanel,
              "CustomizeChromeSidePanel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Forces a dark Google logo for a specific subset of Chrome Web Store themes
 // (see crbug.com/1329552). This is enabled by default to allow finch to disable
@@ -51,6 +51,12 @@ BASE_FEATURE(kDismissPromos,
 // state as searchbox.
 BASE_FEATURE(kRealboxMatchSearchboxTheme,
              "NtpRealboxMatchSearchboxTheme",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Determines the behavior of the width of the realbox in relation to the width
+// for secondary column.
+BASE_FEATURE(kRealboxWidthBehavior,
+             "NtpRealboxWidthBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the NTP "realbox" will have the same rounded corners as
@@ -367,6 +373,7 @@ const char kNtpHistoryClustersModuleCategoriesBoostlistParam[] =
     "NtpHistoryClustersModuleCategoriesBoostlistParam";
 const char kNtpHistoryClustersModuleMaxClustersParam[] =
     "NtpHistoryClustersModuleMaxClustersParam";
+const char kNtpRealboxWidthBehaviorParam[] = "NtpRealboxWidthBehaviorParam";
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

@@ -35,9 +35,9 @@ void SetWarningsForNonExistentDefaultPopup(
       extension->GetResource(relative_path).GetFilePath();
 
   if (resource_path.empty() || !base::PathExists(resource_path)) {
-    warnings->push_back(extensions::InstallWarning(
+    warnings->emplace_back(
         extensions::manifest_errors::kNonexistentDefaultPopup, manifest_key,
-        extensions::manifest_keys::kActionDefaultPopup));
+        extensions::manifest_keys::kActionDefaultPopup);
   }
 }
 

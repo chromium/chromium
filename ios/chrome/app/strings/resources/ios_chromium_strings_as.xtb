@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" />এ Chromium ব্যৱহাৰ কৰি আছিল আৰু এই ডিভাইচটোত বুকমাৰ্ক, পাছৱৰ্ড আৰু অন্য ছেটিং এৰি গৈছে।</translation>
 <translation id="372658070733623520">আপোনাৰ Google একাউণ্টত Chromiumৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ এয়া আপুনিয়েই বুলি সত্যাপন কৰক।</translation>
 <translation id="3805899903892079518">আপোনাৰ ফট’ আৰু ভিডিঅ’সমূহত Chromiumৰ এক্সেছ নাই। iOS ছেটিং &gt; গোপনীয়তা &gt; ফট’-ত এক্সেছ সক্ষম কৰক।</translation>
+<translation id="3955621079070267756">যিকোনো এপৰ পৰা Chromium খোলক</translation>
 <translation id="4043291146360695975">পাছৱৰ্ডসমূহ কেৱল এই ডিভাইচটোত থকা পাছৱৰ্ড পৰিচালকত ছেভ কৰা হয়।</translation>
 <translation id="4099085513035183040">Chromium বিটাত সমৰ্থিত নহয়</translation>
 <translation id="4432744876818348753">Chromiumৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ ছাইন ইন কৰক।</translation>
@@ -101,7 +102,6 @@
 <translation id="7192111075364461693">আপোনাৰ ডিভাইচৰ ছেটিঙত বৰ্তমান Chromiumৰ জাননী অফ কৰা আছে।</translation>
 <translation id="7208566199746267865">আপোনাৰ একাউণ্টসমূহ ৱেবলৈ আনি Chromiumএ আপোনাৰ সময় ৰাহি কৰে। আপুনি ছেটিংসমূহ-ত একাউন্ট যোগ কৰিব বা আঁতৰাব পাৰে।</translation>
 <translation id="725427773388857052">Chromiumএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট তথা আন বহুতৰ পৰা সুৰক্ষিত হৈ থকাত সহায় কৰিব পাৰে।</translation>
-<translation id="7255976941681861701">Chromiumৰ নতুন মেনুৰ বিষয়ে জানক</translation>
 <translation id="7269362888766543920">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি সেইবোৰ আনইনষ্টল কৰি চাওক।</translation>
 <translation id="7313655110045230863">Chromiumক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ কৰিবলৈ ছেটিং খোলক। ডিফ’ল্ট ব্ৰাউজাৰ এপত টিপক আৰু তাৰ পাছত Chromium বাছনি কৰক।</translation>
 <translation id="7337881442233988129">Chromium</translation>
@@ -142,5 +142,6 @@
 <translation id="9089354809943900324">Chromiumটো অতি পুৰণি</translation>
 <translation id="9110075932708282655">ডিফ’ল্ট হিচাপে Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="921174536258924340">Chromiumএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱর্ডসমূহ পৰীক্ষা কৰক।<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংক টিপিলে স্বয়ংক্ৰিয়ভাৱে Chromium ব্যৱহাৰ কৰক।</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

@@ -822,7 +822,7 @@ void PipelineImpl::RendererWrapper::OnDemuxerCompletedTrackChange(
     // TODO(tmathmeyer): Look into text track switching.
     case DemuxerStream::TEXT:
     case DemuxerStream::UNKNOWN:  // Fail on unknown type.
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -1570,8 +1570,7 @@ const char* PipelineImpl::GetStateString(State state) {
     RETURN_STRING(kSuspended);
     RETURN_STRING(kResuming);
   }
-  NOTREACHED();
-  return "INVALID";
+  NOTREACHED_NORETURN();
 }
 
 #undef RETURN_STRING

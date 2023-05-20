@@ -65,8 +65,10 @@
 <translation id="4118525110028899586">Suspendre l'enregistrement</translation>
 <translation id="4121305183798804752">Document détecté</translation>
 <translation id="414641094616694804">Impossible de modifier la résolution de cet appareil photo</translation>
+<translation id="4176463684765177261">Désactivé</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="428234092390943511">Vignette de la page</translation>
+<translation id="4349714250734879769">Mise à l'échelle des images par Chrome</translation>
 <translation id="4383571725254449280">Imprimer les journaux concernant les performances</translation>
 <translation id="4445542136948522167">Arrêter de prendre la photo</translation>
 <translation id="4570032796877367747">Caméra avant</translation>
@@ -148,6 +150,7 @@ S'ils concernent la qualité de l'image ou de la vidéo, veuillez joindre un exe
 <translation id="8145038249676204903">Passer à la prise de photo</translation>
 <translation id="8167081290930651932">Enregistrer en tant que photo</translation>
 <translation id="8239780215768881278">Prendre un instantané vidéo</translation>
+<translation id="8346544573713510785">Mise à l'échelle des images par l'HAL de la caméra</translation>
 <translation id="8425673304802773841">Incliner</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8629662593426079630">360p</translation>

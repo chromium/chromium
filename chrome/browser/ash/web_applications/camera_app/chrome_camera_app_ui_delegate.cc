@@ -326,6 +326,15 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                                       ash::features::kCameraAppTimeLapse));
   source->AddBoolean("jelly",
                      base::FeatureList::IsEnabled(chromeos::features::kJelly));
+
+  const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
+  const char kTestImageRelease[] = "testimage-channel";
+
+  std::string track;
+  bool is_test_image =
+      base::SysInfo::GetLsbReleaseValue(kChromeOSReleaseTrack, &track) &&
+      track.find(kTestImageRelease) != std::string::npos;
+  source->AddBoolean("is_test_image", is_test_image);
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {

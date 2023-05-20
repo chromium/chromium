@@ -38,6 +38,17 @@ class COMPONENT_EXPORT(SWAP_MANAGEMENT) SwapManagementClient
       uint32_t size,
       chromeos::VoidDBusMethodCallback callback) = 0;
 
+  virtual void SwapZramSetWritebackLimit(
+      uint32_t limit,
+      chromeos::VoidDBusMethodCallback callback) = 0;
+
+  virtual void SwapZramMarkIdle(uint32_t age,
+                                chromeos::VoidDBusMethodCallback callback) = 0;
+
+  virtual void InitiateSwapZramWriteback(
+      swap_management::ZramWritebackMode mode,
+      chromeos::VoidDBusMethodCallback callback) = 0;
+
  protected:
   // Initialize() should be used instead.
   SwapManagementClient();

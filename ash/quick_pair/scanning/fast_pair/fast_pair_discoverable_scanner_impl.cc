@@ -35,6 +35,19 @@ namespace {
 constexpr char kNearbyShareModelId[] = "fc128e";
 constexpr int kMaxParseModelIdRetryCount = 5;
 
+bool IsMetadataPublished(const nearby::fastpair::Device& device) {
+  if (ash::features::IsFastPairDebugMetadataEnabled() &&
+      device.status().status_type() !=
+          nearby::fastpair::StatusType::TYPE_UNSPECIFIED) {
+    QP_LOG(INFO) << __func__ << ": Showing unpublished metadata.";
+    return true;
+  }
+
+  // Only show notifications for published devices.
+  return device.status().status_type() ==
+         nearby::fastpair::StatusType::PUBLISHED;
+}
+
 bool IsValidDeviceType(const nearby::fastpair::Device& device) {
   if (ash::features::IsFastPairHIDEnabled() &&
       device.device_type() == nearby::fastpair::DeviceType::INPUT_DEVICE) {
@@ -212,6 +225,13 @@ void FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved(
     QP_LOG(WARNING) << __func__
                     << ": No metadata available for id: " << model_id
                     << ". Ignoring this advertisement";
+    return;
+  }
+
+  // Ignore advertisements for unpublished devices.
+  if (!IsMetadataPublished(device_metadata->GetDetails())) {
+    QP_LOG(WARNING) << __func__
+                    << ": Metadata unpublished. Ignoring this advertisement";
     return;
   }
 

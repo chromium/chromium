@@ -1,5 +1,4 @@
 {
-    "aggregation_coordinator_identifier": "aws-cloud",
     "aggregation_service_payloads": [ {
        "key_id": "example_id",
        "payload": "IxviV/VY/k2Gl8jbZmyuJiW0ujqXSyLHpqkTZ7Wp+UafGxxA8kFsb18me6EXfcLRzltE6Z/TT34t6ruuYYKW12VEpUN2PAmhBcexa3C0036Xn7JWR98JG32Y4sOMVh/rG/2mcxrYxJuIQa9kqIYh"

@@ -54,6 +54,7 @@
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/page/browsing_context_group_info.mojom.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -468,6 +469,9 @@ void RenderViewTest::SetUp() {
       blink::AllocateSessionStorageNamespaceId();
   view_params->hidden = false;
   view_params->never_composited = false;
+
+  view_params->browsing_context_group_info =
+      blink::BrowsingContextGroupInfo::CreateUnique();
 
   web_view_ =
       agent_scheduling_group_->CreateWebView(std::move(view_params),

@@ -20,15 +20,11 @@ namespace {
 using ::metrics::ChromeUserMetricsExtension;
 using ::metrics::SystemProfileProto;
 
-// This is set carefully: metrics logs are stored in a queue of limited size,
-// and are uploaded roughly every 30 minutes.
-constexpr base::TimeDelta kMinIndependentMetricsInterval = base::Minutes(45);
-
 }  // namespace
 
 StructuredMetricsProvider::StructuredMetricsProvider(
     base::raw_ptr<metrics::MetricsProvider> system_profile_provider)
-    : StructuredMetricsProvider(kMinIndependentMetricsInterval,
+    : StructuredMetricsProvider(base::Minutes(GetUploadCadenceMinutes()),
                                 std::make_unique<StructuredMetricsRecorder>(
                                     system_profile_provider)) {
   DCHECK(system_profile_provider);
@@ -97,6 +93,7 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
   // Independent events should not be associated with the client_id, so clear
   // it.
   uma_proto->clear_client_id();
+
   // TODO(crbug/1052796): Remove the UMA timer code, which is currently used to
   // determine if it is worth to finalize independent logs in the background
   // by measuring the time it takes to execute the callback

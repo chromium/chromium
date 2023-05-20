@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy_violation_type.h"
+#include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 
 namespace WTF {
 class String;
@@ -164,6 +165,10 @@ class CORE_EXPORT AuditsIssue {
       Element* element,
       SourceLocation* source_location,
       absl::optional<base::UnguessableToken> issue_id);
+
+  static protocol::Audits::GenericIssueErrorType
+  GenericIssueErrorTypeToProtocol(
+      mojom::blink::GenericIssueErrorType error_type);
 
   static void ReportGenericIssue(LocalFrame* frame,
                                  mojom::blink::GenericIssueErrorType error_type,

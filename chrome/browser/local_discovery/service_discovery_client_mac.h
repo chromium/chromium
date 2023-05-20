@@ -6,13 +6,17 @@
 #define CHROME_BROWSER_LOCAL_DISCOVERY_SERVICE_DISCOVERY_CLIENT_MAC_H_
 
 #import <Foundation/Foundation.h>
+
 #include <memory>
 #include <string>
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace base {
 class Thread;
@@ -86,7 +90,7 @@ class ServiceWatcherImplMac : public ServiceWatcher {
   // |browser_| lives on the |service_discovery_runner_|, though it is
   // initialized on the object creator's sequence. It is released by move()ing
   // it to StopServiceBrowser().
-  base::scoped_nsobject<NetServiceBrowser> browser_;
+  NetServiceBrowser* __strong browser_;
 
   base::WeakPtrFactory<ServiceWatcherImplMac> weak_factory_{this};
 };
@@ -121,7 +125,7 @@ class ServiceResolverImplMac : public ServiceResolver {
   // |resolver_| lives on the |service_discovery_runner_|, though it is
   // initialized on the object creator's sequence. It is released by move()ing
   // it to StopServiceResolver().
-  base::scoped_nsobject<NetServiceResolver> resolver_;
+  NetServiceResolver* __strong resolver_;
 
   base::WeakPtrFactory<ServiceResolverImplMac> weak_factory_{this};
 };

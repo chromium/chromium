@@ -1,11 +1,11 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE n_relations=0
 ++IA2_ROLE_SECTION n_relations=0
-++++ROLE_SYSTEM_TEXT FOCUSABLE n_relations=1
+++++ROLE_SYSTEM_TEXT FOCUSABLE details-roles:* n_relations=1 details='IA2_ROLE_PARAGRAPH'
 ++IA2_ROLE_PARAGRAPH n_relations=1
 ++++ROLE_SYSTEM_STATICTEXT name='Details' n_relations=0
 ++IA2_ROLE_PARAGRAPH n_relations=0
 ++++ROLE_SYSTEM_STATICTEXT name='This ' n_relations=0
-++++IA2_ROLE_SECTION n_relations=1
+++++IA2_ROLE_SECTION details-roles:* n_relations=1 details='ROLE_SYSTEM_GRAPHIC,ROLE_SYSTEM_GROUPING'
 ++++++ROLE_SYSTEM_STATICTEXT name='text' n_relations=0
 ++++ROLE_SYSTEM_STATICTEXT name=' has details' n_relations=0
 ++ROLE_SYSTEM_GROUPING n_relations=1

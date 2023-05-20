@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_info_list.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_logical_line_item.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_score_line_break_context.h"
 
 namespace blink {
 
@@ -33,7 +33,9 @@ class CORE_EXPORT NGInlineChildLayoutContext {
 
   NGFragmentItemsBuilder* ItemsBuilder() { return &items_builder_; }
 
-  NGLineInfoList* GetLineInfoList() const { return line_info_list_; }
+  NGScoreLineBreakContext* ScoreLineBreakContext() const {
+    return score_line_break_context_;
+  }
   NGLineInfo& GetLineInfo(const NGInlineBreakToken* break_token,
                           bool& is_cached_out);
 
@@ -81,14 +83,14 @@ class CORE_EXPORT NGInlineChildLayoutContext {
                              NGLineInfo* line_info);
   NGInlineChildLayoutContext(const NGInlineNode& node,
                              NGBoxFragmentBuilder* container_builder,
-                             NGLineInfoList* line_info_list);
+                             NGScoreLineBreakContext* score_line_break_context);
 
  private:
   NGBoxFragmentBuilder* container_builder_ = nullptr;
   NGFragmentItemsBuilder items_builder_;
 
   NGLineInfo* line_info_ = nullptr;
-  NGLineInfoList* line_info_list_ = nullptr;
+  NGScoreLineBreakContext* score_line_break_context_ = nullptr;
 
   NGLogicalLineItems* temp_logical_line_items_ = nullptr;
 
@@ -120,7 +122,7 @@ class CORE_EXPORT NGSimpleInlineChildLayoutContext
 };
 
 // A subclass of `NGInlineChildLayoutContext` for when the algorithm requires
-// multiple `NGLineInfo`. See `NGParagraphLineBreaker`.
+// `NGScoreLineBreakContext`.
 class CORE_EXPORT NGOptimalInlineChildLayoutContext
     : public NGInlineChildLayoutContext {
  public:
@@ -128,10 +130,10 @@ class CORE_EXPORT NGOptimalInlineChildLayoutContext
                                     NGBoxFragmentBuilder* container_builder)
       : NGInlineChildLayoutContext(node,
                                    container_builder,
-                                   &line_info_list_storage_) {}
+                                   &score_line_break_context_instance_) {}
 
  private:
-  NGLineInfoList line_info_list_storage_;
+  NGScoreLineBreakContext score_line_break_context_instance_;
 };
 
 inline NGLineInfo& NGInlineChildLayoutContext::GetLineInfo(
@@ -141,8 +143,9 @@ inline NGLineInfo& NGInlineChildLayoutContext::GetLineInfo(
   if (line_info_) {
     return *line_info_;
   }
-  DCHECK(line_info_list_);
-  return line_info_list_->Get(break_token, is_cached_out);
+  DCHECK(score_line_break_context_);
+  return score_line_break_context_->LineInfoList().Get(break_token,
+                                                       is_cached_out);
 }
 
 inline NGLogicalLineItems&

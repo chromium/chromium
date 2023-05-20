@@ -30,8 +30,6 @@ blink_core_sources_bindings =
                     "core/v8/custom/v8_promise_rejection_event_custom.cc",
                     "core/v8/custom/v8_window_custom.cc",
                     "core/v8/custom/v8_xml_http_request_custom.cc",
-                    "core/v8/custom_wrappable_adapter.cc",
-                    "core/v8/custom_wrappable_adapter.h",
                     "core/v8/dictionary.cc",
                     "core/v8/dictionary.h",
                     "core/v8/dictionary_helper_for_core.cc",

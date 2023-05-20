@@ -37,6 +37,18 @@
     min-height: 0;
   }
 
+  #multipleCards {
+    height: 200px;
+  }
+
+  .multiple-card-content {
+    align-items: center;
+    display: flex;
+    height: 300px;
+    justify-content: center;
+    width: 100%;
+  }
+
   #emptyStateDemo {
     align-items: center;
     gap: 0;
@@ -113,6 +125,23 @@
       Floating button
     </cr-button>
   </sp-footer>
+</div>
+
+<h2>Multiple cards</h2>
+<div id="multipleCards" class="side-panel-demo sp-scroller">
+  <div class="sp-card">
+    <sp-heading hide-back-button>
+      <h3 slot="heading">Heading</h3>
+    </sp-heading>
+    <div class="multiple-card-content">Some content</div>
+  </div>
+  <hr class="sp-cards-separator">
+  <div class="sp-card">
+    <sp-heading hide-back-button>
+      <h3 slot="heading">Heading</h3>
+    </sp-heading>
+    <div class="multiple-card-content">Some content</div>
+  </div>
 </div>
 
 <h2>Empty state</h2>

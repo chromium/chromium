@@ -13,7 +13,6 @@
 class AccountId;
 
 namespace ash {
-class FakeAuthPolicyClient;
 class FakeSessionManagerClient;
 }  // namespace ash
 
@@ -32,12 +31,6 @@ class AffiliationTestHelper {
   // object.
   static AffiliationTestHelper CreateForCloud(
       ash::FakeSessionManagerClient* fake_session_manager_client);
-
-  // Creates an |AffiliationTestHelper| for Active Directory management (Active
-  // Directory accounts). The pointers must outlive this object.
-  static AffiliationTestHelper CreateForActiveDirectory(
-      ash::FakeSessionManagerClient* fake_session_manager_client,
-      ash::FakeAuthPolicyClient* fake_authpolicy_client);
 
   // Allow move construction, so the static constructors can be used despite
   // deleted constructors.
@@ -83,21 +76,14 @@ class AffiliationTestHelper {
   static const char kEnterpriseUserGaiaId[];
 
  private:
-  enum class ManagementType { kCloud, kActiveDirectory };
-
-  AffiliationTestHelper(
-      ManagementType management_type,
-      ash::FakeSessionManagerClient* fake_session_manager_client,
-      ash::FakeAuthPolicyClient* fake_authpolicy_client);
+  explicit AffiliationTestHelper(
+      ash::FakeSessionManagerClient* fake_session_manager_client);
 
   // ASSERTs on pointer validity.
   void CheckPreconditions();
 
-  ManagementType management_type_;
   raw_ptr<ash::FakeSessionManagerClient, ExperimentalAsh>
       fake_session_manager_client_;  // Not owned.
-  raw_ptr<ash::FakeAuthPolicyClient, ExperimentalAsh>
-      fake_authpolicy_client_;  // Not owned.
 };
 
 }  // namespace policy

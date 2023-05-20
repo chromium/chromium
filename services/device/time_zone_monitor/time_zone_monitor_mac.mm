@@ -10,12 +10,16 @@
 #include "services/device/time_zone_monitor/time_zone_monitor.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace device {
 
 class TimeZoneMonitorMac : public TimeZoneMonitor {
  public:
-  TimeZoneMonitorMac() : TimeZoneMonitor() {
-    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+  TimeZoneMonitorMac() {
+    NSNotificationCenter* nc = NSNotificationCenter.defaultCenter;
     notification_observer_ =
         [nc addObserverForName:NSSystemTimeZoneDidChangeNotification
                         object:nil
@@ -29,12 +33,11 @@ class TimeZoneMonitorMac : public TimeZoneMonitor {
   TimeZoneMonitorMac& operator=(const TimeZoneMonitorMac&) = delete;
 
   ~TimeZoneMonitorMac() override {
-    NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-    [nc removeObserver:notification_observer_];
+    [NSNotificationCenter.defaultCenter removeObserver:notification_observer_];
   }
 
  private:
-  id notification_observer_;
+  id __strong notification_observer_;
 };
 
 // static

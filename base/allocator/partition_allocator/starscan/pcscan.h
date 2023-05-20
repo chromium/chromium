@@ -225,8 +225,9 @@ PA_ALWAYS_INLINE void PCScan::EnableSafepoints() {
 
 PA_ALWAYS_INLINE void PCScan::JoinScanIfNeeded() {
   PCScan& instance = Instance();
-  if (PA_UNLIKELY(instance.IsJoinable()))
+  if (PA_UNLIKELY(instance.IsJoinable())) {
     instance.JoinScan();
+  }
 }
 
 PA_ALWAYS_INLINE void PCScan::MoveToQuarantine(void* object,
@@ -251,8 +252,9 @@ PA_ALWAYS_INLINE void PCScan::MoveToQuarantine(void* object,
   [[maybe_unused]] const bool succeeded =
       state_bitmap->Quarantine(slot_start, instance.epoch());
 #if PA_CONFIG(STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED)
-  if (PA_UNLIKELY(!succeeded))
+  if (PA_UNLIKELY(!succeeded)) {
     DoubleFreeAttempt();
+  }
 #else
   // The compiler is able to optimize cmpxchg to a lock-prefixed and.
 #endif  // PA_CONFIG(STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED)
@@ -260,8 +262,9 @@ PA_ALWAYS_INLINE void PCScan::MoveToQuarantine(void* object,
   const bool is_limit_reached = instance.scheduler_.AccountFreed(slot_size);
   if (PA_UNLIKELY(is_limit_reached)) {
     // Perform a quick check if another scan is already in progress.
-    if (instance.IsInProgress())
+    if (instance.IsInProgress()) {
       return;
+    }
     // Avoid blocking the current thread for regular scans.
     instance.PerformScan(InvocationMode::kNonBlocking);
   }

@@ -1972,15 +1972,11 @@ TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {
             personalization_app::GetTimeOfDaySrcDir()
                 .Append(personalization_app::kAmbientVideoHtml)
                 .value());
-  std::string video_path_requested;
-  ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_src",
-                                         &video_path_requested));
-  GURL video_src_url(video_path_requested);
-  EXPECT_TRUE(video_src_url.SchemeIsFile());
-  EXPECT_EQ(video_src_url.path(),
-            personalization_app::GetTimeOfDayVideosDir()
-                .Append(personalization_app::kTimeOfDayNewMexicoVideo)
-                .value());
+  std::string video_file_requested;
+  ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_file",
+                                         &video_file_requested));
+  EXPECT_EQ(video_file_requested,
+            personalization_app::kTimeOfDayNewMexicoVideo);
 
   UnlockScreen();
   SetAmbientTheme(AmbientTheme::kSlideshow);
@@ -2010,14 +2006,9 @@ TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {
             personalization_app::GetTimeOfDaySrcDir()
                 .Append(personalization_app::kAmbientVideoHtml)
                 .value());
-  ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_src",
-                                         &video_path_requested));
-  video_src_url = GURL(video_path_requested);
-  EXPECT_TRUE(video_src_url.SchemeIsFile());
-  EXPECT_EQ(video_src_url.path(),
-            personalization_app::GetTimeOfDayVideosDir()
-                .Append(personalization_app::kTimeOfDayCloudsVideo)
-                .value());
+  ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_file",
+                                         &video_file_requested));
+  EXPECT_EQ(video_file_requested, personalization_app::kTimeOfDayCloudsVideo);
 }
 
 class AmbientControllerDurationTest : public AmbientAshTestBase {

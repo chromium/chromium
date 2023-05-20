@@ -155,7 +155,7 @@ std::string GetOSVersion() {
 }
 
 std::string GetOSPlatform() {
-  return version_info::GetOSType();
+  return std::string(version_info::GetOSType());
 }
 
 std::string GetOSArchitecture() {

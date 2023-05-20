@@ -60,11 +60,12 @@ FORCE_HEAD_REVISION_FILE = os.path.normpath(os.path.join(LLVM_BUILD_DIR, '..',
 
 def RmTree(dir):
   """Delete dir."""
+  if sys.platform == 'win32':
+    # Avoid problems with paths longer than MAX_PATH
+    # https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation 
+    dir = f'\\\\?\\{dir}'
+
   def ChmodAndRetry(func, path, _):
-    # Windows can fail here with file does not exist. Since we're deleting
-    # everything, we can just ignore this and continue.
-    if not os.path.exists(path):
-      return
     # Subversion can leave read-only files around.
     if not os.access(path, os.W_OK):
       os.chmod(path, stat.S_IWUSR)

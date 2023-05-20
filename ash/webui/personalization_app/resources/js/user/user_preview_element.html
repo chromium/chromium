@@ -90,7 +90,8 @@
   }
 
   :host-context(body.jelly-enabled) #infoContainer > h2 {
-    font: 400 22px/24px var(--cros-font-family-google-sans);
+    font: var(--cros-display-6_regular-font);
+    line-height: 24px;
   }
 
   .avatar-link {
@@ -115,7 +116,6 @@
 
   :host-context(body.jelly-enabled) .avatar-link > span {
     color: var(--cros-sys-secondary, var(--cros-link-color));
-    font: 400 13px/20px var(--cros-font-family-google-sans);
   }
 
   iron-icon[icon='cr:open-in-new'] {

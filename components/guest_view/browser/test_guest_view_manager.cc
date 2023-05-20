@@ -32,13 +32,7 @@ namespace guest_view {
 TestGuestViewManager::TestGuestViewManager(
     content::BrowserContext* context,
     std::unique_ptr<GuestViewManagerDelegate> delegate)
-    : GuestViewManager(context, std::move(delegate)),
-      num_embedder_processes_destroyed_(0),
-      num_guests_created_(0),
-      expected_num_guests_created_(0),
-      num_views_garbage_collected_(0),
-      waiting_for_guests_created_(false),
-      waiting_for_attach_(nullptr) {}
+    : GuestViewManager(context, std::move(delegate)) {}
 
 TestGuestViewManager::~TestGuestViewManager() = default;
 
@@ -142,7 +136,7 @@ void TestGuestViewManager::WaitUntilAttached(GuestViewBase* guest_view) {
   if (guest_view->attached())
     return;
 
-  waiting_for_attach_ = guest_view;
+  instance_waiting_for_attach_ = guest_view->guest_instance_id();
 
   attached_run_loop_ = std::make_unique<base::RunLoop>();
   attached_run_loop_->Run();
@@ -200,9 +194,10 @@ void TestGuestViewManager::AttachGuest(int embedder_process_id,
   GuestViewManager::AttachGuest(embedder_process_id, element_instance_id,
                                 guest_instance_id, attach_params);
 
-  if (waiting_for_attach_ && (waiting_for_attach_ == guest_to_attach)) {
+  if (instance_waiting_for_attach_ == guest_instance_id) {
+    CHECK_NE(instance_waiting_for_attach_, kInstanceIDNone);
     attached_run_loop_->Quit();
-    waiting_for_attach_ = nullptr;
+    instance_waiting_for_attach_ = kInstanceIDNone;
   }
 }
 
@@ -230,20 +225,15 @@ void TestGuestViewManager::ViewGarbageCollected(int embedder_process_id,
 }
 
 // Test factory for creating test instances of GuestViewManager.
-TestGuestViewManagerFactory::TestGuestViewManagerFactory()
-    : test_guest_view_manager_(nullptr) {}
+TestGuestViewManagerFactory::TestGuestViewManagerFactory() = default;
 
-TestGuestViewManagerFactory::~TestGuestViewManagerFactory() {
-}
+TestGuestViewManagerFactory::~TestGuestViewManagerFactory() = default;
 
-GuestViewManager* TestGuestViewManagerFactory::CreateGuestViewManager(
+std::unique_ptr<GuestViewManager>
+TestGuestViewManagerFactory::CreateGuestViewManager(
     content::BrowserContext* context,
     std::unique_ptr<GuestViewManagerDelegate> delegate) {
-  if (!test_guest_view_manager_) {
-    test_guest_view_manager_ =
-        new TestGuestViewManager(context, std::move(delegate));
-  }
-  return test_guest_view_manager_;
+  return std::make_unique<TestGuestViewManager>(context, std::move(delegate));
 }
 
 }  // namespace guest_view

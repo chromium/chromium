@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
@@ -418,7 +419,8 @@ public class BookmarkFolderSelectActivity
 
             Drawable iconDrawable;
             if (entry.mType == FolderListEntry.TYPE_NORMAL) {
-                iconDrawable = BookmarkUtils.getFolderIcon(view.getContext(), entry.mId.getType());
+                iconDrawable = BookmarkUtils.getFolderIcon(
+                        view.getContext(), entry.mId.getType(), BookmarkRowDisplayPref.COMPACT);
             } else {
                 // For new folder, start_icon is different.
                 VectorDrawableCompat vectorDrawable = TraceEventVectorDrawableCompat.create(

@@ -30,6 +30,8 @@ namespace {
 // other way around. This achieves viz scheduling tasks to gpu by first blocking
 // render thread on the viz thread so render thread is ready to receive and run
 // tasks.
+//
+// Lifetime: Singleton
 class TaskQueueViz : public TaskQueueWebView {
  public:
   TaskQueueViz();

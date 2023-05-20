@@ -35,9 +35,12 @@ class BookmarkModelObserverImpl;
 class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
                                    public syncer::ModelTypeControllerDelegate {
  public:
-  // |bookmark_undo_service| must not be nullptr and must outlive this object.
-  explicit BookmarkModelTypeProcessor(
-      BookmarkUndoService* bookmark_undo_service);
+  // `bookmark_undo_service` must not be nullptr and must outlive this object.
+  // If `wipe_model_on_stopping_sync_with_clear_data` is `true`, then calling
+  // `OnSyncStopping` with `CLEAR_METADATA` will trigger the removal of all user
+  // bookmarks from the corresponding `BookmarkModel`.
+  BookmarkModelTypeProcessor(BookmarkUndoService* bookmark_undo_service,
+                             bool wipe_model_on_stopping_sync_with_clear_data);
 
   BookmarkModelTypeProcessor(const BookmarkModelTypeProcessor&) = delete;
   BookmarkModelTypeProcessor& operator=(const BookmarkModelTypeProcessor&) =
@@ -78,10 +81,10 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   std::string EncodeSyncMetadata() const;
 
   // It mainly decodes a BookmarkModelMetadata proto serialized in
-  // |metadata_str|, and uses it to fill in the tracker and the model type state
-  // objects. |model| must not be null and must outlive this object. It is used
+  // `metadata_str`, and uses it to fill in the tracker and the model type state
+  // objects. `model` must not be null and must outlive this object. It is used
   // to the retrieve the local node ids, and is stored in the processor to be
-  // used for further model operations. |schedule_save_closure| is a repeating
+  // used for further model operations. `schedule_save_closure` is a repeating
   // closure used to schedule a save of the bookmark model together with the
   // metadata.
   void ModelReadyToSync(const std::string& metadata_str,
@@ -90,11 +93,13 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
 
   // Sets the favicon service used when processing remote updates. It must be
   // called before the processor is ready to receive remote updates, and hence
-  // before OnSyncStarting() is called. |favicon_service| must not be null.
+  // before OnSyncStarting() is called. `favicon_service` must not be null.
   void SetFaviconService(favicon::FaviconService* favicon_service);
 
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
+
+  bool IsTrackingMetadata() const;
 
   const SyncedBookmarkTracker* GetTrackerForTest() const;
   bool IsConnectedForTest() const;
@@ -136,9 +141,9 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   void StopTrackingMetadataAndResetTracker();
 
   // Creates a DictionaryValue for local and remote debugging information about
-  // |node| and appends it to |all_nodes|. It does the same for child nodes
-  // recursively. |index| is the index of |node| within its parent. |index|
-  // could computed from |node|, however it's much cheaper to pass from outside
+  // `node` and appends it to `all_nodes`. It does the same for child nodes
+  // recursively. `index` is the index of `node` within its parent. `index`
+  // could computed from `node`, however it's much cheaper to pass from outside
   // since we iterate over child nodes already in the calling sites.
   void AppendNodeAndChildrenForDebugging(const bookmarks::BookmarkNode* node,
                                          int index,
@@ -162,6 +167,11 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
 
   // Used to suspend bookmark undo when processing remote changes.
   const raw_ptr<BookmarkUndoService, DanglingUntriaged> bookmark_undo_service_;
+
+  // Controls whether bookmarks should be wiped when sync is stopped. Contains
+  // `true` for Account `BookmarkModel` and `false` for LocalOrSyncable
+  // `BookmarkModel`.
+  const bool wipe_model_on_stopping_sync_with_clear_data_;
 
   // The callback used to schedule the persistence of bookmark model as well as
   // the metadata to a file during which latest metadata should also be pulled

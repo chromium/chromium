@@ -273,12 +273,15 @@ helpApp.ClientApiDelegate.prototype.getDeviceInfo = function() {};
 
 /**
  * Opens a valid https:// URL in a new browser tab without getting intercepted
- * by URL capturing logic. Failure to provide a valid https:// URL will cause
- * the Help app renderer process to crash.
+ * by URL capturing logic. If the "HelpAppAutoTriggerInstallDialog" feature flag
+ * is enabled, this will automatically trigger the install dialog.
+ * Failure to provide a valid https:// URL will cause the Help app renderer
+ * process to crash.
  * @param {string} url
  * @return {!Promise<undefined>}
  */
-helpApp.ClientApiDelegate.prototype.openUrlInBrowser = function(url) {};
+helpApp.ClientApiDelegate.prototype.openUrlInBrowserAndTriggerInstallDialog =
+    function(url) {};
 
 /**
  * Launch data that can be read by the app when it first loads.

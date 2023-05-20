@@ -611,8 +611,8 @@ void EcheTray::InitBubble(
     eche_app::mojom::ConnectionStatus last_connection_status,
     eche_app::mojom::AppStreamLaunchEntryPoint entry_point) {
   if (features::IsEcheNetworkConnectionStateEnabled() &&
-      last_connection_status ==
-          eche_app::mojom::ConnectionStatus::kConnectionStatusFailed &&
+      last_connection_status !=
+          eche_app::mojom::ConnectionStatus::kConnectionStatusConnected &&
       entry_point == eche_app::mojom::AppStreamLaunchEntryPoint::NOTIFICATION) {
     base::UmaHistogramEnumeration(
         "Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed.Result",

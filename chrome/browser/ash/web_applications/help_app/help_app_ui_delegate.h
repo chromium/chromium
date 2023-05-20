@@ -41,7 +41,8 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(ash::help_app::mojom::PageHandler::GetDeviceInfoCallback
                          callback) override;
-  absl::optional<std::string> OpenUrlInBrowser(const GURL& url) override;
+  absl::optional<std::string> OpenUrlInBrowserAndTriggerInstallDialog(
+      const GURL& url) override;
 
  private:
   raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.

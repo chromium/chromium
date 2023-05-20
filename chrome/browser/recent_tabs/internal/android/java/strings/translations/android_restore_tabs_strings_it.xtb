@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Apri <ph name="TABS_COUNT_ONE" /> scheda}other{Apri <ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="4811934403802581334">Tutte le schede selezionate dal dispositivo attualmente selezionato verranno ripristinate.</translation>
 <translation id="5336031759968328813">Rivedi tutte le schede</translation>
+<translation id="8019269305087157499">Apri da</translation>
 <translation id="8725404154479306799">Visualizza le schede lasciate aperte sui vecchi dispositivi</translation>
 </translationbundle>

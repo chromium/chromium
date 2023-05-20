@@ -26,7 +26,6 @@ import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 
 import {CupsPrinterInfo} from './cups_printers_browser_proxy.js';
 import {getTemplate} from './cups_settings_add_printer_dialog.html.js';
-import {PrinterStatusReason} from './printer_status.js';
 
 /**
  * Different dialogs in add printer flow.
@@ -58,7 +57,6 @@ function getEmptyPrinter(): CupsPrinterInfo {
     },
     printerProtocol: 'ipp',
     printerQueue: 'ipp/print',
-    printerStatusReason: PrinterStatusReason.UNKNOWN_REASON,
     printServerUri: '',
   };
 }

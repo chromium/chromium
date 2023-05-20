@@ -27,41 +27,30 @@
 
 namespace {
 base::Value GetSuccessValue() {
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetKey("status",
-              base::Value(static_cast<int>(LinkGenerationOutcome::kSuccess)));
+  auto dict =
+      base::Value::Dict()
+          .Set("status", static_cast<int>(LinkGenerationOutcome::kSuccess))
+          .Set("fragment", base::Value::Dict().Set("textStart", "text"))
+          .Set("selectedText", "text")
+          .Set("selectionRect", base::Value::Dict()
+                                    .Set("x", 0.0)
+                                    .Set("y", 0.0)
+                                    .Set("width", 50.0)
+                                    .Set("height", 50.0));
 
-  base::Value fragment(base::Value::Type::DICT);
-  fragment.SetKey("textStart", base::Value("text"));
-  dict.SetKey("fragment", std::move(fragment));
-
-  dict.SetKey("selectedText", base::Value("text"));
-
-  base::Value rect(base::Value::Type::DICT);
-  rect.SetKey("x", base::Value(0.0));
-  rect.SetKey("y", base::Value(0.0));
-  rect.SetKey("width", base::Value(50.0));
-  rect.SetKey("height", base::Value(50.0));
-
-  dict.SetKey("selectionRect", std::move(rect));
-
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 base::Value GetNoSelectionValue() {
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetKey(
-      "status",
-      base::Value(static_cast<int>(LinkGenerationOutcome::kInvalidSelection)));
-  return dict;
+  auto dict = base::Value::Dict().Set(
+      "status", static_cast<int>(LinkGenerationOutcome::kInvalidSelection));
+  return base::Value(std::move(dict));
 }
 
 base::Value GetFailureValue() {
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetKey(
-      "status",
-      base::Value(static_cast<int>(LinkGenerationOutcome::kExecutionFailed)));
-  return dict;
+  auto dict = base::Value::Dict().Set(
+      "status", static_cast<int>(LinkGenerationOutcome::kExecutionFailed));
+  return base::Value(std::move(dict));
 }
 
 // Fake that disarms the JS calls but leaves all other logic intact.

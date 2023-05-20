@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -31,7 +32,6 @@
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/browser/bookmark_undo_delegate.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/titled_url_match.h"
@@ -52,14 +52,15 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+namespace bookmarks {
+namespace {
+
 using base::ASCIIToUTF16;
 using base::Time;
+using testing::ElementsAre;
 using testing::Invoke;
 using testing::Mock;
 using testing::WithArg;
-
-namespace bookmarks {
-namespace {
 
 // Test cases used to test the removal of extra whitespace when adding
 // a new folder/bookmark or updating a title of a folder/bookmark.
@@ -121,29 +122,34 @@ static struct {
     {"\n foo\r\n\tbar\n \t", "  foo   bar   "},
 };
 
-class ScopedBookmarkUndoDelegate : public BookmarkUndoDelegate {
+// TestBookmarkClient that also has basic support for undoing removals.
+class TestBookmarkClientWithUndo : public TestBookmarkClient {
  public:
-  explicit ScopedBookmarkUndoDelegate(BookmarkModel* model) : model_(model) {
-    model_->SetUndoDelegate(this);
-  }
+  TestBookmarkClientWithUndo() = default;
+  ~TestBookmarkClientWithUndo() override = default;
 
-  ~ScopedBookmarkUndoDelegate() override { model_->SetUndoDelegate(nullptr); }
+  [[nodiscard]] bool RestoreLastRemovedBookmark() {
+    if (!model_ || !last_removed_node_) {
+      return false;
+    }
 
-  void RestoreLastRemovedBookmark() {
-    DCHECK(undo_provider_);
-    undo_provider_->RestoreRemovedNode(parent_, index_,
-                                       std::move(last_removed_node_));
+    static_cast<BookmarkUndoProvider*>(model_)->RestoreRemovedNode(
+        parent_, index_, std::move(last_removed_node_));
+
+    model_ = nullptr;
     parent_ = nullptr;
     index_ = 0;
+    last_removed_node_ = nullptr;
+    return true;
   }
 
-  // BookmarkUndoDelegate overrides.
-  void OnBookmarkNodeRemoved(BookmarkModel* model,
-                             BookmarkUndoProvider* undo_provider,
-                             const BookmarkNode* parent,
-                             size_t index,
-                             std::unique_ptr<BookmarkNode> node) override {
-    undo_provider_ = undo_provider;
+  // BookmarkClient overrides.
+  void OnBookmarkNodeRemovedUndoable(
+      BookmarkModel* model,
+      const BookmarkNode* parent,
+      size_t index,
+      std::unique_ptr<BookmarkNode> node) override {
+    model_ = model;
     parent_ = parent;
     index_ = index;
     last_removed_node_ = std::move(node);
@@ -151,7 +157,6 @@ class ScopedBookmarkUndoDelegate : public BookmarkUndoDelegate {
 
  private:
   raw_ptr<BookmarkModel> model_ = nullptr;
-  raw_ptr<BookmarkUndoProvider> undo_provider_ = nullptr;
   raw_ptr<const BookmarkNode> parent_ = nullptr;
   size_t index_ = 0;
   std::unique_ptr<BookmarkNode> last_removed_node_;
@@ -166,6 +171,12 @@ void SwapDateAdded(BookmarkNode* n1, BookmarkNode* n2) {
   Time tmp = n1->date_added();
   n1->set_date_added(n2->date_added());
   n2->set_date_added(tmp);
+}
+
+void SwapDateUsed(BookmarkNode* n1, BookmarkNode* n2) {
+  Time tmp = n1->date_last_used();
+  n1->set_date_last_used(n2->date_last_used());
+  n2->set_date_last_used(tmp);
 }
 
 // See comment in PopulateNodeFromString.
@@ -272,9 +283,7 @@ void VerifyNoDuplicateIDs(BookmarkModel* model) {
     ASSERT_TRUE(ids.insert(it.Next()->id()).second);
 }
 
-class BookmarkModelTest : public testing::Test,
-                          public BookmarkModelObserver,
-                          public BookmarkUndoDelegate {
+class BookmarkModelTest : public testing::Test, public BookmarkModelObserver {
  public:
   struct ObserverDetails {
     ObserverDetails() {
@@ -314,23 +323,20 @@ class BookmarkModelTest : public testing::Test,
     bool added_by_user_;
   };
 
-  struct NodeRemovalDetail {
-    NodeRemovalDetail(const BookmarkNode* parent,
-                      size_t index,
-                      const BookmarkNode* node)
-        : parent_node_id(parent->id()), index(index), node_id(node->id()) {}
+  struct AllNodesRemovedDetail {
+    explicit AllNodesRemovedDetail(const std::set<GURL>& removed_urls)
+        : removed_urls(removed_urls) {}
 
-    bool operator==(const NodeRemovalDetail& other) const {
-      return parent_node_id == other.parent_node_id && index == other.index &&
-             node_id == other.node_id;
+    bool operator==(const AllNodesRemovedDetail& other) const {
+      return removed_urls == other.removed_urls;
     }
 
-    int64_t parent_node_id;
-    size_t index;
-    int64_t node_id;
+    std::set<GURL> removed_urls;
   };
 
-  BookmarkModelTest() : model_(TestBookmarkClient::CreateModel()) {
+  BookmarkModelTest()
+      : model_(TestBookmarkClient::CreateModelWithClient(
+            std::make_unique<TestBookmarkClientWithUndo>())) {
     model_->AddObserver(this);
     ClearCounts();
   }
@@ -418,6 +424,7 @@ class BookmarkModelTest : public testing::Test,
       BookmarkModel* model,
       const std::set<GURL>& removed_urls) override {
     ++all_bookmarks_removed_;
+    all_bookmarks_removed_details_.emplace_back(removed_urls);
   }
 
   void OnWillRemoveAllUserBookmarks(BookmarkModel* model) override {
@@ -430,15 +437,6 @@ class BookmarkModelTest : public testing::Test,
 
   void GroupedBookmarkChangesEnded(BookmarkModel* model) override {
     ++grouped_changes_ended_count_;
-  }
-
-  void OnBookmarkNodeRemoved(BookmarkModel* model,
-                             BookmarkUndoProvider* undo_provider,
-                             const BookmarkNode* parent,
-                             size_t index,
-                             std::unique_ptr<BookmarkNode> node) override {
-    node_removal_details_.push_back(
-        NodeRemovalDetail(parent, index, node.get()));
   }
 
   void ClearCounts() {
@@ -517,7 +515,7 @@ class BookmarkModelTest : public testing::Test,
  protected:
   std::unique_ptr<BookmarkModel> model_;
   ObserverDetails observer_details_;
-  std::vector<NodeRemovalDetail> node_removal_details_;
+  std::vector<AllNodesRemovedDetail> all_bookmarks_removed_details_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
 
@@ -831,8 +829,7 @@ TEST_F(BookmarkModelTest, RemoveAllUserBookmarks) {
   // Add a url to bookmark bar.
   std::u16string title(u"foo");
   GURL url("http://foo.com");
-  const BookmarkNode* url_node =
-      model_->AddURL(bookmark_bar_node, 0, title, url);
+  model_->AddURL(bookmark_bar_node, 0, title, url);
 
   // Add a folder with child URL.
   const BookmarkNode* folder = model_->AddFolder(bookmark_bar_node, 0, title);
@@ -843,12 +840,6 @@ TEST_F(BookmarkModelTest, RemoveAllUserBookmarks) {
 
   size_t permanent_node_count = model_->root_node()->children().size();
 
-  NodeRemovalDetail expected_node_removal_details[] = {
-      NodeRemovalDetail(bookmark_bar_node, 1, url_node),
-      NodeRemovalDetail(bookmark_bar_node, 0, folder),
-  };
-
-  model_->SetUndoDelegate(this);
   model_->RemoveAllUserBookmarks();
 
   EXPECT_EQ(0u, bookmark_bar_node->children().size());
@@ -861,9 +852,8 @@ TEST_F(BookmarkModelTest, RemoveAllUserBookmarks) {
   AssertGroupedChangesObserverCount(1, 1);
   EXPECT_EQ(1, AllNodesRemovedObserverCount());
   EXPECT_EQ(1, AllNodesRemovedObserverCount());
-  ASSERT_EQ(2u, node_removal_details_.size());
-  EXPECT_EQ(expected_node_removal_details[0], node_removal_details_[0]);
-  EXPECT_EQ(expected_node_removal_details[1], node_removal_details_[1]);
+  EXPECT_THAT(all_bookmarks_removed_details_,
+              ElementsAre(AllNodesRemovedDetail(/*removed_urls=*/{url})));
 }
 
 TEST_F(BookmarkModelTest, UpdateLastUsedTimeInRange) {
@@ -1363,6 +1353,42 @@ TEST_F(BookmarkModelTest, MostRecentlyAddedEntries) {
   ASSERT_TRUE(n4 == recently_added[3]);
 }
 
+// Make sure GetMostRecentlyUsedEntries stays in sync.
+TEST_F(BookmarkModelTest, GetMostRecentlyUsedEntries) {
+  // Add a couple of nodes such that the following holds for the time of the
+  // nodes: n1 > n2 > n3 > n4.
+  Time base_time = Time::Now();
+  BookmarkNode* n1 = AsMutable(model_->AddURL(
+      model_->bookmark_bar_node(), 0, u"blah", GURL("http://foo.com/0")));
+  BookmarkNode* n2 = AsMutable(model_->AddURL(
+      model_->bookmark_bar_node(), 1, u"blah", GURL("http://foo.com/1")));
+  BookmarkNode* n3 = AsMutable(model_->AddURL(
+      model_->bookmark_bar_node(), 2, u"blah", GURL("http://foo.com/2")));
+  BookmarkNode* n4 = AsMutable(model_->AddURL(
+      model_->bookmark_bar_node(), 3, u"blah", GURL("http://foo.com/3")));
+  n1->set_date_last_used(base_time + base::Days(4));
+  n2->set_date_last_used(base_time + base::Days(3));
+  n3->set_date_last_used(base_time + base::Days(2));
+  n4->set_date_last_used(base_time + base::Days(1));
+
+  // Make sure order is honored.
+  std::vector<const BookmarkNode*> recently_used;
+  GetMostRecentlyUsedEntries(model_.get(), 2, &recently_used);
+  ASSERT_EQ(2U, recently_used.size());
+  ASSERT_TRUE(n1 == recently_used[0]);
+  ASSERT_TRUE(n2 == recently_used[1]);
+
+  // swap 1 and 2, then check again.
+  recently_used.clear();
+  SwapDateUsed(n1, n2);
+  GetMostRecentlyUsedEntries(model_.get(), 4, &recently_used);
+  ASSERT_EQ(4U, recently_used.size());
+  ASSERT_TRUE(n2 == recently_used[0]);
+  ASSERT_TRUE(n1 == recently_used[1]);
+  ASSERT_TRUE(n3 == recently_used[2]);
+  ASSERT_TRUE(n4 == recently_used[3]);
+}
+
 // Makes sure GetMostRecentlyAddedUserNodeForURL stays in sync.
 TEST_F(BookmarkModelTest, GetMostRecentlyAddedUserNodeForURL) {
   // Add a couple of nodes such that the following holds for the time of the
@@ -1801,7 +1827,9 @@ TEST(BookmarkModelTest2, CreateAndRestore) {
 class BookmarkModelFaviconTest : public testing::Test,
                                  public BookmarkModelObserver {
  public:
-  BookmarkModelFaviconTest() : model_(TestBookmarkClient::CreateModel()) {
+  BookmarkModelFaviconTest()
+      : model_(TestBookmarkClient::CreateModelWithClient(
+            std::make_unique<TestBookmarkClientWithUndo>())) {
     model_->AddObserver(this);
   }
 
@@ -1950,10 +1978,11 @@ TEST_F(BookmarkModelFaviconTest, ShouldResetFaviconStatusAfterRestore) {
   model_->GetFavicon(node);
   ASSERT_TRUE(node->is_favicon_loading());
 
-  ScopedBookmarkUndoDelegate undo_delegate(model_.get());
   model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
 
-  undo_delegate.RestoreLastRemovedBookmark();
+  ASSERT_TRUE(static_cast<TestBookmarkClientWithUndo*>(model_->client())
+                  ->RestoreLastRemovedBookmark());
+
   EXPECT_FALSE(node->is_favicon_loading());
   EXPECT_FALSE(node->is_favicon_loaded());
 }

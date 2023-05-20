@@ -83,4 +83,8 @@ BASE_FEATURE(kSegmentationPlatformDeviceTier,
 BASE_FEATURE(kSegmentationPlatformTabletProductivityUser,
              "SegmentationPlatformTabletProductivityUser",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSegmentationPlatformModelExecutionSampling,
+             "SegmentationPlatformModelExecutionSampling",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace segmentation_platform::features

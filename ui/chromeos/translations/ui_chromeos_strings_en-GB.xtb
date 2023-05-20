@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">No recent videos</translation>
 <translation id="3634507049637220048">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, managed by your administrator, details</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items moved.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> files selected</translation>
 <translation id="3685122418104378273">Google Drive sync is disabled by default, when using mobile data.</translation>
 <translation id="3689865792480713551">Cancel <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, unactivated, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> image</translation>
 <translation id="5534520101572674276">Calculating size</translation>
 <translation id="554153475311314364">Greek (transliteration)</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> folders selected</translation>
 <translation id="5580591966435005537">virtual machine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Punctuation width is Full</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">Thai with Pattachote keyboard</translation>
 <translation id="57383366388012121">Last month</translation>
 <translation id="5756666464756035725">Hungarian QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> items selected</translation>
 <translation id="5763377084591234761">German (Switzerland)</translation>
 <translation id="5769519078756170258">Host or domain to exclude</translation>
 <translation id="5775750595919327203">Urdu</translation>
@@ -917,6 +920,7 @@
 <translation id="8264024885325823677">This setting is managed by your administrator.</translation>
 <translation id="8269755669432358899">Collapse files feedback panels</translation>
 <translation id="8280151743281770066">Armenian Phonetic</translation>
+<translation id="8285791779547722821">Encrypted <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297012244086013755">Hangul 3 Set (No Shift)</translation>
 <translation id="8299269255470343364">Japanese</translation>

@@ -189,6 +189,7 @@ TEST_F(
     TrackableItemExistsWhenUserUntracksProductFromWebpageIsCurrentlyViewing) {
   commerce::ProductInfo product_info;
   product_info.title = kBookmarkTitle;
+  product_info.product_cluster_id.emplace(12345L);
   absl::optional<commerce::ProductInfo> optional_product_info;
   optional_product_info.emplace(product_info);
   shopping_service_->SetResponseForGetProductInfoForUrl(optional_product_info);

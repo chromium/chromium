@@ -257,7 +257,7 @@ pub fn collect_dependencies(
         // TODO(crbug.com/1291994): Resolve features independently per kind
         // and platform. This may require using the unstable unit-graph feature:
         // https://doc.rust-lang.org/cargo/reference/unstable.html#unit-graph
-        for (_, mut kind_info) in dep.dependency_kinds.iter_mut() {
+        for (_, kind_info) in dep.dependency_kinds.iter_mut() {
             kind_info.features = node.features.clone();
             // Remove "default" feature to match behavior of crates.py. Note
             // that this is technically not correct since a crate's code may

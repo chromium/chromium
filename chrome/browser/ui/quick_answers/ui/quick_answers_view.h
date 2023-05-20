@@ -83,7 +83,7 @@ class QuickAnswersView : public views::View {
       View* container);
   void AddAssistantIcon();
   void AddGoogleIcon();
-  void AddResultTypeIcon();
+  void AddDefaultResultTypeIcon();
   int GetBoundsWidth();
   int GetLabelWidth();
   void ResetContentView();
@@ -116,7 +116,7 @@ class QuickAnswersView : public views::View {
   raw_ptr<views::ImageButton> dogfood_feedback_button_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
   raw_ptr<views::ImageButton> phonetics_audio_button_ = nullptr;
-  raw_ptr<views::ImageView> vector_icon_ = nullptr;
+  raw_ptr<views::ImageView> result_type_icon_ = nullptr;
 
   // Invisible web view to play phonetics audio for definition results.
   raw_ptr<views::WebView> phonetics_audio_web_view_ = nullptr;

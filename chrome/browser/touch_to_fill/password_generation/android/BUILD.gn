@@ -6,6 +6,8 @@ import("//build/config/android/rules.gni")
 
 source_set("public") {
   deps = [
+    ":android",
+    ":jni_headers",
     "//base",
     "//components/password_manager/content/browser:browser",
   ]
@@ -16,11 +18,54 @@ source_set("public") {
   ]
 }
 
+source_set("android") {
+  sources = [
+    "touch_to_fill_password_generation_bridge.h",
+    "touch_to_fill_password_generation_bridge_impl.cc",
+    "touch_to_fill_password_generation_bridge_impl.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//components/password_manager/core/common:features",
+    "//content/public/browser:browser",
+    "//ui/android:android",
+    "//ui/gfx:native_widget_types",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "internal/java/src/org/chromium/chrome/browser/touch_to_fill/password_generation/TouchToFillPasswordGenerationBridge.java" ]
+
+  visibility = [
+    ":android",
+    ":public",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  deps = [
+    ":android",
+    "//base",
+    "//content/public/browser:browser",
+    "//testing/gmock",
+    "//ui/gfx:native_widget_types",
+  ]
+
+  sources = [
+    "mock_touch_to_fill_password_generation_bridge.cc",
+    "mock_touch_to_fill_password_generation_bridge.h",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   deps = [
     ":public",
+    ":test_support",
     "//base",
     "//chrome/test:test_support",
     "//components/password_manager/content/browser:browser",

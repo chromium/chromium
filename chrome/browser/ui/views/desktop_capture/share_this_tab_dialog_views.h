@@ -34,7 +34,7 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
 
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
-  std::u16string GetWindowTitle() const override;
+  bool ShouldShowWindowTitle() const override;
   bool Accept() override;
   bool Cancel() override;
   bool ShouldShowCloseButton() const override;
@@ -45,12 +45,13 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
 
   void Activate();
 
+  bool ShouldAutoAccept() const;
+  bool ShouldAutoReject() const;
+
   const base::WeakPtr<content::WebContents> web_contents_;
   const std::u16string app_name_;
 
   raw_ptr<ShareThisTabDialogViews> parent_;
-
-  raw_ptr<views::Label> description_label_ = nullptr;
 
   // Child view displaying a preview, icon and title for the tab being shared,
   // or a throbber while the dialog is not yet activated.
@@ -61,6 +62,13 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
 
   // Timer for an initial delay during which the allow-button is disabled.
   base::OneShotTimer activation_timer_;
+
+  // Auto-selection. Used only in tests.
+  const std::string auto_select_tab_;        // Only tabs, by title.
+  const std::string auto_select_source_;     // Any source by its title.
+  const bool auto_accept_this_tab_capture_;  // Only for current-tab capture.
+  const bool auto_reject_this_tab_capture_;  // Only for current-tab capture.
+
   base::WeakPtrFactory<ShareThisTabDialogView> weak_factory_{this};
 };
 

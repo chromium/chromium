@@ -12,8 +12,6 @@ namespace ash::personalization_app {
 
 // Returns paths to assets required for the TimeOfDay wallpaper/screensaver
 // feature.
-ASH_PUBLIC_EXPORT const base::FilePath& GetTimeOfDayWallpapersDir();
-ASH_PUBLIC_EXPORT const base::FilePath& GetTimeOfDayVideosDir();
 ASH_PUBLIC_EXPORT const base::FilePath& GetTimeOfDaySrcDir();
 
 // TimeOfDay video file names.

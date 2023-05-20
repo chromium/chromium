@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -128,7 +129,13 @@ ServiceTransferCache::CacheEntryInternal::CacheEntryInternal(
     std::unique_ptr<cc::ServiceTransferCacheEntry> entry)
     : handle(handle), entry(std::move(entry)) {}
 
-ServiceTransferCache::CacheEntryInternal::~CacheEntryInternal() {}
+ServiceTransferCache::CacheEntryInternal::~CacheEntryInternal() {
+  if (entry) {
+    UMA_HISTOGRAM_COUNTS_1M("GPU.TransferCache.ReusedTimes", num_reuse);
+    UMA_HISTOGRAM_LONG_TIMES("GPU.TransferCache.TimeSinceLastUseOnDelete",
+                             base::TimeTicks::Now() - last_use);
+  }
+}
 
 ServiceTransferCache::CacheEntryInternal::CacheEntryInternal(
     CacheEntryInternal&& other) = default;
@@ -243,10 +250,17 @@ bool ServiceTransferCache::DeleteEntry(const EntryKey& key) {
 
 cc::ServiceTransferCacheEntry* ServiceTransferCache::GetEntry(
     const EntryKey& key) {
-  auto found = entries_.Get(key);
-  if (found == entries_.end())
+  auto entry = entries_.Get(key);
+  bool found = entry != entries_.end();
+  UMA_HISTOGRAM_BOOLEAN("GPU.TransferCache.EntryFound", found);
+  if (!found) {
     return nullptr;
-  return found->second.entry.get();
+  }
+  UMA_HISTOGRAM_LONG_TIMES("GPU.TransferCache.TimeSinceLastUse",
+                           base::TimeTicks::Now() - entry->second.last_use);
+  entry->second.last_use = base::TimeTicks::Now();
+  entry->second.num_reuse++;
+  return entry->second.entry.get();
 }
 
 void ServiceTransferCache::EnforceLimits() {

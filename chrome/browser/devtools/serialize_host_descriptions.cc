@@ -45,17 +45,14 @@ void CreateDictionaryForest(
     std::vector<HostDescriptionNode> hosts,
     std::map<base::Value*, std::vector<base::Value*>>* children,
     std::unordered_set<base::Value*>* roots,
-    std::vector<base::Value>* representations) {
+    base::Value::List* representations) {
   representations->reserve(hosts.size());
-  children->clear();
-  roots->clear();
-  representations->clear();
 
   std::map<base::StringPiece, base::Value*> name_to_representation;
 
   // First move the representations and map the names to them.
   for (HostDescriptionNode& node : hosts) {
-    representations->push_back(std::move(node.representation));
+    representations->Append(std::move(node.representation));
     // If there are multiple nodes with the same name, subsequent insertions
     // will be ignored, so only the first node with a given name will be
     // referenced by |roots| and |children|.
@@ -86,7 +83,7 @@ base::Value::List SerializeHostDescriptions(
     base::StringPiece child_key) {
   // |representations| must outlive |children| and |roots|, which contain
   // pointers to objects in |representations|.
-  std::vector<base::Value> representations;
+  base::Value::List representations;
   std::map<base::Value*, std::vector<base::Value*>> children;
   std::unordered_set<base::Value*> roots;
 

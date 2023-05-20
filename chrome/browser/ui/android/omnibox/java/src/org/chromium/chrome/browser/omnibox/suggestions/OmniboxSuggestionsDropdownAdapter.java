@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
-import org.chromium.components.omnibox.OmniboxMetrics;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 

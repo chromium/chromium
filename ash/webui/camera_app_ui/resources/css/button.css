@@ -4,7 +4,7 @@
 
 .text-button {
   box-sizing: border-box;
-  font: 500 13px/20px Roboto;
+  font: var(--cros-button-2-font);
   height: 32px;
   padding: 0 16px;
 }

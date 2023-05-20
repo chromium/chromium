@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "base/containers/contains.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 namespace privacy_sandbox {
@@ -18,6 +19,11 @@ bool PrivacySandboxAttestations::IsSiteAttested(
   // If attestations aren't enabled, pass the check trivially.
   if (!base::FeatureList::IsEnabled(
           privacy_sandbox::kEnforcePrivacySandboxAttestations)) {
+    return true;
+  }
+
+  // Pass the check if the site is in the list of devtools overrides.
+  if (base::Contains(overrides_, site)) {
     return true;
   }
 

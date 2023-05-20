@@ -41,7 +41,8 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(
   auto bookmark_model =
       std::make_unique<BookmarkModel>(std::make_unique<ChromeBookmarkClient>(
           profile, ManagedBookmarkServiceFactory::GetForProfile(profile),
-          BookmarkSyncServiceFactory::GetForProfile(profile)));
+          BookmarkSyncServiceFactory::GetForProfile(profile),
+          BookmarkUndoServiceFactory::GetForProfile(profile)));
 #if defined(TOOLKIT_VIEWS)
   // BookmarkExpandedStateTracker depends on the loading event, so this
   // coupling must happen before the loading happens.

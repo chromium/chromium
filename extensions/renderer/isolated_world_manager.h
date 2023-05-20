@@ -55,11 +55,17 @@ class IsolatedWorldManager {
   // exist.
   void RemoveIsolatedWorlds(const std::string& host_id);
 
-  // Sets the CSP to use for newly-created user script worlds for the associated
+  // Sets properties for newly-created user script worlds for the associated
   // `host_id`. Does not affect any already-created worlds, but does update the
   // world data stored in blink so that any newly-created worlds will be
   // properly initialized.
-  void SetUserScriptWorldCsp(std::string host_id, std::string csp);
+  void SetUserScriptWorldProperties(const std::string& host_id,
+                                    absl::optional<std::string> csp,
+                                    bool enable_messaging);
+
+  // Returns whether messaging APIs should be enabled in worlds for the given
+  // `host_id`.
+  bool IsMessagingEnabledInUserScriptWorlds(const std::string& host_id);
 
   // Returns the id of the isolated world associated with the given
   // `injection_host`.  If none exists, creates a new world for it associated
@@ -93,6 +99,19 @@ class IsolatedWorldManager {
     absl::optional<std::string> csp;
   };
 
+  // A set of data to store properties for newly-created isolated worlds.
+  struct PendingWorldInfo {
+    PendingWorldInfo();
+    ~PendingWorldInfo();
+    PendingWorldInfo(PendingWorldInfo&&);
+
+    // The CSP to use for newly-created isolated worlds, if any.
+    absl::optional<std::string> csp;
+
+    // Whether to enable messaging APIs in newly-created isolated worlds.
+    bool enable_messaging = false;
+  };
+
   void UpdateBlinkIsolatedWorldInfo(int world_id,
                                     const IsolatedWorldInfo& world_info);
 
@@ -100,8 +119,8 @@ class IsolatedWorldManager {
   using IsolatedWorldMap = std::map<int, IsolatedWorldInfo>;
   IsolatedWorldMap isolated_worlds_;
 
-  // A map of <host id, csp> for CSPs to use for newly-created isolated worlds.
-  std::map<std::string, std::string> user_script_world_csps_;
+  // A map of <host id, info> to use for newly-created isolated worlds.
+  std::map<std::string, PendingWorldInfo> pending_worlds_info_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

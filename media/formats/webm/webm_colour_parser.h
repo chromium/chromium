@@ -43,15 +43,15 @@ class WebMColorVolumeMetadataParser : public WebMParserClient {
 
   ~WebMColorVolumeMetadataParser() override;
 
-  gfx::ColorVolumeMetadata GetColorVolumeMetadata() const {
-    return color_volume_metadata_;
+  gfx::HdrMetadataSmpteSt2086 GetColorVolumeMetadata() const {
+    return smpte_st_2086_;
   }
 
  private:
   // WebMParserClient implementation.
   bool OnFloat(int id, double val) override;
 
-  gfx::ColorVolumeMetadata color_volume_metadata_;
+  gfx::HdrMetadataSmpteSt2086 smpte_st_2086_;
 };
 
 // Parser for WebM Colour element:

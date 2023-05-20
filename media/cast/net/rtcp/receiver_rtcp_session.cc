@@ -82,10 +82,7 @@ void ReceiverRtcpSession::OnReceivedNtp(uint32_t ntp_seconds,
 void ReceiverRtcpSession::OnReceivedLipSyncInfo(RtpTimeTicks rtp_timestamp,
                                                 uint32_t ntp_seconds,
                                                 uint32_t ntp_fraction) {
-  if (ntp_seconds == 0) {
-    NOTREACHED();
-    return;
-  }
+  CHECK_GT(ntp_seconds, 0u);
   lip_sync_rtp_timestamp_ = rtp_timestamp;
   lip_sync_ntp_timestamp_ =
       (static_cast<uint64_t>(ntp_seconds) << 32) | ntp_fraction;

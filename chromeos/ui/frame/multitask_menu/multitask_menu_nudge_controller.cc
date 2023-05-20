@@ -264,8 +264,14 @@ void MultitaskMenuNudgeController::OnWindowStackingChanged(
 
   // Ensure the `nudge_widget_` is always above `window_`. We dont worry about
   // the pulse layer since it is not a window, and won't get stacked on top of
-  // during window activation for example.
-  window_->parent()->StackChildAbove(nudge_widget_->GetNativeWindow(), window);
+  // during window activation for example. When moving across displays, it is
+  // possible the window parent differs for a bit. In this case we cannot
+  // restack and we need to wait for `UpdateWidgetAndPulse` to place the nudge
+  // in the correct spot.
+  if (window_->parent() == nudge_widget_->GetNativeWindow()->parent()) {
+    window_->parent()->StackChildAbove(nudge_widget_->GetNativeWindow(),
+                                       window);
+  }
 }
 
 void MultitaskMenuNudgeController::OnWindowDestroying(aura::Window* window) {
@@ -326,9 +332,15 @@ void MultitaskMenuNudgeController::OnGetPreferences(
     return;
   }
 
-  // If the anchor is passed and hidden, we cannot show the nudge.
-  if (anchor_view && !anchor_view->IsDrawn()) {
-    return;
+  // If the anchor is passed and hidden or offscreen, we cannot show the nudge.
+  if (anchor_view) {
+    if (!anchor_view->IsDrawn() ||
+        !display::Screen::GetScreen()
+             ->GetDisplayNearestWindow(window)
+             .bounds()
+             .Contains(anchor_view->GetBoundsInScreen())) {
+      return;
+    }
   }
 
   window_ = window;
@@ -351,7 +363,13 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   }
 
   UpdateWidgetAndPulse();
-  CHECK(nudge_widget_);
+
+  // It is possible `UpdateWidgetAndPulse` could not find a good bounds to place
+  // the nudge. In that case the widget and pulse and observations would have
+  // been cleaned up.
+  if (!nudge_widget_) {
+    return;
+  }
 
   // Fade the education nudge in.
   ui::Layer* layer = nudge_widget_->GetLayer();

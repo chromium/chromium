@@ -71,7 +71,7 @@ suite('PersonalizationThemeTest', function() {
     assertFalse(enabled);
   });
 
-  test('shows pressed button on load', async () => {
+  test('shows selected button on load', async () => {
     personalizationThemeElement = initElement(PersonalizationThemeElement);
     personalizationStore.data.theme.darkModeEnabled = true;
     personalizationStore.data.theme.colorModeAutoScheduleEnabled = false;
@@ -80,7 +80,7 @@ suite('PersonalizationThemeTest', function() {
     const radioButton =
         personalizationThemeElement.shadowRoot!.getElementById('darkMode');
     assertTrue(!!radioButton);
-    assertEquals(radioButton.getAttribute('aria-pressed'), 'true');
+    assertEquals(radioButton.getAttribute('aria-checked'), 'true');
   });
 
   test('sets dark mode enabled when dark button is clicked', async () => {
@@ -92,7 +92,7 @@ suite('PersonalizationThemeTest', function() {
     const radioButton =
         personalizationThemeElement.shadowRoot!.getElementById('darkMode');
     assertTrue(!!radioButton);
-    assertEquals(radioButton.getAttribute('aria-pressed'), 'false');
+    assertEquals(radioButton.getAttribute('aria-checked'), 'false');
 
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(ThemeActionName.SET_DARK_MODE_ENABLED);
@@ -102,7 +102,7 @@ suite('PersonalizationThemeTest', function() {
             ThemeActionName.SET_DARK_MODE_ENABLED) as SetDarkModeEnabledAction;
     assertTrue(action.enabled);
     assertTrue(personalizationStore.data.theme.darkModeEnabled);
-    assertEquals(radioButton.getAttribute('aria-pressed'), 'true');
+    assertEquals(radioButton.getAttribute('aria-checked'), 'true');
   });
 
   test('sets auto mode enabled when auto button is clicked', async () => {
@@ -114,7 +114,7 @@ suite('PersonalizationThemeTest', function() {
     const radioButton =
         personalizationThemeElement.shadowRoot!.getElementById('autoMode');
     assertTrue(!!radioButton);
-    assertEquals(radioButton.getAttribute('aria-pressed'), 'false');
+    assertEquals(radioButton.getAttribute('aria-checked'), 'false');
 
     personalizationStore.setReducersEnabled(true);
     personalizationStore.expectAction(
@@ -125,10 +125,10 @@ suite('PersonalizationThemeTest', function() {
         SetDarkModeEnabledAction;
     assertTrue(action.enabled);
     assertTrue(personalizationStore.data.theme.colorModeAutoScheduleEnabled);
-    assertEquals(radioButton.getAttribute('aria-pressed'), 'true');
+    assertEquals(radioButton.getAttribute('aria-checked'), 'true');
 
     // reclicking the button does not disable auto mode.
     radioButton.click();
-    assertEquals(radioButton.getAttribute('aria-pressed'), 'true');
+    assertEquals(radioButton.getAttribute('aria-checked'), 'true');
   });
 });

@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++blockquote
+++++++++staticText name='Blockquote'
+++++++++++inlineTextBox name='Blockquote'

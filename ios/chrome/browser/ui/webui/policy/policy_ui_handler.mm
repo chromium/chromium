@@ -188,10 +188,10 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
       GetStatusValue(),
       policy::JsonGenerationParams()
           .with_application_name(l10n_util::GetStringUTF8(IDS_IOS_PRODUCT_NAME))
-          .with_channel_name(GetChannelString(GetChannel()))
+          .with_channel_name(std::string(GetChannelString(GetChannel())))
           .with_processor_variation(l10n_util::GetStringUTF8(
               sizeof(void*) == 8 ? IDS_VERSION_UI_64BIT : IDS_VERSION_UI_32BIT))
-          .with_os_name(version_info::GetOSType()));
+          .with_os_name(std::string(version_info::GetOSType())));
 }
 
 void PolicyUIHandler::OnSchemaRegistryUpdated(bool has_new_schemas) {

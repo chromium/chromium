@@ -1,0 +1,7 @@
+Name: hex
+URL: https://crates.io/crates/hex
+Description: Encoding and decoding data into/from hexadecimal representation.
+Version: 0.4.3
+Security Critical: no
+License: Apache 2.0
+Revision: b2b4370b5bf021b98ee7adc92233e8de3f2de792

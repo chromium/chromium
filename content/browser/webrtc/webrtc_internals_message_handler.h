@@ -47,6 +47,7 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
   // Javascript message handler.
   void OnGetStandardStats(const base::Value::List& list);
   void OnGetLegacyStats(const base::Value::List& list);
+  void OnGetCurrentState(const base::Value::List& list);
   void OnSetAudioDebugRecordingsEnabled(bool enable,
                                         const base::Value::List& list);
   void OnSetEventLogRecordingsEnabled(bool enable,

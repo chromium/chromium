@@ -447,10 +447,8 @@ class SourceBufferStreamTest : public testing::Test {
         return DemuxerStream::VIDEO;
       case SourceBufferStreamType::kText:
         return DemuxerStream::TEXT;
-      default:
-        NOTREACHED();
-        return DemuxerStream::UNKNOWN;
     }
+    NOTREACHED_NORETURN();
   }
 
   base::TimeDelta ConvertToFrameDuration(int frames_per_second) {

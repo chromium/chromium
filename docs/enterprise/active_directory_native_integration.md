@@ -71,15 +71,6 @@ Users do not need a Google identity to sign in and Chrome is not signed in.
 Thus, no Google services are available by default unless the user signs in from
 the content area.
 
-Moreover, users may sign up for a Play Store account from within their user
-session, see step 5 of the
-[Help article](https://support.google.com/chrome/a?p=ad).
-For this purpose, DM Server creates a LaForge account for the user. A LaForge
-account is a shadow Gaia account with scope limited to the Play Store. To prove
-the user's identity, a SAML flow is employed with DM Server as service provider
-and AD (or really any other) as identity provider. The SAML flow is triggered by
-[ArcActiveDirectoryEnrollmentTokenFetcher](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/arc/auth/arc_active_directory_enrollment_token_fetcher.h).
-
 ### Instructions for Google Employees
 See [go/cros-ad-test-env](https://goto.google.com/cros-ad-test-env) for setting
 up an Active Directory® test environment.

@@ -563,13 +563,13 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
 
 RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicy(
     const AppId& app_id) const {
-  return GetUrlRunOnOsLoginPolicyByUnhashedAppId(
-      app_registrar_->GetComputedUnhashedAppId(app_id));
+  return GetUrlRunOnOsLoginPolicyByManifestId(
+      app_registrar_->GetComputedManifestId(app_id).spec());
 }
 
-RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicyByUnhashedAppId(
-    const std::string& unhashed_app_id) const {
-  auto it = settings_by_url_.find(unhashed_app_id);
+RunOnOsLoginPolicy WebAppPolicyManager::GetUrlRunOnOsLoginPolicyByManifestId(
+    const std::string& manifest_id) const {
+  auto it = settings_by_url_.find(manifest_id);
   if (it != settings_by_url_.end())
     return it->second.run_on_os_login_policy;
   return default_settings_->run_on_os_login_policy;
@@ -615,16 +615,12 @@ void WebAppPolicyManager::MaybeOverrideManifest(
     return;
 
   // For policy-installed apps there are two ways for getting to the manifest:
-  // via the policy install URL, or via the manifest-specified start_url
+  // via the policy install URL, or via the manifest-specified identity
   // of an already installed app. Websites without a manifest will use the
   // policy-installed URL as start_url, so they are covered by the first case.
   // Second case first:
-  if (!manifest->start_url.is_empty()) {
-    const absl::optional<std::string> manifest_id =
-        manifest->id.has_value() ? absl::optional<std::string>(
-                                       base::UTF16ToUTF8(manifest->id.value()))
-                                 : absl::nullopt;
-    const AppId& app_id = GenerateAppId(manifest_id, manifest->start_url);
+  if (manifest->id.is_valid()) {
+    const AppId& app_id = GenerateAppIdFromManifestId(manifest->id);
     // List of policy-installed apps and their install URLs:
     base::flat_map<AppId, base::flat_set<GURL>> policy_installed_apps =
         app_registrar_->GetExternallyInstalledApps(
@@ -660,9 +656,8 @@ bool WebAppPolicyManager::IsPreventCloseEnabled(const AppId& app_id) const {
     return false;
   }
 
-  const std::string unhashed_id =
-      app_registrar_->GetComputedUnhashedAppId(app_id);
-  auto it = settings_by_url_.find(unhashed_id);
+  const ManifestId manifest_id = app_registrar_->GetComputedManifestId(app_id);
+  auto it = settings_by_url_.find(manifest_id.spec());
   if (it != settings_by_url_.end()) {
     return it->second.prevent_close;
   }

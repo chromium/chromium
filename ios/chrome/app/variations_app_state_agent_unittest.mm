@@ -8,6 +8,7 @@
 #import "base/metrics/field_trial.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/variations/pref_names.h"
@@ -15,10 +16,10 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -315,25 +316,78 @@ TEST_F(VariationsAppStateAgentTest, PreviousGroupAssignmentPersisted) {
   InitStage stageAfterChromeInitialization =
       static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1);
   // Simulate first run.
-  VariationsAppStateAgent* first_agent =
-      CreateAgent(/*fre=*/true, /*lastSeedFetchTime=*/base::Time(),
-                  /*percentage_enabled=*/100, /*percentage_control=*/0);
-  SimulateFetchCompletion(first_agent);
-  TransitionAgentToStage(first_agent, stageAfterChromeInitialization);
-  // Start the the second agent; this time the seed would not be fetched.
-  VariationsAppStateAgent* second_agent =
-      CreateAgent(/*fre=*/false, /*lastSeedFetchTime=*/base::Time(),
-                  /*percentage_enabled=*/100, /*percentage_control=*/0);
-  TransitionAgentToStage(second_agent, stageAfterChromeInitialization);
-  ExpectThatTrialIsActiveAndAssignedToGroup(
-      kIOSChromeVariationsTrialEnabledGroup);
-  // Third agent.
-  VariationsAppStateAgent* third_agent =
-      CreateAgent(/*fre=*/false, /*lastSeedFetchTime=*/base::Time(),
-                  /*percentage_enabled=*/100, /*percentage_control=*/0);
-  TransitionAgentToStage(third_agent, stageAfterChromeInitialization);
-  ExpectThatTrialIsActiveAndAssignedToGroup(
-      kIOSChromeVariationsTrialEnabledGroup);
+  {
+    VariationsAppStateAgent* first_agent =
+        CreateAgent(/*fre=*/true, /*lastSeedFetchTime=*/base::Time(),
+                    /*percentage_enabled=*/100, /*percentage_control=*/0);
+    SimulateFetchCompletion(first_agent);
+    TransitionAgentToStage(first_agent, stageAfterChromeInitialization);
+  }
+  // Simulate a second run; this time the seed would not be fetched, and
+  // group assignment should NOT be recreated.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+    VariationsAppStateAgent* second_agent =
+        CreateAgent(/*fre=*/false, /*lastSeedFetchTime=*/base::Time(),
+                    /*percentage_enabled=*/0, /*percentage_control=*/0);
+    TransitionAgentToStage(second_agent, stageAfterChromeInitialization);
+    ExpectThatTrialIsActiveAndAssignedToGroup(
+        kIOSChromeVariationsTrialEnabledGroup);
+  }
+  // Third run.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+    VariationsAppStateAgent* third_agent =
+        CreateAgent(/*fre=*/false, /*lastSeedFetchTime=*/base::Time(),
+                    /*percentage_enabled=*/0, /*percentage_control=*/0);
+    TransitionAgentToStage(third_agent, stageAfterChromeInitialization);
+    ExpectThatTrialIsActiveAndAssignedToGroup(
+        kIOSChromeVariationsTrialEnabledGroup);
+  }
+}
+
+// Tests that if the app presents first run a second time, experiment group
+// should be re-assigned.
+TEST_F(VariationsAppStateAgentTest, ReassignGroupOnSecondFirstRun) {
+  InitStage stageAfterChromeInitialization =
+      static_cast<InitStage>(InitStageBrowserObjectsForBackgroundHandlers + 1);
+  // Simulate first run in control group.
+  {
+    VariationsAppStateAgent* control_agent =
+        CreateAgent(/*fre=*/true, /*lastSeedFetchTime=*/base::Time(),
+                    /*percentage_enabled=*/0, /*percentage_control=*/100);
+    TransitionAgentToStage(control_agent, stageAfterChromeInitialization);
+    ExpectThatTrialIsActiveAndAssignedToGroup(
+        kIOSChromeVariationsTrialControlGroup);
+  }
+  // Simulate the scenario that the previous run hasn't finished and the app
+  // starts again with first run experience. This time the experiment group
+  // should be re-assigned.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+    VariationsAppStateAgent* enabled_agent_1 =
+        CreateAgent(/*fre=*/true, /*lastSeedFetchTime=*/base::Time(),
+                    /*percentage_enabled=*/100, /*percentage_control=*/0);
+    SimulateFetchCompletion(enabled_agent_1);
+    TransitionAgentToStage(enabled_agent_1, stageAfterChromeInitialization);
+    ExpectThatTrialIsActiveAndAssignedToGroup(
+        kIOSChromeVariationsTrialEnabledGroup);
+  }
+  // Start a subsequent session and check that the group assignment tallies with
+  // the on given during the "second first run."
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+    VariationsAppStateAgent* enabled_agent_2 =
+        CreateAgent(/*fre=*/false, /*lastSeedFetchTime=*/base::Time(),
+                    /*percentage_enabled=*/100, /*percentage_control=*/0);
+    TransitionAgentToStage(enabled_agent_2, stageAfterChromeInitialization);
+    ExpectThatTrialIsActiveAndAssignedToGroup(
+        kIOSChromeVariationsTrialEnabledGroup);
+  }
 }
 
 // Tests that if the seed fetch does not complete before the scene transitions

@@ -28,6 +28,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
+#include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/printing/pdf_to_emf_converter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -38,6 +39,7 @@
 #include "printing/pdf_render_settings.h"
 #include "printing/printed_page_win.h"
 #include "printing/printing_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 
@@ -145,6 +147,10 @@ void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
 
 #if BUILDFLAG(IS_WIN)
   pdf_page_mapping_ = PageNumber::GetPages(settings->ranges(), page_count);
+  PrefService* prefs = GetPrefsForWebContents(GetWebContents(rfh_id_));
+  if (prefs && prefs->IsManagedPreference(prefs::kPdfUseSkiaRendererEnabled)) {
+    use_skia_ = prefs->GetBoolean(prefs::kPdfUseSkiaRendererEnabled);
+  }
 #endif
 
   auto new_doc = base::MakeRefCounted<PrintedDocument>(std::move(settings),
@@ -312,14 +318,18 @@ const std::string& PrintJob::source_id() const {
 #if BUILDFLAG(IS_WIN)
 class PrintJob::PdfConversionState {
  public:
-  PdfConversionState(const gfx::Size& page_size, const gfx::Rect& content_area)
-      : page_size_(page_size), content_area_(content_area) {}
+  PdfConversionState(const gfx::Size& page_size,
+                     const gfx::Rect& content_area,
+                     const absl::optional<bool>& use_skia)
+      : page_size_(page_size),
+        content_area_(content_area),
+        use_skia_(use_skia) {}
 
   void Start(scoped_refptr<base::RefCountedMemory> data,
              const PdfRenderSettings& conversion_settings,
              PdfConverter::StartCallback start_callback) {
-    converter_ = PdfConverter::StartPdfConverter(data, conversion_settings,
-                                                 std::move(start_callback));
+    converter_ = PdfConverter::StartPdfConverter(
+        data, conversion_settings, use_skia_, std::move(start_callback));
   }
 
   void GetMorePages(PdfConverter::GetPageCallback get_page_callback) {
@@ -349,6 +359,7 @@ class PrintJob::PdfConversionState {
   int pages_in_progress_ = 0;
   const gfx::Size page_size_;
   const gfx::Rect content_area_;
+  absl::optional<bool> use_skia_;
   std::unique_ptr<PdfConverter> converter_;
 };
 
@@ -359,7 +370,7 @@ void PrintJob::StartPdfToEmfConversion(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!pdf_conversion_state_);
   pdf_conversion_state_ =
-      std::make_unique<PdfConversionState>(page_size, content_area);
+      std::make_unique<PdfConversionState>(page_size, content_area, use_skia_);
 
   const PrintSettings& settings = document()->settings();
 
@@ -427,7 +438,7 @@ void PrintJob::StartPdfToTextConversion(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!pdf_conversion_state_);
   pdf_conversion_state_ =
-      std::make_unique<PdfConversionState>(gfx::Size(), gfx::Rect());
+      std::make_unique<PdfConversionState>(gfx::Size(), gfx::Rect(), use_skia_);
   gfx::Rect page_area = gfx::Rect(0, 0, page_size.width(), page_size.height());
   const PrintSettings& settings = document()->settings();
   PdfRenderSettings render_settings(
@@ -446,8 +457,8 @@ void PrintJob::StartPdfToPostScriptConversion(
     bool ps_level2) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!pdf_conversion_state_);
-  pdf_conversion_state_ = std::make_unique<PdfConversionState>(
-      gfx::Size(), gfx::Rect());
+  pdf_conversion_state_ =
+      std::make_unique<PdfConversionState>(gfx::Size(), gfx::Rect(), use_skia_);
   const PrintSettings& settings = document()->settings();
 
   PdfRenderSettings::Mode mode;

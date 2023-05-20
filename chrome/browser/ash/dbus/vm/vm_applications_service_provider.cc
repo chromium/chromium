@@ -239,8 +239,8 @@ void VmApplicationsServiceProvider::SelectFile(
     ui::EndpointType source = ui::EndpointType::kUnknownVm;
     if (request.vm_name() == crostini::kCrostiniDefaultVmName) {
       source = ui::EndpointType::kCrostini;
-      owner.dialog_caller = policy::DlpFileDestination(
-          policy::DlpRulesManager::Component::kCrostini);
+      owner.dialog_caller =
+          policy::DlpFileDestination(data_controls::Component::kCrostini);
     }
     std::vector<base::FilePath> paths =
         TranslateVMPathsToHost(source, file_infos);

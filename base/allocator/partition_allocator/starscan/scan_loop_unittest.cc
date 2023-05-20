@@ -83,8 +83,9 @@ TEST(PartitionAllocScanLoopTest, UnvectorizedWithRegularPool) {
 #if defined(ARCH_CPU_X86_64)
 TEST(PartitionAllocScanLoopTest, VectorizedSSE4) {
   base::CPU cpu;
-  if (!cpu.has_sse41())
+  if (!cpu.has_sse41()) {
     return;
+  }
   {
     TestScanLoop sl(SimdSupport::kSSE41);
     TestOnRangeWithAlignment<16>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
@@ -105,8 +106,9 @@ TEST(PartitionAllocScanLoopTest, VectorizedSSE4) {
 
 TEST(PartitionAllocScanLoopTest, VectorizedAVX2) {
   base::CPU cpu;
-  if (!cpu.has_avx2())
+  if (!cpu.has_avx2()) {
     return;
+  }
   {
     TestScanLoop sl(SimdSupport::kAVX2);
     TestOnRangeWithAlignment<32>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr,

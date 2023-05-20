@@ -879,11 +879,20 @@ void ProfileMenuViewBase::AddProfileManagementShortcutFeatureButton(
                         gfx::Insets::TLBR(0, 0, 0, kMenuEdgeMargin)));
   }
 
-  profile_mgmt_shortcut_features_container_->AddChildView(
-      std::make_unique<CircularImageButton>(
-          base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
-                              base::Unretained(this), std::move(action)),
-          icon, text));
+  if (features::IsChromeRefresh2023()) {
+    profile_mgmt_shortcut_features_container_->AddChildView(
+        views::ImageButton::CreateIconButton(
+            base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                                base::Unretained(this), std::move(action)),
+            icon, text, CircularImageButton::MaterialIconStyle::kSmall));
+
+  } else {
+    profile_mgmt_shortcut_features_container_->AddChildView(
+        std::make_unique<CircularImageButton>(
+            base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
+                                base::Unretained(this), std::move(action)),
+            icon, text));
+  }
 }
 
 void ProfileMenuViewBase::AddProfileManagementManagedHint(

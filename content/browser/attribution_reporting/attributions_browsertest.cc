@@ -596,9 +596,9 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
 
   // Verify the navigation redirects contain the eligibility header.
   register_response1->WaitForRequest();
-  EXPECT_EQ(register_response1->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "navigation-source");
+  ExpectValidAttributionReportingEligibleHeaderForNavigation(
+      register_response1->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   EXPECT_FALSE(base::Contains(register_response1->http_request()->headers,
                               "Attribution-Reporting-Support"));
 
@@ -610,9 +610,9 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
 
   // Ensure that redirect requests also contain the header.
   register_response2->WaitForRequest();
-  ASSERT_EQ(register_response2->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "navigation-source");
+  ExpectValidAttributionReportingEligibleHeaderForNavigation(
+      register_response2->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   ASSERT_FALSE(base::Contains(register_response2->http_request()->headers,
                               "Attribution-Reporting-Support"));
 }
@@ -1234,9 +1234,9 @@ IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebRuntimeDisabledBrowserTest,
 
   // Verify the navigation redirects contain the eligibility header.
   register_response1->WaitForRequest();
-  ASSERT_EQ(register_response1->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "navigation-source");
+  ExpectValidAttributionReportingEligibleHeaderForNavigation(
+      register_response1->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   ASSERT_FALSE(base::Contains(register_response1->http_request()->headers,
                               "Attribution-Reporting-Support"));
 
@@ -1249,9 +1249,9 @@ IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebRuntimeDisabledBrowserTest,
   // Ensure that redirect requests also don't contain the
   // Attribution-Reporting-Support header.
   register_response2->WaitForRequest();
-  EXPECT_EQ(register_response2->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "navigation-source");
+  ExpectValidAttributionReportingEligibleHeaderForNavigation(
+      register_response2->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   EXPECT_FALSE(base::Contains(register_response2->http_request()->headers,
                               "Attribution-Reporting-Support"));
 }

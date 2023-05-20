@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Åpne <ph name="TABS_COUNT_ONE" /> fane}other{Åpne <ph name="TABS_COUNT_MANY" /> faner}}</translation>
 <translation id="4811934403802581334">Alle de valgte fanene fra den valgte enheten blir gjenopprettet.</translation>
 <translation id="5336031759968328813">Gå gjennom alle fanene</translation>
+<translation id="8019269305087157499">Åpne fra</translation>
 <translation id="8725404154479306799">Hent faner du har åpnet på andre enheter</translation>
 </translationbundle>

@@ -50,20 +50,28 @@ class ASH_EXPORT SystemToastStyle : public views::View {
   // Updates the toast label text.
   void SetText(const std::u16string& text);
 
-  views::LabelButton* button() const { return button_; }
+  // Adds a second `views::LabelButton` to the end of the toast.
+  void AddSecondButton(base::RepeatingClosure second_button_callback,
+                       const std::u16string& second_button_text);
+
+  views::LabelButton* dismiss_button() const { return dismiss_button_; }
+  views::Label* label() const { return label_; }
 
  private:
   friend class ToastManagerImplTest;
 
   // views::View:
   void AddedToWidget() override;
-  void OnThemeChanged() override;
+
+  // Updates the layout's inside border insets based on the views contents.
+  void UpdateInsideBorderInsets();
 
   const raw_ptr<const gfx::VectorIcon, ExperimentalAsh> leading_icon_ = nullptr;
 
   // Owned by views hierarchy.
   raw_ptr<views::Label, ExperimentalAsh> label_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> button_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> dismiss_button_ = nullptr;
+  raw_ptr<views::LabelButton, ExperimentalAsh> second_button_ = nullptr;
   raw_ptr<views::ImageView, ExperimentalAsh> leading_icon_view_ = nullptr;
 
   // Tells the toast if the dismiss button is already highlighted if one exists.

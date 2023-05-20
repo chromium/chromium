@@ -294,7 +294,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(AutofillPopupControllerUnitTest, RemoveSuggestion) {
   ShowSuggestions({Suggestion::FrontendId(1), Suggestion::FrontendId(1),
-                   POPUP_ITEM_ID_AUTOFILL_OPTIONS});
+                   PopupItemId::kAutofillOptions});
 
   // Generate a popup, so it can be hidden later. It doesn't matter what the
   // external_delegate thinks is being shown in the process, since we are just
@@ -334,13 +334,13 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
   EXPECT_EQ(label1, result0.labels[0][0].value);
   EXPECT_EQ(std::u16string(), result0.additional_label);
   EXPECT_EQ(label1, popup_controller().GetSuggestionLabelsAt(0)[0][0].value);
-  EXPECT_EQ(POPUP_ITEM_ID_DATALIST_ENTRY, result0.frontend_id);
+  EXPECT_EQ(PopupItemId::kDatalistEntry, result0.frontend_id);
 
   Suggestion result1 = popup_controller().GetSuggestionAt(1);
   EXPECT_EQ(std::u16string(), result1.main_text.value);
   EXPECT_TRUE(result1.labels.empty());
   EXPECT_EQ(std::u16string(), result1.additional_label);
-  EXPECT_EQ(POPUP_ITEM_ID_SEPARATOR, result1.frontend_id);
+  EXPECT_EQ(PopupItemId::kSeparator, result1.frontend_id);
 
   Suggestion result2 = popup_controller().GetSuggestionAt(2);
   EXPECT_EQ(std::u16string(), result2.main_text.value);
@@ -372,7 +372,7 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
   EXPECT_EQ(label2, popup_controller().GetSuggestionAt(1).labels[0][0].value);
   EXPECT_EQ(std::u16string(),
             popup_controller().GetSuggestionAt(1).additional_label);
-  EXPECT_EQ(POPUP_ITEM_ID_SEPARATOR,
+  EXPECT_EQ(PopupItemId::kSeparator,
             popup_controller().GetSuggestionAt(2).frontend_id);
 
   // Clear all data list values.
@@ -385,7 +385,7 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
 
 TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
   // Create the popup with a single datalist element.
-  ShowSuggestions({POPUP_ITEM_ID_DATALIST_ENTRY});
+  ShowSuggestions({PopupItemId::kDatalistEntry});
 
   // Replace the datalist element with a new one.
   std::u16string value1 = u"data list value 1";
@@ -402,7 +402,7 @@ TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
   EXPECT_EQ(label1, popup_controller().GetSuggestionAt(0).labels[0][0].value);
   EXPECT_EQ(std::u16string(),
             popup_controller().GetSuggestionAt(0).additional_label);
-  EXPECT_EQ(POPUP_ITEM_ID_DATALIST_ENTRY,
+  EXPECT_EQ(PopupItemId::kDatalistEntry,
             popup_controller().GetSuggestionAt(0).frontend_id);
 
   // Clear datalist values and check that the popup becomes hidden.
@@ -468,7 +468,7 @@ TEST_F(AutofillPopupControllerUnitTest, GetOrCreate) {
 
 TEST_F(AutofillPopupControllerUnitTest, ProperlyResetController) {
   ShowSuggestions(
-      {POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+      {PopupItemId::kAutocompleteEntry, PopupItemId::kAutocompleteEntry});
 
   // Now show a new popup with the same controller, but with fewer items.
   WeakPtr<AutofillPopupControllerImpl> controller =

@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/ui/context_menu_params.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -237,13 +236,9 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
     web::WebState* source,
     NSArray<NSNumber*>* permissions,
     web::WebStatePermissionDecisionHandler handler) API_AVAILABLE(ios(15.0)) {
-  if (web::features::IsMediaPermissionsControlEnabled()) {
-    PermissionsTabHelper::FromWebState(source)
-        ->PresentPermissionsDecisionDialogWithCompletionHandler(permissions,
-                                                                handler);
-  } else {
-    handler(web::PermissionDecisionShowDefaultPrompt);
-  }
+  PermissionsTabHelper::FromWebState(source)
+      ->PresentPermissionsDecisionDialogWithCompletionHandler(permissions,
+                                                              handler);
 }
 
 void WebStateDelegateBrowserAgent::OnAuthRequired(

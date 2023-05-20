@@ -15,6 +15,8 @@
 
   --shortcuts-font-family-default: "Google Sans", Roboto, sans-serif;
   --shortcuts-font-size-default: 13px;
+
+  --shortcuts-lock-icon-color: var(--cros-icon-color-secondary);
 }
 
 :host-context(body.jelly-enabled) {
@@ -37,4 +39,18 @@
 
 :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
   border-radius: 20px;
+}
+
+iron-icon[icon='shortcut-customization:lock'] {
+  --iron-icon-fill-color: var(--shortcuts-lock-icon-color);
+}
+
+.lock-icon-container {
+  align-items: center;
+  display: flex;
+  margin-inline-start: 8px;
+}
+
+.lock-icon-container[hidden] {
+  display: none; /* Required for flexbox hidden. */
 }

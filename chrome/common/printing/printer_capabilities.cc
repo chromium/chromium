@@ -59,22 +59,19 @@ namespace {
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 // Iterate on the `Papers` of a given printer `info` and set the
-// `display_name` members, localizing where possible. We expect the
-// backend to have populated non-empty display names already, so we
-// don't touch media display names that we can't localize.
-// The `Papers` will be sorted in place when this function returns.
-void PopulateAndSortAllPaperDisplayNames(PrinterSemanticCapsAndDefaults& info) {
-  MediaSizeInfo default_paper_display =
-      LocalizePaperDisplayName(info.default_paper.vendor_id);
-  if (!default_paper_display.name.empty()) {
-    info.default_paper.display_name =
-        base::UTF16ToUTF8(default_paper_display.name);
-  }
+// `display_name` members, localizing where possible, as well as the `vendor_id`
+// members. The `Papers` will be sorted in place when this function returns.
+void PopulateAndSortAllPaperNames(PrinterSemanticCapsAndDefaults& info) {
+  MediaSizeInfo default_paper =
+      LocalizePaperDisplayName(info.default_paper.size_um);
+  info.default_paper.vendor_id = default_paper.vendor_id;
+  info.default_paper.display_name =
+      base::UTF16ToUTF8(default_paper.display_name);
 
   // Pair the paper entries with their sort info so they can be sorted.
   std::vector<PaperWithSizeInfo> size_list;
   for (PrinterSemanticCapsAndDefaults::Paper& paper : info.papers) {
-    size_list.emplace_back(LocalizePaperDisplayName(paper.vendor_id),
+    size_list.emplace_back(LocalizePaperDisplayName(paper.size_um),
                            std::move(paper));
   }
 
@@ -83,9 +80,8 @@ void PopulateAndSortAllPaperDisplayNames(PrinterSemanticCapsAndDefaults& info) {
   info.papers.clear();
   for (auto& pair : size_list) {
     auto& paper = info.papers.emplace_back(std::move(pair.paper));
-    if (!pair.size_info.name.empty()) {
-      paper.display_name = base::UTF16ToUTF8(pair.size_info.name);
-    }
+    paper.vendor_id = pair.size_info.vendor_id;
+    paper.display_name = base::UTF16ToUTF8(pair.size_info.display_name);
   }
 }
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
@@ -119,16 +115,17 @@ base::Value AssemblePrinterCapabilities(const std::string& device_name,
     return base::Value();
 
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
-  bool populate_paper_display_names = true;
+  bool populate_paper_names = true;
 #if BUILDFLAG(IS_MAC)
-  // Paper display name localization requires standardized vendor ID names
-  // populated by CUPS IPP. If the CUPS IPP backend is not enabled, localization
-  // will not properly occur.
-  populate_paper_display_names =
+  // Paper display name localization and vendor ID assignment is intended for
+  // use with the CUPS IPP backend. If the CUPS IPP backend is not enabled,
+  // localization will not properly occur.
+  populate_paper_names =
       base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend);
 #endif
-  if (populate_paper_display_names)
-    PopulateAndSortAllPaperDisplayNames(*caps);
+  if (populate_paper_names) {
+    PopulateAndSortAllPaperNames(*caps);
+  }
 #endif  // BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -889,7 +889,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             mTabSwitcherModule = new SingleTabSwitcherCoordinator(mActivity,
                     mView.getCarouselTabSwitcherContainer(), null, mTabModelSelector,
                     /* isTablet= */ false, /* isScrollableMvtEnabled */ true,
-                    /* mostRecentTab= */ null);
+                    /* mostRecentTab= */ null, /* singleTabCardClickedCallback */ null);
         }
         boolean isScrollableMVTEnabled =
                 !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity);

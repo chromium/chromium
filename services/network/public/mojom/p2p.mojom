@@ -36,6 +36,12 @@ struct P2PReceivedPacket {
   mojo_base.mojom.TimeTicks timestamp;
 };
 
+// Represents a packet sent through a socket.
+struct P2PSendPacket {
+  mojo_base.mojom.ReadOnlyBuffer data;
+  P2PPacketInfo packet_info;
+};
+
 interface P2PNetworkNotificationClient {
   NetworkListChanged(array<NetworkInterface> networks,
                      IPAddress default_ipv4_local_address,
@@ -68,6 +74,8 @@ interface P2PSocketManager {
 interface P2PSocket {
   Send(mojo_base.mojom.ReadOnlyBuffer data,
        P2PPacketInfo packet_info);
+  // Sends a batch of packets to the socket.
+  SendBatch(array<P2PSendPacket> packet_batch);
   SetOption(P2PSocketOption option, int32 value);
 };
 
@@ -77,6 +85,9 @@ interface P2PSocketClient {
 
   // Invoked once for each packet after the send is complete.
   SendComplete(P2PSendPacketMetrics send_metrics);
+
+  // Invoked once for each batch of sent packets after the send is complete.
+  SendBatchComplete(array<P2PSendPacketMetrics> send_metrics_batch);
 
   // Invoked when packets are received on the socket.
   DataReceived(array<P2PReceivedPacket> packets);

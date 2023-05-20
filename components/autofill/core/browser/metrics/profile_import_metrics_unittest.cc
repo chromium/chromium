@@ -114,6 +114,8 @@ TEST_F(AutofillProfileImportMetricsTest, ProfileImportStatus_RegularImport) {
 // 'perfect' profile import.
 TEST_F(AutofillProfileImportMetricsTest,
        ProfileImportRequirements_AllFulfilled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kAutofillRequireNameForProfileImport);
   // Set up our form data.
   FormData form = GetAndAddSeenForm(
       {.description_for_logging = "ProfileImportRequirements_AllFulfilled",
@@ -158,7 +160,7 @@ TEST_F(AutofillProfileImportMetricsTest,
       {AddressImportRequirements::kLine1RequirementViolated, false},
       {AddressImportRequirements::kZipOrStateRequirementFulfilled, true},
       {AddressImportRequirements::kZipOrStateRequirementViolated, false},
-      {AddressImportRequirements::kNameRequirementFulfilled, false},
+      {AddressImportRequirements::kNameRequirementFulfilled, true},
       {AddressImportRequirements::kNameRequirementViolated, false}};
 
   TestAddressProfileImportRequirements(&histogram_tester, expectations);
@@ -240,6 +242,8 @@ TEST_F(AutofillProfileImportMetricsTest,
 // 'perfect' profile import.
 TEST_F(AutofillProfileImportMetricsTest,
        ProfileImportRequirements_AllFulfilledForNonStateCountry) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kAutofillRequireNameForProfileImport);
   // Set up our form data.
   FormData form = test::GetFormData(
       {.description_for_logging =
@@ -292,7 +296,7 @@ TEST_F(AutofillProfileImportMetricsTest,
       {AddressImportRequirements::kLine1RequirementViolated, false},
       {AddressImportRequirements::kZipOrStateRequirementFulfilled, true},
       {AddressImportRequirements::kZipOrStateRequirementViolated, false},
-      {AddressImportRequirements::kNameRequirementFulfilled, false},
+      {AddressImportRequirements::kNameRequirementFulfilled, true},
       {AddressImportRequirements::kNameRequirementViolated, false}};
 
   TestAddressProfileImportRequirements(&histogram_tester, expectations);
@@ -306,6 +310,8 @@ TEST_F(AutofillProfileImportMetricsTest,
 // completely filled profile but with invalid values.
 TEST_F(AutofillProfileImportMetricsTest,
        ProfileImportRequirements_FilledButInvalidZipEmailAndState) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kAutofillRequireNameForProfileImport);
   // Set up our form data.
   test::FormDescription form_description = {
       .description_for_logging =
@@ -353,7 +359,7 @@ TEST_F(AutofillProfileImportMetricsTest,
       {AddressImportRequirements::kLine1RequirementViolated, false},
       {AddressImportRequirements::kZipOrStateRequirementFulfilled, true},
       {AddressImportRequirements::kZipOrStateRequirementViolated, false},
-      {AddressImportRequirements::kNameRequirementFulfilled, false},
+      {AddressImportRequirements::kNameRequirementFulfilled, true},
       {AddressImportRequirements::kNameRequirementViolated, false}};
 
   TestAddressProfileImportRequirements(&histogram_tester, expectations);
@@ -368,6 +374,8 @@ TEST_F(AutofillProfileImportMetricsTest,
 // profile with multiple email addresses.
 TEST_F(AutofillProfileImportMetricsTest,
        ProfileImportRequirements_NonUniqueEmail) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kAutofillRequireNameForProfileImport);
   // Set up our form data.
   FormData form = test::GetFormData(
       {.description_for_logging = "ProfileImportRequirements_NonUniqueEmail",
@@ -424,7 +432,7 @@ TEST_F(AutofillProfileImportMetricsTest,
       {AddressImportRequirements::kLine1RequirementViolated, false},
       {AddressImportRequirements::kZipOrStateRequirementFulfilled, true},
       {AddressImportRequirements::kZipOrStateRequirementViolated, false},
-      {AddressImportRequirements::kNameRequirementFulfilled, false},
+      {AddressImportRequirements::kNameRequirementFulfilled, true},
       {AddressImportRequirements::kNameRequirementViolated, false}};
 
   TestAddressProfileImportRequirements(&histogram_tester, expectations);

@@ -9,7 +9,5 @@
   "IKEv2.ClientCertSlot": "1",
   "IKEv2.LocalIdentity": "local-id",
   "IKEv2.RemoteIdentity": "remote-id",
-  "SaveCredentials": true,
-  "StaticIPConfig": {
-  }
+  "SaveCredentials": true
 }

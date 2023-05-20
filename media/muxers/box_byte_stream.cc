@@ -90,6 +90,20 @@ void BoxByteStream::WriteBytes(const void* buf, size_t len) {
   position_ += len;
 }
 
+void BoxByteStream::WriteString(base::StringPiece value) {
+  if (value.empty()) {
+    WriteU8(0);
+    return;
+  }
+
+  WriteBytes(value.data(), value.size());
+
+  // Ensure null terminated string.
+  if (value.back() != 0) {
+    WriteU8(0);
+  }
+}
+
 std::vector<uint8_t> BoxByteStream::Flush() {
   CHECK(!buffer_.empty());
 

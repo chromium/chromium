@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
@@ -53,7 +54,7 @@ TEST(PerformanceMarkTest, Construction) {
 
   ASSERT_EQ(SerializedScriptValue::NullValue()->Deserialize(isolate),
             pm->detail(script_state).V8Value());
-  ASSERT_EQ(1u, pm->navigationId());
+  ASSERT_TRUE(WTF::IsValidUUID(pm->navigationId()));
 }
 
 TEST(PerformanceMarkTest, ConstructionWithDetail) {

@@ -60,6 +60,11 @@ if (current_toolchain == default_toolchain) {
 
   template("chrome_public_bundle") {
     _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
+    if (_is_monochrome) {
+      _module_descs = monochrome_module_descs
+    } else {
+      _module_descs = chrome_module_descs
+    }
 
     _base_module_target_name = "${invoker.target_name}__base_bundle_module"
     chrome_public_apk_or_module_tmpl(_base_module_target_name) {
@@ -76,7 +81,13 @@ if (current_toolchain == default_toolchain) {
                                "resource_ids_provider_dep",
                              ])
       target_type = "android_app_bundle_module"
-      bundle_target = ":${invoker.target_name}"
+
+      srcjar_deps = []
+      foreach(_module_desc, _module_descs) {
+        if (defined(_module_desc.jni_registration)) {
+          srcjar_deps += [ _module_desc.jni_registration ]
+        }
+      }
 
       if (defined(invoker.expected_android_manifest_template)) {
         expected_android_manifest =
@@ -108,11 +119,7 @@ if (current_toolchain == default_toolchain) {
                              ])
       base_module_target = ":$_base_module_target_name"
       manifest_package = chrome_public_manifest_package
-      if (_is_monochrome) {
-        module_descs = monochrome_module_descs
-      } else {
-        module_descs = chrome_module_descs
-      }
+      module_descs = _module_descs
       chrome_deps = [ ":delegate_public_impl_java" ]
     }
   }
@@ -289,6 +296,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/android/webapk/libs/common:splash_java",
       "//chrome/android/webapk/libs/runtime_library:webapk_service_aidl_java",
       "//chrome/browser/accessibility/hierarchysnapshotter/android:java",
+      "//chrome/browser/android/auxiliary_search/proto:proto_java",
       "//chrome/browser/android/browserservices/intents:java",
       "//chrome/browser/android/browserservices/metrics:java",
       "//chrome/browser/android/browserservices/verification:java",
@@ -556,7 +564,6 @@ if (current_toolchain == default_toolchain) {
       "//mojo/public/java/system:system_impl_java",
       "//mojo/public/mojom/base:base_java",
       "//net/android:net_java",
-      "//services/audio/public/java:audio_feature_list_java",
       "//services/data_decoder/public/cpp/android:safe_json_java",
       "//services/device/public/java:device_feature_list_java",
       "//services/device/public/mojom:mojom_java",
@@ -752,6 +759,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/tabmodel/internal:java",
       "//chrome/browser/touch_to_fill/android/internal:java",
       "//chrome/browser/touch_to_fill/common/android:java",
+      "//chrome/browser/touch_to_fill/password_generation/android/internal:java",
       "//chrome/browser/touch_to_fill/payments/android/internal:java",
       "//chrome/browser/ui/android/appmenu/internal:java",
       "//chrome/browser/ui/android/autofill/internal:java",
@@ -873,6 +881,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/android/webapk/libs/common:common_java",
       "//chrome/android/webapk/libs/common:splash_java",
       "//chrome/android/webapk/test:junit_test_support",
+      "//chrome/browser/android/auxiliary_search/proto:proto_java",
       "//chrome/browser/android/browserservices/intents:java",
       "//chrome/browser/android/browserservices/intents:junit",
       "//chrome/browser/android/browserservices/metrics:java",
@@ -1096,6 +1105,8 @@ if (current_toolchain == default_toolchain) {
       "//components/webapk/android/libs/client:java",
       "//components/webapk/android/libs/common:java",
       "//components/webapps/browser/android:java",
+      "//components/webauthn/android:java",
+      "//components/webauthn/android:test_support_java",
       "//content/public/android:content_java",
       "//content/public/common:common_java",
       "//content/public/test/android:content_java_test_support",
@@ -1103,6 +1114,7 @@ if (current_toolchain == default_toolchain) {
       "//mojo/public/java:system_java",
       "//mojo/public/mojom/base:base_java",
       "//net/android:net_java",
+      "//services/device/public/java:device_feature_list_java",
       "//services/device/public/mojom:mojom_java",
       "//services/media_session/public/cpp/android:media_session_java",
       "//services/media_session/public/mojom:mojom_java",
@@ -1142,6 +1154,7 @@ if (current_toolchain == default_toolchain) {
       "//url:gurl_junit_tests",
       "//url:origin_java",
       "//url/mojom:url_mojom_gurl_java",
+      "//url/mojom:url_mojom_origin_java",
     ]
 
     deps += chrome_junit_test_java_deps
@@ -2765,6 +2778,7 @@ if (current_toolchain == default_toolchain) {
     ]
     data = [ "javatests/src/org/chromium/chrome/test/smoke/test.html" ]
     deps = [
+      "//base:base_java",
       "//base:base_java_test_support",
       "//chrome/test/android:chrome_java_test_pagecontroller",
       "//content/public/test/android:content_java_test_support",
@@ -3242,11 +3256,10 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
     "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePrompt.java",
     "java/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptController.java",
-    "java/src/org/chromium/chrome/browser/autofill/VirtualCardEnrollmentDelegate.java",
-    "java/src/org/chromium/chrome/browser/autofill/VirtualCardEnrollmentDialogViewBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsDelegate.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/AutofillProfileBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/settings/VirtualCardEnrollmentFields.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridge.java",
     "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskScheduler.java",
     "java/src/org/chromium/chrome/browser/background_sync/GooglePlayServicesChecker.java",
@@ -3500,6 +3513,7 @@ template("libchrome_impl") {
       deps += [ "//chrome/browser/android/vr:module_factory" ]
     }
 
+    java_targets = [ "//chrome/android:chrome_public_apk" ]
     forward_variables_from(invoker, "*", [ "deps" ])
   }
 }
@@ -3549,9 +3563,6 @@ chrome_common_shared_library("libchromefortest") {
   if (enable_vr) {
     deps += [ "//chrome/browser/android/vr:test_support" ]
   }
-  if (allow_jni_multiplexing) {
-    enable_jni_multiplexing = true
-  }
 
   # Make this a partitioned library, since some partitioned code is linked in
   # (otherwise, the library will warn at build time that it contains multiple
@@ -3559,6 +3570,19 @@ chrome_common_shared_library("libchromefortest") {
   # required or packaged into the APK. This can be removed if LLD starts
   # supporting a "no partitions" argument (https://crbug.com/1021108).
   module_descs = []
+
+  java_targets = [
+    "//chrome/android:chrome_public_unit_test_apk__test_apk",
+    "//chrome/android:chrome_public_test_apk__test_apk",
+    "//chrome/test/android:chrome_java_test_pagecontroller_tests__test_apk",
+    "//chrome/test/android:chrome_java_test_wpr_tests__test_apk",
+    "//chrome/test/android:chrome_java_test_feed_test__test_apk",
+    "//chrome/test/android:chrome_webapk_integration_tests__test_apk",
+    "//chrome/test/android:chrome_java_test_pagecontroller_codelab__test_apk",
+  ]
+  if (enable_vr) {
+    java_targets += [ "//chrome/android:chrome_public_test_vr_apk__test_apk" ]
+  }
 }
 
 # Monochrome equivalent of Chrome's APK or bundle library template.
@@ -3582,6 +3606,11 @@ template("libmonochrome_apk_or_bundle_tmpl") {
 
     if (allow_jni_multiplexing) {
       enable_jni_multiplexing = true
+    }
+    if (android_64bit_target_cpu) {
+      java_targets = [ "//chrome/android:monochrome_64_public_bundle" ]
+    } else {
+      java_targets = [ "//chrome/android:monochrome_public_bundle" ]
     }
 
     if (enable_vr) {

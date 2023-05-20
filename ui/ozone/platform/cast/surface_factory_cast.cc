@@ -32,8 +32,7 @@ class DummySurface : public SurfaceOzoneCanvas {
   SkCanvas* GetCanvas() override { return surface_->getCanvas(); }
 
   void ResizeCanvas(const gfx::Size& viewport_size, float scale) override {
-    surface_ =
-        SkSurface::MakeNull(viewport_size.width(), viewport_size.height());
+    surface_ = SkSurfaces::Null(viewport_size.width(), viewport_size.height());
   }
 
   void PresentCanvas(const gfx::Rect& damage) override {}

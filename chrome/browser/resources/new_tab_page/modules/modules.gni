@@ -10,7 +10,6 @@ import("./history_clusters/history_clusters.gni")
 import("./history_clusters_v2/history_clusters_v2.gni")
 import("./photos/photos.gni")
 import("./recipes/recipes.gni")
-import("./recipes_v2/recipes_v2.gni")
 
 if (!is_official_build) {
   import("./dummy_v2/dummy_v2.gni")
@@ -39,8 +38,8 @@ modules_web_component_files =
       "modules/module_wrapper.ts",
     ] + cart_web_component_files + drive_web_component_files +
     drive_v2_web_component_files + feed_web_component_files +
-    photos_web_component_files + recipes_v2_web_component_files +
-    recipes_web_component_files + history_clusters_web_component_files +
+    photos_web_component_files + recipes_web_component_files +
+    history_clusters_web_component_files +
     history_clusters_v2_web_component_files
 
 if (!is_official_build) {

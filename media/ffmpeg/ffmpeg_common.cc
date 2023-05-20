@@ -740,7 +740,7 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       AVMasteringDisplayMetadata* metadata =
           reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
       if (metadata->has_primaries) {
-        hdr_metadata.color_volume_metadata.primaries = {
+        hdr_metadata.smpte_st_2086.primaries = {
             static_cast<float>(av_q2d(metadata->display_primaries[0][0])),
             static_cast<float>(av_q2d(metadata->display_primaries[0][1])),
             static_cast<float>(av_q2d(metadata->display_primaries[1][0])),
@@ -752,9 +752,9 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
         };
       }
       if (metadata->has_luminance) {
-        hdr_metadata.color_volume_metadata.luminance_max =
+        hdr_metadata.smpte_st_2086.luminance_max =
             av_q2d(metadata->max_luminance);
-        hdr_metadata.color_volume_metadata.luminance_min =
+        hdr_metadata.smpte_st_2086.luminance_min =
             av_q2d(metadata->min_luminance);
       }
     }

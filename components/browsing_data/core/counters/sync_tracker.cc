@@ -5,7 +5,7 @@
 #include "components/browsing_data/core/counters/sync_tracker.h"
 
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace browsing_data {
 

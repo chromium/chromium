@@ -63,7 +63,6 @@ extern const char kUserPolicyNotificationWasShown[];
 extern const char kEventPathEnabled[];
 extern const char kOffsetParentNewSpecBehaviorEnabled[];
 extern const char kSendMouseEventsDisabledFormControlsEnabled[];
-extern const char kForceEnablePepperVideoDecoderDevAPI[];
 extern const char kForceGoogleSafeSearch[];
 extern const char kForceYouTubeRestrict[];
 extern const char kHideWebStoreIcon[];

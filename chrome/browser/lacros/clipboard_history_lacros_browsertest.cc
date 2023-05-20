@@ -13,17 +13,48 @@
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
-using ClipboardHistoryBrowserTest = InProcessBrowserTest;
+class ClipboardHistoryRefreshLacrosTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<
+          /*enable_clipboard_history_refresh=*/bool> {
+ public:
+  // InProcessBrowserTest:
+  void SetUp() override {
+    std::vector<std::string> enabled_features{"ClipboardHistoryRefresh",
+                                              "Jelly"};
+    std::vector<std::string> disabled_features;
+    if (!GetParam()) {
+      std::swap(enabled_features, disabled_features);
+    }
+    StartUniqueAshChrome(enabled_features, disabled_features,
+                         /*additional_cmdline_switches=*/{},
+                         /*bug_number_and_reason=*/
+                         {"b/267681869 Switch to shared ash when clipboard "
+                          "history refresh is enabled by default"});
+
+    InProcessBrowserTest::SetUp();
+  }
+
+  // Returns whether the clipboard history interface is available. It may not be
+  // available on earlier versions of Ash Chrome.
+  bool IsInterfaceAvailable() const {
+    chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+    return lacros_service &&
+           lacros_service->IsAvailable<crosapi::mojom::ClipboardHistory>();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ClipboardHistoryRefreshLacrosTest,
+                         /*enable_clipboard_history_refresh=*/testing::Bool());
 
 // Verifies that the Lacros render view context menu clipboard history option is
 // enabled when and only when there are clipboard item(s) to show.
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, MenuOptionEnabled) {
+IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest, MenuOptionEnabled) {
   // If the clipboard history interface is not available on this version of
   // ash-chrome, this test cannot meaningfully run.
-  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
-  if (!lacros_service ||
-      !lacros_service->IsAvailable<crosapi::mojom::ClipboardHistory>()) {
-    GTEST_SKIP() << "Unsupported Ash version.";
+  if (!IsInterfaceAvailable()) {
+    return;
   }
 
   content::ContextMenuParams params;

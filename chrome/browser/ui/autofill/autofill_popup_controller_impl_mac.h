@@ -7,6 +7,10 @@
 
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @class WebTextfieldTouchBarController;
 
 namespace autofill {
@@ -44,7 +48,7 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
 
  private:
   // The controller providing the autofill touch bar.
-  WebTextfieldTouchBarController* touch_bar_controller_;  // weak.
+  WebTextfieldTouchBarController* __weak touch_bar_controller_;
 
   // True if the popup contains credit card items.
   BOOL is_credit_card_popup_;

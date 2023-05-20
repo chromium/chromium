@@ -149,7 +149,7 @@ ChromeWebViewInternalShowContextMenuFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // TODO(lazyboy): Actually implement filtering menu items.
-  guest_->ShowContextMenu(params->request_id);
+  GetGuest().ShowContextMenu(params->request_id);
   return RespondNow(NoArguments());
 }
 

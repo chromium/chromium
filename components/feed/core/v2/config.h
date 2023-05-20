@@ -19,7 +19,7 @@ struct Config {
   // ActionUpload.
   int max_feed_query_requests_per_day = 20;
   int max_next_page_requests_per_day = 20;
-  int max_action_upload_requests_per_day = 20;
+  int max_action_upload_requests_per_day = 50;
   int max_list_recommended_web_feeds_requests_per_day = 20;
   int max_list_web_feeds_requests_per_day = 20;
   // We'll always attempt to refresh content older than this.

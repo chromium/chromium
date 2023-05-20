@@ -41,6 +41,9 @@
 #include "components/webxr/android/cardboard_device_provider.h"
 #include "components/webxr/android/vr_compositor_delegate_provider.h"
 #endif
+#if BUILDFLAG(ENABLE_OPENXR)
+#include "components/webxr/android/openxr_device_provider.h"
+#endif
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -119,11 +122,18 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
   content::XRProviderList providers;
 
 #if BUILDFLAG(IS_ANDROID)
-  bool add_gvr_device_provider = true;
+  // May be unused if all runtimes are disabled.
+  [[maybe_unused]] bool preferred_vr_runtime_added = false;
+#if BUILDFLAG(ENABLE_OPENXR)
+  if (!preferred_vr_runtime_added &&
+      base::FeatureList::IsEnabled(device::features::kOpenXR)) {
+    providers.emplace_back(std::make_unique<webxr::OpenXrDeviceProvider>());
+    preferred_vr_runtime_added = true;
+  }
+#endif  // BUILDFLAG(ENABLE_OPENXR)
 #if BUILDFLAG(ENABLE_CARDBOARD)
-  // If the cardboard runtime is enabled we want to use it rather than the GVR
-  // runtime.
-  if (base::FeatureList::IsEnabled(device::features::kEnableCardboard)) {
+  if (!preferred_vr_runtime_added &&
+      base::FeatureList::IsEnabled(device::features::kEnableCardboard)) {
     base::android::ScopedJavaLocalRef<jobject>
         j_vr_compositor_delegate_provider =
             vr::Java_VrCompositorDelegateProviderImpl_Constructor(
@@ -131,14 +141,15 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
     providers.emplace_back(std::make_unique<webxr::CardboardDeviceProvider>(
         std::make_unique<webxr::VrCompositorDelegateProvider>(
             std::move(j_vr_compositor_delegate_provider))));
-    add_gvr_device_provider = false;
+    preferred_vr_runtime_added = true;
   }
-#endif  // ENABLE_CARDBOARD
-  if (add_gvr_device_provider) {
+#endif  // BUILDFLAG(ENABLE_CARDBOARD)
 #if BUILDFLAG(ENABLE_GVR_SERVICES)
+  if (!preferred_vr_runtime_added) {
     providers.push_back(std::make_unique<device::GvrDeviceProvider>());
-#endif
+    preferred_vr_runtime_added = true;
   }
+#endif  // BUILDFLAG(ENABLE_GVR_SERVICES)
 #if BUILDFLAG(ENABLE_ARCORE)
   base::android::ScopedJavaLocalRef<jobject> j_ar_compositor_delegate_provider =
       vr::Java_ArCompositorDelegateProviderImpl_Constructor(

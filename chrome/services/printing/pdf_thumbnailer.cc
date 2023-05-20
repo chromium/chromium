@@ -82,4 +82,8 @@ void PdfThumbnailer::GetThumbnail(printing::mojom::ThumbParamsPtr params,
   std::move(callback).Run(result);
 }
 
+void PdfThumbnailer::SetUseSkiaRendererPolicy(bool use_skia) {
+  chrome_pdf::SetUseSkiaRendererPolicy(use_skia);
+}
+
 }  // namespace printing

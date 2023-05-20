@@ -16,8 +16,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/glue/sync_transport_data_prefs.h"
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/service/glue/sync_transport_data_prefs.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -28,16 +28,17 @@
 namespace {
 
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(46 == syncer::GetNumModelTypes(),
+  static_assert(48 == syncer::GetNumModelTypes(),
                 "Add new types below if they run in transport mode");
-  // Only some special allowlisted types (and control types) are allowed in
-  // standalone transport mode.
+  // Only some types will run by default in transport mode (i.e. without their
+  // own separate opt-in).
   syncer::ModelTypeSet allowed_types = {
       syncer::DEVICE_INFO,     syncer::USER_CONSENTS,
       syncer::SECURITY_EVENTS, syncer::AUTOFILL_WALLET_DATA,
       syncer::CONTACT_INFO,    syncer::SHARING_MESSAGE};
   allowed_types.PutAll(syncer::ControlTypes());
   allowed_types.Put(syncer::SEND_TAB_TO_SELF);
+  allowed_types.Put(syncer::READING_LIST);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // OS sync types run in transport mode.
   allowed_types.PutAll(

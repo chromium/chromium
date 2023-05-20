@@ -7,6 +7,10 @@
     grid-template-columns: minmax(min-content, 286px) 50%;
   }
 
+  #container:hover accelerator-view::part(edit-icon) {
+    opacity: 1;
+  }
+
   accelerator-view,
   text-accelerator {
     line-height: 3.2;
@@ -32,6 +36,12 @@
     text-align: initial;
   }
 
+  #container:has(text-accelerator) #descriptionText {
+    /* For text accelerator descriptions, adjust height so that the description
+     * is centered in the container. */
+    height: 100%;
+  }
+
   td {
     display: flex;
     flex-direction: column;
@@ -45,14 +55,19 @@
   <th id="descriptionText" scope="row">[[description]]</th>
   <td>
     <template is="dom-if" if="[[isDefaultLayout(layoutStyle)]]">
-      <template is="dom-repeat" items="[[acceleratorInfos]]">
+      <template is="dom-repeat" items="[[getFilteredAccelerators(acceleratorInfos)]]">
         <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
-            action="[[action]]" source="[[source]]" source-is-locked="[[isLocked]]">
+            action="[[action]]" source="[[source]]" source-is-locked="[[isLocked]]"
+            show-edit-icon="true">
         </accelerator-view>
       </template>
+      <div id="noShortcutAssigned" hidden="[[!isEmptyList(acceleratorInfos)]]">
+        [[i18n('noShortcutAssigned')]]
+      </div>
     </template>
     <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">
-      <text-accelerator parts="[[getTextAcceleratorParts(acceleratorInfos)]]">
+      <text-accelerator parts="[[getTextAcceleratorParts(acceleratorInfos)]]"
+          action="[[action]]" source="[[source]]">
       </text-accelerator>
     </template>
   </td>

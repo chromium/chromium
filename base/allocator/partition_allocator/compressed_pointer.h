@@ -12,8 +12,9 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 
-#if PA_CONFIG(POINTER_COMPRESSION)
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 #if !BUILDFLAG(GLUE_CORE_POOLS)
 #error "Pointer compression only works with glued pools"
@@ -22,7 +23,7 @@
 #error "Pointer compression currently supports constant pool size"
 #endif
 
-#endif  // PA_CONFIG(POINTER_COMPRESSION)
+#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 namespace partition_alloc {
 
@@ -32,7 +33,7 @@ template <typename T1, typename T2>
 constexpr bool IsDecayedSame =
     std::is_same_v<std::decay_t<T1>, std::decay_t<T2>>;
 
-#if PA_CONFIG(POINTER_COMPRESSION)
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 // Pointer compression works by storing only the 'useful' 32-bit part of the
 // pointer. The other half (the base) is stored in a global variable
@@ -117,11 +118,11 @@ class CompressedPointerBaseGlobal final {
   friend class PartitionAddressSpace;
 };
 
-#endif  // PA_CONFIG(POINTER_COMPRESSION)
+#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 }  // namespace internal
 
-#if PA_CONFIG(POINTER_COMPRESSION)
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 template <typename T>
 class PA_TRIVIAL_ABI CompressedPointer final {
@@ -443,7 +444,7 @@ PA_ALWAYS_INLINE constexpr bool operator>=(T* a, CompressedPointer<U> b) {
   return static_cast<CompressedPointer<T>>(a) >= b;
 }
 
-#endif  // PA_CONFIG(POINTER_COMPRESSION)
+#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 // Simple wrapper over the raw pointer.
 template <typename T>

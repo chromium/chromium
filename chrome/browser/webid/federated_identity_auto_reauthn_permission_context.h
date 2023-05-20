@@ -40,7 +40,9 @@ class FederatedIdentityAutoReauthnPermissionContext
       const url::Origin& relying_party_embedder) override;
   base::Time GetAutoReauthnEmbargoStartTime(
       const url::Origin& relying_party_embedder) override;
-  void RecordDisplayAndEmbargo(
+  void RecordEmbargoForAutoReauthn(
+      const url::Origin& relying_party_embedder) override;
+  void RemoveEmbargoForAutoReauthn(
       const url::Origin& relying_party_embedder) override;
   void SetRequiresUserMediation(const GURL& rp_url,
                                 bool requires_user_mediation) override;

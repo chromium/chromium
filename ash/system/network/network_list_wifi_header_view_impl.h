@@ -31,7 +31,7 @@ class ASH_EXPORT NetworkListWifiHeaderViewImpl
 
   // Used for testing.
   static constexpr int kJoinWifiButtonId =
-      NetworkListNetworkHeaderView::kToggleButtonId + 1;
+      NetworkListNetworkHeaderView::kToggleButtonId + 2;
 
   // NetworkListNetworkHeaderView:
   void AddExtraButtons() override;

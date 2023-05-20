@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "highlight_style_utils.cc": [
+    "+components/shared_highlighting/core/common/fragment_directives_constants.h",
+  ],
+}

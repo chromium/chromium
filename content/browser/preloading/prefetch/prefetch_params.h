@@ -121,6 +121,15 @@ bool IsContentPrefetchHoldback();
 // The maximum retry-after header value that will be persisted.
 base::TimeDelta PrefetchMaximumRetryAfterDelta();
 
+// Returns true if |kPrefetchNewLimits| is enabled.
+bool PrefetchNewLimitsEnabled();
+// Returns the max number of eager prefetches allowed (only used when
+// PrefetchNewLimits is enabled).
+size_t MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits();
+// Returns the max number of non-eager prefetches allowed (only used when
+// PrefetchNewLimits is enabled).
+size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_

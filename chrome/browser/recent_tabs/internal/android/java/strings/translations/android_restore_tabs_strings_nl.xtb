@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad openen}other{<ph name="TABS_COUNT_MANY" /> tabbladen openen}}</translation>
 <translation id="4811934403802581334">Alle geselecteerde tabbladen van het huidige geselecteerde apparaat worden hersteld.</translation>
 <translation id="5336031759968328813">Alle tabbladen checken</translation>
+<translation id="8019269305087157499">Openen vanuit</translation>
 <translation id="8725404154479306799">Tabbladen ophalen die je op oude apparaten hebt achtergelaten</translation>
 </translationbundle>

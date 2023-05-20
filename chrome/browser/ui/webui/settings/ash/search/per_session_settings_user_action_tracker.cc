@@ -33,18 +33,28 @@ void LogDurationMetric(const char* metric_name, base::TimeDelta duration) {
 }  // namespace
 
 PerSessionSettingsUserActionTracker::PerSessionSettingsUserActionTracker()
-    : metric_start_time_(base::TimeTicks::Now()) {}
+    : metric_start_time_(base::TimeTicks::Now()),
+      window_last_active_timestamp_(base::TimeTicks::Now()) {}
 
-PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() =
-    default;
+PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
+  RecordPageActiveTime();
+  LogDurationMetric("ChromeOS.Settings.WindowTotalActiveDuration",
+                    total_time_session_active_);
+
+  base::UmaHistogramCounts1000(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.PerSession",
+      changed_settings_.size());
+}
 
 void PerSessionSettingsUserActionTracker::RecordPageFocus() {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  window_last_active_timestamp_ = now;
+
   if (last_blur_timestamp_.is_null())
     return;
 
   // Log the duration of being blurred.
-  const base::TimeDelta blurred_duration =
-      base::TimeTicks::Now() - last_blur_timestamp_;
+  const base::TimeDelta blurred_duration = now - last_blur_timestamp_;
   LogDurationMetric("ChromeOS.Settings.BlurredWindowDuration",
                     blurred_duration);
 
@@ -57,8 +67,17 @@ void PerSessionSettingsUserActionTracker::RecordPageFocus() {
   }
 }
 
+void PerSessionSettingsUserActionTracker::RecordPageActiveTime() {
+  if (window_last_active_timestamp_ != base::TimeTicks()) {
+    total_time_session_active_ +=
+        base::TimeTicks::Now() - window_last_active_timestamp_;
+  }
+  window_last_active_timestamp_ = base::TimeTicks();
+}
+
 void PerSessionSettingsUserActionTracker::RecordPageBlur() {
   last_blur_timestamp_ = base::TimeTicks::Now();
+  RecordPageActiveTime();
 }
 
 void PerSessionSettingsUserActionTracker::RecordClick() {
@@ -73,7 +92,11 @@ void PerSessionSettingsUserActionTracker::RecordSearch() {
   ++num_searches_since_start_time_;
 }
 
-void PerSessionSettingsUserActionTracker::RecordSettingChange() {
+void PerSessionSettingsUserActionTracker::RecordSettingChange(
+    absl::optional<chromeos::settings::mojom::Setting> setting) {
+  if (setting.has_value()) {
+    changed_settings_.insert(setting.value());
+  }
   base::TimeTicks now = base::TimeTicks::Now();
 
   if (!last_record_setting_changed_timestamp_.is_null()) {

@@ -1140,6 +1140,38 @@ TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case4) {
   EXPECT_FALSE(window_state->IsPinned());
 }
 
+TEST_F(TabletModeWindowManagerTest, KeepPinnedModeOn_Case5) {
+  std::unique_ptr<aura::Window> w1(CreateWindow(
+      aura::client::WINDOW_TYPE_NORMAL, gfx::Rect(20, 140, 100, 100)));
+  WindowState* window_state = WindowState::Get(w1.get());
+  EXPECT_FALSE(window_state->IsPinned());
+
+  CreateTabletModeWindowManager();
+  EXPECT_FALSE(window_state->IsPinned());
+
+  // Pin the window.
+  {
+    WMEvent event(WM_EVENT_PIN);
+    window_state->OnWMEvent(&event);
+  }
+  EXPECT_TRUE(window_state->IsPinned());
+
+  // Trigger ADDED_TO_WORKSPACE event.
+  {
+    WMEvent event(WM_EVENT_ADDED_TO_WORKSPACE);
+    window_state->OnWMEvent(&event);
+  }
+  EXPECT_TRUE(window_state->IsPinned());
+
+  // Then unpin.
+  window_state->Restore();
+  EXPECT_FALSE(window_state->IsPinned());
+
+  // Exit tablet mode.
+  DestroyTabletModeWindowManager();
+  EXPECT_FALSE(window_state->IsPinned());
+}
+
 // Verifies that if a window is un-full-screened while in tablet mode,
 // other changes to that window's state (such as minimizing it) are
 // preserved upon exiting tablet mode.

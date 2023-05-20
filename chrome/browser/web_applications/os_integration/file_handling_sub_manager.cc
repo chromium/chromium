@@ -108,7 +108,6 @@ void FileHandlingSubManager::Configure(
   }
 
   proto::FileHandling* os_file_handling = desired_state.mutable_file_handling();
-
   // GetAppFileHandlers should never return a nullptr because of the registrar
   // checks above.
   for (const auto& file_handler : *registrar_->GetAppFileHandlers(app_id)) {
@@ -128,17 +127,6 @@ void FileHandlingSubManager::Configure(
       }
     }
   }
-
-#if BUILDFLAG(IS_MAC)
-  if (AreSubManagersExecuteEnabled()) {
-    // Save file handlers data on `AppShimRegistry` to be used during
-    // `ShortcutSubManager::Execute`.
-    AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-        app_id, profile_path_,
-        GetFileExtensionsFromFileHandlingProto(desired_state.file_handling()),
-        GetMimeTypesFromFileHandlingProto(desired_state.file_handling()));
-  }
-#endif
 
   std::move(configure_done).Run();
 }

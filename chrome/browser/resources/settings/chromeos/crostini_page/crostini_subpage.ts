@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/settings_toggle_button.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import './crostini_confirmation_dialog.js';
 import './crostini_disk_resize_dialog.js';
 import './crostini_disk_resize_confirmation_dialog.js';

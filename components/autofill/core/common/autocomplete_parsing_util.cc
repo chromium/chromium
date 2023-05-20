@@ -101,32 +101,6 @@ bool ContactTypeHintMatchesFieldType(const std::string& token,
   return false;
 }
 
-// Rationalizes the HTML `type` of `field`, based on the fields properties. At
-// the moment only `max_length` is considered. For example, a max_length of 4
-// might indicate a 4 digit year.
-// In case no rationalization rule applies, the original type is returned.
-HtmlFieldType RationalizeAutocompleteType(HtmlFieldType type,
-                                          uint64_t field_max_length) {
-  // (original-type, max-length) -> new-type
-  static constexpr auto rules =
-      base::MakeFixedFlatMap<std::pair<HtmlFieldType, uint64_t>, HtmlFieldType>(
-          {
-              {{HtmlFieldType::kAdditionalName, 1},
-               HtmlFieldType::kAdditionalNameInitial},
-              {{HtmlFieldType::kCreditCardExp, 5},
-               HtmlFieldType::kCreditCardExpDate2DigitYear},
-              {{HtmlFieldType::kCreditCardExp, 7},
-               HtmlFieldType::kCreditCardExpDate4DigitYear},
-              {{HtmlFieldType::kCreditCardExpYear, 2},
-               HtmlFieldType::kCreditCardExp2DigitYear},
-              {{HtmlFieldType::kCreditCardExpYear, 4},
-               HtmlFieldType::kCreditCardExp4DigitYear},
-          });
-
-  auto* it = rules.find(std::make_pair(type, field_max_length));
-  return it == rules.end() ? type : it->second;
-}
-
 // Chrome Autofill supports a subset of the field types listed at
 // http://is.gd/whatwg_autocomplete. Returns the corresponding HtmlFieldType, if
 // `value` matches any of them.
@@ -211,9 +185,7 @@ std::string AutocompleteParsingResult::ToString() const {
                        FieldTypeToStringPiece(field_type), "'"});
 }
 
-HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
-    std::string value,
-    uint64_t field_max_length) {
+HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
   if (value.empty())
     return HtmlFieldType::kUnspecified;
 
@@ -233,7 +205,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
   }
 
   if (type.has_value())
-    return RationalizeAutocompleteType(type.value(), field_max_length);
+    return *type;
 
   // `value` cannot be mapped to any HtmlFieldType. By classifying the field
   // as HtmlFieldType::kUnrecognized Autofill is effectively disabled.
@@ -248,8 +220,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
 }
 
 absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
-    base::StringPiece autocomplete_attribute,
-    uint64_t field_max_length) {
+    base::StringPiece autocomplete_attribute) {
   std::vector<std::string> tokens =
       LowercaseAndTokenizeAttributeString(autocomplete_attribute);
 
@@ -275,8 +246,7 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
   // (1) The final token must be the field type.
   std::string field_type_token = tokens.back();
   tokens.pop_back();
-  result.field_type = FieldTypeFromAutocompleteAttributeValue(field_type_token,
-                                                              field_max_length);
+  result.field_type = FieldTypeFromAutocompleteAttributeValue(field_type_token);
 
   // (2) The preceding token, if any, may be a type hint.
   if (!tokens.empty() && IsContactTypeHint(tokens.back())) {
@@ -344,9 +314,9 @@ bool IsAutocompleteTypeWrongButWellIntended(
   // for them.
   bool is_field_type_password = field_type_token == "new-password" ||
                                 field_type_token == "current-password";
-  if (is_field_type_password || FieldTypeFromAutocompleteAttributeValue(
-                                    field_type_token, /*field_max_length=*/0) !=
-                                    HtmlFieldType::kUnrecognized) {
+  if (is_field_type_password ||
+      FieldTypeFromAutocompleteAttributeValue(field_type_token) !=
+          HtmlFieldType::kUnrecognized) {
     return false;
   }
 

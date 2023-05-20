@@ -2264,17 +2264,21 @@ const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   DCHECK_NE(style.ContainerType() & kContainerTypeSize,
             kContainerTypeBlockSize);
+
   if (style.ContainerType() == kContainerTypeNormal) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
-  if (style.ContainerType() == kContainerTypeSize) {
-    return CSSIdentifierValue::Create(CSSValueID::kSize);
+  CSSValueList* values = CSSValueList::CreateSpaceSeparated();
+  if ((style.ContainerType() & kContainerTypeBlockSize) ==
+      kContainerTypeBlockSize) {
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kSize));
+  } else if (style.ContainerType() & kContainerTypeInlineSize) {
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kInlineSize));
   }
-  if (style.ContainerType() == kContainerTypeInlineSize) {
-    return CSSIdentifierValue::Create(CSSValueID::kInlineSize);
+  if (style.ContainerType() & kContainerTypeSticky) {
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kSticky));
   }
-  NOTREACHED();
-  return nullptr;
+  return values;
 }
 
 namespace {
@@ -9802,6 +9806,33 @@ const CSSValue* WebkitTextStrokeWidth::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return ZoomAdjustedPixelValue(style.TextStrokeWidth(), style);
+}
+
+const CSSValue* TimelineScope::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  if (range.Peek().Id() == CSSValueID::kNone) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
+  using css_parsing_utils::ConsumeCommaSeparatedList;
+  using css_parsing_utils::ConsumeCustomIdent;
+  return ConsumeCommaSeparatedList(ConsumeCustomIdent, range, context);
+}
+
+const CSSValue* TimelineScope::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  if (!style.TimelineScope()) {
+    return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kNone);
+  }
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (const Member<const ScopedCSSName>& name :
+       style.TimelineScope()->GetNames()) {
+    list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(name->GetName()));
+  }
+  return list;
 }
 
 const CSSValue* ToggleGroup::ParseSingleValue(

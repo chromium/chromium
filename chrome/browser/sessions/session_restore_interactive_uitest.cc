@@ -22,6 +22,7 @@
 #include "components/sessions/content/content_test_helper.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 class SessionRestoreInteractiveTest : public InProcessBrowserTest {
  public:
@@ -171,7 +172,12 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
 IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
                        MAYBE_RestoreMinimizedWindow) {
   // Minimize the window.
+  views::test::PropertyWaiter minimize_waiter(
+      base::BindRepeating(&ui::BaseWindow::IsMinimized,
+                          base::Unretained(browser()->window())),
+      true);
   browser()->window()->Minimize();
+  EXPECT_TRUE(minimize_waiter.Wait());
 
   // Restart and session restore the tabs.
   Browser* restored = QuitBrowserAndRestore(browser());
@@ -201,7 +207,12 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
   CreateBrowser(browser()->profile());
 
   // Minimize the first browser window.
+  views::test::PropertyWaiter minimize_waiter(
+      base::BindRepeating(&ui::BaseWindow::IsMinimized,
+                          base::Unretained(browser()->window())),
+      true);
   browser()->window()->Minimize();
+  EXPECT_TRUE(minimize_waiter.Wait());
 
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
 

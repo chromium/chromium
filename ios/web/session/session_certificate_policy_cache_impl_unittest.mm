@@ -109,7 +109,7 @@ TEST_F(SessionCertificatePolicyCacheImplTest,
             GetJudgmenet(cache, cert_, host_, status_));
   // Add allowed certificates to the CertificatePolicyCache and verify that it's
   // now allowed by the CertificatePolicyCache.
-  cache_.UpdateCertificatePolicyCache(cache);
+  cache_.UpdateCertificatePolicyCache();
   EXPECT_EQ(web::CertPolicy::Judgment::ALLOWED,
             GetJudgmenet(cache, cert_, host_, status_));
 }

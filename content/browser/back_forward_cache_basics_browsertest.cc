@@ -232,8 +232,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   EXPECT_THAT(
       GetTreeResult()->GetDocumentResult(),
       MatchesDocumentResult(
-          NotRestoredReasons(NotRestoredReason::kRelatedActiveContentsExist,
-                             NotRestoredReason::kBrowsingInstanceNotSwapped),
+          NotRestoredReasons({NotRestoredReason::kRelatedActiveContentsExist,
+                              NotRestoredReason::kBrowsingInstanceNotSwapped}),
           BlockListedFeatures()));
 
   // 4) Make the popup drop the window.opener connection. It happens when the

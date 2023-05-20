@@ -31,9 +31,9 @@ BLINK_COMMON_EXPORT bool IsTrialEnabledForInsecureContext(
 BLINK_COMMON_EXPORT bool IsTrialEnabledForThirdPartyOrigins(
     base::StringPiece trial_name);
 
-// Return true if |trial_name| can be enabled for read/write access by the
-// browser process.
-BLINK_COMMON_EXPORT bool IsTrialEnabledForBrowserProcessReadWriteAccess(
+// Return true if |trial_name| can be enabled for read access by the browser
+// process.
+BLINK_COMMON_EXPORT bool IsTrialEnabledForBrowserProcessReadAccess(
     base::StringPiece trial_name);
 
 // Returns true if |trial_name| should be enabled until the next response

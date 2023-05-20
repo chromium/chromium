@@ -24,6 +24,7 @@ source_set("oobe_quick_start") {
     "//chromeos/ash/components/attestation:attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/ash/components/dbus/constants:constants",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//components/account_id:account_id",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/prefs:prefs",

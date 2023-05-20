@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
-#include "third_party/blink/renderer/core/animation/view_timeline.h"
+#include "third_party/blink/renderer/core/animation/timeline_range.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -57,7 +57,7 @@ void Keyframe::AddKeyframePropertiesToV8Object(V8ObjectBuilder& object_builder,
                            EffectModel::CompositeOperationToString(composite_));
 }
 
-bool Keyframe::ResolveTimelineOffset(const ViewTimeline* view_timeline,
+bool Keyframe::ResolveTimelineOffset(const TimelineRange& timeline_range,
                                      double range_start,
                                      double range_end) {
   if (!timeline_offset_) {
@@ -65,7 +65,7 @@ bool Keyframe::ResolveTimelineOffset(const ViewTimeline* view_timeline,
   }
 
   double relative_offset =
-      view_timeline->ToFractionalOffset(timeline_offset_.value());
+      timeline_range.ToFractionalOffset(timeline_offset_.value());
   double range = range_end - range_start;
   if (!range) {
     if (offset_) {
@@ -105,16 +105,6 @@ bool Keyframe::LessThan(const Member<Keyframe>& a, const Member<Keyframe>& b) {
   }
 
   return false;
-}
-
-bool Keyframe::ResetOffsetResolvedFromTimeline() {
-  if (!timeline_offset_.has_value()) {
-    return false;
-  }
-
-  offset_.reset();
-  computed_offset_ = kNullComputedOffset;
-  return true;
 }
 
 }  // namespace blink

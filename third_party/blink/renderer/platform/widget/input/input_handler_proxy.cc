@@ -1131,7 +1131,8 @@ InputHandlerProxy::HandleGestureScrollUpdate(
       input_handler_->ScrollUpdate(&scroll_state, delay);
 
   TRACE_EVENT(
-      "input", "InputHandlerProxy::HandleGestureScrollUpdate_Result",
+      "input,input.scrolling",
+      "InputHandlerProxy::HandleGestureScrollUpdate_Result",
       [trace_id, provided_delta_x, provided_delta_y,
        visual_offset_x = scroll_result.current_visual_offset.x(),
        visual_offset_y = scroll_result.current_visual_offset.y()](

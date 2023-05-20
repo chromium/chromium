@@ -112,6 +112,7 @@ void HistoryBackendDBBaseTest::CreateDBVersion(int version) {
 void HistoryBackendDBBaseTest::DeleteBackend() {
   if (backend_) {
     backend_->Closing();
+    db_ = nullptr;
     backend_ = nullptr;
   }
 }
@@ -146,6 +147,7 @@ bool HistoryBackendDBBaseTest::AddDownload(uint32_t id,
   download.transient = true;
   download.by_ext_id = "by_ext_id";
   download.by_ext_name = "by_ext_name";
+  download.by_web_app_id = "by_web_app_id";
   return db_->CreateDownload(download);
 }
 

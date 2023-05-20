@@ -645,11 +645,39 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   CookieSameSiteString samesite_string = CookieSameSiteString::kUnspecified;
   CookieSameSite samesite = parsed_cookie.SameSite(&samesite_string);
 
-  CookieSourceScheme source_scheme = url.SchemeIsCryptographic()
-                                         ? CookieSourceScheme::kSecure
-                                         : CookieSourceScheme::kNonSecure;
-  // Get the port, this will get a default value if a port isn't provided.
-  int source_port = ValidateAndAdjustSourcePort(url.EffectiveIntPort());
+  // The next two sections set the source_scheme_ and source_port_. Normally
+  // these are taken directly from the url's scheme and port but if the url
+  // setting this cookie is considered a trustworthy origin then we may make
+  // some modifications. Note that here we assume that a trustworthy url must
+  // have a non-secure scheme (http). Since we can't know at this point if a url
+  // is trustworthy or not, we'll assume it is if the cookie is set with the
+  // `Secure` attribute.
+  //
+  // For both convenience and to try to match expectations, cookies that have
+  // the `Secure` attribute are modified to look like they were created by a
+  // secure url. This is helpful because this cookie can be treated like any
+  // other secure cookie when we're retrieving them and helps to prevent the
+  // cookie from getting "trapped" if the url loses trustworthiness.
+
+  CookieSourceScheme source_scheme;
+  if (parsed_cookie.IsSecure() || url.SchemeIsCryptographic()) {
+    // It's possible that a trustworthy origin is setting this cookie with the
+    // `Secure` attribute even if the url's scheme isn't secure. In that case
+    // we'll act like it was a secure scheme. This cookie will be rejected later
+    // if the url isn't allowed to access secure cookies so this isn't a
+    // problem.
+    source_scheme = CookieSourceScheme::kSecure;
+  } else {
+    source_scheme = CookieSourceScheme::kNonSecure;
+  }
+
+  // Get the port, this will get a default value if a port isn't explicitly
+  // provided. Similar to the source scheme, it's possible that a trustworthy
+  // origin is setting this cookie with the `Secure` attribute even if the url's
+  // scheme isn't secure. This function will return 443 to pretend like this
+  // cookie was set by a secure scheme.
+  int source_port = CanonicalCookie::GetAndAdjustPortForTrustworthyUrls(
+      url, parsed_cookie.IsSecure());
 
   auto cc = std::make_unique<CanonicalCookie>(
       base::PassKey<CanonicalCookie>(), parsed_cookie.Name(),
@@ -770,6 +798,20 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
         net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
   }
 
+  // The next two sections set the source_scheme_ and source_port_. Normally
+  // these are taken directly from the url's scheme and port but if the url
+  // setting this cookie is considered a trustworthy origin then we may make
+  // some modifications. Note that here we assume that a trustworthy url must
+  // have a non-secure scheme (http). Since we can't know at this point if a url
+  // is trustworthy or not, we'll assume it is if the cookie is set with the
+  // `Secure` attribute.
+  //
+  // For both convenience and to try to match expectations, cookies that have
+  // the `Secure` attribute are modified to look like they were created by a
+  // secure url. This is helpful because this cookie can be treated like any
+  // other secure cookie when we're retrieving them and helps to prevent the
+  // cookie from getting "trapped" if the url loses trustworthiness.
+
   CookieSourceScheme source_scheme = CookieSourceScheme::kNonSecure;
   // This validation step must happen before SchemeIsCryptographic, so it
   // doesn't fail DCHECKs.
@@ -777,13 +819,23 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     status->AddExclusionReason(
         net::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN);
   } else {
-    source_scheme = url.SchemeIsCryptographic()
+    // It's possible that a trustworthy origin is setting this cookie with the
+    // `Secure` attribute even if the url's scheme isn't secure. In that case
+    // we'll act like it was a secure scheme. This cookie will be rejected later
+    // if the url isn't allowed to access secure cookies so this isn't a
+    // problem.
+    source_scheme = (secure || url.SchemeIsCryptographic())
                         ? CookieSourceScheme::kSecure
                         : CookieSourceScheme::kNonSecure;
   }
 
-  // Get the port, this will get a default value if a port isn't provided.
-  int source_port = ValidateAndAdjustSourcePort(url.EffectiveIntPort());
+  // Get the port, this will get a default value if a port isn't explicitly
+  // provided. Similar to the source scheme, it's possible that a trustworthy
+  // origin is setting this cookie with the `Secure` attribute even if the url's
+  // scheme isn't secure. This function will return 443 to pretend like this
+  // cookie was set by a secure scheme.
+  int source_port =
+      CanonicalCookie::GetAndAdjustPortForTrustworthyUrls(url, secure);
 
   std::string cookie_path = CanonicalCookie::CanonPathWithString(url, path);
   // Canonicalize path again to make sure it escapes characters as needed.
@@ -992,6 +1044,8 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
     case CookieAccessScheme::kTrustworthy:
       is_allowed_to_access_secure_cookies = true;
       if (IsSecure()) {
+        // TODO(crbug.com/1170548): Should this also apply when scheme binding
+        // is enabled?
         status.AddWarningReason(
             CookieInclusionStatus::
                 WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC);
@@ -1001,6 +1055,67 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
       is_allowed_to_access_secure_cookies = true;
       break;
   }
+
+  // todo(bingler) add warning if we're allowing access to secure cookie in a
+  // trustworthy context
+
+  // For the following two sections we're checking to see if a cookie's
+  // `source_scheme_` and `source_port_` match that of the url's. In most cases
+  // this is a direct comparison but it does get a bit more complicated when
+  // trustworthy origins are taken into accounts. Note that here, a kTrustworthy
+  // url must have a non-secure scheme (http) because otherwise it'd be a
+  // kCryptographic url.
+  //
+  // Trustworthy origins are allowed to both secure and non-secure cookies. This
+  // means that we'll match source_scheme_ for both their usual kNonSecure as
+  // well as KSecure. For source_port_ we'll match per usual as well as any 443
+  // ports, since those are the default values for secure cookies and we still
+  // want to be able to access them.
+
+  // A cookie with a source scheme of kSecure shouldn't be accessible by
+  // kNonCryptographic urls. But we can skip adding a status if the cookie is
+  // already blocked due to the `Secure` attribute.
+  if (source_scheme_ == CookieSourceScheme::kSecure &&
+      cookie_access_scheme == CookieAccessScheme::kNonCryptographic &&
+      !status.HasExclusionReason(CookieInclusionStatus::EXCLUDE_SECURE_ONLY)) {
+    if (cookie_util::IsSchemeBoundCookiesEnabled()) {
+      status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH);
+    } else {
+      status.AddWarningReason(CookieInclusionStatus::WARN_SCHEME_MISMATCH);
+    }
+  }
+  // A cookie with a source scheme of kNonSecure shouldn't be accessible by
+  // kCryptographic urls.
+  else if (source_scheme_ == CookieSourceScheme::kNonSecure &&
+           cookie_access_scheme == CookieAccessScheme::kCryptographic) {
+    if (cookie_util::IsSchemeBoundCookiesEnabled()) {
+      status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH);
+    } else {
+      status.AddWarningReason(CookieInclusionStatus::WARN_SCHEME_MISMATCH);
+    }
+  }
+  // Else, the cookie has a source scheme of kUnset or the access scheme is
+  // kTrustworthy. Neither of which will block the cookie.
+
+  int url_port = url.EffectiveIntPort();
+  CHECK(url_port != url::PORT_INVALID);
+  // The cookie's source port either must match the url's port or be
+  // PORT_UNSPECIFIED.
+  bool port_matches =
+      url_port == source_port_ || source_port_ == url::PORT_UNSPECIFIED;
+  // Or if the url is trustworthy, we'll also match 443 (in order to get secure
+  // cookies).
+  bool trustworthy_and_443 =
+      cookie_access_scheme == CookieAccessScheme::kTrustworthy &&
+      source_port_ == 443;
+  if (!port_matches && !trustworthy_and_443) {
+    if (cookie_util::IsPortBoundCookiesEnabled()) {
+      status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_PORT_MISMATCH);
+    } else {
+      status.AddWarningReason(CookieInclusionStatus::WARN_PORT_MISMATCH);
+    }
+  }
+
   // Don't include cookies for requests that don't apply to the cookie domain.
   if (!IsDomainMatch(url.host()))
     status.AddExclusionReason(CookieInclusionStatus::EXCLUDE_DOMAIN_MISMATCH);
@@ -1625,6 +1740,33 @@ CookieEffectiveSameSite CanonicalCookie::GetEffectiveSameSite(
     case CookieSameSite::STRICT_MODE:
       return CookieEffectiveSameSite::STRICT_MODE;
   }
+}
+
+// static
+int CanonicalCookie::GetAndAdjustPortForTrustworthyUrls(
+    const GURL& source_url,
+    bool url_is_trustworthy) {
+  // If the url isn't trustworthy, or if `source_url` is cryptographic then
+  // return the port of `source_url`.
+  if (!url_is_trustworthy || source_url.SchemeIsCryptographic()) {
+    return source_url.EffectiveIntPort();
+  }
+
+  // Only http and ws are cookieable schemes that have a port component. For
+  // both of these schemes their default port is 80 whereas their secure
+  // components have a default port of 443.
+  //
+  // Only in cases where we have an http/ws scheme with a default should we
+  // return 443.
+  if ((source_url.SchemeIs(url::kHttpScheme) ||
+       source_url.SchemeIs(url::kWsScheme)) &&
+      source_url.EffectiveIntPort() == 80) {
+    return 443;
+  }
+
+  // Different schemes, or non-default port values should keep the same port
+  // value.
+  return source_url.EffectiveIntPort();
 }
 
 // static

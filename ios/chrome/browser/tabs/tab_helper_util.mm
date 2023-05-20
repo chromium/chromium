@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/commerce/price_notifications/price_notifications_tab_helper.h"
@@ -61,7 +61,6 @@
 #import "ios/chrome/browser/metrics/pageload_foreground_duration_tab_helper.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/open_in/open_in_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_validation_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
@@ -81,6 +80,7 @@
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/sharing/share_file_download_tab_helper.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_url_filter_tab_helper.h"
@@ -196,7 +196,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   ImageFetchTabHelper::CreateForWebState(web_state);
 
   NewTabPageTabHelper::CreateForWebState(web_state);
-  OpenInTabHelper::CreateForWebState(web_state);
+  ShareFileDownloadTabHelper::CreateForWebState(web_state);
   OptimizationGuideTabHelper::CreateForWebState(web_state);
   OptimizationGuideValidationTabHelper::CreateForWebState(web_state);
   ChromeBrowserState* original_browser_state =
@@ -243,9 +243,10 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     ChromeIOSTranslateClient::CreateForWebState(web_state);
 
     PasswordTabHelper::CreateForWebState(web_state);
-    // TODO(crbug.com/1434606): PasswordTabHelper and BottomSheetTabHelper must
-    // share a password controller until the Butter notice is removed.
-    BottomSheetTabHelper::CreateForWebState(
+    // TODO(crbug.com/1434606): PasswordTabHelper and
+    // AutofillBottomSheetTabHelper must share a password controller until the
+    // Butter notice is removed.
+    AutofillBottomSheetTabHelper::CreateForWebState(
         web_state, PasswordTabHelper::FromWebState(web_state)
                        ->GetPasswordsAccountStorageNoticeHandler());
     AutofillTabHelper::CreateForWebState(

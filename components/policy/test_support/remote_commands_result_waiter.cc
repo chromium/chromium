@@ -15,7 +15,7 @@ namespace policy {
 
 RemoteCommandsResultWaiter::RemoteCommandsResultWaiter(
     RemoteCommandsState* remote_commands_state,
-    int command_id)
+    int64_t command_id)
     : remote_commands_state_(remote_commands_state), command_id_(command_id) {
   remote_commands_state_->AddObserver(this);
 }
@@ -45,7 +45,7 @@ em::RemoteCommandResult RemoteCommandsResultWaiter::WaitAndGetResult() {
 }
 
 void RemoteCommandsResultWaiter::OnRemoteCommandResultAvailable(
-    int command_id) {
+    int64_t command_id) {
   if (command_id_ == command_id) {
     run_loop_.Quit();
   }

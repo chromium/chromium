@@ -39,7 +39,6 @@ import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -54,7 +53,6 @@ class DropdownItemViewInfoListBuilder {
 
     private final @NonNull List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
     private final @NonNull Supplier<Tab> mActivityTabSupplier;
-    private final @NonNull OmniboxActionDelegate mOmniboxActionDelegate;
 
     private @Nullable DividerLineProcessor mDividerLineProcessor;
     private @Nullable HeaderProcessor mHeaderProcessor;
@@ -68,13 +66,11 @@ class DropdownItemViewInfoListBuilder {
     private OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
 
     DropdownItemViewInfoListBuilder(@NonNull Supplier<Tab> tabSupplier, BookmarkState bookmarkState,
-            @NonNull OmniboxActionDelegate omniboxActionDelegate,
             OpenHistoryClustersDelegate openHistoryClustersDelegate) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mDropdownHeight = DROPDOWN_HEIGHT_UNKNOWN;
         mActivityTabSupplier = tabSupplier;
         mBookmarkState = bookmarkState;
-        mOmniboxActionDelegate = omniboxActionDelegate;
         mOpenHistoryClustersDelegate = openHistoryClustersDelegate;
     }
 
@@ -106,19 +102,18 @@ class DropdownItemViewInfoListBuilder {
         mHeaderProcessor = new HeaderProcessor(context);
         registerSuggestionProcessor(new EditUrlSuggestionProcessor(
                 context, host, delegate, mFaviconFetcher, mActivityTabSupplier, shareSupplier));
-        registerSuggestionProcessor(new AnswerSuggestionProcessor(
-                context, host, mOmniboxActionDelegate, textProvider, imageFetcherSupplier));
+        registerSuggestionProcessor(
+                new AnswerSuggestionProcessor(context, host, textProvider, imageFetcherSupplier));
         registerSuggestionProcessor(
                 new ClipboardSuggestionProcessor(context, host, mFaviconFetcher));
         registerSuggestionProcessor(new HistoryClustersProcessor(mOpenHistoryClustersDelegate,
                 context, host, textProvider, mFaviconFetcher, mBookmarkState));
-        registerSuggestionProcessor(new EntitySuggestionProcessor(
-                context, host, mOmniboxActionDelegate, imageFetcherSupplier));
         registerSuggestionProcessor(
-                new TailSuggestionProcessor(context, host, mOmniboxActionDelegate));
+                new EntitySuggestionProcessor(context, host, imageFetcherSupplier));
+        registerSuggestionProcessor(new TailSuggestionProcessor(context, host));
         registerSuggestionProcessor(new MostVisitedTilesProcessor(context, host, mFaviconFetcher));
-        registerSuggestionProcessor(new BasicSuggestionProcessor(context, host,
-                mOmniboxActionDelegate, textProvider, mFaviconFetcher, mBookmarkState));
+        registerSuggestionProcessor(new BasicSuggestionProcessor(
+                context, host, textProvider, mFaviconFetcher, mBookmarkState));
     }
 
     void destroy() {

@@ -92,13 +92,8 @@ void BrowsingTopicsState::ClearOneEpoch(size_t epoch_index) {
   ScheduleSave();
 }
 
-void BrowsingTopicsState::ClearTopic(Topic topic, int taxonomy_version) {
+void BrowsingTopicsState::ClearTopic(Topic topic) {
   for (EpochTopics& epoch : epochs_) {
-    // TODO(crbug.com/1310951): this Chrome version only supports a single
-    // taxonomy version. When we start writing taxonomy conversion code, we may
-    // revisit this constraint.
-    DCHECK_EQ(epoch.taxonomy_version(), taxonomy_version);
-
     epoch.ClearTopic(topic);
   }
 

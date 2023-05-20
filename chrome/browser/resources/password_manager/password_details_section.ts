@@ -96,7 +96,10 @@ export class PasswordDetailsSectionElement extends
   }
 
   private navigateBack_() {
-    Router.getInstance().navigateTo(Page.PASSWORDS);
+    // Keep search query when navigating back.
+    Router.getInstance().navigateTo(
+        Page.PASSWORDS, null,
+        Router.getInstance().currentRoute.queryParameters);
   }
 
   private getGroupName_(): string {
@@ -206,7 +209,8 @@ export class PasswordDetailsSectionElement extends
         .then(() => {
           // Use navigation to update page title if needed.
           Router.getInstance().navigateTo(
-              Page.PASSWORD_DETAILS, this.selectedGroup_);
+              Page.PASSWORD_DETAILS, this.selectedGroup_,
+              Router.getInstance().currentRoute.queryParameters);
         })
         .catch(this.navigateBack_);
   }

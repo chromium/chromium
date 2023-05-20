@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarCompactLayout;
-import org.chromium.components.translate.TranslateFeatureList;
+import org.chromium.components.translate.TranslateFeatureMap;
 import org.chromium.components.translate.TranslateMenu;
 import org.chromium.components.translate.TranslateMenuHelper;
 import org.chromium.components.translate.TranslateOption;
@@ -65,9 +65,6 @@ public class TranslateCompactInfoBar
 
     private long mNativeTranslateInfoBarPtr;
     private TranslateTabLayout mTabLayout;
-
-    // Metric to track the total number of translations in a page, including reverts to original.
-    private int mTotalTranslationCount;
 
     private static final String INFOBAR_HISTOGRAM = "Translate.CompactInfobar.Event";
 
@@ -160,11 +157,11 @@ public class TranslateCompactInfoBar
         super(R.drawable.infobar_translate_compact, 0, null, null);
         mWindowAndroid = windowAndroid;
 
-        if (TranslateFeatureList.isEnabled(
-                    TranslateFeatureList.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER)
-                && !TranslateFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        TranslateFeatureList.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER,
-                        TranslateFeatureList.CONTENT_LANGUAGES_DISABLE_OBSERVERS_PARAM, false)) {
+        if (TranslateFeatureMap.getInstance().isEnabled(
+                    TranslateFeatureMap.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER)
+                && !TranslateFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
+                        TranslateFeatureMap.CONTENT_LANGUAGES_IN_LANGUAGE_PICKER,
+                        TranslateFeatureMap.CONTENT_LANGUAGES_DISABLE_OBSERVERS_PARAM, false)) {
             mPrefChangeRegistrar = new PrefChangeRegistrar();
             mPrefChangeRegistrar.addObserver(Pref.ACCEPT_LANGUAGES, this);
         } else {

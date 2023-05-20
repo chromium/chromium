@@ -2211,13 +2211,12 @@ void LayerTreeHostImpl::ReclaimResources(
   }
 
   // If we're not visible, we likely released resources, so we want to
-  // aggressively flush here to make sure those DeleteTextures make it to the
-  // GPU process to free up the memory.
+  // aggressively flush here to make sure those DeleteSharedImage() calls make
+  // it to the GPU process to free up the memory.
   if (!visible_ && layer_tree_frame_sink_->context_provider()) {
-    auto* compositor_context = layer_tree_frame_sink_->context_provider();
-    compositor_context->ContextGL()->ShallowFlushCHROMIUM();
     if (base::FeatureList::IsEnabled(
             features::kReclaimResourcesFlushInBackground)) {
+      auto* compositor_context = layer_tree_frame_sink_->context_provider();
       compositor_context->ContextSupport()->FlushPendingWork();
     }
   }
@@ -3806,16 +3805,16 @@ void LayerTreeHostImpl::CleanUpTileManagerResources() {
   // contexts. Flushing now helps ensure these are cleaned up quickly
   // preventing driver cache growth. See crbug.com/643251
   if (layer_tree_frame_sink_) {
-    if (auto* compositor_context = layer_tree_frame_sink_->context_provider()) {
-      // TODO(ericrk): Remove ordering barrier once |compositor_context| no
-      // longer uses GL.
-      compositor_context->ContextGL()->OrderingBarrierCHROMIUM();
-      compositor_context->ContextSupport()->FlushPendingWork();
-    }
     if (auto* worker_context =
             layer_tree_frame_sink_->worker_context_provider()) {
       viz::RasterContextProvider::ScopedRasterContextLock hold(worker_context);
-      hold.RasterInterface()->ShallowFlushCHROMIUM();
+      hold.RasterInterface()->OrderingBarrierCHROMIUM();
+    }
+    // There can sometimes be a compositor context with no worker context so use
+    // it to flush. cc doesn't use the compositor context to issue GPU work so
+    // it doesn't require an ordering barrier.
+    if (auto* compositor_context = layer_tree_frame_sink_->context_provider()) {
+      compositor_context->ContextSupport()->FlushPendingWork();
     }
   }
 }

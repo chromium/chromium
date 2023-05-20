@@ -7,6 +7,7 @@
 #include "base/timer/timer.h"
 
 #include "base/feature_list.h"
+#include "components/page_load_metrics/browser/observers/assert_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/cross_origin_page_load_metrics_observer.h"
@@ -30,6 +31,10 @@ PageLoadMetricsEmbedderBase::~PageLoadMetricsEmbedderBase() = default;
 
 void PageLoadMetricsEmbedderBase::RegisterObservers(PageLoadTracker* tracker) {
   // Register observers used by all embedders
+#if DCHECK_IS_ON()
+  tracker->AddObserver(std::make_unique<AssertPageLoadMetricsObserver>());
+#endif
+
   if (!IsNoStatePrefetch(web_contents()) && !IsSidePanel(web_contents())) {
     tracker->AddObserver(
         std::make_unique<BackForwardCachePageLoadMetricsObserver>());

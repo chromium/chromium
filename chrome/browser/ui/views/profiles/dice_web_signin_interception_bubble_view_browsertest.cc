@@ -46,8 +46,8 @@ namespace {
 
 struct TestParam {
   std::string test_suffix = "";
-  DiceWebSigninInterceptor::SigninInterceptionType interception_type =
-      DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;
+  WebSigninInterceptor::SigninInterceptionType interception_type =
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser;
   policy::EnterpriseManagementAuthority management_authority =
       policy::EnterpriseManagementAuthority::NONE;
   // Note: changes strings for kEnterprise type, otherwise adds badge on pic.
@@ -68,16 +68,14 @@ std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
 const TestParam kTestParams[] = {
     // Common consumer user case: regular account signing in to a profile having
     // a regular account on a non-managed device.
-    {"ConsumerSimple",
-     DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
+    {"ConsumerSimple", WebSigninInterceptor::SigninInterceptionType::kMultiUser,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false,
      /*use_dark_theme=*/false,
      /*intercepted_profile_color=*/SkColors::kMagenta},
 
     // Ditto, with a different color scheme
-    {"ConsumerDark",
-     DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
+    {"ConsumerDark", WebSigninInterceptor::SigninInterceptionType::kMultiUser,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false,
      /*use_dark_theme=*/true,
@@ -86,7 +84,7 @@ const TestParam kTestParams[] = {
     // Regular account signing in to a profile having a regular account on a
     // managed device (having policies configured locally for example).
     {"ConsumerManagedDevice",
-     DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
+     WebSigninInterceptor::SigninInterceptionType::kMultiUser,
      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL,
      /*is_intercepted_account_managed=*/false,
      /*use_dark_theme=*/false,
@@ -96,20 +94,20 @@ const TestParam kTestParams[] = {
     // Regular account signing in to a profile having a managed account on a
     // non-managed device.
     {"EnterpriseSimple",
-     DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
+     WebSigninInterceptor::SigninInterceptionType::kEnterprise,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false},
 
     // Managed account signing in to a profile having a regular account on a
     // non-managed device.
     {"EnterpriseManagedIntercepted",
-     DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
+     WebSigninInterceptor::SigninInterceptionType::kEnterprise,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/true},
 
     // Ditto, with a different color scheme
     {"EnterpriseManagedInterceptedDark",
-     DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
+     WebSigninInterceptor::SigninInterceptionType::kEnterprise,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/true,
      /*use_dark_theme=*/true},
@@ -117,14 +115,14 @@ const TestParam kTestParams[] = {
     // Regular account signing in to a profile having a managed account on a
     // managed device.
     {"EntepriseManagedDevice",
-     DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
+     WebSigninInterceptor::SigninInterceptionType::kEnterprise,
      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
      /*is_intercepted_account_managed=*/false},
 
     // Profile switch bubble: the account used for signing in is already
     // associated with another profile.
     {"ProfileSwitch",
-     DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
+     WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false},
 };
@@ -206,8 +204,7 @@ class DiceWebSigninInterceptionBubblePixelTest
   }
 
   // Generates bubble parameters for testing.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters
-  GetTestBubbleParameters() {
+  WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
     AccountInfo intercepted_account;
     intercepted_account.account_id =
         CoreAccountId::FromGaiaId("intercepted_ID");
@@ -224,7 +221,7 @@ class DiceWebSigninInterceptionBubblePixelTest
     // since no test config has both accounts being managed.
     bool is_primary_account_managed =
         GetParam().interception_type ==
-            DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise &&
+            WebSigninInterceptor::SigninInterceptionType::kEnterprise &&
         !GetParam().is_intercepted_account_managed;
     AccountInfo primary_account;
     primary_account.account_id = CoreAccountId::FromGaiaId("primary_ID");
@@ -249,7 +246,7 @@ class DiceWebSigninInterceptionBubblePixelTest
             show_managed_disclaimer};
   }
 
-  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> bubble_handle_;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
   base::test::ScopedFeatureList base_scoped_feature_list_;
 };
 
@@ -313,19 +310,18 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
   }
 
   // Returns dummy bubble parameters for testing.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters
-  GetTestBubbleParameters() {
+  WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
     AccountInfo account;
     account.account_id = CoreAccountId::FromGaiaId("ID1");
     AccountInfo primary_account;
     primary_account.account_id = CoreAccountId::FromGaiaId("ID2");
-    return DiceWebSigninInterceptor::Delegate::BubbleParameters(
-        DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser, account,
+    return WebSigninInterceptor::Delegate::BubbleParameters(
+        WebSigninInterceptor::SigninInterceptionType::kMultiUser, account,
         primary_account);
   }
 
   absl::optional<SigninInterceptionResult> callback_result_;
-  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> bubble_handle_;
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
 };
 
 // Tests that the callback is called once when the bubble is closed.
@@ -494,9 +490,9 @@ class DiceWebSigninInterceptionBubbleV2BrowserTest
  public:
   DiceWebSigninInterceptionBubbleV2BrowserTest() = default;
 
-  DiceWebSigninInterceptor::Delegate::BubbleParameters
+  WebSigninInterceptor::Delegate::BubbleParameters
   GetTestBubbleParametersForManagedProfile() {
-    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters =
+    WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters =
         GetTestBubbleParameters();
     bubble_parameters.show_managed_disclaimer = true;
     return bubble_parameters;

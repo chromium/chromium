@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
+#include "base/task/bind_post_task.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -163,12 +164,17 @@ void PPAPIDownloadRequest::CheckAllowlistsOnSBThread(
           : content::BrowserThread::IO);
   DVLOG(2) << " checking allowlists for requestor URL:" << requestor_url;
 
-  bool url_was_allowlisted =
-      requestor_url.is_valid() && database_manager &&
-      database_manager->MatchDownloadAllowlistUrl(requestor_url);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&PPAPIDownloadRequest::AllowlistCheckComplete,
-                                download_request, url_was_allowlisted));
+  auto callback = base::BindPostTask(
+      content::GetUIThreadTaskRunner({}),
+      base::BindOnce(&PPAPIDownloadRequest::AllowlistCheckComplete,
+                     download_request));
+  if (!requestor_url.is_valid() || !database_manager) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  database_manager->MatchDownloadAllowlistUrl(requestor_url,
+                                              std::move(callback));
 }
 
 void PPAPIDownloadRequest::AllowlistCheckComplete(bool was_on_allowlist) {

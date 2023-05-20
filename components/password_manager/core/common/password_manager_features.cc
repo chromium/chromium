@@ -251,6 +251,11 @@ BASE_FEATURE(kUnifiedPasswordManagerAndroid,
              "UnifiedPasswordManagerAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables use of Google Mobile services for non-sycned password storage.
+BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroid,
+             "UnifiedPasswordManagerLocalPasswordsAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables showing the warning about UPM migrating local passwords.
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
              "UnifiedPasswordManagerLocalPasswordsMigrationWarning",

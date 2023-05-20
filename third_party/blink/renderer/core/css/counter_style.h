@@ -168,7 +168,7 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   AtomicString extends_name_;
   Member<CounterStyle> extended_style_;
 
-  AtomicString fallback_name_ = "decimal";
+  AtomicString fallback_name_{"decimal"};
   Member<CounterStyle> fallback_style_;
 
   CounterStyleSpeakAs speak_as_ = CounterStyleSpeakAs::kAuto;

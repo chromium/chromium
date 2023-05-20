@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/committed_all_nudged_changes_checker.h"
 
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/service/sync_service_impl.h"
 
 CommittedAllNudgedChangesChecker::CommittedAllNudgedChangesChecker(
     syncer::SyncServiceImpl* service)

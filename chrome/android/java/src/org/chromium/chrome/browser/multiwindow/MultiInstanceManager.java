@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -78,6 +79,8 @@ public class MultiInstanceManager
     protected final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+
+    protected TabModelSelectorTabModelObserver mTabModelObserver;
 
     private int mActivityTaskId;
     private boolean mNativeInitialized;
@@ -547,5 +550,15 @@ public class MultiInstanceManager
     @VisibleForTesting
     public static void setTestDisplayIds(List<Integer> testDisplayIds) {
         sTestDisplayIds = testDisplayIds;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public TabModelSelectorTabModelObserver getTabModelObserverForTesting() {
+        return mTabModelObserver;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void setTabModelObserverForTesting(TabModelSelectorTabModelObserver tabModelObserver) {
+        mTabModelObserver = tabModelObserver;
     }
 }

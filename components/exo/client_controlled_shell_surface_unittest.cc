@@ -1394,22 +1394,12 @@ TEST_P(ClientControlledShellSurfaceTest, CaptionButtonModel) {
     shell_surface->SetFrameButtons(visible_buttons, 0);
     const chromeos::CaptionButtonModel* model = container->model();
     for (auto not_visible : kAllButtons) {
-      if (not_visible == views::CAPTION_BUTTON_ICON_FLOAT) {
-        // Float is dependent only on maximize/restore.
-        EXPECT_EQ(
-            !model->IsVisible(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE),
-            model->IsVisible(views::CAPTION_BUTTON_ICON_FLOAT));
-      } else if (not_visible != visible) {
+      if (not_visible != visible) {
         EXPECT_FALSE(model->IsVisible(not_visible));
       }
     }
     EXPECT_TRUE(model->IsVisible(visible));
-    if (visible == views::CAPTION_BUTTON_ICON_FLOAT) {
-      EXPECT_EQ(!model->IsEnabled(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE),
-                model->IsEnabled(views::CAPTION_BUTTON_ICON_FLOAT));
-    } else {
-      EXPECT_FALSE(model->IsEnabled(visible));
-    }
+    EXPECT_FALSE(model->IsEnabled(visible));
   }
 
   // Enable
@@ -1418,22 +1408,12 @@ TEST_P(ClientControlledShellSurfaceTest, CaptionButtonModel) {
     shell_surface->SetFrameButtons(kAllButtonMask, enabled_buttons);
     const chromeos::CaptionButtonModel* model = container->model();
     for (auto not_enabled : kAllButtons) {
-      if (not_enabled == views::CAPTION_BUTTON_ICON_FLOAT) {
-        // Float is dependent only on maximize/restore.
-        EXPECT_EQ(
-            !model->IsEnabled(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE),
-            model->IsEnabled(views::CAPTION_BUTTON_ICON_FLOAT));
-      } else if (not_enabled != enabled) {
+      if (not_enabled != enabled) {
         EXPECT_FALSE(model->IsEnabled(not_enabled));
       }
     }
     EXPECT_TRUE(model->IsEnabled(enabled));
-    if (enabled == views::CAPTION_BUTTON_ICON_FLOAT) {
-      EXPECT_EQ(!model->IsVisible(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE),
-                model->IsVisible(views::CAPTION_BUTTON_ICON_FLOAT));
-    } else {
-      EXPECT_TRUE(model->IsVisible(enabled));
-    }
+    EXPECT_TRUE(model->IsVisible(enabled));
   }
 
   // Zoom mode
@@ -2505,19 +2485,6 @@ TEST_P(ClientControlledShellSurfaceTest,
       ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
   surface->Commit();
   EXPECT_FALSE(shell_surface->CanResize());
-
-  // Test that the float caption button is visible on unresizable apps.
-  EXPECT_TRUE(chromeos::wm::CanFloatWindow(
-      shell_surface->GetWidget()->GetNativeWindow()));
-  ash::NonClientFrameViewAsh* frame_view =
-      static_cast<ash::NonClientFrameViewAsh*>(
-          shell_surface->GetWidget()->non_client_view()->frame_view());
-  const chromeos::CaptionButtonModel* model =
-      static_cast<chromeos::HeaderView*>(frame_view->GetHeaderView())
-          ->caption_button_container()
-          ->model();
-  EXPECT_TRUE(model->IsVisible(views::CAPTION_BUTTON_ICON_FLOAT));
-  EXPECT_TRUE(model->IsEnabled(views::CAPTION_BUTTON_ICON_FLOAT));
 
   shell_surface->SetResizeLockType(
       ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE);

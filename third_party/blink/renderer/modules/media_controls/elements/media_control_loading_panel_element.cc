@@ -41,7 +41,7 @@ MediaControlLoadingPanelElement::MediaControlLoadingPanelElement(
   setAttribute(
       html_names::kAriaLabelAttr,
       WTF::AtomicString(GetLocale().QueryString(IDS_AX_MEDIA_LOADING_PANEL)));
-  setAttribute(html_names::kAriaLiveAttr, "polite");
+  setAttribute(html_names::kAriaLiveAttr, AtomicString("polite"));
   CreateUserAgentShadowRoot();
 
   // The loading panel should always start hidden.
@@ -75,19 +75,19 @@ void MediaControlLoadingPanelElement::PopulateShadowDOM() {
   // cuts off any overflowing content. It also contains a SVG mask which will
   // overlay the spinner and cover up any rough edges created by the moving
   // elements.
-  HTMLDivElement* spinner_frame =
-      MediaControlElementsHelper::CreateDivWithId("spinner-frame", shadow_root);
+  HTMLDivElement* spinner_frame = MediaControlElementsHelper::CreateDivWithId(
+      AtomicString("spinner-frame"), shadow_root);
   spinner_frame->SetShadowPseudoId(
-      "-internal-media-controls-loading-panel-spinner-frame");
+      AtomicString("-internal-media-controls-loading-panel-spinner-frame"));
 
   // The spinner is responsible for rotating the elements below. The square
   // edges will be cut off by the frame above.
-  HTMLDivElement* spinner =
-      MediaControlElementsHelper::CreateDivWithId("spinner", spinner_frame);
+  HTMLDivElement* spinner = MediaControlElementsHelper::CreateDivWithId(
+      AtomicString("spinner"), spinner_frame);
 
   // The layer performs a secondary "fill-unfill-rotate" animation.
-  HTMLDivElement* layer =
-      MediaControlElementsHelper::CreateDivWithId("layer", spinner);
+  HTMLDivElement* layer = MediaControlElementsHelper::CreateDivWithId(
+      AtomicString("layer"), spinner);
 
   // The spinner is split into two halves, one on the left (1) and the other
   // on the right (2). The mask elements stop the background from overlapping
@@ -96,15 +96,17 @@ void MediaControlLoadingPanelElement::PopulateShadowDOM() {
   // that forms the look of the transparent spinner. The background should
   // always be bigger than the mask in order to ensure there are no gaps
   // created by the animation.
-  HTMLDivElement* mask1 =
-      MediaControlElementsHelper::CreateDivWithId("spinner-mask-1", layer);
+  HTMLDivElement* mask1 = MediaControlElementsHelper::CreateDivWithId(
+      AtomicString("spinner-mask-1"), layer);
   mask1_background_ = MediaControlElementsHelper::CreateDiv(
-      "-internal-media-controls-loading-panel-spinner-mask-1-background",
+      AtomicString(
+          "-internal-media-controls-loading-panel-spinner-mask-1-background"),
       mask1);
-  HTMLDivElement* mask2 =
-      MediaControlElementsHelper::CreateDivWithId("spinner-mask-2", layer);
+  HTMLDivElement* mask2 = MediaControlElementsHelper::CreateDivWithId(
+      AtomicString("spinner-mask-2"), layer);
   mask2_background_ = MediaControlElementsHelper::CreateDiv(
-      "-internal-media-controls-loading-panel-spinner-mask-2-background",
+      AtomicString(
+          "-internal-media-controls-loading-panel-spinner-mask-2-background"),
       mask2);
 
   event_listener_ =

@@ -108,6 +108,9 @@ class CORE_EXPORT InputMethodController final
   // Returns true if setting selection to specified offsets, otherwise false.
   bool SetEditableSelectionOffsets(const PlainTextRange&);
   void ExtendSelectionAndDelete(int before, int after);
+  void ExtendSelectionAndReplace(int before,
+                                 int after,
+                                 const String& replacement_text);
   PlainTextRange CreateRangeForSelection(int start,
                                          int end,
                                          size_t text_length) const;

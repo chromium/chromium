@@ -33,4 +33,9 @@ interface PdfThumbnailer {
   GetThumbnail(ThumbParams params,
                mojo_base.mojom.ReadOnlySharedMemoryRegion pdf_region)
       => (skia.mojom.BitmapN32? bitmap);
+
+  // Sets the status for enterprise policy `kPdfUseSkiaRendererEnabled`. It
+  // should be called immediately once `mojom::PdfThumbnailer` remote is bound
+  // and only when this policy is managed.
+  SetUseSkiaRendererPolicy(bool use_skia);
 };

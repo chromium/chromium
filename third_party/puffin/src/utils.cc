@@ -297,17 +297,8 @@ bool LocateDeflatesInZipArchive(const Buffer& data,
     if (!LocateDeflatesInDeflateStream(
             data.data() + offset, data.size() - offset, offset, &tmp_deflates,
             &calculated_compressed_size)) {
-      LOG(ERROR) << "Failed to decompress the zip entry starting from: " << pos
-                 << ", skip adding deflates for this entry.";
       pos += 4;
       continue;
-    }
-
-    // Double check the compressed size if it is available in the file header.
-    if (compressed_size > 0 && compressed_size != calculated_compressed_size) {
-      LOG(WARNING) << "Compressed size in the file header: " << compressed_size
-                   << " doesn't equal the real size: "
-                   << calculated_compressed_size;
     }
 
     deflates->insert(deflates->end(), tmp_deflates.begin(), tmp_deflates.end());

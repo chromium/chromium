@@ -178,6 +178,12 @@ void NotificationCenterTray::OnAnyBubbleVisibilityChanged(
   }
 }
 
+void NotificationCenterTray::UpdateLayout() {
+  if (features::IsPrivacyIndicatorsEnabled()) {
+    privacy_indicators_view_->UpdateAlignmentForShelf(shelf());
+  }
+}
+
 void NotificationCenterTray::UpdateVisibility() {
   // `NotificationIconsController` handles updating this tray's tray items, so
   // no need to do that here.

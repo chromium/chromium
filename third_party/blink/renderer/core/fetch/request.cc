@@ -143,8 +143,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
 
-  if (V8Blob::HasInstance(body, isolate)) {
-    Blob* blob = V8Blob::ToImpl(body.As<v8::Object>());
+  if (Blob* blob = V8Blob::ToWrappable(isolate, body)) {
     return_buffer = BodyStreamBuffer::Create(
         script_state,
         MakeGarbageCollected<BlobBytesConsumer>(execution_context,
@@ -187,9 +186,8 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
         script_state,
         MakeGarbageCollected<FormDataBytesConsumer>(array_buffer_view),
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
-  } else if (V8FormData::HasInstance(body, isolate)) {
-    scoped_refptr<EncodedFormData> form_data =
-        V8FormData::ToImpl(body.As<v8::Object>())->EncodeMultiPartFormData();
+  } else if (FormData* form = V8FormData::ToWrappable(isolate, body)) {
+    scoped_refptr<EncodedFormData> form_data = form->EncodeMultiPartFormData();
     // Here we handle formData->boundary() as a C-style string. See
     // FormDataEncoder::generateUniqueBoundaryString.
     content_type = AtomicString("multipart/form-data; boundary=") +
@@ -199,20 +197,21 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
         MakeGarbageCollected<FormDataBytesConsumer>(execution_context,
                                                     std::move(form_data)),
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
-  } else if (V8URLSearchParams::HasInstance(body, isolate)) {
+  } else if (URLSearchParams* url_search_params =
+                 V8URLSearchParams::ToWrappable(isolate, body)) {
     scoped_refptr<EncodedFormData> form_data =
-        V8URLSearchParams::ToImpl(body.As<v8::Object>())->ToEncodedFormData();
+        url_search_params->ToEncodedFormData();
     return_buffer = BodyStreamBuffer::Create(
         script_state,
         MakeGarbageCollected<FormDataBytesConsumer>(execution_context,
                                                     std::move(form_data)),
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
     content_type = "application/x-www-form-urlencoded;charset=UTF-8";
-  } else if (RuntimeEnabledFeatures::FetchUploadStreamingEnabled(
-                 execution_context) &&
-             V8ReadableStream::HasInstance(body, isolate)) {
-    ReadableStream* readable_stream =
-        V8ReadableStream::ToImpl(body.As<v8::Object>());
+  } else if (ReadableStream* readable_stream =
+                 V8ReadableStream::ToWrappable(isolate, body);
+             readable_stream &&
+             RuntimeEnabledFeatures::FetchUploadStreamingEnabled(
+                 execution_context)) {
     // This is implemented in Request::CreateRequestWithRequestOrString():
     //   "If the |keepalive| flag is set, then throw a TypeError."
 
@@ -630,13 +629,28 @@ Request* Request::CreateRequestWithRequestOrString(
             exception_state));
   }
 
+  AbortSignal* request_signal = nullptr;
+  if (RuntimeEnabledFeatures::AbortSignalAnyEnabled()) {
+    // "Let  signals  be [|signal|] if  signal  is non-null; otherwise []."
+    HeapVector<Member<AbortSignal>> signals;
+    if (signal) {
+      signals.push_back(signal);
+    }
+    // "Set |r|'s signal to the result of creating a new  dependent abort signal
+    // from |signals|".
+    request_signal = MakeGarbageCollected<AbortSignal>(script_state, signals);
+  } else {
+    request_signal =
+        MakeGarbageCollected<AbortSignal>(ExecutionContext::From(script_state));
+    // "If |signal| is not null, then make |r|’s signal follow |signal|."
+    if (signal) {
+      request_signal->Follow(script_state, signal);
+    }
+  }
+
   // "Let |r| be a new Request object associated with |request| and a new
   // Headers object whose guard is "request"."
-  Request* r = Request::Create(script_state, request);
-
-  // "If |signal| is not null, then make |r|’s signal follow |signal|."
-  if (signal)
-    r->signal_->Follow(script_state, signal);
+  Request* r = Request::Create(script_state, request, request_signal);
 
   // "If |r|'s request's mode is "no-cors", run these substeps:
   if (r->GetRequest()->Mode() == network::mojom::RequestMode::kNoCors) {
@@ -706,7 +720,7 @@ Request* Request::CreateRequestWithRequestOrString(
     // From "extract a body":
     // - If the keepalive flag is set, then throw a TypeError.
     if (init->hasKeepalive() && init->keepalive() &&
-        V8ReadableStream::HasInstance(init_body, script_state->GetIsolate())) {
+        V8ReadableStream::HasInstance(script_state->GetIsolate(), init_body)) {
       exception_state.ThrowTypeError(
           "Keepalive request cannot have a ReadableStream body.");
       return nullptr;
@@ -838,8 +852,10 @@ Request* Request::Create(ScriptState* script_state,
                                           exception_state);
 }
 
-Request* Request::Create(ScriptState* script_state, FetchRequestData* request) {
-  return MakeGarbageCollected<Request>(script_state, request);
+Request* Request::Create(ScriptState* script_state,
+                         FetchRequestData* request,
+                         AbortSignal* signal) {
+  return MakeGarbageCollected<Request>(script_state, request, signal);
 }
 
 Request* Request::Create(
@@ -849,7 +865,9 @@ Request* Request::Create(
   FetchRequestData* data =
       FetchRequestData::Create(script_state, std::move(fetch_api_request),
                                for_service_worker_fetch_event);
-  return MakeGarbageCollected<Request>(script_state, data);
+  auto* signal =
+      MakeGarbageCollected<AbortSignal>(ExecutionContext::From(script_state));
+  return MakeGarbageCollected<Request>(script_state, data, signal);
 }
 
 absl::optional<network::mojom::CredentialsMode> Request::ParseCredentialsMode(
@@ -874,12 +892,13 @@ Request::Request(ScriptState* script_state,
       headers_(headers),
       signal_(signal) {}
 
-Request::Request(ScriptState* script_state, FetchRequestData* request)
+Request::Request(ScriptState* script_state,
+                 FetchRequestData* request,
+                 AbortSignal* signal)
     : Request(script_state,
               request,
               Headers::Create(request->HeaderList()),
-              MakeGarbageCollected<AbortSignal>(
-                  ExecutionContext::From(script_state))) {
+              signal) {
   headers_->SetGuard(Headers::kRequestGuard);
 }
 
@@ -1021,9 +1040,17 @@ Request* Request::clone(ScriptState* script_state,
     return nullptr;
   Headers* headers = Headers::Create(request->HeaderList());
   headers->SetGuard(headers_->GetGuard());
-  auto* signal =
-      MakeGarbageCollected<AbortSignal>(ExecutionContext::From(script_state));
-  signal->Follow(script_state, signal_);
+  AbortSignal* signal = nullptr;
+  if (RuntimeEnabledFeatures::AbortSignalAnyEnabled()) {
+    HeapVector<Member<AbortSignal>> signals;
+    CHECK(signal_);
+    signals.push_back(signal_);
+    signal = MakeGarbageCollected<AbortSignal>(script_state, signals);
+  } else {
+    signal =
+        MakeGarbageCollected<AbortSignal>(ExecutionContext::From(script_state));
+    signal->Follow(script_state, signal_);
+  }
   return MakeGarbageCollected<Request>(script_state, request, headers, signal);
 }
 

@@ -11,7 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -416,7 +416,7 @@ class PausableResponseProvider : public HtmlResponseProvider {
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey goForward];
 
-  const std::string version = version_info::GetVersionNumber();
+  const std::string version(version_info::GetVersionNumber());
   [ChromeEarlGrey waitForWebStateContainingText:version];
 
   // Make sure that kChromeUIVersionURL URL is displayed in the omnibox.

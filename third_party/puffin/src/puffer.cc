@@ -49,8 +49,6 @@ bool Puffer::PuffDeflate(BitReaderInterface* br,
     br->DropBits(1);
     uint8_t type = br->ReadBits(2);  // BTYPE
     br->DropBits(2);
-    DVLOG(2) << "Read block type: "
-             << BlockTypeToString(static_cast<BlockType>(type));
 
     // If it is the final block and we are just looking for deflate locations,
     // we consider this the end of the search.
@@ -77,8 +75,6 @@ bool Puffer::PuffDeflate(BitReaderInterface* br,
         br->DropBits(16);
 
         if ((len ^ nlen) != 0xFFFF) {
-          LOG(ERROR) << "Length of uncompressed data is invalid;"
-                     << " LEN(" << len << ") NLEN(" << nlen << ")";
           return false;
         }
 
@@ -129,8 +125,6 @@ bool Puffer::PuffDeflate(BitReaderInterface* br,
         break;
 
       default:
-        LOG(ERROR) << "Invalid block compression type: "
-                   << static_cast<int>(type);
         return false;
     }
 
@@ -189,9 +183,6 @@ bool Puffer::PuffDeflate(BitReaderInterface* br,
           if (exclude_bad_distance_caches_) {
             include_deflate = false;
           }
-          LOG(WARNING) << "A rare condition that older Puffin clients fail to"
-                       << " recognize happened. Nothing to worry about."
-                       << " See crbug.com/915559";
         }
         auto read_bits = br->ReadBits(bits_to_cache);
         size_t nbits = 0;

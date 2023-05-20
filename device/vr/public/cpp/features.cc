@@ -52,7 +52,10 @@ BASE_FEATURE(kEnableCardboard,
 
 #if BUILDFLAG(ENABLE_OPENXR)
 // Controls WebXR support for the OpenXR Runtime.
-BASE_FEATURE(kOpenXR, "OpenXR", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOpenXR,
+             "OpenXR",
+             BUILDFLAG(IS_WIN) ? base::FEATURE_ENABLED_BY_DEFAULT
+                               : base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Some WebXR features may have been enabled for ARCore, but are not yet ready
 // to be plumbed up from the OpenXR backend. This feature provides a mechanism

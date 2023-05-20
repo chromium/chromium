@@ -185,6 +185,8 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
       panel_rotation == display::Display::Rotation::ROTATE_270) {
     size_in_pixels.Transpose();
   }
+  size_in_pixels.Enlarge(-metrics.physical_overscan_insets.width(),
+                         -metrics.physical_overscan_insets.height());
   changed_display.set_size_in_pixels(size_in_pixels);
 
   if (!metrics.logical_size.IsEmpty()) {

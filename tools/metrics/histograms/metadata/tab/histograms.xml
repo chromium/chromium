@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Tab.Count.Guest" units="units" expires_after="2023-09-03">
+<histogram name="Tab.Count.Guest" units="units" expires_after="2023-11-12">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.Count.Incognito" units="units" expires_after="2023-08-27">
+<histogram name="Tab.Count.Incognito" units="units" expires_after="2023-11-12">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.PerceivedRestoreTime" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.StatusWhenSwitchedBackToForeground" enum="TabStatus"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>ckitagawa@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -531,8 +531,9 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    Records once an hour once the SavedTabGroupKeyedService is instantiated.
-    Tracks the age of a SavedTabGroup (since creation).
+    Records once per group per hour once the SavedTabGroupKeyedService is
+    instantiated upon profile open. Tracks the age of a SavedTabGroup (since
+    creation). Nothing is recorded for sessions shorter than one hour.
   </summary>
 </histogram>
 
@@ -541,8 +542,9 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    Records once an hour once the SavedTabGroupKeyedService is instantiated.
-    Tracks the total number of groups saved in the profile.
+    Records per hour once the SavedTabGroupKeyedService is instantiated upon
+    profile open. Tracks the total number of groups saved in the profile.
+    Nothing is recorded for sessions shorter than one hour.
   </summary>
 </histogram>
 
@@ -552,7 +554,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     Records when a SavedTabGroup is deleted. Tracks the total age / lifespan of
-    a SavedTabGroup (since creation) once deleted.
+    a SavedTabGroup (since creation) once deleted. Nothing is recorded for
+    sessions shorter than one hour.
   </summary>
 </histogram>
 
@@ -561,8 +564,32 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    Records once an hour once the SavedTabGroupKeyedService is instantiated.
-    Tracks the number of tabs in a SavedTabGroup.
+    Records once per group per hour once the SavedTabGroupKeyedService is
+    instantiated. Tracks the number of tabs in a SavedTabGroup. Nothing is
+    recorded for sessions shorter than one hour.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.SavedTabGroupTabTimeSinceModification"
+    units="minutes" expires_after="2023-12-27">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records once per saved tab per saved group per hour once the
+    SavedTabGroupKeyedService is instantiated upon profile open. Tracks the
+    duration since a saved tab's last modification. Nothing is recorded for
+    sessions shorter than one hour.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.SavedTabGroupTimeSinceModification" units="minutes"
+    expires_after="2023-12-27">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records once per group per hour once the SavedTabGroupKeyedService is
+    instantiated upon profile open. Tracks the duration since a saved group's
+    last modification. Nothing is recorded for sessions shorter than one hour.
   </summary>
 </histogram>
 
@@ -575,6 +602,16 @@ chromium-metrics-reviews@google.com.
     whenever Chrome comes to the foreground, or switch tab in the tab switcher.
     This number is accumulated until that group id is outdated, meaning all the
     tabs with that group id has been closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.TabGroupBubble.TabCount" units="tabs"
+    expires_after="2023-12-27">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the number of tabs in a group whenever a tab group editor bubble
+    closes.
   </summary>
 </histogram>
 
@@ -603,8 +640,9 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    Records once an hour once the SavedTabGroupKeyedService is instantiated.
-    Tracks the number of unsaved TabGroups.
+    Records once an hour once the SavedTabGroupKeyedService is instantiated upon
+    profile open. Tracks the number of unsaved TabGroups. Nothing is recorded
+    for sessions shorter than one hour.
   </summary>
 </histogram>
 
@@ -613,13 +651,14 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    Records once an hour once the SavedTabGroupKeyedService is instantiated.
-    Tracks the number of tabs in an unsaved TabGroup.
+    Records once per group per hour once the SavedTabGroupKeyedService is
+    instantiated. Tracks the number of tabs in an unsaved TabGroup. Nothing is
+    recorded for sessions shorter than one hour.
   </summary>
 </histogram>
 
 <histogram name="TabGroups.UserCustomizedGroupCountPerLoad" units="groups"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -629,7 +668,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UserGroupCount" units="groups"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -649,7 +688,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UserNamedGroupCount" units="groups"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -659,7 +698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UserPinnedTabCountPerLoad" units="tabs"
-    expires_after="2023-09-05">
+    expires_after="2023-11-12">
   <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -991,7 +1030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabManager.Discarding.InactiveToReloadTime" units="ms"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1142,7 +1181,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2023-09-10">
+<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2023-11-12">
   <owner>marq@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>[Android and iOS] The number of tabs opened at cold launch.</summary>
@@ -1327,7 +1366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.PersistedTabData.Deserialize.Critical"
-    enum="BooleanSuccess" expires_after="2023-06-19">
+    enum="BooleanSuccess" expires_after="2024-05-14">
 <!-- P2 project which hasn't launched yet -->
 
   <owner>yusufo@chromium.org</owner>
@@ -1555,7 +1594,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.RestoreTabStateException" enum="RestoreTabStateException"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -1568,7 +1607,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.SadTab.Feedback.Event" enum="SadTabEvent"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>sonnyrao@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -1579,7 +1618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.SadTab.Reload.Event" enum="SadTabEvent"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>sonnyrao@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -1792,7 +1831,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Tabs.TabCountPerLoad" units="tabs" expires_after="2023-08-27">
+<histogram name="Tabs.TabCountPerLoad" units="tabs" expires_after="2023-11-12">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <owner>sbirch@google.com</owner>
@@ -1805,7 +1844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabCountPerWindow" units="tabs"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -1853,7 +1892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabRestoreMethod" enum="TabRestoreMethod"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>davidjm@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
@@ -2269,7 +2308,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabState.SaveTime" units="ms" expires_after="2023-06-18">
+<histogram name="Tabs.TabState.SaveTime" units="ms" expires_after="2024-05-14">
   <owner>yusufo@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -2391,7 +2430,7 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
-<histogram name="Tabs.WindowWidth" units="DIPs" expires_after="2023-09-03">
+<histogram name="Tabs.WindowWidth" units="DIPs" expires_after="2023-11-12">
   <owner>collinbaker@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -2440,7 +2479,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabStrip.TabCountOnPageLoad" units="tabs"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -2452,7 +2491,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabStrip.TimeToCreateNewTabFromPress" units="ms"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>robliao@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>

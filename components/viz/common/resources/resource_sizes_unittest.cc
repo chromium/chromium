@@ -21,13 +21,6 @@ const int kTestFormats = 4;
 
 class ResourceUtilTest : public testing::Test {
  public:
-  void TestVerifyWidthInBytes(int width, const TestFormat* test_formats) {
-    for (int i = 0; i < kTestFormats; ++i) {
-      EXPECT_TRUE(ResourceSizes::VerifyWidthInBytes<size_t>(
-          width, test_formats[i].format));
-    }
-  }
-
   void TestCheckedWidthInBytes(int width, const TestFormat* test_formats) {
     for (int i = 0; i < kTestFormats; ++i) {
       size_t bytes = ResourceSizes::CheckedWidthInBytes<size_t>(
@@ -50,14 +43,6 @@ class ResourceUtilTest : public testing::Test {
       size_t bytes = ResourceSizes::UncheckedWidthInBytesAligned<size_t>(
           width, test_formats[i].format);
       EXPECT_EQ(bytes, test_formats[i].expected_bytes_aligned);
-    }
-  }
-
-  void TestVerifySizeInBytes(const gfx::Size& size,
-                             const TestFormat* test_formats) {
-    for (int i = 0; i < kTestFormats; ++i) {
-      EXPECT_TRUE(ResourceSizes::VerifySizeInBytes<size_t>(
-          size, test_formats[i].format));
     }
   }
 
@@ -99,7 +84,6 @@ TEST_F(ResourceUtilTest, WidthInBytes) {
       {ETC1, 5, 8}          // for 4 bits
   };
 
-  TestVerifyWidthInBytes(width, test_formats);
   TestCheckedWidthInBytes(width, test_formats);
   TestUncheckedWidthInBytes(width, test_formats);
   TestUncheckedWidthInBytesAligned(width, test_formats);
@@ -113,7 +97,6 @@ TEST_F(ResourceUtilTest, WidthInBytes) {
       {ETC1, 6, 8}          // for 4 bits
   };
 
-  TestVerifyWidthInBytes(width_odd, test_formats_odd);
   TestCheckedWidthInBytes(width_odd, test_formats_odd);
   TestUncheckedWidthInBytes(width_odd, test_formats_odd);
   TestUncheckedWidthInBytesAligned(width_odd, test_formats_odd);
@@ -129,7 +112,6 @@ TEST_F(ResourceUtilTest, SizeInBytes) {
       {ETC1, 50, 80}          // for 4 bits
   };
 
-  TestVerifySizeInBytes(size, test_formats);
   TestCheckedSizeInBytes(size, test_formats);
   TestUncheckedSizeInBytes(size, test_formats);
   TestUncheckedSizeInBytesAligned(size, test_formats);
@@ -143,7 +125,6 @@ TEST_F(ResourceUtilTest, SizeInBytes) {
       {ETC1, 66, 88}          // for 4 bits
   };
 
-  TestVerifySizeInBytes(size_odd, test_formats_odd);
   TestCheckedSizeInBytes(size_odd, test_formats_odd);
   TestUncheckedSizeInBytes(size_odd, test_formats_odd);
   TestUncheckedSizeInBytesAligned(size_odd, test_formats_odd);
@@ -152,17 +133,23 @@ TEST_F(ResourceUtilTest, SizeInBytes) {
 TEST_F(ResourceUtilTest, WidthInBytesOverflow) {
   int width = 10;
   // 10 * 16 = 160 bits, overflows in char, but fits in unsigned char.
-  EXPECT_FALSE(
-      ResourceSizes::VerifyWidthInBytes<signed char>(width, RGBA_4444));
-  EXPECT_TRUE(
-      ResourceSizes::VerifyWidthInBytes<unsigned char>(width, RGBA_4444));
+  signed char ignored_signed;
+  EXPECT_FALSE(ResourceSizes::MaybeWidthInBytes<signed char>(width, RGBA_4444,
+                                                             &ignored_signed));
+  unsigned char ignored_unsigned;
+  EXPECT_TRUE(ResourceSizes::MaybeWidthInBytes<unsigned char>(
+      width, RGBA_4444, &ignored_unsigned));
 }
 
 TEST_F(ResourceUtilTest, SizeInBytesOverflow) {
   gfx::Size size(10, 10);
   // 10 * 16 * 10 = 1600 bits, overflows in char, but fits in int.
-  EXPECT_FALSE(ResourceSizes::VerifySizeInBytes<signed char>(size, RGBA_4444));
-  EXPECT_TRUE(ResourceSizes::VerifySizeInBytes<int>(size, RGBA_4444));
+  signed char ignored_char;
+  EXPECT_FALSE(ResourceSizes::MaybeSizeInBytes<signed char>(size, RGBA_4444,
+                                                            &ignored_char));
+  int ignored_int;
+  EXPECT_TRUE(
+      ResourceSizes::MaybeSizeInBytes<int>(size, RGBA_4444, &ignored_int));
 }
 
 TEST_F(ResourceUtilTest, WidthOverflowDoesNotCrash) {
@@ -181,14 +168,16 @@ TEST_F(ResourceUtilTest, SizeInBitsOverflowBytesOk) {
   gfx::Size size(10000, 10000);
   // 8192 * 8192 * 32 = 0x80000000, overflows int.
   // Bytes are /8 and do not overflow.
-  EXPECT_TRUE(ResourceSizes::VerifySizeInBytes<int>(size, BGRA_8888));
+  int ignored;
+  EXPECT_TRUE(ResourceSizes::MaybeSizeInBytes<int>(size, BGRA_8888, &ignored));
 }
 
 // Checks that we correctly identify overflow in cases caused by rounding.
 TEST_F(ResourceUtilTest, RoundingOverflows) {
   gfx::Size size(0x1FFFFFFF, 1);
   // 0x1FFFFFFF * 4 = 0x7FFFFFFC. Will overflow when rounded up.
-  EXPECT_FALSE(ResourceSizes::VerifySizeInBytes<int>(size, ETC1));
+  int ignored;
+  EXPECT_FALSE(ResourceSizes::MaybeSizeInBytes<int>(size, ETC1, &ignored));
 }
 
 }  // namespace

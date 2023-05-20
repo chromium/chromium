@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> alikuwa akitumia Chromium na akaacha alamisho, manenosiri na mipangilio mingine kwenye kifaa hiki.</translation>
 <translation id="372658070733623520">Ili utumie na uhifadhi data ya Chromium katika Akaunti yako ya Google, thibitisha kuwa ni wewe.</translation>
 <translation id="3805899903892079518">Chromium haina uwezo wa kufikia picha au video zako. Washa uwezo wa kufikia katika Mipangilio ya iOS &gt; Faragha &gt; Picha.</translation>
+<translation id="3955621079070267756">Fungua Chromium Kwenye Programu Yoyote</translation>
 <translation id="4043291146360695975">Manenosiri huhifadhiwa kwenye Kidhibiti cha Manenosiri kwenye kifaa hiki tu.</translation>
 <translation id="4099085513035183040">Haitumiki kwenye toleo la Beta la Chromium</translation>
 <translation id="4432744876818348753">Ingia katika akaunti ili unufaike zaidi na Chromium.</translation>
@@ -101,7 +102,6 @@
 <translation id="7192111075364461693">Kwa sasa arifa za Chromium zimezimwa kwenye mipangilio ya kifaa chako.</translation>
 <translation id="7208566199746267865">Chromium inaokoa muda wako kwa kuleta akaunti zako kwenye wavuti. Unaweza kuongeza au kuondoa akaunti katika Mipangilio.</translation>
 <translation id="725427773388857052">Chromium inaweza kukusaidia ulinde akaunti yako dhidi ya ufichuzi haramu wa data, tovuti ambazo si salama na zaidi.</translation>
-<translation id="7255976941681861701">Fahamu kuhusu menyu mpya ya Chromium</translation>
 <translation id="7269362888766543920">Baadhi ya programu jalizi husababisha Chromium iache kufanya kazi. Tafadhali jaribu kuziondoa.</translation>
 <translation id="7313655110045230863">Ili ufanye Chromium iwe kivinjari chako chaguomsingi, fungua Mipangilio. Gusa Programu ya Kivinjari Chaguomsingi, kisha uchague Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
@@ -144,5 +144,6 @@ Mambo ya kuzingatia:
 <translation id="9089354809943900324">Chromium imepitwa na wakati</translation>
 <translation id="9110075932708282655">Tumia Chromium kwa Chaguomsingi</translation>
 <translation id="921174536258924340">Chromium imeshindwa kukagua manenosiri yote. Jaribu tena kesho au <ph name="BEGIN_LINK" />ukague manenosiri katika Akaunti yako ya Google.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">Tumia Chromium kiotomatiki unapogusa viungo katika ujumbe, hati na programu zingine.</translation>
 <translation id="985602178874221306">Waandishi wa Chromium</translation>
 </translationbundle>

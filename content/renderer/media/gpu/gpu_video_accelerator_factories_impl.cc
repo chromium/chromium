@@ -303,6 +303,14 @@ unsigned GpuVideoAcceleratorFactoriesImpl::ImageTextureTarget(
 media::GpuVideoAcceleratorFactories::OutputFormat
 GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
     media::VideoPixelFormat pixel_format) {
+  auto format = VideoFrameOutputFormatImpl(pixel_format);
+  UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormat", format);
+  return format;
+}
+
+media::GpuVideoAcceleratorFactories::OutputFormat
+GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
+    media::VideoPixelFormat pixel_format) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (CheckContextLost())
     return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;

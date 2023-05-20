@@ -12,6 +12,10 @@
 
 #include <windows.h>
 
+namespace gfx {
+class Size;
+}
+
 namespace gl {
 
 // The window DirectComposition renders into needs to be owned by the process
@@ -27,6 +31,8 @@ class GL_EXPORT ChildWindowWin {
 
   void Initialize();
   HWND window() const { return window_; }
+
+  bool Resize(const gfx::Size& size);
 
   scoped_refptr<base::TaskRunner> GetTaskRunnerForTesting();
 

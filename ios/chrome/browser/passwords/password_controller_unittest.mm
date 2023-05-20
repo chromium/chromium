@@ -632,6 +632,7 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
                        displayDescription:nil
                                      icon:nil
                                identifier:0
+                        backendIdentifier:nil
                            requiresReauth:NO];
 
   SuggestionHandledCompletion completion = ^{

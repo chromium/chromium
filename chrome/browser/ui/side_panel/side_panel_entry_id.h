@@ -24,6 +24,7 @@ enum class SidePanelEntryId {
   kAboutThisSite,
   kCustomizeChrome,
   kSearchCompanion,
+  kShoppingInsights,
   // Extensions (nothing more should be added below here)
   kExtension
 };

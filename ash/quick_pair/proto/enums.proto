@@ -156,3 +156,18 @@ enum DeviceType {
   // more details.
   ANDROID_AUTO = 9;
 }
+
+// Status types available for each device.
+// PUBLISHED is the only state that shows notifications to the public.
+enum StatusType {
+  // Unknown status.
+  TYPE_UNSPECIFIED = 0;
+  // Drafted device.
+  DRAFT = 1;
+  // Submitted and waiting for approval.
+  SUBMITTED = 2;
+  // Fully approved and available for end users.
+  PUBLISHED = 3;
+  // Rejected and not available for end users.
+  REJECTED = 4;
+}

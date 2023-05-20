@@ -4,9 +4,12 @@
 
 #include "components/omnibox/browser/autocomplete_scoring_model_handler.h"
 
+#include "base/base_paths.h"
+#include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
+#include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autocomplete_scoring_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -80,12 +83,50 @@ class AutocompleteScoringModelHandlerTest : public testing::Test {
         /*optimization_target=*/
         optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
         /*model_metadata=*/absl::nullopt);
+
+    base::FilePath source_root_dir;
+    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    // A model of `add` operator.
+    model_file_path_ = source_root_dir.AppendASCII("components")
+                           .AppendASCII("test")
+                           .AppendASCII("data")
+                           .AppendASCII("omnibox")
+                           .AppendASCII("adder.tflite");
   }
 
   void TearDown() override {
     model_handler_.reset();
     model_provider_.reset();
     RunUntilIdle();
+  }
+
+  void PushModelFileToModelExecutor(
+      absl::optional<
+          optimization_guide::proto::AutocompleteScoringModelMetadata>
+          metadata) {
+    absl::optional<optimization_guide::proto::Any> any;
+
+    // Craft a correct Any proto in the case we passed in metadata.
+    if (metadata) {
+      std::string serialized_metadata;
+      metadata->SerializeToString(&serialized_metadata);
+      optimization_guide::proto::Any any_proto;
+      any = absl::make_optional(any_proto);
+      any->set_value(serialized_metadata);
+      any->set_type_url(
+          "type.googleapis.com/"
+          "optimization_guide.protos.AutocompleteScoringModelMetadata");
+    }
+
+    auto model_metadata = optimization_guide::TestModelInfoBuilder()
+                              .SetModelMetadata(any)
+                              .SetModelFilePath(model_file_path_)
+                              .SetVersion(123)
+                              .Build();
+    model_handler_->OnModelUpdated(
+        optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
+        *model_metadata);
+    task_environment_.RunUntilIdle();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -95,6 +136,7 @@ class AutocompleteScoringModelHandlerTest : public testing::Test {
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       model_provider_;
   std::unique_ptr<AutocompleteScoringModelHandler> model_handler_;
+  base::FilePath model_file_path_;
 };
 
 TEST_F(AutocompleteScoringModelHandlerTest,
@@ -125,4 +167,25 @@ TEST_F(AutocompleteScoringModelHandlerTest,
   const auto input_signals = model_handler_->ExtractInputFromScoringSignals(
       scoring_signals, model_metadata);
   EXPECT_THAT(input_signals, testing::UnorderedElementsAre(10, 9, -2));
+}
+
+TEST_F(AutocompleteScoringModelHandlerTest, GetBatchModelInputTest) {
+  AutocompleteScoringModelMetadata model_metadata;
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::SCORING_SIGNAL_TYPE_LENGTH_OF_URL);
+  PushModelFileToModelExecutor(model_metadata);
+
+  std::vector<const ScoringSignals*> scoring_signals_vec;
+  // Scoring signals.
+  ScoringSignals scoring_signals_1, scoring_signals_2;
+  scoring_signals_1.set_length_of_url(10);
+  scoring_signals_vec.push_back(&scoring_signals_1);
+  scoring_signals_2.set_length_of_url(12);
+  scoring_signals_vec.push_back(&scoring_signals_2);
+  const absl::optional<std::vector<std::vector<float>>> batch_model_input =
+      model_handler_->GetBatchModelInput(scoring_signals_vec);
+  ASSERT_TRUE(batch_model_input);
+  ASSERT_EQ(batch_model_input->size(), 2u);
+  EXPECT_THAT(batch_model_input->at(0), testing::UnorderedElementsAre(10));
+  EXPECT_THAT(batch_model_input->at(1), testing::UnorderedElementsAre(12));
 }

@@ -411,8 +411,7 @@ void DecryptingDemuxerStream::InitializeDecoderConfig() {
     }
 
     default:
-      NOTREACHED();
-      return;
+      NOTREACHED_NORETURN();
   }
   LogMetadata();
 }

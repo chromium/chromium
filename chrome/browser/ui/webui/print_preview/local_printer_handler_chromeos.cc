@@ -229,12 +229,12 @@ void LocalPrinterHandlerChromeos::StartPrint(
   size_t size_in_kb = print_data->size() / 1024;
   base::UmaHistogramMemoryKB("Printing.CUPS.PrintDocumentSize", size_in_kb);
 
-  const std::string* printer_id = settings.FindString(kSettingDeviceName);
+  std::string printer_id = *settings.FindString(kSettingDeviceName);
   auto call_start_local_print_callback =
       base::BindOnce(&LocalPrinterHandlerChromeos::CallStartLocalPrint,
                      weak_ptr_factory_.GetWeakPtr(), std::move(print_data),
                      std::move(callback));
-  GetAshJobSettings(printer_id ? *printer_id : "",
+  GetAshJobSettings(std::move(printer_id),
                     std::move(call_start_local_print_callback),
                     std::move(settings));
 }

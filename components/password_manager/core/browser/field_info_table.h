@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
@@ -63,9 +63,7 @@ class FieldInfoTable {
   std::vector<FieldInfo> GetAllRowsForFormSignature(uint64_t form_signature);
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION sql::Database* db_ = nullptr;
+  raw_ptr<sql::Database> db_ = nullptr;
 };
 
 }  // namespace password_manager

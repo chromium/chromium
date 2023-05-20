@@ -294,6 +294,9 @@ class PageInfo : private content_settings::CookieControlsView {
   // This method is called when the user pressed "Mark as legitimate" button.
   void OnAllowlistPasswordReuseButtonPressed();
 
+  // This method is called when the user opens the Cookies & Site Data subpage.
+  void OnCookiesPageOpened();
+
   // Return a pointer to the ObjectPermissionContextBase corresponding to the
   // content settings type, |type|. Returns nullptr for content settings
   // for which there's no ObjectPermissionContextBase.

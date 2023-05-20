@@ -43,7 +43,7 @@ class WebContentsUIViewHolder {
 std::unique_ptr<WebContentsView> CreateWebContentsView(
     WebContentsImpl* web_contents,
     std::unique_ptr<WebContentsViewDelegate> delegate,
-    RenderViewHostDelegateView** render_view_host_delegate_view) {
+    raw_ptr<RenderViewHostDelegateView>* render_view_host_delegate_view) {
   auto rv =
       std::make_unique<WebContentsViewIOS>(web_contents, std::move(delegate));
   *render_view_host_delegate_view = rv.get();
@@ -53,7 +53,7 @@ std::unique_ptr<WebContentsView> CreateWebContentsView(
 WebContentsViewIOS::WebContentsViewIOS(
     WebContentsImpl* web_contents,
     std::unique_ptr<WebContentsViewDelegate> delegate)
-    : web_contents_(web_contents) {
+    : web_contents_(web_contents), delegate_(std::move(delegate)) {
   ui_view_ = std::make_unique<WebContentsUIViewHolder>();
   ui_view_->view_ = base::scoped_nsobject<UIView>([[UIView alloc] init]);
   [ui_view_->view_ setAutoresizingMask:UIViewAutoresizingFlexibleWidth |
@@ -93,15 +93,60 @@ void WebContentsViewIOS::FullscreenStateChanged(bool is_fullscreen) {}
 void WebContentsViewIOS::UpdateWindowControlsOverlay(
     const gfx::Rect& bounding_rect) {}
 
-void WebContentsViewIOS::Focus() {}
+void WebContentsViewIOS::Focus() {
+  if (delegate_) {
+    delegate_->ResetStoredFocus();
+  }
 
-void WebContentsViewIOS::SetInitialFocus() {}
+  // Focus the the fullscreen view, if one exists; otherwise, focus the content
+  // native view. This ensures that the view currently attached to a NSWindow is
+  // being used to query or set first responder state.
+  RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
+  if (!rwhv) {
+    return;
+  }
 
-void WebContentsViewIOS::StoreFocus() {}
+  static_cast<RenderWidgetHostViewBase*>(rwhv)->Focus();
+}
 
-void WebContentsViewIOS::RestoreFocus() {}
+void WebContentsViewIOS::SetInitialFocus() {
+  if (delegate_) {
+    delegate_->ResetStoredFocus();
+  }
 
-void WebContentsViewIOS::FocusThroughTabTraversal(bool reverse) {}
+  if (web_contents_->FocusLocationBarByDefault()) {
+    web_contents_->SetFocusToLocationBar();
+  } else {
+    Focus();
+  }
+}
+
+void WebContentsViewIOS::StoreFocus() {
+  if (delegate_) {
+    delegate_->StoreFocus();
+  }
+}
+
+void WebContentsViewIOS::RestoreFocus() {
+  if (delegate_ && delegate_->RestoreFocus()) {
+    return;
+  }
+
+  // Fall back to the default focus behavior if we could not restore focus.
+  // TODO(shess): If location-bar gets focus by default, this will
+  // select-all in the field.  If there was a specific selection in
+  // the field when we navigated away from it, we should restore
+  // that selection.
+  SetInitialFocus();
+}
+
+void WebContentsViewIOS::FocusThroughTabTraversal(bool reverse) {
+  if (delegate_) {
+    delegate_->ResetStoredFocus();
+  }
+
+  web_contents_->GetRenderViewHost()->SetInitialFocus(reverse);
+}
 
 DropData* WebContentsViewIOS::GetDropData() const {
   return nullptr;

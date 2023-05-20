@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {LayersTestRunner} from 'layers_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that when layer snapshots are replayed with scaling applied the image dimensions are properly scaled.\n`);
-  await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.loadHTML(`
       <div id="a" style="background-color:blue; will-change: transform; overflow: hidden;">
 

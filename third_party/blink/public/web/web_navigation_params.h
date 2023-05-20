@@ -318,6 +318,9 @@ struct BLINK_EXPORT WebNavigationParams {
     // TODO(dgozman): we only use this response for navigation timings.
     // Perhaps, we can just get rid of it.
     WebURLResponse redirect_response;
+    // When navigation is restarted due to a Critical-CH header this stores the
+    // time at which the the restart was initiated.
+    base::TimeTicks critical_ch_restart_time;
   };
   // Redirects which happened while fetching the main resource.
   // TODO(dgozman): we are only interested in the final values instead of

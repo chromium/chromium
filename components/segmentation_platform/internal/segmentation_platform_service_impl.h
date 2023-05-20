@@ -22,7 +22,6 @@
 #include "components/segmentation_platform/internal/selection/result_refresh_manager.h"
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
-#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
@@ -121,6 +120,10 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   void GetSelectedSegmentOnDemand(const std::string& segmentation_key,
                                   scoped_refptr<InputContext> input_context,
                                   SegmentSelectionCallback callback) override;
+  void CollectTrainingData(SegmentId segment_id,
+                           TrainingRequestId request_id,
+                           const TrainingLabels& param,
+                           SuccessCallback callback) override;
   void EnableMetrics(bool signal_collection_allowed) override;
   ServiceProxy* GetServiceProxy() override;
   bool IsPlatformInitialized() override;
@@ -148,6 +151,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
   CreateSegmentResultProviders();
 
+  // Creates SegmentResultProvider.
+  std::unique_ptr<SegmentResultProvider> CreateSegmentResultProvider();
   std::unique_ptr<ModelProviderFactory> model_provider_factory_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -7,10 +7,13 @@
 
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
 namespace ash {
 
@@ -18,7 +21,8 @@ namespace ash {
 // User actions and behaviors are recorded by AuthEventsRecorder in multiple
 // stages of the login flow. It will set the appropriate crash keys, and send
 // UMA metrics.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder
+    : public session_manager::SessionManagerObserver {
  public:
   // Enum used for UMA. Do NOT reorder or remove entry. Don't forget to
   // update LoginFlowUserLoginType enum in enums.xml when adding new entries.
@@ -68,7 +72,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder {
   AuthEventsRecorder& operator=(const AuthEventsRecorder&) = delete;
   AuthEventsRecorder(AuthEventsRecorder&&) = delete;
   AuthEventsRecorder& operator=(AuthEventsRecorder&&) = delete;
-  ~AuthEventsRecorder();
+  ~AuthEventsRecorder() override;
 
   static AuthEventsRecorder* Get();
 
@@ -127,6 +131,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder {
     return knowledge_factor_auth_failure_count_;
   }
 
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
+
  private:
   friend class ChromeBrowserMainPartsAsh;
 
@@ -149,9 +156,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder {
 
   void Reset();
 
-  int knowledge_factor_auth_failure_count_ = 0;
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
 
-  // All values should be reset to nullopt in `Reset()`;
+  // All values should be reset in `Reset()`;
+  int knowledge_factor_auth_failure_count_ = 0;
   absl::optional<int> user_count_;
   absl::optional<bool> show_users_on_signin_;
   absl::optional<UserLoginType> user_login_type_;

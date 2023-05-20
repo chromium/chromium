@@ -1,0 +1,107 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/segmentation_platform/embedder/tab_fetcher.h"
+
+#include "base/notreached.h"
+#include "base/time/time.h"
+#include "components/sync_sessions/open_tabs_ui_delegate.h"
+#include "components/sync_sessions/synced_session.h"
+
+namespace segmentation_platform {
+namespace {
+
+void FillTabsFromSessions(
+    const std::vector<const sync_sessions::SyncedSession*> sessions,
+    std::vector<TabFetcher::TabEntry>& tabs) {
+  for (const auto* session : sessions) {
+    for (const auto& session_and_window : session->windows) {
+      const auto& window = session_and_window.second->wrapped_window;
+      for (const auto& tab : window.tabs) {
+        tabs.emplace_back(tab->tab_id, session->GetSessionTag());
+      }
+    }
+  }
+}
+
+}  // namespace
+
+TabFetcher::TabEntry::TabEntry(SessionID tab_id, const std::string& session_tag)
+    : session_tag(session_tag), tab_id(tab_id), web_contents_data(nullptr) {}
+
+TabFetcher::TabEntry::TabEntry(SessionID tab_id,
+                               content::WebContents* webcontents,
+                               TabAndroid* tab_android)
+    : tab_id(tab_id),
+      web_contents_data(webcontents),
+      tab_android_data(tab_android) {}
+
+TabFetcher::TabFetcher(sync_sessions::SessionSyncService* session_sync_service)
+    : session_sync_service_(session_sync_service) {}
+
+bool TabFetcher::FillAllRemoteTabs(std::vector<TabEntry>& tabs) {
+  auto* open_ui_delegate = session_sync_service_->GetOpenTabsUIDelegate();
+  if (!open_ui_delegate) {
+    return false;
+  }
+  std::vector<const sync_sessions::SyncedSession*> sessions;
+  open_ui_delegate->GetAllForeignSessions(&sessions);
+  FillTabsFromSessions(sessions, tabs);
+  return true;
+}
+
+bool TabFetcher::FillAllLocalTabs(std::vector<TabEntry>& tabs) {
+  if (!session_sync_service_->GetOpenTabsUIDelegate()) {
+    return FillAllLocalTabsFromTabModel(tabs);
+  }
+  FillAllLocalTabsFromSyncSessions(tabs);
+  return true;
+}
+
+TabFetcher::Tab TabFetcher::FindTab(const TabEntry& entry) {
+  auto* open_ui_delegate = session_sync_service_->GetOpenTabsUIDelegate();
+  if (!open_ui_delegate) {
+    return FindLocalTab(entry);
+  }
+  const sessions::SessionTab* tab;
+  open_ui_delegate->GetForeignTab(entry.session_tag, entry.tab_id, &tab);
+  return Tab{.session_tab = tab};
+}
+
+bool TabFetcher::FillAllLocalTabsFromTabModel(std::vector<TabEntry>& tabs) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool TabFetcher::FillAllLocalTabsFromSyncSessions(std::vector<TabEntry>& tabs) {
+  const sync_sessions::SyncedSession* local_session = nullptr;
+  auto* open_ui_delegate = session_sync_service_->GetOpenTabsUIDelegate();
+  open_ui_delegate->GetLocalSession(&local_session);
+  if (!local_session) {
+    return false;
+  }
+  FillTabsFromSessions({local_session}, tabs);
+  return true;
+}
+
+TabFetcher::Tab TabFetcher::FindLocalTab(const TabEntry& entry) {
+  NOTIMPLEMENTED();
+  return Tab{};
+}
+
+base::TimeDelta TabFetcher::GetTimeSinceModified(const TabEntry& tab_entry) {
+  Tab tab = FindTab(tab_entry);
+  if (tab.session_tab) {
+    return base::Time::Now() - tab.session_tab->timestamp;
+  }
+  return GetLocalTabTimeSinceModified(tab);
+}
+
+base::TimeDelta TabFetcher::GetLocalTabTimeSinceModified(
+    const TabFetcher::Tab& tab) {
+  NOTIMPLEMENTED();
+  return base::TimeDelta::Max();
+}
+
+}  // namespace segmentation_platform

@@ -36,7 +36,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
 
@@ -47,7 +46,6 @@ using testing::Eq;
 using testing::IsFalse;
 using testing::IsTrue;
 using testing::StartsWith;
-using testing::VariantWith;
 
 using VerifierError = web_package::SignedWebBundleSignatureVerifier::Error;
 
@@ -269,10 +267,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
   FulfillIntegrityBlock();
 
   ReaderResult result = reader_future.Take();
-
   ASSERT_FALSE(result.has_value());
-  auto actual_error = result.error();
-  EXPECT_THAT(actual_error.message(), Eq("test error"));
+  EXPECT_THAT(result.error().message(), Eq("test error"));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -326,10 +322,8 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
         UnusableSwbnFileError::Error::kSignatureVerificationError, 0);
   } else {
     ReaderResult result = reader_future.Take();
-
     ASSERT_FALSE(result.has_value());
-    auto actual_error = result.error();
-    EXPECT_THAT(actual_error.message(), Eq(error_.message));
+    EXPECT_THAT(result.error().message(), Eq(error_.message));
 
     histogram_tester.ExpectBucketCount(
         ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -409,10 +403,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
                                        std::move(metadata));
 
   ReaderResult result = reader_future.Take();
-
   ASSERT_FALSE(result.has_value());
-  auto actual_error = result.error();
-  EXPECT_THAT(actual_error.message(),
+  EXPECT_THAT(result.error().message(),
               StartsWith("Primary URL must not be present"));
 
   histogram_tester.ExpectBucketCount(
@@ -436,10 +428,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
                                        std::move(metadata));
 
   ReaderResult result = reader_future.Take();
-
   ASSERT_FALSE(result.has_value());
-  auto actual_error = result.error();
-  EXPECT_THAT(actual_error.message(),
+  EXPECT_THAT(result.error().message(),
               StartsWith("The URL of an exchange is invalid"));
 }
 

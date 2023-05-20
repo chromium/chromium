@@ -407,5 +407,17 @@ TEST(PartitionAllocDanglingPtrChecks,
 
 #endif
 
+TEST(PartitionAllocSupportTest,
+     ProposeSyntheticFinchTrials_RendererLiveBackupRefPtr) {
+  const std::string group = ProposeSyntheticFinchTrials()[std::string(
+      base::features::kRendererLiveBRPSyntheticTrialName)];
+
+#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
+  EXPECT_EQ(group, "Enabled");
+#else
+  EXPECT_EQ(group, "Control");
+#endif
+}
+
 }  // namespace allocator
 }  // namespace base

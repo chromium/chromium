@@ -45,7 +45,7 @@ TEST(NumberFormattingTest, FormatNumber) {
   }
 }
 
-TEST(NumberFormattingTest, FormatDouble) {
+TEST(NumberFormattingTest, FormatDoubleWithFixedFractionalDigits) {
   static const struct {
     double number;
     int frac_digits;
@@ -88,6 +88,55 @@ TEST(NumberFormattingTest, FormatDouble) {
     ResetFormattersForTesting();
     EXPECT_EQ(i.expected_german,
               UTF16ToUTF8(FormatDouble(i.number, i.frac_digits)));
+  }
+}
+
+TEST(NumberFormattingTest, FormatDoubleWithFractionalDigitRange) {
+  static const struct {
+    double number;
+    int min_frac_digits;
+    int max_frac_digits;
+    const char* expected_english;
+    const char* expected_german;
+  } cases[] = {
+    {0.0, 0, 0, "0", "0"},
+#if !BUILDFLAG(IS_ANDROID)
+    // Bionic can't printf negative zero correctly.
+    {-0.0, 0, 4, "-0", "-0"},
+#endif
+    {1024.2, 0, 0, "1,024", "1.024"},
+    {-1024.223, 0, 2, "-1,024.22", "-1.024,22"},
+    {std::numeric_limits<double>::max(), 0, 6,
+     "179,769,313,486,231,570,000,000,000,000,000,000,000,000,000,000,000,"
+     "000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,"
+     "000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,"
+     "000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,"
+     "000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,"
+     "000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,000,"
+     "000",
+     "179.769.313.486.231.570.000.000.000.000.000.000.000.000.000.000.000."
+     "000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000."
+     "000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000."
+     "000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000."
+     "000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000."
+     "000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000."
+     "000"},
+    {std::numeric_limits<double>::min(), 2, 2, "0.00", "0,00"},
+    {-42.7, 0, 3, "-42.7", "-42,7"},
+  };
+
+  test::ScopedRestoreICUDefaultLocale restore_locale;
+  for (const auto& i : cases) {
+    i18n::SetICUDefaultLocale("en");
+    ResetFormattersForTesting();
+    EXPECT_EQ(i.expected_english,
+              UTF16ToUTF8(FormatDouble(i.number, i.min_frac_digits,
+                                       i.max_frac_digits)));
+    i18n::SetICUDefaultLocale("de");
+    ResetFormattersForTesting();
+    EXPECT_EQ(i.expected_german,
+              UTF16ToUTF8(FormatDouble(i.number, i.min_frac_digits,
+                                       i.max_frac_digits)));
   }
 }
 

@@ -56,7 +56,7 @@ public class IncognitoReauthManager {
      */
     public void startReauthenticationFlow(
             @NonNull IncognitoReauthCallback incognitoReauthCallback) {
-        if (!mReauthenticatorBridge.canUseAuthentication()
+        if (!mReauthenticatorBridge.canUseAuthenticationWithBiometricOrScreenLock()
                 || !isIncognitoReauthFeatureAvailable()) {
             incognitoReauthCallback.onIncognitoReauthNotPossible();
             return;

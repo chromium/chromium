@@ -159,7 +159,7 @@ CaptureModeTestApi::GetRecordingOverlayController() {
   VideoRecordingWatcher* video_recording_watcher =
       controller_->video_recording_watcher_.get();
   CHECK(video_recording_watcher);
-  CaptureModeBehavior* active_behavior =
+  const CaptureModeBehavior* active_behavior =
       video_recording_watcher->active_behavior();
   CHECK(active_behavior);
   CHECK(active_behavior->ShouldCreateRecordingOverlayController());

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -68,7 +69,6 @@ namespace blink {
 
 class BlobDataHandle;
 class FetchParameters;
-class ResourceClient;
 class ResourceFinishObserver;
 class ResourceLoader;
 class ResponseBodyLoaderDrainableInterface;
@@ -94,7 +94,8 @@ enum class ResourceType : uint8_t {
   kManifest = 12,
   kSpeculationRules = 13,
   kMock = 14,  // Only for testing
-  kMaxValue = kMock
+  kDictionary = 15,
+  kMaxValue = kDictionary
 };
 
 // A resource that is held in the cache. Classes who want to use this object
@@ -425,6 +426,14 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   void DidRemoveClientOrObserver();
 
+  void SetIsPreloadedByEarlyHints() { is_preloaded_by_early_hints_ = true; }
+
+  bool IsPreloadedByEarlyHints() { return is_preloaded_by_early_hints_; }
+
+  void SetIsLoadedFromMemoryCache() { is_loaded_from_memory_cache_ = true; }
+
+  bool IsLoadedFromMemoryCache() { return is_loaded_from_memory_cache_; }
+
  protected:
   Resource(const ResourceRequestHead&,
            ResourceType,
@@ -527,6 +536,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   bool is_revalidation_start_forbidden_ = false;
   bool is_unused_preload_ = false;
   bool stale_revalidation_started_ = false;
+  bool is_preloaded_by_early_hints_ = false;
+  bool is_loaded_from_memory_cache_ = false;
 
   ResourceIntegrityDisposition integrity_disposition_;
   SubresourceIntegrity::ReportInfo integrity_report_info_;

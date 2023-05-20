@@ -6,6 +6,10 @@
 
 #include "components/password_manager/core/browser/password_manager.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // static
 IOSPasswordManagerDriver*
 IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(

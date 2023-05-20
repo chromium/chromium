@@ -50,8 +50,6 @@ class ContentWebFramesManager : public WebFramesManager,
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void PrimaryPageChanged(content::Page& page) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
  private:
   // Return the WebFrame* corresponding to the given content id.

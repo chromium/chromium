@@ -161,6 +161,13 @@ found in the LICENSE file.
     <dimen name="tile_grid_layout_bottom_margin_push_down_large">64dp</dimen>
     <dimen name="tile_grid_layout_bottom_margin_pull_up">24dp</dimen>
     <dimen name="tile_carousel_layout_bottom_margin">24dp</dimen>
+    <dimen name="mvt_container_to_ntp_right_extra_margin_two_feed_tablet">16dp</dimen>
+    <dimen name="mvt_container_bottom_margin_tablet">48dp</dimen>
+    <dimen name="tile_grid_layout_landscape_edge_margin_tablet">48dp</dimen>
+    <dimen name="tile_grid_layout_portrait_edge_margin_tablet">32dp</dimen>
+    <dimen name="tile_carousel_layout_max_interval_margin_tablet">64dp</dimen>
+    <dimen name="single_tab_card_top_and_bottom_margin_carousel_mvt_tablet">48dp</dimen>
+    <dimen name="single_tab_card_top_and_bottom_margin_grid_mvt_tablet">36dp</dimen>
     <dimen name="ntp_iph_searchbox_y_inset">6dp</dimen>
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
@@ -223,10 +230,16 @@ found in the LICENSE file.
     <dimen name="bookmark_list_view_padding_top">64dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
-    <!-- The size of the icon view, but not the size of the fetched image. -->
-    <dimen name="improved_bookmark_icon_size">48dp</dimen>
-    <!-- The size of the icon view and the size of the fetched image. -->
-    <dimen name="improved_bookmark_icon_visual_size">80dp</dimen>
+
+     <!-- Improved bookmark row properties. -->
+     <!-- The size of the start image for compact rows.. -->
+    <dimen name="improved_bookmark_start_image_size_compact">48dp</dimen>
+     <!-- The size of the start image for visual rows.. -->
+    <dimen name="improved_bookmark_start_image_size_visual">80dp</dimen>
+    <!-- The size of displayed favicons for each row. -->
+    <dimen name="improved_bookmark_favicon_display_size">24dp</dimen>
+    <dimen name="improved_bookmark_icon_radius">24dp</dimen>
+
 
     <!-- Bookmark visual refresh dimensions. -->
      <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>

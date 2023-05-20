@@ -274,11 +274,12 @@ PasswordStoreChangeList FakePasswordStoreBackend::UpdateLoginInternal(
   std::vector<PasswordForm>& forms = stored_passwords_[form.signon_realm];
   for (auto& stored_form : forms) {
     if (ArePasswordFormUniqueKeysEqual(form, stored_form)) {
+      bool password_changed = form.password_value != stored_form.password_value;
       stored_form = form;
       stored_form.in_store = is_account_store()
                                  ? PasswordForm::Store::kAccountStore
                                  : PasswordForm::Store::kProfileStore;
-      changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE, form));
+      changes.emplace_back(PasswordStoreChange::UPDATE, form, password_changed);
     }
   }
   if (changes.empty() && update_always_succeeds_) {

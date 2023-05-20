@@ -371,6 +371,8 @@ HintsManager::GetOptimizationGuideDecisionFromOptimizationTypeDecision(
     case OptimizationTypeDecision::kNoMatchingPageHint:
     case OptimizationTypeDecision::kNoHintAvailable:
     case OptimizationTypeDecision::kNotAllowedByOptimizationFilter:
+    case OptimizationTypeDecision::kInvalidURL:
+    case OptimizationTypeDecision::kRequestedUnregisteredType:
       return OptimizationGuideDecision::kFalse;
   }
 }
@@ -1391,15 +1393,16 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
   // have a hint, so just return.
   if (!is_optimization_type_registered &&
       (url_keyed_hint == nullptr && host_keyed_hint == nullptr)) {
-    scoped_logger.set_type_decision(OptimizationTypeDecision::kNoHintAvailable);
-    return OptimizationTypeDecision::kNoHintAvailable;
+    scoped_logger.set_type_decision(
+        OptimizationTypeDecision::kRequestedUnregisteredType);
+    return OptimizationTypeDecision::kRequestedUnregisteredType;
   }
 
   // If the URL doesn't have a host, we cannot query the hint for it, so just
   // return early.
   if (!navigation_url.has_host()) {
-    scoped_logger.set_type_decision(OptimizationTypeDecision::kNoHintAvailable);
-    return OptimizationTypeDecision::kNoHintAvailable;
+    scoped_logger.set_type_decision(OptimizationTypeDecision::kInvalidURL);
+    return OptimizationTypeDecision::kInvalidURL;
   }
   const auto& host = navigation_url.host();
 

@@ -167,24 +167,6 @@ NoAllocDirectCallHost* CanvasRenderingContext2D::AsNoAllocDirectCallHost() {
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D() = default;
 
-void CanvasRenderingContext2D::ValidateStateStackWithCanvas(
-    const cc::PaintCanvas* canvas) const {
-#if DCHECK_IS_ON()
-  if (canvas) {
-    // The canvas should always have an initial save frame, to support
-    // resetting the top level matrix and clip.
-    DCHECK_GT(canvas->getSaveCount(), 1);
-
-    if (context_lost_mode_ == kNotLostContext) {
-      DCHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
-                state_stack_.size() + 1);
-    }
-  }
-#endif
-  CHECK(state_stack_.front()
-            .Get());  // Temporary for investigating crbug.com/648510
-}
-
 bool CanvasRenderingContext2D::IsAccelerated() const {
   Canvas2DLayerBridge* layer_bridge = canvas()->GetCanvas2DLayerBridge();
   if (!layer_bridge)

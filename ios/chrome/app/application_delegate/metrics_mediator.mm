@@ -31,17 +31,17 @@
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/metrics.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/widget_kit/features.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/app_group/app_group_metrics_mainapp.h"
@@ -510,7 +510,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
               GetApplicationContext()->GetLocalState()->GetInteger(
                   prefs::kInactiveTabsTimeThreshold)];
     [self recordNumActiveTabAtStartup:numActiveTabs];
-    [self recordInactiveTabsSettingsAtStartup:numInactiveTabs];
+    [self recordNumInactiveTabAtStartup:numInactiveTabs];
     [self recordNumAbsoluteInactiveTabAtStartup:numAbsoluteInactiveTabs];
     [self recordNumTabAtStartup:numTabs];
     [self recordNumNTPTabAtStartup:numNTPTabs];
@@ -553,7 +553,8 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
       }
     }
 
-    if (activeScene) {
+    // Proceed if the active scene is initialized.
+    if (activeScene.browserProviderInterface) {
       web::WebState* currentWebState =
           activeScene.browserProviderInterface.currentBrowserProvider.browser
               ->GetWebStateList()

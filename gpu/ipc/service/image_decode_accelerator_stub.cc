@@ -74,7 +74,7 @@ struct CleanUpContext {
   std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> skia_scoped_access;
 };
 
-void CleanUpResource(SkImage::ReleaseContext context) {
+void CleanUpResource(SkImages::ReleaseContext context) {
   auto* clean_up_context = static_cast<CleanUpContext*>(context);
   DCHECK(clean_up_context->main_task_runner->BelongsToCurrentThread());
 

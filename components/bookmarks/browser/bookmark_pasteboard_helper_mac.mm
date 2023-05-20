@@ -19,6 +19,10 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace bookmarks {
 
 NSString* const kUTTypeChromiumBookmarkDictionaryList =
@@ -101,7 +105,7 @@ void ConvertNSArrayToElements(
     NSNumber* node_id =
         base::mac::ObjCCast<NSNumber>(bookmark_dict[kChromiumBookmarkIdKey]);
     if (node_id)
-      new_node->set_id([node_id longLongValue]);
+      new_node->set_id(node_id.longLongValue);
 
     NSDictionary* meta_info = base::mac::ObjCCast<NSDictionary>(
         bookmark_dict[kChromiumBookmarkMetaInfoKey]);
@@ -143,16 +147,17 @@ bool ReadChromiumBookmarks(NSPasteboard* pb,
 
 bool ReadStandardBookmarks(NSPasteboard* pb,
                            std::vector<BookmarkNodeData::Element>* elements) {
-  NSArray* urls = nil;
-  NSArray* titles = nil;
-  if (!ui::clipboard_util::URLsAndTitlesFromPasteboard(
-          pb, /*include_files=*/false, &urls, &titles)) {
+  NSArray<URLAndTitle*>* urls_and_titles =
+      ui::clipboard_util::URLsAndTitlesFromPasteboard(pb,
+                                                      /*include_files=*/false);
+
+  if (!urls_and_titles.count) {
     return false;
   }
 
-  for (NSUInteger i = 0; i < titles.count; ++i) {
-    std::u16string title = base::SysNSStringToUTF16(titles[i]);
-    std::string url = base::SysNSStringToUTF8(urls[i]);
+  for (URLAndTitle* url_and_title in urls_and_titles) {
+    std::string url = base::SysNSStringToUTF8(url_and_title.URL);
+    std::u16string title = base::SysNSStringToUTF16(url_and_title.title);
     if (!url.empty()) {
       BookmarkNodeData::Element element;
       element.is_url = true;
@@ -249,7 +254,7 @@ NSArray<NSPasteboardItem*>* PasteboardItemsFromBookmarks(
     // consist of bookmark folders. The data for those folders will be contained
     // in the Chromium-specific data, so make a single pasteboard item to hold
     // it.
-    items = @[ [[[NSPasteboardItem alloc] init] autorelease] ];
+    items = @[ [[NSPasteboardItem alloc] init] ];
   }
 
   [items.firstObject setPropertyList:GetNSArrayForBookmarkList(elements)

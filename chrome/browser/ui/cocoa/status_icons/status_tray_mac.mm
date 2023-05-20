@@ -9,6 +9,10 @@
 
 #include "chrome/browser/ui/cocoa/status_icons/status_icon_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 std::unique_ptr<StatusTray> StatusTray::Create() {
   return std::make_unique<StatusTrayMac>();
 }

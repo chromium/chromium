@@ -139,6 +139,20 @@ void WebAuthnBrowserBridge::OnCredManConditionalRequestPending(
                               env, jfull_request_runnable)));
 }
 
+void WebAuthnBrowserBridge::OnCredManUiClosed(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jframe_host,
+    jboolean jsuccess) {
+  auto* client = components::WebAuthnClientAndroid::GetClient();
+  auto* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
+  if (!client || !render_frame_host ||
+      !content::WebContents::FromRenderFrameHost(render_frame_host)) {
+    return;
+  }
+  client->OnCredManUiClosed(render_frame_host, jsuccess);
+}
+
 void WebAuthnBrowserBridge::CleanupRequest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jframe_host) const {

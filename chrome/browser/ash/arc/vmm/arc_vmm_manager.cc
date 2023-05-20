@@ -8,6 +8,7 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
@@ -15,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -69,7 +71,8 @@ ArcVmmManager* ArcVmmManager::GetForBrowserContextForTesting(
 
 ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
                              ArcBridgeService* bridge)
-    : context_(context) {
+    : context_(context), bridge_service_(bridge) {
+  app_instance_observation_.Observe(bridge_service_->app());
   if (base::FeatureList::IsEnabled(kVmmSwapKeyboardShortcut)) {
     accelerator_ = std::make_unique<AcceleratorTarget>(this);
   }
@@ -97,6 +100,10 @@ ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
 ArcVmmManager::~ArcVmmManager() = default;
 
 void ArcVmmManager::SetSwapState(SwapState state) {
+  if (!IsArcVmEnabled() || !arc_connected_) {
+    LOG(ERROR) << "Failed to SetSwapState, ARCVM not enabled or connected.";
+    return;
+  }
   vm_tools::concierge::SwapOperation op;
   switch (state) {
     case SwapState::ENABLE:
@@ -112,8 +119,16 @@ void ArcVmmManager::SetSwapState(SwapState state) {
 
   if (state == SwapState::DISABLE) {
     SendSwapRequest(op, base::DoNothing());
+    enabled_state_heartbeat_timer_.Reset();
     return;
   }
+
+  // Reset the timer anyway since the enable state and force enable state may
+  // overwrite each other.
+  enabled_state_heartbeat_timer_.Start(
+      FROM_HERE, kEnabledStateHeartbeatInterval,
+      base::BindRepeating(&ArcVmmManager::SetSwapState,
+                          weak_ptr_factory_.GetWeakPtr(), state));
 
   // Enable or ForceEnable need shrink ARCVM memory first.
   if (!last_shrink_timestamp_ ||
@@ -137,6 +152,13 @@ void ArcVmmManager::SetSwapState(SwapState state) {
                  "failure";
     }
   }
+}
+
+void ArcVmmManager::OnConnectionReady() {
+  arc_connected_ = true;
+}
+void ArcVmmManager::OnConnectionClosed() {
+  arc_connected_ = false;
 }
 
 void ArcVmmManager::SendSwapRequest(
@@ -221,16 +243,21 @@ void ArcVmmManager::ShrinkArcVmMemoryAndEnableSwap(
             }
           },
           // If successfully execute trim, request enable aggressive balloon.
-          base::BindOnce(&ArcVmmManager::SendAggressiveBalloonRequest,
-                         weak_ptr_factory_.GetWeakPtr(), true,
-                         // If enable aggressive balloon successful, set shrink
-                         // result and re-send enable swap request.
-                         base::BindOnce(&ArcVmmManager::SetShrinkResult,
-                                        weak_ptr_factory_.GetWeakPtr(), true)
-                             .Then(base::BindOnce(
-                                 &ArcVmmManager::SendSwapRequest,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 requested_operation, base::DoNothing())))),
+          base::BindOnce(
+              &ArcVmmManager::SendAggressiveBalloonRequest,
+              weak_ptr_factory_.GetWeakPtr(), true,
+              // If enable aggressive balloon successful, set shrink
+              // result and re-send enable swap request.
+              base::BindOnce(&ArcVmmManager::SetShrinkResult,
+                             weak_ptr_factory_.GetWeakPtr(), true)
+                  .Then(base::BindOnce(
+                      &ArcVmmManager::SendSwapRequest,
+                      weak_ptr_factory_.GetWeakPtr(), requested_operation,
+                      // Drop ARCVM page cache after successful enable swap.
+                      base::BindOnce(
+                          trim_call_, base::DoNothing(),
+                          arc::ArcVmReclaimType::kReclaimGuestPageCaches,
+                          arc::ArcSession::kNoPageLimit))))),
       arc::ArcVmReclaimType::kReclaimAll, arc::ArcSession::kNoPageLimit);
 }
 

@@ -1,4 +1,4 @@
-<style>
+<style include="shortcut-customization-shared">
   .spacing {
     color: var(--cros-text-color-secondary);
     font: var(--cros-button-2-font);
@@ -20,10 +20,9 @@
     white-space: nowrap;
   }
 
-  iron-icon {
+  iron-icon[icon='shortcut-customization:lock'] {
     --iron-icon-width: 16px;
     --iron-icon-height: 16px;
-    --iron-icon-fill-color: var(--cros-text-color-secondary);
   }
 </style>
 
@@ -32,8 +31,8 @@
   accelerator parts. -->
   <div id="text-wrapper">
     <div class="parts-container"></div>
-    <div hidden="[[!shouldShowLockIcon()]]">
-      <iron-icon id="lock" icon="shortcut-customization:lock"></iron-icon>
+    <div class="lock-icon-container" hidden="[[!shouldShowLockIcon()]]">
+      <iron-icon icon="shortcut-customization:lock"></iron-icon>
     </div>
   </div>
 </div>

@@ -456,8 +456,7 @@ void BrowserDataMigratorImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kMigrationStep,
                                 static_cast<int>(MigrationStep::kCheckStep));
-  registry->RegisterDictionaryPref(kMigrationAttemptCountPref,
-                                   base::Value::Dict());
+  registry->RegisterDictionaryPref(kMigrationAttemptCountPref);
   // Register prefs for move migration.
   MoveMigrator::RegisterLocalStatePrefs(registry);
 }

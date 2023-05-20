@@ -20,6 +20,7 @@
 #include "components/reporting/proto/test.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
+#include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -29,10 +30,13 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::EndsWith;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::StrEq;
 using ::testing::WithArg;
@@ -43,6 +47,11 @@ namespace reporting {
 namespace {
 
 constexpr char kTestMessage[] = "TEST_MESSAGE";
+
+class MockRateLimiter : public RateLimiterInterface {
+ public:
+  MOCK_METHOD(bool, Acquire, (size_t event_size), (override));
+};
 
 // Creates a |ReportQueue| using |TestStorageModule| and
 // |TestEncryptionModule|. Allows access to the storage module for checking
@@ -103,13 +112,12 @@ class ReportQueueImplTest : public testing::Test {
 // Enqueues a random string and ensures that the string arrives unaltered in the
 // |StorageModuleInterface|.
 TEST_F(ReportQueueImplTest, SuccessfulStringRecord) {
-  static constexpr char kTestString[] = "El-Chupacabra";
   test::TestEvent<Status> a;
-  report_queue_->Enqueue(kTestString, priority_, a.cb());
+  report_queue_->Enqueue(kTestMessage, priority_, a.cb());
   const auto a_result = a.result();
   EXPECT_OK(a_result) << a_result;
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
-  EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestString));
+  EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
 }
 
 // Enqueues a |base::Value| dictionary and ensures it arrives unaltered in the
@@ -151,11 +159,63 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
   ASSERT_EQ(result_message.test(), test_message.test());
 }
 
+TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
+  auto rate_limiter = std::make_unique<MockRateLimiter>();
+  auto* const mock_rate_limiter = rate_limiter.get();
+  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
+      ReportQueueConfiguration::Create(dm_token_, destination_,
+                                       policy_check_callback_,
+                                       std::move(rate_limiter));
+
+  ASSERT_OK(config_result) << config_result.status();
+
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
+  auto report_queue_result = report_queue_event.result();
+  ASSERT_OK(report_queue_result) << report_queue_result.status();
+
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
+
+  test::TestMessage test_message;
+  test_message.set_test(kTestMessage);
+
+  // Fail Enqueue by rate limiter.
+  EXPECT_CALL(*mock_rate_limiter, Acquire(_)).WillOnce(Return(false));
+
+  test::TestEvent<Status> a;
+  report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                         priority_, a.cb());
+  const auto a_result = a.result();
+  EXPECT_THAT(a_result,
+              AllOf(Property(&Status::error_code, Eq(error::OUT_OF_RANGE)),
+                    Property(&Status::error_message,
+                             EndsWith(" rejected by rate limiter"))))
+      << a_result;
+
+  // Succeed Enqueue by rate limiter.
+  EXPECT_CALL(*mock_rate_limiter, Acquire(_)).WillOnce(Return(true));
+
+  test::TestEvent<Status> b;
+  report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
+                         priority_, b.cb());
+  const auto b_result = b.result();
+  EXPECT_OK(b_result) << b_result;
+
+  EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+
+  test::TestMessage result_message;
+  ASSERT_TRUE(
+      result_message.ParseFromString(test_storage_module()->record().data()));
+  ASSERT_EQ(result_message.test(), test_message.test());
+}
+
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithReservedSpace) {
   static constexpr int64_t kReservedSpace = 12345L;
   StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
-      ReportQueueConfiguration::Create(dm_token_, destination_,
-                                       policy_check_callback_, kReservedSpace);
+      ReportQueueConfiguration::Create(
+          dm_token_, destination_, policy_check_callback_,
+          /*rate_limiter=*/nullptr, kReservedSpace);
 
   ASSERT_OK(config_result) << config_result.status();
 
@@ -208,9 +268,8 @@ TEST_F(ReportQueueImplTest, CallSuccessCallbackFailure) {
 TEST_F(ReportQueueImplTest, EnqueueStringFailsOnPolicy) {
   EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
-  static constexpr char kTestString[] = "El-Chupacabra";
   test::TestEvent<Status> a;
-  report_queue_->Enqueue(std::string(kTestString), priority_, a.cb());
+  report_queue_->Enqueue(std::string(kTestMessage), priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_THAT(result.error_code(), Eq(error::UNAUTHENTICATED));
@@ -282,10 +341,9 @@ TEST_F(ReportQueueImplTest, EnqueueSuccessFlushFailure) {
 // attaches actual one and ensures that the string arrives unaltered in the
 // |StorageModuleInterface|.
 TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
-  static constexpr char kTestString[] = "El-Chupacabra";
   test::TestEvent<Status> a;
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
-  speculative_report_queue->Enqueue(std::string(kTestString), priority_,
+  speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
                                     a.cb());
 
   // Enqueue would not end until actual queue is attached.
@@ -298,15 +356,16 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
   task_environment_.RunUntilIdle();
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
-  EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestString));
+  EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
 }
 
-TEST_F(ReportQueueImplTest,
-       SuccessfulSpeculativeStringRecordWithReservedSpace) {
-  static constexpr int64_t kReservedSpace = 12345L;
+TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithRateLimiter) {
+  auto rate_limiter = std::make_unique<MockRateLimiter>();
+  auto* const mock_rate_limiter = rate_limiter.get();
   StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
       ReportQueueConfiguration::Create(dm_token_, destination_,
-                                       policy_check_callback_, kReservedSpace);
+                                       policy_check_callback_,
+                                       std::move(rate_limiter));
 
   ASSERT_OK(config_result) << config_result.status();
 
@@ -318,10 +377,60 @@ TEST_F(ReportQueueImplTest,
 
   report_queue_ = std::move(report_queue_result.ValueOrDie());
 
-  static constexpr char kTestString[] = "El-Chupacabra";
+  EXPECT_CALL(*mock_rate_limiter, Acquire(_)).WillOnce(Return(false));
+
   test::TestEvent<Status> a;
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
-  speculative_report_queue->Enqueue(std::string(kTestString), priority_,
+  speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
+                                    a.cb());
+
+  // Enqueue would not end until actual queue is attached.
+  speculative_report_queue->PrepareToAttachActualQueue().Run(
+      std::move(report_queue_));
+  const auto a_result = a.result();
+  EXPECT_THAT(a_result,
+              AllOf(Property(&Status::error_code, Eq(error::OUT_OF_RANGE)),
+                    Property(&Status::error_message,
+                             EndsWith(" rejected by rate limiter"))))
+      << a_result;
+
+  EXPECT_CALL(*mock_rate_limiter, Acquire(_)).WillOnce(Return(true));
+
+  test::TestEvent<Status> b;
+  speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
+                                    b.cb());
+
+  const auto b_result = b.result();
+  EXPECT_OK(b_result) << b_result;
+
+  // Let everything ongoing to finish.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
+  EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
+}
+
+TEST_F(ReportQueueImplTest,
+       SuccessfulSpeculativeStringRecordWithReservedSpace) {
+  static constexpr int64_t kReservedSpace = 12345L;
+  StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
+      ReportQueueConfiguration::Create(
+          dm_token_, destination_, policy_check_callback_,
+          /*rate_limiter=*/nullptr, kReservedSpace);
+
+  ASSERT_OK(config_result) << config_result.status();
+
+  test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
+  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                          storage_module_, report_queue_event.cb());
+  auto report_queue_result = report_queue_event.result();
+  ASSERT_OK(report_queue_result) << report_queue_result.status();
+
+  report_queue_ = std::move(report_queue_result.ValueOrDie());
+
+  test::TestEvent<Status> a;
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  speculative_report_queue->Enqueue(std::string(kTestMessage), priority_,
                                     a.cb());
 
   // Enqueue would not end until actual queue is attached.
@@ -334,7 +443,7 @@ TEST_F(ReportQueueImplTest,
   task_environment_.RunUntilIdle();
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
-  EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestString));
+  EXPECT_THAT(test_storage_module()->record().data(), StrEq(kTestMessage));
   EXPECT_THAT(test_storage_module()->record().reserved_space(),
               Eq(kReservedSpace));
 }
@@ -367,7 +476,6 @@ TEST_F(ReportQueueImplTest, SpeculativeQueueMultipleRecordsAfterCreation) {
 }
 
 TEST_F(ReportQueueImplTest, SpeculativeQueueCreationFailedToCreate) {
-  static constexpr char kTestString[] = "record";
   test::TestEvent<Status> test_event;
 
   {
@@ -378,7 +486,7 @@ TEST_F(ReportQueueImplTest, SpeculativeQueueCreationFailedToCreate) {
         Status(error::UNKNOWN, "Failed for Test"));
     task_environment_.RunUntilIdle();  // Let `AttachActualQueue` finish.
 
-    speculative_report_queue->Enqueue(kTestString, Priority::IMMEDIATE,
+    speculative_report_queue->Enqueue(kTestMessage, Priority::IMMEDIATE,
                                       test_event.cb());
   }  // Destructs `speculative_report_queue` now, fails all pending Enqueues.
 
@@ -389,12 +497,11 @@ TEST_F(ReportQueueImplTest, SpeculativeQueueCreationFailedToCreate) {
 }
 
 TEST_F(ReportQueueImplTest, SpeculativeQueueEnqueueAndCreationFailed) {
-  static constexpr char kTestString[] = "record";
   test::TestEvent<Status> test_event;
 
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
 
-  speculative_report_queue->Enqueue(kTestString, Priority::IMMEDIATE,
+  speculative_report_queue->Enqueue(kTestMessage, Priority::IMMEDIATE,
                                     test_event.cb());
 
   // Fail to attach queue after calling `Enqueue`.

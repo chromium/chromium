@@ -446,6 +446,12 @@ void PrivacyIndicatorsTrayItemView::AnimationCanceled(
   UpdateBoundsInset();
 }
 
+void PrivacyIndicatorsTrayItemView::ImmediatelyUpdateVisibility() {
+  // Normally there is work to do here, but this view implements custom
+  // visibility animations that do not adhere to the `TrayItemView` animations
+  // contract. See b/283493232 for details.
+}
+
 void PrivacyIndicatorsTrayItemView::PerformAnimation() {
   // End all previous animations before starting a new sequence of animations.
   EndAllAnimations();

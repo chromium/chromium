@@ -135,8 +135,7 @@ export class ApnList extends ApnListBase {
       return this.i18n('apnSettingsCustomApnsErrorMessage');
     }
 
-    // TODO(b/162365553): Use real string when finalized.
-    return 'Can\'t connect to network.';
+    return this.i18n('apnSettingsDatabaseApnsErrorMessage');
   }
 
   /**

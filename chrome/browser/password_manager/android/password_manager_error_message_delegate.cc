@@ -48,11 +48,6 @@ void PasswordManagerErrorMessageDelegate::MaybeDisplayErrorMessage(
     return;
   }
 
-  int times_shown = pref_service->GetInteger(
-      password_manager::prefs::kTimesUPMAuthErrorShown);
-  pref_service->SetInteger(password_manager::prefs::kTimesUPMAuthErrorShown,
-                           times_shown + 1);
-
   DCHECK(!message_);
 
   CreateMessage(web_contents, flow_type);

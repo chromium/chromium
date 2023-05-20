@@ -12,6 +12,7 @@ import {PropStatus} from '../../externs/ts/state.js';
 import {getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
+import {ProvidersModel} from './providers_model.js';
 
 /**
  * The empty state image for the Recents folder.
@@ -55,9 +56,10 @@ export class EmptyFolderController {
   /**
    * @param {!HTMLElement} emptyFolder Empty folder element.
    * @param {!DirectoryModel} directoryModel Directory model.
+   * @param {!ProvidersModel} providersModel Providers model.
    * @param {!FakeEntry} recentEntry Entry represents Recent view.
    */
-  constructor(emptyFolder, directoryModel, recentEntry) {
+  constructor(emptyFolder, directoryModel, providersModel, recentEntry) {
     /**
      * @private {!HTMLElement}
      */
@@ -67,6 +69,12 @@ export class EmptyFolderController {
      * @private {!DirectoryModel}
      */
     this.directoryModel_ = directoryModel;
+
+    /**
+     * Model for providers (providing extensions).
+     * @private {!ProvidersModel}
+     */
+    this.providersModel_ = providersModel;
 
     /**
      * @private {!FakeEntry}
@@ -171,25 +179,19 @@ export class EmptyFolderController {
     titleSpan.id = 'empty-folder-title';
     titleSpan.innerText = 'You\'ve been logged out';
 
+    const text = document.createElement('span');
+    text.innerText = 'Sign in to your Microsoft account';
+
     const signInLink = document.createElement('a');
     signInLink.setAttribute('class', 'sign-in');
     signInLink.innerText = 'Sign in';
     signInLink.addEventListener('click', this.onODFSSignIn_.bind(this));
 
-    const inBetweenText = document.createElement('span');
-    inBetweenText.innerText = ' to your OneDrive account to open Office files' +
-        ' stored on your Chromebook or go to ';
-
-    const settingsLink = document.createElement('a');
-    settingsLink.setAttribute('class', 'settings');
-    settingsLink.innerText = 'Settings';
-    settingsLink.addEventListener('click', this.onSettings_.bind(this));
-
     const descSpan = document.createElement('span');
     descSpan.id = 'empty-folder-desc';
+    descSpan.appendChild(text);
+    descSpan.appendChild(document.createElement('br'));
     descSpan.appendChild(signInLink);
-    descSpan.appendChild(inBetweenText);
-    descSpan.appendChild(settingsLink);
 
     this.label_.appendChild(titleSpan);
     this.label_.appendChild(document.createElement('br'));
@@ -197,19 +199,17 @@ export class EmptyFolderController {
   }
 
   /**
-   * Called when "Sign in" link for ODFS reauthentication is clicked.
+   * Called when "Sign in" link for ODFS reauthentication is clicked. Request
+   * a new ODFS mount. ODFS will unmount the old mount if the authentication is
+   * successful in the new mount.
    * @private
    */
   onODFSSignIn_() {
-    // TODO(cassycc): handle sign in.
-  }
-
-  /**
-   * Called when "Settings" link for ODFS reauthentication is clicked.
-   * @private
-   */
-  onSettings_() {
-    // TODO(cassycc): handle settings navigation.
+    const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
+    if (util.isOneDrive(currentVolumeInfo) &&
+        currentVolumeInfo.providerId !== undefined) {
+      this.providersModel_.requestMount(currentVolumeInfo.providerId);
+    }
   }
 
   /**

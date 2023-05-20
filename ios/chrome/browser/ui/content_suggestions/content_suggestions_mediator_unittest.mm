@@ -28,8 +28,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
@@ -64,6 +66,9 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
  public:
   ContentSuggestionsMediatorTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
     test_cbs_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
@@ -108,6 +113,14 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
     ReadingListModel* readingListModel =
         ReadingListModelFactory::GetForBrowserState(
             chrome_browser_state_.get());
+
+    AuthenticationService* authentication_service =
+        AuthenticationServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get());
+
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForBrowserState(chrome_browser_state_.get());
+
     mediator_ = [[ContentSuggestionsMediator alloc]
              initWithLargeIconService:largeIconService
                        largeIconCache:cache
@@ -115,6 +128,8 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
                      readingListModel:readingListModel
                           prefService:chrome_browser_state_.get()->GetPrefs()
         isGoogleDefaultSearchProvider:NO
+                authenticationService:authentication_service
+                      identityManager:identityManager
                               browser:browser_.get()];
     mediator_.dispatcher = dispatcher_;
     mediator_.consumer = consumer_;

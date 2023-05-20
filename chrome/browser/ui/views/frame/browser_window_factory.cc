@@ -5,11 +5,11 @@
 #include <memory>
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame_factory.h"
 #include "chrome/grit/chromium_strings.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
@@ -80,8 +80,9 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   view->GetWidget()->GetNativeWindow()->SetProperty(
       aura::client::kCreatedByUserGesture, user_gesture);
 #endif
-  if (profiles::IsKioskSession())
+  if (chromeos::IsKioskSession()) {
     view->SetForceFullscreen(true);
+  }
 
   return view;
 }

@@ -53,13 +53,7 @@ constexpr int kSuccess = 0;
 constexpr int kFailure = 1;
 
 constexpr partition_alloc::PartitionOptions kAllocatorOptions = {
-    partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
-    partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-    partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-    partition_alloc::PartitionOptions::Cookie::kAllowed,
-    partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-    partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
-    partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+    .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
 };
 
 static void HandleOOM(size_t unused_size) {

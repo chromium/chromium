@@ -14,7 +14,6 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/update_client/buildflags.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_serializer.h"
@@ -59,11 +58,7 @@ TEST(SerializeRequestJSON, Serialize) {
                             std::move(apps)));
     constexpr char regex[] =
         R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
         R"("acceptformat":"crx3,puff",)"
-#else
-        R"("acceptformat":"crx3",)"
-#endif
         R"("app":\[{"ap":"ap1","appid":"id1","attr1":"1","attr2":"2",)"
         R"("brand":"BRND","cohort":"c1","cohorthint":"ch1","cohortname":"cn1",)"
         R"("data":\[{"index":"foobar_install_data_index","name":"install"}],)"
@@ -147,11 +142,7 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
       {}));
   constexpr char regex[] =
       R"({"request":{"@os":"\w+","@updater":"prod_id",)"
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
       R"("acceptformat":"crx3,puff","arch":"\w+","dedup":"cr",)"
-#else
-      R"("acceptformat":"crx3","arch":"\w+","dedup":"cr",)"
-#endif
       R"("dlpref":"cacheable","domainjoined":true,"extra":"params",)"
       R"("hw":{"avx":(true|false),)"
       R"("physmemory":\d+,"sse":(true|false),"sse2":(true|false),)"

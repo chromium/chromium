@@ -108,22 +108,7 @@ std::string VideoDecoderConfig::AsHumanReadableString() const {
     << ", color space: " << color_space_info().ToGfxColorSpace().ToString();
 
   if (hdr_metadata().has_value()) {
-    s << std::setprecision(4) << ", luminance range: "
-      << hdr_metadata()->color_volume_metadata.luminance_min << "-"
-      << hdr_metadata()->color_volume_metadata.luminance_max
-      << ", primaries: r("
-      << hdr_metadata()->color_volume_metadata.primaries.fRX << ","
-      << hdr_metadata()->color_volume_metadata.primaries.fRY << ") g("
-      << hdr_metadata()->color_volume_metadata.primaries.fGX << ","
-      << hdr_metadata()->color_volume_metadata.primaries.fGY << ") b("
-      << hdr_metadata()->color_volume_metadata.primaries.fBX << ","
-      << hdr_metadata()->color_volume_metadata.primaries.fBY << ") wp("
-      << hdr_metadata()->color_volume_metadata.primaries.fWX << ","
-      << hdr_metadata()->color_volume_metadata.primaries.fWY
-      << "), max_content_light_level="
-      << hdr_metadata()->max_content_light_level
-      << ", max_frame_average_light_level="
-      << hdr_metadata()->max_frame_average_light_level;
+    s << ", hdr metadata: " << hdr_metadata()->ToString();
   }
 
   return s.str();

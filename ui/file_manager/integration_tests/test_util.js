@@ -265,15 +265,24 @@ export const EntryType = {
 Object.freeze(EntryType);
 
 /**
+ * Enumeration that determines the shared status of entries.
  * @enum {string}
  * @const
  */
-
 export const SharedOption = {
+  // Not shared.
   NONE: 'none',
+
+  // Shared but not visible in the 'Shared with me' view.
   SHARED: 'shared',
+
+  // Shared and appears in the 'Shared With Me' view.
   SHARED_WITH_ME: 'sharedWithMe',
-  NESTED_SHARED_WITH_ME: 'nestedSharedWithMe',
+
+  // Not directly shared, but belongs to a folder that is shared with me.
+  // Entries marked as indirectly shared do not have the 'shared' metadata
+  // field, and thus cannot be located via search for shared items.
+  INDIRECTLY_SHARED_WITH_ME: 'indirectlySharedWithMe',
 };
 Object.freeze(SharedOption);
 
@@ -1563,7 +1572,7 @@ export const ENTRIES = {
     sourceFileName: 'text.txt',
     targetPath: 'Shared Directory/file.txt',
     mimeType: 'text/plain',
-    sharedOption: SharedOption.NESTED_SHARED_WITH_ME,
+    sharedOption: SharedOption.INDIRECTLY_SHARED_WITH_ME,
     lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
     nameText: 'file.txt',
     sizeText: '51 bytes',

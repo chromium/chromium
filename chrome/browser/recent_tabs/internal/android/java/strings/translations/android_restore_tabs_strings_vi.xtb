@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Mở <ph name="TABS_COUNT_ONE" /> thẻ}other{Mở <ph name="TABS_COUNT_MANY" /> thẻ}}</translation>
 <translation id="4811934403802581334">Tất cả các thẻ đã chọn từ thiết bị bạn đang chọn sẽ được khôi phục.</translation>
 <translation id="5336031759968328813">Xem lại tất cả các thẻ</translation>
+<translation id="8019269305087157499">Mở từ</translation>
 <translation id="8725404154479306799">Xem tiếp các thẻ mà bạn đang xem dở trên thiết bị cũ</translation>
 </translationbundle>

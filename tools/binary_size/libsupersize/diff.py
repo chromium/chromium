@@ -90,7 +90,7 @@ def _MatchSymbols(before, after, key_func, padding_by_segment):
   return delta_symbols, unmatched_before, unmatched_after
 
 
-def _DiffSymbolGroups(containers, before, after):
+def _DiffSymbolGroups(containers, before, after, is_sparse):
   # For changed symbols, padding is zeroed out. In order to not lose the
   # information entirely, store it in aggregate. These aggregations are grouped
   # by "segment names", which are (container name, section name) tuples.
@@ -114,18 +114,21 @@ def _DiffSymbolGroups(containers, before, after):
   container_from_name = {c.name: c for c in containers}
 
   # Create a DeltaSymbol to represent the zero'd out padding of matched symbols.
-  for (container_name, section_name), padding in padding_by_segment.items():
-    # Values need to be integer (crbug.com/1132394).
-    padding = round(padding)
-    if padding != 0:
-      padding_sym = models.Symbol(section_name, padding)
-      delta_container = container_from_name[container_name]
-      padding_sym.container = delta_container.after
-      # This is after _NormalizeNames() is called, so set |full_name|,
-      # |template_name|, and |name|.
-      padding_sym.SetName("Overhead: aggregate padding of diff'ed symbols")
-      padding_sym.padding = padding
-      all_deltas.append(models.DeltaSymbol(None, padding_sym))
+  # Skip for sparse symbols, since this would have been done while creating
+  # diff symbols.
+  if not is_sparse:
+    for (container_name, section_name), padding in padding_by_segment.items():
+      # Values need to be integer (crbug.com/1132394).
+      padding = round(padding)
+      if padding != 0:
+        padding_sym = models.Symbol(section_name, padding)
+        delta_container = container_from_name[container_name]
+        padding_sym.container = delta_container.after
+        # This is after _NormalizeNames() is called, so set |full_name|,
+        # |template_name|, and |name|.
+        padding_sym.SetName("Overhead: aggregate padding of diff'ed symbols")
+        padding_sym.padding = padding
+        all_deltas.append(models.DeltaSymbol(None, padding_sym))
 
   return models.DeltaSymbolGroup(all_deltas)
 
@@ -157,8 +160,9 @@ def Diff(before, after, sort=False):
   assert isinstance(before, models.SizeInfo)
   assert isinstance(after, models.SizeInfo)
   containers_diff = _DiffContainerLists(before.containers, after.containers)
+  is_sparse = before.is_sparse and after.is_sparse
   symbol_diff = _DiffSymbolGroups(containers_diff, before.raw_symbols,
-                                  after.raw_symbols)
+                                  after.raw_symbols, is_sparse)
   ret = models.DeltaSizeInfo(before, after, containers_diff, symbol_diff)
 
   if sort:

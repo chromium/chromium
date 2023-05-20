@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "base/scoped_observation.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -27,7 +29,8 @@ struct NotificationPermissions {
 // This class provides data for "Review Notification Permissions" module in site
 // settings notification page. This module shows the domains that send a lot of
 // notification, but have low engagement.
-class NotificationPermissionsReviewService : public KeyedService {
+class NotificationPermissionsReviewService : public KeyedService,
+                                             public content_settings::Observer {
  public:
   explicit NotificationPermissionsReviewService(HostContentSettingsMap* hcsm);
 
@@ -37,6 +40,12 @@ class NotificationPermissionsReviewService : public KeyedService {
       const NotificationPermissionsReviewService&) = delete;
 
   ~NotificationPermissionsReviewService() override;
+
+  // content_settings::Observer implementation.
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -60,6 +69,10 @@ class NotificationPermissionsReviewService : public KeyedService {
  private:
   // Used to update the notification permissions per URL.
   const scoped_refptr<HostContentSettingsMap> hcsm_;
+
+  // Observer to watch for content settings changed.
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      content_settings_observation_{this};
 };
 
 }  // namespace permissions

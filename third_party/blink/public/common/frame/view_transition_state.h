@@ -12,6 +12,8 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace blink {
 
 struct BLINK_COMMON_EXPORT ViewTransitionElement {
@@ -22,6 +24,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
   viz::ViewTransitionElementResourceId snapshot_id;
   int32_t paint_order = 0;
   bool is_root = false;
+  absl::optional<gfx::RectF> captured_rect_in_layout_space;
 };
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {

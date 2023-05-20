@@ -115,6 +115,19 @@ PrivacyHubNotificationDescriptor& PrivacyHubNotificationDescriptor::operator=(
 
 PrivacyHubNotificationDescriptor::~PrivacyHubNotificationDescriptor() = default;
 
+namespace {
+
+// Default throttler implementation that never suppress a notification.
+class DefaultThrottler : public PrivacyHubNotification::Throttler {
+ public:
+  // PrivacyHubNotification::Throttler:
+  bool ShouldThrottle() final { return false; }
+
+  void RecordDismissalByUser() final {}
+};
+
+}  // namespace
+
 PrivacyHubNotification::PrivacyHubNotification(
     const std::string& id,
     const ash::NotificationCatalogName catalog_name,
@@ -127,6 +140,10 @@ PrivacyHubNotification::PrivacyHubNotification(
       .SetCatalogName(catalog_name)
       .SetSmallImage(vector_icons::kSettingsIcon)
       .SetWarningLevel(message_center::SystemNotificationWarningLevel::NORMAL);
+
+  // Sets up the observation / throttling logic
+  SetThrottler(std::make_unique<DefaultThrottler>());
+  StartDismissalObservation();
 }
 
 PrivacyHubNotification::PrivacyHubNotification(
@@ -141,9 +158,24 @@ PrivacyHubNotification::PrivacyHubNotification(
   }
 }
 
-PrivacyHubNotification::~PrivacyHubNotification() = default;
+PrivacyHubNotification::~PrivacyHubNotification() {
+  StopDismissalObservation();
+}
+
+void PrivacyHubNotification::OnNotificationRemoved(
+    const std::string& notification_id,
+    bool by_user) {
+  if (by_user && notification_id == id_) {
+    CHECK(throttler_);
+    throttler_->RecordDismissalByUser();
+  }
+}
 
 void PrivacyHubNotification::Show() {
+  CHECK(throttler_);
+  if (throttler_->ShouldThrottle()) {
+    return;
+  }
   SetNotificationContent();
   if (IsShown()) {
     // The notification is already in the message center. Update the content and
@@ -190,6 +222,27 @@ void PrivacyHubNotification::SetSensors(
   if (sensors_ != sensors) {
     sensors_ = sensors;
     has_sensors_changed_ = true;
+  }
+}
+
+void PrivacyHubNotification::SetThrottler(
+    std::unique_ptr<Throttler> throttler) {
+  throttler_ = std::move(throttler);
+}
+
+void PrivacyHubNotification::StartDismissalObservation() {
+  message_center::MessageCenter* message_center =
+      message_center::MessageCenter::Get();
+  if (message_center) {
+    message_center->AddObserver(this);
+  }
+}
+
+void PrivacyHubNotification::StopDismissalObservation() {
+  message_center::MessageCenter* message_center =
+      message_center::MessageCenter::Get();
+  if (message_center) {
+    message_center->RemoveObserver(this);
   }
 }
 

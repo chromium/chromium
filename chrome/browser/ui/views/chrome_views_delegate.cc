@@ -210,5 +210,5 @@ void ChromeViewsDelegate::OnBeforeWidgetInit(
 }
 
 std::string ChromeViewsDelegate::GetApplicationName() {
-  return version_info::GetProductName();
+  return std::string(version_info::GetProductName());
 }

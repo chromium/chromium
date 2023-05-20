@@ -121,6 +121,10 @@ class IntegrationTest : public ::testing::Test {
                       base::StrCat({"unix:path=", xdg_runtime_dir, "/bus"})));
     }
 #endif
+
+    // Mark the device as de-registered. This stops sending DM requests
+    // that mess up the request expectations in the mock server.
+    ASSERT_NO_FATAL_FAILURE(DMDeregisterDevice());
   }
 
   void TearDown() override {
@@ -135,6 +139,8 @@ class IntegrationTest : public ::testing::Test {
     // TODO(crbug.com/1159189): Use a specific test output directory
     // because Uninstall() deletes the files under GetInstallDirectory().
     CopyLog();
+
+    DMCleanup();
 
     // TODO(crbug.com/1233612) - reenable the code when system tests pass.
     // TearDownTestService();
@@ -419,6 +425,10 @@ class IntegrationTest : public ::testing::Test {
   void RunOfflineInstall(bool is_legacy_install, bool is_silent_install) {
     test_commands_->RunOfflineInstall(is_legacy_install, is_silent_install);
   }
+
+  void DMDeregisterDevice() { test_commands_->DMDeregisterDevice(); }
+
+  void DMCleanup() { test_commands_->DMCleanup(); }
 
   scoped_refptr<IntegrationTestCommands> test_commands_;
 

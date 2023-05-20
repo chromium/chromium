@@ -38,8 +38,9 @@ InstallPlaceholderCommand::InstallPlaceholderCommand(
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : WebAppCommandTemplate<AppLock>("InstallPlaceholderCommand"),
       profile_(profile),
-      app_id_(GenerateAppId(/*manifest_id=*/absl::nullopt,
-                            install_options.install_url)),
+      // For placeholder installs, the install_url is treated as the start_url.
+      app_id_(GenerateAppIdFromManifestId(
+          GenerateManifestIdFromStartUrlOnly(install_options.install_url))),
       lock_description_(std::make_unique<AppLockDescription>(app_id_)),
       install_options_(install_options),
       callback_(std::move(callback)),
@@ -129,8 +130,9 @@ void InstallPlaceholderCommand::OnCustomIconFetched(
 void InstallPlaceholderCommand::FinalizeInstall(
     absl::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
         bitmaps) {
-  WebAppInstallInfo web_app_info;
-
+  // For placeholder installs, the install_url is treated as the start_url.
+  WebAppInstallInfo web_app_info(
+      GenerateManifestIdFromStartUrlOnly(install_options_.install_url));
   web_app_info.title =
       install_options_.override_name
           ? base::UTF8ToUTF16(install_options_.override_name.value())

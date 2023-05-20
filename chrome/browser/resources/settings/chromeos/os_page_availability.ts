@@ -16,26 +16,9 @@
  */
 
 import {isGuest, isKerberosEnabled, isPowerwashAllowed} from './common/load_time_booleans.js';
+import {OsPageAvailability} from './mojom-webui/routes.mojom-webui.js';
 
-export interface OsPageAvailability {
-  a11y: boolean;
-  apps: boolean;
-  bluetooth: boolean;
-  crostini: boolean;
-  dateTime: boolean;
-  device: boolean;
-  files: boolean;
-  internet: boolean;
-  kerberos: boolean;
-  languages: boolean;
-  multidevice: boolean;
-  people: boolean;
-  personalization: boolean;
-  printing: boolean;
-  privacy: boolean;
-  reset: boolean;
-  search: boolean;
-}
+export {OsPageAvailability};
 
 /**
  * Used to create the pageAvailability object.
@@ -44,44 +27,25 @@ export interface OsPageAvailability {
  * overriding load time data within tests.
  */
 export function createPageAvailability(): OsPageAvailability {
-  if (isGuest()) {
-    return {
-      a11y: true,
-      apps: true,
-      bluetooth: true,
-      crostini: true,
-      dateTime: true,
-      device: true,
-      files: false,
-      internet: true,
-      kerberos: isKerberosEnabled(),
-      languages: true,
-      multidevice: false,
-      people: false,
-      personalization: false,
-      printing: true,
-      privacy: true,
-      reset: isPowerwashAllowed(),
-      search: true,
-    };
-  }
+  const isGuestMode = isGuest();
+
   return {
-    a11y: true,
     apps: true,
     bluetooth: true,
     crostini: true,
     dateTime: true,
     device: true,
-    files: true,
+    files: !isGuestMode,
     internet: true,
     kerberos: isKerberosEnabled(),
-    languages: true,
-    multidevice: true,
-    people: true,
-    personalization: true,
-    printing: true,
-    privacy: true,
-    reset: isPowerwashAllowed(),
-    search: true,
+    multidevice: !isGuestMode,
+    osAccessibility: true,
+    osLanguages: true,
+    osPeople: !isGuestMode,
+    osPrinting: true,
+    osPrivacy: true,
+    osReset: isPowerwashAllowed(),
+    osSearch: true,
+    personalization: !isGuestMode,
   };
 }

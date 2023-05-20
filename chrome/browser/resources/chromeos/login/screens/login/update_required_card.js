@@ -165,7 +165,7 @@ class UpdateRequired extends UpdateRequiredBase {
    * @param {string} eolMessage Not sanitized end of life message from policy
    */
   setEolMessage(eolMessage) {
-    this.eolAdminMessage_ = sanitizeInnerHtml(eolMessage);
+    this.eolAdminMessage_ = sanitizeInnerHtml(eolMessage).toString();
   }
 
   /** @param {boolean} connected */

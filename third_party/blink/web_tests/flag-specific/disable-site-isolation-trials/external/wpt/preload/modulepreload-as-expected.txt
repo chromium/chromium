@@ -1,0 +1,30 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection
+PASS Modulepreload with as=""
+FAIL Modulepreload with as="audio" assert_equals: expected 0 but got 1
+FAIL Modulepreload with as="audioworklet" promise_test: Unhandled rejection with value: object "[object Event]"
+FAIL Modulepreload with as="document" assert_equals: expected 0 but got 1
+PASS Modulepreload with as="embed"
+PASS Modulepreload with as="font"
+PASS Modulepreload with as="frame"
+PASS Modulepreload with as="iframe"
+PASS Modulepreload with as="image"
+PASS Modulepreload with as="manifest"
+PASS Modulepreload with as="object"
+FAIL Modulepreload with as="paintworklet" promise_test: Unhandled rejection with value: object "[object Event]"
+PASS Modulepreload with as="report"
+PASS Modulepreload with as="script"
+FAIL Modulepreload with as="serviceworker" promise_test: Unhandled rejection with value: object "[object Event]"
+FAIL Modulepreload with as="sharedworker" promise_test: Unhandled rejection with value: object "[object Event]"
+PASS Modulepreload with as="style"
+PASS Modulepreload with as="track"
+PASS Modulepreload with as="video"
+PASS Modulepreload with as="webidentity"
+FAIL Modulepreload with as="worker" promise_test: Unhandled rejection with value: object "[object Event]"
+PASS Modulepreload with as="xslt"
+PASS Modulepreload with as="fetch"
+FAIL Modulepreload with as="invalid-dest" promise_test: Unhandled rejection with value: object "[object Event]"
+PASS Modulepreload with as="iMaGe"
+PASS Modulepreload with as="sCrIpT"
+Harness: the test ran to completion.
+

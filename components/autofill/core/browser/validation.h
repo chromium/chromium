@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_VALIDATION_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_VALIDATION_H_
 
-#include <set>
 #include <string>
 
 #include "base/strings/string_piece_forward.h"
@@ -56,14 +55,6 @@ bool PassesLuhnCheck(const std::u16string& number);
 bool IsValidCreditCardSecurityCode(const std::u16string& code,
                                    const base::StringPiece card_network,
                                    CvcType cvc_type = CvcType::kRegularCvc);
-
-// Returns true if |text| is a supported card type and a valid credit card
-// number. |error_message| can't be null and will be filled with the appropriate
-// error message.
-bool IsValidCreditCardNumberForBasicCardNetworks(
-    const std::u16string& text,
-    const std::set<std::string>& supported_basic_card_networks,
-    std::u16string* error_message);
 
 // Returns true if |text| looks like a valid e-mail address.
 bool IsValidEmailAddress(const std::u16string& text);

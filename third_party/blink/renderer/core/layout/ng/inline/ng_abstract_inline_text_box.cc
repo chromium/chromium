@@ -19,6 +19,11 @@ namespace blink {
 
 namespace {
 
+wtf_size_t ItemIndex(const NGInlineCursor& cursor) {
+  return static_cast<wtf_size_t>(cursor.CurrentItem() -
+                                 &cursor.Items().front());
+}
+
 class NGAbstractInlineTextBoxCache final {
  public:
   static NGAbstractInlineTextBox* GetOrCreate(const NGInlineCursor& cursor) {
@@ -27,43 +32,52 @@ class NGAbstractInlineTextBoxCache final {
     return s_instance_->GetOrCreateInternal(cursor);
   }
 
-  static void WillDestroy(const NGFragmentItem* fragment) {
+  static void WillDestroy(const NGInlineCursor& cursor) {
     if (!s_instance_)
       return;
-    s_instance_->WillDestroyInternal(fragment);
+    s_instance_->WillDestroyInternal(cursor);
   }
 
  private:
   NGAbstractInlineTextBoxCache() : map_(MakeGarbageCollected<MapType>()) {}
 
   NGAbstractInlineTextBox* GetOrCreateInternal(const NGInlineCursor& cursor) {
-    const NGFragmentItem& fragment = *cursor.CurrentItem();
-    DCHECK(&fragment);
-    const auto it = map_->find(&fragment);
-    auto* const layout_text = To<LayoutText>(fragment.GetMutableLayoutObject());
+    DCHECK(cursor.CurrentItem());
+    MapKey key = ToMapKey(cursor);
+    const auto it = map_->find(key);
+    auto* const layout_text =
+        To<LayoutText>(cursor.CurrentMutableLayoutObject());
     if (it != map_->end()) {
       CHECK(layout_text->HasAbstractInlineTextBox());
       return it->value;
     }
     auto* obj = MakeGarbageCollected<NGAbstractInlineTextBox>(cursor);
-    map_->Set(&fragment, obj);
+    map_->Set(key, obj);
     layout_text->SetHasAbstractInlineTextBox();
     return obj;
   }
 
-  void WillDestroyInternal(const NGFragmentItem* fragment) {
-    const auto it = map_->find(fragment);
+  void WillDestroyInternal(const NGInlineCursor& cursor) {
+    MapKey key = ToMapKey(cursor);
+    const auto it = map_->find(key);
     if (it == map_->end()) {
       return;
     }
     it->value->Detach();
-    map_->erase(fragment);
+    map_->erase(key);
+  }
+
+  // An NGFragmentItem pointer can't be a key because NGFragmentItem instances
+  // are stored in HeapVector instances, and Oilpan heap compaction changes
+  // addresses of NGFragmentItem instances.
+  using MapKey = std::pair<const NGFragmentItems*, wtf_size_t>;
+  MapKey ToMapKey(const NGInlineCursor& cursor) {
+    return MapKey(&cursor.Items(), ItemIndex(cursor));
   }
 
   static NGAbstractInlineTextBoxCache* s_instance_;
 
-  using MapType =
-      HeapHashMap<const NGFragmentItem*, Member<NGAbstractInlineTextBox>>;
+  using MapType = HeapHashMap<MapKey, Member<NGAbstractInlineTextBox>>;
   Persistent<MapType> map_;
 };
 
@@ -80,21 +94,21 @@ NGAbstractInlineTextBox* NGAbstractInlineTextBox::GetOrCreate(
 }
 
 void NGAbstractInlineTextBox::WillDestroy(const NGInlineCursor& cursor) {
-  if (const NGFragmentItem* fragment_item = cursor.CurrentItem()) {
-    return NGAbstractInlineTextBoxCache::WillDestroy(fragment_item);
+  if (cursor.CurrentItem()) {
+    return NGAbstractInlineTextBoxCache::WillDestroy(cursor);
   }
   NOTREACHED();
 }
 
 NGAbstractInlineTextBox::NGAbstractInlineTextBox(const NGInlineCursor& cursor)
-    : fragment_item_(cursor.CurrentItem()),
+    : fragment_item_index_(ItemIndex(cursor)),
       layout_text_(To<LayoutText>(cursor.Current().GetMutableLayoutObject())),
       root_box_fragment_(&cursor.ContainerFragment()) {
-  DCHECK(fragment_item_->IsText()) << fragment_item_;
+  DCHECK(cursor.CurrentItem()->IsText()) << cursor.CurrentItem();
 }
 
 NGAbstractInlineTextBox::~NGAbstractInlineTextBox() {
-  DCHECK(!fragment_item_);
+  DCHECK(!fragment_item_index_);
   DCHECK(!root_box_fragment_);
   DCHECK(!layout_text_);
 }
@@ -115,7 +129,7 @@ void NGAbstractInlineTextBox::Detach() {
 
   layout_text_ = nullptr;
 
-  fragment_item_ = nullptr;
+  fragment_item_index_ = absl::nullopt;
   root_box_fragment_ = nullptr;
 
   if (cache) {
@@ -143,10 +157,11 @@ LayoutText* NGAbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
 }
 
 NGInlineCursor NGAbstractInlineTextBox::GetCursor() const {
-  if (!fragment_item_)
+  if (!fragment_item_index_) {
     return NGInlineCursor();
+  }
   NGInlineCursor cursor(*root_box_fragment_);
-  cursor.MoveTo(*fragment_item_);
+  cursor.MoveTo(cursor.Items().Items()[*fragment_item_index_]);
   DCHECK(!cursor.Current().GetLayoutObject()->NeedsLayout());
   return cursor;
 }

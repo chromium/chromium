@@ -377,10 +377,6 @@ class ExistingUserController : public content::NotificationObserver,
   // Timer for the interval to wait for the reboot after TPM error UI was shown.
   base::OneShotTimer reboot_timer_;
 
-  // Collection of verifiers that check validity of password sync token for SAML
-  // users.
-  std::unique_ptr<PasswordSyncTokenCheckersCollection> sync_token_checkers_;
-
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 
   base::CallbackListSubscription show_user_names_subscription_;

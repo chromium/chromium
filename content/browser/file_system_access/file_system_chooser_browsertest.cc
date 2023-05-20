@@ -11,13 +11,14 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
-#include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
@@ -30,6 +31,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fake_file_system_access_permission_context.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -914,29 +916,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, UndefinedAccepts) {
   ASSERT_TRUE(dialog_params.file_types);
   EXPECT_TRUE(dialog_params.file_types->include_all_files);
   ASSERT_EQ(0u, dialog_params.file_types->extensions.size());
-}
-
-IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       FileSystemAccessUsageDisablesBackForwardCache) {
-  BackForwardCacheDisabledTester tester;
-
-  const base::FilePath test_file = CreateTestFile("file contents");
-  SelectFileDialogParams dialog_params;
-  ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
-  ASSERT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
-            EvalJs(shell(),
-                   "(async () => {"
-                   "  let [e] = await self.showOpenFilePicker();"
-                   "  self.selected_entry = e;"
-                   "  return e.name; })()"));
-  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
-      shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
-      BackForwardCacheDisable::DisabledReason(
-          BackForwardCacheDisable::DisabledReasonId::kFileSystemAccess)));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
@@ -1917,6 +1896,48 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, PickerTitle) {
   // Check that the title of the file picker was plumbed through correctly.
   EXPECT_EQ(FakeFileSystemAccessPermissionContext::kPickerTitle,
             dialog_params.title);
+}
+
+class FileSystemChooserBackForwardCacheBrowserTest
+    : public FileSystemChooserBrowserTest {
+ public:
+  FileSystemChooserBackForwardCacheBrowserTest() {
+    InitBackForwardCacheFeature(&feature_list_for_back_forward_cache_,
+                                /*enable_back_forward_cache=*/true);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
+};
+
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBackForwardCacheBrowserTest,
+                       IsEligibleForBackForwardCache) {
+  const base::FilePath test_file = CreateTestFile("file contents");
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let [e] = await self.showOpenFilePicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+
+  RenderFrameHostWrapper initial_rfh(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  // Navigate to another page and expect the previous RenderFrameHost to be
+  // in the BFCache.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_TRUE(static_cast<RenderFrameHostImpl*>(initial_rfh.get())
+                  ->IsInBackForwardCache());
+
+  // And then navigating back restores `initial_rfh` as the primary main frame.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  EXPECT_EQ(initial_rfh.get(), shell()->web_contents()->GetPrimaryMainFrame());
 }
 
 }  // namespace content

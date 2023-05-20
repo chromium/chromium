@@ -5,12 +5,13 @@
 #include "components/update_client/update_query_params.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/update_client/buildflags.h"
+#include "components/update_client/features.h"
 #include "components/update_client/update_query_params_delegate.h"
 #include "components/version_info/version_info.h"
 
@@ -86,19 +87,11 @@ UpdateQueryParamsDelegate* g_delegate = nullptr;
 
 // static
 std::string UpdateQueryParams::Get(ProdId prod) {
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
   return base::StringPrintf(
       "os=%s&arch=%s&os_arch=%s&nacl_arch=%s&prod=%s%s&acceptformat=crx3,puff",
       kOs, kArch, base::SysInfo().OperatingSystemArchitecture().c_str(),
       GetNaclArch(), GetProdIdString(prod),
       g_delegate ? g_delegate->GetExtraParams().c_str() : "");
-#else
-  return base::StringPrintf(
-      "os=%s&arch=%s&os_arch=%s&nacl_arch=%s&prod=%s%s&acceptformat=crx3", kOs,
-      kArch, base::SysInfo().OperatingSystemArchitecture().c_str(),
-      GetNaclArch(), GetProdIdString(prod),
-      g_delegate ? g_delegate->GetExtraParams().c_str() : "");
-#endif
 }
 
 // static
@@ -158,7 +151,7 @@ const char* UpdateQueryParams::GetNaclArch() {
 
 // static
 std::string UpdateQueryParams::GetProdVersion() {
-  return version_info::GetVersionNumber();
+  return std::string(version_info::GetVersionNumber());
 }
 
 // static

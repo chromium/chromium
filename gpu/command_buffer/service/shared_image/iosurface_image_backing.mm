@@ -556,14 +556,15 @@ DawnIOSurfaceRepresentation::~DawnIOSurfaceRepresentation() {
   dawn_procs_.deviceRelease(device_);
 }
 
-WGPUTexture DawnIOSurfaceRepresentation::BeginAccess(WGPUTextureUsage usage) {
+WGPUTexture DawnIOSurfaceRepresentation::BeginAccess(
+    WGPUTextureUsage wgpu_texture_usage) {
   const std::string debug_label =
-      "IOSurface(" + CreateLabelForSharedImageUsage(usage) + ")";
+      "IOSurface(" + CreateLabelForSharedImageUsage(usage()) + ")";
 
   WGPUTextureDescriptor texture_descriptor = {};
   texture_descriptor.label = debug_label.c_str();
   texture_descriptor.format = wgpu_format_;
-  texture_descriptor.usage = usage;
+  texture_descriptor.usage = wgpu_texture_usage;
   texture_descriptor.dimension = WGPUTextureDimension_2D;
   texture_descriptor.size = {static_cast<uint32_t>(size().width()),
                              static_cast<uint32_t>(size().height()), 1};

@@ -15,9 +15,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_file_check_delegate.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
@@ -103,6 +106,14 @@ void StartReportOnlyScanning(
                        std::move(outputs), profile, file_system_context);
 }
 
+// Returns DlpFilesControllerAsh* if exists.
+policy::DlpFilesControllerAsh* GetDlpFilesController() {
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  return static_cast<policy::DlpFilesControllerAsh*>(
+      rules_manager ? rules_manager->GetDlpFilesController() : nullptr);
+}
+
 }  // namespace
 
 CopyOrMoveIOTaskPolicyImpl::CopyOrMoveIOTaskPolicyImpl(
@@ -156,18 +167,49 @@ void CopyOrMoveIOTaskPolicyImpl::Execute(
   }
 }
 
-void CopyOrMoveIOTaskPolicyImpl::VerifyTransfer() {
-  if (report_only_scans_) {
-    // Don't do any scans. Instead, the scans are performed after the copy/move
-    // is completed.
-    StartTransfer();
+void CopyOrMoveIOTaskPolicyImpl::Resume(ResumeParams params) {
+  // In this class we only handle policy resumes, anything else defer to the
+  // base class.
+  if (!params.policy_params.has_value()) {
+    CopyOrMoveIOTaskImpl::Resume(std::move(params));
     return;
   }
 
-  // Allocate one unique_ptr for each source. If it is not set, scanning is not
-  // enabled for this source.
-  file_transfer_analysis_delegates_.resize(progress_->sources.size());
-  MaybeScanForDisallowedFiles(0);
+  // We cannot resume after timeout error.
+  if (params.policy_params->type != PolicyErrorType::kDlpWarningTimeout) {
+    LOG(ERROR)
+        << "Policy resume shouldn't be called with kDlpWarningTimeout type";
+    Complete(State::kError);
+    return;
+  }
+
+  if (params.policy_params->type == PolicyErrorType::kDlp) {
+    // TODO: Start scanning.
+  }
+
+  if (params.policy_params->type == PolicyErrorType::kEnterpriseConnectors) {
+    // TODO: Start transfer.
+  }
+}
+
+void CopyOrMoveIOTaskPolicyImpl::VerifyTransfer() {
+  auto on_check_transfer_cb =
+      base::BindOnce(&CopyOrMoveIOTaskPolicyImpl::OnCheckIfTransferAllowed,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  if (auto* files_controller = GetDlpFilesController();
+      policy::DlpFilesController::kCopyTaskFlowEnabled && files_controller) {
+    std::vector<storage::FileSystemURL> transferred_urls;
+    for (const auto& entry : progress_->sources) {
+      transferred_urls.push_back(entry.url);
+    }
+    files_controller->CheckIfTransferAllowed(
+        progress_->task_id, std::move(transferred_urls),
+        progress_->GetDestinationFolder(), std::move(on_check_transfer_cb));
+    return;
+  }
+
+  std::move(on_check_transfer_cb).Run(/*blocked_entries=*/{});
 }
 
 void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
@@ -278,6 +320,25 @@ CopyOrMoveIOTaskPolicyImpl::GetHookDelegate(size_t idx) {
                           weak_ptr_factory_.GetWeakPtr(), idx));
   return std::make_unique<FileManagerCopyOrMoveHookFileCheckDelegate>(
       file_system_context_, progress_callback, file_check_callback);
+}
+
+void CopyOrMoveIOTaskPolicyImpl::OnCheckIfTransferAllowed(
+    std::set<storage::FileSystemURL> blocked_entries) {
+  // TODO(b/279029167): This function shouldn't be reached if the user cancelled
+  // the DLP warning or the DLP warning timed out. If there's any file blocked
+  // by DLP, skip Enterprise Connectors scanning for them.
+
+  if (report_only_scans_) {
+    // Don't do any scans. Instead, the scans are performed after the copy/move
+    // is completed.
+    StartTransfer();
+    return;
+  }
+
+  // Allocate one unique_ptr for each source. If it is not set, scanning is not
+  // enabled for this source.
+  file_transfer_analysis_delegates_.resize(progress_->sources.size());
+  MaybeScanForDisallowedFiles(0);
 }
 
 }  // namespace file_manager::io_task

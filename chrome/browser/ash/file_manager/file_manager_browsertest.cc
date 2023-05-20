@@ -558,8 +558,7 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
       auto* component_str = value.FindString("component");
       EXPECT_TRUE(component_str);
       auto component = MapToPolicyComponent(*component_str);
-      EXPECT_NE(policy::DlpRulesManager::Component::kUnknownComponent,
-                component);
+      EXPECT_NE(data_controls::Component::kUnknownComponent, component);
       policy::DlpRulesManager::AggregatedComponents components;
       components[policy::DlpRulesManager::Level::kBlock].insert(component);
       EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents)
@@ -631,25 +630,24 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
     return dlp_rules_manager;
   }
 
-  // Maps |component| to DlpRulesManager::Component.
-  policy::DlpRulesManager::Component MapToPolicyComponent(
-      const std::string& component) {
+  // Maps |component| to data_controls::Component.
+  data_controls::Component MapToPolicyComponent(const std::string& component) {
     if (component == "arc") {
-      return policy::DlpRulesManager::Component::kArc;
+      return data_controls::Component::kArc;
     }
     if (component == "crostini") {
-      return policy::DlpRulesManager::Component::kCrostini;
+      return data_controls::Component::kCrostini;
     }
     if (component == "pluginVm") {
-      return policy::DlpRulesManager::Component::kPluginVm;
+      return data_controls::Component::kPluginVm;
     }
     if (component == "usb") {
-      return policy::DlpRulesManager::Component::kUsb;
+      return data_controls::Component::kUsb;
     }
     if (component == "drive") {
-      return policy::DlpRulesManager::Component::kDrive;
+      return data_controls::Component::kDrive;
     }
-    return policy::DlpRulesManager::Component::kUnknownComponent;
+    return data_controls::Component::kUnknownComponent;
   }
 
   // Returns the inode value for |path|, if found.
@@ -1552,6 +1550,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveFolderShouldShowOfflineTickWhenBulkPinningEnabled")
             .EnableBulkPinning(),
         TestCase("driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled")
+            .EnableBulkPinning(),
+        TestCase("drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled")
             .EnableBulkPinning()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
@@ -2170,7 +2170,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchHierarchy").EnableSearchV2(),
         TestCase("hideSearchInTrash").EnableSearchV2(),
         TestCase("searchTrashedFiles").EnableSearchV2(),
-        TestCase("matchDriveFilesByName").EnableSearchV2()
+        TestCase("matchDriveFilesByName").EnableSearchV2(),
+        TestCase("searchSharedWithMe").EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));

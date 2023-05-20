@@ -64,12 +64,19 @@ static_assert(
     static_cast<int>(PreloadingEligibility::kPreloadingEligibilityContentEnd));
 
 PreloadingEligibility ToPreloadingEligibility(PrefetchStatus status) {
-  if (status == PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled) {
-    return PreloadingEligibility::kDataSaverEnabled;
+  switch (status) {
+    case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+      return PreloadingEligibility::kDataSaverEnabled;
+    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+      return PreloadingEligibility::kBatterySaverEnabled;
+    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
+      return PreloadingEligibility::kPreloadingDisabled;
+    default:
+      return static_cast<PreloadingEligibility>(
+          static_cast<int>(status) +
+          static_cast<int>(
+              PreloadingEligibility::kPreloadingEligibilityCommonEnd));
   }
-  return static_cast<PreloadingEligibility>(
-      static_cast<int>(status) +
-      static_cast<int>(PreloadingEligibility::kPreloadingEligibilityCommonEnd));
 }
 
 // Please follow go/preloading-dashboard-updates if a new eligibility is added.
@@ -79,6 +86,8 @@ void SetIneligibilityFromStatus(PreloadingAttempt* attempt,
     switch (status) {
       case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
       case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+      case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+      case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
       case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
       case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
       case PrefetchStatus::kPrefetchProxyNotAvailable:
@@ -111,12 +120,53 @@ PreloadingFailureReason ToPreloadingFailureReason(PrefetchStatus status) {
           PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
 }
 
+absl::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
+    PrefetchStatus prefetch_status) {
+  switch (prefetch_status) {
+    case PrefetchStatus::kPrefetchNotFinishedInTime:
+      return PreloadingTriggeringOutcome::kRunning;
+    case PrefetchStatus::kPrefetchSuccessful:
+      return PreloadingTriggeringOutcome::kReady;
+    case PrefetchStatus::kPrefetchResponseUsed:
+      return PreloadingTriggeringOutcome::kSuccess;
+    case PrefetchStatus::kPrefetchIsPrivacyDecoy:
+    case PrefetchStatus::kPrefetchFailedNetError:
+    case PrefetchStatus::kPrefetchFailedNon2XX:
+    case PrefetchStatus::kPrefetchFailedMIMENotSupported:
+    case PrefetchStatus::kPrefetchFailedInvalidRedirect:
+    case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
+    case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
+    case PrefetchStatus::kPrefetchEvicted:
+      return PreloadingTriggeringOutcome::kFailure;
+    case PrefetchStatus::kPrefetchHeldback:
+    case PrefetchStatus::kPrefetchAllowed:
+    case PrefetchStatus::kPrefetchNotStarted:
+    case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
+    case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
+    case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
+    case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
+    case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
+    case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
+    case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
+    case PrefetchStatus::kPrefetchIneligibleRetryAfter:
+    case PrefetchStatus::kPrefetchProxyNotAvailable:
+    case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
+    case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
+    case PrefetchStatus::kPrefetchIsStale:
+    case PrefetchStatus::kPrefetchNotUsedProbeFailed:
+    case PrefetchStatus::
+        kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
+      return absl::nullopt;
+  }
+  return absl::nullopt;
+}
+
 // Please follow go/preloading-dashboard-updates if a new outcome enum or a
 // failure reason enum is added.
-absl::optional<PreloadingTriggeringOutcome>
-SetTriggeringOutcomeAndFailureReasonFromStatus(
+void SetTriggeringOutcomeAndFailureReasonFromStatus(
     PreloadingAttempt* attempt,
-    FrameTreeNode* ftn,
     const GURL& url,
     absl::optional<PrefetchStatus> old_prefetch_status,
     PrefetchStatus new_prefetch_status) {
@@ -124,20 +174,17 @@ SetTriggeringOutcomeAndFailureReasonFromStatus(
       old_prefetch_status.value() == PrefetchStatus::kPrefetchResponseUsed) {
     // Skip this update if the triggering outcome has already been updated
     // to kSuccess.
-    return absl::nullopt;
+    return;
   }
 
-  absl::optional<PreloadingTriggeringOutcome> preloading_trigger_outcome;
   if (attempt) {
     switch (new_prefetch_status) {
       case PrefetchStatus::kPrefetchNotFinishedInTime:
-        preloading_trigger_outcome = PreloadingTriggeringOutcome::kRunning;
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kRunning);
         break;
       case PrefetchStatus::kPrefetchSuccessful:
         // A successful prefetch means the response is ready to be used for the
         // next navigation.
-        preloading_trigger_outcome = PreloadingTriggeringOutcome::kReady;
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         break;
       case PrefetchStatus::kPrefetchResponseUsed:
@@ -151,7 +198,6 @@ SetTriggeringOutcomeAndFailureReasonFromStatus(
           // before the body is fully received.
           attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         }
-        preloading_trigger_outcome = PreloadingTriggeringOutcome::kSuccess;
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
         break;
       // A decoy is considered eligible because a network request is made for
@@ -164,7 +210,10 @@ SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchFailedInvalidRedirect:
       case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
       case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
-        preloading_trigger_outcome = PreloadingTriggeringOutcome::kFailure;
+      // TODO(adithyas): This would report 'eviction' as a failure even though
+      // the initial prefetch succeeded, consider introducing a different
+      // PreloadingTriggerOutcome for eviction.
+      case PrefetchStatus::kPrefetchEvicted:
         attempt->SetFailureReason(
             ToPreloadingFailureReason(new_prefetch_status));
         break;
@@ -186,6 +235,8 @@ SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
       case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
       case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+      case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+      case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
       case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
       case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
       case PrefetchStatus::kPrefetchIneligibleRetryAfter:
@@ -199,7 +250,6 @@ SetTriggeringOutcomeAndFailureReasonFromStatus(
         NOTIMPLEMENTED();
     }
   }
-  return preloading_trigger_outcome;
 }
 
 std::string GetEagernessHistogramSuffix(
@@ -278,7 +328,8 @@ PrefetchContainer::PrefetchContainer(
 
   // `PreloadingPrediction` is added in `PreloadingDecider`.
 
-  redirect_chain_.push_back(std::make_unique<SinglePrefetch>(prefetch_url_));
+  redirect_chain_.push_back(
+      std::make_unique<SinglePrefetch>(prefetch_url_, referring_site_));
 }
 
 PrefetchContainer::~PrefetchContainer() {
@@ -308,16 +359,14 @@ PrefetchContainer::~PrefetchContainer() {
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
+void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
+    PrefetchStatus prefetch_status) {
+  prefetch_status_ = prefetch_status;
   FrameTreeNode* ftn = FrameTreeNode::From(
       RenderFrameHostImpl::FromID(referring_render_frame_host_id_));
 
   absl::optional<PreloadingTriggeringOutcome> preloading_trigger_outcome =
-      SetTriggeringOutcomeAndFailureReasonFromStatus(
-          attempt_.get(), ftn, prefetch_url_,
-          /*old_prefetch_status=*/prefetch_status_,
-          /*new_prefetch_status=*/prefetch_status);
-  prefetch_status_ = prefetch_status;
+      TriggeringOutcomeFromStatus(prefetch_status);
 
   if (initiator_devtools_navigation_token_.has_value() &&
       preloading_trigger_outcome.has_value()) {
@@ -325,6 +374,14 @@ void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
         ftn, initiator_devtools_navigation_token_.value(), prefetch_url_,
         preloading_trigger_outcome.value(), prefetch_status);
   }
+}
+
+void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
+  SetTriggeringOutcomeAndFailureReasonFromStatus(
+      attempt_.get(), prefetch_url_,
+      /*old_prefetch_status=*/prefetch_status_,
+      /*new_prefetch_status=*/prefetch_status);
+  SetPrefetchStatusWithoutUpdatingTriggeringOutcome(prefetch_status);
 }
 
 PrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
@@ -344,14 +401,49 @@ PrefetchContainer::ReleaseProxyLookupClient() {
   return std::move(proxy_lookup_client_);
 }
 
-PrefetchNetworkContext* PrefetchContainer::GetOrCreateNetworkContext(
+PrefetchNetworkContext* PrefetchContainer::GetOrCreateNetworkContextForURL(
+    const GURL& url,
     PrefetchService* prefetch_service) {
-  if (!network_context_) {
-    network_context_ = std::make_unique<PrefetchNetworkContext>(
-        prefetch_service, prefetch_type_, referrer_,
-        referring_render_frame_host_id_);
+  bool is_isolated_network_context_required =
+      IsIsolatedNetworkContextRequiredForURL(url);
+
+  auto network_context_itr =
+      network_contexts_.find(is_isolated_network_context_required);
+  if (network_context_itr == network_contexts_.end()) {
+    network_context_itr =
+        network_contexts_
+            .emplace(
+                is_isolated_network_context_required,
+                std::make_unique<PrefetchNetworkContext>(
+                    prefetch_service, is_isolated_network_context_required,
+                    prefetch_type_, referrer_, referring_render_frame_host_id_))
+            .first;
   }
-  return network_context_.get();
+
+  CHECK(network_context_itr != network_contexts_.end());
+  CHECK(network_context_itr->second);
+  return network_context_itr->second.get();
+}
+
+PrefetchNetworkContext* PrefetchContainer::GetNetworkContextForURL(
+    const GURL& url) const {
+  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
+  CHECK(this_prefetch);
+
+  const auto& network_context_itr = network_contexts_.find(
+      this_prefetch->is_isolated_network_context_required_);
+  if (network_context_itr == network_contexts_.end()) {
+    // Not set in unit tests.
+    return nullptr;
+  }
+  return network_context_itr->second.get();
+}
+
+void PrefetchContainer::CloseIdleConnections() {
+  for (const auto& network_context_itr : network_contexts_) {
+    CHECK(network_context_itr.second);
+    network_context_itr.second->CloseIdleConnections();
+  }
 }
 
 PrefetchDocumentManager* PrefetchContainer::GetPrefetchDocumentManager() const {
@@ -365,10 +457,6 @@ void PrefetchContainer::OnEligibilityCheckComplete(
   SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
   DCHECK(this_prefetch);
   this_prefetch->is_eligible_ = is_eligible;
-  if (this_prefetch->on_eligibility_check_complete_callback_) {
-    std::move(this_prefetch->on_eligibility_check_complete_callback_)
-        .Run(is_eligible);
-  }
 
   if (url == prefetch_url_ && redirect_chain_.size() == 1) {
     // This case is for just the URL that was originally requested to be
@@ -376,7 +464,7 @@ void PrefetchContainer::OnEligibilityCheckComplete(
     if (!is_eligible) {
       // Expect a reason (status) if not eligible.
       DCHECK(status.has_value());
-      prefetch_status_ = status;
+      SetPrefetchStatusWithoutUpdatingTriggeringOutcome(status.value());
     }
 
     if (attempt_) {
@@ -406,7 +494,8 @@ bool PrefetchContainer::IsInitialPrefetchEligible() const {
 }
 
 void PrefetchContainer::AddRedirectHop(const GURL& url) {
-  redirect_chain_.push_back(std::make_unique<SinglePrefetch>(url));
+  redirect_chain_.push_back(
+      std::make_unique<SinglePrefetch>(url, referring_site_));
 }
 
 absl::optional<bool> PrefetchContainer::GetEligibilityResultForRedirect(
@@ -414,24 +503,6 @@ absl::optional<bool> PrefetchContainer::GetEligibilityResultForRedirect(
   SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
   DCHECK(this_prefetch);
   return this_prefetch->is_eligible_;
-}
-
-void PrefetchContainer::SetOnEligibilityCheckCompleteCallback(
-    const GURL& url,
-    OnEligibilityCheckCompleteCallback on_eligibility_check_complete_callback) {
-  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
-  DCHECK(this_prefetch);
-
-  this_prefetch->on_eligibility_check_complete_callback_ =
-      std::move(on_eligibility_check_complete_callback);
-}
-
-bool PrefetchContainer::IsOnEligibilityCheckCompleteCallbackRegistered(
-    const GURL& url) const {
-  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
-  DCHECK(this_prefetch);
-
-  return !this_prefetch->on_eligibility_check_complete_callback_.is_null();
 }
 
 void PrefetchContainer::RegisterCookieListener(
@@ -550,24 +621,55 @@ void PrefetchContainer::SetOnCookieCopyCompleteCallback(
 
 void PrefetchContainer::TakeStreamingURLLoader(
     std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader) {
-  DCHECK(!streaming_loader_);
-  streaming_loader_ = std::move(streaming_loader);
+  // Transfer the OnReceivedHeadCallback to the last streaming URL loader.
+  if (!streaming_loaders_.empty()) {
+    streaming_loader->SetOnReceivedHeadCallback(
+        streaming_loaders_.back()->ReleaseOnReceivedHeadCallback());
+  }
+
+  streaming_loaders_.push_back(std::move(streaming_loader));
+}
+
+PrefetchStreamingURLLoader* PrefetchContainer::GetFirstStreamingURLLoader()
+    const {
+  if (streaming_loaders_.empty()) {
+    return nullptr;
+  }
+  return streaming_loaders_[0].get();
+}
+
+PrefetchStreamingURLLoader* PrefetchContainer::GetLastStreamingURLLoader()
+    const {
+  if (streaming_loaders_.empty()) {
+    return nullptr;
+  }
+  return streaming_loaders_.back().get();
 }
 
 std::unique_ptr<PrefetchStreamingURLLoader>
-PrefetchContainer::ReleaseStreamingLoader() {
-  DCHECK(streaming_loader_);
-  return std::move(streaming_loader_);
+PrefetchContainer::ReleaseFirstStreamingURLLoader() {
+  CHECK(!streaming_loaders_.empty() &&
+        streaming_loaders_[0]->IsReadyToServeLastEvents());
+
+  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
+      std::move(streaming_loaders_[0]);
+  streaming_loaders_.erase(streaming_loaders_.begin());
+  return streaming_loader;
 }
 
-void PrefetchContainer::ResetStreamingLoader() {
-  DCHECK(streaming_loader_);
+void PrefetchContainer::ResetAllStreamingURLLoaders() {
+  CHECK(!streaming_loaders_.empty());
+  for (auto& streaming_loader : streaming_loaders_) {
+    DCHECK(streaming_loader);
 
-  // The streaming URL loader can be deleted in one of its callbacks, so instead
-  // of deleting it immediately, it is made self owned and then deletes itself.
-  PrefetchStreamingURLLoader* raw_streaming_loader = streaming_loader_.get();
-  raw_streaming_loader->MakeSelfOwnedAndDeleteSoon(
-      std::move(streaming_loader_));
+    // The streaming URL loader can be deleted in one of its callbacks, so
+    // instead of deleting it immediately, it is made self owned and then
+    // deletes itself.
+    PrefetchStreamingURLLoader* raw_streaming_loader = streaming_loader.get();
+    raw_streaming_loader->MakeSelfOwnedAndDeleteSoon(
+        std::move(streaming_loader));
+  }
+  streaming_loaders_.clear();
 }
 
 void PrefetchContainer::OnPrefetchProbeResult(
@@ -586,7 +688,8 @@ void PrefetchContainer::OnPrefetchProbeResult(
       break;
     case PrefetchProbeResult::kDNSProbeFailure:
     case PrefetchProbeResult::kTLSProbeFailure:
-      prefetch_status_ = PrefetchStatus::kPrefetchNotUsedProbeFailed;
+      SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
+          PrefetchStatus::kPrefetchNotUsedProbeFailed);
       break;
     default:
       NOTIMPLEMENTED();
@@ -603,12 +706,13 @@ void PrefetchContainer::OnPrefetchComplete() {
   UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.RedirectChainSize",
                            redirect_chain_.size());
 
-  if (!streaming_loader_) {
+  if (streaming_loaders_.empty()) {
     return;
   }
 
-  UpdatePrefetchRequestMetrics(streaming_loader_->GetCompletionStatus(),
-                               streaming_loader_->GetHead());
+  UpdatePrefetchRequestMetrics(
+      GetLastStreamingURLLoader()->GetCompletionStatus(),
+      GetLastStreamingURLLoader()->GetHead());
   UpdateServingPageMetrics();
 }
 
@@ -635,8 +739,8 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
 bool PrefetchContainer::ShouldBlockUntilHeadReceived() const {
   // Can only block until head if the request has been started using a streaming
   // URL loader and head hasn't been received yet.
-  if (!streaming_loader_ || streaming_loader_->GetHead() ||
-      streaming_loader_->Failed()) {
+  if (streaming_loaders_.empty() || GetLastStreamingURLLoader()->GetHead() ||
+      GetLastStreamingURLLoader()->Failed()) {
     return false;
   }
   return PrefetchShouldBlockUntilHead(prefetch_type_.GetEagerness());
@@ -646,15 +750,15 @@ bool PrefetchContainer::IsPrefetchServable(
     base::TimeDelta cacheable_duration) const {
   // Whether or not the response (either full or partial) from the streaming URL
   // loader is servable.
-  return streaming_loader_ && streaming_loader_->Servable(cacheable_duration);
+  return !streaming_loaders_.empty() &&
+         GetLastStreamingURLLoader()->Servable(cacheable_duration);
 }
 
 bool PrefetchContainer::DoesCurrentURLToServeMatch(const GURL& url) const {
   DCHECK(index_redirect_chain_to_serve_ >= 1 &&
          index_redirect_chain_to_serve_ < redirect_chain_.size());
-  return redirect_chain_[index_redirect_chain_to_serve_]->url_ == url ||
-         IsMatchingNoVarySearchUrl(
-             redirect_chain_[index_redirect_chain_to_serve_]->url_, url);
+  return IsMatchingURL(redirect_chain_[index_redirect_chain_to_serve_]->url_,
+                       url);
 }
 
 const GURL& PrefetchContainer::GetCurrentURLToServe() const {
@@ -664,7 +768,8 @@ const GURL& PrefetchContainer::GetCurrentURLToServe() const {
 }
 
 const network::mojom::URLResponseHead* PrefetchContainer::GetHead() {
-  return streaming_loader_ ? streaming_loader_->GetHead() : nullptr;
+  PrefetchStreamingURLLoader* streaming_loader = GetLastStreamingURLLoader();
+  return streaming_loader ? streaming_loader->GetHead() : nullptr;
 }
 
 void PrefetchContainer::SetServingPageMetrics(
@@ -698,11 +803,12 @@ void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
 
 PrefetchContainer::SinglePrefetch* PrefetchContainer::GetSinglePrefetch(
     const GURL& url) const {
+  // TODO(https://crbug.com/1444568): Handle the case where the given URL
+  // matches multiple entries in |redirect_chain_|.
   for (auto itr = redirect_chain_.rbegin(); itr != redirect_chain_.rend();
        itr++) {
     GURL single_prefetch_url = (*itr)->url_;
-    if (single_prefetch_url == url ||
-        IsMatchingNoVarySearchUrl(single_prefetch_url, url)) {
+    if (IsMatchingURL(single_prefetch_url, url)) {
       return itr->get();
     }
   }
@@ -710,9 +816,32 @@ PrefetchContainer::SinglePrefetch* PrefetchContainer::GetSinglePrefetch(
   return nullptr;
 }
 
-bool PrefetchContainer::IsMatchingNoVarySearchUrl(
-    const GURL& internal_url,
-    const GURL& external_url) const {
+PrefetchContainer::SinglePrefetch* PrefetchContainer::GetPreviousSinglePrefetch(
+    const GURL& url) const {
+  // TODO(https://crbug.com/1444568): Handle the case where the given URL
+  // matches multiple entries in |redirect_chain_|.
+  for (auto itr = redirect_chain_.rbegin(); itr != redirect_chain_.rend();
+       itr++) {
+    GURL single_prefetch_url = (*itr)->url_;
+    if (IsMatchingURL(single_prefetch_url, url)) {
+      // Once the SinglePrefetch that matches the given URL is found, then
+      // increment the reverse iterator to get the previous one.
+      itr++;
+      return itr != redirect_chain_.rend() ? itr->get() : nullptr;
+    }
+  }
+  NOTREACHED();
+  return nullptr;
+}
+
+bool PrefetchContainer::IsMatchingURL(const GURL& internal_url,
+                                      const GURL& external_url) const {
+  // Check if the URLs match directly.
+  if (internal_url == external_url) {
+    return true;
+  }
+
+  // Otherwise, try to use no_vary_search_helper_.
   if (!no_vary_search_helper_) {
     return false;
   }
@@ -756,6 +885,20 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
   }
 }
 
+bool PrefetchContainer::IsIsolatedNetworkContextRequiredForURL(
+    const GURL& url) const {
+  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
+  CHECK(this_prefetch);
+  return this_prefetch->is_isolated_network_context_required_;
+}
+
+bool PrefetchContainer::IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
+    const GURL& url) const {
+  SinglePrefetch* previous_prefetch = GetPreviousSinglePrefetch(url);
+  CHECK(previous_prefetch);
+  return previous_prefetch->is_isolated_network_context_required_;
+}
+
 bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
   return !referring_origin_.IsSameOriginWith(url) &&
          prefetch_type_.IsProxyRequiredWhenCrossOrigin();
@@ -767,8 +910,13 @@ std::ostream& operator<<(std::ostream& ostream,
                  << ", URL=" << prefetch_container.GetURL() << "]";
 }
 
-PrefetchContainer::SinglePrefetch::SinglePrefetch(const GURL& url)
-    : url_(url) {}
+PrefetchContainer::SinglePrefetch::SinglePrefetch(
+    const GURL& url,
+    const net::SchemefulSite& referring_site)
+    : url_(url) {
+  net::SchemefulSite this_site(url_);
+  is_isolated_network_context_required_ = referring_site != this_site;
+}
 
 PrefetchContainer::SinglePrefetch::~SinglePrefetch() = default;
 

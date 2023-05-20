@@ -578,15 +578,6 @@ public abstract class Layout {
     }
 
     /**
-     * Called when a tab is about to be closed. When called, the closing tab will still
-     * be part of the model.
-     * @param time  The current time of the app in ms.
-     * @param tabId The id of the tab being closed
-     */
-    public void onTabClosing(long time, int tabId) {
-    }
-
-    /**
      * Called when a tab is being closed. When called, the closing tab will not
      * be part of the model.
      * @param time      The current time of the app in ms.
@@ -666,19 +657,6 @@ public abstract class Layout {
      */
     public LayoutTab[] getLayoutTabsToRender() {
         return mLayoutTabs;
-    }
-
-    /**
-     * @param id The id of the {@link LayoutTab} to search for.
-     * @return   A {@link LayoutTab} represented by a {@link Tab} with an id of {@code id}.
-     */
-    public LayoutTab getLayoutTab(int id) {
-        if (mLayoutTabs != null) {
-            for (int i = 0; i < mLayoutTabs.length; i++) {
-                if (mLayoutTabs[i].getId() == id) return mLayoutTabs[i];
-            }
-        }
-        return null;
     }
 
     /**

@@ -48,7 +48,7 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
   extensions::ExtensionDownloadsEventRouter* GetExtensionEventRouter() override;
 #endif
   bool HasCreatedDownloadManager() override;
-  int NonMaliciousDownloadCount() const override;
+  int BlockingShutdownCount() const override;
   void CancelDownloads() override;
   void SetDownloadManagerDelegateForTesting(
       std::unique_ptr<ChromeDownloadManagerDelegate> delegate) override;

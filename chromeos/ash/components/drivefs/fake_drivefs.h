@@ -233,6 +233,9 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
   void ClearOfflineFiles(
       drivefs::mojom::DriveFs::ClearOfflineFilesCallback) override;
 
+  void GetDocsOfflineStats(
+      drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback) override;
+
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;
 

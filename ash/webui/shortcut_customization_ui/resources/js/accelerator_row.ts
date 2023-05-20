@@ -9,12 +9,13 @@ import '../css/shortcut_customization_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './accelerator_row.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {AcceleratorInfo, AcceleratorSource, LayoutStyle, ShortcutProviderInterface, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
+import {AcceleratorInfo, AcceleratorSource, AcceleratorState, LayoutStyle, ShortcutProviderInterface, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
 import {isCustomizationDisabled} from './shortcut_utils.js';
 import {TextAcceleratorElement} from './text_accelerator.js';
 
@@ -37,7 +38,8 @@ declare global {
  * description of the shortcut along with a list of accelerators.
  * TODO(jimmyxgong): Implement opening a dialog when clicked.
  */
-export class AcceleratorRowElement extends PolymerElement {
+const AcceleratorRowElementBase = I18nMixin(PolymerElement);
+export class AcceleratorRowElement extends AcceleratorRowElementBase {
   static get is(): string {
     return 'accelerator-row';
   }
@@ -89,7 +91,7 @@ export class AcceleratorRowElement extends PolymerElement {
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     if (!this.isLocked) {
-      this.removeEventListener('click', () => this.showDialog());
+      this.removeEventListener('edit-icon-clicked', () => this.showDialog());
     }
   }
 
@@ -98,7 +100,7 @@ export class AcceleratorRowElement extends PolymerElement {
         .then(({isMutable}) => {
           this.isLocked = !isMutable;
           if (!this.isLocked) {
-            this.addEventListener('click', () => this.showDialog());
+            this.addEventListener('edit-icon-clicked', () => this.showDialog());
           }
         });
   }
@@ -134,6 +136,16 @@ export class AcceleratorRowElement extends PolymerElement {
   protected getTextAcceleratorParts(infos: TextAcceleratorInfo[]):
       TextAcceleratorPart[] {
     return TextAcceleratorElement.getTextAcceleratorParts(infos);
+  }
+
+  protected getFilteredAccelerators(accelerators: AcceleratorInfo[]):
+      AcceleratorInfo[] {
+    return accelerators.filter(
+        accel => accel.state !== AcceleratorState.kDisabledByUser);
+  }
+
+  protected isEmptyList(infos: AcceleratorInfo[]): boolean {
+    return this.getFilteredAccelerators(infos).length === 0;
   }
 
   static get template(): HTMLTemplateElement {

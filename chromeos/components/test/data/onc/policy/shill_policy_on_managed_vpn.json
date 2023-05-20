@@ -16,7 +16,6 @@
   },
   "SaveCredentials": false,
   "State": "idle",
-  "StaticIPConfig": {},
   "Type": "vpn",
   "UIData": "{\"onc_source\":\"user_policy\",\"user_settings\":{}}",
   "Visible": true

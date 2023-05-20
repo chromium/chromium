@@ -24,13 +24,17 @@ class MEDIA_EXPORT SpeechRecognitionClient {
 
   virtual void AddAudio(scoped_refptr<AudioBuffer> buffer) = 0;
 
-  virtual void AddAudio(std::unique_ptr<media::AudioBus> audio_bus,
-                        int sample_rate,
-                        media::ChannelLayout channel_layout) = 0;
+  // This should not perform any memory allocations so that it can be called on
+  // audio rendering threads. Must call Reconfigure() first and can't be called
+  // concurrently with Reconfigure().
+  virtual void AddAudio(const media::AudioBus& audio_bus) = 0;
 
   virtual bool IsSpeechRecognitionAvailable() = 0;
 
   virtual void SetOnReadyCallback(OnReadyCallback callback) = 0;
+
+  // Must not be called concurrently with AddAudio().
+  virtual void Reconfigure(const media::AudioParameters& audio_parameters) = 0;
 };
 
 }  // namespace media

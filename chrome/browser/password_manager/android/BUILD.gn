@@ -31,7 +31,7 @@ source_set("backend_public") {
     "//components/keyed_service/content:content",
     "//components/password_manager/core/browser:browser",
     "//components/prefs:prefs",
-    "//components/sync/driver:driver",
+    "//components/sync/service",
     "//content/public/browser",
   ]
 }
@@ -452,6 +452,8 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/autofill",
     "//chrome/browser/password_manager/android/pwd_migration:utils",
+    "//chrome/browser/touch_to_fill/password_generation/android:public",
+    "//chrome/browser/touch_to_fill/password_generation/android:test_support",
     "//chrome/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -467,6 +469,7 @@ source_set("unit_tests") {
     "//components/security_state/core",
     "//components/strings:components_strings_grit",
     "//components/ukm:test_support",
+    "//components/webauthn/android:android",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

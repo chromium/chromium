@@ -556,10 +556,7 @@ void V4L2ImageProcessorBackend::ProcessLegacy(scoped_refptr<VideoFrame> frame,
   DVLOGF(4) << "ts=" << frame->timestamp().InMilliseconds();
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  if (output_memory_type_ != V4L2_MEMORY_MMAP) {
-    NOTREACHED();
-    return;
-  }
+  CHECK_EQ(output_memory_type_, V4L2_MEMORY_MMAP);
 
   auto job_record = std::make_unique<JobRecord>();
   job_record->input_frame = frame;
@@ -905,8 +902,7 @@ void V4L2ImageProcessorBackend::Dequeue() {
         break;
 
       default:
-        NOTREACHED();
-        return;
+        NOTREACHED_NORETURN();
     }
 
     const auto timestamp = job_record->input_frame->timestamp();
@@ -983,8 +979,7 @@ bool V4L2ImageProcessorBackend::EnqueueInputRecord(
       break;
     }
     default:
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
   DVLOGF(4) << "enqueued frame ts="
             << job_record->input_frame->timestamp().InMilliseconds()
@@ -1022,8 +1017,7 @@ bool V4L2ImageProcessorBackend::EnqueueOutputRecord(
           output_handle->native_pixmap_handle.planes);
     }
     default:
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
 }
 

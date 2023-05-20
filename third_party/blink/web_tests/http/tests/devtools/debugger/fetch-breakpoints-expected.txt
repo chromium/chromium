@@ -4,7 +4,7 @@ Tests fetch() breakpoints.
 Running: testFetchBreakpoint
 Script execution paused.
 Call stack:
-    0) sendRequest (fetch-breakpoints.js:11)
+    0) sendRequest (fetch-breakpoints.js:14)
     1)  (:1)
 Script execution resumed.
 

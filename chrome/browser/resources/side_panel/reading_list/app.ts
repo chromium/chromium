@@ -15,6 +15,7 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import './reading_list_item.js';
 import '../strings.m.js';
 
+import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
@@ -97,6 +98,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
 
   constructor() {
     super();
+    startColorChangeUpdater();
 
     this.visibilityChangedListener_ = () => {
       // Refresh Reading List's list data when transitioning into a visible

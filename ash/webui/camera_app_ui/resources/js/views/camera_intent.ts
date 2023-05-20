@@ -77,6 +77,7 @@ export class CameraIntent extends Camera {
           new review.Option(
               {
                 label: I18nString.CONFIRM_REVIEW_BUTTON,
+                icon: 'camera_intent_result_confirm.svg',
                 templateId: 'review-intent-button-template',
                 primary: true,
               },
@@ -84,6 +85,7 @@ export class CameraIntent extends Camera {
           new review.Option(
               {
                 label: I18nString.CANCEL_REVIEW_BUTTON,
+                icon: 'camera_intent_result_cancel.svg',
                 templateId: 'review-intent-button-template',
               },
               {exitValue: false}),

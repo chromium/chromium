@@ -176,9 +176,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   bool should_show_scan_credit_card_ = false;
   PopupType popup_type_ = PopupType::kUnspecified;
 
-  // Whether the credit card signin promo should be shown to the user.
-  bool should_show_cc_signin_promo_ = false;
-
   bool should_show_cards_from_account_option_ = false;
 
   // The current data list values.

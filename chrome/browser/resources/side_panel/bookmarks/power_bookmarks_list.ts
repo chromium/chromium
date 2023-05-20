@@ -309,12 +309,12 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
-    Object.keys(changedInfo).forEach(key => {
-      const visibleIndex = this.visibleIndex_(id);
-      if (visibleIndex > -1) {
+    const visibleIndex = this.visibleIndex_(id);
+    if (visibleIndex > -1) {
+      Object.keys(changedInfo).forEach(key => {
         this.notifyPath(`shownBookmarks_.${visibleIndex}.${key}`);
-      }
-    });
+      });
+    }
     this.updateShoppingData_();
   }
 
@@ -329,8 +329,13 @@ export class PowerBookmarksListElement extends PolymerElement {
       this.shownBookmarks_ = this.shownBookmarks_.slice();
       const bookmarkIndex = this.shownBookmarks_.indexOf(bookmarksToShow[0]);
       this.$.shownBookmarksIronList.scrollToIndex(bookmarkIndex);
-      getAnnouncerInstance().announce(loadTimeData.getStringF(
-          'bookmarkCreated', getBookmarkName(bookmark)));
+      if (bookmark.url) {
+        getAnnouncerInstance().announce(loadTimeData.getStringF(
+            'bookmarkCreated', getBookmarkName(bookmark)));
+      } else {
+        getAnnouncerInstance().announce(loadTimeData.getStringF(
+            'bookmarkFolderCreated', getBookmarkName(bookmark)));
+      }
     }
     this.updateShoppingData_();
   }
@@ -528,12 +533,19 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
-  private getBookmarkAllyLabel_(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      string {
-    if (bookmark.url) {
-      return loadTimeData.getStringF('openBookmarkLabel', bookmark.title);
+  private getBookmarkMenuA11yLabel_(url: string, title: string): string {
+    if (url) {
+      return loadTimeData.getStringF('bookmarkMenuLabel', title);
     } else {
-      return loadTimeData.getStringF('openFolderLabel', bookmark.title);
+      return loadTimeData.getStringF('folderMenuLabel', title);
+    }
+  }
+
+  private getBookmarkA11yLabel_(url: string, title: string): string {
+    if (url) {
+      return loadTimeData.getStringF('openBookmarkLabel', title);
+    } else {
+      return loadTimeData.getStringF('openFolderLabel', title);
     }
   }
 
@@ -677,6 +689,7 @@ export class PowerBookmarksListElement extends PolymerElement {
         this.push('activeFolderPath_', event.detail.bookmark);
         // Cancel search when changing active folder.
         this.$.searchField.setValue('');
+        this.$.shownBookmarksIronList.focusItem(0);
       } else {
         this.bookmarksApi_.openBookmark(
             event.detail.bookmark.id, this.activeFolderPath_.length, {
@@ -755,6 +768,10 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private shouldShowEmptySearchState_() {
     return this.hasActiveLabels_() || !!this.searchQuery_;
+  }
+
+  private shouldHideCard_(): boolean {
+    return this.shouldHideHeader_() && this.shownBookmarks_.length === 0;
   }
 
   private shouldHideHeader_(): boolean {

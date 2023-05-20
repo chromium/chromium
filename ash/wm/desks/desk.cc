@@ -396,9 +396,9 @@ void Desk::AddWindowToDesk(aura::Window* window) {
   if (!is_desk_being_removed_ &&
       !desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
     // Setting the property for `kWindowWorkspaceKey` or
-    // `kDeskGuidKey` will trigger a save for the window state. To
+    // `kDeskUuidKey` will trigger a save for the window state. To
     // avoid doing this twice, we tell the window state to hold off on saving
-    // until we save the `kDeskGuidKey` value.
+    // until we save the `kDeskUuidKey` value.
     // TODO(b/265490703): We should eventually clean up this and
     // `GetScopedIgnorePropertyChange` when unit tests no longer need this
     // scoping to prevent double saves.
@@ -409,7 +409,7 @@ void Desk::AddWindowToDesk(aura::Window* window) {
                           desks_controller->GetDeskIndex(this));
     }
 
-    window->SetProperty(kDeskGuidKey, uuid_.AsLowercaseString());
+    window->SetProperty(aura::client::kDeskUuidKey, uuid_.AsLowercaseString());
   }
 
   MaybeIncrementWeeklyActiveDesks();

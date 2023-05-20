@@ -44,8 +44,7 @@ absl::optional<std::string> GetMimeTypeForVideoCodec(media::VideoCodec codec) {
       break;
   }
 
-  NOTREACHED();
-  return absl::nullopt;
+  NOTREACHED_NORETURN();
 }
 
 media::VideoCodecProfile ConvertToVideoCodecProfile(

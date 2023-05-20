@@ -1,0 +1,18 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// Provides all the necessary information for a blink::Page object to be put in
+// the correct browsing context group.
+struct BrowsingContextGroupInfo {
+  // Uniquely identifies the browsing context group of the page.
+  mojo_base.mojom.UnguessableToken browsing_context_group_token;
+
+  // Uniquely identifies the CoopRelatedGroup of the page.
+  mojo_base.mojom.UnguessableToken coop_related_group_token;
+};
+

@@ -236,6 +236,13 @@ void FlossAdvertiserClient::StopAdvertisingSet(
     const AdvertiserId adv_id,
     StopSuccessCallback success_callback,
     ErrorCallback error_callback) {
+  if (stop_advertising_set_callbacks_.contains(adv_id)) {
+    // Stop already called for this adv_id.
+    std::move(error_callback)
+        .Run(device::BluetoothAdvertisement::ERROR_RESET_ADVERTISING);
+    return;
+  }
+
   CallAdvertisingMethod(
       base::BindOnce(&FlossAdvertiserClient::CompleteStopAdvertisingSetCallback,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -324,9 +331,22 @@ void FlossAdvertiserClient::CompleteStopAdvertisingSetCallback(
     ErrorCallback error_callback,
     const AdvertiserId adv_id,
     DBusResult<Void> ret) {
-  stop_advertising_set_callbacks_.insert(
-      {adv_id,
-       std::make_pair(std::move(success_callback), std::move(error_callback))});
+  if (!ret.has_value()) {
+    std::move(error_callback)
+        .Run(device::BluetoothAdvertisement::ERROR_RESET_ADVERTISING);
+    return;
+  }
+
+  auto found = stop_advertising_set_callbacks_.find(adv_id);
+  if (found != stop_advertising_set_callbacks_.end()) {
+    // |OnAdvertisingSetStopped| has already completed
+    std::move(success_callback).Run();
+    stop_advertising_set_callbacks_.erase(found);
+  } else {
+    stop_advertising_set_callbacks_.insert(
+        {adv_id, std::make_pair(std::move(success_callback),
+                                std::move(error_callback))});
+  }
 }
 
 void FlossAdvertiserClient::CompleteSetAdvertisingParametersCallback(
@@ -375,6 +395,13 @@ void FlossAdvertiserClient::OnAdvertisingSetStopped(AdvertiserId adv_id) {
     auto& [success_callback, error_callback] = found->second;
     std::move(success_callback).Run();
     stop_advertising_set_callbacks_.erase(found);
+  } else {
+    // We have seen instances where we will get |OnAdvertisingSetStopped|
+    // before |CompleteStopAdvertisingSetCallback|. In that case, put a
+    // placeholder in the map to signal that we should run
+    // corresponding callbacks in |CompleteStopAdvertisingSetCallback|
+    stop_advertising_set_callbacks_.insert(
+        {adv_id, std::make_pair(base::DoNothing(), base::DoNothing())});
   }
 }
 

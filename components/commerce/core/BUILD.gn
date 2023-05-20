@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/protobuf/proto_library.gni")
-import("//ui/webui/resources/tools/build_webui.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -206,7 +205,7 @@ static_library("shopping_service") {
     "//components/search:search",
     "//components/session_proto_db:core",
     "//components/signin/public/identity_manager:identity_manager",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//services/network/public/cpp:cpp",
     "//ui/base",
     "//url:url",
@@ -325,7 +324,7 @@ source_set("account_checker") {
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/prefs:prefs",
     "//components/signin/public/identity_manager:identity_manager",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//components/unified_consent",
     "//net/traffic_annotation:traffic_annotation",
     "//services/data_decoder/public/cpp",

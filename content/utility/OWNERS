@@ -3,6 +3,8 @@ per-file services.*=set noparent
 per-file services.*=file://ipc/SECURITY_OWNERS
 per-file browser_exposed_utility_interfaces.cc=set noparent
 per-file browser_exposed_utility_interfaces.cc=file://ipc/SECURITY_OWNERS
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 # For service-related code
 per-file utility_service_factory.*=rockot@google.com

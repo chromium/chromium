@@ -11,8 +11,8 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_utils.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
 
 namespace app_list {
 

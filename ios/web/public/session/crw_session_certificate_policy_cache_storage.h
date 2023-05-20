@@ -60,7 +60,8 @@ extern NSString* const kCertificateStoragesKey;
 @interface CRWSessionCertificatePolicyCacheStorage : NSObject <NSCoding>
 
 // The certificate policy storages for this session.
-@property(nonatomic, strong) NSSet* certificateStorages;
+@property(nonatomic, strong)
+    NSSet<CRWSessionCertificateStorage*>* certificateStorages;
 
 @end
 

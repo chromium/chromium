@@ -676,6 +676,7 @@ public class SigninFirstRunFragmentTest {
         verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
+    @DisabledTest(message = "https:://crbug.com/1447085")
     @Test
     @MediumTest
     public void testDismissButtonWhenUserIsSignedIn() {

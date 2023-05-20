@@ -101,18 +101,27 @@ bool XRCompositorCommon::IsUsingSharedImages() const {
 
 void XRCompositorCommon::SubmitFrameMissing(int16_t frame_index,
                                             const gpu::SyncToken& sync_token) {
+  DVLOG(3) << __func__ << " frame_index=" << frame_index;
   TRACE_EVENT_INSTANT0("xr", "SubmitFrameMissing", TRACE_EVENT_SCOPE_THREAD);
   if (pending_frame_) {
     // WebXR for this frame is hidden.
     pending_frame_->waiting_for_webxr_ = false;
   }
   webxr_has_pose_ = false;
+#if (BUILDFLAG(IS_ANDROID))
+  // We haven't finished the rendering path on Android yet so are just calling
+  // this to ensure that the page stays un-stuck while we aren't actually
+  // rendering anything.
+  // TODO(alcooper): Clean this up.
+  pending_frame_->webxr_submitted_ = true;
+#endif
   MaybeCompositeAndSubmit();
 }
 
 void XRCompositorCommon::SubmitFrame(int16_t frame_index,
                                      const gpu::MailboxHolder& mailbox,
                                      base::TimeDelta time_waited) {
+  DVLOG(3) << __func__ << " frame_index=" << frame_index;
   NOTREACHED();
 }
 
@@ -120,6 +129,7 @@ void XRCompositorCommon::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     const gpu::SyncToken& sync_token,
     base::TimeDelta time_waited) {
+  DVLOG(3) << __func__ << " frame_index=" << frame_index;
   NOTREACHED();
 }
 
@@ -128,6 +138,7 @@ void XRCompositorCommon::SubmitFrameWithTextureHandle(
     int16_t frame_index,
     mojo::PlatformHandle texture_handle,
     const gpu::SyncToken& sync_token) {
+  DVLOG(3) << __func__ << " frame_index=" << frame_index;
   TRACE_EVENT1("xr", "SubmitFrameWithTextureHandle", "frameIndex", frame_index);
   webxr_has_pose_ = false;
   // Tell the browser that WebXR has submitted a frame.
@@ -162,6 +173,7 @@ void XRCompositorCommon::SubmitFrameWithTextureHandle(
 #endif
 
 void XRCompositorCommon::CleanUp() {
+  DVLOG(1) << __func__;
   submit_client_.reset();
   webxr_has_pose_ = false;
   presentation_receiver_.reset();
@@ -310,6 +322,7 @@ void XRCompositorCommon::StartRuntimeFinish(
 }
 
 void XRCompositorCommon::ExitPresent(ExitXrPresentReason reason) {
+  DVLOG(1) << __func__ << " reason=" << base::to_underlying(reason);
   TRACE_EVENT_INSTANT1("xr", "ExitPresent", TRACE_EVENT_SCOPE_THREAD, "reason",
                        base::to_underlying(reason));
   if (!is_presenting_)
@@ -338,9 +351,9 @@ void XRCompositorCommon::ExitPresent(ExitXrPresentReason reason) {
   // Don't call StopRuntime until this thread has finished the rest of the work.
   // This is to prevent the OpenXrApiWrapper from being deleted before its
   // cleanup work has finished.
-  task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&XRCompositorCommon::StopRuntime, base::Unretained(this)));
+  task_runner()->PostTask(FROM_HERE,
+                          base::BindOnce(&XRCompositorCommon::StopRuntime,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void XRCompositorCommon::SetVisibilityState(
@@ -377,6 +390,7 @@ void XRCompositorCommon::SetStageParameters(
 void XRCompositorCommon::Init() {}
 
 void XRCompositorCommon::StartPendingFrame() {
+  DVLOG(3) << __func__ << " pending_frame_=" << pending_frame_.has_value();
   if (!pending_frame_) {
     pending_frame_.emplace();
     pending_frame_->waiting_for_webxr_ = webxr_visible_;
@@ -396,6 +410,15 @@ void XRCompositorCommon::GetFrameData(
     ExitPresent(ExitXrPresentReason::kGetFrameAfterSessionEnded);
     return;
   }
+
+  // HasSessionEnded() may do some work that alters the state of
+  // `is_presenting_`, in which case we'll get the ExitPresent log to know that
+  // we've ignored this request; but otherwise, we should log the rest of the
+  // state after that.
+  DVLOG(3) << __func__ << " is_presenting_=" << is_presenting_
+           << " webxr_visible=" << webxr_visible_
+           << " on_webxr_submitted_=" << !!on_webxr_submitted_
+           << " webxr_has_pose_=" << webxr_has_pose_;
 
   if (!is_presenting_) {
     return;
@@ -467,6 +490,7 @@ void XRCompositorCommon::SetInputSourceButtonListener(
 void XRCompositorCommon::SendFrameData(
     XRFrameDataProvider::GetFrameDataCallback callback,
     mojom::XRFrameDataPtr frame_data) {
+  DVLOG(3) << __func__;
   TRACE_EVENT0("xr", "SendFrameData");
 
   // This method represents a call from the renderer process. If our visibility
@@ -526,6 +550,7 @@ void XRCompositorCommon::SubmitOverlayTexture(
 
 void XRCompositorCommon::RequestNextOverlayPose(
     RequestNextOverlayPoseCallback callback) {
+  DVLOG(3) << __func__;
   // We will only request poses while the overlay is visible.
   DCHECK(overlay_visible_);
   TRACE_EVENT_INSTANT0("xr", "RequestOverlayPose", TRACE_EVENT_SCOPE_THREAD);
@@ -538,6 +563,8 @@ void XRCompositorCommon::RequestNextOverlayPose(
 
 void XRCompositorCommon::SetOverlayAndWebXRVisibility(bool overlay_visible,
                                                       bool webxr_visible) {
+  DVLOG(1) << __func__ << " overlay_visible=" << overlay_visible
+           << " webxr_visible=" << webxr_visible;
   TRACE_EVENT_INSTANT2("xr", "SetOverlayAndWebXRVisibility",
                        TRACE_EVENT_SCOPE_THREAD, "overlay", overlay_visible,
                        "webxr", webxr_visible);

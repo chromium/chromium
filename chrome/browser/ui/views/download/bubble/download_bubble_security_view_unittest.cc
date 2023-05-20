@@ -93,13 +93,13 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
             bubble_delegate_));
 
     row_list_view_ = std::make_unique<DownloadBubbleRowListView>(
-        /*is_partial_view=*/true, browser_.get());
+        /*is_partial_view=*/true, browser_->AsWeakPtr());
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
     row_view_ = std::make_unique<DownloadBubbleRowView>(
         DownloadItemModel::Wrap(&download_item_), row_list_view_.get(),
-        bubble_controller_.get(), bubble_navigator_.get(), browser_.get(),
-        bubble_width);
+        bubble_controller_->GetWeakPtr(), bubble_navigator_->GetWeakPtr(),
+        browser_->AsWeakPtr(), bubble_width);
   }
 
   void TearDown() override {
@@ -134,7 +134,8 @@ TEST_F(DownloadBubbleSecurityViewTest,
        UpdateSecurityView_WillHaveAppropriateDialogButtons) {
   // Two buttons, one prominent
   row_view_->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo(std::u16string())
+      DownloadUIModel::BubbleUIInfo()
+          .AddSubpageSummary(std::u16string())
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP)
           // OK button
@@ -151,7 +152,8 @@ TEST_F(DownloadBubbleSecurityViewTest,
 
   // Two buttons, none prominent
   DownloadUIModel::BubbleUIInfo info =
-      DownloadUIModel::BubbleUIInfo(std::u16string())
+      DownloadUIModel::BubbleUIInfo()
+          .AddSubpageSummary(std::u16string())
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP)
           // OK button
@@ -170,7 +172,8 @@ TEST_F(DownloadBubbleSecurityViewTest,
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
 
   // One button, none prominent
-  info = DownloadUIModel::BubbleUIInfo(std::u16string())
+  info = DownloadUIModel::BubbleUIInfo()
+             .AddSubpageSummary(std::u16string())
              .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
              .AddPrimaryButton(DownloadCommands::Command::KEEP)
              // OK button
@@ -185,7 +188,9 @@ TEST_F(DownloadBubbleSecurityViewTest,
 
   // No buttons, none prominent
   row_view_->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo(std::u16string())
+      DownloadUIModel::BubbleUIInfo()
+          .AddSubpageSummary(std::u16string())
+
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP));
   security_view_->UpdateSecurityView(row_view_.get());

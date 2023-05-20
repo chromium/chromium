@@ -18,6 +18,9 @@ namespace media_router {
 
 MediaRouterDebuggerImpl::MediaRouterDebuggerImpl() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  receivers_.set_disconnect_handler(
+      base::BindRepeating(&MediaRouterDebuggerImpl::LogMirroringStats,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 MediaRouterDebuggerImpl::~MediaRouterDebuggerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -92,6 +95,16 @@ void MediaRouterDebuggerImpl::NotifyGetMirroringStats(
   for (MirroringStatsObserver& observer : observers_) {
     observer.OnMirroringStatsUpdated(json_logs);
   }
+  most_recent_mirroring_stats_ = json_logs.Clone();
+}
+
+void MediaRouterDebuggerImpl::LogMirroringStats() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!ShouldFetchMirroringStats()) {
+    return;
+  }
+  DVLOG(1) << "Mirroring stats for the most recent session: "
+           << most_recent_mirroring_stats_.DebugString();
 }
 
 }  // namespace media_router

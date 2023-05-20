@@ -140,5 +140,4 @@ ExternalMetadataProvider.PROPERTY_NAMES = [
   'syncStatus',
   'progress',
   'shortcut',
-  'syncCompletedTime',
 ];

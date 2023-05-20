@@ -67,7 +67,14 @@ class CachedFlagsSafeMode {
     private AtomicBoolean mStartCheckpointWritten = new AtomicBoolean(false);
     private AtomicBoolean mEndCheckpointWritten = new AtomicBoolean(false);
 
-    CachedFlagsSafeMode() {}
+    private static final CachedFlagsSafeMode sInstance = new CachedFlagsSafeMode();
+
+    public static CachedFlagsSafeMode getInstance() {
+        return sInstance;
+    }
+
+    // Singleton
+    private CachedFlagsSafeMode() {}
 
     /**
      * Call right before any flag is checked. The first time this is called, check if safe mode
@@ -154,7 +161,7 @@ class CachedFlagsSafeMode {
      * Call when all flags have been cached. Signals that the current configuration is safe. It will
      * be saved to be used in Safe Mode.
      */
-    void onEndCheckpoint(ValuesReturned safeValuesReturned) {
+    void onEndCheckpoint() {
         if (mEndCheckpointWritten.getAndSet(true)) {
             // Limit to one reset per run.
             return;
@@ -172,7 +179,7 @@ class CachedFlagsSafeMode {
             @Override
             protected Void doInBackground() {
                 try {
-                    writeSafeValues(safeValuesReturned);
+                    writeSafeValues();
                 } catch (Exception e) {
                     Log.e(TAG, "Exception writing safe values.", e);
                     cancel(true);
@@ -232,7 +239,7 @@ class CachedFlagsSafeMode {
                 SAFE_VALUES_FILE, Context.MODE_PRIVATE);
     }
 
-    private void writeSafeValues(ValuesReturned safeValuesReturned) {
+    private void writeSafeValues() {
         TraceEvent.begin("writeSafeValues");
         SharedPreferences.Editor editor = getSafeValuePreferences().edit();
 
@@ -241,24 +248,24 @@ class CachedFlagsSafeMode {
         // will.
         editor.clear();
 
-        synchronized (safeValuesReturned.boolValues) {
-            for (Entry<String, Boolean> pair : safeValuesReturned.boolValues.entrySet()) {
+        synchronized (ValuesReturned.sBoolValues) {
+            for (Entry<String, Boolean> pair : ValuesReturned.sBoolValues.entrySet()) {
                 editor.putBoolean(pair.getKey(), pair.getValue());
             }
         }
-        synchronized (safeValuesReturned.intValues) {
-            for (Entry<String, Integer> pair : safeValuesReturned.intValues.entrySet()) {
+        synchronized (ValuesReturned.sIntValues) {
+            for (Entry<String, Integer> pair : ValuesReturned.sIntValues.entrySet()) {
                 editor.putInt(pair.getKey(), pair.getValue());
             }
         }
-        synchronized (safeValuesReturned.doubleValues) {
-            for (Entry<String, Double> pair : safeValuesReturned.doubleValues.entrySet()) {
+        synchronized (ValuesReturned.sDoubleValues) {
+            for (Entry<String, Double> pair : ValuesReturned.sDoubleValues.entrySet()) {
                 long ieee754LongValue = Double.doubleToRawLongBits(pair.getValue());
                 editor.putLong(pair.getKey(), ieee754LongValue);
             }
         }
-        synchronized (safeValuesReturned.stringValues) {
-            for (Entry<String, String> pair : safeValuesReturned.stringValues.entrySet()) {
+        synchronized (ValuesReturned.sStringValues) {
+            for (Entry<String, String> pair : ValuesReturned.sStringValues.entrySet()) {
                 editor.putString(pair.getKey(), pair.getValue());
             }
         }

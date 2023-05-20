@@ -28,7 +28,10 @@
 #include "chrome/browser/ash/policy/remote_commands/crd_uma_logger.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/pref_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "remoting/host/chromeos/features.h"
@@ -383,6 +386,7 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   parameters.show_confirmation_dialog = ShouldShowConfirmationDialog();
   parameters.curtain_local_user_session = curtain_local_user_session_;
   parameters.admin_email = admin_email_;
+  parameters.allow_troubleshooting_tools = ShouldAllowTroubleshootingTools();
 
   delegate_->StartCrdHostAndGetCode(
       parameters,
@@ -544,6 +548,18 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
       NOTREACHED();
       return true;
   }
+}
+
+bool DeviceCommandStartCrdSessionJob::ShouldAllowTroubleshootingTools() const {
+  if (GetCurrentUserSessionType() !=
+          UserSessionType::AUTO_LAUNCHED_KIOSK_SESSION &&
+      GetCurrentUserSessionType() !=
+          UserSessionType::MANUALLY_LAUNCHED_KIOSK_SESSION) {
+    return false;
+  }
+  auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  CHECK(prefs);
+  return prefs->GetBoolean(prefs::kKioskTroubleshootingToolsEnabled);
 }
 
 DeviceCommandStartCrdSessionJob::ErrorCallback

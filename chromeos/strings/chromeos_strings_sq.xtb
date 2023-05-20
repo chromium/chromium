@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> e menaxhon këtë pajisje dhe mund të jetë në gjendje të monitorojë aktivitetin tënd.</translation>
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Dërgo</translation>
+<translation id="1488850966314959671">Nuk mund të lidhesh me këtë rrjet duke përdorur një nga APN-të e personalizuara të aktivizuara. Kontakto me operatorin tënd celular për më shumë informacione.</translation>
 <translation id="1491076385728777984">Po përditësohet firmueri në <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">rrit volumin</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Dukshmëria</translation>
 <translation id="1672499492233627739">Furnizimi i videos i uebkamerës</translation>
 <translation id="1676557873873341166">Po nxjerr një video</translation>
+<translation id="1684279041537802716">Ngjyra e theksit</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Zgjidhësi i DNS-së i pranishëm</translation>
 <translation id="1708602061922134366">Blu e Google</translation>
@@ -217,6 +219,7 @@
 <translation id="2638662041295312666">Imazhi i identifikimit</translation>
 <translation id="2640549051766135490">Është zgjedhur albumi <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">rifresko</translation>
+<translation id="268270014981824665">zbeh tastierën</translation>
 <translation id="2712812801627182647">Çelësi i vërtetimit për TLS</translation>
 <translation id="2713444072780614174">E bardhë</translation>
 <translation id="2717139507051041123">Aktivizo modalitetin e ngjyrave të errëta</translation>
@@ -224,6 +227,7 @@
 <translation id="2744221223678373668">Të ndara</translation>
 <translation id="2751739896257479635">Vërtetimi EAP i fazës 2</translation>
 <translation id="2783010256799387990">KALOI</translation>
+<translation id="2787435249130282949">tastiera më e ndritshme</translation>
 <translation id="2789486458103222910">Në rregull</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="28232023175184696">S'mund të lidhet me internetin. Kliko për të provuar përsëri.</translation>
@@ -327,11 +331,13 @@
 <translation id="3749289110408117711">Emri i skedarit</translation>
 <translation id="3771294271822695279">Skedarët video</translation>
 <translation id="3784455785234192852">Kyçe</translation>
+<translation id="380097101658023925">kontrollet me rbg</translation>
 <translation id="38114475217616659">Fshi të gjithë historikun</translation>
 <translation id="3820172043799983114">Kodi PIN i pavlefshëm</translation>
 <translation id="3824259034819781947">Bashkëngjit skedarët</translation>
 <translation id="3838338534323494292">Fjalëkalimi i ri</translation>
 <translation id="3845880861638660475">Shtyp <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> për ta mbyllur dialogun.</translation>
+<translation id="3848280697030027394">errëso tastierën</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3862598938296403232">Kërkohet përshkrimi</translation>
@@ -403,6 +409,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Çaktivizo</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> po riniset</translation>
+<translation id="4395835743215824109">personalizo tastierën</translation>
 <translation id="4415951057168511744">Simboli aktual</translation>
 <translation id="4422041425070339732">shigjeta poshtë</translation>
 <translation id="4425149324548788773">Disku im</translation>
@@ -426,6 +433,7 @@
 <translation id="455835558791489930">Bateria <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Karta SIM e shkyçur</translation>
 <translation id="4562494484721939086">Nuk ka shërbim</translation>
+<translation id="4573777384450697571">Dështoi - Certifikata skadoi</translation>
 <translation id="458794348635939462">Zgjidhja e të gjithë pritësve dështoi</translation>
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4609350030397390689">Ulja e ndriçimit të tastierës</translation>
@@ -442,6 +450,7 @@
 <translation id="4731797938093519117">Qasja e prindit</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4744944742468440486">Informacion në lidhje me zgjedhjen tënde</translation>
+<translation id="4771607256327216405">ndriço tastierën</translation>
 <translation id="4773299976671772492">Ndaloi</translation>
 <translation id="4782311465517282004">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose prek e mban shtypur tekstin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografi</translation>
@@ -490,6 +499,7 @@
 <translation id="500920857929044050">Ndalo testin</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kur ekrani yt është në gjendje joaktive, shfaq fotografitë, orën, motin dhe informacionet e medias.</translation>
+<translation id="5038292761217083259">tastiera me shumë ngjyra</translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5049856988445523908">Karta SIM e kyçur (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Emri i grupit</translation>
@@ -539,7 +549,6 @@
 <translation id="5423849171846380976">U aktivizua</translation>
 <translation id="5430931332414098647">Ndarja e internetit në çast</translation>
 <translation id="5431318178759467895">Ngjyra</translation>
-<translation id="5456936324019847994">Nuk mund të lidhet me asnjë APN të personalizuar të aktivizuar. Kontakto me operatorin tënd celular për më shumë informacione.</translation>
 <translation id="5457599981699367932">Shfleto si vizitor</translation>
 <translation id="54609108002486618">E menaxhuar</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} përpjekje e mbetur}other{{0} përpjekje të mbetura}}</translation>
@@ -555,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skano përsëri</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
+<translation id="5584044598279886848">Kjo APN nuk mund të çaktivizohet apo të hiqet. Sigurohu që të çaktivizohen ose të hiqen APN-të e bashkëngjitura të aktivizuara.</translation>
 <translation id="5600027863942488546">Tasti <ph name="KEY_NAME" /> u testua</translation>
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5649768706273821470">Dëgjo</translation>
@@ -639,6 +649,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktivizo temën e errët</translation>
 <translation id="6285899124799306373">hap nisësin</translation>
+<translation id="629550705077076970">zbehja e tastierës</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="631063167932043783">Aplikacioni "Eksploro"</translation>
 <translation id="6319207335391420837">Përditëso firmuerin në <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +668,7 @@
 <translation id="6401427872449207797">kërkimi në shfletues</translation>
 <translation id="6410257289063177456">Skedarët e imazheve</translation>
 <translation id="641081527798843608">Përputhja e subjektit</translation>
+<translation id="6411934471898487866">ndriçimi i tastierës</translation>
 <translation id="6412715219990689313">Tastiera e integruar</translation>
 <translation id="6417265370957905582">Asistenti i Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -710,7 +722,6 @@
 <translation id="6798678288485555829">Navigimi në tekst</translation>
 <translation id="680983167891198932">Çelësi</translation>
 <translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
-<translation id="6838167112108853532">Kjo APN nuk mund të çaktivizohet apo të hiqet. Sigurohu që të çaktivizohen ose të hiqen APN-të e bashkëngjitura të aktivizuara.</translation>
 <translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
 <translation id="6889786074662672253">Gjatë rinisjes, mos e hiq nga priza pajisjen e jashtme dhe mos e fik kompjuterin. Mund ta minimizosh këtë dritare. Kjo mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="6900701049656042631">Ky album nuk ka asnjë fotografi. Për të shtuar fotografi, shko te <ph name="LINK" /></translation>
@@ -740,6 +751,7 @@
 <translation id="7130438335435247835">Emri i pikës së qasjes (APN)</translation>
 <translation id="7131634559772719176">Konfirmo paravendosjen</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveri i emrave}other{Serverët e emrave}}</translation>
+<translation id="7135814714616751706">Shkurtoret e kërkimit</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
 <translation id="714876143603641390">Lidhshmëria e LAN-it</translation>
@@ -770,6 +782,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Shtyp "Kërko" plus "Hapësirë" për ta shikuar rezultatin në "Kërko në Google".</translation>
 <translation id="7343649194310845056">Pajisjet e rrjetit</translation>
+<translation id="7353413232959255829">Rezultati i kërkimit <ph name="LIST_POSITION" /> nga <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Shtyp "Enter" për të naviguar për te shkurtorja.</translation>
 <translation id="7359657277149375382">Lloji i skedarit</translation>
 <translation id="73631062356239394">Ndaj të dhënat diagnostikuese</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -806,10 +819,12 @@
 <translation id="7656388927906093505">Pajisja është një maus.</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7665800271478495366">Ndrysho simbolin</translation>
+<translation id="7683228889864052081">nuanca e tastierës</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">drita e tastierës</translation>
 <translation id="773153675489693198">Numri i cikleve</translation>
 <translation id="7747039790905080783">Çelës i ndarë paraprakisht</translation>
 <translation id="7762130827864645708">Ndryshimi i fjalëkalimit tënd u krye me sukses. Përdor fjalëkalimin e ri këtej e tutje.</translation>
@@ -853,6 +868,7 @@
 <translation id="8075838845814659848">Karikimi i mbetur</translation>
 <translation id="8076492880354921740">Skedat</translation>
 <translation id="8082366717211101304">DNS-ja nuk mund të zgjidhet nga aplikacionet për Android</translation>
+<translation id="8082644724189923105">zona e tastierës</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
 <translation id="8094062939584182041">Lejo që Google të të dërgojë email-e për këtë problem</translation>
 <translation id="8104083085214006426">Po përdor një rrjet të hapur dhe të pasigurt</translation>
@@ -901,6 +917,7 @@
 <translation id="8456761643544401578">Modalitet i errët automatik</translation>
 <translation id="8461329675984532579">Emri i ofruesit të rrjetit bazë</translation>
 <translation id="8475690821716466388">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP PSK</translation>
+<translation id="8476242415522716722">ndriçimi i poshtëm i tastierës</translation>
 <translation id="8477551185774834963">Vonesa e DNS-së është pak më lart se pragu i lejueshëm</translation>
 <translation id="8483248364096924578">Adresa e IP-së</translation>
 <translation id="8491311378305535241">Nuk mund të lidhesh me sajtet e uebit HTTPS nëpërmjet murit mbrojtës nga aplikacionet për Android</translation>
@@ -944,6 +961,7 @@
 <translation id="8845001906332463065">Kërko ndihmë</translation>
 <translation id="8855781559874488009">Nuk mund të lidhesh me sajtet e uebit HTTP nëpërmjet murit mbrojtës</translation>
 <translation id="885701979325669005">Hapësira ruajtëse</translation>
+<translation id="885704831271383379">tastiera më e errët</translation>
 <translation id="8863170912498892583">Aktivizo temën e errët</translation>
 <translation id="8863888432376731307">Merr <ph name="INTENT" /> për "<ph name="QUERY" />" dhe më shumë</translation>
 <translation id="8864415976656252616">Nuk ka përmbajtje të sugjeruara. Shiko përmbajtjet kryesore të ndihmës.</translation>
@@ -996,6 +1014,7 @@
 <translation id="9173638680043580060">Ka mbetur më pak se një minutë</translation>
 <translation id="917720651393141712">Provë</translation>
 <translation id="9188992814426075118">Tastiera jote mund të përputhet automatikisht me imazhin e sfondit</translation>
+<translation id="9189000703457422362">Nuk mund të lidhesh me këtë rrjet duke përdorur APN-të e zbuluara automatikisht. Kontakto me operatorin tënd celular për më shumë informacione.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Portëkalimi nuk mund të kontaktohet nga aplikacionet për Android</translation>
 <translation id="9211490828691860325">Të gjitha tavolinat e punës</translation>

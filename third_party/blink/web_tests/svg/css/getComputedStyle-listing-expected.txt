@@ -52,7 +52,7 @@ align-self: auto
 alignment-baseline: auto
 anchor-default: implicit
 anchor-name: none
-anchor-scroll: none
+anchor-scroll: default
 animation-composition: replace
 animation-delay: 0s
 animation-direction: normal
@@ -360,6 +360,7 @@ text-size-adjust: auto
 text-transform: none
 text-underline-position: auto
 text-wrap: wrap
+timeline-scope: none
 toggle-group: none
 toggle-root: none
 toggle-trigger: none

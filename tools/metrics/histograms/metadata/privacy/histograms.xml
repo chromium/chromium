@@ -244,9 +244,11 @@ reviewer.
   <summary>
     The number of sites that may have had their storage cleared by DIPS.
 
-    If DIPS deletion is on, this is the number of sites that have had storage
-    cleared by DIPS. Otherwise, this number is the sites that would've had their
-    storage cleared if the DIPS deletion feature was on.
+    If DIPS deletion is on, third-party cookies are blocked, and there are no
+    url-specific exemptions by the user for the latter, then, this is the number
+    of sites that have had storage cleared by DIPS. Otherwise, this number is
+    the sites that would've had their storage cleared if the above conditions
+    were met for all the sites.
 
     This is recorded every time the DIPS timer is fired, which is determined by
     the `timer_delay` parameter of the DIPS feature.
@@ -335,8 +337,22 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="Privacy.DIPS.Deletion{DIPSCookieMode}"
+    enum="DIPSDeletionAction" expires_after="2023-11-01">
+  <owner>njeunje@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    This is recorded each time we initiate a possible deletion of state on
+    DIPS-eligible (incidental) sites. This metric will represents the action
+    taken based on multiple conditions gating the actual deletion.
+
+    This is recorded with {DIPSCookieMode} profiles.
+  </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
+</histogram>
+
 <histogram name="Privacy.DIPS.DIPSErrorCodes" enum="DIPSErrorCode"
-    expires_after="2023-09-13">
+    expires_after="2023-11-12">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -586,7 +602,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.NumRetriesBeforeSuccess"
-    units="retries" expires_after="M117">
+    units="retries" expires_after="2023-11-12">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -597,7 +613,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.ScheduledRequests.Status"
-    enum="AggregationServiceObserverReportStatus" expires_after="M117">
+    enum="AggregationServiceObserverReportStatus" expires_after="2023-11-12">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -647,7 +663,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity"
-    enum="Boolean" expires_after="M117">
+    enum="Boolean" expires_after="2023-11-12">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -658,7 +674,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.UnscheduledRequests.Status"
-    enum="AggregationServiceObserverReportStatus" expires_after="M117">
+    enum="AggregationServiceObserverReportStatus" expires_after="2023-11-12">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -687,7 +703,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult"
     enum="PrivacySandboxPrivateAggregationBudgeterRequestResult"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -711,7 +727,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.BudgetStorage.ShutdownBeforeFinishingInitialization"
-    enum="Boolean" expires_after="M117">
+    enum="Boolean" expires_after="2023-11-12">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>

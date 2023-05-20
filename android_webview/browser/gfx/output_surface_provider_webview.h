@@ -27,6 +27,8 @@ namespace android_webview {
 class AwVulkanContextProvider;
 
 // Effectively a data struct to pass pointers from render thread to viz thread.
+//
+// Lifetime: WebView
 class OutputSurfaceProviderWebView {
  public:
   explicit OutputSurfaceProviderWebView(

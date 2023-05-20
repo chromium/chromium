@@ -38,18 +38,30 @@ class FormStructure;
 // - AutofillDriverIOS for iOS,
 // - ContentAutofillDriver for all other platforms.
 //
-// An AutofillDriver's lifetime should be contained by the associated frame.
-//
-// AutofillDriverIOS is co-owned by AutofillDriverIOSWebFrame, which itself is
-// owned by the WebFrame, and the iOS-specific AutofillAgent, which extends the
-// driver's lifetime beyond the WebFrame's (crbug.com/892612).
-//
-// ContentAutofillDriver is owned by ContentAutofillDriverFactory, which ensures
-// that the associated RenderFrameHost's lifetime contains the driver's
-// lifetime.
+// An AutofillDriver's lifetime must be contained by the associated frame,
+// web::WebFrame on iOS and content::RenderFrameHost on non-iOS. This is ensured
+// by the AutofillDriverIOSFactory and ContentAutofillDriverFactory,
+// respectively, which own the AutofillDrivers.
 class AutofillDriver {
  public:
   virtual ~AutofillDriver() = default;
+
+  // Returns the uniquely identifying frame token.
+  virtual LocalFrameToken GetFrameToken() const = 0;
+
+  // Returns the AutofillDriver of the parent frame, if such a frame and driver
+  // exist, and nullptr otherwise.
+  virtual AutofillDriver* GetParent() = 0;
+
+  // Resolves a FrameToken `query` from the perspective of `this` to the
+  // globally unique LocalFrameToken. Returns `absl::nullopt` if `query` is a
+  // RemoteFrameToken that cannot be resolved from the perspective of `this`.
+  //
+  // This function should not be cached: a later Resolve() call may map the same
+  // RemoteFrameToken to another LocalFrameToken.
+  //
+  // See the documentation of LocalFrameToken and RemoteFrameToken for details.
+  virtual absl::optional<LocalFrameToken> Resolve(FrameToken query) = 0;
 
   // Returns whether the AutofillDriver instance is associated with an active
   // frame in the MPArch sense.
@@ -60,9 +72,18 @@ class AutofillDriver {
   // frame.
   virtual bool IsInAnyMainFrame() const = 0;
 
+  // Returns whether the AutofillDriver instance is associated with a fenced
+  // frame. This can be an active or non-active main frame.
+  virtual bool IsInFencedFrameRoot() const = 0;
+
   // Returns whether the AutofillDriver instance is associated with a
   // prerendered frame.
   virtual bool IsPrerendering() const = 0;
+
+  // Returns whether the policy-controlled feature "shared-autofill" is enabled
+  // in the document. In the main frame the permission is enabled by default.
+  // The main frame may pass it on to its children.
+  virtual bool HasSharedAutofillPermission() const = 0;
 
   // Returns true iff a popup can be shown on the behalf of the associated
   // frame.
@@ -73,10 +94,27 @@ class AutofillDriver {
   // the last-queried source remembered by `ContentAutofillRouter`.
   virtual void SetShouldSuppressKeyboard(bool suppress) = 0;
 
+  // Triggers a reparse of the new forms in the AutofillAgent. This is necessary
+  // when a form is seen in a child frame and it is not known which form is its
+  // parent.
+  //
+  // Generally, this may happen because AutofillAgent is only notified about
+  // newly created form control elements, but not about newly created or loaded
+  // child frames.
+  //
+  // For example, consider a parent frame with a form that contains an <iframe>.
+  // Suppose the parent form is seen (processed by AutofillDriver::FormsSeen())
+  // before the iframe is loaded. Loading a cross-origin page into the iframe
+  // may change the iframe's frame token. Then, the frame token in the parent
+  // form's FormData::child_frames may be outdated. When a form is now seen in
+  // the child frame, it is not known *which form* in the parent frame is its
+  // parent form. In this scenario, a reparse should be triggered.
+  virtual void TriggerReparse() = 0;
+
   // Triggers a reparse on all frames of the same frame tree. Calls
   // `trigger_reparse_finished_callback` when all frames reported back being
-  // done. If `success == false`, reparse was triggered while another reparse
-  // was ongoing.
+  // done. `success == false` indicates that in some frame, a reparse was
+  // triggered while another reparse was ongoing.
   virtual void TriggerReparseInAllFrames(
       base::OnceCallback<void(bool success)>
           trigger_reparse_finished_callback) = 0;
@@ -156,6 +194,12 @@ class AutofillDriver {
   // manual filling on form interaction.
   virtual void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) = 0;
+
+  // Query's the DOM for four digit combinations that could potentially be of a
+  // card number.
+  virtual void GetFourDigitCombinationsFromDOM(
+      base::OnceCallback<void(const std::vector<std::string>&)>
+          potential_matches) = 0;
 };
 
 }  // namespace autofill

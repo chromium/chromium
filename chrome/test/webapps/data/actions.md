@@ -53,7 +53,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | |
 | # Install |
 | install_omnibox_icon | InstallableSite |  | 31 | Implemented |  |  |
-| install_policy_app | Site, ShortcutOptions, WindowOptions, InstallMode |  | 32 | Implemented | Add a force-installed enterprise policy site to the user profile (must be managed profile). |  |
+| install_policy_app | Site, ShortcutOptions, WindowOptions, InstallMode |  | 32 | Implemented | Add a force-installed enterprise policy site to the user profile (must be managed profile). This installation action also opens the target site in a tab to match the expectation of installs opening the app first for some CUJs.|  |
 | install_menu_option | InstallableSite |  | 47 | Implemented |  |  |
 | install_no_shortcut | Site | install_policy_app($1, NoShortcut, WindowOptions::All, WebApp) | 56 | Parameterized |  |  |
 | install_tabbed_no_shortcut | Site | install_policy_app($1, NoShortcut, Browser, WebApp) | 129 | Parameterized | All installation methods that result in a tabbed webapp without shortcut. |  |
@@ -165,9 +165,9 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | #Subapps |
 | install_sub_app | Site, Site, SubAppInstallDialogOptions |  | 138 | WIP | Navigate to the first site, call subApps.add() to install the second site. |  |
 | remove_sub_app | Site, Site |  | 139 | Implemented | Navigate to the first site, call subApps.remove() to uninstall the second site. |  |
-| check_has_sub_app | Site |  | 140 | Implemented | Assuming we have the active browser window on the (potential) parent site, call subApps.list() and check if the given site is listed. |  |
-| check_not_has_sub_app | Site |  | 141 | Implemented | Assuming we have the active browser window on the (potential) parent site, call subApps.list() and check if the given site is not listed. |  |
-| check_no_sub_apps |  |  | 142 | Implemented | Assuming we navigated to the (potential) parent site, call subApps.list() and check if the list is empty. |  |
+| check_has_sub_app | Site, Site |  | 140 | Implemented | Assuming we have some tab or browser window on the (potential) parent site, call subApps.list() and check if the given site is listed. |  |
+| check_not_has_sub_app | Site, Site |  | 141 | Implemented | Assuming we have some tab or browser window on the (potential) parent site, call subApps.list() and check if the given site is not listed. |  |
+| check_no_sub_apps | Site |  | 142 | Implemented | Assuming we have some tab or browser window on the (potential) parent site, call subApps.list() and check if the list is empty. |  |
 
 ### App Home
 Actions that the user can take by going to chrome://apps and either left clicking an app or right clicking an app and then taking actions from the context menu that opens.

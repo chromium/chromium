@@ -18,6 +18,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
@@ -202,6 +203,27 @@ TEST(AggregatableAttributionUtilsTest, AggregatableReportRequestForNullReport) {
           "source_registration_time");
   ASSERT_TRUE(source_registration_time);
   EXPECT_EQ(*source_registration_time, "1234483200");
+}
+
+TEST(AggregatableAttributionUtilsTest,
+     AggregatableReportRequestExcludingSourceRegistrationTime) {
+  absl::optional<AggregatableReportRequest> request =
+      CreateAggregatableReportRequest(
+          ReportBuilder(AttributionInfoBuilder().Build(),
+                        SourceBuilder(base::Time::FromJavaTime(1234567890123))
+                            .BuildStored())
+              .SetAggregatableHistogramContributions(
+                  {AggregatableHistogramContribution(/*key=*/1, /*value=*/2)})
+              .SetSourceRegistrationTimeConfig(
+                  attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                      kExclude)
+              .BuildAggregatableAttribution());
+  ASSERT_TRUE(request.has_value());
+  const std::string* source_registration_time =
+      request->shared_info().additional_fields.FindString(
+          "source_registration_time");
+  ASSERT_TRUE(source_registration_time);
+  EXPECT_EQ(*source_registration_time, "0");
 }
 
 }  // namespace content

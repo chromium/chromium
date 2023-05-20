@@ -125,10 +125,6 @@ absl::optional<base::FilePath> GetLogFilePath(UpdaterScope scope);
 // Initializes logging for an executable.
 void InitLogging(UpdaterScope updater_scope);
 
-// Wraps the 'command_line' to be executed in an elevated context.
-// On macOS this is done with 'sudo'.
-base::CommandLine MakeElevated(base::CommandLine command_line);
-
 // Functor used by associative containers of strings as a case-insensitive ASCII
 // compare. `StringT` could be either UTF-8 or UTF-16.
 struct CaseInsensitiveASCIICompare {

@@ -63,6 +63,7 @@ source_set("time_zone_monitor") {
 
   if (is_apple) {
     sources += [ "time_zone_monitor_mac.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "Foundation.framework" ]
   }
 

@@ -52,7 +52,6 @@ class BookmarkCodecTest;
 class BookmarkLoadDetails;
 class BookmarkModelObserver;
 class BookmarkStorage;
-class BookmarkUndoDelegate;
 class ModelLoader;
 class ScopedGroupBookmarkActions;
 class TestBookmarkClient;
@@ -371,8 +370,6 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // Returns the client used by this BookmarkModel.
   BookmarkClient* client() const { return client_.get(); }
 
-  void SetUndoDelegate(BookmarkUndoDelegate* undo_delegate);
-
   base::WeakPtr<BookmarkModel> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -453,8 +450,6 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // decoding since during decoding codec assigns node IDs.
   void set_next_node_id(int64_t id) { next_node_id_ = id; }
 
-  BookmarkUndoDelegate* undo_delegate() const;
-
   // Implementation of `UpdateLastUsedTime` which gives the option to skip
   // saving the change to `BookmarkStorage. Used to efficiently make changes
   // to multiple bookmarks.
@@ -509,9 +504,6 @@ class BookmarkModel final : public BookmarkUndoProvider,
   int extensive_changes_ = 0;
 
   std::set<std::string> non_cloned_keys_;
-
-  raw_ptr<BookmarkUndoDelegate> undo_delegate_ = nullptr;
-  std::unique_ptr<BookmarkUndoDelegate> empty_undo_delegate_;
 
   scoped_refptr<ModelLoader> model_loader_;
 

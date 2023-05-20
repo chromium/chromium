@@ -117,6 +117,7 @@ class CORE_EXPORT IntersectionObserver final
       bool always_report_root_bounds = false,
       MarginTarget margin_target = kApplyMarginToRoot,
       bool use_overflow_clip_edge = false,
+      bool needs_initial_observation_with_detached_target = true,
       ExceptionState& = ASSERT_NO_EXCEPTION);
 
   explicit IntersectionObserver(IntersectionObserverDelegate&,

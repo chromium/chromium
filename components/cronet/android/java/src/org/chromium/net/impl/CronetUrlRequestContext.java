@@ -66,6 +66,21 @@ public class CronetUrlRequestContext extends CronetEngineBase {
      */
     private final Object mLock = new Object();
     private final ConditionVariable mInitCompleted = new ConditionVariable(false);
+
+    /**
+     * The number of started requests where the terminal callback (i.e.
+     * onSucceeded/onCancelled/onFailed) has not yet been called.
+     */
+    private final AtomicInteger mRunningRequestCount = new AtomicInteger(0);
+    /*
+     * The number of started requests where the terminal callbacks (i.e.
+     * onSucceeded/onCancelled/onFailed, request finished listeners) have not
+     * all returned yet.
+     *
+     * By definition this is always greater than or equal to
+     * mRunningRequestCount. The difference between the two is the number of
+     * terminal callbacks that are currently running.
+     */
     private final AtomicInteger mActiveRequestCount = new AtomicInteger(0);
 
     @GuardedBy("mLock")
@@ -379,8 +394,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
         synchronized (mLock) {
             checkHaveAdapter();
-            if (mActiveRequestCount.get() != 0) {
-                throw new IllegalStateException("Cannot shutdown with active requests.");
+            if (mRunningRequestCount.get() != 0) {
+                throw new IllegalStateException("Cannot shutdown with running requests.");
             }
             // Destroying adapter stops the network thread, so it cannot be
             // called on network thread.
@@ -653,13 +668,29 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         return new CronetURLStreamHandlerFactory(this);
     }
 
-    /** Mark request as started to prevent shutdown when there are active requests. */
+    /**
+     * Mark request as started for the purposes of getActiveRequestCount(), and
+     * to prevent shutdown when there are running requests.
+     */
     void onRequestStarted() {
         mActiveRequestCount.incrementAndGet();
+        mRunningRequestCount.incrementAndGet();
     }
 
-    /** Mark request as finished to allow shutdown when there are no active requests. */
+    /**
+     * Mark request as destroyed to allow shutdown when there are no running
+     * requests. Should be called *before* the terminal callback is called, so
+     * that users can call shutdown() from the terminal callback.
+     */
     void onRequestDestroyed() {
+        mRunningRequestCount.decrementAndGet();
+    }
+
+    /**
+     * Mark request as finished for the purposes of getActiveRequestCount().
+     * Should be called *after* the terminal callback returns.
+     */
+    void onRequestFinished() {
         mActiveRequestCount.decrementAndGet();
     }
 
@@ -786,7 +817,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
     }
 
-    void reportRequestFinished(final RequestFinishedInfo requestInfo) {
+    void reportRequestFinished(
+            final RequestFinishedInfo requestInfo, RefCountDelegate inflightCallbackCount) {
         ArrayList<VersionSafeCallbacks.RequestFinishedInfoListener> currentListeners;
         synchronized (mFinishedListenerLock) {
             if (mFinishedListenerMap.isEmpty()) return;
@@ -800,17 +832,32 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                     listener.onRequestFinished(requestInfo);
                 }
             };
-            postObservationTaskToExecutor(listener.getExecutor(), task);
+            postObservationTaskToExecutor(listener.getExecutor(), task, inflightCallbackCount);
+        }
+    }
+
+    private static void postObservationTaskToExecutor(
+            Executor executor, Runnable task, RefCountDelegate inflightCallbackCount) {
+        if (inflightCallbackCount != null) inflightCallbackCount.increment();
+        try {
+            executor.execute(() -> {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Exception thrown from observation task", e);
+                } finally {
+                    if (inflightCallbackCount != null) inflightCallbackCount.decrement();
+                }
+            });
+        } catch (RejectedExecutionException failException) {
+            if (inflightCallbackCount != null) inflightCallbackCount.decrement();
+            Log.e(CronetUrlRequestContext.LOG_TAG, "Exception posting task to executor",
+                    failException);
         }
     }
 
     private static void postObservationTaskToExecutor(Executor executor, Runnable task) {
-        try {
-            executor.execute(task);
-        } catch (RejectedExecutionException failException) {
-            Log.e(CronetUrlRequestContext.LOG_TAG, "Exception posting task to executor",
-                    failException);
-        }
+        postObservationTaskToExecutor(executor, task, null);
     }
 
     public boolean isNetworkThread(Thread thread) {

@@ -30,7 +30,7 @@ import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentRequestService;
-import org.chromium.components.payments.test_support.ShadowPaymentFeatureList;
+import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
@@ -45,7 +45,7 @@ import java.util.Set;
  * WebLayerPaymentRequestService and PaymentAppService.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowPaymentFeatureList.class})
+@Config(manifest = Config.NONE)
 public class WebLayerPaymentRequestServiceTest {
     private static final String METHOD_NAME = "https://www.chromium.org";
     private static final String STRINGIFIED_DETAILS = "test stringifiedDetails";
@@ -76,7 +76,7 @@ public class WebLayerPaymentRequestServiceTest {
                 .when(mErrorMessageUtilMock)
                 .getNotSupportedErrorMessage(Mockito.any());
 
-        ShadowPaymentFeatureList.setDefaultStatuses();
+        DefaultPaymentFeatureConfig.setDefaultFlagConfigurationForTesting();
         PaymentRequestService.resetShowingPaymentRequestForTest();
         PaymentAppService.getInstance().resetForTest();
 

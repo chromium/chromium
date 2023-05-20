@@ -30,3 +30,11 @@ imageset("default_browser_illustration") {
     "default_browser_illustration.imageset/default_browser_light@3x.png",
   ]
 }
+
+bundle_data("animation_files") {
+  sources = [
+    "default_browser_animation.json",
+    "default_browser_animation_darkmode.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}

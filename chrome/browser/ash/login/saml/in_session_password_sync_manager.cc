@@ -136,11 +136,8 @@ void InSessionPasswordSyncManager::CreateTokenAsync() {
 
 void InSessionPasswordSyncManager::OnTokenCreated(const std::string& token) {
   password_sync_token_fetcher_.reset();
-  PrefService* prefs = primary_profile_->GetPrefs();
 
-  // Set token value in prefs for in-session operations and ephemeral users and
-  // local settings for login screen sync.
-  prefs->SetString(prefs::kSamlPasswordSyncToken, token);
+  // Set token value in local state.
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), token);
   lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
@@ -155,9 +152,7 @@ void InSessionPasswordSyncManager::FetchTokenAsync() {
 void InSessionPasswordSyncManager::OnTokenFetched(const std::string& token) {
   password_sync_token_fetcher_.reset();
   if (!token.empty()) {
-    // Set token fetched from the endpoint in prefs and local settings.
-    PrefService* prefs = primary_profile_->GetPrefs();
-    prefs->SetString(prefs::kSamlPasswordSyncToken, token);
+    // Set token fetched from the endpoint in local state.
     user_manager::KnownUser known_user(g_browser_process->local_state());
     known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), token);
     lock_screen_reauth_reason_ = ReauthenticationReason::kNone;

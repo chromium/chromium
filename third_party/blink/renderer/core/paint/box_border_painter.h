@@ -79,7 +79,7 @@ class BoxBorderPainter {
                                     float accumulated_opacity) const;
   void PaintSide(const ComplexBorderInfo&,
                  BoxSide,
-                 unsigned alpha,
+                 float alpha,
                  BorderEdgeFlags) const;
   void PaintOneBorderSide(const gfx::Rect& side_rect,
                           BoxSide,

@@ -610,6 +610,11 @@ void Surface::SetBackgroundColor(absl::optional<SkColor4f> background_color) {
   pending_state_.basic_state.background_color = background_color;
 }
 
+void Surface::SetTrustedDamage(bool trusted_damage) {
+  TRACE_EVENT0("exo", "Surface::SetTrustedDamage");
+  trusted_damage_ = trusted_damage;
+}
+
 void Surface::SetViewport(const gfx::SizeF& viewport) {
   TRACE_EVENT1("exo", "Surface::SetViewport", "viewport", viewport.ToString());
 
@@ -915,25 +920,30 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
 
     // TODO(penghuang): Make the damage more precise for sub surface changes.
     // https://crbug.com/779704
-    bool needs_full_damage =
-        sub_surfaces_changed_ ||
-        cached_state_.basic_state.opaque_region !=
-            state_.basic_state.opaque_region ||
-        cached_state_.basic_state.buffer_scale !=
-            state_.basic_state.buffer_scale ||
-        cached_state_.basic_state.buffer_transform !=
-            state_.basic_state.buffer_transform ||
-        cached_state_.basic_state.viewport != state_.basic_state.viewport ||
-        cached_state_.rounded_corners_bounds != state_.rounded_corners_bounds ||
-        cached_state_.basic_state.crop != state_.basic_state.crop ||
-        cached_state_.basic_state.only_visible_on_secure_output !=
-            state_.basic_state.only_visible_on_secure_output ||
-        cached_state_.basic_state.blend_mode != state_.basic_state.blend_mode ||
-        cached_state_.basic_state.alpha != state_.basic_state.alpha ||
-        cached_state_.basic_state.color_space !=
-            state_.basic_state.color_space ||
-        cached_state_.basic_state.is_tracking_occlusion !=
-            state_.basic_state.is_tracking_occlusion;
+    bool needs_full_damage = false;
+    if (!trusted_damage_) {
+      needs_full_damage =
+          sub_surfaces_changed_ ||
+          cached_state_.basic_state.opaque_region !=
+              state_.basic_state.opaque_region ||
+          cached_state_.basic_state.buffer_scale !=
+              state_.basic_state.buffer_scale ||
+          cached_state_.basic_state.buffer_transform !=
+              state_.basic_state.buffer_transform ||
+          cached_state_.basic_state.viewport != state_.basic_state.viewport ||
+          cached_state_.rounded_corners_bounds !=
+              state_.rounded_corners_bounds ||
+          cached_state_.basic_state.crop != state_.basic_state.crop ||
+          cached_state_.basic_state.only_visible_on_secure_output !=
+              state_.basic_state.only_visible_on_secure_output ||
+          cached_state_.basic_state.blend_mode !=
+              state_.basic_state.blend_mode ||
+          cached_state_.basic_state.alpha != state_.basic_state.alpha ||
+          cached_state_.basic_state.color_space !=
+              state_.basic_state.color_space ||
+          cached_state_.basic_state.is_tracking_occlusion !=
+              state_.basic_state.is_tracking_occlusion;
+    }
 
     bool needs_update_buffer_transform =
         cached_state_.basic_state.buffer_scale !=
@@ -1047,6 +1057,9 @@ void Surface::CommitSurfaceHierarchy(bool synchronized) {
       aura::Window* stacking_target = nullptr;
       for (const auto& sub_surface_entry : pending_sub_surfaces_) {
         Surface* sub_surface = sub_surface_entry.first;
+        // If the parent has trusted damage set, then consider it trusted for
+        // all subsurfaces.
+        sub_surface->SetTrustedDamage(trusted_damage_);
         sub_surfaces_.push_back(sub_surface_entry);
         // Move sub-surface to its new position in the stack.
         if (stacking_target)

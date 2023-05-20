@@ -1363,8 +1363,6 @@ const char* ChromeBrowsingDataRemoverDelegate::GetHistogramSuffix(
       return "PluginData";
     case TracingDataType::kDomainReliability:
       return "DomainReliability";
-    case TracingDataType::kNetworkPredictor:
-      return "NetworkPredictor";
     case TracingDataType::kWebrtcLogs:
       return "WebrtcLogs";
     case TracingDataType::kVideoDecodeHistory:

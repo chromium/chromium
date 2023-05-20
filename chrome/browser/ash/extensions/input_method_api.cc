@@ -26,12 +26,12 @@
 #include "chrome/browser/ash/os_url_handler.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/extensions/api/input_method_private.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "extensions/browser/extension_function_registry.h"
@@ -290,7 +290,7 @@ InputMethodPrivateOpenOptionsPageFunction::Run() {
     // If Lacros is the only browser, open the options page in an Ash app window
     // instead of a regular Ash browser window.
     if (!crosapi::browser_util::IsAshWebBrowserEnabled() &&
-        !profiles::IsKioskSession()) {
+        !chromeos::IsKioskSession()) {
       bool launched = ash::TryLaunchOsUrlHandler(options_page_url);
       DCHECK(launched);
       return RespondNow(NoArguments());

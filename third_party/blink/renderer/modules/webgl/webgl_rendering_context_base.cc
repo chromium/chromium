@@ -519,15 +519,6 @@ static String ExtractWebGLContextCreationError(
   return builder.ToString();
 }
 
-bool WebGLRenderingContextBase::SupportOwnOffscreenSurface(
-    ExecutionContext* execution_context) {
-  // Using an own offscreen surface disables virtualized contexts, and this
-  // doesn't currently work properly, see https://crbug.com/691102.
-  // TODO(https://crbug.com/791755): Remove this function and related code once
-  // the replacement is ready.
-  return false;
-}
-
 std::unique_ptr<WebGraphicsContext3DProvider>
 WebGLRenderingContextBase::CreateContextProviderInternal(
     CanvasRenderingContextHost* host,
@@ -538,8 +529,8 @@ WebGLRenderingContextBase::CreateContextProviderInternal(
   ExecutionContext* execution_context = host->GetTopExecutionContext();
   DCHECK(execution_context);
 
-  Platform::ContextAttributes context_attributes = ToPlatformContextAttributes(
-      attributes, context_type, SupportOwnOffscreenSurface(execution_context));
+  Platform::ContextAttributes context_attributes =
+      ToPlatformContextAttributes(attributes, context_type);
 
   // To run our tests with Chrome rendering on the low power GPU and WebGL on
   // the high performance GPU, we need to force the power preference attribute.
@@ -8592,10 +8583,8 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
   // ensure its resources were freed.
   DCHECK(!GetDrawingBuffer());
 
-  auto* execution_context = Host()->GetTopExecutionContext();
-  Platform::ContextAttributes attributes = ToPlatformContextAttributes(
-      CreationAttributes(), context_type_,
-      SupportOwnOffscreenSurface(execution_context));
+  Platform::ContextAttributes attributes =
+      ToPlatformContextAttributes(CreationAttributes(), context_type_);
   Platform::GraphicsInfo gl_info;
   const auto& url = Host()->GetExecutionContextUrl();
 

@@ -26,7 +26,7 @@ class CONTENT_EXPORT BackForwardCacheDisable {
     kWebAuthenticationAPI = 3,
     kFileChooser = 4,
     kSerial = 5,
-    kFileSystemAccess = 6,
+    // kFileSystemAccess = 6, Removed. See https://crbug.com/1259861.
     kMediaDevicesDispatcherHost = 7,
     kWebBluetooth = 8,
     kWebUSB = 9,

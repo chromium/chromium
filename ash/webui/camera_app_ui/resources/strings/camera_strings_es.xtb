@@ -65,8 +65,10 @@
 <translation id="4118525110028899586">Pausar grabación</translation>
 <translation id="4121305183798804752">Documento detectado</translation>
 <translation id="414641094616694804">Esta cámara no puede cambiar de resolución</translation>
+<translation id="4176463684765177261">Inhabilitado</translation>
 <translation id="4269820728363426813">Copiar la dirección del enlace</translation>
 <translation id="428234092390943511">Miniatura de la página</translation>
+<translation id="4349714250734879769">Escalar marcos con Chrome</translation>
 <translation id="4383571725254449280">Imprimir registros de rendimiento</translation>
 <translation id="4445542136948522167">Detener foto</translation>
 <translation id="4570032796877367747">Cámara frontal</translation>
@@ -97,7 +99,7 @@
 <translation id="5753488212459587150">Habilitar modo Experto</translation>
 <translation id="5759254179196327752">Escanear documento</translation>
 <translation id="5775960006311140197">Modo Experto</translation>
-<translation id="5860033963881614850">Desactivado</translation>
+<translation id="5860033963881614850">Desactivada</translation>
 <translation id="5869546221129391014">Cuadrícula</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5975083100439434680">Reducir</translation>
@@ -148,6 +150,7 @@ Si tu comentario está relacionado con la calidad de imagen o de vídeo, adjunta
 <translation id="8145038249676204903">Cambiar al modo de cámara de fotos</translation>
 <translation id="8167081290930651932">Guardar como foto</translation>
 <translation id="8239780215768881278">Hacer una captura de vídeo</translation>
+<translation id="8346544573713510785">Escalar marcos con cámara HAL</translation>
 <translation id="8425673304802773841">Inclinar hacia abajo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8629662593426079630">360p</translation>

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_database.h"
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,6 +22,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
@@ -44,8 +46,10 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
+#include "third_party/blink/public/common/url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/url_pattern.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -303,16 +307,6 @@ proto::TabStrip::Visibility TabStripVisibilityToProto(
   }
 }
 
-TabStrip::Visibility ProtoToTabStripVisibility(
-    proto::TabStrip::Visibility visibility) {
-  switch (visibility) {
-    case proto::TabStrip_Visibility_AUTO:
-      return TabStrip::Visibility::kAuto;
-    case proto::TabStrip_Visibility_ABSENT:
-      return TabStrip::Visibility::kAbsent;
-  }
-}
-
 std::string FilePathToProto(const base::FilePath& path) {
   base::Pickle pickle;
   path.WriteToPickle(&pickle);
@@ -396,9 +390,10 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   // Required fields:
   const GURL start_url = web_app.start_url();
-  DCHECK(!start_url.is_empty() && start_url.is_valid());
+  DCHECK(start_url.is_valid());
 
   DCHECK(!web_app.app_id().empty());
+  DCHECK(web_app.manifest_id().is_valid());
 
   // Set sync data to sync proto.
   *(local_data->mutable_sync_data()) = WebAppToSyncProto(web_app);
@@ -771,11 +766,20 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     } else {
       auto* mutable_home_tab_params =
           mutable_tab_strip->mutable_home_tab_params();
-      absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
+
+      const absl::optional<std::vector<blink::Manifest::ImageResource>>& icons =
           absl::get<blink::Manifest::HomeTabParams>(tab_strip.home_tab).icons;
       for (const auto& image_resource : *icons) {
         *(mutable_home_tab_params->add_icons()) =
             AppImageResourceToProto(image_resource);
+      }
+
+      const std::vector<blink::UrlPattern>& scope_patterns =
+          absl::get<blink::Manifest::HomeTabParams>(tab_strip.home_tab)
+              .scope_patterns;
+      for (const auto& pattern : scope_patterns) {
+        *(mutable_home_tab_params->add_scope_patterns()) =
+            ToUrlPatternProto(pattern);
       }
     }
 
@@ -809,6 +813,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   if (web_app.isolation_data().has_value()) {
     auto* mutable_data = local_data->mutable_isolation_data();
+    for (const std::string& partition :
+         web_app.isolation_data()->controlled_frame_partitions) {
+      mutable_data->add_controlled_frame_partitions(partition);
+    }
+
     absl::visit(
         base::Overloaded{
             [&mutable_data](const InstalledBundle& bundle) {
@@ -849,15 +858,18 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     return nullptr;
   }
 
-  absl::optional<std::string> manifest_id = absl::nullopt;
-  if (sync_data.has_manifest_id())
-    manifest_id = absl::optional<std::string>(sync_data.manifest_id());
+  ManifestId manifest_id;
+  if (sync_data.has_relative_manifest_id()) {
+    manifest_id =
+        GenerateManifestId(sync_data.relative_manifest_id(), start_url);
+  } else {
+    manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
+  }
 
-  const AppId app_id = GenerateAppId(manifest_id, start_url);
+  AppId app_id = GenerateAppIdFromManifestId(manifest_id);
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
-
   web_app->SetManifestId(manifest_id);
 
   // Required fields:
@@ -1474,33 +1486,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   web_app->SetWebAppManagementExternalConfigMap(management_to_external_config);
 
   if (local_data.has_tab_strip()) {
-    TabStrip tab_strip;
-    if (local_data.tab_strip().has_home_tab_visibility()) {
-      tab_strip.home_tab = ProtoToTabStripVisibility(
-          local_data.tab_strip().home_tab_visibility());
-    } else {
-      absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
-          ParseAppImageResource(
-              "WebApp", local_data.tab_strip().home_tab_params().icons());
-      blink::Manifest::HomeTabParams home_tab_params;
-      if (!icons->empty()) {
-        home_tab_params.icons = std::move(*icons);
-      }
-      tab_strip.home_tab = std::move(home_tab_params);
-    }
-
-    if (local_data.tab_strip().has_new_tab_button_visibility()) {
-      tab_strip.new_tab_button = ProtoToTabStripVisibility(
-          local_data.tab_strip().new_tab_button_visibility());
-    } else {
-      blink::Manifest::NewTabButtonParams new_tab_button_params;
-      if (local_data.tab_strip().new_tab_button_params().has_url()) {
-        new_tab_button_params.url =
-            GURL(local_data.tab_strip().new_tab_button_params().url());
-      }
-      tab_strip.new_tab_button = new_tab_button_params;
-    }
-    web_app->SetTabStrip(std::move(tab_strip));
+    web_app->SetTabStrip(ProtoToTabStrip(local_data.tab_strip()));
   }
 
   if (local_data.has_current_os_integration_states()) {
@@ -1522,6 +1508,11 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   if (local_data.has_isolation_data()) {
+    const google::protobuf::RepeatedPtrField<std::string>& partitions =
+        local_data.isolation_data().controlled_frame_partitions();
+    std::set<std::string> controlled_frame_partitions(partitions.begin(),
+                                                      partitions.end());
+
     switch (local_data.isolation_data().location_case()) {
       case IsolationDataProto::LocationCase::kInstalledBundle: {
         absl::optional<base::FilePath> path = ProtoToFilePath(
@@ -1531,8 +1522,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                          "parse error: cannot deserialize file path";
           return nullptr;
         }
-        web_app->SetIsolationData(
-            WebApp::IsolationData(InstalledBundle{.path = *path}));
+        web_app->SetIsolationData(WebApp::IsolationData(
+            InstalledBundle{.path = *path}, controlled_frame_partitions));
         break;
       }
 
@@ -1544,8 +1535,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                          "parse error: cannot deserialize file path";
           return nullptr;
         }
-        web_app->SetIsolationData(
-            WebApp::IsolationData(DevModeBundle{.path = *path}));
+        web_app->SetIsolationData(WebApp::IsolationData(
+            DevModeBundle{.path = *path}, controlled_frame_partitions));
         break;
       }
 
@@ -1560,8 +1551,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
                      local_data.isolation_data().dev_mode_proxy().proxy_url();
           return nullptr;
         }
-        web_app->SetIsolationData(
-            WebApp::IsolationData(DevModeProxy{.proxy_url = proxy_url}));
+        web_app->SetIsolationData(WebApp::IsolationData(
+            DevModeProxy{.proxy_url = proxy_url}, controlled_frame_partitions));
         break;
       }
 
@@ -1663,7 +1654,9 @@ std::unique_ptr<WebApp> WebAppDatabase::ParseWebApp(const AppId& app_id,
   }
 
   if (web_app->app_id() != app_id) {
-    DLOG(ERROR) << "WebApps LevelDB error: app_id doesn't match storage key";
+    DLOG(ERROR) << "WebApps LevelDB error: app_id doesn't match storage key "
+                << app_id << " vs " << web_app->app_id() << ", from "
+                << web_app->manifest_id();
     return nullptr;
   }
 

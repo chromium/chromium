@@ -30,8 +30,13 @@ const char FakeFlossAdapterClient::kKeyboardAddress[] = "aa:aa:aa:aa:aa:aa";
 const char FakeFlossAdapterClient::kPhoneAddress[] = "bb:bb:bb:bb:bb:bb";
 const char FakeFlossAdapterClient::kOldDeviceAddress[] = "cc:cc:cc:cc:cc:cc";
 const char FakeFlossAdapterClient::kClassicAddress[] = "dd:dd:dd:dd:dd:dd";
+const char FakeFlossAdapterClient::kPinCodeDisplayAddress[] =
+    "ee:ee:ee:ee:ee:ee";
+const char FakeFlossAdapterClient::kPinCodeRequestAddress[] =
+    "ff:ff:ff:ff:ff:ff";
 const char FakeFlossAdapterClient::kClassicName[] = "Classic Device";
 const uint32_t FakeFlossAdapterClient::kPasskey = 123456;
+const char FakeFlossAdapterClient::kPinCode[] = "012345";
 const uint32_t FakeFlossAdapterClient::kHeadsetClassOfDevice = 2360344;
 const uint32_t FakeFlossAdapterClient::kKeyboardClassofDevice = 1344;
 
@@ -62,6 +67,9 @@ void FakeFlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
     observer.AdapterFoundDevice(FlossDeviceId({kKeyboardAddress, ""}));
     observer.AdapterFoundDevice(FlossDeviceId({kPhoneAddress, ""}));
     observer.AdapterFoundDevice(FlossDeviceId({kOldDeviceAddress, ""}));
+    observer.AdapterFoundDevice(FlossDeviceId({kPinCodeDisplayAddress, ""}));
+    observer.AdapterFoundDevice(
+        FlossDeviceId({kPinCodeRequestAddress, ""}));
     // Simulate a device which sends its name later
     observer.AdapterFoundDevice(FlossDeviceId({kClassicAddress, ""}));
     observer.AdapterFoundDevice(FlossDeviceId({kClassicAddress, kClassicName}));
@@ -112,6 +120,18 @@ void FakeFlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
     for (auto& observer : observers_) {
       observer.AdapterSspRequest(device, /*cod=*/0,
                                  BluetoothSspVariant::kPasskeyEntry, 0);
+    }
+
+    PostDelayedTask(base::BindOnce(std::move(callback), true));
+  } else if (device.address == kPinCodeDisplayAddress) {
+    for (auto& observer : observers_) {
+      observer.AdapterPinDisplay(device, std::string(kPinCode));
+    }
+
+    PostDelayedTask(base::BindOnce(std::move(callback), true));
+  } else if (device.address == kPinCodeRequestAddress) {
+    for (auto& observer : observers_) {
+      observer.AdapterPinRequest(device, 0, false);
     }
 
     PostDelayedTask(base::BindOnce(std::move(callback), true));

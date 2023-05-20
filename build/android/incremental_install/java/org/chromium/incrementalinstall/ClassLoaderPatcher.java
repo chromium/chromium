@@ -237,8 +237,12 @@ final class ClassLoaderPatcher {
     @SuppressLint("SetWorldReadable")
     private static boolean copyIfModified(File src, File dest) throws IOException {
         long lastModified = src.lastModified();
-        if (dest.exists() && dest.lastModified() == lastModified) {
-            return false;
+        if (dest.exists()) {
+            if (dest.lastModified() == lastModified) {
+                return false;
+            }
+            // Files are read-only, so need to explicitly delete.
+            dest.delete();
         }
         Log.i(TAG, "Copying " + src + " -> " + dest);
         FileInputStream istream = new FileInputStream(src);
@@ -247,7 +251,8 @@ final class ClassLoaderPatcher {
         istream.close();
         ostream.close();
         dest.setReadable(true, false);
-        dest.setExecutable(true,  false);
+        dest.setWritable(false, false); // Required as of Android U.
+        dest.setExecutable(true, false);
         dest.setLastModified(lastModified);
         return true;
     }

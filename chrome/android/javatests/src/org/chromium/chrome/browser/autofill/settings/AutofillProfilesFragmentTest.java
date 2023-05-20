@@ -67,9 +67,19 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class AutofillProfilesFragmentTest {
-    private static final AutofillProfile sLocalOrSyncProfile = new AutofillProfile("",
-            "" /* honorific prefix */, "Seb Doe", "Google", "111 First St", "CA", "Los Angeles", "",
-            "90291", "", "US", "650-253-0000", "first@gmail.com", "en-US");
+    private static final AutofillProfile sLocalOrSyncProfile =
+            AutofillProfile.builder()
+                    .setFullName("Seb Doe")
+                    .setCompanyName("Google")
+                    .setStreetAddress("111 First St")
+                    .setRegion("CA")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90291")
+                    .setCountryCode("US")
+                    .setPhoneNumber("650-253-0000")
+                    .setEmailAddress("first@gmail.com")
+                    .setLanguageCode("en-US")
+                    .build();
     private static final AutofillProfile sAccountProfile = new AutofillProfile("", true, Source.ACCOUNT,
             "" /* honorific prefix */, "Artik Doe", "Google", "999 Fourth St", "California",
             "Los Angeles", "", "90291", "", "US", "650-253-0000", "artik@gmail.com", "en-US");
@@ -102,17 +112,44 @@ public class AutofillProfilesFragmentTest {
     @Before
     public void setUp() throws TimeoutException {
         mHelper.setProfile(sLocalOrSyncProfile);
-        mHelper.setProfile(new AutofillProfile("", "" /* honorific prefix */, "John Doe", "Google",
-                "111 Second St", "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000",
-                "second@gmail.com", "en-US"));
+        mHelper.setProfile(AutofillProfile.builder()
+                                   .setFullName("John Doe")
+                                   .setCompanyName("Google")
+                                   .setStreetAddress("111 Second St")
+                                   .setRegion("CA")
+                                   .setLocality("Los Angeles")
+                                   .setPostalCode("90291")
+                                   .setCountryCode("US")
+                                   .setPhoneNumber("650-253-0000")
+                                   .setEmailAddress("second@gmail.com")
+                                   .setLanguageCode("en-US")
+                                   .build());
         // Invalid state should not cause a crash on the state dropdown list.
-        mHelper.setProfile(new AutofillProfile("", "" /* honorific prefix */, "Bill Doe", "Google",
-                "111 Third St", "XXXYYY", "Los Angeles", "", "90291", "", "US", "650-253-0000",
-                "third@gmail.com", "en-US"));
+        mHelper.setProfile(AutofillProfile.builder()
+                                   .setFullName("Bill Doe")
+                                   .setCompanyName("Google")
+                                   .setStreetAddress("111 Third St")
+                                   .setRegion("XXXYYY")
+                                   .setLocality("Los Angeles")
+                                   .setPostalCode("90291")
+                                   .setCountryCode("US")
+                                   .setPhoneNumber("650-253-0000")
+                                   .setEmailAddress("third@gmail.com")
+                                   .setLanguageCode("en-US")
+                                   .build());
         // Full value for state should show up correctly on the dropdown list.
-        mHelper.setProfile(new AutofillProfile("", "" /* honorific prefix */, "Bob Doe", "Google",
-                "111 Fourth St", "California", "Los Angeles", "", "90291", "", "US", "650-253-0000",
-                "fourth@gmail.com", "en-US"));
+        mHelper.setProfile(AutofillProfile.builder()
+                                   .setFullName("Bob Doe")
+                                   .setCompanyName("Google")
+                                   .setStreetAddress("111 Fourth St")
+                                   .setRegion("California")
+                                   .setLocality("Los Angeles")
+                                   .setPostalCode("90291")
+                                   .setCountryCode("US")
+                                   .setPhoneNumber("650-253-0000")
+                                   .setEmailAddress("fourth@gmail.com")
+                                   .setLanguageCode("en-US")
+                                   .build());
     }
 
     @After

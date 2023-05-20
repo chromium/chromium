@@ -128,9 +128,9 @@ bool LoadFileHandler(const std::string& handler_id,
         entry.first != keys::kFileHandlerTypes &&
         entry.first != keys::kFileHandlerIncludeDirectories &&
         entry.first != keys::kFileHandlerVerb) {
-      install_warnings->push_back(InstallWarning(
+      install_warnings->emplace_back(
           base::StringPrintf(kNotRecognized, entry.first.c_str()),
-          keys::kFileHandlers, entry.first));
+          keys::kFileHandlers, entry.first);
     }
   }
 
@@ -160,9 +160,22 @@ FileHandlersParser::FileHandlersParser() = default;
 
 FileHandlersParser::~FileHandlersParser() = default;
 
+bool FileHandlersParser::Validate(const Extension* extension,
+                                  std::string* error,
+                                  std::vector<InstallWarning>* warnings) const {
+  DCHECK(extension);
+
+  // Web File Handlers.
+  if (extension->manifest_version() >= 3) {
+    return WebFileHandlersParser().Validate(extension, error, warnings);
+  }
+
+  return true;
+}
+
 bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   // If this is an MV3 extension, use the generated `file_handlers` object.
-  if (WebFileHandlers::SupportsWebFileHandlers(extension->manifest_version())) {
+  if (extension->manifest_version() >= 3) {
     return WebFileHandlersParser().Parse(extension, error);
   }
 

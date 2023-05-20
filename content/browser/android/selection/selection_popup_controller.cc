@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "cc/slim/features.h"
 #include "content/browser/android/selection/composited_touch_handle_drawable.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
@@ -15,9 +16,11 @@
 #include "content/common/features.h"
 #include "content/public/android/content_jni_headers/SelectionPopupControllerImpl_jni.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 using base::android::AttachCurrentThread;
@@ -27,6 +30,18 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
+
+namespace {
+
+bool IsAndroidSurfaceControlMagnifierEnabled() {
+  static bool enabled =
+      gfx::SurfaceControl::SupportsSurfacelessControl() &&
+      features::IsSlimCompositorEnabled() &&
+      base::FeatureList::IsEnabled(features::kAndroidSurfaceControlMagnifier);
+  return enabled;
+}
+
+}  // namespace
 
 static jboolean
 JNI_SelectionPopupControllerImpl_IsMagnifierWithSurfaceControlSupported(

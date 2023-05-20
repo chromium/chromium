@@ -50,6 +50,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   void WriteIntoTrace(perfetto::TracedValue context) override;
   base::WeakPtr<Page> GetWeakPtr() override;
   bool IsPageScaleFactorOne() override;
+  const std::string& GetContentsMimeType() const override;
 
   base::WeakPtr<PageImpl> GetWeakPtrImpl();
 
@@ -111,7 +112,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   }
 
   void SetContentsMimeType(std::string mime_type);
-  const std::string& contents_mime_type() { return contents_mime_type_; }
 
   void OnTextAutosizerPageInfoChanged(
       blink::mojom::TextAutosizerPageInfoPtr page_info);

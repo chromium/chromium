@@ -4,10 +4,10 @@
 
 #include "components/password_manager/core/browser/password_form.h"
 
-#include <compare>
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <tuple>
 
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
@@ -219,15 +219,23 @@ AlternativeElement::AlternativeElement(const AlternativeElement::Value& value,
     : value(value), field_renderer_id(field_renderer_id), name(name) {}
 
 AlternativeElement::AlternativeElement(const AlternativeElement& rhs) = default;
+
 AlternativeElement::AlternativeElement(AlternativeElement&& rhs) = default;
+
 AlternativeElement& AlternativeElement::operator=(
     const AlternativeElement& rhs) = default;
+
 AlternativeElement& AlternativeElement::operator=(AlternativeElement&& rhs) =
     default;
+
 AlternativeElement::~AlternativeElement() = default;
+
 bool AlternativeElement::operator==(const AlternativeElement&) const = default;
-std::strong_ordering AlternativeElement::operator<=>(
-    const AlternativeElement&) const = default;
+
+bool AlternativeElement::operator<(const AlternativeElement& other) const {
+  return std::tie(value, field_renderer_id, name) <
+         std::tie(other.value, other.field_renderer_id, other.name);
+}
 
 std::ostream& operator<<(std::ostream& os, const AlternativeElement& element) {
   base::Value::Dict element_json;

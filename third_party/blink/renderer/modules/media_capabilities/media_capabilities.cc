@@ -1105,7 +1105,8 @@ ScriptPromise MediaCapabilities::encodingInfo(
 
   if (auto* handler = MakeGarbageCollected<MediaRecorderHandler>(
           resolver->GetExecutionContext()->GetTaskRunner(
-              TaskType::kInternalMediaRealTime))) {
+              TaskType::kInternalMediaRealTime),
+          KeyFrameRequestProcessor::Configuration())) {
     handler->EncodingInfo(ToWebMediaConfiguration(config),
                           WTF::BindOnce(&OnMediaCapabilitiesEncodingInfo,
                                         WrapPersistent(resolver)));

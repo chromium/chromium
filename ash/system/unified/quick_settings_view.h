@@ -26,6 +26,7 @@ class PageIndicatorView;
 class QuickSettingsFooter;
 class QuickSettingsHeader;
 class QuickSettingsMediaViewContainer;
+class TrayDetailedView;
 class UnifiedMediaControlsContainer;
 class UnifiedSystemTrayController;
 
@@ -105,9 +106,11 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   FeatureTilesContainerView* feature_tiles_container() {
     return feature_tiles_container_;
   }
+  views::View* detailed_view_container() { return detailed_view_container_; }
 
-  views::View* detailed_view() { return detailed_view_container_; }
-  views::View* detailed_view_for_testing() { return detailed_view_container_; }
+  // Returns the current tray detailed view.
+  TrayDetailedView* GetDetailedViewForTest();
+
   PageIndicatorView* page_indicator_view_for_test() {
     return page_indicator_view_;
   }

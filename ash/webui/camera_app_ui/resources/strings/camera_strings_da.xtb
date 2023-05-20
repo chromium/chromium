@@ -65,8 +65,10 @@
 <translation id="4118525110028899586">Sæt optagelsen på pause</translation>
 <translation id="4121305183798804752">Et dokument blev registreret</translation>
 <translation id="414641094616694804">Dette kamera kan ikke ændre opløsning</translation>
+<translation id="4176463684765177261">Deaktiveret</translation>
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
 <translation id="428234092390943511">Miniature for side</translation>
+<translation id="4349714250734879769">Skaler rammer i Chrome</translation>
 <translation id="4383571725254449280">Effektivitetslogfiler for udskrivning</translation>
 <translation id="4445542136948522167">Stop med at tage billedet</translation>
 <translation id="4570032796877367747">Frontkamera</translation>
@@ -149,6 +151,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8145038249676204903">Skift for at tage et billede</translation>
 <translation id="8167081290930651932">Gem som billede</translation>
 <translation id="8239780215768881278">Tag et videoøjebliksbillede</translation>
+<translation id="8346544573713510785">Skaler billeder med kamera-HAL</translation>
 <translation id="8425673304802773841">Drej nedad</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8629662593426079630">360p</translation>

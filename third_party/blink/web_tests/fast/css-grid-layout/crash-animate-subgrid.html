@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Animating a grid columns to subgrid does not crash</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div id="target"></div>
+<script>
+  test(() => {
+    target.style.gridTemplateColumns = '100px 200px';
+    var animation = target.animate([{}, {gridTemplateColumns: '200px 300px'}], 1000);
+    animation.pause();
+    animation.currentTime = 500;
+    target.style.gridTemplateColumns = 'subgrid [x] [y] [z] [y] [z]';
+  }, 'Animating to a subgrid does not crash');
+</script>

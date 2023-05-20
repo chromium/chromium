@@ -23,17 +23,9 @@ struct AutocompleteMatch;
 // omnibox, including `AutocompleteController` and `OmniboxEditModel`.
 class OmniboxController : public AutocompleteController::Observer {
  public:
-  // Used by the omnibox which uses `OmniboxView` and whose
-  // `AutocompleteController` instance is created and observed here.
   OmniboxController(OmniboxView* view,
                     OmniboxEditModelDelegate* edit_model_delegate,
                     std::unique_ptr<OmniboxClient> client);
-  // Used by the realbox which does not use `OmniboxView` and observes and
-  // passes its own instance of `AutocompleteController`.
-  OmniboxController(
-      OmniboxEditModelDelegate* edit_model_delegate,
-      std::unique_ptr<AutocompleteController> autocomplete_controller,
-      std::unique_ptr<OmniboxClient> client);
   ~OmniboxController() override;
   OmniboxController(const OmniboxController&) = delete;
   OmniboxController& operator=(const OmniboxController&) = delete;
@@ -45,14 +37,14 @@ class OmniboxController : public AutocompleteController::Observer {
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
-  OmniboxEditModel* edit_model() const { return edit_model_.get(); }
+  OmniboxClient* client() { return client_.get(); }
 
-  void SetEditModel(std::unique_ptr<OmniboxEditModel> edit_model);
+  OmniboxEditModel* edit_model() const { return edit_model_.get(); }
+  void set_edit_model(std::unique_ptr<OmniboxEditModel> edit_model);
 
   AutocompleteController* autocomplete_controller() {
     return autocomplete_controller_.get();
   }
-
   void set_autocomplete_controller(
       std::unique_ptr<AutocompleteController> autocomplete_controller) {
     autocomplete_controller_ = std::move(autocomplete_controller);
@@ -70,14 +62,6 @@ class OmniboxController : public AutocompleteController::Observer {
   const AutocompleteResult& result() const {
     return autocomplete_controller_->result();
   }
-
- protected:
-  // Used by other constructors.
-  OmniboxController(
-      OmniboxView* view,
-      OmniboxEditModelDelegate* edit_model_delegate,
-      std::unique_ptr<AutocompleteController> autocomplete_controller,
-      std::unique_ptr<OmniboxClient> client);
 
  private:
   // Stores the bitmap in the OmniboxPopupModel.

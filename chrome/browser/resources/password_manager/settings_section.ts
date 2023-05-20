@@ -176,12 +176,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     }
   }
 
-  private getBlockedSitesDescription_() {
-    return this.i18n(
-        this.blockedSites_.length ? 'blockedSitesDescription' :
-                                    'blockedSitesEmptyDescription');
-  }
-
   private onAddShortcutClick_() {
     // TODO(crbug.com/1358448): Record metrics on all entry points usage.
     // TODO(crbug.com/1358448): Hide the button for users after the shortcut is

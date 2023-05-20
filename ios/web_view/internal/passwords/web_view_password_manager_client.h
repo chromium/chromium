@@ -24,7 +24,7 @@
 #include "components/password_manager/ios/password_manager_client_bridge.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web_view/internal/passwords/web_view_password_feature_manager.h"
 #include "ios/web_view/internal/web_view_browser_state.h"

@@ -202,6 +202,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Event.Jank.DelayedFramesPercentage" units="%"
+    expires_after="2024-03-20">
+  <owner>kartarsingh@google.com</owner>
+  <owner>mekk@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    A frame is deemed janky during a scroll if there was no presented frame in
+    previous vsync while the delta in timestamp of earliest input of current
+    frame and timestamp of last input of previous frame is less than vsync. This
+    metric reports the percentage of delayed frames within an arbitrary window
+    of 64 frames.
+
+    For more details about this metric, please check
+    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
+  </summary>
+</histogram>
+
+<histogram name="Event.Jank.MissedVsyncCount" units="counts"
+    expires_after="2024-03-20">
+  <owner>kartarsingh@google.com</owner>
+  <owner>mekk@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    A frame is deemed janky during a scroll if there was no presented frame in
+    previous vsync while the delta in timestamp of earliest input of current
+    frame and timestamp of last input of previous frame is less than vsync. For
+    janky frames, this metric counts number of vsyncs the frame was delayed by.
+    The metric gets reported for a windows of 64 reported frames.
+
+    For more details about this metric, please check
+    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
+  </summary>
+</histogram>
+
 <histogram name="Event.Jank.PredictorJankyFramePercentage" units="%"
     expires_after="2024-03-20">
   <owner>mekk@google.com</owner>
@@ -632,7 +666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2"
-    units="microseconds" expires_after="2023-09-10">
+    units="microseconds" expires_after="2023-11-12">
   <owner>nzolghadr@chromium.org</owner>
   <summary>
     NOTE: This metric is deprecated in favor of
@@ -659,7 +693,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.TotalEvents" units="counts"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>ddrone@google.com</owner>
   <owner>chrometto-team@google.com</owner>
   <summary>
@@ -892,7 +926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.PassiveListeners" enum="EventResultType"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>dtapuska@chromium.org</owner>
   <summary>
     The result of handling of MouseWheel, TouchStart, TouchMove, TouchEnd events

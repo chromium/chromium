@@ -34,6 +34,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryActivity;
+import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.base.ActionChipsAdapter;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.tab.Tab;
@@ -52,9 +54,7 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.EntityInfoProto.ActionInfo;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.ActionInSuggestUmaType;
-import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
-import org.chromium.components.omnibox.action.OmniboxActionInSuggest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -160,8 +160,8 @@ public class OmniboxActionsTest {
     private AutocompleteMatch createDummyActionInSuggest(ActionInfo.ActionType... types) {
         var actions = new ArrayList<OmniboxAction>();
         for (var type : types) {
-            actions.add(new OmniboxActionInSuggest(
-                    "hint", ActionInfo.newBuilder().setActionType(type).build()));
+            actions.add(
+                    new OmniboxActionInSuggest("hint", type.getNumber(), "https://www.google.com"));
         }
 
         return createDummySuggestion(actions);
@@ -234,19 +234,19 @@ public class OmniboxActionsTest {
         // None of these actions have a linked intent, so no action will be taken.
         setSuggestions(createDummySuggestion(null),
                 createDummyActionInSuggest(ActionInfo.ActionType.CALL,
-                        ActionInfo.ActionType.DIRECTIONS, ActionInfo.ActionType.WEBSITE));
+                        ActionInfo.ActionType.DIRECTIONS, ActionInfo.ActionType.REVIEWS));
 
         var histogramWatcher = HistogramWatcher.newBuilder()
                                        .expectIntRecord("Omnibox.ActionInSuggest.Shown",
                                                ActionInSuggestUmaType.CALL)
                                        .expectIntRecord("Omnibox.ActionInSuggest.Shown",
                                                ActionInSuggestUmaType.DIRECTIONS)
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
-                                               ActionInSuggestUmaType.WEBSITE)
                                        .expectIntRecord("Omnibox.ActionInSuggest.Used",
-                                               ActionInSuggestUmaType.WEBSITE)
+                                               ActionInSuggestUmaType.DIRECTIONS)
+                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
+                                               ActionInSuggestUmaType.REVIEWS)
                                        .build();
-        clickOnAction(2);
+        clickOnAction(1);
         histogramWatcher.assertExpected();
     }
 }

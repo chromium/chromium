@@ -1,0 +1,100 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+  /*
+  Test borders with alpha < 1/255. Before float color these would get rounded
+  to zero and become invisible. This caused crashed because logic in
+  BoxBorderPainter would throw out invisible borders based on integer alpha,
+  whereas the rest of the code base was using float alpha.
+
+  See crbug.com/1445288, 1445288, 1445299 and 1445351
+  */
+    div {
+        width: 10px;
+        height: 100px;
+        display: inline-block;
+        border-width: 85px;
+    }
+    #dashed {
+        border-style: dashed;
+        border-top-color: color(srgb 0 1 0 / 0.75);
+        border-right-color: color(srgb 0 0 1 / 0.75);
+        border-bottom-color: color(srgb 0 1 0 / 0.75);
+        border-left-color: color(srgb 0 0 1 / 0.75);
+    }
+    #dotted {
+        border-style: dotted;
+        border-top-color: color(srgb 0 1 0 / 0.001);
+        border-right-color: color(srgb 0 0 1 / 0.75);
+        border-bottom-color: color(srgb 0 1 0 / 0.75);
+        border-left-color: color(srgb 0 0 1 / 0.001);
+    }
+    #solid {
+        border-style: solid;
+        border-top-color: color(srgb 0 1 0 / 0.001);
+        border-right-color: color(srgb 0 0 1 / 0.75);
+        border-bottom-color: color(srgb 0 1 0 / 0.001);
+        border-left-color: color(srgb 0 0 1 / 0.001);
+    }
+    #double {
+        border-style: double;
+        border-top-color: color(srgb 0 1 0 / 0.001);
+        border-right-color: color(srgb 0 0 1 / 0.75);
+        border-bottom-color: color(srgb 0 1 0 / 0.25);
+        border-left-color: color(srgb 0 0 1 / 0.001);
+
+    }
+    #groove {
+        border-style: groove;
+        border-top-color: color(srgb 0 1 0 / 0.001);
+        border-right-color: color(srgb 0 0 1 / 0.75);
+        border-bottom-color: color(srgb 0 1 0 / 0.25);
+        border-left-color: color(srgb 0 0 1 / 0.25);
+
+    }
+    #ridge {
+        border-style: ridge;
+        border-top-color: color(srgb 0 1 0 / 0.001);
+        border-right-color: color(srgb 0 0 1 / 0.75);
+        border-bottom-color: color(srgb 0 1 0 / 0.15);
+        border-left-color: color(srgb 0 0 1 / 0.25);
+
+    }
+    #inset {
+        border-style: inset;
+        border-top-color: color(srgb 0 1 0 / 0.001);
+        border-right-color: color(srgb 0 0 1 / 0.75);
+        border-bottom-color: color(srgb 0 1 0 / 0.25);
+        border-left-color: color(srgb 0 0 1 / 0.15);
+
+    }
+    #outset {
+        border-style: outset;
+        border-top-color: color(srgb 0 1 0 / 0.15);
+        border-right-color: color(srgb 0 0 1 / 0.75);
+        border-bottom-color: color(srgb 0 1 0 / 0.001);
+        border-left-color: color(srgb 0 0 1 / 0.15);
+
+    }
+</style>
+<body>
+  <div id="dashed"></div>
+  <div id="dotted"></div>
+  <div id="solid"></div>
+  <div id="double"></div>
+  <br>
+  <div id="groove"></div>
+  <div id="ridge"></div>
+  <div id="inset"></div>
+  <div id="outset"></div>
+  <p id="outputText"></p>
+</body>
+
+<script>
+test(() => {
+  document.getElementById("outputText").innerText = `
+    computed border: ${getComputedStyle(document.getElementById("outset")).borderBottom}
+  `;
+}, "Does not crash by creating objects with very transparent borders");
+</script>

@@ -189,7 +189,7 @@ class TouchToFillCreditCardMediator {
         } else {
             creditCardModelBuilder.with(
                     TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION,
-                    card.getFormattedExpirationDateWithTwoDigitYear(mContext));
+                    card.getFormattedExpirationDate(mContext));
         }
         return creditCardModelBuilder.build();
     }

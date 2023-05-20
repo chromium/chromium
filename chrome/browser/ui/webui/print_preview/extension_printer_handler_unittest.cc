@@ -303,7 +303,8 @@ class FakePwgRasterConverter : public PwgRasterConverter {
 
   // PwgRasterConverter implementation. It writes |data| to shared memory.
   // Also, remembers conversion and bitmap settings passed into the method.
-  void Start(const base::RefCountedMemory* data,
+  void Start(const absl::optional<bool>& use_skia,
+             const base::RefCountedMemory* data,
              const PdfRenderSettings& conversion_settings,
              const PwgRasterSettings& bitmap_settings,
              ResultCallback callback) override {

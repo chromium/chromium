@@ -260,8 +260,10 @@ AX_TEST_F('DictationE2ETest', 'NoCommandsWhenNotSupported', async function() {
   this.mockInputIme.clearLastParameters();
 });
 
+// TODO(crbug.com/1442591) flaky test
 AX_TEST_F(
-    'DictationE2ETest', 'SilencesSpokenFeedbackWhenStarting', async function() {
+    'DictationE2ETest', 'DISABLED_SilencesSpokenFeedbackWhenStarting',
+    async function() {
       assertEquals(
           0, this.mockAccessibilityPrivate.getSpokenFeedbackSilencedCount());
 

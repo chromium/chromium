@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '/shared/nearby_contact_visibility.js';
 import '/shared/nearby_onboarding_page.js';
 import '/shared/nearby_visibility_page.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {NearbyContactVisibilityElement} from '/shared/nearby_contact_visibility.js';
 import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';

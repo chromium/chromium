@@ -239,13 +239,6 @@ std::string GetInstallDataIndexFromAppArgs(const std::string& app_id) {
       *base::CommandLine::ForCurrentProcess(), app_id);
 }
 
-base::CommandLine MakeElevated(base::CommandLine command_line) {
-#if BUILDFLAG(IS_MAC)
-  command_line.PrependWrapper("/usr/bin/sudo");
-#endif
-  return command_line;
-}
-
 // The log file is created in DIR_LOCAL_APP_DATA or DIR_ROAMING_APP_DATA.
 absl::optional<base::FilePath> GetLogFilePath(UpdaterScope scope) {
   const absl::optional<base::FilePath> log_dir = GetInstallDirectory(scope);

@@ -233,9 +233,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, TopicsHeaderForWindowFetch) {
 
   EXPECT_TRUE(last_request_is_topics_request());
   EXPECT_TRUE(last_topics_header());
-  EXPECT_EQ(last_topics_header().value(),
-            "1;version=\"chrome.1:1:2\";config_version=\"chrome.1\";model_"
-            "version=\"2\";taxonomy_version=\"1\"");
+  EXPECT_EQ(last_topics_header().value(), "1;v=\"chrome.1:1:2\"");
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,

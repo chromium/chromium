@@ -424,6 +424,8 @@ generated_dictionary_sources_in_core = [
 ]
 
 generated_enumeration_sources_in_core = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_entropy.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_navigation_entropy.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_align_setting.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_align_setting.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.cc",

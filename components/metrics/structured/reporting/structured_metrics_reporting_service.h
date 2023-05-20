@@ -31,12 +31,17 @@ class StructuredMetricsReportingService : public metrics::ReportingService {
                                     PrefService* local_state,
                                     const StorageLimits& storage_limits);
 
-  static void RegisterPrefs(PrefRegistrySimple* registry);
+  void StoreLog(const std::string& serialized_log,
+                metrics::MetricsLogsEventManager::CreateReason reason);
 
- private:
   // metrics::ReportingService:
   metrics::LogStore* log_store() override;
 
+  void Purge();
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
+ private:
   // Getters for MetricsLogUploader parameters.
   GURL GetUploadUrl() const override;
   GURL GetInsecureUploadUrl() const override;

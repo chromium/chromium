@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Deschide <ph name="TABS_COUNT_ONE" /> filă}few{Deschide <ph name="TABS_COUNT_MANY" /> file}other{Deschide <ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="4811934403802581334">Toate filele selectate de pe dispozitivul selectat momentan se vor restabili.</translation>
 <translation id="5336031759968328813">Examinează toate filele</translation>
+<translation id="8019269305087157499">Deschide din</translation>
 <translation id="8725404154479306799">Accesează filele pe care le-ai lăsat pe dispozitive vechi</translation>
 </translationbundle>

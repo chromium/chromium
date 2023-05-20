@@ -11,8 +11,6 @@ component("upstart") {
 
   deps = [
     "//base",
-    "//chromeos/ash/components/dbus/authpolicy",
-    "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
     "//chromeos/ash/components/dbus/kerberos",
     "//chromeos/ash/components/dbus/media_analytics",
     "//chromeos/dbus/common",

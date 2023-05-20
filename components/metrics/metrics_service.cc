@@ -134,6 +134,7 @@
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/process/process_handle.h"
@@ -186,6 +187,7 @@ class IndependentFlattener : public base::HistogramFlattener {
   // base::HistogramFlattener:
   void RecordDelta(const base::HistogramBase& histogram,
                    const base::HistogramSamples& snapshot) override {
+    CHECK(histogram.HasFlags(base::HistogramBase::kUmaTargetedHistogramFlag));
     log_->RecordHistogramDelta(histogram.histogram_name(), snapshot);
   }
 
@@ -270,6 +272,10 @@ MetricsService::MetricsService(MetricsStateManager* state_manager,
   DCHECK(client_);
   DCHECK(local_state_);
 
+  // Emit a local histogram, which should not be reported to servers. This is
+  // monitored from the serverside.
+  LOCAL_HISTOGRAM_BOOLEAN("UMA.LocalHistogram", true);
+
   bool create_logs_event_observer;
 #ifdef NDEBUG
   // For non-debug builds, we only create |logs_event_observer_| if the
@@ -320,6 +326,13 @@ MetricsService::~MetricsService() {
           command_line->GetSwitchValuePath(switches::kExportUmaLogsToFile));
     }
   }
+
+  // Emit a local histogram, which should not be reported to servers. This is
+  // monitored from the serverside. Because this is emitted after closing the
+  // last log before shutdown, this sample should be retrieved by the persistent
+  // histograms system in a follow up session. This is to ensure independent
+  // logs do not include local histograms, a previously buggy behaviour.
+  LOCAL_HISTOGRAM_BOOLEAN("UMA.LocalHistogram", true);
 }
 
 void MetricsService::InitializeMetricsRecordingState() {

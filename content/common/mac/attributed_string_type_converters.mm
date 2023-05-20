@@ -6,12 +6,17 @@
 
 #include <AppKit/AppKit.h>
 
+#include "base/apple/bridging.h"
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/common/common_param_traits.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace mojo {
 
@@ -40,8 +45,8 @@ TypeConverter<CFAttributedStringRef, ui::mojom::AttributedStringPtr>::Convert(
   // Create the return value.
   NSString* plain_text =
       base::SysUTF16ToNSString(mojo_attributed_string->string);
-  base::scoped_nsobject<NSMutableAttributedString> decoded_string(
-      [[NSMutableAttributedString alloc] initWithString:plain_text]);
+  NSMutableAttributedString* decoded_string =
+      [[NSMutableAttributedString alloc] initWithString:plain_text];
   // Iterate over all the encoded attributes, attaching each to the string.
   const std::vector<ui::mojom::FontAttributePtr>& attributes =
       mojo_attributed_string->attributes;
@@ -57,14 +62,16 @@ TypeConverter<CFAttributedStringRef, ui::mojom::AttributedStringPtr>::Convert(
                                              attribute.get()->font_point_size)
                 range:range.ToNSRange()];
   }
-  return base::mac::NSToCFCast(decoded_string.autorelease());
+
+  return static_cast<CFAttributedStringRef>(
+      CFAutorelease(base::apple::NSToCFOwnershipCast(decoded_string)));
 }
 
 ui::mojom::AttributedStringPtr
 TypeConverter<ui::mojom::AttributedStringPtr, CFAttributedStringRef>::Convert(
     const CFAttributedStringRef cf_attributed_string) {
   NSAttributedString* ns_attributed_string =
-      base::mac::CFToNSCast(cf_attributed_string);
+      base::apple::CFToNSPtrCast(cf_attributed_string);
 
   // Create the return value.
   ui::mojom::AttributedStringPtr attributed_string =

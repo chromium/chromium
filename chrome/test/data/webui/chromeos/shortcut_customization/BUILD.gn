@@ -25,6 +25,7 @@ ts_library("build_ts") {
     "accelerator_row_test.ts",
     "accelerator_subsection_test.ts",
     "accelerator_view_test.ts",
+    "bottom_nav_content_test.ts",
     "fake_shortcut_provider_test.ts",
     "fake_shortcut_search_handler_test.ts",
     "input_key_test.ts",

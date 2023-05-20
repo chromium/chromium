@@ -383,10 +383,8 @@ TEST_F(WebCryptoRsaSsaTest, ImportCorruptKeyReusedModulus) {
 }
 
 TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairRsa) {
-  // Note: using unrealistic short key lengths here to avoid bogging down tests.
-
   // Successful WebCryptoAlgorithmIdRsaSsaPkcs1v1_5 key generation (sha256)
-  const unsigned int modulus_length = 256;
+  const unsigned int modulus_length = 2048;
   const std::vector<uint8_t> public_exponent = HexStringToBytes("010001");
   blink::WebCryptoAlgorithm algorithm = CreateRsaHashedKeyGenAlgorithm(
       blink::kWebCryptoAlgorithmIdRsaSsaPkcs1v1_5,
@@ -776,7 +774,7 @@ TEST_F(WebCryptoRsaSsaTest, GenerateKeyBadUsages) {
 // key usages which are applicable, and not have the exact same usages as was
 // specified to GenerateKey
 TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairIntersectUsages) {
-  const unsigned int modulus_length = 256;
+  const unsigned int modulus_length = 2048;
   const std::vector<uint8_t> public_exponent = HexStringToBytes("010001");
 
   blink::WebCryptoKey public_key;
@@ -809,7 +807,7 @@ TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairIntersectUsages) {
 }
 
 TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairEmptyUsages) {
-  const unsigned int modulus_length = 256;
+  const unsigned int modulus_length = 2048;
   const std::vector<uint8_t> public_exponent = HexStringToBytes("010001");
 
   blink::WebCryptoKey public_key;

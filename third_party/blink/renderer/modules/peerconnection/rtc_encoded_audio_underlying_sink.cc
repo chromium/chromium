@@ -47,9 +47,8 @@ ScriptPromise RTCEncodedAudioUnderlyingSink::write(
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  RTCEncodedAudioFrame* encoded_frame =
-      V8RTCEncodedAudioFrame::ToImplWithTypeCheck(script_state->GetIsolate(),
-                                                  chunk.V8Value());
+  RTCEncodedAudioFrame* encoded_frame = V8RTCEncodedAudioFrame::ToWrappable(
+      script_state->GetIsolate(), chunk.V8Value());
   if (!encoded_frame) {
     exception_state.ThrowTypeError("Invalid frame");
     return ScriptPromise();

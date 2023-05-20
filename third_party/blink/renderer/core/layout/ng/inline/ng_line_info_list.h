@@ -40,7 +40,12 @@ class NGLineInfoList {
   // If empty, this will hit `DCHECK`.
   const NGLineInfo& Back() const { return (*this)[Size() - 1]; }
 
+  void Shrink(wtf_size_t size) {
+    DCHECK_LT(size, size_);
+    size_ = size;
+  }
   void Clear() { size_ = start_index_ = 0; }
+
   NGLineInfo& Append() {
     DCHECK_LT(size_, kCapacity);
     ++size_;

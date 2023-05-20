@@ -10,8 +10,11 @@
 namespace sync_bookmarks {
 
 BookmarkSyncService::BookmarkSyncService(
-    BookmarkUndoService* bookmark_undo_service)
-    : bookmark_model_type_processor_(bookmark_undo_service) {}
+    BookmarkUndoService* bookmark_undo_service,
+    bool wipe_model_on_stopping_sync_with_clear_data)
+    : bookmark_model_type_processor_(
+          bookmark_undo_service,
+          wipe_model_on_stopping_sync_with_clear_data) {}
 
 BookmarkSyncService::~BookmarkSyncService() = default;
 
@@ -33,6 +36,10 @@ BookmarkSyncService::GetBookmarkSyncControllerDelegate(
   DCHECK(favicon_service);
   bookmark_model_type_processor_.SetFaviconService(favicon_service);
   return bookmark_model_type_processor_.GetWeakPtr();
+}
+
+bool BookmarkSyncService::IsTrackingMetadata() const {
+  return bookmark_model_type_processor_.IsTrackingMetadata();
 }
 
 void BookmarkSyncService::SetBookmarksLimitForTesting(size_t limit) {

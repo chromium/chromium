@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
+#include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -181,6 +182,24 @@ void GetBookmarksMatchingPropertiesImpl(
     nodes->push_back(node);
     if (nodes->size() == max_count)
       return;
+  }
+}
+
+template <class Comparator>
+void GetMostRecentEntries(
+    BookmarkModel* model,
+    size_t limit,
+    std::set<const BookmarkNode*, Comparator>* nodes_set) {
+  ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
+  while (iterator.has_next()) {
+    const BookmarkNode* node = iterator.Next();
+    if (node->is_url()) {
+      nodes_set->insert(node);
+      if (nodes_set->size() > limit) {
+        nodes_set->erase(std::next(nodes_set->begin(), limit),
+                         nodes_set->end());
+      }
+    }
   }
 }
 
@@ -372,23 +391,35 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
 void GetMostRecentlyAddedEntries(BookmarkModel* model,
                                  size_t count,
                                  std::vector<const BookmarkNode*>* nodes) {
-  ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
-  while (iterator.has_next()) {
-    const BookmarkNode* node = iterator.Next();
-    if (node->is_url()) {
-      auto insert_position = std::upper_bound(nodes->begin(), nodes->end(),
-                                              node, &MoreRecentlyAdded);
-      if (nodes->size() < count || insert_position != nodes->end()) {
-        nodes->insert(insert_position, node);
-        while (nodes->size() > count)
-          nodes->pop_back();
-      }
-    }
-  }
+  // std::set is used here since insert element into std::vector is slower than
+  // std::set, so we use std::set to find the most recent bookmarks, and then
+  // return to users as std::vector.
+  std::set<const BookmarkNode*, decltype(&MoreRecentlyAdded)> nodes_set(
+      &MoreRecentlyAdded);
+  GetMostRecentEntries(model, count, &nodes_set);
+
+  nodes->reserve(nodes_set.size());
+  std::move(nodes_set.begin(), nodes_set.end(), std::back_inserter(*nodes));
 }
 
 bool MoreRecentlyAdded(const BookmarkNode* n1, const BookmarkNode* n2) {
   return n1->date_added() > n2->date_added();
+}
+
+void GetMostRecentlyUsedEntries(BookmarkModel* model,
+                                size_t count,
+                                std::vector<const BookmarkNode*>* nodes) {
+  // std::set is used here since insert element into std::vector is slower than
+  // std::set, so we use std::set to find the most recent bookmarks, and then
+  // return to users as std::vector.
+  auto lastUsedComp = [](const BookmarkNode* n1, const BookmarkNode* n2) {
+    return n1->date_last_used() > n2->date_last_used();
+  };
+  std::set<const BookmarkNode*, decltype(lastUsedComp)> nodes_set(lastUsedComp);
+  GetMostRecentEntries(model, count, &nodes_set);
+
+  nodes->reserve(nodes_set.size());
+  std::move(nodes_set.begin(), nodes_set.end(), std::back_inserter(*nodes));
 }
 
 void GetBookmarksMatchingProperties(BookmarkModel* model,
@@ -505,7 +536,8 @@ const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
   // Nothing to do, a user bookmark with that url already exists.
   if (IsBookmarkedByUser(model, url))
     return nullptr;
-  model->client()->RecordAction(base::UserMetricsAction("BookmarkAdded"));
+
+  base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
 
   const auto* parent_to_use = parent ? parent : GetParentForNewNodes(model);
   return model->AddNewURL(parent_to_use, parent_to_use->children().size(),

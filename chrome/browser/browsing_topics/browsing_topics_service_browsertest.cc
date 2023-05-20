@@ -72,17 +72,9 @@ constexpr char kExpectedApiResult[] =
     "\"configVersion\":\"chrome.1\",\"modelVersion\":\"2\","
     "\"taxonomyVersion\":\"1\",\"topic\":10,\"version\":\"chrome.1:1:2\"};]";
 
-constexpr char kExpectedHeaderValueForSiteA[] =
-    "1;version=\"chrome.1:1:2\";config_version=\"chrome.1\";model_version="
-    "\"2\";taxonomy_version=\"1\", "
-    "10;version=\"chrome.1:1:2\";config_version=\"chrome.1\";model_version="
-    "\"2\";taxonomy_version=\"1\"";
+constexpr char kExpectedHeaderValueForSiteA[] = "1;v=\"chrome.1:1:2\", 10";
 
-constexpr char kExpectedHeaderValueForSiteB[] =
-    "1;version=\"chrome.1:1:2\";config_version=\"chrome.1\";model_version="
-    "\"2\";taxonomy_version=\"1\", "
-    "7;version=\"chrome.1:1:2\";config_version=\"chrome.1\";model_version="
-    "\"2\";taxonomy_version=\"1\"";
+constexpr char kExpectedHeaderValueForSiteB[] = "1;v=\"chrome.1:1:2\", 7";
 
 static constexpr char kBrowsingTopicsApiActionTypeHistogramId[] =
     "BrowsingTopics.ApiActionType";

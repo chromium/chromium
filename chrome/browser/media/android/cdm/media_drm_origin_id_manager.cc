@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/android/build_info.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
@@ -41,18 +43,36 @@
 // {
 //     "origin_ids": [ $origin_id, ... ]
 //     "expirable_token": $expiration_time,
+//     "last_provisioning_attempt_time": $last_provisioning_attempt_time,
 // }
 //
 // If specified, "expirable_token" is stored as a string representing the
 // int64_t (base::NumberToString()) form of the number of microseconds since
 // Windows epoch (1601-01-01 00:00:00 UTC). It is the latest time that this
 // code should attempt to pre-provision more origins on some devices.
+//
+// "last_provisioning_attempt_time" is only used on Android R due to bugs in
+// the OS. The OS can get into a weird state where provisioning attempts crash,
+// although rebooting the device is expected to clear this condition. However,
+// as the code attempts to pre-provision some origin IDs if needed shortly
+// after launch, this can result in Chrome randomly crashing every time it is
+// started. "last_provisioning_attempt_time" is a time like "expirable_token"
+// and represents the last time a provisioning attempt was made (roughly, as
+// the attempt is posted as a delayed task). If set, another attempt at
+// provisioning won't be made until |kProvisioningDelta| has passed. If
+// provisioning returns, then provisioning doesn't crash, so this value is
+// cleared and provisioning can be checked every time Chrome starts.
+// Note that this does not affect requests for an origin. If a page needs one,
+// then provisioning will be attempted. This may still crash.
+// TODO(b/253295050): Remove this workaround if Android R patched to fix this.
 
 namespace {
 
 const char kMediaDrmOriginIds[] = "media.media_drm_origin_ids";
 const char kExpirableToken[] = "expirable_token";
 const char kOriginIds[] = "origin_ids";
+const char kLastProvisioningAttemptTimeToken[] =
+    "last_provisioning_attempt_time";
 
 // The maximum number of origin IDs to pre-provision. Chosen to be small to
 // minimize provisioning server load.
@@ -64,6 +84,9 @@ constexpr int kUMAMaxPreProvisionedOriginIds = 10;
 
 // "expirable_token" is only good for 24 hours.
 constexpr base::TimeDelta kExpirationDelta = base::Hours(24);
+
+// Only try provisioning once a week (Android R only due to crashes).
+constexpr base::TimeDelta kProvisioningDelta = base::Days(7);
 
 // Time to wait before attempting pre-provisioning at startup (if enabled).
 constexpr base::TimeDelta kStartupDelay = base::Minutes(1);
@@ -88,6 +111,57 @@ void SetExpirableToken(PrefService* const pref_service) {
 void RemoveExpirableToken(base::Value::Dict& origin_id_dict) {
   DVLOG(3) << __func__;
   origin_id_dict.Remove(kExpirableToken);
+}
+
+// On Android R a bug in the OS can cause MediaDrm::getProvisionRequest()
+// to crash. As this runs shortly after startup, Chrome will be unusable
+// if that happens. So use |kLastProvisioningAttemptTimeToken| to keep track of
+// the last attempt to pre-provision, and don't try again within
+// |kProvisioningDelta|. Value is cleared if provisioning returns, so on devices
+// without the crash things will work as normal.
+// TODO(b/253295050): Remove this workaround if Android R patched to fix this.
+
+bool IsAndroidR() {
+  return base::android::BuildInfo::GetInstance()->sdk_int() ==
+         base::android::SDK_VERSION_R;
+}
+
+bool ShouldAttemptProvisioning(base::Value::Dict& origin_id_dict) {
+  DVLOG(3) << __func__;
+  DCHECK(IsAndroidR());
+
+  const base::Value* token_value =
+      origin_id_dict.Find(kLastProvisioningAttemptTimeToken);
+  if (token_value) {
+    auto last_provisioning_attempt_time = base::ValueToTime(*token_value);
+    if (last_provisioning_attempt_time) {
+      if (base::Time::Now() <
+          last_provisioning_attempt_time.value() + kProvisioningDelta) {
+        // Last provisioning attempt is within |kProvisioningDelta|, so return
+        // false so that provisioning is not attempted.
+        return false;
+      }
+    }
+  }
+
+  // Either no value or it's too old, so return true to try a provisioning
+  // attempt.
+  return true;
+}
+
+void SetLastProvisioningTime(base::Value::Dict& origin_id_dict) {
+  DVLOG(3) << __func__;
+  DCHECK(IsAndroidR());
+
+  origin_id_dict.Set(kLastProvisioningAttemptTimeToken,
+                     base::TimeToValue(base::Time::Now()));
+}
+
+void RemoveLastProvisioningTime(base::Value::Dict& origin_id_dict) {
+  DVLOG(3) << __func__;
+  DCHECK(IsAndroidR());
+
+  origin_id_dict.Remove(kLastProvisioningAttemptTimeToken);
 }
 
 // On devices that don't support per-application provisioning attempts to
@@ -345,13 +419,29 @@ MediaDrmOriginIdManager::MediaDrmOriginIdManager(PrefService* pref_service)
   // posted task won't do anything). |kMediaDrmPreprovisioningAtStartup| is also
   // used by testing so that it can check pre-provisioning directly.
   if (base::FeatureList::IsEnabled(media::kMediaDrmPreprovisioningAtStartup)) {
+    // Special handling for Android R due to a bug in the OS can cause
+    // MediaDrm::getProvisionRequest() to crash. We check here so that if the
+    // preference is updated it should be persisted before provisioning is
+    // actually attempted after |kStartupDelay|.
+    bool should_attempt_provisioning = true;
+    if (IsAndroidR()) {
+      ScopedDictPrefUpdate update(pref_service_, kMediaDrmOriginIds);
+      should_attempt_provisioning = ShouldAttemptProvisioning(*update);
+      if (should_attempt_provisioning) {
+        // Provisioning will be attempted, so record the current time.
+        SetLastProvisioningTime(*update);
+      }
+    }
+
     // Running this after a delay of |kStartupDelay| in order to not do too much
     // extra work when the profile is loaded.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&MediaDrmOriginIdManager::PreProvisionIfNecessary,
-                       weak_factory_.GetWeakPtr()),
-        kStartupDelay);
+    if (should_attempt_provisioning) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&MediaDrmOriginIdManager::PreProvisionIfNecessary,
+                         weak_factory_.GetWeakPtr()),
+          kStartupDelay);
+    }
   }
 
   // In order to determine how devices are pre-provisioning origin IDs, post a
@@ -509,6 +599,13 @@ void MediaDrmOriginIdManager::OriginIdProvisioned(
            << " origin_id: " << (origin_id ? origin_id->ToString() : "null");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(is_provisioning_);
+
+  // On Android R, clear |kLastProvisioningAttemptTimeToken| as provisioning()
+  // didn't crash.
+  if (IsAndroidR()) {
+    ScopedDictPrefUpdate update(pref_service_, kMediaDrmOriginIds);
+    RemoveLastProvisioningTime(*update);
+  }
 
   if (!origin_id) {
     // Unable to provision an origin ID, most likely due to being unable to

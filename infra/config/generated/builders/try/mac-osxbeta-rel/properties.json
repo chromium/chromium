@@ -15,10 +15,9 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "goma_use_local"
+                  "mb"
                 ],
-                "build_config": "Release",
+                "build_config": "Debug",
                 "config": "chromium",
                 "target_bits": 64,
                 "target_platform": "mac"

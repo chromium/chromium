@@ -114,6 +114,10 @@ ImageResourceContent* ImageResourceContent::Fetch(FetchParameters& params,
   ImageResource* resource = ImageResource::Fetch(params, fetcher);
   if (!resource)
     return nullptr;
+  resource->GetContent()->SetIsLoadedFromMemoryCache(
+      resource->IsLoadedFromMemoryCache());
+  resource->GetContent()->SetIsPreloadedWithEarlyHints(
+      resource->IsPreloadedByEarlyHints());
   return resource->GetContent();
 }
 

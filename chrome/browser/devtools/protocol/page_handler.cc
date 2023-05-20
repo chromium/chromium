@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/protocol/page_handler.h"
 
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -317,13 +318,19 @@ void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
                           protocol::Maybe<protocol::String>());
     return;
   }
-  absl::optional<std::string> id;
-  if (data.manifest->id.has_value()) {
-    id = base::UTF16ToUTF8(data.manifest->id.value());
+  // Either both the id and start_url are present, or they are both empty.
+  std::string current_app_id_str;
+  std::string recommended_manifest_id_path_only;
+  if (data.manifest->id.is_valid()) {
+    CHECK(data.manifest->start_url.is_valid());
+    current_app_id_str = data.manifest->id.spec();
+    recommended_manifest_id_path_only =
+        web_app::GenerateManifestIdFromStartUrlOnly(data.manifest->start_url)
+            .PathForRequest();
+  } else {
+    CHECK(!data.manifest->start_url.is_valid());
   }
-  callback->sendSuccess(
-      web_app::GenerateAppIdUnhashed(id, data.manifest->start_url),
-      web_app::GenerateRecommendedId(data.manifest->start_url));
+  callback->sendSuccess(current_app_id_str, recommended_manifest_id_path_only);
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)

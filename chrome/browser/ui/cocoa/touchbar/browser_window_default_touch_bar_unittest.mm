@@ -8,7 +8,6 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
@@ -30,6 +29,10 @@
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
@@ -47,8 +50,8 @@ class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr),
         true);
 
-    touch_bar_.reset([[BrowserWindowDefaultTouchBar alloc] init]);
-    touch_bar_.get().browser = browser();
+    touch_bar_ = [[BrowserWindowDefaultTouchBar alloc] init];
+    touch_bar_.browser = browser();
   }
 
   void UpdateCommandEnabled(int id, bool enabled) {
@@ -64,8 +67,8 @@ class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
-    touch_bar_.get().browser = nullptr;
-    touch_bar_.reset();
+    touch_bar_.browser = nullptr;
+    touch_bar_ = nil;
 
     BrowserWithTestWindowTest::TearDown();
   }
@@ -75,7 +78,7 @@ class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<TemplateURLServiceFactoryTestUtil> template_service_util_;
 
-  base::scoped_nsobject<BrowserWindowDefaultTouchBar> touch_bar_;
+  BrowserWindowDefaultTouchBar* __strong touch_bar_;
 };
 
 // Test if any known identifiers no longer work. See the message in the test;

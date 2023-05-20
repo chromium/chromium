@@ -71,7 +71,7 @@ ClipboardNudge::~ClipboardNudge() = default;
 
 std::unique_ptr<SystemNudgeLabel> ClipboardNudge::CreateLabelView() const {
   bool use_launcher_key =
-      Shell::Get()->keyboard_capability()->HasLauncherButton();
+      Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard();
   std::u16string shortcut_key = l10n_util::GetStringUTF16(
       use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
                        : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);

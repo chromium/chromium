@@ -65,8 +65,10 @@
 <translation id="4118525110028899586">暫停錄影</translation>
 <translation id="4121305183798804752">偵測到文件</translation>
 <translation id="414641094616694804">這部攝影機無法變更解析度</translation>
+<translation id="4176463684765177261">已停用</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
 <translation id="428234092390943511">頁面縮圖</translation>
+<translation id="4349714250734879769">由 Chrome 縮放畫面</translation>
 <translation id="4383571725254449280">列印效能記錄</translation>
 <translation id="4445542136948522167">停止拍照</translation>
 <translation id="4570032796877367747">前置鏡頭</translation>
@@ -148,6 +150,7 @@
 <translation id="8145038249676204903">切換為拍照模式</translation>
 <translation id="8167081290930651932">儲存為相片</translation>
 <translation id="8239780215768881278">拍攝影片快照</translation>
+<translation id="8346544573713510785">由相機 HAL 縮放畫面</translation>
 <translation id="8425673304802773841">向下傾斜</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8629662593426079630">360p</translation>

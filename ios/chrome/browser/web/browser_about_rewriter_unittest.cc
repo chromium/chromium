@@ -5,7 +5,7 @@
 #include "ios/chrome/browser/web/browser_about_rewriter.h"
 
 #include "base/test/gtest_util.h"
-#include "ios/chrome/browser/url/chrome_url_constants.h"
+#include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
 

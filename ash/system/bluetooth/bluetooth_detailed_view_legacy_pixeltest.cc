@@ -85,14 +85,14 @@ TEST_F(BluetoothDetailedViewLegacyPixelTest, Basics) {
   system_tray->bubble()
       ->unified_system_tray_controller()
       ->ShowBluetoothDetailedView();
-  views::View* detailed_view =
-      system_tray->bubble()->unified_view()->detailed_view();
-  ASSERT_TRUE(detailed_view);
+  views::View* detailed_view_container =
+      system_tray->bubble()->unified_view()->detailed_view_container();
+  ASSERT_TRUE(detailed_view_container);
 
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "bluetooth_detailed_view_legacy",
-      /*revision_number=*/1, detailed_view));
+      /*revision_number=*/1, detailed_view_container));
 }
 
 }  // namespace ash

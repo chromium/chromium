@@ -23,6 +23,11 @@ std::unique_ptr<PrefetchStreamingURLLoader>
 MakeServableStreamingURLLoaderWithRedirectForTest(const GURL& original_url,
                                                   const GURL& redirect_url);
 
+std::vector<std::unique_ptr<PrefetchStreamingURLLoader>>
+MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
+    const GURL& original_url,
+    const GURL& redirect_url);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTILS_H_

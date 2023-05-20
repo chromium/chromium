@@ -103,14 +103,14 @@ class WebAppDatabaseTest : public WebAppTest {
     run_loop.Run();
   }
 
-  Registry WriteWebApps(const GURL& base_url, int num_apps) {
+  Registry WriteWebApps(const GURL& base_url, uint32_t num_apps) {
     Registry registry;
 
     auto write_batch = database_factory().GetStore()->CreateWriteBatch();
 
-    for (int i = 0; i < num_apps; ++i) {
+    for (uint32_t i = 0; i < num_apps; ++i) {
       std::unique_ptr<WebApp> app =
-          test::CreateRandomWebApp(base_url, /*seed=*/i);
+          test::CreateRandomWebApp({.base_url = base_url, .seed = i});
       std::unique_ptr<WebAppProto> proto =
           WebAppDatabase::CreateWebAppProto(*app);
       const AppId app_id = app->app_id();
@@ -170,17 +170,18 @@ TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
   InitSyncBridge();
   EXPECT_TRUE(registrar().is_empty());
 
-  const int num_apps = 20;
+  const uint32_t num_apps = 100;
   const GURL base_url("https://example.com/path");
 
-  std::unique_ptr<WebApp> app = test::CreateRandomWebApp(base_url, /*seed=*/0);
+  std::unique_ptr<WebApp> app =
+      test::CreateRandomWebApp({.base_url = base_url, .seed = 0});
   AppId app_id = app->app_id();
   RegisterApp(std::move(app));
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
 
-  for (int i = 1; i <= num_apps; ++i) {
+  for (uint32_t i = 1; i <= num_apps; ++i) {
     std::unique_ptr<WebApp> extra_app =
-        test::CreateRandomWebApp(base_url, /*seed=*/i);
+        test::CreateRandomWebApp({.base_url = base_url, .seed = i});
     RegisterApp(std::move(extra_app));
   }
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
@@ -196,7 +197,7 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
   InitSyncBridge();
   EXPECT_TRUE(registrar().is_empty());
 
-  const int num_apps = 10;
+  const uint32_t num_apps = 100;
   const GURL base_url("https://example.com/path");
 
   RegistryUpdateData::Apps apps_to_create;
@@ -209,14 +210,19 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
   bool allow_system_source = false;
 #endif
 
-  for (int i = 0; i < num_apps; ++i) {
+  for (uint32_t i = 0; i < num_apps; ++i) {
     std::unique_ptr<WebApp> app =
-        test::CreateRandomWebApp(base_url, /*seed=*/i, allow_system_source);
+        test::CreateRandomWebApp({.base_url = base_url,
+                                  .seed = i,
+                                  .allow_system_source = allow_system_source});
     apps_to_delete.push_back(app->app_id());
     apps_to_create.push_back(std::move(app));
 
     std::unique_ptr<WebApp> expected_app =
-        test::CreateRandomWebApp(base_url, /*seed=*/i, allow_system_source);
+        test::CreateRandomWebApp({.base_url = base_url,
+                                  .seed = i,
+                                  .non_zero = false,
+                                  .allow_system_source = allow_system_source});
     expected_registry.emplace(expected_app->app_id(), std::move(expected_app));
   }
 
@@ -260,7 +266,7 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 }
 
 TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
-  Registry registry = WriteWebApps(GURL("https://example.com/path"), 20);
+  Registry registry = WriteWebApps(GURL("https://example.com/path"), 100);
 
   InitSyncBridge();
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
@@ -339,6 +345,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
 
   // Required fields:
   app->SetStartUrl(start_url);
+  app->SetManifestId(GenerateManifestIdFromStartUrlOnly(start_url));
   app->SetName(name);
   app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   app->SetIsLocallyInstalled(false);
@@ -389,7 +396,6 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_EQ(app->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
   EXPECT_FALSE(app->run_on_os_login_os_integration_state().has_value());
   EXPECT_TRUE(app->manifest_url().is_empty());
-  EXPECT_FALSE(app->manifest_id().has_value());
   EXPECT_TRUE(app->permissions_policy().empty());
   EXPECT_FALSE(app->isolation_data().has_value());
   RegisterApp(std::move(app));
@@ -401,6 +407,8 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
 
   // Required fields were serialized:
   EXPECT_EQ(app_id, app_copy->app_id());
+  EXPECT_EQ(GenerateManifestIdFromStartUrlOnly(start_url),
+            app_copy->manifest_id());
   EXPECT_EQ(start_url, app_copy->start_url());
   EXPECT_EQ(name, app_copy->untranslated_name());
   EXPECT_EQ(mojom::UserDisplayMode::kBrowser, app_copy->user_display_mode());
@@ -459,7 +467,6 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
   EXPECT_FALSE(app_copy->run_on_os_login_os_integration_state().has_value());
   EXPECT_TRUE(app_copy->manifest_url().is_empty());
-  EXPECT_FALSE(app_copy->manifest_id().has_value());
   EXPECT_TRUE(app_copy->permissions_policy().empty());
   EXPECT_FALSE(app_copy->tab_strip());
 }
@@ -471,7 +478,8 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
   // A number of icons of each IconPurpose.
   const int num_icons = 32;
 
-  std::unique_ptr<WebApp> app = test::CreateRandomWebApp(base_url, /*seed=*/0);
+  std::unique_ptr<WebApp> app =
+      test::CreateRandomWebApp({.base_url = base_url, .seed = 0});
   AppId app_id = app->app_id();
 
   std::vector<apps::IconInfo> icons;
@@ -512,8 +520,8 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
 }
 
 TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
-  std::unique_ptr<WebApp> base_app =
-      test::CreateRandomWebApp(GURL("https://example.com"), /*seed=*/0);
+  std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp(
+      {.base_url = GURL("https://example.com"), .seed = 0});
   std::unique_ptr<WebAppProto> base_proto =
       WebAppDatabase::CreateWebAppProto(*base_app);
 
@@ -615,7 +623,6 @@ class WebAppDatabaseProtoDataTest : public ::testing::Test {
 
 TEST_F(WebAppDatabaseProtoDataTest, DoesNotSetIsolationDataIfNotIsolated) {
   std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
-
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app,
               AllOf(Eq(*protoed_web_app),

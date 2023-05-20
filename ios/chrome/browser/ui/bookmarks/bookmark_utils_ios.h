@@ -135,8 +135,20 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service);
 
 // Creates the bookmark if `node` is NULL. Otherwise updates `node`.
 // `folder` is the intended parent of `node`.
-// Returns a snackbar with an undo action, returns nil if operation wasn't
-// successful or there's nothing to undo.
+// Returns a boolean signifying whether any change was performed.
+// Note: This function might invalidate `node` if `folder` and `node` belong to
+// different `BookmarkModel` instances.
+bool CreateOrUpdateBookmark(const bookmarks::BookmarkNode* node,
+                            NSString* title,
+                            const GURL& url,
+                            const bookmarks::BookmarkNode* folder,
+                            bookmarks::BookmarkModel* local_or_syncable_model,
+                            bookmarks::BookmarkModel* account_model);
+
+// Similar to `CreateOrUpdateBookmark`, but returns a snackbar that allows to
+// undo the performed action. Returns nil if there's nothing to undo.
+// Note: This function might invalidate `node` if `folder` and `node` belong to
+// different `BookmarkModel` instances.
 // TODO(crbug.com/1099901): Refactor to include position and replace two
 // functions below.
 MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
@@ -144,7 +156,8 @@ MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
     NSString* title,
     const GURL& url,
     const bookmarks::BookmarkNode* folder,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* local_or_syncable_model,
+    bookmarks::BookmarkModel* account_model,
     ChromeBrowserState* browser_state);
 
 // Creates a new bookmark with `title`, `url`, at `position` under parent

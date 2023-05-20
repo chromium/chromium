@@ -336,7 +336,7 @@
       <part file="version_ui_strings.grdp" />
       <part file="webapps_strings.grdp" />
 
-      <if expr="not is_ios">
+      <if expr="use_blink">
         <part file="history_clusters_strings.grdp" />
       </if>
       <if expr="is_android">

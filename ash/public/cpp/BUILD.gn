@@ -332,6 +332,8 @@ component("cpp") {
     "stylus_utils.h",
     "system/anchored_nudge_data.cc",
     "system/anchored_nudge_data.h",
+    "system/anchored_nudge_manager.cc",
+    "system/anchored_nudge_manager.h",
     "system/power/power_button_controller_base.cc",
     "system/power/power_button_controller_base.h",
     "system/toast_data.cc",

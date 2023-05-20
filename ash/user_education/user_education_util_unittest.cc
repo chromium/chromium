@@ -17,8 +17,10 @@
 #include "ash/test/test_widget_builder.h"
 #include "ash/user_education/user_education_types.h"
 #include "components/account_id/account_id.h"
+#include "components/user_education/common/help_bubble_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -29,9 +31,10 @@ namespace ash::user_education_util {
 namespace {
 
 // Aliases.
-using session_manager::SessionState;
-using testing::AnyOf;
-using testing::Eq;
+using ::session_manager::SessionState;
+using ::testing::AnyOf;
+using ::testing::Eq;
+using ::user_education::HelpBubbleParams;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -61,9 +64,22 @@ using UserEducationUtilTest = ::testing::Test;
 // Verifies that `CreateExtendedProperties()` can be used to create extended
 // properties for a help bubble having set ID, and that `GetHelpBubbleId()` can
 // be used to retrieve help bubble ID from extended properties.
-TEST_F(UserEducationUtilTest, ExtendedProperties) {
+TEST_F(UserEducationUtilTest, ExtendedPropertiesWithId) {
   EXPECT_EQ(GetHelpBubbleId(CreateExtendedProperties(HelpBubbleId::kTest)),
             HelpBubbleId::kTest);
+}
+
+// Verifies that `CreateExtendedProperties()` can be used to create extended
+// properties for a help bubble having set style, and `GetHelpBubbleStyle()` can
+// be used to retrieve help bubble style from extended properties.
+TEST_F(UserEducationUtilTest, ExtendedPropertiesWithStyle) {
+  EXPECT_EQ(
+      GetHelpBubbleStyle(CreateExtendedProperties(HelpBubbleStyle::kNudge)),
+      HelpBubbleStyle::kNudge);
+
+  // It is permissible to query help bubble style even when absent.
+  EXPECT_EQ(GetHelpBubbleStyle(HelpBubbleParams::ExtendedProperties()),
+            absl::nullopt);
 }
 
 // Verifies that `ToString()` is working as intended.

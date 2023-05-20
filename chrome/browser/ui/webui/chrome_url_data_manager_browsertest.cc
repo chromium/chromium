@@ -37,6 +37,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #else
 #include "chrome/browser/signin/signin_features.h"
@@ -176,6 +177,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
       enabled_features.push_back(welcome::kForceEnabled);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    enabled_features.push_back(ash::features::kDriveFsMirroring);
     enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
 #else
     enabled_features.push_back(kForYouFre);
@@ -266,7 +268,10 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://components",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
+// TODO(crbug.com/1446612): Re-enable this test
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     "chrome://credits",
+#endif
     "chrome://customize-chrome-side-panel.top-chrome",
     "chrome://device-log",
     // TODO(crbug.com/1113446): Test failure due to excessive output.
@@ -366,18 +371,24 @@ static constexpr const char* const kChromeUrls[] = {
     // TODO(crbug.com/1400799): Add CrOS-only WebUI URLs here as TrustedTypes
     // are deployed to more WebUIs.
 
+    "chrome://account-manager-error",
+    "chrome://account-migration-welcome",
     // TODO(crbug.com/1102129): DCHECK failure in
     // ArcGraphicsTracingHandler::ArcGraphicsTracingHandler.
     // "chrome://arc-graphics-tracing",
+    "chrome://add-supervision/",
     "chrome://app-disabled",
     "chrome://certificate-manager/",
+    "chrome://cloud-upload",
     "chrome://cryptohome",
     "chrome://drive-internals",
     "chrome://emoji-picker",
     "chrome://family-link-user-internals",
     "chrome://help-app",
     "chrome://linux-proxy-config",
+    "chrome://manage-mirrorsync",
     "chrome://multidevice-internals",
+    "chrome://multidevice-setup",
     "chrome://nearby-internals",
     "chrome://network",
     "chrome://office-fallback/",

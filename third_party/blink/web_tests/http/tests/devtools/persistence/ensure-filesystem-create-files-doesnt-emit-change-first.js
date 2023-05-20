@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {BindingsTestRunner} from 'bindings_test_runner';
+
 (async function() {
   TestRunner.addResult(`Verify that fs.createFile is creating UISourceCode atomically with content`);
-  await TestRunner.loadTestModule('bindings_test_runner');
 
   var folderLocation = '/var/test';
   await (new BindingsTestRunner.TestFileSystem(folderLocation)).reportCreatedPromise();

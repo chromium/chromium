@@ -38,9 +38,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.MessagePumpTimeKeeper.{NamedThread}"
-    enum="MessagePumpPhases" expires_after="2023-05-31">
+    enum="MessagePumpPhases" expires_after="2024-05-31">
   <owner>gab@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
+  <owner>spvw@chromium.org</owner>
   <summary>
     Records the number of milliseconds spent in each phase of pumping tasks on
     {NamedThread}. Each enum value can be analyzed for its total time or as a

@@ -206,6 +206,7 @@ static_library("test_support") {
     "test/test_window_targeter.h",
     "test/test_windows.cc",
     "test/test_windows.h",
+    "test/ui_controls_aurawin.h",
     "test/ui_controls_factory_aura.h",
     "test/window_event_dispatcher_test_api.cc",
     "test/window_event_dispatcher_test_api.h",
@@ -245,7 +246,7 @@ static_library("test_support") {
   ]
 
   if (is_win) {
-    sources += [ "test/ui_controls_factory_aurawin.cc" ]
+    sources += [ "test/ui_controls_aurawin.cc" ]
   }
 
   if (use_ozone && (is_chromeos_ash || is_castos)) {

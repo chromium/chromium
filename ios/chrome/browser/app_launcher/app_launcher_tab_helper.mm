@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_util.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/url/url_util.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"

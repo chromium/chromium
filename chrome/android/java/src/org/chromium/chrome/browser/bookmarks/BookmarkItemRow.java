@@ -48,8 +48,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
         super(context, attrs);
 
         final @BookmarkRowDisplayPref int displayPref = BookmarkUiPrefs.getDisplayPrefForLegacy();
-        mIconGenerator =
-                BookmarkUtils.getRoundedIconGenerator(getContext(), getResources(), displayPref);
+        mIconGenerator = BookmarkUtils.getRoundedIconGenerator(getContext(), displayPref);
         mFetchFaviconSize = BookmarkUtils.getFaviconFetchSize(getResources());
         mDisplayFaviconSize = BookmarkUtils.getFaviconDisplaySize(getResources(), displayPref);
     }

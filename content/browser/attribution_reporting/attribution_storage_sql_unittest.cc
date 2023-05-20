@@ -354,7 +354,7 @@ TEST_F(AttributionStorageSqlTest,
     // [impression_origin_idx], [sources_by_source_time],
     // [reports_by_report_time], [reports_by_source_id_report_type],
     // [reports_by_trigger_time], [reports_by_reporting_origin],
-    // [rate_limit_source_site_reporting_origin_idx],
+    // [rate_limit_source_site_reporting_site_idx],
     // [rate_limit_reporting_origin_idx], [rate_limit_time_idx],
     // [rate_limit_impression_id_idx], [sources_by_destination_site], and the
     // meta table index.

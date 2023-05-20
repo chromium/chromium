@@ -63,8 +63,6 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   void SetDefaultLanguage(const std::string& lang);
   size_t GetFontNameIndex(std::string font_name);
   void SetSelectedIndex(size_t index);
-  std::vector<std::string> GetLabelFontNameAt(size_t index) override;
-  absl::optional<int> GetLabelFontSize() override;
   size_t GetSelectedIndex() { return selected_index_; }
   ReadAnythingFont GetFontLoggingValue() {
     return font_choices_[selected_index_].enum_value;

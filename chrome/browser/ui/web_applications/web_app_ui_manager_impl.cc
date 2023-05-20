@@ -334,7 +334,9 @@ void WebAppUiManagerImpl::TriggerInstallDialog(
     content::WebContents* web_contents) {
   web_app::CreateWebAppFromManifest(
       web_contents, /*bypass_service_worker_check=*/true,
-      webapps::WebappInstallSource::INTERNAL_DEFAULT, base::DoNothing());
+      // TODO(issuetracker.google.com/283034487): Consider passing in the
+      // install source from the caller.
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, base::DoNothing());
 }
 
 void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {

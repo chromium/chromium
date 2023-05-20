@@ -9,6 +9,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view.h"
+#include "ui/views/views_export.h"
 
 namespace gfx {
 class RoundedCornersF;
@@ -22,7 +23,7 @@ class SubmenuView;
 // MenuScrollViewContainer contains the SubmenuView (through a MenuScrollView)
 // and two scroll buttons. The scroll buttons are only visible and enabled if
 // the preferred height of the SubmenuView is bigger than our bounds.
-class MenuScrollViewContainer : public View {
+class VIEWS_EXPORT MenuScrollViewContainer : public View {
  public:
   METADATA_HEADER(MenuScrollViewContainer);
 

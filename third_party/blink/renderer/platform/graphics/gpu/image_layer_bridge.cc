@@ -191,8 +191,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
     *out_resource = viz::TransferableResource::MakeGpu(
         mailbox_holder.mailbox, mailbox_holder.texture_target,
         mailbox_holder.sync_token, size,
-        viz::SharedImageFormat::SinglePlane(
-            viz::SkColorTypeToResourceFormat(color_type)),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(color_type),
         is_overlay_candidate);
 
     // If the transferred ImageBitmap contained in this ImageLayerBridge was

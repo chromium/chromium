@@ -1733,6 +1733,17 @@ void DriveIntegrationService::RegisterDriveFsNativeMessageHostBridge(
   drivefs_holder_->RegisterDriveFsNativeMessageHostBridge(std::move(bridge));
 }
 
+void DriveIntegrationService::GetDocsOfflineStats(
+    DriveFs::GetDocsOfflineStatsCallback callback) {
+  if (!IsMounted() || !GetDriveFsInterface()) {
+    std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE,
+                            drivefs::mojom::DocsOfflineStats::New());
+    return;
+  }
+
+  GetDriveFsInterface()->GetDocsOfflineStats(std::move(callback));
+}
+
 //===================== DriveIntegrationServiceFactory =======================
 
 DriveIntegrationServiceFactory::FactoryCallback*

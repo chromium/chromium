@@ -8,6 +8,9 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
@@ -19,6 +22,19 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace enterprise_connectors {
+
+namespace {
+
+std::string ConvertPolicyLevelToString(DTCPolicyLevel level) {
+  switch (level) {
+    case DTCPolicyLevel::kBrowser:
+      return "Browser";
+    case DTCPolicyLevel::kUser:
+      return "User";
+  }
+}
+
+}  // namespace
 
 ConnectorsInternalsPageHandler::ConnectorsInternalsPageHandler(
     mojo::PendingReceiver<connectors_internals::mojom::PageHandler> receiver,
@@ -38,7 +54,7 @@ void ConnectorsInternalsPageHandler::GetDeviceTrustState(
   // if the current management configuration is not supported.
   if (!device_trust_service) {
     auto state = connectors_internals::mojom::DeviceTrustState::New(
-        false,
+        false, std::vector<std::string>(),
         connectors_internals::mojom::KeyInfo::New(
             connectors_internals::mojom::KeyManagerInitializedValue::
                 UNSUPPORTED,
@@ -76,9 +92,19 @@ void ConnectorsInternalsPageHandler::OnSignalsCollected(
         user_permission_service->HasUserConsented());
   }
 
+  std::vector<std::string> policy_enabled_levels;
+  auto* device_trust_connector_service =
+      DeviceTrustConnectorServiceFactory::GetForProfile(profile_);
+  if (device_trust_connector_service) {
+    for (const auto& level :
+         device_trust_connector_service->GetEnabledInlinePolicyLevels()) {
+      policy_enabled_levels.push_back(ConvertPolicyLevelToString(level));
+    }
+  }
+
   auto state = connectors_internals::mojom::DeviceTrustState::New(
-      is_device_trust_enabled, utils::GetKeyInfo(), signals_json,
-      std::move(consent_metadata));
+      is_device_trust_enabled, policy_enabled_levels, utils::GetKeyInfo(),
+      signals_json, std::move(consent_metadata));
   std::move(callback).Run(std::move(state));
 }
 

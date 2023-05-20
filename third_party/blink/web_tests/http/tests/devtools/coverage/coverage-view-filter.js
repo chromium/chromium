@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {CoverageTestRunner} from 'coverage_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests the filter is properly applied to coverage list view.\n`);
-  await TestRunner.loadLegacyModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
+  await TestRunner.loadLegacyModule('panels/coverage');
 
   await CoverageTestRunner.startCoverage(true);
   await TestRunner.navigatePromise(TestRunner.url('resources/basic-coverage.html'));

@@ -37,7 +37,7 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
   void MaybeShowDiscoverNotification() override;
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(GetDeviceInfoCallback callback) override;
-  void OpenUrlInBrowser(const GURL& url) override;
+  void OpenUrlInBrowserAndTriggerInstallDialog(const GURL& url) override;
 
  private:
   mojo::Receiver<help_app::mojom::PageHandler> receiver_;

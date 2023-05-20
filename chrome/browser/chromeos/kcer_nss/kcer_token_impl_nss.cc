@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -56,8 +57,8 @@ void RunUnblocker(base::ScopedClosureRunner unblocker) {
   unblocker.RunAndReset();
 }
 
-// Returns a vector containing bytes from `value` or an empty vector if `value`
-// is nullptr.
+// Returns a vector containing bytes from `value` or an empty vector if
+// `value` is nullptr.
 std::vector<uint8_t> SECItemToBytes(crypto::ScopedSECItem value) {
   return value ? std::vector<uint8_t>(value->data, value->data + value->len)
                : std::vector<uint8_t>();
@@ -175,7 +176,8 @@ void GenerateEcKeyOnWorkerThread(Token token,
         slot.get(), SEC_OID_ANSIX962_EC_PRIME256V1, /*permanent=*/true,
         &public_key, &private_key);
   } else {
-    // Shouldn't be needed yet, will be implemented in non-NSS version of Kcer.
+    // Shouldn't be needed yet, will be implemented in non-NSS version of
+    // Kcer.
     return std::move(callback).Run(base::unexpected(Error::kNotImplemented));
   }
 
@@ -293,10 +295,173 @@ void RemoveCertOnWorkerThread(crypto::ScopedPK11Slot slot,
         base::unexpected(Error::kFailedToRemoveCertificate));
   }
   // TODO(miersh): Currently the method returns "success" even when
-  // SEC_DeletePermCertificate doesn't find the certificate. This is acceptable
-  // for a "remove" method, but it might be useful to change it after NSS is not
-  // used for Kcer.
+  // SEC_DeletePermCertificate doesn't find the certificate. This is
+  // acceptable for a "remove" method, but it might be useful to change it
+  // after NSS is not used for Kcer.
   std::move(callback).Run({});
+}
+
+bool DoesKeySupportSigningScheme(
+    SigningScheme kcer_signing_scheme,
+    const crypto::ScopedSECKEYPrivateKey& sec_private_key) {
+  switch (kcer_signing_scheme) {
+    case SigningScheme::kRsaPkcs1Sha1:
+    case SigningScheme::kRsaPkcs1Sha256:
+    case SigningScheme::kRsaPkcs1Sha384:
+    case SigningScheme::kRsaPkcs1Sha512:
+    case SigningScheme::kRsaPssRsaeSha256:
+    case SigningScheme::kRsaPssRsaeSha384:
+    case SigningScheme::kRsaPssRsaeSha512:
+      return (sec_private_key->keyType == ::KeyType::rsaKey);
+    case SigningScheme::kEcdsaSecp256r1Sha256:
+    case SigningScheme::kEcdsaSecp384r1Sha384:
+    case SigningScheme::kEcdsaSecp521r1Sha512:
+      return (sec_private_key->keyType == ::KeyType::ecKey);
+  }
+}
+
+// TODO(b/244408117): This method is mostly a copy of Sign() from
+// net/ssl/ssl_platform_key_nss.cc . The original method should be replaced
+// during the upcoming refactoring to remove direct usages of NSS.
+void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
+                        PrivateKeyHandle key,
+                        SigningScheme kcer_signing_scheme,
+                        DataToSign data_to_sign,
+                        Kcer::SignCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+
+  const crypto::ScopedSECKEYPrivateKey& sec_private_key = private_key.value();
+  if (!DoesKeySupportSigningScheme(kcer_signing_scheme, sec_private_key)) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kKeyDoesNotSupportSigningScheme));
+  }
+  uint16_t ssl_algorithm = static_cast<uint16_t>(kcer_signing_scheme);
+
+  const EVP_MD* digest_method =
+      SSL_get_signature_algorithm_digest(ssl_algorithm);
+  uint8_t digest[EVP_MAX_MD_SIZE];
+  unsigned digest_len;
+  if (!digest_method ||
+      !EVP_Digest(data_to_sign->data(), data_to_sign->size(), digest,
+                  &digest_len, digest_method, nullptr)) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToSignFailedToDigest));
+  }
+  SECItem digest_item;
+  digest_item.data = digest;
+  digest_item.len = digest_len;
+
+  CK_MECHANISM_TYPE mechanism = PK11_MapSignKeyType(sec_private_key->keyType);
+  SECItem param = {siBuffer, nullptr, 0};
+  CK_RSA_PKCS_PSS_PARAMS pss_params;
+  bssl::UniquePtr<uint8_t> free_digest_info;
+  if (SSL_is_signature_algorithm_rsa_pss(ssl_algorithm)) {
+    switch (EVP_MD_type(digest_method)) {
+      case NID_sha256:
+        pss_params.hashAlg = CKM_SHA256;
+        pss_params.mgf = CKG_MGF1_SHA256;
+        break;
+      case NID_sha384:
+        pss_params.hashAlg = CKM_SHA384;
+        pss_params.mgf = CKG_MGF1_SHA384;
+        break;
+      case NID_sha512:
+        pss_params.hashAlg = CKM_SHA512;
+        pss_params.mgf = CKG_MGF1_SHA512;
+        break;
+      default:
+        return std::move(callback).Run(
+            base::unexpected(Error::kUnexpectedSigningScheme));
+    }
+    // Use the hash length for the salt length.
+    pss_params.sLen = EVP_MD_size(digest_method);
+    mechanism = CKM_RSA_PKCS_PSS;
+    param.data = reinterpret_cast<unsigned char*>(&pss_params);
+    param.len = sizeof(pss_params);
+  } else if (SSL_get_signature_algorithm_key_type(ssl_algorithm) ==
+             EVP_PKEY_RSA) {
+    // PK11_SignWithMechanism expects the caller to prepend the DigestInfo for
+    // PKCS #1.
+    int hash_nid =
+        EVP_MD_type(SSL_get_signature_algorithm_digest(ssl_algorithm));
+    int is_alloced;
+    size_t prefix_len;
+    if (!RSA_add_pkcs1_prefix(&digest_item.data, &prefix_len, &is_alloced,
+                              hash_nid, digest_item.data, digest_item.len)) {
+      return std::move(callback).Run(
+          base::unexpected(Error::kFailedToSignFailedToAddPrefix));
+    }
+    digest_item.len = prefix_len;
+    if (is_alloced) {
+      free_digest_info.reset(digest_item.data);
+    }
+  }
+
+  std::vector<uint8_t> signature;
+
+  {
+    const int len = PK11_SignatureLen(sec_private_key.get());
+    if (len <= 0) {
+      return std::move(callback).Run(
+          base::unexpected(Error::kFailedToSignFailedToGetSignatureLength));
+    }
+
+    signature.resize(len);
+    SECItem signature_item;
+    signature_item.data = signature.data();
+    signature_item.len = signature.size();
+
+    SECStatus rv =
+        PK11_SignWithMechanism(sec_private_key.get(), mechanism, &param,
+                               &signature_item, &digest_item);
+    if (rv != SECSuccess) {
+      return std::move(callback).Run(base::unexpected(Error::kFailedToSign));
+    }
+    signature.resize(signature_item.len);
+  }
+
+  // NSS emits raw ECDSA signatures, but BoringSSL expects a DER-encoded
+  // ECDSA-Sig-Value.
+  if (SSL_get_signature_algorithm_key_type(ssl_algorithm) == EVP_PKEY_EC) {
+    if (signature.size() % 2 != 0) {
+      return std::move(callback).Run(
+          base::unexpected(Error::kFailedToSignBadSignatureLength));
+    }
+    size_t order_len = signature.size() / 2;
+
+    // Convert the RAW ECDSA signature to a DER-encoded ECDSA-Sig-Value.
+    bssl::UniquePtr<ECDSA_SIG> sig(ECDSA_SIG_new());
+    if (!sig || !BN_bin2bn(signature.data(), order_len, sig->r) ||
+        !BN_bin2bn(signature.data() + order_len, order_len, sig->s)) {
+      return std::move(callback).Run(
+          base::unexpected(Error::kFailedToDerEncode));
+    }
+
+    {
+      const int len = i2d_ECDSA_SIG(sig.get(), nullptr);
+      if (len <= 0) {
+        return std::move(callback).Run(
+            base::unexpected(Error::kFailedToSignBadSignatureLength));
+      }
+      signature.resize(len);
+    }
+
+    {
+      uint8_t* ptr = signature.data();
+      const int len = i2d_ECDSA_SIG(sig.get(), &ptr);
+      if (len <= 0) {
+        return std::move(callback).Run(
+            base::unexpected(Error::kFailedToDerEncode));
+      }
+      signature.resize(len);
+    }
+  }
+
+  return std::move(callback).Run(Signature(std::move(signature)));
 }
 
 std::vector<SigningScheme> GetSigningSchemes(bool supports_pss,
@@ -337,6 +502,7 @@ std::vector<SigningScheme> GetSigningSchemes(bool supports_pss,
 
 base::expected<absl::optional<chaps::KeyPermissions>, Error>
 GetKeyPermissionsOnWorkerThread(
+    KeyPermissionsAttributeId key_permissions_attribute_id,
     const crypto::ScopedSECKEYPrivateKey& sec_private_key) {
   crypto::ScopedSECItem key_permissions_attribute(
       SECITEM_AllocItem(/*arena=*/nullptr,
@@ -345,8 +511,7 @@ GetKeyPermissionsOnWorkerThread(
 
   SECStatus status = PK11_ReadRawAttribute(
       /*objType=*/PK11_TypePrivKey, sec_private_key.get(),
-      pkcs11_custom_attributes::kCkaChromeOsKeyPermissions,
-      key_permissions_attribute.get());
+      key_permissions_attribute_id.value(), key_permissions_attribute.get());
 
   if (status != SECSuccess) {
     // CKR_ATTRIBUTE_TYPE_INVALID is a cryptoki function return value which is
@@ -372,6 +537,7 @@ GetKeyPermissionsOnWorkerThread(
 
 base::expected<absl::optional<std::string>, Error>
 GetCertProvisioningIdOnWorkerThread(
+    CertProvisioningIdAttributeId cert_prov_attribute_id,
     const crypto::ScopedSECKEYPrivateKey& sec_private_key) {
   crypto::ScopedSECItem cert_prov_attribute(SECITEM_AllocItem(/*arena=*/nullptr,
                                                               /*item=*/nullptr,
@@ -379,8 +545,7 @@ GetCertProvisioningIdOnWorkerThread(
 
   SECStatus status = PK11_ReadRawAttribute(
       /*objType=*/PK11_TypePrivKey, sec_private_key.get(),
-      pkcs11_custom_attributes::kCkaChromeOsBuiltinProvisioningProfileId,
-      cert_prov_attribute.get());
+      cert_prov_attribute_id.value(), cert_prov_attribute.get());
 
   if (status != SECSuccess) {
     // CKR_ATTRIBUTE_TYPE_INVALID is a cryptoki function return value which is
@@ -400,9 +565,21 @@ GetCertProvisioningIdOnWorkerThread(
                      cert_prov_attribute->data + cert_prov_attribute->len);
 }
 
-void GetKeyInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
-                              PrivateKeyHandle key,
-                              Kcer::GetKeyInfoCallback callback) {
+void GetTokenInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
+                                Kcer::GetTokenInfoCallback callback) {
+  TokenInfo token_info;
+  token_info.pkcs11_id = PK11_GetSlotID(slot.get());
+  token_info.token_name = PK11_GetSlotName(slot.get());
+  token_info.module_name = PK11_GetModule(slot.get())->commonName;
+  return std::move(callback).Run(std::move(token_info));
+}
+
+void GetKeyInfoOnWorkerThread(
+    KeyPermissionsAttributeId key_permissions_attribute_id,
+    CertProvisioningIdAttributeId cert_prov_attribute_id,
+    crypto::ScopedPK11Slot slot,
+    PrivateKeyHandle key,
+    Kcer::GetKeyInfoCallback callback) {
   KeyInfo key_info;
 
   base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
@@ -438,28 +615,21 @@ void GetKeyInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
     PORT_Free(nickname);
   }
 
-  // TODO(miersh): Temporary disable the code because on some builds unit tests
-  // fail to read custom attributes. This will be re-enabled in a following CL
-  // when custom attributes are mapped into unused normal attributes in tests.
-#if 0
   base::expected<absl::optional<chaps::KeyPermissions>, Error> key_permissions =
-      GetKeyPermissionsOnWorkerThread(sec_private_key);
+      GetKeyPermissionsOnWorkerThread(key_permissions_attribute_id,
+                                      sec_private_key);
   if (!key_permissions.has_value()) {
     return std::move(callback).Run(base::unexpected(key_permissions.error()));
   }
   key_info.key_permissions = std::move(key_permissions).value();
 
   base::expected<absl::optional<std::string>, Error> cert_prov_id =
-      GetCertProvisioningIdOnWorkerThread(sec_private_key);
+      GetCertProvisioningIdOnWorkerThread(cert_prov_attribute_id,
+                                          sec_private_key);
   if (!cert_prov_id.has_value()) {
     return std::move(callback).Run(base::unexpected(cert_prov_id.error()));
   }
   key_info.cert_provisioning_profile_id = std::move(cert_prov_id).value();
-#endif
-  // TODO(miersh): Temporary suppress "unused method" warnings. This should be
-  // removed together with the "#if 0" above.
-  (void)GetKeyPermissionsOnWorkerThread;
-  (void)GetCertProvisioningIdOnWorkerThread;
 
   return std::move(callback).Run(std::move(key_info));
 }
@@ -476,6 +646,62 @@ void SetKeyNicknameOnWorkerThread(crypto::ScopedPK11Slot slot,
 
   if (PK11_SetPrivateKeyNickname(private_key.value().get(), nickname.c_str()) !=
       SECSuccess) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToWriteAttribute));
+  }
+  return std::move(callback).Run({});
+}
+
+void SetKeyPermissionsOnWorkerThread(KeyPermissionsAttributeId attribute_id,
+                                     crypto::ScopedPK11Slot slot,
+                                     PrivateKeyHandle key,
+                                     chaps::KeyPermissions key_permissions,
+                                     Kcer::StatusCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+
+  std::vector<uint8_t> serialized_permissions;
+  serialized_permissions.resize(key_permissions.ByteSizeLong());
+  key_permissions.SerializeToArray(serialized_permissions.data(),
+                                   serialized_permissions.size());
+
+  SECItem attribute_value;
+  attribute_value.data = serialized_permissions.data();
+  attribute_value.len = serialized_permissions.size();
+
+  if (SECStatus res = PK11_WriteRawAttribute(
+          /*objType=*/PK11_TypePrivKey, private_key.value().get(),
+          attribute_id.value(), &attribute_value);
+      res != SECSuccess) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToWriteAttribute));
+  }
+  return std::move(callback).Run({});
+}
+
+void SetCertProvisioningProfileIdOnWorkerThread(
+    CertProvisioningIdAttributeId attribute_id,
+    crypto::ScopedPK11Slot slot,
+    PrivateKeyHandle key,
+    std::string cert_prov_id,
+    Kcer::StatusCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+
+  SECItem attribute_value;
+  attribute_value.data = reinterpret_cast<uint8_t*>(cert_prov_id.data());
+  attribute_value.len = cert_prov_id.size();
+
+  if (SECStatus res = PK11_WriteRawAttribute(
+          /*objType=*/PK11_TypePrivKey, private_key.value().get(),
+          attribute_id.value(), &attribute_value);
+      res != SECSuccess) {
     return std::move(callback).Run(
         base::unexpected(Error::kFailedToWriteAttribute));
   }
@@ -512,8 +738,8 @@ void KcerTokenImplNss::Initialize(crypto::ScopedPK11Slot nss_slot) {
     state_ = State::kInitializationFailed;
   }
 
-  // This is supposed to be the first time the task queue is unblocked, no other
-  // tasks should be already running.
+  // This is supposed to be the first time the task queue is unblocked, no
+  // other tasks should be already running.
   UnblockQueueProcessNextTask();
 }
 
@@ -732,7 +958,26 @@ void KcerTokenImplNss::Sign(PrivateKeyHandle key,
                             DataToSign data,
                             Kcer::SignCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  }
+  if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(
+        &KcerTokenImplNss::Sign, weak_factory_.GetWeakPtr(), std::move(key),
+        signing_scheme, std::move(data), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SignOnWorkerThread,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), signing_scheme, std::move(data),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::SignRsaPkcs1Raw(PrivateKeyHandle key,
@@ -744,7 +989,25 @@ void KcerTokenImplNss::SignRsaPkcs1Raw(PrivateKeyHandle key,
 
 void KcerTokenImplNss::GetTokenInfo(Kcer::GetTokenInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  }
+  if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(&KcerTokenImplNss::GetTokenInfo,
+                                           weak_factory_.GetWeakPtr(),
+                                           std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GetTokenInfoOnWorkerThread,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::GetKeyInfo(PrivateKeyHandle key,
@@ -765,7 +1028,8 @@ void KcerTokenImplNss::GetKeyInfo(PrivateKeyHandle key,
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&GetKeyInfoOnWorkerThread,
+      base::BindOnce(&GetKeyInfoOnWorkerThread, GetKeyPermissionsAttributeId(),
+                     GetCertProvisioningIdAttributeId(),
                      crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
                      std::move(key), std::move(unblocking_callback)));
 }
@@ -799,7 +1063,26 @@ void KcerTokenImplNss::SetKeyPermissions(PrivateKeyHandle key,
                                          chaps::KeyPermissions key_permissions,
                                          Kcer::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(
+        &KcerTokenImplNss::SetKeyPermissions, weak_factory_.GetWeakPtr(),
+        std::move(key), std::move(key_permissions), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SetKeyPermissionsOnWorkerThread,
+                     GetKeyPermissionsAttributeId(),
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(key_permissions),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::SetCertProvisioningProfileId(
@@ -807,7 +1090,27 @@ void KcerTokenImplNss::SetCertProvisioningProfileId(
     std::string profile_id,
     Kcer::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push(
+        base::BindOnce(&KcerTokenImplNss::SetCertProvisioningProfileId,
+                       weak_factory_.GetWeakPtr(), std::move(key),
+                       std::move(profile_id), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SetCertProvisioningProfileIdOnWorkerThread,
+                     GetCertProvisioningIdAttributeId(),
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(profile_id),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::OnCertsModified(Kcer::StatusCallback callback,
@@ -836,8 +1139,8 @@ base::OnceClosure KcerTokenImplNss::BlockQueueGetUnblocker() {
   base::ScopedClosureRunner unblocker(
       base::BindOnce(&KcerTokenImplNss::UnblockQueueProcessNextTask,
                      weak_factory_.GetWeakPtr()));
-  // Pack `unblocker` into an IO thread bound closure, so it can be attached to
-  // a callback.
+  // Pack `unblocker` into an IO thread bound closure, so it can be attached
+  // to a callback.
   return base::BindPostTask(
       content::GetIOThreadTaskRunner({}),
       base::BindOnce(&RunUnblocker, std::move(unblocker)));
@@ -886,9 +1189,9 @@ void KcerTokenImplNss::UpdateCacheWithCerts(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (state_ == State::kCacheOutdated) {
-    // If the status switched from kUpdating, then new update happened since the
-    // cache started to update, `new_certs` might already be outdated. Skip
-    // re-building the cache and try again.
+    // If the status switched from kUpdating, then new update happened since
+    // the cache started to update, `new_certs` might already be outdated.
+    // Skip re-building the cache and try again.
     return;
   }
 
@@ -905,8 +1208,8 @@ void KcerTokenImplNss::UpdateCacheWithCerts(
   }
 
   // Rebuilding the cache implicitly removes all the certs that are not in the
-  // permanent storage anymore. The certs themself will be fully destroyed when
-  // the last ref-counting reference to them is destroyed.
+  // permanent storage anymore. The certs themself will be fully destroyed
+  // when the last ref-counting reference to them is destroyed.
   cert_cache_ = CertCacheNss(new_cache);
   state_ = State::kCacheUpToDate;
 }
@@ -916,11 +1219,36 @@ void KcerTokenImplNss::HandleInitializationFailed(
     base::OnceCallback<void(base::expected<T, Error>)> callback) {
   std::move(callback).Run(base::unexpected(Error::kTokenInitializationFailed));
   // Multiple tasks might be handled in a row, schedule the next task
-  // asynchronously to not overload the stack and not occupy the thread for too
-  // long.
+  // asynchronously to not overload the stack and not occupy the thread for
+  // too long.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&KcerTokenImplNss::UnblockQueueProcessNextTask,
                                 weak_factory_.GetWeakPtr()));
+}
+
+void KcerTokenImplNss::SetAttributeTranslationForTesting(bool is_enabled) {
+  CHECK_IS_TEST();
+  translate_attributes_for_testing_ = is_enabled;
+}
+
+KeyPermissionsAttributeId KcerTokenImplNss::GetKeyPermissionsAttributeId()
+    const {
+  if (UNLIKELY(translate_attributes_for_testing_)) {
+    CHECK_IS_TEST();
+    return KeyPermissionsAttributeId(CKA_END_DATE);
+  }
+  return KeyPermissionsAttributeId(
+      pkcs11_custom_attributes::kCkaChromeOsKeyPermissions);
+}
+
+CertProvisioningIdAttributeId
+KcerTokenImplNss::GetCertProvisioningIdAttributeId() const {
+  if (UNLIKELY(translate_attributes_for_testing_)) {
+    CHECK_IS_TEST();
+    return CertProvisioningIdAttributeId(CKA_START_DATE);
+  }
+  return CertProvisioningIdAttributeId(
+      pkcs11_custom_attributes::kCkaChromeOsBuiltinProvisioningProfileId);
 }
 
 }  // namespace kcer::internal

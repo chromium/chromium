@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
+#include "web_app_integration_test_driver.h"
 
 namespace web_app::integration_tests {
 namespace {
@@ -181,16 +182,16 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigationFails) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSubAppInstallation) {
   helper_.InstallMenuOption(InstallableSite::kHasSubApps);
-  helper_.CheckNoSubApps();
+  helper_.CheckNoSubApps(Site::kHasSubApps);
   helper_.InstallSubApp(Site::kHasSubApps, Site::kSubApp1,
                         SubAppInstallDialogOptions::kUserAllow);
-  helper_.CheckHasSubApp(Site::kSubApp1);
-  helper_.CheckNotHasSubApp(Site::kSubApp2);
+  helper_.CheckHasSubApp(Site::kHasSubApps, Site::kSubApp1);
+  helper_.CheckNotHasSubApp(Site::kHasSubApps, Site::kSubApp2);
   helper_.CheckAppInListWindowed(Site::kSubApp1);
-  EXPECT_NONFATAL_FAILURE(helper_.CheckNoSubApps(),
+  EXPECT_NONFATAL_FAILURE(helper_.CheckNoSubApps(Site::kHasSubApps),
                           "Expected equality of these values");
   helper_.RemoveSubApp(Site::kHasSubApps, Site::kSubApp1);
-  helper_.CheckNoSubApps();
+  helper_.CheckNoSubApps(Site::kHasSubApps);
 }
 
 // Generated tests:

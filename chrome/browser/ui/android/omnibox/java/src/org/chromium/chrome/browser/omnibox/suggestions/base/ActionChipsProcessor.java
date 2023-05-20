@@ -11,17 +11,16 @@ import android.util.SparseBooleanArray;
 import androidx.annotation.NonNull;
 import androidx.collection.ArraySet;
 
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.EntityInfoProto;
-import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.action.OmniboxAction;
-import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.action.OmniboxActionInSuggest;
 import org.chromium.components.omnibox.action.OmniboxActionType;
-import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -33,7 +32,6 @@ import java.util.Set;
  */
 public class ActionChipsProcessor {
     private final @NonNull Context mContext;
-    private final @NonNull OmniboxActionDelegate mOmniboxActionDelegate;
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @NonNull Set<Integer> mLastVisiblePedals = new ArraySet<>();
     private final @NonNull SparseBooleanArray mActionInSuggestShownOrUsed =
@@ -44,13 +42,10 @@ public class ActionChipsProcessor {
     /**
      * @param context An Android context.
      * @param suggestionHost Component receiving suggestion events.
-     * @param omniboxActionDelegate A delegate that will responsible for pedals.
      */
-    public ActionChipsProcessor(@NonNull Context context, @NonNull SuggestionHost suggestionHost,
-            @NonNull OmniboxActionDelegate omniboxActionDelegate) {
+    public ActionChipsProcessor(@NonNull Context context, @NonNull SuggestionHost suggestionHost) {
         mContext = context;
         mSuggestionHost = suggestionHost;
-        mOmniboxActionDelegate = omniboxActionDelegate;
 
         // TODO(crbug/1418077): Migrate this to OmniboxActionInSuggest along with execute logic.
         var pm = mContext.getPackageManager();
@@ -117,9 +112,7 @@ public class ActionChipsProcessor {
                     break;
 
                 case OmniboxActionType.ACTION_IN_SUGGEST:
-                    var actionType = OmniboxActionInSuggest.from(chip)
-                                             .actionInfo.getActionType()
-                                             .getNumber();
+                    var actionType = OmniboxActionInSuggest.from(chip).actionType;
                     mActionInSuggestShownOrUsed.put(actionType, false);
                     break;
             }
@@ -148,7 +141,7 @@ public class ActionChipsProcessor {
                 return true;
 
             case OmniboxActionType.ACTION_IN_SUGGEST:
-                return OmniboxActionInSuggest.from(action).actionInfo.getActionType().getNumber()
+                return OmniboxActionInSuggest.from(action).actionType
                         != EntityInfoProto.ActionInfo.ActionType.CALL_VALUE
                         || mDialerAvailable;
         }
@@ -167,13 +160,11 @@ public class ActionChipsProcessor {
                 break;
 
             case OmniboxActionType.ACTION_IN_SUGGEST:
-                var actionType =
-                        OmniboxActionInSuggest.from(action).actionInfo.getActionType().getNumber();
+                var actionType = OmniboxActionInSuggest.from(action).actionType;
                 mActionInSuggestShownOrUsed.put(actionType, true);
                 break;
         }
-        mSuggestionHost.finishInteraction();
-        mOmniboxActionDelegate.execute(action);
+        mSuggestionHost.onOmniboxActionClicked(action);
     }
 
     /**

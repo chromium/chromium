@@ -16,6 +16,7 @@
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger.h"
 
 class PrefService;
@@ -38,6 +39,8 @@ class HistogramSignalHandler;
 // model execution collector.
 class TrainingDataCollector {
  public:
+  using SuccessCallback = SegmentationPlatformService::SuccessCallback;
+  // Name and sample of the uma output metric to be collected as training data.
   static std::unique_ptr<TrainingDataCollector> Create(
       processing::FeatureListQueryProcessor* processor,
       HistogramSignalHandler* histogram_signal_handler,
@@ -48,7 +51,7 @@ class TrainingDataCollector {
       CachedResultProvider* cached_result_provider);
 
   // Parameters used for reporting immediate output collections.
-  struct ImmediaCollectionParam {
+  struct ImmediateCollectionParam {
     // Hash of the output metric name given by
     // |base::HashMetricName(histogram_name)| function.
     uint64_t output_metric_hash;
@@ -79,13 +82,12 @@ class TrainingDataCollector {
       scoped_refptr<InputContext> input_context,
       DecisionType type) = 0;
 
-  // Called when a relevant uma histogram is recorded or when a time delay
-  // trigger is hit, retrieve input training data from storage, collect output
-  // training data and upload all training data.
-  virtual void OnObservationTrigger(
-      const absl::optional<ImmediaCollectionParam>& param,
-      TrainingRequestId request_id,
-      const proto::SegmentInfo& segment_info) = 0;
+  // Called by Segmentation Platform when manually triggering data collection on
+  // the client.
+  virtual void CollectTrainingData(SegmentId segment_id,
+                                   TrainingRequestId request_id,
+                                   const TrainingLabels& param,
+                                   SuccessCallback callback) = 0;
 
   virtual ~TrainingDataCollector();
 

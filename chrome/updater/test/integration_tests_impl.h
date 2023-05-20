@@ -282,6 +282,12 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id);
 void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install);
+
+base::CommandLine MakeElevated(base::CommandLine command_line);
+
+void DMDeregisterDevice(UpdaterScope scope);
+void DMCleanup(UpdaterScope scope);
+
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_

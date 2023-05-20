@@ -67,9 +67,10 @@ class AXTreeDistiller {
 #endif
 
  private:
-  // Distills the AXTree via a rules-based algorithm. Runs the callback on
-  // completion.
-  void DistillViaAlgorithm(const ui::AXTree& tree);
+  // Distills the AXTree via a rules-based algorithm. Results are added to
+  // |content_node_ids|.
+  void DistillViaAlgorithm(const ui::AXTree& tree,
+                           std::vector<ui::AXNodeID>* content_node_ids);
 
   // render_frame_ is only used in the ENABLE_SCREEN_AI_SERVICE buildflag.
   // Fuchsia does not build with that buildflag so it is throwing
@@ -83,15 +84,21 @@ class AXTreeDistiller {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Passes |snapshot| to the Screen2x ML model, which identifes the main
   // content nodes and calls |ProcessScreen2xResult()| on completion.
-  void DistillViaScreen2x(const ui::AXTree& tree,
-                          const ui::AXTreeUpdate& snapshot,
-                          const ukm::SourceId& ukm_source_id);
+  // |content_node_ids_algorithm| are the content nodes identified by the
+  // algorithm. They are passed along to the screen2x callback.
+  void DistillViaScreen2x(
+      const ui::AXTree& tree,
+      const ui::AXTreeUpdate& snapshot,
+      const ukm::SourceId& ukm_source_id,
+      std::vector<ui::AXNodeID>* content_node_ids_algorithm);
 
-  // Called by the Screen2x service from the utility process. Runs the callback
-  // if Screen2x identified content nodes. If not, distills via the rules-based
-  // algorithm.
-  void ProcessScreen2xResult(const ui::AXTreeID& tree_id,
-                             const std::vector<ui::AXNodeID>& content_node_ids);
+  // Called by the Screen2x service from the utility process. Merges the result
+  // from the algorithm with the result from Screen2x and passes the merged
+  // vector to the callback.
+  void ProcessScreen2xResult(
+      const ui::AXTreeID& tree_id,
+      std::vector<ui::AXNodeID> content_node_ids_algorithm,
+      const std::vector<ui::AXNodeID>& content_node_ids_screen2x);
 
   // Called when the main content extractor is disconnected. Runs the callback
   // with an empty list of content node IDs.

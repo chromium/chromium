@@ -398,7 +398,10 @@
   if (_locationBarView == locationBarView) {
     return;
   }
-  [_locationBarView removeFromSuperview];
+
+  if ([_locationBarView superview] == self.locationBarContainer) {
+    [_locationBarView removeFromSuperview];
+  }
 
   _locationBarView = locationBarView;
   locationBarView.translatesAutoresizingMaskIntoConstraints = NO;

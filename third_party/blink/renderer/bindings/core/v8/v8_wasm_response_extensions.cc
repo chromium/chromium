@@ -539,8 +539,7 @@ void StreamFromResponseCallback(
     kMaxValue = kValidOtherProtocol
   };
 
-  Response* response =
-      V8Response::ToImplWithTypeCheck(args.GetIsolate(), args[0]);
+  Response* response = V8Response::ToWrappable(args.GetIsolate(), args[0]);
   if (!response) {
     base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
                                   WasmStreamingInputType::kNoResponse);

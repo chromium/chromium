@@ -26,6 +26,9 @@ api::os_events::UsbEventInfo UncheckedConvertPtr(
 api::os_events::SdCardEventInfo UncheckedConvertPtr(
     crosapi::mojom::TelemetrySdCardEventInfoPtr ptr);
 
+api::os_events::PowerEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryPowerEventInfoPtr ptr);
+
 }  // namespace unchecked
 
 api::os_events::AudioJackEvent Convert(
@@ -42,6 +45,9 @@ api::os_events::UsbEvent Convert(
 
 api::os_events::SdCardEvent Convert(
     crosapi::mojom::TelemetrySdCardEventInfo::State state);
+
+api::os_events::PowerEvent Convert(
+    crosapi::mojom::TelemetryPowerEventInfo::State state);
 
 crosapi::mojom::TelemetryEventCategoryEnum Convert(
     api::os_events::EventCategory input);

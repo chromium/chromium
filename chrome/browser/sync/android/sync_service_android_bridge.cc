@@ -27,9 +27,9 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_utils.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_utils.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -163,9 +163,10 @@ jboolean SyncServiceAndroidBridge::IsInitialSyncFeatureSetupComplete(
       ->IsInitialSyncFeatureSetupComplete();
 }
 
-void SyncServiceAndroidBridge::SetFirstSetupComplete(JNIEnv* env, jint source) {
+void SyncServiceAndroidBridge::SetInitialSyncFeatureSetupComplete(JNIEnv* env,
+                                                                  jint source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  native_sync_service_->GetUserSettings()->SetFirstSetupComplete(
+  native_sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       static_cast<syncer::SyncFirstSetupCompleteSource>(source));
 }
 
@@ -188,8 +189,8 @@ ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetSelectedTypes(
 jboolean SyncServiceAndroidBridge::IsTypeManagedByPolicy(JNIEnv* env,
                                                          jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK_GE(type, (int)syncer::UserSelectableType::kFirstType);
-  CHECK_LE(type, (int)syncer::UserSelectableType::kLastType);
+  CHECK_GE(type, static_cast<int>(syncer::UserSelectableType::kFirstType));
+  CHECK_LE(type, static_cast<int>(syncer::UserSelectableType::kLastType));
   return native_sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
       static_cast<syncer::UserSelectableType>(type));
 }
@@ -205,8 +206,8 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
 
   syncer::UserSelectableTypeSet user_selectable_types;
   for (int type : types_vector) {
-    CHECK_GE(type, (int)syncer::UserSelectableType::kFirstType);
-    CHECK_LE(type, (int)syncer::UserSelectableType::kLastType);
+    CHECK_GE(type, static_cast<int>(syncer::UserSelectableType::kFirstType));
+    CHECK_LE(type, static_cast<int>(syncer::UserSelectableType::kLastType));
     user_selectable_types.Put(static_cast<syncer::UserSelectableType>(type));
   }
 

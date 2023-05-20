@@ -53,7 +53,8 @@ void GetIndexedOrNamed(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   }
 
-  HTMLAllCollection* impl = V8HTMLAllCollection::ToImpl(info.Holder());
+  HTMLAllCollection* impl =
+      V8HTMLAllCollection::ToWrappableUnsafe(info.Holder());
 
   v8::Local<v8::Uint32> index;
   if (info[0]

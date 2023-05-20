@@ -38,6 +38,12 @@ class V8IntersectionObserverDelegate final
     return IntersectionObserver::kPostTaskToDeliver;
   }
 
+  // The IntersectionObserver spec requires that at least one observation be
+  // recorded after observe() is called, even if the target is detached.
+  bool NeedsInitialObservationWithDetachedTarget() const override {
+    return true;
+  }
+
   void Deliver(const HeapVector<Member<IntersectionObserverEntry>>&,
                IntersectionObserver&) override;
 

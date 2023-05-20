@@ -163,6 +163,20 @@ bool IsVietnameseVniEngine(base::StringPiece engine_id) {
   return engine_id == "vkd_vi_vni";
 }
 
+mojom::VietnameseVniSettingsPtr CreateVietnameseVniSettings(
+    const base::Value::Dict& input_method_specific_pref) {
+  auto settings = mojom::VietnameseVniSettings::New();
+  settings->show_underline_for_composition_text = true;
+  return settings;
+}
+
+mojom::VietnameseTelexSettingsPtr CreateVietnameseTelexSettings(
+    const base::Value::Dict& input_method_specific_pref) {
+  auto settings = mojom::VietnameseTelexSettings::New();
+  settings->show_underline_for_composition_text = true;
+  return settings;
+}
+
 mojom::LatinSettingsPtr CreateLatinSettings(
     const base::Value::Dict& input_method_specific_pref,
     const PrefService& prefs,
@@ -175,25 +189,31 @@ mojom::LatinSettingsPtr CreateLatinSettings(
       base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning) ||
       autocorrect_pref == AutocorrectPreference::kEnabled;
   settings->predictive_writing =
-      features::IsAssistiveMultiWordEnabled() &&
+      base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
       prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
       IsUsEnglishEngine(engine_id);
   return settings;
 }
 
 mojom::KoreanLayout KoreanLayoutToMojom(const std::string& layout) {
-  if (layout == kKoreanPrefsLayoutDubeolsik)
+  if (layout == kKoreanPrefsLayoutDubeolsik) {
     return mojom::KoreanLayout::kDubeolsik;
-  if (layout == kKoreanPrefsLayoutDubeolsikOldHangeul)
+  }
+  if (layout == kKoreanPrefsLayoutDubeolsikOldHangeul) {
     return mojom::KoreanLayout::kDubeolsikOldHangeul;
-  if (layout == kKoreanPrefsLayoutSebeolsik390)
+  }
+  if (layout == kKoreanPrefsLayoutSebeolsik390) {
     return mojom::KoreanLayout::kSebeolsik390;
-  if (layout == kKoreanPrefsLayoutSebeolsikFinal)
+  }
+  if (layout == kKoreanPrefsLayoutSebeolsikFinal) {
     return mojom::KoreanLayout::kSebeolsikFinal;
-  if (layout == kKoreanPrefsLayoutSebeolsikNoShift)
+  }
+  if (layout == kKoreanPrefsLayoutSebeolsikNoShift) {
     return mojom::KoreanLayout::kSebeolsikNoShift;
-  if (layout == kKoreanPrefsLayoutSebeolsikOldHangeul)
+  }
+  if (layout == kKoreanPrefsLayoutSebeolsikOldHangeul) {
     return mojom::KoreanLayout::kSebeolsikOldHangeul;
+  }
   return mojom::KoreanLayout::kDubeolsik;
 }
 
@@ -229,12 +249,15 @@ mojom::FuzzyPinyinSettingsPtr CreateFuzzyPinyinSettings(
 }
 
 mojom::PinyinLayout PinyinLayoutToMojom(const std::string& layout) {
-  if (layout == kPinyinPrefsLayoutUsQwerty)
+  if (layout == kPinyinPrefsLayoutUsQwerty) {
     return mojom::PinyinLayout::kUsQwerty;
-  if (layout == kPinyinPrefsLayoutDvorak)
+  }
+  if (layout == kPinyinPrefsLayoutDvorak) {
     return mojom::PinyinLayout::kDvorak;
-  if (layout == kPinyinPrefsLayoutColemak)
+  }
+  if (layout == kPinyinPrefsLayoutColemak) {
     return mojom::PinyinLayout::kColemak;
+  }
   return mojom::PinyinLayout::kUsQwerty;
 }
 
@@ -266,37 +289,48 @@ mojom::PinyinSettingsPtr CreatePinyinSettings(
 }
 
 mojom::ZhuyinLayout ZhuyinLayoutToMojom(const std::string& layout) {
-  if (layout == kZhuyinPrefsLayoutStandard)
+  if (layout == kZhuyinPrefsLayoutStandard) {
     return mojom::ZhuyinLayout::kStandard;
-  if (layout == kZhuyinPrefsLayoutIbm)
+  }
+  if (layout == kZhuyinPrefsLayoutIbm) {
     return mojom::ZhuyinLayout::kIbm;
-  if (layout == kZhuyinPrefsLayoutEten)
+  }
+  if (layout == kZhuyinPrefsLayoutEten) {
     return mojom::ZhuyinLayout::kEten;
+  }
   return mojom::ZhuyinLayout::kStandard;
 }
 
 mojom::ZhuyinSelectionKeys ZhuyinSelectionKeysToMojom(
     const std::string& selection_keys) {
-  if (selection_keys == kZhuyinPrefsSelectionKeys1234567890)
+  if (selection_keys == kZhuyinPrefsSelectionKeys1234567890) {
     return mojom::ZhuyinSelectionKeys::k1234567890;
-  if (selection_keys == kZhuyinPrefsSelectionKeysAsdfghjkl)
+  }
+  if (selection_keys == kZhuyinPrefsSelectionKeysAsdfghjkl) {
     return mojom::ZhuyinSelectionKeys::kAsdfghjkl;
-  if (selection_keys == kZhuyinPrefsSelectionKeysAsdfzxcv89)
+  }
+  if (selection_keys == kZhuyinPrefsSelectionKeysAsdfzxcv89) {
     return mojom::ZhuyinSelectionKeys::kAsdfzxcv89;
-  if (selection_keys == kZhuyinPrefsSelectionKeysAsdfjkl789)
+  }
+  if (selection_keys == kZhuyinPrefsSelectionKeysAsdfjkl789) {
     return mojom::ZhuyinSelectionKeys::kAsdfjkl789;
-  if (selection_keys == kZhuyinPrefsSelectionKeys1234Qweras)
+  }
+  if (selection_keys == kZhuyinPrefsSelectionKeys1234Qweras) {
     return mojom::ZhuyinSelectionKeys::k1234Qweras;
+  }
   return mojom::ZhuyinSelectionKeys::k1234567890;
 }
 
 uint32_t ZhuyinPageSizeToInt(const std::string& page_size) {
-  if (page_size == kZhuyinPrefsPageSize10)
+  if (page_size == kZhuyinPrefsPageSize10) {
     return 10;
-  if (page_size == kZhuyinPrefsPageSize9)
+  }
+  if (page_size == kZhuyinPrefsPageSize9) {
     return 9;
-  if (page_size == kZhuyinPrefsPageSize8)
+  }
+  if (page_size == kZhuyinPrefsPageSize8) {
     return 8;
+  }
   return 10;
 }
 
@@ -517,11 +551,11 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   }
   if (IsVietnameseTelexEngine(engine_id)) {
     return mojom::InputMethodSettings::NewVietnameseTelexSettings(
-        mojom::VietnameseTelexSettings::New());
+        CreateVietnameseTelexSettings(input_method_specific_pref));
   }
   if (IsVietnameseVniEngine(engine_id)) {
     return mojom::InputMethodSettings::NewVietnameseVniSettings(
-        mojom::VietnameseVniSettings::New());
+        CreateVietnameseVniSettings(input_method_specific_pref));
   }
   // TODO(b/232341104): Add the code to send the Japanese settings to
   // the engine if the engine_id is nacl_mozc_jp or nacl_mozc_us.

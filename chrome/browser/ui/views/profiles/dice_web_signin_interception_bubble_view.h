@@ -40,18 +40,16 @@ class DiceWebSigninInterceptionBubbleView
   // Warning: the bubble is closed when the handle is destroyed ; it is the
   // responsibility of the caller to keep the handle alive until the bubble
   // should be closed.
-  [[nodiscard]] static std::unique_ptr<
-      ScopedDiceWebSigninInterceptionBubbleHandle>
-  CreateBubble(Browser* browser,
-               views::View* anchor_view,
-               const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-                   bubble_parameters,
-               base::OnceCallback<void(SigninInterceptionResult)> callback);
+  [[nodiscard]] static std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
+  CreateBubble(
+      Browser* browser,
+      views::View* anchor_view,
+      const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
+      base::OnceCallback<void(SigninInterceptionResult)> callback);
 
   // Record metrics about the result of the signin interception.
   static void RecordInterceptionResult(
-      const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-          bubble_parameters,
+      const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       Profile* profile,
       SigninInterceptionResult result);
 
@@ -85,7 +83,7 @@ class DiceWebSigninInterceptionBubbleView
 
   // Closes the bubble when `ScopedHandle` is destroyed. Does nothing if the
   // bubble has been already closed.
-  class ScopedHandle : public ScopedDiceWebSigninInterceptionBubbleHandle {
+  class ScopedHandle : public ScopedWebSigninInterceptionBubbleHandle {
    public:
     explicit ScopedHandle(
         base::WeakPtr<DiceWebSigninInterceptionBubbleView> bubble);
@@ -101,14 +99,13 @@ class DiceWebSigninInterceptionBubbleView
   DiceWebSigninInterceptionBubbleView(
       Browser* browser,
       views::View* anchor_view,
-      const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-          bubble_parameters,
+      const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 
   // Gets a handle on the bubble. Warning: the bubble is closed when the handle
   // is destroyed ; it is the responsibility of the caller to keep the handle
   // alive until the bubble should be closed.
-  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> GetHandle();
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> GetHandle();
 
   // This bubble has no native buttons. The user accepts or cancels or selects
   // Guest profile through this method, which is called by the inner web UI.
@@ -127,7 +124,7 @@ class DiceWebSigninInterceptionBubbleView
   base::WeakPtr<Browser> browser_;
   raw_ptr<Profile> profile_;
   bool accepted_ = false;
-  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
   raw_ptr<views::WebView> web_view_;
 

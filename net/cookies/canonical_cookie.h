@@ -462,6 +462,8 @@ class NET_EXPORT CanonicalCookie {
   static std::string BuildCookieAttributesLine(const CanonicalCookie& cookie);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest,
+                           TestGetAndAdjustPortForTrustworthyUrls);
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestPrefixHistograms);
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestHasHiddenPrefixName);
 
@@ -515,6 +517,19 @@ class NET_EXPORT CanonicalCookie {
   // SameSite computation yourself.
   CookieEffectiveSameSite GetEffectiveSameSite(
       CookieAccessSemantics access_semantics) const;
+
+  // Returns the appropriate port value for the given `source_url` depending on
+  // if the url is considered trustworthy or not.
+  //
+  // This function normally returns source_url.EffectiveIntPort(), but it can
+  // return a different port value if:
+  // * `source_url`'s scheme isn't cryptographically secure
+  // * `url_is_trustworthy` is true
+  // * `source_url`'s port is the default port for the scheme i.e.: 80
+  // If all these conditions are true then the returned value will be 443 to
+  // indicate that we're treating `source_url` as if it was secure.
+  static int GetAndAdjustPortForTrustworthyUrls(const GURL& source_url,
+                                                bool url_is_trustworthy);
 
   // Checks for values that could be misinterpreted as a cookie name prefix.
   static bool HasHiddenPrefixName(const base::StringPiece cookie_value);

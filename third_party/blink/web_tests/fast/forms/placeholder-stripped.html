@@ -21,8 +21,8 @@ if (window.internals) {
     shouldBeEqualToString('internals.visiblePlaceholder(input0)', 'first line second line');
     shouldBeEqualToString('internals.visiblePlaceholder(input1)', '');
     shouldBeEqualToString('internals.visiblePlaceholder(textarea0)', 'first line \nsecond line');
-    shouldBeEqualToString('internals.visiblePlaceholder(textarea1)', '');
-    shouldBeEqualToString('internals.visiblePlaceholder(textarea2)', '');
+    shouldBeEqualToString('internals.visiblePlaceholder(textarea1)', '\n');
+    shouldBeEqualToString('internals.visiblePlaceholder(textarea2)', '\n');
 
     document.body.removeChild(document.getElementById('container'));
 } else {

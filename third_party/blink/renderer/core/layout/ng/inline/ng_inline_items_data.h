@@ -24,6 +24,10 @@ struct CORE_EXPORT NGInlineItemsData
  public:
   virtual ~NGInlineItemsData() = default;
 
+  NGInlineItemTextIndex End() const {
+    return {items.size(), text_content.length()};
+  }
+
   // Text content for all inline items represented by a single NGInlineNode.
   // Encoded either as UTF-16 or latin-1 depending on the content.
   String text_content;

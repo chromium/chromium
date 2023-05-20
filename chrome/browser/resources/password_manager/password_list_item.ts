@@ -88,7 +88,10 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
           this.dispatchEvent(new CustomEvent(
               'password-details-shown',
               {bubbles: true, composed: true, detail: this}));
-          Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+          // Keep current search query.
+          Router.getInstance().navigateTo(
+              Page.PASSWORD_DETAILS, group,
+              Router.getInstance().currentRoute.queryParameters);
         })
         .catch(() => {});
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(

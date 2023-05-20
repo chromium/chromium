@@ -8,18 +8,18 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {ContentSettingsTypes, SettingsUnusedSitePermissionsElement, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, SettingsUnusedSitePermissionsElement, SafetyHubBrowserProxyImpl, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckUnusedSitePermissionsModuleInteractions, SettingsRoutes} from 'chrome://settings/settings.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestSiteSettingsPermissionsBrowserProxy} from './test_site_settings_permissions_browser_proxy.js';
+import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 
 // clang-format on
 
 suite('CrSettingsUnusedSitePermissionsTest', function() {
-  let browserProxy: TestSiteSettingsPermissionsBrowserProxy;
+  let browserProxy: TestSafetyHubBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   let testElement: SettingsUnusedSitePermissionsElement;
@@ -112,9 +112,9 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
   }
 
   setup(async function() {
-    browserProxy = new TestSiteSettingsPermissionsBrowserProxy();
+    browserProxy = new TestSafetyHubBrowserProxy();
     browserProxy.setUnusedSitePermissions(mockData);
-    SiteSettingsPermissionsBrowserProxyImpl.setInstance(browserProxy);
+    SafetyHubBrowserProxyImpl.setInstance(browserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     testRoutes = {

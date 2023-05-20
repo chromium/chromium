@@ -4,7 +4,7 @@
 
 'use strict';
 
-import {AppManagementStore} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementStore} from 'chrome://os-settings/os_settings.js';
 import {convertOptionalBoolToBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {setupFakeHandler, replaceBody} from './test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

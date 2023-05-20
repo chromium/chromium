@@ -266,13 +266,11 @@ bool V4L2VideoDecoder::NeedsBitstreamConversion() const {
 
 bool V4L2VideoDecoder::CanReadWithoutStalling() const {
   NOTIMPLEMENTED();
-  NOTREACHED();
-  return true;
+  NOTREACHED_NORETURN();
 }
 
 int V4L2VideoDecoder::GetMaxDecodeRequests() const {
-  NOTREACHED();
-  return 4;
+  NOTREACHED_NORETURN();
 }
 
 VideoDecoderType V4L2VideoDecoder::GetDecoderType() const {
@@ -399,7 +397,8 @@ bool V4L2VideoDecoder::SetupInputFormat(uint32_t fourcc) {
 
   // Determine the input buffer size.
   gfx::Size max_size, min_size;
-  device_->GetSupportedResolution(fourcc, &min_size, &max_size);
+  GetSupportedResolution(base::BindRepeating(&V4L2Device::Ioctl, device_),
+                         fourcc, &min_size, &max_size);
   size_t input_size = max_size.GetArea() > k1080pArea
                           ? kInputBufferMaxSizeFor4k
                           : kInputBufferMaxSizeFor1080p;

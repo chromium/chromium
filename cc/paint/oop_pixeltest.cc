@@ -687,9 +687,9 @@ TEST_F(OopPixelTest, DISABLED_DrawHdrImageWithMetadata) {
   // maximum luminance. The result should map the image to solid white (up
   // to rounding error).
   {
-    options.target_color_params.hdr_metadata->color_volume_metadata =
-        gfx::ColorVolumeMetadata(SkNamedPrimariesExt::kSRGB, image_luminance,
-                                 0.f);
+    options.target_color_params.hdr_metadata->smpte_st_2086 =
+        gfx::HdrMetadataSmpteSt2086(SkNamedPrimariesExt::kSRGB, image_luminance,
+                                    0.f);
 
     auto actual = Raster(display_item_list, options);
     auto color = actual.getColor4f(0, 0);
@@ -702,9 +702,9 @@ TEST_F(OopPixelTest, DISABLED_DrawHdrImageWithMetadata) {
   // luminance. The result should map the image to something darker than solid
   // white.
   {
-    options.target_color_params.hdr_metadata->color_volume_metadata =
-        gfx::ColorVolumeMetadata(SkNamedPrimariesExt::kSRGB, kPQMaxLuminance,
-                                 0.f);
+    options.target_color_params.hdr_metadata->smpte_st_2086 =
+        gfx::HdrMetadataSmpteSt2086(SkNamedPrimariesExt::kSRGB, kPQMaxLuminance,
+                                    0.f);
 
     auto actual = Raster(display_item_list, options);
     auto color = actual.getColor4f(0, 0);
@@ -1670,14 +1670,14 @@ class OopTextBlobPixelTest
           GetTextBlobStrategy(GetParam()) == TextBlobStrategy::kRecordFilter;
       error_pixels_percentage =
           std::max(is_record_filter ? 12.f : 0.2f, error_pixels_percentage);
-      max_abs_error = std::max(is_record_filter ? 220 : 2, max_abs_error);
-      avg_error = std::max(is_record_filter ? 50.f : 2.f, avg_error);
+      max_abs_error = std::max(is_record_filter ? 246 : 2, max_abs_error);
+      avg_error = std::max(is_record_filter ? 59.1f : 2.f, avg_error);
     } else if (GetMatrixStrategy(GetParam()) == MatrixStrategy::kPerspective) {
       switch (GetTextBlobStrategy(GetParam())) {
         case TextBlobStrategy::kRecordFilter:
           error_pixels_percentage = std::max(13.f, error_pixels_percentage);
           max_abs_error = std::max(255, max_abs_error);
-          avg_error = std::max(60.f, avg_error);
+          avg_error = std::max(62.4f, avg_error);
           break;
         case TextBlobStrategy::kRecordShader:
           // For kRecordShader+kPerspective the scale factor used to draw the

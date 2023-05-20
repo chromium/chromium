@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/constants",
   "+components/invalidation",
   "+components/pref_registry",
   "+components/prefs",

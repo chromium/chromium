@@ -76,7 +76,7 @@ const char kMultiloginSuccessResponse[] =
 
 class FakeDiceWebSigninInterceptorDelegate;
 
-class FakeBubbleHandle : public ScopedDiceWebSigninInterceptionBubbleHandle,
+class FakeBubbleHandle : public ScopedWebSigninInterceptionBubbleHandle,
                          public base::SupportsWeakPtr<FakeBubbleHandle> {
  public:
   ~FakeBubbleHandle() override = default;
@@ -87,7 +87,7 @@ class FakeBubbleHandle : public ScopedDiceWebSigninInterceptionBubbleHandle,
 class FakeDiceWebSigninInterceptorDelegate
     : public DiceWebSigninInterceptorDelegate {
  public:
-  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
   ShowSigninInterceptionBubble(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
@@ -106,8 +106,7 @@ class FakeDiceWebSigninInterceptorDelegate
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
       const CoreAccountId& account_id,
-      DiceWebSigninInterceptor::SigninInterceptionType interception_type)
-      override {
+      WebSigninInterceptor::SigninInterceptionType interception_type) override {
     EXPECT_FALSE(fre_browser_)
         << "First run experience must be shown only once.";
     EXPECT_EQ(interception_type, expected_interception_type_);
@@ -120,7 +119,7 @@ class FakeDiceWebSigninInterceptorDelegate
   const CoreAccountId& fre_account_id() { return fre_account_id_; }
 
   void set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType type) {
+      WebSigninInterceptor::SigninInterceptionType type) {
     expected_interception_type_ = type;
   }
 
@@ -137,8 +136,8 @@ class FakeDiceWebSigninInterceptorDelegate
  private:
   raw_ptr<Browser, DanglingUntriaged> fre_browser_ = nullptr;
   CoreAccountId fre_account_id_;
-  DiceWebSigninInterceptor::SigninInterceptionType expected_interception_type_ =
-      DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;
+  WebSigninInterceptor::SigninInterceptionType expected_interception_type_ =
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser;
   SigninInterceptionResult expected_interception_result_ =
       SigninInterceptionResult::kAccepted;
   base::WeakPtr<FakeBubbleHandle> weak_bubble_handle_;
@@ -420,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(GetProfile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
+      WebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   ASSERT_TRUE(new_profile);
@@ -508,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   // Start the interception.
   GetInterceptorDelegate(GetProfile())
       ->set_expected_interception_type(
-          DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
+          WebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
   interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
@@ -703,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(GetProfile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise);
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise);
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   EXPECT_FALSE(
@@ -718,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
       GetInterceptorDelegate(new_profile);
   new_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise);
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise);
 
   IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
   adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
@@ -801,7 +800,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(GetProfile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise);
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise);
   source_interceptor_delegate->set_expected_interception_result(
       SigninInterceptionResult::kDeclined);
 
@@ -867,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(GetProfile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   EXPECT_TRUE(
@@ -882,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
       GetInterceptorDelegate(new_profile);
   new_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
 
   IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
   adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
@@ -954,7 +953,7 @@ IN_PROC_BROWSER_TEST_F(
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(GetProfile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
   source_interceptor_delegate->set_expected_interception_result(
       SigninInterceptionResult::kDeclined);
 
@@ -1022,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(GetProfile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
   source_interceptor_delegate->set_expected_interception_result(
       SigninInterceptionResult::kDeclined);
 
@@ -1086,7 +1085,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(GetProfile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   EXPECT_TRUE(
@@ -1101,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
       GetInterceptorDelegate(new_profile);
   new_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
 
   IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
   adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
@@ -1176,7 +1175,7 @@ IN_PROC_BROWSER_TEST_F(
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(GetProfile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
 
   EXPECT_FALSE(
       chrome::enterprise_util::UserAcceptedAccountManagement(GetProfile()));
@@ -1243,7 +1242,7 @@ IN_PROC_BROWSER_TEST_F(
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(GetProfile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
 
   EXPECT_FALSE(
       chrome::enterprise_util::UserAcceptedAccountManagement(GetProfile()));
@@ -1317,7 +1316,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(GetProfile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced);
+      WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced);
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   ASSERT_TRUE(new_profile);
@@ -1412,8 +1411,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   // Start the interception.
   GetInterceptorDelegate(GetProfile())
       ->set_expected_interception_type(
-          DiceWebSigninInterceptor::SigninInterceptionType::
-              kProfileSwitchForced);
+          WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced);
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
   interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,

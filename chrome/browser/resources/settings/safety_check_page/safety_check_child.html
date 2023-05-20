@@ -16,9 +16,12 @@
     width: var(--cr-link-row-icon-width, var(--cr-icon-size));
   }
 
+  .button-icon {
+    padding-inline-end: 0;
+  }
+
   .icon-blue {
     fill: var(--google-blue-600);
-    padding-inline-end: 0;
   }
 
   .icon-red {
@@ -54,7 +57,7 @@
       aria-label="[[buttonAriaLabel]]" no-search>
     [[buttonLabel]]
     <template is="dom-if" if="[[showButtonIcon_(buttonIcon)]]">
-      <iron-icon class="icon-blue" icon="[[buttonIcon]]" slot="suffix-icon">
+      <iron-icon class="button-icon icon-blue" icon="[[buttonIcon]]" slot="suffix-icon">
       </iron-icon>
     </template>
   </cr-button>

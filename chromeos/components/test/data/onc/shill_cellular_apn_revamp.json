@@ -37,6 +37,5 @@
       "username": "test-username",
       "password": "test-password"
     }
-  ],
-  "StaticIPConfig": {}
+  ]
 }

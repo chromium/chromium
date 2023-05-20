@@ -43,6 +43,10 @@ class BucketHost : public blink::mojom::BucketHost {
   // for the StorageBucket object.
   mojo::PendingRemote<blink::mojom::BucketHost> CreateStorageBucketBinding(
       base::WeakPtr<BucketContext> context);
+  // Pass a mojo data pipe sent from the renderer for the StorageBucket object.
+  void PassStorageBucketBinding(
+      base::WeakPtr<BucketContext> bucket_context,
+      mojo::PendingReceiver<blink::mojom::BucketHost> receiver);
 
   // blink::mojom::BucketHost
   void Persist(PersistCallback callback) override;

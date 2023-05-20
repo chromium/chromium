@@ -100,17 +100,6 @@ class NET_EXPORT NetworkIsolationKey {
   NetworkIsolationKey CreateWithNewFrameSite(
       const SchemefulSite& new_frame_site) const;
 
-  // Intended for temporary use in locations that should be using main frame and
-  // frame origin, but are currently only using frame origin, because the
-  // creating object may be shared across main frame objects. Having a special
-  // constructor for these methods makes it easier to keep track of locating
-  // callsites that need to have their NetworkIsolationKey filled in.
-  static NetworkIsolationKey ToDoUseTopFrameOriginAsWell(
-      const url::Origin& incorrectly_used_frame_origin) {
-    return NetworkIsolationKey(incorrectly_used_frame_origin,
-                               incorrectly_used_frame_origin);
-  }
-
   // Compare keys for equality, true if all enabled fields are equal.
   bool operator==(const NetworkIsolationKey& other) const {
     if (GetMode() != Mode::kFrameSiteEnabled) {

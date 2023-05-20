@@ -7,6 +7,7 @@ package org.chromium.chrome.test.util.browser;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.FeaturesBase;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.CachedFlag;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
@@ -131,7 +132,7 @@ public class Features extends FeaturesBase {
     private static void resetCachedFlags(boolean forInstrumentation) {
         CachedFeatureFlags.resetFlagsForTesting();
         if (forInstrumentation) {
-            CachedFeatureFlags.resetDiskForTesting();
+            CachedFlag.resetDiskForTesting();
         }
         FieldTrials.getInstance().reset();
     }

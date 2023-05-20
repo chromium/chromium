@@ -21,6 +21,7 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -380,6 +381,19 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                .BuildAggregatableAttribution(),
        .report_file = "report_6.json",
        .cleartext_payloads_file = "report_6_cleartext_payloads.json"},
+      {.report =
+           ReportBuilder(AttributionInfoBuilder().Build(),
+                         SourceBuilder(base::Time::FromJavaTime(1234483200000))
+                             .BuildStored())
+               .SetAggregatableHistogramContributions(
+                   {AggregatableHistogramContribution(/*key=*/0, /*value=*/1)})
+               .SetReportTime(base::Time::FromJavaTime(1234486400000))
+               .SetSourceRegistrationTimeConfig(
+                   attribution_reporting::mojom::SourceRegistrationTimeConfig::
+                       kExclude)
+               .BuildAggregatableAttribution(),
+       .report_file = "report_7.json",
+       .cleartext_payloads_file = "report_7_cleartext_payloads.json"},
   };
 
   for (auto& test_case : kTestCases) {

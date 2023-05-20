@@ -252,9 +252,10 @@ TEST_F(WebRtcInternalsTest, EnsureNoLogWhenNoObserver) {
 
   ASSERT_TRUE(observer.event_data()->is_list());
   EXPECT_EQ(1U, observer.event_data()->GetList().size());
-  base::Value& dict = observer.event_data()->GetList()[0];
-  ASSERT_TRUE(dict.is_dict());
-  ASSERT_FALSE(dict.FindPath("log"));
+  const base::Value::Dict* dict =
+      observer.event_data()->GetList()[0].GetIfDict();
+  ASSERT_TRUE(dict);
+  ASSERT_FALSE(dict->Find("log"));
 
   webrtc_internals.OnPeerConnectionRemoved(kFrameId, kLid);
 
@@ -279,9 +280,10 @@ TEST_F(WebRtcInternalsTest, EnsureLogIsRemovedWhenObserverIsRemoved) {
 
   ASSERT_TRUE(observer.event_data()->is_list());
   EXPECT_EQ(1U, observer.event_data()->GetList().size());
-  base::Value& dict = observer.event_data()->GetList()[0];
-  ASSERT_TRUE(dict.is_dict());
-  ASSERT_TRUE(dict.FindPath("log")->is_list());
+  const base::Value::Dict* dict =
+      observer.event_data()->GetList()[0].GetIfDict();
+  ASSERT_TRUE(dict);
+  ASSERT_TRUE(dict->FindList("log"));
 
   // Make sure we the log entry was removed when the last observer was removed.
   webrtc_internals.RemoveObserver(&observer);
@@ -290,9 +292,9 @@ TEST_F(WebRtcInternalsTest, EnsureLogIsRemovedWhenObserverIsRemoved) {
 
   ASSERT_TRUE(observer.event_data()->is_list());
   EXPECT_EQ(1U, observer.event_data()->GetList().size());
-  base::Value& updated_dict = observer.event_data()->GetList()[0];
-  ASSERT_TRUE(updated_dict.is_dict());
-  ASSERT_FALSE(updated_dict.FindPath("log"));
+  const base::Value::Dict* updated_dict =
+      observer.event_data()->GetList()[0].GetIfDict();
+  ASSERT_FALSE(updated_dict->Find("log"));
 
   webrtc_internals.OnPeerConnectionRemoved(kFrameId, kLid);
 

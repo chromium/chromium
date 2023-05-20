@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
@@ -302,21 +304,21 @@ TEST_F(ManifestParserTest, IdParseRules) {
   {
     auto& manifest = ParseManifest(R"({"start_url": "/start?query=a" })");
     ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ("start?query=a", manifest->id);
+    EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
   }
   // Invalid type.
   {
     auto& manifest =
         ParseManifest("{\"start_url\": \"/start?query=a\", \"id\": 1}");
     ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("start?query=a", manifest->id);
+    EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
   }
   // Empty string.
   {
     auto& manifest =
         ParseManifest(R"({ "start_url": "/start?query=a", "id": "" })");
     ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ("start?query=a", manifest->id);
+    EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
   }
   // Full url.
   {
@@ -324,7 +326,7 @@ TEST_F(ManifestParserTest, IdParseRules) {
         "{ \"start_url\": \"/start?query=a\", \"id\": \"http://foo.com/foo\" "
         "}");
     ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ("foo", manifest->id);
+    EXPECT_EQ("http://foo.com/foo", manifest->id);
   }
   // Full url with different origin.
   {
@@ -332,35 +334,49 @@ TEST_F(ManifestParserTest, IdParseRules) {
         "{ \"start_url\": \"/start?query=a\", \"id\": "
         "\"http://another.com/foo\" }");
     ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("start?query=a", manifest->id);
+    EXPECT_EQ("http://foo.com/start?query=a", manifest->id);
   }
   // Relative path
   {
     auto& manifest =
         ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \".\" }");
     ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ("", manifest->id);
+    EXPECT_EQ("http://foo.com/", manifest->id);
   }
   // Absolute path
   {
     auto& manifest =
         ParseManifest("{ \"start_url\": \"/start?query=a\", \"id\": \"/\" }");
     ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ("", manifest->id);
+    EXPECT_EQ("http://foo.com/", manifest->id);
   }
   // url with fragment
   {
     auto& manifest = ParseManifest(
         "{ \"start_url\": \"/start?query=a\", \"id\": \"/#abc\" }");
     ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ("", manifest->id);
+    EXPECT_EQ("http://foo.com/", manifest->id);
   }
   // Smoke test.
   {
     auto& manifest =
         ParseManifest(R"({ "start_url": "/start?query=a", "id": "foo" })");
     ASSERT_EQ(0u, GetErrorCount());
-    EXPECT_EQ("foo", manifest->id);
+    EXPECT_EQ("http://foo.com/foo", manifest->id);
+  }
+  // Invalid UTF-8 character.
+  {
+    UChar invalid_utf8_chars[] = {0xD801, 0x0000};
+    String manifest_str =
+        String("{ \"start_url\": \"/start?query=a\", \"id\": \"") +
+        String(invalid_utf8_chars) + String("\" }");
+
+    ParseManifest(manifest_str);
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_THAT(
+        errors()[0].Utf8(),
+        testing::EndsWith("Unsupported encoding. JSON and all string literals "
+                          "must contain valid Unicode characters."));
   }
 }
 
@@ -6749,6 +6765,33 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
         manifest->tab_strip->home_tab->get_params()->scope_patterns.size(), 0u);
 
     EXPECT_EQ(0u, GetErrorCount());
+  }
+}
+
+TEST_F(ManifestParserTest, VersionParseRules) {
+  // Valid versions are parsed.
+  {
+    auto& manifest = ParseManifest(R"({ "version": "1.2.3" })");
+    EXPECT_FALSE(manifest->version.IsNull());
+    EXPECT_EQ(manifest->version, "1.2.3");
+
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Do not tamper with the version string in any way.
+  {
+    auto& manifest = ParseManifest(R"({ "version": " abc !^?$ test " })");
+    EXPECT_FALSE(manifest->version.IsNull());
+    EXPECT_EQ(manifest->version, " abc !^?$ test ");
+
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Reject versions that are not strings.
+  {
+    auto& manifest = ParseManifest(R"({ "version": 123 })");
+    EXPECT_TRUE(manifest->version.IsNull());
+    EXPECT_EQ(1u, GetErrorCount());
   }
 }
 

@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Ouvrir <ph name="TABS_COUNT_ONE" /> onglet}one{Ouvrir <ph name="TABS_COUNT_MANY" /> onglet}other{Ouvrir <ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="4811934403802581334">Tous les onglets sélectionnés de l'appareil actuellement sélectionné seront restaurés.</translation>
 <translation id="5336031759968328813">Vérifier tous les onglets</translation>
+<translation id="8019269305087157499">Ouvrir à partir de l'appareil</translation>
 <translation id="8725404154479306799">Obtenez les onglets que vous avez laissés sur les anciens appareils</translation>
 </translationbundle>

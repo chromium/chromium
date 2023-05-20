@@ -93,6 +93,10 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/viz/service/display/overlay_processor_surface_control.h"
+#endif
+
 namespace viz {
 
 namespace {
@@ -848,11 +852,6 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
         number_of_buffers);
   }
 #endif
-
-#if OS_ANDROID
-  use_real_color_space_for_stream_video_ =
-      features::UseRealVideoColorSpaceForDisplay();
-#endif
 }
 
 SkiaRenderer::~SkiaRenderer() = default;
@@ -903,6 +902,15 @@ void SkiaRenderer::FinishDrawingFrame() {
       surface_candidate.resource_size_in_pixels = surface_plane.resource_size;
       surface_candidate.format = surface_plane.format;
       surface_candidate.color_space = surface_plane.color_space;
+      if (current_frame()->root_render_pass->content_color_usage ==
+          gfx::ContentColorUsage::kHDR) {
+        surface_candidate.hdr_metadata.emplace();
+        surface_candidate.hdr_metadata->extended_range_brightness.emplace();
+        // TODO(https://crbug.com/1430768): Track the actual brightness of the
+        // content. For now, assume that all HDR content is 1,000 nits.
+        surface_candidate.hdr_metadata->extended_range_brightness
+            ->desired_ratio = 1000.f / gfx::ColorSpace::kDefaultSDRWhiteLevel;
+      }
       surface_candidate.is_opaque = !surface_plane.enable_blending;
       surface_candidate.opacity = surface_plane.opacity;
       surface_candidate.priority_hint = surface_plane.priority_hint;
@@ -1063,8 +1071,8 @@ void SkiaRenderer::SwapBuffersComplete(
 
 void SkiaRenderer::BuffersPresented() {
   if (read_lock_release_fence_overlay_locks_.empty()) {
-    // Debug crbug.com/1357789.
-    base::debug::DumpWithoutCrashing();
+    // This shouldn't be needed, but could not figure out the cause in
+    // crbug.com/1357789 and crbug.com/1372602
     return;
   }
   read_lock_release_fence_overlay_locks_.pop_front();
@@ -2404,11 +2412,19 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     override_color_space = CurrentRenderPassSkColorSpace();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Force SRGB color space if we don't want real color space from media
-  // decoder.
-  if (!use_real_color_space_for_stream_video_ && quad->is_stream_video) {
-    override_color_space = SkColorSpace::MakeSRGB();
+#if BUILDFLAG(IS_ANDROID)
+  if (quad->is_stream_video) {
+    // If overlay processor would override color space, override it here to to
+    // avoid color changes during promotion.
+    if (auto overlay_color_space =
+            OverlayProcessorSurfaceControl::GetOverrideColorSpace()) {
+      override_color_space = overlay_color_space->ToSkColorSpace();
+    }
   }
+#else
+  // Only on android stream video can be composited.
+  CHECK(!quad->is_stream_video);
+#endif
 
   ScopedSkImageBuilder builder(
       this, quad->resource_id(), /*maybe_concurrent_reads=*/true,
@@ -3678,8 +3694,6 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     OverlayCandidate::ApplyClip(*overlay, gfx::RectF(apply_clip));
     overlay->clip_rect = absl::nullopt;
   }
-  // Assume full damage every time the pass is rendered.
-  overlay->damage_rect = gfx::RectF(filter_bounds);
   // Fill in |format| and |color_space| information based on selected backing.
   overlay->color_space = color_space;
   overlay->format = BufferFormat(buffer_format.resource_format());

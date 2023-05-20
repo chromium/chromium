@@ -83,7 +83,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
       const GURL& url,
       const std::string& metric_variation) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
-  bool MatchDownloadAllowlistUrl(const GURL& url) override;
+  void MatchDownloadAllowlistUrl(
+      const GURL& url,
+      base::OnceCallback<void(bool)> callback) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
 
@@ -299,10 +301,10 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   void ScheduleFullHashCheck(std::unique_ptr<PendingCheck> check);
 
   // Checks |stores_to_check| in database synchronously for hash prefixes
-  // matching the full hashes for |url|. See |HandleHashSynchronously| for
-  // details.
-  bool HandleUrlSynchronously(const GURL& url,
-                              const StoresToCheck& stores_to_check);
+  // matching the full hashes for |url|.
+  void HandleUrl(const GURL& url,
+                 const StoresToCheck& stores_to_check,
+                 base::OnceCallback<void(bool)> callback);
 
   // Called when the |v4_get_hash_protocol_manager_| has the full hash response
   // available for the URL that we requested. It determines the severest

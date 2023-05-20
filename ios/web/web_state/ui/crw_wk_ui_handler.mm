@@ -318,12 +318,8 @@ enum class PermissionRequest {
   DCHECK(selfRetain.webStateImpl);
 
   // Request permission.
-  if (web::features::IsMediaPermissionsControlEnabled()) {
-    selfRetain.webStateImpl->RequestPermissionsWithDecisionHandler(permissions,
-                                                                   handler);
-  } else {
-    handler(WKPermissionDecisionPrompt);
-  }
+  selfRetain.webStateImpl->RequestPermissionsWithDecisionHandler(permissions,
+                                                                 handler);
 }
 
 // Helper that returns whether or not a dialog should be presented for a

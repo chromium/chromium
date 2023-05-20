@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS Switching between document and scroll timelines [immediate]
+PASS Switching between document and scroll timelines [scroll]
+PASS Switching pending animation from document to scroll timelines [immediate]
+PASS Switching pending animation from document to scroll timelines [scroll]
+PASS Changing computed value of animation-timeline changes effective timeline [immediate]
+PASS Changing computed value of animation-timeline changes effective timeline [scroll]
+PASS Changing to/from animation-timeline:none [immediate]
+PASS Changing to/from animation-timeline:none [scroll]
+PASS Reverse animation direction [immediate]
+PASS Reverse animation direction [scroll]
+FAIL Change to timeline attachment while paused [immediate] assert_equals: expected "140px" but got "120px"
+FAIL Change to timeline attachment while paused [scroll] assert_equals: expected "140px" but got "120px"
+PASS Switching timelines and pausing at the same time [immediate]
+PASS Switching timelines and pausing at the same time [scroll]
+Harness: the test ran to completion.
+

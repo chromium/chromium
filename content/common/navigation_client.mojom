@@ -247,13 +247,10 @@ interface NavigationClient {
   // Worker.
   // |container_info| may also be provided if the browser has created a
   // ServiceWorkerContainerHost for this navigation.
-  // |prefetch_loader_factory| is populated only when Network Service is
-  // enabled. The pointer is used to start a prefetch loading via the browser
-  // process.
   //
-  // |topics_loader_factory| is used to proxy topics handling
-  // (https://github.com/patcg-individual-drafts/topics) via the browser
-  // process.
+  // |subresource_proxying_loader_factory| is used to proxy prefetch and topics
+  // (https://github.com/patcg-individual-drafts/topics) handling via the
+  // browser process.
   //
   // |keep_alive_loader_factory| is used to handle fetch keepalive requests via
   // the browser process.
@@ -285,8 +282,7 @@ interface NavigationClient {
       array<blink.mojom.TransferrableURLLoader>? subresource_overrides,
       blink.mojom.ControllerServiceWorkerInfo? controller_service_worker_info,
       blink.mojom.ServiceWorkerContainerInfoForClient? container_info,
-      pending_remote<network.mojom.URLLoaderFactory>? prefetch_loader_factory,
-      pending_remote<network.mojom.URLLoaderFactory>? topics_loader_factory,
+      pending_remote<network.mojom.URLLoaderFactory>? subresource_proxying_loader_factory,
       pending_remote<network.mojom.URLLoaderFactory>? keep_alive_loader_factory,
       blink.mojom.DocumentToken document_token,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,

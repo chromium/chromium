@@ -294,6 +294,10 @@ static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
        new_style.ViewTimelineAttachment())) {
     return true;
   }
+  if (!base::ValuesEquivalent(old_style.TimelineScope(),
+                              new_style.TimelineScope())) {
+    return true;
+  }
   return false;
 }
 
@@ -396,7 +400,7 @@ ComputedStyle::Difference ComputedStyle::ComputeDifference(
   }
   if (!old_style || !new_style) {
     if (AffectsScrollAnimations(old_style, new_style)) {
-      return Difference::kSiblingDescendantAffecting;
+      return Difference::kDescendantAffecting;
     }
     return Difference::kInherited;
   }
@@ -428,7 +432,7 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     const ComputedStyle& new_style) {
   DCHECK_NE(&old_style, &new_style);
   if (DiffAffectsScrollAnimations(old_style, new_style)) {
-    return Difference::kSiblingDescendantAffecting;
+    return Difference::kDescendantAffecting;
   }
   if (old_style.Display() != new_style.Display() &&
       old_style.BlockifiesChildren() != new_style.BlockifiesChildren()) {
@@ -1443,15 +1447,14 @@ bool ComputedStyle::HasFilters() const {
 
 namespace {
 
-gfx::SizeF GetReferenceBoxSize(const LayoutBox* box,
-                               const gfx::RectF& bounding_box,
-                               CoordBox coord_box) {
+gfx::SizeF GetReferenceBoxSize(const LayoutBox* box, CoordBox coord_box) {
   if (box) {
-    // In SVG contexts, all values behave as view-box.
-    if (box->IsSVG()) {
-      return SVGLengthContext(To<SVGElement>(box->GetNode())).ResolveViewport();
-    }
     if (const LayoutBlock* containing_block = box->ContainingBlock()) {
+      // In SVG contexts, all values behave as view-box.
+      if (box->IsSVG()) {
+        return SVGLengthContext(To<SVGElement>(box->GetNode()))
+            .ResolveViewport();
+      }
       // https://drafts.csswg.org/css-box-4/#typedef-coord-box
       switch (coord_box) {
         case CoordBox::kFillBox:
@@ -1466,7 +1469,9 @@ gfx::SizeF GetReferenceBoxSize(const LayoutBox* box,
       }
     }
   }
-  return bounding_box.size();
+  // As the motion path calculations can be called before all the layout
+  // has been correctly calculated, we can end up here.
+  return {0.0, 0.0};
 }
 
 gfx::PointF GetOffsetFromContainingBlock(const LayoutBox* box) {
@@ -1598,8 +1603,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
   if (const auto* shape_operation =
           DynamicTo<ShapeOffsetPathOperation>(offset_path)) {
     const BasicShape& basic_shape = shape_operation->GetBasicShape();
-    const gfx::SizeF reference_box_size =
-        GetReferenceBoxSize(box, bounding_box, coord_box);
+    const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, coord_box);
     const gfx::PointF starting_point =
         GetStartingPointOfThePath(box, OffsetPosition(), reference_box_size);
     switch (basic_shape.GetType()) {
@@ -1628,8 +1632,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
   } else if (const auto* coord_box_operation =
                  DynamicTo<CoordBoxOffsetPathOperation>(offset_path)) {
     if (box && box->ContainingBlock()) {
-      const gfx::SizeF reference_box_size =
-          GetReferenceBoxSize(box, bounding_box, coord_box);
+      const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, coord_box);
       const gfx::PointF starting_point =
           GetStartingPointOfThePath(box, OffsetPosition(), reference_box_size);
       scoped_refptr<BasicShapeInset> inset = BasicShapeInset::Create();

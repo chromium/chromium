@@ -254,8 +254,7 @@ enum EntryPropertyName {
   isArbitrarySyncFolder,
   syncStatus,
   progress,
-  shortcut,
-  syncCompletedTime
+  shortcut
 };
 
 // Source of the volume data.
@@ -562,10 +561,6 @@ dictionary EntryProperties {
   // E.g., pasting, syncing. Note: currently, this is exclusively being used
   // for Drive syncing.
   double? progress;
-
-  // Time in milliseconds since the epoch when the file last received a
-  // "completed" sync status.
-  double? syncCompletedTime;
 
   // True if the entry is a shortcut.
   boolean? shortcut;
@@ -1072,8 +1067,8 @@ dictionary IOTaskParams {
   boolean? showNotification;
 };
 
-// IO task state::PAUSED parameters, see file_manager::io_task::PauseParams.
-dictionary PauseParams {
+// IO task state::PAUSED name conflict parameters, see file_manager::io_task::ConflictPauseParams.
+dictionary ConflictPauseParams {
   // The conflict file name.
   DOMString? conflictName;
 
@@ -1087,14 +1082,40 @@ dictionary PauseParams {
   DOMString? conflictTargetUrl;
 };
 
-// Resume IO Task parameters, see file_manager::io_task::ResumeParams.
-dictionary ResumeParams {
+// IO task state::PAUSED policy parameters, see file_manager::io_task::PolicyPauseParams.
+dictionary PolicyPauseParams {
+  PolicyErrorType type;
+};
+
+// IO task state::PAUSED parameters, see file_manager::io_task::PauseParams.
+dictionary PauseParams {
+  // Set iff pausing due to name conflict.
+  ConflictPauseParams? conflictParams;
+  // Set iff pausing due to policy.
+  PolicyPauseParams? policyParams;
+};
+
+// Resume IO Task parameters, see file_manager::io_task::ConflictResumeParams.
+dictionary ConflictResumeParams {
   // How to resolve a CopyOrMoveIOTask file name conflict: either 'keepboth'
   // or 'replace'.
   DOMString? conflictResolve;
 
   // Set true if conflictResolve should apply to future file name conflicts.
   boolean? conflictApplyToAll;
+};
+
+// Resume IO Task parameters, see file_manager::io_task::PolicyResumeParams.
+dictionary PolicyResumeParams {
+  PolicyErrorType type;
+};
+
+// Resume IO Task parameters, see file_manager::io_task::ResumeParams.
+dictionary ResumeParams {
+  // Set iff paused due to name conflict.
+  ConflictResumeParams? conflictParams;
+  // Set iff paused due to policy.
+  PolicyResumeParams? policyParams;
 };
 
 // IO Task Progress status, see file_manager::io_task::ProgressStatus.

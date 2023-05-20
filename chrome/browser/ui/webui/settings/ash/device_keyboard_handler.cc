@@ -34,6 +34,7 @@ KeyboardsStateResult GetKeyboardsState() {
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     switch (ash::Shell::Get()->keyboard_capability()->GetDeviceType(keyboard)) {
       case ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
+      case ui::KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard:
         result.has_launcher_key = true;
         break;
       case ui::KeyboardCapability::DeviceType::kDeviceExternalAppleKeyboard:

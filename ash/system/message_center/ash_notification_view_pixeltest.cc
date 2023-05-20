@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
@@ -15,6 +16,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/base/models/image_model.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
@@ -90,8 +92,30 @@ class AshNotificationViewPixelTestBase : public AshTestBase {
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 
+class AshNotificationViewPixelTest
+    : public AshNotificationViewPixelTestBase,
+      public testing::WithParamInterface<bool /*IsQsRevampEnabled()*/> {
+ public:
+  // AshTestBase:
+  void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
+                                               /*enabled=*/IsQsRevampEnabled());
+    AshNotificationViewPixelTestBase::SetUp();
+  }
+
+  bool IsQsRevampEnabled() { return GetParam(); }
+
+ private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(IsQsRevampEnabled,
+                         AshNotificationViewPixelTest,
+                         /*IsQsRevampEnabled()=*/testing::Bool());
+
 // Tests that a notification's close button is visible when it is focused.
-TEST_F(AshNotificationViewPixelTestBase, CloseButtonFocused) {
+TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
   // Create a notification and open the notification center bubble to view it.
   const auto id = test_api()->AddNotification();
   test_api()->ToggleBubble();
@@ -118,30 +142,53 @@ TEST_F(AshNotificationViewPixelTestBase, CloseButtonFocused) {
   EXPECT_TRUE(close_button->HasFocus());
   EXPECT_EQ(control_buttons_layer->opacity(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "close_button_focused", 0u, notification_view));
+      "close_button_focused", /*revision_number=*/0u, notification_view));
 }
 
 class AshNotificationViewTitlePixelTest
     : public AshNotificationViewPixelTestBase,
       public testing::WithParamInterface<
-          std::pair<const char* /*notification title string*/,
-                    const char* /*screenshot name*/>> {};
+          std::tuple<bool /*IsQsRevampEnabled()*/,
+                     std::pair<const char* /*notification title string*/,
+                               const char* /*screenshot name*/>>> {
+ public:
+  // AshTestBase:
+  void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
+                                               /*enabled=*/IsQsRevampEnabled());
+    AshNotificationViewPixelTestBase::SetUp();
+  }
+
+  bool IsQsRevampEnabled() { return std::get<0>(GetParam()); }
+
+  const std::string GetTitle() { return std::get<1>(GetParam()).first; }
+
+  const std::string GetScreenshotName() {
+    return std::get<1>(GetParam()).second;
+  }
+
+ private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+};
 
 INSTANTIATE_TEST_SUITE_P(
-    TitleTest,
+    All,
     AshNotificationViewTitlePixelTest,
-    testing::ValuesIn({
-        std::make_pair(kShortTitleString, kShortTitleScreenshot),
-        std::make_pair(kMediumTitleString, kMediumTitleScreenshot),
-        std::make_pair(kLongTitleString, kLongTitleScreenshot),
-    }));
+    testing::Combine(
+        testing::Bool(),
+        testing::ValuesIn({
+            std::make_pair(kShortTitleString, kShortTitleScreenshot),
+            std::make_pair(kMediumTitleString, kMediumTitleScreenshot),
+            std::make_pair(kLongTitleString, kLongTitleScreenshot),
+        })));
 
 // Regression test for b/251686063. Tests that a notification with a medium
 // length multiline title and an icon is correctly displayed. This string would
 // not be displayed properly without the workaround implemented for b/251686063.
 TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   // Create a notification with a multiline title and an icon.
-  const std::string title = GetParam().first;
+  const std::string title = GetTitle();
 
   const std::string id = test_api()->AddCustomNotification(
       base::UTF8ToUTF16(title), u"Notification Content",
@@ -157,9 +204,9 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   EXPECT_TRUE(notification_view->GetVisible());
 
   // Compare pixels.
-  const std::string screenshot = GetParam().second;
+  const std::string screenshot_name = GetScreenshotName();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      screenshot, /*revision_number=*/2, notification_view));
+      screenshot_name, /*revision_number=*/0, notification_view));
 }
 
 class ScreenCaptureNotificationPixelTest

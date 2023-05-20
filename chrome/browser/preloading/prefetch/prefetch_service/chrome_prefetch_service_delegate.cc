@@ -4,6 +4,8 @@
 
 #include "chrome/browser/preloading/prefetch/prefetch_service/chrome_prefetch_service_delegate.h"
 
+#include "chrome/browser/battery/battery_saver.h"
+#include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/preloading/prefetch/prefetch_service/prefetch_origin_decider.h"
 #include "chrome/browser/profiles/profile.h"
@@ -79,6 +81,19 @@ bool ChromePrefetchServiceDelegate::DisableDecoysBasedOnUserSettings() {
 content::PreloadingEligibility
 ChromePrefetchServiceDelegate::IsSomePreloadingEnabled() {
   return prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs());
+}
+
+bool ChromePrefetchServiceDelegate::IsPreloadingPrefEnabled() {
+  return prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs()) !=
+         content::PreloadingEligibility::kPreloadingDisabled;
+}
+
+bool ChromePrefetchServiceDelegate::IsDataSaverEnabled() {
+  return data_saver::IsDataSaverEnabled();
+}
+
+bool ChromePrefetchServiceDelegate::IsBatterySaverEnabled() {
+  return battery::IsBatterySaverEnabled();
 }
 
 bool ChromePrefetchServiceDelegate::IsExtendedPreloadingEnabled() {

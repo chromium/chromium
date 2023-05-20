@@ -7,7 +7,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece.h"
 #include "components/handoff/pref_names_ios.h"
-#include "ios/chrome/browser/prefs/pref_names.h"
+#include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #include "ios/chrome/browser/voice/voice_search_prefs.h"
 
 namespace browser_sync {

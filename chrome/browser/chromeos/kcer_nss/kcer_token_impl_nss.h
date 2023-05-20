@@ -12,14 +12,23 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/chromeos/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/cros_system_api/constants/pkcs11_custom_attributes.h"
 
 namespace kcer::internal {
+
+using KeyPermissionsAttributeId =
+    base::StrongAlias<class TagKcerToken0,
+                      pkcs11_custom_attributes::CkAttributeType>;
+using CertProvisioningIdAttributeId =
+    base::StrongAlias<class TagKcerToken1,
+                      pkcs11_custom_attributes::CkAttributeType>;
 
 // Implementation of KcerToken that uses NSS as a permanent storage.
 class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
@@ -101,6 +110,12 @@ class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
                                     std::string profile_id,
                                     Kcer::StatusCallback callback) override;
 
+  // NSS software database (softoken) doesn't support custom attributes. If
+  // attribute translation is enabled, KcerToken will store the attributes in
+  // some standard attributes, which is wrong in general, but good enough for
+  // tests.
+  void SetAttributeTranslationForTesting(bool is_enabled);
+
  private:
   // Immediately blocks the queue and returns a closure that unblocks it when
   // called or destroyed.
@@ -123,6 +138,13 @@ class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
   void OnCertsModified(Kcer::StatusCallback callback,
                        base::expected<void, Error> result);
 
+  // These methods return PKCS#11 attribute IDs that should be passed to NSS,
+  // respecting SetAttribtueTranslationForTesting.
+  KeyPermissionsAttributeId GetKeyPermissionsAttributeId() const;
+  CertProvisioningIdAttributeId GetCertProvisioningIdAttributeId() const;
+
+  // Indicates whether fake attribute ids should be used (for testing).
+  bool translate_attributes_for_testing_ = false;
   // Indicates whether the task queue is blocked. Task queue should be blocked
   // until NSS is initialized, during the processing of most requests and
   // during updating the cache.

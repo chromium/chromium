@@ -3271,7 +3271,7 @@ f! {
             as ::c_uint
     }
 
-    pub fn CMSG_LEN(len: ::c_uint) -> ::c_uint {
+    pub {const} fn CMSG_LEN(len: ::c_uint) -> ::c_uint {
         (CMSG_ALIGN(::mem::size_of::<cmsghdr>()) + len as ::size_t) as ::c_uint
     }
 }

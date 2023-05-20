@@ -38,8 +38,10 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
+#include "net/http/structured_headers.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/cpp/trigger_verification_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -1169,6 +1171,53 @@ std::ostream& operator<<(std::ostream& out, const OsRegistration& r) {
   return out << "{registration_url=" << r.registration_url
              << ",top_level_origin=" << r.top_level_origin
              << ",type=" << r.GetType() << "}";
+}
+
+namespace {
+
+void CheckAttributionReportingEligibleHeader(
+    const std::string& header,
+    const std::vector<std::string>& required_keys,
+    const std::vector<std::string>& prohibited_keys) {
+  auto dict = net::structured_headers::ParseDictionary(header);
+  EXPECT_TRUE(dict.has_value());
+  if (!dict.has_value()) {
+    return;
+  }
+
+  for (const auto& key : required_keys) {
+    EXPECT_TRUE(dict->contains(key)) << key;
+  }
+
+  for (const auto& key : prohibited_keys) {
+    EXPECT_FALSE(dict->contains(key)) << key;
+  }
+}
+
+}  // namespace
+
+void ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+    const std::string& header) {
+  CheckAttributionReportingEligibleHeader(
+      header,
+      /*required_keys=*/{"event-source"},
+      /*prohibited_keys=*/{"navigation-source", "trigger"});
+}
+
+void ExpectValidAttributionReportingEligibleHeaderForImg(
+    const std::string& header) {
+  CheckAttributionReportingEligibleHeader(
+      header,
+      /*required_keys=*/{"event-source", "trigger"},
+      /*prohibited_keys=*/{"navigation-source"});
+}
+
+void ExpectValidAttributionReportingEligibleHeaderForNavigation(
+    const std::string& header) {
+  CheckAttributionReportingEligibleHeader(
+      header,
+      /*required_keys=*/{"navigation-source"},
+      /*prohibited_keys=*/{"event-source", "trigger"});
 }
 
 }  // namespace content

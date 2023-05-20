@@ -1,0 +1,217 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
+#include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+
+namespace blink {
+
+ScrollSnapshotTimeline::ScrollSnapshotTimeline(Document* document)
+    : AnimationTimeline(document), ScrollSnapshotClient(document->GetFrame()) {}
+
+bool ScrollSnapshotTimeline::IsResolved() const {
+  return ComputeIsResolved(ResolvedSource());
+}
+
+bool ScrollSnapshotTimeline::IsActive() const {
+  return timeline_state_snapshotted_.phase != TimelinePhase::kInactive;
+}
+
+absl::optional<ScrollOffsets> ScrollSnapshotTimeline::GetResolvedScrollOffsets()
+    const {
+  return timeline_state_snapshotted_.scroll_offsets;
+}
+
+absl::optional<ScrollOffsets> ScrollSnapshotTimeline::GetResolvedViewOffsets()
+    const {
+  return timeline_state_snapshotted_.view_offsets;
+}
+
+// TODO(crbug.com/1336260): Since phase can only be kActive or kInactive and
+// currentTime  can only be null if phase is inactive or before the first
+// snapshot we can probably drop phase.
+AnimationTimeline::PhaseAndTime ScrollSnapshotTimeline::CurrentPhaseAndTime() {
+  return {timeline_state_snapshotted_.phase,
+          timeline_state_snapshotted_.current_time};
+}
+
+V8CSSNumberish* ScrollSnapshotTimeline::ConvertTimeToProgress(
+    AnimationTimeDelta time) const {
+  return MakeGarbageCollected<V8CSSNumberish>(
+      CSSUnitValues::percent((time / GetDuration().value()) * 100));
+}
+
+V8CSSNumberish* ScrollSnapshotTimeline::currentTime() {
+  // Compute time as a percentage based on the relative scroll position, where
+  // the start offset corresponds to 0% and the end to 100%.
+  auto current_time = timeline_state_snapshotted_.current_time;
+
+  if (current_time) {
+    return ConvertTimeToProgress(AnimationTimeDelta(current_time.value()));
+  }
+  return nullptr;
+}
+
+V8CSSNumberish* ScrollSnapshotTimeline::duration() {
+  return MakeGarbageCollected<V8CSSNumberish>(CSSUnitValues::percent(100));
+}
+
+void ScrollSnapshotTimeline::ResolveTimelineOffsets() const {
+  TimelineRange timeline_range = GetTimelineRange();
+  for (Animation* animation : GetAnimations()) {
+    animation->ResolveTimelineOffsets(timeline_range);
+  }
+}
+
+// Scroll-linked animations are initialized with the start time of zero.
+absl::optional<base::TimeDelta>
+ScrollSnapshotTimeline::InitialStartTimeForAnimations() {
+  return base::TimeDelta();
+}
+
+AnimationTimeDelta ScrollSnapshotTimeline::CalculateIntrinsicIterationDuration(
+    const TimelineRange& timeline_range,
+    const absl::optional<TimelineOffset>& range_start,
+    const absl::optional<TimelineOffset>& range_end,
+    const Timing& timing) {
+  absl::optional<AnimationTimeDelta> duration = GetDuration();
+
+  // Only run calculation for progress based scroll timelines
+  if (duration && timing.iteration_count > 0) {
+    double active_interval = 1;
+
+    double start = range_start
+                       ? timeline_range.ToFractionalOffset(range_start.value())
+                       : 0;
+    double end =
+        range_end ? timeline_range.ToFractionalOffset(range_end.value()) : 1;
+
+    active_interval -= start;
+    active_interval -= (1 - end);
+    active_interval = std::max(0., active_interval);
+
+    // Start and end delays are proportional to the active interval.
+    double start_delay = timing.start_delay.relative_delay.value_or(0);
+    double end_delay = timing.end_delay.relative_delay.value_or(0);
+    double delay = start_delay + end_delay;
+
+    if (delay >= 1) {
+      return AnimationTimeDelta();
+    }
+
+    active_interval *= (1 - delay);
+    return duration.value() * active_interval / timing.iteration_count;
+  }
+  return AnimationTimeDelta();
+}
+
+TimelineRange ScrollSnapshotTimeline::GetTimelineRange() const {
+  absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
+  return scroll_offsets.has_value() ? TimelineRange(scroll_offsets.value())
+                                    : TimelineRange();
+}
+
+void ScrollSnapshotTimeline::ServiceAnimations(TimingUpdateReason reason) {
+  // When scroll timeline goes from inactive to active the animations may need
+  // to be started and possibly composited.
+  bool was_active =
+      last_current_phase_and_time_ &&
+      last_current_phase_and_time_.value().phase == TimelinePhase::kActive;
+  if (!was_active && IsActive()) {
+    MarkAnimationsCompositorPending();
+  }
+
+  AnimationTimeline::ServiceAnimations(reason);
+}
+
+bool ScrollSnapshotTimeline::ShouldScheduleNextService() {
+  if (AnimationsNeedingUpdateCount() == 0) {
+    return false;
+  }
+
+  auto state = ComputeTimelineState();
+  PhaseAndTime current_phase_and_time{state.phase, state.current_time};
+  return current_phase_and_time != last_current_phase_and_time_;
+}
+
+void ScrollSnapshotTimeline::ScheduleNextService() {
+  // See DocumentAnimations::UpdateAnimations() for why we shouldn't reach here.
+  NOTREACHED();
+}
+
+void ScrollSnapshotTimeline::UpdateSnapshot() {
+  auto state = ComputeTimelineState();
+  bool invalidate_timing =
+      !state.HasConsistentLayout(timeline_state_snapshotted_);
+  timeline_state_snapshotted_ = state;
+  if (invalidate_timing) {
+    for (Animation* animation : GetAnimations()) {
+      animation->InvalidateNormalizedTiming();
+    }
+  }
+  ResolveTimelineOffsets();
+}
+
+bool ScrollSnapshotTimeline::ComputeIsResolved(Node* resolved_source) {
+  LayoutBox* layout_box =
+      resolved_source ? resolved_source->GetLayoutBox() : nullptr;
+  return layout_box && layout_box->IsScrollContainer();
+}
+
+void ScrollSnapshotTimeline::Trace(Visitor* visitor) const {
+  visitor->Trace(timeline_state_snapshotted_);
+  AnimationTimeline::Trace(visitor);
+  ScrollSnapshotClient::Trace(visitor);
+}
+
+void ScrollSnapshotTimeline::InvalidateEffectTargetStyle() const {
+  for (Animation* animation : GetAnimations()) {
+    animation->InvalidateEffectTargetStyle();
+  }
+}
+
+bool ScrollSnapshotTimeline::ValidateSnapshot() {
+  TimelineState new_state = ComputeTimelineState();
+
+  if (timeline_state_snapshotted_.HasConsistentLayout(new_state)) {
+    return true;
+  }
+
+  // Note that `timeline_state_snapshotted_` must be updated before
+  // ResolveTimelineOffsets is called.
+  timeline_state_snapshotted_ = new_state;
+  ResolveTimelineOffsets();
+
+  // Mark an attached animation's target as dirty if the play state is running
+  // or finished. Idle animations are not in effect and the effect of a paused
+  // animation is not impacted by timeline staleness.
+  for (Animation* animation : GetAnimations()) {
+    Animation::AnimationPlayState play_state =
+        animation->CalculateAnimationPlayState();
+    if (play_state != Animation::kRunning &&
+        play_state != Animation::kFinished) {
+      continue;
+    }
+
+    // The animation's effect target requires a style update to ensure that we
+    // pickup the new effect value.
+    animation->InvalidateEffectTargetStyle();
+    // Normalized timing needs to be reevaluated since the intrinsic iteration
+    // duration may be affected.
+    animation->InvalidateNormalizedTiming();
+    // The animation range may be affected, which in turn can affect animation
+    // start time as well as intrinsic iteration duration.
+    animation->OnRangeUpdate();
+  }
+
+  return false;
+}
+
+}  // namespace blink

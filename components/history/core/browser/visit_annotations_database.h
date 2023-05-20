@@ -221,6 +221,10 @@ class VisitAnnotationsDatabase {
   // table by adding the has_url_keyed_image column.
   bool MigrateContentAnnotationsAddHasUrlKeyedImage();
 
+  // Called by the derived class to migrate the older clusters_and_visits table
+  // by adding the interaction_state column.
+  bool MigrateClustersAndVisitsAddInteractionState();
+
  private:
   // Return true if the clusters table's schema contains "AUTOINCREMENT".
   // false if table do not contain AUTOINCREMENT, or the table is not created.

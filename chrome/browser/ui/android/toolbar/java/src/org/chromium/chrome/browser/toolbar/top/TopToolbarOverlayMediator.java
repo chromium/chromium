@@ -94,7 +94,7 @@ public class TopToolbarOverlayMediator {
 
         mSceneChangeObserver = new LayoutStateObserver() {
             @Override
-            public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+            public void onStartedShowing(@LayoutType int layoutType) {
                 mIsOnValidLayout = (layoutType & layoutsToShowOn) > 0;
                 updateVisibility();
             }

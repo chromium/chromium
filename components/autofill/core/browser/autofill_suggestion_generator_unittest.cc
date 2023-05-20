@@ -645,7 +645,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
   ASSERT_EQ(iban_suggestions[0].labels.size(), 1u);
   ASSERT_EQ(iban_suggestions[0].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[0].labels[0][0].value, u"My doctor's IBAN");
-  EXPECT_EQ(iban_suggestions[0].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
+  EXPECT_EQ(iban_suggestions[0].frontend_id, PopupItemId::kIbanEntry);
   EXPECT_TRUE(
       AreImagesEqual(iban_suggestions[0].custom_icon, CreateFakeImage()));
 
@@ -656,7 +656,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
   ASSERT_EQ(iban_suggestions[1].labels.size(), 1u);
   ASSERT_EQ(iban_suggestions[1].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[1].labels[0][0].value, u"My brother's IBAN");
-  EXPECT_EQ(iban_suggestions[1].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
+  EXPECT_EQ(iban_suggestions[1].frontend_id, PopupItemId::kIbanEntry);
   EXPECT_TRUE(
       AreImagesEqual(iban_suggestions[1].custom_icon, CreateFakeImage()));
 
@@ -667,7 +667,7 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
   ASSERT_EQ(iban_suggestions[2].labels.size(), 1u);
   ASSERT_EQ(iban_suggestions[2].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[2].labels[0][0].value, u"My teacher's IBAN");
-  EXPECT_EQ(iban_suggestions[2].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
+  EXPECT_EQ(iban_suggestions[2].frontend_id, PopupItemId::kIbanEntry);
   EXPECT_TRUE(
       AreImagesEqual(iban_suggestions[2].custom_icon, CreateFakeImage()));
 
@@ -676,15 +676,15 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
   EXPECT_EQ(iban_suggestions[3].GetPayload<Suggestion::ValueToFill>().value(),
             iban3.GetStrippedValue());
   EXPECT_EQ(iban_suggestions[3].labels.size(), 0u);
-  EXPECT_EQ(iban_suggestions[3].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
+  EXPECT_EQ(iban_suggestions[3].frontend_id, PopupItemId::kIbanEntry);
   EXPECT_TRUE(
       AreImagesEqual(iban_suggestions[3].custom_icon, CreateFakeImage()));
 
-  EXPECT_EQ(iban_suggestions[4].frontend_id, POPUP_ITEM_ID_SEPARATOR);
+  EXPECT_EQ(iban_suggestions[4].frontend_id, PopupItemId::kSeparator);
 
   EXPECT_EQ(iban_suggestions[5].main_text.value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  EXPECT_EQ(iban_suggestions[5].frontend_id, POPUP_ITEM_ID_AUTOFILL_OPTIONS);
+  EXPECT_EQ(iban_suggestions[5].frontend_id, PopupItemId::kAutofillOptions);
 
   CleanUpIbanImageResources();
 }
@@ -730,7 +730,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("1"));
   EXPECT_EQ(promo_code_suggestions[0].frontend_id,
-            POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
+            PopupItemId::kMerchantPromoCodeEntry);
 
   EXPECT_EQ(promo_code_suggestions[1].main_text.value, u"test_promo_code_2");
   EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::BackendId>(),
@@ -742,9 +742,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("2"));
   EXPECT_EQ(promo_code_suggestions[1].frontend_id,
-            POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
+            PopupItemId::kMerchantPromoCodeEntry);
 
-  EXPECT_EQ(promo_code_suggestions[2].frontend_id, POPUP_ITEM_ID_SEPARATOR);
+  EXPECT_EQ(promo_code_suggestions[2].frontend_id, PopupItemId::kSeparator);
 
   EXPECT_EQ(promo_code_suggestions[3].main_text.value,
             l10n_util::GetStringUTF16(
@@ -752,7 +752,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(promo_code_suggestions[3].GetPayload<GURL>(),
             offer1.GetOfferDetailsUrl().spec());
   EXPECT_EQ(promo_code_suggestions[3].frontend_id,
-            POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS);
+            PopupItemId::kSeePromoCodeDetails);
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,
@@ -778,7 +778,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_FALSE(
       absl::holds_alternative<GURL>(promo_code_suggestions[0].payload));
   EXPECT_EQ(promo_code_suggestions[0].frontend_id,
-            POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
+            PopupItemId::kMerchantPromoCodeEntry);
 }
 
 TEST_F(AutofillSuggestionGeneratorTest, BackendIdAndFrontendIdMappings) {
@@ -1117,7 +1117,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*card_linked_offer_available=*/false);
 
   EXPECT_EQ(virtual_card_suggestion.frontend_id,
-            POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
+            PopupItemId::kVirtualCreditCardEntry);
   EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
   EXPECT_TRUE(VerifyCardArtImageExpectation(virtual_card_suggestion,
@@ -1178,7 +1178,7 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
           /*card_linked_offer_available=*/false);
 
   EXPECT_EQ(virtual_card_suggestion.frontend_id,
-            POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
+            PopupItemId::kVirtualCreditCardEntry);
   EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
   EXPECT_TRUE(VerifyCardArtImageExpectation(virtual_card_suggestion,
@@ -1319,7 +1319,7 @@ TEST_P(AutofillSuggestionGeneratorTestForOffer,
           /*card_linked_offer_available=*/true);
 
   EXPECT_EQ(virtual_card_suggestion.frontend_id,
-            POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
+            PopupItemId::kVirtualCreditCardEntry);
   EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("00000000-0000-0000-0000-000000000001"));
   // Ensures CLO text is not shown for virtual card option.

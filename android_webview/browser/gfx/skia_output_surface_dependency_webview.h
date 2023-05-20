@@ -18,6 +18,8 @@ class TaskQueueWebView;
 class GpuServiceWebView;
 
 // Implementation for access to gpu objects and task queue for WebView.
+//
+// Lifetime: WebView
 class SkiaOutputSurfaceDependencyWebView
     : public viz::SkiaOutputSurfaceDependency {
  public:

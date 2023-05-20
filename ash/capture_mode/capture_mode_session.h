@@ -120,6 +120,11 @@ class ASH_EXPORT CaptureModeSession
   // nullptr if no window is available for selection.
   aura::Window* GetSelectedWindow() const;
 
+  // Sets the pre-selected window to be observed by `capture_window_observer_`,
+  // once set, the window can't be altered throughout the entire capture
+  // session.
+  void SetPreSelectedWindow(aura::Window* pre_selected_window);
+
   // Called when a user toggles the capture source or capture type to announce
   // an accessibility alert. If `trigger_now` is true, it will announce
   // immediately; otherwise, it will trigger another alert asynchronously with
@@ -256,6 +261,10 @@ class ASH_EXPORT CaptureModeSession
 
   void OnCameraPreviewDestroyed();
 
+  // If there's a user nudge currently showing, it will be dismissed forever,
+  // and will no longer be shown to the user.
+  void MaybeDismissUserNudgeForever();
+
  private:
   friend class CaptureModeSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
@@ -296,10 +305,6 @@ class ASH_EXPORT CaptureModeSession
   // the new folder selection settings. The nudge will be created on top of the
   // the settings button on the capture mode bar.
   void MaybeCreateUserNudge();
-
-  // If there's a user nudge currently showing, it will be dismissed forever,
-  // and will no longer be shown to the user.
-  void MaybeDismissUserNudgeForever();
 
   // Called to accept and trigger a capture operation. This happens e.g. when
   // the user hits enter, selects a window/display to capture, or presses on the

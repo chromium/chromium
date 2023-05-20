@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -61,7 +62,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScan);
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanBrowserOnly);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanRendererOnly);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocBackupRefPtrControl);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeThreadCacheSize);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocLargeEmptySlotSpanRing);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -87,9 +87,6 @@ enum class BackupRefPtrMode {
   // This entails splitting the main partition.
   kEnabled,
 
-  // Same as kEnabled but without zapping quarantined objects.
-  kEnabledWithoutZapping,
-
   // Same as kEnabled but registers the main partition to memory reclaimer.
   kEnabledWithMemoryReclaimer,
 
@@ -106,6 +103,22 @@ enum class BackupRefPtrMode {
   kDisabledButSplitPartitions3Way,
 };
 
+// Decides the amount of memory uses for BRP ref-count. The actual ref-count may
+// be smaller, in which case extra padding is added.
+enum class BackupRefPtrRefCountSize {
+  // Whatever sizeof(PartitionRefCount) happens to be, which is influence by
+  // buildflags.
+  // The remaining options require sizeof(PartitionRefCount) not to exceed the
+  // desired size, which will be asserted.
+  kNatural,
+  // 4 bytes.
+  k4B,
+  // 8 bytes
+  k8B,
+  // 16 bytes.
+  k16B,
+};
+
 enum class AlternateBucketDistributionMode : uint8_t {
   kDefault,
   kDenser,
@@ -116,6 +129,8 @@ extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam;
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrMode>
     kBackupRefPtrModeParam;
+extern const BASE_EXPORT base::FeatureParam<BackupRefPtrRefCountSize>
+    kBackupRefPtrRefCountSizeParam;
 extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableDereferenceCheckParam;
 extern const BASE_EXPORT base::FeatureParam<bool>
@@ -138,6 +153,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseAlternateDistribution);
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPageAllocatorRetryOnCommitFailure);
 #endif
+
+// Name of the synthetic trial associated with forcibly enabling BRP in
+// all processes.
+inline constexpr base::StringPiece kRendererLiveBRPSyntheticTrialName =
+    "BackupRefPtrRendererLive";
 
 }  // namespace features
 }  // namespace base

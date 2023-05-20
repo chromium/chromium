@@ -697,7 +697,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                browser:self.browser
                             credential:credential
                           reauthModule:[[ReauthenticationModule alloc] init]
-                               context:DetailsContext::kGeneral];
+                               context:DetailsContext::kOutsideSettings];
   self.passwordDetailsCoordinator.delegate = self;
   self.passwordDetailsCoordinator.showCancelButton = showCancelButton;
   [self.passwordDetailsCoordinator start];
@@ -767,11 +767,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.passwordDetailsCoordinator stop];
   self.passwordDetailsCoordinator.delegate = nil;
   self.passwordDetailsCoordinator = nil;
-}
-
-- (void)passwordDetailsWillDeletePassword {
-  // No-op: This method is only used when the Password Details page is presented
-  // from a PasswordIssuesCoordinator.
 }
 
 #pragma mark - ClearBrowsingDataCoordinatorDelegate

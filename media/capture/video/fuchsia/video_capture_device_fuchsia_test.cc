@@ -67,8 +67,7 @@ class HeapBufferHandleProvider final
   ~HeapBufferHandleProvider() override = default;
 
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override {
-    NOTREACHED();
-    return {};
+    NOTREACHED_NORETURN();
   }
 
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess()
@@ -150,7 +149,7 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp,
                               int frame_feedback_id) override {
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
   void OnIncomingCapturedGfxBuffer(gfx::GpuMemoryBuffer* buffer,
                                    const VideoCaptureFormat& frame_format,
@@ -158,7 +157,7 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
                                    base::TimeTicks reference_time,
                                    base::TimeDelta timestamp,
                                    int frame_feedback_id) override {
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
   void OnIncomingCapturedExternalBuffer(
       CapturedExternalVideoBuffer buffer,
@@ -166,27 +165,24 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       gfx::Rect visible_rect) override {
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
   void OnIncomingCapturedBuffer(Buffer buffer,
                                 const VideoCaptureFormat& format,
                                 base::TimeTicks reference_time,
                                 base::TimeDelta timestamp) override {
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
   void OnError(VideoCaptureError error,
                const base::Location& from_here,
                const std::string& reason) override {
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
   void OnFrameDropped(VideoCaptureFrameDropReason reason) override {
-    NOTREACHED();
+    NOTREACHED_NORETURN();
   }
-  void OnLog(const std::string& message) override { NOTREACHED(); }
-  double GetBufferPoolUtilization() const override {
-    NOTREACHED();
-    return 0;
-  }
+  void OnLog(const std::string& message) override { NOTREACHED_NORETURN(); }
+  double GetBufferPoolUtilization() const override { NOTREACHED_NORETURN(); }
 
   bool started_ = false;
   std::vector<ReceivedFrame> received_frames_;

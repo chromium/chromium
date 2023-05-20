@@ -35,6 +35,7 @@
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -51,6 +52,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -578,6 +580,9 @@ void ThemeService::ClearAllThemeData() {
 
   SwapThemeSupplier(nullptr);
   ClearThemePrefs();
+  if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel)) {
+    NtpCustomBackgroundService::ResetProfilePrefs(profile_);
+  }
 
   // Disable extension after modifying the prefs so that unloading the extension
   // doesn't trigger |ClearAllThemeData| again.
@@ -815,6 +820,9 @@ void ThemeService::ClearThemePrefs() {
 void ThemeService::SetThemePrefsForExtension(
     const extensions::Extension* extension) {
   ClearThemePrefs();
+  if (base::FeatureList::IsEnabled(ntp_features::kCustomizeChromeSidePanel)) {
+    NtpCustomBackgroundService::ResetProfilePrefs(profile_);
+  }
 
   profile_->GetPrefs()->SetString(prefs::kCurrentThemeID, extension->id());
 

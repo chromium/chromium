@@ -60,7 +60,7 @@ TestSocketBrokerImpl::~TestSocketBrokerImpl() = default;
 
 void TestSocketBrokerImpl::CreateTcpSocket(net::AddressFamily address_family,
                                            CreateTcpSocketCallback callback) {
-  if (is_mock_socket_test_) {
+  if (connection_failure_) {
     std::move(callback).Run(network::TransferableSocket(),
                             net::ERR_CONNECTION_FAILED);
     return;
@@ -87,7 +87,7 @@ void TestSocketBrokerImpl::CreateTcpSocket(net::AddressFamily address_family,
 
 void TestSocketBrokerImpl::CreateUdpSocket(net::AddressFamily address_family,
                                            CreateUdpSocketCallback callback) {
-  if (is_mock_socket_test_) {
+  if (connection_failure_) {
     std::move(callback).Run(network::TransferableSocket(),
                             net::ERR_CONNECTION_FAILED);
     return;

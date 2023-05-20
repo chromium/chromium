@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
@@ -26,28 +27,7 @@ class SidePanelEntryObserver;
 class SidePanelEntry final {
  public:
   using Id = SidePanelEntryId;
-
-  // Container for entry identification related information.
-  class Key {
-   public:
-    explicit Key(Id id);
-    Key(Id id, extensions::ExtensionId extension_id);
-    Key(const Key& other);
-    ~Key();
-
-    Key& operator=(const Key& other);
-    bool operator==(const Key& other) const;
-    bool operator<(const Key& other) const;
-
-    Id id() const { return id_; }
-    absl::optional<extensions::ExtensionId> extension_id() const {
-      return extension_id_;
-    }
-
-   private:
-    Id id_;
-    absl::optional<extensions::ExtensionId> extension_id_ = absl::nullopt;
-  };
+  using Key = SidePanelEntryKey;
 
   // If adding a callback to provide a URL to the 'Open in New Tab' button, you
   // must also add a relevant entry in actions.xml because a user action is

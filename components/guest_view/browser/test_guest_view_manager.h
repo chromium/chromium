@@ -11,9 +11,9 @@
 
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
+#include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -115,11 +115,11 @@ class TestGuestViewManager : public GuestViewManager {
   using GuestViewManager::last_instance_id_removed_;
   using GuestViewManager::removed_instance_ids_;
 
-  int num_embedder_processes_destroyed_;
-  size_t num_guests_created_;
-  size_t expected_num_guests_created_;
-  int num_views_garbage_collected_;
-  bool waiting_for_guests_created_;
+  int num_embedder_processes_destroyed_ = 0;
+  size_t num_guests_created_ = 0;
+  size_t expected_num_guests_created_ = 0;
+  int num_views_garbage_collected_ = 0;
+  bool waiting_for_guests_created_ = false;
 
   // Tracks the life time of the GuestView's main FrameTreeNode. The main FTN
   // has the same lifesspan as the GuestView.
@@ -127,7 +127,7 @@ class TestGuestViewManager : public GuestViewManager {
       guest_view_watchers_;
   std::unique_ptr<base::RunLoop> created_run_loop_;
   std::unique_ptr<base::RunLoop> num_created_run_loop_;
-  raw_ptr<GuestViewBase, DanglingUntriaged> waiting_for_attach_;
+  int instance_waiting_for_attach_ = kInstanceIDNone;
   std::unique_ptr<base::RunLoop> attached_run_loop_;
   std::unique_ptr<base::RunLoop> gc_run_loop_;
   base::OnceCallback<void(GuestViewBase*)> will_attach_callback_;
@@ -144,12 +144,9 @@ class TestGuestViewManagerFactory : public GuestViewManagerFactory {
 
   ~TestGuestViewManagerFactory() override;
 
-  GuestViewManager* CreateGuestViewManager(
+  std::unique_ptr<GuestViewManager> CreateGuestViewManager(
       content::BrowserContext* context,
       std::unique_ptr<GuestViewManagerDelegate> delegate) override;
-
- private:
-  raw_ptr<TestGuestViewManager, DanglingUntriaged> test_guest_view_manager_;
 };
 
 }  // namespace guest_view

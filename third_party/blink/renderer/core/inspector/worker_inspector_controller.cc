@@ -127,7 +127,8 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
     session->CreateAndAppend<InspectorEmulationAgent>(nullptr,
                                                       *virtual_time_controller);
     session->CreateAndAppend<InspectorAuditsAgent>(
-        network_agent, thread_->GetInspectorIssueStorage(), nullptr);
+        network_agent, thread_->GetInspectorIssueStorage(),
+        /*inspected_frames=*/nullptr, /*web_autofill_client=*/nullptr);
     session->CreateAndAppend<InspectorMediaAgent>(inspected_frames_.Get(),
                                                   scope);
   }

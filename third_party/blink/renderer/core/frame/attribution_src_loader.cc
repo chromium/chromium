@@ -538,11 +538,13 @@ network::mojom::AttributionSupport AttributionSrcLoader::GetSupport() const {
 
 network::AttributionReportingRuntimeFeatures
 AttributionSrcLoader::GetRuntimeFeatures() const {
-  return network::AttributionReportingRuntimeFeatures{
-      .cross_app_web_enabled =
-          RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
-              local_frame_->DomWindow()),
-  };
+  network::AttributionReportingRuntimeFeatures runtime_features;
+  if (RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
+          local_frame_->DomWindow())) {
+    runtime_features.Put(
+        network::AttributionReportingRuntimeFeature::kCrossAppWeb);
+  }
+  return runtime_features;
 }
 
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
@@ -819,9 +821,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
                   /*invalid_parameter=*/headers.os_source);
     return;
   }
-  for (const GURL& registration_url : registration_urls) {
-    data_host_->OsSourceDataAvailable(KURL(registration_url));
-  }
+  data_host_->OsSourceDataAvailable(std::move(registration_urls));
   ++num_registrations_;
 }
 
@@ -880,9 +880,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
         /*invalid_parameter=*/headers.os_trigger);
     return;
   }
-  for (const GURL& registration_url : registration_urls) {
-    data_host_->OsTriggerDataAvailable(KURL(registration_url));
-  }
+  data_host_->OsTriggerDataAvailable(std::move(registration_urls));
   ++num_registrations_;
 }
 

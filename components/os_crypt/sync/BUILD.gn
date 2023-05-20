@@ -70,6 +70,7 @@ component("os_crypt") {
       "keychain_password_mac.mm",
       "os_crypt_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -170,6 +171,7 @@ source_set("unit_tests") {
 
   if (is_apple) {
     sources += [ "keychain_password_mac_unittest.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_linux && !is_castos) {

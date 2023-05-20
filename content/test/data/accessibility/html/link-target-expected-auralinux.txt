@@ -1,0 +1,17 @@
+[document web]
+++[paragraph]
+++++[static] name='Top context.'
+++[internal frame]
+++++[document web]
+++++++[paragraph]
+++++++++[static] name='First context.'
+++++++[link] name='Self target. Opens in this iframe. '
+++++++++[static] name='Self target. Opens in this iframe. '
+++++++[link] name='Parent target. Opens in the body of the whole page.' link-target:_parent
+++++++++[static] name='Parent target. Opens in the body of the whole page.'
+++[link] name='Base target. Open in blank. ' link-target:_top
+++++[static] name='Base target. Open in blank. '
+++[link] name='Top target. Opens in current context. ' link-target:_top
+++++[static] name='Top target. Opens in current context. '
+++[link] name='Opens in iframe.' link-target:iframeContext
+++++[static] name='Opens in iframe.'

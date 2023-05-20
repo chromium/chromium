@@ -137,6 +137,12 @@ class CONTENT_EXPORT TouchActionFilter {
 
   bool has_deferred_events_ = false;
 
+  // True if scroll gestures are allowed to be used for cursor control. We set
+  // this to false if a long press or double press has occurred in the current
+  // gesture sequence, to prevent the cursor control feature from interfering
+  // with long press drag selection and double press drag selection.
+  bool allow_cursor_control_ = true;
+
   // Increment at receiving ACK for touch start and decrement at touch end.
   int num_of_active_touches_ = 0;
 

@@ -56,7 +56,6 @@ message ActionInfo {
   enum ActionType {
     DIRECTIONS = 2;
     CALL = 3;
-    WEBSITE = 6;
     REVIEWS = 20;
   }
 
@@ -105,5 +104,6 @@ message CategoryInfo {
     COMPANIES = 23;
     PRODUCT_LINES = 24;
     LOCAL_POI = 25;
+    LOCALITY = 26;
   }
 }

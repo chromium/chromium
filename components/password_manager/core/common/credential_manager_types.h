@@ -36,7 +36,16 @@ enum class CredentialManagerError {
   UNKNOWN,
 };
 
-enum class CredentialMediationRequirement { kSilent, kOptional, kRequired };
+// This enum described the mediation requirement of a
+// navigator.credentials.get() call. Do not change the meaning or order of these
+// values, since they are being recorded in metrics and in sync with the
+// counterpart in enums.xml. New values can be added at the end.
+enum class CredentialMediationRequirement {
+  kOptional,
+  kSilent,
+  kRequired,
+  kMaxValue = kRequired
+};
 
 std::string CredentialTypeToString(CredentialType value);
 std::ostream& operator<<(std::ostream& os, CredentialType value);

@@ -49,8 +49,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   // 'states', we use the kExtraState for that.
   enum class SaveType {
     kSaveRestore,
-    kBeginEndLayer,
-    kInternalLayer,
+    kBeginEndLayerOneSave,
+    kBeginEndLayerTwoSaves,
     kInitial
   };
 
@@ -133,6 +133,12 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
 
   void ClearResolvedFilter();
   void ValidateFilterState() const;
+
+  void SetLayerFilter(sk_sp<PaintFilter> filter) {
+    layer_filter_ = std::move(filter);
+  }
+  sk_sp<PaintFilter> GetLayerFilter() const { return layer_filter_; }
+  bool HasLayerFilter() const { return layer_filter_ != nullptr; }
 
   void SetStrokeColor(Color color) {
     if (stroke_style_.SetColor(color)) {
@@ -281,6 +287,10 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
                                  ImageType = kNoImage) const;
 
   SaveType GetSaveType() const { return save_type_; }
+  bool IsLayerSaveType() const {
+    return save_type_ == SaveType::kBeginEndLayerOneSave ||
+           save_type_ == SaveType::kBeginEndLayerTwoSaves;
+  }
 
   sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
@@ -332,6 +342,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   String unparsed_css_filter_;
   Member<const CSSValue> css_filter_value_;
   sk_sp<PaintFilter> resolved_filter_;
+  sk_sp<PaintFilter> layer_filter_;
 
   // Text state.
   TextAlign text_align_;

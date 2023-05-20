@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "components/history/core/browser/sync/history_model_type_controller_helper.h"
-#include "components/sync/driver/model_type_controller.h"
+#include "components/sync/service/model_type_controller.h"
 
 class PrefService;
 

@@ -942,8 +942,7 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareRGBAFrame) {
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, PreservesMetadata) {
   gfx::HDRMetadata hdr_metadata;
-  hdr_metadata.max_content_light_level = 5000;
-  hdr_metadata.max_frame_average_light_level = 1000;
+  hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(5000, 1000);
 
   scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10);
   software_frame->metadata().end_of_stream = true;

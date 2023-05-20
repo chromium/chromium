@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/scoped_observation.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 
 @protocol SyncObserverModelBridge <NSObject>
 - (void)onSyncStateChanged;

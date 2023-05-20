@@ -39,13 +39,15 @@ class UserPermissionServiceImpl : public UserPermissionService {
 
   // UserPermissionService:
   bool ShouldCollectConsent() const override;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   UserPermission CanUserCollectSignals(
       const UserContext& user_context) const override;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
   UserPermission CanCollectSignals() const override;
   bool HasUserConsented() const override;
   void ResetUserConsentIfNeeded() override;
 
- private:
+ protected:
   // Returns true if the specific consent flow policy is enabled.
   bool IsConsentFlowPolicyEnabled() const;
 

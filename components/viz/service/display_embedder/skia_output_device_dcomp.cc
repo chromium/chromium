@@ -83,7 +83,9 @@ class SkiaOutputDeviceDComp::OverlayData {
     CHECK(representation_);
     if (!access_) {
       access_ = representation_->BeginScopedReadAccess();
-      CHECK(access_);
+      if (!access_) {
+        return absl::nullopt;
+      }
     }
     return access_->GetDCLayerOverlayImage();
   }

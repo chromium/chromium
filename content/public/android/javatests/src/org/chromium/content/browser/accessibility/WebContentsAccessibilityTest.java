@@ -158,7 +158,7 @@ public class WebContentsAccessibilityTest {
     // ContentFeatureList maps used for various tests.
     private static final Map<String, Boolean> ON_DEMAND_ON_AXMODES_ON =
             Map.of(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS, true,
-                    ContentFeatureList.ACCESSIBILITY_AX_MODES, true);
+                    ContentFeatureList.ACCESSIBILITY_PERFORMANCE_FILTERING, true);
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;

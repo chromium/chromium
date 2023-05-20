@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -32,6 +33,10 @@
 #include "net/cert/cert_status_flags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/page_transition_types.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using autofill::mojom::FocusedFieldType;
 
@@ -439,10 +444,31 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 
 #if BUILDFLAG(IS_ANDROID)
 void ContentPasswordManagerDriver::ShowKeyboardReplacingSurface(
-    autofill::mojom::SubmissionReadinessState submission_readiness) {
+    autofill::mojom::SubmissionReadinessState submission_readiness,
+    bool is_webauthn_form) {
   if (!password_manager::bad_message::CheckFrameNotPrerendering(
-          render_frame_host_))
+          render_frame_host_)) {
     return;
+  }
+  if (is_webauthn_form && WebAuthnCredManDelegate::IsCredManEnabled()) {
+    WebAuthnCredManDelegate* cred_man_delegate =
+        WebAuthnCredManDelegate::GetRequestDelegate(
+            content::WebContents::FromRenderFrameHost(render_frame_host_));
+    // webauthn forms without passkeys should show TouchToFill bottom sheet.
+    if (cred_man_delegate->HasResults()) {
+      auto cred_man_request_completion_cb =
+          base::BindRepeating(
+              [](bool success) { return ShowVirtualKeyboard(!success); })
+              .Then(base::BindRepeating(
+                  &ContentPasswordManagerDriver::KeyboardReplacingSurfaceClosed,
+                  weak_factory_.GetWeakPtr()));
+
+      cred_man_delegate->SetRequestCompletionCallback(
+          std::move(cred_man_request_completion_cb));
+      cred_man_delegate->TriggerFullRequest();
+      return;
+    }
+  }
   client_->ShowTouchToFill(this, submission_readiness);
 }
 #endif

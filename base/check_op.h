@@ -224,6 +224,23 @@ DEFINE_CHECK_OP_IMPL(GT, > )
 #define DCHECK_GT(val1, val2) DCHECK_OP(GT, > , val1, val2)
 // clang-format on
 
+#define DUMP_WILL_BE_CHECK_OP(name, op, val1, val2)                          \
+  CHECK_OP_FUNCTION_IMPL(::logging::CheckError::DumpWillBeCheckOp, name, op, \
+                         val1, val2)
+
+#define DUMP_WILL_BE_CHECK_EQ(val1, val2) \
+  DUMP_WILL_BE_CHECK_OP(EQ, ==, val1, val2)
+#define DUMP_WILL_BE_CHECK_NE(val1, val2) \
+  DUMP_WILL_BE_CHECK_OP(NE, !=, val1, val2)
+#define DUMP_WILL_BE_CHECK_LE(val1, val2) \
+  DUMP_WILL_BE_CHECK_OP(LE, <=, val1, val2)
+#define DUMP_WILL_BE_CHECK_LT(val1, val2) \
+  DUMP_WILL_BE_CHECK_OP(LT, <, val1, val2)
+#define DUMP_WILL_BE_CHECK_GE(val1, val2) \
+  DUMP_WILL_BE_CHECK_OP(GE, >=, val1, val2)
+#define DUMP_WILL_BE_CHECK_GT(val1, val2) \
+  DUMP_WILL_BE_CHECK_OP(GT, >, val1, val2)
+
 }  // namespace logging
 
 #endif  // BASE_CHECK_OP_H_

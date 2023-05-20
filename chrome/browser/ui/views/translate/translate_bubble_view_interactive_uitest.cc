@@ -19,7 +19,6 @@
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
@@ -88,8 +87,6 @@ class TranslateBubbleViewUITest
  public:
   TranslateBubbleViewUITest() = default;
   ~TranslateBubbleViewUITest() override = default;
-  explicit TranslateBubbleViewUITest(const TranslateBubbleUiEvent&) = delete;
-  TranslateBubbleUiEvent& operator=(const TranslateBubbleUiEvent&) = delete;
 
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);

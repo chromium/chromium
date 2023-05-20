@@ -49,14 +49,9 @@ class PermissionPromptChipModel {
   bool ShouldBubbleStartOpen() { return should_bubble_start_open_; }
   bool ShouldExpand() { return should_expand_; }
 
-  // Permission state
-  void SetShouldDismiss(bool flag) { should_dismiss_ = flag; }
-
   // Updates relevant properties of the model according to the chip's collapse
   // state if it's triggered automatically.
   void UpdateAutoCollapsePromptChipState(bool is_collapsed);
-
-  bool ShouldDismiss() { return should_dismiss_; }
 
   bool IsExpandAnimationAllowed();
 
@@ -92,9 +87,6 @@ class PermissionPromptChipModel {
   // Chip behaviour
   bool should_bubble_start_open_ = false;
   bool should_expand_ = true;
-
-  // Permission state
-  bool should_dismiss_ = false;
 
   permissions::PermissionAction user_decision_ =
       permissions::PermissionAction::NUM;

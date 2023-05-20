@@ -171,43 +171,43 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
       input_digest_(input_digest),
       callback_(callback),
       script_promise_resolver_(resolver) {
-  DCHECK(context);
+  CHECK(context);
+  CHECK(image);
 
   mime_type_ = ImageEncoderUtils::ToEncodingMimeType(
       encode_options_->type(),
       ImageEncoderUtils::kEncodeReasonConvertToBlobPromise);
 
   // We use pixmap to access the image pixels. Make the image unaccelerated if
-  // necessary.
-  DCHECK(image);
+  // necessary. May return nullptr if GPU context lost or readback buffer
+  // allocation failed.
   image_ = image->MakeUnaccelerated();
 
-  DCHECK(image_);
-  DCHECK(!image_->IsTextureBacked());
+  if (image_) {
+    sk_sp<SkImage> skia_image =
+        image_->PaintImageForCurrentFrame().GetSwSkImage();
+    CHECK(skia_image);
+    CHECK(!skia_image->isTextureBacked());
 
-  sk_sp<SkImage> skia_image =
-      image_->PaintImageForCurrentFrame().GetSwSkImage();
-  DCHECK(skia_image);
-  DCHECK(!skia_image->isTextureBacked());
+    // If image is lazy decoded, call readPixels() to trigger decoding.
+    if (skia_image->isLazyGenerated()) {
+      SkImageInfo info = SkImageInfo::MakeN32Premul(1, 1);
+      uint8_t pixel[info.bytesPerPixel()];
+      skia_image->readPixels(info, pixel, info.minRowBytes(), 0, 0);
+    }
 
-  // If image is lazy decoded, call readPixels() to trigger decoding.
-  if (skia_image->isLazyGenerated()) {
-    SkImageInfo info = SkImageInfo::MakeN32Premul(1, 1);
-    uint8_t pixel[info.bytesPerPixel()];
-    skia_image->readPixels(info, pixel, info.minRowBytes(), 0, 0);
-  }
+    if (skia_image->peekPixels(&src_data_)) {
+      static_bitmap_image_loaded_ = true;
 
-  if (skia_image->peekPixels(&src_data_)) {
-    static_bitmap_image_loaded_ = true;
-
-    // Ensure that the size of the to-be-encoded-image does not pass the maximum
-    // size supported by the encoders.
-    int max_dimension = ImageEncoder::MaxDimension(mime_type_);
-    if (std::max(src_data_.width(), src_data_.height()) > max_dimension) {
-      SkImageInfo info = src_data_.info();
-      info = info.makeWH(std::min(info.width(), max_dimension),
-                         std::min(info.height(), max_dimension));
-      src_data_.reset(info, src_data_.addr(), src_data_.rowBytes());
+      // Ensure that the size of the to-be-encoded-image does not pass the
+      // maximum size supported by the encoders.
+      int max_dimension = ImageEncoder::MaxDimension(mime_type_);
+      if (std::max(src_data_.width(), src_data_.height()) > max_dimension) {
+        SkImageInfo info = src_data_.info();
+        info = info.makeWH(std::min(info.width(), max_dimension),
+                           std::min(info.height(), max_dimension));
+        src_data_.reset(info, src_data_.addr(), src_data_.rowBytes());
+      }
     }
   }
 

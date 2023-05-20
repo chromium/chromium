@@ -84,8 +84,8 @@ public class PriceTrackingActionProviderTest {
     }
 
     private void setIsUrlPriceTrackableResult(boolean hasProductInfo) {
-        ProductInfo testProductInfo =
-                new ProductInfo(null, null, 0, 0, null, 0, null, Optional.empty());
+        ProductInfo testProductInfo = new ProductInfo(
+                null, null, Optional.of(12345L), Optional.empty(), null, 0, null, Optional.empty());
         Mockito.doReturn(true).when(mShoppingService).isShoppingListEligible();
         Mockito.doAnswer(invocation -> {
                    ProductInfoCallback callback = invocation.getArgument(1);

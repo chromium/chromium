@@ -400,11 +400,6 @@ class ComputedStyle : public ComputedStyleBase,
     // The container-name property affects which container is queried by
     // rules matching descedant elements.
     kDescendantAffecting,
-    // Properties which can affect the follow elements changed:
-    // descendants, subsequent siblings, and descendants of subsequent siblings.
-    //
-    // For example, scroll-timeline-* properties.
-    kSiblingDescendantAffecting,
   };
   CORE_EXPORT static Difference ComputeDifference(
       const ComputedStyle* old_style,
@@ -1914,6 +1909,10 @@ class ComputedStyle : public ComputedStyleBase,
   AppliedTextDecorationData() const {
     return IsDecoratingBox() ? EnsureAppliedTextDecorationsCache()
                              : BaseTextDecorationDataInternal().get();
+  }
+  const Vector<AppliedTextDecoration, 1>* BaseAppliedTextDecorations() const {
+    const auto base = BaseTextDecorationDataInternal();
+    return base ? &base->data : nullptr;
   }
 
   // Returns true if this a "decorating box".

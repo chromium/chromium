@@ -8,6 +8,7 @@ import("//components/services/screen_ai/buildflags/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/accessibility/buildflags.gni")
 
@@ -146,6 +147,19 @@ source_set("utility") {
       "//content/services/isolated_xr_device:lib",
       "//device/vr/public/mojom:isolated_xr_service",
     ]
+  }
+
+  if (is_win) {
+    deps += [ ":delegate_data" ]
+  }
+}
+
+if (is_win) {
+  mojom("delegate_data") {
+    disable_variants = true
+
+    sources = [ "sandbox_delegate_data.mojom" ]
+    public_deps = [ "//mojo/public/mojom/base" ]
   }
 }
 

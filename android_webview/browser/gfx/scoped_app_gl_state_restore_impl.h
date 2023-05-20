@@ -15,6 +15,7 @@
 namespace android_webview {
 namespace internal {
 
+// Lifetime: Temporary
 class ScopedAppGLStateRestoreImpl : public ScopedAppGLStateRestore::Impl {
  public:
   ScopedAppGLStateRestoreImpl(ScopedAppGLStateRestore::CallMode mode,

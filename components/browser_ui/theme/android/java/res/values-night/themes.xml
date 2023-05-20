@@ -10,11 +10,11 @@ found in the LICENSE file.
          Theme.BrowserUI.AlertDialog.NoActionBar.DayNight. -->
     <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI">
         <!-- Color palettes -->
-        <item name="colorPrimary">@color/baseline_primary_200</item>
-        <item name="colorPrimaryInverse">@color/baseline_primary_600</item>
-        <item name="colorOnPrimary">@color/baseline_primary_800</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_700</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="colorPrimary">@color/baseline_primary_80</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_40</item>
+        <item name="colorOnPrimary">@color/baseline_primary_20</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
         <item name="colorSecondaryContainer">@color/baseline_secondary_700</item>
         <item name="colorOnSecondaryContainer">@color/baseline_secondary_100</item>
         <item name="android:colorBackground">@color/baseline_neutral_900</item>
@@ -34,11 +34,11 @@ found in the LICENSE file.
     <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
     <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge">
         <!-- Color palettes -->
-        <item name="colorPrimary">@color/baseline_primary_200</item>
-        <item name="colorPrimaryInverse">@color/baseline_primary_600</item>
-        <item name="colorOnPrimary">@color/baseline_primary_800</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_700</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="colorPrimary">@color/baseline_primary_80</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_40</item>
+        <item name="colorOnPrimary">@color/baseline_primary_20</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
         <item name="colorSecondaryContainer">@color/baseline_secondary_700</item>
         <item name="colorOnSecondaryContainer">@color/baseline_secondary_100</item>
         <item name="android:colorBackground">@color/baseline_neutral_900</item>
@@ -58,11 +58,11 @@ found in the LICENSE file.
     <!-- Colors should be mirrored by Theme.BrowserUI.DayNight. -->
     <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar">
         <!-- Color palettes -->
-        <item name="colorPrimary">@color/baseline_primary_200</item>
-        <item name="colorPrimaryInverse">@color/baseline_primary_600</item>
-        <item name="colorOnPrimary">@color/baseline_primary_800</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_700</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="colorPrimary">@color/baseline_primary_80</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_40</item>
+        <item name="colorOnPrimary">@color/baseline_primary_20</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
         <item name="colorSecondaryContainer">@color/baseline_secondary_700</item>
         <item name="colorOnSecondaryContainer">@color/baseline_secondary_100</item>
         <item name="android:colorBackground">@color/baseline_neutral_900</item>

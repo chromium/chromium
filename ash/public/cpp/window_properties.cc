@@ -67,6 +67,5 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
 DEFINE_UI_CLASS_PROPERTY_KEY(ResizeShadowType,
                              kResizeShadowTypeKey,
                              ResizeShadowType::kUnlock)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kDeskGuidKey, nullptr)
 
 }  // namespace ash

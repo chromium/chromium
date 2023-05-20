@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Ireki <ph name="TABS_COUNT_ONE" /> fitxa}other{Ireki <ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="4811934403802581334">Hautatutako fitxa guztiak leheneratuko dira orain hautatuta dagoen gailutik.</translation>
 <translation id="5336031759968328813">Berrikusi fitxa guztiak</translation>
+<translation id="8019269305087157499">Ireki hemendik</translation>
 <translation id="8725404154479306799">Berreskuratu gailu zaharretan utzi zenituen fitxak</translation>
 </translationbundle>

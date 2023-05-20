@@ -7,7 +7,7 @@
  * Chrome OS only.
  */
 
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 Router.getInstance().navigateTo(routes.MANAGE_ACCESSIBILITY);

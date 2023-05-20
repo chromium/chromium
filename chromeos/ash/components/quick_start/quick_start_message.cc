@@ -20,6 +20,8 @@ std::string GetStringKeyForQuickStartMessageType(
       return "secondDeviceAuthPayload";
     case ash::quick_start::QuickStartMessageType::kBootstrapConfigurations:
       return "bootstrapConfigurations";
+    case ash::quick_start::QuickStartMessageType::kBootstrapOptions:
+      return "bootstrapOptions";
     case ash::quick_start::QuickStartMessageType::kFidoMessage:
       return "fidoMessage";
     case ash::quick_start::QuickStartMessageType::kQuickStartPayload:
@@ -31,6 +33,7 @@ bool IsMessagePayloadBase64Encoded(
     ash::quick_start::QuickStartMessageType message_type) {
   switch (message_type) {
     case ash::quick_start::QuickStartMessageType::kSecondDeviceAuthPayload:
+    case ash::quick_start::QuickStartMessageType::kBootstrapOptions:
     case ash::quick_start::QuickStartMessageType::kBootstrapConfigurations:
     case ash::quick_start::QuickStartMessageType::kFidoMessage:
       return false;

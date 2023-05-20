@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
 
+#include <set>
+
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -22,12 +26,30 @@ class PerSessionSettingsUserActionTracker {
       const PerSessionSettingsUserActionTracker& other) = delete;
   ~PerSessionSettingsUserActionTracker();
 
+  void RecordPageActiveTime();
   void RecordPageFocus();
   void RecordPageBlur();
   void RecordClick();
   void RecordNavigation();
   void RecordSearch();
-  void RecordSettingChange();
+  // TODO (b/282233232): make 'setting' a required parameter once the
+  // corresponding function 'RecordSettingChange()' in ts files have been
+  // backfilled with the information on what specific Setting has been changed.
+  // In the meantime, this parameter is optional, and if it is not provided, it
+  // will be set to nullopt to indicate that it has not been initialized.
+  void RecordSettingChange(absl::optional<chromeos::settings::mojom::Setting>
+                               setting = absl::nullopt);
+
+  const std::set<chromeos::settings::mojom::Setting>&
+  GetChangedSettingsForTesting() {
+    return changed_settings_;
+  }
+  const base::TimeDelta& GetTotalTimeSessionActiveForTesting() {
+    return total_time_session_active_;
+  }
+  const base::TimeTicks& GetWindowLastActiveTimeStampForTesting() {
+    return window_last_active_timestamp_;
+  }
 
  private:
   friend class PerSessionSettingsUserActionTrackerTest;
@@ -56,6 +78,16 @@ class PerSessionSettingsUserActionTracker {
   // The last time at which a page blur event was received; if no blur events
   // have been received, this field is_null().
   base::TimeTicks last_blur_timestamp_;
+
+  // Tracks which settings have been changed in this user session
+  std::set<chromeos::settings::mojom::Setting> changed_settings_;
+
+  // Total time the Settings page has been active and in focus from the opening
+  // of the page to closing. Blur events pause the timer.
+  base::TimeDelta total_time_session_active_;
+
+  // The point in time which the Settings page was last active and in focus.
+  base::TimeTicks window_last_active_timestamp_;
 };
 
 }  // namespace ash::settings

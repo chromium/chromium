@@ -217,6 +217,7 @@ NSString* const kInactiveTabsUserEducationShownOnce =
     return;
   }
   self.showing = YES;
+  base::RecordAction(base::UserMetricsAction("MobileInactiveTabGridEntered"));
 
   // Add the Inactive Tabs view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;
@@ -261,6 +262,7 @@ NSString* const kInactiveTabsUserEducationShownOnce =
   if (!self.showing) {
     return;
   }
+  base::RecordAction(base::UserMetricsAction("MobileInactiveTabGridExited"));
 
   [self.userEducationCoordinator stop];
   self.userEducationCoordinator = nil;

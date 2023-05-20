@@ -6,8 +6,11 @@
 
 #include <cmath>
 
+#include "build/build_config.h"
+
 namespace blink {
 
+#if !BUILDFLAG(IS_ANDROID)
 // The minimum and maximum amount of page zoom that is possible, independent
 // of other factors such as device scale and page scale (pinch). Historically,
 // these values came from WebKitLegacy/mac/WebView/WebView.mm where they are
@@ -15,6 +18,16 @@ namespace blink {
 // changed to use different limits.
 const double kMinimumPageZoomFactor = 0.25;
 const double kMaximumPageZoomFactor = 5.0;
+#else
+// On Android, both OS-level font size and desktop site preferences are
+// considered when calculating zoom factor. Requesting desktop site can
+// increase zoom by 10% (see: |kDefaultRequestDesktopSiteZoomScale|). At the
+// OS-level, we support a range of 85% - 200%, and at the browser-level we
+// support 50% - 300%. The max we support is therefore: 3.0 * 1.1 * 2 = 6.6,
+// and the min is 0.5 * .85 = .425 (depending on settings).
+const double kMinimumPageZoomFactor = 0.425;
+const double kMaximumPageZoomFactor = 6.6;
+#endif
 
 // Change the zoom factor by 20% for each zoom level increase from the user.
 // Historically, this value came from WebKit in

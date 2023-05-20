@@ -8,11 +8,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/pref_registry/pref_registry_syncable.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/push_notification/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -78,10 +78,7 @@ void PushNotificationService::UnregisterAccount(
 
 void PushNotificationService::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  base::Value::Dict feature_push_notification_permission = base::Value::Dict();
-  registry->RegisterDictionaryPref(
-      prefs::kFeaturePushNotificationPermissions,
-      std::move(feature_push_notification_permission));
+  registry->RegisterDictionaryPref(prefs::kFeaturePushNotificationPermissions);
 }
 
 void PushNotificationService::SetPreferences(

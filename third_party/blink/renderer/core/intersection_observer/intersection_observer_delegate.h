@@ -26,6 +26,10 @@ class IntersectionObserverDelegate
   virtual IntersectionObserver::DeliveryBehavior GetDeliveryBehavior()
       const = 0;
 
+  // The IntersectionObserver spec requires that at least one observation be
+  // recorded after observe() is called, even if the target is detached.
+  virtual bool NeedsInitialObservationWithDetachedTarget() const = 0;
+
   virtual void Deliver(const HeapVector<Member<IntersectionObserverEntry>>&,
                        IntersectionObserver&) = 0;
   virtual ExecutionContext* GetExecutionContext() const = 0;

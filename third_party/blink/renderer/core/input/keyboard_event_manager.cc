@@ -176,6 +176,7 @@ KeyboardEventManager::KeyboardEventManager(LocalFrame& frame,
 void KeyboardEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(scroll_manager_);
+  visitor->Trace(scrollend_event_target_);
 }
 
 bool KeyboardEventManager::HandleAccessKey(const WebKeyboardEvent& evt) {
@@ -429,6 +430,14 @@ void KeyboardEventManager::DefaultKeyboardEventHandler(
     if (event->key() == "Enter") {
       DefaultEnterEventHandler(event);
     }
+    if (event->keyCode() == last_scrolling_keycode_) {
+      if (scrollend_event_target_ && has_pending_scrollend_on_key_up_) {
+        scrollend_event_target_->OnScrollFinished(true);
+      }
+      scrollend_event_target_.Clear();
+      last_scrolling_keycode_ = VKEY_UNKNOWN;
+      has_pending_scrollend_on_key_up_ = false;
+    }
   }
 }
 
@@ -445,13 +454,22 @@ void KeyboardEventManager::DefaultSpaceEventHandler(
           ? mojom::blink::ScrollDirection::kScrollBlockDirectionBackward
           : mojom::blink::ScrollDirection::kScrollBlockDirectionForward;
 
+  // We must clear |scrollend_event_target_| at the beginning of each scroll
+  // so that we don't fire scrollend based on a prior scroll if a newer scroll
+  // begins before the keyup event associated with the prior scroll/keydown.
+  // If a newer scroll begins before the keyup event and ends after it,
+  // we should fire scrollend at the end of that newer scroll rather than at
+  // the keyup event.
+  scrollend_event_target_.Clear();
   // TODO(bokan): enable scroll customization in this case. See
   // crbug.com/410974.
   if (scroll_manager_->LogicalScroll(direction,
-                                     ui::ScrollGranularity::kScrollByPage, nullptr,
-                                     possible_focused_node)) {
+                                     ui::ScrollGranularity::kScrollByPage,
+                                     nullptr, possible_focused_node, true)) {
     UseCounter::Count(frame_->GetDocument(),
                       WebFeature::kScrollByKeyboardSpacebarKey);
+    last_scrolling_keycode_ = event->keyCode();
+    has_pending_scrollend_on_key_up_ = true;
     event->SetDefaultHandled();
     return;
   }
@@ -495,9 +513,14 @@ void KeyboardEventManager::DefaultArrowEventHandler(
                            &scroll_use_uma))
     return;
 
+  // See KeyboardEventManager::DefaultSpaceEventHandler for the reason for
+  // this Clear.
+  scrollend_event_target_.Clear();
   if (scroll_manager_->BubblingScroll(scroll_direction, scroll_granularity,
-                                      nullptr, possible_focused_node)) {
+                                      nullptr, possible_focused_node, true)) {
     UseCounter::Count(frame_->GetDocument(), scroll_use_uma);
+    last_scrolling_keycode_ = event->keyCode();
+    has_pending_scrollend_on_key_up_ = true;
     event->SetDefaultHandled();
     return;
   }

@@ -17,7 +17,6 @@ static_library("browser") {
     "bookmark_node.h",
     "bookmark_node_data.h",
     "bookmark_storage.h",
-    "bookmark_undo_delegate.h",
     "bookmark_undo_provider.h",
     "bookmark_utils.h",
     "history_bookmark_model.h",
@@ -91,6 +90,7 @@ static_library("browser") {
       "AppKit.framework",
       "Foundation.framework",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_ios) {

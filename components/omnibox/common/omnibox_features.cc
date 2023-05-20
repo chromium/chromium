@@ -258,14 +258,6 @@ BASE_FEATURE(kOnDeviceTailModel,
              "OmniboxOnDeviceTailModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, changes the way Google-provided search suggestions are scored by
-// the backend. Note that this Feature is only used for triggering a server-
-// side experiment config that will send experiment IDs to the backend. It is
-// not referred to in any of the Chromium code.
-BASE_FEATURE(kOmniboxExperimentalSuggestScoring,
-             "OmniboxExperimentalSuggestScoring",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, suggestions from a cgi param name match are scored to 0.
 BASE_FEATURE(kDisableCGIParamMatching,
              "OmniboxDisableCGIParamMatching",

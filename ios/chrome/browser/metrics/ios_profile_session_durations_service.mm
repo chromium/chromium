@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
 
 #import "components/password_manager/core/browser/password_session_durations_metrics_recorder.h"
-#import "components/sync/driver/sync_session_durations_metrics_recorder.h"
+#import "components/sync/service/sync_session_durations_metrics_recorder.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

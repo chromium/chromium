@@ -28,7 +28,7 @@ namespace support_tool_ui {
 
 const char kAndroidAppInfo[] = "Android App Information";
 const char kSSID[] = "WiFi SSID";
-const char kLocationInfo[] = "Location Info";
+const char kCellularLocationInfo[] = "Cellular Location Info";
 const char kEmail[] = "Email Address";
 const char kGAIA[] = "Google Account ID";
 const char kStableIdentifier[] =
@@ -79,8 +79,8 @@ std::string GetPIITypeDescription(redaction::PIIType type_enum) {
       return support_tool_ui::kIPPAddress;
     case redaction::PIIType::kIPAddress:
       return support_tool_ui::kIPAddress;
-    case redaction::PIIType::kLocationInfo:
-      return support_tool_ui::kLocationInfo;
+    case redaction::PIIType::kCellularLocationInfo:
+      return support_tool_ui::kCellularLocationInfo;
     case redaction::PIIType::kMACAddress:
       return support_tool_ui::kMACAddress;
     case redaction::PIIType::kUIHierarchyWindowTitles:

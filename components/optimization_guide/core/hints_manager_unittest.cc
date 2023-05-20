@@ -289,10 +289,14 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
  public:
   HintsManagerTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOptimizationHints,
-          GetOptimizationHintsDefaultFeatureParams()},
-         {features::kOptimizationHintsComponent,
-          {{"check_failed_component_version_pref", "true"}}}},
+        {
+            {features::kOptimizationHints,
+             GetOptimizationHintsDefaultFeatureParams()},
+            {features::kRemoteOptimizationGuideFetching,
+             {{"batch_update_hints_for_top_hosts", "true"}}},
+            {features::kOptimizationHintsComponent,
+             {{"check_failed_component_version_pref", "true"}}},
+        },
         /*disabled_features=*/{});
 
     pref_service_ =
@@ -1080,8 +1084,7 @@ TEST_F(HintsManagerTest, CanApplyOptimizationUrlWithNoHost) {
                                             /*optimization_metadata=*/nullptr);
 
   // Make sure decisions are logged correctly.
-  EXPECT_EQ(OptimizationTypeDecision::kNoHintAvailable,
-            optimization_type_decision);
+  EXPECT_EQ(OptimizationTypeDecision::kInvalidURL, optimization_type_decision);
 }
 
 TEST_F(HintsManagerTest, CanApplyOptimizationHasFilterForTypeButNotLoadedYet) {
@@ -1680,7 +1683,8 @@ class HintsManagerFetchingTest : public HintsManagerTest {
         {
             {
                 features::kRemoteOptimizationGuideFetching,
-                {{"max_concurrent_page_navigation_fetches", "2"},
+                {{"batch_update_hints_for_top_hosts", "true"},
+                 {"max_concurrent_page_navigation_fetches", "2"},
                  {"max_concurrent_batch_update_fetches",
                   base::NumberToString(batch_concurrency_limit_)}},
             },

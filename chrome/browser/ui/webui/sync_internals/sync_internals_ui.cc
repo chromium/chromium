@@ -10,9 +10,9 @@
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_message_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
-#include "components/grit/sync_driver_sync_internals_resources.h"
-#include "components/grit/sync_driver_sync_internals_resources_map.h"
-#include "components/sync/driver/sync_internals_util.h"
+#include "components/grit/sync_service_sync_internals_resources.h"
+#include "components/grit/sync_service_sync_internals_resources_map.h"
+#include "components/sync/service/sync_internals_util.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -31,10 +31,10 @@ void CreateAndAddSyncInternalsHTMLSource(Profile* profile) {
 
   source->UseStringsJs();
   source->AddResourcePaths(
-      base::make_span(kSyncDriverSyncInternalsResources,
-                      kSyncDriverSyncInternalsResourcesSize));
+      base::make_span(kSyncServiceSyncInternalsResources,
+                      kSyncServiceSyncInternalsResourcesSize));
 
-  source->SetDefaultResource(IDR_SYNC_DRIVER_SYNC_INTERNALS_INDEX_HTML);
+  source->SetDefaultResource(IDR_SYNC_SERVICE_SYNC_INTERNALS_INDEX_HTML);
 }
 
 }  // namespace

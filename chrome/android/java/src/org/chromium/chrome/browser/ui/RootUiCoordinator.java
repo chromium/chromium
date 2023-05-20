@@ -40,7 +40,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.omnibox.ActionChipsDelegateImpl;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
@@ -92,6 +91,7 @@ import org.chromium.chrome.browser.messages.MessageContainerObserver;
 import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
@@ -164,7 +164,6 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageContainer;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessagesFactory;
-import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -304,7 +303,6 @@ public class RootUiCoordinator
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
     private final IntentRequestTracker mIntentRequestTracker;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
-    private final OmniboxActionDelegate mOmniboxActionDelegate;
     private final boolean mInitializeUiWithIncognitoColors;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
@@ -430,33 +428,6 @@ public class RootUiCoordinator
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
         mActivityTabProvider = tabProvider;
-
-        mOmniboxActionDelegate = new ActionChipsDelegateImpl(mActivity, mActivityTabProvider,
-                new SettingsLauncherImpl(),
-                // TODO(ender): phase out callbacks when the modules below are components.
-                // Open URL in an existing, else new regular tab.
-                url
-                -> {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    intent.setComponent(new ComponentName(mActivity, ChromeLauncherActivity.class));
-                    intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
-                    mActivity.startActivity(intent);
-                },
-                // Open Incognito Tab callback:
-                ()
-                        -> mActivity.startActivity(
-                                IntentHandler.createTrustedOpenNewTabIntent(mActivity, true)),
-                // Open Password Settings callback:
-                ()
-                        -> PasswordManagerLauncher.showPasswordSettings(mActivity,
-                                ManagePasswordsReferrer.CHROME_SETTINGS,
-                                mModalDialogManagerSupplier, /*managePasskeys=*/false),
-                // Open History Clusters UI for Query:
-                query -> {
-                    if (mHistoryClustersCoordinator != null) {
-                        mHistoryClustersCoordinator.openHistoryClustersUi(query);
-                    }
-                });
 
         // This little bit of arithmetic is necessary because of Java doesn't like accepting
         // Supplier<BaseImpl> where Supplier<Base> is expected. We should remove the need for
@@ -1211,6 +1182,34 @@ public class RootUiCoordinator
                 mHistoryClustersCoordinator.openHistoryClustersUi(query);
             };
 
+            var omniboxActionDelegate = new OmniboxActionDelegateImpl(mActivity,
+                    mActivityTabProvider, new SettingsLauncherImpl(),
+                    // TODO(ender): phase out callbacks when the modules below are components.
+                    // Open URL in an existing, else new regular tab.
+                    url
+                    -> {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        intent.setComponent(
+                                new ComponentName(mActivity, ChromeLauncherActivity.class));
+                        intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+                        mActivity.startActivity(intent);
+                    },
+                    // Open Incognito Tab callback:
+                    ()
+                            -> {
+                        mActivity.startActivity(
+                                IntentHandler.createTrustedOpenNewTabIntent(mActivity, true));
+                    },
+                    // Open Password Settings callback:
+                    ()
+                            -> {
+                        PasswordManagerLauncher.showPasswordSettings(mActivity,
+                                ManagePasswordsReferrer.CHROME_SETTINGS,
+                                mModalDialogManagerSupplier, /*managePasskeys=*/false);
+                    },
+                    // Open History Clusters UI for Query:
+                    openHistoryClustersDelegate);
+
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mFullscreenManager, toolbarContainer, mCompositorViewHolderSupplier.get(),
                     urlFocusChangedCallback, mTopUiThemeColorProvider,
@@ -1226,7 +1225,7 @@ public class RootUiCoordinator
                     mStartSurfaceParentTabSupplier, mBottomSheetController, mIsWarmOnResumeSupplier,
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
                     mSnackbarManagerSupplier.get(), getMerchantTrustSignalsCoordinatorSupplier(),
-                    mTabReparentingControllerSupplier, mOmniboxActionDelegate,
+                    mTabReparentingControllerSupplier, omniboxActionDelegate,
                     mEphemeralTabCoordinatorSupplier, mInitializeUiWithIncognitoColors,
                     mBackPressManager, openHistoryClustersDelegate);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
@@ -1274,7 +1273,7 @@ public class RootUiCoordinator
         mLayoutStateProvider = layoutStateProvider;
         mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
-            public void onStartedShowing(int layoutType, boolean showToolbar) {
+            public void onStartedShowing(int layoutType) {
                 if (layoutType != LayoutType.BROWSING
                         && layoutType != LayoutType.SIMPLE_ANIMATION) {
                     // Hide contextual search.
@@ -1305,8 +1304,7 @@ public class RootUiCoordinator
             }
 
             @Override
-            public void onStartedHiding(
-                    int layoutType, boolean showToolbar, boolean delayAnimation) {
+            public void onStartedHiding(int layoutType) {
                 if (layoutType == LayoutType.TAB_SWITCHER) {
                     hideAppMenu();
                 }

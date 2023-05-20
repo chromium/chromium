@@ -261,8 +261,22 @@ struct AddEntriesMessage {
   // Represents the different types of entries (e.g. file, folder).
   enum EntryType { FILE, DIRECTORY, LINK, TEAM_DRIVE, COMPUTER };
 
-  // Represents whether an entry appears in 'Share with Me' or not.
-  enum SharedOption { NONE, SHARED, SHARED_WITH_ME, NESTED_SHARED_WITH_ME };
+  // Enumeration that determines the shared status of entries.
+  enum SharedOption {
+    // Not shared.
+    NONE,
+
+    // Shared but not visible in the 'Shared with me' view.
+    SHARED,
+
+    // Shared and appears in the 'Shared With Me' view.
+    SHARED_WITH_ME,
+
+    // Not directly shared, but belongs to a folder that is shared with me.
+    // Entries marked as indirectly shared do not have the 'shared' metadata
+    // field, and thus cannot be located via search for shared items.
+    INDIRECTLY_SHARED_WITH_ME,
+  };
 
   // The actual AddEntriesMessage contents.
 
@@ -545,8 +559,8 @@ struct AddEntriesMessage {
         *option = SHARED;
       } else if (value == "sharedWithMe") {
         *option = SHARED_WITH_ME;
-      } else if (value == "nestedSharedWithMe") {
-        *option = NESTED_SHARED_WITH_ME;
+      } else if (value == "indirectlySharedWithMe") {
+        *option = INDIRECTLY_SHARED_WITH_ME;
       } else if (value == "none") {
         *option = NONE;
       } else {
@@ -1405,41 +1419,6 @@ class DriveFsTestVolume : public TestVolume {
     drivefs_delegate.FlushForTesting();
   }
 
-  void SetFileProgress(const std::string* path, const int progress) {
-    const base::FilePath file_path(*path);
-    const auto& md =
-        fake_drivefs_helper_->fake_drivefs().GetItemMetadata(file_path);
-    CHECK(md.has_value()) << "No metadata found for " << file_path.value();
-
-    auto progress_event = drivefs::mojom::ProgressEvent::New();
-    base::FilePath full_path = mount_path();
-    CHECK(base::FilePath("/").AppendRelativePath(base::FilePath(*path),
-                                                 &full_path))
-        << "Failed to convert to full path";
-    progress_event->path = full_path.AsUTF8Unsafe();
-    progress_event->progress = progress;
-    progress_event->stable_id = md.value().stable_id;
-
-    auto& drivefs_delegate = fake_drivefs_helper_->fake_drivefs().delegate();
-    drivefs_delegate->OnItemProgress(std::move(progress_event));
-    drivefs_delegate.FlushForTesting();
-  }
-
-  void SetSyncError(const std::string* path) {
-    const base::FilePath file_path(*path);
-    const auto& md =
-        fake_drivefs_helper_->fake_drivefs().GetItemMetadata(file_path);
-    CHECK(md.has_value()) << "No metadata found for " << file_path.value();
-
-    auto drive_error = drivefs::mojom::DriveError::New();
-    drive_error->path = base::FilePath(*path);
-    drive_error->stable_id = md.value().stable_id;
-
-    auto& drivefs_delegate = fake_drivefs_helper_->fake_drivefs().delegate();
-    drivefs_delegate->OnError(std::move(drive_error));
-    drivefs_delegate.FlushForTesting();
-  }
-
   void SendCloudDeleteEvent(const std::string& path) {
     const base::FilePath file_path(path);
     absl::optional<drivefs::FakeDriveFs::FileMetadata> metadata =
@@ -1516,7 +1495,7 @@ class DriveFsTestVolume : public TestVolume {
   base::FilePath GetTargetBasePathForTestEntry(
       const AddEntriesMessage::TestEntryInfo& entry) {
     if (entry.shared_option == AddEntriesMessage::SHARED_WITH_ME ||
-        entry.shared_option == AddEntriesMessage::NESTED_SHARED_WITH_ME) {
+        entry.shared_option == AddEntriesMessage::INDIRECTLY_SHARED_WITH_ME) {
       return GetSharedWithMePath();
     }
     if (!entry.team_drive_name.empty()) {
@@ -3509,22 +3488,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     drive_volume_->SetFileSyncStatus(
         path, state, drivefs::mojom::ItemEventReason::kPin,
         bytes_transferred.value(), bytes_to_transfer.value());
-    return;
-  }
-
-  if (name == "setDriveSyncProgress") {
-    auto* path = value.FindString("path");
-    auto progress = value.FindInt("progress");
-    ASSERT_TRUE(path);
-    ASSERT_TRUE(progress.has_value());
-    drive_volume_->SetFileProgress(path, *progress);
-    return;
-  }
-
-  if (name == "setDriveSyncError") {
-    auto* path = value.FindString("path");
-    ASSERT_TRUE(path);
-    drive_volume_->SetSyncError(path);
     return;
   }
 

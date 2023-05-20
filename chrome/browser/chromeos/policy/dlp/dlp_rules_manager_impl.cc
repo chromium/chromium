@@ -95,18 +95,18 @@ DlpRulesManager::Level GetLevelMapping(const std::string& level) {
                                   : it->second;
 }
 
-DlpRulesManager::Component GetComponentMapping(const std::string& component) {
+data_controls::Component GetComponentMapping(const std::string& component) {
   static constexpr auto kComponentsMap =
-      base::MakeFixedFlatMap<base::StringPiece, DlpRulesManager::Component>(
-          {{dlp::kArc, DlpRulesManager::Component::kArc},
-           {dlp::kCrostini, DlpRulesManager::Component::kCrostini},
-           {dlp::kPluginVm, DlpRulesManager::Component::kPluginVm},
-           {dlp::kDrive, DlpRulesManager::Component::kDrive},
-           {dlp::kUsb, DlpRulesManager::Component::kUsb}});
+      base::MakeFixedFlatMap<base::StringPiece, data_controls::Component>(
+          {{dlp::kArc, data_controls::Component::kArc},
+           {dlp::kCrostini, data_controls::Component::kCrostini},
+           {dlp::kPluginVm, data_controls::Component::kPluginVm},
+           {dlp::kDrive, data_controls::Component::kDrive},
+           {dlp::kUsb, data_controls::Component::kUsb}});
 
   auto* it = kComponentsMap.find(component);
   return (it == kComponentsMap.end())
-             ? DlpRulesManager::Component::kUnknownComponent
+             ? data_controls::Component::kUnknownComponent
              : it->second;
 }
 
@@ -175,9 +175,9 @@ void AddUrlConditions(url_matcher::URLMatcher* matcher,
 // Returns the URLs associated with the given component. An empty vector is
 // returned if there are none.
 std::vector<std::string> GetAssociatedUrlsConditions(
-    DlpRulesManager::Component component) {
+    data_controls::Component component) {
   switch (component) {
-    case DlpRulesManager::Component::kDrive:
+    case data_controls::Component::kDrive:
       return {kDrivePattern};
     default:
       return {};
@@ -186,7 +186,7 @@ std::vector<std::string> GetAssociatedUrlsConditions(
 
 // Add URL conditions associated with the given `component`.
 void AddAssociatedUrlConditions(
-    DlpRulesManager::Component component,
+    data_controls::Component component,
     url_matcher::URLMatcher* matcher,
     UrlConditionId& condition_id,
     url_matcher::URLMatcherConditionSet::Vector& conditions,
@@ -419,7 +419,7 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
 
 DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
     const GURL& source,
-    const Component& destination,
+    const data_controls::Component& destination,
     Restriction restriction,
     std::string* out_source_pattern,
     RuleMetadata* out_rule_metadata) const {
@@ -427,7 +427,7 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
   DCHECK(restriction == Restriction::kClipboard ||
          restriction == Restriction::kFiles);
 
-  if (destination == Component::kUnknownComponent) {
+  if (destination == data_controls::Component::kUnknownComponent) {
     return DlpRulesManager::Level::kAllow;
   }
 
@@ -540,8 +540,8 @@ DlpRulesManagerImpl::GetAggregatedComponents(const GURL& source,
   DCHECK(restriction == Restriction::kClipboard ||
          restriction == Restriction::kFiles);
 
-  std::map<Level, std::set<Component>> result;
-  for (Component component : components) {
+  std::map<Level, std::set<data_controls::Component>> result;
+  for (data_controls::Component component : components) {
     std::string out_source_pattern;
     Level level = IsRestrictedComponent(source, component, restriction,
                                         &out_source_pattern, nullptr);
@@ -701,7 +701,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     if (destinations_components) {
       for (const auto& component : *destinations_components) {
         DCHECK(component.is_string());
-        DlpRulesManager::Component component_mapping =
+        data_controls::Component component_mapping =
             GetComponentMapping(component.GetString());
         components_rules_[component_mapping].insert(rules_counter);
         AddAssociatedUrlConditions(component_mapping, dst_url_matcher_.get(),

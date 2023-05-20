@@ -5,8 +5,8 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 PASS internals.visiblePlaceholder(input0) is "first line second line"
 PASS internals.visiblePlaceholder(input1) is ""
 PASS internals.visiblePlaceholder(textarea0) is "first line \nsecond line"
-PASS internals.visiblePlaceholder(textarea1) is ""
-PASS internals.visiblePlaceholder(textarea2) is ""
+PASS internals.visiblePlaceholder(textarea1) is "\n"
+PASS internals.visiblePlaceholder(textarea2) is "\n"
 PASS successfullyParsed is true
 
 TEST COMPLETE

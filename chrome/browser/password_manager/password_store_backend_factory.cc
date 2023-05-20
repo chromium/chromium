@@ -35,11 +35,6 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
   if (PasswordStoreAndroidBackendBridgeHelper::CanCreateBackend() &&
       base::FeatureList::IsEnabled(
           password_manager::features::kUnifiedPasswordManagerAndroid)) {
-    // Re-enrollment happens before the initial migration and any possible
-    // backend interactions allowing to perform proper initialization.
-    if (password_manager_upm_eviction::ShouldInvalidateEviction(prefs))
-      password_manager_upm_eviction::ReenrollCurrentUser(prefs);
-
     base::UmaHistogramBoolean(
         "PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated",
         !prefs->GetBoolean(password_manager::prefs::

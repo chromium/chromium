@@ -45,6 +45,7 @@ ReadAnythingFontCombobox::ReadAnythingFontCombobox(
   SetBorderColorId(ui::kColorSidePanelComboboxBorder);
   SetMenuModel(std::move(new_model));
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  SetEventHighlighting(true);
 }
 
 void ReadAnythingFontCombobox::GetAccessibleNodeData(
@@ -55,7 +56,6 @@ void ReadAnythingFontCombobox::GetAccessibleNodeData(
 }
 
 void ReadAnythingFontCombobox::FontNameChangedCallback() {
-  UpdateFont();
   if (delegate_)
     delegate_->OnFontChoiceChanged(GetSelectedIndex().value());
 }

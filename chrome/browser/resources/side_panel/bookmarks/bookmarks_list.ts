@@ -279,8 +279,13 @@ export class BookmarksListElement extends PolymerElement {
     this.splice(`${pathToParentString}.children`, node.index!, 0, node);
     afterNextRender(this, () => {
       this.focusBookmark_(node.id);
-      getAnnouncerInstance().announce(
-          loadTimeData.getStringF('bookmarkCreated', getBookmarkName(node)));
+      if (node.url) {
+        getAnnouncerInstance().announce(
+            loadTimeData.getStringF('bookmarkCreated', getBookmarkName(node)));
+      } else {
+        getAnnouncerInstance().announce(loadTimeData.getStringF(
+            'bookmarkFolderCreated', getBookmarkName(node)));
+      }
     });
   }
 

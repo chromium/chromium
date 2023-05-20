@@ -150,14 +150,15 @@ class NetworkRequestMetricsBrowserTest
     if (GetParam() == RequestType::kMainFrame) {
       ui_test_utils::NavigateToURLWithDisposition(
           browser(), interesting_url, WindowOpenDisposition::CURRENT_TAB,
-          ui_test_utils::BROWSER_TEST_NONE);
+          ui_test_utils::BROWSER_TEST_NO_WAIT);
     } else {
       WaitForMainFrameResourceObserver wait_for_main_frame_resource_observer(
           active_web_contents());
       ui_test_utils::NavigateToURLWithDisposition(
           browser(),
           embedded_test_server()->GetURL(kUninterestingMainFramePath),
-          WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NONE);
+          WindowOpenDisposition::CURRENT_TAB,
+          ui_test_utils::BROWSER_TEST_NO_WAIT);
       uninteresting_main_frame_response_->WaitForRequest();
       uninteresting_main_frame_response_->Send(
           "HTTP/1.1 200 Peachy\r\n"

@@ -306,6 +306,36 @@ void ManifestDemuxer::SetPlaybackRate(double rate) {
   TriggerEvent();
 }
 
+bool ManifestDemuxer::AddRole(std::string role,
+                              std::string container,
+                              std::string codec) {
+  CHECK(chunk_demuxer_);
+  if (ChunkDemuxer::kOk != chunk_demuxer_->AddId(role, container, codec)) {
+    return false;
+  }
+  chunk_demuxer_->SetParseWarningCallback(
+      role, base::BindRepeating(&ManifestDemuxer::OnChunkDemuxerParseWarning,
+                                weak_factory_.GetWeakPtr(), role));
+  chunk_demuxer_->SetTracksWatcher(
+      role, base::BindRepeating(&ManifestDemuxer::OnChunkDemuxerTracksChanged,
+                                weak_factory_.GetWeakPtr(), role));
+  return true;
+}
+
+void ManifestDemuxer::RemoveRole(std::string role) {
+  chunk_demuxer_->RemoveId(role);
+}
+
+void ManifestDemuxer::SetSequenceMode(std::string role, bool sequence_mode) {
+  CHECK(chunk_demuxer_);
+  return chunk_demuxer_->SetSequenceMode(role, sequence_mode);
+}
+
+void ManifestDemuxer::SetDuration(double duration) {
+  CHECK(chunk_demuxer_);
+  return chunk_demuxer_->SetDuration(duration);
+}
+
 void ManifestDemuxer::OnError(PipelineStatus error) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   cancelable_next_event_.Cancel();
@@ -455,6 +485,19 @@ void ManifestDemuxer::TryCompletePendingSeek() {
 
   // Schedule a new event ASAP to populate data.
   OnEngineEventFinished(base::Seconds(0));
+}
+
+void ManifestDemuxer::OnChunkDemuxerParseWarning(
+    std::string role,
+    SourceBufferParseWarning warning) {
+  MEDIA_LOG(WARNING, media_log_)
+      << "ParseWarning (" << role << "): " << static_cast<int>(warning);
+}
+
+void ManifestDemuxer::OnChunkDemuxerTracksChanged(
+    std::string role,
+    std::unique_ptr<MediaTracks> tracks) {
+  MEDIA_LOG(WARNING, media_log_) << "TracksChanged for role: " << role;
 }
 
 void ManifestDemuxer::OnEncryptedMediaData(EmeInitDataType type,

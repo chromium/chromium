@@ -69,7 +69,7 @@ void WorkletAnimation::Tick(base::TimeTicks monotonic_time) {
   // animations lifecycle. To avoid this we pause the underlying keyframe effect
   // at the local time obtained from the user script - essentially turning each
   // call to |WorkletAnimation::Tick| into a seek in the effect.
-  keyframe_effect()->Pause(local_time_.Read(*this).value());
+  keyframe_effect()->Pause(base::TimeTicks() + local_time_.Read(*this).value());
   keyframe_effect()->Tick(base::TimeTicks());
 }
 

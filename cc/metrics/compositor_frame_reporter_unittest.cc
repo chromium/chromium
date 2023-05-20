@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -228,6 +229,9 @@ class CompositorFrameReporterTest : public testing::Test {
               actual_info.total_blink_latency);
     EXPECT_EQ(expected_info.total_viz_latency, actual_info.total_viz_latency);
   }
+
+  // Disable sub-sampling to deterministically record histograms under test.
+  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
 
   // This should be defined before |pipeline_reporter_| so it is created before
   // and destroyed after that.

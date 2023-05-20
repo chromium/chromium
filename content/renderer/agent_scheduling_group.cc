@@ -23,6 +23,7 @@
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
@@ -272,7 +273,8 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
       /*compositing_enabled=*/true, params->never_composited,
       opener_frame ? opener_frame->View() : nullptr,
       std::move(params->blink_page_broadcast), agent_group_scheduler(),
-      params->session_storage_namespace_id, params->base_background_color);
+      params->session_storage_namespace_id, params->base_background_color,
+      params->browsing_context_group_info);
 
   bool local_main_frame = params->main_frame->is_local_params();
 

@@ -19,6 +19,7 @@ namespace {
 
 // Constants related to icon sizing.
 constexpr CGFloat kIconSize = 36;
+constexpr CGFloat kCompactIconSize = 26;
 constexpr CGFloat kSymbolPointSize = 18;
 constexpr CGFloat kSparkleSize = 72;
 constexpr CGFloat kSparkleOffset = (kSparkleSize - kIconSize) / 2;
@@ -32,7 +33,9 @@ constexpr int kAnimationSparkleFrameCount = 36;
 
 // Returns a UIImageView for the given SF Symbol, and with a color named
 // `colorName`.
-UIImageView* IconForSymbol(NSString* symbol, NSString* colorName = nil) {
+UIImageView* IconForSymbol(NSString* symbol,
+                           BOOL compact_layout,
+                           NSString* colorName = nil) {
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithWeight:UIImageSymbolWeightLight];
   UIImage* image = DefaultSymbolWithConfiguration(symbol, config);
@@ -41,26 +44,28 @@ UIImageView* IconForSymbol(NSString* symbol, NSString* colorName = nil) {
     icon.tintColor = [UIColor colorNamed:colorName];
   }
   icon.translatesAutoresizingMaskIntoConstraints = NO;
+  CGFloat icon_width = compact_layout ? kCompactIconSize : kIconSize;
   [NSLayoutConstraint activateConstraints:@[
-    [icon.widthAnchor constraintEqualToConstant:kIconSize],
+    [icon.widthAnchor constraintEqualToConstant:icon_width],
     [icon.heightAnchor constraintEqualToAnchor:icon.widthAnchor],
   ]];
   return icon;
 }
 
-UIImageView* DefaultBrowserIcon() {
+UIImageView* DefaultBrowserIcon(BOOL compact_layout) {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   UIImage* image = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kChromeSymbol, kSymbolPointSize));
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
+  CGFloat icon_width = compact_layout ? kCompactIconSize : kIconSize;
   [NSLayoutConstraint activateConstraints:@[
-    [icon.widthAnchor constraintEqualToConstant:kIconSize],
+    [icon.widthAnchor constraintEqualToConstant:icon_width],
     [icon.heightAnchor constraintEqualToAnchor:icon.widthAnchor],
   ]];
   return icon;
 #else
-  return IconForSymbol(kDefaultBrowserSymbol);
+  return IconForSymbol(kDefaultBrowserSymbol, compact_layout);
 #endif
 }
 
@@ -68,10 +73,19 @@ UIImageView* DefaultBrowserIcon() {
 // circle. The circle's color will be the color named `circleColorName`.
 // Note: this was necessary because there was no symbol exactly matching
 // what was needed for the Autofill icon.
-UIImageView* IconInCircle(NSString* symbol, NSString* circle_color_name) {
+UIImageView* IconInCircle(NSString* symbol,
+                          BOOL compact_layout,
+                          NSString* circle_color_name) {
   UIImageView* circle_view =
-      IconForSymbol(kCircleFillSymbol, circle_color_name);
-  UIImage* symbol_image = DefaultSymbolWithPointSize(symbol, kSymbolPointSize);
+      IconForSymbol(kCircleFillSymbol, compact_layout, circle_color_name);
+  UIImageConfiguration* compactImageConfiguration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolPointSize
+                          weight:UIImageSymbolWeightLight
+                           scale:UIImageSymbolScaleSmall];
+  UIImage* symbol_image =
+      compact_layout
+          ? DefaultSymbolWithConfiguration(symbol, compactImageConfiguration)
+          : DefaultSymbolWithPointSize(symbol, kSymbolPointSize);
   CHECK(symbol_image);
 
   UIImageView* symbol_view = [[UIImageView alloc] initWithImage:symbol_image];
@@ -90,13 +104,18 @@ UIImageView* IconInCircle(NSString* symbol, NSString* circle_color_name) {
   UIImageView* _typeIcon;
   UIImageView* _checkmark;
   UIImageView* _sparkle;
+  // YES if this view should configure itself with a compacted layout.
+  BOOL _compactLayout;
 }
 
-- (instancetype)initWithType:(SetUpListItemType)type complete:(BOOL)complete {
+- (instancetype)initWithType:(SetUpListItemType)type
+                    complete:(BOOL)complete
+               compactLayout:(BOOL)compactLayout {
   self = [super init];
   if (self) {
     _type = type;
     _complete = complete;
+    _compactLayout = compactLayout;
   }
   return self;
 }
@@ -154,7 +173,8 @@ UIImageView* IconInCircle(NSString* symbol, NSString* circle_color_name) {
   }
 
   _typeIcon = [self createTypeIcon];
-  _checkmark = IconForSymbol(kCheckmarkCircleFillSymbol, kBlue500Color);
+  _checkmark =
+      IconForSymbol(kCheckmarkCircleFillSymbol, _compactLayout, kBlue500Color);
   _sparkle = [self createSparkle];
   [self addSubview:_typeIcon];
   [self addSubview:_checkmark];
@@ -173,11 +193,12 @@ UIImageView* IconInCircle(NSString* symbol, NSString* circle_color_name) {
 - (UIImageView*)createTypeIcon {
   switch (_type) {
     case SetUpListItemType::kSignInSync:
-      return IconForSymbol(kSyncCircleSymbol, kGreen500Color);
+      return IconForSymbol(kSyncCircleSymbol, _compactLayout, kGreen500Color);
     case SetUpListItemType::kDefaultBrowser:
-      return DefaultBrowserIcon();
+      return DefaultBrowserIcon(_compactLayout);
     case SetUpListItemType::kAutofill:
-      return IconInCircle(kEllipsisRectangleSymbol, kBlue600Color);
+      return IconInCircle(kEllipsisRectangleSymbol, _compactLayout,
+                          kBlue600Color);
     case SetUpListItemType::kFollow:
       // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
       NOTREACHED();

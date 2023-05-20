@@ -327,7 +327,6 @@ void PasswordManager::RegisterProfilePrefs(
                                 0);
   registry->RegisterIntegerPref(
       prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
-  registry->RegisterIntegerPref(prefs::kTimesUPMAuthErrorShown, 0);
 #endif
   // Preferences for |PasswordChangeSuccessTracker|.
   registry->RegisterIntegerPref(prefs::kPasswordChangeSuccessTrackerVersion, 0);

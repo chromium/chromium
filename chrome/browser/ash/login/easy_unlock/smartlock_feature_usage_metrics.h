@@ -18,8 +18,7 @@ class MultiDeviceSetupClient;
 // Tracks Smart Lock feature usage for the Standard Feature Usage Logging
 // (SFUL) framework.
 class SmartLockFeatureUsageMetrics
-    : public feature_usage::FeatureUsageMetrics::Delegate,
-      public SmartLockMetricsRecorder::UsageRecorder {
+    : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
   SmartLockFeatureUsageMetrics(
       multidevice_setup::MultiDeviceSetupClient* multi_device_setup_client);
@@ -29,8 +28,7 @@ class SmartLockFeatureUsageMetrics
       delete;
   ~SmartLockFeatureUsageMetrics() override;
 
-  // SmartLockMetricsRecorder::UsageRecorder:
-  void RecordUsage(bool success) override;
+  void RecordUsage(bool success);
 
  private:
   // feature_usage::FeatureUsageMetrics::Delegate:

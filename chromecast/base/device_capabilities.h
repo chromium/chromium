@@ -222,9 +222,9 @@ class DeviceCapabilities {
   virtual void SetCapability(const std::string& path,
                              base::Value proposed_value) = 0;
 
-  // Iterates through entries in |dict_value| and calls SetCapability() for
-  // each one. This method is asynchronous.
-  virtual void MergeDictionary(const base::Value& dict_value) = 0;
+  // Iterates through entries in |dict| and calls SetCapability() for each one.
+  // This method is asynchronous.
+  virtual void MergeDictionary(const base::Value::Dict& dict) = 0;
 
   // Adds/removes an observer. It doesn't take the ownership of |observer|.
   virtual void AddCapabilitiesObserver(Observer* observer) = 0;

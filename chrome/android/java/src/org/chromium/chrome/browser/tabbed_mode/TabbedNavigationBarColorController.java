@@ -142,14 +142,13 @@ class TabbedNavigationBarColorController {
         mLayoutStateObserver =
                 new FilterLayoutStateObserver(LayoutType.TAB_SWITCHER, new LayoutStateObserver() {
                     @Override
-                    public void onStartedShowing(int layoutType, boolean showToolbar) {
+                    public void onStartedShowing(int layoutType) {
                         mOverviewModeHiding = false;
                         updateNavigationBarColor();
                     }
 
                     @Override
-                    public void onStartedHiding(
-                            int layoutType, boolean showToolbar, boolean delayAnimation) {
+                    public void onStartedHiding(int layoutType) {
                         mOverviewModeHiding = true;
                         updateNavigationBarColor();
                     }

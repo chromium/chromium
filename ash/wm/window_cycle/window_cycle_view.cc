@@ -59,6 +59,11 @@ constexpr int kBackgroundCornerRadius = 16;
 // Shield horizontal inset.
 constexpr int kBackgroundHorizontalInsetDp = 8;
 
+// Shield horizontal inset when Jellyroll is enabled.
+// TODO(b/282753971): Rename this to `kBackgroundHorizontalInsetDp` and remove
+// `kBackgroundHorizontalInsetDp` above.
+constexpr int kBackgroundHorizontalInsetDpCrOSNext = 40;
+
 // Vertical padding between the alt-tab bandshield and the window previews.
 constexpr int kInsideBorderVerticalPaddingDp = 60;
 
@@ -673,7 +678,9 @@ bool WindowCycleView::IsEventInTabSliderContainer(
 
 int WindowCycleView::CalculateMaxWidth() const {
   return root_window_->GetBoundsInScreen().size().width() -
-         2 * kBackgroundHorizontalInsetDp;
+         2 * (chromeos::features::IsJellyrollEnabled()
+                  ? kBackgroundHorizontalInsetDpCrOSNext
+                  : kBackgroundHorizontalInsetDp);
 }
 
 gfx::Rect WindowCycleView::GetContentContainerBounds() const {

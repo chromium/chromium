@@ -248,6 +248,9 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
                 webrtc::PeerConnectionInterface::StatsOutputLevel level,
                 rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> selector);
 
+  // Allows webrtc-internals to request a brief dump of the current state.
+  void EmitCurrentStateForTracker();
+
   // Tells the |client_| to close RTCPeerConnection.
   // Make it virtual for testing purpose.
   virtual void CloseClientPeerConnection();

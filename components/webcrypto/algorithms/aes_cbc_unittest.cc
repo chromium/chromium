@@ -726,7 +726,7 @@ TEST_F(WebCryptoAesCbcTest, WrapUnwrapRoundtripSpkiPkcs8) {
                               &wrapping_key));
 
   // Generate an RSA key pair to be wrapped.
-  const unsigned int modulus_length = 256;
+  const unsigned int modulus_length = 2048;
   const std::vector<uint8_t> public_exponent = HexStringToBytes("010001");
 
   blink::WebCryptoKey public_key;

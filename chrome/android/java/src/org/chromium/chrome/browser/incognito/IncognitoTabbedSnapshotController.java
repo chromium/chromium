@@ -117,14 +117,13 @@ public class IncognitoTabbedSnapshotController
         mLayoutStateObserver =
                 new FilterLayoutStateObserver(LayoutType.TAB_SWITCHER, new LayoutStateObserver() {
                     @Override
-                    public void onStartedShowing(int layoutType, boolean showToolbar) {
+                    public void onStartedShowing(int layoutType) {
                         assert layoutType == LayoutType.TAB_SWITCHER;
                         updateIncognitoTabSnapshotState();
                     }
 
                     @Override
-                    public void onStartedHiding(
-                            int layoutType, boolean showToolbar, boolean delayAnimation) {
+                    public void onStartedHiding(int layoutType) {
                         assert layoutType == LayoutType.TAB_SWITCHER;
                         updateIncognitoTabSnapshotState();
                     }

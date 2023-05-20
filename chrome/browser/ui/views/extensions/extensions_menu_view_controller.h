@@ -49,6 +49,8 @@ class ExtensionsMenuViewController
       extensions::PermissionsManager::UserSiteAccess site_access) override;
   void OnExtensionToggleSelected(extensions::ExtensionId extension_id,
                                  bool is_on) override;
+  void OnAllowExtensionClicked(
+      const extensions::ExtensionId& extension_id) override;
 
   // TabStripModelObserver:
   // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or
@@ -107,6 +109,11 @@ class ExtensionsMenuViewController
 
   // Populates menu items in `main_page`.
   void PopulateMainPage(ExtensionsMenuMainPageView* main_page);
+
+  // Inserts a menu item for `extension_id` in `main_page` at `index`.
+  void InsertMenuItemMainPage(ExtensionsMenuMainPageView* main_page,
+                              const extensions::ExtensionId& extension_id,
+                              int index);
 
   // Returns the currently active web contents.
   content::WebContents* GetActiveWebContents() const;

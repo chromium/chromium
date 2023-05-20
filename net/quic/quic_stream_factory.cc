@@ -684,15 +684,19 @@ int QuicStreamFactory::Job::DoResolveHostComplete(int rv) {
 
   // Inform the factory of this resolution, which will set up
   // a session alias, if possible.
-  // TODO(crbug.com/1264933): Consider dealing with the other endpoints
-  // with protocol metadata.
-  if (factory_->HasMatchingIpSession(
-          key_,
-          HostResolver::GetNonProtocolEndpoints(
-              *resolve_host_request_->GetEndpointResults()),
-          *resolve_host_request_->GetDnsAliasResults(), use_dns_aliases_)) {
-    LogConnectionIpPooling(true);
-    return OK;
+  const bool svcb_optional =
+      IsSvcbOptional(*resolve_host_request_->GetEndpointResults());
+  for (const auto& endpoint : *resolve_host_request_->GetEndpointResults()) {
+    // Only consider endpoints that would have been eligible for QUIC.
+    if (!SelectQuicVersion(endpoint, svcb_optional).IsKnown()) {
+      continue;
+    }
+    if (factory_->HasMatchingIpSession(
+            key_, endpoint.ip_endpoints,
+            *resolve_host_request_->GetDnsAliasResults(), use_dns_aliases_)) {
+      LogConnectionIpPooling(true);
+      return OK;
+    }
   }
   io_state_ = STATE_CREATE_SESSION;
   return OK;

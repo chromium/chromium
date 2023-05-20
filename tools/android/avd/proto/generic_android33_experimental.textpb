@@ -1,0 +1,25 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86_64 android-13 AVD (userdebug build).
+
+emulator_package {
+  package_name: "experimental/hypan_at_google.com/chromium/third_party/android_sdk/public/emulator"
+  version: "unizoio_BPhQXxevcOgK47Nqg1ZpaViURktsleZ2VfkC"  # 32.1.12 with updated swiftshader
+  dest_path: "generic_android33_experimental"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-33/google_apis/x86_64"
+  version: "1TealwPsZ5QUC9ZhKI9-nbMjZ1cFouZQ-CzOv0varQcC"  # r9, TE1A.220922.021
+  dest_path: "generic_android33_experimental"
+}
+system_image_name: "system-images;android-33;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-33/google_apis/x86_64"
+  version: "ArHSre6lDRPRC_WDP8x-NbgbAHM_ig0uTg54ireSpJoC"
+  dest_path: "generic_android33_experimental"
+}
+avd_name: "android_33_google_apis_x86_64"

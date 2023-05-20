@@ -831,6 +831,30 @@ TEST_F(SnapGroupEntryPointArm1Test, SwapWindowsAndUnlockTest) {
   ClickUnlockButtonAndVerify();
 }
 
+// Tests that by toggling the keyboard shortcut 'Search + Shift + G', the two
+// snapped windows can be grouped or ungrouped.
+TEST_F(SnapGroupEntryPointArm1Test, UseShortcutToGroupUnGroupWindows) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Press the shortcut and the windows will be ungrouped.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_G,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  // Press the shortcut again and the windows will be grouped.
+  event_generator->PressAndReleaseKey(ui::VKEY_G,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_TRUE(split_view_divider());
+}
+
 // Tests that the windows in snap group can be minimized together with the
 // keyboard shortcut 'Search + Shift + D'.
 TEST_F(SnapGroupEntryPointArm1Test, UseShortcutToMinimizeWindows) {
@@ -839,14 +863,15 @@ TEST_F(SnapGroupEntryPointArm1Test, UseShortcutToMinimizeWindows) {
   SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
 
   // Press the shortcut first time and the windows will be minimized.
-  GetEventGenerator()->PressAndReleaseKey(
-      ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_D,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(WindowState::Get(w1.get())->IsMinimized());
   EXPECT_TRUE(WindowState::Get(w2.get())->IsMinimized());
 
   // Press the shortcut again and the windows state remain the same.
-  GetEventGenerator()->PressAndReleaseKey(
-      ui::VKEY_D, ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  event_generator->PressAndReleaseKey(ui::VKEY_D,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(WindowState::Get(w1.get())->IsMinimized());
   EXPECT_TRUE(WindowState::Get(w2.get())->IsMinimized());
 }

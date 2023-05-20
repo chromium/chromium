@@ -62,55 +62,56 @@ TEST(ExtensionProcessMapTest, Test) {
 
   // Test behavior when empty.
   EXPECT_FALSE(map.Contains("a", 1));
-  EXPECT_FALSE(map.Remove("a", 1, content::SiteInstanceId(1)));
+  EXPECT_FALSE(map.RemoveAllFromProcess(1));
   EXPECT_EQ(0u, map.size());
 
   // Test insertion and behavior with one item.
-  EXPECT_TRUE(map.Insert("a", 1, content::SiteInstanceId(1)));
+  EXPECT_TRUE(map.Insert("a", 1));
   EXPECT_TRUE(map.Contains("a", 1));
   EXPECT_FALSE(map.Contains("a", 2));
   EXPECT_FALSE(map.Contains("b", 1));
   EXPECT_EQ(1u, map.size());
 
   // Test inserting a duplicate item.
-  EXPECT_FALSE(map.Insert("a", 1, content::SiteInstanceId(1)));
+  EXPECT_FALSE(map.Insert("a", 1));
   EXPECT_TRUE(map.Contains("a", 1));
   EXPECT_EQ(1u, map.size());
 
   // Insert some more items.
-  EXPECT_TRUE(map.Insert("a", 2, content::SiteInstanceId(2)));
-  EXPECT_TRUE(map.Insert("b", 1, content::SiteInstanceId(3)));
-  EXPECT_TRUE(map.Insert("b", 2, content::SiteInstanceId(4)));
+  EXPECT_TRUE(map.Insert("a", 2));
+  EXPECT_TRUE(map.Insert("b", 3));
+  EXPECT_TRUE(map.Insert("b", 4));
   EXPECT_EQ(4u, map.size());
 
   EXPECT_TRUE(map.Contains("a", 1));
   EXPECT_TRUE(map.Contains("a", 2));
-  EXPECT_TRUE(map.Contains("b", 1));
-  EXPECT_TRUE(map.Contains("b", 2));
+  EXPECT_TRUE(map.Contains("b", 3));
+  EXPECT_TRUE(map.Contains("b", 4));
+
   EXPECT_FALSE(map.Contains("a", 3));
+  EXPECT_FALSE(map.Contains("b", 2));
+  EXPECT_FALSE(map.Contains("a", 5));
+  EXPECT_FALSE(map.Contains("c", 3));
 
-  // Note that this only differs from an existing item because of the site
-  // instance id.
-  EXPECT_TRUE(map.Insert("a", 1, content::SiteInstanceId(5)));
-  EXPECT_TRUE(map.Contains("a", 1));
-
-  // Test removal.
-  EXPECT_TRUE(map.Remove("a", 1, content::SiteInstanceId(1)));
-  EXPECT_FALSE(map.Remove("a", 1, content::SiteInstanceId(1)));
-  EXPECT_EQ(4u, map.size());
-
-  // Should still return true because there were two site instances for this
-  // extension/process pair.
-  EXPECT_TRUE(map.Contains("a", 1));
-
-  EXPECT_TRUE(map.Remove("a", 1, content::SiteInstanceId(5)));
+  // At this point we have {a,1}, {a,2}, {b,3}, and {b,4} in the map. Test
+  // removal of these processes.
+  EXPECT_EQ(1, map.RemoveAllFromProcess(1));
   EXPECT_EQ(3u, map.size());
   EXPECT_FALSE(map.Contains("a", 1));
+  EXPECT_TRUE(map.Contains("a", 2));
 
-  EXPECT_EQ(2, map.RemoveAllFromProcess(2));
-  EXPECT_EQ(1u, map.size());
+  EXPECT_EQ(1, map.RemoveAllFromProcess(2));
+  EXPECT_EQ(2u, map.size());
   EXPECT_EQ(0, map.RemoveAllFromProcess(2));
+  EXPECT_EQ(2u, map.size());
+  EXPECT_EQ(1, map.RemoveAllFromProcess(3));
   EXPECT_EQ(1u, map.size());
+  EXPECT_EQ(0, map.RemoveAllFromProcess(3));
+  EXPECT_EQ(1u, map.size());
+  EXPECT_EQ(1, map.RemoveAllFromProcess(4));
+  EXPECT_EQ(0u, map.size());
+  EXPECT_EQ(0, map.RemoveAllFromProcess(4));
+  EXPECT_EQ(0u, map.size());
 }
 
 TEST(ExtensionProcessMapTest, GetMostLikelyContextType) {
@@ -135,13 +136,13 @@ TEST(ExtensionProcessMapTest, GetMostLikelyContextType) {
       extensions::Feature::CONTENT_SCRIPT_CONTEXT,
       map.GetMostLikelyContextType(extension.get(), 2, &untrusted_webui_url));
 
-  map.Insert("b", 3, content::SiteInstanceId(1));
+  map.Insert("b", 3);
   extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kExtension, "b");
   EXPECT_EQ(extensions::Feature::BLESSED_EXTENSION_CONTEXT,
             map.GetMostLikelyContextType(extension.get(), 3, &extension_url));
 
-  map.Insert("c", 4, content::SiteInstanceId(2));
+  map.Insert("c", 4);
   extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kPlatformApp, "c");
   EXPECT_EQ(extensions::Feature::BLESSED_EXTENSION_CONTEXT,
@@ -149,30 +150,30 @@ TEST(ExtensionProcessMapTest, GetMostLikelyContextType) {
 
   map.set_is_lock_screen_context(true);
 
-  map.Insert("d", 5, content::SiteInstanceId(3));
+  map.Insert("d", 5);
   extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kPlatformApp, "d");
   EXPECT_EQ(extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT,
             map.GetMostLikelyContextType(extension.get(), 5, &extension_url));
 
-  map.Insert("e", 6, content::SiteInstanceId(4));
+  map.Insert("e", 6);
   extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kExtension, "e");
   EXPECT_EQ(extensions::Feature::LOCK_SCREEN_EXTENSION_CONTEXT,
             map.GetMostLikelyContextType(extension.get(), 6, &extension_url));
 
-  map.Insert("f", 7, content::SiteInstanceId(5));
+  map.Insert("f", 7);
   extension =
       CreateExtensionWithFlags(extensions::TypeToCreate::kHostedApp, "f");
   EXPECT_EQ(extensions::Feature::BLESSED_WEB_PAGE_CONTEXT,
             map.GetMostLikelyContextType(extension.get(), 7, &web_url));
 
-  map.Insert("g", 8, content::SiteInstanceId(6));
+  map.Insert("g", 8);
   EXPECT_EQ(extensions::Feature::WEBUI_UNTRUSTED_CONTEXT,
             map.GetMostLikelyContextType(/*extension=*/nullptr, 8,
                                          &untrusted_webui_url));
 
-  map.Insert("h", 9, content::SiteInstanceId(7));
+  map.Insert("h", 9);
   EXPECT_EQ(extensions::Feature::WEB_PAGE_CONTEXT,
             map.GetMostLikelyContextType(/*extension=*/nullptr, 9, &web_url));
 }

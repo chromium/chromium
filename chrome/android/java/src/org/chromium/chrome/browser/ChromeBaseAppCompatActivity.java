@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
 
 import android.app.ActivityManager.TaskDescription;
@@ -65,6 +67,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * Activities that use the <merge> tag or delay layout inflation cannot use WITH_TOOLBAR_VIEW.
      * Activities that use their own action bar cannot use WITH_ACTION_BAR.
      * Activities that appear as Dialogs using themes do not have an automotive toolbar yet (NONE).
+     *
+     * Full screen alert dialogs display the automotive toolbar using FullscreenAlertDialog.
+     * Full screen dialogs display the automotive toolbar using ChromeDialog.
      */
     @IntDef({
             AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW,
@@ -394,6 +399,21 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             linearLayout.addView(view);
         } else {
             super.setContentView(view, params);
+        }
+    }
+
+    @Override
+    public void addContentView(View view, ViewGroup.LayoutParams params) {
+        if (BuildInfo.getInstance().isAutomotive && params.width == MATCH_PARENT
+                && params.height == MATCH_PARENT) {
+            ViewGroup automotiveLayout = (ViewGroup) getLayoutInflater().inflate(
+                    R.layout.automotive_layout_with_back_button_toolbar, null);
+            super.addContentView(
+                    automotiveLayout, new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+            setAutomotiveToolbarBackButtonAction();
+            automotiveLayout.addView(view, params);
+        } else {
+            super.addContentView(view, params);
         }
     }
 

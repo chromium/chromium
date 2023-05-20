@@ -114,5 +114,18 @@
     // https://w3c.github.io/page-visibility/#visibilitystate-enum
     "hidden",
     "visible",
+
+    // Blocking attributes
+    // https://html.spec.whatwg.org/C/#blocking-attribute
+    "render",
+
+    // dropEffect IDL attribute
+    // https://html.spec.whatwg.org/C/#dom-datatransfer-dropeffect
+    "none",
+
+    // Various Aria attribute values
+    // https://www.w3.org/TR/wai-aria-1.1/#valuetype_true-false
+    "false",
+    "true",
   ],
 }

@@ -49,7 +49,12 @@ promise_test(async t => {
   const requests = await waitForRequest();
   assert_equals(requests.length, 1);
   assert_equals(requests[0].method, 'GET');
-  assert_equals(requests[0]['attribution-reporting-eligible'], expected_eligible);
+  // TODO(apaseltiner): Check header value once WPT can parse structured dictionaries.
+  if (expected_eligible) {
+    assert_own_property(requests[0], 'attribution-reporting-eligible');
+  } else {
+    assert_not_own_property(requests[0], 'attribution-reporting-eligible');
+  }
   assert_equals(requests[0]['attribution-reporting-support'], expected_support);
   assert_equals(requests[0].referer, location.toString());
 

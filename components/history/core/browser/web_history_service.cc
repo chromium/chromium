@@ -559,9 +559,8 @@ void WebHistoryService::QueryHistoryCompletionCallback(
     WebHistoryService::QueryWebHistoryCallback callback,
     WebHistoryService::Request* request,
     bool success) {
-  absl::optional<base::Value::Dict> response =
-      success ? ReadResponse(request) : absl::nullopt;
-  std::move(callback).Run(request, response);
+  std::move(callback).Run(request,
+                          success ? ReadResponse(request) : absl::nullopt);
 }
 
 void WebHistoryService::ExpireHistoryCompletionCallback(

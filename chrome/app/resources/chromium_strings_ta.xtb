@@ -92,6 +92,7 @@
 <translation id="3179665906251668410">Chromium மறை&amp;நிலை சாளரத்தில் இணைப்பைத் திற</translation>
 <translation id="3185330573522821672">புதிய Chromium சுயவிவரத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="3190315855212034486">ஓ! Chromium செயலிழந்தது. இப்போது மீண்டும் தொடங்கவா?</translation>
+<translation id="3255926992597692024">பேமெண்ட் விவரங்களை நிரப்பும் முறைகளுக்கான அமைப்புகளை Chromium மாற்ற முயல்கிறது.</translation>
 <translation id="3258596308407688501">தன்னுடைய தரவுக் கோப்பகத்தில் Chromium படிக்கவும் எழுதவும் செய்யாது:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -131,7 +132,6 @@
 <translation id="390528597099634151">இந்த Chromium சுயவிவரத்தில் ஏற்கெனவே <ph name="EXISTING_USER" /> உள்நுழைந்துள்ளார். நீங்கள் உலாவுவதைத் தனிப்பட்டதாக வைத்திருக்க உங்களுக்கு ஒரு புதிய சுயவிவரத்தை Chromium உருவாக்க முடியும்.</translation>
 <translation id="391789666908693569">உங்கள் கணக்கை <ph name="MANAGER_NAME" /> நிர்வகிக்கிறது. இந்த Chromium உலாவியின் சுயவிவரத்தையும் புக்மார்க்குகள், பதிவுகள், கடவுச்சொற்கள் போன்ற அதன் தரவையும் உங்கள் நிர்வாகி பார்க்கலாம் திருத்தலாம்.</translation>
 <translation id="3945058413678539331">Chromium கடவுச்சொற்களை நகலெடுக்க முயல்கிறது. இதை அனுமதிக்க உங்கள் Windows கடவுச்சொல்லை உள்ளிடவும்.</translation>
-<translation id="3962623956404948996">இந்த ஃபைல் ஆபத்தானதாக இருக்கக்கூடும் என்பதால் இதை ஸ்கேன் செய்யுமாறு Chromium பரிந்துரைக்கிறது</translation>
 <translation id="3997429360543082038">ChromiumOS - ஓர் அறிமுகம்</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux டெவெலப்மெண்ட் சூழல்<ph name="END_LINK_LINUX_OSS" /> போலவே, கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromiumOS உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />தற்போதைய அமைப்புகளைப்<ph name="END_LINK" /> பற்றிய அறிக்கையை அனுப்பி, Chromiumஐ இன்னும் சிறந்ததாக்க உதவவும்</translation>
@@ -198,6 +198,7 @@
 <translation id="5653831366781983928">Chromiumமை இப்போது மீண்டும் தொடங்கவும்</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumமை இந்த மொழியில் காட்டு</translation>
+<translation id="585620188971323280">பேமெண்ட் விவரங்களை நிரப்பும் முறைகளுக்கான அமைப்புகளை மாற்றுங்கள்.</translation>
 <translation id="5862307444128926510">Chromium க்கு வரவேற்கிறோம்</translation>
 <translation id="5883558403894052917">இவற்றில் மால்வேர் இருப்பதை Chromium கண்டறிந்துள்ளது:</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>

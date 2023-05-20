@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_REGISTRY_MAP_ENTRY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_REGISTRY_MAP_ENTRY_H_
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
@@ -13,8 +14,6 @@ class Highlight;
 
 struct HighlightRegistryMapEntry final
     : public GarbageCollected<HighlightRegistryMapEntry> {
-  explicit HighlightRegistryMapEntry(const AtomicString& highlight_name)
-      : highlight_name(highlight_name) {}
   HighlightRegistryMapEntry(const AtomicString& highlight_name,
                             Member<Highlight> highlight)
       : highlight(highlight), highlight_name(highlight_name) {}
@@ -25,6 +24,21 @@ struct HighlightRegistryMapEntry final
 
   Member<Highlight> highlight = nullptr;
   AtomicString highlight_name = g_null_atom;
+};
+
+// Translator used for looking up a HighlightRegistryMapEntry using only the
+// name. Use with the special Find<Translator>() on the highlights set.
+struct HighlightRegistryMapEntryNameTranslator {
+  STATIC_ONLY(HighlightRegistryMapEntryNameTranslator);
+
+  static unsigned GetHash(const AtomicString& name) {
+    return WTF::GetHash(name);
+  }
+  static bool Equal(const HighlightRegistryMapEntry* entry,
+                    const AtomicString& name) {
+    DCHECK(entry);
+    return HashTraits<AtomicString>::Equal(entry->highlight_name, name);
+  }
 };
 
 }  // namespace blink

@@ -33,6 +33,7 @@
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "third_party/skia/include/gpu/graphite/YUVABackendTextures.h"
 
@@ -522,7 +523,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
       }
       skgpu::graphite::YUVABackendTextures yuva_backend_textures(
           recorder, yuva_info, yuva_textures.data());
-      result_image = SkImage::MakeGraphiteFromYUVABackendTextures(
+      result_image = SkImages::TextureFromYUVATextures(
           recorder, yuva_backend_textures, src_rgb_color_space);
     }
 

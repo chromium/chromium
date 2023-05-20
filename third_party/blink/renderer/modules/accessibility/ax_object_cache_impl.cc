@@ -2369,6 +2369,49 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
     relation_cache_->UpdateRelatedTree(optional_node, obj);
 }
 
+void AXObjectCacheImpl::UpdateTreeIfNeededOnce() {
+  DCHECK(!updating_tree_);
+  base::AutoReset<bool> updating(&updating_tree_, true);
+  HeapDeque<Member<AXObject>> objects_to_process;
+  objects_to_process.push_back(Root());
+  while (!objects_to_process.empty()) {
+    AXObject* obj = objects_to_process.front();
+    objects_to_process.pop_front();
+    if (obj->IsDetached()) {
+      continue;
+    }
+    obj->UpdateChildrenIfNecessary();
+    if (obj->HasDirtyDescendants()) {
+      obj->ClearHasDirtyDescendants();
+      for (auto& child : obj->ChildrenIncludingIgnored()) {
+        objects_to_process.push_back(child);
+      }
+    }
+  }
+}
+
+void AXObjectCacheImpl::UpdateTreeIfNeeded() {
+  if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
+    return;
+  }
+  UpdateTreeIfNeededOnce();
+  // Update a second time because image maps or AX relations may invalidate
+  // ancestors. See AXNodeObject::AddImageMapChildren or
+  // AXRelationCache::UpdateRelatedText.
+  // TODO(chrishtr): find a way to do this without two tree walks.
+  if (Root()->HasDirtyDescendants() || Root()->NeedsToUpdateChildren()) {
+    UpdateTreeIfNeededOnce();
+  }
+
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  for (const auto& entry : objects_) {
+    const AXObject* object = entry.value;
+    DCHECK(!object->HasDirtyDescendants())
+        << "No children in the tree should require an update at this point.";
+  }
+#endif
+}
+
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
   if (IsPopup(document)) {
     // Only process popup document together with main document.
@@ -2390,6 +2433,17 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
     }
     ProcessDeferredAccessibilityEventsImpl(document);
   }
+
+  if (RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
+    UpdateTreeIfNeeded();
+  }
+
+  // Send events to RenderAccessibilityImpl, which serializes them and then
+  // sends the serialized events and dirty objects to the browser process.
+  if (GetPopupDocumentIfShowing()) {
+    PostNotifications(*GetPopupDocumentIfShowing());
+  }
+  PostNotifications(document);
 
   // Check whether there are dirty objects ready to be serialized.
   // TODO(accessibility) It's a bit confusing that this can be true when the
@@ -2447,7 +2501,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
     relation_cache_->ProcessUpdatesWithCleanLayout();
 
     // Keep going if there are more ids to invalidate or children changes to
-    // process from previous steps. For examople, a display locked
+    // process from previous steps. For example, a display locked
     // (content-visibility:auto) element could be invalidated as it is scrolled
     // in or out of view, causing Invalidate() to add it to invalidated_ids_.
     // As ProcessInvalidatedObjects() refreshes the objectt and calls
@@ -2458,10 +2512,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
 #endif
   } while (!nodes_with_pending_children_changed_.empty() ||
            !GetInvalidatedIds(document).empty());
-
-  // Send events to RenderAccessibilityImpl, which serializes them and then
-  // sends the serialized events and dirty objects to the browser process.
-  PostNotifications(document);
 }
 
 bool AXObjectCacheImpl::IsMainDocumentDirty() const {
@@ -2477,9 +2527,19 @@ bool AXObjectCacheImpl::IsPopupDocumentDirty() const {
          !invalidated_ids_popup_.empty();
 }
 
-bool AXObjectCacheImpl::IsDirty() const {
-  return IsMainDocumentDirty() || IsPopupDocumentDirty() ||
-         relation_cache_->IsDirty();
+bool AXObjectCacheImpl::IsDirty() {
+  if (IsMainDocumentDirty() || IsPopupDocumentDirty() ||
+      relation_cache_->IsDirty()) {
+    return true;
+  }
+  DCHECK(RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled() ||
+         !Root()->HasDirtyDescendants());
+  if (RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
+    if (Root()->NeedsToUpdateChildren() || Root()->HasDirtyDescendants()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void AXObjectCacheImpl::EmbeddingTokenChanged(HTMLFrameOwnerElement* element) {
@@ -3635,6 +3695,9 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
   obj = GetSerializationTarget(obj);
   if (!obj)
     return;
+
+  // TODO(chrishtr): handle |subtree|.
+  obj->SetAncestorsHaveDirtyDescendants();
 
   // If the content is inside the popup, mark the owning element dirty.
   // TODO(aleventhal): not sure why this works, but now that we run a11y in

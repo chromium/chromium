@@ -149,12 +149,11 @@ const char kCapabilitiesPageLoadStrategy[] = "normal";
 
 base::Value CreateErrorValue(const std::string& error,
                              const std::string& message) {
-  base::Value error_value(base::Value::Type::DICT);
-  error_value.SetStringKey(kWebDriverErrorCodeValueField, error);
-  error_value.SetStringKey(kWebDriverErrorMessageValueField, message);
-  error_value.SetStringKey(kWebDriverStackTraceValueField,
-                           base::debug::StackTrace().ToString());
-  return error_value;
+  return base::Value(base::Value::Dict()
+                         .Set(kWebDriverErrorCodeValueField, error)
+                         .Set(kWebDriverErrorMessageValueField, message)
+                         .Set(kWebDriverStackTraceValueField,
+                              base::debug::StackTrace().ToString()));
 }
 
 bool IsErrorValue(const base::Value& value) {
@@ -294,8 +293,8 @@ CWTRequestHandler::HandleRequest(const net::test_server::HttpRequest& request) {
     response->set_code(net::HTTP_OK);
   }
 
-  base::Value response_content(base::Value::Type::DICT);
-  response_content.SetKey(kWebDriverValueResponseField, std::move(*result));
+  auto response_content =
+      base::Value::Dict().Set(kWebDriverValueResponseField, std::move(*result));
   std::string response_content_string;
   base::JSONWriter::Write(response_content, &response_content_string);
   response->set_content(response_content_string);
@@ -439,9 +438,8 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
   std::string stderr_contents;
   base::ReadFileToString(log_file, &stderr_contents);
 
-  base::Value result(base::Value::Type::DICT);
-  result.SetStringKey(kChromeStderrValueField, stderr_contents);
-  return result;
+  return base::Value(
+      base::Value::Dict().Set(kChromeStderrValueField, stderr_contents));
 }
 
 base::Value CWTRequestHandler::SetTimeouts(const base::Value& timeouts) {
@@ -572,21 +570,20 @@ base::Value CWTRequestHandler::SetWindowRect(const base::Value& rect) {
 }
 
 base::Value CWTRequestHandler::GetVersionInfo() {
-  base::Value result(base::Value::Type::DICT);
-  result.SetStringKey(kCapabilitiesBrowserVersionField,
-                      version_info::GetVersionNumber());
+  auto result = base::Value::Dict().Set(kCapabilitiesBrowserVersionField,
+                                        version_info::GetVersionNumber());
 
   // The full revision starts with a git hash and ends with the revision
   // number in the following format: @{#123456}
-  std::string full_revision = version_info::GetLastChange();
+  std::string full_revision(version_info::GetLastChange());
   size_t start_position = full_revision.rfind("#") + 1;
 
   if (start_position == std::string::npos) {
-    result.SetStringKey(kChromeRevisionNumberField, "0");
+    result.Set(kChromeRevisionNumberField, "0");
   } else {
     size_t length = full_revision.size() - start_position - 1;
-    result.SetStringKey(kChromeRevisionNumberField,
-                        full_revision.substr(start_position, length));
+    result.Set(kChromeRevisionNumberField,
+               full_revision.substr(start_position, length));
   }
-  return result;
+  return base::Value(std::move(result));
 }

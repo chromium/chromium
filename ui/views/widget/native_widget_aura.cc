@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
@@ -206,7 +207,14 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   if (params.visible_on_all_workspaces) {
     window_->SetProperty(aura::client::kWindowWorkspaceKey,
                          aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
+  } else if (const base::Uuid& desk_uuid =
+                 base::Uuid::ParseLowercase(params.workspace);
+             desk_uuid.is_valid()) {
+    window_->SetProperty(aura::client::kDeskUuidKey,
+                         desk_uuid.AsLowercaseString());
   } else if (base::StringToInt(params.workspace, &desk_index)) {
+    // `params.workspace` used to be the desk index, it now stores the desk
+    // Uuid. We still check to see if it is the index for compatibility.
     window_->SetProperty(aura::client::kWindowWorkspaceKey, desk_index);
   }
 

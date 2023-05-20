@@ -14,9 +14,9 @@
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -206,8 +206,8 @@ TEST_F(SetUpListTest, BuildListWithFollow) {
   ExpectListToNotInclude(SetUpListItemType::kFollow);
 }
 
-// Test that SetUpList observes local state changes, updates the item, and calls
-// the delegate.
+// Tests that SetUpList observes local state changes, updates the item, and
+// calls the delegate.
 TEST_F(SetUpListTest, ObservesPrefs) {
   BuildSetUpList();
   id delegate = [OCMockObject mockForProtocol:@protocol(SetUpListDelegate)];
@@ -219,4 +219,14 @@ TEST_F(SetUpListTest, ObservesPrefs) {
                                       SetUpListItemType::kSignInSync);
   EXPECT_TRUE(item.complete);
   [delegate verify];
+}
+
+// Tests that the Set Up List can be disabled.
+TEST_F(SetUpListTest, Disable) {
+  EXPECT_FALSE(set_up_list_prefs::IsSetUpListDisabled(local_state_.Get()));
+  set_up_list_prefs::DisableSetUpList(local_state_.Get());
+  EXPECT_TRUE(set_up_list_prefs::IsSetUpListDisabled(local_state_.Get()));
+
+  BuildSetUpList();
+  EXPECT_EQ(set_up_list_, nil);
 }

@@ -6,7 +6,7 @@
  * @fileoverview 'timezone-selector' is the time zone selector dropdown.
  */
 
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
 
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';

@@ -12,6 +12,10 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
@@ -34,11 +38,6 @@ using bookmarks::BookmarkNode;
     self.tempURL = @"";
   }
   return self;
-}
-
-- (void)dealloc {
-  [_tempURL release];
-  [super dealloc];
 }
 
 - (void)didCreateBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode {

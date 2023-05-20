@@ -24,8 +24,8 @@
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/data_type_controller.h"
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/service/data_type_controller.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,7 +86,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(46 == syncer::GetNumModelTypes(),
+    static_assert(48 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -174,6 +174,8 @@ class SyncServiceFactoryTest : public testing::Test {
     if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
       datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
     }
+    // TODO(crbug.com/1445868): Add *_PASSWORD_SHARING_INVITATION types once
+    // implemented.
     return datatypes;
   }
 

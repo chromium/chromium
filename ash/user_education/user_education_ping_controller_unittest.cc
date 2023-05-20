@@ -41,6 +41,7 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::Optional;
 using ::testing::Property;
 
 // Helpers ---------------------------------------------------------------------
@@ -253,6 +254,23 @@ TEST_F(UserEducationPingControllerTest, End) {
   ASSERT_NO_FATAL_FAILURE(AssertPingDestruction(
       [&]() { EXPECT_TRUE(ping_animation_ended_future.Wait()); },
       ping_animation_ended_future.GetCallback()));
+}
+
+// Verifies that `UserEducationPingController::GetPingId()` is WAI.
+TEST_F(UserEducationPingControllerTest, GetPingId) {
+  views::View other_view;
+
+  ExpectNoPing();
+  EXPECT_FALSE(controller()->GetPingId(view()));
+  EXPECT_FALSE(controller()->GetPingId(&other_view));
+
+  EXPECT_TRUE(CreatePing());
+  EXPECT_THAT(controller()->GetPingId(view()), Optional(PingId::kTest1));
+  EXPECT_FALSE(controller()->GetPingId(&other_view));
+
+  view()->SetVisible(false);
+  EXPECT_FALSE(controller()->GetPingId(view()));
+  EXPECT_FALSE(controller()->GetPingId(&other_view));
 }
 
 // Verifies that a single view cannot be pinged multiple times concurrently but

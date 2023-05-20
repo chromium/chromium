@@ -80,10 +80,11 @@ class MockTrainingDataCollector : public TrainingDataCollector {
                TrainingRequestId(proto::SegmentId id,
                                  scoped_refptr<InputContext> input_context,
                                  DecisionType type));
-  MOCK_METHOD3(OnObservationTrigger,
-               void(const absl::optional<ImmediaCollectionParam>& param,
+  MOCK_METHOD4(CollectTrainingData,
+               void(SegmentId segment_id,
                     TrainingRequestId request_id,
-                    const proto::SegmentInfo& segment_info));
+                    const TrainingLabels& param,
+                    SuccessCallback callback));
 };
 
 }  // namespace

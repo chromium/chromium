@@ -11,7 +11,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/net/referrer.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ui_metrics/sadtab_metrics_types.h"
 #include "content/public/browser/browser_context.h"
@@ -241,8 +241,9 @@ SadTab::SadTab(content::WebContents* web_contents, SadTabKind kind)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Only Google Chrome-branded browsers may show the Feedback button.
   // Sending feedback is not allowed in the ChromeOS Kiosk mode.
-  if (!profiles::IsKioskSession())
+  if (!chromeos::IsKioskSession()) {
     show_feedback_button_ = is_repeatedly_crashing_;
+  }
 #endif
 
   switch (kind) {

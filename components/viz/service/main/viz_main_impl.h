@@ -132,7 +132,7 @@ class VizMainImpl : public mojom::VizMain {
 #endif
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
-  void FilterDebugStream(base::Value filter_data) override;
+  void FilterDebugStream(base::Value::Dict filter_data) override;
   void StartDebugStream(
       mojo::PendingRemote<mojom::VizDebugOutput> debug_output) override;
   void StopDebugStream() override;

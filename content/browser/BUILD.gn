@@ -653,10 +653,8 @@ source_set("browser") {
     "browsing_topics/browsing_topics_site_data_manager_impl.h",
     "browsing_topics/browsing_topics_site_data_storage.cc",
     "browsing_topics/browsing_topics_site_data_storage.h",
-    "browsing_topics/browsing_topics_url_loader.cc",
-    "browsing_topics/browsing_topics_url_loader.h",
-    "browsing_topics/browsing_topics_url_loader_service.cc",
-    "browsing_topics/browsing_topics_url_loader_service.h",
+    "browsing_topics/browsing_topics_url_loader_interceptor.cc",
+    "browsing_topics/browsing_topics_url_loader_interceptor.h",
     "browsing_topics/header_util.cc",
     "browsing_topics/header_util.h",
     "buckets/bucket_context.h",
@@ -1215,12 +1213,16 @@ source_set("browser") {
     "loader/object_navigation_fallback_body_loader.h",
     "loader/prefetch_url_loader.cc",
     "loader/prefetch_url_loader.h",
-    "loader/prefetch_url_loader_service.cc",
-    "loader/prefetch_url_loader_service.h",
+    "loader/prefetch_url_loader_service_context.cc",
+    "loader/prefetch_url_loader_service_context.h",
     "loader/resource_cache_manager.cc",
     "loader/resource_cache_manager.h",
     "loader/shared_cors_origin_access_list_impl.cc",
     "loader/shared_cors_origin_access_list_impl.h",
+    "loader/subresource_proxying_url_loader.cc",
+    "loader/subresource_proxying_url_loader.h",
+    "loader/subresource_proxying_url_loader_service.cc",
+    "loader/subresource_proxying_url_loader_service.h",
     "loader/url_loader_throttles.cc",
     "locks/lock_manager.cc",
     "locks/lock_manager.h",
@@ -1327,6 +1329,8 @@ source_set("browser") {
     "message_port_provider.cc",
     "metrics/histogram_controller.cc",
     "metrics/histogram_controller.h",
+    "metrics/histogram_shared_memory_config.cc",
+    "metrics/histogram_shared_memory_config.h",
     "metrics/histogram_subscriber.h",
     "metrics/histogram_synchronizer.cc",
     "metrics/histogram_synchronizer.h",
@@ -1499,6 +1503,8 @@ source_set("browser") {
     "preloading/preloading_decider.h",
     "preloading/preloading_prediction.cc",
     "preloading/preloading_prediction.h",
+    "preloading/prerender/devtools_prerender_attempt.cc",
+    "preloading/prerender/devtools_prerender_attempt.h",
     "preloading/prerender/prerender_attributes.cc",
     "preloading/prerender/prerender_attributes.h",
     "preloading/prerender/prerender_commit_deferring_condition.cc",
@@ -1916,6 +1922,7 @@ source_set("browser") {
     "renderer_host/stored_page.h",
     "renderer_host/subframe_history_navigation_throttle.cc",
     "renderer_host/subframe_history_navigation_throttle.h",
+    "renderer_host/system_entropy_utils.h",
     "renderer_host/text_input_manager.cc",
     "renderer_host/text_input_manager.h",
     "renderer_host/transient_allow_popup.cc",
@@ -2374,7 +2381,6 @@ source_set("browser") {
       "font_access/font_enumeration_data_source_linux.h",
       "font_service.cc",
       "font_service.h",
-      "media/stable_video_decoder_factory.cc",
       "media/video_encode_accelerator_provider_launcher.cc",
       "media/video_encode_accelerator_provider_launcher.h",
       "memory/swap_metrics_driver_impl_linux.cc",
@@ -2393,9 +2399,13 @@ source_set("browser") {
       "//components/crash/content/browser/error_reporting",
       "//components/services/font:lib",
       "//content/common:sandbox_support_linux",
-      "//media/mojo/mojom/stable:stable_video_decoder",
       "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings",
     ]
+  }
+
+  if (allow_oop_video_decoder) {
+    sources += [ "media/stable_video_decoder_factory.cc" ]
+    deps += [ "//media/mojo/mojom/stable:stable_video_decoder" ]
   }
 
   if (is_chromeos) {
@@ -2764,6 +2774,7 @@ source_set("browser") {
     ]
     deps += [
       "//components/services/screen_ai/public/cpp:utilities",
+      "//content/utility:delegate_data",
       "//third_party/blink/public/common:font_unique_name_table_proto",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",

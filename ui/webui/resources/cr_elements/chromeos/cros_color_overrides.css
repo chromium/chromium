@@ -106,7 +106,7 @@ To get ChromeOS Jelly colors, an element must:
   --cr-form-field-label-color: var(--cros-sys-on_surface);
   --cr-link-color: var(--cros-sys-primary);
   --cr-primary-text-color: var(--cros-sys-on_surface);
-  --cr-secondary-text-color: var(--cros-sys-secondary);
+  --cr-secondary-text-color: var(--cros-sys-on_surface_variant);
 }
 
 /* Button */

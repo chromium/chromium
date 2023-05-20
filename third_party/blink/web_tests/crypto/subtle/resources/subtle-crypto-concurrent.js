@@ -33,9 +33,7 @@ function testGenerateRsaKey()
 {
     var extractable = false;
     var usages = ['sign', 'verify'];
-    // Note that the modulus length is unusually small in order to speed up
-    // the test (1024 or 2048 would be more typical).
-    var algorithm = {name: "RSASSA-PKCS1-v1_5", modulusLength: 256, publicExponent: hexStringToUint8Array("010001"), hash: {name: "SHA-256"}};
+    var algorithm = {name: "RSASSA-PKCS1-v1_5", modulusLength: 2048, publicExponent: hexStringToUint8Array("010001"), hash: {name: "SHA-256"}};
 
     return crypto.subtle.generateKey(algorithm, extractable, usages).then(function(result) {
         publicKey = result.publicKey;

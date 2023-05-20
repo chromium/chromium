@@ -115,6 +115,36 @@ absl::optional<std::string> GetModifierKeyName(
   return absl::nullopt;
 }
 
+int GetNumberOfNonDefaultRemappings(
+    const mojom::KeyboardSettings& settings,
+    const base::flat_map<ui::mojom::ModifierKey, ui::mojom::ModifierKey>&
+        default_remappings) {
+  int num_keys_changed = 0;
+  const auto& remappings = settings.modifier_remappings;
+
+  // Count the number of different pairs in the current remapping that is not
+  // default. For defaults on apple keyboard, it would be a flat_map:
+  // {{ModifierKey.Meta => ModifierKey.Control},
+  //  {ModifierKey.Control => ModifierKey.Meta}},
+  // For others, it's an empty flat_map.
+  // A remapping pair [remapped_from, remapped_to] in current remapping is
+  // considered to be non-default if:
+  //   1. remapped_from does not exist in the default remapping.
+  //   2. remapped_from is mapped to any key other than its default mapping.
+  for (const auto& [remapped_from, remapped_to] : remappings) {
+    const auto& iter = default_remappings.find(remapped_from);
+    if (iter == default_remappings.end() || iter->second != remapped_to) {
+      ++num_keys_changed;
+    }
+  }
+  for (const auto& [remapped_from, remapped_to] : default_remappings) {
+    if (!remappings.contains(remapped_from)) {
+      ++num_keys_changed;
+    }
+  }
+  return num_keys_changed;
+}
+
 }  // namespace
 
 InputDeviceSettingsMetricsManager::InputDeviceSettingsMetricsManager() =
@@ -160,8 +190,27 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
     base::UmaHistogramEnumeration(modifier_remapping_metrics, key_remapped_to);
   }
 
-  // Record remapping hash when keyboard is initialized.
+  // Record remapping metrics when keyboard is initialized.
   RecordModifierRemappingHash(keyboard);
+  RecordKeyboardNumberOfKeysRemapped(keyboard);
+}
+
+void InputDeviceSettingsMetricsManager::RecordKeyboardNumberOfKeysRemapped(
+    const mojom::Keyboard& keyboard) {
+  base::flat_map<ui::mojom::ModifierKey, ui::mojom::ModifierKey>
+      default_remappings;
+  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+    default_remappings[ui::mojom::ModifierKey::kControl] =
+        ui::mojom::ModifierKey::kMeta;
+    default_remappings[ui::mojom::ModifierKey::kMeta] =
+        ui::mojom::ModifierKey::kControl;
+  }
+  const int num_keys_remapped = GetNumberOfNonDefaultRemappings(
+      *keyboard.settings, std::move(default_remappings));
+  const std::string keyboard_metrics =
+      base::StrCat({GetKeyboardMetricsPrefix(keyboard),
+                    "Modifiers.NumberOfRemappedKeysOnStart"});
+  base::UmaHistogramCounts100(keyboard_metrics, num_keys_remapped);
 }
 
 void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
@@ -200,6 +249,19 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
       base::UmaHistogramEnumeration(modifier_remapping_metrics,
                                     key_remapped_to);
     }
+  }
+}
+
+void InputDeviceSettingsMetricsManager::RecordKeyboardNumberOfKeysReset(
+    const mojom::Keyboard& keyboard,
+    const mojom::KeyboardSettings& default_settings) {
+  const int num_keys_reset = GetNumberOfNonDefaultRemappings(
+      *keyboard.settings, default_settings.modifier_remappings);
+
+  if (num_keys_reset != 0) {
+    const std::string keyboard_metrics = base::StrCat(
+        {GetKeyboardMetricsPrefix(keyboard), "Modifiers.NumberOfKeysReset"});
+    base::UmaHistogramCounts100(keyboard_metrics, num_keys_reset);
   }
 }
 
@@ -252,6 +314,15 @@ void InputDeviceSettingsMetricsManager::RecordMouseChangedMetrics(
         static_cast<PointerSensitivity>(mouse.settings->sensitivity);
     base::UmaHistogramEnumeration(
         "ChromeOS.Settings.Device.Mouse.Sensitivity.Changed", sensitivity);
+    const int speed_difference =
+        mouse.settings->sensitivity - old_settings.sensitivity;
+    const std::string delta_sensitivity_metric =
+        speed_difference > 0
+            ? "ChromeOS.Settings.Device.Mouse.Sensitivity.Increase"
+            : "ChromeOS.Settings.Device.Mouse.Sensitivity.Decrease";
+    base::UmaHistogramEnumeration(
+        delta_sensitivity_metric,
+        static_cast<PointerSensitivity>(abs(speed_difference)));
   }
   if (mouse.settings->swap_right != old_settings.swap_right) {
     base::UmaHistogramBoolean(
@@ -303,6 +374,15 @@ void InputDeviceSettingsMetricsManager::RecordPointingStickChangedMetrics(
     base::UmaHistogramEnumeration(
         "ChromeOS.Settings.Device.PointingStick.Sensitivity.Changed",
         sensitivity);
+    const int speed_difference =
+        pointing_stick.settings->sensitivity - old_settings.sensitivity;
+    const std::string delta_sensitivity_metric =
+        speed_difference > 0
+            ? "ChromeOS.Settings.Device.PointingStick.Sensitivity.Increase"
+            : "ChromeOS.Settings.Device.PointingStick.Sensitivity.Decrease";
+    base::UmaHistogramEnumeration(
+        delta_sensitivity_metric,
+        static_cast<PointerSensitivity>(abs(speed_difference)));
   }
   if (pointing_stick.settings->swap_right != old_settings.swap_right) {
     base::UmaHistogramBoolean(
@@ -376,6 +456,13 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
         static_cast<PointerSensitivity>(touchpad.settings->sensitivity);
     base::UmaHistogramEnumeration(
         touchpad_metrics_prefix + "Sensitivity.Changed", sensitivity);
+    const int speed_difference =
+        touchpad.settings->sensitivity - old_settings.sensitivity;
+    const std::string delta_metric_suffix =
+        speed_difference > 0 ? "Sensitivity.Increase" : "Sensitivity.Decrease";
+    base::UmaHistogramEnumeration(
+        base::StrCat({touchpad_metrics_prefix, delta_metric_suffix}),
+        static_cast<PointerSensitivity>(abs(speed_difference)));
   }
   if (touchpad.settings->tap_dragging_enabled !=
       old_settings.tap_dragging_enabled) {
@@ -400,6 +487,14 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
       base::UmaHistogramEnumeration(
           touchpad_metrics_prefix + "HapticSensitivity.Changed",
           haptic_sensitivity);
+      const int speed_difference = touchpad.settings->haptic_sensitivity -
+                                   old_settings.haptic_sensitivity;
+      const std::string delta_metric_suffix =
+          speed_difference > 0 ? "HapticSensitivity.Increase"
+                               : "HapticSensitivity.Decrease";
+      base::UmaHistogramEnumeration(
+          base::StrCat({touchpad_metrics_prefix, delta_metric_suffix}),
+          static_cast<PointerSensitivity>(abs(speed_difference)));
     }
   }
 }

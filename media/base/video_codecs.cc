@@ -44,8 +44,7 @@ std::string GetCodecName(VideoCodec codec) {
     case VideoCodec::kAV1:
       return "av1";
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 // Reported as part of some UMA names. NEVER change existing strings!
@@ -74,8 +73,7 @@ std::string GetCodecNameForUMA(VideoCodec codec) {
     case VideoCodec::kAV1:
       return "AV1";
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 std::string GetProfileName(VideoCodecProfile profile) {
@@ -157,8 +155,7 @@ std::string GetProfileName(VideoCodecProfile profile) {
     case AV1PROFILE_PROFILE_PRO:
       return "av1 profile pro";
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 std::string BuildH264MimeSuffix(media::VideoCodecProfile profile,

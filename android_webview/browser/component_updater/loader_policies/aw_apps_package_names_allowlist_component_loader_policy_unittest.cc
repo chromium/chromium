@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -21,6 +22,7 @@
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -382,6 +384,12 @@ void TestThrottlingAllowlist(absl::optional<AppPackageNameLoggingRule> rule,
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestThrottlingAllowlist_AbsentCache) {
+  // Since the server-side allowlist is now enabled by default,
+  // the simplest thing to do in order to preserve the same testing logic
+  // is to disable it.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
   base::SetRecordActionTaskRunner(env_.GetMainThreadTaskRunner());
 
   TestThrottlingAllowlist(absl::optional<AppPackageNameLoggingRule>(),
@@ -390,6 +398,9 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestThrottlingAllowlist_ValidCacheAllowedApp) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
   base::SetRecordActionTaskRunner(env_.GetMainThreadTaskRunner());
 
   TestThrottlingAllowlist(
@@ -400,6 +411,9 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestThrottlingAllowlist_ValidCacheNotAllowedApp) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
   base::SetRecordActionTaskRunner(env_.GetMainThreadTaskRunner());
 
   TestThrottlingAllowlist(
@@ -410,6 +424,9 @@ TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
 
 TEST_F(AwAppsPackageNamesAllowlistComponentLoaderPolicyTest,
        TestThrottlingAllowlist_ExpiredAllowedCache) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
   base::SetRecordActionTaskRunner(env_.GetMainThreadTaskRunner());
 
   TestThrottlingAllowlist(

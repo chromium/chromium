@@ -142,13 +142,13 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
             .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                          /*component_id=*/std::string()))
             .Clone();
-    policy::PolicyMap::Entry* const existing_entry =
-        policy_map.GetMutable(policy::key::kExtensionSettings);
+    auto* existing_entry = policy_map.GetMutableValue(
+        policy::key::kExtensionSettings, base::Value::Type::DICT);
 
-    if (existing_entry && existing_entry->value(base::Value::Type::DICT)) {
+    if (existing_entry) {
       // Append to the existing policy.
-      existing_entry->value(base::Value::Type::DICT)
-          ->SetKey(policy_item_key, base::Value(std::move(policy_item_value)));
+      existing_entry->GetDict().Set(policy_item_key,
+                                    std::move(policy_item_value));
     } else {
       // Set the new policy value.
       base::Value::Dict policy_value;

@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {CoverageTestRunner} from 'coverage_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Test if coverage view also shows completly uncovered css files\n`);
-  await TestRunner.loadLegacyModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
+  await TestRunner.loadLegacyModule('panels/coverage');
   await TestRunner.navigatePromise(
       TestRunner.url('resources/css-coverage-import.html'));
 

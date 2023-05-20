@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
@@ -88,6 +89,8 @@ class NetworkInfoBubbleTest : public AshTestBase,
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     if (IsQsRevampEnabled()) {
       scoped_feature_list_->InitAndEnableFeature(features::kQsRevamp);
+    } else {
+      scoped_feature_list_->InitAndDisableFeature(features::kQsRevamp);
     }
 
     AshTestBase::SetUp();

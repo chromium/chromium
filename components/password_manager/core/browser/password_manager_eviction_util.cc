@@ -53,9 +53,6 @@ void EvictCurrentUser(int api_error_code, PrefService* prefs) {
   prefs->SetInteger(password_manager::prefs::
                         kUnenrolledFromGoogleMobileServicesAfterApiErrorCode,
                     api_error_code);
-  prefs->SetInteger(password_manager::prefs::
-                        kUnenrolledFromGoogleMobileServicesWithErrorListVersion,
-                    password_manager::features::kGmsApiErrorListVersion.Get());
 
   // Reset migration prefs so when the user can join the experiment again,
   // non-syncable data and settings can be migrated to GMS Core.
@@ -65,29 +62,12 @@ void EvictCurrentUser(int api_error_code, PrefService* prefs) {
   prefs->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt, 0.0);
   prefs->SetBoolean(password_manager::prefs::kSettingsMigratedToUPM, false);
 
-  // Reset the counter for the auth error prompts, so that the user starts
-  // with a fresh state when re-enrolling.
-  prefs->SetInteger(password_manager::prefs::kTimesUPMAuthErrorShown, 0);
-
   base::UmaHistogramBoolean("PasswordManager.UnenrolledFromUPMDueToErrors",
                             true);
   base::UmaHistogramSparse("PasswordManager.UPMUnenrollmentReason",
                            api_error_code);
   LOG(ERROR) << "Unenrolled from UPM due to error with code: "
              << api_error_code;
-}
-
-bool ShouldInvalidateEviction(const PrefService* prefs) {
-  if (!IsCurrentUserEvicted(prefs))
-    return false;
-
-  // Configured error versions are > 0, default stored version is 0.
-  int stored_version = prefs->GetInteger(
-      password_manager::prefs::
-          kUnenrolledFromGoogleMobileServicesWithErrorListVersion);
-
-  return stored_version <
-         password_manager::features::kGmsApiErrorListVersion.Get();
 }
 
 void ReenrollCurrentUser(PrefService* prefs) {
@@ -98,8 +78,6 @@ void ReenrollCurrentUser(PrefService* prefs) {
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
   prefs->ClearPref(password_manager::prefs::
                        kUnenrolledFromGoogleMobileServicesAfterApiErrorCode);
-  prefs->ClearPref(password_manager::prefs::
-                       kUnenrolledFromGoogleMobileServicesWithErrorListVersion);
   prefs->ClearPref(
       password_manager::prefs::kTimesReenrolledToGoogleMobileServices);
   prefs->ClearPref(

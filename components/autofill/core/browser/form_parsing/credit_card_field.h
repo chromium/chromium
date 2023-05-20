@@ -34,6 +34,25 @@ class CreditCardField : public FormField {
                                           PatternSource pattern_source,
                                           LogManager* log_manager);
 
+  // Instructions for how to format an expiration date for a text field.
+  struct ExpirationDateFormat {
+    // The expiration month is always assumed to be two digits and is therefore
+    // not listed as a separate attribute.
+    // The overall format is:
+    // "{expiration month with 2 digits}{separator}{expiration year with
+    // specified number of digits}"
+    std::u16string separator;
+    uint8_t digits_in_expiration_year = 0;
+  };
+  // Returns formatting instructions for an CC expiration date <input> field
+  // based on properties of the field (maximum length, label, placeholder, ...).
+  // The `assumed_field_type` specifies the number of digits to use for a field
+  // if there are no hints on what's best. It must be either
+  // CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR or CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR.
+  static ExpirationDateFormat DetermineExpirationDateFormat(
+      const AutofillField& field,
+      ServerFieldType assumed_field_type);
+
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 

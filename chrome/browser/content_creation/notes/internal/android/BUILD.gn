@@ -44,6 +44,7 @@ android_library("java") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/share/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
     "//components/content_creation/notes/android:java",
     "//components/image_fetcher:java",
     "//components/url_formatter/android:url_formatter_java",

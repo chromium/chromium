@@ -286,7 +286,6 @@ chrome.fileManagerPrivate.EntryPropertyName = {
   SYNC_STATUS: 'syncStatus',
   PROGRESS: 'progress',
   SHORTCUT: 'shortcut',
-  SYNC_COMPLETED_TIME: 'syncCompletedTime',
 };
 
 /**
@@ -534,7 +533,6 @@ chrome.fileManagerPrivate.ResultingTasks;
  *   isArbitrarySyncFolder: (boolean|undefined),
  *   syncStatus: (!chrome.fileManagerPrivate.SyncStatus|undefined),
  *   progress: (number|undefined),
- *   syncCompletedTime: (number|undefined),
  *   shortcut: (boolean|undefined)
  * }}
  */
@@ -880,12 +878,42 @@ chrome.fileManagerPrivate.IOTaskParams;
  *   conflictTargetUrl: (string|undefined)
  * }}
  */
+chrome.fileManagerPrivate.ConflictPauseParams;
+
+/**
+ * @typedef {{
+ *   type: !chrome.fileManagerPrivate.PolicyErrorType
+ * }}
+ */
+chrome.fileManagerPrivate.PolicyPauseParams;
+
+/**
+ * @typedef {{
+ *   conflictParams: (!chrome.fileManagerPrivate.ConflictPauseParams|undefined),
+ *   policyParams: (!chrome.fileManagerPrivate.PolicyPauseParams|undefined)
+ * }}
+ */
 chrome.fileManagerPrivate.PauseParams;
 
 /**
  * @typedef {{
  *   conflictResolve: (string|undefined),
  *   conflictApplyToAll: (boolean|undefined)
+ * }}
+ */
+chrome.fileManagerPrivate.ConflictResumeParams;
+
+/**
+ * @typedef {{
+ *   type: !chrome.fileManagerPrivate.PolicyErrorType
+ * }}
+ */
+chrome.fileManagerPrivate.PolicyResumeParams;
+
+/**
+ * @typedef {{
+ *   conflictParams: (!chrome.fileManagerPrivate.ConflictResumeParams|undefined),
+ *   policyParams: (!chrome.fileManagerPrivate.PolicyResumeParams|undefined)
  * }}
  */
 chrome.fileManagerPrivate.ResumeParams;
@@ -1767,7 +1795,7 @@ chrome.fileManagerPrivate.getBulkPinProgress = function(callback) {};
 /**
  * Starts calculating the space required to pin all the items in a users My
  * drive.
- * @param {function(): void} callback
+ * @param {function(): void} callback Callback that does not take arguments.
  */
 chrome.fileManagerPrivate.calculateBulkPinRequiredSpace = function(callback) {};
 

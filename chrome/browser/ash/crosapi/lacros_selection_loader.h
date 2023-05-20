@@ -40,7 +40,8 @@ class LacrosSelectionLoader {
 
   // Calculates version and send it back via `callback`.
   // It may take time since it requires to load/mount lacros binary.
-  virtual void GetVersion(base::OnceCallback<void(base::Version)> callback) = 0;
+  virtual void GetVersion(
+      base::OnceCallback<void(const base::Version&)> callback) = 0;
 
   // Sets version.
   // Only implemented for testing class (FakeLacrosSelectionLoader).

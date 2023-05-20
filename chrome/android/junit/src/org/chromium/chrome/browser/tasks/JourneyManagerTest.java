@@ -194,7 +194,7 @@ public final class JourneyManagerTest {
         // Advance time.
         doReturn(BASE_TIME_MS + LAST_ENGAGEMENT_ELAPSED_MS).when(mEngagementTimeUtil).currentTime();
 
-        mLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER, true);
+        mLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER);
         flushAsyncPrefs();
 
         assertEquals(BASE_TIME_MS + LAST_ENGAGEMENT_ELAPSED_MS,

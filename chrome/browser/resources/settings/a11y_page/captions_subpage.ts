@@ -4,8 +4,7 @@
 
 /**
  * @fileoverview 'settings-captions' is a component for showing captions
- * settings subpage (chrome://settings/captions, and a component of
- * chrome://os-settings/audioAndCaptions on Chrome OS).
+ * settings on chrome://settings/captions.
  */
 
 import '//resources/cr_elements/cr_shared_style.css.js';
@@ -21,14 +20,9 @@ import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdow
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
-import {getTemplate} from './captions_subpage.html.js';
-
-// clang-format off
-// <if expr="not is_chromeos">
 import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
-// </if>
-// clang-format on
 
+import {getTemplate} from './captions_subpage.html.js';
 
 const SettingsCaptionsElementBase = PrefsMixin(PolymerElement);
 
@@ -49,7 +43,6 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
       },
 
 
-      // <if expr="not is_chromeos">
       /**
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.
@@ -60,7 +53,6 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
       },
 
       languageHelper: Object,
-      // </if>
 
       /**
        * List of options for the background opacity drop-down menu.
@@ -219,10 +211,8 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
     };
   }
 
-  // <if expr="not is_chromeos">
   languages: LanguagesModel;
   languageHelper: LanguageHelper;
-  // </if>
   private readonly backgroundOpacityOptions_: DropdownMenuOptionList;
   private readonly colorOptions_: DropdownMenuOptionList;
   private textFontOptions_: DropdownMenuOptionList;

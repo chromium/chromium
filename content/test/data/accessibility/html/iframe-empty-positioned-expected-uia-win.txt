@@ -1,6 +1,5 @@
 Document
-++Group IsControlElement=false
-++++Document IsControlElement=false
-++++++Document
-++++Document IsControlElement=false
-++++++Document
+++Document IsControlElement=false
+++++Document
+++Document IsControlElement=false
+++++Document

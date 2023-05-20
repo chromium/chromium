@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
@@ -67,6 +68,10 @@ void SharedDictionaryWriterInMemory::Finish() {
     memcpy(buffer->data() + written_size, item.c_str(), item.size());
     written_size += item.size();
   }
+
+  base::UmaHistogramCustomCounts(
+      "Net.SharedDictionaryWriterInMemory.DictionarySize", total_size_, 1,
+      100000000, 50);
 
   std::move(finish_callback_)
       .Run(Result::kSuccess, buffer, total_size_, sha256);

@@ -13,8 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 class EventsProto;
 class ExternalMetricsTest;
@@ -42,6 +41,9 @@ class ExternalMetrics {
   // Adds a project to the disallowed list for testing.
   void AddDisallowedProjectForTest(uint64_t project_name_hash);
 
+  void EnableRecording();
+  void DisableRecording();
+
  private:
   friend class ExternalMetricsTest;
 
@@ -51,6 +53,8 @@ class ExternalMetrics {
 
   // Builds a cache of disallow projects from the Finch controlled variable.
   void CacheDisallowedProjectsSet();
+
+  bool recording_enabled_ = false;
 
   const base::FilePath events_directory_;
   const base::TimeDelta collection_interval_;
@@ -64,7 +68,6 @@ class ExternalMetrics {
   base::WeakPtrFactory<ExternalMetrics> weak_factory_{this};
 };
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured
 
 #endif  // COMPONENTS_METRICS_STRUCTURED_EXTERNAL_METRICS_H_

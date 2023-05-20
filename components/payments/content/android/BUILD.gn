@@ -24,8 +24,8 @@ static_library("android") {
     "origin_security_checker_android.cc",
     "payment_app_service_bridge.cc",
     "payment_app_service_bridge.h",
-    "payment_feature_list.cc",
-    "payment_feature_list.h",
+    "payment_feature_map.cc",
+    "payment_feature_map.h",
     "payment_handler_host.cc",
     "payment_handler_host.h",
     "payment_handler_navigation_throttle_android.cc",
@@ -74,7 +74,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/payments/JourneyLogger.java",
     "java/src/org/chromium/components/payments/OriginSecurityChecker.java",
     "java/src/org/chromium/components/payments/PaymentAppServiceBridge.java",
-    "java/src/org/chromium/components/payments/PaymentFeatureList.java",
+    "java/src/org/chromium/components/payments/PaymentFeatureMap.java",
     "java/src/org/chromium/components/payments/PaymentHandlerHost.java",
     "java/src/org/chromium/components/payments/PaymentHandlerNavigationThrottle.java",
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
@@ -140,8 +140,10 @@ android_library("service_java") {
 
 android_library("feature_list_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-  sources =
-      [ "java/src/org/chromium/components/payments/PaymentFeatureList.java" ]
+  sources = [
+    "java/src/org/chromium/components/payments/PaymentFeatureList.java",
+    "java/src/org/chromium/components/payments/PaymentFeatureMap.java",
+  ]
   deps = [
     "//base:base_java",
     "//base:jni_java",
@@ -329,16 +331,18 @@ java_cpp_enum("pre_purchase_query_enum_javagen") {
 
 robolectric_library("junit_test_support") {
   sources = [
+    "junit/src/org/chromium/components/payments/test_support/DefaultPaymentFeatureConfig.java",
     "junit/src/org/chromium/components/payments/test_support/FakeClock.java",
     "junit/src/org/chromium/components/payments/test_support/PaymentRequestServiceBuilder.java",
-    "junit/src/org/chromium/components/payments/test_support/ShadowPaymentFeatureList.java",
     "junit/src/org/chromium/components/payments/test_support/ShadowWebContentsStatics.java",
   ]
   deps = [
     ":java",
+    "//base:base_java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
@@ -359,6 +363,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":junit_test_support",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/browser_ui/bottomsheet/android:java",

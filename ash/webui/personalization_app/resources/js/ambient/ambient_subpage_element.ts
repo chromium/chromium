@@ -229,10 +229,6 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private getPlaceholders_(x: number): number[] {
     return getZerosArray(x);
   }
-
-  private getClassContainer_(x: number): string {
-    return `ambient-text-placeholder-${x}`;
-  }
 }
 
 customElements.define(AmbientSubpage.is, AmbientSubpage);

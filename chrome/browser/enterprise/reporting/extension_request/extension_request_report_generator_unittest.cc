@@ -109,16 +109,15 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
                        const std::string& pref_name,
                        const std::string& timestamp_name,
                        TestingProfile* profile) {
-    std::unique_ptr<base::Value> id_values =
-        std::make_unique<base::Value>(base::Value::Type::DICT);
+    base::Value::Dict id_values;
     for (const auto& id : ids) {
-      base::Value request_data(base::Value::Type::DICT);
-      request_data.SetKey(
-          timestamp_name,
-          ::base::TimeToValue(base::Time::FromJavaTime(kTimeStamp)));
-      request_data.SetKey(extension_misc::kExtensionWorkflowJustification,
-                          base::Value(kJustification));
-      id_values->SetKey(id, std::move(request_data));
+      id_values.Set(
+          id,
+          base::Value::Dict()
+              .Set(timestamp_name,
+                   ::base::TimeToValue(base::Time::FromJavaTime(kTimeStamp)))
+              .Set(extension_misc::kExtensionWorkflowJustification,
+                   base::Value(kJustification)));
     }
 
     profile->GetTestingPrefService()->SetUserPref(pref_name,

@@ -911,6 +911,94 @@ void BluetoothAdapterFloss::AdapterSspRequest(
   }
 }
 
+void BluetoothAdapterFloss::AdapterPinDisplay(
+    const FlossDeviceId& remote_device,
+    std::string pincode) {
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(remote_device.address));
+
+  if (!device) {
+    LOG(WARNING) << "PIN display for an unknown device";
+    return;
+  }
+
+  if (pincode.length() != 6) {
+    LOG(WARNING) << "PIN display for length=" << pincode.length()
+                 << " is not supported";
+    return;
+  }
+
+  BluetoothPairingFloss* pairing = device->pairing();
+
+  // Initiate pairing data for the incoming bonding.
+  if (!pairing) {
+    device::BluetoothDevice::PairingDelegate* pairing_delegate =
+        DefaultPairingDelegate();
+    if (pairing_delegate) {
+      pairing = device->BeginPairing(pairing_delegate);
+    }
+  }
+
+  if (!pairing->active()) {
+    LOG(WARNING) << "PIN display for an inactive pairing";
+    return;
+  }
+
+  device::BluetoothDevice::PairingDelegate* pairing_delegate =
+      pairing->pairing_delegate();
+
+  if (!pairing_delegate) {
+    LOG(WARNING) << "PIN display for an unknown delegate";
+    return;
+  }
+
+  pairing_delegate->DisplayPinCode(device, pincode);
+}
+
+void BluetoothAdapterFloss::AdapterPinRequest(
+    const FlossDeviceId& remote_device,
+    uint32_t cod,
+    bool min_16_digit) {
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(remote_device.address));
+
+  if (!device) {
+    LOG(WARNING) << "PIN request for an unknown device";
+    return;
+  }
+
+  if (min_16_digit) {
+    LOG(WARNING) << "16-digit pin is not supported";
+    return;
+  }
+
+  BluetoothPairingFloss* pairing = device->pairing();
+
+  // Initiate pairing data for the incoming bonding.
+  if (!pairing) {
+    device::BluetoothDevice::PairingDelegate* pairing_delegate =
+        DefaultPairingDelegate();
+    if (pairing_delegate) {
+      pairing = device->BeginPairing(pairing_delegate);
+    }
+  }
+
+  if (!pairing->active()) {
+    LOG(WARNING) << "PIN request for an inactive pairing";
+    return;
+  }
+
+  device::BluetoothDevice::PairingDelegate* pairing_delegate =
+      pairing->pairing_delegate();
+
+  if (!pairing_delegate) {
+    LOG(WARNING) << "PIN request for an unknown delegate";
+    return;
+  }
+
+  pairing_delegate->RequestPinCode(device);
+}
+
 void BluetoothAdapterFloss::DeviceBondStateChanged(
     const FlossDeviceId& remote_device,
     uint32_t status,

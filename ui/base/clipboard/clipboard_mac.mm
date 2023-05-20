@@ -15,7 +15,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -44,6 +43,10 @@
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 #include "url/gurl.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 namespace {
@@ -51,24 +54,27 @@ namespace {
 NSPasteboard* GetPasteboard() {
   // The pasteboard can always be nil, since there is a finite amount of storage
   // that must be shared between all pasteboards.
-  NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
+  NSPasteboard* pasteboard = NSPasteboard.generalPasteboard;
   return pasteboard;
 }
 
-base::scoped_nsobject<NSImage> GetNSImage(NSPasteboard* pasteboard) {
+NSImage* GetNSImage(NSPasteboard* pasteboard) {
   // If the pasteboard's image data is not to its liking, the guts of NSImage
   // may throw, and that exception will leak. Prevent a crash in that case;
   // a blank image is better.
-  base::scoped_nsobject<NSImage> image;
+  NSImage* image;
   @try {
-    if (pasteboard)
-      image.reset([[NSImage alloc] initWithPasteboard:pasteboard]);
+    if (pasteboard) {
+      image = [[NSImage alloc] initWithPasteboard:pasteboard];
+    }
   } @catch (id exception) {
   }
-  if (!image)
-    return base::scoped_nsobject<NSImage>();
-  if ([[image representations] count] == 0u)
-    return base::scoped_nsobject<NSImage>();
+  if (!image) {
+    return nil;
+  }
+  if (image.representations.count == 0u) {
+    return nil;
+  }
   return image;
 }
 
@@ -148,8 +154,9 @@ bool ClipboardMac::IsFormatAvailable(
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
-  // https://crbug.com/1016740#c21
-  base::scoped_nsobject<NSArray> types([[GetPasteboard() types] retain]);
+  // https://crbug.com/1016740#c21: The pasteboard types array may end up going
+  // away; make a copy.
+  NSArray* types = [GetPasteboard().types copy];
 
   // Safari only places RTF on the pasteboard, never HTML. We can convert RTF
   // to HTML, so the presence of either indicates success when looking for HTML.
@@ -230,7 +237,7 @@ void ClipboardMac::ReadAvailableTypes(
   types->clear();
   *types = GetStandardFormats(buffer, data_dst);
 
-  if ([[pb types] containsObject:kUTTypeChromiumWebCustomData]) {
+  if ([pb.types containsObject:kUTTypeChromiumWebCustomData]) {
     NSData* data = [pb dataForType:kUTTypeChromiumWebCustomData];
     if ([data length])
       ReadCustomDataTypes([data bytes], [data length], types);
@@ -498,7 +505,7 @@ void ClipboardMac::ReadPngInternal(ClipboardBuffer buffer,
 
   // If we can’t read a PNG, try reading for an NSImage, and if successful,
   // transcode it to PNG.
-  base::scoped_nsobject<NSImage> image = GetNSImage(pasteboard);
+  NSImage* image = GetNSImage(pasteboard);
   if (!image) {
     std::move(callback).Run({});
     return;
@@ -545,8 +552,7 @@ void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
   NSData* data = [image_rep representationUsingType:NSBitmapImageFileTypePNG
                                          properties:@{}];
   if (data) {
-    base::scoped_nsobject<NSPasteboardItem> pasteboard_item(
-        [[NSPasteboardItem alloc] init]);
+    NSPasteboardItem* pasteboard_item = [[NSPasteboardItem alloc] init];
     [pasteboard_item setData:data forType:NSPasteboardTypePNG];
     if ([pasteboard writeObjects:@[ pasteboard_item ]]) {
       return;
@@ -555,7 +561,7 @@ void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
 
   // Otherwise, fall back to writing the NSImage directly to the clipboard,
   // which will write only a TIFF.
-  base::scoped_nsobject<NSImage> image([[NSImage alloc] init]);
+  NSImage* image = [[NSImage alloc] init];
   [image addRepresentation:image_rep];
   [image setSize:NSMakeSize(bitmap.width(), bitmap.height())];
   [pasteboard writeObjects:@[ image ]];

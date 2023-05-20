@@ -383,6 +383,10 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
     return nullptr;
   }
 
+  // Tell the debugger about the attempt to create a canvas context
+  // even if it will fail, to ease debugging.
+  probe::DidCreateCanvasContext(&GetDocument());
+
   // If this context is cross-origin, it should prefer to use the low-power GPU
   LocalFrame* frame = GetDocument().GetFrame();
   CanvasContextCreationAttributesCore recomputed_attributes = attributes;
@@ -402,8 +406,6 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   }
 
   context_creation_was_blocked_ = false;
-
-  probe::DidCreateCanvasContext(&GetDocument());
 
   if (IsWebGL())
     UpdateMemoryUsage();

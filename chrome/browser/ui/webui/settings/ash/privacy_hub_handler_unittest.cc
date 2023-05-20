@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/adapters.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_hats_trigger.h"
@@ -89,7 +90,9 @@ class PrivacyHubHandlerTest : public testing::Test {
       }
 
       // Assume that the data is stored in the last valid arg.
-      for (const auto& arg : base::Reversed(data->args())) {
+      auto data_span =
+          base::make_span(data->args().begin(), data->args().end());
+      for (const auto& arg : base::Reversed(data_span)) {
         if (&arg != data->arg1())
           return arg.Clone();
       }

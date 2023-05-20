@@ -101,7 +101,7 @@ void NativeThemeFluent::PaintScrollbarCorner(
     State state,
     const gfx::Rect& rect,
     ColorScheme color_scheme) const {
-  const SkColor corner_color = color_provider->GetColor(kColorScrollbarTrack);
+  const SkColor corner_color = color_provider->GetColor(kColorScrollbarCorner);
 
   cc::PaintFlags flags;
   flags.setColor(corner_color);

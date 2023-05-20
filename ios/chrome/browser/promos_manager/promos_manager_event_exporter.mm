@@ -8,8 +8,8 @@
 #import "components/feature_engagement/public/configuration.h"
 #import "components/feature_engagement/public/feature_configurations.h"
 #import "components/prefs/scoped_user_pref_update.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

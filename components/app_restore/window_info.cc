@@ -42,7 +42,7 @@ std::string ToPrefixedString(absl::optional<std::u16string> val,
 
 std::string ToPrefixedString(base::Uuid val, const std::string& prefix) {
   return prefix + ": " +
-         (val.is_valid() ? val : base::Uuid()).AsLowercaseString();
+         (val.is_valid() ? val : base::Uuid()).AsLowercaseString() + " \n";
 }
 
 }  // namespace

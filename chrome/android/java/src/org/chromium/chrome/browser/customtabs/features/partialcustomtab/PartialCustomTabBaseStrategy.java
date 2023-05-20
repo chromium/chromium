@@ -27,6 +27,7 @@ import android.view.animation.AccelerateInterpolator;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -167,9 +168,29 @@ public abstract class PartialCustomTabBaseStrategy
         // Elevate the main web contents area as high as the handle bar to have the shadow
         // effect look right.
         int ev = mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
-        getCoordinatorLayout().setElevation(ev);
+        View coordinatorLayout = getCoordinatorLayout();
+        coordinatorLayout.setElevation(ev);
 
         mPositionUpdater.run();
+
+        // Set the window title so the type announcement is made, only when CCT is first launched.
+        if (!coordinatorLayout.isAttachedToWindow()) setWindowTitleForTouchExploration();
+    }
+
+    private void setWindowTitleForTouchExploration() {
+        View coordinatorLayout = getCoordinatorLayout();
+        var attachStateListener = new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {
+                Window window = mActivity.getWindow();
+                window.setTitle(mActivity.getResources().getString(getTypeStringId()));
+                coordinatorLayout.removeOnAttachStateChangeListener(this);
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {}
+        };
+        coordinatorLayout.addOnAttachStateChangeListener(attachStateListener);
     }
 
     @Override
@@ -313,6 +334,9 @@ public abstract class PartialCustomTabBaseStrategy
 
     @PartialCustomTabType
     public abstract int getStrategyType();
+
+    @StringRes
+    public abstract int getTypeStringId();
 
     @ActivityLayoutState
     protected abstract int getActivityLayoutState();

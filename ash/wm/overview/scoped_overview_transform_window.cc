@@ -266,9 +266,8 @@ ScopedOverviewTransformWindow::GetWindowDimensionsType(const gfx::Size& size) {
   return OverviewGridWindowFillMode::kNormal;
 }
 
-void ScopedOverviewTransformWindow::RestoreWindow(
-    bool reset_transform,
-    bool was_saved_desk_grid_showing) {
+void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
+                                                  bool animate) {
   // Shadow controller may be null on shutdown.
   if (Shell::Get()->shadow_controller())
     Shell::Get()->shadow_controller()->UpdateShadowForWindow(window_);
@@ -276,7 +275,7 @@ void ScopedOverviewTransformWindow::RestoreWindow(
   // We will handle clipping here, no need to do anything in the destructor.
   reset_clip_on_shutdown_ = false;
 
-  if (IsMinimized() || was_saved_desk_grid_showing) {
+  if (!animate || IsMinimized()) {
     // Minimized windows may have had their transforms altered by swiping up
     // from the shelf.
     ScopedOverviewAnimationSettings animation_settings(OVERVIEW_ANIMATION_NONE,

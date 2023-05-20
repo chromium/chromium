@@ -28,6 +28,11 @@ desks_storage::DeskModel* TestSavedDeskDelegate::GetDeskModel() {
   return desk_model_;
 }
 
+desks_storage::AdminTemplateService*
+TestSavedDeskDelegate::GetAdminTemplateService() {
+  return admin_template_service_;
+}
+
 bool TestSavedDeskDelegate::IsWindowPersistable(aura::Window* window) const {
   return true;
 }

@@ -212,8 +212,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 //
 // Remove these as we update our sites.
 
-#define SK_LEGACY_LAYER_BOUNDS_EXPANSION  // skbug.com/12083, skbug.com/12303
-
 // Workaround for poor anisotropic mipmap quality,
 // pending Skia ripmap support.
 // (https://bugs.chromium.org/p/skia/issues/detail?id=4863)
@@ -235,7 +233,7 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_ENABLE_SKSL_IN_RASTER_PIPELINE
 
-#define SK_USE_LEGACY_COLORFILTER_IMAGEFILTER
+#define SK_USE_LEGACY_IMAGE_IMAGEFILTER
 
 // Use the original std::vector based serializer
 // Remove when new streaming support operations has been verified.

@@ -43,6 +43,7 @@ constexpr int64_t kTime2122 = 4'796'668'800'000'000;
 // thread pool (no synchronization expected).
 void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
                         Priority priority,
+                        WrappedRateLimiter::AsyncAcquireCb acquire_cb,
                         std::string dm_token,
                         Destination destination,
                         int64_t reserved_space,
@@ -102,13 +103,40 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
     return;
   }
   record.set_timestamp_us(time_since_epoch_us);
-  if (!record_result.ok()) {
-    std::move(callback).Run(record_result.status());
+
+  const auto record_size = record.ByteSizeLong();
+
+  // Prepare `Storage::AddRecord` as a callback.
+  auto add_record_cb = base::BindOnce(&StorageModuleInterface::AddRecord,
+                                      storage, priority, std::move(record));
+
+  // Rate-limit event, if required.
+  if (!acquire_cb) {
+    // No rate limiter, just add resulting Record to the storage.
+    std::move(add_record_cb).Run(std::move(callback));
     return;
   }
 
-  // Add resulting Record to the storage.
-  storage->AddRecord(priority, std::move(record), std::move(callback));
+  // Add Record only if rate limiter approves.
+  acquire_cb.Run(
+      record_size,
+      base::BindOnce(
+          [](size_t record_size,
+             base::OnceCallback<void(StorageModuleInterface::EnqueueCallback
+                                         callback)> add_record_cb,
+             StorageModuleInterface::EnqueueCallback callback, bool acquired) {
+            if (!acquired) {
+              std::move(callback).Run(
+                  Status(error::OUT_OF_RANGE,
+                         base::StrCat({"Event size ",
+                                       base::NumberToString(record_size),
+                                       " rejected by rate limiter"})));
+              return;
+            }
+            // Add resulting Record to the storage.
+            std::move(add_record_cb).Run(std::move(callback));
+          },
+          record_size, std::move(add_record_cb), std::move(callback)));
 }
 }  // namespace
 
@@ -147,9 +175,9 @@ void ReportQueueImpl::AddProducedRecord(RecordProducer record_producer,
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&AddRecordToStorage, storage_, priority,
-                     config_->dm_token(), config_->destination(),
-                     config_->reserved_space(), std::move(record_producer),
-                     std::move(callback)));
+                     config_->is_event_allowed_cb(), config_->dm_token(),
+                     config_->destination(), config_->reserved_space(),
+                     std::move(record_producer), std::move(callback)));
 }
 
 void ReportQueueImpl::Flush(Priority priority, FlushCallback callback) {

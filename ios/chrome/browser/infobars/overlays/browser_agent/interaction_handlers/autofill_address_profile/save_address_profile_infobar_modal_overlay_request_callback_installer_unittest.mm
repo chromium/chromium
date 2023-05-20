@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_overlay_request_callback_installer.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_update_address_profile_delegate_ios.h"
@@ -31,6 +33,7 @@
 using autofill_address_profile_infobar_overlays::
     SaveAddressProfileModalRequestConfig;
 using save_address_profile_infobar_modal_responses::CancelViewAction;
+using save_address_profile_infobar_modal_responses::EditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::
     LegacyEditedProfileSaveAction;
 using save_address_profile_infobar_modal_responses::NoThanksViewAction;
@@ -87,11 +90,19 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
 };
 
 TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,
-       LegacySaveEditedProfile) {
-  NSDictionary* empty = @{}.mutableCopy;
-  EXPECT_CALL(mock_handler_, SaveEditedProfile(infobar_, empty));
-  request_->GetCallbackManager()->DispatchResponse(
-      OverlayResponse::CreateWithInfo<LegacyEditedProfileSaveAction>(empty));
+       SaveEditedProfile) {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAccountProfileStorage)) {
+    autofill::AutofillProfile profile = autofill::test::GetFullProfile();
+    EXPECT_CALL(mock_handler_, SaveEditedProfile(infobar_, &profile));
+    request_->GetCallbackManager()->DispatchResponse(
+        OverlayResponse::CreateWithInfo<EditedProfileSaveAction>(&profile));
+  } else {
+    NSDictionary* empty = @{}.mutableCopy;
+    EXPECT_CALL(mock_handler_, SaveEditedProfile(infobar_, empty));
+    request_->GetCallbackManager()->DispatchResponse(
+        OverlayResponse::CreateWithInfo<LegacyEditedProfileSaveAction>(empty));
+  }
 }
 
 TEST_F(SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest,

@@ -169,7 +169,10 @@ HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
         current_line_start->text_offset(), current_line_end->text_offset(),
         AXCoordinateSystem::kFrame, AXClippingBehavior::kUnclipped);
 
-    if (frame_rect.Contains(current_rect)) {
+    // There are scenarios where the text range bounds might be slightly outside
+    // the container bounds, so we check if the bounding rects intersect rather
+    // than if it is only contained within.
+    if (frame_rect.Intersects(current_rect)) {
       Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider =
           AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
               current_line_start->Clone(), current_line_end->Clone());

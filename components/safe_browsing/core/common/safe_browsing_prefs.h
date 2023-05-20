@@ -46,9 +46,19 @@ extern const char kSafeBrowsingEnterpriseRealTimeUrlCheckMode[];
 // kSafeBrowsingEnterpriseRealTimeUrlCheckMode pref is set.
 extern const char kSafeBrowsingEnterpriseRealTimeUrlCheckScope[];
 
-// Boolean that tells us whether users are given the option to opt in to Safe
-// Browsing extended reporting. This is exposed as a preference that can be
-// overridden by enterprise policy.
+// Timestamp indicating the last time a protego ping with a token was sent.
+// This is only set if the user has enhanced protection enabled and is signed
+// in with their account.
+extern const char kSafeBrowsingEsbProtegoPingWithTokenLastLogTime[];
+
+// Timestamp indicating the last time a protego ping without a token was sent.
+// This is only set if the user has enhanced protection enabled and is not
+// signed in with their account.
+extern const char kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime[];
+
+// Boolean that tells us whether users are given the option to opt in to
+// Safe Browsing extended reporting. This is exposed as a preference that
+// can be overridden by enterprise policy.
 extern const char kSafeBrowsingExtendedReportingOptInAllowed[];
 
 // A dictionary mapping incident types to a dict of incident key:digest pairs.

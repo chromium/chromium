@@ -44,6 +44,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -62,9 +63,11 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
+import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
@@ -129,7 +132,7 @@ public class Fido2CredentialRequestTest {
     private PublicKeyCredentialRequestOptions mRequestOptions;
     private static final String GOOGLE_PLAY_SERVICES_PACKAGE = "com.google.android.gms";
     private static final String FILLER_ERROR_MSG = "Error Error";
-    private AuthenticatorCallback mCallback;
+    private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
     private long mStartTimeMs;
     private MockWebContents mMockWebContents;
 
@@ -258,71 +261,10 @@ public class Fido2CredentialRequestTest {
         }
     }
 
-    private static class AuthenticatorCallback {
-        private Integer mStatus;
-        private MakeCredentialAuthenticatorResponse mMakeCredentialResponse;
-        private GetAssertionAuthenticatorResponse mGetAssertionAuthenticatorResponse;
-        private List<byte[]> mGetMatchingCredentialIdsResponse;
-
-        // Signals when request is complete.
-        private final ConditionVariable mDone = new ConditionVariable();
-
-        AuthenticatorCallback() {}
-
-        public void onRegisterResponse(int status, MakeCredentialAuthenticatorResponse response) {
-            assert mStatus == null;
-            mStatus = status;
-            mMakeCredentialResponse = response;
-            unblock();
-        }
-
-        public void onSignResponse(int status, GetAssertionAuthenticatorResponse response) {
-            assert mStatus == null;
-            mStatus = status;
-            mGetAssertionAuthenticatorResponse = response;
-            unblock();
-        }
-
-        public void onGetMatchingCredentialIds(List<byte[]> matchingCredentialIds) {
-            mGetMatchingCredentialIdsResponse = matchingCredentialIds;
-            unblock();
-        }
-
-        public void onError(int status) {
-            assert mStatus == null;
-            mStatus = status;
-            unblock();
-        }
-
-        public Integer getStatus() {
-            return mStatus;
-        }
-
-        public MakeCredentialAuthenticatorResponse getMakeCredentialResponse() {
-            return mMakeCredentialResponse;
-        }
-
-        public GetAssertionAuthenticatorResponse getGetAssertionResponse() {
-            return mGetAssertionAuthenticatorResponse;
-        }
-
-        public List<byte[]> getGetMatchingCredentialIdsResponse() {
-            return mGetMatchingCredentialIdsResponse;
-        }
-
-        public void blockUntilCalled() {
-            mDone.block();
-        }
-
-        private void unblock() {
-            mDone.open();
-        }
-    }
-
     private static class TestAuthenticatorImplJni implements InternalAuthenticator.Natives {
-        private AuthenticatorCallback mCallback;
+        private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
 
-        TestAuthenticatorImplJni(AuthenticatorCallback callback) {
+        TestAuthenticatorImplJni(Fido2ApiTestHelper.AuthenticatorCallback callback) {
             mCallback = callback;
         }
 
@@ -460,7 +402,7 @@ public class Fido2CredentialRequestTest {
         Assume.assumeTrue(gmsVersionSupported());
         mIntentSender = new MockIntentSender();
         mTestServer = sActivityTestRule.getTestServer();
-        mCallback = new AuthenticatorCallback();
+        mCallback = Fido2ApiTestHelper.getAuthenticatorCallback();
         String url = mTestServer.getURLWithHostName(
                 "subdomain.example.test", "/content/test/data/android/authenticator.html");
         GURL gurl = new GURL(url);
@@ -505,7 +447,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testConvertOriginToString_defaultPortRemoved() {
         Origin origin = Origin.create(new GURL("https://www.example.com:443"));
-        String parsedOrigin = mRequest.convertOriginToString(origin);
+        String parsedOrigin = Fido2CredentialRequest.convertOriginToString(origin);
         Assert.assertEquals(parsedOrigin, "https://www.example.com/");
     }
 
@@ -1398,11 +1340,11 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testGetAssertion_securePaymentConfirmation_canReplaceClientDataJson() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
-        Fido2ApiTestHelper.setSecurePaymentConfirmationEnabled(mMocker);
         String clientDataJson = "520";
         Fido2ApiTestHelper.mockClientDataJson(mMocker, clientDataJson);
 
@@ -1424,11 +1366,11 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testGetAssertion_securePaymentConfirmation_clientDataJsonCannotBeEmpty() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
-        Fido2ApiTestHelper.setSecurePaymentConfirmationEnabled(mMocker);
         Fido2ApiTestHelper.mockClientDataJson(mMocker, null);
 
         mFrameHost.setLastCommittedURL(new GURL("https://www.chromium.org/pay"));
@@ -1448,14 +1390,13 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testGetAssertion_securePaymentConfirmation_buildClientDataJsonParameters() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
         GURL topUrl = new GURL("https://www.chromium.org/pay");
         mFrameHost.setLastCommittedURL(topUrl);
-
-        Fido2ApiTestHelper.setSecurePaymentConfirmationEnabled(mMocker);
 
         // ClientDataJsonImplJni is mocked directly instead of using
         // Fido2ApiTestHelper.mockClientDataJson so that it can be used to verify the call arguments
@@ -1474,12 +1415,14 @@ public class Fido2CredentialRequestTest {
         ArgumentCaptor<Origin> topOriginCaptor = ArgumentCaptor.forClass(Origin.class);
         Mockito.verify(mClientDataJsonImplMock, Mockito.times(1))
                 .buildClientDataJson(eq(ClientDataRequestType.PAYMENT_GET),
-                        eq(mRequest.convertOriginToString(mOrigin)), eq(mRequestOptions.challenge),
-                        eq(false), eq(payment.serialize()), eq(mRequestOptions.relyingPartyId),
-                        topOriginCaptor.capture());
+                        eq(Fido2CredentialRequest.convertOriginToString(mOrigin)),
+                        eq(mRequestOptions.challenge), eq(false), eq(payment.serialize()),
+                        eq(mRequestOptions.relyingPartyId), topOriginCaptor.capture());
 
-        String topOriginString = mRequest.convertOriginToString(topOriginCaptor.getValue());
-        String expectedTopOriginString = mRequest.convertOriginToString(Origin.create(topUrl));
+        String topOriginString =
+                Fido2CredentialRequest.convertOriginToString(topOriginCaptor.getValue());
+        String expectedTopOriginString =
+                Fido2CredentialRequest.convertOriginToString(Origin.create(topUrl));
         Assert.assertEquals(expectedTopOriginString, topOriginString);
     }
 

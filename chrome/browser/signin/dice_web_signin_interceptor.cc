@@ -99,50 +99,9 @@ AccountInfo GetPrimaryAccountInfo(signin::IdentityManager* manager) {
 
 }  // namespace
 
-ScopedDiceWebSigninInterceptionBubbleHandle::
-    ~ScopedDiceWebSigninInterceptionBubbleHandle() = default;
-
-bool SigninInterceptionHeuristicOutcomeIsSuccess(
-    SigninInterceptionHeuristicOutcome outcome) {
-  return outcome == SigninInterceptionHeuristicOutcome::kInterceptEnterprise ||
-         outcome == SigninInterceptionHeuristicOutcome::kInterceptMultiUser ||
-         outcome ==
-             SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch ||
-         outcome ==
-             SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced ||
-         outcome == SigninInterceptionHeuristicOutcome::
-                        kInterceptEnterpriseForcedProfileSwitch;
-}
-
-DiceWebSigninInterceptor::Delegate::BubbleParameters::BubbleParameters(
-    SigninInterceptionType interception_type,
-    AccountInfo intercepted_account,
-    AccountInfo primary_account,
-    SkColor profile_highlight_color,
-    bool show_guest_option,
-    bool show_link_data_option,
-    bool show_managed_disclaimer)
-    : interception_type(interception_type),
-      intercepted_account(intercepted_account),
-      primary_account(primary_account),
-      profile_highlight_color(profile_highlight_color),
-      show_guest_option(show_guest_option),
-      show_link_data_option(show_link_data_option),
-      show_managed_disclaimer(show_managed_disclaimer) {}
-
-DiceWebSigninInterceptor::Delegate::BubbleParameters::BubbleParameters(
-    const BubbleParameters& copy) = default;
-
-DiceWebSigninInterceptor::Delegate::BubbleParameters&
-DiceWebSigninInterceptor::Delegate::BubbleParameters::operator=(
-    const BubbleParameters&) = default;
-
-DiceWebSigninInterceptor::Delegate::BubbleParameters::~BubbleParameters() =
-    default;
-
 DiceWebSigninInterceptor::DiceWebSigninInterceptor(
     Profile* profile,
-    std::unique_ptr<Delegate> delegate)
+    std::unique_ptr<WebSigninInterceptor::Delegate> delegate)
     : profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       delegate_(std::move(delegate)) {
@@ -328,9 +287,9 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
 void DiceWebSigninInterceptor::CreateBrowserAfterSigninInterception(
     CoreAccountId account_id,
     content::WebContents* intercepted_contents,
-    std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> bubble_handle,
+    std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle,
     bool is_new_profile,
-    SigninInterceptionType interception_type) {
+    WebSigninInterceptor::SigninInterceptionType interception_type) {
   DCHECK(!session_startup_helper_);
   DCHECK(bubble_handle);
   interception_bubble_handle_ = std::move(bubble_handle);
@@ -479,7 +438,7 @@ bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
 }
 
 void DiceWebSigninInterceptor::ShowSigninInterceptionBubble(
-    const Delegate::BubbleParameters& bubble_parameters,
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
       web_contents_.get(), bubble_parameters, std::move(callback));
@@ -492,7 +451,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
   DCHECK_EQ(info.account_id, account_id_);
   DCHECK(info.IsValid());
 
-  absl::optional<SigninInterceptionType> interception_type;
+  absl::optional<WebSigninInterceptor::SigninInterceptionType>
+      interception_type;
 
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -522,7 +482,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
 
   if (force_profile_separation) {
     if (switch_to_entry) {
-      interception_type = SigninInterceptionType::kProfileSwitchForced;
+      interception_type =
+          WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced;
       RecordSigninInterceptionHeuristicOutcome(
           SigninInterceptionHeuristicOutcome::
               kInterceptEnterpriseForcedProfileSwitch);
@@ -538,7 +499,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       Reset();
       return;
     } else {
-      interception_type = SigninInterceptionType::kEnterpriseForced;
+      interception_type =
+          WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced;
       auto primary_account_id =
           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
       show_link_data_option =
@@ -552,7 +514,8 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
           SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
     }
   } else if (ShouldShowEnterpriseDialog(info)) {
-    interception_type = SigninInterceptionType::kEnterpriseAcceptManagement;
+    interception_type = WebSigninInterceptor::SigninInterceptionType::
+        kEnterpriseAcceptManagement;
     show_link_data_option = true;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
@@ -566,15 +529,18 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     // Propose account switching if we skipped in GetHeuristicOutcome because we
     // returned a nullptr to get more information about forced enterprise
     // profile separation.
-    interception_type = SigninInterceptionType::kProfileSwitch;
+    interception_type =
+        WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
   } else if (ShouldShowEnterpriseBubble(info)) {
-    interception_type = SigninInterceptionType::kEnterprise;
+    interception_type =
+        WebSigninInterceptor::SigninInterceptionType::kEnterprise;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
   } else if (ShouldShowMultiUserBubble(info)) {
-    interception_type = SigninInterceptionType::kMultiUser;
+    interception_type =
+        WebSigninInterceptor::SigninInterceptionType::kMultiUser;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptMultiUser);
   }
@@ -588,13 +554,14 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
   }
 
   bool show_managed_disclaimer =
-      *interception_type != SigninInterceptionType::kProfileSwitch &&
+      *interception_type !=
+          WebSigninInterceptor::SigninInterceptionType::kProfileSwitch &&
       (base::FeatureList::IsEnabled(kSigninInterceptBubbleV2) ||
        base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept)) &&
       (info.IsManaged() ||
        policy::ManagementServiceFactory::GetForPlatform()->IsManaged());
 
-  Delegate::BubbleParameters bubble_parameters(
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
       *interception_type, info, GetPrimaryAccountInfo(identity_manager_),
       GetAutogeneratedThemeColors(profile_color).frame_color,
       /*show_guest_option=*/false, show_link_data_option,
@@ -602,20 +569,21 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
 
   base::OnceCallback<void(SigninInterceptionResult)> callback;
   switch (*interception_type) {
-    case SigninInterceptionType::kProfileSwitch:
-    case SigninInterceptionType::kProfileSwitchForced:
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       callback = base::BindOnce(
           &DiceWebSigninInterceptor::OnProfileSwitchChoice,
           base::Unretained(this), info.email, switch_to_entry->GetPath());
       break;
-    case SigninInterceptionType::kEnterpriseForced:
-    case SigninInterceptionType::kEnterpriseAcceptManagement:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
+    case WebSigninInterceptor::SigninInterceptionType::
+        kEnterpriseAcceptManagement:
       callback = base::BindOnce(
           &DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult,
           base::Unretained(this), info, profile_color);
       break;
-    case SigninInterceptionType::kEnterprise:
-    case SigninInterceptionType::kMultiUser:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
+    case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
       callback =
           base::BindOnce(&DiceWebSigninInterceptor::OnProfileCreationChoice,
                          base::Unretained(this), info, profile_color);

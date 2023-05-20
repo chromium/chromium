@@ -10,7 +10,6 @@ import("./history_clusters/history_clusters.gni")
 import("./history_clusters_v2/history_clusters_v2.gni")
 import("./photos/photos.gni")
 import("./recipes/recipes.gni")
-import("./recipes_v2/recipes_v2.gni")
 
 if (!is_official_build) {
   import("./dummy_v2/dummy_v2.gni")
@@ -25,9 +24,8 @@ modules_test_files =
       "modules/module_wrapper_test.ts",
       "modules/modules_test.ts",
     ] + cart_test_files + drive_test_files + drive_v2_test_files +
-    feed_test_files + photos_test_files + recipes_v2_test_files +
-    recipes_test_files + history_clusters_test_files +
-    history_clusters_v2_test_files
+    feed_test_files + photos_test_files + recipes_test_files +
+    history_clusters_test_files + history_clusters_v2_test_files
 
 if (!is_official_build) {
   modules_test_files += dummy_v2_test_files

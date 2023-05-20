@@ -26,15 +26,15 @@ namespace remoting {
 
 namespace {
 
-base::Value CreateWebAuthnExceptionDetailsDict(const std::string& name,
-                                               const std::string& message) {
-  base::Value details(base::Value::Type::DICT);
-  details.SetStringKey(kWebAuthnErrorNameKey, name);
-  details.SetStringKey(kWebAuthnErrorMessageKey, message);
-  return details;
+base::Value::Dict CreateWebAuthnExceptionDetailsDict(
+    const std::string& name,
+    const std::string& message) {
+  return base::Value::Dict()
+      .Set(kWebAuthnErrorNameKey, name)
+      .Set(kWebAuthnErrorMessageKey, message);
 }
 
-base::Value MojoErrorToErrorDict(
+base::Value::Dict MojoErrorToErrorDict(
     const mojom::WebAuthnExceptionDetailsPtr& mojo_error) {
   return CreateWebAuthnExceptionDetailsDict(mojo_error->name,
                                             mojo_error->message);

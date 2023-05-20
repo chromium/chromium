@@ -88,8 +88,8 @@ redaction::PIIType GetPiiTypeFromProtoEnum(support_tool::PiiType pii_type) {
       return redaction::PIIType::kIPPAddress;
     case support_tool::PiiType::IP_ADDRESS:
       return redaction::PIIType::kIPAddress;
-    case support_tool::PiiType::LOCATION_INFO:
-      return redaction::PIIType::kLocationInfo;
+    case support_tool::PiiType::CELLULAR_LOCATION_INFO:
+      return redaction::PIIType::kCellularLocationInfo;
     case support_tool::PiiType::MAC_ADDRESS:
       return redaction::PIIType::kMACAddress;
     case support_tool::PiiType::UI_HIEARCHY_WINDOW_TITLE:
@@ -381,6 +381,7 @@ void DeviceCommandFetchSupportPacketJob::EnqueueEvent() {
       exported_path_.value());
   log_upload_event->mutable_upload_settings()->set_upload_parameters(
       GetUploadParameters(exported_path_, unique_id()));
+  log_upload_event->set_command_id(unique_id());
   report_queue_->Enqueue(
       std::move(log_upload_event), reporting::Priority::SLOW_BATCH,
       base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnEventEnqueued,

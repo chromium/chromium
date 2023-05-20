@@ -47,6 +47,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
   void AddController();
   void RemoveController();
 
+  // Ensure tab window is z-order on top of any siblings. Tab window will be
+  // parented to overlay window regardless of the current parent.
+  void OrderTabWindowZOrderOnTop();
+
   NSWindow* const tab_window_;
   BridgedContentView* tab_content_view_;
   base::scoped_nsobject<NSTitlebarAccessoryViewController>

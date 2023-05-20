@@ -1287,8 +1287,7 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   const gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kSoftwareProtected;
   gfx::HDRMetadata hdr_metadata = gfx::HDRMetadata();
-  hdr_metadata.max_content_light_level = 1000;
-  hdr_metadata.max_frame_average_light_level = 100;
+  hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 100);
 
   SharedQuadState* sqs = render_pass->CreateAndAppendSharedQuadState();
   YUVVideoDrawQuad* quad =

@@ -87,7 +87,7 @@ constexpr int kDeviceTypeChrome = 7;
 std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
   std::unique_ptr<QuickStartMessage> message =
       std::make_unique<QuickStartMessage>(
-          QuickStartMessageType::kBootstrapConfigurations);
+          QuickStartMessageType::kBootstrapOptions);
   message->GetPayload()->Set(kAccountRequirementKey, kAccountRequirementSingle);
   message->GetPayload()->Set(kFlowTypeKey, kFlowTypeTargetChallenge);
   message->GetPayload()->Set(kDeviceTypeKey, kDeviceTypeChrome);

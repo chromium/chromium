@@ -730,6 +730,9 @@ cfg_if! {
     } else if #[cfg(target_os = "horizon")] {
         mod horizon;
         pub use self::horizon::*;
+    } else if #[cfg(target_os = "vita")] {
+        mod vita;
+        pub use self::vita::*;
     } else if #[cfg(target_arch = "arm")] {
         mod arm;
         pub use self::arm::*;

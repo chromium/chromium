@@ -740,6 +740,10 @@ test("gpu_unittests") {
   # to add the shared lib to the chrome-binary-tests directory.
   if (enable_base_tracing && !is_cronet_build && is_chromeos) {
     deps += [ "//base/test:test_trace_processor" ]
+    sources += [
+      "//base/test/test_trace_processor.cc",
+      "//base/test/test_trace_processor.h",
+    ]
   }
 
   if (is_android) {

@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
@@ -73,8 +74,8 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/test/feature_promo_test_util.h"
@@ -98,6 +99,7 @@
 #include "chrome/browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.h"
 #include "chrome/browser/signin/signin_ui_delegate_impl_lacros.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #endif
 
 namespace {
@@ -149,13 +151,14 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
+const char kPasswordManagerId[] = "chrome://password-manager/";
 const char kPasswordManagerPWAUrl[] = "chrome://password-manager/?source=pwa";
 
 std::unique_ptr<WebAppInstallInfo> CreatePasswordManagerWebAppInfo() {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = GURL(kPasswordManagerPWAUrl);
   web_app_info->title = u"Password Manager";
-  web_app_info->manifest_id = "";
+  web_app_info->manifest_id = GURL(kPasswordManagerId);
   return web_app_info;
 }
 
@@ -738,6 +741,15 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninErrorButtonTest, OpenReauthDialog) {
       .WillOnce([&loop]() { loop.Quit(); });
 
   // Complete reauth.
+  // Fake that this account was successfully reauthenticated via the UI.
+  crosapi::AccountManagerMojoService* mojo_service =
+      MaybeGetAshAccountManagerMojoServiceForTests();
+  DCHECK(mojo_service);
+  account_manager::AccountKey kAccountKey{account_info_.gaia,
+                                          account_manager::AccountType::kGaia};
+  mojo_service->OnAccountUpsertionFinishedForTesting(
+      account_manager::AccountUpsertionResult::FromAccount(
+          {kAccountKey, account_info_.email}));
   account_manager_ui->CloseDialog();
 
   // Wait until the Sync confirmation is shown.

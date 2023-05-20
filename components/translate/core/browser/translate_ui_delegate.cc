@@ -21,14 +21,12 @@
 namespace {
 
 const char kDeclineTranslate[] = "Translate.DeclineTranslate";
-const char kRevertTranslation[] = "Translate.RevertTranslation";
 const char kPerformTranslate[] = "Translate.Translate";
 const char kPerformTranslateAmpCacheUrl[] = "Translate.Translate.AMPCacheURL";
 const char kNeverTranslateLang[] = "Translate.NeverTranslateLang";
 const char kNeverTranslateSite[] = "Translate.NeverTranslateSite";
 const char kAlwaysTranslateLang[] = "Translate.AlwaysTranslateLang";
 const char kModifySourceLang[] = "Translate.ModifyOriginalLang";
-const char kModifyTargetLang[] = "Translate.ModifyTargetLang";
 const char kShowErrorUI[] = "Translate.ShowErrorUI";
 
 // Returns whether |url| fits pattern of an AMP cache url.
@@ -126,8 +124,6 @@ void TranslateUIDelegate::UpdateAndRecordTargetLanguageIndex(
     return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN(kModifyTargetLang, true);
-
   if (translate_manager_) {
     translate_manager_->GetActiveTranslateMetricsLogger()->LogTargetLanguage(
         translate_ui_languages_manager_->GetLanguageCodeAt(language_index),
@@ -208,7 +204,6 @@ void TranslateUIDelegate::RevertTranslation() {
   if (translate_manager_ &&
       translate_manager_->GetLanguageState()->IsPageTranslated()) {
     translate_manager_->RevertTranslation();
-    UMA_HISTOGRAM_BOOLEAN(kRevertTranslation, true);
   }
 }
 

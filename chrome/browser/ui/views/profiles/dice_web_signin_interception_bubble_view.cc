@@ -63,17 +63,16 @@ DiceWebSigninInterceptionBubbleView::~DiceWebSigninInterceptionBubbleView() {
 }
 
 // static
-std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptionBubbleView::CreateBubble(
     Browser* browser,
     views::View* anchor_view,
-    const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-        bubble_parameters,
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   auto interception_bubble =
       base::WrapUnique(new DiceWebSigninInterceptionBubbleView(
           browser, anchor_view, bubble_parameters, std::move(callback)));
-  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> handle =
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
       interception_bubble->GetHandle();
   // The widget is owned by the views system and shown after the view is loaded
   // and the final height of the bubble is sent from
@@ -101,23 +100,22 @@ DiceWebSigninInterceptionBubbleView::ScopedHandle::ScopedHandle(
 
 // static
 void DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
-    const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-        bubble_parameters,
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     Profile* profile,
     SigninInterceptionResult result) {
   std::string histogram_base_name = "Signin.InterceptResult";
   switch (bubble_parameters.interception_type) {
-    case DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise:
-    case DiceWebSigninInterceptor::SigninInterceptionType::
+    case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
+    case WebSigninInterceptor::SigninInterceptionType::
         kEnterpriseAcceptManagement:
-    case DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
+    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
       histogram_base_name.append(".Enterprise");
       break;
-    case DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser:
+    case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
       histogram_base_name.append(".MultiUser");
       break;
-    case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-    case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
+    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       histogram_base_name.append(".Switch");
       break;
   }
@@ -134,7 +132,7 @@ void DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
   base::UmaHistogramEnumeration(histogram_base_name + sync_suffix, result);
   // For Enterprise, slice per enterprise status for each account.
   if (bubble_parameters.interception_type ==
-      DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise) {
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise) {
     if (bubble_parameters.intercepted_account.IsManaged()) {
       std::string histogram_name = histogram_base_name + ".NewIsEnterprise";
       base::UmaHistogramEnumeration(histogram_name, result);
@@ -168,8 +166,7 @@ void DiceWebSigninInterceptionBubbleView::AddNewContents(
 DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
     Browser* browser,
     views::View* anchor_view,
-    const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-        bubble_parameters,
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::TOP_RIGHT),
@@ -219,7 +216,7 @@ void DiceWebSigninInterceptionBubbleView::SetHeightAndShowWidget(int height) {
   GetWidget()->Show();
 }
 
-std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptionBubbleView::GetHandle() {
   return std::make_unique<ScopedHandle>(weak_factory_.GetWeakPtr());
 }
@@ -266,11 +263,10 @@ bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupportedInternal(
   return GetBubbleAnchorView(browser) != nullptr;
 }
 
-std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubbleInternal(
     Browser* browser,
-    const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-        bubble_parameters,
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   DCHECK(browser);
 

@@ -111,6 +111,10 @@ class CORE_EXPORT PerformanceTimingForReporting final
   // the same way as the above LargestContentfulPaintImageLoadStart.
   absl::optional<base::TimeDelta> LargestContentfulPaintImageLoadEnd() const;
 
+  bool LargestContentfulPaintImageIsLoadedFromMemoryCache() const;
+
+  bool LargestContentfulPaintImageIsPreloadedWithEarlyHints() const;
+
   // The time of the first paint of the largest text within viewport.
   // Largest Text Paint is the first paint after the largest text within
   // viewport being painted. LargestTextPaint and LargestTextPaintSize

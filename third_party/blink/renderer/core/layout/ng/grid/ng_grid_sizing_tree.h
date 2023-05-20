@@ -25,9 +25,11 @@ class NGSubgriddedItemData {
   NGSubgriddedItemData() = default;
 
   NGSubgriddedItemData(const GridItemData& item_data_in_parent,
-                       const NGGridLayoutData& parent_layout_data)
+                       const NGGridLayoutData& parent_layout_data,
+                       WritingMode parent_writing_mode)
       : item_data_in_parent_(&item_data_in_parent),
-        parent_layout_data_(&parent_layout_data) {}
+        parent_layout_data_(&parent_layout_data),
+        parent_writing_mode_(parent_writing_mode) {}
 
   explicit operator bool() const { return item_data_in_parent_ != nullptr; }
 
@@ -42,14 +44,30 @@ class NGSubgriddedItemData {
     return item_data_in_parent_ && item_data_in_parent_->IsSubgrid();
   }
 
-  const NGGridLayoutData& ParentLayoutData() const {
-    DCHECK(parent_layout_data_);
-    return *parent_layout_data_;
+  const NGGridLayoutTrackCollection& Columns(
+      absl::optional<WritingMode> container_writing_mode =
+          absl::nullopt) const {
+    return (!container_writing_mode ||
+            IsParallelWritingMode(*container_writing_mode,
+                                  parent_writing_mode_))
+               ? parent_layout_data_->Columns()
+               : parent_layout_data_->Rows();
+  }
+
+  const NGGridLayoutTrackCollection& Rows(
+      absl::optional<WritingMode> container_writing_mode =
+          absl::nullopt) const {
+    return (!container_writing_mode ||
+            IsParallelWritingMode(*container_writing_mode,
+                                  parent_writing_mode_))
+               ? parent_layout_data_->Rows()
+               : parent_layout_data_->Columns();
   }
 
  private:
   const GridItemData* item_data_in_parent_{nullptr};
   const NGGridLayoutData* parent_layout_data_{nullptr};
+  WritingMode parent_writing_mode_{WritingMode::kHorizontalTb};
 };
 
 constexpr NGSubgriddedItemData kNoSubgriddedItemData;

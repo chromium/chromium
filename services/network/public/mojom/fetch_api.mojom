@@ -66,6 +66,8 @@ enum RequestDestination {
   // Requests from the federated credential management API,
   // https://fedidcg.github.io/FedCM/
   kWebIdentity = 23,
+  // Requests for compression dictionary
+  kDictionary = 24,
 };
 
 // Corresponds to Fetch request's "redirect mode":

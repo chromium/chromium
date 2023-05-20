@@ -472,7 +472,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 assert ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)
                     : "PrivacySandboxSettings4 is disabled";
                 SiteSettingsHelper.showCategorySettings(
-                        context, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+                        context, mProfile, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
             });
         }
         if (fragment instanceof AdMeasurementFragment) {
@@ -507,7 +507,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)
-                    .setDelegate(new ChromeAccessibilitySettingsDelegate());
+                    .setDelegate(new ChromeAccessibilitySettingsDelegate(mProfile));
         }
     }
 

@@ -253,6 +253,10 @@ size_t SharedImageFormat::EstimatedSizeInBytes(const gfx::Size& size) const {
   return MaybeEstimatedSizeInBytes(size).value_or(0);
 }
 
+bool SharedImageFormat::VerifySizeInBytes(const gfx::Size& size) const {
+  return MaybeEstimatedSizeInBytes(size).has_value();
+}
+
 gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
                                           const gfx::Size& size) const {
   DCHECK(IsValidPlaneIndex(plane_index));

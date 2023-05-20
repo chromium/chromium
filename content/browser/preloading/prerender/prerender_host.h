@@ -32,11 +32,12 @@ enum class WebClientHintsType;
 
 namespace content {
 
+class DevToolsPrerenderAttempt;
 class FrameTreeNode;
+class PrerenderCancellationReason;
 class PrerenderHostRegistry;
 class RenderFrameHostImpl;
 class WebContentsImpl;
-class PrerenderCancellationReason;
 
 // Prerender2:
 // PrerenderHost creates a new FrameTree in WebContents associated with the page
@@ -112,7 +113,8 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
 
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContentsImpl& web_contents,
-                base::WeakPtr<PreloadingAttempt> attempt);
+                base::WeakPtr<PreloadingAttempt> attempt,
+                std::unique_ptr<DevToolsPrerenderAttempt> devtools_attempt);
   ~PrerenderHost() override;
 
   PrerenderHost(const PrerenderHost&) = delete;
@@ -312,6 +314,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // We use a WeakPtr here to avoid inadvertent UAF. `attempt_` can get deleted
   // before `PrerenderHostRegistry::DeleteAbandonedHosts` is scheduled.
   base::WeakPtr<PreloadingAttempt> attempt_;
+  std::unique_ptr<DevToolsPrerenderAttempt> devtools_attempt_;
   // Navigation parameters for the navigation which loaded the main document of
   // the prerendered page, copied immediately after BeginNavigation when
   // throttles are created. They will be compared with the navigation parameters

@@ -30,9 +30,11 @@
 
 #include "third_party/blink/renderer/core/loader/base_fetch_context.h"
 
+#include "base/test/scoped_command_line.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 #include "third_party/blink/renderer/core/script/fetch_client_settings_object_impl.h"
@@ -332,6 +334,35 @@ TEST_F(BaseFetchContextTest, UACSSTest_BypassCSP) {
             fetch_context_->CanRequest(
                 ResourceType::kImage, resource_request, data_url, options,
                 ReportingDisposition::kReport, redirect_info));
+}
+
+// Tests that CanRequest() checks for data: URL in SVGUseElement.
+TEST_F(BaseFetchContextTest, CanRequestSVGImage) {
+  base::test::ScopedCommandLine scoped_command_line;
+  ScopedRemoveDataUrlInSvgUseForTest runtime_flag(true);
+
+  KURL url(NullURL(), "data:image/svg+xml,blah");
+  ResourceRequest resource_request(url);
+  resource_request.SetRequestContext(mojom::blink::RequestContextType::IMAGE);
+  resource_request.SetRequestorOrigin(GetSecurityOrigin());
+  resource_request.SetRequestDestination(
+      network::mojom::RequestDestination::kImage);
+  resource_request.SetMode(network::mojom::blink::RequestMode::kSameOrigin);
+
+  ResourceLoaderOptions options(nullptr /* world */);
+  options.initiator_info.name = fetch_initiator_type_names::kUse;
+
+  EXPECT_EQ(ResourceRequestBlockedReason::kOrigin,
+            fetch_context_->CanRequest(
+                ResourceType::kImage, resource_request, url, options,
+                ReportingDisposition::kReport, absl::nullopt));
+
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      blink::switches::kDataUrlInSvgUseEnabled);
+  EXPECT_EQ(absl::nullopt,
+            fetch_context_->CanRequest(
+                ResourceType::kImage, resource_request, url, options,
+                ReportingDisposition::kReport, absl::nullopt));
 }
 
 }  // namespace blink

@@ -17,7 +17,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 <histograms>
 
 <histogram name="PrivacyBudget.ClockDrift.FetchLatencyVariance" units="ms^2"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>
@@ -29,7 +29,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockDrift.Magnitude.Negative"
-    units="microseconds/s" expires_after="2023-09-03">
+    units="microseconds/s" expires_after="2023-11-12">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>
@@ -41,7 +41,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockDrift.Magnitude.Positive"
-    units="microseconds/s" expires_after="2023-09-03">
+    units="microseconds/s" expires_after="2023-11-12">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>
@@ -53,7 +53,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.FetchLatency" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>
@@ -64,7 +64,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.FetchLatencyJitter" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>
@@ -76,7 +76,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.Magnitude.Negative" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>
@@ -87,7 +87,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.Magnitude.Positive" units="ms"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>

@@ -259,12 +259,10 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     if (_useWithPopUpButtonCell) {
       ui::Accelerator accelerator;
       if (model->GetAcceleratorAt(index, &accelerator)) {
-        NSString* key_equivalent;
-        NSUInteger modifier_mask;
-        GetKeyEquivalentAndModifierMaskFromAccelerator(
-            accelerator, &key_equivalent, &modifier_mask);
-        [item setKeyEquivalent:key_equivalent];
-        [item setKeyEquivalentModifierMask:modifier_mask];
+        KeyEquivalentAndModifierMask* equivalent =
+            GetKeyEquivalentAndModifierMaskFromAccelerator(accelerator);
+        [item setKeyEquivalent:equivalent.keyEquivalent];
+        [item setKeyEquivalentModifierMask:equivalent.modifierMask];
       }
     }
   }

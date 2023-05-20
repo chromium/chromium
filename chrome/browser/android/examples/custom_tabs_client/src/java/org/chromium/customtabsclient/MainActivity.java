@@ -279,15 +279,6 @@ public class MainActivity
             Log.w(TAG,
                     "EngagementSignalsCallback#onGreatestScrollPercentageIncreased: "
                             + "scrollPercentage = " + scrollPercentage);
-            try {
-                Log.w(TAG,
-                        "getGreatestScrollPercentage: "
-                                + getSession().getGreatestScrollPercentage(Bundle.EMPTY));
-            } catch (RemoteException e) {
-                Log.w(TAG, "The Service died while responding to the request.", e);
-            } catch (UnsupportedOperationException e) {
-                Log.w(TAG, "Engagement Signals API isn't supported by the browser.", e);
-            }
         }
 
         @Override

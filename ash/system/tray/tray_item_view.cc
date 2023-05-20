@@ -172,7 +172,7 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
   }
 
   // Immediately progress to the end of the animation if animation is disabled.
-  if (!IsAnimationEnabled()) {
+  if (!ShouldVisibilityChangeBeAnimated()) {
     // Tray items need to stay visible during the notification center tray's
     // hide animation, so don't do anything here.
     // `StatusAreaAnimationController` will call `ImmediatelyUpdateVisibility()`

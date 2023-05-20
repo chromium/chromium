@@ -14,7 +14,6 @@
 
 struct AutocompleteMatch;
 class OmniboxEditModelDelegate;
-class OmniboxEditModel;
 
 // Fake implementation of OmniboxView for use in tests.
 class TestOmniboxView : public OmniboxView {
@@ -25,8 +24,6 @@ class TestOmniboxView : public OmniboxView {
 
   TestOmniboxView(const TestOmniboxView&) = delete;
   TestOmniboxView& operator=(const TestOmniboxView&) = delete;
-
-  void SetEditModel(std::unique_ptr<OmniboxEditModel> edit_model);
 
   const std::u16string& inline_autocompletion() const {
     return inline_autocompletion_;

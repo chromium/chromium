@@ -43,14 +43,20 @@ def kill(proc, name, timeout_in_seconds=10):
   if not proc:
     return
 
-  proc.terminate()
   thread = threading.Thread(target=proc.wait)
-  thread.start()
+  try:
+    proc.terminate()
+    thread.start()
 
-  thread.join(timeout_in_seconds)
-  if thread.is_alive():
-    print('%s running after SIGTERM, trying SIGKILL.\n' % name, file=sys.stderr)
-    proc.kill()
+    thread.join(timeout_in_seconds)
+    if thread.is_alive():
+      print('%s running after SIGTERM, trying SIGKILL.\n' % name,
+        file=sys.stderr)
+      proc.kill()
+  except OSError as e:
+    # proc.terminate()/kill() can raise, not sure if only ProcessLookupError
+    # which is explained in https://bugs.python.org/issue40550#msg382427
+    print('Exception while killing process %s: %s' % (name, e), file=sys.stderr)
 
   thread.join(timeout_in_seconds)
   if thread.is_alive():
@@ -199,13 +205,16 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox,
       signal.signal(signal.SIGUSR1, signal.SIG_IGN)
       xvfb_proc = subprocess.Popen(xvfb_cmd, stderr=subprocess.STDOUT, env=env)
       signal.signal(signal.SIGUSR1, set_xvfb_ready)
-      for _ in range(10):
+      for _ in range(30):
         time.sleep(.1)  # gives Xvfb time to start or fail.
         if xvfb_ready.getvalue() or xvfb_proc.poll() is not None:
           break  # xvfb sent ready signal, or already failed and stopped.
 
       if xvfb_proc.poll() is None:
-        break  # xvfb is running, can proceed.
+        if xvfb_ready.getvalue():
+          break  # xvfb is ready
+        kill(xvfb_proc, 'Xvfb')  # still not ready, give up and retry
+
     if xvfb_proc.poll() is not None:
       raise _XvfbProcessError('Failed to start after 10 tries')
 
@@ -229,12 +238,12 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox,
           ['openbox', '--sm-disable', '--startup',
            openbox_startup_cmd], stderr=subprocess.STDOUT, env=env)
 
-      for _ in range(10):
+      for _ in range(30):
         time.sleep(.1)  # gives Openbox time to start or fail.
         if openbox_ready.getvalue() or openbox_proc.poll() is not None:
           break  # openbox sent ready signal, or failed and stopped.
 
-      if openbox_proc.poll() is not None:
+      if openbox_proc.poll() is not None or not openbox_ready.getvalue():
         raise _XvfbProcessError('Failed to start OpenBox.')
 
     if use_xcompmgr:

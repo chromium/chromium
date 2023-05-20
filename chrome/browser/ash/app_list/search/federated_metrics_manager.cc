@@ -82,12 +82,6 @@ FederatedMetricsManager::FederatedMetricsManager(
     return;
   }
 
-  TryToBindFederatedServiceIfNecessary();
-  if (!federated_service_.is_bound() || !federated_service_.is_connected()) {
-    LogInitStatus(InitStatus::kFederatedConnectionFailedToEstablish);
-    return;
-  }
-
   // Observe notifier only after all init checks have suceeded.
   observation_.Observe(notifier);
   LogInitStatus(InitStatus::kOk);

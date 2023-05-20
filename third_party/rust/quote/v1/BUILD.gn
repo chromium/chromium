@@ -14,7 +14,7 @@ cargo_crate("lib") {
   build_native_rust_unit_tests = false
   sources = [ "crate/src/lib.rs" ]
   edition = "2018"
-  cargo_pkg_version = "1.0.10"
+  cargo_pkg_version = "1.0.27"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "quote"
   cargo_pkg_description = "Quasi-quoting macro quote!(...)"
@@ -24,4 +24,6 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/proc_macro2/v1:lib" ]
   features = [ "proc-macro" ]
+  build_root = "crate/build.rs"
+  build_sources = [ "crate/build.rs" ]
 }

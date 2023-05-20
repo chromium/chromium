@@ -386,7 +386,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
               if (!hdr_metadata_)
                 hdr_metadata_ = gfx::HDRMetadata();
               sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
-                  hdr_metadata_->color_volume_metadata);
+                  hdr_metadata_->smpte_st_2086);
               break;
             default:
               break;

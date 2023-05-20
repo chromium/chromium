@@ -125,12 +125,13 @@ class SpdySessionRequestDelegate
 
 // Attempts to set up an alias for |key| using an already existing session in
 // |pool|. To do this, simulates a host resolution that returns
-// |ip_address_list|.
-bool TryCreateAliasedSpdySession(SpdySessionPool* pool,
-                                 const SpdySessionKey& key,
-                                 const std::string& ip_address_list,
-                                 bool enable_ip_based_pooling = true,
-                                 bool is_websocket = false) {
+// |endpoints|.
+bool TryCreateAliasedSpdySession(
+    SpdySessionPool* pool,
+    const SpdySessionKey& key,
+    const std::vector<HostResolverEndpointResult>& endpoints,
+    bool enable_ip_based_pooling = true,
+    bool is_websocket = false) {
   // The requested session must not already exist.
   EXPECT_FALSE(pool->FindAvailableSession(key, enable_ip_based_pooling,
                                           is_websocket, NetLogWithSource()));
@@ -148,16 +149,9 @@ bool TryCreateAliasedSpdySession(SpdySessionPool* pool,
   EXPECT_TRUE(request);
   EXPECT_TRUE(is_blocking_request_for_session);
 
-  std::vector<IPEndPoint> ip_endpoints;
-  EXPECT_THAT(ParseAddressList(ip_address_list, &ip_endpoints), IsOk());
-  HostResolverEndpointResult endpoint;
-  for (auto& ip_endpoint : ip_endpoints) {
-    endpoint.ip_endpoints.emplace_back(ip_endpoint.address(), 443);
-  }
-
   // Simulate a host resolution completing.
   OnHostResolutionCallbackResult result = pool->OnHostResolutionComplete(
-      key, is_websocket, {endpoint}, /*aliases=*/{});
+      key, is_websocket, endpoints, /*aliases=*/{});
 
   // Spin the message loop and see if it creates an H2 session.
   base::RunLoop().RunUntilIdle();
@@ -179,6 +173,24 @@ bool TryCreateAliasedSpdySession(SpdySessionPool* pool,
                 .get());
 
   return request_delegate.spdy_session() != nullptr;
+}
+
+// Attempts to set up an alias for |key| using an already existing session in
+// |pool|. To do this, simulates a host resolution that returns
+// |ip_address_list|.
+bool TryCreateAliasedSpdySession(SpdySessionPool* pool,
+                                 const SpdySessionKey& key,
+                                 const std::string& ip_address_list,
+                                 bool enable_ip_based_pooling = true,
+                                 bool is_websocket = false) {
+  std::vector<IPEndPoint> ip_endpoints;
+  EXPECT_THAT(ParseAddressList(ip_address_list, &ip_endpoints), IsOk());
+  HostResolverEndpointResult endpoint;
+  for (auto& ip_endpoint : ip_endpoints) {
+    endpoint.ip_endpoints.emplace_back(ip_endpoint.address(), 443);
+  }
+  return TryCreateAliasedSpdySession(pool, key, {endpoint},
+                                     enable_ip_based_pooling, is_websocket);
 }
 
 // A delegate that opens a new session when it is closed.
@@ -830,6 +842,102 @@ TEST_F(SpdySessionPoolTest, IPPoolingNetLog) {
   // TryCreateAliasedSpdySession) should log histogram entries indicating IP
   // pooling.
   histogram_tester.ExpectUniqueSample("Net.SpdySessionGet", 2, 2);
+}
+
+// Test IP pooling when the DNS responses have ALPNs.
+TEST_F(SpdySessionPoolTest, IPPoolingDnsAlpn) {
+  // Define two hosts with identical IP address.
+  constexpr int kTestPort = 443;
+  struct TestHosts {
+    std::string name;
+    std::vector<HostResolverEndpointResult> endpoints;
+    SpdySessionKey key;
+  } test_hosts[] = {{"www.example.org"},
+                    {"mail.example.org"},
+                    {"mail.example.com"},
+                    {"example.test"}};
+
+  const IPEndPoint kRightIP(*IPAddress::FromIPLiteral("192.168.0.1"),
+                            kTestPort);
+  const IPEndPoint kWrongIP(*IPAddress::FromIPLiteral("192.168.0.2"),
+                            kTestPort);
+  const std::string kRightALPN = "h2";
+  const std::string kWrongALPN = "h3";
+
+  // `test_hosts[0]` and `test_hosts[1]` resolve to the same IP address, without
+  // any ALPN information.
+  test_hosts[0].endpoints.emplace_back();
+  test_hosts[0].endpoints[0].ip_endpoints = {kRightIP};
+  test_hosts[1].endpoints.emplace_back();
+  test_hosts[1].endpoints[0].ip_endpoints = {kRightIP};
+
+  // `test_hosts[2]` resolves to the same IP address, but only via an
+  // alternative endpoint with matching ALPN.
+  test_hosts[2].endpoints.emplace_back();
+  test_hosts[2].endpoints[0].ip_endpoints = {kRightIP};
+  test_hosts[2].endpoints[0].metadata.supported_protocol_alpns = {kRightALPN};
+
+  // `test_hosts[3]` resolves to the same IP address, but only via an
+  // alternative endpoint with a mismatching ALPN.
+  test_hosts[3].endpoints.resize(2);
+  test_hosts[3].endpoints[0].ip_endpoints = {kRightIP};
+  test_hosts[3].endpoints[0].metadata.supported_protocol_alpns = {kWrongALPN};
+  test_hosts[3].endpoints[1].ip_endpoints = {kWrongIP};
+  test_hosts[3].endpoints[1].metadata.supported_protocol_alpns = {kRightALPN};
+
+  // Populate the HostResolver cache.
+  session_deps_.host_resolver->set_synchronous_mode(true);
+  for (auto& test_host : test_hosts) {
+    session_deps_.host_resolver->rules()->AddRule(
+        test_host.name,
+        MockHostResolverBase::RuleResolver::RuleResult(test_host.endpoints));
+
+    test_host.key = SpdySessionKey(
+        HostPortPair(test_host.name, kTestPort), ProxyServer::Direct(),
+        PRIVACY_MODE_DISABLED, SpdySessionKey::IsProxySession::kFalse,
+        SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+  }
+
+  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
+  StaticSocketDataProvider data(reads, base::span<MockWrite>());
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  data.set_connect_data(connect_data);
+
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+
+  // Open SpdySession to the first host.
+  base::WeakPtr<SpdySession> session0 = CreateSpdySession(
+      http_session_.get(), test_hosts[0].key, NetLogWithSource());
+
+  // The second host should pool to the existing connection. Although the
+  // addresses are not associated with ALPNs, the default connection flow for
+  // HTTPS is compatible with HTTP/2.
+  EXPECT_TRUE(TryCreateAliasedSpdySession(spdy_session_pool_, test_hosts[1].key,
+                                          test_hosts[1].endpoints));
+  base::WeakPtr<SpdySession> session1 =
+      spdy_session_pool_->FindAvailableSession(
+          test_hosts[1].key, /*enable_ip_based_pooling=*/true,
+          /*is_websocket=*/false,
+          NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_EQ(session0.get(), session1.get());
+
+  // The third host should also pool to the existing connection.
+  EXPECT_TRUE(TryCreateAliasedSpdySession(spdy_session_pool_, test_hosts[2].key,
+                                          test_hosts[2].endpoints));
+  base::WeakPtr<SpdySession> session2 =
+      spdy_session_pool_->FindAvailableSession(
+          test_hosts[2].key, /*enable_ip_based_pooling=*/true,
+          /*is_websocket=*/false,
+          NetLogWithSource::Make(NetLogSourceType::NONE));
+  EXPECT_EQ(session0.get(), session2.get());
+
+  // The fourth host should not pool. The only matching endpoint is specific to
+  // QUIC.
+  EXPECT_FALSE(TryCreateAliasedSpdySession(
+      spdy_session_pool_, test_hosts[3].key, test_hosts[3].endpoints));
 }
 
 TEST_F(SpdySessionPoolTest, IPPoolingDisabled) {

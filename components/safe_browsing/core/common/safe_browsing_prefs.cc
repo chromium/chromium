@@ -78,6 +78,10 @@ const char kSafeBrowsingEnterpriseRealTimeUrlCheckMode[] =
     "safebrowsing.enterprise_real_time_url_check_mode";
 const char kSafeBrowsingEnterpriseRealTimeUrlCheckScope[] =
     "safebrowsing.enterprise_real_time_url_check_scope";
+const char kSafeBrowsingEsbProtegoPingWithTokenLastLogTime[] =
+    "safebrowsing.esb_protego_ping_with_token_last_log_time";
+const char kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime[] =
+    "safebrowsing.esb_protego_ping_without_token_last_log_time";
 const char kSafeBrowsingExtendedReportingOptInAllowed[] =
     "safebrowsing.extended_reporting_opt_in_allowed";
 const char kSafeBrowsingIncidentsSent[] = "safebrowsing.incidents_sent";
@@ -230,6 +234,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kSafeBrowsingSawInterstitialScoutReporting, false);
   registry->RegisterBooleanPref(
       prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
+  registry->RegisterTimePref(
+      prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime, base::Time());
+  registry->RegisterTimePref(
+      prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime, base::Time());
   registry->RegisterBooleanPref(
       prefs::kSafeBrowsingEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -268,10 +276,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
   registry->RegisterTimePref(prefs::kExtensionTelemetryLastUploadTime,
                              base::Time::Now());
-  registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig,
-                                   base::Value::Dict());
-  registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData,
-                                   base::Value::Dict());
+  registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig);
+  registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData);
   registry->RegisterBooleanPref(
       prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, true);
   registry->RegisterBooleanPref(

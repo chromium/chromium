@@ -2,60 +2,60 @@ Tests that expressions have thrown objects.
 
 setTimeout(throwError, 0); undefined
 undefined
-foo.js:12 Uncaught Error: error_text
-    at throwError (foo.js:12:17)
-throwError @ foo.js:12
+foo.js:15 Uncaught Error: error_text
+    at throwError (foo.js:15:17)
+throwError @ foo.js:15
 setTimeout (async)
 (anonymous) @ VM:1
 throwError();
-foo.js:12 Uncaught Error: error_text
-    at throwError (foo.js:12:17)
+foo.js:15 Uncaught Error: error_text
+    at throwError (foo.js:15:17)
     at <anonymous>:1:1
-throwError @ foo.js:12
+throwError @ foo.js:15
 (anonymous) @ VM:1
 setTimeout(throwObject, 0); undefined
 undefined
-foo.js:17 Uncaught {a: 42}
-throwObject @ foo.js:17
+foo.js:20 Uncaught {a: 42}
+throwObject @ foo.js:20
 setTimeout (async)
 (anonymous) @ VM:1
 throwObject();
-foo.js:17 Uncaught {a: 42}
-throwObject @ foo.js:17
+foo.js:20 Uncaught {a: 42}
+throwObject @ foo.js:20
 (anonymous) @ VM:1
 setTimeout(throwNumber, 0); undefined
 undefined
-foo.js:22 Uncaught 42
-throwNumber @ foo.js:22
+foo.js:25 Uncaught 42
+throwNumber @ foo.js:25
 setTimeout (async)
 (anonymous) @ VM:1
 throwNumber();
-foo.js:22 Uncaught 42
-throwNumber @ foo.js:22
+foo.js:25 Uncaught 42
+throwNumber @ foo.js:25
 (anonymous) @ VM:1
 setTimeout(rejectWithError, 0); undefined
 undefined
-foo.js:27 Uncaught (in promise) Error: promise_error
-    at rejectWithError (foo.js:27:26)
-rejectWithError @ foo.js:27
+foo.js:30 Uncaught (in promise) Error: promise_error
+    at rejectWithError (foo.js:30:26)
+rejectWithError @ foo.js:30
 setTimeout (async)
 (anonymous) @ VM:1
 rejectWithError();
 undefined
-foo.js:27 Uncaught (in promise) Error: promise_error
-    at rejectWithError (foo.js:27:26)
+foo.js:30 Uncaught (in promise) Error: promise_error
+    at rejectWithError (foo.js:30:26)
     at <anonymous>:1:1
-rejectWithError @ foo.js:27
+rejectWithError @ foo.js:30
 (anonymous) @ VM:1
 setTimeout(rejectWithObject, 0); undefined
 undefined
-foo.js:32 Uncaught (in promise) {b: 42}
-rejectWithObject @ foo.js:32
+foo.js:35 Uncaught (in promise) {b: 42}
+rejectWithObject @ foo.js:35
 setTimeout (async)
 (anonymous) @ VM:1
 rejectWithObject();
 undefined
-foo.js:32 Uncaught (in promise) {b: 42}
-rejectWithObject @ foo.js:32
+foo.js:35 Uncaught (in promise) {b: 42}
+rejectWithObject @ foo.js:35
 (anonymous) @ VM:1
 

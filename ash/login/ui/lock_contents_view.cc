@@ -1912,9 +1912,6 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         if (state->show_pin) {
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
         }
-        if (state->enable_tap_auth) {
-          to_update_auth |= LoginAuthUserView::AUTH_TAP;
-        }
         if (state->fingerprint_state != FingerprintState::UNAVAILABLE) {
           to_update_auth |= LoginAuthUserView::AUTH_FINGERPRINT;
         }

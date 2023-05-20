@@ -524,28 +524,32 @@ class ECDSASoftwareKey : public VirtualUnexportableSigningKey {
 
   absl::optional<std::vector<uint8_t>> Sign(
       base::span<const uint8_t> data) override {
-    if (!valid_) {
+    if (!key_.is_valid()) {
       return absl::nullopt;
     }
 
     return SignECDSA(key_.get(), data);
   }
 
-  bool DeleteKey() override {
-    if (!valid_) {
-      return false;
+  void DeleteKey() override {
+    if (!key_.is_valid()) {
+      return;
     }
 
-    auto status = NCryptDeleteKey(key_.get(), NCRYPT_SILENT_FLAG);
-    valid_ = false;
-    return !FAILED(status);
+    // If key deletion succeeds, NCryptDeleteKey frees the key. To avoid double
+    // free, we need to release the key from the ScopedNCryptKey RAII object.
+    // Key deletion can fail in circumstances which are not under the
+    // application's control. For these cases, ScopedNCrypt key should free the
+    // key.
+    if (NCryptDeleteKey(key_.get(), NCRYPT_SILENT_FLAG) == ERROR_SUCCESS) {
+      static_cast<void>(key_.release());
+    }
   }
 
  private:
   ScopedNCryptKey key_;
   const std::string name_;
   const std::vector<uint8_t> spki_;
-  bool valid_ = true;
 };
 
 // RSASoftwareKey wraps a Credential Guard stored RSA key.
@@ -568,28 +572,32 @@ class RSASoftwareKey : public VirtualUnexportableSigningKey {
 
   absl::optional<std::vector<uint8_t>> Sign(
       base::span<const uint8_t> data) override {
-    if (!valid_) {
+    if (!key_.is_valid()) {
       return absl::nullopt;
     }
 
     return SignRSA(key_.get(), data);
   }
 
-  bool DeleteKey() override {
-    if (!valid_) {
-      return false;
+  void DeleteKey() override {
+    if (!key_.is_valid()) {
+      return;
     }
 
-    auto status = NCryptDeleteKey(key_.get(), NCRYPT_SILENT_FLAG);
-    valid_ = false;
-    return !FAILED(status);
+    // If key deletion succeeds, NCryptDeleteKey frees the key. To avoid double
+    // free, we need to release the key from the ScopedNCryptKey RAII object.
+    // Key deletion can fail in circumstances which are not under the
+    // application's control. For these cases, ScopedNCrypt key should free the
+    // key.
+    if (NCryptDeleteKey(key_.get(), NCRYPT_SILENT_FLAG) == ERROR_SUCCESS) {
+      static_cast<void>(key_.release());
+    }
   }
 
  private:
   ScopedNCryptKey key_;
   std::string name_;
   const std::vector<uint8_t> spki_;
-  bool valid_ = true;
 };
 
 // UnexportableKeyProviderWin uses NCrypt and the Platform Crypto

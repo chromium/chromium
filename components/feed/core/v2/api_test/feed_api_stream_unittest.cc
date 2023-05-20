@@ -2866,6 +2866,41 @@ TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshInterestFeedSuccess) {
   EXPECT_EQ("", surface2.DescribeUpdates());
 }
 
+TEST_F(FeedApiTest, ManualRefreshResetsRequestThrottlerQuota) {
+  Config config;
+  // Small number to make test faster.
+  config.max_action_upload_requests_per_day = 3;
+  SetFeedConfigForTesting(config);
+
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  // Exhaust upload action request throttler quota.
+  for (;;) {
+    CallbackReceiver<UploadActionsTask::Result> callback;
+    stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), true,
+                          callback.Bind());
+    if (callback.RunAndGetResult().upload_attempt_count == 0ul) {
+      break;
+    }
+  }
+
+  // Do a manual refresh, it should upload the queued action immediately, and
+  // allow further upload actions.
+  int action_requests_before =
+      network_.GetApiRequestCount<UploadActionsDiscoverApi>();
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->ManualRefresh(surface.GetStreamType(), base::DoNothing());
+  WaitForIdleTaskQueue();
+  EXPECT_GT(network_.GetApiRequestCount<UploadActionsDiscoverApi>(),
+            action_requests_before);
+
+  CallbackReceiver<UploadActionsTask::Result> callback;
+  stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), true,
+                        callback.Bind());
+  EXPECT_GT(callback.RunAndGetResult().upload_attempt_count, 0ul);
+}
+
 TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshWebFeedSuccess) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface(stream_.get());
@@ -4066,16 +4101,18 @@ class SignedOutViewDemotionTest : public FeedApiTest {
 
 TEST_F(SignedOutViewDemotionTest, ViewsAreSent) {
   account_info_ = {};
-  // Simulate loading the feed, viewing one document, and closing Chrome.
+  // Simulate loading the feed, viewing two documents, and closing Chrome.
   {
     response_translator_.InjectResponse(MakeTypicalInitialModelState());
     TestForYouSurface surface(stream_.get());
     WaitForIdleTaskQueue();
 
     stream_->RecordContentViewed(123);
+    stream_->RecordContentViewed(456);
     WaitForIdleTaskQueue();
   }
 
+  base::HistogramTester histograms;
   // Simulate loading the feed again later after restart, triggering a refresh.
   task_environment_.FastForwardBy(GetFeedConfig().stale_content_threshold +
                                   base::Minutes(1));
@@ -4092,23 +4129,29 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreSent) {
   view_demotion_profile {
     tables {
       name: "url_all_ondevice"
-      num_rows: 1
+      num_rows: 2
       columns {
         type: 4
         name: "dimension_key"
         uint64_values: 123
+        uint64_values: 456
       }
       columns {
         type: 4
         name: "FEED_CARD_VIEW"
         uint64_values: 1
+        uint64_values: 1
       }
     }
   }
 })"));
+
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.DocumentViewSendCount100", 2, 1);
 }
 
 TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenSignedIn) {
+  base::HistogramTester histograms;
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -4119,9 +4162,12 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenSignedIn) {
   CallbackReceiver<std::vector<feedstore::DocView>> read_callback;
   store_->ReadDocViews(read_callback.Bind());
   EXPECT_THAT(read_callback.RunAndGetResult(), testing::IsEmpty());
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.DocumentViewSendCount100", 0);
 }
 
 TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenFeatureIsOff) {
+  base::HistogramTester histograms;
   base::test::ScopedFeatureList features;
   std::vector<base::test::FeatureRef> enabled_features = {},
                                       disabled_features = {
@@ -4139,6 +4185,8 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenFeatureIsOff) {
   CallbackReceiver<std::vector<feedstore::DocView>> read_callback;
   store_->ReadDocViews(read_callback.Bind());
   EXPECT_THAT(read_callback.RunAndGetResult(), testing::IsEmpty());
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.DocumentViewSendCount100", 0);
 }
 
 TEST_F(SignedOutViewDemotionTest, OldViewsAreDeleted) {

@@ -1,0 +1,8 @@
+{
+  "name": "sidePanel.open() errors",
+  "manifest_version": 3,
+  "version": "1",
+  "background": {"service_worker": "background.js"},
+  "side_panel": {"default_path": "default_panel.html"},
+  "permissions": ["sidePanel"]
+}

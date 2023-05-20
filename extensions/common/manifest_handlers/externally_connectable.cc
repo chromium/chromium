@@ -115,24 +115,23 @@ std::unique_ptr<ExternallyConnectableInfo> ExternallyConnectableInfo::FromValue(
   bool all_ids = false;
 
   if (externally_connectable->ids) {
-    for (auto it = externally_connectable->ids->begin();
-         it != externally_connectable->ids->end(); ++it) {
-      if (*it == kAllIds) {
+    for (const auto& id : *externally_connectable->ids) {
+      if (id == kAllIds) {
         all_ids = true;
-      } else if (crx_file::id_util::IdIsValid(*it)) {
-        ids.push_back(*it);
+      } else if (crx_file::id_util::IdIsValid(id)) {
+        ids.push_back(id);
       } else {
         *error = ErrorUtils::FormatErrorMessageUTF16(
-            externally_connectable_errors::kErrorInvalidId, *it);
+            externally_connectable_errors::kErrorInvalidId, id);
         return nullptr;
       }
     }
   }
 
   if (!externally_connectable->matches && !externally_connectable->ids) {
-    install_warnings->push_back(
-        InstallWarning(externally_connectable_errors::kErrorNothingSpecified,
-                       keys::kExternallyConnectable));
+    install_warnings->emplace_back(
+        externally_connectable_errors::kErrorNothingSpecified,
+        keys::kExternallyConnectable);
   }
 
   bool accepts_tls_channel_id =

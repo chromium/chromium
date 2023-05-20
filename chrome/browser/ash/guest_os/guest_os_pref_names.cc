@@ -7,8 +7,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace guest_os {
-namespace prefs {
+namespace guest_os::prefs {
 
 // Dictionary of filesystem paths mapped to the list of VMs that the paths are
 // shared with.
@@ -64,9 +63,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kGuestOsRegistry);
   registry->RegisterListPref(kGuestOsContainers);
   registry->RegisterDictionaryPref(
-      kGuestOsTerminalSettings, base::Value::Dict(),
+      kGuestOsTerminalSettings,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
-}  // namespace prefs
-}  // namespace guest_os
+}  // namespace guest_os::prefs

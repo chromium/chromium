@@ -523,22 +523,35 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
             (line_start_result ? line_start_result->NumCharacters() : 0) +
                 (last_safe > first_safe ? last_safe - first_safe : 0) +
                 (line_end_result ? line_end_result->NumCharacters() : 0));
+  SetBreakOffset(break_opportunity, text, result_out);
 
   // Create shape results for the line by copying from the re-shaped result (if
   // reshaping was needed) and the original shape results.
+  return ConcatShapeResults(start, break_opportunity.offset, first_safe,
+                            last_safe, std::move(line_start_result),
+                            std::move(line_end_result));
+}
+scoped_refptr<const ShapeResultView> ShapingLineBreaker::ConcatShapeResults(
+    unsigned start,
+    unsigned end,
+    unsigned first_safe,
+    unsigned last_safe,
+    scoped_refptr<const ShapeResult> line_start_result,
+    scoped_refptr<const ShapeResult> line_end_result) {
   ShapeResultView::Segment segments[3];
-  unsigned max_length = std::numeric_limits<unsigned>::max();
+  constexpr unsigned max_length = std::numeric_limits<unsigned>::max();
   unsigned count = 0;
-  if (line_start_result)
+  if (line_start_result) {
     segments[count++] = {line_start_result.get(), 0, max_length};
-  if (last_safe > first_safe)
+  }
+  if (last_safe > first_safe) {
     segments[count++] = {result_.get(), first_safe, last_safe};
-  if (line_end_result)
+  }
+  if (line_end_result) {
     segments[count++] = {line_end_result.get(), last_safe, max_length};
+  }
   auto line_result = ShapeResultView::Create({&segments[0], count});
-  DCHECK_EQ(break_opportunity.offset - start, line_result->NumCharacters());
-
-  SetBreakOffset(break_opportunity, text, result_out);
+  DCHECK_EQ(end - start, line_result->NumCharacters());
   return line_result;
 }
 
@@ -577,6 +590,47 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeToEnd(
       {line_start.get(), 0, std::numeric_limits<unsigned>::max()},
       {result_.get(), first_safe, range_end}};
   return ShapeResultView::Create(segments);
+}
+
+scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLineAt(
+    unsigned start,
+    unsigned end,
+    unsigned options) {
+  DCHECK_GT(end, start);
+
+  unsigned first_safe;
+  scoped_refptr<const ShapeResult> line_start_result;
+  if (options & kDontReshapeStart) {
+    first_safe = start;
+  } else {
+    first_safe = result_->CachedNextSafeToBreakOffset(start);
+    DCHECK_GE(first_safe, start);
+    if (first_safe != start) {
+      if (first_safe >= end) {
+        // There is no safe-to-break, reshape the whole range.
+        scoped_refptr<ShapeResult> line_result = Shape(start, end);
+        return ShapeResultView::Create(line_result.get());
+      }
+      line_start_result = Shape(start, first_safe);
+    }
+  }
+
+  unsigned last_safe;
+  scoped_refptr<const ShapeResult> line_end_result;
+  if ((options & kDontReshapeEndIfAtSpace) &&
+      IsBreakableSpace(GetText()[end - 1])) {
+    last_safe = end;
+  } else {
+    last_safe = result_->CachedPreviousSafeToBreakOffset(end);
+    DCHECK_GE(last_safe, first_safe);
+    if (last_safe != end) {
+      line_end_result = Shape(last_safe, end);
+    }
+  }
+
+  return ConcatShapeResults(start, end, first_safe, last_safe,
+                            std::move(line_start_result),
+                            std::move(line_end_result));
 }
 
 }  // namespace blink

@@ -1,9 +1,9 @@
 Tests exception message contains stack with correct function name.
 
-function-name-in-con…message-stack.js:13 Uncaught Error
-foo.function.name @ function-name-in-con…message-stack.js:13
-bar @ function-name-in-con…message-stack.js:21
-baz.function.name @ function-name-in-con…message-stack.js:28
+function-name-in-con…message-stack.js:16 Uncaught Error
+foo.function.name @ function-name-in-con…message-stack.js:16
+bar @ function-name-in-con…message-stack.js:24
+baz.function.name @ function-name-in-con…message-stack.js:31
 setTimeout (async)
-(anonymous) @ function-name-in-con…message-stack.js:35
+(anonymous) @ function-name-in-con…message-stack.js:38
 

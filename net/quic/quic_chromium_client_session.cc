@@ -39,6 +39,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
+#include "net/log/net_log_values.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/quic_chromium_connection_helper.h"
@@ -296,7 +297,8 @@ base::Value::Dict NetLogQuicClientSessionParams(
     const quic::QuicConnectionId& client_connection_id,
     const quic::ParsedQuicVersionVector& supported_versions,
     int cert_verify_flags,
-    bool require_confirmation) {
+    bool require_confirmation,
+    base::span<const uint8_t> ech_config_list) {
   base::Value::Dict dict;
   dict.Set("host", session_key->server_id().host());
   dict.Set("port", session_key->server_id().port());
@@ -311,6 +313,9 @@ base::Value::Dict NetLogQuicClientSessionParams(
     dict.Set("client_connection_id", client_connection_id.ToString());
   }
   dict.Set("versions", ParsedQuicVersionVectorToString(supported_versions));
+  if (!ech_config_list.empty()) {
+    dict.Set("ech_config_list", NetLogBinaryValue(ech_config_list));
+  }
   return dict;
 }
 
@@ -1060,7 +1065,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
   net_log_.BeginEvent(NetLogEventType::QUIC_SESSION, [&] {
     return NetLogQuicClientSessionParams(
         &session_key, connection_id(), connection->client_connection_id(),
-        supported_versions(), cert_verify_flags, require_confirmation_);
+        supported_versions(), cert_verify_flags, require_confirmation_,
+        ech_config_list_);
   });
   IPEndPoint address;
   if (socket_raw && socket_raw->GetLocalAddress(&address) == OK &&
@@ -1830,11 +1836,10 @@ void QuicChromiumClientSession::OnConnectionClosed(
 
   logger_->OnConnectionClosed(frame, source);
 
-  const quic::QuicConnection::MultiPortStats* multi_port_stats =
-      connection()->multi_port_stats();
-  if (multi_port_stats != nullptr) {
-    UMA_HISTOGRAM_COUNTS_1000("Net.QuicMultiPort.NumDefaultPathDegrading",
-                              multi_port_stats->num_path_degrading);
+  UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumDefaultPathDegrading",
+                            connection()->GetStats().num_path_degrading);
+  if (const quic::QuicConnection::MultiPortStats* multi_port_stats =
+          connection()->multi_port_stats()) {
     UMA_HISTOGRAM_COUNTS_1000(
         "Net.QuicMultiPort.NumMultiPortFailureWhenPathNotDegrading",
         multi_port_stats
@@ -1845,7 +1850,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
         multi_port_stats->num_multi_port_probe_failures_when_path_degrading;
     uint64_t srtt_ms =
         multi_port_stats->rtt_stats.smoothed_rtt().ToMilliseconds();
-    if (multi_port_stats->num_path_degrading > 0 &&
+    if (connection()->GetStats().num_path_degrading > 0 &&
         total_multi_port_probe_failures > 0 && srtt_ms > 0) {
       base::UmaHistogramSparse(
           "Net.QuicMultiPort.AltPortRttWhenPathDegradingVsGeneral",
@@ -3079,10 +3084,10 @@ void QuicChromiumClientSession::MaybeStartProbing(
   StartProbing(std::move(probing_callback), network, peer_address);
 }
 
-std::unique_ptr<quic::QuicPathValidationContext>
-QuicChromiumClientSession::CreateContextForMultiPortPath() {
+void QuicChromiumClientSession::CreateContextForMultiPortPath(
+    std::unique_ptr<quic::MultiPortPathContextObserver> context_observer) {
   if (!connection()->connection_migration_use_new_cid()) {
-    return nullptr;
+    return;
   }
 
   // Create and configure socket on default network
@@ -3091,7 +3096,7 @@ QuicChromiumClientSession::CreateContextForMultiPortPath() {
   if (stream_factory_->ConfigureSocket(
           probing_socket.get(), ToIPEndPoint(peer_address()), default_network_,
           session_key_.socket_tag()) != OK) {
-    return nullptr;
+    return;
   }
 
   // Create new packet writer and reader on the probing socket.
@@ -3107,10 +3112,11 @@ QuicChromiumClientSession::CreateContextForMultiPortPath() {
   probing_writer->set_delegate(&path_validation_writer_delegate_);
   IPEndPoint local_address;
   probing_socket->GetLocalAddress(&local_address);
-  return std::make_unique<QuicChromiumPathValidationContext>(
-      ToQuicSocketAddress(local_address), peer_address(), default_network_,
-      std::move(probing_socket), std::move(probing_writer),
-      std::move(probing_reader));
+  context_observer->OnMultiPortPathContextAvailable(
+      std::make_unique<QuicChromiumPathValidationContext>(
+          ToQuicSocketAddress(local_address), peer_address(), default_network_,
+          std::move(probing_socket), std::move(probing_writer),
+          std::move(probing_reader)));
 }
 
 void QuicChromiumClientSession::MigrateToMultiPortPath(

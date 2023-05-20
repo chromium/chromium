@@ -46,6 +46,31 @@ DTHandshakeResult ResponseToResult(const DeviceTrustResponse& response) {
   }
 }
 
+bool ContainsPolicyLevel(const std::set<DTCPolicyLevel>& levels,
+                         const DTCPolicyLevel& level) {
+  return levels.find(level) != levels.end();
+}
+
+DTAttestationPolicyLevel GetAttestationPolicyLevel(
+    const std::set<DTCPolicyLevel>& levels) {
+  if (levels.empty()) {
+    return DTAttestationPolicyLevel::kNone;
+  }
+
+  if (ContainsPolicyLevel(levels, DTCPolicyLevel::kBrowser)) {
+    if (ContainsPolicyLevel(levels, DTCPolicyLevel::kUser)) {
+      return DTAttestationPolicyLevel::kUserAndBrowser;
+    }
+    return DTAttestationPolicyLevel::kBrowser;
+  }
+
+  if (ContainsPolicyLevel(levels, DTCPolicyLevel::kUser)) {
+    return DTAttestationPolicyLevel::kUser;
+  }
+
+  return DTAttestationPolicyLevel::kUnknown;
+}
+
 }  // namespace
 
 void LogAttestationFunnelStep(DTAttestationFunnelStep step) {
@@ -53,6 +78,13 @@ void LogAttestationFunnelStep(DTAttestationFunnelStep step) {
       "Enterprise.DeviceTrust.Attestation.Funnel";
   base::UmaHistogramEnumeration(kFunnelStepHistogram, step);
   VLOG(1) << "Device Trust attestation step: " << static_cast<int>(step);
+}
+
+void LogAttestationPolicyLevel(const std::set<DTCPolicyLevel>& levels) {
+  static constexpr char kAttestationPolicyLevelHistogram[] =
+      "Enterprise.DeviceTrust.Attestation.PolicyLevel";
+  base::UmaHistogramEnumeration(kAttestationPolicyLevelHistogram,
+                                GetAttestationPolicyLevel(levels));
 }
 
 void LogAttestationResult(DTAttestationResult result) {

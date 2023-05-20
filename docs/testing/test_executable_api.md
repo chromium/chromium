@@ -109,6 +109,15 @@ This argument is required, and should be set to the directory created
 by the swarming task for the task to write outputs into.
 
 ```
+--out-dir=[PATH]
+```
+
+This argument mirrors `--isolated-outdir`, but may appear in addition to
+it depending on the bot configuration (e.g. IOS bots that specify the
+`out_dir_arg` mixin in //testing/buildbot/waterfalls.pyl). It only needs
+to be handled in these cases.
+
+```
 --isolated-script-test-output=[FILENAME]
 ```
 
@@ -178,6 +187,20 @@ provided, it is an error to also pass
 `--isolated-script-test-launcher-retry-limit` (since -repeat specifies an
 explicit number of times to run the test, it makes no sense to also pass
 -retry-limit).
+
+```
+--xcode-build-version [VERSION]
+```
+
+This flag is passed to scripts on IOS bots only, due to the `xcode_14_main`
+mixin in //testing/builtbot/waterfalls.pyl.
+
+```
+--xctest
+```
+
+This flag is passed to scripts on IOS bots only, due to the `xctest`
+mixin in //testing/builtbot/waterfalls.pyl.
 
 If "`--`" is passed as an argument:
 

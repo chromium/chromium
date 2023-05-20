@@ -221,7 +221,7 @@ void DevToolsListener::VerifyAllScriptsAreParsedRepeatedly(
   // pause in between verification attempts.
   bool missing_script = false;
   for (const auto& entry : *coverage_entries) {
-    const std::string* id = entry.FindStringPath("scriptId");
+    const std::string* id = entry.GetDict().FindString("scriptId");
     CHECK(id) << "Can't extract scriptId: " << entry;
     if (!script_ids.contains(*id)) {
       missing_script = true;

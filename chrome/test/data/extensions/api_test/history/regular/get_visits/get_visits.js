@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // History api test for Chrome.
-// browser_tests.exe --gtest_filter=HistoryExtensionApiTest.GetVisits
+// browser_tests.exe --gtest_filter=*HistoryApiTest.GetVisits*
 
 const scriptUrl = '_test_resources/api_test/history/regular/common.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
@@ -25,6 +25,7 @@ chrome.test.runTests([
         chrome.history.getVisits({ 'url': GOOGLE_URL }, function(results) {
           assertEq(1, results.length);
           assertEq(id, results[0].id);
+          assertTrue(results[0].isLocal);
 
           // The test has succeeded.
           chrome.test.succeed();

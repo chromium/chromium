@@ -22,7 +22,7 @@ source_set("promos_manager") {
     "//components/feature_engagement/public",
     "//components/keyed_service/core",
     "//components/prefs",
-    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 }
 
@@ -81,7 +81,7 @@ source_set("internal") {
   deps = [
     ":features",
     "//components/feature_engagement/public",
-    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 }
 
@@ -158,7 +158,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",

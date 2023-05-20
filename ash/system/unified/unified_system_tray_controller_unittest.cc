@@ -261,16 +261,16 @@ TEST_F(UnifiedSystemTrayControllerTest, UMATracking) {
 
 TEST_F(UnifiedSystemTrayControllerTest, EnsureExpanded_UserChooserShown) {
   InitializeView();
-  EXPECT_FALSE(view()->detailed_view_for_testing()->GetVisible());
+  EXPECT_FALSE(view()->detailed_view_container()->GetVisible());
 
   // Show the user chooser view.
   controller()->ShowUserChooserView();
-  EXPECT_TRUE(view()->detailed_view_for_testing()->GetVisible());
+  EXPECT_TRUE(view()->detailed_view_container()->GetVisible());
 
   // Calling EnsureExpanded() should hide the detailed view (e.g. this can
   // happen when changing the brightness or volume).
   controller()->EnsureExpanded();
-  EXPECT_FALSE(view()->detailed_view_for_testing()->GetVisible());
+  EXPECT_FALSE(view()->detailed_view_container()->GetVisible());
 }
 
 TEST_F(UnifiedSystemTrayControllerTest, PreferredSizeChanged) {

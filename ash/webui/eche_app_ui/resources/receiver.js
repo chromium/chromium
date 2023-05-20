@@ -69,6 +69,12 @@ parentMessagePipe.registerHandler(
           /** @type {boolean} */ (message.androidDeviceOnCellular));
     });
 
+// Handle accessibility perform action.
+parentMessagePipe.registerHandler(
+    Message.ACCESSIBILITY_PERFORM_ACTION, async (action) => {
+      console.log('Performed accessibility action: ' + action);
+    });
+
 // The implementation of echeapi.d.ts
 const EcheApiBindingImpl = new (class {
   closeWindow() {

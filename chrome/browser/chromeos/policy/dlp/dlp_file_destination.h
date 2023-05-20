@@ -17,7 +17,7 @@ class DlpFileDestination {
  public:
   DlpFileDestination() = delete;
   explicit DlpFileDestination(const std::string& url);
-  explicit DlpFileDestination(const DlpRulesManager::Component component);
+  explicit DlpFileDestination(const data_controls::Component component);
 
   DlpFileDestination(const DlpFileDestination&);
   DlpFileDestination& operator=(const DlpFileDestination&);
@@ -35,13 +35,13 @@ class DlpFileDestination {
 
   absl::optional<std::string> url_or_path() const;
 
-  absl::optional<DlpRulesManager::Component> component() const;
+  absl::optional<data_controls::Component> component() const;
 
  private:
   // Destination url or destination path.
   absl::optional<std::string> url_or_path_;
   // Destination component.
-  absl::optional<DlpRulesManager::Component> component_;
+  absl::optional<data_controls::Component> component_;
 };
 
 }  // namespace policy

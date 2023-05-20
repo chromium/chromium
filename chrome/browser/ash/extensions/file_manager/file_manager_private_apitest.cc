@@ -914,15 +914,15 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpRestrictionDetails) {
       "https://internal.com");
   policy::DlpRulesManager::AggregatedComponents components;
   components[policy::DlpRulesManager::Level::kBlock].insert(
-      policy::DlpRulesManager::Component::kArc);
+      data_controls::Component::kArc);
   components[policy::DlpRulesManager::Level::kBlock].insert(
-      policy::DlpRulesManager::Component::kCrostini);
+      data_controls::Component::kCrostini);
   components[policy::DlpRulesManager::Level::kBlock].insert(
-      policy::DlpRulesManager::Component::kPluginVm);
+      data_controls::Component::kPluginVm);
   components[policy::DlpRulesManager::Level::kBlock].insert(
-      policy::DlpRulesManager::Component::kUsb);
+      data_controls::Component::kUsb);
   components[policy::DlpRulesManager::Level::kAllow].insert(
-      policy::DlpRulesManager::Component::kDrive);
+      data_controls::Component::kDrive);
   EXPECT_CALL(*mock_rules_manager_, GetAggregatedDestinations)
       .WillOnce(testing::Return(destinations));
   EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents)
@@ -943,15 +943,15 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockedComponents) {
 
   policy::DlpRulesManager::AggregatedComponents components;
   components[policy::DlpRulesManager::Level::kBlock].insert(
-      policy::DlpRulesManager::Component::kArc);
+      data_controls::Component::kArc);
   components[policy::DlpRulesManager::Level::kBlock].insert(
-      policy::DlpRulesManager::Component::kCrostini);
+      data_controls::Component::kCrostini);
   components[policy::DlpRulesManager::Level::kBlock].insert(
-      policy::DlpRulesManager::Component::kPluginVm);
+      data_controls::Component::kPluginVm);
   components[policy::DlpRulesManager::Level::kBlock].insert(
-      policy::DlpRulesManager::Component::kUsb);
+      data_controls::Component::kUsb);
   components[policy::DlpRulesManager::Level::kAllow].insert(
-      policy::DlpRulesManager::Component::kDrive);
+      data_controls::Component::kDrive);
   EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents)
       .WillOnce(testing::Return(components));
 

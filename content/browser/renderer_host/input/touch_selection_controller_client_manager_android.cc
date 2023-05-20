@@ -36,6 +36,10 @@ void TouchSelectionControllerClientManagerAndroid::DidStopFlinging() {
   // TODO(wjmaclean): determine what, if anything, needs to happen here.
 }
 
+void TouchSelectionControllerClientManagerAndroid::OnSwipeToMoveCursorBegin() {}
+
+void TouchSelectionControllerClientManagerAndroid::OnSwipeToMoveCursorEnd() {}
+
 void TouchSelectionControllerClientManagerAndroid::UpdateClientSelectionBounds(
     const gfx::SelectionBound& start,
     const gfx::SelectionBound& end,

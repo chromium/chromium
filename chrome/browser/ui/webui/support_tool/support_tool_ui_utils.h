@@ -19,7 +19,7 @@ namespace support_tool_ui {
 // enums.
 extern const char kAndroidAppInfo[];
 extern const char kSSID[];
-extern const char kLocationInfo[];
+extern const char kCellularLocationInfo[];
 extern const char kEmail[];
 extern const char kGAIA[];
 extern const char kStableIdentifier[];

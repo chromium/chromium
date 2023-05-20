@@ -176,6 +176,15 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
         mojom::PermissionsPolicyFeature::kBrowsingTopicsBackwardCompatible);
   }
 
+  // Note that currently permissions for `sharedStorageWritable` are checked
+  // using `IsFeatureEnabledForSubresourceRequestAssumingOptIn()`, since a
+  // `network::ResourceRequest` is not available at the call site and
+  // `blink::ResourceRequest` should not be used in blink public APIs.
+  if (request.shared_storage_writable) {
+    DCHECK(base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI));
+    opt_in_features.insert(mojom::PermissionsPolicyFeature::kSharedStorage);
+  }
+
   return IsFeatureEnabledForOriginImpl(feature, origin, opt_in_features);
 }
 
@@ -330,6 +339,12 @@ PermissionsPolicyFeatureState PermissionsPolicy::GetFeatureState() const {
   return feature_state;
 }
 
+const mojom::PermissionsPolicyFeature
+    PermissionsPolicy::defined_opt_in_features_[] = {
+        mojom::PermissionsPolicyFeature::kBrowsingTopics,
+        mojom::PermissionsPolicyFeature::kBrowsingTopicsBackwardCompatible,
+        mojom::PermissionsPolicyFeature::kSharedStorage};
+
 PermissionsPolicy::PermissionsPolicy(
     url::Origin origin,
     const PermissionsPolicyFeatureList& feature_list)
@@ -429,6 +444,18 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
   // 9.9.6: Return "Disabled".
   DCHECK_EQ(default_policy, PermissionsPolicyFeatureDefault::EnableForSelf);
   return origin_.IsSameOriginWith(origin);
+}
+
+bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+    mojom::PermissionsPolicyFeature feature,
+    const url::Origin& origin) const {
+  CHECK(base::Contains(defined_opt_in_features_, feature));
+
+  // Make an opt-in features set containing exactly `feature`, as we're not
+  // given access to the full request to derive any other opt-in features.
+  std::set<mojom::PermissionsPolicyFeature> opt_in_features({feature});
+
+  return IsFeatureEnabledForOriginImpl(feature, origin, opt_in_features);
 }
 
 // Implements Permissions Policy 9.7: Define an inherited policy for feature in

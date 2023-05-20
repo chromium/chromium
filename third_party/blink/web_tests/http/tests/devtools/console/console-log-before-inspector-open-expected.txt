@@ -1,9 +1,9 @@
 Tests that Web Inspector won't crash if some console have been logged by the time it's opening.
 
-console-log-before-inspector-open.js:13 log
-console-log-before-inspector-open.js:14 info
-console-log-before-inspector-open.js:15 warn
-(anonymous) @ console-log-before-inspector-open.js:15
-console-log-before-inspector-open.js:16 error
-(anonymous) @ console-log-before-inspector-open.js:16
+console-log-before-inspector-open.js:16 log
+console-log-before-inspector-open.js:17 info
+console-log-before-inspector-open.js:18 warn
+(anonymous) @ console-log-before-inspector-open.js:18
+console-log-before-inspector-open.js:19 error
+(anonymous) @ console-log-before-inspector-open.js:19
 

@@ -22,11 +22,13 @@ function isCategoryButtonActive(element: HTMLElement|null|undefined) {
 suite('emoji-picker-extension', () => {
   let emojiPicker: EmojiPicker;
   let findInEmojiPicker: (...path: string[]) => HTMLElement | null;
+  let waitUntilFindInEmojiPicker: (...path: string[]) => Promise<HTMLElement>;
 
   setup(async () => {
     const newPicker = initialiseEmojiPickerForTest();
     emojiPicker = newPicker.emojiPicker;
     findInEmojiPicker = newPicker.findInEmojiPicker;
+    waitUntilFindInEmojiPicker = newPicker.waitUntilFindInEmojiPicker;
     await newPicker.readyPromise;
   });
 
@@ -41,9 +43,9 @@ suite('emoji-picker-extension', () => {
             'cr-icon-button');
         emoticonCategoryButton!.click();
         await flush();
-        const firstEmoticonTabInFirstPage =
-            findInEmojiPicker('.pagination text-group-button', 'cr-button');
-        const firstEmoticonTabInSecondPage = findInEmojiPicker(
+        const firstEmoticonTabInFirstPage = await waitUntilFindInEmojiPicker(
+            '.pagination text-group-button', 'cr-button');
+        const firstEmoticonTabInSecondPage = await waitUntilFindInEmojiPicker(
             '.pagination + .pagination', 'text-group-button', 'cr-button');
         rightChevron!.click();
 
@@ -116,21 +118,29 @@ suite('emoji-picker-extension', () => {
         const emoticonCategoryButton = findInEmojiPicker(
             'emoji-search', 'emoji-category-button:last-of-type',
             'cr-icon-button');
-        const emojiGroups = findInEmojiPicker('#groups');
+        const emojiGroups = await waitUntilFindInEmojiPicker('#groups');
         emoticonCategoryButton!.click();
         const targetScroll = emojiGroups!.scrollTop;
         emojiCategoryButton!.click();
 
-        (findInEmojiPicker('emoji-search') as unknown as
-         EmojiSearch)!.setSearchQuery('face');
+        const emojiSearch = await waitUntilFindInEmojiPicker('emoji-search');
+        (emojiSearch as unknown as EmojiSearch)!.setSearchQuery('face');
+
         await waitForCondition(
-            () => findInEmojiPicker('emoji-search', 'emoji-group'),
+            () => findInEmojiPicker('emoji-search', 'emoji-group') !== null,
             'Wait for emoji groups to render');
+
         emoticonCategoryButton!.click();
 
         await waitForCondition(
             () => emojiGroups!.scrollTop === targetScroll,
             'Wait for scrolling to complete');
+
+        await waitForCondition(
+            () => (findInEmojiPicker('emoji-search') as EmojiSearch)
+                      .searchNotEmpty() === false,
+            'wait for search results empty');
+
         assertFalse((findInEmojiPicker('emoji-search') as EmojiSearch)
                         .searchNotEmpty());
       });

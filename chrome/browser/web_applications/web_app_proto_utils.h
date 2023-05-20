@@ -8,10 +8,13 @@
 #include <vector>
 
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_tab_strip.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/url_pattern.h"
 
 namespace apps {
 struct IconInfo;
@@ -55,6 +58,13 @@ RunOnOsLoginMode ToRunOnOsLoginMode(WebAppProto::RunOnOsLoginMode mode);
 
 WebAppProto::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
     RunOnOsLoginMode mode);
+
+absl::optional<blink::UrlPattern> ToUrlPattern(
+    const proto::UrlPattern& proto_url_pattern);
+
+proto::UrlPattern ToUrlPatternProto(const blink::UrlPattern& url_pattern);
+
+absl::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto);
 
 }  // namespace web_app
 

@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/core/frame/dom_timer_coordinator.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
@@ -147,17 +146,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   static ExecutionContext* From(const ScriptState*);
   static ExecutionContext* From(v8::Local<v8::Context>);
 
-  // Returns the ExecutionContext of the current realm.
-  static ExecutionContext* ForCurrentRealm(
-      const v8::FunctionCallbackInfo<v8::Value>&);
-  static ExecutionContext* ForCurrentRealm(
-      const v8::PropertyCallbackInfo<v8::Value>&);
-  // Returns the ExecutionContext of the relevant realm for the receiver object.
-  static ExecutionContext* ForRelevantRealm(
-      const v8::FunctionCallbackInfo<v8::Value>&);
-  static ExecutionContext* ForRelevantRealm(
-      const v8::PropertyCallbackInfo<v8::Value>&);
-
   // Returns the CodeCacheHost interface associated with the execution
   // context. This could return nullptr if there is no CodeCacheHost associated
   // with the current execution context.
@@ -231,15 +219,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   }
 
   virtual HttpsState GetHttpsState() const = 0;
-
-  // Gets the DOMTimerCoordinator which maintains the "active timer
-  // list" of tasks created by setTimeout and setInterval. The
-  // DOMTimerCoordinator is owned by the ExecutionContext and should
-  // not be used after the ExecutionContext is destroyed.
-  DOMTimerCoordinator* Timers() {
-    DCHECK(!IsWorkletGlobalScope());
-    return &timers_;
-  }
 
   virtual ResourceFetcher* Fetcher() = 0;
 
@@ -538,8 +517,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   Member<PublicURLManager> public_url_manager_;
 
   const Member<ContentSecurityPolicyDelegate> csp_delegate_;
-
-  DOMTimerCoordinator timers_;
 
   // Counter that keeps track of how many window interaction calls are allowed
   // for this ExecutionContext. Callers are expected to call

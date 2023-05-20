@@ -631,7 +631,7 @@ String ReplaceUnmatchedSurrogates(String string) {
 }
 
 DOMWindow* ToDOMWindow(v8::Isolate* isolate, v8::Local<v8::Value> value) {
-  return V8Window::ToImplWithTypeCheck(isolate, value);
+  return V8Window::ToWrappable(isolate, value);
 }
 
 LocalDOMWindow* ToLocalDOMWindow(v8::Local<v8::Context> context) {

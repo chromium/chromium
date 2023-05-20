@@ -117,7 +117,7 @@ export async function testDisplayPanelChangingPanelTypes(done) {
 
   // Check cancel signal from the panel from a click.
   /** @type {!HTMLElement} */
-  const cancel = assert(panelItem.secondaryButton);
+  let cancel = assert(panelItem.secondaryButton);
   cancel.click();
   assertEquals(
       signal, 'cancel', 'Expected signal name "cancel". Got ' + signal);
@@ -147,6 +147,27 @@ export async function testDisplayPanelChangingPanelTypes(done) {
   dismiss.click();
   assertEquals(
       signal, 'dismiss', 'Expected signal name "dismiss". Got ' + signal);
+
+  // Change the panel item to an info panel.
+  panelItem.panelType = panelItem.panelTypeInfo;
+
+  // Verify the panel item indicator is set to warning.
+  assertEquals(
+      panelItem.indicator, 'status',
+      'Wrong panel indicator, got ' + panelItem.indicator);
+  assertEquals(
+      panelItem.status, 'warning',
+      'Wrong panel status, got ' + panelItem.status);
+
+  // Verify the panel item icon is the warning icon.
+  const warningIcon = panelItem.shadowRoot.querySelector('iron-icon');
+  assertEquals('files36:warning', warningIcon.getAttribute('icon'));
+
+  // Check cancel signal from the panel from a click.
+  cancel = assert(panelItem.primaryButton);
+  cancel.click();
+  assertEquals(
+      signal, 'cancel', 'Expected signal name "cancel". Got ' + signal);
 
   // Change the panel type to a done panel.
   panelItem.panelType = panelItem.panelTypeDone;
@@ -354,12 +375,24 @@ export function testFilesDisplayPanelMixedSummary() {
   assertEquals('largeprogress', summaryPanelItem.indicator);
   assertEquals('hidden', summaryPanelItem.errorMarkerVisibility);
 
-  // Remove the progress panel items and add 2 error panel items.
-  displayPanel.removePanelItem(progressPanel);
-  displayPanel.removePanelItem(extraProgressPanel);
-  errorPanel = displayPanel.addPanelItem('testpanel4');
+  // Remove the progress panels and add two info (a.k.a. warning) panel items.
+  displayPanel.removeAllPanelItems();
+  const infoPanel = displayPanel.addPanelItem('testpanel4');
+  infoPanel.panelType = extraProgressPanel.panelTypeInfo;
+  const extraInfoPanel = displayPanel.addPanelItem('testpanel5');
+  extraInfoPanel.panelType = extraInfoPanel.panelTypeInfo;
+
+  // Verify a summary panel item is created with a warning indicator.
+  summaryPanelItem = summaryContainer.querySelector('xf-panel-item');
+  assertEquals(summaryPanelItem.panelTypeSummary, summaryPanelItem.panelType);
+  assertEquals('status', summaryPanelItem.indicator);
+  assertEquals('warning', summaryPanelItem.status);
+
+  // Remove one info panel and add 2 error panel items.
+  displayPanel.removePanelItem(extraInfoPanel);
+  errorPanel = displayPanel.addPanelItem('testpanel6');
   errorPanel.panelType = errorPanel.panelTypeError;
-  const extraErrorPanel = displayPanel.addPanelItem('testpanel5');
+  const extraErrorPanel = displayPanel.addPanelItem('testpanel7');
   extraErrorPanel.panelType = extraErrorPanel.panelTypeError;
 
   // Verify a summary panel item is shown, with an error status indicator.
@@ -368,11 +401,21 @@ export function testFilesDisplayPanelMixedSummary() {
   assertEquals('status', summaryPanelItem.indicator);
   assertEquals('failure', summaryPanelItem.status);
 
-  // Remove the error panel items and add 2 done (a.k.a. success) panel items.
-  displayPanel.removeAllPanelItems();
-  const donePanel = displayPanel.addPanelItem('testpanel6');
+  // Remove the error panels items and add a done (a.k.a. success) panel item.
+  displayPanel.removePanelItem(errorPanel);
+  displayPanel.removePanelItem(extraErrorPanel);
+  const donePanel = displayPanel.addPanelItem('testpanel8');
   donePanel.panelType = donePanel.panelTypeDone;
-  const extraDonePanel = displayPanel.addPanelItem('testpanel7');
+
+  // Verify a summary panel item is created with a warning indicator.
+  summaryPanelItem = summaryContainer.querySelector('xf-panel-item');
+  assertEquals(summaryPanelItem.panelTypeSummary, summaryPanelItem.panelType);
+  assertEquals('status', summaryPanelItem.indicator);
+  assertEquals('warning', summaryPanelItem.status);
+
+  // Remove the info panel items and add another done panel item.
+  displayPanel.removePanelItem(infoPanel);
+  const extraDonePanel = displayPanel.addPanelItem('testpanel9');
   extraDonePanel.panelType = extraDonePanel.panelTypeDone;
 
   // Verify a summary panel is shown with success indicator.

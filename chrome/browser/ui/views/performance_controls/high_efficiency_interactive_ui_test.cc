@@ -755,11 +755,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Tests the new memory savings reporting improvements on the high efficiency
 // dialog.
-class HighEfficiencyMemorySavingsReportingImprovmentsTest
+class HighEfficiencyMemorySavingsReportingImprovementsTest
     : public HighEfficiencyInteractiveTest {
  public:
-  HighEfficiencyMemorySavingsReportingImprovmentsTest() = default;
-  ~HighEfficiencyMemorySavingsReportingImprovmentsTest() override = default;
+  HighEfficiencyMemorySavingsReportingImprovementsTest() = default;
+  ~HighEfficiencyMemorySavingsReportingImprovementsTest() override = default;
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
@@ -779,7 +779,7 @@ class HighEfficiencyMemorySavingsReportingImprovmentsTest
 
 // The high efficiency chip dialog renders a gauge style visualization that
 // must be rendered correctly.
-IN_PROC_BROWSER_TEST_F(HighEfficiencyMemorySavingsReportingImprovmentsTest,
+IN_PROC_BROWSER_TEST_F(HighEfficiencyMemorySavingsReportingImprovementsTest,
                        RenderVisualizationInDialog) {
   RunTestSequence(
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
@@ -788,8 +788,19 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyMemorySavingsReportingImprovmentsTest,
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       ForceRefreshMemoryMetrics(), DiscardAndSelectTab(0, kFirstTabContents),
+      Do(base::BindLambdaForTesting([&]() {
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetWebContentsAt(0);
+        auto* pre_discard_resource_usage =
+            performance_manager::user_tuning::UserPerformanceTuningManager::
+                PreDiscardResourceUsage::FromWebContents(web_contents);
+        pre_discard_resource_usage->SetMemoryFootprintEstimateKbForTesting(
+            135 * 1024);
+      })),
       PressButton(kHighEfficiencyChipElementId),
-      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
-      Screenshot(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId,
-                 "HighEfficiencyResourceView", "4497874"));
+      WaitForShow(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogResourceViewElementId),
+      Screenshot(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogResourceViewElementId,
+          "HighEfficiencyResourceView", "4546555"));
 }

@@ -36,11 +36,12 @@ const float kContentBottomInset = 10.0f;
   self = [super initWithType:type];
   if (self) {
     UILabel* title = [[UILabel alloc] init];
-    title.text = [self titleString];
+    title.text = [MagicStackModuleContainer titleStringForModule:type];
     title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     title.textColor = [UIColor colorNamed:kTextPrimaryColor];
     title.accessibilityTraits |= UIAccessibilityTraitHeader;
-    title.accessibilityIdentifier = [self titleString];
+    title.accessibilityIdentifier =
+        [MagicStackModuleContainer titleStringForModule:type];
 
     UIStackView* stackView = [[UIStackView alloc] init];
     stackView.translatesAutoresizingMaskIntoConstraints = NO;

@@ -31,7 +31,7 @@ DEFINE_PROTO_FUZZER(const web::ScriptMessageProto& proto_js_message) {
     if (base::RandDouble() < 0.2) {
       std::string encoded;
       base::Base64Encode("some raw data", &encoded);
-      script_message->body()->SetStringKey("data", encoded);
+      script_message->body()->GetDict().Set("data", encoded);
     }
   }
   env.InvokeScriptMessageReceived(*script_message);

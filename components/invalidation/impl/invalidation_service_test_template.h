@@ -30,11 +30,6 @@
 //       ...
 //     }
 //
-//     // Destroy the InvalidationService implementation.
-//     void DestroyInvalidationService() {
-//       ...
-//     }
-//
 //     // The Trigger* functions below should block until the effects of
 //     // the call are visible on the current thread.
 //

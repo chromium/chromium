@@ -900,6 +900,9 @@ bool AppListItemView::InitiateDrag(const gfx::Point& location,
                          weak_ptr_factory_.GetWeakPtr()))) {
     return false;
   }
+  if (!IsItemDraggable()) {
+    return false;
+  }
   drag_state_ = DragState::kInitialized;
   SilentlyRequestFocus();
   return true;
@@ -1319,7 +1322,7 @@ void AppListItemView::OnBlur() {
 }
 
 int AppListItemView::GetDragOperations(const gfx::Point& press_pt) {
-  if (context_ == Context::kRecentAppsView) {
+  if (!IsItemDraggable()) {
     return ui::DragDropTypes::DRAG_NONE;
   }
 
@@ -1406,7 +1409,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
       }
       break;
     case ui::ET_GESTURE_TAP_DOWN:
-      if (GetState() != STATE_DISABLED) {
+      if (GetState() != STATE_DISABLED && IsItemDraggable()) {
         SetState(STATE_PRESSED);
         touch_drag_timer_.Start(
             FROM_HERE, base::Milliseconds(kTouchLongpressDelayInMs),
@@ -1548,6 +1551,10 @@ bool AppListItemView::FireTouchDragTimerForTest() {
 
 bool AppListItemView::IsShowingAppMenu() const {
   return item_menu_model_adapter_ && item_menu_model_adapter_->IsShowingMenu();
+}
+
+bool AppListItemView::IsItemDraggable() const {
+  return context_ != Context::kRecentAppsView;
 }
 
 bool AppListItemView::IsNotificationIndicatorShownForTest() const {

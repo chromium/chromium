@@ -13,6 +13,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/flags/CachedFlag.java",
     "android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureMap.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
     "android/java/src/org/chromium/chrome/browser/flags/DoubleCachedFieldTrialParameter.java",
     "android/java/src/org/chromium/chrome/browser/flags/FeatureParamUtils.java",
@@ -43,7 +44,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java",
-    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureMap.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
   ]
 }
@@ -96,6 +97,7 @@ robolectric_library("flags_junit_tests") {
     "//base/test:test_support_java",
     "//chrome/browser/preferences:java",
     "//chrome/test/android:chrome_java_unit_test_support",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

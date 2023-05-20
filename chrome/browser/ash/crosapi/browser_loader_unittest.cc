@@ -91,7 +91,8 @@ class FakeLacrosSelectionLoader : public LacrosSelectionLoader {
   }
   void Unload() override {}
   void Reset() override {}
-  void GetVersion(base::OnceCallback<void(base::Version)> callback) override {
+  void GetVersion(
+      base::OnceCallback<void(const base::Version&)> callback) override {
     std::move(callback).Run(version_);
   }
 

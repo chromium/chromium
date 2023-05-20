@@ -15,6 +15,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/views_export.h"
@@ -164,12 +165,14 @@ class VIEWS_EXPORT BubbleBorder : public Border {
 
   // Set the corner radius, enables Material Design.
   void SetCornerRadius(int radius);
+  int corner_radius() const { return corner_radius_; }
 
-  // Set the customized rounded corners.
-  void SetRoundedCorners(int top_left,
-                         int top_right,
-                         int bottom_right,
-                         int bottom_left);
+  // Set the customized rounded corners. Takes precedence over `corner_radius_`
+  // when non-empty.
+  void set_rounded_corners(const gfx::RoundedCornersF& rounded_corners) {
+    rounded_corners_ = rounded_corners;
+  }
+  const gfx::RoundedCornersF& rounded_corners() { return rounded_corners_; }
 
   // Get or set the arrow type.
   void set_arrow(Arrow arrow) { arrow_ = arrow; }
@@ -209,9 +212,6 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // and bubble content size; calculated from shadow and arrow image dimensions.
   virtual gfx::Rect GetBounds(const gfx::Rect& anchor_rect,
                               const gfx::Size& contents_size) const;
-
-  // Returns the corner radius of the current image set.
-  int corner_radius() const { return corner_radius_; }
 
   // Overridden from Border:
   void Paint(const View& view, gfx::Canvas* canvas) override;
@@ -297,12 +297,14 @@ class VIEWS_EXPORT BubbleBorder : public Border {
 
   Arrow arrow_;
   int arrow_offset_ = 0;
+
   // Corner radius for the bubble border. If supplied the border will use
   // material design.
   int corner_radius_ = 0;
 
-  // The rounded corner radius for the 4 corners.
-  SkVector radii_[4]{{}, {}, {}, {}};
+  // Customized rounded corners for the bubble border. Takes precedence over
+  // `corner_radius_` when non-empty.
+  gfx::RoundedCornersF rounded_corners_;
 
   // Whether a visible arrow should be present.
   bool visible_arrow_ = false;

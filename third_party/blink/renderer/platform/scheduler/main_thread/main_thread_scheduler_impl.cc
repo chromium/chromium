@@ -352,21 +352,18 @@ MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), "MainThreadScheduler",
       this);
-
-  for (const auto& pair : task_runners_) {
-    pair.first->ShutdownTaskQueue();
-  }
-
-  if (virtual_time_control_task_queue_)
-    virtual_time_control_task_queue_->ShutdownTaskQueue();
-
-  base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
-      this);
-
   // Ensure the renderer scheduler was shut down explicitly, because otherwise
   // we could end up having stale pointers to the Blink heap which has been
   // terminated by this point.
-  DCHECK(was_shutdown_);
+  CHECK(was_shutdown_);
+
+  // These should be cleared during shutdown.
+  CHECK(task_runners_.empty());
+  CHECK(main_thread_only().detached_task_queues.empty());
+  CHECK(!virtual_time_control_task_queue_);
+
+  base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
+      this);
 }
 
 // static
@@ -589,8 +586,15 @@ void MainThreadSchedulerImpl::ShutdownAllQueues() {
     scoped_refptr<MainThreadTaskQueue> queue = task_runners_.begin()->first;
     queue->ShutdownTaskQueue();
   }
-  if (virtual_time_control_task_queue_)
+  while (!main_thread_only().detached_task_queues.empty()) {
+    scoped_refptr<MainThreadTaskQueue> queue =
+        *main_thread_only().detached_task_queues.begin();
+    queue->ShutdownTaskQueue();
+  }
+  if (virtual_time_control_task_queue_) {
     virtual_time_control_task_queue_->ShutdownTaskQueue();
+    virtual_time_control_task_queue_ = nullptr;
+  }
 }
 
 bool MainThreadSchedulerImpl::
@@ -806,6 +810,23 @@ void MainThreadSchedulerImpl::
       ->DetachOnIPCTaskPostedWhileInBackForwardCache();
 }
 
+void MainThreadSchedulerImpl::ShutdownEmptyDetachedTaskQueues() {
+  if (main_thread_only().detached_task_queues.empty()) {
+    return;
+  }
+  WTF::Vector<scoped_refptr<MainThreadTaskQueue>> queues_to_delete;
+  for (auto& queue : main_thread_only().detached_task_queues) {
+    if (queue->IsEmpty()) {
+      queues_to_delete.push_back(queue);
+    }
+  }
+  for (auto& queue : queues_to_delete) {
+    queue->ShutdownTaskQueue();
+    // The task queue is removed in `OnShutdownTaskQueue()`.
+    CHECK(!main_thread_only().detached_task_queues.Contains(queue));
+  }
+}
+
 // TODO(sreejakshetty): Cleanup NewLoadingTaskQueue.
 scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewLoadingTaskQueue(
     MainThreadTaskQueue::QueueType queue_type,
@@ -841,11 +862,28 @@ MainThreadSchedulerImpl::NewTaskQueueForTest() {
 
 void MainThreadSchedulerImpl::OnShutdownTaskQueue(
     const scoped_refptr<MainThreadTaskQueue>& task_queue) {
-  if (was_shutdown_)
+  if (was_shutdown_) {
     return;
-
+  }
   task_queue.get()->DetachOnIPCTaskPostedWhileInBackForwardCache();
   task_runners_.erase(task_queue.get());
+  main_thread_only().detached_task_queues.erase(task_queue.get());
+}
+
+void MainThreadSchedulerImpl::OnDetachTaskQueue(
+    MainThreadTaskQueue& task_queue) {
+  if (was_shutdown_) {
+    return;
+  }
+  // `UpdatePolicy()` is not set up to handle detached frame scheduler queues.
+  // TODO(crbug.com/1143007): consider keeping FrameScheduler alive until all
+  // tasks have finished running.
+  task_runners_.erase(&task_queue);
+
+  // Don't immediately shut down the task queue even if it's empty. Tasks can
+  // still be queued before this task ends, which some parts of blink depend on.
+  main_thread_only().detached_task_queues.insert(
+      base::WrapRefCounted(&task_queue));
 }
 
 void MainThreadSchedulerImpl::AddTaskObserver(
@@ -2391,6 +2429,7 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
 
   find_in_page_budget_pool_controller_->OnTaskCompleted(queue.get(),
                                                         task_timing);
+  ShutdownEmptyDetachedTaskQueues();
 }
 
 void MainThreadSchedulerImpl::RecordTaskUkm(

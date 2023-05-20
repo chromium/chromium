@@ -894,10 +894,18 @@ bool EditContext::FirstRectForCharacterRange(uint32_t location,
     }
   }
 
-  // If we couldn't get a result from the composition bounds, we'll fall back to
-  // using the control bounds. In this case the IME might not be drawn exactly
-  // in the right spot, but will at least be adjacent to the editable region
-  // rather than in the corner of the screen.
+  // If we couldn't get a result from the composition bounds then we'll fall
+  // back to using the selection bounds, since these will generally be close to
+  // where the composition is happening.
+  if (!selection_bounds_.IsEmpty()) {
+    rect_in_viewport = selection_bounds_;
+    return true;
+  }
+
+  // If we have neither composition bounds nor selection bounds, we'll fall back
+  // to using the control bounds. In this case the IME might not be drawn
+  // exactly in the right spot, but will at least be adjacent to the editable
+  // region rather than in the corner of the screen.
   if (!control_bounds_.IsEmpty()) {
     rect_in_viewport = control_bounds_;
     return true;

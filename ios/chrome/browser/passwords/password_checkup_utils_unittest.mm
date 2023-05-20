@@ -137,8 +137,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
-  std::vector<CredentialUIEntry> insecure_credentials =
-      manager().GetInsecureCredentials();
+  std::vector<CredentialUIEntry> insecure_credentials;
   // The "no insecure passwords" warning is the highest priority warning.
   EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
               WarningType::kNoInsecurePasswordsWarning);
@@ -147,9 +146,8 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
   PasswordForm form1 = MakeSavedPassword(kExampleCom1, kUsername116);
   AddIssueToForm(&form1, InsecureType::kLeaked, base::Minutes(1),
                  /*is_muted=*/true);
-  store().AddLogin(form1);
-  RunUntilIdle();
-  insecure_credentials = manager().GetInsecureCredentials();
+  insecure_credentials.emplace_back(form1);
+
   // The "dismissed warnings" warning becomes the highest priority warning.
   EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
               WarningType::kDismissedWarningsWarning);
@@ -159,9 +157,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
   AddIssueToForm(&form2, InsecureType::kLeaked, base::Minutes(1),
                  /*is_muted=*/true);
   AddIssueToForm(&form2, InsecureType::kWeak, base::Minutes(1));
-  store().AddLogin(form2);
-  RunUntilIdle();
-  insecure_credentials = manager().GetInsecureCredentials();
+  insecure_credentials.emplace_back(form2);
   // The "weak passwords" warning becomes the highest priority warning.
   EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
               WarningType::kWeakPasswordsWarning);
@@ -169,9 +165,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
   // Add a weak password.
   PasswordForm form3 = MakeSavedPassword(kExampleCom3, kUsername116);
   AddIssueToForm(&form3, InsecureType::kWeak, base::Minutes(1));
-  store().AddLogin(form3);
-  RunUntilIdle();
-  insecure_credentials = manager().GetInsecureCredentials();
+  insecure_credentials.emplace_back(form3);
   // The "weak passwords" warning stays the highest priority warning.
   EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
               WarningType::kWeakPasswordsWarning);
@@ -179,12 +173,10 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
   // Add 2 reused passwords.
   PasswordForm form4 = MakeSavedPassword(kExampleCom4, kUsername116);
   AddIssueToForm(&form4, InsecureType::kReused, base::Minutes(1));
-  store().AddLogin(form4);
   PasswordForm form5 = MakeSavedPassword(kExampleCom5, kUsername116);
   AddIssueToForm(&form5, InsecureType::kReused, base::Minutes(1));
-  store().AddLogin(form5);
-  RunUntilIdle();
-  insecure_credentials = manager().GetInsecureCredentials();
+  insecure_credentials.emplace_back(form4);
+  insecure_credentials.emplace_back(form5);
   // The "reused passwords" warning becomes the highest priority warning.
   EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
               WarningType::kReusedPasswordsWarning);
@@ -192,9 +184,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckHighestPriorityWarningType) {
   // Add an unmuted compromised password.
   PasswordForm form6 = MakeSavedPassword(kExampleCom6, kUsername116);
   AddIssueToForm(&form6, InsecureType::kLeaked, base::Minutes(1));
-  store().AddLogin(form6);
-  RunUntilIdle();
-  insecure_credentials = manager().GetInsecureCredentials();
+  insecure_credentials.emplace_back(form6);
   // The "compromised passwords" warning becomes the highest priority warning.
   EXPECT_THAT(GetWarningOfHighestPriority(insecure_credentials),
               WarningType::kCompromisedPasswordsWarning);
@@ -207,8 +197,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
   base::test::ScopedFeatureList feature_list(
       password_manager::features::kIOSPasswordCheckup);
 
-  std::vector<CredentialUIEntry> insecure_credentials =
-      manager().GetInsecureCredentials();
+  std::vector<CredentialUIEntry> insecure_credentials;
   WarningType warning_type = GetWarningOfHighestPriority(insecure_credentials);
   EXPECT_EQ(GetPasswordCountForWarningType(warning_type, insecure_credentials),
             0);
@@ -217,9 +206,7 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
   PasswordForm form1 = MakeSavedPassword(kExampleCom1, kUsername116);
   AddIssueToForm(&form1, InsecureType::kLeaked, base::Minutes(1),
                  /*is_muted=*/true);
-  store().AddLogin(form1);
-  RunUntilIdle();
-  insecure_credentials = manager().GetInsecureCredentials();
+  insecure_credentials.emplace_back(form1);
   warning_type = GetWarningOfHighestPriority(insecure_credentials);
   // The number of passwords for which the compromised warning was dismissed
   // should be returned.
@@ -231,10 +218,8 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
   PasswordForm form3 = MakeSavedPassword(kExampleCom3, kUsername116);
   AddIssueToForm(&form2, InsecureType::kWeak, base::Minutes(1));
   AddIssueToForm(&form3, InsecureType::kWeak, base::Minutes(1));
-  store().AddLogin(form2);
-  store().AddLogin(form3);
-  RunUntilIdle();
-  insecure_credentials = manager().GetInsecureCredentials();
+  insecure_credentials.emplace_back(form2);
+  insecure_credentials.emplace_back(form3);
   warning_type = GetWarningOfHighestPriority(insecure_credentials);
   // The number of weak passwords should be returned.
   EXPECT_EQ(GetPasswordCountForWarningType(warning_type, insecure_credentials),
@@ -247,11 +232,9 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
   AddIssueToForm(&form4, InsecureType::kReused, base::Minutes(1));
   AddIssueToForm(&form5, InsecureType::kReused, base::Minutes(1));
   AddIssueToForm(&form6, InsecureType::kReused, base::Minutes(1));
-  store().AddLogin(form4);
-  store().AddLogin(form5);
-  store().AddLogin(form6);
-  RunUntilIdle();
-  insecure_credentials = manager().GetInsecureCredentials();
+  insecure_credentials.emplace_back(form4);
+  insecure_credentials.emplace_back(form5);
+  insecure_credentials.emplace_back(form6);
   warning_type = GetWarningOfHighestPriority(insecure_credentials);
   // The number of reused passwords should be returned.
   EXPECT_EQ(GetPasswordCountForWarningType(warning_type, insecure_credentials),
@@ -266,12 +249,10 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
   AddIssueToForm(&form8, InsecureType::kLeaked, base::Minutes(1));
   AddIssueToForm(&form9, InsecureType::kLeaked, base::Minutes(1));
   AddIssueToForm(&form10, InsecureType::kLeaked, base::Minutes(1));
-  store().AddLogin(form7);
-  store().AddLogin(form8);
-  store().AddLogin(form9);
-  store().AddLogin(form10);
-  RunUntilIdle();
-  insecure_credentials = manager().GetInsecureCredentials();
+  insecure_credentials.emplace_back(form7);
+  insecure_credentials.emplace_back(form8);
+  insecure_credentials.emplace_back(form9);
+  insecure_credentials.emplace_back(form10);
   warning_type = GetWarningOfHighestPriority(insecure_credentials);
   // The number of compromised passwords should be returned.
   EXPECT_EQ(GetPasswordCountForWarningType(warning_type, insecure_credentials),

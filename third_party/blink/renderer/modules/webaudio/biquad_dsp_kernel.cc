@@ -36,7 +36,7 @@ namespace blink {
 namespace {
 
 bool HasConstantValues(float* values, int frames_to_process) {
-  // TODO(rtoy): Use SIMD to optimize this.  This would speed up
+  // TODO(crbug.com/1447094): Use SIMD to optimize this.  This would speed up
   // processing by a factor of 4 because we can process 4 floats at a
   // time.
   float value = values[0];
@@ -155,11 +155,10 @@ void BiquadDSPKernel::UpdateCoefficients(int number_of_frames,
 }
 
 void BiquadDSPKernel::UpdateTailTime(int coef_index) {
-  // A reasonable upper limit for the tail time.  While it's easy to
-  // create biquad filters whose tail time can be much larger than
-  // this, limit the maximum to this value so that we don't keep such
-  // nodes alive "forever".
-  // TODO: What is a reasonable upper limit?
+  // TODO(crbug.com/1447095): A reasonable upper limit for the tail time.  While
+  // it's easy to create biquad filters whose tail time can be much larger than
+  // this, limit the maximum to this value so that we don't keep such nodes
+  // alive "forever". Investigate if we can adjust this to a smaller value.
   constexpr double kMaxTailTime = 30.0;
 
   double sample_rate = SampleRate();

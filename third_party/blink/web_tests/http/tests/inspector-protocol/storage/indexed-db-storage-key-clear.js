@@ -71,7 +71,7 @@
 
     // Clean up
     await dp.IndexedDB.deleteDatabase(
-      { storageKey, databaseName: 'test-database' });
+      { storageBucket, databaseName: 'test-database' });
   }
 
   const { dp, session } = await testRunner.startBlank(

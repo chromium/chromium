@@ -195,5 +195,18 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Subclassing collections is uncommon. If you are not doing so, please ignore. If you are subclassing in order to call add()/put(), use List.of() / Set.of() / Map.of() instead, or use multiple statements."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="AccessibilityManagerUsage"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="android\.view\.accessibility\.AccessibilityManager"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Use org.chromium.ui.accessibility.AccessibilityState instead of AccessibilityManager. For more information, contact //ui/accessibility/OWNERS."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="FullscreenDialogs"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="ThemeOverlay\_BrowserUI\_Fullscreen"/>
+      <property name="message" value="Fullscreen AlertDialogs must use FullscreenAlertDialog and fullscreen Dialogs must use ChromeDialog. Not doing this will break automotive devices. (This check is triggered by the presence of ThemeOverlay_BrowserUI_Fullscreen and does not know if you are already using the correct class)"/>
+    </module>
   </module>
 </module>

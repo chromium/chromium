@@ -200,8 +200,8 @@ double AudioWorkletHandler::TailTime() const {
 
 void AudioWorkletHandler::SetProcessorOnRenderThread(
     AudioWorkletProcessor* processor) {
-  // TODO(hongchan): unify the thread ID check. The thread ID for this call
-  // is different from `Context()->IsAudiothread()`.
+  // TODO(crbug.com/1071917): unify the thread ID check. The thread ID for this
+  // call may be different from `Context()->IsAudiothread()`.
   DCHECK(!IsMainThread());
 
   // `processor` can be `nullptr` when the invocation of user-supplied

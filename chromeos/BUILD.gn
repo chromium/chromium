@@ -198,6 +198,15 @@ if (is_chromeos_ash && is_chromeos_device) {
     enable_tast_informational_tests = true
   }
 
+  tast_test("chrome_criticalstaging_tast_tests") {
+    deploy_lacros_chrome = true
+
+    # To disable a specific test, add it to the
+    # tast_disabled_tests_from_chrome_all list in "tast_control.gni" and cite
+    # a bug.
+    tast_disabled_tests = tast_disabled_tests_from_chrome_all
+  }
+
   tast_test("chrome_variations_tast_tests") {
     tast_tests = [ "ui.ChromeVariationsSmoke" ]
   }

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_POLICY_TEST_SUPPORT_REMOTE_COMMANDS_RESULT_WAITER_H_
 #define COMPONENTS_POLICY_TEST_SUPPORT_REMOTE_COMMANDS_RESULT_WAITER_H_
 
+#include <cstdint>
+
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -16,7 +18,7 @@ namespace policy {
 class RemoteCommandsResultWaiter : public RemoteCommandsState::Observer {
  public:
   RemoteCommandsResultWaiter(RemoteCommandsState* remote_commands_state,
-                             int command_id);
+                             int64_t command_id);
 
   ~RemoteCommandsResultWaiter() override;
 
@@ -25,10 +27,10 @@ class RemoteCommandsResultWaiter : public RemoteCommandsState::Observer {
   enterprise_management::RemoteCommandResult WaitAndGetResult();
 
  private:
-  void OnRemoteCommandResultAvailable(int command_id) override;
+  void OnRemoteCommandResultAvailable(int64_t command_id) override;
 
   const raw_ptr<RemoteCommandsState> remote_commands_state_;
-  const int command_id_;
+  const int64_t command_id_;
   base::RunLoop run_loop_;
 };
 

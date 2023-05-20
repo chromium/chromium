@@ -34,7 +34,7 @@ class PLATFORM_EXPORT P2PSocketClientImpl
     : public blink::P2PSocketClient,
       public network::mojom::blink::P2PSocketClient {
  public:
-  P2PSocketClientImpl();
+  explicit P2PSocketClientImpl(bool batch_packets);
   P2PSocketClientImpl(const P2PSocketClientImpl&) = delete;
   P2PSocketClientImpl& operator=(const P2PSocketClientImpl&) = delete;
   ~P2PSocketClientImpl() override;
@@ -49,6 +49,7 @@ class PLATFORM_EXPORT P2PSocketClientImpl
   uint64_t Send(const net::IPEndPoint& address,
                 base::span<const uint8_t> data,
                 const rtc::PacketOptions& options) override;
+  void FlushBatch() override;
 
   // Setting socket options.
   void SetOption(network::P2PSocketOption option, int value) override;
@@ -92,14 +93,26 @@ class PLATFORM_EXPORT P2PSocketClientImpl
   void SocketCreated(const net::IPEndPoint& local_address,
                      const net::IPEndPoint& remote_address) override;
   void SendComplete(const network::P2PSendPacketMetrics& send_metrics) override;
+  void SendBatchComplete(const WTF::Vector<::network::P2PSendPacketMetrics>&
+                             in_send_metrics_batch) override;
   void DataReceived(WTF::Vector<P2PReceivedPacketPtr> packets) override;
+  void DoSendBatch();
 
   void OnConnectionError();
 
   THREAD_CHECKER(thread_checker_);
+  const bool batch_packets_;
   int socket_id_;
   blink::P2PSocketClientDelegate* delegate_;
   State state_;
+
+  // Packets sent with rtc::PacketOptions::batchable being true are collected
+  // here until a packet with rtc::PacketOptions::last_packet_in_batch is
+  // signalled.
+  WTF::Vector<network::mojom::blink::P2PSendPacketPtr> batched_send_packets_;
+  WTF::Vector<WTF::Vector<uint8_t>> batched_packets_storage_;
+  // Attribute recording if we're currently awaiting OnSendWatchComplete.
+  bool awaiting_batch_complete_ = false;
 
   // These two fields are used to identify packets for tracing.
   uint32_t random_socket_id_;

@@ -115,24 +115,14 @@ void PingManagerTest::PingSentCallback(int error, const std::string& response) {
 }
 
 scoped_refptr<UpdateContext> PingManagerTest::MakeMockUpdateContext() const {
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-  // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-  // we should remove this #if.
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
     return nullptr;
   }
   CrxCache::Options options(temp_dir.GetPath());
-#endif
   return base::MakeRefCounted<UpdateContext>(
-      config_,
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-      // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-      // we should remove this #if.
-      base::MakeRefCounted<CrxCache>(options),
-#endif
-      false, false, std::vector<std::string>(),
-      UpdateClient::CrxStateChangeCallback(),
+      config_, base::MakeRefCounted<CrxCache>(options), false, false,
+      std::vector<std::string>(), UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
       nullptr,
       /*is_update_check_only=*/false);
@@ -178,11 +168,7 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_TRUE(request.contains("@os"));
     EXPECT_EQ("fake_prodid", CHECK_DEREF(request.FindString("@updater")));
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
     EXPECT_EQ("crx3,puff", CHECK_DEREF(request.FindString("acceptformat")));
-#else
-    EXPECT_EQ("crx3", CHECK_DEREF(request.FindString("acceptformat")));
-#endif
     EXPECT_TRUE(request.contains("arch"));
     EXPECT_EQ("cr", CHECK_DEREF(request.FindString("dedup")));
     EXPECT_LT(0, request.FindByDottedPath("hw.physmemory")->GetInt());

@@ -12,7 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace syncer {
 
@@ -26,13 +26,15 @@ class TestSyncUserSettings : public SyncUserSettings {
   ~TestSyncUserSettings() override;
 
   bool IsInitialSyncFeatureSetupComplete() const override;
-  void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;
+  void SetInitialSyncFeatureSetupComplete(
+      SyncFirstSetupCompleteSource source) override;
 
   bool IsSyncEverythingEnabled() const override;
   UserSelectableTypeSet GetSelectedTypes() const override;
   bool IsTypeManagedByPolicy(UserSelectableType type) const override;
   void SetSelectedTypes(bool sync_everything,
                         UserSelectableTypeSet types) override;
+  void SetSelectedType(UserSelectableType type, bool is_type_on) override;
 #if BUILDFLAG(IS_IOS)
   void SetBookmarksAndReadingListAccountStorageOptIn(bool value) override;
 #endif  // BUILDFLAG(IS_IOS)
@@ -72,8 +74,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
   std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
 
-  void SetFirstSetupComplete();
-  void ClearFirstSetupComplete();
+  void SetInitialSyncFeatureSetupComplete();
+  void ClearInitialSyncFeatureSetupComplete();
   void SetTypeIsManaged(UserSelectableType type, bool managed);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetOsTypeIsManaged(UserSelectableOsType type, bool managed);
@@ -95,7 +97,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   UserSelectableTypeSet selected_types_;
   UserSelectableTypeSet managed_types_;
 
-  bool first_setup_complete_ = true;
+  bool initial_sync_feature_setup_complete_ = true;
   bool sync_everything_enabled_ = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool sync_all_os_types_enabled_ = true;

@@ -89,31 +89,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     }
 
     @Override
-    protected LayoutManagerTabModelObserver createTabModelObserver() {
-        return new LayoutManagerTabModelObserver() {
-            @Override
-            public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
-                super.willCloseTab(tab, animate, didCloseAlone);
-                if (animate) tabClosing(tab.getId());
-            }
-        };
-    }
-
-    private void tabClosing(int id) {
-        Tab closedTab = getTabById(id);
-        if (closedTab == null) return;
-
-        if (getActiveLayout().handlesTabClosing()) {
-            // The user is currently interacting with the {@code LayoutHost}.
-            // Allow the foreground layout to animate the tab closing.
-            getActiveLayout().onTabClosing(time(), id);
-        } else if (animationsEnabled() && !hasExplicitNextLayout()) {
-            startShowing(mSimpleAnimationLayout, false);
-            getActiveLayout().onTabClosing(time(), id);
-        }
-    }
-
-    @Override
     protected void tabClosed(int id, int nextId, boolean incognito, boolean tabRemoved) {
         boolean showOverview = nextId == Tab.INVALID_TAB_ID;
         if (getActiveLayoutType() != LayoutType.TAB_SWITCHER

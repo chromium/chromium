@@ -91,7 +91,7 @@ class CONTENT_EXPORT MidiHost : public midi::MidiManagerClient,
 
   // Represents if the renderer has a permission to send/receive MIDI SysEX
   // messages.
-  bool has_sys_ex_permission_;
+  bool has_midi_sysex_permission_;
 
   // |midi_service_| manages a MidiManager instance that talks to
   // platform-specific MIDI APIs.  It can be nullptr after detached.

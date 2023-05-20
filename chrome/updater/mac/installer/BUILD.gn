@@ -27,6 +27,7 @@ executable("metainstaller") {
   output_name = "UpdaterSetup"
 
   sources = [ "main.mm" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":updater_zip",
     "//base",

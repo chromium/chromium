@@ -1319,10 +1319,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
   auto* caption_settings_icon = left_header_container->children()[1];
   ASSERT_FALSE(live_translate_label->GetVisible());
   ASSERT_TRUE(caption_settings_icon->GetVisible());
-  ASSERT_EQ(14, static_cast<views::BoxLayout*>(
-                    left_header_container->GetLayoutManager())
-                    ->inside_border_insets()
-                    .left());
+  ASSERT_EQ(0, static_cast<views::BoxLayout*>(
+                   left_header_container->GetLayoutManager())
+                   ->inside_border_insets()
+                   .left());
   EXPECT_EQ(464, left_header_container->GetPreferredSize().width());
 
   // Enable Live Translate.
@@ -1335,10 +1335,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
 
   ASSERT_TRUE(live_translate_label->GetVisible());
   ASSERT_TRUE(caption_settings_icon->GetVisible());
-  ASSERT_EQ(18, static_cast<views::BoxLayout*>(
-                    left_header_container->GetLayoutManager())
-                    ->inside_border_insets()
-                    .left());
+  ASSERT_EQ(4, static_cast<views::BoxLayout*>(
+                   left_header_container->GetLayoutManager())
+                   ->inside_border_insets()
+                   .left());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,

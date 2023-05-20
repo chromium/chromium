@@ -83,7 +83,7 @@ class PopupMultiScreenTest : public PopupTestBase,
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("100+100-801x802,901+100-802x802");
+        .UpdateDisplay("100+100-801x802,901+100-802x803");
     return true;
 #elif BUILDFLAG(IS_MAC)
     if (display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
@@ -143,8 +143,16 @@ IN_PROC_BROWSER_TEST_P(PopupMultiScreenTest, OpenOnAnotherScreen) {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
+    defined(LEAK_SANITIZER)
+#define MAYBE_MoveToAnotherScreen DISABLED_MoveToAnotherScreen
+#else
+#define MAYBE_MoveToAnotherScreen MoveToAnotherScreen
+#endif
+
 // Tests opening a popup on the same screen, then moving it to another screen.
-IN_PROC_BROWSER_TEST_P(PopupMultiScreenTest, MoveToAnotherScreen) {
+// TODO(crbug.com/1444721): Re-enable this test
+IN_PROC_BROWSER_TEST_P(PopupMultiScreenTest, MAYBE_MoveToAnotherScreen) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Copy the display vector so references are not invalidated while looping.

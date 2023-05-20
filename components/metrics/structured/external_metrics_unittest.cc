@@ -76,7 +76,14 @@ class ExternalMetricsTest : public testing::Test {
         temp_dir_.GetPath(), one_hour,
         base::BindRepeating(&ExternalMetricsTest::OnEventsCollected,
                             base::Unretained(this)));
+
+    // For most tests the recording needs to be enabled.
+    EnableRecording();
   }
+
+  void EnableRecording() { external_metrics_->EnableRecording(); }
+
+  void DisableRecording() { external_metrics_->DisableRecording(); }
 
   void CollectEvents() {
     external_metrics_->CollectEvents();
@@ -206,7 +213,8 @@ TEST_F(ExternalMetricsTest, FileNumberReadCappedAndDiscarded) {
   base::test::ScopedFeatureList feature_list;
   const int file_limit = 2;
   feature_list.InitAndEnableFeatureWithParameters(
-      kStructuredMetrics, {{"file_limit", base::NumberToString(file_limit)}});
+      features::kStructuredMetrics,
+      {{"file_limit", base::NumberToString(file_limit)}});
 
   Init();
 
@@ -247,6 +255,24 @@ TEST_F(ExternalMetricsTest, FilterDisallowedProjects) {
 
   // Validate that only project 1 remains.
   ASSERT_THAT(ids, UnorderedElementsAre(111, 333));
+
+  // And the directory should be empty too.
+  ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
+}
+
+TEST_F(ExternalMetricsTest, DroppedEventsWhenDisabled) {
+  Init();
+  DisableRecording();
+
+  // Add 3 events with a project of 1 and 2.
+  WriteToDisk("first", MakeTestingProto({111}, 1));
+  WriteToDisk("second", MakeTestingProto({222}, 2));
+  WriteToDisk("third", MakeTestingProto({333}, 1));
+
+  CollectEvents();
+
+  // No events should have been collected.
+  ASSERT_EQ(proto_.value().uma_events().size(), 0);
 
   // And the directory should be empty too.
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));

@@ -122,8 +122,7 @@ absl::optional<int64_t> MediaHistoryImagesTable::SaveOrGetImage(
     }
   }
 
-  NOTREACHED();
-  return absl::nullopt;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace media_history

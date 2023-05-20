@@ -4,8 +4,15 @@
 
 #include "ash/ambient/managed/screensaver_image_downloader.h"
 
+#include <string>
+
+#include "base/containers/flat_set.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/sha1.h"
+#include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "net/http/http_request_headers.h"
@@ -60,6 +67,7 @@ constexpr net::NetworkTrafficAnnotationTag
           }
         })");
 constexpr char kCacheFileExt[] = ".cache";
+constexpr char kCacheFileWildCardPattern[] = "*.cache";
 
 constexpr int64_t kMaxFileSizeInBytes = 8 * 1024 * 1024;  // 8 MB
 constexpr int kMaxUrlFetchRetries = 3;
@@ -108,6 +116,69 @@ bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
   return true;
 }
 
+std::string GetHashedFileNameForUrl(const std::string& url) {
+  const std::string hash = base::SHA1HashString(url);
+  const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
+  return encoded_hash + kCacheFileExt;
+}
+
+std::vector<std::string> GetImageUrlsToProcess(
+    const base::Value::List& image_url_list) {
+  std::vector<std::string> urls;
+  for (size_t i = 0;
+       i < kMaxUrlsToProcessFromPolicy && i < image_url_list.size(); ++i) {
+    const base::Value& value = image_url_list[i];
+    if (!value.is_string() || value.GetString().empty()) {
+      continue;
+    }
+    // Canonicalize URLs and require HTTPS.
+    GURL url(value.GetString());
+    if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
+      LOG(WARNING) << "Ignored invalid URL: " << url;
+      continue;
+    }
+
+    urls.emplace_back(url.spec());
+  }
+  return urls;
+}
+
+// Returns all the cached images in the provided directory.
+// This method does blocking IO and should only be run on a thread that
+// allows blocking IO.
+std::vector<base::FilePath> GetCachedImagesFromDisk(
+    const base::FilePath& directory) {
+  std::vector<base::FilePath> images_on_disk;
+  base::FileEnumerator iterator(directory, /*recursive=*/false,
+                                base::FileEnumerator::FILES,
+                                FILE_PATH_LITERAL(kCacheFileWildCardPattern));
+  base::FilePath current_path;
+  for (base::FilePath path = iterator.Next(); !path.empty();
+       path = iterator.Next()) {
+    images_on_disk.push_back(path);
+  }
+
+  return images_on_disk;
+}
+
+// Deletes all the provided files in the `files_to_delete` parameter.
+// This method does blocking IO and should only be run on a thread that
+// allows blocking IO.
+// Note: In case all of the files are successfully deleted, this will return
+// true otherwise will return false.
+bool DeleteFiles(const std::vector<base::FilePath>& files_to_delete) {
+  bool success = true;
+  for (const auto& path : files_to_delete) {
+    // Even if one file fails to delete mark this operation as not being
+    // success.
+    if (!base::DeleteFile(path)) {
+      LOG(WARNING) << "Failed to clean up: " << path.BaseName().value();
+      success = false;
+    }
+  }
+  return success;
+}
+
 }  // namespace
 
 ScreensaverImageDownloader::ScreensaverImageDownloader(
@@ -136,22 +207,64 @@ void ScreensaverImageDownloader::UpdateImageUrlList(
     return;
   }
 
-  for (size_t i = 0;
-       i < kMaxUrlsToProcessFromPolicy && i < image_url_list.size(); ++i) {
-    const base::Value& value = image_url_list[i];
-    if (!value.is_string() || value.GetString().empty()) {
-      continue;
-    }
-    // Canonicalize URLs and require HTTPS.
-    GURL url(value.GetString());
-    if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
-      LOG(WARNING) << "Ignored invalid URL: " << url;
-      continue;
-    }
-    LOG(WARNING) << "Queue URL: " << url;
-    auto job = std::make_unique<ScreensaverImageDownloader::Job>(url.spec());
+  std::vector<std::string> new_image_urls =
+      GetImageUrlsToProcess(image_url_list);
+
+  // `this` is unretained here as `PostTaskAndReplyWithResult` does not work
+  // with weak ptrs as weak ptrs do not work with functions that return a value.
+  // The usage is safe as the task is executed immediately and `this` should
+  // outlive the call.
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ScreensaverImageDownloader::DeleteUnreferencedImageFiles,
+                     base::Unretained(this), new_image_urls),
+      base::BindOnce(&ScreensaverImageDownloader::OnUnreferencedImagesDeleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  for (const std::string& url : new_image_urls) {
+    DLOG(WARNING) << "Queue URL: " << url;
+    auto job = std::make_unique<ScreensaverImageDownloader::Job>(url);
     QueueDownloadJob(std::move(job));
   }
+}
+
+std::vector<base::FilePath>
+ScreensaverImageDownloader::DeleteUnreferencedImageFiles(
+    const std::vector<std::string>& new_image_urls) {
+  std::vector<std::string> hashed_image_urls = new_image_urls;
+  // Hash the image url
+  base::ranges::transform(hashed_image_urls.begin(), hashed_image_urls.end(),
+                          hashed_image_urls.begin(), GetHashedFileNameForUrl);
+
+  base::flat_set<std::string> hashed_image_file_paths(hashed_image_urls);
+
+  auto cached_images_from_disk = GetCachedImagesFromDisk(download_directory_);
+
+  std::vector<base::FilePath> file_paths_to_delete;
+  for (const auto& downloaded_file : cached_images_from_disk) {
+    if (!hashed_image_file_paths.contains(downloaded_file.BaseName().value())) {
+      file_paths_to_delete.push_back(downloaded_file);
+    }
+  }
+  if (!DeleteFiles(file_paths_to_delete)) {
+    // TODO(b/276208772): Track result with metrics
+    DLOG(WARNING) << "Failed to delete some of the files";
+  }
+
+  return file_paths_to_delete;
+}
+
+void ScreensaverImageDownloader::OnUnreferencedImagesDeleted(
+    std::vector<base::FilePath> file_paths_deleted) {
+  if (file_paths_deleted.empty()) {
+    return;
+  }
+  for (const auto& path : file_paths_deleted) {
+    downloaded_images_.erase(path);
+  }
+
+  image_list_updated_callback_.Run(std::vector<base::FilePath>(
+      downloaded_images_.begin(), downloaded_images_.end()));
 }
 
 std::vector<base::FilePath> ScreensaverImageDownloader::GetScreensaverImages() {
@@ -174,9 +287,7 @@ ScreensaverImageDownloader::Job::Job(const std::string& image_url)
 ScreensaverImageDownloader::Job::~Job() = default;
 
 std::string ScreensaverImageDownloader::Job::file_name() const {
-  const std::string hash = base::SHA1HashString(image_url);
-  const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
-  return encoded_hash + kCacheFileExt;
+  return GetHashedFileNameForUrl(image_url);
 }
 
 void ScreensaverImageDownloader::QueueDownloadJob(

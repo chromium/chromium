@@ -166,17 +166,22 @@ export class XfSelect extends XfBase {
   private renderDropdown_() {
     const alignment = this.menuAlignment || 'center';
     return html`<cr-action-menu>
-        ${this.options.map((option, index) => html`
-          <cr-button
-              class="dropdown-item dropdown-item-${alignment}"
-              role="menuitem"
-              @click=${() => this.onOptionSelected_(index)}
-              ?selected=${this.selectedOption_!.value === option.value}>
-            ${option.text}
-            <div class='dropdown-filler'></div>
-            <div slot='suffix-icon' class='selected-icon'></div>
-          </cr-button>`)}
-      </cr-action-menu>`;
+        ${this.options.map((option, index) => {
+          const checked = this.selectedOption_!.value === option.value;
+          return html`
+              <cr-button
+                  class="dropdown-item dropdown-item-${alignment}"
+                  role="menuitemcheckbox"
+                  aria-label="${option.text}"
+                  aria-checked="${checked}"
+                  @click=${() => this.onOptionSelected_(index)}
+                  ?selected=${checked}>
+                ${option.text}
+                <div class='dropdown-filler'></div>
+                <div slot='suffix-icon' class='selected-icon'></div>
+              </cr-button>`;
+        })}
+        </cr-action-menu>`;
   }
 
   override updated(changedProperties: Map<string, any>) {

@@ -41,14 +41,17 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
   // Perform security checks by ensuring the following:
   base::flat_map<::blink::mojom::RuntimeFeatureState, bool>
       validated_features{};
+  base::flat_map<::blink::mojom::RuntimeFeatureState, std::vector<std::string>>
+      possible_third_party_features{};
   for (const auto& feature_pair : modified_features) {
     // Ensure the tokens we received are valid for this feature and origin.
-    // TODO(https://crbug.com/1410784): add support for third-party Origin
-    // Trials in the token validation process.
     std::string feature_name;
     blink::TrialTokenValidator validator;
     bool are_tokens_valid = true;
     for (const auto& token : feature_pair.second->tokens) {
+      // Third party tokens will be rejected as invalid here. These will instead
+      // be collected in `possible_third_party_features` for later validation
+      // via Is$FEATURE$EnabledForThirdParty.
       blink::TrialTokenResult result = validator.ValidateTokenAndTrial(
           token, render_frame_host().GetLastCommittedOrigin(),
           base::Time::Now());
@@ -69,11 +72,8 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
     // 2. The feature we received is an origin trial feature.
     // 3. The feature we received is expected in the browser process.
     if (are_tokens_valid) {
-      // TODO(https://crbug.com/1410784): Since 3p tokens are not currently
-      // supported, we cannot assume that invalid tokens are a sign of a
-      // compromised renderer.
       if (blink::origin_trials::IsTrialValid(feature_name) &&
-          blink::origin_trials::IsTrialEnabledForBrowserProcessReadWriteAccess(
+          blink::origin_trials::IsTrialEnabledForBrowserProcessReadAccess(
               feature_name)) {
         validated_features[feature_pair.first] =
             feature_pair.second->is_enabled;
@@ -84,6 +84,12 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
             bad_message::RFSCI_BROWSER_VALIDATION_BAD_ORIGIN_TRIAL_TOKEN);
         return;
       }
+    } else if (feature_pair.second->is_enabled) {
+      // If we could not validate the tokens it's possible there's a third-party
+      // origin trial among them. In this case we should store the tokens for
+      // later validation once the potential third-party origin is known.
+      possible_third_party_features[feature_pair.first] =
+          feature_pair.second->tokens;
     }
   }
   // Apply the diff changes to the mutable RuntimeFeatureStateReadContext.
@@ -93,7 +99,7 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
   document_data
       ->GetMutableRuntimeFeatureStateReadContext(
           base::PassKey<RuntimeFeatureStateControllerImpl>())
-      .ApplyFeatureChange(validated_features);
+      .ApplyFeatureChange(validated_features, possible_third_party_features);
 }
 
 void RuntimeFeatureStateControllerImpl::EnablePersistentTrial(

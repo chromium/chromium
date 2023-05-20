@@ -466,10 +466,10 @@ class SingleTestRunner(object):
                 self._convert_to_str(driver_output.text)):
             return False, []
         if (self._options.ignore_testharness_expected_txt
-                # Any kind of all-pass baseline is equivalent to any other kind of
-                # all-pass. This condition forces skipping the text comparison.
-                or testharness_results.is_all_pass_testharness_result(
-                    self._convert_to_str(expected_driver_output.text))):
+                # Skip the text comparison when expecting an abbreviated
+                # all-pass result.
+                or self._convert_to_str(expected_driver_output.text)
+                == testharness_results.ABBREVIATED_ALL_PASS):
             expected_driver_output.text = b''
         elif expected_driver_output.text:
             # Will compare text if there is expected text that is not all-pass

@@ -14,6 +14,7 @@
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -230,10 +231,17 @@ gfx::Rect GetCollisionAvoidanceRect(aura::Window* root_window) {
     return gfx::Rect();
 
   gfx::Rect collision_avoidance_rect = tray->GetBubbleBoundsInScreen();
-  auto* message_center_bubble = tray->message_center_bubble();
 
-  if (message_center_bubble->IsMessageCenterVisible())
-    collision_avoidance_rect.Union(message_center_bubble->GetBoundsInScreen());
+  // TODO(b/282943613): Handle collisions with the new notification center that
+  // QsRevamp view introduced.
+  if (!features::IsQsRevampEnabled()) {
+    auto* message_center_bubble = tray->message_center_bubble();
+
+    if (message_center_bubble->IsMessageCenterVisible()) {
+      collision_avoidance_rect.Union(
+          message_center_bubble->GetBoundsInScreen());
+    }
+  }
 
   // TODO(conniekxu): Return a vector of collision avoidance rects including
   // other system UIs, like launcher.
@@ -644,7 +652,7 @@ void CaptureModeCameraController::OnCaptureSessionStarted() {
 }
 
 void CaptureModeCameraController::OnRecordingStarted(
-    CaptureModeBehavior* active_behavior) {
+    const CaptureModeBehavior* active_behavior) {
   // Check if there's a camera disconnection that happened before recording
   // starts. In this case, we don't want the camera preview to show, even if the
   // camera reconnects within the allowed grace period.

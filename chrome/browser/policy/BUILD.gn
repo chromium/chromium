@@ -197,10 +197,6 @@ source_set("policy_specific_browser_tests") {
     sources += [ "test/policy_certs_browsertest.cc" ]
   }
 
-  if (enable_nacl) {
-    sources += [ "test/ppb_video_decoder_dev_api_policy_browsertest.cc" ]
-  }
-
   deps = [
     ":test_support",
     "//base",

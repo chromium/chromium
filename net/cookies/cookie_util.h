@@ -51,6 +51,25 @@ enum class StorageAccessResult {
 // allowed or not by the provided |result|.
 NET_EXPORT void FireStorageAccessHistogram(StorageAccessResult result);
 
+// This enum must match the numbering for StorageAccessInputState in
+// histograms/enums.xml. Do not reorder or remove items, only add new items at
+// the end.
+enum class StorageAccessInputState {
+  // The frame-level opt-in was provided, and a permission grant exists.
+  kOptInWithGrant = 0,
+  // The frame-level opt-in was provided, but no permission grant exists.
+  kOptInWithoutGrant = 1,
+  // No frame-level opt-in was provided, but a permission grant exists.
+  kGrantWithoutOptIn = 2,
+  // No frame-level opt-in was provided, and no permission grant exists.
+  kNoOptInNoGrant = 3,
+  kMaxValue = kNoOptInNoGrant,
+};
+// Helper to record a histogram sample for relevant Storage Access API state
+// when cookie settings queries consult the Storage Access API grants.
+NET_EXPORT void FireStorageAccessInputHistogram(bool has_opt_in,
+                                                bool has_grant);
+
 // Returns the effective TLD+1 for a given host. This only makes sense for http
 // and https schemes. For other schemes, the host will be returned unchanged
 // (minus any leading period).
@@ -247,6 +266,10 @@ NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForSubresource(const GURL& url,
                                      const SiteForCookies& site_for_cookies,
                                      bool force_ignore_site_for_cookies);
+
+NET_EXPORT bool IsPortBoundCookiesEnabled();
+
+NET_EXPORT bool IsSchemeBoundCookiesEnabled();
 
 // Returns whether the respective feature is enabled.
 NET_EXPORT bool IsSchemefulSameSiteEnabled();

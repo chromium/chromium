@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -61,7 +62,8 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
 
   // Makes a copy of WebContents fields right after Commit but before a mojo
   // request to the renderer process.
-  fallback_install_info_ = std::make_unique<WebAppInstallInfo>();
+  fallback_install_info_ = std::make_unique<WebAppInstallInfo>(
+      GenerateManifestIdFromStartUrlOnly(web_contents->GetLastCommittedURL()));
   fallback_install_info_->start_url = web_contents->GetLastCommittedURL();
   fallback_install_info_->title = web_contents->GetTitle();
   if (fallback_install_info_->title.empty()) {

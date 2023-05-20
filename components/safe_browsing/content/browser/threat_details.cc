@@ -193,6 +193,8 @@ GetUrlRequestDestinationFromMojomRequestDestination(
       return ClientSafeBrowsingReportRequest::FENCED_FRAME;
     case network::mojom::RequestDestination::kWebIdentity:
       return ClientSafeBrowsingReportRequest::WEB_IDENTITY;
+    case network::mojom::RequestDestination::kDictionary:
+      return ClientSafeBrowsingReportRequest::DICTIONARY;
   }
 }
 

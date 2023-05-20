@@ -12,6 +12,9 @@ import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+[EnableIf=supports_os_accessibility_service]
+import "services/accessibility/public/mojom/tts.mojom";
+
 // Main interface a client uses to send accessibility tree updates and
 // results, implemented in the Accessibility service. Clients may
 // be the main OS browser process, renderers, or other accessibility tree
@@ -140,4 +143,9 @@ interface AccessibilityServiceClient {
   BindAutomation(
     pending_remote<Automation> automation,
     pending_receiver<AutomationClient> automation_client);
+
+  // Binds to a Text-to-Speech client implemented in the main OS process,
+  // called by the service.
+  [EnableIf=supports_os_accessibility_service]
+  BindTts(pending_receiver<Tts> tts_receiver);
 };

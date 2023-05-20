@@ -1880,7 +1880,7 @@ unsigned ShapeResult::CharacterPositionData::PreviousSafeToBreakOffset(
     unsigned offset) const {
   DCHECK_LE(start_offset_, offset);
   unsigned adjusted_offset = offset - start_offset_;
-  DCHECK_LT(adjusted_offset, data_.size());
+  DCHECK_LE(adjusted_offset, data_.size());
 
   // Assume it is always safe to break at the end of the run.
   if (adjusted_offset >= data_.size())

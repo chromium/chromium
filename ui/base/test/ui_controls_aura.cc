@@ -16,9 +16,11 @@ UIControlsAura* instance_ = NULL;
 bool g_ui_controls_enabled = false;
 }  // namespace
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_WIN)
 void EnableUIControls() {
   g_ui_controls_enabled = true;
 }
+#endif
 
 void ResetUIControlsIfEnabled() {}
 
@@ -163,11 +165,13 @@ UIControlsAura::UIControlsAura() {
 UIControlsAura::~UIControlsAura() {
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 // static. declared in ui_controls.h
 void InstallUIControlsAura(UIControlsAura* instance) {
-  EnableUIControls();
+  g_ui_controls_enabled = true;
   delete instance_;
   instance_ = instance;
 }
+#endif  //! BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace ui_controls

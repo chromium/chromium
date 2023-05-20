@@ -29,8 +29,8 @@ class SaveAddressProfileInfobarModalInteractionHandler
   void InfobarVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
 
   // Instructs the handler that the user has edited and then saved the profile.
-  void SaveEditedProfile(InfoBarIOS* infobar,
-                         autofill::AutofillProfile* profileData);
+  virtual void SaveEditedProfile(InfoBarIOS* infobar,
+                                 autofill::AutofillProfile* profile);
 
   virtual void SaveEditedProfile(InfoBarIOS* infobar,
                                  NSDictionary* profileData);

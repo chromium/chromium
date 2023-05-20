@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_METRIC_REPORTING_PREFS_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_METRIC_REPORTING_PREFS_H_
 
+#include <string>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace user_prefs {
@@ -13,6 +15,10 @@ class PrefRegistrySyncable;
 
 namespace apps {
 enum class AppType;
+}
+
+namespace reporting {
+class ReportingSettings;
 }
 
 namespace ash::reporting {
@@ -46,6 +52,12 @@ void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry);
 // type.
 absl::optional<std::string> GetAppReportingCategoryForType(
     ::apps::AppType app_type);
+
+// Retrieves the corresponding app reporting policy and returns true if the app
+// type is in the retrieved allowlist. False otherwise.
+bool IsAppTypeAllowed(::apps::AppType app_type,
+                      const ::reporting::ReportingSettings* reporting_settings,
+                      const std::string& policy_setting);
 
 }  // namespace ash::reporting
 

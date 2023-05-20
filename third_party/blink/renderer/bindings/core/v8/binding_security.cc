@@ -205,10 +205,10 @@ DOMWindow* FindWindow(v8::Isolate* isolate,
                       const WrapperTypeInfo* type,
                       v8::Local<v8::Object> holder) {
   if (V8Window::GetWrapperTypeInfo()->Equals(type))
-    return V8Window::ToImpl(holder);
+    return V8Window::ToWrappableUnsafe(holder);
 
   if (V8Location::GetWrapperTypeInfo()->Equals(type))
-    return V8Location::ToImpl(holder)->DomWindow();
+    return V8Location::ToWrappableUnsafe(holder)->DomWindow();
 
   // This function can handle only those types listed above.
   NOTREACHED();

@@ -47,13 +47,14 @@ class MODULES_EXPORT NavigatorAuction final
   // See platform/Supplementable.h
   static NavigatorAuction& From(ExecutionContext*, Navigator&);
 
+  // TODO(crbug.com/1441988): Make `const AuctionAdInterestGroup*` after rename.
   ScriptPromise joinAdInterestGroup(ScriptState*,
-                                    const AuctionAdInterestGroup*,
+                                    AuctionAdInterestGroup*,
                                     double,
                                     ExceptionState&);
   static ScriptPromise joinAdInterestGroup(ScriptState*,
                                            Navigator&,
-                                           const AuctionAdInterestGroup*,
+                                           AuctionAdInterestGroup*,
                                            double,
                                            ExceptionState&);
   ScriptPromise leaveAdInterestGroup(ScriptState*,
@@ -72,12 +73,11 @@ class MODULES_EXPORT NavigatorAuction final
 
   void updateAdInterestGroups();
   static void updateAdInterestGroups(ScriptState*, Navigator&, ExceptionState&);
-  ScriptPromise runAdAuction(ScriptState*,
-                             const AuctionAdConfig*,
-                             ExceptionState&);
+  // TODO(crbug.com/1441988): Make `const AuctionAdConfig*` after rename.
+  ScriptPromise runAdAuction(ScriptState*, AuctionAdConfig*, ExceptionState&);
   static ScriptPromise runAdAuction(ScriptState*,
                                     Navigator&,
-                                    const AuctionAdConfig*,
+                                    AuctionAdConfig*,
                                     ExceptionState&);
 
   // If called from a FencedFrame that was navigated to the URN resulting from

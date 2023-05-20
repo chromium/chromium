@@ -91,6 +91,13 @@ TEST_F(FeatureTilePixelTest, PrimaryTile) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "toggled",
       /*revision_number=*/0, widget_.get()));
+
+  // Test eliding.
+  tile->SetLabel(u"A very very long label");
+  tile->SetSubLabel(u"A very very long label");
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "elided",
+      /*revision_number=*/0, widget_.get()));
 }
 
 TEST_F(FeatureTilePixelTest, CompactTile) {
@@ -106,16 +113,34 @@ TEST_F(FeatureTilePixelTest, CompactTile) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "basic",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   widget_->GetFocusManager()->SetFocusedView(tile);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focused",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   tile->SetToggled(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "toggled",
+      /*revision_number=*/1, widget_.get()));
+
+  // Test eliding.
+  tile->SetLabel(u"A very very long label");
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "elided",
+      /*revision_number=*/1, widget_.get()));
+
+  // Test font descenders ("g").
+  tile->SetLabel(u"Multi-line ggggg");
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "descenders",
+      /*revision_number=*/0, widget_.get()));
+
+  // Test one-line labels.
+  tile->SetLabel(u"One line");
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "one_line",
       /*revision_number=*/0, widget_.get()));
 }
 

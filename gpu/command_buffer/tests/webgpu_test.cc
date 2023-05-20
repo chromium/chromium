@@ -132,6 +132,7 @@ void WebGPUTest::Initialize(const Options& options) {
 
   wgpu::RequestAdapterOptions ra_options = {};
   ra_options.forceFallbackAdapter = options.force_fallback_adapter;
+  ra_options.compatibilityMode = options.compatibility_mode;
 
   bool done = false;
   auto* callback = webgpu::BindWGPUOnceCallback(
@@ -461,6 +462,38 @@ TEST_F(WebGPUTest, ImplicitFallbackAdapterIsDisallowed) {
     // If we got an Adapter, it must not be a CPU adapter.
     EXPECT_NE(properties.adapterType, wgpu::AdapterType::CPU);
   }
+}
+
+TEST_F(WebGPUTest, CompatibilityMode) {
+  auto options = WebGPUTest::Options();
+  options.compatibility_mode = true;
+  options.enable_unsafe_webgpu = true;
+  // Initialize attempts to create an adapter.
+  Initialize(options);
+
+  // Compatibility adapter should be available.
+  EXPECT_NE(adapter_, nullptr);
+
+  wgpu::AdapterProperties properties;
+  adapter_.GetProperties(&properties);
+
+  EXPECT_TRUE(properties.compatibilityMode);
+}
+
+TEST_F(WebGPUTest, NonCompatibilityMode) {
+  auto options = WebGPUTest::Options();
+  options.compatibility_mode = false;
+  options.enable_unsafe_webgpu = true;
+  // Initialize attempts to create an adapter.
+  Initialize(options);
+
+  // Non-compatibility adapter should be available.
+  EXPECT_NE(adapter_, nullptr);
+
+  wgpu::AdapterProperties properties;
+  adapter_.GetProperties(&properties);
+
+  EXPECT_FALSE(properties.compatibilityMode);
 }
 
 }  // namespace gpu

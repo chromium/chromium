@@ -318,6 +318,7 @@ namespace developerPrivate {
     boolean? errorCollection;
     HostAccess? hostAccess;
     boolean? showAccessRequestsInToolbar;
+    boolean? acknowledgeSafetyCheckWarning;
   };
 
   dictionary ProfileConfigurationUpdate {
@@ -663,12 +664,6 @@ namespace developerPrivate {
     //     properties omitted from |update| will not be changed.
     [supportsPromises] static void updateProfileConfiguration(
         ProfileConfigurationUpdate update,
-        optional VoidCallback callback);
-
-    // Opens a permissions dialog.
-    // |extensionId| : The id of the extension to show permissions for.
-    [supportsPromises] static void showPermissionsDialog(
-        DOMString extensionId,
         optional VoidCallback callback);
 
     // Reloads a given extension.

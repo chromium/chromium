@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 
 enum class AccountErrorUserActionableType {
   // No action to take.

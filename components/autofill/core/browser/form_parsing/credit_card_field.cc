@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_filler.h"
@@ -493,8 +494,27 @@ void CreditCardField::AddClassifications(
   if (expiration_date_) {
     DCHECK(!expiration_month_);
     DCHECK(!expiration_year_);
-    AddClassification(expiration_date_, GetExpirationYearType(),
-                      kBaseCreditCardParserScore, field_candidates);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableExpirationDateImprovements)) {
+      // We try to derive the expiration date from the max-length and label or
+      // placeholder strings. If that's not possible, we fallback to the format
+      // determined in `GetExpirationYearType()`.
+      ServerFieldType fallback_type =
+          GetExpirationYearType() == CREDIT_CARD_EXP_2_DIGIT_YEAR
+              ? CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
+              : CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
+      ExpirationDateFormat format =
+          CreditCardField::DetermineExpirationDateFormat(*expiration_date_,
+                                                         fallback_type);
+      AddClassification(expiration_date_,
+                        format.digits_in_expiration_year == 2
+                            ? CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
+                            : CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+                        kBaseCreditCardParserScore, field_candidates);
+    } else {
+      AddClassification(expiration_date_, GetExpirationYearType(),
+                        kBaseCreditCardParserScore, field_candidates);
+    }
   } else {
     AddClassification(expiration_month_, CREDIT_CARD_EXP_MONTH,
                       kBaseCreditCardParserScore, field_candidates);
@@ -561,14 +581,22 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
     return true;
   }
 
-  // If that fails, look for just MM and/or YY(YY).
+  // If that fails, look for just MM and/or YY(YY) (or the Spanish/Portuguese
+  // MM / AA(AA) version).
   scanner->RewindTo(month_year_saved_cursor);
+
+  std::u16string year_pattern =
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableExpirationDateImprovements)
+          ? u"^(yy|yyyy|aa|aaaa)$"
+          : u"^(yy|yyyy)$";
   if (ParseFieldSpecifics(scanner, u"^mm$", kMatchCCType,
                           cc_exp_month_before_year_patterns, &expiration_month_,
                           {log_manager_, "^mm$"}) &&
-      ParseFieldSpecifics(scanner, u"^(yy|yyyy)$", kMatchCCType,
-                          cc_exp_year_after_month_patterns, &expiration_year_,
-                          {log_manager_, "^(yy|yyyy)$"})) {
+      ParseFieldSpecifics(
+          scanner, year_pattern, kMatchCCType, cc_exp_year_after_month_patterns,
+          &expiration_year_,
+          {log_manager_, base::UTF16ToUTF8(year_pattern).c_str()})) {
     return true;
   }
 
@@ -637,6 +665,84 @@ ServerFieldType CreditCardField::GetExpirationYearType() const {
 
 bool CreditCardField::HasExpiration() const {
   return expiration_date_ || (expiration_month_ && expiration_year_);
+}
+
+// static
+CreditCardField::ExpirationDateFormat
+CreditCardField::DetermineExpirationDateFormat(
+    const AutofillField& field,
+    ServerFieldType assumed_field_type) {
+  CHECK(assumed_field_type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
+        assumed_field_type == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
+  static constexpr size_t kMonthLength = 2;  // 2 characters for a MM format.
+  // Check whether we find one of the standard format descriptors like
+  // "mm/yy", "mm/yyyy", "mm / yy", "mm-yyyy", ... in one of the human
+  // readable labels. In that case, follow the specified pattern.
+  std::vector<std::u16string> groups;
+  bool matches = false;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableExpirationDateImprovements)) {
+    static constexpr char16_t kFormatRegex[] =
+        u"mm(\\s?[/-]?\\s?)?(y{2,4}|a{2,4})";
+    //       ^^^^ opt white space
+    //           ^^^^^ opt separator
+    //                ^^^ opt white space
+    //                       ^^^^^^^^^^^^^^ year
+    matches = MatchesRegex<kFormatRegex>(field.placeholder, &groups) ||
+              MatchesRegex<kFormatRegex>(field.label, &groups);
+  } else {
+    static constexpr char16_t kFormatRegEx[] = u"mm(\\s?[/-]?\\s?)?(y{2,4})";
+    //                                              ^^^^ opt white space
+    //                                                  ^^^^^ opt separator
+    //                                                       ^^^ opt white space
+    //                                                         year ^^^^^^^
+    matches = MatchesRegex<kFormatRegEx>(field.placeholder, &groups) ||
+              MatchesRegex<kFormatRegEx>(field.label, &groups);
+  }
+  // TODO(crbug/1326244): We should use language specific regex.
+  if (matches) {
+    const std::u16string& separator = groups[1];
+    const std::u16string& year_format = groups[2];
+    uint8_t year_length = year_format.length();
+    uint8_t candidate_size = kMonthLength + separator.length() + year_length;
+    if (field.max_length == 0 || candidate_size <= field.max_length) {
+      return {separator, year_length};
+    }
+    // Try once more with a stripped version of the separator if the previous
+    // version did not fit.
+    base::StringPiece16 trimmed_separator =
+        base::TrimWhitespace(groups[1], base::TRIM_ALL);
+    candidate_size = kMonthLength + trimmed_separator.length() + year_length;
+    if (field.max_length == 0 || candidate_size <= field.max_length) {
+      return {std::u16string(trimmed_separator), year_length};
+    }
+  }
+
+  switch (field.max_length) {
+    case 1:
+    case 2:
+    case 3:
+      // It is impossible to fill an expiration date in this size, so we
+      // pick the shorted one.
+      return {.separator = u"", .digits_in_expiration_year = 2};
+    case 4:
+      // Field likely expects MMYY
+      return {.separator = u"", .digits_in_expiration_year = 2};
+    case 5:
+      // Field likely expects MM/YY
+      return {.separator = u"/", .digits_in_expiration_year = 2};
+    case 6:
+      // Field likely expects MMYYYY
+      return {.separator = u"", .digits_in_expiration_year = 4};
+    case 7:
+      // Field likely expects MM/YYYY
+      return {.separator = u"/", .digits_in_expiration_year = 4};
+    default:
+      // Includes the case where max_length is not specified (0).
+      return assumed_field_type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
+                 ? ExpirationDateFormat{u"/", /*digits_in_expiration_year*/ 2}
+                 : ExpirationDateFormat{u"/", /*digits_in_expiration_year*/ 4};
+  }
 }
 
 }  // namespace autofill

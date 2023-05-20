@@ -1,3 +1,9 @@
 include_rules = [
   "+services/accessibility/public/mojom",
 ]
+
+specific_include_rules = {
+  "tts_client_impl.cc": [
+    "+content/public/browser/tts_controller.h",
+  ],
+}

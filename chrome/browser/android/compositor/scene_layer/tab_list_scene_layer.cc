@@ -8,6 +8,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/cxx20_erase.h"
 #include "chrome/android/chrome_jni_headers/TabListSceneLayer_jni.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/layer/tab_layer.h"
@@ -29,8 +30,7 @@ TabListSceneLayer::TabListSceneLayer(JNIEnv* env, const JavaRef<jobject>& jobj)
   layer()->AddChild(own_tree_);
 }
 
-TabListSceneLayer::~TabListSceneLayer() {
-}
+TabListSceneLayer::~TabListSceneLayer() {}
 
 void TabListSceneLayer::BeginBuildingFrame(JNIEnv* env,
                                            const JavaParamRef<jobject>& jobj) {
@@ -38,8 +38,9 @@ void TabListSceneLayer::BeginBuildingFrame(JNIEnv* env,
 
   // Remove (and re-add) all layers every frame to guarantee that z-order
   // matches PutTabLayer call order.
-  for (auto tab : tab_map_)
+  for (auto tab : tab_map_) {
     tab.second->layer()->RemoveFromParent();
+  }
 }
 
 void TabListSceneLayer::FinishBuildingFrame(JNIEnv* env,
@@ -47,10 +48,11 @@ void TabListSceneLayer::FinishBuildingFrame(JNIEnv* env,
   // Destroy all tabs that weren't used this frame.
   for (auto it = tab_map_.cbegin(); it != tab_map_.cend();) {
     if (visible_tabs_this_frame_.find(it->first) ==
-        visible_tabs_this_frame_.end())
+        visible_tabs_this_frame_.end()) {
       it = tab_map_.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
   visible_tabs_this_frame_.clear();
 }
@@ -101,11 +103,8 @@ void TabListSceneLayer::PutTabLayer(JNIEnv* env,
                                     jboolean anonymize_toolbar,
                                     jint toolbar_textbox_resource_id,
                                     jint toolbar_textbox_background_color,
-                                    jfloat toolbar_alpha,
                                     jfloat toolbar_y_offset,
-                                    jfloat content_offset,
-                                    jfloat side_border_scale,
-                                    jboolean inset_border) {
+                                    jfloat content_offset) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the TabLayer";
   DCHECK(resource_manager_)
@@ -137,8 +136,7 @@ void TabListSceneLayer::PutTabLayer(JNIEnv* env,
         content_width, show_toolbar, default_theme_color,
         toolbar_background_color, anonymize_toolbar,
         toolbar_textbox_resource_id, toolbar_textbox_background_color,
-        toolbar_alpha, toolbar_y_offset, content_offset, side_border_scale,
-        inset_border);
+        toolbar_y_offset, content_offset);
   }
 
   gfx::RectF self(own_tree_->position(), gfx::SizeF(own_tree_->bounds()));
@@ -155,8 +153,9 @@ void TabListSceneLayer::PutBackgroundLayer(
     jint top_offset) {
   int ui_resource_id = resource_manager_->GetUIResourceId(
       ui::ANDROID_RESOURCE_TYPE_DYNAMIC, resource_id);
-  if (ui_resource_id == 0)
+  if (ui_resource_id == 0) {
     return;
+  }
 
   if (!background_layer_) {
     background_layer_ = cc::slim::UIResourceLayer::Create();
@@ -191,8 +190,9 @@ void TabListSceneLayer::SetDependencies(
 
 void TabListSceneLayer::OnDetach() {
   SceneLayer::OnDetach();
-  for (auto tab : tab_map_)
+  for (auto tab : tab_map_) {
     tab.second->layer()->RemoveFromParent();
+  }
   tab_map_.clear();
 }
 

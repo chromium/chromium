@@ -395,7 +395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.CanvasOopRaster.OopRasterAndGpuAcceleration"
-    enum="CanvasOopRasterAndGpuAcceleration" expires_after="2023-09-10">
+    enum="CanvasOopRasterAndGpuAcceleration" expires_after="2023-11-12">
   <owner>vasilyt@chromium.org</owner>
   <owner>nazabris@microsoft.com</owner>
   <owner>jochin@microsoft.com</owner>
@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ContextLost" enum="ContextLostReason"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>sievers@chromium.org</owner>
   <summary>
     The reason a GPU command buffer context of a given type was lost.
@@ -518,7 +518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayer.YUVOverlayCount"
-    units="overlays" expires_after="2023-09-10">
+    units="overlays" expires_after="2023-11-12">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -602,7 +602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlayFormatUsed3" enum="DXGI_FORMAT"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
@@ -615,7 +615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.OverlaysSupported"
-    enum="BooleanOverlaySupported" expires_after="2023-09-03">
+    enum="BooleanOverlaySupported" expires_after="2023-11-12">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
@@ -639,7 +639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.SwapChainFormat3" enum="DXGI_FORMAT"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
@@ -678,7 +678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EGLDisplayType" enum="EGLDisplayType"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>The display type used to ask for an EGLDisplay.</summary>
@@ -772,7 +772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -824,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUProcessExitCode" enum="GPUProcessExitCode"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -842,7 +842,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUProcessLaunchTime" units="ms"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Startup time of the GPU process as measured by the GPU process host.
@@ -867,7 +867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUProcessTerminationStatus2" enum="GpuTerminationStatus"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Counts for each time the GPU Process Host detects the process dies.
@@ -911,7 +911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.IntelGpuGeneration" enum="IntelGpuGeneration"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -921,7 +921,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.IntelGpuSeriesType" enum="IntelGpuSeriesType"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1153,7 +1153,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2023-08-27">
+<histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2023-11-12">
   <owner>hubbe@chromium.org</owner>
   <owner>cassew@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -1201,7 +1201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ProcessLifetimeEvents.HardwareAccelerated"
-    enum="GPUProcessLifetimeEvent" expires_after="2023-09-03">
+    enum="GPUProcessLifetimeEvent" expires_after="2023-11-12">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Recorded once for every GPU process launch and crash when GPU process is
@@ -1212,7 +1212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ProcessLifetimeEvents.SwiftShader"
-    enum="GPUProcessLifetimeEvent" expires_after="2023-09-03">
+    enum="GPUProcessLifetimeEvent" expires_after="2023-11-12">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Recorded once for every GPU process launch and crash when GPU process is
@@ -1365,8 +1365,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.SharedImage.FormatPixmapSupport"
+    enum="FormatPixmapSupport" expires_after="2023-12-01">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>hitawala@chromium.org</owner>
+  <summary>
+    Tracks which formats can be supported for creating SharedImages with real
+    GpuMemoryBuffers on Ozone based platforms. Result is an enum that represents
+    multiplanar buffer formats in order of possible support eg. NV12, YV12 and
+    whether they can be used on platform that supports native pixmaps. This is
+    logged once per gpu process launch.
+  </summary>
+</histogram>
+
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1426,6 +1439,46 @@ chromium-metrics-reviews@google.com.
     information. It measures the time of SwapBuffers call. Only reported when
     there is single surface swap in the same vsync interval. Only reported for
     platforms supporting high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="GPU.TransferCache.EntryFound" enum="BooleanYesNo"
+    expires_after="2024-01-31">
+  <owner>boliu@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Whether a transfer cache entry is found when trying to retrieve it. Recorded
+    on every transfer cache look up.
+  </summary>
+</histogram>
+
+<histogram name="GPU.TransferCache.ReusedTimes" units="Reuses"
+    expires_after="2024-01-31">
+  <owner>boliu@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    When a transfer cache entry is deleted, record how many times it was used.
+    Recorded when an entry is deleted.
+  </summary>
+</histogram>
+
+<histogram name="GPU.TransferCache.TimeSinceLastUse" units="ms"
+    expires_after="2024-01-31">
+  <owner>boliu@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    When a transfer cache is found, record the time since last use. Recorded on
+    every successful transfer cache look up.
+  </summary>
+</histogram>
+
+<histogram name="GPU.TransferCache.TimeSinceLastUseOnDelete" units="ms"
+    expires_after="2024-01-31">
+  <owner>boliu@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    When a transfer cache entry is deleted, record the last time the entry was
+    used. Recorded when an entry is deleted.
   </summary>
 </histogram>
 
@@ -1691,7 +1744,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayNumProposedCandidates"
-    units="units" expires_after="2023-08-08">
+    units="units" expires_after="2023-11-12">
   <owner>petermcneeley@chromium.org</owner>
   <owner>khaslett@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1737,7 +1790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.RootDamageRect.Overlay"
-    enum="BooleanOverlayDamageRect" expires_after="2023-09-03">
+    enum="BooleanOverlayDamageRect" expires_after="2023-11-12">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1755,7 +1808,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FileDescriptorTracking.TimeToCompute" units="microseconds"
-    expires_after="2023-06-09">
+    expires_after="2024-06-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1770,7 +1823,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FileDescriptorTracking.{FdStat}" units="units"
-    expires_after="2023-06-09">
+    expires_after="2024-06-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>

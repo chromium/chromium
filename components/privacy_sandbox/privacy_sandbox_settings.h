@@ -216,6 +216,10 @@ class PrivacySandboxSettings : public KeyedService {
   // Overrides the privacy sandbox attestations map for testing.
   virtual void SetPrivacySandboxAttestationsMapForTesting(
       const PrivacySandboxAttestationsMap& attestations_map) = 0;
+
+  virtual void AddPrivacySandboxAttestationOverride(const GURL& url) = 0;
+  virtual const std::vector<net::SchemefulSite>
+  GetAttestationOverridesForTesting() const = 0;
 };
 
 }  // namespace privacy_sandbox

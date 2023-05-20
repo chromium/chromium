@@ -76,6 +76,14 @@ namespace storage {
 
 namespace {
 
+// These values are used in UMA, so the list should be append-only.
+enum class DatabaseDisabledReason {
+  kRegisterStorageKeyFailed = 0,
+  kSetIsBootstrappedFailed = 1,
+  kRazeFailed = 2,
+  kMaxValue = kRazeFailed,
+};
+
 constexpr int64_t kReportHistogramInterval = 60 * 60 * 1000;  // 1 hour
 
 // Take action on write errors if there is <= 2% disk space
@@ -100,6 +108,10 @@ bool IsSupportedType(StorageType type) {
 
 bool IsSupportedIncognitoType(StorageType type) {
   return type == StorageType::kTemporary;
+}
+
+void ReportDatabaseDisabledReason(DatabaseDisabledReason reason) {
+  base::UmaHistogramEnumeration("Quota.QuotaDatabaseDisabled", reason);
 }
 
 void DidGetUsageAndQuotaStripBreakdown(
@@ -1030,7 +1042,7 @@ void QuotaManagerImpl::UpdateOrCreateBucket(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
   if (!bucket_params.expiration.is_null() &&
@@ -1072,7 +1084,7 @@ void QuotaManagerImpl::GetOrCreateBucketDeprecated(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
   PostTaskAndReplyWithResultForDBThread(
@@ -1098,7 +1110,7 @@ void QuotaManagerImpl::CreateBucketForTesting(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
   PostTaskAndReplyWithResultForDBThread(
@@ -1125,7 +1137,7 @@ void QuotaManagerImpl::GetBucketByNameUnsafe(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
   PostTaskAndReplyWithResultForDBThread(
@@ -1149,7 +1161,7 @@ void QuotaManagerImpl::GetBucketById(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
   PostTaskAndReplyWithResultForDBThread(
@@ -1193,7 +1205,7 @@ void QuotaManagerImpl::GetBucketsForType(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
   PostTaskAndReplyWithResultForDBThread(
@@ -1216,7 +1228,7 @@ void QuotaManagerImpl::GetBucketsForHost(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
   PostTaskAndReplyWithResultForDBThread(
@@ -1241,7 +1253,7 @@ void QuotaManagerImpl::GetBucketsForStorageKey(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
 
@@ -1470,7 +1482,7 @@ void QuotaManagerImpl::UpdateBucketExpiration(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
   PostTaskAndReplyWithResultForDBThread(
@@ -1495,7 +1507,7 @@ void QuotaManagerImpl::UpdateBucketPersistence(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
   PostTaskAndReplyWithResultForDBThread(
@@ -1881,6 +1893,8 @@ void QuotaManagerImpl::DidBootstrapDatabase(QuotaError error) {
     // If we got an error during bootstrapping there is no point in
     // trying again. Disable the database instead.
     db_disabled_ = true;
+    ReportDatabaseDisabledReason(
+        DatabaseDisabledReason::kRegisterStorageKeyFailed);
   }
 
   PostTaskAndReplyWithResultForDBThread(
@@ -1902,6 +1916,8 @@ void QuotaManagerImpl::DidSetDatabaseBootstrapped(QuotaError error) {
     // If we got an error during bootstrapping there is no point in
     // trying again. Disable the database instead.
     db_disabled_ = true;
+    ReportDatabaseDisabledReason(
+        DatabaseDisabledReason::kSetIsBootstrappedFailed);
   }
 
   RunDatabaseCallbacks();
@@ -2190,7 +2206,7 @@ void QuotaManagerImpl::DeleteBucketFromDatabase(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
 
@@ -2248,7 +2264,7 @@ void QuotaManagerImpl::DeleteBucketDataInternal(
   EnsureDatabaseOpened();
 
   if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
+    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseDisabled));
     return;
   }
   auto bucket_deleter = std::make_unique<BucketDataDeleter>(
@@ -2801,6 +2817,7 @@ void QuotaManagerImpl::DidRazeForReBootstrap(
   // Deleting the database failed. Disable the database and hope we'll recover
   // after Chrome restarts instead.
   db_disabled_ = true;
+  ReportDatabaseDisabledReason(DatabaseDisabledReason::kRazeFailed);
   is_bootstrapping_database_ = false;
   RunDatabaseCallbacks();
   // No reason to restart eviction here. Without a working database there is

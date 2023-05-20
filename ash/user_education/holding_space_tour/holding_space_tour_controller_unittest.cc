@@ -21,6 +21,7 @@
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -29,6 +30,8 @@
 #include "ash/test/test_widget_builder.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_types.h"
+#include "ash/wallpaper/wallpaper_view.h"
+#include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -41,6 +44,8 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/view.h"
@@ -70,6 +75,12 @@ aura::Window* GetRootWindowForDisplayId(int64_t display_id) {
 
 Shelf* GetShelfForDisplayId(int64_t display_id) {
   return Shelf::ForWindow(GetRootWindowForDisplayId(display_id));
+}
+
+WallpaperView* GetWallpaperViewForDisplayId(int64_t display_id) {
+  return RootWindowController::ForWindow(GetRootWindowForDisplayId(display_id))
+      ->wallpaper_widget_controller()
+      ->wallpaper_view();
 }
 
 std::unique_ptr<HoldingSpaceImage> CreateHoldingSpaceImage(
@@ -105,6 +116,38 @@ std::unique_ptr<views::Widget> CreateTestWidgetForDisplayId(
       .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
       .SetContext(GetRootWindowForDisplayId(display_id))
       .BuildOwnsNativeWidget();
+}
+
+bool HasWallpaperHighlight(int64_t display_id) {
+  auto* const wallpaper_view = GetWallpaperViewForDisplayId(display_id);
+
+  bool has_wallpaper_highlight = false;
+  bool below_wallpaper_view_layer = true;
+
+  for (const auto* wallpaper_layer : wallpaper_view->GetLayersInOrder()) {
+    if (wallpaper_layer == wallpaper_view->layer()) {
+      below_wallpaper_view_layer = false;
+      continue;
+    }
+
+    if (wallpaper_layer->name() !=
+        HoldingSpaceTourController::kHighlightLayerName) {
+      continue;
+    }
+
+    has_wallpaper_highlight = true;
+
+    // Add failures if the highlight layer is not configured as expected.
+    EXPECT_FALSE(below_wallpaper_view_layer);
+    EXPECT_EQ(wallpaper_layer->type(), ui::LAYER_SOLID_COLOR);
+    EXPECT_EQ(wallpaper_layer->bounds(), wallpaper_view->layer()->bounds());
+    EXPECT_EQ(wallpaper_layer->background_color(),
+              SkColorSetA(wallpaper_view->GetColorProvider()->GetColor(
+                              cros_tokens::kCrosSysPrimaryLight),
+                          0.4f * SK_AlphaOPAQUE));
+  }
+
+  return has_wallpaper_highlight;
 }
 
 void FlushMessageLoop() {
@@ -331,6 +374,11 @@ TEST_P(HoldingSpaceTourControllerDragAndDropTest, DragAndDrop) {
   EXPECT_EQ(secondary_tray->GetVisible(), drag_files_app_data());
   EXPECT_FALSE(secondary_shelf->IsVisible());
 
+  // Expect the wallpaper on the primary display to be highlighted if and only
+  // if Files app data was dragged.
+  EXPECT_EQ(HasWallpaperHighlight(primary_display_id), drag_files_app_data());
+  EXPECT_FALSE(HasWallpaperHighlight(secondary_display_id));
+
   // Drag the data to a position just outside the `secondary_widget` so that the
   // cursor is over the wallpaper on the secondary display.
   MoveMouseTo(secondary_widget.get());
@@ -343,6 +391,11 @@ TEST_P(HoldingSpaceTourControllerDragAndDropTest, DragAndDrop) {
   EXPECT_EQ(primary_tray->GetVisible(), drag_files_app_data());
   EXPECT_EQ(secondary_tray->GetVisible(), drag_files_app_data());
   EXPECT_FALSE(primary_shelf->IsVisible());
+
+  // Expect the wallpaper on the secondary display to be highlighted if and only
+  // if Files app data was dragged.
+  EXPECT_EQ(HasWallpaperHighlight(secondary_display_id), drag_files_app_data());
+  EXPECT_FALSE(HasWallpaperHighlight(primary_display_id));
 
   // Conditionally cancel the drop depending on test parameterization.
   if (!complete_drop()) {
@@ -378,6 +431,10 @@ TEST_P(HoldingSpaceTourControllerDragAndDropTest, DragAndDrop) {
   EXPECT_EQ(secondary_shelf->IsVisible(), complete_drop_of_files_app_data);
   EXPECT_EQ(primary_tray->GetVisible(), complete_drop_of_files_app_data);
   EXPECT_EQ(secondary_tray->GetVisible(), complete_drop_of_files_app_data);
+
+  // Expect no wallpaper to be highlighted.
+  EXPECT_FALSE(HasWallpaperHighlight(primary_display_id));
+  EXPECT_FALSE(HasWallpaperHighlight(secondary_display_id));
 
   // If Files app data was dropped, the holding space bubble should be visible
   // on the secondary display.

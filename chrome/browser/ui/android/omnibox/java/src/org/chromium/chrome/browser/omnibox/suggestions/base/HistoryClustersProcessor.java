@@ -11,14 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.FaviconFetcher;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.action.HistoryClustersAction;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.OmniboxMetrics;
-import org.chromium.components.omnibox.action.HistoryClustersAction;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionType;
@@ -48,7 +48,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
             @NonNull Context context, @NonNull SuggestionHost suggestionHost,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
             @NonNull FaviconFetcher faviconFetcher, @NonNull BookmarkState bookmarkState) {
-        super(context, suggestionHost, null, editingTextProvider, faviconFetcher, bookmarkState);
+        super(context, suggestionHost, editingTextProvider, faviconFetcher, bookmarkState);
         mOpenHistoryClustersDelegate = openHistoryClustersDelegate;
         mContext = context;
     }
@@ -92,6 +92,11 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, true);
         setActionButtons(model, null);
         mJourneysActionShownPosition = position;
+    }
+
+    @Override
+    public boolean allowOmniboxActions() {
+        return false;
     }
 
     private void onJourneysSuggestionClicked(HistoryClustersAction action, int position) {

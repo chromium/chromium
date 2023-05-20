@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब खोलें}one{<ph name="TABS_COUNT_MANY" /> टैब खोलें}other{<ph name="TABS_COUNT_MANY" /> टैब खोलें}}</translation>
 <translation id="4811934403802581334">फ़िलहाल चुने गए डिवाइस पर सभी चुने गए टैब वापस लाए जाएंगे.</translation>
 <translation id="5336031759968328813">सभी टैब की समीक्षा करें</translation>
+<translation id="8019269305087157499">यहां से खोलें</translation>
 <translation id="8725404154479306799">पुराने डिवाइसों पर चुने गए टैब वापस पाएं</translation>
 </translationbundle>

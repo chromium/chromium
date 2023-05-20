@@ -40,7 +40,7 @@
    "management_type_to_external_configuration_map": {
    },
    "manifest_icons": [  ],
-   "manifest_id": null,
+   "manifest_id": "",
    "manifest_update_time": "1601-01-01 00:00:00.000 UTC",
    "manifest_url": "",
    "note_taking_new_note_url": "",
@@ -63,7 +63,6 @@
    },
    "tab_strip": null,
    "theme_color": "none",
-   "unhashed_app_id": "",
    "url_handlers": [  ],
    "user_display_mode": "",
    "user_launch_ordinal": "INVALID[]",

@@ -102,6 +102,9 @@
   self.cloudSlashedView = [[UIImageView alloc] initWithImage:cloudSlashedImage];
   self.cloudSlashedView.tintColor = CloudSlashTintColor();
   self.cloudSlashedView.hidden = YES;
+  [self.cloudSlashedView
+      setContentHuggingPriority:UILayoutPriorityRequired
+                        forAxis:UILayoutConstraintAxisHorizontal];
 
   // Container StackView.
   self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[

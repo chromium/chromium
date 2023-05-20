@@ -69,11 +69,19 @@ class CopyOrMoveIOTaskImpl {
   virtual void Execute(ProgressCallback progress_callback,
                        CompleteCallback complete_callback);
 
+  // Pauses the copy or move.
+  // TODO(b/283089374): Use this function to pause for conflict resolve.
+  void Pause(PauseParams);
+
   // Resumes the copy or move.
-  void Resume(ResumeParams);
+  virtual void Resume(ResumeParams);
 
   // Cancels the copy or move.
   void Cancel();
+
+  // Completes the copy or move. |progress_| should not be
+  // accessed after calling this.
+  void Complete(State state);
 
   // Helper function for copy or move tasks that determines whether or not
   // entries identified by their URLs should be considered as being on the
@@ -125,7 +133,6 @@ class CopyOrMoveIOTaskImpl {
   virtual std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
       size_t idx);
 
-  void Complete(State state);
   void GetFileSize(size_t idx);
   void GotFileSize(size_t idx,
                    base::File::Error error,

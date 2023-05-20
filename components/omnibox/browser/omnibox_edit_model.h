@@ -67,16 +67,14 @@ class OmniboxEditModel {
     const AutocompleteInput autocomplete_input;
   };
 
-  OmniboxEditModel(OmniboxView* view,
-                   OmniboxEditModelDelegate* edit_model_delegate,
-                   OmniboxClient* client);
+  OmniboxEditModel(OmniboxController* omnibox_controller,
+                   OmniboxView* view,
+                   OmniboxEditModelDelegate* edit_model_delegate);
   virtual ~OmniboxEditModel();
   OmniboxEditModel(const OmniboxEditModel&) = delete;
   OmniboxEditModel& operator=(const OmniboxEditModel&) = delete;
 
-  void set_omnibox_controller(OmniboxController* omnibox_controller) {
-    omnibox_controller_ = omnibox_controller;
-  }
+  OmniboxController* omnibox_controller() const { return omnibox_controller_; }
 
   // TODO(jdonnelly): Remove this accessor when the AutocompleteController has
   //     completely moved to OmniboxController.
@@ -90,7 +88,7 @@ class OmniboxEditModel {
 
   OmniboxEditModelDelegate* delegate() const { return edit_model_delegate_; }
 
-  OmniboxClient* client() const { return client_.get(); }
+  OmniboxClient* client() const { return omnibox_controller_->client(); }
 
   metrics::OmniboxEventProto::PageClassification GetPageClassification() const;
 
@@ -640,9 +638,6 @@ class OmniboxEditModel {
 
   // Implemented by `LocationBarView` which owns `OmniboxView`.
   raw_ptr<OmniboxEditModelDelegate> edit_model_delegate_;
-
-  // Owned by `omnibox_controller_` which owns this.
-  raw_ptr<OmniboxClient> client_;
 
   OmniboxFocusState focus_state_ = OMNIBOX_FOCUS_NONE;
 

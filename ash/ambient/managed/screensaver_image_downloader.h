@@ -100,6 +100,16 @@ class ASH_EXPORT ScreensaverImageDownloader {
     const std::string image_url;
   };
 
+  // Deletes all images on disk in the cache directory that are not referenced
+  // by the given `new_image_urls`.
+  std::vector<base::FilePath> DeleteUnreferencedImageFiles(
+      const std::vector<std::string>& new_image_urls);
+
+  // Called when unreferenced images have been deleted. Used for removing stale
+  // file references from the in-memory `downloaded_images_` cache.
+  void OnUnreferencedImagesDeleted(
+      std::vector<base::FilePath> file_paths_deleted);
+
   // Downloads a new external image from `image_url` to the download folder as
   // `file_name`. The async `callback` will pass the result, and the file path
   // if the operation succeeded.

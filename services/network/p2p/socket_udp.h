@@ -76,6 +76,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   // mojom::P2PSocket implementation:
   void Send(base::span<const uint8_t> data,
             const P2PPacketInfo& packet_info) override;
+  void SendBatch(std::vector<mojom::P2PSendPacketPtr> packet_batch) override;
   void SetOption(P2PSocketOption option, int32_t value) override;
 
  private:
@@ -97,6 +98,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
     uint64_t id;
   };
 
+  bool SendPacket(base::span<const uint8_t> data,
+                  const P2PPacketInfo& packet_info);
   void DoRead();
   void OnRecv(int result);
   void MaybeDrainReceivedPackets(bool force);
@@ -116,6 +119,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
               int result);
 
   int SetSocketDiffServCodePointInternal(net::DiffServCodePoint dscp);
+
+  // Called at the end of sends to send out SendComplete to the |client_|.
+  void ProcessSendCompletions();
 
   std::unique_ptr<net::DatagramServerSocket> socket_;
   scoped_refptr<net::IOBuffer> recv_buffer_;
@@ -140,6 +146,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
 
   // Callback object that returns a new socket when invoked.
   DatagramServerSocketFactory socket_factory_;
+
+  // Container for batching send completions.
+  std::vector<::network::P2PSendPacketMetrics> send_completions_;
 };
 
 }  // namespace network

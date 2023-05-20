@@ -104,6 +104,9 @@ def fyi_reclient_test_builder(
         console_view_category,
         **kwargs):
     reclient_bootstrap_env = kwargs.pop("reclient_bootstrap_env", {})
+    reclient_bootstrap_env.update({
+        "RBE_fast_log_collection": "true",
+    })
     return fyi_reclient_staging_builder(
         name = name,
         console_view_category = console_view_category,

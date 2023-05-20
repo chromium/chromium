@@ -12,7 +12,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.feed.FeedListContentManager.FeedContent;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
-import org.chromium.chrome.browser.xsurface.SurfaceScope;
+import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 
 import java.util.List;
 
@@ -112,13 +112,13 @@ public interface Stream {
      * @param manager The {@link FeedListContentManager} to which we should make updates to.
      * @param savedInstanceState A previously saved instance state to restore to after loading
      *         content.
-     * @param surfaceScope The {@link SurfaceScope} that is hosting the renderer.
+     * @param surfaceScope The {@link FeedSurfaceScope} that is hosting the renderer.
      * @param renderer The {@link HybridListRenderer} that is rendering the feed.
      * @param reliabilityLogger Logger for feed reliability.
      * @param headerCount The number of headers in the RecyclerView that the feed shouldn't touch.
      */
     void bind(RecyclerView view, FeedListContentManager manager, FeedScrollState savedInstanceState,
-            SurfaceScope surfaceScope, HybridListRenderer renderer,
+            FeedSurfaceScope surfaceScope, HybridListRenderer renderer,
             @Nullable FeedReliabilityLogger reliabilityLogger, int headerCount);
 
     /**
@@ -126,8 +126,9 @@ public interface Stream {
      *
      * @param shouldPlaceSpacer Whether this feed should place a spacer at the end to
      *     prevent abrupt scroll jumps.
+     * @param switchingStream Whether another feed is going to be bound right after this.
      */
-    void unbind(boolean shouldPlaceSpacer);
+    void unbind(boolean shouldPlaceSpacer, boolean switchingStream);
 
     /**
      * Whether this stream supports alternate sort options.

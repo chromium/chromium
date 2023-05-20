@@ -23,8 +23,6 @@ ReadAnythingButtonView::ReadAnythingButtonView(
                                            icon_size);
   ConfigureInkDropForToolbar(this);
   views::InstallCircleHighlightPathGenerator(this);
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(kInternalInsets / 2, kInternalInsets / 2)));
   SetTooltipText(tooltip);
 }
 

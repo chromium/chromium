@@ -606,6 +606,7 @@ const char* const ATK_OBJECT_ATTRIBUTES[] = {
     "id",
     "keyshortcuts",
     "level",
+    "link-target",
     "live",
     "placeholder",
     "posinset",

@@ -39,7 +39,7 @@ export {FeedProxy} from './modules/feed/feed_module_proxy.js';
 export {feedDescriptor, FeedModuleElement} from './modules/feed/module.js';
 export {CartTileModuleElement} from './modules/history_clusters/cart/cart_tile.js';
 export {HistoryClustersProxy, HistoryClustersProxyImpl} from './modules/history_clusters/history_clusters_proxy.js';
-export {HistoryClusterElementType, HistoryClusterImageDisplayState, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS} from './modules/history_clusters/module.js';
+export {HistoryClusterElementType, HistoryClusterImageDisplayState, historyClustersDescriptor, HistoryClustersModuleElement, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS} from './modules/history_clusters/module.js';
 export {SuggestTileModuleElement} from './modules/history_clusters/suggest_tile.js';
 export {TileModuleElement} from './modules/history_clusters/tile.js';
 export {historyClustersDescriptor as historyClustersV2Descriptor, HistoryClustersModuleElement as HistoryClustersV2ModuleElement} from './modules/history_clusters_v2/module.js';
@@ -54,5 +54,4 @@ export {photosDescriptor, PhotosModuleElement} from './modules/photos/module.js'
 export {PhotosProxy} from './modules/photos/photos_module_proxy.js';
 export {RecipesModuleElement, recipeTasksDescriptor} from './modules/recipes/module.js';
 export {RecipesHandlerProxy} from './modules/recipes/recipes_handler_proxy.js';
-export {RecipesModuleElement as RecipesModuleElementV2, recipeTasksDescriptor as recipeTasksV2Descriptor} from './modules/recipes_v2/module.js';
 export {VoiceSearchOverlayElement} from './voice_search_overlay.js';

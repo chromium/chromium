@@ -53,11 +53,11 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
 
  public:
   ScheduledAction(ScriptState*,
-                  ExecutionContext* target,
+                  ExecutionContext& target,
                   V8Function* handler,
                   const HeapVector<ScriptValue>& arguments);
   ScheduledAction(ScriptState*,
-                  ExecutionContext* target,
+                  ExecutionContext& target,
                   const String& handler);
 
   ScheduledAction(const ScheduledAction&) = delete;

@@ -96,6 +96,7 @@ constexpr char kVPNProvider[] = "vpnprovider";
 constexpr char kPermissionStateGranted[] = "granted";
 constexpr char kPermissionStateManaged[] = "managed";
 constexpr char kPermissionStateDetails[] = "details";
+constexpr char kPermissionStateOneTime[] = "one_time";
 constexpr char kWebAppInfo[] = "web_app_info";
 constexpr char kTitle[] = "title";
 constexpr char kStartUrl[] = "start_url";
@@ -861,10 +862,14 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
           details_opt = *details;
         }
 
+        bool one_time = permission_state_dict->FindBool(kPermissionStateOneTime)
+                            .value_or(false);
+
         arc::mojom::AppPermission permission =
             static_cast<arc::mojom::AppPermission>(permission_type);
-        permissions.emplace(permission, arc::mojom::PermissionState::New(
-                                            granted, managed, details_opt));
+        permissions.emplace(permission,
+                            arc::mojom::PermissionState::New(
+                                granted, managed, details_opt, one_time));
       } else {
         LOG(ERROR) << "Permission state was not a dictionary.";
       }
@@ -1804,6 +1809,8 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
         permission_state_dict.Set(kPermissionStateDetails,
                                   permission_state->details.value());
       }
+      permission_state_dict.Set(kPermissionStateOneTime,
+                                permission_state->one_time);
 
       permissions_dict.Set(
           base::NumberToString(static_cast<int64_t>(permission_type)),

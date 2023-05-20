@@ -369,7 +369,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
                         mMessageObserverMock));
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(/*isAvailable=*/true);
-        when(mReauthenticatorBridgeMock.canUseAuthentication()).thenReturn(true);
+        when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
+                .thenReturn(true);
         doAnswer(invocation -> {
             Callback<Boolean> callback = invocation.getArgument(0);
             callback.onResult(true);
@@ -391,7 +392,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         mIncognitoReauthPromoMessageService.review();
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(false);
 
-        verify(mReauthenticatorBridgeMock, times(1)).canUseAuthentication();
+        verify(mReauthenticatorBridgeMock, times(1))
+                .canUseAuthenticationWithBiometricOrScreenLock();
         verify(mReauthenticatorBridgeMock, times(1))
                 .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
         verify(mPrefServiceMock, times(1))

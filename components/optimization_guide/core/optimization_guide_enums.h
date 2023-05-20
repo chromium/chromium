@@ -44,9 +44,16 @@ enum class OptimizationTypeDecision {
   // Guide Service was started, but was not available in time to make a
   // decision.
   kHintFetchStartedButNotAvailableInTime = 10,
+  // A fetch to get the hint for the page load from the remote Optimization
+  // Guide Service was started, but requested optimization type was not
+  // registered.
+  kRequestedUnregisteredType = 11,
+  // A fetch to get the hint for the page load from the remote Optimization
+  // Guide Service was started, but requested URL was invalid.
+  kInvalidURL = 12,
 
   // Add new values above this line.
-  kMaxValue = kHintFetchStartedButNotAvailableInTime,
+  kMaxValue = kInvalidURL,
 };
 
 // The statuses for racing a hints fetch with the current navigation based

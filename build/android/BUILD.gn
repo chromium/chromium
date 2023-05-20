@@ -204,8 +204,7 @@ python_library("resource_sizes_py") {
 
   data = [
     build_vars_file,
-    android_readelf,
-    rebase_path("$android_ndk_library_path/libc++.so.1", root_build_dir),
+    "//third_party/llvm-build/Release+Asserts/bin/llvm-readobj",
   ]
 }
 

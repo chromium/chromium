@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_H_
 
 #include <iosfwd>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -260,9 +261,7 @@ class WebApp {
 
   const GURL& manifest_url() const { return manifest_url_; }
 
-  const absl::optional<std::string>& manifest_id() const {
-    return manifest_id_;
-  }
+  ManifestId manifest_id() const;
 
   const absl::optional<LaunchHandler>& launch_handler() const {
     return launch_handler_;
@@ -334,6 +333,8 @@ class WebApp {
   // IWA-specific information like bundle location.
   struct IsolationData {
     explicit IsolationData(IsolatedWebAppLocation location);
+    IsolationData(IsolatedWebAppLocation location,
+                  const std::set<std::string>& controlled_frame_partitions);
     ~IsolationData();
     IsolationData(const IsolationData&);
     IsolationData& operator=(const IsolationData&);
@@ -345,6 +346,7 @@ class WebApp {
     base::Value AsDebugValue() const;
 
     IsolatedWebAppLocation location;
+    std::set<std::string> controlled_frame_partitions;
   };
   const absl::optional<IsolationData>& isolation_data() const {
     return isolation_data_;
@@ -425,7 +427,7 @@ class WebApp {
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
   void SetManifestUrl(const GURL& manifest_url);
-  void SetManifestId(const absl::optional<std::string>& manifest_id);
+  void SetManifestId(const ManifestId& manifest_id);
   void SetWindowControlsOverlayEnabled(bool enabled);
   void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
   void SetParentAppId(const absl::optional<AppId>& parent_app_id);
@@ -542,7 +544,7 @@ class WebApp {
       blink::mojom::CaptureLinks::kUndefined;
   ClientData client_data_;
   GURL manifest_url_;
-  absl::optional<std::string> manifest_id_;
+  ManifestId manifest_id_;
   // The state of the user's approval of the app's use of the File Handler API.
   ApiApprovalState file_handler_approval_state_ =
       ApiApprovalState::kRequiresPrompt;

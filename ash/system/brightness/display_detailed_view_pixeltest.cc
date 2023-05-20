@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
@@ -42,13 +43,13 @@ TEST_F(DisplayDetailedViewPixelTest, Basics) {
       ->unified_system_tray_controller()
       ->ShowDisplayDetailedView();
 
-  auto* detailed_view =
-      system_tray->bubble()->quick_settings_view()->detailed_view();
+  TrayDetailedView* detailed_view =
+      system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
   ASSERT_TRUE(detailed_view);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "qs_display_detailed_view",
-      /*revision_number=*/2, detailed_view));
+      /*revision_number=*/3, detailed_view));
 }
 
 }  // namespace ash

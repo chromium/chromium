@@ -10,7 +10,6 @@
 
 namespace blink {
 
-class NGFragmentItem;
 class NGInlineCursor;
 
 // High-level abstraction of a text box fragment, to allow the accessibility
@@ -70,7 +69,11 @@ class CORE_EXPORT NGAbstractInlineTextBox final
   NGInlineCursor GetCursorOnLine() const;
   String GetTextContent() const;
 
-  const NGFragmentItem* fragment_item_;
+  // NGFragmentItem index in root_box_fragment_'s NGFragmentItems.
+  // It's an index instead of an NGFragmentItem pointer because NGFragmentItem
+  // instances are stored in HeapVector instances, and Oilpan heap compaction
+  // changes addresses of NGFragmentItem instances.
+  absl::optional<wtf_size_t> fragment_item_index_;
   Member<LayoutText> layout_text_;
   // |root_box_fragment_| owns |fragment_item_|. Persistent is used here to keep
   // |NGAbstractInlineTextBoxCache| off-heap.

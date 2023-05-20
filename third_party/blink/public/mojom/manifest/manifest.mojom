@@ -29,8 +29,8 @@ struct Manifest {
 
   mojo_base.mojom.String16? description;
 
-  // Defaults to start_url with origin stripped when id field is not present.
-  mojo_base.mojom.String16? id;
+  // This is empty if the start_url is empty.
+  url.mojom.Url id;
 
   url.mojom.Url start_url;
 
@@ -134,6 +134,10 @@ struct Manifest {
   // experiment. See:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md
   ManifestTabStrip? tab_strip;
+
+  // TODO(crbug.com/1444407): This field is non-standard and part of an
+  // experiment. See: https://github.com/WICG/isolated-web-apps
+  mojo_base.mojom.String16? version;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:

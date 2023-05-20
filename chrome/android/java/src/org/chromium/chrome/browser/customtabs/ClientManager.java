@@ -230,7 +230,6 @@ class ClientManager {
         private boolean mShouldGetPageLoadMetrics;
         private boolean mCustomTabIsInForeground;
         private boolean mWasSessionDisconnectStatusLogged;
-        private Supplier<Integer> mGreatestScrollPercentageSupplier;
         private Supplier<Boolean> mEngagementSignalsAvailableSupplier;
 
         public SessionParams(Context context, int uid, CustomTabsCallback customTabsCallback,
@@ -322,14 +321,6 @@ class ClientManager {
 
         public void setEngagementSignalsCallback(EngagementSignalsCallback callback) {
             mEngagementSignalsCallback = callback;
-        }
-
-        public void setGreatestScrollPercentageSupplier(Supplier<Integer> supplier) {
-            mGreatestScrollPercentageSupplier = supplier;
-        }
-
-        public Supplier<Integer> getGreatestScrollPercentageSupplier() {
-            return mGreatestScrollPercentageSupplier;
         }
 
         public void setEngagementSignalsAvailableSupplier(Supplier<Boolean> supplier) {
@@ -758,19 +749,6 @@ class ClientManager {
 
     public boolean shouldGetPageLoadMetrics(CustomTabsSessionToken session) {
         return callOnSession(session, false, params -> params.mShouldGetPageLoadMetrics);
-    }
-
-    public void setGreatestScrollPercentageSupplierForSession(
-            CustomTabsSessionToken session, Supplier<Integer> supplier) {
-        callOnSession(session, params -> params.setGreatestScrollPercentageSupplier(supplier));
-    }
-
-    public int getGreatestScrollPercentageForSession(
-            CustomTabsSessionToken session, Bundle extras) {
-        return callOnSession(session, 0, params -> {
-            Supplier<Integer> supplier = params.getGreatestScrollPercentageSupplier();
-            return supplier != null ? supplier.get() : 0;
-        });
     }
 
     /**

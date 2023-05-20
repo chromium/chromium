@@ -58,7 +58,7 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
   for (auto usage_it : user_prefs->GetDict(::apps::kAppUsageTime)) {
     ::apps::AppPlatformMetrics::UsageTime usage_time(usage_it.second);
     if (usage_time.reporting_usage_time < metrics::kMinimumAppUsageTime) {
-      // No reporting usage tracked by the `AppUsageCollector` since it was last
+      // No reporting usage tracked by the `AppUsageObserver` since it was last
       // enabled, so we skip. The `AppPlatformMetrics` component will
       // subsequently delete this entry once it reports its UKM snapshot.
       DCHECK(usage_time.reporting_usage_time.is_zero());

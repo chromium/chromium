@@ -28,8 +28,9 @@ class TestSocketBrokerImpl : public network::mojom::SocketBroker {
   void CreateUdpSocket(net::AddressFamily address_family,
                        CreateUdpSocketCallback callback) override;
 
-  void SetMockSocketTest(bool is_mock_socket_test) {
-    is_mock_socket_test_ = is_mock_socket_test;
+  // Used to set whether a test connection should fail.
+  void SetConnectionFailure(bool connection_failure) {
+    connection_failure_ = connection_failure;
   }
 
  private:
@@ -37,7 +38,7 @@ class TestSocketBrokerImpl : public network::mojom::SocketBroker {
 
   // When true, CreateTcpSocket returns ERR_CONNECTION_FAILED to test a failed
   // connection.
-  bool is_mock_socket_test_ = false;
+  bool connection_failure_ = false;
 };
 
 }  // namespace network

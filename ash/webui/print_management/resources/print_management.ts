@@ -13,6 +13,7 @@ import './print_job_clear_history_dialog.js';
 import './print_job_entry.js';
 import './print_management_fonts.css.js';
 import './print_management_shared.css.js';
+import './printer_setup_info.js';
 import './strings.m.js';
 
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -116,6 +117,13 @@ export class PrintManagementElement extends PrintManagementElementBase
         value: false,
       },
 
+      showSetupAssistance: {
+        type: Boolean,
+        value: (): boolean => {
+          return loadTimeData.getBoolean('isSetupAssistanceEnabled');
+        },
+      },
+
       deletePrintJobHistoryAllowedByPolicy: {
         type: Boolean,
         value: true,
@@ -163,6 +171,7 @@ export class PrintManagementElement extends PrintManagementElementBase
   private listBlurred: boolean;
   private showClearAllButton: boolean;
   private showClearAllDialog: boolean;
+  private showSetupAssistance: boolean;
   private deletePrintJobHistoryAllowedByPolicy: boolean;
   private shouldDisableClearAllButton: boolean;
   private printJobsObserverReceiver: PrintJobsObserverReceiver;

@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/game_capture_bar_view.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,8 +29,7 @@ PillButton* GameCaptureBarView::GetStartRecordingButton() const {
 }
 
 void GameCaptureBarView::StartRecording() {
-  // TODO(b/282193685): Start recording once the selected window is set and not
-  // changeable after game capture session starts.
+  CaptureModeController::Get()->PerformCapture();
 }
 
 BEGIN_METADATA(GameCaptureBarView, CaptureModeBarView)

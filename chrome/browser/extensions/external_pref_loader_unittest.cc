@@ -98,7 +98,7 @@ class ExternalPrefLoaderTest : public ::testing::Test {
     sync_service_ = static_cast<TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
-    sync_service_->SetFirstSetupComplete(true);
+    sync_service_->SetInitialSyncFeatureSetupComplete(true);
   }
 
   void TearDown() override { profile_.reset(); }

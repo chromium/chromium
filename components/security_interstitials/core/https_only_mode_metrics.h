@@ -51,9 +51,9 @@ enum class Event {
   // Navigation failed after being upgraded to HTTPS.
   kUpgradeFailed = 2,
 
-  // kUpgradeCertError, kUpgradeNetError, and kUpgradeTimedOut are subsets of
-  // kUpgradeFailed. kUpgradeFailed should also be recorded whenever these
-  // events are recorded.
+  // kUpgradeCertError, kUpgradeNetError, kUpgradeTimedOut, and
+  // kUpgradeRedirectLoop are subsets of kUpgradeFailed. kUpgradeFailed should
+  // also be recorded whenever these events are recorded.
 
   // Navigation failed due to a cert error.
   kUpgradeCertError = 3,
@@ -69,7 +69,10 @@ enum class Event {
   // Mode nor HTTPS Upgrading were enabled.
   kUpgradeNotAttempted = 7,
 
-  kMaxValue = kUpgradeNotAttempted,
+  // Upgrade failed due to encountering a redirect loop and failing early.
+  kUpgradeRedirectLoop = 8,
+
+  kMaxValue = kUpgradeRedirectLoop,
 };
 
 // Recorded by HTTPS-Upgrade logic when each step in a navigation request is
@@ -146,6 +149,10 @@ struct HttpInterstitialState {
   // Whether HTTPS-First Mode is enabled for the current site due to the
   // site engagement heuristic.
   bool enabled_by_engagement_heuristic = false;
+
+  // Whether HTTPS-First Mode is enabled because the user is in the Advanced
+  // Protection program.
+  bool enabled_by_advanced_protection = false;
 };
 
 // Helper to record an HTTPS-First Mode navigation event.

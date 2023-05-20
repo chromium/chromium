@@ -9,7 +9,7 @@
 
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_sync_api_component_factory.h"
 #include "components/sync/test/mock_sync_invalidations_service.h"
 #include "components/sync/test/mock_trusted_vault_client.h"
@@ -33,11 +33,9 @@ class SyncServiceImplBundle {
   // Creates a mock sync client that leverages the dependencies in this bundle.
   std::unique_ptr<SyncClientMock> CreateSyncClientMock();
 
-  // Creates an InitParams instance with the specified |start_behavior| and
-  // |sync_client|, and fills the rest with dummy values and objects owned by
-  // the bundle.
+  // Creates an InitParams instance with the specified |sync_client|, and fills
+  // the rest with dummy values and objects owned by the bundle.
   SyncServiceImpl::InitParams CreateBasicInitParams(
-      SyncServiceImpl::StartBehavior start_behavior,
       std::unique_ptr<SyncClient> sync_client);
 
   // Accessors

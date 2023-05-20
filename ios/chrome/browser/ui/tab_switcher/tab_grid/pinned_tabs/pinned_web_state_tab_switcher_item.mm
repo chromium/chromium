@@ -9,9 +9,9 @@
 #endif
 
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
-#import "ios/chrome/browser/url/url_util.h"
 #import "ios/web/public/web_state.h"
 
 @implementation PinnedWebStateTabSwitcherItem

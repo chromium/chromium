@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -363,6 +364,27 @@ HTMLFormControlElement::popoverTargetElement() {
     action = PopoverTriggerAction::kHover;
   }
   return PopoverTargetElement{.popover = target_popover, .action = action};
+}
+
+AtomicString HTMLFormControlElement::popoverTargetAction() const {
+  auto attribute_value =
+      FastGetAttribute(html_names::kPopovertargetactionAttr).LowerASCII();
+  // ReflectEmpty="toggle", ReflectMissing="toggle"
+  if (attribute_value.IsNull() || attribute_value.empty()) {
+    return kPopoverTargetActionToggle;
+  } else if (attribute_value == kPopoverTargetActionToggle ||
+             attribute_value == kPopoverTargetActionShow ||
+             attribute_value == kPopoverTargetActionHide) {
+    return attribute_value;  // ReflectOnly
+  } else if (RuntimeEnabledFeatures::HTMLPopoverHintEnabled() &&
+             attribute_value == kPopoverTargetActionHover) {
+    return attribute_value;  // ReflectOnly (with HTMLPopoverHint enabled)
+  } else {
+    return kPopoverTargetActionToggle;  // ReflectInvalid = "toggle"
+  }
+}
+void HTMLFormControlElement::setPopoverTargetAction(const AtomicString& value) {
+  setAttribute(html_names::kPopovertargetactionAttr, value);
 }
 
 void HTMLFormControlElement::DefaultEventHandler(Event& event) {

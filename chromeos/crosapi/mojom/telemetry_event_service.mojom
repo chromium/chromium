@@ -115,9 +115,32 @@ struct TelemetrySdCardEventInfo {
   State state@0;
 };
 
+// Power event info. This is emitted when the device begins/stops consuming from
+// an external power source or the system receives/completes a suspend request.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryPowerEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // The device began consuming from an external power source.
+    kAcInserted = 1,
+    // The device stopped consuming from an external power source.
+    kAcRemoved = 2,
+    // The system received a suspend request.
+    kOsSuspend = 3,
+    // The system completed a suspend request, i.e. resumed again.
+    kOsResume = 4,
+  };
+
+  State state@0;
+};
+
 // Union of event info.
 //
-// NextMinVersion: 4, NextIndex: 5
+// NextMinVersion: 5, NextIndex: 6
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -131,11 +154,13 @@ union TelemetryEventInfo {
   [MinVersion=2] TelemetryUsbEventInfo usb_event_info@3;
   // SD card event info.
   [MinVersion=3] TelemetrySdCardEventInfo sd_card_event_info@4;
+  // Power event info.
+  [MinVersion=4] TelemetryPowerEventInfo power_event_info@5;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 4, NextIndex: 5
+// NextMinVersion: 5, NextIndex: 6
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -144,6 +169,7 @@ enum TelemetryEventCategoryEnum {
   [MinVersion=1] kLid = 2,
   [MinVersion=2] kUsb = 3,
   [MinVersion=3] kSdCard = 4,
+  [MinVersion=4] kPower = 5,
 };
 
 // Implemented by clients who desire events.

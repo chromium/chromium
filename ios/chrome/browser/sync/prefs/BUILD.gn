@@ -13,8 +13,8 @@ source_set("prefs") {
     "//components/handoff",
     "//components/sync_preferences",
     "//components/sync_preferences:common_syncable_prefs_database",
-    "//ios/chrome/browser/prefs:browser_prefs",
-    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/voice:prefs",
   ]
 }

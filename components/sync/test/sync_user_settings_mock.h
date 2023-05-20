@@ -9,8 +9,8 @@
 #include <string>
 
 #include "build/chromeos_buildflags.h"
-#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
@@ -21,7 +21,7 @@ class SyncUserSettingsMock : public SyncUserSettings {
   ~SyncUserSettingsMock() override;
   MOCK_METHOD(bool, IsInitialSyncFeatureSetupComplete, (), (const override));
   MOCK_METHOD(void,
-              SetFirstSetupComplete,
+              SetInitialSyncFeatureSetupComplete,
               (SyncFirstSetupCompleteSource),
               (override));
   MOCK_METHOD(bool, IsSyncEverythingEnabled, (), (const override));
@@ -34,6 +34,7 @@ class SyncUserSettingsMock : public SyncUserSettings {
               SetSelectedTypes,
               (bool, UserSelectableTypeSet),
               (override));
+  MOCK_METHOD(void, SetSelectedType, (UserSelectableType, bool), (override));
 #if BUILDFLAG(IS_IOS)
   MOCK_METHOD(void,
               SetBookmarksAndReadingListAccountStorageOptIn,

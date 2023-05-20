@@ -80,9 +80,18 @@ public class AutofillPopupWithKeyboardTest {
                 + "</select>"
                 + "<input type=\"submit\" />"
                 + "</form></body></html>"));
-        new AutofillTestHelper().setProfile(new AutofillProfile("", "" /* honorific prefix */,
-                "John Smith", "Acme Inc", "1 Main\nApt A", "CA", "San Francisco", "", "94102", "",
-                "US", "(415) 888-9999", "john@acme.inc", "en"));
+        new AutofillTestHelper().setProfile(AutofillProfile.builder()
+                                                    .setFullName("John Smith")
+                                                    .setCompanyName("Acme Inc")
+                                                    .setStreetAddress("1 Main\nApt A")
+                                                    .setRegion("CA")
+                                                    .setLocality("San Francisco")
+                                                    .setPostalCode("94102")
+                                                    .setCountryCode("US")
+                                                    .setPhoneNumber("(415) 888-9999")
+                                                    .setEmailAddress("john@acme.inc")
+                                                    .setLanguageCode("en")
+                                                    .build());
         final AtomicReference<WebContents> webContentsRef = new AtomicReference<WebContents>();
         final AtomicReference<ViewGroup> viewRef = new AtomicReference<ViewGroup>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {

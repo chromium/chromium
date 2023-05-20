@@ -66,6 +66,9 @@ TEST_F(PromoHandlerTest, SigninPromo) {
 }
 
 TEST_F(PromoHandlerTest, ExpsPromo) {
+  promo_handler_->OnPromoAction(PromoType::kExps, PromoAction::kShown);
+  EXPECT_EQ(1, pref_service_.GetInteger(kExpsPromoShownCountPref));
+
   promo_handler_->OnPromoAction(PromoType::kExps, PromoAction::kRejected);
   EXPECT_EQ(1, pref_service_.GetInteger(kExpsPromoDeclinedCountPref));
 

@@ -7,8 +7,7 @@
 
 class PrefRegistrySimple;
 
-namespace guest_os {
-namespace prefs {
+namespace guest_os::prefs {
 
 // GuestOsSharedPath
 extern const char kGuestOSPathsSharedToVms[];
@@ -58,7 +57,6 @@ extern const char kGuestOsTerminalSettings[];
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-}  // namespace prefs
-}  // namespace guest_os
+}  // namespace guest_os::prefs
 
 #endif  // CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_PREF_NAMES_H_

@@ -73,9 +73,9 @@ def sign_part(paths, config, part):
     path = os.path.join(paths.work, part.path)
     if _linker_signed_arm64_needs_force(path):
         command.append('--force')
-    if config.notary_user:
-        # Assume if the config has notary authentication information that the
-        # products will be notarized, which requires a secure timestamp.
+    if config.notarize.should_notarize():
+        # If the products will be notarized, the signature requires a secure
+        # timestamp.
         command.append('--timestamp')
     if part.sign_with_identifier:
         command.extend(['--identifier', part.identifier])

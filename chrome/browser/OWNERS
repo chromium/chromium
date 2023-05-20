@@ -41,6 +41,8 @@ per-file chrome_device_client*=rockot@google.com
 
 per-file chrome_navigation_browsertest.cc=file://content/OWNERS
 
+per-file chrome_origin_trials_browsertest.cc=file://third_party/blink/common/origin_trials/OWNERS
+
 per-file chrome_security_exploit_browsertest.cc=file://content/OWNERS
 
 per-file chrome_service_worker_browsertest.cc=file://content/browser/service_worker/OWNERS

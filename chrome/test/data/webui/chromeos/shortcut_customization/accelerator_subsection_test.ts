@@ -86,14 +86,22 @@ suite('acceleratorSubsectionTest', function() {
     const rowListElement =
         sectionElement!.shadowRoot!.querySelectorAll('accelerator-row');
 
-    // First accelerator-row corresponds to 'Snap Window Left'.
+    // First accelerator-row corresponds to 'Snap Window Left', and its category
+    // is kWindowsAndDesks.
     assertEquals(
         manager!.getAcceleratorName(/*source=*/ 0, /*action=*/ 0)!,
         rowListElement[0]!.description);
-    // Second accelerator-row corresponds to 'Snap Window Right'.
+    assertEquals(
+        manager!.getAcceleratorCategory(/*source=*/ 0, /*action=*/ 0)!,
+        AcceleratorCategory.kWindowsAndDesks);
+    // Second accelerator-row corresponds to 'Snap Window Right', and its
+    // category is kWindowsAndDesks.
     assertEquals(
         manager!.getAcceleratorName(/*source=*/ 0, /*action=*/ 1)!,
         rowListElement[1]!.description);
+    assertEquals(
+        manager!.getAcceleratorCategory(/*source=*/ 0, /*action=*/ 1)!,
+        AcceleratorCategory.kWindowsAndDesks);
   });
 
   test('SkipAddingRowWhenCertainKeysAreUnavailable', async () => {
@@ -114,10 +122,14 @@ suite('acceleratorSubsectionTest', function() {
     assertEquals(1, rowListElement.length);
 
     // First and the only accelerator row in General -> Apps category
-    // corresponds to 'Open Diagnostic app'.
+    // corresponds to 'Open Diagnostic app'. And its category is kGeneral.
     assertEquals(
         manager!.getAcceleratorName(/*source=*/ 0, /*action=*/ 5)!,
         rowListElement[0]!.description);
+    assertEquals(
+        manager!.getAcceleratorCategory(/*source=*/ 0, /*action=*/ 5)!,
+        AcceleratorCategory.kGeneral);
+
   });
 
   test('RemoveAcceleratorWhenCertainKeysAreUnavailable', async () => {
@@ -140,10 +152,14 @@ suite('acceleratorSubsectionTest', function() {
     assertEquals(1, rowListElement[0]!.acceleratorInfos.length);
 
     // First and the only accelerator row in General -> GeneralControls category
-    // corresponds to 'Open/close Google assistant'.
+    // corresponds to 'Open/close Google assistant', and its category is
+    // kGeneral.
     assertEquals(
         manager!.getAcceleratorName(/*source=*/ 0, /*action=*/ 6)!,
         rowListElement[0]!.description);
+    assertEquals(
+        manager!.getAcceleratorCategory(/*source=*/ 0, /*action=*/ 6)!,
+        AcceleratorCategory.kGeneral);
   });
 
 });

@@ -4,7 +4,6 @@
 
 #include "services/network/public/cpp/attribution_utils.h"
 
-#include "base/strings/string_piece.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -999,10 +999,12 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   SetPreferCompositingToLCDText(true);
   SetBodyInnerHTML(R"HTML(
     <style>
-      html, #fixed-background {
+      html {
         background: linear-gradient(black, white) fixed;
       }
       #fixed-background {
+        background: linear-gradient(black, white) fixed,
+                    linear-gradient(blue, yellow) local;
         width: 200px;
         height: 200px;
         overflow: scroll;

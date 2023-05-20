@@ -1,0 +1,27 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.chrome.browser.auxiliary_search';
+option java_outer_classname = 'AuxiliarySearchGroupProto';
+
+package auxiliary_search;
+
+enum GroupType {
+  UNKNOWN_GROUP_TYPE = 0;
+  BOOKMARK_GROUP = 1;
+  TAB_GROUP = 2;
+}
+
+// Contains information about the tabs and bookmarks.
+message AuxiliarySearchGroup {
+  message Entry {
+    optional string title = 1;
+    optional string url = 2;
+  }
+  repeated Entry entry = 1;
+  optional GroupType group_type = 2;
+}

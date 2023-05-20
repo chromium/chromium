@@ -1,9 +1,9 @@
 This is a testharness.js-based test.
-FAIL COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with cross origin iframe, same origin popup with window_open assert_equals: Iframe has cross origin access to the popup? expected "false" but got "true"
-PASS COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with cross origin iframe, same origin popup with anchor
-PASS COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with cross origin iframe, same origin popup with form
-FAIL COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with same origin iframe, same site popup with window_open assert_equals: Iframe has cross origin access to the popup? expected "false" but got "true"
-PASS COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with same origin iframe, same site popup with anchor
-PASS COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with same origin iframe, same site popup with form
+FAIL COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with cross origin iframe, same origin popup with window_open assert_equals: Popup name is cleared? expected "true" but got "false"
+FAIL COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with cross origin iframe, same origin popup with anchor assert_equals: Popup name is cleared? expected "true" but got "false"
+FAIL COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with cross origin iframe, same origin popup with form assert_equals: Popup name is cleared? expected "true" but got "false"
+FAIL COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with same origin iframe, same site popup with window_open assert_equals: Popup name is cleared? expected "true" but got "false"
+FAIL COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with same origin iframe, same site popup with anchor assert_equals: Popup name is cleared? expected "true" but got "false"
+FAIL COOP: restrict-properties to popup COOP: unsafe-none via an iframe, with same origin iframe, same site popup with form assert_equals: Popup name is cleared? expected "true" but got "false"
 Harness: the test ran to completion.
 

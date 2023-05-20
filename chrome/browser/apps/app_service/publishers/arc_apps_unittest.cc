@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 
+#include <functional>
+
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -14,6 +16,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -374,25 +377,43 @@ TEST_F(ArcAppsPublisherTest, PublishPermission) {
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
       permissions;
+
+  permissions.emplace(arc::mojom::AppPermission::CAMERA,
+                      arc::mojom::PermissionState::New(
+                          /*granted=*/true, /*managed=*/false,
+                          /*details=*/absl::nullopt, /*one_time=*/true));
   permissions.emplace(
       arc::mojom::AppPermission::LOCATION,
       arc::mojom::PermissionState::New(/*granted=*/true, /*managed=*/true,
                                        /*details=*/"While in use"));
+
   package->permission_states = std::move(permissions);
   packages.push_back(std::move(package));
 
   arc_test()->app_instance()->SendRefreshPackageList(std::move(packages));
 
+  apps::Permissions result;
   bool found = app_service_proxy()->AppRegistryCache().ForOneApp(
-      kAppId, [](const apps::AppUpdate& update) {
-        EXPECT_EQ(update.Permissions().size(), 1ul);
-        EXPECT_EQ(update.Permissions()[0]->permission_type,
-                  apps::PermissionType::kLocation);
-        EXPECT_TRUE(update.Permissions()[0]->value->IsPermissionEnabled());
-        EXPECT_TRUE(update.Permissions()[0]->is_managed);
-        EXPECT_EQ(update.Permissions()[0]->details, "While in use");
+      kAppId, [&result](const apps::AppUpdate& update) {
+        result = ClonePermissions(update.Permissions());
       });
   ASSERT_TRUE(found);
+
+  EXPECT_EQ(result.size(), 2ul);
+
+  // Sort permissions by permission type.
+  base::ranges::sort(result, std::less<>(), &apps::Permission::permission_type);
+
+  EXPECT_EQ(result[0]->permission_type, apps::PermissionType::kCamera);
+  EXPECT_EQ(absl::get<apps::TriState>(result[0]->value->value),
+            apps::TriState::kAsk);
+  EXPECT_FALSE(result[0]->is_managed);
+  EXPECT_EQ(result[0]->details, absl::nullopt);
+
+  EXPECT_EQ(result[1]->permission_type, apps::PermissionType::kLocation);
+  EXPECT_TRUE(result[1]->value->IsPermissionEnabled());
+  EXPECT_TRUE(result[1]->is_managed);
+  EXPECT_EQ(result[1]->details, "While in use");
 }
 
 TEST_F(ArcAppsPublisherTest,

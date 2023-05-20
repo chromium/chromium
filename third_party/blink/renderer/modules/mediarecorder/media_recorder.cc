@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include "base/time/time.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediarecorder/blob_event.h"
+#include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -197,8 +199,24 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
                                       "Execution context is detached.");
     return;
   }
+  if (options->hasVideoKeyFrameIntervalDuration() &&
+      options->hasVideoKeyFrameIntervalCount()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Both videoKeyFrameIntervalDuration and videoKeyFrameIntervalCount "
+        "can't be specified.");
+    return;
+  }
+  KeyFrameRequestProcessor::Configuration key_frame_config;
+  if (options->hasVideoKeyFrameIntervalDuration()) {
+    key_frame_config =
+        base::Milliseconds(options->videoKeyFrameIntervalDuration());
+  } else if (options->hasVideoKeyFrameIntervalCount()) {
+    key_frame_config = options->videoKeyFrameIntervalCount();
+  }
   recorder_handler_ = MakeGarbageCollected<MediaRecorderHandler>(
-      context->GetTaskRunner(TaskType::kInternalMediaRealTime));
+      context->GetTaskRunner(TaskType::kInternalMediaRealTime),
+      key_frame_config);
   if (!recorder_handler_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -367,7 +385,8 @@ void MediaRecorder::requestData(ExceptionState& exception_state) {
 bool MediaRecorder::isTypeSupported(ExecutionContext* context,
                                     const String& type) {
   MediaRecorderHandler* handler = MakeGarbageCollected<MediaRecorderHandler>(
-      context->GetTaskRunner(TaskType::kInternalMediaRealTime));
+      context->GetTaskRunner(TaskType::kInternalMediaRealTime),
+      KeyFrameRequestProcessor::Configuration());
   if (!handler)
     return false;
 
@@ -412,8 +431,10 @@ void MediaRecorder::ContextDestroyed() {
 
   state_ = State::kInactive;
   stream_.Clear();
-  recorder_handler_->Stop();
-  recorder_handler_ = nullptr;
+  if (recorder_handler_) {
+    recorder_handler_->Stop();
+    recorder_handler_ = nullptr;
+  }
 }
 
 void MediaRecorder::WriteData(const void* data,

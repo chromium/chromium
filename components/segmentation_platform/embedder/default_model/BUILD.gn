@@ -16,20 +16,25 @@ static_library("default_model") {
     "feed_user_segment.h",
     "low_user_engagement_model.cc",
     "low_user_engagement_model.h",
+    "password_manager_user_segment.cc",
+    "password_manager_user_segment.h",
     "resume_heavy_user_model.cc",
     "resume_heavy_user_model.h",
     "search_user_model.cc",
     "search_user_model.h",
     "shopping_user_model.cc",
     "shopping_user_model.h",
+    "tab_resumption_ranker.cc",
+    "tab_resumption_ranker.h",
   ]
   deps = [
     "//base",
     "//components/prefs:prefs",
+    "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//ui/base",
   ]
   if (is_android) {
@@ -66,6 +71,7 @@ source_set("unit_tests") {
     "resume_heavy_user_model_unittest.cc",
     "search_user_model_unittest.cc",
     "shopping_user_model_unittest.cc",
+    "tab_resumption_ranker_unittest.cc",
   ]
 
   if (is_android) {
@@ -85,6 +91,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",
+    "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public:public",

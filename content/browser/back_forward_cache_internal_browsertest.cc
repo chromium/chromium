@@ -873,10 +873,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheEntryTimeoutBrowserTest,
                     FROM_HERE);
 
   // Make sure that the tree reasons match the flattened reasons.
-  EXPECT_THAT(GetTreeResult()->GetDocumentResult(),
-              MatchesDocumentResult(
-                  NotRestoredReasons(NotRestoredReason::kTimeoutPuttingInCache),
-                  BlockListedFeatures()));
+  EXPECT_THAT(
+      GetTreeResult()->GetDocumentResult(),
+      MatchesDocumentResult(
+          NotRestoredReasons({NotRestoredReason::kTimeoutPuttingInCache}),
+          BlockListedFeatures()));
 }
 
 // Test the race condition where a document is evicted from the BackForwardCache
@@ -1148,7 +1149,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TimedEviction) {
   // Make sure that the tree reasons match the flattened reasons.
   EXPECT_THAT(
       GetTreeResult()->GetDocumentResult(),
-      MatchesDocumentResult(NotRestoredReasons(NotRestoredReason::kTimeout),
+      MatchesDocumentResult(NotRestoredReasons({NotRestoredReason::kTimeout}),
                             BlockListedFeatures()));
 }
 
@@ -4195,9 +4196,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFencedFrames,
   // 6. Check the blocked reasons are set correctly on the fenced frame.
   EXPECT_THAT(child_c_results->GetDocumentResult(),
               MatchesDocumentResult(
-                  NotRestoredReasons(NotRestoredReason::kBlocklistedFeatures),
+                  NotRestoredReasons({NotRestoredReason::kBlocklistedFeatures}),
                   BlockListedFeatures(
-                      blink::scheduler::WebSchedulerTrackedFeature::kDummy)));
+                      {blink::scheduler::WebSchedulerTrackedFeature::kDummy})));
 
   // 7. Ensure that the web exposed reasons do not replicate any of
   // fenced frame results.

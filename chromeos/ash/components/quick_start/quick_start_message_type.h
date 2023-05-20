@@ -10,6 +10,7 @@ namespace ash::quick_start {
 // Lists various types of QuickStartMessages possible.
 enum class QuickStartMessageType {
   kSecondDeviceAuthPayload,  // secondDeviceAuthPayload in message
+  kBootstrapOptions,         // bootstrapOptions in message
   kBootstrapConfigurations,  // bootstrapConfiguration in message
   kFidoMessage,              // fidoMessage in message
   kQuickStartPayload,        // quickStartPayload in message

@@ -45,6 +45,7 @@
 #include "components/password_manager/core/browser/sql_table_builder.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -199,14 +200,13 @@ enum class LoginDatabaseEncryptionStatus {
   kMaxValue = kEncryptionUnavailable,
 };
 
-// Struct to hold table builder for "logins", "insecure_credentials",
-// "sync_entities_metadata", and "sync_model_metadata" tables.
+// Struct to hold table builder for different tables in the LoginDatabase.
 struct SQLTableBuilders {
   raw_ptr<SQLTableBuilder> logins;
   raw_ptr<SQLTableBuilder> insecure_credentials;
   raw_ptr<SQLTableBuilder> password_notes;
-  raw_ptr<SQLTableBuilder> sync_entities_metadata;
-  raw_ptr<SQLTableBuilder> sync_model_metadata;
+  raw_ptr<SQLTableBuilder> passwords_sync_entities_metadata;
+  raw_ptr<SQLTableBuilder> passwords_sync_model_metadata;
 };
 
 base::span<const uint8_t> PickleToSpan(const base::Pickle& pickle) {
@@ -301,12 +301,32 @@ void LogDatabaseInitError(DatabaseInitError error) {
                             DATABASE_INIT_ERROR_COUNT);
 }
 
-bool ClearAllSyncMetadata(sql::Database* db) {
-  sql::Statement s1(
-      db->GetCachedStatement(SQL_FROM_HERE, "DELETE FROM sync_model_metadata"));
+constexpr char kPasswordsSyncModelMetadataTableName[] = "sync_model_metadata";
+constexpr char kPasswordsSyncEntitiesMetadataTableName[] =
+    "sync_entities_metadata";
+
+const char* SyncModelMetadataTableName(syncer::ModelType model_type) {
+  CHECK_EQ(model_type, syncer::PASSWORDS);
+  return kPasswordsSyncModelMetadataTableName;
+}
+
+const char* SyncEntitiesMetadataTableName(syncer::ModelType model_type) {
+  CHECK_EQ(model_type, syncer::PASSWORDS);
+  return kPasswordsSyncEntitiesMetadataTableName;
+}
+
+bool ClearAllSyncMetadata(sql::Database* db, syncer::ModelType model_type) {
+  CHECK_EQ(model_type, syncer::PASSWORDS);
+  sql::Statement s1(db->GetCachedStatement(
+      SQL_FROM_HERE, base::StringPrintf("DELETE FROM %s",
+                                        SyncModelMetadataTableName(model_type))
+                         .c_str()));
 
   sql::Statement s2(db->GetCachedStatement(
-      SQL_FROM_HERE, "DELETE FROM sync_entities_metadata"));
+      SQL_FROM_HERE,
+      base::StringPrintf("DELETE FROM %s",
+                         SyncEntitiesMetadataTableName(model_type))
+          .c_str()));
 
   return s1.Run() && s2.Run();
 }
@@ -325,13 +345,13 @@ void SealVersion(SQLTableBuilders builders, unsigned expected_version) {
   unsigned notes_version = builders.password_notes->SealVersion();
   DCHECK_EQ(expected_version, notes_version);
 
-  unsigned sync_entities_metadata_version =
-      builders.sync_entities_metadata->SealVersion();
-  DCHECK_EQ(expected_version, sync_entities_metadata_version);
+  unsigned passwords_sync_entities_metadata_version =
+      builders.passwords_sync_entities_metadata->SealVersion();
+  DCHECK_EQ(expected_version, passwords_sync_entities_metadata_version);
 
-  unsigned sync_model_metadata_version =
-      builders.sync_model_metadata->SealVersion();
-  DCHECK_EQ(expected_version, sync_model_metadata_version);
+  unsigned passwords_sync_model_metadata_version =
+      builders.passwords_sync_model_metadata->SealVersion();
+  DCHECK_EQ(expected_version, passwords_sync_model_metadata_version);
 }
 
 // Teaches |builders| about the different DB schemes in different versions.
@@ -425,10 +445,12 @@ void InitializeBuilders(SQLTableBuilders builders) {
   SealVersion(builders, /*expected_version=*/20u);
 
   // Version 21.
-  builders.sync_entities_metadata->AddPrimaryKeyColumn("storage_key");
-  builders.sync_entities_metadata->AddColumn("metadata", "VARCHAR NOT NULL");
-  builders.sync_model_metadata->AddPrimaryKeyColumn("id");
-  builders.sync_model_metadata->AddColumn("model_metadata", "VARCHAR NOT NULL");
+  builders.passwords_sync_entities_metadata->AddPrimaryKeyColumn("storage_key");
+  builders.passwords_sync_entities_metadata->AddColumn("metadata",
+                                                       "VARCHAR NOT NULL");
+  builders.passwords_sync_model_metadata->AddPrimaryKeyColumn("id");
+  builders.passwords_sync_model_metadata->AddColumn("model_metadata",
+                                                    "VARCHAR NOT NULL");
   SealVersion(builders, /*expected_version=*/21u);
 
   // Version 22. Changes in Sync metadata encryption.
@@ -659,11 +681,13 @@ bool MigrateDatabase(unsigned current_version,
     return false;
   }
 
-  if (!builders.sync_entities_metadata->MigrateFrom(current_version, db)) {
+  if (!builders.passwords_sync_entities_metadata->MigrateFrom(current_version,
+                                                              db)) {
     return false;
   }
 
-  if (!builders.sync_model_metadata->MigrateFrom(current_version, db)) {
+  if (!builders.passwords_sync_model_metadata->MigrateFrom(current_version,
+                                                           db)) {
     return false;
   }
 
@@ -688,10 +712,11 @@ bool MigrateDatabase(unsigned current_version,
     }
   }
 
-  // Sync Metadata tables have been introduced in version 21. It is enough to
-  // drop all data because Sync would populate the tables properly at startup.
+  // Passwords Sync Metadata tables have been introduced in version 21. It is
+  // enough to drop all data because Sync would populate the tables properly at
+  // startup.
   if (current_version >= 21 && current_version < 26) {
-    if (!ClearAllSyncMetadata(db)) {
+    if (!ClearAllSyncMetadata(db, syncer::PASSWORDS)) {
       return false;
     }
   }
@@ -859,11 +884,14 @@ bool LoginDatabase::Init() {
   SQLTableBuilder insecure_credentials_builder(
       InsecureCredentialsTable::kTableName);
   SQLTableBuilder password_notes_builder(PasswordNotesTable::kTableName);
-  SQLTableBuilder sync_entities_metadata_builder("sync_entities_metadata");
-  SQLTableBuilder sync_model_metadata_builder("sync_model_metadata");
-  SQLTableBuilders builders = {
-      &logins_builder, &insecure_credentials_builder, &password_notes_builder,
-      &sync_entities_metadata_builder, &sync_model_metadata_builder};
+  SQLTableBuilder passwords_sync_entities_metadata_builder(
+      kPasswordsSyncEntitiesMetadataTableName);
+  SQLTableBuilder passwords_sync_model_metadata_builder(
+      kPasswordsSyncModelMetadataTableName);
+  SQLTableBuilders builders = {&logins_builder, &insecure_credentials_builder,
+                               &password_notes_builder,
+                               &passwords_sync_entities_metadata_builder,
+                               &passwords_sync_model_metadata_builder};
   InitializeBuilders(builders);
   InitializeStatementStrings(logins_builder);
 
@@ -874,14 +902,14 @@ bool LoginDatabase::Init() {
     return false;
   }
 
-  if (!sync_entities_metadata_builder.CreateTable(&db_)) {
+  if (!passwords_sync_entities_metadata_builder.CreateTable(&db_)) {
     LOG(ERROR) << "Failed to create the 'sync_entities_metadata' table";
     transaction.Rollback();
     db_.Close();
     return false;
   }
 
-  if (!sync_model_metadata_builder.CreateTable(&db_)) {
+  if (!passwords_sync_model_metadata_builder.CreateTable(&db_)) {
     LOG(ERROR) << "Failed to create the 'sync_model_metadata' table";
     transaction.Rollback();
     db_.Close();
@@ -1690,11 +1718,15 @@ LoginDatabase::SyncMetadataStore::SyncMetadataStore(sql::Database* db)
 LoginDatabase::SyncMetadataStore::~SyncMetadataStore() = default;
 
 std::unique_ptr<syncer::MetadataBatch>
-LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata() {
+LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata(
+    syncer::ModelType model_type) {
+  CHECK_EQ(model_type, syncer::PASSWORDS);
   auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-  sql::Statement s(db_->GetCachedStatement(SQL_FROM_HERE,
-                                           "SELECT storage_key, metadata FROM "
-                                           "sync_entities_metadata"));
+  sql::Statement s(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      base::StringPrintf("SELECT storage_key, metadata FROM %s",
+                         SyncEntitiesMetadataTableName(model_type))
+          .c_str()));
 
   while (s.Step()) {
     int storage_key_int = s.ColumnInt(0);
@@ -1724,11 +1756,15 @@ LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata() {
 }
 
 std::unique_ptr<sync_pb::ModelTypeState>
-LoginDatabase::SyncMetadataStore::GetModelTypeState() {
+LoginDatabase::SyncMetadataStore::GetModelTypeState(
+    syncer::ModelType model_type) {
+  CHECK_EQ(model_type, syncer::PASSWORDS);
   auto state = std::make_unique<sync_pb::ModelTypeState>();
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT model_metadata FROM sync_model_metadata WHERE id=1"));
+      base::StringPrintf("SELECT model_metadata FROM %s WHERE id=1",
+                         SyncModelMetadataTableName(model_type))
+          .c_str()));
 
   if (!s.Step()) {
     if (s.Succeeded()) {
@@ -1746,16 +1782,18 @@ LoginDatabase::SyncMetadataStore::GetModelTypeState() {
 }
 
 std::unique_ptr<syncer::MetadataBatch>
-LoginDatabase::SyncMetadataStore::GetAllSyncMetadata() {
+LoginDatabase::SyncMetadataStore::GetAllSyncMetadata(
+    syncer::ModelType model_type) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::GetAllSyncMetadata");
+  CHECK_EQ(model_type, syncer::PASSWORDS);
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
-      GetAllSyncEntityMetadata();
+      GetAllSyncEntityMetadata(model_type);
   if (metadata_batch == nullptr) {
     return nullptr;
   }
 
   std::unique_ptr<sync_pb::ModelTypeState> model_type_state =
-      GetModelTypeState();
+      GetModelTypeState(model_type);
   if (model_type_state == nullptr) {
     return nullptr;
   }
@@ -1764,16 +1802,19 @@ LoginDatabase::SyncMetadataStore::GetAllSyncMetadata() {
   return metadata_batch;
 }
 
-void LoginDatabase::SyncMetadataStore::DeleteAllSyncMetadata() {
+void LoginDatabase::SyncMetadataStore::DeleteAllSyncMetadata(
+    syncer::ModelType model_type) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::DeleteAllSyncMetadata");
-  bool had_unsynced_deletions = HasUnsyncedDeletions();
-  ClearAllSyncMetadata(db_);
-  if (had_unsynced_deletions && deletions_have_synced_callback_) {
+  CHECK_EQ(model_type, syncer::PASSWORDS);
+  bool had_unsynced_password_deletions = HasUnsyncedPasswordDeletions();
+  ClearAllSyncMetadata(db_, model_type);
+  if (had_unsynced_password_deletions &&
+      password_deletions_have_synced_callback_) {
     // Note: At this point we can't be fully sure whether the deletions actually
     // reached the server yet. We might have sent a commit, but haven't received
     // the commit confirmation. Let's be conservative and assume they haven't
     // been successfully deleted.
-    deletions_have_synced_callback_.Run(/*success=*/false);
+    password_deletions_have_synced_callback_.Run(/*success=*/false);
   }
 }
 
@@ -1798,19 +1839,21 @@ bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
     return false;
   }
 
-  sql::Statement s(
-      db_->GetCachedStatement(SQL_FROM_HERE,
-                              "INSERT OR REPLACE INTO sync_entities_metadata "
-                              "(storage_key, metadata) VALUES(?, ?)"));
+  sql::Statement s(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      base::StringPrintf(
+          "INSERT OR REPLACE INTO %s (storage_key, metadata) VALUES(?, ?)",
+          SyncEntitiesMetadataTableName(model_type))
+          .c_str()));
 
   s.BindInt(0, storage_key_int);
   s.BindString(1, encrypted_metadata);
 
-  bool had_unsynced_deletions = HasUnsyncedDeletions();
+  bool had_unsynced_deletions = HasUnsyncedPasswordDeletions();
   bool result = s.Run();
-  if (result && had_unsynced_deletions && !HasUnsyncedDeletions() &&
-      deletions_have_synced_callback_) {
-    deletions_have_synced_callback_.Run(/*success=*/true);
+  if (result && had_unsynced_deletions && !HasUnsyncedPasswordDeletions() &&
+      password_deletions_have_synced_callback_) {
+    password_deletions_have_synced_callback_.Run(/*success=*/true);
   }
   return result;
 }
@@ -1828,17 +1871,18 @@ bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
     return false;
   }
 
-  sql::Statement s(
-      db_->GetCachedStatement(SQL_FROM_HERE,
-                              "DELETE FROM sync_entities_metadata WHERE "
-                              "storage_key=?"));
+  sql::Statement s(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      base::StringPrintf("DELETE FROM %s WHERE storage_key=?",
+                         SyncEntitiesMetadataTableName(model_type))
+          .c_str()));
   s.BindInt(0, storage_key_int);
 
-  bool had_unsynced_deletions = HasUnsyncedDeletions();
+  bool had_unsynced_deletions = HasUnsyncedPasswordDeletions();
   bool result = s.Run();
-  if (result && had_unsynced_deletions && !HasUnsyncedDeletions() &&
-      deletions_have_synced_callback_) {
-    deletions_have_synced_callback_.Run(/*success=*/true);
+  if (result && had_unsynced_deletions && !HasUnsyncedPasswordDeletions() &&
+      password_deletions_have_synced_callback_) {
+    password_deletions_have_synced_callback_.Run(/*success=*/true);
   }
   return result;
 }
@@ -1853,8 +1897,10 @@ bool LoginDatabase::SyncMetadataStore::UpdateModelTypeState(
   // every time.
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
-      "INSERT OR REPLACE INTO sync_model_metadata (id, model_metadata) "
-      "VALUES(1, ?)"));
+      base::StringPrintf("INSERT OR REPLACE INTO %s (id, model_metadata) "
+                         "VALUES(1, ?)",
+                         SyncModelMetadataTableName(model_type))
+          .c_str()));
   s.BindString(0, model_type_state.SerializeAsString());
 
   return s.Run();
@@ -1866,20 +1912,23 @@ bool LoginDatabase::SyncMetadataStore::ClearModelTypeState(
   DCHECK_EQ(model_type, syncer::PASSWORDS);
 
   sql::Statement s(db_->GetCachedStatement(
-      SQL_FROM_HERE, "DELETE FROM sync_model_metadata WHERE id=1"));
+      SQL_FROM_HERE, base::StringPrintf("DELETE FROM %s WHERE id=1",
+                                        SyncModelMetadataTableName(model_type))
+                         .c_str()));
 
   return s.Run();
 }
 
-void LoginDatabase::SyncMetadataStore::SetDeletionsHaveSyncedCallback(
+void LoginDatabase::SyncMetadataStore::SetPasswordDeletionsHaveSyncedCallback(
     base::RepeatingCallback<void(bool)> callback) {
-  deletions_have_synced_callback_ = std::move(callback);
+  password_deletions_have_synced_callback_ = std::move(callback);
 }
 
-bool LoginDatabase::SyncMetadataStore::HasUnsyncedDeletions() {
+bool LoginDatabase::SyncMetadataStore::HasUnsyncedPasswordDeletions() {
   TRACE_EVENT0("passwords", "SyncMetadataStore::HasUnsyncedDeletions");
 
-  std::unique_ptr<syncer::MetadataBatch> batch = GetAllSyncEntityMetadata();
+  std::unique_ptr<syncer::MetadataBatch> batch =
+      GetAllSyncEntityMetadata(syncer::PASSWORDS);
   if (!batch) {
     return false;
   }

@@ -13,20 +13,30 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
+#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -36,6 +46,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/tab_helper.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 using side_panel::mojom::MethodType;
 using side_panel::mojom::PromoAction;
@@ -201,8 +215,31 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         GetCompanionWebContents(browser());
     EXPECT_TRUE(companion_web_contents);
 
+    // Verify that extensions do not have access to the companion web contents.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    CHECK_EQ(nullptr,
+             extensions::TabHelper::FromWebContents(companion_web_contents));
+#endif
+
     // Wait for the navigations in both the frames to complete.
     content::TestNavigationObserver nav_observer(companion_web_contents, 2);
+    nav_observer.Wait();
+  }
+
+  void WaitForMainPageToBeLoaded(const std::string& relative_url) {
+    // Wait for the navigations in the frame to complete.
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                             CreateUrl(kHost, relative_url)));
+  }
+
+  void WaitForCompanionIframeReload() {
+    content::WebContents* companion_web_contents =
+        GetCompanionWebContents(browser());
+    EXPECT_TRUE(companion_web_contents);
+
+    // Wait for the navigations in both the frames to complete.
+    content::TestNavigationObserver nav_observer(companion_web_contents, 1);
     nav_observer.Wait();
   }
 
@@ -224,6 +261,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::test_server::HttpResponse> InspectRequest(
       const net::test_server::HttpRequest& request) {
+    requests_received_on_server_++;
     const GURL& url = request.GetURL();
 
     std::string query_proto;
@@ -266,13 +304,24 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   }
 
   void EnableMsbb(bool enable_msbb) {
-    if (enable_msbb) {
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          companion::switches::kDisableCheckUserPermissionsForCompanion);
-    } else {
-      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-          companion::switches::kDisableCheckUserPermissionsForCompanion);
+    auto* pref_service = browser()->profile()->GetPrefs();
+    pref_service->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+        enable_msbb);
+  }
+
+  void EnableSignInMsbbExps(bool signed_in, bool msbb, bool exps) {
+    if (signed_in) {
+      // Mock a signed-in user.
+      signin::SetPrimaryAccount(
+          IdentityManagerFactory::GetForProfile(browser()->profile()),
+          "someemail@gmail.com", signin::ConsentLevel::kSignin);
     }
+
+    // Set MSBB and exps status.
+    EnableMsbb(msbb);
+    browser()->profile()->GetPrefs()->SetBoolean(
+        companion::kExpsOptInStatusGrantedPref, exps);
   }
 
   virtual void SetUpFeatureList() {
@@ -281,8 +330,6 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         companion_server_.GetURL("/companion_iframe.html").spec();
     feature_list_.InitAndEnableFeatureWithParameters(
         companion::features::kSidePanelCompanion, params);
-
-    EnableMsbb(true);
   }
 
   void WaitForHistogram(const std::string& histogram_name) {
@@ -315,6 +362,10 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     ukm_recorder->ExpectEntryMetric(entry, metric_name, expected_value);
   }
 
+  size_t requests_received_on_server() const {
+    return requests_received_on_server_;
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer page_url_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -323,6 +374,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   absl::optional<companion::proto::CompanionUrlParams>
       last_proto_from_url_load_;
+  size_t requests_received_on_server_ = 0;
 };
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
@@ -335,6 +387,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
   WaitForCompanionToBeLoaded();
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_EQ(1u, requests_received_on_server());
 
   // Inspect the URL from the proto.
   auto proto = GetLastCompanionProtoFromUrlLoad();
@@ -350,6 +403,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
 
   WaitForCompanionToBeLoaded();
+  EXPECT_EQ(1u, requests_received_on_server());
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
 
@@ -369,7 +423,97 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl3));
 }
 
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SamePageNavigation) {
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/false, /*exps=*/false);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Inspect the URL from the proto. This will reset the proto.
+  auto proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_TRUE(proto->page_url().empty());
+
+  // Turn on Msbb via promo. This should auto refresh the companion page.
+  CompanionScriptBuilder builder(MethodType::kOnPromoAction);
+  builder.promo_type = PromoType::kMsbb;
+  builder.promo_action = PromoAction::kAccepted;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+  WaitForHistogram("Companion.PromoEvent");
+
+  WaitForCompanionIframeReload();
+  proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnTabForegrounded) {
+  EnableSignInMsbbExps(/*signed_in=*/false, /*msbb=*/false, /*exps=*/false);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Inspect the URL from the proto. This will reset the proto.
+  auto proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_TRUE(proto->page_url().empty());
+
+  // Navigate to a new tab.
+  chrome::NewTab(browser());
+
+  // Go back to the original tab. This should refresh the companion.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  WaitForCompanionIframeReload();
+
+  proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_TRUE(proto->page_url().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       DontAutoRefreshIfHasAllPermissions) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Inspect the URL from the proto. This will reset the proto.
+  auto proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_FALSE(proto->page_url().empty());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+
+  // Navigate to a new tab.
+  chrome::NewTab(browser());
+
+  // Go back to the original tab. This should not refresh the companion.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_FALSE(proto.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       SamePageNavigationsAreSkipped) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
   // Load a page on the active tab and open companion side panel
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl3)));
@@ -381,6 +525,28 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SamePageNavigation) {
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl4)));
   auto proto = GetLastCompanionProtoFromPostMessage();
   EXPECT_FALSE(proto.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ReloadWillRefreshCompanion) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  WaitForCompanionToBeLoaded();
+  auto proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+
+  // Reload the page. It should refresh the companion via postmessage.
+  content::TestNavigationObserver nav_observer(web_contents(), 1);
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  nav_observer.Wait();
+
+  proto = GetLastCompanionProtoFromPostMessage();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
@@ -725,4 +891,95 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   ExpectUkmEntry(
       &ukm_recorder, ukm::builders::Companion_PageView::kOpenTriggerName,
       static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton));
+}
+
+class CompanionPagePolicyBrowserTest : public CompanionPageBrowserTest {
+ public:
+  void EnableCompanionByPolicy(bool enable_companion_by_policy) {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kGoogleSearchSidePanelEnabled, enable_companion_by_policy);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CompanionPagePolicyBrowserTest,
+                       SubsequentNavigationWithPolicyDefault) {
+  EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_EQ(1u, requests_received_on_server());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CompanionPagePolicyBrowserTest,
+    SubsequentNavigationWithPolicyEnabledFollowedbyDisabled) {
+  EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_EQ(1u, requests_received_on_server());
+
+  // Disable companion by policy. CSC should not be shown anymore.
+  EnableCompanionByPolicy(false);
+  EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+  WaitForMainPageToBeLoaded(kRelativeUrl2);
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_FALSE(side_panel_coordinator()->GetCurrentEntryId().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPagePolicyBrowserTest,
+                       PRE_SubsequentNavigationWithPolicyDisabled) {
+  EnableCompanionByPolicy(false);
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPagePolicyBrowserTest,
+                       SubsequentNavigationWithPolicyDisabled) {
+  EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+  // Load a page on the active tab and open companion side panel
+  WaitForMainPageToBeLoaded(kRelativeUrl1);
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  EXPECT_FALSE(side_panel_coordinator()->GetCurrentEntryId().has_value());
+  EXPECT_EQ(0u, requests_received_on_server());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CompanionPagePolicyBrowserTest,
+    PRE_SubsequentNavigationWithPolicyDisabledFollowedbyEnabled) {
+  EnableCompanionByPolicy(false);
+}
+IN_PROC_BROWSER_TEST_F(
+    CompanionPagePolicyBrowserTest,
+    SubsequentNavigationWithPolicyDisabledFollowedbyEnabled) {
+  // Load a page on the active tab and open companion side panel
+  EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+  WaitForMainPageToBeLoaded(kRelativeUrl1);
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_FALSE(side_panel_coordinator()->GetCurrentEntryId().has_value());
+  EXPECT_EQ(0u, requests_received_on_server());
+
+  // Enable companion by policy and that should enable the feature.
+  EnableCompanionByPolicy(true);
+  EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_EQ(1u, requests_received_on_server());
 }

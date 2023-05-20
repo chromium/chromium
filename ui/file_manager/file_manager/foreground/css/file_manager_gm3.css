@@ -173,6 +173,14 @@ html.breadcrumb-elider-expanded #directory-tree {
   text-overflow: ellipsis;
 }
 
+/* The file label's direction is always LTR even in RTL mode
+   (.entry-name in common.css), so the inline-start above won't work in RTL
+   mode, we need to have the inline-end here. */
+html[dir='rtl'] #directory-tree .tree-row > .file-row > .label {
+  margin-inline-end: 8px;
+  margin-inline-start: 0;
+}
+
 #directory-tree .tree-row .rename-placeholder {
   flex: auto;
   font: var(--cros-button-2-font);
@@ -231,7 +239,7 @@ html.drag-drop-active #directory-tree .tree-item.denies > .tree-row > .file-row 
 }
 
 html.drag-drop-active #directory-tree .tree-item.accepts > .tree-row > .file-row {
-  background-color: var(--cros-sys-hover_on_prominent);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 html.drag-drop-active #directory-tree
@@ -382,7 +390,6 @@ body[type='open-multi-file'].check-select .dialog-header {
   height: 36px;
   min-width: 48px;
   position: relative;
-  text-transform: uppercase;
   z-index: 1;
 }
 
@@ -739,6 +746,7 @@ html[dir='rtl'] #search-box .clear {
   --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
   --cr-toggle-ripple-diameter: 32px;
   margin-inline: 6px;
+  margin-top: 2px;
 }
 
 /* only show the ripple ring for tab navigation */
@@ -805,7 +813,7 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
   width: 100%;
 }
 
-.dialog-footer cr-input::part(input)::selection {
+cr-input::part(input)::selection {
   background-color: var(--cros-sys-highlight_text);
 }
 
@@ -1181,7 +1189,7 @@ body.files-ng .thumbnail-frame > .img-container {
 }
 
 #list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
+#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
 #list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
 #list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
   display: flex;
@@ -1526,8 +1534,8 @@ body.check-select #list-container list > li[lead] {
   border: 2px solid var(--cros-sys-on_surface_variant);
 }
 
-#list-container grid > .accepts {
-  background-color: var(--cros-highlight-color-hover)
+#list-container grid > .accepts .thumbnail-bottom {
+  background-color: var(--cros-sys-surface_variant);
 }
 
 #directory-tree .tree-item.accepts > .tree-row,
@@ -1539,7 +1547,7 @@ body.check-select #list-container list > li[lead] {
 @keyframes acceptsBlink {
   0% {
     background-color: transparent;
-    color: var(--cros-ripple-color);
+    color: var(--cros-sys-hover_on_prominent);
   }
 }
 
@@ -1591,8 +1599,16 @@ input.rename {
   flex: auto;
 }
 
-body.files-ng #list-container input.rename {
+#list-container input.rename {
   margin-inline-end: 12px;
+}
+
+/* The file name's direction is always LTR even in RTL mode
+   (.entry-name in common.css), so the inline-end above won't work in RTL
+   mode, we need to have the inline-start here. */
+html[dir='rtl'] #list-container input.rename {
+  margin-inline-end: 0;
+  margin-inline-start: 12px;
 }
 
 li[renaming=''] .filename-label {
@@ -1798,8 +1814,8 @@ body.files-ng #drag-container {
 }
 
 body.files-ng #drag-container .drag-box {
-  background-color: var(--cros-bg-color-elevation-2);
-  border-radius: 2px;
+  background-color: var(--cros-sys-base_elevated);
+  border-radius: 8px;
   box-shadow: var(--cros-elevation-2-shadow);
   box-sizing: border-box;
   height: 40px;
@@ -1811,10 +1827,9 @@ body.files-ng #drag-container .drag-contents {
   align-items: center;
   display: flex;
   left: 8px;
-  padding-inline-end: 2px;
   padding-inline-start: 8px;
   right: 8px;
-  top: 12px;
+  top: 8px;
 }
 
 body.files-ng #drag-container .drag-multiple {
@@ -1829,11 +1844,12 @@ body.files-ng #drag-container .detail-icon {
 }
 
 body.files-ng #drag-container .detail-icon[file-type-icon] {
-  color: var(--cros-icon-color-primary);
+  color: var(--cros-sys-on_surface);
 }
 
 body.files-ng #drag-container .label {
-  color: var(--cros-text-color-primary);
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-body-2-font);
   overflow: hidden;
   padding: 0 10px;
   text-overflow: ellipsis;
@@ -1841,11 +1857,10 @@ body.files-ng #drag-container .label {
 }
 
 body.files-ng #drag-container .drag-bubble {
-  background-color: var(--cros-icon-color-prominent);
+  background-color: var(--cros-sys-tertiary_container);
   border-radius: 12px;
-  color: var(--cros-bg-color);
-  font-size: 14px;
-  font-weight: 700;
+  color: var(--cros-sys-on_tertiary_container);
+  font: var(--cros-button-1-font);
   height: 24px;
   line-height: 24px;
   max-width: fit-content;
@@ -1858,25 +1873,6 @@ body.files-ng #drag-container .drag-bubble {
 html[dir=rtl] body.files-ng #drag-container .drag-bubble {
   left: calc(8px * 0.5);
   right: unset;
-}
-
-/* TODO(fukino): Gather menu-related definitions into one place. */
-cr-menu#file-context-menu {
-  min-width: 208px;
-  z-index: 600;  /* Must be below the overlay pane (1000). */
-}
-
-cr-menu#file-context-menu > :not(hr) {
-  padding-inline-end: 8px;
-}
-
-cr-menu#file-context-menu.toolbar-menu > .hide-on-toolbar {
-  display: none;
-}
-
-cr-menu.chrome-menu hr {
-  color: transparent;
-  font-size: 0;
 }
 
 body[drive='unmounted'] .dialog-container #list-container,
@@ -2124,7 +2120,7 @@ body.files-ng #list-container li .detail-checkmark {
 #list-container .list li.encrypted:not([renaming]) .encryption-status,
 #list-container .list li.encrypted:not([renaming]) .encryption-status xf-icon[type=encrypted],
 #list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status,
-#list-container .list li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
+#list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
 #list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
 #list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
   display: flex;
@@ -2252,11 +2248,6 @@ list.autocomplete-suggestions > li > div[search-icon] {
 list.autocomplete-suggestions > [selected],
 list.autocomplete-suggestions > [lead] {
   background-color: var(--cros-menu-item-background-hover);
-}
-
-#gear-menu > cr-menu-item:not(.menuitem-button),
-#sort-menu > cr-menu-item {
-  margin-inline-end: 50px;
 }
 
 .cr-dialog-container.files-ng #suggest-app-dialog.cr-dialog-frame {

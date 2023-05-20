@@ -4,7 +4,6 @@
 
 #import "chrome/browser/ui/cocoa/applescript/bookmark_folder_applescript.h"
 
-#import "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_item_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
@@ -12,6 +11,10 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -86,8 +89,8 @@ using bookmarks::BookmarkNode;
       continue;
     }
 
-    base::scoped_nsobject<BookmarkFolderAppleScript> bookmarkFolder(
-        [[BookmarkFolderAppleScript alloc] initWithBookmarkNode:node.get()]);
+    BookmarkFolderAppleScript* bookmarkFolder =
+        [[BookmarkFolderAppleScript alloc] initWithBookmarkNode:node.get()];
     [bookmarkFolder setContainer:self
                         property:AppleScript::kBookmarkFoldersProperty];
     [bookmarkFolders addObject:bookmarkFolder];
@@ -105,8 +108,8 @@ using bookmarks::BookmarkNode;
       continue;
     }
 
-    base::scoped_nsobject<BookmarkItemAppleScript> bookmarkItem(
-        [[BookmarkItemAppleScript alloc] initWithBookmarkNode:node.get()]);
+    BookmarkItemAppleScript* bookmarkItem =
+        [[BookmarkItemAppleScript alloc] initWithBookmarkNode:node.get()];
     [bookmarkItem setContainer:self
                       property:AppleScript::kBookmarkItemsProperty];
     [bookmarkItems addObject:bookmarkItem];

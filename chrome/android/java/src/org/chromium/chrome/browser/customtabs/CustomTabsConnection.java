@@ -1837,11 +1837,6 @@ public class CustomTabsConnection {
         mClientManager.setEngagementSignalsAvailableSupplierForSession(session, supplier);
     }
 
-    public void setGreatestScrollPercentageSupplier(
-            CustomTabsSessionToken session, Supplier<Integer> supplier) {
-        mClientManager.setGreatestScrollPercentageSupplierForSession(session, supplier);
-    }
-
     @CalledByNative
     public static void notifyClientOfDetachedRequestCompletion(
             CustomTabsSessionToken session, String url, int status) {
@@ -1893,13 +1888,6 @@ public class CustomTabsConnection {
 
         mClientManager.setEngagementSignalsCallbackForSession(sessionToken, callback);
         return true;
-    }
-
-    public int getGreatestScrollPercentage(CustomTabsSessionToken sessionToken, Bundle extras) {
-        if (!isEngagementSignalsApiAvailableInternal(sessionToken)) {
-            throw new UnsupportedOperationException("Engagement Signals API is not available.");
-        }
-        return mClientManager.getGreatestScrollPercentageForSession(sessionToken, extras);
     }
 
     private boolean isEngagementSignalsApiAvailableInternal(CustomTabsSessionToken session) {

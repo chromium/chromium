@@ -64,7 +64,7 @@ inputCaseWithoutRenderer.value = "Foobar";
 textareaCaseWithoutRenderer.appendChild(document.createTextNode("Foobar"));
 testBackgroundColor(false);
 debug("Removing the placeholder, we should not match.");
-setAttribute("placeholder", "");
+document.querySelectorAll('input, textarea').forEach(element => element.removeAttribute('placeholder'));
 testBackgroundColor(false);
 debug("Removing the value. We should still not match since the placeholder attribute was removed.");
 inputCaseWithRenderer.value = "";

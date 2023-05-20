@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_autolaunch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/kiosk_enable_screen_handler.h"
@@ -112,9 +114,15 @@ IN_PROC_BROWSER_TEST_F(KioskBaseTest, KioskEnableAfter2ndSigninScreen) {
   OobeScreenWaiter(KioskEnableScreenView::kScreenId).Wait();
   test::OobeJS().TapOnPath({"kiosk-enable", "close"});
 
-  // Navigate to gaia sign in screen.
+  // Navigate to gaia info screen.
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   test::OobeJS().TapOnPath({"user-creation", "nextButton"});
+
+  if (features::IsOobeGaiaInfoScreenEnabled()) {
+    // Navigate to gaia sign in screen.
+    OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
+    test::OobeJS().TapOnPath({"gaia-info", "nextButton"});
+  }
 
   // Wait for signin screen to appear again.
   OobeScreenWaiter(GaiaView::kScreenId).Wait();

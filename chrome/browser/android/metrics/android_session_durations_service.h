@@ -7,7 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/driver/sync_session_durations_metrics_recorder.h"
+#include "components/sync/service/sync_session_durations_metrics_recorder.h"
 
 namespace signin {
 class IdentityManager;

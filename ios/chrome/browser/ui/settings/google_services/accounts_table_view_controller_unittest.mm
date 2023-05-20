@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync/base/features.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "google_apis/gaia/core_account_id.h"
@@ -55,7 +55,7 @@ void SetSyncStateFeatureActive(const CoreAccountInfo& account,
   sync_service->SetHasSyncConsent(true);
   sync_service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service->SetDisableReasons({});
-  sync_service->SetFirstSetupComplete(true);
+  sync_service->SetInitialSyncFeatureSetupComplete(true);
   ASSERT_TRUE(sync_service->IsSyncFeatureEnabled());
 }
 

@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_UI_COCOA_SCREENTIME_WEBPAGE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_COCOA_SCREENTIME_WEBPAGE_CONTROLLER_IMPL_H_
 
-#include "base/mac/scoped_nsobject.h"
+#include <Foundation/Foundation.h>
+
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class BlockedObserver;
 @class STWebpageController;
@@ -26,8 +31,8 @@ class NS_AVAILABLE_MAC(11.0) WebpageControllerImpl : public WebpageController {
   void OnBlockedChanged(bool blocked);
 
  private:
-  base::scoped_nsobject<STWebpageController> platform_controller_;
-  base::scoped_nsobject<BlockedObserver> blocked_observer_;
+  STWebpageController* __strong platform_controller_;
+  BlockedObserver* __strong blocked_observer_;
   BlockedChangedCallback blocked_changed_callback_;
 };
 

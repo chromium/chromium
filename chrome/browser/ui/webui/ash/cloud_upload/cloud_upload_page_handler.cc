@@ -11,8 +11,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
-#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
-#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
@@ -21,9 +19,6 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace ash::cloud_upload {
-
-using ash::file_system_provider::ProviderId;
-using ash::file_system_provider::Service;
 
 CloudUploadPageHandler::CloudUploadPageHandler(
     content::WebUI* web_ui,
@@ -96,12 +91,9 @@ void CloudUploadPageHandler::IsODFSMounted(IsODFSMountedCallback callback) {
 
 void CloudUploadPageHandler::SignInToOneDrive(
     SignInToOneDriveCallback callback) {
-  Service* service = Service::Get(profile_);
-  ProviderId provider_id = ProviderId::CreateFromExtensionId(
-      file_manager::file_tasks::GetODFSExtensionId(profile_));
   web_ui_->GetWebContents()->GetTopLevelNativeWindow()->Hide();
-  service->RequestMount(
-      provider_id,
+  CloudUploadDialog::RequestODFSMount(
+      profile_,
       base::BindOnce(&CloudUploadPageHandler::OnMountResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

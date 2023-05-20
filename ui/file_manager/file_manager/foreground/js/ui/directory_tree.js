@@ -13,7 +13,7 @@ import {str, strf, util} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../../externs/background/file_operation_manager.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
-import {PropStatus, SearchData, State} from '../../../externs/ts/state.js';
+import {PropStatus, SearchData, SearchLocation, State} from '../../../externs/ts/state.js';
 import {VolumeInfo} from '../../../externs/volume_info.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {getStore} from '../../../state/store.js';
@@ -2088,7 +2088,9 @@ export class DirectoryTree extends Tree {
         this.setActiveItemHighlighted_(true);
       } else if (
           searchState.status === PropStatus.STARTED && searchState.query) {
-        this.setActiveItemHighlighted_(false);
+        this.setActiveItemHighlighted_(
+            (searchState.options || {}).location ===
+            SearchLocation.THIS_FOLDER);
       }
     }
   }

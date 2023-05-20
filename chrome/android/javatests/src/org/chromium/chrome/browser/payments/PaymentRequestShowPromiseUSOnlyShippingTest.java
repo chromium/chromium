@@ -54,9 +54,17 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest {
 
     private void runCannotShipTest() throws TimeoutException {
         AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
-        autofillTestHelper.setProfile(new AutofillProfile("", "https://example.test", true,
-                "" /* honorific prefix */, "Jon Doe", "Google", "51 Breithaupt St", "ON",
-                "Kitchener", "", "N2H 5G5", "", "CA", "555-222-2222", "", "en-CA"));
+        autofillTestHelper.setProfile(AutofillProfile.builder()
+                                              .setFullName("Jon Doe")
+                                              .setCompanyName("Google")
+                                              .setStreetAddress("51 Breithaupt St")
+                                              .setRegion("ON")
+                                              .setLocality("Kitchener")
+                                              .setPostalCode("N2H 5G5")
+                                              .setCountryCode("CA")
+                                              .setPhoneNumber("555-222-2222")
+                                              .setLanguageCode("en-CA")
+                                              .build());
         mRule.triggerUIAndWait("buy", mRule.getReadyForInput());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());
@@ -89,9 +97,17 @@ public class PaymentRequestShowPromiseUSOnlyShippingTest {
 
     private void runCanShipTest() throws TimeoutException {
         AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
-        autofillTestHelper.setProfile(new AutofillProfile("", "https://example.test", true,
-                "" /* honorific prefix */, "Jane Smith", "Google", "340 Main St", "California",
-                "Los Angeles", "", "90291", "", "US", "555-111-1111", "", "en-US"));
+        autofillTestHelper.setProfile(AutofillProfile.builder()
+                                              .setFullName("Jane Smith")
+                                              .setCompanyName("Google")
+                                              .setStreetAddress("340 Main St")
+                                              .setRegion("California")
+                                              .setLocality("Los Angeles")
+                                              .setPostalCode("90291")
+                                              .setCountryCode("US")
+                                              .setPhoneNumber("555-111-1111")
+                                              .setLanguageCode("en-US")
+                                              .build());
         mRule.triggerUIAndWait("buy", mRule.getReadyForInput());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());

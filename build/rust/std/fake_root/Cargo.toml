@@ -4,11 +4,17 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-test = { path = "../../../../third_party/rust-toolchain/lib/rustlib/src/rust/library/test" }
 
-[dependencies.std]
-path = "../../../../third_party/rust-toolchain/lib/rustlib/src/rust/library/std"
-features = ["backtrace", "profiler"]
+[dependencies.sysroot]
+path = "../../../../third_party/rust-toolchain/lib/rustlib/src/rust/library/sysroot"
+default-features = false
+features = [
+    "backtrace",
+    "panic-unwind",
+    "profiler",
+    "std_detect_dlsym_getauxval",
+    "std_detect_file_io"
+]
 
 [patch.crates-io]
 rustc-std-workspace-core = { path = '../../../../third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-core' }

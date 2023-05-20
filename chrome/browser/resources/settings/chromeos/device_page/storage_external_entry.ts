@@ -9,7 +9,7 @@
  * the storage's uuid will be saved to a preference.
  */
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';

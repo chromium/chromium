@@ -152,19 +152,19 @@ void ButtonOptionsMenu::AddHeader() {
   container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&ButtonOptionsMenu::OnTrashButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &vector_icons::kCloseIcon,
+      ash::IconButton::Type::kMedium, &kGameControlsDeleteIcon,
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 
   container->AddChildView(ash::bubble_utils::CreateLabel(
-      // TODO(b/281753420): Replace placeholder text with localized strings.
+      // TODO(b/274690042): Replace placeholder text with localized strings.
       ash::TypographyToken::kCrosTitle1, u"Button options",
       cros_tokens::kCrosSysOnSurface));
 
   container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&ButtonOptionsMenu::OnDoneButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &vector_icons::kCloseIcon,
-      // TODO(b/281753420): Replace placeholder names with a11y strings.
+      ash::IconButton::Type::kMedium, &kGameControlsDoneIcon,
+      // TODO(b/279117180): Replace placeholder names with a11y strings.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 }
 
@@ -179,7 +179,7 @@ void ButtonOptionsMenu::AddEditTitle() {
   container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 12, 0));
 
   container->AddChildView(ash::bubble_utils::CreateLabel(
-      // TODO(b/281753420): Replace placeholder text with localized strings.
+      // TODO(b/274690042): Replace placeholder text with localized strings.
       ash::TypographyToken::kCrosBody2, u"Key assignment",
       cros_tokens::kCrosSysOnSurface));
 }
@@ -214,9 +214,9 @@ void ButtonOptionsMenu::AddActionSelection() {
       /*type=*/ash::FeatureTile::TileType::kCompact));
   tap_button->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
   tap_button->SetAccessibleName(
-      // TODO(b/281753420): Replace placeholder names with a11y strings.
+      // TODO(b/279117180): Replace placeholder names with a11y strings.
       l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-  // TODO(b/281753420): Replace placeholder text with localized strings.
+  // TODO(b/274690042): Replace placeholder text with localized strings.
   tap_button->SetLabel(u"Single button");
   tap_button->SetVectorIcon(vector_icons::kCloseIcon);
   tap_button->SetVisible(true);
@@ -230,11 +230,11 @@ void ButtonOptionsMenu::AddActionSelection() {
           /*type=*/ash::FeatureTile::TileType::kCompact));
   move_button->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
   move_button->SetAccessibleName(
-      // TODO(b/281753420): Replace placeholder names with a11y strings.
+      // TODO(b/279117180): Replace placeholder names with a11y strings.
       l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-  // TODO(b/281753420): Replace placeholder text with localized strings.
+  // TODO(b/274690042): Replace placeholder text with localized strings.
   move_button->SetLabel(u"Dpad");
-  move_button->SetVectorIcon(vector_icons::kCloseIcon);
+  move_button->SetVectorIcon(kGameControlsDpadKeyboardIcon);
   move_button->SetVisible(true);
   move_button->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
 }
@@ -260,13 +260,18 @@ void ButtonOptionsMenu::AddActionEdit() {
   container->SetBorderInsets(gfx::Insets::VH(14, 16));
   container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 8, 0));
 
-  // TODO(b/281753420): Replace placeholder text with localized strings.
+  // TODO(b/274690042): Replace placeholder text with localized strings.
   container->AddChildView(CreateNameTag(u"Selected key", u"Key"));
-  auto* key_binding_button =
-      container->AddChildView(std::make_unique<views::LabelButton>(
-          views::Button::PressedCallback(), base::UTF8ToUTF16(action_->name()),
-          views::style::CONTEXT_BUTTON));
-  key_binding_button->SetBackground(views::CreateSolidBackground(SK_ColorGRAY));
+  switch (action_->GetType()) {
+    case ActionType::TAP:
+      container->AddChildView(CreateActionTapEditForKeyboard(action_));
+      break;
+    case ActionType::MOVE:
+      container->AddChildView(CreateActionMoveEditForKeyboard(action_));
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void ButtonOptionsMenu::AddActionNameLabel() {
@@ -286,9 +291,9 @@ void ButtonOptionsMenu::AddActionNameLabel() {
           /*is_togglable=*/false));
   action_name_feature_tile->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
   action_name_feature_tile->SetAccessibleName(
-      // TODO(b/281753420): Replace placeholder names with a11y strings.
+      // TODO(b/279117180): Replace placeholder names with a11y strings.
       l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-  // TODO(b/281753420): Replace placeholder text with localized strings.
+  // TODO(b/274690042): Replace placeholder text with localized strings.
   action_name_feature_tile->SetLabel(u"Button label");
   action_name_feature_tile->SetSubLabel(u"Unassigned");
   action_name_feature_tile->SetSubLabelVisibility(true);

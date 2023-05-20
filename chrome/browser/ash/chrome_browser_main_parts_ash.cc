@@ -115,6 +115,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/memory_metrics.h"
 #include "chrome/browser/ash/mojo_service_manager/connection_helper.h"
+#include "chrome/browser/ash/net/apn_migrator.h"
 #include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/net/network_portal_detector_impl.h"
@@ -1416,6 +1417,12 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
         std::make_unique<VideoConferenceAppServiceClient>();
   }
 
+  apn_migrator_ = std::make_unique<ApnMigrator>(
+      NetworkHandler::Get()->managed_cellular_pref_handler(),
+      NetworkHandler::Get()->managed_network_configuration_handler(),
+      NetworkHandler::Get()->network_state_handler(),
+      NetworkHandler::Get()->network_metadata_store());
+
   ChromeBrowserMainPartsLinux::PostBrowserStart();
 }
 
@@ -1436,6 +1443,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
     zram_writeback_controller_->Stop();
   }
 
+  apn_migrator_.reset();
   SystemProxyManager::Shutdown();
   device_activity_controller_.reset();
   crostini_unsupported_action_notifier_.reset();

@@ -82,3 +82,8 @@ wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Skip ]
 
 # Most likely a forced style/layout update from accessibiity while we are
 # render blocking, which should not happen.
+
+crbug.com/1445710 external/wpt/css/css-lists/list-marker-containing-control-char-crash.html [ Failure ]
+
+# Times out
+http/tests/inspector-protocol/runtime/serialization_options.js [ Skip ]

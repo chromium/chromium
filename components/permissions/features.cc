@@ -73,18 +73,11 @@ BASE_FEATURE(kPermissionQuietChip,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kPermissionChipAutoDismiss,
-             "PermissionChipAutoDismiss",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a faster permission request finalization if it is displayed as a
 // quiet chip.
 BASE_FEATURE(kFailFastQuietChip,
              "FailFastQuietChip",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kPermissionChipAutoDismissDelay{
-    &kPermissionChipAutoDismiss, "delay_ms", 6000};
 
 // When enabled, use the value of the `service_url` FeatureParam as the url
 // for the Web Permission Predictions Service.
@@ -147,6 +140,11 @@ BASE_FEATURE(kPermissionStorageAccessAPI,
 // default to the new alias.
 BASE_FEATURE(kWindowManagementPermissionAlias,
              "WindowManagementPermissionAlias",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables disallowing MIDI permission by default.
+BASE_FEATURE(kBlockMidiByDefault,
+             "BlockMidiByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -99,6 +99,8 @@ enum PrefPath {
   [MinVersion=9] kMultitaskMenuNudgeClamshellShownCount = 35,
   // M112: prefs::kMultitaskMenuNudgeClamshellLastShown
   [MinVersion=9] kMultitaskMenuNudgeClamshellLastShown = 36,
+  // M115: ash::kAttestationForContentProtectionEnabled
+  [MinVersion=10] kAttestationForContentProtectionEnabled = 37,
 };
 
 // Information about who or what is controlling a particular pref. This is used

@@ -23,7 +23,7 @@ class SubAppsServiceImpl
     : public content::DocumentService<blink::mojom::SubAppsService> {
  public:
   using AddResults = std::vector<
-      std::pair<UnhashedAppId, blink::mojom::SubAppsServiceResultCode>>;
+      std::pair<ManifestId, blink::mojom::SubAppsServiceResultCode>>;
   using AddResultsMojo = std::vector<blink::mojom::SubAppsServiceAddResultPtr>;
 
   SubAppsServiceImpl(const SubAppsServiceImpl&) = delete;
@@ -41,12 +41,12 @@ class SubAppsServiceImpl
       std::vector<blink::mojom::SubAppsServiceAddParametersPtr> sub_apps_to_add,
       AddCallback result_callback) override;
   void List(ListCallback result_callback) override;
-  void Remove(const std::vector<std::string>& unhashed_app_id_paths,
+  void Remove(const std::vector<std::string>& manifest_id_paths,
               RemoveCallback result_callback) override;
 
  private:
   void RemoveSubApp(
-      const UnhashedAppId& unhashed_app_id,
+      const std::string& manifest_id_path,
       base::OnceCallback<void(blink::mojom::SubAppsServiceRemoveResultPtr)>
           remove_barrier_callback,
       const AppId* calling_app_id);

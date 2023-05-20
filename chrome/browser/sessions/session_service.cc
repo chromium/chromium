@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -166,7 +167,7 @@ bool SessionService::IsRelevantWindowType(
 
 bool SessionService::ShouldRestore(Browser* browser) {
   // Do not restore browser window in the kiosk session.
-  if (profiles::IsKioskSession()) {
+  if (chromeos::IsKioskSession()) {
     return false;
   }
 

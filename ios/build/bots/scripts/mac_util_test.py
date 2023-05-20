@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Unittests for mac_util_test.py."""
 
+import json
 import subprocess
 import unittest
 from unittest.mock import patch, MagicMock
@@ -47,6 +48,52 @@ class TestRunCodesignCheck(test_runner_test.TestCase):
     success, return_error = mac_util.run_codesign_check("testdir/Xcode.app")
     self.assertEqual(success, False)
     self.assertEqual(return_error, error)
+
+
+class TestPlistAsDict(test_runner_test.TestCase):
+
+  @patch('subprocess.check_output')
+  def test_complex_dict(self, mock_check_output: MagicMock):
+
+    mock_return = '{"key1":"val1","key2":{"key3":[1,2,3],"key4":false}}'.encode(
+        'utf-8')
+    mock_check_output.return_value = mock_return
+
+    plist, error = mac_util.plist_as_dict('PATH')
+
+    expected_plist = {
+        'key1': 'val1',
+        'key2': {
+            'key3': [1, 2, 3],
+            'key4': False
+        }
+    }
+    self.assertIsNone(error)
+    self.assertDictEqual(plist, expected_plist)
+
+  @patch('subprocess.check_output')
+  def test_subprocess_call(self, mock_check_output: MagicMock):
+    mock_check_output.return_value = '{}'.encode('utf-8')
+    mac_util.plist_as_dict('PATH')
+    mock_check_output.assert_called_once_with(
+        ['plutil', '-convert', 'json', '-o', '-', 'PATH'])
+
+  @patch('subprocess.check_output')
+  def test_subprocess_raises_error(self, mock_check_output: MagicMock):
+    mock_check_output.side_effect = subprocess.CalledProcessError(
+        cmd='cmd', returncode=1)
+    plist, error = mac_util.plist_as_dict('PATH')
+    self.assertIsNone(plist)
+    self.assertIsInstance(error, subprocess.CalledProcessError)
+
+  @patch('subprocess.check_output')
+  def test_json_decode_raises_error(self, mock_check_output: MagicMock):
+    mock_json_loads = MagicMock()
+    mock_json_loads.side_effect = json.JSONDecodeError('message', 'doc', 0)
+    self.mock(json, 'loads', mock_json_loads)
+    plist, error = mac_util.plist_as_dict('PATH')
+    self.assertIsNone(plist)
+    self.assertIsInstance(error, json.JSONDecodeError)
 
 
 if __name__ == '__main__':

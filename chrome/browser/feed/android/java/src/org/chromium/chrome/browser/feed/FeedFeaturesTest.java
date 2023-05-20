@@ -25,6 +25,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -150,6 +151,7 @@ public class FeedFeaturesTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/1445267")
     public void testShouldUseNewIndicator_notSeenFeedAndAnimation() {
         mParamsTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "new_animation");

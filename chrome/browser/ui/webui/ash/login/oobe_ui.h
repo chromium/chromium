@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/core_oobe.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -74,6 +75,7 @@ class OobeUI : public ui::MojoWebUIController {
     virtual void OnCurrentScreenChanged(OobeScreenId current_screen,
                                         OobeScreenId new_screen) = 0;
 
+    virtual void OnBackdropLoaded() {}
     virtual void OnDestroyingOobeUI() = 0;
 
    protected:
@@ -87,7 +89,7 @@ class OobeUI : public ui::MojoWebUIController {
 
   ~OobeUI() override;
 
-  CoreOobeView* GetCoreOobeView();
+  CoreOobe* GetCoreOobe();
   ErrorScreen* GetErrorScreen();
 
   // Collects localized strings from the owned handlers.
@@ -98,6 +100,9 @@ class OobeUI : public ui::MojoWebUIController {
 
   // Called when the screen has changed.
   void CurrentScreenChanged(OobeScreenId screen);
+
+  // Called when the backdrop image of the OOBE is loaded.
+  void OnBackdropLoaded();
 
   bool IsJSReady(base::OnceClosure display_is_ready_callback);
 
@@ -203,6 +208,7 @@ class OobeUI : public ui::MojoWebUIController {
 
   // Reference to CoreOobeHandler that handles common requests of Oobe page.
   raw_ptr<CoreOobeHandler, ExperimentalAsh> core_handler_ = nullptr;
+  std::unique_ptr<CoreOobe> core_oobe_;
 
   std::vector<BaseWebUIHandler*> webui_handlers_;       // Non-owning pointers.
   std::vector<BaseWebUIHandler*> webui_only_handlers_;  // Non-owning pointers.

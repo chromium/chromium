@@ -391,13 +391,15 @@ def _ReadValuesFromLine(file_iter, split):
   return _ReadLine(file_iter).split(split)
 
 
-def _LoadSizeInfoFromFile(file_obj, size_path):
+def _LoadSizeInfoFromFile(file_obj, size_path, is_sparse):
   """Loads a size_info from the given file.
 
   See _SaveSizeInfoToFile() for details on the .size file format.
 
   Args:
-    file_obj: File to read, should be a GzipFile
+    file_obj: File to read, should be a GzipFile.
+    size_path: Path to the file to read.
+    is_sparse: Whether the size file is a sparse, e.g., created from diff.
   """
   # Split lines on '\n', since '\r' can appear in some lines!
   lines = io.TextIOWrapper(file_obj, newline='\n')
@@ -463,7 +465,10 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
 
   if num_path_tuples == 0:
     logging.warning('File contains no symbols: %s', size_path)
-    return models.SizeInfo(build_config, containers, [], size_path=size_path)
+    return models.SizeInfo(build_config,
+                           containers, [],
+                           size_path=size_path,
+                           is_sparse=is_sparse)
 
   # Component list.
   if has_components:
@@ -599,7 +604,8 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
   return models.SizeInfo(build_config,
                          containers,
                          raw_symbols,
-                         size_path=size_path)
+                         size_path=size_path,
+                         is_sparse=is_sparse)
 
 
 @contextlib.contextmanager
@@ -641,10 +647,10 @@ def SaveSizeInfo(size_info,
       f.write(bytesio.getvalue())
 
 
-def LoadSizeInfo(filename, file_obj=None):
+def LoadSizeInfo(filename, file_obj=None, is_sparse=False):
   """Returns a SizeInfo loaded from |filename|."""
   with gzip.GzipFile(filename=filename, fileobj=file_obj) as f:
-    return _LoadSizeInfoFromFile(f, filename)
+    return _LoadSizeInfoFromFile(f, filename, is_sparse)
 
 
 def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None):
@@ -717,8 +723,8 @@ def LoadDeltaSizeInfo(path, file_obj=None):
   assert fields['version'] == _SIZEDIFF_VERSION
   after_pos = file_obj.tell() + fields['before_length']
 
-  before_size_info = LoadSizeInfo(path, file_obj)
+  before_size_info = LoadSizeInfo(path, file_obj, is_sparse=True)
   file_obj.seek(after_pos)
-  after_size_info = LoadSizeInfo(path, file_obj)
+  after_size_info = LoadSizeInfo(path, file_obj, is_sparse=True)
 
   return before_size_info, after_size_info

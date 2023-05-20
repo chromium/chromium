@@ -24,35 +24,33 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:textDirection="locale"
-        android:drawableStart="@drawable/ic_watch_later_24dp"
+        android:drawableStart="@drawable/ic_history_24dp"
         android:paddingBottom="24dp"
         android:drawablePadding="12dp"
         app:chromeDrawableTint="@macro/default_icon_color"
         android:text="@string/clear_history_title"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-
     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/quick_delete_tabs_close_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:textDirection="locale"
-        android:drawableStart="@drawable/permission_cookie"
+        android:drawableStart="@drawable/quick_delete_dialog_tab_icon_24dp"
         android:paddingBottom="24dp"
         android:drawablePadding="12dp"
         app:chromeDrawableTint="@macro/default_icon_color"
-        android:text="@string/clear_cookies_and_site_data_title"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-
     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:textDirection="locale"
-        android:drawableStart="@drawable/ic_collections_grey"
+        android:drawableStart="@drawable/quick_delete_cookies_24dp"
         android:paddingBottom="24dp"
         android:drawablePadding="12dp"
         app:chromeDrawableTint="@macro/default_icon_color"
-        android:text="@string/clear_cache_title"
+        android:text="@string/quick_delete_dialog_cookies_cache_and_other_site_data_text"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
     <org.chromium.ui.widget.TextViewWithClickableSpans

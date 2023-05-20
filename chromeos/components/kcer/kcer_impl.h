@@ -118,12 +118,27 @@ class KcerImpl : public Kcer {
       DoesKeyExistCallback callback,
       base::expected<absl::optional<Token>, Error> find_key_result);
 
+  void SignWithToken(SigningScheme signing_scheme,
+                     DataToSign data,
+                     SignCallback callback,
+                     base::expected<PrivateKeyHandle, Error> key_or_error);
+
   void GetKeyInfoWithToken(
       GetKeyInfoCallback callback,
       base::expected<PrivateKeyHandle, Error> key_or_error);
 
   void SetKeyNicknameWithToken(
       std::string nickname,
+      StatusCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
+  void SetKeyPermissionsWithToken(
+      chaps::KeyPermissions key_permissions,
+      StatusCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
+  void SetCertProvisioningProfileIdWithToken(
+      std::string profile_id,
       StatusCallback callback,
       base::expected<PrivateKeyHandle, Error> key_or_error);
 

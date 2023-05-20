@@ -1430,9 +1430,9 @@ TEST_F(SellerWorkletTest, ScoreAdInterestGroupOwner) {
 TEST_F(SellerWorkletTest, ScoreAdRenderUrl) {
   browser_signal_render_url_ = GURL("https://bar.test/path");
   RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.renderUrl === "https://bar.test/path" ? 3 : 0)", 3);
+      R"(browserSignals.renderURL === "https://bar.test/path" ? 3 : 0)", 3);
   RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.renderUrl === "https://bar.test/" ? 3 : 0)", 0);
+      R"(browserSignals.renderURL === "https://bar.test/" ? 3 : 0)", 0);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdAdComponents) {
@@ -1665,11 +1665,11 @@ TEST_F(SellerWorkletTest, ScoreAdParallelBeforeLoadComplete) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(0u, num_completed_worklets);
 
-  // Load a seller script that uses the last character of `renderUrl` as the
+  // Load a seller script that uses the last character of `renderURL` as the
   // score. The worklet should report a successful load.
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
-      CreateScoreAdScript("parseInt(browserSignals.renderUrl.slice(-1))"));
+      CreateScoreAdScript("parseInt(browserSignals.renderURL.slice(-1))"));
 
   // All scripts should complete successfully.
   run_loop.Run();
@@ -1678,10 +1678,10 @@ TEST_F(SellerWorkletTest, ScoreAdParallelBeforeLoadComplete) {
 // Test the case of a bunch of ScoreAd() calls in parallel, all started after
 // the worklet script has loaded.
 TEST_F(SellerWorkletTest, ScoreAdParallelAfterLoadComplete) {
-  // Seller script that uses the last character of `renderUrl` as the score.
+  // Seller script that uses the last character of `renderURL` as the score.
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
-      CreateScoreAdScript("parseInt(browserSignals.renderUrl.slice(-1))"));
+      CreateScoreAdScript("parseInt(browserSignals.renderURL.slice(-1))"));
   auto seller_worklet = CreateWorklet();
 
   const size_t kNumWorklets = 10;
@@ -1740,11 +1740,11 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsNotBatched) {
   base::Time start_time = base::Time::Now();
 
   // Seller script that gets the score from the `trustedScoringSignals` value of
-  // the passed in `renderUrl`.
+  // the passed in `renderURL`.
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript(
-          "trustedScoringSignals.renderUrl[browserSignals.renderUrl]"));
+          "trustedScoringSignals.renderUrl[browserSignals.renderURL]"));
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
   auto seller_worklet = CreateWorklet();
@@ -1810,11 +1810,11 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsNotBatched) {
 // 3) The trusted bidding signals are loaded.
 TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched1) {
   // Seller script that gets the score from the `trustedScoringSignals` value of
-  // the passed in `renderUrl`.
+  // the passed in `renderURL`.
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript(
-          "trustedScoringSignals.renderUrl[browserSignals.renderUrl]"));
+          "trustedScoringSignals.renderUrl[browserSignals.renderURL]"));
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
   auto seller_worklet = CreateWorklet();
@@ -1909,11 +1909,11 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched2) {
   EXPECT_EQ(0u, num_completed_worklets);
 
   // Return seller script that gets the score from the `trustedScoringSignals`
-  // value of the passed in `renderUrl`, and wait for it to finish loading.
+  // value of the passed in `renderURL`, and wait for it to finish loading.
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript(
-          "trustedScoringSignals.renderUrl[browserSignals.renderUrl]"));
+          "trustedScoringSignals.renderUrl[browserSignals.renderURL]"));
   task_environment_.RunUntilIdle();
 
   // Provide a single response for the merged URL request.
@@ -2003,11 +2003,11 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
   EXPECT_EQ(0u, num_completed_worklets);
 
   // Return seller script that gets the score from the `trustedScoringSignals`
-  // value of the passed in `renderUrl`, and wait for it to finish loading.
+  // value of the passed in `renderURL`, and wait for it to finish loading.
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
       CreateScoreAdScript(
-          "trustedScoringSignals.renderUrl[browserSignals.renderUrl]"));
+          "trustedScoringSignals.renderUrl[browserSignals.renderURL]"));
 
   // All ScoreAd() calls should succeed with the expected scores.
   run_loop.Run();
@@ -2550,7 +2550,7 @@ TEST_F(SellerWorkletTest, ReportResultBuyerAndSellerReportingId) {
 TEST_F(SellerWorkletTest, ReportResultRenderUrl) {
   browser_signal_render_url_ = GURL("https://foo/");
   RunReportResultCreatedScriptExpectingResult(
-      "browserSignals.renderUrl", "sendReportTo(browserSignals.renderUrl)",
+      "browserSignals.renderURL", "sendReportTo(browserSignals.renderURL)",
       R"("https://foo/")", browser_signal_render_url_);
 }
 
@@ -2576,14 +2576,14 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         'click': "https://click.example.com/",
         'view': "https://view.example.com/",
       });
-      sendReportTo(browserSignals.renderUrl))",
+      sendReportTo(browserSignals.renderURL))",
       /*expected_signals_for_winner=*/"5",
       /*expected_report_url =*/browser_signal_render_url_,
       expected_ad_beacon_map);
 
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
-      R"(sendReportTo(browserSignals.renderUrl);
+      R"(sendReportTo(browserSignals.renderURL);
       registerAdBeacon({
         'click': "https://click.example.com/",
         'view': "https://view.example.com/",
@@ -2754,6 +2754,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(),
       R"({"seller":"https://example.com",)"
+      R"("decisionLogicURL":"https://example.com/auction.js",)"
       R"("decisionLogicUrl":"https://example.com/auction.js"})",
       /*expected_report_url=*/absl::nullopt);
 
@@ -2819,7 +2820,9 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
 
   const char kExpectedJson1[] =
       R"({"seller":"https://example.com",
+          "decisionLogicURL":"https://example.com/auction.js",
           "decisionLogicUrl":"https://example.com/auction.js",
+          "trustedScoringSignalsURL":"https://example.com/scoring_signals.json",
           "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
           "interestGroupBuyers":["https://buyer1.com",
                                  "https://another-buyer.com"],
@@ -2866,14 +2869,19 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
 
   const char kExpectedJson2[] =
       R"({"seller":"https://example.com",
+          "decisionLogicURL":"https://example.com/auction.js",
           "decisionLogicUrl":"https://example.com/auction.js",
+          "trustedScoringSignalsURL":"https://example.com/scoring_signals.json",
           "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
           "componentAuctions":[
               {"seller":"https://component1.com",
+               "decisionLogicURL":"https://component1.com/script.js",
                "decisionLogicUrl":"https://component1.com/script.js",
                "sellerTimeout":111},
               {"seller":"https://component2.com",
+               "decisionLogicURL":"https://component2.com/script.js",
                "decisionLogicUrl":"https://component2.com/script.js",
+               "trustedScoringSignalsURL":"https://component2.com/signals.json",
                "trustedScoringSignalsUrl":"https://component2.com/signals.json"}
           ]})";
   RunReportResultCreatedScriptExpectingResult(
@@ -2888,6 +2896,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(),
       R"({"seller":"https://example.com",)"
+      R"("decisionLogicURL":"https://example.com/auction.js",)"
       R"("decisionLogicUrl":"https://example.com/auction.js"})",
       /*expected_report_url=*/absl::nullopt);
 
@@ -2901,6 +2910,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
     RunReportResultCreatedScriptExpectingResult(
         "auctionConfig", /*extra_code=*/std::string(),
         R"({"seller":"https://example.com",)"
+        R"("decisionLogicURL":"https://example.com/auction.js",)"
         R"("decisionLogicUrl":"https://example.com/auction.js",)"
         R"("perBuyerTimeouts":{}})",
         /*expected_report_url=*/absl::nullopt);
@@ -2917,6 +2927,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
     RunReportResultCreatedScriptExpectingResult(
         "auctionConfig", /*extra_code=*/std::string(),
         R"({"seller":"https://example.com",)"
+        R"("decisionLogicURL":"https://example.com/auction.js",)"
         R"("decisionLogicUrl":"https://example.com/auction.js",)"
         R"("perBuyerTimeouts":{"*":150}})",
         /*expected_report_url=*/absl::nullopt);

@@ -44,6 +44,7 @@ source_set("system_web_apps") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/components/kiosk",
     "//components/keyed_service/content",
     "//components/pref_registry:pref_registry",
     "//components/webapps/browser",

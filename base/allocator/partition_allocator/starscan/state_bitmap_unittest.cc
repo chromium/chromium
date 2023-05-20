@@ -261,8 +261,9 @@ TEST_F(PartitionAllocStateBitmapTest, AdjacentQuarantinedObjectsAtBegin) {
     size_t count = 0;
     this->bitmap().IterateUnmarkedQuarantined(
         kTestEpoch, [&count, this](uintptr_t current) {
-          if (count == 0)
+          if (count == 0) {
             EXPECT_EQ(ObjectAddress(1), current);
+          }
           count++;
         });
 
@@ -295,8 +296,9 @@ TEST_F(PartitionAllocStateBitmapTest, AdjacentQuarantinedObjectsAtMiddle) {
     size_t count = 0;
     this->bitmap().IterateUnmarkedQuarantined(
         kTestEpoch, [&count, this](uintptr_t current) {
-          if (count == 0)
+          if (count == 0) {
             EXPECT_EQ(ObjectAddress(MiddleIndex() + 1), current);
+          }
           count++;
         });
 
@@ -331,8 +333,9 @@ TEST_F(PartitionAllocStateBitmapTest, AdjacentQuarantinedObjectsAtEnd) {
     size_t count = 0;
     this->bitmap().IterateUnmarkedQuarantined(
         kTestEpoch, [&count, this](uintptr_t current) {
-          if (count == 0)
+          if (count == 0) {
             EXPECT_EQ(ObjectAddress(LastIndex() - 1), current);
+          }
           count++;
         });
 

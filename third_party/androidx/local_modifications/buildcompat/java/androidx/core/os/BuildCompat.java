@@ -51,8 +51,9 @@ public class BuildCompat {
      * @hide
      */
     @VisibleForTesting
-    protected static boolean isAtLeastPreReleaseCodename(
-            @NonNull String codename, @NonNull String buildCodename) {
+    protected static boolean isAtLeastPreReleaseCodename(@NonNull String codename,
+            @NonNull String buildCodename) {
+
         // Special case "REL", which means the build is not a pre-release build.
         if ("REL".equals(buildCodename)) {
             return false;
@@ -194,7 +195,8 @@ public class BuildCompat {
     @Deprecated
     public static boolean isAtLeastSv2() {
         return VERSION.SDK_INT >= 32
-                || (VERSION.SDK_INT >= 31 && isAtLeastPreReleaseCodename("Sv2", VERSION.CODENAME));
+                || (VERSION.SDK_INT >= 31
+                && isAtLeastPreReleaseCodename("Sv2", VERSION.CODENAME));
     }
 
     /**
@@ -232,7 +234,7 @@ public class BuildCompat {
     public static boolean isAtLeastU() {
         return VERSION.SDK_INT >= 34
                 || (VERSION.SDK_INT >= 33
-                        && isAtLeastPreReleaseCodename("UpsideDownCake", VERSION.CODENAME));
+                && isAtLeastPreReleaseCodename("UpsideDownCake", VERSION.CODENAME));
     }
 
     /**
@@ -260,7 +262,7 @@ public class BuildCompat {
      * removed</strong> after their respective SDKs are finalized for release.
      */
     @RequiresOptIn
-    public @interface PrereleaseSdkCheck {}
+    public @interface PrereleaseSdkCheck { }
 
     /**
      * The value of {@code SdkExtensions.getExtensionVersion(R)}. This is a convenience constant

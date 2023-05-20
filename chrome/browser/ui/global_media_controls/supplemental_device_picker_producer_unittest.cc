@@ -67,16 +67,24 @@ class SupplementalDevicePickerProducerTest : public testing::Test {
 TEST_F(SupplementalDevicePickerProducerTest, ShowItem) {
   std::string id = ShowItem();
   EXPECT_TRUE(notification_producer_.GetMediaItem(id));
-  EXPECT_TRUE(notification_producer_.GetNotificationItem());
   EXPECT_FALSE(notification_producer_.HasFrozenItems());
   EXPECT_FALSE(notification_producer_.IsItemActivelyPlaying(id));
+}
+
+TEST_F(SupplementalDevicePickerProducerTest, HasActiveItemOnItemShown) {
+  notification_producer_.CreateItem(base::UnguessableToken::Create());
+  EXPECT_CALL(item_manager_, ShowItem).WillOnce([&]() {
+    // MediaItemManager::ShowItem() leads to showing the media UI, at which
+    // point `notification_producer_` should claim that it has an item to show.
+    EXPECT_EQ(1u, notification_producer_.GetActiveControllableItemIds().size());
+  });
+  notification_producer_.ShowItem();
 }
 
 TEST_F(SupplementalDevicePickerProducerTest, HideItem) {
   std::string id = ShowItem();
   notification_producer_.HideItem();
   EXPECT_TRUE(notification_producer_.GetMediaItem(id));
-  EXPECT_TRUE(notification_producer_.GetNotificationItem());
   EXPECT_TRUE(notification_producer_.GetActiveControllableItemIds().empty());
 }
 
@@ -84,8 +92,14 @@ TEST_F(SupplementalDevicePickerProducerTest, DeleteItem) {
   std::string id = ShowItem();
   notification_producer_.DeleteItem();
   EXPECT_FALSE(notification_producer_.GetMediaItem(id));
-  EXPECT_FALSE(notification_producer_.GetNotificationItem());
   EXPECT_TRUE(notification_producer_.GetActiveControllableItemIds().empty());
+}
+
+TEST_F(SupplementalDevicePickerProducerTest, GetOrCreateNotificationItem) {
+  const SupplementalDevicePickerItem& supplemental_item =
+      notification_producer_.GetOrCreateNotificationItem(
+          base::UnguessableToken::Create());
+  EXPECT_FALSE(supplemental_item.id().empty());
 }
 
 TEST_F(SupplementalDevicePickerProducerTest, OnMediaDialogOpened) {

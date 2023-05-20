@@ -40,11 +40,9 @@ TEST(PlatformAcceleratorCocoaTest,
     SCOPED_TRACE(base::StringPrintf("key_code='%c', modifiers=0x%x",
                                     test.accelerator.key_code(),
                                     test.accelerator.modifiers()));
-    NSString* actual_key_equivalent;
-    NSUInteger actual_modifier_mask;
-    ui::GetKeyEquivalentAndModifierMaskFromAccelerator(
-        test.accelerator, &actual_key_equivalent, &actual_modifier_mask);
-    EXPECT_NSEQ(test.expected_key_equivalent, actual_key_equivalent);
-    EXPECT_EQ(test.expected_modifier_mask, actual_modifier_mask);
+    KeyEquivalentAndModifierMask* equivalent =
+        ui::GetKeyEquivalentAndModifierMaskFromAccelerator(test.accelerator);
+    EXPECT_NSEQ(test.expected_key_equivalent, equivalent.keyEquivalent);
+    EXPECT_EQ(test.expected_modifier_mask, equivalent.modifierMask);
   }
 }

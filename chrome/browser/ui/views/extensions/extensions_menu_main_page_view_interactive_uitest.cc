@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
@@ -22,6 +24,7 @@
 namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
+using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
 }  // namespace
 
@@ -40,6 +43,13 @@ class ExtensionsMenuMainPageViewInteractiveUITest
 
   // Asserts there is exactly one menu item and then returns it.
   ExtensionMenuItemView* GetOnlyMenuItem();
+
+  // Returns the extension ids in the request access section. If it's empty,
+  // the section is not visible.
+  std::vector<extensions::ExtensionId> GetExtensionsInRequestAccessSection();
+
+  // Returns the extension ids in the request access button in the toolbar.
+  std::vector<extensions::ExtensionId> GetExtensionsInRequestAccessButton();
 
   void ClickSiteSettingToggle();
 
@@ -73,6 +83,23 @@ ExtensionsMenuMainPageViewInteractiveUITest::GetOnlyMenuItem() {
     return nullptr;
   }
   return *items.begin();
+}
+
+std::vector<extensions::ExtensionId>
+ExtensionsMenuMainPageViewInteractiveUITest::
+    GetExtensionsInRequestAccessSection() {
+  ExtensionsMenuMainPageView* page = main_page();
+  return page ? page->GetExtensionsRequestingAccessForTesting()
+              : std::vector<std::string>();
+}
+
+std::vector<extensions::ExtensionId>
+ExtensionsMenuMainPageViewInteractiveUITest::
+    GetExtensionsInRequestAccessButton() {
+  return GetExtensionsToolbarContainer()
+      ->GetExtensionsToolbarControls()
+      ->request_access_button_for_testing()
+      ->GetExtensionIdsForTesting();
 }
 
 void ExtensionsMenuMainPageViewInteractiveUITest::ClickSiteSettingToggle() {
@@ -196,13 +223,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 }
 
 // Test that running an extension's action, when site permission were withheld,
-// sets the extension's site access toggle on.
+// sets the extension's site access toggle on. It also tests that the menu's
+// request access section and the toolbar's request access button are properly
+// updated with the extension requesting access.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
                        SiteAccessToggle_RunAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto extension =
       InstallExtensionWithHostPermissions("Extension", "<all_urls>");
+  auto extension_id = extension->id();
   extensions::ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
 
@@ -220,19 +250,35 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   ASSERT_EQ(permissions_manager->GetUserSiteAccess(*extension.get(), urlA),
             PermissionsManager::UserSiteAccess::kOnClick);
 
-  // Button is visible and off since extension has withheld site access.
+  // When extension has withheld site access:
+  //   - site access toggle is visible and off.
+  //   - request access section includes extension.
+  //   - request access button, in the toolbar, includes extension.
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension_id));
+  EXPECT_THAT(GetExtensionsInRequestAccessButton(),
+              testing::ElementsAre(extension_id));
 
-  // Button is visible and on when the extension's action is executed.
+  // When extension has granted site access, after toggling ON site access:
+  //   - site access toggle is visible and on
+  //   - request access section does not include extension.
+  //   - request access button, in the toolbar, does not include extension.
   ClickButton(menu_item->primary_action_button_for_testing());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
 
-  // Button is visible and off when re navigating to the page as site access is
-  // revoked.
-  // Note that refreshing the page doesn't revoke tab permissions, thus we
-  // need to re navigate to the url.
+  EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
+  EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
+
+  // When navigating back to the original site:
+  //   - site access toggle is visible and off.
+  //   - request access section includes extension.
+  //   - request access button, in the toolbar, includes extension.
+  // Note that we don't revoke permissions when navigation is to the same origin
+  // (e.g refreshing the page). Thus, we navigate to other site and then back to
+  // original one.
   GURL urlB = embedded_test_server()->GetURL("b.com", "/title1.html");
   NavigateTo(urlB);
   NavigateTo(urlA);
@@ -240,4 +286,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   menu_item = GetOnlyMenuItem();
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension_id));
+  EXPECT_THAT(GetExtensionsInRequestAccessButton(),
+              testing::ElementsAre(extension_id));
+
+  // When extension has withheld site access but cannot show requests in
+  // toolbar:
+  //   - site access toggle is visible and off.
+  //   - request access section includes extension.
+  //   - request access button, in the toolbar, does not include extension.
+  SitePermissionsHelper(profile()).SetShowAccessRequestsInToolbar(extension_id,
+                                                                  false);
+  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension_id));
+  EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
 }

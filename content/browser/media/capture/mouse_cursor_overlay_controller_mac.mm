@@ -41,10 +41,12 @@ using LocationUpdateCallback = base::RepeatingCallback<void(const NSPoint&)>;
         NSTrackingMouseMoved | NSTrackingMouseEnteredAndExited |
         NSTrackingActiveInKeyWindow | NSTrackingInVisibleRect |
         NSTrackingEnabledDuringMouseDrag;
-    _trackingArea.reset([[CrTrackingArea alloc] initWithRect:NSZeroRect
-                                                     options:kTrackingOptions
-                                                       owner:self
-                                                    userInfo:nil]);
+    base::scoped_nsobject<CrTrackingArea> trackingArea([[CrTrackingArea alloc]
+        initWithRect:NSZeroRect
+             options:kTrackingOptions
+               owner:self
+            userInfo:nil]);
+    _trackingArea.reset(trackingArea.get());
     [nsView addTrackingArea:_trackingArea.get()];
   }
   return self;

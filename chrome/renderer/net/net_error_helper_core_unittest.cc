@@ -381,12 +381,12 @@ TEST_F(NetErrorHelperCoreTest,
 
   auto* suggestions_details = page_state.strings.FindList("suggestionsDetails");
   ASSERT_TRUE(suggestions_details);
-  EXPECT_FALSE(suggestions_details->empty());
+  ASSERT_TRUE(suggestions_details->empty());
 
   auto* suggestions_summary_list =
       page_state.strings.FindList("suggestionsSummaryList");
   ASSERT_TRUE(suggestions_summary_list);
-  EXPECT_FALSE(suggestions_summary_list->empty());
+  EXPECT_TRUE(suggestions_summary_list->empty());
 }
 
 TEST_F(NetErrorHelperCoreTest,

@@ -95,7 +95,10 @@ void LazyImageHelper::StartMonitoringVisibilityMetrics(
 
 void LazyImageHelper::RecordMetricsOnLoadFinished(
     HTMLImageElement* image_element) {
-  if (!image_element->is_lazy_loaded()) {
+  // TODO(pdr): We should only report metrics for images that were actually lazy
+  // loaded, and checking the attribute alone is not sufficient. See:
+  // `LazyImageHelper::ShouldDeferImageLoad`.
+  if (!image_element->HasLazyLoadingAttribute()) {
     return;
   }
 

@@ -292,14 +292,14 @@ TEST_F(RateLimitTableTest,
        RateLimitResult::kAllowed},
 
       {RateLimitInput::Attribution("https://b.s1.test", "https://b.d1.test",
-                                   "https://a.r.test", now),
+                                   "https://b.r.test", now),
        RateLimitResult::kAllowed},
 
       // This is not allowed because
-      // <https://s1.test, https://d1.test, https://a.r.test> already has the
+      // <https://s1.test, https://d1.test, https://r.test> already has the
       // maximum of 2 attributions.
       {RateLimitInput::Attribution("https://b.s1.test", "https://b.d1.test",
-                                   "https://a.r.test", now),
+                                   "https://b.r.test", now),
        RateLimitResult::kNotAllowed},
 
       // This is allowed because the source site is different.
@@ -312,9 +312,9 @@ TEST_F(RateLimitTableTest,
                                    "https://a.r.test", now),
        RateLimitResult::kAllowed},
 
-      // This is allowed because the reporting origin is different.
+      // This is allowed because the reporting site is different.
       {RateLimitInput::Attribution("https://a.s1.test", "https://d2.test",
-                                   "https://b.r.test", now),
+                                   "https://r2.test", now),
        RateLimitResult::kAllowed},
   };
 
@@ -923,7 +923,7 @@ TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
 }
 
 TEST_F(RateLimitTableTest, SourceAllowedForDestinationLimit) {
-  delegate_.set_max_destinations_per_source_site_reporting_origin(2);
+  delegate_.set_max_destinations_per_source_site_reporting_site(2);
 
   const base::Time now = base::Time::Now();
   const base::TimeDelta expiry = base::Milliseconds(30);

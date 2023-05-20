@@ -15,10 +15,10 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service_impl.h"
-#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/service/sync_service_impl.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/fake_server_verifier.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -74,12 +74,11 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
   void InjectWebAppEntityToFakeServer(
       const std::string& app_id,
       const GURL& url,
-      absl::optional<std::string> manifest_id = absl::nullopt) {
+      absl::optional<std::string> relative_manifest_id = absl::nullopt) {
     WebApp app(app_id);
     app.SetName(app_id);
     app.SetStartUrl(url);
     app.SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
-    app.SetManifestId(manifest_id);
 
     WebApp::SyncFallbackData sync_fallback_data;
     sync_fallback_data.name = app_id;
@@ -88,6 +87,12 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
     sync_pb::EntitySpecifics entity_specifics;
 
     *(entity_specifics.mutable_web_app()) = WebAppToSyncProto(app);
+    if (relative_manifest_id) {
+      entity_specifics.mutable_web_app()->set_relative_manifest_id(
+          relative_manifest_id.value());
+    } else {
+      entity_specifics.mutable_web_app()->clear_relative_manifest_id();
+    }
 
     fake_server_->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
@@ -152,11 +157,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithIdSpecifiedSyncInstalled) {
-  const absl::optional<std::string> manifest_id("explicit_id");
+  const std::string relative_manifest_id = "explicit_id";
   GURL url("https://example.com/start");
-  const std::string app_id = GenerateAppId(manifest_id, url);
+  const std::string app_id = GenerateAppId(relative_manifest_id, url);
 
-  InjectWebAppEntityToFakeServer(app_id, url, manifest_id);
+  InjectWebAppEntityToFakeServer(app_id, url, relative_manifest_id);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
@@ -171,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.description = u"Test description";
   info.start_url = url;
   info.scope = url;
-  info.manifest_id = manifest_id;
+  info.manifest_id = GenerateManifestId(relative_manifest_id, url);
   const AppId installed_app_id =
       apps_helper::InstallWebApp(GetProfile(0), info);
 
@@ -182,11 +187,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithIdSpecifiedAsEmptyStringSyncInstalled) {
-  const absl::optional<std::string> manifest_id("");
+  const std::string relative_manifest_id = "";
   GURL url("https://example.com/start");
-  const std::string app_id = GenerateAppId(manifest_id, url);
+  const std::string app_id = GenerateAppId(relative_manifest_id, url);
 
-  InjectWebAppEntityToFakeServer(app_id, url, manifest_id);
+  InjectWebAppEntityToFakeServer(app_id, url, relative_manifest_id);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
@@ -201,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.description = u"Test description";
   info.start_url = url;
   info.scope = url;
-  info.manifest_id = manifest_id;
+  info.manifest_id = GenerateManifestId(relative_manifest_id, url);
   const AppId installed_app_id =
       apps_helper::InstallWebApp(GetProfile(0), info);
 
@@ -209,5 +214,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
       /*manifest_id=*/absl::nullopt, GURL("https://example.com/"));
   EXPECT_EQ(expected_app_id, installed_app_id);
 }
+
 }  // namespace
 }  // namespace web_app

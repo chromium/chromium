@@ -16,7 +16,6 @@
 #include "remoting/base/chromoting_event.h"
 #include "remoting/base/chromoting_event_log_writer.h"
 #include "remoting/base/oauth_token_getter.h"
-#include "remoting/base/url_request.h"
 
 namespace network {
 class SharedURLLoaderFactory;

@@ -19,10 +19,10 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/prefs/browser_prefs.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -312,14 +312,14 @@ TEST_F(SigninUtilsTest,
   authentication_service->GrantSyncConsent(
       identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
   chrome_browser_state_->GetPrefs()->SetBoolean(
-      syncer::prefs::internal::kSyncFirstSetupComplete, true);
+      syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
 
   IdentitySigninState state =
       signin::GetPrimaryIdentitySigninState(chrome_browser_state_.get());
   EXPECT_EQ(IdentitySigninStateSignedInWithSyncEnabled, state);
 
   chrome_browser_state_->GetPrefs()->ClearPref(
-      syncer::prefs::internal::kSyncFirstSetupComplete);
+      syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete);
 }
 
 // Regression test for crbug.com/1248042.

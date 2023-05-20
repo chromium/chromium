@@ -200,8 +200,7 @@ ContentRendererClient::CreateWorkerContentSettingsClient(
 #if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<media::SpeechRecognitionClient>
 ContentRendererClient::CreateSpeechRecognitionClient(
-    RenderFrame* render_frame,
-    media::SpeechRecognitionClient::OnReadyCallback callback) {
+    RenderFrame* render_frame) {
   return nullptr;
 }
 #endif

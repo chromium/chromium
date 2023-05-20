@@ -153,6 +153,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // OobeUI::Observer:
   void OnCurrentScreenChanged(OobeScreenId current_screen,
                               OobeScreenId new_screen) override;
+  void OnBackdropLoaded() override;
   void OnDestroyingOobeUI() override;
 
   // LoginDisplayHostCommon:
@@ -208,9 +209,12 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // Show OOBE WebUI if signal from javascript side never came.
   void OnShowWebUITimeout();
 
-  // Callback that is called once booting animation has finished running, but
-  // the last frame is still shown.
-  void BootingAnimationFinished();
+  // Callback that is called once booting animation in views has finished
+  // running, but the last frame is still shown.
+  void OnViewsBootingAnimationPlayed();
+
+  // Finishes booting animation in views and triggers the WebUI part.
+  void FinishBootingAnimation();
 
   // Sign in screen controller.
   std::unique_ptr<ExistingUserController> existing_user_controller_;
@@ -259,6 +263,13 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // True if we need to play startup sound when audio device becomes available.
   bool need_to_play_startup_sound_ = false;
+
+  // True if WebUI has loaded the minimum UI that can be shown. It is used to
+  // synchronize the booting animation between views and WebUI.
+  bool webui_ready_to_take_over_ = false;
+
+  // True if booting animation has finished playing.
+  bool booting_animation_finished_playing_ = false;
 
   // Measures OOBE WebUI load time.
   absl::optional<base::ElapsedTimer> oobe_load_timer_;

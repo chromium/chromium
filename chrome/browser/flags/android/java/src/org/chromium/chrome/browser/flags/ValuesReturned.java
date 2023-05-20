@@ -13,29 +13,29 @@ import java.util.Map;
 /**
  * Keeps track of values returned for cached flags and field trial parameters.
  */
-class ValuesReturned {
-    @GuardedBy("boolValues")
-    public final Map<String, Boolean> boolValues = new HashMap<>();
-    @GuardedBy("stringValues")
-    public final Map<String, String> stringValues = new HashMap<>();
-    @GuardedBy("intValues")
-    public final Map<String, Integer> intValues = new HashMap<>();
-    @GuardedBy("doubleValues")
-    public final Map<String, Double> doubleValues = new HashMap<>();
+abstract class ValuesReturned {
+    @GuardedBy("sBoolValues")
+    static final Map<String, Boolean> sBoolValues = new HashMap<>();
+    @GuardedBy("sStringValues")
+    static final Map<String, String> sStringValues = new HashMap<>();
+    @GuardedBy("sIntValues")
+    static final Map<String, Integer> sIntValues = new HashMap<>();
+    @GuardedBy("sDoubleValues")
+    static final Map<String, Double> sDoubleValues = new HashMap<>();
 
     @VisibleForTesting
-    final void clearForTesting() {
-        synchronized (boolValues) {
-            boolValues.clear();
+    static void clearForTesting() {
+        synchronized (sBoolValues) {
+            sBoolValues.clear();
         }
-        synchronized (stringValues) {
-            stringValues.clear();
+        synchronized (sStringValues) {
+            sStringValues.clear();
         }
-        synchronized (intValues) {
-            intValues.clear();
+        synchronized (sIntValues) {
+            sIntValues.clear();
         }
-        synchronized (doubleValues) {
-            doubleValues.clear();
+        synchronized (sDoubleValues) {
+            sDoubleValues.clear();
         }
     }
 }

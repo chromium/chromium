@@ -1416,13 +1416,12 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
     base::WeakPtr<Accessor> accessor,
     const CreditCard* card,
     const std::u16string& cvc) {
-  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
-      client_->GetDeviceAuthenticator();
+  device_authenticator_ = client_->GetDeviceAuthenticator();
 
   // Since this function should only be called on platforms where the
   // DeviceAuthenticator is present, we should always have a
   // DeviceAuthenticator.
-  CHECK(device_authenticator);
+  CHECK(device_authenticator_);
 
   is_authentication_in_progress_ = true;
 
@@ -1430,24 +1429,30 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
   CHECK(record_type == CreditCard::LOCAL_CARD ||
         record_type == CreditCard::VIRTUAL_CARD);
 
+  base::OnceClosure on_reauth_completed =
+      base::BindOnce(&CreditCardAccessManager::OnReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr());
+
   // TODO(crbug.com/1427216): Add the iOS branching logic as well.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  device_authenticator->AuthenticateWithMessage(
+  device_authenticator_->AuthenticateWithMessage(
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH),
       base::BindOnce(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
-          weak_ptr_factory_.GetWeakPtr(), accessor, card, cvc));
+          weak_ptr_factory_.GetWeakPtr(), accessor, card, cvc)
+          .Then(std::move(on_reauth_completed)));
 #elif BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1427216): Convert this to
   // DeviceAuthenticator::AuthenticateWithMessage() with the correct message
   // once it is supported. Currently, the message is "Verify it's you".
-  device_authenticator->Authenticate(
+  device_authenticator_->Authenticate(
       record_type == CreditCard::LOCAL_CARD
           ? device_reauth::DeviceAuthRequester::kLocalCardAutofill
           : device_reauth::DeviceAuthRequester::kVirtualCardAutofill,
       base::BindOnce(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
-          weak_ptr_factory_.GetWeakPtr(), accessor, card, cvc),
+          weak_ptr_factory_.GetWeakPtr(), accessor, card, cvc)
+          .Then(std::move(on_reauth_completed)),
       /*use_last_valid_auth=*/true);
 #else
   NOTREACHED_NORETURN();
@@ -1470,6 +1475,10 @@ void CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling(
   // `Reset()` here, and we should as from this class' point of view the
   // authentication flow is complete.
   Reset();
+}
+
+void CreditCardAccessManager::OnReauthCompleted() {
+  device_authenticator_.reset();
 }
 
 }  // namespace autofill

@@ -96,7 +96,6 @@ void CodecImage::ReleaseResources() {
 }
 
 bool CodecImage::IsUsingGpuMemory() const {
-  DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
   AssertAcquiredDrDcLock();
   if (!output_buffer_renderer_)
     return false;

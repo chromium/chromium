@@ -22,7 +22,7 @@ CachedResultWriter::CachedResultWriter(std::unique_ptr<ClientResultPrefs> prefs,
 CachedResultWriter::~CachedResultWriter() = default;
 
 void CachedResultWriter::UpdatePrefsIfExpired(
-    Config* config,
+    const Config* config,
     proto::ClientResult client_result,
     const PlatformOptions& platform_options) {
   if (!IsPrefUpdateRequiredForClient(config, platform_options) ||
@@ -37,7 +37,7 @@ void CachedResultWriter::UpdatePrefsIfExpired(
 }
 
 bool CachedResultWriter::IsPrefUpdateRequiredForClient(
-    Config* config,
+    const Config* config,
     const PlatformOptions& platform_options) {
   absl::optional<proto::ClientResult> client_result =
       result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
@@ -69,7 +69,7 @@ bool CachedResultWriter::IsPrefUpdateRequiredForClient(
 }
 
 void CachedResultWriter::UpdateNewClientResultToPrefs(
-    Config* config,
+    const Config* config,
     const proto::ClientResult& client_result) {
   auto prev_client_result =
       result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);

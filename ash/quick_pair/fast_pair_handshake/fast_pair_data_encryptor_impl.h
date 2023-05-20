@@ -78,6 +78,14 @@ class FastPairDataEncryptorImpl : public FastPairDataEncryptor {
   std::vector<uint8_t> CreateAdditionalDataPacket(
       std::array<uint8_t, kNonceSizeBytes> nonce,
       const std::vector<uint8_t>& additional_data) override;
+  bool VerifyEncryptedAdditionalData(
+      const std::array<uint8_t, kHmacVerifyLenBytes> hmacSha256First8Bytes,
+      std::array<uint8_t, kNonceSizeBytes> nonce,
+      const std::vector<uint8_t>& encrypted_additional_data) override;
+  std::vector<uint8_t> EncryptAdditionalDataWithSecretKey(
+      std::array<uint8_t, kNonceSizeBytes> nonce,
+      const std::vector<uint8_t>& additional_data) override;
+
   ~FastPairDataEncryptorImpl() override;
 
  protected:

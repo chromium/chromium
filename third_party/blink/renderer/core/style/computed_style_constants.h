@@ -250,11 +250,12 @@ inline Containment& operator|=(Containment& a, Containment b) {
   return a = a | b;
 }
 
-static const size_t kContainerTypeBits = 2;
+static const size_t kContainerTypeBits = 3;
 enum EContainerType {
   kContainerTypeNormal = 0x0,
   kContainerTypeInlineSize = 0x1,
   kContainerTypeBlockSize = 0x2,
+  kContainerTypeSticky = 0x4,
   kContainerTypeSize = kContainerTypeInlineSize | kContainerTypeBlockSize,
 };
 inline EContainerType operator|(EContainerType a, EContainerType b) {
@@ -402,7 +403,7 @@ enum class ViewportUnitFlag {
   kDynamic = 0x2,
 };
 
-enum class TimelineAxis { kBlock, kInline, kVertical, kHorizontal };
+enum class TimelineAxis { kBlock, kInline, kX, kY };
 enum class TimelineAttachment {
   // The timeline is not attached to another timeline, and other timelines
   // can not be attached to this timeline.

@@ -6,7 +6,7 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SYNC_MODEL_TYPE_CONTROLLER_H_
 
 #include "base/functional/callback_forward.h"
-#include "components/sync/driver/syncable_service_based_model_type_controller.h"
+#include "components/sync/service/syncable_service_based_model_type_controller.h"
 
 // A DataTypeController for supervised user sync datatypes, which enables or
 // disables these types based on the profile's IsSupervised state. Runs in

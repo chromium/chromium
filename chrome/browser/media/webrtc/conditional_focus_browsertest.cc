@@ -49,8 +49,7 @@ const char* ToString(FocusEnumValue focus_enum_value) {
     case FocusEnumValue::kNoFocusChange:
       return "no-focus-change";
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 enum class Tab { kUnknownTab, kCapturingTab, kCapturedTab };
@@ -289,8 +288,16 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest, NoFocusBeforeCapture) {
   EXPECT_EQ(ActiveTab(), Tab::kCapturingTab);
 }
 
+// TODO(crbug.com/1446884): Flaky on a TSan bot.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_NoFocusAfterCaptureOverrideFocusBeforeCapture \
+  DISABLED_NoFocusAfterCaptureOverrideFocusBeforeCapture
+#else
+#define MAYBE_NoFocusAfterCaptureOverrideFocusBeforeCapture \
+  NoFocusAfterCaptureOverrideFocusBeforeCapture
+#endif
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
-                       NoFocusAfterCaptureOverrideFocusBeforeCapture) {
+                       MAYBE_NoFocusAfterCaptureOverrideFocusBeforeCapture) {
   // Setup.
   SetUpTestTabs();
   CallSetFocusBehaviorBeforeCapture(FocusEnumValue::kFocusCapturedSurface,

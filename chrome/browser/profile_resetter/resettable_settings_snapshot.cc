@@ -244,7 +244,7 @@ base::Value::List GetReadableFeedbackForSnapshot(
           g_browser_process->GetApplicationLocale());
   AddPair(list, l10n_util::GetStringUTF16(IDS_VERSION_UI_USER_AGENT),
           embedder_support::GetUserAgent());
-  std::string version = version_info::GetVersionNumber();
+  std::string version(version_info::GetVersionNumber());
   version += chrome::GetChannelName(chrome::WithExtendedStable(true));
   AddPair(list,
           l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),

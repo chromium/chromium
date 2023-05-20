@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableSt
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,9 +26,8 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param context An Android context.
      * @param suggestionHost A handle to the object using the suggestions.
      */
-    public TailSuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            OmniboxActionDelegate omniboxActionDelegate) {
-        super(context, suggestionHost, omniboxActionDelegate, null);
+    public TailSuggestionProcessor(Context context, SuggestionHost suggestionHost) {
+        super(context, suggestionHost, null);
         mAlignTailSuggestions = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 

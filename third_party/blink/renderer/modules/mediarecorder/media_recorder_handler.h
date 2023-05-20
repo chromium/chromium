@@ -48,8 +48,9 @@ class MODULES_EXPORT MediaRecorderHandler final
     : public GarbageCollected<MediaRecorderHandler>,
       public WebMediaStreamObserver {
  public:
-  explicit MediaRecorderHandler(
-      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner);
+  MediaRecorderHandler(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      KeyFrameRequestProcessor::Configuration key_frame_config);
   MediaRecorderHandler(const MediaRecorderHandler&) = delete;
   MediaRecorderHandler& operator=(const MediaRecorderHandler&) = delete;
 
@@ -137,6 +138,9 @@ class MODULES_EXPORT MediaRecorderHandler final
                                  bool is_video);
 
   void OnVideoEncodingError();
+
+  // Variant holding configured keyframe intervals.
+  const KeyFrameRequestProcessor::Configuration key_frame_config_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 

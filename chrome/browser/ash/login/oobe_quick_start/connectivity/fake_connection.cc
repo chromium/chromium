@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
 
@@ -41,6 +42,40 @@ void FakeConnection::InitiateHandshake(const std::string& authentication_token,
                                        HandshakeSuccessCallback callback) {
   handshake_initiated_ = true;
   handshake_success_callback_ = std::move(callback);
+}
+
+void FakeConnection::RequestWifiCredentials(
+    int32_t session_id,
+    RequestWifiCredentialsCallback callback) {
+  wifi_credentials_callback_ = std::move(callback);
+}
+
+void FakeConnection::WaitForUserVerification(
+    AwaitUserVerificationCallback callback) {
+  await_user_verification_callback_ = std::move(callback);
+}
+
+void FakeConnection::RequestAccountTransferAssertion(
+    const std::string& challenge_b64url,
+    RequestAccountTransferAssertionCallback callback) {
+  request_account_transfer_assertion_callback_ = std::move(callback);
+}
+
+void FakeConnection::SendWifiCredentials(
+    absl::optional<mojom::WifiCredentials> credentials) {
+  CHECK(wifi_credentials_callback_);
+  std::move(wifi_credentials_callback_).Run(credentials);
+}
+
+void FakeConnection::VerifyUser(
+    absl::optional<mojom::UserVerificationResponse> response) {
+  CHECK(await_user_verification_callback_);
+  std::move(await_user_verification_callback_).Run(response);
+}
+
+void FakeConnection::SendAccountTransferAssertionInfo(
+    absl::optional<FidoAssertionInfo> assertion_info) {
+  std::move(request_account_transfer_assertion_callback_).Run(assertion_info);
 }
 
 bool FakeConnection::WasHandshakeInitiated() {

@@ -44,4 +44,8 @@ void PdfFlattener::FlattenPdf(base::ReadOnlySharedMemoryRegion src_pdf_region,
   std::move(callback).Run(std::move(region_mapping.region));
 }
 
+void PdfFlattener::SetUseSkiaRendererPolicy(bool use_skia) {
+  chrome_pdf::SetUseSkiaRendererPolicy(use_skia);
+}
+
 }  // namespace printing

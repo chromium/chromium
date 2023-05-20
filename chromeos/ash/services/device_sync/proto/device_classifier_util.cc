@@ -36,7 +36,8 @@ const cryptauth::DeviceClassifier& GetDeviceClassifier() {
       classifier.set_device_software_version_code(version_components[0]);
     }
 
-    classifier.set_device_software_package(version_info::GetProductName());
+    classifier.set_device_software_package(
+        std::string(version_info::GetProductName()));
 
     return classifier;
   }());

@@ -10,6 +10,7 @@
 #include "ash/components/arc/power/arc_power_bridge.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_background_service_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_cpu_throttle_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_display_power_observer.h"
@@ -126,6 +127,12 @@ void ArcIdleManager::OnConnectionReady() {
   StartObservers();
   delegate_->SetInteractiveMode(bridge_, !should_throttle());
   is_connected_ = true;
+
+  // Always reset the timer on connect.
+  LogScreenOffTimer(true);
+  // Next call to LogScreenOffTimer from ThrottleInstance will either:
+  //   a) throttle=true: reset the timer again - and that's fine.
+  //   b) throttle=false: log time between connect and un-throttle.
 }
 
 void ArcIdleManager::OnConnectionClosed() {
@@ -133,11 +140,37 @@ void ArcIdleManager::OnConnectionClosed() {
   if (!is_connected_)
     return;
   StopObservers();
+  if (should_throttle()) {
+    // May be a logout, or a systemserver crash.
+    // Either way, we stop tracking and log.
+    LogScreenOffTimer(false);
+  }
   is_connected_ = false;
 }
 
 void ArcIdleManager::ThrottleInstance(bool should_throttle) {
+  // Note: this never happens in between StopObservers() - StartObservers();
+  LogScreenOffTimer(should_throttle);
   delegate_->SetInteractiveMode(bridge_, !should_throttle);
+}
+
+void ArcIdleManager::LogScreenOffTimer(bool should_throttle) {
+  if (should_throttle) {
+    // Start measuring now.
+    interactive_off_span_ = base::ElapsedTimer();
+  } else {
+    base::TimeDelta elapsed = interactive_off_span_.Elapsed();
+    // Report time spent with screen-off, in milliseconds. Use 100 buckets,
+    // as the span of allowed values is very wide (0ms -> 8h(28,800,000ms)).
+    // Notice that the very first call to this function may hit this case,
+    // which will cause us to log the time between start-up and the
+    // transition to no-throttle (first-active), which is an appropriate
+    // measurement value.
+    base::UmaHistogramCustomTimes("Arc.IdleManager.ScreenOffTime",
+                                  /*sample=*/elapsed,
+                                  /*min=*/base::Milliseconds(1),
+                                  /*max=*/base::Hours(8), /*#buckets=*/100);
+  }
 }
 
 }  // namespace arc

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -30,8 +28,6 @@ import static org.chromium.url.JUnitTestGURLs.URL_1;
 import android.graphics.Point;
 import android.os.SystemClock;
 
-import androidx.browser.customtabs.CustomTabsSessionToken;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,7 +43,6 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.ScrollState;
@@ -501,52 +496,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
     }
 
     @Test
-    public void returnsRetroactiveMaxScroll() {
-        initializeTabForTest();
-        GestureStateListener gestureStateListener = captureGestureStateListener();
-        Supplier<Integer> scrollPercentageSupplier = captureGreatestScrollPercentageSupplier();
-
-        // Scroll down to 58%.
-        gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
-        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 58));
-        gestureStateListener.onScrollEnded(58, SCROLL_EXTENT);
-
-        assertEquals(Integer.valueOf(55), scrollPercentageSupplier.get());
-    }
-
-    @Test
-    public void returnsRetroactiveMaxScroll_zeroIfNotScrolled() {
-        initializeTabForTest();
-        Supplier<Integer> scrollPercentageSupplier = captureGreatestScrollPercentageSupplier();
-
-        assertEquals(Integer.valueOf(0), scrollPercentageSupplier.get());
-    }
-
-    @Test
-    public void returnsRetroactiveMaxScroll_nullIfNotReportingUsage() {
-        doReturn(false).when(mPrivacyPreferencesManagerImpl).isUsageAndCrashReportingPermitted();
-        initializeTabForTest();
-
-        Supplier<Integer> scrollPercentageSupplier = captureGreatestScrollPercentageSupplier();
-        assertNull(scrollPercentageSupplier.get());
-    }
-
-    @Test
-    public void returnsRetroactiveMaxScroll_zeroIfSendingFakeValues() {
-        setFeatureParams(false, null);
-        initializeTabForTest();
-        GestureStateListener gestureStateListener = captureGestureStateListener();
-        Supplier<Integer> scrollPercentageSupplier = captureGreatestScrollPercentageSupplier();
-
-        // Scroll down to 46%.
-        gestureStateListener.onScrollStarted(0, SCROLL_EXTENT, false);
-        gestureStateListener.onScrollUpdateGestureConsumed(new Point(0, 46));
-        gestureStateListener.onScrollEnded(46, SCROLL_EXTENT);
-
-        assertEquals(Integer.valueOf(0), scrollPercentageSupplier.get());
-    }
-
-    @Test
     public void sendsFalseForScrollDirectionIfSendingFakeValues() {
         setFeatureParams(false, null);
         initializeTabForTest();
@@ -848,15 +797,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
         verify(env.tabProvider.getTab(), atLeastOnce())
                 .addObserver(tabObserverArgumentCaptor.capture());
         return tabObserverArgumentCaptor.getAllValues();
-    }
-
-    private Supplier<Integer> captureGreatestScrollPercentageSupplier() {
-        ArgumentCaptor<Supplier<Integer>> greatestScrollPercentageSupplierArgumentCaptor =
-                ArgumentCaptor.forClass(Supplier.class);
-        verify(env.connection)
-                .setGreatestScrollPercentageSupplier(any(CustomTabsSessionToken.class),
-                        greatestScrollPercentageSupplierArgumentCaptor.capture());
-        return greatestScrollPercentageSupplierArgumentCaptor.getValue();
     }
 
     private void verifyNoMemoryLeakForGestureStateListener(GestureStateListener listener) {

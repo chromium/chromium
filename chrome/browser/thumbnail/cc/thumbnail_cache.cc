@@ -270,6 +270,10 @@ bool ThumbnailCache::CheckAndUpdateThumbnailMetaData(TabId tab_id,
   return true;
 }
 
+bool ThumbnailCache::IsInVisibleIds(TabId tab_id) {
+  return primary_tab_id_ == tab_id || base::Contains(visible_ids_, tab_id);
+}
+
 void ThumbnailCache::UpdateVisibleIds(const std::vector<TabId>& priority,
                                       TabId primary_tab_id) {
   bool needs_update = false;

@@ -18,9 +18,25 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
 namespace enterprise_connectors {
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+namespace {
+
+static constexpr enterprise_connectors::AnalysisConnector
+    kLocalAnalysisConnectors[] = {
+        AnalysisConnector::BULK_DATA_ENTRY,
+        AnalysisConnector::FILE_ATTACHED,
+        AnalysisConnector::PRINT,
+};
+
+}  // namespace
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 ConnectorsManager::ConnectorsManager(
     std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
@@ -34,6 +50,16 @@ ConnectorsManager::ConnectorsManager(
           std::move(extension_install_event_router)) {
   DCHECK(browser_crash_event_router_) << "Crash event router is null";
   DCHECK(extension_install_event_router_) << "Extension event router is null";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Start observing tab strip models for all browsers.
+  BrowserList* browser_list = BrowserList::GetInstance();
+  for (Browser* browser : *browser_list) {
+    OnBrowserAdded(browser);
+  }
+  browser_list->AddObserver(this);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   if (observe_prefs) {
     StartObservingPrefs(pref_service);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -43,7 +69,17 @@ ConnectorsManager::ConnectorsManager(
   extension_install_event_router_->StartObserving();
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+ConnectorsManager::~ConnectorsManager() {
+  BrowserList* browser_list = BrowserList::GetInstance();
+  browser_list->RemoveObserver(this);
+  for (Browser* browser : *browser_list) {
+    OnBrowserRemoved(browser);
+  }
+}
+#else
 ConnectorsManager::~ConnectorsManager() = default;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 bool ConnectorsManager::IsConnectorEnabled(AnalysisConnector connector) const {
   if (analysis_connector_settings_.count(connector) == 0 &&
@@ -142,6 +178,38 @@ absl::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void ConnectorsManager::OnBrowserAdded(Browser* browser) {
+  browser->tab_strip_model()->AddObserver(this);
+}
+
+void ConnectorsManager::OnBrowserRemoved(Browser* browser) {
+  browser->tab_strip_model()->RemoveObserver(this);
+}
+
+void ConnectorsManager::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  // Checking only when new tab is open.
+  if (change.type() != TabStripModelChange::kInserted) {
+    return;
+  }
+
+  for (auto connector : kLocalAnalysisConnectors) {
+    if (!IsConnectorEnabledForLocalAgent(connector)) {
+      continue;
+    }
+
+    // Send a connection event to the local agent. If all the enabled connectors
+    // are configured to use the same agent, the same connection is reused here.
+    auto configs = GetAnalysisServiceConfigs(connector);
+    enterprise_connectors::ContentAnalysisSdkManager::Get()->GetClient(
+        {configs[0]->local_path, configs[0]->user_specific});
+  }
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 absl::optional<AnalysisSettings>
 ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
     const GURL& url,
@@ -175,13 +243,7 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void ConnectorsManager::MaybeCloseLocalContentAnalysisAgentConnection() {
-  constexpr enterprise_connectors::AnalysisConnector kConnectors[] = {
-      AnalysisConnector::BULK_DATA_ENTRY,
-      AnalysisConnector::FILE_ATTACHED,
-      AnalysisConnector::PRINT,
-  };
-
-  for (auto connector : kConnectors) {
+  for (auto connector : kLocalAnalysisConnectors) {
     if (IsConnectorEnabledForLocalAgent(connector)) {
       // Return early because at lease one access point is enabled for local
       // agent.

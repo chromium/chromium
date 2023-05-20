@@ -8,6 +8,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
@@ -110,8 +111,27 @@ TEST_F(AwClientHintsControllerDelegateTest, AreThirdPartyCookiesBlocked) {
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, GetUserAgentMetadata) {
-  EXPECT_EQ(embedder_support::GetUserAgentMetadata(prefs_.get()),
-            client_hints_controller_delegate_->GetUserAgentMetadata());
+  auto metadata = client_hints_controller_delegate_->GetUserAgentMetadata();
+
+  // Most fields should match those from the embedder_support util function.
+  auto from_embedder = embedder_support::GetUserAgentMetadata(prefs_.get());
+
+  EXPECT_EQ(metadata.architecture, from_embedder.architecture);
+  EXPECT_EQ(metadata.bitness, from_embedder.bitness);
+  EXPECT_EQ(metadata.full_version, from_embedder.full_version);
+  EXPECT_EQ(metadata.mobile, from_embedder.mobile);
+  EXPECT_EQ(metadata.model, from_embedder.model);
+  EXPECT_EQ(metadata.platform, from_embedder.platform);
+  EXPECT_EQ(metadata.platform_version, from_embedder.platform_version);
+  EXPECT_EQ(metadata.wow64, from_embedder.wow64);
+
+  // The brand version lists should contain Android Webview.
+  for (auto& list :
+       {metadata.brand_version_list, metadata.brand_full_version_list}) {
+    EXPECT_THAT(list, testing::Contains(testing::Field(
+                          &blink::UserAgentBrandVersion::brand,
+                          testing::Eq(kAndroidWebViewProductName))));
+  }
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, PersistClientHints) {

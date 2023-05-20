@@ -29,27 +29,30 @@ source_set("sharing_internal") {
   ]
   deps = [
     ":sharing",
+    ":sharing_metrics",
     "//base",
-    "//components/bookmarks/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
-    "//ios/chrome/browser/open_in",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/shared/ui/util:url_with_title",
-    "//ios/chrome/browser/ui/bookmarks:core",
-    "//ios/chrome/browser/ui/open_in:features",
-    "//ios/chrome/browser/ui/open_in:open_in_histograms",
+    "//ios/chrome/browser/sharing",
     "//ios/chrome/browser/ui/sharing/activity_services",
     "//ios/chrome/browser/ui/sharing/qr_generator",
     "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//ios/web/public/download",
     "//ui/base",
-    "//url",
+  ]
+}
+
+source_set("sharing_metrics") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "share_file_download_metrics.h",
+    "share_file_download_metrics.mm",
   ]
 }
 
@@ -83,4 +86,20 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//url",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "share_file_download_egtest.mm" ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

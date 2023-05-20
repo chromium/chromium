@@ -79,13 +79,15 @@
         padding-top: var(--cr-dialog-title-slot-padding-top, 20px);
       }
 
+      /* Note that if the padding is non-uniform and the button-container
+       * border is visible, then the buttons will appear off-center. */
       :host ::slotted([slot=button-container]) {
         display: flex;
         justify-content: flex-end;
         padding-bottom: var(--cr-dialog-button-container-padding-bottom, 16px);
         padding-inline-end: var(--cr-dialog-button-container-padding-horizontal, 16px);
         padding-inline-start: var(--cr-dialog-button-container-padding-horizontal, 16px);
-        padding-top: 24px;
+        padding-top: 16px;
       }
 
       :host ::slotted([slot=footer]) {

@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
@@ -28,6 +27,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using content::NavigationController;
 using content::NavigationEntry;
@@ -97,14 +100,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   return self;
 }
 
-- (void)dealloc {
-  [_tempURL release];
-  [super dealloc];
-}
-
 - (instancetype)initWithWebContents:(content::WebContents*)webContents {
   if (!webContents) {
-    [self release];
     return nil;
   }
 

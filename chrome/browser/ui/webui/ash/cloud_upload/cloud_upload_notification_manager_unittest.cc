@@ -241,7 +241,7 @@ TEST_F(CloudUploadNotificationManagerTest, ShowInFolderClick) {
   ASSERT_TRUE(HaveMoveCompleteNotification());
 
   base::RunLoop run_loop;
-  manager->SetHandleNotificationClickCallbackForTesting(
+  manager->SetHandleCompleteNotificationClickCallbackForTesting(
       base::BindLambdaForTesting(
           [&run_loop, this](base::FilePath destination_path) {
             // Check |destination_path| is as expected.

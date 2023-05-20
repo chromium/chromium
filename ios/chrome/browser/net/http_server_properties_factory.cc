@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/http/http_server_properties.h"
 

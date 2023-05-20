@@ -64,8 +64,7 @@ void ActionViewListItem::SetActionTapListItem(views::View* container) {
   // --------------------------
   // TODO(b/270969479): Replace the hardcoded string.
   container->AddChildView(CreateNameTag(u"title", u"sub-title"));
-  container->AddChildView(std::make_unique<views::LabelButton>(
-      views::Button::PressedCallback(), u"a"));
+  container->AddChildView(CreateActionTapEditForKeyboard(action_));
 }
 
 void ActionViewListItem::SetActionMoveListItem(views::View* container) {

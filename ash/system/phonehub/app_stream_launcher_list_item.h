@@ -34,8 +34,20 @@ class ASH_EXPORT AppStreamLauncherListItem : public views::View {
   views::LabelButton* GetAppButtonForTest();
 
  private:
+  class AppButton : public views::LabelButton {
+   public:
+    explicit AppButton(views::LabelButton::PressedCallback callback,
+                       const std::u16string& text);
+    ~AppButton() override;
+    AppButton(AppButton&) = delete;
+    AppButton operator=(AppButton&) = delete;
+
+    // views::View:
+    const char* GetClassName() const override;
+  };
+
   // Owned by views hierarchy.
-  raw_ptr<views::LabelButton, ExperimentalAsh> app_button_ = nullptr;
+  raw_ptr<AppButton, ExperimentalAsh> app_button_ = nullptr;
 };
 
 }  // namespace ash

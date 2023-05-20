@@ -30,19 +30,25 @@ bool EnterpriseAuthenticationAppLinkPolicyHandler::CheckPolicySettings(
 
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
-  if (!value || value->GetList().empty())
+  if (!value) {
     return true;
+  }
+
+  const base::Value::List& policy_list = value->GetList();
+  if (policy_list.empty()) {
+    return true;
+  }
 
   // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
   // warning message.
-  if (value->GetList().size() > policy::kMaxUrlFiltersPerPolicy) {
+  if (policy_list.size() > policy::kMaxUrlFiltersPerPolicy) {
     errors->AddError(policy_name(),
                      IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
                      base::NumberToString(policy::kMaxUrlFiltersPerPolicy));
   }
 
   std::vector<std::string> invalid_policies;
-  for (const auto& entry : value->GetList()) {
+  for (const auto& entry : policy_list) {
     const std::string* url = entry.GetDict().FindString("url");
     if (!url) {
       invalid_policies.push_back(
@@ -57,7 +63,7 @@ bool EnterpriseAuthenticationAppLinkPolicyHandler::CheckPolicySettings(
                      base::JoinString(invalid_policies, ","));
   }
 
-  return invalid_policies.size() < value->GetList().size();
+  return invalid_policies.size() < policy_list.size();
 }
 
 void EnterpriseAuthenticationAppLinkPolicyHandler::ApplyPolicySettings(

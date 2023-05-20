@@ -102,8 +102,7 @@ class MockVaapiImageDecoder : public VaapiImageDecoder {
       case gpu::ImageDecodeAcceleratorType::kWebP:
         return SkYUVColorSpace::kRec601_SkYUVColorSpace;
       case gpu::ImageDecodeAcceleratorType::kUnknown:
-        NOTREACHED();
-        return SkYUVColorSpace::kIdentity_SkYUVColorSpace;
+        NOTREACHED_NORETURN();
     }
   }
 

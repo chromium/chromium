@@ -11,12 +11,14 @@
 
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/exo/keyboard.h"
 #include "components/exo/keyboard_device_configuration_delegate.h"
 #include "components/exo/keyboard_observer.h"
 #include "components/exo/wayland/server_util.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
@@ -32,7 +34,8 @@ namespace {
 // keyboard_device_configuration interface:
 
 class WaylandKeyboardDeviceConfigurationDelegate
-    : public KeyboardDeviceConfigurationDelegate,
+    : public ash::input_method::InputMethodManager::ImeMenuObserver,
+      public KeyboardDeviceConfigurationDelegate,
       public KeyboardObserver,
       public ash::ImeControllerImpl::Observer,
       public ui::InputDeviceEventObserver {
@@ -46,6 +49,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
         ash::Shell::Get()->ime_controller();
     ime_controller->AddObserver(this);
     ui::DeviceDataManager::GetInstance()->AddObserver(this);
+    ash::input_method::InputMethodManager::Get()->AddImeMenuObserver(this);
     ProcessKeyBitsUpdate();
     OnKeyboardLayoutNameChanged(ime_controller->keyboard_layout_name());
   }
@@ -55,6 +59,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
       const WaylandKeyboardDeviceConfigurationDelegate&) = delete;
 
   ~WaylandKeyboardDeviceConfigurationDelegate() override {
+    ash::input_method::InputMethodManager::Get()->RemoveImeMenuObserver(this);
     ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
     ash::Shell::Get()->ime_controller()->RemoveObserver(this);
     if (keyboard_) {
@@ -95,7 +100,48 @@ class WaylandKeyboardDeviceConfigurationDelegate
     ProcessKeyBitsUpdate();
   }
 
+  // ash::input_method::InputMethodManager::ImeMenuObserver:
+  void ImeMenuActivationChanged(bool) override {}
+
+  void ImeMenuListChanged() override {
+    // We'll scan ime list changes and notify if a new one was installed.
+    // However if we're not sending event to the client, we can return early.
+    if (wl_resource_get_version(resource_) <
+        ZCR_KEYBOARD_DEVICE_CONFIGURATION_V1_LAYOUT_INSTALL_SINCE_VERSION) {
+      return;
+    }
+
+    ash::input_method::InputMethodManager::State* state =
+        ash::input_method::InputMethodManager::Get()->GetActiveIMEState().get();
+    if (!state) {
+      return;
+    }
+    std::vector<ash::input_method::InputMethodDescriptor>
+        enabled_ime_descriptors = state->GetEnabledInputMethods();
+
+    for (const auto& descriptor : enabled_ime_descriptors) {
+      const std::string& keyboard_layout = descriptor.keyboard_layout();
+      if (!base::Contains(installed_keyboard_layouts_, keyboard_layout)) {
+        OnKeyboardLayoutInstalled(keyboard_layout);
+      }
+    }
+
+    installed_keyboard_layouts_.clear();
+    for (const auto& descriptor : enabled_ime_descriptors) {
+      const std::string& keyboard_layout = descriptor.keyboard_layout();
+      installed_keyboard_layouts_.insert(keyboard_layout);
+    }
+  }
+
+  void ImeMenuItemsChanged(
+      const std::string&,
+      const std::vector<ash::input_method::InputMethodManager::MenuItem>&)
+      override {}
+
  private:
+  // TODO: Implement this method to send layout_install event.
+  void OnKeyboardLayoutInstalled(const std::string& layout_name) {}
+
   // Notify key bits update.
   void ProcessKeyBitsUpdate() {
     if (wl_resource_get_version(resource_) <
@@ -137,6 +183,10 @@ class WaylandKeyboardDeviceConfigurationDelegate
 
   raw_ptr<wl_resource, ExperimentalAsh> resource_;
   raw_ptr<Keyboard, ExperimentalAsh> keyboard_;
+
+  // List of acknowledged installed keyboard layouts. Used to determine if there
+  // are new keyboard layouts installed.
+  std::set<std::string> installed_keyboard_layouts_;
 };
 
 void keyboard_device_configuration_destroy(wl_client* client,

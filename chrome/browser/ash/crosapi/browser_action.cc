@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/user_manager/user_manager.h"
 
 namespace crosapi {
@@ -402,7 +402,7 @@ std::unique_ptr<BrowserAction> BrowserAction::GetActionForSessionStart() {
     return std::make_unique<NewWindowAction>(
         /*incognito=*/false, /*should_trigger_session_restore=*/false, -1);
   }
-  if (profiles::IsKioskSession() ||
+  if (chromeos::IsKioskSession() ||
       ash::full_restore::MaybeCreateFullRestoreServiceForLacros()) {
     return std::make_unique<NoOpAction>();
   }

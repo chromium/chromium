@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/overloaded.h"
@@ -30,8 +31,10 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
+#include "third_party/blink/public/common/url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/color_utils.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -214,6 +217,18 @@ base::Value::Dict ImageResourceDebugDict(
   return root;
 }
 
+base::Value::Dict UrlPatternDebugValue(const blink::UrlPattern& pattern) {
+  liburlpattern::Options options = {.delimiter_list = "/",
+                                    .prefix_list = "/",
+                                    .sensitive = true,
+                                    .strict = false};
+  liburlpattern::Pattern pathname(pattern.pathname, options, "[^/]+?");
+
+  base::Value::Dict pattern_dict;
+  pattern_dict.Set("pathname", pathname.GeneratePatternString());
+  return pattern_dict;
+}
+
 }  // namespace
 
 WebApp::WebApp(const AppId& app_id)
@@ -237,6 +252,20 @@ const SortedSizesPx& WebApp::downloaded_icon_sizes(IconPurpose purpose) const {
     case IconPurpose::MASKABLE:
       return downloaded_icon_sizes_maskable_;
   }
+}
+
+ManifestId WebApp::manifest_id() const {
+  // Almost all production use-cases should have the manifest_id set, but in
+  // some test it is not. If the manifest id is not set, then fall back to the
+  // start_url, as per the algorithm in
+  // https://www.w3.org/TR/appmanifest/#id-member.
+  if (manifest_id_.is_empty()) {
+    CHECK_IS_TEST();
+    // This is why the function must return a value instead of a const ref, as
+    // this object would be temporary.
+    return GenerateManifestIdFromStartUrlOnly(start_url_);
+  }
+  return manifest_id_;
 }
 
 void WebApp::AddSource(WebAppManagement::Type source) {
@@ -323,7 +352,13 @@ void WebApp::SetDescription(const std::string& description) {
 }
 
 void WebApp::SetStartUrl(const GURL& start_url) {
-  DCHECK(start_url.is_valid());
+  CHECK(start_url.is_valid());
+  if (manifest_id_.is_empty()) {
+    manifest_id_ = GenerateManifestIdFromStartUrlOnly(start_url);
+  }
+  CHECK(url::Origin::Create(manifest_id())
+            .IsSameOriginWith(url::Origin::Create(start_url)))
+      << manifest_id().spec() << " " << start_url.spec();
   start_url_ = start_url;
 }
 
@@ -525,7 +560,12 @@ void WebApp::SetManifestUrl(const GURL& manifest_url) {
   manifest_url_ = manifest_url;
 }
 
-void WebApp::SetManifestId(const absl::optional<std::string>& manifest_id) {
+void WebApp::SetManifestId(const ManifestId& manifest_id) {
+  CHECK(manifest_id.is_valid());
+  CHECK(start_url_.is_empty() ||
+        url::Origin::Create(start_url_)
+            .IsSameOriginWith(url::Origin::Create(manifest_id)))
+      << start_url_.spec() << " vs " << manifest_id.spec();
   manifest_id_ = manifest_id;
 }
 
@@ -702,6 +742,11 @@ base::Value::Dict WebApp::ExternalManagementConfig::AsDebugValue() const {
 
 WebApp::IsolationData::IsolationData(IsolatedWebAppLocation location)
     : location(location) {}
+WebApp::IsolationData::IsolationData(
+    IsolatedWebAppLocation location,
+    const std::set<std::string>& controlled_frame_partitions)
+    : location(location),
+      controlled_frame_partitions(controlled_frame_partitions) {}
 WebApp::IsolationData::~IsolationData() = default;
 WebApp::IsolationData::IsolationData(const WebApp::IsolationData&) = default;
 WebApp::IsolationData& WebApp::IsolationData::operator=(
@@ -712,7 +757,8 @@ WebApp::IsolationData& WebApp::IsolationData::operator=(
 
 bool WebApp::IsolationData::operator==(
     const WebApp::IsolationData& other) const {
-  return location == other.location;
+  return location == other.location &&
+         controlled_frame_partitions == other.controlled_frame_partitions;
 }
 bool WebApp::IsolationData::operator!=(
     const WebApp::IsolationData& other) const {
@@ -723,6 +769,11 @@ base::Value WebApp::IsolationData::AsDebugValue() const {
   base::Value::Dict value;
   value.Set("isolated_web_app_location",
             IsolatedWebAppLocationAsDebugValue(location));
+  base::Value::List* partitions =
+      value.EnsureList("controlled_frame_partitions");
+  for (const std::string& partition : controlled_frame_partitions) {
+    partitions->Append(partition);
+  }
   return base::Value(std::move(value));
 }
 
@@ -954,8 +1005,6 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("launch_query_params", ConvertOptional(launch_query_params_));
 
-  root.Set("manifest_id", ConvertOptional(manifest_id_));
-
   root.Set("manifest_update_time", base::ToString(manifest_update_time_));
 
   root.Set("manifest_url", base::ToString(manifest_url_));
@@ -1023,7 +1072,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("theme_color", ColorToString(theme_color_));
 
-  root.Set("unhashed_app_id", GenerateAppIdUnhashed(manifest_id_, start_url_));
+  root.Set("manifest_id", manifest_id_.spec());
 
   root.Set("url_handlers", ConvertDebugValueList(url_handlers_));
 
@@ -1066,16 +1115,28 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
                              tab_strip_.value().home_tab)));
     } else {
       base::Value::Dict home_tab_json;
+      const blink::Manifest::HomeTabParams& home_tab_params =
+          absl::get<blink::Manifest::HomeTabParams>(
+              tab_strip_.value().home_tab);
+
       base::Value::List icons_json;
       absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
-          absl::get<blink::Manifest::HomeTabParams>(tab_strip_.value().home_tab)
-              .icons;
+          home_tab_params.icons;
 
       for (auto& icon : *icons) {
         icons_json.Append(ImageResourceDebugDict(icon));
       }
 
+      base::Value::List scope_patterns_json;
+      const std::vector<blink::UrlPattern>& scope_patterns =
+          home_tab_params.scope_patterns;
+
+      for (const auto& scope_pattern : scope_patterns) {
+        scope_patterns_json.Append(UrlPatternDebugValue(scope_pattern));
+      }
+
       home_tab_json.Set("icons", std::move(icons_json));
+      home_tab_json.Set("scope_patterns", std::move(scope_patterns_json));
       tab_strip_json.Set("home_tab", std::move(home_tab_json));
     }
     root.Set("tab_strip", std::move(tab_strip_json));

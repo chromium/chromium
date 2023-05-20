@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL ReadableStream of type owning should close serialized chunks promise_test: Unhandled rejection with value: object "RangeError: Failed to construct 'ReadableStream': Invalid type is specified"
+FAIL ReadableStream of type owning should transfer JS chunks with transferred values promise_test: Unhandled rejection with value: object "RangeError: Failed to construct 'ReadableStream': Invalid type is specified"
+FAIL ReadableStream of type owning should error when trying to enqueue not serializable values promise_test: Unhandled rejection with value: object "RangeError: Failed to construct 'ReadableStream': Invalid type is specified"
+FAIL ReadableStream of type owning should clone serializable objects when teeing promise_test: Unhandled rejection with value: object "RangeError: Failed to construct 'ReadableStream': Invalid type is specified"
+FAIL ReadableStream of type owning should clone JS Objects with serializables when teeing promise_test: Unhandled rejection with value: object "RangeError: Failed to construct 'ReadableStream': Invalid type is specified"
+Harness: the test ran to completion.
+

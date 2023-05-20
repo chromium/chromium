@@ -24,6 +24,10 @@
 #include "net/log/net_log.h"
 #include "services/network/network_service.h"
 
+namespace embedder_support {
+class OriginTrialsSettingsStorage;
+}  // namespace embedder_support
+
 namespace android_webview {
 
 namespace prefs {
@@ -38,6 +42,7 @@ extern const char kEnterpriseAuthAppLinkPolicy[];
 class AwContentsLifecycleNotifier;
 class VisibilityMetricsLogger;
 
+// Lifetime: Singleton
 class AwBrowserProcess {
  public:
   AwBrowserProcess(AwFeatureListCreator* aw_feature_list_creator);
@@ -88,6 +93,9 @@ class AwBrowserProcess {
   EnterpriseAuthenticationAppLinkManager*
   GetEnterpriseAuthenticationAppLinkManager();
 
+  embedder_support::OriginTrialsSettingsStorage*
+  GetOriginTrialsSettingsStorage();
+
  private:
   void CreateSafeBrowsingUIManager();
   void CreateSafeBrowsingAllowlistManager();
@@ -127,6 +135,8 @@ class AwBrowserProcess {
   std::unique_ptr<VisibilityMetricsLogger> visibility_metrics_logger_;
   std::unique_ptr<AwContentsLifecycleNotifier> aw_contents_lifecycle_notifier_;
   std::unique_ptr<EnterpriseAuthenticationAppLinkManager> app_link_manager_;
+  std::unique_ptr<embedder_support::OriginTrialsSettingsStorage>
+      origin_trials_settings_storage_;
 };
 
 }  // namespace android_webview

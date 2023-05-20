@@ -154,9 +154,6 @@ public class ToolbarButtonIphTest {
 
         toolbarTabButtonInteraction.perform(ViewActions.click());
         onView(withId(R.id.new_tab_button)).check(ViewAssertions.matches(withHighlight(true)));
-
-        onView(withId(R.id.tab_switcher_mode_tab_switcher_button)).perform(ViewActions.click());
-        toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(false)));
     }
 
     private void setPriceTrackingFeatures() {

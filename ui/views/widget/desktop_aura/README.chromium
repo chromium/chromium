@@ -30,7 +30,7 @@ Chromium uses several layers of abstraction on top of these primitives:
 Moving onto aura-specific concepts:
   * aura::Window: A cross-platform abstraction that replaces the NativeWindow.
     Forms a tree hierarchy. An aura::Window is effectively an abstraction over a
-    ui:::Layer that handles events as an EventTarget.
+    ui::Layer that handles events as an EventTarget.
   * WindowTreeHost: Provides the root aura::Window. WindowTreeHost owns a
     compositor that ultimately enables rendering the contents of an aura::Window
     tree on to an AcceleratedWidget.

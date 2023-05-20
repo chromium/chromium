@@ -557,6 +557,8 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
   // but not consumed.
   StopFlingingIfNecessary(event, ack_result);
 
+  HandleSwipeToMoveCursorGestureAck(event);
+
   if (!frame_connector_)
     return;
 
@@ -1041,6 +1043,34 @@ ui::Compositor* RenderWidgetHostViewChildFrame::GetCompositor() {
   if (!GetRootView())
     return nullptr;
   return GetRootView()->GetCompositor();
+}
+
+void RenderWidgetHostViewChildFrame::HandleSwipeToMoveCursorGestureAck(
+    const blink::WebGestureEvent& event) {
+  if (!selection_controller_client_) {
+    return;
+  }
+
+  switch (event.GetType()) {
+    case blink::WebInputEvent::Type::kGestureScrollBegin: {
+      if (!event.data.scroll_begin.cursor_control) {
+        break;
+      }
+      swipe_to_move_cursor_activated_ = true;
+      selection_controller_client_->OnSwipeToMoveCursorBegin();
+      break;
+    }
+    case blink::WebInputEvent::Type::kGestureScrollEnd: {
+      if (!swipe_to_move_cursor_activated_) {
+        break;
+      }
+      swipe_to_move_cursor_activated_ = false;
+      selection_controller_client_->OnSwipeToMoveCursorEnd();
+      break;
+    }
+    default:
+      break;
+  }
 }
 
 }  // namespace content

@@ -11,8 +11,8 @@ source_set("open_from_clipboard") {
   deps = [
     "//base",
     "//components/open_from_clipboard",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/url:constants",
     "//ios/chrome/common/app_group",
     "//ios/components/webui:url_constants",
   ]

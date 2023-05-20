@@ -15,4 +15,21 @@ mojom("mojom") {
     "//sandbox/policy/mojom",
     "//ui/accessibility/mojom",
   ]
+  if (supports_os_accessibility_service) {
+    public_deps += [ ":os_service_mojom" ]
+  }
+}
+
+if (supports_os_accessibility_service) {
+  mojom("os_service_mojom") {
+    sources = [ "tts.mojom" ]
+    public_deps = [ "//mojo/public/mojom/base" ]
+    webui_module_path = "/"
+  }
+
+  group("os_accessibility_service_js") {
+    testonly = true
+    data = [ "$target_gen_dir/tts.mojom-lite.js" ]
+    deps = [ ":os_service_mojom_js__generator" ]
+  }
 }

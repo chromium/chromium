@@ -5,6 +5,8 @@
 #include "base/allocator/partition_allocator/compressed_pointer.h"
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc {
@@ -47,14 +49,14 @@ std::unique_ptr<T[], PADeleter> make_pa_array_unique(PAAllocator& alloc,
 }
 
 // Test that pointer types are trivial.
-#if PA_CONFIG(POINTER_COMPRESSION)
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 static_assert(
     std::is_trivially_default_constructible_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_copy_constructible_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_move_constructible_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_copy_assignable_v<CompressedPointer<Base>>);
 static_assert(std::is_trivially_move_assignable_v<CompressedPointer<Base>>);
-#endif  // PA_CONFIG(POINTER_COMPRESSION)
+#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 static_assert(
     std::is_trivially_default_constructible_v<UncompressedPointer<Base>>);
 static_assert(
@@ -72,32 +74,24 @@ struct CompressedTypeTag {};
 template <typename TagType>
 class CompressedPointerTest : public ::testing::Test {
  public:
-#if PA_CONFIG(POINTER_COMPRESSION)
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   template <typename T>
   using PointerType =
       std::conditional_t<std::is_same_v<TagType, CompressedTypeTag>,
                          CompressedPointer<T>,
                          UncompressedPointer<T>>;
-#else   // PA_CONFIG(POINTER_COMPRESSION)
+#else   // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   template <typename T>
   using PointerType = UncompressedPointer<T>;
-#endif  // PA_CONFIG(POINTER_COMPRESSION)
+#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
-  CompressedPointerTest() {
-    allocator_.init({PartitionOptions::AlignedAlloc::kDisallowed,
-                     PartitionOptions::ThreadCache::kDisabled,
-                     PartitionOptions::Quarantine::kDisallowed,
-                     PartitionOptions::Cookie::kDisallowed,
-                     PartitionOptions::BackupRefPtr::kDisabled,
-                     PartitionOptions::BackupRefPtrZapping::kDisabled,
-                     PartitionOptions::UseConfigurablePool::kNo});
-  }
+  CompressedPointerTest() { allocator_.init(PartitionOptions{}); }
 
  protected:
   internal::PartitionAllocator<internal::ThreadSafe> allocator_;
 };
 
-#if PA_CONFIG(POINTER_COMPRESSION)
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 using ObjectTypes = ::testing::Types<UncompressedTypeTag, CompressedTypeTag>;
 #else
 using ObjectTypes = ::testing::Types<UncompressedTypeTag>;

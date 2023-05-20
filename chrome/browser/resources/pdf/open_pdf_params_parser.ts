@@ -120,6 +120,8 @@ export class OpenPdfParamsParser {
     const params: OpenPdfParams = {};
     const viewMode = viewModeComponents[0];
     let acceptsPositionParam = false;
+
+    // Note that pageNumber is 1-indexed, but PDF Viewer is 0-indexed.
     switch (viewMode) {
       case ViewMode.FIT:
         params['view'] = FittingType.FIT_TO_PAGE;
@@ -134,13 +136,20 @@ export class OpenPdfParamsParser {
         break;
       case ViewMode.FIT_B:
         params['view'] = FittingType.FIT_TO_BOUNDING_BOX;
-        // pageNumber is 1-indexed, but PDF Viewer is 0-indexed.
         params['boundingBox'] =
             await this.getPageBoundingBoxCallback_(pageNumber - 1);
         break;
       case ViewMode.FIT_BH:
+        params['view'] = FittingType.FIT_TO_BOUNDING_BOX_WIDTH;
+        params['boundingBox'] =
+            await this.getPageBoundingBoxCallback_(pageNumber - 1);
+        acceptsPositionParam = true;
+        break;
       case ViewMode.FIT_BV:
-        // Not implemented yet, do nothing.
+        params['view'] = FittingType.FIT_TO_BOUNDING_BOX_HEIGHT;
+        params['boundingBox'] =
+            await this.getPageBoundingBoxCallback_(pageNumber - 1);
+        acceptsPositionParam = true;
         break;
       case ViewMode.FIT_R:
       case ViewMode.XYZ:

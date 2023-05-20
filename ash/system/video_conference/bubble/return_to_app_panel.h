@@ -30,6 +30,7 @@ class LinearAnimation;
 }  // namespace gfx
 
 namespace views {
+class FlexLayout;
 class ImageView;
 class Label;
 class View;
@@ -163,6 +164,9 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
     // Starts the expand/collapse animation.
     void StartExpandCollapseAnimation();
 
+    // We use different layout padding for expand and collapse state.
+    void AdjustLayoutForExpandCollapseState(bool expanded);
+
     gfx::LinearAnimation* animation() { return animation_.get(); }
 
     void set_height_before_animation(int height_before_animation) {
@@ -183,6 +187,9 @@ class ASH_EXPORT ReturnToAppPanel : public views::View,
 
     // views::View:
     gfx::Size CalculatePreferredSize() const override;
+
+    // Layout manager of this view. Owned by the views hierarchy.
+    raw_ptr<views::FlexLayout> layout_manager_ = nullptr;
 
     // Animation used for the expand/collapse animation.
     std::unique_ptr<gfx::LinearAnimation> animation_;

@@ -188,11 +188,11 @@ void RequestHandlerImpl::OnGetAnnotatedNumericResult(
 
 TrainingRequestId RequestHandlerImpl::CollectTrainingData(
     scoped_refptr<InputContext> input_context) {
-  // The execution service and training data collector, might be null in
-  // testing.
-  if (!execution_service_ || !execution_service_->training_data_collector()) {
+  // The training data collector might be null in testing.
+  if (!execution_service_->training_data_collector()) {
     return TrainingRequestId();
   }
+
   return execution_service_->training_data_collector()->OnDecisionTime(
       config_->segments.begin()->first, input_context,
       proto::TrainingOutputs::TriggerConfig::ONDEMAND);

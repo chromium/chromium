@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SYNC_SYNC_UI_UTIL_H_
 
 #include "build/build_config.h"
-#include "components/sync/driver/sync_service_utils.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;

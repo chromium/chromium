@@ -40,6 +40,11 @@ void AssistiveTechnologyControllerImpl::BindAutomation(
       std::move(automation), std::move(automation_client));
 }
 
+void AssistiveTechnologyControllerImpl::BindTts(
+    mojo::PendingReceiver<mojom::Tts> tts_receiver) {
+  accessibility_service_client_remote_->BindTts(std::move(tts_receiver));
+}
+
 void AssistiveTechnologyControllerImpl::EnableAssistiveTechnology(
     const std::vector<mojom::AssistiveTechnologyType>& enabled_features) {
   for (int i = static_cast<int>(mojom::AssistiveTechnologyType::kMinValue);
@@ -88,6 +93,10 @@ scoped_refptr<V8Manager> AssistiveTechnologyControllerImpl::GetOrMakeV8Manager(
   // Install bindings on the global context depending on the type.
   // For example, some types may need TTS and some may not. All need Automation.
   v8_manager->InstallAutomation(weak_ptr_factory_.GetWeakPtr());
+  if (type == mojom::AssistiveTechnologyType::kChromeVox ||
+      type == mojom::AssistiveTechnologyType::kSelectToSpeak) {
+    v8_manager->InstallTts(weak_ptr_factory_.GetWeakPtr());
+  }
   // TODO(crbug.com/1355633): Install other bindings based on the type
   // once they are implemented.
 

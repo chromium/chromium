@@ -90,9 +90,6 @@ class GPU_EXPORT SharedImageInterface {
   // SharedImageInterface keeps ownership of the image until
   // `DestroySharedImage()` is called or the interface itself is destroyed (e.g.
   // the GPU channel is lost).
-  //
-  // NOTE: `format` must be a multi-planar format. This is temporary until
-  // support is added for single-planar formats here.
   virtual Mailbox CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,

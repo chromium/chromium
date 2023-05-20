@@ -302,7 +302,7 @@ public class AutofillPaymentMethodsFragmentTest {
     @Policies.Add({ @Policies.Item(key = "AutofillCreditCardEnabled", string = "false") })
     public void testMandatoryReauthToggle_notShownWhenAutofillDisabled() throws Exception {
         // Simulate the user can authenticate with biometric.
-        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometric()).thenReturn(true);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -317,7 +317,7 @@ public class AutofillPaymentMethodsFragmentTest {
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
     public void testMandatoryReauthToggle_notShownWhenBiometricIsDisabled() throws Exception {
         // Simulate the user can't authenticate with biometric.
-        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(false);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometric()).thenReturn(false);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -336,7 +336,7 @@ public class AutofillPaymentMethodsFragmentTest {
             getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
         });
         // Simulate the user can authenticate with biometric, so that Reauth toggle can be shown.
-        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometric()).thenReturn(true);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -360,7 +360,7 @@ public class AutofillPaymentMethodsFragmentTest {
             getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
         });
         // Simulate the user can authenticate with biometric, so that Reauth toggle can be shown.
-        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometric()).thenReturn(true);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -390,7 +390,7 @@ public class AutofillPaymentMethodsFragmentTest {
             getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
         });
         // Simulate the user can authenticate with biometric, so that Reauth toggle can be shown.
-        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometric()).thenReturn(true);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -421,7 +421,7 @@ public class AutofillPaymentMethodsFragmentTest {
             getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
         });
         // Simulate the user can authenticate with biometric, so that Reauth toggle can be shown.
-        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometric()).thenReturn(true);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -455,7 +455,7 @@ public class AutofillPaymentMethodsFragmentTest {
             getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, true);
         });
         // Simulate the user can authenticate with biometric, so that Reauth toggle can be shown.
-        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometric()).thenReturn(true);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
@@ -521,7 +521,7 @@ public class AutofillPaymentMethodsFragmentTest {
             getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, false);
         });
         // Simulate the user can authenticate with biometric, so that Reauth toggle can be shown.
-        when(mReauthenticatorMock.canUseAuthentication()).thenReturn(true);
+        when(mReauthenticatorMock.canUseAuthenticationWithBiometric()).thenReturn(true);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 

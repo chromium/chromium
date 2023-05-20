@@ -323,6 +323,10 @@ component("partition_alloc") {
     deps += [ "//third_party/android_ndk:cpu_features" ]
   }
   if (is_fuchsia) {
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.kernel:fuchsia.kernel_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
+    ]
     public_deps += [
       "//third_party/fuchsia-sdk/sdk/pkg/fit",
       "//third_party/fuchsia-sdk/sdk/pkg/sync",
@@ -370,6 +374,7 @@ source_set("raw_ptr") {
   check_includes = use_partition_alloc
   public = [
     "pointers/raw_ptr.h",
+    "pointers/raw_ptr_cast.h",
     "pointers/raw_ptr_exclusion.h",
     "pointers/raw_ref.h",
   ]
@@ -417,6 +422,18 @@ buildflag_header("partition_alloc_buildflags") {
   # Pools are a logical concept when address space is 32-bit.
   _glue_core_pools = glue_core_pools && has_64_bit_pointers
 
+  # Pointer compression requires 64-bit pointers.
+  _enable_pointer_compression =
+      enable_pointer_compression_support && has_64_bit_pointers
+
+  # Force-enable live BRP in all processes, ignoring the canonical
+  # experiment state of `PartitionAllocBackupRefPtr`.
+  #
+  # This is not exposed as a GN arg as it is not meant to be used by
+  # developers - it is simply a compile-time hinge that should be
+  # set in the experimental build and then reverted immediately.
+  _force_all_process_brp = false
+
   # TODO(crbug.com/1151236): Need to refactor the following buildflags.
   # The buildflags (except RECORD_ALLOC_INFO) are used by both chrome and
   # partition alloc. For partition alloc,
@@ -442,13 +459,14 @@ buildflag_header("partition_alloc_buildflags") {
     "USE_ASAN_UNOWNED_PTR=$use_asan_unowned_ptr",
     "USE_HOOKABLE_RAW_PTR=$use_hookable_raw_ptr",
     "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
+    "FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES=$_force_all_process_brp",
 
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
 
     "RECORD_ALLOC_INFO=$_record_alloc_info",
     "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
     "GLUE_CORE_POOLS=$_glue_core_pools",
-    "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression_support",
+    "ENABLE_POINTER_COMPRESSION=$_enable_pointer_compression",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
 
     "USE_STARSCAN=$use_starscan",

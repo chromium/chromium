@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/translate/partial_translate_bubble_model_impl.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/translate/translate_bubble_model_impl.h"
-#include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
 #include "components/translate/content/browser/partial_translate_manager.h"
@@ -106,8 +105,6 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
   translate_bubble_view_->SetViewState(step, error_type);
 
   translate_bubble_view_->ShowForReason(reason);
-  translate::ReportTranslateBubbleUiAction(
-      translate::TranslateBubbleUiEvent::BUBBLE_SHOWN);
 
   translate_bubble_view_->model()->ReportUIChange(true);
 

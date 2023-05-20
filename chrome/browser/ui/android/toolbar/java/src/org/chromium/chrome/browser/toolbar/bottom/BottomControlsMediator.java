@@ -137,7 +137,7 @@ class BottomControlsMediator implements BrowserControlsStateProvider.Observer,
     // LayoutStateObserver
 
     @Override
-    public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+    public void onStartedShowing(@LayoutType int layoutType) {
         mIsInSwipeLayout = layoutType == LayoutType.TOOLBAR_SWIPE;
         updateAndroidViewVisibility();
     }

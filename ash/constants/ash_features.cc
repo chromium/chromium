@@ -824,6 +824,12 @@ BASE_FEATURE(kExoConsumedByImeByFlag,
              "ExoConsumedByImeByFlag",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables to check KeyEvent flag to see if the event is consumed by IME
+// or not (=decides using heuristics based on key code etc.).
+BASE_FEATURE(kExoSurroundingTextOffset,
+             "ExoSurroundingTextOffset",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allows RGB Keyboard to test new animations/patterns.
 BASE_FEATURE(kExperimentalRgbKeyboardPatterns,
              "ExperimentalRgbKeyboardPatterns",
@@ -916,6 +922,13 @@ BASE_FEATURE(kFeatureManagement16Desks,
              "FeatureManagement16Desks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows borealis on certain boards whose features are determined by
+// FeatureManagement. This feature does not apply to all boards, and does not
+// guarantee borealis will be available (due to additional hardware checks).
+BASE_FEATURE(kFeatureManagementSteamOnChromebook,
+             "FeatureManagementSteamOnChromebook",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Restricts the time-of-day wallpaper/screensaver features to the intended
 // target population, whereas the `kTimeOfDayScreenSaver|Wallpaper` flags
 // control the feature's rollout within said target population. These flags are
@@ -972,6 +985,12 @@ BASE_FEATURE(kFilesInlineSyncStatus,
              "FilesInlineSyncStatus",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable inline sync status in Files app to consume events from the new more
+// robust ProgressEvents (enables inline sync status for downsync events).
+BASE_FEATURE(kFilesInlineSyncStatusProgressEvents,
+             "FilesInlineSyncStatusProgressEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables V2 of search functionality in files.
 BASE_FEATURE(kFilesSearchV2,
              "FilesSearchV2",
@@ -991,7 +1010,7 @@ BASE_FEATURE(kFilesTrashDrive,
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kFirmwareUpdateJelly,
              "FirmwareUpdateJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables first party Vietnamese input method.
 BASE_FEATURE(kFirstPartyVietnameseInput,
@@ -1462,7 +1481,7 @@ BASE_FEATURE(kMacAddressRandomization,
 // Enables PDF signature saving and a selection tool in the media app.
 BASE_FEATURE(kMediaAppPdfSignature,
              "MediaAppPdfSignature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables notification of when a microphone-using app is launched while the
 // microphone is muted.
@@ -1591,10 +1610,15 @@ BASE_FEATURE(kOobeDrivePinning,
              "OobeDrivePinning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Consumer Software Screen will be shown during OOBE.
+BASE_FEATURE(kOobeSoftwareUpdate,
+             "OobeSoftwareUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Gaia info screen in OOBE.
 BASE_FEATURE(kOobeGaiaInfoScreen,
              "OobeGaiaInfoScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, TouchPadScreen will be shown in CHOOBE.
 // enabling this without enabling OobeChoobe flag will have no effect
@@ -1620,7 +1644,7 @@ BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementOobeSimon,
              "FeatureManagementOobeSimon",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kOobeSimon, "OobeSimon", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOobeSimon, "OobeSimon", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Skipping the assistant setup screen in OOBE.
 BASE_FEATURE(kOobeSkipAssistant,
@@ -1668,6 +1692,11 @@ BASE_FEATURE(kOsFeedbackJelly,
 BASE_FEATURE(kOsSettingsAppBadgingToggle,
              "OsSettingsAppBadgingToggle",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the wayfinding improvements for the ChromeOS Settings revamp
+BASE_FEATURE(kOsSettingsRevampWayfinding,
+             "OsSettingsRevampWayfinding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables search result feedback in ChromeOS Settings when no search results
 // are returned.
@@ -1772,6 +1801,12 @@ BASE_FEATURE(kPreferConstantFrameRate,
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kPrintManagementJelly,
              "PrintManagementJelly",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, improved messaging for printer setup displayed in print
+// management app.
+BASE_FEATURE(kPrintManagementSetupAssistance,
+             "PrintManagementSetupAssistance",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the new OS Printer Settings UI.
@@ -1954,7 +1989,7 @@ BASE_FEATURE(kRgbKeyboard, "RgbKeyboard", base::FEATURE_ENABLED_BY_DEFAULT);
 // jelly-colors flag to also be enabled.
 BASE_FEATURE(kScanningAppJelly,
              "ScanningAppJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables screensaver customized running time.
 BASE_FEATURE(kScreenSaverDuration,
@@ -2049,7 +2084,7 @@ BASE_FEATURE(kShimlessRMADiagnosticPage,
 // Requires jelly-colors flag to also be enabled.
 BASE_FEATURE(kShortcutCustomizationJelly,
              "ShortcutCustomizationJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables a toggle to enable Bluetooth debug logs.
 BASE_FEATURE(kShowBluetoothDebugLogToggle,
@@ -2550,10 +2585,6 @@ bool IsAssistantNativeIconsEnabled() {
   return base::FeatureList::IsEnabled(kAssistantNativeIcons);
 }
 
-bool IsAssistiveMultiWordEnabled() {
-  return base::FeatureList::IsEnabled(kAssistMultiWord);
-}
-
 bool IsAudioSettingsPageEnabled() {
   return base::FeatureList::IsEnabled(kAudioSettingsPage);
 }
@@ -2680,6 +2711,10 @@ bool IsDriveFsBulkPinningEnabled() {
 
 bool IsInlineSyncStatusEnabled() {
   return base::FeatureList::IsEnabled(kFilesInlineSyncStatus);
+}
+
+bool IsInlineSyncStatusProgressEventsEnabled() {
+  return base::FeatureList::IsEnabled(kFilesInlineSyncStatusProgressEvents);
 }
 
 bool IsEapGtcWifiAuthenticationEnabled() {
@@ -3173,6 +3208,10 @@ bool IsOobeDrivePinningEnabled() {
          IsOobeChoobeEnabled() && IsDriveFsBulkPinningEnabled();
 }
 
+bool IsOobeSoftwareUpdateEnabled() {
+  return base::FeatureList::IsEnabled(kOobeSoftwareUpdate);
+}
+
 bool IsOobeQuickStartEnabled() {
   return base::FeatureList::IsEnabled(kOobeQuickStart);
 }
@@ -3189,6 +3228,10 @@ bool IsOobeDisplaySizeEnabled() {
 
 bool IsOsSettingsAppBadgingToggleEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppBadgingToggle);
+}
+
+bool IsOsSettingsRevampWayfindingEnabled() {
+  return base::FeatureList::IsEnabled(kOsSettingsRevampWayfinding);
 }
 
 bool IsOsSettingsSearchFeedbackEnabled() {

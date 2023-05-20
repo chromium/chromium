@@ -249,7 +249,7 @@ void InternetHandler::SetGmsCoreNotificationsDisabledDeviceNames() {
       gms_core_notifications_state_tracker_
           ->GetGmsCoreNotificationsDisabledDeviceNames();
   for (const auto& device_name : device_names) {
-    device_names_without_notifications_.emplace_back(base::Value(device_name));
+    device_names_without_notifications_.Append(base::Value(device_name));
   }
   SendGmsCoreNotificationsDisabledDeviceNames();
 }

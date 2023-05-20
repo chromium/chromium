@@ -237,9 +237,6 @@ class WizardController : public OobeUI::Observer {
   void ShowGaiaPasswordChangedScreenLegacy(const AccountId& account_id,
                                            bool has_error);
 
-  // Configure and show active directory password change screen.
-  void ShowActiveDirectoryPasswordChangeScreen(const std::string& username);
-
   // Configure and show the signin fatal error screen.
   void ShowSignInFatalErrorScreen(SignInFatalErrorScreen::Error error,
                                   base::Value::Dict params);
@@ -349,8 +346,7 @@ class WizardController : public OobeUI::Observer {
   // `exit_reason` is the screen specific exit reason reported by the screen.
   void OnScreenExit(OobeScreenId screen, const std::string& exit_reason);
 
-  // Advances either to Gaia screen or Active Directory login screen, depending
-  // on the device state.
+  // Advances to Gaia login screen.
   void AdvanceToSigninScreen();
 
   // Exit handlers:
@@ -390,7 +386,6 @@ class WizardController : public OobeUI::Observer {
   void OnUpdateRequiredScreenExit();
   void OnOobeFlowFinished();
   void OnPackagedLicenseScreenExit(PackagedLicenseScreen::Result result);
-  void OnActiveDirectoryPasswordChangeScreenExit();
   void OnFamilyLinkNoticeScreenExit(FamilyLinkNoticeScreen::Result result);
   void OnUserCreationScreenExit(UserCreationScreen::Result result);
   void OnGaiaScreenExit(GaiaScreen::Result result);
@@ -587,6 +582,9 @@ class WizardController : public OobeUI::Observer {
   base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observation_{this};
 
   base::ObserverList<ScreenObserver> screen_observers_;
+
+  // Shared factory for outgoing network requests.
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   base::WeakPtrFactory<WizardController> weak_factory_{this};
 };

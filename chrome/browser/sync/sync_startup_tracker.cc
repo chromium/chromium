@@ -6,7 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {

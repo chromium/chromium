@@ -184,28 +184,28 @@ void DlpPolicyEventBuilder::SetDestinationPattern(
 }
 
 void DlpPolicyEventBuilder::SetDestinationComponent(
-    DlpRulesManager::Component dst_component) {
+    data_controls::Component dst_component) {
   DlpPolicyEventDestination* event_destination = new DlpPolicyEventDestination;
   switch (dst_component) {
-    case (DlpRulesManager::Component::kArc):
+    case (data_controls::Component::kArc):
       event_destination->set_component(DlpPolicyEventDestination_Component_ARC);
       break;
-    case (DlpRulesManager::Component::kCrostini):
+    case (data_controls::Component::kCrostini):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_CROSTINI);
       break;
-    case (DlpRulesManager::Component::kPluginVm):
+    case (data_controls::Component::kPluginVm):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_PLUGIN_VM);
       break;
-    case (DlpRulesManager::Component::kUsb):
+    case (data_controls::Component::kUsb):
       event_destination->set_component(DlpPolicyEventDestination_Component_USB);
       break;
-    case (DlpRulesManager::Component::kDrive):
+    case (data_controls::Component::kDrive):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_DRIVE);
       break;
-    case (DlpRulesManager::Component::kUnknownComponent):
+    case (data_controls::Component::kUnknownComponent):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT);
       break;
@@ -256,7 +256,7 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
 }
 
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    DlpRulesManager::Component dst_component,
+                                    data_controls::Component dst_component,
                                     DlpRulesManager::Restriction restriction,
                                     const std::string& rule_name,
                                     const std::string& rule_id,
@@ -306,7 +306,7 @@ void DlpReportingManager::ReportEvent(const std::string& src_pattern,
 
 void DlpReportingManager::ReportEvent(
     const std::string& src_pattern,
-    const DlpRulesManager::Component dst_component,
+    const data_controls::Component dst_component,
     DlpRulesManager::Restriction restriction,
     DlpRulesManager::Level level,
     const std::string& rule_name,

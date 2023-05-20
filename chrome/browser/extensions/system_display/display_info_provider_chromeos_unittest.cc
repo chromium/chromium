@@ -592,7 +592,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetVisibleArea) {
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, GetMirroring) {
-  UpdateDisplay("600x600, 400x520/o");
+  UpdateDisplay("600x500, 400x520/o");
   DisplayUnitInfoList result;
   result = GetAllDisplaysInfo();
 
@@ -638,7 +638,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetMirroring) {
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, GetBounds) {
-  UpdateDisplay("600x600, 400x520");
+  UpdateDisplay("600x500, 400x520");
   GetDisplayManager()->SetLayoutForCurrentDisplays(
       display::test::CreateDisplayLayout(display_manager(),
                                          display::DisplayPlacement::LEFT, -40));
@@ -646,7 +646,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetBounds) {
   DisplayUnitInfoList result = GetAllDisplaysInfo();
 
   ASSERT_EQ(2u, result.size());
-  EXPECT_EQ("0,0 600x600", SystemInfoDisplayBoundsToString(result[0].bounds));
+  EXPECT_EQ("0,0 600x500", SystemInfoDisplayBoundsToString(result[0].bounds));
   EXPECT_EQ("-400,-40 400x520",
             SystemInfoDisplayBoundsToString(result[1].bounds));
 
@@ -657,7 +657,7 @@ TEST_F(DisplayInfoProviderChromeosTest, GetBounds) {
   result = GetAllDisplaysInfo();
 
   ASSERT_EQ(2u, result.size());
-  EXPECT_EQ("0,0 600x600", SystemInfoDisplayBoundsToString(result[0].bounds));
+  EXPECT_EQ("0,0 600x500", SystemInfoDisplayBoundsToString(result[0].bounds));
   EXPECT_EQ("40,-520 400x520",
             SystemInfoDisplayBoundsToString(result[1].bounds));
 
@@ -667,8 +667,8 @@ TEST_F(DisplayInfoProviderChromeosTest, GetBounds) {
 
   result = GetAllDisplaysInfo();
   ASSERT_EQ(2u, result.size());
-  EXPECT_EQ("0,0 600x600", SystemInfoDisplayBoundsToString(result[0].bounds));
-  EXPECT_EQ("80,600 400x520",
+  EXPECT_EQ("0,0 600x500", SystemInfoDisplayBoundsToString(result[0].bounds));
+  EXPECT_EQ("80,500 400x520",
             SystemInfoDisplayBoundsToString(result[1].bounds));
 }
 
@@ -1071,7 +1071,7 @@ TEST_F(DisplayInfoProviderChromeosTest,
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginPrimaryHiDPI) {
-  UpdateDisplay("1200x600*2,500x500");
+  UpdateDisplay("1200x600*2,500x400");
 
   const display::Display& secondary =
       display::test::DisplayManagerTestApi(display_manager())
@@ -1083,7 +1083,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginPrimaryHiDPI) {
   EXPECT_TRUE(
       CallSetDisplayUnitInfo(base::NumberToString(secondary.id()), info));
 
-  EXPECT_EQ("600,-100 500x500", secondary.bounds().ToString());
+  EXPECT_EQ("600,-100 500x400", secondary.bounds().ToString());
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, SetBoundsOriginSecondaryHiDPI) {
@@ -1551,7 +1551,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetDisplayZoomFactor) {
 
   // Initialize displays that have bounds outside the valid width range of 640px
   // to 4096px.
-  UpdateDisplay("400x400, 4500x1000#4500x1000");
+  UpdateDisplay("400x350, 4500x1000#4500x1000");
 
   display_id_list = display_manager()->GetConnectedDisplayIdList();
 
@@ -1677,7 +1677,7 @@ TEST_F(DisplayInfoProviderChromeosTest, SetMIXEDMode) {
   }
 
   // Add more displays.
-  UpdateDisplay("200x200,600x600,700x700");
+  UpdateDisplay("200x150,600x550,700x650");
   display::DisplayIdList id_list =
       display_manager()->GetConnectedDisplayIdList();
   EXPECT_EQ(3U, id_list.size());

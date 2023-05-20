@@ -5,8 +5,10 @@
 #include "components/commerce/core/android/shopping_service_android.h"
 
 #include "base/android/callback_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/shopping_service_jni_headers/ShoppingService_jni.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -75,7 +77,9 @@ ShoppingServiceAndroid::GetAvailableProductInfoForUrl(
     info_java_object = Java_ShoppingService_createProductInfo(
         env, ConvertUTF8ToJavaString(env, info->title),
         url::GURLAndroid::FromNativeGURL(env, GURL(info->image_url)),
-        info->product_cluster_id, info->offer_id,
+        info->product_cluster_id.has_value(),
+        info->product_cluster_id.value_or(0), info->offer_id.has_value(),
+        info->offer_id.value_or(0),
         ConvertUTF8ToJavaString(env, info->currency_code), info->amount_micros,
         ConvertUTF8ToJavaString(env, info->country_code),
         info->previous_amount_micros.has_value(),
@@ -95,7 +99,9 @@ void ShoppingServiceAndroid::HandleProductInfoCallback(
     info_java_object = Java_ShoppingService_createProductInfo(
         env, ConvertUTF8ToJavaString(env, info->title),
         url::GURLAndroid::FromNativeGURL(env, GURL(info->image_url)),
-        info->product_cluster_id, info->offer_id,
+        info->product_cluster_id.has_value(),
+        info->product_cluster_id.value_or(0), info->offer_id.has_value(),
+        info->offer_id.value_or(0),
         ConvertUTF8ToJavaString(env, info->currency_code), info->amount_micros,
         ConvertUTF8ToJavaString(env, info->country_code),
         info->previous_amount_micros.has_value(),
@@ -252,6 +258,23 @@ bool ShoppingServiceAndroid::IsSubscribedFromCache(
                            kUnknownSubscriptionTimestamp, absl::nullopt);
 
   return shopping_service_->IsSubscribedFromCache(std::move(sub));
+}
+
+void ShoppingServiceAndroid::GetAllPriceTrackedBookmarks(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_callback) {
+  shopping_service_->GetAllPriceTrackedBookmarks(base::BindOnce(
+      [](JNIEnv* env, const ScopedJavaGlobalRef<jobject>& callback,
+         std::vector<const bookmarks::BookmarkNode*> tracked_items) {
+        std::vector<int64_t> ids;
+        for (const auto* bookmark : tracked_items) {
+          ids.push_back(bookmark->id());
+        }
+        Java_ShoppingService_runGetAllPriceTrackedBookmarksCallback(
+            env, callback, base::android::ToJavaLongArray(env, ids));
+      },
+      env, ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 void ShoppingServiceAndroid::OnSubscribe(const CommerceSubscription& sub,

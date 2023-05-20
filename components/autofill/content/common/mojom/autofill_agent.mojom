@@ -89,6 +89,13 @@ interface AutofillAgent {
 
   // Update fields that are eligible to show manual filling on form interaction.
   SetFieldsEligibleForManualFilling(array<FieldRendererId> fields);
+
+  // Returns a vector of four digit combinations present in the DOM of a
+  // webpage. Used to check for the presence of the virtual card last four in
+  // the DOM prior to offering CVC autofill for a virtual card saved on a
+  // merchant website.
+  GetPotentialLastFourCombinationsForStandaloneCvc() =>
+      (array<string> potential_matches);
 };
 
 // There is one instance of this interface per render frame in the render

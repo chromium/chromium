@@ -259,8 +259,9 @@ class MediaNotificationServiceCastTest : public MediaNotificationServiceTest {
     base::RunLoop().RunUntilIdle();
     auto notification_id =
         service()
-            ->supplemental_device_picker_producer_->GetNotificationItem()
-            ->id();
+            ->supplemental_device_picker_producer_
+            ->GetOrCreateNotificationItem(base::UnguessableToken::Create())
+            .id();
     EXPECT_FALSE(notification_id.empty());
     auto item = service()
                     ->presentation_request_notification_producer_

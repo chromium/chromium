@@ -94,7 +94,8 @@ const char kNewTabToolbarItemUsed[] = "new_tab_toolbar_item_used";
 const char kTabGridToolbarItemUsed[] = "tab_grid_toolbar_item_used";
 const char kHistoryOnOverflowMenuUsed[] = "history_on_overflow_menu_used";
 const char kShareToolbarItemUsed[] = "share_toolbar_item_used";
-
+const char kDefaultBrowserVideoPromoConditionsMet[] =
+    "default_browser_video_promo_conditions_met";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

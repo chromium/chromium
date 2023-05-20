@@ -141,7 +141,7 @@ class MediaRecorderEncoderWrapperTest : public ::testing::Test {
   // It can be called only in MediaRecorderEncoderWrapperTest.
   void EncodeFrame(scoped_refptr<media::VideoFrame> frame,
                    base::TimeTicks capture_timestamp) {
-    encoder_wrapper_.EncodeFrame(std::move(frame), capture_timestamp);
+    encoder_wrapper_.EncodeFrame(std::move(frame), capture_timestamp, false);
   }
 
   MOCK_METHOD(void,

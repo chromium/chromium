@@ -8,7 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/driver/data_type_controller.h"
+#include "components/sync/service/data_type_controller.h"
 
 namespace syncer {
 class GlobalIdMapper;

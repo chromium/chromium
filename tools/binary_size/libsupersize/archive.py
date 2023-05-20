@@ -405,9 +405,10 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
     add_syms(arsc_section_ranges, arsc_symbols)
     metrics_by_file.update(arsc_metrics_by_file)
 
-    other_section_ranges, other_symbols, apk_metadata = (
+    other_section_ranges, other_symbols, apk_metadata, apk_metrics_by_file = (
         apk.CreateApkOtherSymbols(apk_spec))
     add_syms(other_section_ranges, other_symbols)
+    metrics_by_file.update(apk_metrics_by_file)
 
   metadata = _CreateMetadata(container_spec, elf_info)
   assert not (metadata.keys() & apk_metadata.keys())

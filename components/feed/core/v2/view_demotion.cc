@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -70,6 +71,10 @@ DocViewDigest CreateDigest(std::vector<feedstore::DocView> all_views) {
     // docids to remove.
     size_t remove_count =
         digest.doc_view_counts.size() - GetFeedConfig().max_docviews_to_send;
+
+    base::UmaHistogramCounts100(
+        "ContentSuggestions.Feed.DroppedDocumentViewCount", remove_count);
+
     std::vector<std::pair<int64_t, uint64_t>> latest_view_to_docid;
     for (const feedstore::DocView& view : all_views) {
       if (latest_view_to_docid.empty() ||
@@ -104,6 +109,14 @@ DocViewDigest CreateDigest(std::vector<feedstore::DocView> all_views) {
     DCHECK_EQ(digest.doc_view_counts.size(),
               GetFeedConfig().max_docviews_to_send);
   }
+
+  base::UmaHistogramCounts100(
+      "ContentSuggestions.Feed.DocumentViewSendCount100",
+      digest.doc_view_counts.size());
+
+  base::UmaHistogramCounts1000(
+      "ContentSuggestions.Feed.DocumentViewSendCount1000",
+      digest.doc_view_counts.size());
   return digest;
 }
 }  // namespace internal

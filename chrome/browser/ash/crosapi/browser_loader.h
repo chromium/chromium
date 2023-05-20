@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_LOADER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -14,7 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 class CrOSComponentManager;
@@ -49,6 +52,16 @@ class BrowserLoader {
   // If this returns false subsequent loads of lacros-chrome will never load
   // a newer lacros-chrome version and update checking can be skipped.
   static bool WillLoadStatefulComponentBuilds();
+
+  struct LacrosSelectionVersion {
+    LacrosSelectionVersion(LacrosSelection selection, base::Version version);
+
+    // LacrosSelection::kRootfs or kStateful should be set here, not
+    // kDeployedLocally.
+    LacrosSelection selection;
+
+    base::Version version;
+  };
 
   // Starts to load lacros-chrome binary or the rootfs lacros-chrome binary.
   // |callback| is called on completion with the path to the lacros-chrome on
@@ -89,20 +102,21 @@ class BrowserLoader {
   // `load_stateful_lacros` specifies whether we should start the installation
   // of stateful lacros in the background.
   void SelectRootfsLacros(LoadCompletionCallback callback,
-                          bool load_stateful_lacros = false);
+                          bool load_stateful_lacros);
   void SelectStatefulLacros(LoadCompletionCallback callback);
 
-  // Called when stateful lacros version is calculated.
-  // TODO(crbug.com/1429138): Make it pararell to load stateful and rootfs
-  // lacros.
-  void OnLoadStatefulLacros(LoadCompletionCallback callback,
-                            base::Version stateful_lacros_version);
+  // Called on GetVersion for each rootfs and stateful lacros loader.
+  void OnGetVersion(
+      LacrosSelection selection,
+      base::OnceCallback<void(LacrosSelectionVersion)> barrier_callback,
+      const base::Version& version);
 
   // Called to determine which lacros to load based on version (rootfs vs
   // stateful).
-  void OnLoadVersionSelection(LoadCompletionCallback callback,
-                              base::Version stateful_lacros_version,
-                              base::Version rootfs_lacros_version);
+  // `versions` consists of 2 elements, one for rootfs lacros, one for stateful
+  // lacros. The order is not specified.
+  void OnLoadVersions(LoadCompletionCallback callback,
+                      std::vector<LacrosSelectionVersion> versions);
 
   // Called on the completion of loading.
   void OnLoadComplete(LoadCompletionCallback callback,

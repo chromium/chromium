@@ -4,7 +4,7 @@
 
 #include "components/sync/test/data_type_manager_mock.h"
 
-#include "components/sync/driver/configure_context.h"
+#include "components/sync/service/configure_context.h"
 
 namespace syncer {
 

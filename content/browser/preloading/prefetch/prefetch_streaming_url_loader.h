@@ -33,17 +33,11 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       const network::URLLoaderCompletionStatus& completion_status)>;
 
   // This callback is used by the owner to determine if the redirect should be
-  // followed. If the redirect should be followed, then the callback should
-  // return |kFollowRedirect|. If the redirect should not be followed, then the
-  // callback should return |kFailedInvalidRedirect|. If eligibility check is
-  // still being run on the redirect URL, then
-  // |kPauseRedirectForEligibilityCheck| should be returned and then
-  // |OnEligibilityCheckForRedirectComplete| should be called later with the
-  // result of the eligibility check.
-  using OnPrefetchRedirectCallback =
-      base::RepeatingCallback<PrefetchStreamingURLLoaderStatus(
-          const net::RedirectInfo& redirect_info,
-          const network::mojom::URLResponseHead& response_head)>;
+  // followed. |HandleRedirect| should be called with the appropriate status for
+  // how the redirect should be handled.
+  using OnPrefetchRedirectCallback = base::RepeatingCallback<void(
+      const net::RedirectInfo& redirect_info,
+      const network::mojom::URLResponseHead& response_head)>;
 
   PrefetchStreamingURLLoader(
       network::mojom::URLLoaderFactory* url_loader_factory,
@@ -60,16 +54,25 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   PrefetchStreamingURLLoader& operator=(const PrefetchStreamingURLLoader&) =
       delete;
 
-  // Informs the URL loader of the result of the eligibility check on a redirect
-  // URL after |kPauseRedirectForEligibilityCheck| was returned by
-  // |on_prefetch_redirect_callback_|.
-  void OnEligibilityCheckForRedirectComplete(bool is_eligible);
+  // Informs the URL loader of how to handle the most recent redirect. This
+  // should only be called after |on_prefetch_redirect_callback_| is called. The
+  // value of |new_status| should only be one of the following:
+  // - |kFollowRedirect|, if the redirect should be followed by |this|.
+  // - |kStopSwitchInNetworkContextForRedirect|, if the redirect will be
+  //   followed by a different |PrefetchStreamingURLLoader| due to a change in
+  //   network context.
+  // - |kFailedInvalidRedirect|, if the redirect should not be followed by
+  //   |this|.
+  void HandleRedirect(PrefetchStreamingURLLoaderStatus new_status);
 
   // Registers a callback that is called once the head of the response is
   // received via either |OnReceiveResponse| or |OnReceiveRedirect|. The
   // callback is called once it is determined whether or not the prefetch is
   // servable.
   void SetOnReceivedHeadCallback(base::OnceClosure on_received_head_callback);
+
+  // Releases the closure registered via |SetOnReceivedHeadCallback|.
+  base::OnceClosure ReleaseOnReceivedHeadCallback();
 
   bool Servable(base::TimeDelta cacheable_duration) const;
   bool Failed() const;
@@ -80,9 +83,11 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   }
   const network::mojom::URLResponseHead* GetHead() const { return head_.get(); }
 
-  // Whether |this| is ready to serve the final response of the prefetch, or if
-  // there are any redirects to serve first.
-  bool IsReadyToServeFinalResponse() const;
+  // Whether |this| is ready to serve its last set of events. This can either be
+  // the head and body of the overall prefetch, or a redirect that required a
+  // switch in network context and was followed in a separate
+  // |PrefetchStreamingURLLoader|.
+  bool IsReadyToServeLastEvents() const;
 
   using RequestHandler = base::OnceCallback<void(
       const network::ResourceRequest& resource_request,
@@ -134,11 +139,6 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void DisconnectPrefetchURLLoaderMojo();
   void OnServingURLLoaderMojoDisconnect();
   void PostTaskToDeleteSelf();
-
-  // Helper function to handle redirects. The input status must be one of
-  // |kFollowRedirect|, |kFailedInvalidRedirect|, or
-  // |kPauseRedirectForEligibilityCheck|.
-  void HandleRedirect(PrefetchStreamingURLLoaderStatus new_status);
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;

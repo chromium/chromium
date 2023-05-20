@@ -540,8 +540,8 @@ TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
                         scope.GetExceptionState());
     tester.WaitUntilSettled();
     EXPECT_NE(tester.IsFulfilled(), true);
-    auto* exception = V8DOMException::ToImplWithTypeCheck(
-        scope.GetIsolate(), tester.Value().V8Value());
+    auto* exception = V8DOMException::ToWrappable(scope.GetIsolate(),
+                                                  tester.Value().V8Value());
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
@@ -567,8 +567,8 @@ TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
                         scope.GetExceptionState());
     tester.WaitUntilSettled();
     EXPECT_NE(tester.IsFulfilled(), true);
-    auto* exception = V8DOMException::ToImplWithTypeCheck(
-        scope.GetIsolate(), tester.Value().V8Value());
+    auto* exception = V8DOMException::ToWrappable(scope.GetIsolate(),
+                                                  tester.Value().V8Value());
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));
@@ -594,8 +594,8 @@ TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
                         scope.GetExceptionState());
     tester.WaitUntilSettled();
     EXPECT_NE(tester.IsFulfilled(), true);
-    auto* exception = V8DOMException::ToImplWithTypeCheck(
-        scope.GetIsolate(), tester.Value().V8Value());
+    auto* exception = V8DOMException::ToWrappable(scope.GetIsolate(),
+                                                  tester.Value().V8Value());
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(),
               DOMException::GetErrorName(DOMExceptionCode::kDataError));

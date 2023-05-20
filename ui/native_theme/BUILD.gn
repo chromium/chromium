@@ -86,6 +86,10 @@ component("native_theme") {
 
   defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   public_deps = [
     ":features",
     "//skia",
@@ -185,6 +189,7 @@ test("native_theme_unittests") {
       "native_theme_mac_unittest.mm",
       "scrollbar_animator_mac_unittest.cc",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [
       "//ui/color",
       "//ui/gfx:test_support",

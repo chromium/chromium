@@ -899,11 +899,11 @@ void HasMetadataValue(const perfetto::protos::ChromeMetadata& entry,
 }
 
 void HasMetadataValue(const perfetto::protos::ChromeMetadata& entry,
-                      const base::Value& value) {
+                      const base::Value::Dict& value) {
   EXPECT_TRUE(entry.has_json_value());
 
-  absl::optional<base::Value> child_dict =
-      base::JSONReader::Read(entry.json_value());
+  absl::optional<base::Value::Dict> child_dict =
+      base::JSONReader::ReadDict(entry.json_value());
   EXPECT_EQ(*child_dict, value);
 }
 
@@ -948,8 +948,7 @@ TEST_F(TraceEventDataSourceTest, MetadataGeneratorBeforeTracing) {
   MetadataHasNamedValue(metadata, "foo_str", "bar");
   MetadataHasNamedValue(metadata, "foo_bool", true);
 
-  base::Value child_dict(base::Value::Type::DICT);
-  child_dict.SetStringKey("child_str", "child_val");
+  auto child_dict = base::Value::Dict().Set("child_str", "child_val");
   MetadataHasNamedValue(metadata, "child_dict", child_dict);
 }
 
@@ -967,8 +966,7 @@ TEST_F(TraceEventDataSourceTest, MetadataGeneratorWhileTracing) {
   MetadataHasNamedValue(metadata, "foo_str", "bar");
   MetadataHasNamedValue(metadata, "foo_bool", true);
 
-  base::Value child_dict(base::Value::Type::DICT);
-  child_dict.SetStringKey("child_str", "child_val");
+  auto child_dict = base::Value::Dict().Set("child_str", "child_val");
   MetadataHasNamedValue(metadata, "child_dict", child_dict);
 }
 
@@ -997,8 +995,7 @@ TEST_F(TraceEventDataSourceTest, MultipleMetadataGenerators) {
   MetadataHasNamedValue(metadata, "foo_str", "bar");
   MetadataHasNamedValue(metadata, "foo_bool", true);
 
-  base::Value child_dict(base::Value::Type::DICT);
-  child_dict.SetStringKey("child_str", "child_val");
+  auto child_dict = base::Value::Dict().Set("child_str", "child_val");
   MetadataHasNamedValue(metadata, "child_dict", child_dict);
 
   EXPECT_EQ(1, metadata1.size());

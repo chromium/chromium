@@ -517,7 +517,7 @@ TEST_F(BrowsingTopicsStateTest, ClearTopic) {
   state.AddEpoch(CreateTestEpochTopics(kTime2));
   state.UpdateNextScheduledCalculationTime();
 
-  state.ClearTopic(Topic(3), kTaxonomyVersion);
+  state.ClearTopic(Topic(3));
 
   EXPECT_EQ(state.epochs().size(), 2u);
   EXPECT_EQ(state.epochs()[0].top_topics_and_observing_domains()[0].topic(),

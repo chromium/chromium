@@ -24,6 +24,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -36,6 +37,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
+#include "components/desks_storage/core/admin_template_service.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -316,6 +318,12 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
 
 desks_storage::DeskModel* ChromeSavedDeskDelegate::GetDeskModel() {
   return DesksClient::Get()->GetDeskModel();
+}
+
+desks_storage::AdminTemplateService*
+ChromeSavedDeskDelegate::GetAdminTemplateService() {
+  return ash::AdminTemplateServiceFactory::GetForProfile(
+      ProfileManager::GetPrimaryUserProfile());
 }
 
 bool ChromeSavedDeskDelegate::IsWindowPersistable(aura::Window* window) const {

@@ -46,8 +46,8 @@ LocalOrSyncableBookmarkSyncServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   std::unique_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service(
       new sync_bookmarks::BookmarkSyncService(
-          BookmarkUndoServiceFactory::GetForBrowserStateIfExists(
-              browser_state)));
+          BookmarkUndoServiceFactory::GetForBrowserStateIfExists(browser_state),
+          /*wipe_model_on_stopping_sync_with_clear_data=*/false));
   return bookmark_sync_service;
 }
 

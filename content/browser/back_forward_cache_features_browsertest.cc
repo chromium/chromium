@@ -1929,12 +1929,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_THAT(
       GetTreeResult()->GetDocumentResult(),
       MatchesDocumentResult(
-          NotRestoredReasons(NotRestoredReason::kBlocklistedFeatures,
-                             NotRestoredReason::kBrowsingInstanceNotSwapped),
+          NotRestoredReasons({NotRestoredReason::kBlocklistedFeatures,
+                              NotRestoredReason::kBrowsingInstanceNotSwapped}),
           BlockListedFeatures(
-              blink::scheduler::WebSchedulerTrackedFeature::kDummy,
-              blink::scheduler::WebSchedulerTrackedFeature::
-                  kBroadcastChannel)));
+              {blink::scheduler::WebSchedulerTrackedFeature::kDummy,
+               blink::scheduler::WebSchedulerTrackedFeature::
+                   kBroadcastChannel})));
 }
 
 // Tests which blocklisted features are tracked in the metrics when we used a

@@ -1178,9 +1178,8 @@ void CaptionBubble::UpdateContentSize() {
   int left_header_padding =
       base::FeatureList::IsEnabled(media::kLiveTranslate) &&
               live_translate_label_->GetVisible()
-          ? kSidePaddingDip
-          : kSidePaddingDip -
-                caption_settings_button_->GetBorder()->GetInsets().width() / 2;
+          ? caption_settings_button_->GetBorder()->GetInsets().width() / 2
+          : 0;
   left_header_container_
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,

@@ -190,7 +190,10 @@ class CORE_EXPORT HTMLImageElement final
   static bool SupportedImageType(const String& type,
                                  const HashSet<String>* disabled_image_types);
 
-  bool is_lazy_loaded() const { return is_lazy_loaded_; }
+  // True if the `loading` attribute is present and the value is lazy. Note that
+  // additional conditions can prevent lazy loading even when this is true, such
+  // as script being disabled (see: `LazyImageHelper::ShouldDeferImageLoad`).
+  bool HasLazyLoadingAttribute() const;
 
  protected:
   // Controls how an image element appears in the layout. See:
@@ -280,7 +283,6 @@ class CORE_EXPORT HTMLImageElement final
   bool is_lcp_element_ : 1;
   bool is_changed_shortly_after_mouseover_ : 1;
   bool has_sizes_attribute_in_img_or_sibling_ : 1;
-  bool is_lazy_loaded_ : 1;
 
   std::unique_ptr<LazyLoadImageObserver::VisibleLoadTimeMetrics>
       visible_load_time_metrics_;

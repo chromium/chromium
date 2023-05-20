@@ -162,6 +162,7 @@
   }
 
   #infoIcon {
+    filter: drop-shadow(0 0 2px var(--cros-sys-shadow));
     position: absolute;
     right: 8px;
     top: 8px;
@@ -226,8 +227,7 @@
   </template>
   <template is="dom-if" if="[[shouldShowInfoText_(imageStatus_, infoText)]]"
       restamp>
-    <!-- TODO(b/268400442) better contrast required -->
-    <info-svg id="infoIcon" title$="[[infoText]]"></info-svg>
+    <info-svg id="infoIcon" title$="[[infoText]]" part="info-icon"></info-svg>
   </template>
   <iron-icon part="icon" icon="[[checkmarkIcon_]]"></iron-icon>
 </div>

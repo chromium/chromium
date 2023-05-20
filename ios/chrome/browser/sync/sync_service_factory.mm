@@ -17,8 +17,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/sync_util.h"
-#import "components/sync/driver/sync_service.h"
-#import "components/sync/driver/sync_service_impl.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_service_impl.h"
 #import "components/sync_device_info/device_info.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/sync_device_info/device_info_tracker.h"
@@ -33,11 +33,11 @@
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -150,7 +150,6 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
   init_params.is_regular_profile_for_uma = true;
   init_params.identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
-  init_params.start_behavior = syncer::SyncServiceImpl::MANUAL_START;
   init_params.sync_client =
       std::make_unique<IOSChromeSyncClient>(browser_state);
   init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();

@@ -26,10 +26,6 @@ import {
   UIComponent,
 } from './cca_type.js';
 
-/**
- * Possible HTMLElement types that can have a boolean attribute "disabled".
- */
-type HTMLElementWithDisabled = HTMLElement&{disabled: boolean};
 interface Coordinate {
   x: number;
   y: number;
@@ -349,6 +345,14 @@ export class CCATest {
   }
 
   /**
+   * Gets current boolean value of |key|.
+   */
+  static getState(key: string): boolean {
+    const stateKey = state.assertState(key);
+    return state.get(stateKey);
+  }
+
+  /**
    * Calculates the expected duration of the time-lapse video recorded for
    * |recordDuration| seconds.
    */
@@ -384,16 +388,15 @@ export class CCATest {
   }
 
   /**
-   * Returns disabled attribute of the component. In case the element with
+   * Returns disabled attribute of the component. In case the element without
    * "disabled" attribute, always returns false.
    */
   static isDisabled(component: UIComponent, index?: number): boolean {
     const element = resolveElement(component, index);
-    const withDisabledElement = element as HTMLElementWithDisabled;
-    if (withDisabledElement.disabled === undefined) {
-      return false;
+    if ('disabled' in element && typeof element.disabled === 'boolean') {
+      return element.disabled;
     }
-    return withDisabledElement.disabled;
+    return false;
   }
 
   /**
@@ -523,5 +526,29 @@ export class CCATest {
 
   static getFpsObserver(): FpsObserver {
     return new FpsObserver(getPreviewVideo());
+  }
+
+  /**
+   * Waits until the state |key| is changed to |expected| and resolves the
+   * millisecond unix timestamp of the state change.
+   */
+  static waitStateChange(key: string, expected: boolean): Promise<number> {
+    const stateKey = state.assertState(key);
+    const current = state.get(stateKey);
+    if (current === expected) {
+      throw new Error(`Cannot start observing because the state of ${
+          stateKey} is already ${expected}`);
+    }
+    return new Promise((resolve, reject) => {
+      function onChange(newState: boolean) {
+        state.removeObserver(stateKey, onChange);
+        if (newState !== expected) {
+          reject(
+              new Error(`The changed "${stateKey}" state is not ${expected}`));
+        }
+        resolve(Date.now());
+      }
+      state.addObserver(stateKey, onChange);
+    });
   }
 }

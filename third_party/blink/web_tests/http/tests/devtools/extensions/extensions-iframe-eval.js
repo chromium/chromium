@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ExtensionsTestRunner} from 'extensions_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests WebInspector extension API\n`);
-  await TestRunner.loadTestModule('extensions_test_runner');
   await TestRunner.loadHTML(`<iframe src="${TestRunner.url('../resources/extensions-frame-eval.html')}"></iframe>`);
   await ExtensionsTestRunner.runExtensionTests([
     function extension_testEvalInIFrame(nextTest) {

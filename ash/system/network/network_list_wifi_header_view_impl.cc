@@ -13,6 +13,7 @@
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_wifi_header_view.h"
 #include "ash/system/network/tray_network_state_model.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -20,6 +21,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/onc/onc_constants.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
@@ -51,7 +53,15 @@ void NetworkListWifiHeaderViewImpl::AddExtraButtons() {
 void NetworkListWifiHeaderViewImpl::SetToggleState(bool enabled,
                                                    bool is_on,
                                                    bool animate_toggle) {
-  if (!features::IsQsRevampEnabled()) {
+  if (features::IsQsRevampEnabled()) {
+    std::u16string tooltip_text = l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_WIFI,
+        l10n_util::GetStringUTF16(
+            is_on ? IDS_ASH_STATUS_TRAY_NETWORK_WIFI_ENABLED
+                  : IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED));
+    entry_row()->SetTooltipText(tooltip_text);
+    qs_toggle()->SetTooltipText(tooltip_text);
+  } else {
     join_wifi_button_->SetEnabled(enabled && is_on);
   }
   NetworkListNetworkHeaderView::SetToggleState(enabled, is_on, animate_toggle);

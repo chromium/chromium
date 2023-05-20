@@ -33,15 +33,10 @@ ViewsTextServicesContextMenuAsh::ViewsTextServicesContextMenuAsh(
   // clipboard history descriptors; otherwise, insert a menu option to trigger
   // the clipboard history menu.
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    // The command ids in `submenu_model_` should not conflict any other id in
-    // the text services context menu.
-    // TODO(b/278903842): Using `views::Textfield::kLastCommandId` does not
-    // always work. Find a better solution.
     submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
         CreateClipboardHistorySubmenuModel(
             crosapi::mojom::ClipboardHistoryControllerShowSource::
-                kTextfieldContextMenu,
-            /*start_command_id=*/views::Textfield::kLastCommandId + 1);
+                kTextfieldContextMenu);
 
     menu->InsertSubMenuWithStringIdAt(
         target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,

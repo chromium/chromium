@@ -16,7 +16,7 @@
 namespace metrics {
 
 std::string GetVersionString() {
-  std::string version = version_info::GetVersionNumber();
+  std::string version(version_info::GetVersionNumber());
 #if defined(ARCH_CPU_64_BITS)
   version += "-64";
 #endif  // defined(ARCH_CPU_64_BITS)

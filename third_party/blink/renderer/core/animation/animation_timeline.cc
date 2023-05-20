@@ -24,6 +24,7 @@ AnimationTimeline::AnimationTimeline(Document* document)
 void AnimationTimeline::AnimationAttached(Animation* animation) {
   DCHECK(!animations_.Contains(animation));
   animations_.insert(animation);
+  animation->ResolveTimelineOffsets(GetTimelineRange());
 }
 
 void AnimationTimeline::AnimationDetached(Animation* animation) {
@@ -31,6 +32,7 @@ void AnimationTimeline::AnimationDetached(Animation* animation) {
   animations_needing_update_.erase(animation);
   if (animation->Outdated())
     outdated_animation_count_--;
+  animation->ResolveTimelineOffsets(GetTimelineRange());
 }
 
 bool CompareAnimations(const Member<Animation>& left,
@@ -80,7 +82,7 @@ wtf_size_t AnimationTimeline::AnimationsNeedingUpdateCount() const {
   for (const auto& animation : animations_needing_update_) {
     // Exclude animations which are not actively generating frames.
     if ((!animation->CompositorPending() && !animation->Playing() &&
-         !IsScrollTimeline()) ||
+         !IsProgressBased()) ||
         animation->AnimationHasNoEffect()) {
       continue;
     }
@@ -108,7 +110,7 @@ void AnimationTimeline::ServiceAnimations(TimingUpdateReason reason) {
 
   auto current_phase_and_time = CurrentPhaseAndTime();
 
-  if (IsScrollTimeline() &&
+  if (IsProgressBased() &&
       last_current_phase_and_time_ != current_phase_and_time) {
     UpdateCompositorTimeline();
   }

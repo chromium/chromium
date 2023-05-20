@@ -122,6 +122,8 @@
 - (void)stop {
   [self.recentTabsTableViewController dismissModals];
   self.recentTabsTableViewController.browser = nil;
+  self.recentTabsTableViewController.delegate = nil;
+  self.recentTabsTableViewController = nil;
   [self.recentTabsNavigationController
       dismissViewControllerAnimated:YES
                          completion:self.completion];

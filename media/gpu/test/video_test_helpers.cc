@@ -172,8 +172,7 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextBuffer() {
     case VideoCodec::kAV1:
       return GetNextFrame();
     default:
-      NOTREACHED();
-      return nullptr;
+      NOTREACHED_NORETURN();
   }
 }
 

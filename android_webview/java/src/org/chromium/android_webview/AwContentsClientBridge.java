@@ -340,7 +340,7 @@ public class AwContentsClientBridge {
                 }
             }
             if (request.isOutermostMainFrame
-                    && AwFeatureList.pageStartedOnCommitEnabled(isRendererInitiated)) {
+                    && AwComputedFlags.pageStartedOnCommitEnabled(isRendererInitiated)) {
                 mClient.getCallbackHelper().postOnPageStarted(request.url);
             }
             mClient.getCallbackHelper().postOnReceivedError(request, error);

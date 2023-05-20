@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <linux/media.h>
 #include <poll.h>
+#include <sys/eventfd.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 
@@ -35,11 +36,18 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/buffer_affinity_tracker.h"
-#include "media/gpu/v4l2/generic_v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/native_pixmap_handle.h"
+#include "ui/gl/egl_util.h"
+
+// Auto-generated for dlopen libv4l2 libraries
+#include "media/gpu/v4l2/v4l2_stubs.h"
+#include "third_party/v4l-utils/lib/include/libv4l2.h"
+
+using media_gpu_v4l2::InitializeStubs;
+using media_gpu_v4l2::kModuleV4l2;
+using media_gpu_v4l2::StubPathMap;
 
 namespace media {
 
@@ -141,6 +149,28 @@ bool LibV4L2Exists() {
 #else
   return false;
 #endif
+}
+
+uint32_t V4L2PixFmtToDrmFormat(uint32_t format) {
+  switch (format) {
+    case V4L2_PIX_FMT_NV12:
+    case V4L2_PIX_FMT_NV12M:
+      return DRM_FORMAT_NV12;
+
+    case V4L2_PIX_FMT_YUV420:
+    case V4L2_PIX_FMT_YUV420M:
+      return DRM_FORMAT_YUV420;
+
+    case V4L2_PIX_FMT_YVU420:
+      return DRM_FORMAT_YVU420;
+
+    case V4L2_PIX_FMT_RGB32:
+      return DRM_FORMAT_ARGB8888;
+
+    default:
+      DVLOGF(1) << "Unrecognized format " << FourccToString(format);
+      return 0;
+  }
 }
 
 }  // namespace
@@ -989,7 +1019,6 @@ V4L2Queue::V4L2Queue(scoped_refptr<V4L2Device> dev,
                      enum v4l2_buf_type type,
                      base::OnceClosure destroy_cb)
     : type_(type),
-      affinity_tracker_(0),
       device_(dev),
       destroy_cb_(std::move(destroy_cb)),
       weak_this_factory_(this) {
@@ -1133,6 +1162,8 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
         << "Cannot allocate new buffers while others are still allocated.";
     return 0;
   }
+  // Should have been cleared in DeallocateBuffers() if it was ever filled in.
+  DCHECK(free_buffers_indexes_.empty());
 
   if (count == 0) {
     VQLOGF(1) << "Attempting to allocate 0 buffers.";
@@ -1183,8 +1214,6 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
     free_buffers_->ReturnBuffer(i);
   }
 
-  affinity_tracker_.resize(buffers_.size());
-
   DCHECK(free_buffers_);
   DCHECK_EQ(free_buffers_->size(), buffers_.size());
   DCHECK(queued_buffers_.empty());
@@ -1205,7 +1234,7 @@ bool V4L2Queue::DeallocateBuffers() {
 
   weak_this_factory_.InvalidateWeakPtrs();
   buffers_.clear();
-  affinity_tracker_.resize(0);
+  free_buffers_indexes_.clear();
   free_buffers_ = nullptr;
 
   // Free all buffers.
@@ -1297,12 +1326,17 @@ absl::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
     return absl::nullopt;
   }
 
-  const auto v4l2_id = affinity_tracker_.get_buffer_for_id(id);
-  if (!v4l2_id) {
-    return absl::nullopt;
+  // If |id| has already been used in |buffers_|, then return that buffer.
+  // Otherwise use the next buffer from |free_buffers_indexes_|.
+  if (!base::Contains(free_buffers_indexes_, id)) {
+    if (free_buffers_indexes_.size() >= buffers_.size()) {
+      return absl::nullopt;
+    }
+    // The value for |id| is simply the map size(): a poor man's way to have a
+    // monotonically increasing counter.
+    free_buffers_indexes_.emplace(id, free_buffers_indexes_.size());
   }
-
-  return GetFreeBuffer(*v4l2_id);
+  return GetFreeBuffer(free_buffers_indexes_[id]);
 }
 
 bool V4L2Queue::QueueBuffer(struct v4l2_buffer* v4l2_buffer,
@@ -1488,7 +1522,9 @@ V4L2Device::V4L2Device() {
   DETACH_FROM_SEQUENCE(client_sequence_checker_);
 }
 
-V4L2Device::~V4L2Device() = default;
+V4L2Device::~V4L2Device() {
+  CloseDevice();
+}
 
 scoped_refptr<V4L2Queue> V4L2Device::GetQueue(enum v4l2_buf_type type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
@@ -1528,14 +1564,36 @@ void V4L2Device::OnQueueDestroyed(v4l2_buf_type buf_type) {
 scoped_refptr<V4L2Device> V4L2Device::Create() {
   DVLOGF(3);
 
-  scoped_refptr<V4L2Device> device;
-
-  device = new GenericV4L2Device();
+  scoped_refptr<V4L2Device> device = new V4L2Device();
   if (device->Initialize())
     return device;
 
   VLOGF(1) << "Failed to create a V4L2Device";
   return nullptr;
+}
+
+bool V4L2Device::Open(Type type, uint32_t v4l2_pixfmt) {
+  DVLOGF(3);
+  std::string path = GetDevicePathFor(type, v4l2_pixfmt);
+
+  if (path.empty()) {
+    VLOGF(1) << "No devices supporting " << FourccToString(v4l2_pixfmt)
+             << " for type: " << static_cast<int>(type);
+    return false;
+  }
+
+  if (!OpenDevicePath(path, type)) {
+    VLOGF(1) << "Failed opening " << path;
+    return false;
+  }
+
+  device_poll_interrupt_fd_.reset(eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC));
+  if (!device_poll_interrupt_fd_.is_valid()) {
+    VLOGF(1) << "Failed creating a poll interrupt fd";
+    return false;
+  }
+
+  return true;
 }
 
 std::string V4L2Device::GetDriverName() {
@@ -1858,52 +1916,203 @@ bool V4L2Device::UseLibV4L2() {
   return use_libv4l2;
 }
 
-void V4L2Device::GetSupportedResolution(uint32_t pixelformat,
-                                        gfx::Size* min_resolution,
-                                        gfx::Size* max_resolution) {
-  max_resolution->SetSize(0, 0);
-  min_resolution->SetSize(0, 0);
-  v4l2_frmsizeenum frame_size;
-  memset(&frame_size, 0, sizeof(frame_size));
-  frame_size.pixel_format = pixelformat;
-  for (; Ioctl(VIDIOC_ENUM_FRAMESIZES, &frame_size) == 0; ++frame_size.index) {
-    if (frame_size.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
-      if (frame_size.discrete.width >=
-              base::checked_cast<uint32_t>(max_resolution->width()) &&
-          frame_size.discrete.height >=
-              base::checked_cast<uint32_t>(max_resolution->height())) {
-        max_resolution->SetSize(frame_size.discrete.width,
-                                frame_size.discrete.height);
-      }
-      if (min_resolution->IsEmpty() ||
-          (frame_size.discrete.width <=
-               base::checked_cast<uint32_t>(min_resolution->width()) &&
-           frame_size.discrete.height <=
-               base::checked_cast<uint32_t>(min_resolution->height()))) {
-        min_resolution->SetSize(frame_size.discrete.width,
-                                frame_size.discrete.height);
-      }
-    } else if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE ||
-               frame_size.type == V4L2_FRMSIZE_TYPE_CONTINUOUS) {
-      max_resolution->SetSize(frame_size.stepwise.max_width,
-                              frame_size.stepwise.max_height);
-      min_resolution->SetSize(frame_size.stepwise.min_width,
-                              frame_size.stepwise.min_height);
-      break;
+int V4L2Device::Ioctl(int request, void* arg) {
+  DCHECK(device_fd_.is_valid());
+
+  if (use_libv4l2_) {
+    return HANDLE_EINTR(v4l2_ioctl(device_fd_.get(), request, arg));
+  }
+
+  return HANDLE_EINTR(ioctl(device_fd_.get(), request, arg));
+}
+
+bool V4L2Device::Poll(bool poll_device, bool* event_pending) {
+  struct pollfd pollfds[2];
+  nfds_t nfds;
+  int pollfd = -1;
+
+  pollfds[0].fd = device_poll_interrupt_fd_.get();
+  pollfds[0].events = POLLIN | POLLERR;
+  nfds = 1;
+
+  if (poll_device) {
+    DVLOGF(5) << "adding device fd to poll() set";
+    pollfds[nfds].fd = device_fd_.get();
+    pollfds[nfds].events = POLLIN | POLLOUT | POLLERR | POLLPRI;
+    pollfd = nfds;
+    nfds++;
+  }
+
+  if (HANDLE_EINTR(poll(pollfds, nfds, -1)) == -1) {
+    VPLOGF(1) << "poll() failed";
+    return false;
+  }
+  *event_pending = (pollfd != -1 && pollfds[pollfd].revents & POLLPRI);
+  return true;
+}
+
+void* V4L2Device::Mmap(void* addr,
+                       unsigned int len,
+                       int prot,
+                       int flags,
+                       unsigned int offset) {
+  DCHECK(device_fd_.is_valid());
+  return mmap(addr, len, prot, flags, device_fd_.get(), offset);
+}
+
+void V4L2Device::Munmap(void* addr, unsigned int len) {
+  munmap(addr, len);
+}
+
+bool V4L2Device::SetDevicePollInterrupt() {
+  DVLOGF(4);
+
+  const uint64_t buf = 1;
+  if (HANDLE_EINTR(write(device_poll_interrupt_fd_.get(), &buf, sizeof(buf))) ==
+      -1) {
+    VPLOGF(1) << "write() failed";
+    return false;
+  }
+  return true;
+}
+
+bool V4L2Device::ClearDevicePollInterrupt() {
+  DVLOGF(5);
+
+  uint64_t buf;
+  if (HANDLE_EINTR(read(device_poll_interrupt_fd_.get(), &buf, sizeof(buf))) ==
+      -1) {
+    if (errno == EAGAIN) {
+      // No interrupt flag set, and we're reading nonblocking.  Not an error.
+      return true;
+    } else {
+      VPLOGF(1) << "read() failed";
+      return false;
     }
   }
-  if (max_resolution->IsEmpty()) {
-    max_resolution->SetSize(1920, 1088);
-    VLOGF(1) << "GetSupportedResolution failed to get maximum resolution for "
-             << "fourcc " << FourccToString(pixelformat) << ", fall back to "
-             << max_resolution->ToString();
+  return true;
+}
+
+bool V4L2Device::Initialize() {
+  DVLOGF(3);
+  static bool v4l2_functions_initialized = PostSandboxInitialization();
+  if (!v4l2_functions_initialized) {
+    VLOGF(1) << "Failed to initialize LIBV4L2 libs";
+    return false;
   }
-  if (min_resolution->IsEmpty()) {
-    min_resolution->SetSize(16, 16);
-    VLOGF(1) << "GetSupportedResolution failed to get minimum resolution for "
-             << "fourcc " << FourccToString(pixelformat) << ", fall back to "
-             << min_resolution->ToString();
+
+  return true;
+}
+
+std::vector<base::ScopedFD> V4L2Device::GetDmabufsForV4L2Buffer(
+    int index,
+    size_t num_planes,
+    enum v4l2_buf_type buf_type) {
+  DVLOGF(3);
+  DCHECK(V4L2_TYPE_IS_MULTIPLANAR(buf_type));
+
+  std::vector<base::ScopedFD> dmabuf_fds;
+  for (size_t i = 0; i < num_planes; ++i) {
+    struct v4l2_exportbuffer expbuf;
+    memset(&expbuf, 0, sizeof(expbuf));
+    expbuf.type = buf_type;
+    expbuf.index = index;
+    expbuf.plane = i;
+    expbuf.flags = O_CLOEXEC;
+    if (Ioctl(VIDIOC_EXPBUF, &expbuf) != 0) {
+      dmabuf_fds.clear();
+      break;
+    }
+
+    dmabuf_fds.push_back(base::ScopedFD(expbuf.fd));
   }
+
+  return dmabuf_fds;
+}
+
+bool V4L2Device::CanCreateEGLImageFrom(const Fourcc fourcc) const {
+  static uint32_t kEGLImageDrmFmtsSupported[] = {
+    DRM_FORMAT_ARGB8888,
+#if defined(ARCH_CPU_ARM_FAMILY)
+    DRM_FORMAT_NV12,
+    DRM_FORMAT_YVU420,
+#endif
+  };
+
+  return base::Contains(kEGLImageDrmFmtsSupported,
+                        V4L2PixFmtToDrmFormat(fourcc.ToV4L2PixFmt()));
+}
+
+EGLImageKHR V4L2Device::CreateEGLImage(EGLDisplay egl_display,
+                                       EGLContext /* egl_context */,
+                                       GLuint texture_id,
+                                       const gfx::Size& size,
+                                       unsigned int buffer_index,
+                                       const Fourcc fourcc,
+                                       gfx::NativePixmapHandle handle) const {
+  DVLOGF(3);
+
+  if (!CanCreateEGLImageFrom(fourcc)) {
+    VLOGF(1) << "Unsupported V4L2 pixel format";
+    return EGL_NO_IMAGE_KHR;
+  }
+
+  // Number of components, as opposed to the number of V4L2 planes, which is
+  // just a buffer count.
+  const size_t num_planes = handle.planes.size();
+  DCHECK_LE(num_planes, 3u);
+
+  std::vector<EGLint> attrs;
+  attrs.push_back(EGL_WIDTH);
+  attrs.push_back(size.width());
+  attrs.push_back(EGL_HEIGHT);
+  attrs.push_back(size.height());
+  attrs.push_back(EGL_LINUX_DRM_FOURCC_EXT);
+  attrs.push_back(V4L2PixFmtToDrmFormat(fourcc.ToV4L2PixFmt()));
+
+  for (size_t plane = 0; plane < num_planes; ++plane) {
+    attrs.push_back(EGL_DMA_BUF_PLANE0_FD_EXT + plane * 3);
+    attrs.push_back(handle.planes[plane].fd.get());
+    attrs.push_back(EGL_DMA_BUF_PLANE0_OFFSET_EXT + plane * 3);
+    attrs.push_back(handle.planes[plane].offset);
+    attrs.push_back(EGL_DMA_BUF_PLANE0_PITCH_EXT + plane * 3);
+    attrs.push_back(handle.planes[plane].stride);
+  }
+
+  attrs.push_back(EGL_NONE);
+
+  EGLImageKHR egl_image = eglCreateImageKHR(
+      egl_display, EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT, NULL, &attrs[0]);
+  if (egl_image == EGL_NO_IMAGE_KHR) {
+    VLOGF(1) << "Failed creating EGL image: " << ui::GetLastEGLErrorString();
+    return egl_image;
+  }
+  glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture_id);
+  glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, egl_image);
+
+  return egl_image;
+}
+
+EGLBoolean V4L2Device::DestroyEGLImage(EGLDisplay egl_display,
+                                       EGLImageKHR egl_image) const {
+  DVLOGF(3);
+  EGLBoolean result = eglDestroyImageKHR(egl_display, egl_image);
+  if (result != EGL_TRUE) {
+    LOG(WARNING) << "Destroy EGLImage failed.";
+  }
+  return result;
+}
+
+GLenum V4L2Device::GetTextureTarget() const {
+  return GL_TEXTURE_EXTERNAL_OES;
+}
+
+std::vector<uint32_t> V4L2Device::PreferredInputFormat(Type type) const {
+  if (type == Type::kEncoder) {
+    return {V4L2_PIX_FMT_NV12M, V4L2_PIX_FMT_NV12};
+  }
+
+  return {};
 }
 
 VideoEncodeAccelerator::SupportedRateControlMode
@@ -1945,6 +2154,87 @@ V4L2Device::GetSupportedRateControlMode() {
   return rate_control_mode;
 }
 
+std::vector<uint32_t> V4L2Device::GetSupportedImageProcessorPixelformats(
+    v4l2_buf_type buf_type) {
+  std::vector<uint32_t> supported_pixelformats;
+
+  Type type = Type::kImageProcessor;
+  const auto& devices = GetDevicesForType(type);
+  for (const auto& device : devices) {
+    if (!OpenDevicePath(device.first, type)) {
+      VLOGF(1) << "Failed opening " << device.first;
+      continue;
+    }
+
+    const auto pixelformats = EnumerateSupportedPixFmts(
+        base::BindRepeating(&V4L2Device::Ioctl, this), buf_type);
+
+    supported_pixelformats.insert(supported_pixelformats.end(),
+                                  pixelformats.begin(), pixelformats.end());
+    CloseDevice();
+  }
+
+  return supported_pixelformats;
+}
+
+VideoDecodeAccelerator::SupportedProfiles
+V4L2Device::GetSupportedDecodeProfiles(
+    const std::vector<uint32_t>& pixelformats) {
+  VideoDecodeAccelerator::SupportedProfiles supported_profiles;
+
+  Type type = Type::kDecoder;
+  const auto& devices = GetDevicesForType(type);
+  for (const auto& device : devices) {
+    if (!OpenDevicePath(device.first, type)) {
+      VLOGF(1) << "Failed opening " << device.first;
+      continue;
+    }
+
+    const auto& profiles = EnumerateSupportedDecodeProfiles(pixelformats);
+    supported_profiles.insert(supported_profiles.end(), profiles.begin(),
+                              profiles.end());
+    CloseDevice();
+  }
+
+  return supported_profiles;
+}
+
+VideoEncodeAccelerator::SupportedProfiles
+V4L2Device::GetSupportedEncodeProfiles() {
+  VideoEncodeAccelerator::SupportedProfiles supported_profiles;
+
+  Type type = Type::kEncoder;
+  const auto& devices = GetDevicesForType(type);
+  for (const auto& device : devices) {
+    if (!OpenDevicePath(device.first, type)) {
+      VLOGF(1) << "Failed opening " << device.first;
+      continue;
+    }
+
+    const auto& profiles = EnumerateSupportedEncodeProfiles();
+    supported_profiles.insert(supported_profiles.end(), profiles.begin(),
+                              profiles.end());
+    CloseDevice();
+  }
+
+  return supported_profiles;
+}
+
+bool V4L2Device::IsImageProcessingSupported() {
+  const auto& devices = GetDevicesForType(Type::kImageProcessor);
+  return !devices.empty();
+}
+
+bool V4L2Device::IsJpegDecodingSupported() {
+  const auto& devices = GetDevicesForType(Type::kJpegDecoder);
+  return !devices.empty();
+}
+
+bool V4L2Device::IsJpegEncodingSupported() {
+  const auto& devices = GetDevicesForType(Type::kJpegEncoder);
+  return !devices.empty();
+}
+
 VideoDecodeAccelerator::SupportedProfiles
 V4L2Device::EnumerateSupportedDecodeProfiles(
     const std::vector<uint32_t>& pixelformats) {
@@ -1967,7 +2257,8 @@ V4L2Device::EnumerateSupportedDecodeProfiles(
     }
 
     VideoDecodeAccelerator::SupportedProfile profile;
-    GetSupportedResolution(pixelformat, &profile.min_resolution,
+    GetSupportedResolution(base::BindRepeating(&V4L2Device::Ioctl, this),
+                           pixelformat, &profile.min_resolution,
                            &profile.max_resolution);
 
     const auto video_codec_profiles = EnumerateSupportedProfilesForV4L2Codec(
@@ -2006,7 +2297,8 @@ V4L2Device::EnumerateSupportedEncodeProfiles() {
       continue;
     }
     gfx::Size min_resolution;
-    GetSupportedResolution(pixelformat, &min_resolution,
+    GetSupportedResolution(base::BindRepeating(&V4L2Device::Ioctl, this),
+                           pixelformat, &min_resolution,
                            &profile.max_resolution);
     const auto video_codec_profiles = EnumerateSupportedProfilesForV4L2Codec(
         base::BindRepeating(&V4L2Device::Ioctl, this), pixelformat);
@@ -2242,6 +2534,133 @@ bool V4L2Device::SetGOPLength(uint32_t gop_length) {
   return true;
 }
 
+// static
+bool V4L2Device::PostSandboxInitialization() {
+  if (V4L2Device::UseLibV4L2()) {
+    StubPathMap paths;
+    paths[kModuleV4l2].push_back(V4L2Device::kLibV4l2Path);
+
+    return InitializeStubs(paths);
+  } else {
+    return true;
+  }
+}
+
+bool V4L2Device::OpenDevicePath(const std::string& path, Type type) {
+  DCHECK(!device_fd_.is_valid());
+
+  device_fd_.reset(
+      HANDLE_EINTR(open(path.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+  if (!device_fd_.is_valid()) {
+    return false;
+  }
+
+  if (V4L2Device::UseLibV4L2()) {
+    if (type == Type::kEncoder &&
+        HANDLE_EINTR(v4l2_fd_open(device_fd_.get(), V4L2_DISABLE_CONVERSION)) !=
+            -1) {
+      DVLOGF(3) << "Using libv4l2 for " << path;
+      use_libv4l2_ = true;
+    }
+  }
+  return true;
+}
+
+void V4L2Device::CloseDevice() {
+  DVLOGF(3);
+  if (use_libv4l2_ && device_fd_.is_valid()) {
+    v4l2_close(device_fd_.release());
+  }
+  device_fd_.reset();
+}
+
+void V4L2Device::EnumerateDevicesForType(Type type) {
+  static const std::string kDecoderDevicePattern = "/dev/video-dec";
+  static const std::string kEncoderDevicePattern = "/dev/video-enc";
+  static const std::string kImageProcessorDevicePattern = "/dev/image-proc";
+  static const std::string kJpegDecoderDevicePattern = "/dev/jpeg-dec";
+  static const std::string kJpegEncoderDevicePattern = "/dev/jpeg-enc";
+
+  std::string device_pattern;
+  v4l2_buf_type buf_type;
+  switch (type) {
+    case Type::kDecoder:
+      device_pattern = kDecoderDevicePattern;
+      buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+      break;
+    case Type::kEncoder:
+      device_pattern = kEncoderDevicePattern;
+      buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+      break;
+    case Type::kImageProcessor:
+      device_pattern = kImageProcessorDevicePattern;
+      buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+      break;
+    case Type::kJpegDecoder:
+      device_pattern = kJpegDecoderDevicePattern;
+      buf_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
+      break;
+    case Type::kJpegEncoder:
+      device_pattern = kJpegEncoderDevicePattern;
+      buf_type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+      break;
+  }
+
+  std::vector<std::string> candidate_paths;
+
+  // TODO(posciak): Remove this legacy unnumbered device once
+  // all platforms are updated to use numbered devices.
+  candidate_paths.push_back(device_pattern);
+
+  // We are sandboxed, so we can't query directory contents to check which
+  // devices are actually available. Try to open the first 10; if not present,
+  // we will just fail to open immediately.
+  for (int i = 0; i < 10; ++i) {
+    candidate_paths.push_back(
+        base::StringPrintf("%s%d", device_pattern.c_str(), i));
+  }
+
+  Devices devices;
+  for (const auto& path : candidate_paths) {
+    if (!OpenDevicePath(path, type)) {
+      continue;
+    }
+    const auto supported_pixelformats = EnumerateSupportedPixFmts(
+        base::BindRepeating(&V4L2Device::Ioctl, this), buf_type);
+
+    if (!supported_pixelformats.empty()) {
+      DVLOGF(3) << "Found device: " << path;
+      devices.push_back(std::make_pair(path, supported_pixelformats));
+    }
+
+    CloseDevice();
+  }
+
+  DCHECK_EQ(devices_by_type_.count(type), 0u);
+  devices_by_type_[type] = devices;
+}
+
+const V4L2Device::Devices& V4L2Device::GetDevicesForType(Type type) {
+  if (devices_by_type_.count(type) == 0) {
+    EnumerateDevicesForType(type);
+  }
+
+  DCHECK_NE(devices_by_type_.count(type), 0u);
+  return devices_by_type_[type];
+}
+
+std::string V4L2Device::GetDevicePathFor(Type type, uint32_t pixfmt) {
+  const Devices& devices = GetDevicesForType(type);
+
+  for (const auto& device : devices) {
+    if (base::Contains(device.second, pixfmt)) {
+      return device.first;
+    }
+  }
+
+  return std::string();
+}
+
 class V4L2Request {
  public:
   V4L2Request(const V4L2Request&) = delete;
@@ -2365,8 +2784,7 @@ bool V4L2Request::WaitForCompletion(int poll_timeout_ms) {
       VPLOGF(1) << "Failed to poll request";
       return false;
     default:
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
 }
 

@@ -9,10 +9,13 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -353,6 +356,63 @@ TEST_F(PrefsAshTest, ExtensionPrefsClearNonExtensionPref) {
   base::Value get_value;
   GetPref(prefs_remote, path, &get_value);
   EXPECT_TRUE(get_value.GetBool());
+}
+
+TEST_F(PrefsAshTest, CrosSettingsPrefs) {
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings;
+
+  PrefsAsh prefs_ash(profile_manager(), local_state());
+  mojo::Remote<mojom::Prefs> prefs_remote;
+  prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
+  mojom::PrefPath path =
+      mojom::PrefPath::kAttestationForContentProtectionEnabled;
+
+  // Get returns value, which defaults to true.
+  base::Value get_value;
+  GetPref(prefs_remote, path, &get_value);
+  prefs_remote.FlushForTesting();
+  EXPECT_TRUE(get_value.GetBool());
+
+  // Set does not update values for CrosSettings.
+  prefs_remote->SetPref(path, base::Value(false), base::DoNothing());
+  prefs_remote.FlushForTesting();
+  EXPECT_TRUE(scoped_testing_cros_settings.device_settings()
+                  ->Get(ash::kAttestationForContentProtectionEnabled)
+                  ->GetBool());
+
+  // Adding an observer results in it being fired with the current state.
+  auto observer1 = std::make_unique<TestObserver>();
+  prefs_remote->AddObserver(path,
+                            observer1->receiver_.BindNewPipeAndPassRemote());
+  prefs_remote.FlushForTesting();
+  EXPECT_TRUE(observer1->value_->GetBool());
+  EXPECT_EQ(1u, prefs_ash.cros_settings_subs_.count(path));
+  EXPECT_EQ(1u, prefs_ash.observers_[path].size());
+
+  // Multiple observers is ok.
+  auto observer2 = std::make_unique<TestObserver>();
+  prefs_remote->AddObserver(path,
+                            observer2->receiver_.BindNewPipeAndPassRemote());
+  prefs_remote.FlushForTesting();
+  EXPECT_TRUE(observer2->value_->GetBool());
+  EXPECT_EQ(2u, prefs_ash.observers_[path].size());
+
+  // Observer should be notified when value changes.
+  scoped_testing_cros_settings.device_settings()->SetBoolean(
+      ash::kAttestationForContentProtectionEnabled, false);
+  task_environment_.RunUntilIdle();
+  prefs_remote.FlushForTesting();
+  EXPECT_FALSE(observer1->value_->GetBool());
+  EXPECT_FALSE(observer2->value_->GetBool());
+
+  // Disconnect should remove CallbackListSubscription.
+  observer1.reset();
+  prefs_remote.FlushForTesting();
+  EXPECT_EQ(1u, prefs_ash.observers_[path].size());
+  observer2.reset();
+  prefs_remote.FlushForTesting();
+  EXPECT_EQ(0u, prefs_ash.observers_[path].size());
+  EXPECT_EQ(0u, prefs_ash.cros_settings_subs_.count(path));
 }
 
 }  // namespace crosapi

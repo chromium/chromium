@@ -65,8 +65,8 @@ constexpr char kUserVerificationResultKey[] = "user_verification_result";
 constexpr char kIsFirstUserVerificationKey[] = "is_first_user_verification";
 
 // Key in UserVerificationRequested indicating if user verification was
-// requestedait
-constexpr char kAwaitingUserVerificationKey[] = "awaiting_user_verification";
+// requested
+constexpr char kAwaitingUserVerificationKey[] = "await_user_verification";
 
 constexpr int kUserVerifiedStatusCode = 0;
 

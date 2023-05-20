@@ -42,6 +42,24 @@ double GetRotatedHue(double source_hue,
                                                          it->second);
 }
 
+// Returns the chroma value from `hues_to_chroma` given a `source_hue`. If the
+// `source_hue` is out of range, the first entry in `hues_to_chroma` is
+// returned.
+double GetAdjustedChroma(
+    double source_hue,
+    const base::flat_map<double, double>& hues_to_chromas) {
+  CHECK_GE(source_hue, -0.0);
+  CHECK_LE(source_hue, 360.0);
+  CHECK(!hues_to_chromas.empty());
+
+  auto iter = hues_to_chromas.lower_bound(source_hue);
+  if (iter == hues_to_chromas.end()) {
+    return hues_to_chromas.begin()->second;
+  }
+
+  return iter->second;
+}
+
 class CustomPalette : public Palette {
  public:
   CustomPalette(TonalPalette&& primary,
@@ -89,10 +107,14 @@ struct Transform {
       : hue_rotation(hue_rotation),
         chroma(chroma),
         hues_to_rotations(hues_to_rotations) {}
+  explicit Transform(base::flat_map<double, double> hues_to_chroma)
+      : hues_to_chroma(hues_to_chroma) {}
 
   double hue_rotation = 0.0;
   double chroma = 0.0;
-  absl::optional<base::flat_map<double, double>> hues_to_rotations;
+  absl::optional<base::flat_map<double, double>> hues_to_rotations =
+      absl::nullopt;
+  absl::optional<base::flat_map<double, double>> hues_to_chroma = absl::nullopt;
 };
 
 Transform Chroma(double chroma) {
@@ -113,13 +135,18 @@ struct Config {
 
 // Returns a `TonalPalette` constructed from `hue` transformed by `transform`.
 TonalPalette MakePalette(double hue, const Transform& transform) {
+  CHECK_LE(hue, 360.0);
+  double chroma = transform.chroma;
+  if (transform.hues_to_chroma) {
+    chroma = GetAdjustedChroma(hue, *transform.hues_to_chroma);
+  }
   if (transform.hues_to_rotations) {
     hue = GetRotatedHue(hue, *transform.hues_to_rotations);
   } else {
     hue = material_color_utilities::SanitizeDegreesDouble(
         hue + transform.hue_rotation);
   }
-  return TonalPalette(hue, transform.chroma);
+  return TonalPalette(hue, chroma);
 }
 
 std::unique_ptr<Palette> FromConfig(SkColor seed_color, const Config& config) {
@@ -175,10 +202,15 @@ std::unique_ptr<Palette> GeneratePalette(SkColor seed_color,
                 Chroma(12.0)};
       break;
     }
-    case SchemeVariant::kNeutral:
-      config = {Chroma(12.0), Chroma(8.0), Chroma(16.0), Chroma(2.0),
-                Chroma(2.0)};
+    case SchemeVariant::kNeutral: {
+      const auto hues = std::to_array<double>({0, 260, 315, 360});
+      const auto chromas = std::to_array<double>({12.0, 12.0, 20.0, 12.0});
+      const base::flat_map<double, double> chroma_transforms =
+          Zip(hues, chromas);
+      config = {Transform(std::move(chroma_transforms)), Chroma(8.0),
+                Chroma(16.0), Chroma(2.0), Chroma(2.0)};
       break;
+    }
     case SchemeVariant::kExpressive: {
       const auto hues =
           std::to_array<double>({0, 21, 51, 121, 151, 191, 271, 321, 360});
@@ -191,7 +223,7 @@ std::unique_ptr<Palette> GeneratePalette(SkColor seed_color,
           std::to_array<double>({120, 120, 20, 45, 20, 15, 20, 120, 120});
       const base::flat_map<double, double> tertiary_hues_to_rotations =
           Zip(hues, tertiary_rotations);
-      config = {Transform(120.0, 40.0),
+      config = {Transform(-90, 40.0),
                 Transform(0.0, 24.0, secondary_hues_to_rotations),
                 Transform(0.0, 32.0, tertiary_hues_to_rotations), Chroma(8.0),
                 Chroma(12.0)};

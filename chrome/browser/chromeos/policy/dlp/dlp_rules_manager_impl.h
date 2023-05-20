@@ -49,7 +49,7 @@ class DlpRulesManagerImpl : public DlpRulesManager,
                                 std::string* out_destination_pattern,
                                 RuleMetadata* out_rule_metadata) const override;
   Level IsRestrictedComponent(const GURL& source,
-                              const Component& destination,
+                              const data_controls::Component& destination,
                               Restriction restriction,
                               std::string* out_source_pattern,
                               RuleMetadata* out_rule_metadata) const override;
@@ -86,7 +86,7 @@ class DlpRulesManagerImpl : public DlpRulesManager,
   PrefChangeRegistrar pref_change_registrar_;
 
   // Map from the components to their configured rules IDs.
-  std::map<Component, std::set<RuleId>> components_rules_;
+  std::map<data_controls::Component, std::set<RuleId>> components_rules_;
 
   // Map from the restrictions to their configured rules IDs and levels.
   std::map<Restriction, std::map<RuleId, Level>> restrictions_map_;

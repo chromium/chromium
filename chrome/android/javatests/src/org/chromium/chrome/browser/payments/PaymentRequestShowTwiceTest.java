@@ -39,9 +39,17 @@ public class PaymentRequestShowTwiceTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(new AutofillProfile("", "https://example.test",
-                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
-                "Los Angeles", "", "90291", "", "US", "555-555-5555", "", "en-US"));
+        String billingAddressId = helper.setProfile(AutofillProfile.builder()
+                                                            .setFullName("Jon Doe")
+                                                            .setCompanyName("Google")
+                                                            .setStreetAddress("340 Main St")
+                                                            .setRegion("CA")
+                                                            .setLocality("Los Angeles")
+                                                            .setPostalCode("90291")
+                                                            .setCountryCode("US")
+                                                            .setPhoneNumber("555-555-5555")
+                                                            .setEmailAddress("en-US")
+                                                            .build());
     }
 
     @Test

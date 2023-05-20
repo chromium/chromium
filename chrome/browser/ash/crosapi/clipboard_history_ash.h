@@ -19,6 +19,8 @@ class Rect;
 
 namespace crosapi {
 
+// Ash-Chrome implementation of `mojom::ClipboardHistory`. Handles
+// communications with Lacros.
 class ClipboardHistoryAsh : public mojom::ClipboardHistory {
  public:
   ClipboardHistoryAsh();
@@ -28,7 +30,7 @@ class ClipboardHistoryAsh : public mojom::ClipboardHistory {
 
   void BindReceiver(mojo::PendingReceiver<mojom::ClipboardHistory> receiver);
 
-  // crosapi::mojom::ClipboardHistory:
+  // mojom::ClipboardHistory:
   void ShowClipboard(
       const gfx::Rect& anchor_point,
       ui::MenuSourceType menu_source_type,
@@ -37,11 +39,27 @@ class ClipboardHistoryAsh : public mojom::ClipboardHistory {
       const base::UnguessableToken& item_id,
       int event_flags,
       mojom::ClipboardHistoryControllerShowSource paste_source) override;
+  void RegisterClient(
+      mojo::PendingRemote<mojom::ClipboardHistoryClient> client) override;
+
+  // Updates the cached descriptors on `remote_client_` with the current
+  // clipboard history.
+  void UpdateRemoteDescriptorsForTesting();
+
+  // Flushes the calls on `remotes_`.
+  void FlushForTesting();
 
  private:
+  // Called when the remote client is disconnected.
+  void OnRemoteDisconnected();
+
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.
+  // TODO(http://b/281766341): Use `mojo::Receiver` here.
   mojo::ReceiverSet<mojom::ClipboardHistory> receivers_;
+
+  // There is only one client connection.
+  mojo::Remote<mojom::ClipboardHistoryClient> remote_client_;
 };
 
 }  // namespace crosapi

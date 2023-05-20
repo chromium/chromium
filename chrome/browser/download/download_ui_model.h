@@ -166,13 +166,11 @@ class DownloadUIModel {
     // Subpage buttons
     std::vector<SubpageButton> subpage_buttons;
 
-    // The subpage exists if the summary exists.
-    explicit BubbleUIInfo(const std::u16string& summary);
-    // If no subpage, the progress bar may exist.
-    explicit BubbleUIInfo(bool has_progress_bar);
     BubbleUIInfo();
     ~BubbleUIInfo();
     BubbleUIInfo(const BubbleUIInfo&);
+    BubbleUIInfo& AddSubpageSummary(const std::u16string& summary);
+    BubbleUIInfo& AddProgressBar();
     BubbleUIInfo& AddIconAndColor(const gfx::VectorIcon& vector_icon,
                                   ui::ColorId color_id);
     BubbleUIInfo& AddSecondaryTextColor(ui::ColorId color_id);

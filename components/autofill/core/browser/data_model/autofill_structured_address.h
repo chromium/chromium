@@ -20,20 +20,10 @@ class AddressComponentWithRewriter : public AddressComponent {
   using AddressComponent::AddressComponent;
 
  protected:
-  // Apply a country-specific rewriter to the normalized value.
+  // Normalizes and then applies a country-specific rewriter to the `value`
+  // provided.
   std::u16string GetValueForComparison(
-      const AddressComponent& other) const override;
-
-  // Applies the |country_code| specific rewriter to the normalized value. If
-  // |country_code| is empty, it defaults to US.
-  std::u16string RewriteValue(const std::u16string& value,
-                              const std::u16string& country_code) const;
-
-  // This method is used to retrieve the value for a supported field type
-  // different from the storage type, and rewrites it for comparison with
-  // `other`. It must implement the conversion logic specific to each type.
-  std::u16string GetValueForComparisonForOtherSupportedType(
-      ServerFieldType field_type,
+      const std::u16string& value,
       const AddressComponent& other) const override;
 };
 
@@ -214,6 +204,10 @@ class PostalCodeNode : public AddressComponentWithRewriter {
   // In contrast to the base class, the normalization removes all white spaces
   // from the value.
   std::u16string GetNormalizedValue() const override;
+
+  std::u16string GetValueForComparison(
+      const std::u16string& value,
+      const AddressComponent& other) const override;
 };
 
 // Stores the sorting code.
@@ -228,6 +222,13 @@ class LandmarkNode : public AddressComponent {
  public:
   explicit LandmarkNode(AddressComponent* parent);
   ~LandmarkNode() override;
+};
+
+// Stores the streets intersection of an address profile.
+class BetweenStreetsNode : public AddressComponent {
+ public:
+  explicit BetweenStreetsNode(AddressComponent* parent);
+  ~BetweenStreetsNode() override;
 };
 
 // Stores the overall Address that contains the StreetAddress, the PostalCode
@@ -254,6 +255,7 @@ class AddressNode : public AddressComponent {
   CityNode city_{this};
   StateNode state_{this};
   CountryCodeNode country_code_{this};
+  BetweenStreetsNode between_streets_{this};
   LandmarkNode landmark_code_{this};
 };
 

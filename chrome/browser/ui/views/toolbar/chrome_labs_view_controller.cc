@@ -54,7 +54,8 @@ enum class ChromeLabsSelectedLab {
   // kLensRegionSearchSelected = 5,
   kWebUITabStripSelected = 6,
   // kTabSearchMediaTabsSelected = 7,
-  kMaxValue = kWebUITabStripSelected,
+  kChromeRefresh2023Selected = 8,
+  kMaxValue = kChromeRefresh2023Selected,
 };
 
 void EmitToHistogram(const std::u16string& selected_lab_state,
@@ -76,6 +77,9 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
   };
 
   const auto get_enum = [](const std::string& internal_name) {
+    if (internal_name == flag_descriptions::kChromeRefresh2023Id) {
+      return ChromeLabsSelectedLab::kChromeRefresh2023Selected;
+    }
     if (internal_name == flag_descriptions::kScrollableTabStripFlagId)
       return ChromeLabsSelectedLab::kTabScrollingSelected;
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \

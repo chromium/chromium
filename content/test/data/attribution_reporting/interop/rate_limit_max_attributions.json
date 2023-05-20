@@ -86,6 +86,23 @@
           }
         }]
       },
+      {
+        "timestamp": "1643235581001",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter2.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "555"
+            }
+          }
+        }]
+      },
       // Should be preferred over the third source as it's more recent.
       {
         "timestamp": "1643235583000",
@@ -290,16 +307,37 @@
           }
         }]
       },
-      // Should result in an event-level report because the attribution limit
-      // is separate for a different reporting origin.
+      // Should not result in an event-level report because the attribution limit
+      // applies to reporting sites, not reporting origins.
       {
-        "timestamp": "1643235582000",
+        "timestamp": "1643235581500",
         "registration_request": {
           "attribution_src_url": "https://example.reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
         },
         "responses": [{
           "url": "https://example.reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "4"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      // Should result in an event-level report because the attribution limit
+      // is separate for a different reporting site.
+      {
+        "timestamp": "1643235582000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter2.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-trigger",
           "response": {
             "Attribution-Reporting-Register-Trigger": {
               "event_trigger_data": [
@@ -415,8 +453,8 @@
           "source_type": "navigation",
           "trigger_data": "4"
         },
-        "report_url": "https://example.reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411981000"
+        "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "1643411981001"
       },
       {
         "payload": {

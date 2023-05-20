@@ -82,6 +82,9 @@ struct DeviceTrustState {
   // Whether the connector is enabled or not.
   bool is_enabled;
 
+  // Information around the levels the device trust connector is enabled for.
+  array<string> policy_enabled_levels;
+
   // Information around the state of the device trust signing key.
   KeyInfo key_info;
 

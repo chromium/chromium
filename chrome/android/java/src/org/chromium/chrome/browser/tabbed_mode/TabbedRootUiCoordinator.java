@@ -494,7 +494,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mCompositorViewHolderSupplier.get()::removeTouchEventObserver, mLayoutManager);
         mGestureNavLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
-            public void onStartedShowing(int layoutType, boolean showToolbar) {
+            public void onStartedShowing(int layoutType) {
                 if (layoutType == LayoutType.TAB_SWITCHER) mHistoryNavigationCoordinator.reset();
             }
         };

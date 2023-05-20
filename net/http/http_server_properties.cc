@@ -1222,7 +1222,6 @@ void HttpServerProperties::OnBrokenAndRecentlyBrokenAlternativeServicesLoaded(
 
 void HttpServerProperties::MaybeQueueWriteProperties() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
   if (prefs_update_timer_.IsRunning() || !properties_manager_)
     return;
 
@@ -1235,6 +1234,22 @@ void HttpServerProperties::MaybeQueueWriteProperties() {
       FROM_HERE, kUpdatePrefsDelay,
       base::BindOnce(&HttpServerProperties::WriteProperties,
                      base::Unretained(this), base::OnceClosure()));
+}
+
+void HttpServerProperties::FlushWritePropertiesForTesting(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!properties_manager_) {
+    return;
+  }
+
+  // initialising the |properties_manager_| is not a concern here. So skip
+  // it and set |is_initalized_| to true.
+  is_initialized_ = true;
+  // Stop the timer if it's running, since this will write to the properties
+  // file immediately.
+  prefs_update_timer_.Stop();
+  WriteProperties(std::move(callback));
 }
 
 void HttpServerProperties::WriteProperties(base::OnceClosure callback) const {

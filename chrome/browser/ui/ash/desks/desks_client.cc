@@ -644,9 +644,9 @@ void DesksClient::OnGetTemplateForDeskLaunch(
     return;
   }
 
-  // Copy the index of the newly created desk to the saved desk. This ensures
+  // Copy the uuid of the newly created desk to the saved desk. This ensures
   // that apps appear on the right desk even if the user switches to another.
-  saved_desk->SetDeskIndex(desks_controller_->GetDeskIndex(new_desk));
+  saved_desk->SetDeskUuid(new_desk->uuid());
 
   const auto saved_desk_type = saved_desk->type();
   const auto uuid = saved_desk->uuid();

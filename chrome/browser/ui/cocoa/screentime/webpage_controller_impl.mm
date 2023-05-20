@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller_impl.h"
 
+#include <ScreenTime/ScreenTime.h>
+
 #include "base/mac/foundation_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
 
-#include <ScreenTime/ScreenTime.h>
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @interface BlockedObserver : NSObject
 @end
@@ -17,7 +21,7 @@
 NS_AVAILABLE_MAC(11.0)
 @implementation BlockedObserver {
   raw_ptr<screentime::WebpageControllerImpl> _controller;
-  STWebpageController* _nativeController;
+  STWebpageController* __weak _nativeController;
 }
 
 - (instancetype)initWithController:
@@ -36,7 +40,6 @@ NS_AVAILABLE_MAC(11.0)
 
 - (void)dealloc {
   [_nativeController removeObserver:self forKeyPath:@"URLIsBlocked"];
-  [super dealloc];
 }
 
 - (void)observeValueForKeyPath:(NSString*)forKeyPath
@@ -56,7 +59,7 @@ WebpageControllerImpl::WebpageControllerImpl(
     : platform_controller_([[STWebpageController alloc] init]),
       blocked_observer_([[BlockedObserver alloc]
           initWithController:this
-            nativeController:platform_controller_.get()]),
+            nativeController:platform_controller_]),
       blocked_changed_callback_(blocked_changed_callback) {
   NSError* error = nil;
   NSString* bundle_id = base::SysUTF8ToNSString(base::mac::BaseBundleID());

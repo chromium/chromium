@@ -41,8 +41,6 @@ const char* ToString(ActionType type) {
       return "Directions";
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return "Reviews";
-    case omnibox::ActionInfo_ActionType_WEBSITE:
-      return "Website";
     default:
       NOTREACHED();
   }
@@ -91,13 +89,6 @@ TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
                         IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
                         IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
                         IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST,
-                    },
-                    {
-                        omnibox::ActionInfo_ActionType_WEBSITE,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_HINT,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_CONTENTS,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST,
                     }};
 
   for (const auto& test_case : test_cases) {
@@ -130,8 +121,7 @@ TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
 TEST_F(OmniboxActionInSuggestTest, ConversionFromAction) {
   const ActionType test_cases[]{omnibox::ActionInfo_ActionType_CALL,
                                 omnibox::ActionInfo_ActionType_DIRECTIONS,
-                                omnibox::ActionInfo_ActionType_REVIEWS,
-                                omnibox::ActionInfo_ActionType_WEBSITE};
+                                omnibox::ActionInfo_ActionType_REVIEWS};
 
   for (auto test_case : test_cases) {
     ActionInfo action_info;
@@ -212,7 +202,6 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
       {omnibox::ActionInfo_ActionType_CALL, UmaTypeForTest::kCall},
       {omnibox::ActionInfo_ActionType_DIRECTIONS, UmaTypeForTest::kDirections},
       {omnibox::ActionInfo_ActionType_REVIEWS, UmaTypeForTest::kReviews},
-      {omnibox::ActionInfo_ActionType_WEBSITE, UmaTypeForTest::kWebsite},
   };
 
   for (const auto& test_case : test_cases) {

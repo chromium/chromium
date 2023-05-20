@@ -27,6 +27,7 @@ class ResolvedFrameData;
 }  // namespace viz
 
 namespace android_webview {
+// Lifetime: WebView
 class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
                                 public OverlaysInfoProvider {
  public:

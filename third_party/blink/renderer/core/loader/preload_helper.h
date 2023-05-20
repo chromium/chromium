@@ -28,6 +28,7 @@ class PreloadHelper final {
     kDocumentBeforeCommit,
     kDocumentAfterCommitWithoutViewport,
     kDocumentAfterCommitWithViewport,
+    kDocumentAfterLoadCompleted,
     kSubresourceFromMemoryCache,
     kSubresourceNotFromMemoryCache,
   };
@@ -71,6 +72,9 @@ class PreloadHelper final {
                                     Document&,
                                     const ViewportDescription*,
                                     PendingLinkPreload*);
+  static void FetchDictionaryIfNeeded(const LinkLoadParameters&,
+                                      Document&,
+                                      PendingLinkPreload*);
 
   static absl::optional<ResourceType> GetResourceTypeFromAsAttribute(
       const String& as);

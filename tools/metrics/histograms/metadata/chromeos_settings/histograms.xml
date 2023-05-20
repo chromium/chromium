@@ -112,7 +112,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.TouchpadSpeedValue"
-    enum="TouchpadSensitivity" expires_after="2023-08-27">
+    enum="TouchpadSensitivity" expires_after="2023-11-12">
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
@@ -123,7 +123,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Inputs.ShortcutReminderDismissed"
-    enum="SettingsInputsShortcutReminderState" expires_after="2023-08-27">
+    enum="SettingsInputsShortcutReminderState" expires_after="2023-11-12">
   <owner>mlcui@google.com</owner>
   <owner>cros-borders@google.com</owner>
   <summary>
@@ -286,7 +286,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.NumNavigationsUntilChange"
-    units="navigations" expires_after="2023-09-10">
+    units="navigations" expires_after="2023-11-12">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->
 
   <owner>wesokuhara@google.com</owner>
@@ -313,6 +313,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The number of search results fetched each time a successful search request
     is made to the Settings Search Mojo API.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.NumUniqueSettingsChanged.PerSession"
+    units="UniqueChanges" expires_after="2024-05-15">
+  <owner>moteva@google.com</owner>
+  <owner>wesokuhara@google.com</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Records the number of unique settings changed by a user between opening and
+    closing the settings app. Records on each window close.
   </summary>
 </histogram>
 
@@ -530,7 +541,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Wifi.Hidden" enum="BooleanToggled"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>jonmann@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
@@ -543,13 +554,28 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.WindowOpenDuration" units="ms"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
     The amount of time between when a Chrome OS settings window is opened and
     when it is closed.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.Settings.WindowTotalActiveDuration" units="ms"
+    expires_after="2024-05-15">
+  <owner>moteva@google.com</owner>
+  <owner>wesokuhara@google.com</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    The total time the Settings window is active in a session. The timer starts
+    once the user opens the page and stops once closed. If the user navigates to
+    another window or if the device goes into lock mode, the timer will pause
+    and it will resume once they navigate back to the Settings page. If user is
+    on Settings page and the device goes into sleep mode with lock disabled, the
+    timer continues and does not pause, which may lead to some outliers.
   </summary>
 </histogram>
 

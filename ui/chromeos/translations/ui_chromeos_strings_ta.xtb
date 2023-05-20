@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">சமீபத்திய வீடியோக்கள் எதுவுமில்லை</translation>
 <translation id="3634507049637220048">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் /கோப்பகங்கள் நகர்த்தப்பட்டன.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> ஃபைல்கள் தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="3685122418104378273">மொபைல் டேட்டாவைப் பயன்படுத்தும்போது, இயல்புநிலையாகவே Google இயக்கக ஒத்திசைவு முடக்கப்பட்டுள்ளது.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ரத்துசெய்யப்படும்.</translation>
 <translation id="3690128548376345212">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இயக்கப்படவில்லை, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> படம்</translation>
 <translation id="5534520101572674276">அளவைக் கணக்கிடுகிறது</translation>
 <translation id="554153475311314364">கிரேக்க ஒலிபெயர்ப்பு</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> ஃபோல்டர்கள் தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="5580591966435005537">விர்ச்சுவல் மெஷின்</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">முழுமையான நிறுத்தற்குறி அகலம்</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">தாய் - பட்டாச்சோட் கீபோர்டு</translation>
 <translation id="57383366388012121">கடந்த மாதம்</translation>
 <translation id="5756666464756035725">ஹங்கேரியன் QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ஃபோல்டர்களும் ஃபைல்களும் தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="5763377084591234761">ஜெர்மன் (சுவிட்சர்லாந்து)</translation>
 <translation id="5769519078756170258">தவிர்க்க வேண்டிய ஹோஸ்ட் அல்லது டொமைன்</translation>
 <translation id="5775750595919327203">உருது</translation>
@@ -917,6 +920,7 @@
 <translation id="8264024885325823677">உங்கள் நிர்வாகி இந்த அமைப்பை நிர்வகிக்கிறார்.</translation>
 <translation id="8269755669432358899">ஃபைல்கள்  காட்டப்படும் பேனல்களைச் சுருக்கும்</translation>
 <translation id="8280151743281770066">ஆர்மேனியன் ஒலிப்புமுறை</translation>
+<translation id="8285791779547722821">என்க்ரிப்ஷன் செய்யப்பட்ட <ph name="ORIGINAL_MIME_TYPE" /> ஃபைல்</translation>
 <translation id="8294431847097064396">மூலம்</translation>
 <translation id="8297012244086013755">ஹாங்குல் 3 செட் (ஷிஃப்ட் இல்லை)</translation>
 <translation id="8299269255470343364">ஜாப்பனீஸ்</translation>

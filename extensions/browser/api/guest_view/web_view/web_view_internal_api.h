@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -29,13 +28,16 @@ namespace extensions {
 
 class WebViewInternalExtensionFunction : public ExtensionFunction {
  public:
-  WebViewInternalExtensionFunction() {}
+  WebViewInternalExtensionFunction() = default;
 
  protected:
-  ~WebViewInternalExtensionFunction() override {}
+  ~WebViewInternalExtensionFunction() override = default;
   bool PreRunValidation(std::string* error) override;
 
-  raw_ptr<WebViewGuest, FlakyDanglingUntriaged> guest_ = nullptr;
+  WebViewGuest& GetGuest();
+
+ private:
+  int instance_id_ = 0;
 };
 
 class WebViewInternalCaptureVisibleRegionFunction

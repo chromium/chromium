@@ -534,19 +534,18 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
 
 bool IsFooterFrontendId(PopupItemId frontend_id) {
   switch (frontend_id) {
-    case PopupItemId::POPUP_ITEM_ID_SCAN_CREDIT_CARD:
-    case PopupItemId::POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
-    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
-    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
-    case PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN:
-    case PopupItemId::
-        POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
-    case PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
-    case PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD:
-    case PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
-    case PopupItemId::POPUP_ITEM_ID_CLEAR_FORM:
-    case PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS:
-    case PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
+    case PopupItemId::kScanCreditCard:
+    case PopupItemId::kCreditCardSigninPromo:
+    case PopupItemId::kPasswordAccountStorageEmpty:
+    case PopupItemId::kPasswordAccountStorageOptIn:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case PopupItemId::kShowAccountCards:
+    case PopupItemId::kUseVirtualCard:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kClearForm:
+    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kSeePromoCodeDetails:
       return true;
     default:
       return false;

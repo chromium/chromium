@@ -39,7 +39,7 @@ if (!is_android) {
     ]
     public_deps = [
       "//base",
-      "//components/sync/driver",
+      "//components/sync/service",
     ]
     deps = [
       "//components/os_crypt/sync",

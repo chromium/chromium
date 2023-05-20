@@ -441,8 +441,9 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
   FormSuggestion* suggestion =
       [FormSuggestion suggestionWithValue:@"value"
                        displayDescription:@"display-description"
-                                     icon:@"icon"
+                                     icon:nil
                                identifier:0
+                        backendIdentifier:nil
                            requiresReauth:NO];
 
   auto web_frame =
@@ -516,7 +517,7 @@ TEST_F(SharedPasswordControllerTest,
                                    id<FormSuggestionProvider> delegate) {
                  ASSERT_EQ(1UL, suggestions.count);
                  FormSuggestion* suggestion = suggestions.firstObject;
-                 EXPECT_EQ(autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY,
+                 EXPECT_EQ(autofill::PopupItemId::kGeneratePasswordEntry,
                            suggestion.identifier);
                  EXPECT_EQ(delegate, controller_);
                  completion_was_called = YES;
@@ -566,7 +567,8 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
                      icon:nil
-               identifier:autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY
+               identifier:autofill::PopupItemId::kGeneratePasswordEntry
+        backendIdentifier:nil
            requiresReauth:NO];
 
   [[delegate_ expect] sharedPasswordController:controller_
@@ -634,7 +636,8 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
                      icon:nil
-               identifier:autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY
+               identifier:autofill::PopupItemId::kGeneratePasswordEntry
+        backendIdentifier:nil
            requiresReauth:NO];
 
   id decision_handler_arg =

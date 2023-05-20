@@ -294,6 +294,9 @@
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE" desc="A11y retry label name template for the Quick Answers view.">
         <ph name="DESC_TEXT">$1<ex>Cannot connect to the internet. Click to try again.</ex></ph>: Retry
       </message>
+      <message name="IDS_QUICK_ANSWERS_VIEW_EXPANSION_INDICATOR_LABEL" desc="Description text of the expansion affordance indicator for the Quick Answers view.">
+        more
+      </message>
       <message name="IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_INTERNAL_LABEL" desc="Description text of the report query button for the Quick Answers view.">
         Internal only
       </message>
@@ -692,6 +695,15 @@
         </message>
         <message name="IDS_PRINT_MANAGEMENT_COLLAPSE_PRINTING_STATUS" desc="A text that indicates to the user that the print job is currently printing. This text only appears if the width of the app's window is small and cannot display the entire ongoing printing status.">
           Printing
+        </message>
+        <message translateable="false" name="IDS_PRINT_MANAGEMENT_EMPTY_STATE_NO_JOBS_MESSAGE" desc="The message shown to users if they do not have any print jobs in progress i.e. being printed.">
+          No printer jobs
+        </message>
+        <message translateable="false" name="IDS_PRINT_MANAGEMENT_EMPTY_STATE_PRINTER_SETTINGS_MESSAGE" desc="The message shown to users to suggest navigating to Printer settings when they do not have any print jobs.">
+          Go to Printer settings to manage your printers
+        </message>
+        <message translateable="false" name="IDS_PRINT_MANAGEMENT_EMPTY_STATE_MANAGE_PRINTERS_LABEL" desc="The label for the button that opens Printer settings when they do not have any print jobs.">
+          Manage printers
         </message>
 
         <!-- Scanning App -->
@@ -2690,6 +2702,9 @@
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION" desc="Description shown in the Time of Day promo banner.">
           You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/collection?id=_time_of_day_chromebook_collection"&gt;</ph>wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE">&lt;a href="chrome://personalization/ambient"&gt;</ph>screen saver<ph name="END_LINK_SCREENSAVER_SUBPAGE">&lt;/a&gt;</ph>
         </message>
+        <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION_NO_SCREENSAVER" desc="Description shown in the Time of Day promo banner without screen saver link.">
+          You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/collection?id=_time_of_day_chromebook_collection"&gt;</ph>wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE">&lt;/a&gt;</ph>
+        </message>
 
         <!-- Personalization App Search Results -->
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TITLE" desc="Text for search result item which, when clicked, navigates the user to personalization app.">
@@ -2814,6 +2829,36 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_SCHEDULE_ALT4" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a dropdown to select scheduling mode. Alternate phrase for: 'Dark theme schedule', 'Dark mode schedule', 'Automatic dark mode', 'Automatic light mode'">
           Automatic dark theme
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting.">
+          Theme
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT1" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 1">
+          Theme color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT2" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 2">
+          Accent color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT3" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 3">
+          System color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT4" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 4">
+          Launcher color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT5" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 5">
+          Wallpaper color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT6" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 6">
+          Desktop color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT7" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 7">
+          Background image
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT8" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 8">
+          UI color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT9" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 9">
+          Interface color
         </message>
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT" desc="Text for search result item which, when clicked, navigates the user to personalization app keyboard backlight setting.">
           Keyboard backlight
@@ -3925,6 +3970,9 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_RESULT_ROW_A11Y_RESULT_SELECTED" desc="ChromeVox alert to indicate the position number of a selected result in a list of search results and the selected result text itself, and that the user can press enter to navigate to section described by the search result.">
           Search result <ph name="LIST_POSITION">$1<ex>1</ex></ph> of <ph name="LIST_SIZE">$2<ex>2</ex></ph>: <ph name="SEARCH_RESULT_TEXT">$3<ex>Open new tab, ctrl T</ex></ph>. Press Enter to navigate to shortcut.
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_NO_SHORTCUT_ASSIGNED" desc="The text shown when no shortcut is enabled with the accelerator" translateable="false">
+          No shortcut assigned
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CATEGORY_GENERAL" desc="Category named 'General' shown on the navigation sidebar">
           General
         </message>
@@ -4138,8 +4186,11 @@
         <message name="IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION" desc="Text explaining there is no APN information to show because the network has not been attempted to be connected with, and that the user might need to add a custom APN.">
           You are not connected yet. If your mobile carrier recommends a custom APN, enter the APN information by selecting "+ New APN"
         </message>
+        <message name="IDS_SETTINGS_APN_DATABASE_APNS_ERROR_MESSAGE" desc="Error message displayed when a cellular network fails to connect to any database APNs due to APN-related reasons.">
+          Can’t connect to this network using automatically detected APNs. Contact your mobile carrier for more information.
+        </message>
         <message name="IDS_SETTINGS_APN_CUSTOM_APNS_ERROR_MESSAGE" desc="Error message displayed when a cellular network fails to connect due to APN-related reasons, informing the user that none of the enabled custom APNs were successful in being used to connect.">
-          Can't connect to any enabled custom APNs. Contact your mobile carrier for more information.
+          Can’t connect to this network using any enabled custom APNs. Contact your mobile carrier for more information.
         </message>
         <message name="IDS_SETTINGS_APN_MENU_DETAILS" desc="Details button in three dotted menu for APNs">
           Details
@@ -4154,7 +4205,7 @@
           Remove
         </message>
         <message name="IDS_SETTINGS_APN_MORE_ACTIONS_TITLE" desc="Description of the tree dotted menu for APNs">
-          More actions
+          More actions for <ph name="APN_NAME">$1<ex>vzwinternet</ex></ph>
         </message>
         <message name="IDS_SETTINGS_ADD_APN_DIALOG_TITLE" desc="Title for the dialog that creates a new custom APN">
           Add a new APN
@@ -4211,7 +4262,7 @@
           Automatically detected
         </message>
         <message name="IDS_SETTINGS_APN_WARNING_PROMPT_FOR_DISABLE_REMOVE" desc="Warning Prompt describing why the APN can't be disabled or removed.">
-          Can't disable or remove this APN. Make sure enabled attached APNs are disabled or removed.
+          Can't disable or remove this APN. Make sure enabled attach APNs are disabled or removed.
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_ADD" desc="Text used for adding a new APN.">
           Add

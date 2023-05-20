@@ -1082,6 +1082,9 @@ class LayerTreeHostPresentationDuringAnimation
  private:
   void OnPresentation(base::TimeTicks presentation_timestamp) { EndTest(); }
 
+  // Disable sub-sampling to deterministically record histograms under test.
+  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
+
   FakeContentLayerClient client_;
   scoped_refptr<FakePictureLayer> scroll_layer_;
   uint32_t request_token_ = 0;

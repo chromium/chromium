@@ -40,7 +40,7 @@
   ::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
     color: var(--cr-primary-text-color);
     flex: 1;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 500;
     line-height: 20px;
     margin: 0;
@@ -74,7 +74,7 @@
   ::slotted([slot=metadata]) {
     color: var(--cr-secondary-text-color);
     flex-shrink: 0;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 400;
     line-height: 20px;
     overflow: hidden;
@@ -83,6 +83,7 @@
   }
 
   :host-context([chrome-refresh-2023]) ::slotted([slot=metadata]) {
+    font-size: 11px;
     line-height: 16px;
   }
 </style>

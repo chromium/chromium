@@ -485,7 +485,11 @@ void AutofillField::AppendLogEventIfNotRepeated(
 }
 
 FormControlType AutofillField::FormControlType() const {
-  if (form_control_type == "text") {
+  // Keep in sync with https://html.spec.whatwg.org/#attr-input-type.
+  if (form_control_type == "text" || form_control_type == "search" ||
+      form_control_type == "tel" || form_control_type == "url" ||
+      form_control_type == "email" || form_control_type == "password" ||
+      form_control_type == "number") {
     return FormControlType::kText;
   } else if (form_control_type == "textarea") {
     return FormControlType::kTextarea;

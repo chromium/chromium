@@ -40,6 +40,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/android/metrics/memory_metrics_logger.h"
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
+#include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
@@ -59,6 +60,7 @@
 #include "content/public/common/result_codes.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/network_change_notifier.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/layout.h"
 #include "ui/gl/gl_surface.h"
@@ -94,8 +96,12 @@ int AwBrowserMainParts::PreEarlyInitialization() {
   browser_process_ = std::make_unique<AwBrowserProcess>(
       browser_client_->aw_feature_list_creator());
 
-  embedder_support::SetupOriginTrialsCommandLine(
-      browser_process_->local_state());
+  auto* origin_trials_settings_storage =
+      browser_process_->GetOriginTrialsSettingsStorage();
+  embedder_support::SetupOriginTrialsCommandLineAndSettings(
+      browser_process_->local_state(), origin_trials_settings_storage);
+  blink::OriginTrialsSettingsProvider::Get()->SetSettings(
+      origin_trials_settings_storage->GetSettings());
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }

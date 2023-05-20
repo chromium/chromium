@@ -46,6 +46,7 @@ import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom";
+import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
@@ -158,6 +159,9 @@ struct CreateViewParams {
 
   // Base background color of this view. Only used by a local main frame.
   skia.mojom.SkColor? base_background_color;
+
+  // Indicates which browsing context group the page in this view belongs to.
+  blink.mojom.BrowsingContextGroupInfo browsing_context_group_info;
 };
 
 // A union to distinguish between parameters specific to local main frame
@@ -660,6 +664,9 @@ struct CreateNewWindowReply {
   // The policy container for the new frame that will be created by Blink in
   // response.
   blink.mojom.PolicyContainer policy_container;
+
+  // Indicates which browsing context group the page in this view belongs to.
+  blink.mojom.BrowsingContextGroupInfo browsing_context_group_info;
 };
 
 // A per-navigation interface passed along with the BeginNavigation call, used

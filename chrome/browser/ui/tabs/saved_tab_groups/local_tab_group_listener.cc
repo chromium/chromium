@@ -31,9 +31,8 @@ LocalTabGroupListener::LocalTabGroupListener(
     web_contents_to_tab_id_map_.try_emplace(contents, contents, local_tab_id,
                                             model_);
 
-    SavedTabGroupTab tab(*saved_group()->GetTab(saved_tab_guid));
-    tab.SetLocalTabID(local_tab_id);
-    model_->UpdateTabInGroup(saved_group()->saved_guid(), std::move(tab));
+    const SavedTabGroupTab tab(*saved_group()->GetTab(saved_tab_guid));
+    model_->UpdateLocalTabId(saved_group()->saved_guid(), tab, local_tab_id);
   }
 }
 
@@ -220,8 +219,7 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
 
   // Listen to navigations.
   base::Token token = base::Token::CreateRandom();
-  tab.SetLocalTabID(token);
-  model_->UpdateTabInGroup(tab.saved_group_guid(), tab);
+  model_->UpdateLocalTabId(tab.saved_group_guid(), tab, token);
   web_contents_to_tab_id_map_.try_emplace(opened_contents, opened_contents,
                                           token, model_);
 }
@@ -241,6 +239,23 @@ void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
 
 void LocalTabGroupListener::RemoveWebContentsFromSync(
     content::WebContents* contents) {
-  contents->Close();
   web_contents_to_tab_id_map_.erase(contents);
+
+  Browser* const browser =
+      SavedTabGroupUtils::GetBrowserWithTabGroupId(local_id_);
+  CHECK(browser);
+  CHECK(browser->tab_strip_model());
+  int model_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+  CHECK(model_index != TabStripModel::kNoTab);
+
+  // Unload listeners can delay or prevent a tab closing. Remove the tab from
+  // the group first so the local and saved groups can be consistent even if
+  // this happens.
+  browser->tab_strip_model()->RemoveFromGroup({model_index});
+
+  // Removing the tab from the group may have moved the tab to maintain group
+  // contiguity. Find the tab again and close it.
+  model_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+  browser->tab_strip_model()->CloseWebContentsAt(
+      model_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }

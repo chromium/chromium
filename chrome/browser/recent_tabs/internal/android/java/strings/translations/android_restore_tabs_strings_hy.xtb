@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Բացել <ph name="TABS_COUNT_ONE" /> ներդիր}one{Բացել <ph name="TABS_COUNT_MANY" /> ներդիր}other{Բացել <ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="4811934403802581334">Նշած սարքից ընտրված բոլոր ներդիրները կվերականգնվեն։</translation>
 <translation id="5336031759968328813">Դիտել բոլոր ներդիրները</translation>
+<translation id="8019269305087157499">Բացել այստեղից</translation>
 <translation id="8725404154479306799">Վերականգնեք ներդիրները, որոնք բացված եք թողել նախորդ սարքերում</translation>
 </translationbundle>

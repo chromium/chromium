@@ -13,13 +13,12 @@ public interface LayoutStateProvider {
      * An observer that is notified when the {@link Layout} state changes.
      */
     interface LayoutStateObserver {
-        // TODO(crbug.com/1108496): Reiterate to see whether the showToolbar param is needed.
         /**
          * Called when Layout starts showing.
+         *
          * @param layoutType LayoutType of the started showing Layout.
-         * @param showToolbar Whether or not to show the normal toolbar when animating into the
          */
-        default void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {}
+        default void onStartedShowing(@LayoutType int layoutType) {}
 
         /**
          * Called when Layout finishes showing.
@@ -32,12 +31,8 @@ public interface LayoutStateProvider {
         /**
          * Called when Layout starts hiding.
          * @param layoutType LayoutType of the started hiding Layout.
-         * @param showToolbar    Whether or not to show the normal toolbar when animating out of
-         *                       showing Layout.
-         * @param delayAnimation Whether or not to delay any related animations until after Layout
          */
-        default void onStartedHiding(
-                @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {}
+        default void onStartedHiding(@LayoutType int layoutType) {}
 
         /**
          * Called when Layout finishes hiding.

@@ -3,24 +3,6 @@
  * found in the LICENSE file. */
 
 :root {
-  /* Standard CrOS styles */
-  --blue-300-rgb: 138, 180, 248;
-  --blue-300: rgb(var(--blue-300-rgb));
-  --blue-500: rgb(66, 133, 244);
-  --blue-600: rgb(26, 115, 232);
-  --red-300-rgb: 242, 139, 130;
-  --red-300: rgb(var(--red-300-rgb));
-  --grey-100: rgb(241, 243, 244);
-  --grey-200-rgb: 233, 234, 237;
-  --grey-200: rgb(var(--grey-200-rgb));
-  --grey-400: rgb(189, 193, 198);
-  --grey-500: rgb(154, 160, 166);
-  --grey-600: rgb(128, 134, 139);
-  --grey-700: rgb(95, 99, 104);
-  --grey-900-rgb: 32, 33, 36;
-  --grey-900: rgb(var(--grey-900-rgb));
-  --yellow-300: rgb(253, 214, 99);
-
   --fast1-duration: 100ms;
   --fast2-duration: 200ms;
   --moderate1-duration: 250ms;
@@ -278,7 +260,7 @@ body.doc-mode-reviewing #mode-selector {
 }
 
 #modes-group::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--cros-sys-scrollbar);
   border-radius: 2px;
   height: auto;
   width: auto;
@@ -329,9 +311,7 @@ div.mode-item>span {
   border-radius: 16px/50%;
   color: var(--cros-sys-on_surface);
   display: inline-block;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 16px;
+  font: var(--cros-button-1-font);
   padding: 8px 12px;
   position: relative;
   z-index: 0;
@@ -385,7 +365,8 @@ body:is(:not(.recording), .enable-gif-recording, .should-handle-intent-result) :
 
 :is(#start-takephoto, #video-snapshot) svg-wrapper {
   color: var(--cros-sys-inverse_surface);
-  --secondary-color: white;
+  /* TODO(pihsun): Use cros.sys.white when it's available. */
+  --secondary-color: var(--cros-ref-primary100);
 }
 
 :is(#start-takephoto, #video-snapshot, #stop-takephoto):enabled:hover::after {
@@ -411,6 +392,16 @@ body.taking #start-takephoto:active {
   --secondary-color: var(--cros-sys-secondary_container);
 }
 
+#recordvideo-container {
+  display: relative;
+  /*
+   * overflow: visible is needed since the progress bar for gif mode is larger
+   * than the button. This can't be set on the button itself since the ripple
+   * effect should be contained inside the button.
+   */
+  overflow: visible;
+}
+
 #recordvideo {
   --size: 60px;
 }
@@ -431,7 +422,8 @@ body.taking #start-takephoto:active {
   --square-delay: 45ms;
   --square-size: calc(100% / 3);
 
-  background: white;
+  /* TODO(pihsun): Use cros.sys.white when it's available. */
+  background: var(--cros-ref-primary100);
   border-radius: 50%;
   height: var(--size);
   position: relative;
@@ -476,7 +468,8 @@ body:not(.recording-ui-paused).video #pause-recordvideo .red-dot {
 }
 
 #recordvideo .white-square {
-  background: white;
+  /* TODO(pihsun): Use cros.sys.white when it's available. */
+  background: var(--cros-ref-primary100);
   border-radius: 2px;
   height: 0;
   left: 50%;
@@ -554,7 +547,7 @@ body.mode-switching:not(.streaming) #camera-mode {
 }
 
 #timer-tick-msg {
-  color: white;
+  color: var(--cros-sys-on_surface);
   font-size: 72px;
   visibility: hidden;
 }
@@ -591,10 +584,10 @@ body.doc-mode-reviewing #gallery-enter {
 }
 
 #gallery-enter {
-  background-color: rgba(24, 24, 24, 1);
-  height: var(--big-icon);
+  border: 2px var(--cros-sys-primary_container) solid;
+  height: calc(var(--big-icon) - 4px);
   overflow: hidden;
-  width: var(--big-icon);
+  width: calc(var(--big-icon) - 4px);
 }
 
 #gallery-enter>img {
@@ -859,6 +852,8 @@ body.mirror #preview-document-corner-overlay .corner-container {
 }
 
 #preview-focus-aim {
+  color: var(--cros-sys-ripple_primary);
+  --secondary-color: var(--cros-sys-focus_ring);
   position: absolute;
   transform: translate(-50%, -50%);
 }
@@ -891,7 +886,7 @@ body.use-fake-camera #view-expert-settings label.require-chromeos-vcd {
 }
 
 #expert-controls {
-  font-size: 14px;
+  font: var(--cros-body-1-font);
   left: 60px;
   position: absolute;
   text-align: left;  /* csschecker-disable-line left-right */
@@ -907,9 +902,9 @@ body.use-fake-camera #view-expert-settings label.require-chromeos-vcd {
 }
 
 #expert-controls .title {
-  background-color: rgb(0, 128, 0);
+  background-color: var(--cros-sys-primary);
   border-radius: 3px;
-  color: white;
+  color: var(--cros-sys-on_primary);
   display: inline;
   font-weight: bold;
   padding: 1px 3px 1px 3px;
@@ -921,23 +916,24 @@ body.use-fake-camera #view-expert-settings label.require-chromeos-vcd {
 }
 
 #expert-controls .metadata-row:not(.mode-on) .title {
-  background-color: rgba(255, 255, 255, 0.7);
-  color: grey;
+  background: var(--cros-sys-inverse_surface);
+  color: var(--cros-sys-inverse_on_surface);
 }
 
 #expert-controls .value {
-  background-color: rgba(255, 255, 255, 0.3);
+  background: var(--cros-sys-base_elevated);
   border-radius: 3px;
+  color: var(--cros-sys-on_surface);
   display: inline;
   padding: 1px 3px 1px 3px;
 }
 
-#preview-wb-gain-red {
-  color: red;
+#expert-controls #preview-wb-gain-red {
+  background: var(--cros-ref-red40);
 }
 
-#preview-wb-gain-blue {
-  color: blue;
+#expert-controls #preview-wb-gain-blue {
+  background: var(--cros-ref-blue40);
 }
 
 #preview-grid {
@@ -972,8 +968,8 @@ body:not(.custom-video-parameters) #expert-controls>.video-option-row {
 }
 
 #preview-grid-horizontal {
-  border-bottom: 1px solid white;
-  border-top: 1px solid white;
+  border-bottom: 1px solid var(--cros-ref-primary100);
+  border-top: 1px solid var(--cros-ref-primary100);
   height: 100%;
   left: 0;
   position: absolute;
@@ -987,7 +983,7 @@ body.grid #preview-grid {
 }
 
 body.grid.grid-4x4 #preview-grid-horizontal::before {
-  border-bottom: 1px solid white;
+  border-bottom: 1px solid var(--cros-ref-primary100);
   content: '';
   height: 0;
   left: 0;
@@ -1010,8 +1006,8 @@ body.grid.grid-4x4 #preview-grid-horizontal::before {
 }
 
 #preview-grid-vertical {
-  border-inline-end: 1px solid white;
-  border-inline-start: 1px solid white;
+  border-inline-end: 1px solid var(--cros-ref-primary100);
+  border-inline-start: 1px solid var(--cros-ref-primary100);
   bottom: 0;
   left: 50%;
   position: absolute;
@@ -1021,7 +1017,8 @@ body.grid.grid-4x4 #preview-grid-horizontal::before {
 }
 
 body.grid-4x4 #preview-grid-vertical::before {
-  border-right: 1px solid white;  /* csschecker-disable-line left-right */
+  border-right:  /* csschecker-disable-line left-right */
+      1px solid var(--cros-ref-primary100);
   bottom: 0;
   content: '';
   left: 0;
@@ -1059,19 +1056,24 @@ body.grid.grid-4x4 #preview-grid-vertical::before {
   border-radius: var(--border-radius-rounded-with-short-side);
   box-sizing: border-box;
   display: flex;
-  font-size: 13px;
+  font: var(--cros-button-2-font);
   font-variant-numeric: tabular-nums;
   height: 32px;
   justify-content: flex-start;
-  line-height: 20px;
   padding: 6px 12px;
   pointer-events: none;
 }
 
-#record-time[hidden],
-.menu-item[hidden],
-#nudge[hidden] {
-  display: none;  /* Required for flexbox hidden. */
+/*
+ * Since the [hidden] attribute is done by user agent style, and any change to
+ * `display` will override it, add a rule to force `display: none` to element
+ * with hidden attribute. Note that there's another possible value of
+ * 'until-found' but we're not using it in CCA.
+ *
+ * See https://css-tricks.com/the-hidden-attribute-is-visibly-weak/
+ */
+[hidden] {
+  display: none !important;
 }
 
 #record-time .icon {
@@ -1088,7 +1090,7 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 }
 
 #record-time #record-time-msg {
-  color: white;
+  color: var(--cros-sys-on_surface);
   flex-shrink: 0;
 }
 
@@ -1109,11 +1111,10 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   background: var(--cros-sys-on_surface);
   border-radius: 2px;
   color: var(--cros-sys-inverse_on_surface);
-  font-size: 12px;
+  font: var(--cros-annotation-1-font);
   left: 0;
-  line-height: 22px;
   opacity: 0;
-  padding: 0 8px;
+  padding: 2px 8px;
   pointer-events: none;
   position: absolute;
   top: 0;
@@ -1131,8 +1132,7 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   border-radius: 16px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   color: var(--cros-sys-on_surface);
-  font-size: 16px;
-  line-height: 32px;
+  font: var(--cros-body-0-font);
   opacity: 0;
   padding: 8px 16px;
   pointer-events: none;
@@ -1175,12 +1175,15 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 .menu-header,
 .menu-item {
   align-items: center;
-  color: white;
+  color: var(--cros-sys-on_surface);
   display: flex;
   flex-shrink: 0;
-  font-size: 13px;
   justify-content: flex-start;
   text-align: initial;
+}
+
+.menu-item {
+  font: var(--cros-body-2-font);
 }
 
 button.menu-item:hover,
@@ -1193,9 +1196,9 @@ label.menu-item:hover {
 }
 
 .menu-header {
-  color: white;
+  color: var(--cros-sys-on_surface);
   cursor: default;
-  font-size: 20px;
+  font: var(--cros-title-1-font);
   height: 72px;
   padding-inline-start: 16px;
   user-select: none;
@@ -1279,8 +1282,7 @@ html[dir=rtl] .menu-header .icon {
 }
 
 #view-warning #error-msg {
-  font-size: 18px;
-  line-height: 32px;
+  font: var(--cros-body-0-font);
   text-align: center;
   white-space: pre-wrap;
 }
@@ -1303,14 +1305,16 @@ html[dir=rtl] .menu-header .icon {
  */
 #view-splash {
   align-items: center;
-  background: var(--cros-sys-app_base, var(--grey-900));
+  /* color-token-disable-next-line */
+  background: var(--cros-sys-app_base, rgb(32, 33, 36));
   display: flex;
   justify-content: center;
 }
 
 #view-splash .icon {
   -webkit-mask: url(/images/camera_mode_photo.svg);
-  background: var(--cros-sys-on_surface, var(--grey-200));
+  /* color-token-disable-next-line */
+  background: var(--cros-sys-on_surface, rgb(233, 234, 237));
   height: 40px;
   width: 40px;
 }
@@ -1338,18 +1342,16 @@ html[dir=rtl] .menu-header .icon {
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  padding: 8px;
+  padding: 8px 0;
   position: absolute;
   width: 225px;
 }
 
 #option-title {
   color: var(--cros-sys-secondary);
-  font-family: var(--default-font-family);
-  font-size: 13px;
-  font-weight: 400;
-  height: 28px;
-  padding: 8px 8px 0 8px;
+  font: var(--cros-button-2-font);
+  height: 20px;
+  padding: 8px 20px;
 }
 
 #options-container {
@@ -1378,7 +1380,7 @@ body:not(.video) #settings-video-resolution {
 
 .label-item {
   color: var(--cros-sys-secondary);
-  font: 500 13px/20px var(--default-font-family);
+  font: var(--cros-button-2-font);
   margin: 9px 0 3px 0;
   padding-inline-start: 26px;
 }
@@ -1393,7 +1395,7 @@ body:not(.video) #settings-video-resolution {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  font: 400 13px var(--default-font-family);
+  font: var(--cros-body-2-font);
   height: 64px;
   justify-content: center;
   padding-inline-end: 60px;
@@ -1459,7 +1461,7 @@ body:not(.video) #settings-video-resolution {
 
 #nudge .warning-msg {
   color: var(--cros-sys-on_surface);
-  font: 400 14px/20px Roboto;
+  font: var(--cros-body-2-font);
 }
 
 .low-storage-dialog-popup {
@@ -1473,13 +1475,13 @@ body:not(.video) #settings-video-resolution {
 }
 
 .low-storage-dialog-popup .dialog-title {
-  color: white;
-  font: 500 16px/24px var(--default-font-family);
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-title-1-font);
 }
 
 .low-storage-dialog-popup .dialog-description {
   color: var(--cros-sys-secondary);
-  font: 400 14px/20px var(--default-font-family);
+  font: var(--cros-body-2-font);
 }
 
 .low-storage-dialog-buttons {

@@ -42,20 +42,18 @@ NSString* const kIsAppInitiated = @"IsAppInitiated";
 
 namespace web {
 
-SynthesizedSessionRestore::SynthesizedSessionRestore() {}
-SynthesizedSessionRestore::~SynthesizedSessionRestore() {}
-
-void SynthesizedSessionRestore::Init(
+NSData* SynthesizedSessionRestore(
     int last_committed_item_index,
     const std::vector<std::unique_ptr<NavigationItem>>& items,
     bool off_the_record) {
-  if (!IsEnabled()) {
-    return;
+  if (!base::FeatureList::IsEnabled(
+          web::features::kSynthesizedRestoreSession)) {
+    return nil;
   }
 
   DCHECK(last_committed_item_index >= 0 &&
          last_committed_item_index < static_cast<int>(items.size()));
-  int external_url_policy = off_the_record ? 0 : 1;
+  NSNumber* const external_url_policy = off_the_record ? @0 : @1;
   NSMutableArray* entries =
       [[NSMutableArray alloc] initWithCapacity:items.size()];
   for (size_t i = 0; i < items.size(); i++) {
@@ -68,7 +66,7 @@ void SynthesizedSessionRestore::Init(
     [entries addObject:@{
       kEntryData : entry_data.AsNSData(),
       kEntryOriginalURL : base::SysUTF8ToNSString(item->GetURL().spec()),
-      kEntryExternalURLPolicy : @(external_url_policy),
+      kEntryExternalURLPolicy : external_url_policy,
       kEntryTitle : base::SysUTF16ToNSString(item->GetTitle()),
       kEntryURL : base::SysUTF8ToNSString(item->GetURL().spec()),
     }];
@@ -93,34 +91,7 @@ void SynthesizedSessionRestore::Init(
                    options:0
                      error:nil];
   [interaction_data appendData:property_list_data];
-  cached_data_ = interaction_data;
-}
-
-bool SynthesizedSessionRestore::Restore(WebState* web_state) {
-  if (!IsEnabled() || cached_data_.length == 0)
-    return false;
-  NSData* data = cached_data_;
-  cached_data_ = nil;
-
-  bool restore_session_succeeded = web_state->SetSessionStateData(data);
-  UMA_HISTOGRAM_BOOLEAN("Session.WebStates.NativeRestoreSession",
-                        restore_session_succeeded);
-  if (!restore_session_succeeded)
-    return false;
-
-  DCHECK(web_state->GetNavigationItemCount());
-  web::GetWebClient()->CleanupNativeRestoreURLs(web_state);
-  return true;
-}
-
-// static
-bool SynthesizedSessionRestore::IsEnabled() {
-  if (!base::FeatureList::IsEnabled(
-          web::features::kSynthesizedRestoreSession)) {
-    return false;
-  }
-
-  return base::ios::IsRunningOnIOS15OrLater();
+  return interaction_data;
 }
 
 }  // namespace web

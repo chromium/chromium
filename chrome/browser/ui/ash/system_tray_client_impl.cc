@@ -448,6 +448,14 @@ void SystemTrayClientImpl::ShowPrivacyHubSettings() {
       chromeos::settings::mojom::kPrivacyHubSubpagePath);
 }
 
+void SystemTrayClientImpl::ShowSpeakOnMuteDetectionSettings() {
+  ShowSettingsSubPageForActiveUser(
+      std::string(chromeos::settings::mojom::kPrivacyHubSubpagePath) +
+      "?settingId=" +
+      base::NumberToString(static_cast<int32_t>(
+          chromeos::settings::mojom::Setting::kSpeakOnMuteDetectionOnOff)));
+}
+
 void SystemTrayClientImpl::ShowSmartPrivacySettings() {
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kSmartPrivacySubpagePath);
@@ -637,6 +645,11 @@ void SystemTrayClientImpl::ShowSettingsSimUnlock() {
 
 void SystemTrayClientImpl::ShowNetworkSettings(const std::string& network_id) {
   ShowNetworkSettingsHelper(network_id, false /* show_configure */);
+}
+
+void SystemTrayClientImpl::ShowHotspotSubpage() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kHotspotSubpagePath);
 }
 
 void SystemTrayClientImpl::ShowNetworkSettingsHelper(

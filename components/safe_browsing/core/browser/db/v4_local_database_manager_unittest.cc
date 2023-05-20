@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
@@ -1101,14 +1102,35 @@ TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadAllowlistUrl) {
 
   ReplaceV4Database(store_and_hash_prefixes, false /* not available */);
   // Verify it defaults to false when DB is not available.
-  EXPECT_FALSE(v4_local_database_manager_->MatchDownloadAllowlistUrl(good_url));
+  bool result = false;
+  base::RunLoop run_loop1;
+  v4_local_database_manager_->MatchDownloadAllowlistUrl(
+      good_url, base::BindLambdaForTesting([&](bool value) {
+        result = value;
+        run_loop1.Quit();
+      }));
+  run_loop1.Run();
+  EXPECT_FALSE(result);
 
   ReplaceV4Database(store_and_hash_prefixes, true /* available */);
   // Not allowlisted.
-  EXPECT_FALSE(
-      v4_local_database_manager_->MatchDownloadAllowlistUrl(other_url));
+  base::RunLoop run_loop2;
+  v4_local_database_manager_->MatchDownloadAllowlistUrl(
+      other_url, base::BindLambdaForTesting([&](bool value) {
+        result = value;
+        run_loop2.Quit();
+      }));
+  run_loop2.Run();
+  EXPECT_FALSE(result);
   // Allowlisted.
-  EXPECT_TRUE(v4_local_database_manager_->MatchDownloadAllowlistUrl(good_url));
+  base::RunLoop run_loop3;
+  v4_local_database_manager_->MatchDownloadAllowlistUrl(
+      good_url, base::BindLambdaForTesting([&](bool value) {
+        result = value;
+        run_loop3.Quit();
+      }));
+  run_loop3.Run();
+  EXPECT_TRUE(result);
 
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));

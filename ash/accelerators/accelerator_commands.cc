@@ -415,6 +415,23 @@ aura::Window* GetTargetWindow() {
   return window->IsVisible() ? window : nullptr;
 }
 
+// Returns the window pair that is eligle to form a snap group.
+aura::Window::Windows GetTargetWindowPairForSnapGroup() {
+  aura::Window::Windows window_pair;
+  MruWindowTracker::WindowList windows =
+      Shell::Get()->mru_window_tracker()->BuildAppWindowList(kActiveDesk);
+  auto* overview_controller = Shell::Get()->overview_controller();
+  OverviewSession* overview_session = overview_controller->overview_session();
+  if (!overview_session && windows.size() >= 2) {
+    aura::Window* window1 = windows[0];
+    aura::Window* window2 = windows[1];
+    window_pair.push_back(window2);
+    window_pair.push_back(window1);
+  }
+
+  return window_pair;
+}
+
 }  // namespace
 
 bool CanActivateTouchHud() {
@@ -472,6 +489,55 @@ bool CanFocusCameraPreview() {
 
 bool CanLock() {
   return Shell::Get()->session_controller()->CanLockScreen();
+}
+
+bool CanGroupOrUngroupWindows() {
+  aura::Window::Windows window_pair = GetTargetWindowPairForSnapGroup();
+  if (!Shell::Get()->snap_group_controller() || window_pair.size() != 2) {
+    return false;
+  }
+
+  aura::Window* window1 = window_pair[0];
+  aura::Window* window2 = window_pair[1];
+  WindowStateType window1_state_type =
+      WindowState::Get(window1)->GetStateType();
+  WindowStateType window2_state_type =
+      WindowState::Get(window2)->GetStateType();
+  return (window1_state_type == WindowStateType::kPrimarySnapped &&
+          window2_state_type == WindowStateType::kSecondarySnapped) ||
+         (window1_state_type == WindowStateType::kSecondarySnapped &&
+          window2_state_type == WindowStateType::kPrimarySnapped);
+}
+
+void GroupOrUngroupWindowsInSnapGroup() {
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  CHECK(snap_group_controller);
+  aura::Window::Windows window_pair = GetTargetWindowPairForSnapGroup();
+  if (window_pair.size() != 2) {
+    return;
+  }
+
+  aura::Window* window1 = window_pair[0];
+  aura::Window* window2 = window_pair[1];
+  WindowStateType window1_state_type =
+      WindowState::Get(window1)->GetStateType();
+  WindowStateType window2_state_type =
+      WindowState::Get(window2)->GetStateType();
+  CHECK((window1_state_type == WindowStateType::kPrimarySnapped &&
+         window2_state_type == WindowStateType::kSecondarySnapped) ||
+        (window1_state_type == WindowStateType::kSecondarySnapped &&
+         window2_state_type == WindowStateType::kPrimarySnapped));
+
+  // TODO(michelefan): Trigger a11y alert if there are no eligible windows.
+
+  if (!snap_group_controller->AreWindowsInSnapGroup(window1, window2)) {
+    snap_group_controller->AddSnapGroup(window1, window2);
+    CHECK(snap_group_controller->AreWindowsInSnapGroup(window1, window2));
+  } else {
+    snap_group_controller->RemoveSnapGroupContainingWindow(window1);
+    CHECK(!snap_group_controller->AreWindowsInSnapGroup(window1, window2));
+  }
 }
 
 bool CanMinimizeSnapGroupWindows() {

@@ -135,8 +135,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
           init_params->device_info_tracker));
 
   result_refresh_manager_ = std::make_unique<ResultRefreshManager>(
-      config_holder->configs(),
-      std::move(storage_service_->cached_result_writer()), platform_options_);
+      config_holder, std::move(storage_service_->cached_result_writer()),
+      platform_options_);
 }
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() {
@@ -213,6 +213,15 @@ void SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand(
       segmentation_key, base::Time::Now(), std::move(callback));
   selector->GetSelectedSegmentOnDemand(input_context,
                                        std::move(wrapped_callback));
+}
+
+void SegmentationPlatformServiceImpl::CollectTrainingData(
+    SegmentId segment_id,
+    TrainingRequestId request_id,
+    const TrainingLabels& param,
+    SuccessCallback callback) {
+  execution_service_.training_data_collector()->CollectTrainingData(
+      segment_id, request_id, param, std::move(callback));
 }
 
 void SegmentationPlatformServiceImpl::EnableMetrics(
@@ -296,8 +305,12 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
 
   signal_handler_.OnSignalListUpdated();
 
-  execution_service_.OnNewModelInfoReady(segment_info);
-  request_dispatcher_->OnModelUpdated(segment_info.segment_id());
+  if (!metadata_utils::SegmentUsesLegacyOutput(segment_info.segment_id())) {
+    result_refresh_manager_->OnModelUpdated(&segment_info, &execution_service_);
+    request_dispatcher_->OnModelUpdated(segment_info.segment_id());
+  } else {
+    execution_service_.OnNewModelInfoReadyLegacy(segment_info);
+  }
 
   // Update the service status for proxy.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -331,13 +344,18 @@ SegmentationPlatformServiceImpl::CreateSegmentResultProviders() {
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
       result_providers;
   for (const auto& config : storage_service_->config_holder()->configs()) {
-    result_providers[config->segmentation_key] = SegmentResultProvider::Create(
-        storage_service_->segment_info_database(),
-        storage_service_->signal_storage_config(),
-        storage_service_->default_model_manager(), &execution_service_, clock_,
-        platform_options_.force_refresh_results);
+    result_providers[config->segmentation_key] = CreateSegmentResultProvider();
   }
   return result_providers;
+}
+
+std::unique_ptr<SegmentResultProvider>
+SegmentationPlatformServiceImpl::CreateSegmentResultProvider() {
+  return SegmentResultProvider::Create(
+      storage_service_->segment_info_database(),
+      storage_service_->signal_storage_config(),
+      storage_service_->default_model_manager(), &execution_service_, clock_,
+      platform_options_.force_refresh_results);
 }
 
 // static

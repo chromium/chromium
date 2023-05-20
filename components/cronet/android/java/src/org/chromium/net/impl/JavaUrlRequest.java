@@ -977,7 +977,6 @@ final class JavaUrlRequest extends UrlRequestBase {
 
         void onCanceled(final UrlResponseInfo info) {
             closeResponseChannel();
-            mEngine.decrementActiveRequestCount();
             mUserExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -987,12 +986,12 @@ final class JavaUrlRequest extends UrlRequestBase {
                     } catch (Exception exception) {
                         Log.e(TAG, "Exception in onCanceled method", exception);
                     }
+                    mEngine.decrementActiveRequestCount();
                 }
             });
         }
 
         void onSucceeded(final UrlResponseInfo info) {
-            mEngine.decrementActiveRequestCount();
             mUserExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -1002,13 +1001,13 @@ final class JavaUrlRequest extends UrlRequestBase {
                     } catch (Exception exception) {
                         Log.e(TAG, "Exception in onSucceeded method", exception);
                     }
+                    mEngine.decrementActiveRequestCount();
                 }
             });
         }
 
         void onFailed(final UrlResponseInfo urlResponseInfo, final CronetException e) {
             closeResponseChannel();
-            mEngine.decrementActiveRequestCount();
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -1018,6 +1017,7 @@ final class JavaUrlRequest extends UrlRequestBase {
                     } catch (Exception exception) {
                         Log.e(TAG, "Exception in onFailed method", exception);
                     }
+                    mEngine.decrementActiveRequestCount();
                 }
             };
             try {

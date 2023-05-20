@@ -50,12 +50,30 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsCreated_MostCompleteFirst() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // Name, phone and email are all different. First entry is incomplete.
-        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
-                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                "" /* no phone number */, "jm@example.test", ""));
-        profiles.add(new AutofillProfile("guid-2", "" /* honorific prefix */, "Jane Doe",
-                "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "", "US",
-                "555-212-1212", "jane@example.test", ""));
+        profiles.add(AutofillProfile.builder()
+                             .setGUID("guid-1")
+                             .setFullName("John Major")
+                             .setCompanyName("Acme Inc.")
+                             .setStreetAddress("123 Main")
+                             .setRegion("California")
+                             .setLocality("Los Angeles")
+                             .setPostalCode("90210")
+                             .setCountryCode("US")
+                             .setPhoneNumber("") /* no phone number */
+                             .setEmailAddress("jm@example.test")
+                             .build());
+        profiles.add(AutofillProfile.builder()
+                             .setGUID("guid-2")
+                             .setFullName("Jane Doe")
+                             .setCompanyName("Edge corp.")
+                             .setStreetAddress("123 Main")
+                             .setRegion("Washington")
+                             .setLocality("Lake City")
+                             .setPostalCode("10110")
+                             .setCountryCode("US")
+                             .setPhoneNumber("555-212-1212")
+                             .setEmailAddress("jane@example.test")
+                             .build());
 
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
@@ -82,12 +100,30 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsCreated_AllComplete() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // Name, phone and email are all different. All entries complete.
-        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
-                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                "514-555-1212", "jm@example.test", ""));
-        profiles.add(new AutofillProfile("guid-2", "" /* honorific prefix */, "Jane Doe",
-                "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "", "US",
-                "555-212-1212", "jane@example.test", ""));
+        profiles.add(AutofillProfile.builder()
+                             .setGUID("guid-1")
+                             .setFullName("John Major")
+                             .setCompanyName("Acme Inc.")
+                             .setStreetAddress("123 Main")
+                             .setRegion("California")
+                             .setLocality("Los Angeles")
+                             .setPostalCode("90210")
+                             .setCountryCode("US")
+                             .setPhoneNumber("514-555-1212")
+                             .setEmailAddress("jm@example.test")
+                             .build());
+        profiles.add(AutofillProfile.builder()
+                             .setGUID("guid-2")
+                             .setFullName("Jane Doe")
+                             .setCompanyName("Edge corp.")
+                             .setStreetAddress("123 Main")
+                             .setRegion("Washington")
+                             .setLocality("Lake City")
+                             .setPostalCode("10110")
+                             .setCountryCode("US")
+                             .setPhoneNumber("555-212-1212")
+                             .setEmailAddress("jane@example.test")
+                             .build());
 
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
@@ -114,9 +150,18 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsCreated_NotRequestingMissingValue() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // Entry is incomplete but it will not matter.
-        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
-                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                "" /* no phone number */, "jm@example.test", ""));
+        profiles.add(AutofillProfile.builder()
+                             .setGUID("guid-1")
+                             .setFullName("John Major")
+                             .setCompanyName("Acme Inc.")
+                             .setStreetAddress("123 Main")
+                             .setRegion("California")
+                             .setLocality("Los Angeles")
+                             .setPostalCode("90210")
+                             .setCountryCode("US")
+                             .setPhoneNumber("") /* no phone number */
+                             .setEmailAddress("jm@example.test")
+                             .build());
 
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 false /* requestPayerPhone */, true /* requestPayerEmail */);
@@ -138,9 +183,18 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsUpdated_WithCompleteAddress() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // First entry is complete.
-        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
-                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                "514-555-1212", "jm@example.test", ""));
+        profiles.add(AutofillProfile.builder()
+                             .setGUID("guid-1")
+                             .setFullName("John Major")
+                             .setCompanyName("Acme Inc.")
+                             .setStreetAddress("123 Main")
+                             .setRegion("California")
+                             .setLocality("Los Angeles")
+                             .setPostalCode("90210")
+                             .setCountryCode("US")
+                             .setPhoneNumber("514-555-1212")
+                             .setEmailAddress("jm@example.test")
+                             .build());
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
 
@@ -154,9 +208,18 @@ public class PaymentRequestContactDetailsSectionUnitTest {
         Assert.assertEquals(null, items.get(0).getEditMessage());
 
         // We update the contact list with a new, complete address.
-        AutofillProfile newProfile = new AutofillProfile("guid-2", "" /* honorific prefix */,
-                "Jane Doe", "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "",
-                "US", "555-212-1212", "jane@example.test", "");
+        AutofillProfile newProfile = AutofillProfile.builder()
+                                             .setGUID("guid-2")
+                                             .setFullName("Jane Doe")
+                                             .setCompanyName("Edge corp.")
+                                             .setStreetAddress("123 Main")
+                                             .setRegion("Washington")
+                                             .setLocality("Lake City")
+                                             .setPostalCode("10110")
+                                             .setCountryCode("US")
+                                             .setPhoneNumber("555-212-1212")
+                                             .setEmailAddress("jane@example.test")
+                                             .build();
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
                 new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
@@ -183,9 +246,18 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsUpdated_WithNewButIncomplete() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // Name, phone and email are all different. All entries complete.
-        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
-                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                "514-555-1212", "jm@example.test", ""));
+        profiles.add(AutofillProfile.builder()
+                             .setGUID("guid-1")
+                             .setFullName("John Major")
+                             .setCompanyName("Acme Inc.")
+                             .setStreetAddress("123 Main")
+                             .setRegion("California")
+                             .setLocality("Los Angeles")
+                             .setPostalCode("90210")
+                             .setCountryCode("US")
+                             .setPhoneNumber("514-555-1212")
+                             .setEmailAddress("jm@example.test")
+                             .build());
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
 
@@ -199,9 +271,18 @@ public class PaymentRequestContactDetailsSectionUnitTest {
         Assert.assertEquals(null, items.get(0).getEditMessage());
 
         // We update the contact list with a new address, which has a missing email.
-        AutofillProfile newProfile = new AutofillProfile("guid-2", "" /* honorific prefix */,
-                "Jane Doe", "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "",
-                "US", "555-212-1212", "" /* No email */, "");
+        AutofillProfile newProfile = AutofillProfile.builder()
+                                             .setGUID("guid-2")
+                                             .setFullName("Jane Doe")
+                                             .setCompanyName("Edge corp.")
+                                             .setStreetAddress("123 Main")
+                                             .setRegion("Washington")
+                                             .setLocality("Lake City")
+                                             .setPostalCode("10110")
+                                             .setCountryCode("US")
+                                             .setPhoneNumber("555-212-1212")
+                                             .setEmailAddress("") /* No email */
+                                             .build();
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
                 new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
@@ -236,9 +317,18 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 SectionInformation.NO_SELECTION, mContactDetailsSection.getSelectedItemIndex());
 
         // We update the contact list with a new, complete address.
-        AutofillProfile newProfile = new AutofillProfile("guid-2", "" /* honorific prefix */,
-                "Jane Doe", "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "",
-                "US", "555-212-1212", "jane@example.test", "");
+        AutofillProfile newProfile = AutofillProfile.builder()
+                                             .setGUID("guid-2")
+                                             .setFullName("Jane Doe")
+                                             .setCompanyName("Edge corp.")
+                                             .setStreetAddress("123 Main")
+                                             .setRegion("Washington")
+                                             .setLocality("Lake City")
+                                             .setPostalCode("10110")
+                                             .setCountryCode("US")
+                                             .setPhoneNumber("555-212-1212")
+                                             .setEmailAddress("jane@example.test")
+                                             .build();
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
                 new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
@@ -261,9 +351,18 @@ public class PaymentRequestContactDetailsSectionUnitTest {
     public void testContactsListIsUpdated_UpdateExistingItem() {
         List<AutofillProfile> profiles = new ArrayList<>();
         // This entry is missing an email, which will get added later on.
-        profiles.add(new AutofillProfile("guid-1", "" /* honorific prefix */, "John Major",
-                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                "514-555-1212", "" /* No email */, ""));
+        profiles.add(AutofillProfile.builder()
+                             .setGUID("guid-1")
+                             .setFullName("John Major")
+                             .setCompanyName("Acme Inc.")
+                             .setStreetAddress("123 Main")
+                             .setRegion("California")
+                             .setLocality("Los Angeles")
+                             .setPostalCode("90210")
+                             .setCountryCode("US")
+                             .setPhoneNumber("514-555-1212")
+                             .setEmailAddress("") /* No email */
+                             .build());
 
         createContactDetailsSectionWithProfiles(profiles, true /* requestPayerName */,
                 true /* requestPayerPhone */, true /* requestPayerEmail */);
@@ -279,9 +378,18 @@ public class PaymentRequestContactDetailsSectionUnitTest {
         Assert.assertEquals("Email required", items.get(0).getEditMessage());
 
         // We update the contact list with the same profile GUID, complete this time.
-        AutofillProfile newProfile = new AutofillProfile("guid-1", "" /* honorific prefix */,
-                "John Major", "Acme Inc.", "456 Main", "California", "Los Angeles", "", "90210", "",
-                "US", "514-555-1212", "john@example.test", "");
+        AutofillProfile newProfile = AutofillProfile.builder()
+                                             .setGUID("guid-1")
+                                             .setFullName("John Major")
+                                             .setCompanyName("Acme Inc.")
+                                             .setStreetAddress("456 Main")
+                                             .setRegion("California")
+                                             .setLocality("Los Angeles")
+                                             .setPostalCode("90210")
+                                             .setCountryCode("US")
+                                             .setPhoneNumber("514-555-1212")
+                                             .setEmailAddress("john@example.test")
+                                             .build();
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
                 new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 
@@ -311,9 +419,18 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                 SectionInformation.NO_SELECTION, mContactDetailsSection.getSelectedItemIndex());
 
         // We update the contact list with a new, incomplete address.
-        AutofillProfile newProfile = new AutofillProfile("guid-2", "" /* honorific prefix */,
-                "Jane Doe", "Edge corp.", "123 Main", "Washington", "Seattle", "", "10110", "",
-                "US", "555-212-1212", "" /* no email */, "");
+        AutofillProfile newProfile = AutofillProfile.builder()
+                                             .setGUID("guid-2")
+                                             .setFullName("Jane Doe")
+                                             .setCompanyName("Edge corp.")
+                                             .setStreetAddress("123 Main")
+                                             .setRegion("Washington")
+                                             .setLocality("Lake City")
+                                             .setPostalCode("10110")
+                                             .setCountryCode("US")
+                                             .setPhoneNumber("555-212-1212")
+                                             .setEmailAddress("") /* no email */
+                                             .build();
         mContactDetailsSection.addOrUpdateWithAutofillAddress(
                 new AutofillAddress(ApplicationProvider.getApplicationContext(), newProfile));
 

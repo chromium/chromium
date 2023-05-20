@@ -20,34 +20,34 @@ WebMColorVolumeMetadataParser::~WebMColorVolumeMetadataParser() = default;
 bool WebMColorVolumeMetadataParser::OnFloat(int id, double val) {
   switch (id) {
     case kWebMIdPrimaryRChromaticityX:
-      color_volume_metadata_.primaries.fRX = val;
+      smpte_st_2086_.primaries.fRX = val;
       break;
     case kWebMIdPrimaryRChromaticityY:
-      color_volume_metadata_.primaries.fRY = val;
+      smpte_st_2086_.primaries.fRY = val;
       break;
     case kWebMIdPrimaryGChromaticityX:
-      color_volume_metadata_.primaries.fGX = val;
+      smpte_st_2086_.primaries.fGX = val;
       break;
     case kWebMIdPrimaryGChromaticityY:
-      color_volume_metadata_.primaries.fGY = val;
+      smpte_st_2086_.primaries.fGY = val;
       break;
     case kWebMIdPrimaryBChromaticityX:
-      color_volume_metadata_.primaries.fBX = val;
+      smpte_st_2086_.primaries.fBX = val;
       break;
     case kWebMIdPrimaryBChromaticityY:
-      color_volume_metadata_.primaries.fBY = val;
+      smpte_st_2086_.primaries.fBY = val;
       break;
     case kWebMIdWhitePointChromaticityX:
-      color_volume_metadata_.primaries.fWX = val;
+      smpte_st_2086_.primaries.fWX = val;
       break;
     case kWebMIdWhitePointChromaticityY:
-      color_volume_metadata_.primaries.fWY = val;
+      smpte_st_2086_.primaries.fWY = val;
       break;
     case kWebMIdLuminanceMax:
-      color_volume_metadata_.luminance_max = val;
+      smpte_st_2086_.luminance_max = val;
       break;
     case kWebMIdLuminanceMin:
-      color_volume_metadata_.luminance_min = val;
+      smpte_st_2086_.luminance_min = val;
       break;
     default:
       DVLOG(1) << "Unexpected id in ColorVolumeMetadata: 0x" << std::hex << id;
@@ -196,17 +196,17 @@ WebMColorMetadata WebMColourParser::GetWebMColorMetadata() const {
     color_metadata.hdr_metadata = gfx::HDRMetadata();
 
     if (max_content_light_level_ != -1) {
-      color_metadata.hdr_metadata->max_content_light_level =
+      color_metadata.hdr_metadata->cta_861_3.max_content_light_level =
           max_content_light_level_;
     }
 
     if (max_frame_average_light_level_ != -1) {
-      color_metadata.hdr_metadata->max_frame_average_light_level =
+      color_metadata.hdr_metadata->cta_861_3.max_frame_average_light_level =
           max_frame_average_light_level_;
     }
 
     if (color_volume_metadata_parsed_) {
-      color_metadata.hdr_metadata->color_volume_metadata =
+      color_metadata.hdr_metadata->smpte_st_2086 =
           color_volume_metadata_parser_.GetColorVolumeMetadata();
     }
   }

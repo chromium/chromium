@@ -32,6 +32,13 @@ public abstract class Flag {
     }
 
     /**
+     * @return the unique name of the feature flag.
+     */
+    public String getFeatureName() {
+        return mFeatureName;
+    }
+
+    /**
      * Checks if a feature flag is enabled.
      * @return whether the feature should be considered enabled.
      */

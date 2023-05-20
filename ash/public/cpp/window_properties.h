@@ -194,11 +194,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<gfx::Rect*>* const
     kWindowPipResizeHandleBoundsKey;
 
-// A property key to indicate a desk guid of a workspace this window belongs
-// to.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<std::string*>* const
-    kDeskGuidKey;
-
 // Alphabetical sort.
 
 }  // namespace ash

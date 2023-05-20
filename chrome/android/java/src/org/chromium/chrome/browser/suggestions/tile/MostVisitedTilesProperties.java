@@ -31,8 +31,17 @@ public final class MostVisitedTilesProperties {
             new WritableObjectPropertyKey<>(true);
     public static final PropertyModel.WritableObjectPropertyKey<Integer> HORIZONTAL_EDGE_PADDINGS =
             new WritableObjectPropertyKey<>(true);
+    public static final PropertyModel
+            .WritableBooleanPropertyKey IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    //{@code true} if the orientation of the tablet is landscape.
+    public static final PropertyModel
+            .WritableObjectPropertyKey<Boolean> UPDATE_INTERVAL_PADDINGS_TABLET =
+            new PropertyModel.WritableObjectPropertyKey<>(true /* skipEquality */);
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {IS_CONTAINER_VISIBLE, IS_MVT_LAYOUT_VISIBLE, PLACEHOLDER_VIEW,
-                    HORIZONTAL_INTERVAL_PADDINGS, HORIZONTAL_EDGE_PADDINGS};
+                    HORIZONTAL_INTERVAL_PADDINGS, HORIZONTAL_EDGE_PADDINGS,
+                    IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED, UPDATE_INTERVAL_PADDINGS_TABLET};
 }

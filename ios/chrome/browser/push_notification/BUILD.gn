@@ -16,9 +16,9 @@ source_set("push_notification_browser_state_service") {
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/commerce",
-    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 }
 
@@ -65,9 +65,9 @@ source_set("push_notification_service") {
     "//components/prefs",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/commerce/push_notification",
-    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 }
 

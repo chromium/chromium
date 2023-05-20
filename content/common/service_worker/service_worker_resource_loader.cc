@@ -8,14 +8,18 @@ namespace content {
 ServiceWorkerResourceLoader::ServiceWorkerResourceLoader() = default;
 ServiceWorkerResourceLoader::~ServiceWorkerResourceLoader() = default;
 
-void ServiceWorkerResourceLoader::SetFetchResponseFrom(
+void ServiceWorkerResourceLoader::SetCommitResponsibility(
     FetchResponseFrom fetch_response_from) {
-  DCHECK_EQ(fetch_response_from_, FetchResponseFrom::kNoResponseYet);
+  DCHECK(commit_responsibility_ == FetchResponseFrom::kNoResponseYet);
+  commit_responsibility_ = fetch_response_from;
+  RecordFetchResponseFrom();
+}
+
+void ServiceWorkerResourceLoader::RecordFetchResponseFrom() {
   UMA_HISTOGRAM_ENUMERATION(
       IsMainResourceLoader()
           ? "ServiceWorker.FetchEvent.MainResource.FetchResponseFrom"
           : "ServiceWorker.FetchEvent.Subresource.FetchResponseFrom",
-      fetch_response_from);
-  fetch_response_from_ = fetch_response_from;
+      commit_responsibility_);
 }
 }  // namespace content

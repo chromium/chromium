@@ -1,9 +1,9 @@
 Test that console.log can be called without console receiver.
 
-console-log-without-console.js:12 1
-console-log-without-console.js:14 2
-console-log-without-console.js:16 3
-(anonymous) @ console-log-without-console.js:16
-console-log-without-console.js:18 4
-(anonymous) @ console-log-without-console.js:18
+console-log-without-console.js:15 1
+console-log-without-console.js:17 2
+console-log-without-console.js:19 3
+(anonymous) @ console-log-without-console.js:19
+console-log-without-console.js:21 4
+(anonymous) @ console-log-without-console.js:21
 

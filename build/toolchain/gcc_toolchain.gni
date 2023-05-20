@@ -108,9 +108,9 @@ if (enable_resource_allowlist_generation) {
 #      all shared libraries and executables as they are built. The pre-stripped
 #      artifacts will be put in lib.unstripped/ and exe.unstripped/.
 #
-# Callers will normally want to invoke "gcc_toolchain" instead, which makes
-# a toolchain just like this but may additionally create an extra toolchain
-# without sanitizers for host-side tools.
+# Callers will normally want to invoke "gcc_toolchain" instead, which makes an
+# additional toolchain for Rust targets that are build-time artificts such as
+# proc macros.
 template("single_gcc_toolchain") {
   toolchain(target_name) {
     assert(defined(invoker.ar), "gcc_toolchain() must specify a \"ar\" value")
@@ -148,10 +148,6 @@ template("single_gcc_toolchain") {
       # ensure that it's always the same, regardless of the values that may be
       # set on those toolchains.
       host_toolchain = host_toolchain
-
-      # The same applies to the toolchain we use to build Rust procedural
-      # macros, which is probably the same but might have sanitizers disabled.
-      host_toolchain_no_sanitizers = host_toolchain_no_sanitizers
 
       if (!defined(invoker_toolchain_args.v8_current_cpu)) {
         v8_current_cpu = invoker_toolchain_args.current_cpu
@@ -812,8 +808,9 @@ template("single_gcc_toolchain") {
   }
 }
 
-# Makes a single GCC toolchain, or possibly two if we need
-# an equivalent toolchain without sanitizers.
+# Makes a GCC toolchain for the target, and an equivalent toolchain with the
+# prebuilt Rust stdlib for building proc macros (and other for-build-use
+# artifacts).
 template("gcc_toolchain") {
   single_gcc_toolchain(target_name) {
     assert(defined(invoker.toolchain_args),
@@ -829,9 +826,16 @@ template("gcc_toolchain") {
     # toolchains, but presubmit checks require that we explicitly exclude them
   }
 
-  if (using_sanitizer) {
-    # Make an additional toolchain with no sanitizers.
-    single_gcc_toolchain("${target_name}_no_sanitizers") {
+  if (enable_rust && current_toolchain == default_toolchain) {
+    # Make an additional toolchain which is used for making tools that are run
+    # on the host machine as part of the build process (such as proc macros
+    # and Cargo build scripts). This toolchain uses the prebuilt stdlib that
+    # comes with the compiler, so it doesn't have to wait for the stdlib to be
+    # built before building other stuff. And this ensures its proc macro
+    # outputs have the right ABI to be loaded by the compiler, and it can be
+    # used to compile build scripts that are part of the stdlib that is built
+    # for the default toolchain.
+    single_gcc_toolchain("${target_name}_for_rust_host_build_tools") {
       assert(defined(invoker.toolchain_args),
              "Toolchains must declare toolchain_args")
       forward_variables_from(invoker,
@@ -844,7 +848,13 @@ template("gcc_toolchain") {
       toolchain_args = {
         # Populate toolchain args from the invoker.
         forward_variables_from(invoker.toolchain_args, "*")
-        toolchain_disables_sanitizers = true
+        toolchain_for_rust_host_build_tools = true
+
+        # The host build tools are static release builds to make the Chromium
+        # build faster.
+        is_debug = false
+        is_component_build = false
+        is_official_build = false
       }
     }
   }

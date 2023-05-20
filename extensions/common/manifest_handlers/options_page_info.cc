@@ -123,8 +123,7 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
     std::unique_ptr<OptionsUI> options_ui =
         OptionsUI::FromValueDeprecated(*options_ui_value, &options_ui_error);
     if (!options_ui) {
-      install_warnings->push_back(
-          InstallWarning(base::UTF16ToASCII(options_ui_error)));
+      install_warnings->emplace_back(base::UTF16ToASCII(options_ui_error));
     } else {
       std::u16string options_parse_error;
       if (!ParseOptionsUrl(extension,
@@ -132,8 +131,7 @@ std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
                            keys::kOptionsUI,
                            &options_parse_error,
                            &options_page)) {
-        install_warnings->push_back(
-            InstallWarning(base::UTF16ToASCII(options_parse_error)));
+        install_warnings->emplace_back(base::UTF16ToASCII(options_parse_error));
       }
       if (options_ui->chrome_style) {
         if (extension->manifest_version() < 3)

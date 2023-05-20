@@ -94,6 +94,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(int, kWindowCornerRadiusKey, -1)
 DEFINE_UI_CLASS_PROPERTY_KEY(int,
                              kWindowWorkspaceKey,
                              kWindowWorkspaceUnassignedWorkspace)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kDeskUuidKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::ZOrderLevel,
                              kZOrderingKey,
                              ui::ZOrderLevel::kNormal)

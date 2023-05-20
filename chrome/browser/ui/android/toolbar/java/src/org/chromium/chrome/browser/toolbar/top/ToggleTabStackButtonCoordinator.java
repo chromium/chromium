@@ -105,7 +105,7 @@ public class ToggleTabStackButtonCoordinator {
             private boolean mHighlightedNewTabPageButton;
 
             @Override
-            public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+            public void onStartedShowing(@LayoutType int layoutType) {
                 if (layoutType == LayoutType.TAB_SWITCHER && mIphBeingShown) {
                     mSetNewTabButtonHighlightCallback.onResult(true);
                     mHighlightedNewTabPageButton = true;
@@ -113,8 +113,7 @@ public class ToggleTabStackButtonCoordinator {
             }
 
             @Override
-            public void onStartedHiding(
-                    @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
+            public void onStartedHiding(@LayoutType int layoutType) {
                 if (layoutType == LayoutType.TAB_SWITCHER && mHighlightedNewTabPageButton) {
                     mSetNewTabButtonHighlightCallback.onResult(false);
                     mHighlightedNewTabPageButton = false;

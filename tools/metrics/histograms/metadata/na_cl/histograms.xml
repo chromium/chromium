@@ -426,18 +426,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NaCl.ResourceCreationImpl.CreateVideoDecoderDev_Invoked"
-    enum="Boolean" expires_after="2023-09-01">
-  <owner>blundell@chromium.org</owner>
-  <owner>dschuff@chromium.org</owner>
-  <summary>
-    True is emitted when ResourceCreationImpl::CreateVideoDecoderDev() is
-    invoked. Targeted metric to get clarity on whether there are any attempted
-    creations of this API against production Chrome as we work toward
-    eliminating support for the API.
-  </summary>
-</histogram>
-
 <histogram name="NaCl.ValidationCache.Query" enum="NaClValidationCacheEnum"
     expires_after="2023-07-31">
   <owner>dschuff@chromium.org</owner>

@@ -287,13 +287,9 @@ std::unique_ptr<ScopedVAImage> VaapiJpegDecoder::GetImage(
   // disable support for odd dimensions since the VAImage path is only expected
   // to be used in camera captures (and we don't expect JPEGs with odd
   // dimensions in that path).
-  if ((scoped_va_context_and_surface_->size().width() & 1) ||
-      (scoped_va_context_and_surface_->size().height() & 1)) {
-    VLOGF(1) << "Getting images with odd dimensions is not supported";
-    *status = VaapiImageDecodeStatus::kCannotGetImage;
-    NOTREACHED();
-    return nullptr;
-  }
+  CHECK((scoped_va_context_and_surface_->size().width() & 1) == 0 &&
+        (scoped_va_context_and_surface_->size().height() & 1) == 0)
+      << "Getting images with odd dimensions is not supported";
   auto scoped_image = vaapi_wrapper_->CreateVaImage(
       scoped_va_context_and_surface_->id(), &image_format,
       scoped_va_context_and_surface_->size());

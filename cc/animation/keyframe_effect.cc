@@ -170,7 +170,7 @@ void KeyframeEffect::UpdateTickingState() {
   }
 }
 
-void KeyframeEffect::Pause(base::TimeDelta pause_offset,
+void KeyframeEffect::Pause(base::TimeTicks timeline_time,
                            PauseCondition pause_condition) {
   bool did_pause = false;
   for (auto& keyframe_model : keyframe_models()) {
@@ -184,7 +184,9 @@ void KeyframeEffect::Pause(base::TimeDelta pause_offset,
              gfx::KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY ||
          keyframe_model->run_state() == gfx::KeyframeModel::STARTING))
       continue;
-    keyframe_model->Pause(pause_offset);
+    // Convert the timeline_time to the effective local time for each
+    // KeyframeModel's start time.
+    keyframe_model->Pause(timeline_time - keyframe_model->start_time());
     did_pause = true;
   }
 

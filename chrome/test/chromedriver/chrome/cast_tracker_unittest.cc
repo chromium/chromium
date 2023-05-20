@@ -15,12 +15,11 @@ using testing::Return;
 
 namespace {
 
-base::Value CreateSink(const std::string& name, const std::string& id) {
-  base::Value sink(base::Value::Type::DICT);
-  sink.SetKey("name", base::Value(name));
-  sink.SetKey("id", base::Value(id));
-  sink.SetKey("session", base::Value("Example session"));
-  return sink;
+base::Value::Dict CreateSink(const std::string& name, const std::string& id) {
+  return base::Value::Dict()
+      .Set("name", base::Value(name))
+      .Set("id", base::Value(id))
+      .Set("session", base::Value("Example session"));
 }
 
 class MockDevToolsClient : public StubDevToolsClient {
@@ -54,9 +53,9 @@ TEST_F(CastTrackerTest, OnSinksUpdated) {
   EXPECT_EQ(0u, cast_tracker_->sinks().GetList().size());
 
   base::Value::List sinks;
-  sinks.Append(CreateSink("sink1", "1"));
-  sinks.Append(CreateSink("sink2", "2"));
-  params.Set("sinks", base::Value(std::move(sinks)));
+  params.Set("sinks", base::Value::List()
+                          .Append(CreateSink("sink1", "1"))
+                          .Append(CreateSink("sink2", "2")));
   cast_tracker_->OnEvent(&devtools_client_, "Cast.sinksUpdated", params);
   EXPECT_EQ(2u, cast_tracker_->sinks().GetList().size());
 

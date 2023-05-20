@@ -160,6 +160,8 @@ TEST_F(DeviceCommandFetchSupportPacketTest, Success) {
       *enqueued_event.mutable_upload_settings()->mutable_upload_parameters());
   EXPECT_EQ(exported_file.value(),
             *enqueued_event.mutable_upload_settings()->mutable_origin_path());
+  EXPECT_TRUE(enqueued_event.has_command_id());
+  EXPECT_EQ(enqueued_event.command_id(), kUniqueID);
 
   int64_t file_size;
   ASSERT_TRUE(base::GetFileSize(exported_file, &file_size));

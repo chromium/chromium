@@ -192,14 +192,14 @@ AtomicString DOMScheduler::isAncestor(
       tracker->IsAncestor(script_state, scheduler::TaskAttributionId(parentId));
   switch (status) {
     case scheduler::TaskAttributionTracker::AncestorStatus::kAncestor:
-      return "ancestor";
+      return AtomicString("ancestor");
     case scheduler::TaskAttributionTracker::AncestorStatus::kNotAncestor:
-      return "not ancestor";
+      return AtomicString("not ancestor");
     case scheduler::TaskAttributionTracker::AncestorStatus::kUnknown:
-      return "unknown";
+      return AtomicString("unknown");
   }
   NOTREACHED();
-  return "not reached";
+  return AtomicString("not reached");
 }
 
 void DOMScheduler::CreateFixedPriorityTaskQueues(

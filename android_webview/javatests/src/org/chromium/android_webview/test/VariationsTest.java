@@ -13,7 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.android_webview.AwFeatureList;
+import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
@@ -97,7 +97,7 @@ public class VariationsTest {
 
             TestThreadUtils.runOnUiThreadBlocking(() -> {
                 Assert.assertTrue("TEST_FEATURE_NAME should be enabled",
-                        AwFeatureList.isEnabled(AwFeatures.WEBVIEW_TEST_FEATURE));
+                        AwFeatureMap.getInstance().isEnabled(AwFeatures.WEBVIEW_TEST_FEATURE));
             });
         } finally {
             VariationsTestUtils.deleteSeeds();

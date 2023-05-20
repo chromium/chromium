@@ -17,7 +17,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "components/unified_consent/consent_throttle.h"
 
 namespace optimization_guide {

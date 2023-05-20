@@ -18,6 +18,14 @@ specific_include_rules = {
     "frame_fetch_context.cc": [
         "+services/network/public/cpp/attribution_reporting_runtime_features.h",
     ],
+    "base_fetch_context.cc" : [
+      "+base/command_line.h"
+    ],
+    "base_fetch_context_test.cc" : [
+      "+base/test/scoped_command_line.h",
+      "+third_party/blink/public/common/switches.h",
+      "+third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+    ],
 }
 include_rules = [
   "+base/containers/flat_map.h",

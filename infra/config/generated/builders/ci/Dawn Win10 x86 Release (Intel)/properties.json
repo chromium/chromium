@@ -86,5 +86,8 @@
     ]
   },
   "builder_group": "chromium.dawn",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "dawn"
+  ]
 }

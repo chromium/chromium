@@ -10,7 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
-#include "ash/system/toast/toast_manager_impl.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
@@ -25,11 +25,25 @@
 namespace ash {
 
 namespace {
-constexpr char kVideoConferenceTraySpeakOnMuteDetectedId[] =
-    "video_conference_tray_toast_ids.speak_on_mute_detected";
 
-constexpr char kVideoConferenceTrayUseWhileDisabledToastId[] =
-    "video_conference_tray_toast_ids.use_while_disable";
+constexpr char kVideoConferenceTraySpeakOnMuteDetectedNudgeId[] =
+    "video_conference_tray_nudge_ids.speak_on_mute_detected";
+
+constexpr char kVideoConferenceTrayUseWhileDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.use_while_disabled";
+
+bool IsNudgeShown(const std::string& id) {
+  return Shell::Get()->anchored_nudge_manager()->IsNudgeShown(id);
+}
+
+const std::u16string& GetNudgeText(const std::string& id) {
+  return Shell::Get()->anchored_nudge_manager()->GetNudgeText(id);
+}
+
+views::View* GetNudgeAnchorView(const std::string& id) {
+  return Shell::Get()->anchored_nudge_manager()->GetNudgeAnchorView(id);
+}
+
 }  // namespace
 
 class VideoConferenceTrayControllerTest : public AshTestBase {
@@ -60,6 +74,8 @@ class VideoConferenceTrayControllerTest : public AshTestBase {
     controller_.reset();
   }
 
+  // Returns the VC tray from the primary display. If testing multiple displays,
+  // VC nudges will be shown anchored to the tray in the active display.
   VideoConferenceTray* video_conference_tray() {
     return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
         ->video_conference_tray();
@@ -71,6 +87,19 @@ class VideoConferenceTrayControllerTest : public AshTestBase {
 
   VideoConferenceTrayButton* audio_icon() {
     return video_conference_tray()->audio_icon();
+  }
+
+  // Make the tray and buttons visible by setting `VideoConferenceMediaState`,
+  // and return the state so it can be modified.
+  VideoConferenceMediaState SetTrayAndButtonsVisible() {
+    VideoConferenceMediaState state;
+    state.has_media_app = true;
+    state.has_camera_permission = true;
+    state.has_microphone_permission = true;
+    state.is_capturing_screen = true;
+    state.is_capturing_microphone = true;
+    controller()->UpdateWithMediaState(state);
+    return state;
   }
 
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
@@ -167,131 +196,138 @@ TEST_F(VideoConferenceTrayControllerTest, ClickCameraWhenHardwareMuted) {
 
 TEST_F(VideoConferenceTrayControllerTest,
        HandleCameraUsedWhileSoftwaredDisabled) {
-  auto* toast_manager = Shell::Get()->toast_manager();
   auto* app_name = u"app_name";
   auto camera_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME);
+  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+
+  SetTrayAndButtonsVisible();
 
   controller()->OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState::ON);
 
-  // No toast show be shown before `HandleDeviceUsedWhileDisabled()` is called.
-  EXPECT_FALSE(
-      toast_manager->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
+  // No nudge is shown before `HandleDeviceUsedWhileDisabled()` is called.
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 
   controller()->HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
 
-  // Toast should be displayed. Showing that app is accessing while camera is
+  // Nudge should be displayed. Showing that app is accessing while camera is
   // software-muted.
-  EXPECT_TRUE(
-      toast_manager->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+  EXPECT_EQ(GetNudgeAnchorView(nudge_id), camera_icon());
+  EXPECT_EQ(GetNudgeText(nudge_id),
+            l10n_util::GetStringFUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED,
-                app_name, camera_device_name),
-            toast_manager->GetCurrentToastDataForTesting().text);
+                app_name, camera_device_name));
 }
 
 TEST_F(VideoConferenceTrayControllerTest,
        HandleMicrophoneUsedWhileSoftwaredDisabled) {
-  auto* toast_manager = Shell::Get()->toast_manager();
   auto* app_name = u"app_name";
   auto microphone_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_MICROPHONE_NAME);
+  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+
+  SetTrayAndButtonsVisible();
 
   controller()->OnInputMuteChanged(
       /*mute_on=*/true, CrasAudioHandler::InputMuteChangeMethod::kOther);
 
-  // No toast show be shown before `HandleDeviceUsedWhileDisabled()` is called.
-  EXPECT_FALSE(
-      toast_manager->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
+  // No nudge is shown before `HandleDeviceUsedWhileDisabled()` is called.
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 
   controller()->HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, app_name);
 
-  // Toast should be displayed. Showing that app is accessing while microphone
+  // Nudge should be displayed. Showing that app is accessing while microphone
   // is software-muted.
-  EXPECT_TRUE(
-      toast_manager->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+  EXPECT_EQ(GetNudgeAnchorView(nudge_id), audio_icon());
+  EXPECT_EQ(GetNudgeText(nudge_id),
+            l10n_util::GetStringFUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED,
-                app_name, microphone_device_name),
-            toast_manager->GetCurrentToastDataForTesting().text);
+                app_name, microphone_device_name));
 }
 
 TEST_F(VideoConferenceTrayControllerTest,
        HandleCameraUsedWhileHardwaredDisabled) {
-  auto* toast_manager = Shell::Get()->toast_manager();
   auto* app_name = u"app_name";
   auto camera_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME);
+  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+
+  SetTrayAndButtonsVisible();
 
   controller()->OnCameraHWPrivacySwitchStateChanged(
       /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::ON);
 
-  // No toast show be shown before `HandleDeviceUsedWhileDisabled()` is called.
-  EXPECT_FALSE(
-      toast_manager->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
+  // No nudge is shown before `HandleDeviceUsedWhileDisabled()` is called.
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 
   controller()->HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice::kCamera, app_name);
 
-  // Toast should be displayed. Showing that app is accessing while camera is
+  // Nudge should be displayed. Showing that app is accessing while camera is
   // hardware-muted.
-  EXPECT_TRUE(
-      toast_manager->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+  EXPECT_EQ(GetNudgeAnchorView(nudge_id), camera_icon());
+  EXPECT_EQ(GetNudgeText(nudge_id),
+            l10n_util::GetStringFUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_HARDWARE_DISABLED,
-                app_name, camera_device_name),
-            toast_manager->GetCurrentToastDataForTesting().text);
+                app_name, camera_device_name));
 }
 
 TEST_F(VideoConferenceTrayControllerTest,
        HandleMicrophoneUsedWhileHardwaredDisabled) {
-  auto* toast_manager = Shell::Get()->toast_manager();
   auto* app_name = u"app_name";
   auto microphone_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_MICROPHONE_NAME);
+  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+
+  SetTrayAndButtonsVisible();
 
   controller()->OnInputMuteChanged(
       /*mute_on=*/true,
       CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
 
-  // No toast show be shown before `HandleDeviceUsedWhileDisabled()` is called.
-  EXPECT_FALSE(
-      toast_manager->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
+  // No nudge is shown before `HandleDeviceUsedWhileDisabled()` is called.
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 
   controller()->HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice::kMicrophone, app_name);
 
-  // Toast should be displayed. Showing that app is accessing while microphone
+  // Nudge should be displayed. Showing that app is accessing while microphone
   // is hardware-muted.
-  EXPECT_TRUE(
-      toast_manager->IsRunning(kVideoConferenceTrayUseWhileDisabledToastId));
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+  EXPECT_EQ(GetNudgeAnchorView(nudge_id), audio_icon());
+  EXPECT_EQ(GetNudgeText(nudge_id),
+            l10n_util::GetStringFUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_HARDWARE_DISABLED,
-                app_name, microphone_device_name),
-            toast_manager->GetCurrentToastDataForTesting().text);
+                app_name, microphone_device_name));
 }
 
-TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteToast) {
-  auto* toast_manager = Shell::Get()->toast_manager();
+TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
+  auto* nudge_id = kVideoConferenceTraySpeakOnMuteDetectedNudgeId;
 
-  // No toast show be shown before `OnSpeakOnMuteDetected()` is called.
-  EXPECT_FALSE(
-      toast_manager->IsRunning(kVideoConferenceTraySpeakOnMuteDetectedId));
+  SetTrayAndButtonsVisible();
 
-  // Toast should be displayed. Showing that client is speaking while on mute.
+  // No nudge is shown before `OnSpeakOnMuteDetected()` is called.
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  // Nudge should be displayed. Showing that client is speaking while on mute.
   controller()->OnSpeakOnMuteDetected();
-  EXPECT_TRUE(
-      toast_manager->IsRunning(kVideoConferenceTraySpeakOnMuteDetectedId));
+  ASSERT_TRUE(IsNudgeShown(nudge_id));
+  EXPECT_EQ(GetNudgeAnchorView(nudge_id), audio_icon());
+  EXPECT_EQ(GetNudgeText(nudge_id),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_VIDEO_CONFERENCE_TOAST_SPEAK_ON_MUTE_DETECTED));
 
-  toast_manager->Cancel(kVideoConferenceTraySpeakOnMuteDetectedId);
+  Shell::Get()->anchored_nudge_manager()->Cancel(nudge_id);
 
-  // Toast should not be displayed as there is a cool down period for the toast.
+  // Nudge should not be displayed as there is a cool down period for the nudge.
   controller()->OnSpeakOnMuteDetected();
-  EXPECT_FALSE(
-      toast_manager->IsRunning(kVideoConferenceTraySpeakOnMuteDetectedId));
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 
   controller()->OnInputMuteChanged(
       /*mute_on=*/false,
@@ -300,11 +336,10 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteToast) {
       /*mute_on=*/true,
       CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
 
-  // Toast should be displayed again as the mute action will reset the toast
+  // Nudge should be displayed again as the mute action will reset the nudge
   // cool down timer.
   controller()->OnSpeakOnMuteDetected();
-  EXPECT_TRUE(
-      toast_manager->IsRunning(kVideoConferenceTraySpeakOnMuteDetectedId));
+  EXPECT_TRUE(IsNudgeShown(nudge_id));
 }
 
 }  // namespace ash

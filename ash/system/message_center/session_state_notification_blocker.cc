@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
+#include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/power/battery_notification.h"
 #include "base/containers/contains.h"
 #include "ui/message_center/message_center.h"
@@ -136,6 +137,12 @@ bool SessionStateNotificationBlocker::ShouldShowNotification(
           DoNotDisturbNotificationController::kDoNotDisturbNotificationId &&
       session_state != SessionState::ACTIVE) {
     return false;
+  }
+
+  // Allow the lock screen notification to show on and only on the lock screen.
+  if (notification.id() ==
+      LockScreenNotificationController::kLockScreenNotificationId) {
+    return session_state == SessionState::LOCKED;
   }
 
   // Only allow System priority notifications to be shown on the lock screen. We

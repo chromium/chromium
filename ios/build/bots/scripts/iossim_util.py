@@ -7,9 +7,11 @@ import logging
 import os
 import subprocess
 import time
+import typing
 
 import test_runner
 import test_runner_errors
+import mac_util
 
 LOGGER = logging.getLogger(__name__)
 
@@ -350,3 +352,51 @@ def delete_simulator_runtime_and_wait(ios_version):
     if (time_waited > MAX_WAIT_TIME_TO_DELETE_RUNTIME):
       raise test_runner_errors.SimRuntimeDeleteTimeoutError(ios_version)
   LOGGER.debug('Runtime successfully deleted!')
+
+
+def disable_hardware_keyboard(udid: str) -> None:
+  """Disables hardware keyboard input for the given simulator.
+
+  Exceptions are caught and logged but do not interrupt program flow. The result
+  is that if the util is unable to change the HW keyboard pref for any reason
+  the test will still run without changing the preference.
+
+  Args:
+    udid: (str) UDID of the simulator to disable hw keyboard for.
+  """
+
+  path = os.path.expanduser(
+      '~/Library/Preferences/com.apple.iphonesimulator.plist')
+
+  try:
+    if not os.path.exists(path):
+      subprocess.check_call(['plutil', '-create', 'binary1', path])
+
+    plist, error = mac_util.plist_as_dict(path)
+    if error:
+      raise error
+
+    if 'DevicePreferences' not in plist:
+      subprocess.check_call(
+          ['plutil', '-insert', 'DevicePreferences', '-dictionary', path])
+      plist['DevicePreferences'] = {}
+
+    if 'DevicePreferences' in plist and udid not in plist['DevicePreferences']:
+      subprocess.check_call([
+          'plutil', '-insert', 'DevicePreferences.{}'.format(udid),
+          '-dictionary', path
+      ])
+      plist['DevicePreferences'][udid] = {}
+
+    subprocess.check_call([
+        'plutil', '-replace',
+        'DevicePreferences.{}.ConnectHardwareKeyboard'.format(udid), '-bool',
+        'NO', path
+    ])
+
+  except subprocess.CalledProcessError as e:
+    message = 'Unable to disable hardware keyboard. Error: %s' % e.stderr
+    LOGGER.error(message)
+  except json.JSONDecodeError as e:
+    message = 'Unable to disable hardware keyboard. Error: %s' % e.msg
+    LOGGER.error(message)

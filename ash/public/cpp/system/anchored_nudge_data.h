@@ -21,7 +21,7 @@ class View;
 namespace ash {
 
 // Describes the contents of an AnchoredNudge, which is a notifier that anchors
-// to an `anchor` view and informs users about something that might enhance
+// to an `anchor_view` and informs users about something that might enhance
 // their experience immediately. See the "Educational Nudges" section in
 // go/notifier-framework for example usages.
 struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
@@ -29,7 +29,7 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
       const std::string& id,
       AnchoredNudgeCatalogName catalog_name,
       const std::u16string& text,
-      views::View* anchor,
+      views::View* anchor_view,
       bool has_dismiss_button = false,
       const std::u16string& custom_dismiss_text = std::u16string(),
       base::RepeatingClosure dismiss_callback = base::RepeatingClosure(),
@@ -44,7 +44,7 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
 
   // Unowned. Must outlive the `AnchoredNudge` created with this by observing
   // its `OnViewIsDeleting()` in `AnchoredNudgeManagerImpl`.
-  raw_ptr<views::View> anchor;
+  raw_ptr<views::View> anchor_view;
 
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::BOTTOM_CENTER;
 

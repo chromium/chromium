@@ -172,7 +172,7 @@ class CertificateProvisioningUiHandlerTest : public ::testing::Test {
 
   // Use in ASSERT_NO_FATAL_FAILURE.
   void ExtractCertProvisioningProcesses(
-      std::vector<base::Value>& args,
+      base::Value::List& args,
       base::Value* out_all_processes,
       std::vector<std::string>* out_profile_ids) {
     ASSERT_EQ(1U, args.size());

@@ -31,7 +31,25 @@ void RecoveryFactorEditor::Configure(
     const std::string& auth_token,
     bool enabled,
     base::OnceCallback<void(mojom::ConfigureResult)> callback) {
-  DCHECK(features::IsCryptohomeRecoveryEnabled());
+  CHECK(features::IsCryptohomeRecoveryEnabled());
+
+  auth_factor_config_->IsEditable(
+      auth_token, mojom::AuthFactor::kRecovery,
+      base::BindOnce(&RecoveryFactorEditor::OnGetEditable,
+                     weak_factory_.GetWeakPtr(), auth_token, enabled,
+                     std::move(callback)));
+}
+
+void RecoveryFactorEditor::OnGetEditable(
+    const std::string& auth_token,
+    bool should_enable,
+    base::OnceCallback<void(mojom::ConfigureResult)> callback,
+    bool is_editable) {
+  if (!is_editable) {
+    LOG(ERROR) << "Recovery configuration not editable";
+    std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
+    return;
+  }
 
   const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
   auto* user_context_ptr =
@@ -46,7 +64,7 @@ void RecoveryFactorEditor::Configure(
       user_context_ptr->GetAuthFactorsConfiguration().HasConfiguredFactor(
           cryptohome::AuthFactorType::kRecovery);
 
-  if (enabled == currently_enabled) {
+  if (should_enable == currently_enabled) {
     std::move(callback).Run(mojom::ConfigureResult::kSuccess);
     return;
   }
@@ -57,7 +75,7 @@ void RecoveryFactorEditor::Configure(
       base::BindOnce(&RecoveryFactorEditor::OnRecoveryFactorConfigured,
                      weak_factory_.GetWeakPtr(), std::move(callback));
 
-  if (enabled) {
+  if (should_enable) {
     auth_factor_editor_.AddRecoveryFactor(std::move(user_context),
                                           std::move(on_configured_callback));
   } else {
@@ -102,27 +120,6 @@ void RecoveryFactorEditor::OnGetAuthFactorsConfiguration(
   }
 
   const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
-
-  PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
-  const PrefService::Preference* recovery_pref =
-      prefs->FindPreference(prefs::kRecoveryFactorBehavior);
-  const base::Value is_configured_value{
-      context->GetAuthFactorsConfiguration().HasConfiguredFactor(
-          cryptohome::AuthFactorType::kRecovery)};
-  // In case the recovery pref value is recommended to be what we would set it
-  // to, we do not set it. This means that we do not consider the user to have
-  // overridden it in this case.
-  // This way, RecoveryFactorEditor can also be used from places where the user
-  // has not explicitly opted in, e.g. during OOBE.
-  if (recovery_pref && recovery_pref->IsRecommended() &&
-      recovery_pref->GetValue() != nullptr) {
-    if (*recovery_pref->GetValue() != is_configured_value) {
-      prefs->Set(prefs::kRecoveryFactorBehavior, is_configured_value);
-    }
-  } else {
-    prefs->Set(prefs::kRecoveryFactorBehavior, is_configured_value);
-  }
-
   quick_unlock_storage_->SetUserContext(user, std::move(context));
 
   std::move(callback).Run(mojom::ConfigureResult::kSuccess);

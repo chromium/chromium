@@ -1079,11 +1079,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         startPriceTrackingMenuItem.setEnabled(editEnabled);
         stopPriceTrackingMenuItem.setEnabled(editEnabled);
 
-        if (info != null) {
+        if (info != null && info.productClusterId.isPresent()) {
             CommerceSubscription sub = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
                     IdentifierType.PRODUCT_CLUSTER_ID,
-                    UnsignedLongs.toString(info.productClusterId), ManagementType.USER_MANAGED,
-                    null);
+                    UnsignedLongs.toString(info.productClusterId.get()),
+                    ManagementType.USER_MANAGED, null);
             boolean isSubscribed = service.isSubscribedFromCache(sub);
             startPriceTrackingMenuItem.setVisible(!isSubscribed);
             stopPriceTrackingMenuItem.setVisible(isSubscribed);

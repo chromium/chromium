@@ -45,12 +45,6 @@ BASE_DECLARE_FEATURE(kIOSSharedHighlightingColorChange);
 // interaction state.
 BASE_DECLARE_FEATURE(kSynthesizedRestoreSession);
 
-// Enables user control for camera and/or microphone access for a specific site
-// through site settings during its lifespan. When enabled, each web state will
-// keep track of whether camera and/or microphone access is granted by the user
-// for its current site.
-BASE_DECLARE_FEATURE(kMediaPermissionsControl);
-
 // Enables the Fullscreen API in WebKit (supported on iOS 16.0+). This API
 // allows web sites to enter fullscreen mode, with all browser UI hidden.
 BASE_DECLARE_FEATURE(kEnableFullscreenAPI);
@@ -87,10 +81,6 @@ BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 
 // Feature flag to enable the session serialization optimizations.
 BASE_DECLARE_FEATURE(kEnableSessionSerializationOptimizations);
-
-// When true, user control for camera and/or microphone access should be
-// enabled.
-bool IsMediaPermissionsControlEnabled();
 
 // When true, the new loadSimulatedRequest API should be used when displaying
 // error pages.

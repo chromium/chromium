@@ -90,6 +90,8 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
   bool has_close_been_called_;
   bool is_closed_;
 
+  bool has_key_status_uma_reported_ = false;
+
   THREAD_CHECKER(thread_checker_);
 
   // Since promises will live until they are fired, use a weak reference when

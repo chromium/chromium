@@ -234,6 +234,13 @@ Color Color::FromColorMix(Color::ColorSpace interpolation_space,
 
   result.alpha_ *= alpha_multiplier;
 
+  // Legacy colors that are the result of color-mix should serialize as
+  // color(srgb ... ).
+  // See: https://github.com/mozilla/wg-decisions/issues/1125
+  if (result.IsLegacyColor()) {
+    result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+  }
+
   return result;
 }
 
@@ -344,8 +351,8 @@ Color Color::InterpolateColors(
     Color color1,
     Color color2,
     float percentage) {
-  // TODO(juanmihd): Add unit tests that cover "none" values for hue, hsl and
-  // hwb colorspaces.
+  // TODO(crbug.com/1445171): Add unit tests that cover "none" values for hue,
+  // hsl and hwb colorspaces.
   DCHECK(percentage >= 0.0f && percentage <= 1.0f);
 
   const auto color1_prev_color_space = color1.GetColorSpace();
@@ -557,6 +564,12 @@ void Color::ConvertToColorSpace(Color::ColorSpace destination_color_space) {
       std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
       param2_ = AngleToUnitCircleDegrees(param2_);
       color_space_ = ColorSpace::kLch;
+
+      // Hue component is powerless for fully transparent colors.
+      if (IsFullyTransparent()) {
+        param2_is_none_ = true;
+      }
+
       return;
     }
     case ColorSpace::kOklch: {
@@ -581,6 +594,12 @@ void Color::ConvertToColorSpace(Color::ColorSpace destination_color_space) {
       std::tie(param0_, param1_, param2_) = gfx::LabToLch(l, a, b);
       param2_ = AngleToUnitCircleDegrees(param2_);
       color_space_ = ColorSpace::kOklch;
+
+      // Hue component is powerless for fully transparent colors.
+      if (IsFullyTransparent()) {
+        param2_is_none_ = true;
+      }
+
       return;
     }
     case ColorSpace::kSRGB:
@@ -599,6 +618,12 @@ void Color::ConvertToColorSpace(Color::ColorSpace destination_color_space) {
       std::tie(param0_, param1_, param2_) =
           gfx::SRGBToHSL(sRGB_color.fR, sRGB_color.fG, sRGB_color.fB);
       color_space_ = ColorSpace::kHSL;
+
+      // Hue component is powerless for fully transparent colors.
+      if (IsFullyTransparent()) {
+        param0_is_none_ = true;
+      }
+
       return;
     }
     case ColorSpace::kHWB: {
@@ -606,6 +631,12 @@ void Color::ConvertToColorSpace(Color::ColorSpace destination_color_space) {
       std::tie(param0_, param1_, param2_) =
           gfx::SRGBToHWB(sRGB_color.fR, sRGB_color.fG, sRGB_color.fB);
       color_space_ = ColorSpace::kHWB;
+
+      // Hue component is powerless for fully transparent colors.
+      if (IsFullyTransparent()) {
+        param0_is_none_ = true;
+      }
+
       return;
     }
     // We do not yet interpolate in these spaces.

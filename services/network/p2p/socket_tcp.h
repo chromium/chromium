@@ -59,6 +59,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
   // mojom::P2PSocket implementation:
   void Send(base::span<const uint8_t> data,
             const P2PPacketInfo& packet_info) override;
+  void SendBatch(std::vector<mojom::P2PSendPacketPtr> packet_batch) override;
   void SetOption(P2PSocketOption option, int32_t value) override;
 
  protected:

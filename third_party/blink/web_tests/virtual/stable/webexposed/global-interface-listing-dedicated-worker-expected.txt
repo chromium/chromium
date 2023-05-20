@@ -597,6 +597,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method values
 [Worker] interface GPU
 [Worker]     attribute @@toStringTag
+[Worker]     getter wgslLanguageFeatures
 [Worker]     method constructor
 [Worker]     method getPreferredCanvasFormat
 [Worker]     method requestAdapter
@@ -2039,6 +2040,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method close
 [Worker]     method constructor
 [Worker]     method copyTo
+[Worker] interface WGSLLanguageFeatures
+[Worker]     attribute @@toStringTag
+[Worker]     getter size
+[Worker]     method @@iterator
+[Worker]     method constructor
+[Worker]     method entries
+[Worker]     method forEach
+[Worker]     method has
+[Worker]     method keys
+[Worker]     method values
 [Worker] interface WebGL2RenderingContext
 [Worker]     attribute @@toStringTag
 [Worker]     attribute ACTIVE_ATTRIBUTES

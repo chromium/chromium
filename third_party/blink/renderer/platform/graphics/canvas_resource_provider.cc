@@ -183,8 +183,8 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap {
  private:
   scoped_refptr<CanvasResource> CreateResource() final {
     SkImageInfo info = GetSkImageInfo();
-    if (!IsBitmapFormatSupported(
-            viz::SkColorTypeToResourceFormat(info.colorType()))) {
+    if (!viz::SkColorTypeToSinglePlaneSharedImageFormat(info.colorType())
+             .IsBitmapFormatSupported()) {
       // If the rendering format is not supported, downgrade to 8-bits.
       // TODO(junov): Should we try 12-12-12-12 and 10-10-10-2?
       info = info.makeColorType(kN32_SkColorType);

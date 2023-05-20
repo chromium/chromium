@@ -19,6 +19,10 @@ namespace ash {
 class ASH_EXPORT HoldingSpaceTourController
     : public UserEducationFeatureController {
  public:
+  // Names for layers so they are easy to distinguish in debugging/testing.
+  static constexpr char kHighlightLayerName[] =
+      "HoldingSpaceTourController::Highlight";
+
   HoldingSpaceTourController();
   HoldingSpaceTourController(const HoldingSpaceTourController&) = delete;
   HoldingSpaceTourController& operator=(const HoldingSpaceTourController&) =

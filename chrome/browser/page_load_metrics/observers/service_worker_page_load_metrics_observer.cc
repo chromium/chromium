@@ -501,7 +501,9 @@ void ServiceWorkerPageLoadMetricsObserver::RecordSubresourceLoad() {
         .SetManifestHandled(sw_metrics.manifest_handled)
         .SetManifestFallback(sw_metrics.manifest_fallback)
         .SetSpeculationRulesHandled(sw_metrics.speculation_rules_handled)
-        .SetSpeculationRulesFallback(sw_metrics.speculation_rules_fallback);
+        .SetSpeculationRulesFallback(sw_metrics.speculation_rules_fallback)
+        .SetDictionaryHandled(sw_metrics.dictionary_handled)
+        .SetDictionaryFallback(sw_metrics.dictionary_fallback);
   }
   builder.Record(ukm::UkmRecorder::Get());
 }

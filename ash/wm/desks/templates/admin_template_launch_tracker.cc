@@ -358,9 +358,7 @@ void AdminTemplateLaunchTracker::LaunchTemplate(SavedDeskDelegate* delegate,
 
   // Set apps to launch on the current desk.
   auto* desks_controller = DesksController::Get();
-  const int desk_index =
-      desks_controller->GetDeskIndex(desks_controller->active_desk());
-  admin_template->SetDeskIndex(desk_index);
+  admin_template->SetDeskUuid(desks_controller->active_desk()->uuid());
 
   UpdateAdminTemplateActivationIndices(*admin_template);
 

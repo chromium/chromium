@@ -214,6 +214,7 @@ void XRFrameTransport::OnSubmitFrameTransferred(bool success) {
 }
 
 void XRFrameTransport::WaitForPreviousTransfer() {
+  DVLOG(3) << __func__ << " Start";
   TRACE_EVENT0("gpu", "waitForPreviousTransferToFinish");
   while (waiting_for_previous_frame_transfer_) {
     if (!submit_frame_client_receiver_.WaitForIncomingCall()) {
@@ -221,6 +222,7 @@ void XRFrameTransport::WaitForPreviousTransfer() {
       break;
     }
   }
+  DVLOG(3) << __func__ << " Stop";
 }
 
 void XRFrameTransport::OnSubmitFrameRendered() {
@@ -229,6 +231,7 @@ void XRFrameTransport::OnSubmitFrameRendered() {
 }
 
 base::TimeDelta XRFrameTransport::WaitForPreviousRenderToFinish() {
+  DVLOG(3) << __func__ << " Start";
   TRACE_EVENT0("gpu", "waitForPreviousRenderToFinish");
   base::TimeTicks start = base::TimeTicks::Now();
   while (waiting_for_previous_frame_render_) {
@@ -237,6 +240,7 @@ base::TimeDelta XRFrameTransport::WaitForPreviousRenderToFinish() {
       break;
     }
   }
+  DVLOG(3) << __func__ << " Stop";
   return base::TimeTicks::Now() - start;
 }
 
@@ -247,6 +251,7 @@ void XRFrameTransport::OnSubmitFrameGpuFence(gfx::GpuFenceHandle handle) {
 }
 
 base::TimeDelta XRFrameTransport::WaitForGpuFenceReceived() {
+  DVLOG(3) << __func__ << " Start";
   TRACE_EVENT0("gpu", "WaitForGpuFenceReceived");
   base::TimeTicks start = base::TimeTicks::Now();
   while (waiting_for_previous_frame_fence_) {
@@ -255,6 +260,7 @@ base::TimeDelta XRFrameTransport::WaitForGpuFenceReceived() {
       break;
     }
   }
+  DVLOG(3) << __func__ << " Stop";
   return base::TimeTicks::Now() - start;
 }
 

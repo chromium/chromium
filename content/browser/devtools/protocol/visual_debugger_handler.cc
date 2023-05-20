@@ -35,16 +35,14 @@ void VisualDebuggerHandler::Wire(UberDispatcher* dispatcher) {
 
 DispatchResponse VisualDebuggerHandler::FilterStream(
     std::unique_ptr<base::Value::Dict> in_filter) {
-  base::Value dict(std::move(*in_filter));
-
   GpuProcessHost::CallOnIO(
       FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
       /*force_create=*/false,
       base::BindOnce(
-          [](base::Value json, GpuProcessHost* host) {
+          [](base::Value::Dict json, GpuProcessHost* host) {
             host->gpu_host()->FilterVisualDebugStream(std::move(json));
           },
-          std::move(dict)));
+          std::move(*in_filter)));
 
   return DispatchResponse::Success();
 }

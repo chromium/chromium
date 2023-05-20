@@ -538,13 +538,15 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // of CSP, use a javascript: URL which does go through the CSP checks.
   content::RenderFrameHost* error_host =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
-  std::string location;
-  EXPECT_EQ(
-      EvalJs(
-          error_host,
-          "location='javascript:domAutomationController.send(location.href)';",
-          content::EXECUTE_SCRIPT_USE_MANUAL_REPLY),
-      content::kUnreachableWebDataURL);
+  EXPECT_EQ(EvalJs(error_host,
+                   R"(
+                    var resolve;
+                    new Promise((res) => {
+                      resolve = res;
+                      location = 'javascript:resolve(location.href)';
+                    });
+        )"),
+            content::kUnreachableWebDataURL);
 
   // The error page should have a unique origin.
   EXPECT_EQ("null", EvalJs(error_host, "self.origin;"));

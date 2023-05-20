@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CupsPrintersBrowserProxyImpl, PrinterStatusReason, PrinterStatusSeverity, PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CupsPrintersBrowserProxyImpl, PrinterStatusReason, PrinterStatusSeverity, PrinterType} from 'chrome://os-settings/lazy_load.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
@@ -676,27 +676,27 @@ suite('CupsSavedPrintersTests', function() {
     assertTrue(!!savedPrintersElement);
 
     // For each of the 3 saved printers verify it gets the correct printer
-    // status reason based on the printer status previously set.
+    // icon based on the printer status previously set.
     const printerListEntries = getPrinterEntries(savedPrintersElement);
     assertEquals(3, printerListEntries.length);
     for (const entry of printerListEntries) {
-      let expectedPrinterStatusReason;
-      const printerInfo = entry.printerEntry.printerInfo;
-      switch (printerInfo.printerId) {
+      let expectedPrinterIcon;
+      switch (entry.printerEntry.printerInfo.printerId) {
         case 'id1':
-          expectedPrinterStatusReason = PrinterStatusReason.NO_ERROR;
+          expectedPrinterIcon = 'os-settings:printer-status-green';
           break;
         case 'id2':
-          expectedPrinterStatusReason = PrinterStatusReason.PRINTER_UNREACHABLE;
+          expectedPrinterIcon = 'os-settings:printer-status-red';
           break;
         case 'id3':
-          expectedPrinterStatusReason = PrinterStatusReason.UNKNOWN_REASON;
+          expectedPrinterIcon = 'os-settings:printer-status-grey';
           break;
         default:
           assertNotReached();
       }
       assertEquals(
-          expectedPrinterStatusReason, printerInfo.printerStatusReason);
+          expectedPrinterIcon,
+          entry.shadowRoot.querySelector('#printerStatusIcon').icon);
     }
   });
 

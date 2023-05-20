@@ -65,6 +65,12 @@ std::u16string FormatNumber(int64_t number) {
 }
 
 std::u16string FormatDouble(double number, int fractional_digits) {
+  return FormatDouble(number, fractional_digits, fractional_digits);
+}
+
+std::u16string FormatDouble(double number,
+                            int min_fractional_digits,
+                            int max_fractional_digits) {
   icu::NumberFormat* number_format =
       g_number_format_float.Get().number_format.get();
 
@@ -72,8 +78,8 @@ std::u16string FormatDouble(double number, int fractional_digits) {
     // As a fallback, just return the raw number in a string.
     return ASCIIToUTF16(StringPrintf("%f", number));
   }
-  number_format->setMaximumFractionDigits(fractional_digits);
-  number_format->setMinimumFractionDigits(fractional_digits);
+  number_format->setMaximumFractionDigits(max_fractional_digits);
+  number_format->setMinimumFractionDigits(min_fractional_digits);
   icu::UnicodeString ustr;
   number_format->format(number, ustr);
 

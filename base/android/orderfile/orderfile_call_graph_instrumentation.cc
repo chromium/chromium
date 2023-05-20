@@ -240,26 +240,26 @@ NO_INSTRUMENT_FUNCTION bool DumpToFile(const base::FilePath& path) {
 
   // This can get very large as it  constructs the whole data structure in
   // memory before dumping it to the file.
-  Value root(Value::Type::DICT);
   uint32_t total_calls_count = g_calls_count.load(std::memory_order_relaxed);
-  root.SetStringKey("total_calls_count",
-                    base::StringPrintf("%" PRIu32, total_calls_count));
-  Value call_graph(Value::Type::LIST);
+  auto root = base::Value::Dict().Set(
+      "total_calls_count", base::StringPrintf("%" PRIu32, total_calls_count));
+  auto call_graph = base::Value::List();
   for (size_t i = 0; i < kMaxElements; i++) {
     auto caller_index =
         callee_map[i].load(std::memory_order_relaxed) * kTotalBuckets;
-    if (!caller_index)
+    if (!caller_index) {
       // This callee was never called.
       continue;
+    }
 
-    Value callee_element(Value::Type::DICT);
     uint32_t callee_offset = i * 4;
-    callee_element.SetStringKey("index",
-                                base::StringPrintf("%" PRIuS, caller_index));
-    callee_element.SetStringKey("callee_offset",
-                                base::StringPrintf("%" PRIu32, callee_offset));
+    auto callee_element =
+        base::Value::Dict()
+            .Set("index", base::StringPrintf("%" PRIuS, caller_index))
+            .Set("callee_offset",
+                 base::StringPrintf("%" PRIu32, callee_offset));
     std::string offset_str;
-    Value callers_list(Value::Type::LIST);
+    auto callers_list = base::Value::List();
     for (size_t j = 0; j < kTotalBuckets; j++) {
       uint32_t caller_offset =
           g_caller_offset[caller_index + j].load(std::memory_order_relaxed);
@@ -274,21 +274,23 @@ NO_INSTRUMENT_FUNCTION bool DumpToFile(const base::FilePath& path) {
       // The count can only be 0 for the misses bucket. Otherwise,
       // if |caller_offset| is set then the count must be >= 1.
       CHECK_EQ(count || j == kMissesBucketIndex, true);
-      if (!count)
+      if (!count) {
         // No misses.
         continue;
+      }
 
-      Value caller_count(Value::Type::DICT);
-      caller_count.SetStringKey("caller_offset",
-                                base::StringPrintf("%" PRIu32, caller_offset));
-      caller_count.SetStringKey("count", base::StringPrintf("%" PRIu32, count));
+      auto caller_count =
+          base::Value::Dict()
+              .Set("caller_offset",
+                   base::StringPrintf("%" PRIu32, caller_offset))
+              .Set("count", base::StringPrintf("%" PRIu32, count));
       callers_list.Append(std::move(caller_count));
     }
-    callee_element.SetKey("caller_and_count", std::move(callers_list));
+    callee_element.Set("caller_and_count", std::move(callers_list));
     call_graph.Append(std::move(callee_element));
   }
 
-  root.SetKey("call_graph", std::move(call_graph));
+  root.Set("call_graph", std::move(call_graph));
   std::string output_js;
   if (!JSONWriter::Write(root, &output_js)) {
     LOG(FATAL) << "Error getting JSON string";

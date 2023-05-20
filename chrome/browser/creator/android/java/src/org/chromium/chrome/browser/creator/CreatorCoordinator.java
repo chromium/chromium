@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
-import org.chromium.chrome.browser.xsurface.SurfaceScope;
+import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -94,7 +94,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private View mProfileView;
     private ViewGroup mLayoutView;
     private HybridListRenderer mHybridListRenderer;
-    private SurfaceScope mSurfaceScope;
+    private FeedSurfaceScope mSurfaceScope;
     private FeedSurfaceScopeDependencyProviderImpl mDependencyProvider;
     private PropertyModel mCreatorModel;
     private PropertyModelChangeProcessor<PropertyModel, CreatorProfileView, PropertyKey>
@@ -298,7 +298,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         if (processScope != null) {
             mDependencyProvider = new FeedSurfaceScopeDependencyProviderImpl(
                     mActivity, mActivity, ColorUtils.inNightMode(mActivity));
-            mSurfaceScope = processScope.obtainSurfaceScope(mDependencyProvider);
+            mSurfaceScope = processScope.obtainFeedSurfaceScope(mDependencyProvider);
         } else {
             mDependencyProvider = null;
             mSurfaceScope = null;
@@ -579,6 +579,14 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                         getContentPreviewsPaddingPx(), CREATOR_PRIVACY_ID, privacyView));
                 mContentManager.addContents(mHeaderCount, privacyList);
                 mHeaderCount += privacyList.size();
+                mStream.removeOnContentChangedListener(this);
+                mStream.notifyNewHeaderCount(mHeaderCount);
+            } else if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))
+                    || TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))) {
+                // If there is an error, hide the profile section if either the creator URL or
+                // creator title is unavailable.
+                mContentManager.removeContents(0, 1);
+                mHeaderCount -= 1;
                 mStream.removeOnContentChangedListener(this);
                 mStream.notifyNewHeaderCount(mHeaderCount);
             }

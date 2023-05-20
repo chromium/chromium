@@ -115,9 +115,6 @@ bool TestBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
   return false;
 }
 
-void TestBookmarkClient::RecordAction(const base::UserMetricsAction& action) {
-}
-
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
   return base::BindOnce(&TestBookmarkClient::LoadManagedNode,
                         std::move(managed_node_));
@@ -152,6 +149,12 @@ TestBookmarkClient::GetFaviconImageForPageURL(
   requests_per_page_url_[page_url].push_back(std::move(callback));
   return next_task_id_++;
 }
+
+void TestBookmarkClient::OnBookmarkNodeRemovedUndoable(
+    BookmarkModel* model,
+    const BookmarkNode* parent,
+    size_t index,
+    std::unique_ptr<BookmarkNode> node) {}
 
 // static
 std::unique_ptr<BookmarkPermanentNode> TestBookmarkClient::LoadManagedNode(

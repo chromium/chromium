@@ -65,8 +65,10 @@
 <translation id="4118525110028899586">Паузирај го снимањето</translation>
 <translation id="4121305183798804752">Откриен е документ</translation>
 <translation id="414641094616694804">Камерава не може да ја промени резолуцијата</translation>
+<translation id="4176463684765177261">Оневозможено</translation>
 <translation id="4269820728363426813">Копирај ја адресата на линкот</translation>
 <translation id="428234092390943511">Сликичка на страница</translation>
+<translation id="4349714250734879769">Скалирање рамки од Chrome</translation>
 <translation id="4383571725254449280">Евиденција за изведба на печатењето</translation>
 <translation id="4445542136948522167">Сопри го фотографирањето</translation>
 <translation id="4570032796877367747">Предна камера</translation>
@@ -148,6 +150,7 @@
 <translation id="8145038249676204903">Префрли на фотографирање</translation>
 <translation id="8167081290930651932">Зачувај како фотографија</translation>
 <translation id="8239780215768881278">Создајте слика од видеото</translation>
+<translation id="8346544573713510785">Скалирање рамки од Camera HAL</translation>
 <translation id="8425673304802773841">Навалете надолу</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8629662593426079630">360p</translation>

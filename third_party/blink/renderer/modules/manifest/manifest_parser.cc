@@ -233,6 +233,8 @@ bool ManifestParser::Parse() {
     manifest_->tab_strip = ParseTabStrip(root_object.get());
   }
 
+  manifest_->version = ParseVersion(root_object.get());
+
   ManifestUmaUtil::ParseSucceeded(manifest_);
 
   return has_comments;
@@ -452,12 +454,11 @@ String ManifestParser::ParseDescription(const JSONObject* object) {
   return description.has_value() ? *description : String();
 }
 
-String ManifestParser::ParseId(const JSONObject* object,
-                               const KURL& start_url) {
+KURL ManifestParser::ParseId(const JSONObject* object, const KURL& start_url) {
   if (!start_url.IsValid()) {
     ManifestUmaUtil::ParseIdResult(
         ManifestUmaUtil::ParseIdResultType::kInvalidStartUrl);
-    return String();
+    return KURL();
   }
   KURL start_url_origin = KURL(SecurityOrigin::Create(start_url)->ToString());
 
@@ -474,9 +475,7 @@ String ManifestParser::ParseId(const JSONObject* object,
     id = start_url;
   }
   id.RemoveFragmentIdentifier();
-  // TODO(https://crbug.com/1231765): rename the field to relative_id to reflect
-  // the actual value.
-  return id.GetString().Substring(id.PathStart() + 1);
+  return id;
 }
 
 KURL ManifestParser::ParseStartURL(const JSONObject* object) {
@@ -2212,6 +2211,10 @@ Vector<UrlPattern> ManifestParser::ParseScopePatterns(
   }
 
   return result;
+}
+
+String ManifestParser::ParseVersion(const JSONObject* object) {
+  return ParseString(object, "version", Trim(false)).value_or(String());
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,

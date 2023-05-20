@@ -4,7 +4,8 @@
 
 package org.chromium.net;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -78,7 +79,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest = requestBuilder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         cronetEngine.shutdown();
         FileInputStream newVersionFile = null;
         // Make sure that version file is in readOnlyStoragePath.
@@ -87,7 +88,7 @@ public class DiskStorageTest {
             newVersionFile = new FileInputStream(versionFile);
             byte[] buffer = new byte[] {0, 0, 0, 0};
             int bytesRead = newVersionFile.read(buffer, 0, 4);
-            assertEquals(4, bytesRead);
+            assertThat(bytesRead).isEqualTo(4);
             assertTrue(Arrays.equals(new byte[] {1, 0, 0, 0}, buffer));
         } finally {
             if (newVersionFile != null) {
@@ -141,14 +142,14 @@ public class DiskStorageTest {
         UrlRequest urlRequest = requestBuilder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         cronetEngine.shutdown();
         FileInputStream newVersionFile = null;
         try {
             newVersionFile = new FileInputStream(versionFile);
             byte[] buffer = new byte[] {0, 0, 0, 0};
             int bytesRead = newVersionFile.read(buffer, 0, 4);
-            assertEquals(4, bytesRead);
+            assertThat(bytesRead).isEqualTo(4);
             assertTrue(Arrays.equals(new byte[] {1, 0, 0, 0}, buffer));
         } finally {
             if (newVersionFile != null) {
@@ -182,7 +183,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest = requestBuilder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         cronetEngine.shutdown();
 
         // Create a dummy file in storage directory.
@@ -208,7 +209,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest2 = requestBuilder2.build();
         urlRequest2.start();
         callback2.blockForDone();
-        assertEquals(200, callback2.mResponseInfo.getHttpStatusCode());
+        assertThat(callback2.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         engine.shutdown();
         // Dummy file still exists.
         BufferedReader reader = new BufferedReader(new FileReader(dummyFile));
@@ -218,7 +219,7 @@ public class DiskStorageTest {
             stringBuilder.append(line);
         }
         reader.close();
-        assertEquals(dummyContent, stringBuilder.toString());
+        assertThat(stringBuilder.toString()).isEqualTo(dummyContent);
         File diskCacheDir = new File(testStorage + "/disk_cache");
         assertTrue(diskCacheDir.exists());
         File prefsDir = new File(testStorage + "/prefs");
@@ -248,7 +249,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest = requestBuilder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         cronetEngine.shutdown();
 
         String testStorage = getTestStorage(getContext());
@@ -277,7 +278,7 @@ public class DiskStorageTest {
         UrlRequest urlRequest = requestBuilder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         cronetEngine.shutdown();
 
         File diskCacheDir = new File(testStorage + "/disk_cache");

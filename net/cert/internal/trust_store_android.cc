@@ -34,7 +34,7 @@ class TrustStoreAndroid::Impl
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;
       }
-      trust_store_.AddTrustAnchor(parsed);
+      trust_store_.AddTrustAnchor(std::move(parsed));
     }
   }
 
@@ -65,7 +65,7 @@ class TrustStoreAndroid::Impl
 TrustStoreAndroid::TrustStoreAndroid() = default;
 
 TrustStoreAndroid::~TrustStoreAndroid() {
-  if (is_observing_certdb_changes) {
+  if (is_observing_certdb_changes_) {
     CertDatabase::GetInstance()->RemoveObserver(this);
   }
 }
@@ -74,12 +74,12 @@ void TrustStoreAndroid::Initialize() {
   MaybeInitializeAndGetImpl();
 }
 
-// This function is not thread safe. CertDB observation is added here to avoid
-// having to add a TaskEnvironment to every unit test that uses
-// TrustStoreAndroid.
+// This function is not thread safe. CertDatabase observation is added here
+// rather than in the constructor to avoid having to add a TaskEnvironment to
+// every unit test that uses TrustStoreAndroid.
 void TrustStoreAndroid::ObserveCertDBChanges() {
-  if (!is_observing_certdb_changes) {
-    is_observing_certdb_changes = true;
+  if (!is_observing_certdb_changes_) {
+    is_observing_certdb_changes_ = true;
     CertDatabase::GetInstance()->AddObserver(this);
   }
 }

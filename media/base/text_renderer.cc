@@ -172,12 +172,10 @@ void TextRenderer::BufferReady(DemuxerStream* stream,
       case kPaused:
       case kUninitialized:
       case kEnded:
-        NOTREACHED();
-        return;
+        NOTREACHED_NORETURN();
     }
 
-    NOTREACHED();
-    return;
+    NOTREACHED_NORETURN();
   }
 
   if (input->end_of_stream()) {
@@ -268,8 +266,7 @@ void TextRenderer::CueReady(
     case kPaused:
     case kUninitialized:
     case kEnded:
-      NOTREACHED();
-      return;
+      NOTREACHED_NORETURN();
   }
 
   base::TimeDelta start = text_cue->timestamp();

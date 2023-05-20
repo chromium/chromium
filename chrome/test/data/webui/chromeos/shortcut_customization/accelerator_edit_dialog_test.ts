@@ -10,6 +10,8 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditDialogElement} from 'chrome://shortcut-customization/js/accelerator_edit_dialog.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {AcceleratorInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
@@ -21,15 +23,23 @@ import {createUserAcceleratorInfo} from './shortcut_customization_test_util.js';
 suite('acceleratorEditDialogTest', function() {
   let viewElement: AcceleratorEditDialogElement|null = null;
   let provider: FakeShortcutProvider;
+  let manager: AcceleratorLookupManager|null = null;
 
   setup(() => {
     provider = new FakeShortcutProvider();
     setShortcutProviderForTesting(provider);
+    // Set up manager.
+    manager = AcceleratorLookupManager.getInstance();
+    manager.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
     viewElement = document.createElement('accelerator-edit-dialog');
     document.body.appendChild(viewElement);
   });
 
   teardown(() => {
+    if (manager) {
+      manager.reset();
+    }
     viewElement!.remove();
     viewElement = null;
   });

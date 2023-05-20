@@ -63,20 +63,22 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
       "destination_site TEXT NOT NULL,"
       "context_origin TEXT NOT NULL,"
       "reporting_origin TEXT NOT NULL,"
+      "reporting_site TEXT NOT NULL,"
       "time INTEGER NOT NULL,"
       "source_expiry_or_attribution_time INTEGER NOT NULL)";
   if (!db->Execute(kRateLimitTableSql)) {
     return false;
   }
 
-  static_assert(static_cast<int>(Scope::kAttribution) == 1,
-                "update `scope=1` clause below");
+  static_assert(static_cast<int>(Scope::kSource) == 0,
+                "update `scope=0` clause below");
 
   // Optimizes calls to `SourceAllowedForDestinationLimit()`.
-  static constexpr char kRateLimitSourceSiteReportingOriginIndexSql[] =
-      "CREATE INDEX rate_limit_source_site_reporting_origin_idx "
-      "ON rate_limits(scope,source_site,reporting_origin)";
-  if (!db->Execute(kRateLimitSourceSiteReportingOriginIndexSql)) {
+  static constexpr char kRateLimitSourceSiteReportingSiteIndexSql[] =
+      "CREATE INDEX rate_limit_source_site_reporting_site_idx "
+      "ON rate_limits(source_site,reporting_site)"
+      "WHERE scope=0";
+  if (!db->Execute(kRateLimitSourceSiteReportingSiteIndexSql)) {
     return false;
   }
 
@@ -153,8 +155,8 @@ bool RateLimitTable::AddRateLimit(
   static constexpr char kStoreRateLimitSql[] =
       "INSERT INTO rate_limits"
       "(scope,source_id,source_site,destination_site,context_origin,"
-      "reporting_origin,time,source_expiry_or_attribution_time)"
-      "VALUES(?,?,?,?,?,?,?,?)";
+      "reporting_origin,reporting_site,time,source_expiry_or_attribution_time)"
+      "VALUES(?,?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
 
@@ -163,8 +165,10 @@ bool RateLimitTable::AddRateLimit(
   statement.BindString(2, common_info.source_site().Serialize());
   statement.BindString(4, context_origin.Serialize());
   statement.BindString(5, common_info.reporting_origin().Serialize());
-  statement.BindTime(6, source.source_time());
-  statement.BindTime(7, source_expiry_or_attribution_time);
+  statement.BindString(
+      6, net::SchemefulSite(common_info.reporting_origin()).Serialize());
+  statement.BindTime(7, source.source_time());
+  statement.BindTime(8, source_expiry_or_attribution_time);
 
   const base::flat_set<net::SchemefulSite>* destination_sites =
       &source.destination_sites().destinations();
@@ -213,7 +217,8 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
   statement.BindString(
       0, net::SchemefulSite(attribution_info.context_origin).Serialize());
   statement.BindString(1, common_info.source_site().Serialize());
-  statement.BindString(2, common_info.reporting_origin().Serialize());
+  statement.BindString(
+      2, net::SchemefulSite(common_info.reporting_origin()).Serialize());
   statement.BindTime(3, min_timestamp);
 
   if (!statement.Step()) {
@@ -253,10 +258,11 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
 
   const CommonSourceInfo& common_info = source.common_info();
   statement.BindString(0, common_info.source_site().Serialize());
-  statement.BindString(1, common_info.reporting_origin().Serialize());
+  statement.BindString(
+      1, net::SchemefulSite(common_info.reporting_origin()).Serialize());
   statement.BindTime(2, source_time);
 
-  const int limit = delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin();
+  const int limit = delegate_->GetMaxDestinationsPerSourceSiteReportingSite();
   DCHECK_GT(limit, 0);
 
   base::flat_set<net::SchemefulSite> destination_sites =

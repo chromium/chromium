@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "base/base64url.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -225,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
       "</script>";
 
   AutofillPageQueryRequest query;
-  query.set_client_version(GetProductNameAndVersionForUserAgent());
+  query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   auto* query_form = query.add_forms();
   query_form->set_signature(15916856893790176210U);
 
@@ -249,7 +251,8 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   AutofillUploadRequest request;
   AutofillUploadContents* upload = request.mutable_upload();
   upload->set_submission(true);
-  upload->set_client_version(GetProductNameAndVersionForUserAgent());
+  upload->set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload->set_form_signature(15916856893790176210U);
   upload->set_autofill_used(false);
 
@@ -319,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
       "</form>";
 
   AutofillPageQueryRequest query;
-  query.set_client_version(GetProductNameAndVersionForUserAgent());
+  query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   auto* query_form = query.add_forms();
   query_form->set_signature(8900697631820480876U);
 

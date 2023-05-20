@@ -498,8 +498,7 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
       current_sps_.profile_idc = H264SPS::kProfileIDCHigh;
       break;
     default:
-      NOTREACHED();
-      return;
+      NOTREACHED_NORETURN();
   }
 
   H264SPS::GetLevelConfigFromProfileLevel(profile_, level_,

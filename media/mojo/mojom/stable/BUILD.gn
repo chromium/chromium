@@ -57,7 +57,7 @@ mojom("stable_video_decoder") {
         },
         {
           mojom = "media.stable.mojom.ColorVolumeMetadata"
-          cpp = "::gfx::ColorVolumeMetadata"
+          cpp = "::gfx::HdrMetadataSmpteSt2086"
         },
         {
           mojom = "media.stable.mojom.DecoderBuffer"

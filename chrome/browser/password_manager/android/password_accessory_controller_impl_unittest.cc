@@ -47,8 +47,10 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "device/fido/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -85,6 +87,7 @@ using testing::StrictMock;
 using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 using IsExactMatch = autofill::UserInfo::IsExactMatch;
+using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 constexpr char kExampleSite[] = "https://example.com";
 constexpr char kExampleHttpSite[] = "http://example.com";
@@ -231,6 +234,10 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     mock_pwd_manager_client_ = std::make_unique<MockPasswordManagerClient>(
         CreateInternalPasswordStore());
     NavigateAndCommit(GURL(kExampleSite));
+  }
+
+  WebAuthnCredManDelegate* cred_man_delegate() {
+    return WebAuthnCredManDelegate::GetRequestDelegate(web_contents());
   }
 
   void CreateSheetController(
@@ -1003,6 +1010,62 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
 
   EXPECT_CALL(*mock_authenticator_.get(),
               Cancel(DeviceAuthRequester::kFallbackSheet));
+}
+
+TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
+  base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
+  CreateSheetController();
+  cred_man_delegate()->OnCredManConditionalRequestPending(
+      /*render_frame_host=*/nullptr, /*has_results=*/true,
+      base::RepeatingClosure());
+
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(true),
+                  autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY));
+
+  controller()->UpdateCredManReentryUi();
+}
+
+TEST_F(PasswordAccessoryControllerTest, HideCredManReentryWithoutResult) {
+  base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
+  CreateSheetController();
+  cred_man_delegate()->OnCredManConditionalRequestPending(
+      /*render_frame_host=*/nullptr, /*has_results=*/false,
+      base::RepeatingClosure());
+
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(false),
+                  autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY));
+
+  controller()->UpdateCredManReentryUi();
+}
+
+TEST_F(PasswordAccessoryControllerTest, SuppressCredManReentryWithoutFeature) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(device::kWebAuthnAndroidCredMan);
+  CreateSheetController();
+
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged)
+      .Times(0);
+
+  controller()->UpdateCredManReentryUi();
+}
+
+TEST_F(PasswordAccessoryControllerTest, OnCredManConditionalUiRequested) {
+  base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
+  CreateSheetController();
+  base::MockRepeatingClosure cred_man_callback;
+  cred_man_delegate()->OnCredManConditionalRequestPending(
+      /*render_frame_host=*/nullptr, /*has_results=*/true,
+      cred_man_callback.Get());
+
+  EXPECT_CALL(cred_man_callback, Run);
+
+  controller()->OnOptionSelected(
+      autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
 }
 
 class PasswordAccessoryControllerWithTestStoreTest

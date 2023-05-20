@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
+import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 
 android_library("aw_net_java_test_support") {
@@ -48,7 +49,7 @@ source_set("aw_java_test_native_support") {
   ]
 }
 
-shared_library("aw_net_java_test_native_support") {
+shared_library_with_jni("aw_net_java_test_native_support") {
   testonly = true
   deps = [
     ":aw_java_test_native_support",
@@ -56,6 +57,7 @@ shared_library("aw_net_java_test_native_support") {
   ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
+  java_targets = [ ":aw_net_test_support_apk" ]
 }
 
 android_apk("aw_net_test_support_apk") {
@@ -72,4 +74,5 @@ android_apk("aw_net_test_support_apk") {
   android_manifest = "java/AndroidManifest.xml"
   apk_name = "ChromiumNetTestAwSupport"
   shared_libraries = [ ":aw_net_java_test_native_support" ]
+  srcjar_deps = [ ":aw_net_java_test_native_support__jni_registration" ]
 }

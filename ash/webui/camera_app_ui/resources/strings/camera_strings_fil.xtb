@@ -65,8 +65,10 @@
 <translation id="4118525110028899586">I-pause ang pag-record</translation>
 <translation id="4121305183798804752">Na-detect ang dokumento</translation>
 <translation id="414641094616694804">Hindi puwedeng baguhin ng camera na ito ang resolution</translation>
+<translation id="4176463684765177261">Hindi pinapagana</translation>
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
 <translation id="428234092390943511">Thumbnail ng page</translation>
+<translation id="4349714250734879769">I-scale ang mga frame gamit ang Chrome</translation>
 <translation id="4383571725254449280">Mag-print ng mga log ng pagganap</translation>
 <translation id="4445542136948522167">Ihinto ang pagkuha ng larawan</translation>
 <translation id="4570032796877367747">Camera sa harap</translation>
@@ -148,6 +150,7 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8145038249676204903">Lumipat sa pagkuha ng larawan</translation>
 <translation id="8167081290930651932">I-save bilang Larawan</translation>
 <translation id="8239780215768881278">Kumuha ng video snapshot</translation>
+<translation id="8346544573713510785">I-scale ang mga frame gamit ang Camera HAL</translation>
 <translation id="8425673304802773841">I-tilt pababa</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8629662593426079630">360p</translation>

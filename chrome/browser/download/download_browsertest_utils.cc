@@ -288,7 +288,7 @@ DownloadItem* DownloadTestBase::CreateSlowTestDownload() {
 
   DownloadManager* manager = DownloadManagerForBrowser(browser());
 
-  EXPECT_EQ(0, manager->NonMaliciousInProgressCount());
+  EXPECT_EQ(0, manager->BlockingShutdownCount());
   EXPECT_EQ(0, manager->InProgressCount());
   if (manager->InProgressCount() != 0) {
     return nullptr;

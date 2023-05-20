@@ -22,7 +22,6 @@
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/safe_ref.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
@@ -1339,16 +1338,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     return mouse_lock_widget_;
   }
 
-  // Record a prerender activation for DevTools.
-  void set_last_navigation_was_prerender_activation_for_devtools() {
-    last_navigation_was_prerender_activation_for_devtools_ = true;
-  }
-
-  // Check if prerender was just activated.
-  bool last_navigation_was_prerender_activation_for_devtools() {
-    return last_navigation_was_prerender_activation_for_devtools_;
-  }
-
   ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() const;
 
  private:
@@ -1904,9 +1893,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // The view of the RVHD. Usually this is our WebContentsView implementation,
   // but if an embedder uses a different WebContentsView, they'll need to
   // provide this.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RenderViewHostDelegateView* render_view_host_delegate_view_;
+  raw_ptr<RenderViewHostDelegateView> render_view_host_delegate_view_;
 
   // Tracks CreatedWindow objects that have not been shown yet. They are
   // identified by the process ID and routing ID passed to CreateNewWindow.
@@ -2356,12 +2343,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       picture_in_picture_options_;
 
   VisibleTimeRequestTrigger visible_time_request_trigger_;
-
-  // Stores the information whether last navigation was prerender activation for
-  // DevTools. Set when a prerender activation completes, and cleared when
-  // either DevTools is opened and consults this value or when a non-prerendered
-  // navigation commits in the primary main frame.
-  bool last_navigation_was_prerender_activation_for_devtools_ = false;
 
   // Counts the number of open scopes that disallow custom cursors in this web
   // contents. Custom cursors are allowed if this is 0.

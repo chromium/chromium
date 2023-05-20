@@ -444,7 +444,6 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
       focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)),
       capture_toast_controller_(this) {
   CHECK(current_root_);
-  active_behavior->AttachToSession();
 }
 
 CaptureModeSession::~CaptureModeSession() = default;
@@ -544,6 +543,7 @@ void CaptureModeSession::Initialize() {
   }
 
   Shell::Get()->AddShellObserver(this);
+  active_behavior_->AttachToSession();
 }
 
 void CaptureModeSession::Shutdown() {
@@ -587,8 +587,9 @@ void CaptureModeSession::Shutdown() {
   if (!is_stopping_to_start_video_recording_) {
     // Kill the camera preview when the capture mode session ends without
     // starting any recording. Note that we need to kill the camera preview
-    // before aborting the projector session to avoid repareting the camera
-    // preview widget which will lead to crash.
+    // before aborting the client initiated capture mode session that requires
+    // the camera to avoid repareting the camera preview widget which will lead
+    // to crash.
     if (!controller_->is_recording_in_progress()) {
       controller_->camera_controller()->SetShouldShowPreview(false);
     }
@@ -617,6 +618,13 @@ void CaptureModeSession::Shutdown() {
 aura::Window* CaptureModeSession::GetSelectedWindow() const {
   return capture_window_observer_ ? capture_window_observer_->window()
                                   : nullptr;
+}
+
+void CaptureModeSession::SetPreSelectedWindow(
+    aura::Window* pre_selected_window) {
+  CHECK(capture_window_observer_);
+  capture_window_observer_->SetSelectedWindow(pre_selected_window,
+                                              /*allow_window_change=*/false);
 }
 
 void CaptureModeSession::A11yAlertCaptureSource(bool trigger_now) {
@@ -1507,6 +1515,13 @@ void CaptureModeSession::OnCameraPreviewDestroyed() {
       CaptureToastType::kCameraPreview);
 }
 
+void CaptureModeSession::MaybeDismissUserNudgeForever() {
+  if (user_nudge_controller_) {
+    user_nudge_controller_->set_should_dismiss_nudge_forever(true);
+  }
+  user_nudge_controller_.reset();
+}
+
 std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
   std::vector<views::Widget*> result;
   DCHECK(capture_mode_bar_widget_);
@@ -1610,14 +1625,7 @@ void CaptureModeSession::MaybeCreateUserNudge() {
   user_nudge_controller_->SetVisible(true);
 }
 
-void CaptureModeSession::MaybeDismissUserNudgeForever() {
-  if (user_nudge_controller_)
-    user_nudge_controller_->set_should_dismiss_nudge_forever(true);
-  user_nudge_controller_.reset();
-}
-
 void CaptureModeSession::DoPerformCapture() {
-  MaybeDismissUserNudgeForever();
   controller_->PerformCapture();  // `this` can be deleted after this.
 }
 
@@ -1956,7 +1964,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       case ui::ET_TOUCH_MOVED: {
         if (is_capture_window) {
           capture_window_observer_->UpdateSelectedWindowAtPosition(
-              screen_location, {});
+              screen_location);
         }
         break;
       }

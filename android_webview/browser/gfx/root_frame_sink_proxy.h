@@ -32,6 +32,8 @@ class RootFrameSinkProxyClient {
 // Per-AwContents object. Straddles UI and Viz thread. Public methods should be
 // called on the UI thread unless otherwise specified. Mostly used for creating
 // RootFrameSink and routing calls to it.
+//
+// Lifetime: WebView
 class RootFrameSinkProxy : public viz::BeginFrameObserverBase {
  public:
   RootFrameSinkProxy(

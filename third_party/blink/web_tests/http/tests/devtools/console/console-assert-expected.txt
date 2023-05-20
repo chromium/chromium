@@ -1,13 +1,13 @@
 Tests that console.assert() will dump a message and stack trace with source URLs and line numbers.
 
-console-assert.js:14 Assertion failed: 1
-b @ console-assert.js:14
-a @ console-assert.js:20
+console-assert.js:17 Assertion failed: 1
+b @ console-assert.js:17
+a @ console-assert.js:23
 setTimeout (async)
-(anonymous) @ console-assert.js:37
-console-assert.js:15 Assertion failed: a b
-b @ console-assert.js:15
-a @ console-assert.js:20
+(anonymous) @ console-assert.js:40
+console-assert.js:18 Assertion failed: a b
+b @ console-assert.js:18
+a @ console-assert.js:23
 setTimeout (async)
-(anonymous) @ console-assert.js:37
+(anonymous) @ console-assert.js:40
 

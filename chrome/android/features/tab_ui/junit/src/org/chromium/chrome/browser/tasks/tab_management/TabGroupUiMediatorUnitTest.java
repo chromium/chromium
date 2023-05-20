@@ -779,7 +779,7 @@ public class TabGroupUiMediatorUnitTest {
         assertThat(mTabGroupUiMediator.getIsShowingOverViewModeForTesting(), equalTo(false));
 
         // Simulate the overview mode is showing, which hides the strip.
-        mLayoutStateObserverCaptor.getValue().onStartedShowing(layoutType, true);
+        mLayoutStateObserverCaptor.getValue().onStartedShowing(layoutType);
         assertThat(mTabGroupUiMediator.getIsShowingOverViewModeForTesting(), equalTo(true));
         mVisibilityControllerInOrder.verify(mVisibilityController).setBottomControlsVisible(false);
 
@@ -807,7 +807,7 @@ public class TabGroupUiMediatorUnitTest {
     private void overViewStartedShowingImpl(@LayoutType int layoutType) {
         initAndAssertProperties(mTab1);
 
-        mLayoutStateObserverCaptor.getValue().onStartedShowing(layoutType, true);
+        mLayoutStateObserverCaptor.getValue().onStartedShowing(layoutType);
 
         verifyResetStrip(false, null);
     }

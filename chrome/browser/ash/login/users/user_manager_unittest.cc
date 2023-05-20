@@ -52,17 +52,19 @@ namespace ash {
 
 namespace {
 
+const AccountId kOwnerAccountId =
+    AccountId::FromUserEmailGaiaId("owner@example.com", "1234567890");
+const AccountId kAccountId0 =
+    AccountId::FromUserEmailGaiaId("user0@example.com", "0123456789");
+const AccountId kAccountId1 =
+    AccountId::FromUserEmailGaiaId("user1@example.com", "9012345678");
+
 constexpr char kDeviceLocalAccountId[] = "device_local_account";
 
 AccountId CreateDeviceLocalKioskAppAccountId(const std::string& account_id) {
   return AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
       kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_KIOSK_APP));
 }
-
-constexpr char kOwnerEmail[] = "owner@example.com";
-
-const AccountId kOwnerAccountId =
-    AccountId::FromUserEmailGaiaId(kOwnerEmail, "1234567890");
 
 }  // namespace
 
@@ -233,13 +235,6 @@ class UserManagerTest : public testing::Test {
     GetChromeUserManager()->RetrieveTrustedDevicePolicies();
   }
 
-  const AccountId owner_account_id_at_invalid_domain_ =
-      AccountId::FromUserEmailGaiaId("owner@invalid.domain", "1234567890");
-  const AccountId account_id0_at_invalid_domain_ =
-      AccountId::FromUserEmailGaiaId("user0@invalid.domain", "0123456789");
-  const AccountId account_id1_at_invalid_domain_ =
-      AccountId::FromUserEmailGaiaId("user1@invalid.domain", "9012345678");
-
  protected:
   // The call chain
   // - `ProfileRequiresPolicyUnknown`
@@ -276,12 +271,12 @@ TEST_F(UserManagerTest, RetrieveTrustedDevicePolicies) {
 
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ false,
-      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
+      /* owner= */ kOwnerAccountId.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
   EXPECT_FALSE(IsEphemeralAccountId(EmptyAccountId()));
 
-  EXPECT_EQ(GetUserManagerOwnerId(), owner_account_id_at_invalid_domain_);
+  EXPECT_EQ(GetUserManagerOwnerId(), kOwnerAccountId);
 }
 
 // Tests that `IsEphemeralAccountId(account_id)` returns false when `account_id`
@@ -304,7 +299,7 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdUsesEphemeralUsersEnabledPolicy) {
 
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ true,
-      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
+      /* owner= */ kOwnerAccountId.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
   EXPECT_TRUE(IsEphemeralAccountId(EmptyAccountId()));
@@ -322,7 +317,7 @@ TEST_F(UserManagerTest,
 
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ true,
-      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
+      /* owner= */ kOwnerAccountId.GetUserEmail());
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kFollowDeviceWidePolicy);
@@ -331,7 +326,7 @@ TEST_F(UserManagerTest,
 
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ false,
-      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
+      /* owner= */ kOwnerAccountId.GetUserEmail());
   RetrieveTrustedDevicePolicies();
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 }
@@ -347,7 +342,7 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsUnsetEphemeralMode) {
 
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ true,
-      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
+      /* owner= */ kOwnerAccountId.GetUserEmail());
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kUnset);
@@ -356,7 +351,7 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsUnsetEphemeralMode) {
 
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ false,
-      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
+      /* owner= */ kOwnerAccountId.GetUserEmail());
   RetrieveTrustedDevicePolicies();
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 }
@@ -372,7 +367,7 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsDisableEphemeralMode) {
 
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ true,
-      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
+      /* owner= */ kOwnerAccountId.GetUserEmail());
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kDisable);
@@ -393,7 +388,7 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsEnableEphemeralMode) {
 
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ false,
-      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
+      /* owner= */ kOwnerAccountId.GetUserEmail());
   SetDeviceLocalKioskAppAccount(
       kDeviceLocalAccountId, "",
       policy::DeviceLocalAccount::EphemeralMode::kEnable);
@@ -408,19 +403,17 @@ TEST_F(UserManagerTest, RemoveUser) {
       CreateMockRemoveUserManager();
 
   // Create owner account and login in.
-  user_manager->UserLoggedIn(owner_account_id_at_invalid_domain_,
-                             owner_account_id_at_invalid_domain_.GetUserEmail(),
+  user_manager->UserLoggedIn(kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
                              false /* browser_restart */, false /* is_child */);
 
   // Create non-owner account  and login in.
-  user_manager->UserLoggedIn(account_id0_at_invalid_domain_,
-                             account_id0_at_invalid_domain_.GetUserEmail(),
+  user_manager->UserLoggedIn(kAccountId0, kAccountId0.GetUserEmail(),
                              false /* browser_restart */, false /* is_child */);
 
   ASSERT_EQ(2U, user_manager->GetUsers().size());
 
   // Removing logged-in account is unacceptable.
-  user_manager->RemoveUser(account_id0_at_invalid_domain_,
+  user_manager->RemoveUser(kAccountId0,
                            user_manager::UserRemovalReason::UNKNOWN);
   EXPECT_EQ(2U, user_manager->GetUsers().size());
 
@@ -434,22 +427,20 @@ TEST_F(UserManagerTest, RemoveUser) {
   // Get a pointer to the user that will be removed.
   user_manager::User* user_to_remove = nullptr;
   for (user_manager::User* user : user_manager->GetUsers()) {
-    if (user->GetAccountId() == account_id0_at_invalid_domain_) {
+    if (user->GetAccountId() == kAccountId0) {
       user_to_remove = user;
       break;
     }
   }
   ASSERT_TRUE(user_to_remove);
-  ASSERT_EQ(account_id0_at_invalid_domain_, user_to_remove->GetAccountId());
+  ASSERT_EQ(kAccountId0, user_to_remove->GetAccountId());
 
   // Removing non-owner account is acceptable.
-  EXPECT_CALL(*user_manager,
-              AsyncRemoveCryptohome(account_id0_at_invalid_domain_))
-      .Times(1);
+  EXPECT_CALL(*user_manager, AsyncRemoveCryptohome(kAccountId0)).Times(1);
 
   // Pass the account id of the user to be removed from the user list to verify
   // that a reference to the account id will not be used after user removal.
-  user_manager->RemoveUser(account_id0_at_invalid_domain_,
+  user_manager->RemoveUser(kAccountId0,
                            user_manager::UserRemovalReason::UNKNOWN);
   testing::Mock::VerifyAndClearExpectations(user_manager.get());
   EXPECT_EQ(1, observer_test.OnUserToBeRemovedCallCount());
@@ -457,11 +448,9 @@ TEST_F(UserManagerTest, RemoveUser) {
   EXPECT_EQ(1U, user_manager->GetUsers().size());
 
   // Removing owner account is unacceptable.
-  EXPECT_CALL(*user_manager,
-              AsyncRemoveCryptohome(owner_account_id_at_invalid_domain_))
-      .Times(0);
+  EXPECT_CALL(*user_manager, AsyncRemoveCryptohome(kOwnerAccountId)).Times(0);
   observer_test.ResetCallCounts();
-  user_manager->RemoveUser(owner_account_id_at_invalid_domain_,
+  user_manager->RemoveUser(kOwnerAccountId,
                            user_manager::UserRemovalReason::UNKNOWN);
   testing::Mock::VerifyAndClearExpectations(user_manager.get());
   EXPECT_EQ(0, observer_test.OnUserToBeRemovedCallCount());
@@ -476,37 +465,34 @@ TEST_F(UserManagerTest, RemoveAllExceptOwnerFromList) {
       SystemSaltGetter::RawSalt({1, 2, 3, 4, 5, 6, 7, 8}));
 
   user_manager::UserManager::Get()->UserLoggedIn(
-      owner_account_id_at_invalid_domain_,
-      owner_account_id_at_invalid_domain_.GetUserEmail(),
+      kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
       false /* browser_restart */, false /* is_child */);
   ResetUserManager();
   user_manager::UserManager::Get()->UserLoggedIn(
-      account_id0_at_invalid_domain_,
-      owner_account_id_at_invalid_domain_.GetUserEmail(),
-      false /* browser_restart */, false /* is_child */);
+      kAccountId0, kAccountId0.GetUserEmail(), false /* browser_restart */,
+      false /* is_child */);
   ResetUserManager();
   user_manager::UserManager::Get()->UserLoggedIn(
-      account_id1_at_invalid_domain_,
-      owner_account_id_at_invalid_domain_.GetUserEmail(),
-      false /* browser_restart */, false /* is_child */);
+      kAccountId1, kAccountId1.GetUserEmail(), false /* browser_restart */,
+      false /* is_child */);
   ResetUserManager();
 
   const user_manager::UserList* users =
       &user_manager::UserManager::Get()->GetUsers();
   ASSERT_EQ(3U, users->size());
-  EXPECT_EQ((*users)[0]->GetAccountId(), account_id1_at_invalid_domain_);
-  EXPECT_EQ((*users)[1]->GetAccountId(), account_id0_at_invalid_domain_);
-  EXPECT_EQ((*users)[2]->GetAccountId(), owner_account_id_at_invalid_domain_);
+  EXPECT_EQ((*users)[0]->GetAccountId(), kAccountId1);
+  EXPECT_EQ((*users)[1]->GetAccountId(), kAccountId0);
+  EXPECT_EQ((*users)[2]->GetAccountId(), kOwnerAccountId);
 
   test_wallpaper_controller_.ClearCounts();
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ true,
-      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
+      /* owner= */ kOwnerAccountId.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
   users = &user_manager::UserManager::Get()->GetUsers();
   EXPECT_EQ(1U, users->size());
-  EXPECT_EQ((*users)[0]->GetAccountId(), owner_account_id_at_invalid_domain_);
+  EXPECT_EQ((*users)[0]->GetAccountId(), kOwnerAccountId);
   // Verify that the wallpaper is removed when user is removed.
   EXPECT_EQ(2, test_wallpaper_controller_.remove_user_wallpaper_count());
 }
@@ -514,31 +500,28 @@ TEST_F(UserManagerTest, RemoveAllExceptOwnerFromList) {
 TEST_F(UserManagerTest, RegularUserLoggedInAsEphemeral) {
   SetDeviceSettings(
       /* ephemeral_users_enabled= */ true,
-      /* owner= */ owner_account_id_at_invalid_domain_.GetUserEmail());
+      /* owner= */ kOwnerAccountId.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
   user_manager::UserManager::Get()->UserLoggedIn(
-      owner_account_id_at_invalid_domain_,
-      account_id0_at_invalid_domain_.GetUserEmail(),
+      kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
       false /* browser_restart */, false /* is_child */);
   ResetUserManager();
   user_manager::UserManager::Get()->UserLoggedIn(
-      account_id0_at_invalid_domain_,
-      account_id0_at_invalid_domain_.GetUserEmail(),
-      false /* browser_restart */, false /* is_child */);
+      kAccountId0, kAccountId0.GetUserEmail(), false /* browser_restart */,
+      false /* is_child */);
   ResetUserManager();
 
   const user_manager::UserList* users =
       &user_manager::UserManager::Get()->GetUsers();
   EXPECT_EQ(1U, users->size());
-  EXPECT_EQ((*users)[0]->GetAccountId(), owner_account_id_at_invalid_domain_);
+  EXPECT_EQ((*users)[0]->GetAccountId(), kOwnerAccountId);
 }
 
 TEST_F(UserManagerTest, ScreenLockAvailability) {
   // Log in the user and create the profile.
   user_manager::UserManager::Get()->UserLoggedIn(
-      owner_account_id_at_invalid_domain_,
-      owner_account_id_at_invalid_domain_.GetUserEmail(),
+      kOwnerAccountId, kOwnerAccountId.GetUserEmail(),
       false /* browser_restart */, false /* is_child */);
   user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
@@ -560,12 +543,10 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
 
 TEST_F(UserManagerTest, ProfileRequiresPolicyUnknown) {
   user_manager::UserManager::Get()->UserLoggedIn(
-      owner_account_id_at_invalid_domain_,
-      owner_account_id_at_invalid_domain_.GetUserEmail(), false, false);
+      kOwnerAccountId, kOwnerAccountId.GetUserEmail(), false, false);
   user_manager::KnownUser known_user(local_state_->Get());
-  EXPECT_EQ(
-      user_manager::ProfileRequiresPolicy::kUnknown,
-      known_user.GetProfileRequiresPolicy(owner_account_id_at_invalid_domain_));
+  EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
+            known_user.GetProfileRequiresPolicy(kOwnerAccountId));
   ResetUserManager();
 }
 
@@ -579,12 +560,12 @@ TEST_F(UserManagerTest, RecordOwner) {
 
   // Save a user as an owner.
   user_manager::UserManager::Get()->RecordOwner(
-      AccountId::FromUserEmail(kOwnerEmail));
+      AccountId::FromUserEmail(kOwnerAccountId.GetUserEmail()));
 
   // Now `GetOwnerEmail` should return the email of the user above.
   owner = user_manager::UserManager::Get()->GetOwnerEmail();
   ASSERT_TRUE(owner.has_value());
-  EXPECT_EQ(owner.value(), kOwnerEmail);
+  EXPECT_EQ(owner.value(), kOwnerAccountId.GetUserEmail());
 }
 
 }  // namespace ash

@@ -24,6 +24,8 @@ namespace android_webview {
 // BeginFrameSourceWebView to provide AddBeginFrameCompletionCallback which will
 // be forwarded to root begin frame source to ensure that callbacks called after
 // all BeginFrames are sent.
+//
+// Lifetime: WebView
 class BeginFrameSourceWebView : public viz::ExternalBeginFrameSource {
  public:
   BeginFrameSourceWebView();
@@ -74,6 +76,12 @@ class BeginFrameSourceWebView : public viz::ExternalBeginFrameSource {
 // observes ExternalBeginFrameSourceAndroid to provide actual BeginFrames from
 // Android Choreographer and implements the logic of
 // AddBeginFrameCompletionCallback.
+//
+// Lifetime: Singleton
+//
+// There is only one RootBeginFrameSourceWebView, even if there are multiple
+// displays with different VSync timings attached. Choreographer only uses the
+// built-in display for frame timing.
 class RootBeginFrameSourceWebView : public BeginFrameSourceWebView {
  public:
   static RootBeginFrameSourceWebView* GetInstance();

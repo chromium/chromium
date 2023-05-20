@@ -187,4 +187,8 @@ specific_include_rules = {
   "site_per_process_mac_browsertest\.mm": [
     "+content/app_shim_remote_cocoa",
   ],
+  "utility_sandbox_delegate_win\.cc": [
+    "+content/utility/sandbox_delegate_data.mojom.h"
+  ]
+
 }

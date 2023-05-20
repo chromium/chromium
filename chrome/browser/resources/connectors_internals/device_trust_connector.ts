@@ -46,6 +46,15 @@ export class DeviceTrustConnectorElement extends CustomElement {
     this.setValueToElement('#enabled-string', isEnabledString);
   }
 
+  public set policyEnabledLevels(policyLevels: string[]) {
+    if (policyLevels.length === 0) {
+      this.setValueToElement('#policy-enabled-levels', 'None');
+      return;
+    }
+
+    this.setValueToElement('#policy-enabled-levels', `${policyLevels}`);
+  }
+
   public set consentMetadata(consentMetadata: ConsentMetadata|undefined) {
     const consentDetailsEl = (this.$('#consent-details') as HTMLElement);
     const noConsentDetailsEl = (this.$('#no-consent') as HTMLElement);
@@ -158,6 +167,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
     }
 
     this.enabledString = `${state.isEnabled}`;
+    this.policyEnabledLevels = state.policyEnabledLevels;
     this.consentMetadata = state.consentMetadata;
     this.keyInfo = state.keyInfo;
     this.signalsString = state.signalsJson;

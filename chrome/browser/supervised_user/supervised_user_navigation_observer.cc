@@ -16,7 +16,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
@@ -25,6 +24,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
+#include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
@@ -321,10 +321,10 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
   auto web_content_handler = CreateWebContentHandler(
       web_contents(), url, profile, frame_id, navigation_id);
   CHECK(web_content_handler);
-  std::unique_ptr<SupervisedUserInterstitial> interstitial =
-      SupervisedUserInterstitial::Create(std::move(web_content_handler),
-                                         *supervised_user_service_, url,
-                                         reason);
+  std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial =
+      supervised_user::SupervisedUserInterstitial::Create(
+          std::move(web_content_handler), *supervised_user_service_, url,
+          reason);
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
 
   bool already_requested = base::Contains(requested_hosts_, url.host());
@@ -377,7 +377,7 @@ void SupervisedUserNavigationObserver::RequestUrlAccessRemote(
     return;
   }
 
-  SupervisedUserInterstitial* interstitial =
+  supervised_user::SupervisedUserInterstitial* interstitial =
       supervised_user_interstitials_[id].get();
   interstitial->RequestUrlAccessRemote(
       base::BindOnce(&SupervisedUserNavigationObserver::RequestCreated,
@@ -396,7 +396,7 @@ void SupervisedUserNavigationObserver::RequestUrlAccessLocal(
     return;
   }
 
-  SupervisedUserInterstitial* interstitial =
+  supervised_user::SupervisedUserInterstitial* interstitial =
       supervised_user_interstitials_[id].get();
   interstitial->RequestUrlAccessLocal(std::move(callback));
 }

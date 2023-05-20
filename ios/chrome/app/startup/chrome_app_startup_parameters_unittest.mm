@@ -9,7 +9,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/app/app_startup_parameters.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "testing/gtest_mac.h"

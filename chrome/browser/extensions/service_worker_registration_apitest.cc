@@ -205,9 +205,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
 
 // Tests that the service worker is properly unregistered when the extension is
 // disabled or uninstalled.
+// TODO(crbug.com/1446468): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(
     ServiceWorkerRegistrationApiTest,
-    DisablingOrUninstallingAnExtensionUnregistersTheServiceWorker) {
+    DISABLED_DisablingOrUninstallingAnExtensionUnregistersTheServiceWorker) {
   static constexpr char kManifest[] =
       R"({
            "name": "Extension",

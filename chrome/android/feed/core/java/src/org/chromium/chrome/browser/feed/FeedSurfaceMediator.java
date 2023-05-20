@@ -628,7 +628,7 @@ public class FeedSurfaceMediator
     void bindStream(Stream stream) {
         if (mCurrentStream == stream) return;
         if (mCurrentStream != null) {
-            unbindStream(/* shouldPlaceSpacer = */ true);
+            unbindStream(/* shouldPlaceSpacer = */ true, /* switchingStream = */ true);
         }
         // Don't bind before the coordinator is active, or when the feed should not show.
         if (!mCoordinator.isActive()
@@ -669,14 +669,14 @@ public class FeedSurfaceMediator
 
     /** Unbinds the stream and clear all the stream's contents. */
     private void unbindStream() {
-        unbindStream(false);
+        unbindStream(false, false);
     }
 
     /** Unbinds the stream with option for stream to put a placeholder for its contents. */
-    private void unbindStream(boolean shouldPlaceSpacer) {
+    private void unbindStream(boolean shouldPlaceSpacer, boolean switchingStream) {
         if (mCurrentStream == null) return;
         mCoordinator.getHybridListRenderer().onSurfaceClosed();
-        mCurrentStream.unbind(shouldPlaceSpacer);
+        mCurrentStream.unbind(shouldPlaceSpacer, switchingStream);
         mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
         mCurrentStream = null;
     }
@@ -786,7 +786,7 @@ public class FeedSurfaceMediator
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).clear();
 
         if (mCoordinator.getSurfaceScope() != null) {
-            mCoordinator.getSurfaceScope().getFeedLaunchReliabilityLogger().cancelPendingEvents();
+            mCoordinator.getSurfaceScope().getLaunchReliabilityLogger().cancelPendingEvents();
         }
     }
 

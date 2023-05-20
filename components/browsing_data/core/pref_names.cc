@@ -8,9 +8,7 @@
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
-namespace browsing_data {
-
-namespace prefs {
+namespace browsing_data::prefs {
 
 // JSON config to periodically delete some browsing data as specified by
 // the BrowsingDataLifetime policy.
@@ -56,11 +54,9 @@ const char kPreferencesMigratedToBasic[] =
     "browser.clear_data.preferences_migrated_to_basic";
 
 void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(kBrowsingDataLifetime,
-                             base::Value(base::Value::Type::LIST));
+  registry->RegisterListPref(kBrowsingDataLifetime);
   registry->RegisterBooleanPref(kClearBrowsingDataOnExitDeletionPending, false);
-  registry->RegisterListPref(kClearBrowsingDataOnExitList,
-                             base::Value(base::Value::Type::LIST));
+  registry->RegisterListPref(kClearBrowsingDataOnExitList);
   registry->RegisterIntegerPref(
       kDeleteTimePeriod, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -109,6 +105,4 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
-}  // namespace prefs
-
-}  // namespace browsing_data
+}  // namespace browsing_data::prefs

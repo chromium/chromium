@@ -34,6 +34,9 @@ crosapi::mojom::OpenUrlParams::WindowOpenDisposition DispositionToMojom(
           kNewForegroundTab;
     case ash::NewWindowDelegate::Disposition::kNewWindow:
       return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kNewWindow;
+    case ash::NewWindowDelegate::Disposition::kOffTheRecord:
+      return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::
+          kOffTheRecord;
     case ash::NewWindowDelegate::Disposition::kSwitchToTab:
       return crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab;
   }

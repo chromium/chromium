@@ -60,13 +60,15 @@ bool origin_trials::IsTrialEnabledForThirdPartyOrigins(base::StringPiece trial_n
   return base::Contains(kEnabledForThirdPartyOrigins, trial_name);
 }
 
-bool origin_trials::IsTrialEnabledForBrowserProcessReadWriteAccess(base::StringPiece trial_name) {
+bool origin_trials::IsTrialEnabledForBrowserProcessReadAccess(base::StringPiece trial_name) {
   // Select all features that represent origin trials and have
   // browser_process_read_write_access enabled. Determine if that list of
   // features contains the  `trial_name` provided.
   static const char* const kEnabledForBrowserProcessReadWriteAccess[] = {
-  {% for trial in origin_trial_features|selectattr('browser_process_read_write_access')|map(attribute='origin_trial_feature_name')|unique %}
-      "{{trial}}",
+  {% for trial in origin_trial_features %}
+    {% if trial.browser_process_read_access or trial.browser_process_read_write_access  %}
+      "{{trial.origin_trial_feature_name}}",
+    {% endif %}
   {% endfor %}
   };
   return base::Contains(kEnabledForBrowserProcessReadWriteAccess, trial_name);

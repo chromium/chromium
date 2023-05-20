@@ -29,7 +29,7 @@
 namespace {
 
 // Maximum time allowed to fetch the seed before the request is cancelled.
-const base::TimeDelta kRequestTimeout = base::Seconds(2);
+const base::TimeDelta kRequestTimeout = base::Seconds(1.5);
 // Histogram names for seed fetch time and result.
 const char kSeedFetchResultHistogram[] =
     "IOS.Variations.FirstRun.SeedFetchResult";

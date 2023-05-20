@@ -367,7 +367,7 @@ views::Widget* ToastOverlay::widget_for_testing() {
 }
 
 views::LabelButton* ToastOverlay::dismiss_button_for_testing() {
-  return overlay_view_->button();
+  return overlay_view_->dismiss_button();
 }
 
 }  // namespace ash

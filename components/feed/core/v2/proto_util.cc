@@ -173,6 +173,10 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(Capability::ON_DEVICE_USER_PROFILE);
   }
 
+  if (base::FeatureList::IsEnabled(kFeedSignedOutViewDemotion)) {
+    feed_request.add_client_capability(Capability::ON_DEVICE_VIEW_HISTORY);
+  }
+
   if (base::FeatureList::IsEnabled(kInfoCardAcknowledgementTracking)) {
     feed_request.add_client_capability(
         Capability::INFO_CARD_ACKNOWLEDGEMENT_TRACKING);

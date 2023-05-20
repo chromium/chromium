@@ -33,7 +33,6 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WebContentsFactory;
-import org.chromium.chrome.browser.app.omnibox.ActionChipsDelegateImpl;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -51,6 +50,7 @@ import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -250,28 +250,26 @@ public class SearchActivity extends AsyncInitializationActivity
             TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,
             VoiceToolbarButtonController::isToolbarMicEnabled,
             /*merchantTrustSignalsCoordinatorSupplier=*/null,
-            new ActionChipsDelegateImpl(this,
-                () -> mSearchBoxDataProvider.getTab(),
-                new SettingsLauncherImpl(),
-                // TODO(ender): phase out callbacks when the modules below are components.
-                // Open URL in an existing, else new regular tab.
-                url -> {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    intent.setComponent(new ComponentName(getApplicationContext(),
-                                        ChromeLauncherActivity.class));
-                    intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
-                    startActivity(intent);
-                },
-                // Open Incognito Tab callback:
-                () -> startActivity(IntentHandler.createTrustedOpenNewTabIntent(this, true)),
-                // Open Password Settings callback:
-                () ->
-                    PasswordManagerLauncher.showPasswordSettings(this,
-                            ManagePasswordsReferrer.CHROME_SETTINGS,
-                            () -> getModalDialogManager(), /*managePasskeys=*/false),
-                // Open History Clusters UI for Query:
-                query -> {}
-                ), null,
+            new OmniboxActionDelegateImpl(this,
+                    () -> mSearchBoxDataProvider.getTab(),
+                    new SettingsLauncherImpl(),
+                    // TODO(ender): phase out callbacks when the modules below are components.
+                    // Open URL in an existing, else new regular tab.
+                    url -> {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        intent.setComponent(new ComponentName(
+                                getApplicationContext(), ChromeLauncherActivity.class));
+                        intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+                        startActivity(intent);
+                    },
+                    // Open Incognito Tab callback:
+                    () -> startActivity(IntentHandler.createTrustedOpenNewTabIntent(this, true)),
+                    // Open Password Settings callback:
+                    () -> PasswordManagerLauncher.showPasswordSettings(this,
+                                    ManagePasswordsReferrer.CHROME_SETTINGS,
+                                    () -> getModalDialogManager(), /*managePasskeys=*/false),
+                    // Open History Clusters UI for Query:
+                    query -> {}), null,
             ChromePureJavaExceptionReporter::reportJavaException, backPressManager,
             /*OmniboxSuggestionsDropdownScrollListener=*/this,
             new OpenHistoryClustersDelegate() {

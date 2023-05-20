@@ -215,6 +215,10 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kErrorRpPageNotVisible: {
       return "RP page is not visible.";
     }
+    case FederatedAuthRequestResult::kErrorSilentMediationFailure: {
+      return "Silent mediation was requested, but the conditions to achieve it "
+             "were not met.";
+    }
     case FederatedAuthRequestResult::kError: {
       return "Error retrieving a token.";
     }

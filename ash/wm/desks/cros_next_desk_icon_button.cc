@@ -160,7 +160,7 @@ void CrOSNextDeskIconButton::UpdateFocusState() {
        IsPointOnButton(bar_view_->last_dragged_item_screen_location()))) {
     new_focus_color_id = ui::kColorAshFocusRing;
   } else if (state_ == State::kActive && paint_as_active_) {
-    new_focus_color_id = kColorAshCurrentDeskColor;
+    new_focus_color_id = cros_tokens::kCrosSysTertiary;
   } else {
     new_focus_color_id = absl::nullopt;
   }

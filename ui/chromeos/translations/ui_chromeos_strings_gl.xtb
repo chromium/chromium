@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Non hai vídeos recentes</translation>
 <translation id="3634507049637220048">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, xestionada polo teu administrador, detalles</translation>
 <translation id="3645233063072417428">Movéronse <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> ficheiros seleccionados</translation>
 <translation id="3685122418104378273">A sincronización con Google Drive está desactivada de xeito predeterminado cando se utilizan os datos móbiles.</translation>
 <translation id="3689865792480713551">Cancelar esta actividade: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921">Imaxe <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calculando tamaño</translation>
 <translation id="554153475311314364">Grego (transliteración)</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> cartafoles seleccionados</translation>
 <translation id="5580591966435005537">máquina virtual</translation>
 <translation id="5583640892426849032">Retroceso</translation>
 <translation id="5583664733673201137">A largura da puntuación é completa</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">Tailandés con teclado Pattachote</translation>
 <translation id="57383366388012121">O último mes</translation>
 <translation id="5756666464756035725">QWERTY húngaro</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementos seleccionados</translation>
 <translation id="5763377084591234761">Alemán (Suíza)</translation>
 <translation id="5769519078756170258">Host ou dominio que queres excluír</translation>
 <translation id="5775750595919327203">Urdú</translation>
@@ -916,6 +919,7 @@
 <translation id="8264024885325823677">O teu administrador xestiona esta opción de configuración.</translation>
 <translation id="8269755669432358899">Contraer paneis de comentarios de ficheiros</translation>
 <translation id="8280151743281770066">Fonética armenia</translation>
+<translation id="8285791779547722821">Ficheiro encriptado: <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">Fonte</translation>
 <translation id="8297012244086013755">Tripla alternancia hangul (sen premer Maiús)</translation>
 <translation id="8299269255470343364">Xaponés</translation>

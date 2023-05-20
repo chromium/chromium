@@ -670,7 +670,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             initializeLayoutManagerPhone(2, 0);
             mManager.addObserver(new LayoutStateProvider.LayoutStateObserver() {
                 @Override
-                public void onStartedShowing(int layoutType, boolean showToolbar) {
+                public void onStartedShowing(int layoutType) {
                     Log.d(TAG, "Started to show: " + layoutType);
                     startedShowingCallback.layoutType = layoutType;
                     startedShowingCallback.notifyCalled();
@@ -684,8 +684,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 }
 
                 @Override
-                public void onStartedHiding(
-                        int layoutType, boolean showToolbar, boolean delayAnimation) {
+                public void onStartedHiding(int layoutType) {
                     Log.d(TAG, "Started to hide: " + layoutType);
                     startedHidingCallback.layoutType = layoutType;
                     startedHidingCallback.notifyCalled();
@@ -898,7 +897,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             Assert.assertNotNull("Must be called after initialization", layoutManagerChrome);
             layoutManagerChrome.addObserver(new LayoutStateProvider.LayoutStateObserver() {
                 @Override
-                public void onStartedShowing(int layoutType, boolean showToolbar) {
+                public void onStartedShowing(int layoutType) {
                     observationSequence.add(
                             new LayoutStateLayoutType(LayoutState.STARTING_TO_SHOW, layoutType));
                 }
@@ -910,8 +909,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 }
 
                 @Override
-                public void onStartedHiding(
-                        int layoutType, boolean showToolbar, boolean delayAnimation) {
+                public void onStartedHiding(int layoutType) {
                     observationSequence.add(
                             new LayoutStateLayoutType(LayoutState.STARTING_TO_HIDE, layoutType));
                 }

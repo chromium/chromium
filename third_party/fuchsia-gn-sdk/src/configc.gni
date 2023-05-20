@@ -1,0 +1,274 @@
+# Copyright 2022 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("config/config.gni")
+template("_configc_tool") {
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "testonly",
+                             "visibility",
+                           ])
+    script = "${fuchsia_sdk}/build/gn_run_binary.py"
+    _configc_tool_path = "${fuchsia_tool_dir}/configc"
+
+    assert(defined(invoker.inputs), "inputs is a required parameter.")
+    assert(defined(invoker.outputs), "outputs is a required parameter.")
+    assert(defined(invoker.args), "args is a required parameter.")
+
+    inputs =
+        [
+          _configc_tool_path,
+
+          # Depend on the SDK hash, to ensure rebuild if the SDK tools change.
+          fuchsia_sdk_manifest_file,
+        ] + invoker.inputs
+
+    outputs = invoker.outputs
+
+    args = [ rebase_path(_configc_tool_path, root_build_dir) ] + invoker.args
+  }
+}
+
+# Compile a configuration value file.
+#
+# Parameters
+#
+#   cm (required)
+#     Compiled manifest for which the value file should be compiled.
+#     Type: path
+#
+#   value_file (required)
+#     A JSON5 file containing the configuration values to be compiled.
+#     Type: path
+#
+#   deps (optional)
+#   metadata (optional)
+#   output_name (optional)
+#   testonly (optional)
+#   visibility (optional)
+#     Standard GN meaning.
+template("cvf") {
+  input_manifest = invoker.cm
+  value_file = invoker.value_file
+
+  _configc_tool(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "metadata",
+                             "output_name",
+                             "testonly",
+                             "visibility",
+                           ])
+
+    if (!defined(output_name)) {
+      output_name = target_name
+    }
+
+    inputs = [
+      input_manifest,
+      value_file,
+    ]
+    output_file = "${target_out_dir}/${output_name}.cvf"
+    outputs = [ output_file ]
+
+    args = [
+      "cvf",
+      "--cm",
+      rebase_path(input_manifest, root_build_dir),
+      "--values",
+      rebase_path(value_file, root_build_dir),
+      "--output",
+      rebase_path(output_file, root_build_dir),
+    ]
+  }
+}
+
+# Generate the FIDL client library source files for a configuration declaration.
+#
+# Parameters
+#
+#   compiled_manifest (required)
+#     Compiled manifest for which the source files should be generated.
+#     Type: path
+#
+#   name (required)
+#     Name for the generated FIDL library.
+#     Type: string
+#
+#   deps (optional)
+#   testonly (optional)
+#   visibility (optional)
+#     Standard GN meaning.
+template("fidl_config_client_lib_source") {
+  assert(defined(invoker.compiled_manifest),
+         "the path to a compiled component manifest must be specified")
+  assert(defined(invoker.name),
+         "the name of this FIDL library must be specified")
+  compiled_manifest = invoker.compiled_manifest
+
+  _configc_tool(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "testonly",
+                             "visibility",
+                           ])
+
+    fidl_format_tool_path = "${fuchsia_tool_dir}/fidl-format"
+
+    inputs = [
+      compiled_manifest,
+      fidl_format_tool_path,
+    ]
+
+    source_file_path = "${target_gen_dir}/${target_name}.fidl"
+
+    args = [
+      "fidl",
+      "--cm",
+      rebase_path(compiled_manifest, root_build_dir),
+      "--output",
+      rebase_path(source_file_path, root_build_dir),
+      "--library-name",
+      invoker.name,
+      "--fidl-format",
+      rebase_path(fidl_format_tool_path, root_build_dir),
+    ]
+
+    if (!defined(deps)) {
+      deps = []
+    }
+
+    outputs = [ source_file_path ]
+  }
+}
+
+# Generate the C++ client library source files for a configuration declaration.
+#
+# Parameters
+#
+#   compiled_manifest (required)
+#     Compiled manifest for which the source files should be generated.
+#     Type: path
+#
+#   fidl_library_name (required)
+#     Name for the internal FIDL library.
+#     Type: string
+#
+#   flavor (required)
+#     Runner flavor for client library
+#     Type: string
+#
+#   namespace (optional)
+#     Namespace used by the C++ library.
+#     Type: string
+#
+#   deps (optional)
+#   metadata (optional)
+#   output_name (optional)
+#   testonly (optional)
+#   visibility (optional)
+#     Standard GN meaning.
+template("cpp_config_client_lib_source") {
+  assert(defined(invoker.compiled_manifest),
+         "the path to a compiled component manifest must be specified")
+  assert(defined(invoker.fidl_library_name),
+         "the name of the internal FIDL library must be specified")
+  assert(defined(invoker.flavor),
+         "the flavor of the FIDL library must be specified ('elf' or 'driver')")
+  if (defined(invoker.namespace)) {
+    namespace = invoker.namespace
+  } else {
+    namespace = target_name
+  }
+  compiled_manifest = invoker.compiled_manifest
+
+  clang_format_path = "//third_party/depot_tools/clang-format"
+
+  _configc_tool(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "name",
+                             "testonly",
+                             "visibility",
+                           ])
+
+    inputs = [
+      compiled_manifest,
+      clang_format_path,
+    ]
+
+    cc_source_file_path = "${target_gen_dir}/${namespace}.cc"
+    h_source_file_path = "${target_gen_dir}/${namespace}.h"
+
+    args = [
+      "cpp",
+      "--cm",
+      rebase_path(compiled_manifest, root_build_dir),
+      "--h-output",
+      rebase_path(h_source_file_path, root_build_dir),
+      "--cc-output",
+      rebase_path(cc_source_file_path, root_build_dir),
+      "--namespace",
+      namespace,
+      "--fidl-library-name",
+      invoker.fidl_library_name,
+      "--clang-format",
+      rebase_path(clang_format_path, root_build_dir),
+      "--flavor",
+      invoker.flavor,
+    ]
+
+    outputs = [
+      cc_source_file_path,
+      h_source_file_path,
+    ]
+  }
+}
+
+# Validate a package's components' configuration (if any).
+#
+# Parameters
+#
+#   package_manifest (path)
+#     Path to the output of the `pm_build()` template.
+#
+#   deps (optional)
+#   metadata (optional)
+#   testonly (optional)
+#   visibility (optional)
+#     Standard GN meaning.
+template("validate_packaged_config") {
+  assert(defined(invoker.package_manifest), "must provide an input manifest")
+  _package_manifest = invoker.package_manifest
+  _meta_far = get_path_info(_package_manifest, "dir") + "/meta.far"
+  _stamp = "${target_out_dir}/${target_name}.configc.stamp"
+  _configc_tool(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "metadata",
+                             "testonly",
+                             "visibility",
+                           ])
+
+    inputs = [
+      _package_manifest,
+      _meta_far,
+    ]
+    outputs = [ _stamp ]
+
+    args = [
+      "validate-package",
+      rebase_path(_package_manifest, root_build_dir),
+      "--stamp",
+      rebase_path(_stamp, root_build_dir),
+    ]
+  }
+}

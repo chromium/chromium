@@ -180,7 +180,7 @@ CheckError CheckError::DCheck(const char* condition,
 CheckError CheckError::DCheckOp(char* log_message_str,
                                 const base::Location& location) {
   auto* const log_message = new DCheckLogMessage(
-      location.file_name(), location.line_number(), LOGGING_FATAL);
+      location.file_name(), location.line_number(), LOGGING_DCHECK);
   log_message->stream() << log_message_str;
   free(log_message_str);
   return CheckError(log_message);
@@ -191,6 +191,15 @@ CheckError CheckError::DumpWillBeCheck(const char* condition,
   auto* const log_message = new DumpWillBeCheckLogMessage(
       location, DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR);
   log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
+}
+
+CheckError CheckError::DumpWillBeCheckOp(char* log_message_str,
+                                         const base::Location& location) {
+  auto* const log_message = new DumpWillBeCheckLogMessage(
+      location, DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR);
+  log_message->stream() << log_message_str;
+  free(log_message_str);
   return CheckError(log_message);
 }
 
@@ -223,6 +232,14 @@ CheckError CheckError::DPCheck(const char* condition,
       new DCheckErrnoLogMessage(location, LOGGING_DCHECK, err_code);
 #endif
   log_message->stream() << "Check failed: " << condition << ". ";
+  return CheckError(log_message);
+}
+
+CheckError CheckError::DumpWillBeNotReachedNoreturn(
+    const base::Location& location) {
+  auto* const log_message = new DumpWillBeCheckLogMessage(
+      location, DCHECK_IS_ON() ? LOGGING_DCHECK : LOGGING_ERROR);
+  log_message->stream() << "NOTREACHED hit. ";
   return CheckError(log_message);
 }
 

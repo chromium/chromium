@@ -905,9 +905,16 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
       print_view_manager.snooped_params();
   ASSERT_TRUE(snooped_params);
   EXPECT_EQ(test::kPrinterCapabilitiesDpi, snooped_params->params->dpi);
+
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(kLegalPhysicalSize, snooped_params->params->page_size);
+  EXPECT_EQ(kLegalPrintableArea, snooped_params->params->printable_area);
+  EXPECT_EQ(kLegalExpectedContentSize, snooped_params->params->content_size);
+#else
   EXPECT_EQ(kLetterPhysicalSize, snooped_params->params->page_size);
   EXPECT_EQ(kLetterPrintableArea, snooped_params->params->printable_area);
   EXPECT_EQ(kLetterExpectedContentSize, snooped_params->params->content_size);
+#endif
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -935,9 +942,16 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
       print_view_manager.snooped_params();
   ASSERT_TRUE(snooped_params);
   EXPECT_EQ(test::kPrinterCapabilitiesDpi, snooped_params->params->dpi);
+
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(kLetterPhysicalSize, snooped_params->params->page_size);
+  EXPECT_EQ(kLetterPrintableArea, snooped_params->params->printable_area);
+  EXPECT_EQ(kLetterExpectedContentSize, snooped_params->params->content_size);
+#else
   EXPECT_EQ(kLegalPhysicalSize, snooped_params->params->page_size);
   EXPECT_EQ(kLegalPrintableArea, snooped_params->params->printable_area);
   EXPECT_EQ(kLegalExpectedContentSize, snooped_params->params->content_size);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,

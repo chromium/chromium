@@ -167,12 +167,12 @@ class MLModelLoaderTest : public testing::Test {
   }
 
   MLModel* ScriptValueToMLModel(const ScriptValue& value) {
-    return V8MLModel::ToImplWithTypeCheck(value.GetIsolate(), value.V8Value());
+    return V8MLModel::ToWrappable(value.GetIsolate(), value.V8Value());
   }
 
   String ScriptValueToDOMExceptionName(const ScriptValue& value) {
-    auto* exception = V8DOMException::ToImplWithTypeCheck(value.GetIsolate(),
-                                                          value.V8Value());
+    auto* exception =
+        V8DOMException::ToWrappable(value.GetIsolate(), value.V8Value());
     if (!exception) {
       return DOMException::GetErrorName(DOMExceptionCode::kNoError);
     }

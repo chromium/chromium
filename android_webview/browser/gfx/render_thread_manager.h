@@ -26,6 +26,8 @@ class ChildFrame;
 class CompositorFrameProducer;
 
 // This class is used to pass data between UI thread and RenderThread.
+//
+// Lifetime: WebView
 class RenderThreadManager : public CompositorFrameConsumer {
  public:
   explicit RenderThreadManager(

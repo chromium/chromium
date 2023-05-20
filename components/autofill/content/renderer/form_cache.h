@@ -85,9 +85,6 @@ class FormCache {
   UpdateFormCacheResult UpdateFormCache(
       const FieldDataManager* field_data_manager);
 
-  // Resets the forms.
-  void Reset();
-
   // Clears the values of all input elements in the section of the form that
   // contains |element|.  Returns false if the form is not found.
   bool ClearSectionWithElement(const blink::WebFormControlElement& element);

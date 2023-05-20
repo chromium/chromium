@@ -2043,10 +2043,8 @@ bool SwapChainPresenter::ReallocateSwapChain(
     }
   }
   if (!use_yuv_swap_chain) {
-    std::ostringstream trace_event_stream;
-    trace_event_stream << "SwapChainPresenter::ReallocateSwapChain::"
-                       << DxgiFormatToString(swap_chain_format);
-    TRACE_EVENT0("gpu", trace_event_stream.str().c_str());
+    TRACE_EVENT1("gpu", "SwapChainPresenter::ReallocateSwapChain::BGRA",
+                 "format", DxgiFormatToString(swap_chain_format));
 
     desc.Format = swap_chain_format;
     desc.Flags = DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO;

@@ -19,6 +19,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -287,6 +288,11 @@ KeyboardControllerImpl::GetKeyRepeatSettings() {
 }
 
 bool KeyboardControllerImpl::AreTopRowKeysFunctionKeys() {
+  if (ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    return Shell::Get()
+        ->input_device_settings_controller()
+        ->GetGeneralizedTopRowAreFKeys();
+  }
   PrefService* prefs = pref_change_registrar_->prefs();
   return prefs->GetBoolean(ash::prefs::kSendFunctionKeys);
 }

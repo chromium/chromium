@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './module_header.js';
+import './visit_tile.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -45,12 +46,18 @@ export class HistoryClustersModuleElement extends I18nMixin
       },
 
       searchResultsPage_: Object,
+
+      format: {
+        type: String,
+        value: 'wide',
+        reflectToAttribute: true,
+      },
     };
   }
 
   cluster: Cluster;
+  format: string;
   private searchResultsPage_: URLVisit;
-
   private onClusterUpdated_() {
     this.searchResultsPage_ = this.cluster!.visits[0];
   }

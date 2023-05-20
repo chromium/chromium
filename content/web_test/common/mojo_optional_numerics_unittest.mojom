@@ -196,6 +196,34 @@ interface ResponseParams {
     RegularEnum enum_value) => (OptionalNumericsStruct s);
 };
 
+struct VersionedStructV0 {
+};
+
+struct VersionedStructV2 {
+  [MinVersion=2] bool? bool_value;
+  [MinVersion=2] uint8? uint8_value;
+  [MinVersion=2] int8? int8_value;
+  [MinVersion=2] uint16? uint16_value;
+  [MinVersion=2] int16? int16_value;
+  [MinVersion=2] uint32? uint32_value;
+  [MinVersion=2] int32? int32_value;
+  [MinVersion=2] uint64? uint64_value;
+  [MinVersion=2] int64? int64_value;
+  [MinVersion=2] float? float_value;
+  [MinVersion=2] double? double_value;
+  [MinVersion=2] RegularEnum? enum_value;
+};
+
+// Implemented in JS to test that optional numerics in versioned interfaces
+// work.
+interface InterfaceV0 {
+  // V2 of this method has optional numeric params and response params.
+  MethodWithVersionedParams@1() => ();
+
+  // V2 of this method uses VersionedStructV2.
+  MethodWithVersionedStruct@2(VersionedStructV0 s) => (VersionedStructV0 s);
+};
+
 // Implemented in JS to test that optional numerics in versioned interfaces
 // work.
 interface InterfaceV2 {
@@ -229,4 +257,9 @@ interface InterfaceV2 {
     [MinVersion=2] double? double_value,
     [MinVersion=2] RegularEnum? enum_value
   );
+
+  // Returns the optional numerics in `s` it was sent but with some
+  // transformations i.e. !bool_value, integers get multiplied by 2, float and
+  // double get multiplied by 3.
+  MethodWithVersionedStruct@2(VersionedStructV2 s) => (VersionedStructV2 s);
 };

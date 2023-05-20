@@ -417,7 +417,7 @@ void AccountManagerUIHandler::HandleReauthenticateAccount(
       ->ShowReauthAccountDialog(
           account_manager::AccountManagerFacade::AccountAdditionSource::
               kSettingsReauthAccountButton,
-          account_email, base::OnceClosure());
+          account_email, base::DoNothing());
 }
 
 void AccountManagerUIHandler::HandleMigrateAccount(

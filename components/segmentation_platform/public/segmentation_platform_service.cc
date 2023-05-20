@@ -6,6 +6,9 @@
 
 namespace segmentation_platform {
 
+TrainingLabels::TrainingLabels() = default;
+TrainingLabels::~TrainingLabels() = default;
+
 ServiceProxy* SegmentationPlatformService::GetServiceProxy() {
   return nullptr;
 }

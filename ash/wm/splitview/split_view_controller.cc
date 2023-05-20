@@ -259,7 +259,7 @@ void RemoveSnappingWindowFromOverviewIfApplicable(
   // repositioned in this case as they have been positioned to the right place
   // during dragging.
   item->EnsureVisible();
-  item->RestoreWindow(/*reset_transform=*/false);
+  item->RestoreWindow(/*reset_transform=*/false, /*animate=*/true);
   overview_session->RemoveItem(item);
 }
 
@@ -2023,7 +2023,8 @@ void SplitViewController::OnOverviewModeEnding(
         // Remove the overview item before snapping because the overview session
         // is unavailable to retrieve outside this function after
         // OnOverviewEnding is notified.
-        overview_item->RestoreWindow(/*reset_transform=*/false);
+        overview_item->RestoreWindow(/*reset_transform=*/false,
+                                     /*animate=*/true);
         overview_session->RemoveItem(overview_item.get());
 
         SnapWindow(window,

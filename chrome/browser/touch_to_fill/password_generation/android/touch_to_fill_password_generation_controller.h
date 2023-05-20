@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_CONTROLLER_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_CONTROLLER_H_
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -18,9 +20,11 @@ class ContentPasswordManagerDriver;
 // after the bottom sheet is dismissed.
 class TouchToFillPasswordGenerationController {
  public:
-  explicit TouchToFillPasswordGenerationController(
+  TouchToFillPasswordGenerationController(
       base::WeakPtr<password_manager::ContentPasswordManagerDriver>
-          frame_driver);
+          frame_driver,
+      content::WebContents* web_contents,
+      std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge);
   TouchToFillPasswordGenerationController(
       const TouchToFillPasswordGenerationController&) = delete;
   TouchToFillPasswordGenerationController& operator=(
@@ -28,7 +32,7 @@ class TouchToFillPasswordGenerationController {
   ~TouchToFillPasswordGenerationController();
 
   // Shows the password generation bottom sheet.
-  void ShowTouchToFill();
+  bool ShowTouchToFill();
 
  private:
   // Suppressing IME input is necessary for Touch-To-Fill.
@@ -36,9 +40,10 @@ class TouchToFillPasswordGenerationController {
   void RemoveSuppressShowingImeCallback();
 
   // Password manager driver for the frame on which the Touch-To-Fill was
-  // triggered. Ensure that the bottom sheet should be hidden when the frame is
-  // removed.
+  // triggered.
   base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver_;
+  base::raw_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge_;
 
   content::RenderWidgetHost::SuppressShowingImeCallback
       suppress_showing_ime_callback_;

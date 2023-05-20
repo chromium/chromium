@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/common/extensions/api/side_panel.h"
@@ -73,6 +74,57 @@ SidePanelGetPanelBehaviorFunction::RunFunction() {
       GetService()->OpenSidePanelOnIconClick(extension()->id());
 
   return RespondNow(WithArguments(behavior.ToValue()));
+}
+
+ExtensionFunction::ResponseAction SidePanelOpenFunction::RunFunction() {
+  // Only available to extensions.
+  EXTENSION_FUNCTION_VALIDATE(extension());
+  // This API is only available with the corresponding feature enabled or to
+  // the allowlisted extension.
+  EXTENSION_FUNCTION_VALIDATE(
+      base::FeatureList::IsEnabled(extensions_features::kApiSidePanelOpen) ||
+      extension()->hashed_id().value() ==
+          "3CEFE7915CDBD48D769E214807ACAA51581724A0");
+
+  // `sidePanel.open()` requires a user gesture.
+  if (!user_gesture()) {
+    return RespondNow(
+        Error("`sidePanel.open()` may only be called in "
+              "response to a user gesture."));
+  }
+
+  absl::optional<api::side_panel::Open::Params> params =
+      api::side_panel::Open::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (!params->options.tab_id && !params->options.window_id) {
+    return RespondNow(
+        Error("At least one of `tabId` and `windowId` must be provided"));
+  }
+
+  SidePanelService* service = GetService();
+  base::expected<bool, std::string> open_panel_result;
+  if (params->options.tab_id) {
+    open_panel_result = service->OpenSidePanelForTab(
+        *extension(), *params->options.tab_id, params->options.window_id,
+        include_incognito_information());
+  } else {
+    CHECK(params->options.window_id);
+    open_panel_result = service->OpenSidePanelForWindow(
+        *extension(), *params->options.window_id,
+        include_incognito_information());
+  }
+
+  if (!open_panel_result.has_value()) {
+    return RespondNow(Error(std::move(open_panel_result.error())));
+  }
+
+  CHECK_EQ(true, open_panel_result.value());
+
+  // TODO(https://crbug.com/1446022): Should we wait for the side panel to be
+  // created and load? That would probably be nice.
+
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

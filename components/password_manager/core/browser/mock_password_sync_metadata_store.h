@@ -35,12 +35,15 @@ class MockPasswordSyncMetadataStore : public PasswordStoreSync::MetadataStore {
   MOCK_METHOD(bool, ClearModelTypeState, (syncer::ModelType model_type));
 
   // PasswordStoreSync::MetadataStore:
-  MOCK_METHOD(std::unique_ptr<syncer::MetadataBatch>, GetAllSyncMetadata, ());
-  MOCK_METHOD(void, DeleteAllSyncMetadata, ());
+  MOCK_METHOD(std::unique_ptr<syncer::MetadataBatch>,
+              GetAllSyncMetadata,
+              (syncer::ModelType model_type));
+  MOCK_METHOD(void, DeleteAllSyncMetadata, (syncer::ModelType model_type));
   MOCK_METHOD(void,
               SetDeletionsHaveSyncedCallback,
-              (base::RepeatingCallback<void(bool)> callback));
-  MOCK_METHOD(bool, HasUnsyncedDeletions, ());
+              (syncer::ModelType model_type,
+               base::RepeatingCallback<void(bool)> callback));
+  MOCK_METHOD(bool, HasUnsyncedDeletions, (syncer::ModelType model_type));
 };
 
 }  // namespace password_manager

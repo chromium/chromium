@@ -12,6 +12,7 @@
 
 #include <cstring>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 
@@ -154,22 +155,28 @@ void AddInstallServerWorkItems(HKEY root,
 std::wstring GetTaskName(UpdaterScope scope) {
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope);
-  CHECK(task_scheduler);
-  return task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
+  return task_scheduler
+             ? task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope))
+             : std::wstring();
 }
 
 void UnregisterWakeTask(UpdaterScope scope) {
-  auto task_scheduler = TaskScheduler::CreateInstance(scope);
-  CHECK(task_scheduler);
-
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope);
+  if (!task_scheduler) {
+    LOG(ERROR) << "Can't create a TaskScheduler instance.";
+    return;
+  }
   const std::wstring task_name = GetTaskName(scope);
   if (task_name.empty()) {
     LOG(ERROR) << "Empty task name during uninstall.";
     return;
   }
-
-  task_scheduler->DeleteTask(task_name.c_str());
-  VLOG(1) << "UnregisterWakeTask succeeded: " << task_name;
+  if (task_scheduler->DeleteTask(task_name)) {
+    VLOG(1) << "UnregisterWakeTask succeeded: " << task_name;
+  } else {
+    VLOG(1) << "UnregisterWakeTask failed: " << task_name;
+  }
 }
 
 std::vector<IID> GetSideBySideInterfaces(UpdaterScope scope) {
@@ -501,7 +508,10 @@ RegisterWakeTaskWorkItem::~RegisterWakeTaskWorkItem() = default;
 bool RegisterWakeTaskWorkItem::DoImpl() {
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope_);
-  CHECK(task_scheduler);
+  if (!task_scheduler) {
+    LOG(ERROR) << "Can't create a TaskScheduler instance.";
+    return false;
+  }
 
   // Task already exists.
   if (!GetTaskName(scope_).empty()) {
@@ -515,10 +525,13 @@ bool RegisterWakeTaskWorkItem::DoImpl() {
     return false;
   }
 
-  CHECK(!task_scheduler->IsTaskRegistered(task_name.c_str()));
+  if (task_scheduler->IsTaskRegistered(task_name)) {
+    LOG(ERROR) << "Unexpected task name found. " << task_name;
+    return false;
+  }
 
   if (!task_scheduler->RegisterTask(
-          task_name.c_str(), GetTaskDisplayName(scope_).c_str(), run_command_,
+          task_name, GetTaskDisplayName(scope_), run_command_,
           TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY |
               TaskScheduler::TriggerType::TRIGGER_TYPE_LOGON,
           true)) {
@@ -533,10 +546,12 @@ void RegisterWakeTaskWorkItem::RollbackImpl() {
   if (task_name_.empty()) {
     return;
   }
-
-  auto task_scheduler = TaskScheduler::CreateInstance(scope_);
-  CHECK(task_scheduler);
-  task_scheduler->DeleteTask(task_name_.c_str());
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope_);
+  if (!task_scheduler) {
+    return;
+  }
+  std::ignore = task_scheduler->DeleteTask(task_name_);
 }
 
 }  // namespace updater

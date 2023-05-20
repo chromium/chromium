@@ -51,12 +51,6 @@ void PrefRegistrySimple::RegisterListPref(const std::string& path,
 }
 
 void PrefRegistrySimple::RegisterListPref(const std::string& path,
-                                          base::Value default_value,
-                                          uint32_t flags) {
-  RegisterPreference(path, std::move(default_value), flags);
-}
-
-void PrefRegistrySimple::RegisterListPref(const std::string& path,
                                           base::Value::List default_value,
                                           uint32_t flags) {
   RegisterPreference(path, base::Value(std::move(default_value)), flags);
@@ -65,12 +59,6 @@ void PrefRegistrySimple::RegisterListPref(const std::string& path,
 void PrefRegistrySimple::RegisterDictionaryPref(const std::string& path,
                                                 uint32_t flags) {
   RegisterPreference(path, base::Value(base::Value::Type::DICT), flags);
-}
-
-void PrefRegistrySimple::RegisterDictionaryPref(const std::string& path,
-                                                base::Value default_value,
-                                                uint32_t flags) {
-  RegisterPreference(path, std::move(default_value), flags);
 }
 
 void PrefRegistrySimple::RegisterDictionaryPref(const std::string& path,

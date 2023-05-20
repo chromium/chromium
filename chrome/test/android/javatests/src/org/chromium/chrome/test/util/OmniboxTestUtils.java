@@ -53,10 +53,6 @@ import java.util.function.Function;
 public class OmniboxTestUtils {
     /** Value indicating that the index is not valid. */
     public static final int SUGGESTION_INDEX_INVALID = -1;
-    /** Maximum time to wait for the Omnibox content to stabilize. */
-    private static final int MAX_TIME_TO_POLL_MS = 300;
-    /** Interval between subsequent polls. */
-    private static final int POLL_INTERVAL_MS = 30;
 
     private final @NonNull Activity mActivity;
     private final @NonNull LocationBarLayout mLocationBar;
@@ -145,7 +141,7 @@ public class OmniboxTestUtils {
                     Context.INPUT_METHOD_SERVICE);
             Criteria.checkThat("Keyboard did not reach expected state", imm.isActive(mUrlBar),
                     Matchers.is(active));
-        }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
+        });
     }
 
     /**
@@ -165,7 +161,7 @@ public class OmniboxTestUtils {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat("Omnibox not shown.", mUrlBar.isShown(), Matchers.is(true));
             Criteria.checkThat("Omnibox not focusable.", mUrlBar.isFocusable(), Matchers.is(true));
-        }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
+        });
 
         TestThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.requestFocus());
         waitAnimationsComplete();
@@ -211,7 +207,7 @@ public class OmniboxTestUtils {
                     suggestionsDropdown.getViewGroup().isShown(), Matchers.is(true));
             Criteria.checkThat("suggestion list has no entries",
                     suggestionsDropdown.getDropdownItemViewCountForTest(), Matchers.greaterThan(0));
-        }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
+        });
     }
 
     /**
@@ -285,7 +281,7 @@ public class OmniboxTestUtils {
                 }
             }
             return false;
-        }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
+        });
 
         return result.get();
     }
@@ -484,7 +480,7 @@ public class OmniboxTestUtils {
                 // URL bar is not focused. Match against the content.
                 Criteria.checkThat(mUrlBar.getText().toString(), textMatcher);
             }
-        }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
+        });
     }
 
     /**
@@ -526,7 +522,7 @@ public class OmniboxTestUtils {
             Criteria.checkThat("Composing Span End",
                     BaseInputConnection.getComposingSpanEnd(composingText),
                     Matchers.is(composingRangeEnd));
-        }, MAX_TIME_TO_POLL_MS, POLL_INTERVAL_MS);
+        });
     }
 
     /**

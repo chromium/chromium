@@ -91,8 +91,8 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/browser/web_contents.h"
@@ -523,7 +523,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
       crosapi::AccountManagerMojoService* mojo_service =
           MaybeGetAshAccountManagerMojoServiceForTests();
       DCHECK(mojo_service);
-      mojo_service->OnAccountAdditionFinishedForTesting(
+      mojo_service->OnAccountUpsertionFinishedForTesting(
           account_manager::AccountUpsertionResult::FromAccount(
               {kAccountKey, email}));
       fake_ui->CloseDialog();

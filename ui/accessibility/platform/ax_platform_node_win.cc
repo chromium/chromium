@@ -6762,7 +6762,7 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
       ia2_role = IA2_ROLE_LANDMARK;
       break;
     case ax::mojom::Role::kBlockquote:
-      ia2_role = IA2_ROLE_SECTION;
+      ia2_role = IA2_ROLE_BLOCK_QUOTE;
       break;
     case ax::mojom::Role::kCanvas:
       if (GetBoolAttribute(ax::mojom::BoolAttribute::kCanvasHasFallback)) {

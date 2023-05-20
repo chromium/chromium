@@ -5,9 +5,12 @@
 import 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
@@ -137,8 +140,13 @@ suite('shortcutCustomizationAppTest', function() {
         subSections[subsectionIndex]!.shadowRoot!.querySelectorAll(
             'accelerator-row') as NodeListOf<AcceleratorRowElement>;
 
-    // Click on the first accelerator, expect the edit dialog to open.
-    accelerators[0]!.click();
+    // Click on the first accelerator's edit icon, expect the edit dialog to
+    // open.
+    const acceleratorView =
+        accelerators[0]!.shadowRoot!.querySelectorAll('accelerator-view');
+    const editIconContainer = acceleratorView[0]!.shadowRoot!.querySelector(
+                                  '#editIconContainer') as HTMLDivElement;
+    editIconContainer.click();
     await flushTasks();
   }
 
@@ -148,6 +156,7 @@ suite('shortcutCustomizationAppTest', function() {
   }
 
   test('LoadFakeWindowsAndDesksPage', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -176,6 +185,13 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(
         page.i18n(getSubcategoryNameStringId(expectedSecondSubcat)),
         actualSubsections[1]!.title);
+    // Assert no lock icon displayed next to subsection title under
+    // WindowsAndDesks category.
+    for (const subsection of actualSubsections) {
+      const lockIcon = strictQuery(
+          '.lock-icon-container', subsection.shadowRoot, HTMLDivElement);
+      assertFalse(isVisible(lockIcon));
+    }
     // Assert 2 accelerators are loaded for the second subcategory.
     assertEquals(
         (expectedLayouts!.get(expectedSecondSubcat) as LayoutInfo[]).length,
@@ -183,6 +199,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('LoadFakeBrowserPage', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -208,6 +225,13 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(
         page.i18n(getSubcategoryNameStringId(keyIterator.value)),
         actualSubsections[0]!.title);
+    // Assert lock icon displayed next to every subcategories under Browser
+    // category.
+    for (const subsection of actualSubsections) {
+      const lockIcon = subsection!.shadowRoot!.querySelector(
+                           '.lock-icon-container') as IronIconElement;
+      assertTrue(isVisible(lockIcon));
+    }
     // Assert only 1 accelerator is within this subsection.
     assertEquals(
         (expectedLayouts!.get(keyIterator.value) as LayoutInfo[]).length,
@@ -227,8 +251,16 @@ suite('shortcutCustomizationAppTest', function() {
         subSections[0]!.shadowRoot!.querySelectorAll('accelerator-row');
     // Only three accelerators rows for this subsection.
     assertEquals(3, accelerators.length);
-    // Click on the first accelerator, expect the edit dialog to open.
-    accelerators[0]!.click();
+
+    // Click on the first accelerator's edit button, expect the edit dialog to
+    // open.
+    const acceleratorView =
+        accelerators[0]!.shadowRoot!.querySelectorAll('accelerator-view');
+    assertEquals(1, acceleratorView.length);
+    const editIconContainer = acceleratorView[0]!.shadowRoot!.querySelector(
+                                  '#editIconContainer') as HTMLDivElement;
+    editIconContainer.click();
+
     await flushTasks();
     editDialog = getPage().shadowRoot!.querySelector('#editDialog');
     assertTrue(!!editDialog);
@@ -514,6 +546,9 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('DisableDefaultAccelerator', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    manager!.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager!.setAcceleratorLayoutLookup(fakeLayoutInfo);
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -526,10 +561,21 @@ suite('shortcutCustomizationAppTest', function() {
     let acceleratorList =
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
+
+    // Get the accelerator info before removal.
+    const accelViewElement = strictQuery(
+        '#acceleratorItem', acceleratorList[0]!.shadowRoot,
+        AcceleratorViewElement);
+    const acceleratorInfo =
+        (accelViewElement as AcceleratorViewElement).acceleratorInfo;
+
+    // Before removal, there should be exactly one accelerator present in the
+    // dialog, and its state should be set to kEnabled.
     assertEquals(1, acceleratorList!.length);
-    const editView = acceleratorList[0] as AcceleratorEditViewElement;
+    assertEquals(AcceleratorState.kEnabled, acceleratorInfo.state);
 
     // Click on remove button.
+    const editView = acceleratorList[0] as AcceleratorEditViewElement;
     const deleteButton =
         editView!.shadowRoot!.querySelector('#deleteButton') as CrButtonElement;
     deleteButton.click();
@@ -541,15 +587,12 @@ suite('shortcutCustomizationAppTest', function() {
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
 
-    // Expect that the accelerator has now been disabled but not removed.
+    // After removal, expect that the accelerator has now been disabled and
+    // removed.
     acceleratorList =
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
-    assertEquals(1, acceleratorList!.length);
-    const accelViewElement =
-        acceleratorList[0]!.shadowRoot!.querySelector('#acceleratorItem');
-    const acceleratorInfo =
-        (accelViewElement as AcceleratorViewElement).acceleratorInfo;
+    assertEquals(0, acceleratorList!.length);
     assertEquals(AcceleratorState.kDisabledByUser, acceleratorInfo.state);
   });
 
@@ -563,8 +606,10 @@ suite('shortcutCustomizationAppTest', function() {
     assertFalse(!!restoreDialog);
 
     // Click on the Restore all button.
-    const restoreButton = getPage().shadowRoot!.querySelector(
-                              '#restoreAllButton') as CrButtonElement;
+    const restoreButton =
+        getPage()
+            .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
+            .shadowRoot!.querySelector('#restoreAllButton') as CrButtonElement;
     restoreButton!.click();
 
     await flushTasks();
@@ -606,8 +651,10 @@ suite('shortcutCustomizationAppTest', function() {
     page = initShortcutCustomizationAppElement();
     waitAfterNextRender(getPage());
     await flushTasks();
-    const restoreButton = getPage().shadowRoot!.querySelector(
-                              '#restoreAllButton') as CrButtonElement;
+    const restoreButton =
+        getPage()
+            .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
+            .shadowRoot!.querySelector('#restoreAllButton') as CrButtonElement;
     await flushTasks();
     assertTrue(isVisible(restoreButton));
   });
@@ -617,8 +664,10 @@ suite('shortcutCustomizationAppTest', function() {
     page = initShortcutCustomizationAppElement();
     waitAfterNextRender(getPage());
     await flushTasks();
-    const restoreButton = getPage().shadowRoot!.querySelector(
-                              '#restoreAllButton') as CrButtonElement;
+    const restoreButton =
+        getPage()
+            .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
+            .shadowRoot!.querySelector('#restoreAllButton') as CrButtonElement;
     await flushTasks();
     assertFalse(isVisible(restoreButton));
   });
@@ -768,6 +817,44 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(1, textLookup.length);
   });
 
+  test('BottomNavContentPresentInSideNav', async () => {
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+    const navigationPanel =
+        strictQuery('navigation-view-panel', getPage().shadowRoot, HTMLElement);
+    const sideNav =
+        strictQuery('#sideNav', navigationPanel.shadowRoot, HTMLDivElement);
+    const navContentInSideNavSlot = sideNav.querySelector<HTMLSlotElement>(
+        'slot[name=bottom-nav-content-panel]');
+    assertTrue(!!navContentInSideNavSlot);
+    const navContentInSideNavWrapper =
+        navContentInSideNavSlot.assignedElements()[0];
+    assertTrue(!!navContentInSideNavWrapper);
+    const navContentInSideNav = navContentInSideNavWrapper.querySelector(
+        'shortcuts-bottom-nav-content');
+    assertTrue(
+        !!navContentInSideNav, 'Bottom nav content in side nav should exist');
+  });
+
+  test('BottomNavContentPresentInDrawer', async () => {
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+    const navigationPanel =
+        strictQuery('navigation-view-panel', getPage().shadowRoot, HTMLElement);
+    const drawer =
+        strictQuery('cr-drawer', navigationPanel.shadowRoot, CrDrawerElement);
+    const navContentInDrawerSlot = drawer.querySelector<HTMLSlotElement>(
+        'slot[name=bottom-nav-content-drawer]');
+    assertTrue(!!navContentInDrawerSlot);
+    const navContentInDrawerWrapper =
+        navContentInDrawerSlot?.assignedElements()[0];
+    assertTrue(!!navContentInDrawerWrapper);
+    const navContentInDrawer =
+        navContentInDrawerWrapper.querySelector('shortcuts-bottom-nav-content');
+    assertTrue(
+        !!navContentInDrawer, 'Bottom nav content in drawer should exist');
+  });
+
   test('LaunchOldKeyboardSettings', async () => {
     loadTimeData.overrideValues({
       isInputDeviceSettingsSplitEnabled: false,
@@ -776,8 +863,10 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
     const actualLink =
         getPage()
-            .shadowRoot!.querySelector('#keyboardSettingsLinkContainer')!
-            .querySelector('#keyboardSettingsLink') as HTMLLinkElement;
+            .shadowRoot!.querySelector(
+                            'shortcuts-bottom-nav-content')!.shadowRoot!
+            .querySelector('#keyboardSettingsLinkContainer')!.querySelector(
+                '#keyboardSettingsLink') as HTMLLinkElement;
     assertEquals('chrome://os-settings/keyboard-overlay', actualLink.href);
   });
 
@@ -789,8 +878,10 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
     const actualLink =
         getPage()
-            .shadowRoot!.querySelector('#keyboardSettingsLinkContainer')!
-            .querySelector('#keyboardSettingsLink') as HTMLLinkElement;
+            .shadowRoot!.querySelector(
+                            'shortcuts-bottom-nav-content')!.shadowRoot!
+            .querySelector('#keyboardSettingsLinkContainer')!.querySelector(
+                '#keyboardSettingsLink') as HTMLLinkElement;
     assertEquals('chrome://os-settings/per-device-keyboard', actualLink.href);
   });
 });

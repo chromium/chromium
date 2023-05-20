@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
+import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 import("//third_party/icu/config.gni")
 
@@ -18,7 +19,7 @@ generate_jni("content_shell_jni_headers") {
   ]
 }
 
-shared_library("libcontent_shell_content_view") {
+shared_library_with_jni("libcontent_shell_content_view") {
   testonly = true
   deps = [
     ":content_shell_jni_headers",
@@ -41,9 +42,10 @@ shared_library("libcontent_shell_content_view") {
   sources = [ "shell_library_loader.cc" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
+  java_targets = [ ":content_shell_apk" ]
 }
 
-shared_library("libcontent_native_test") {
+shared_library_with_jni("libcontent_native_test") {
   testonly = true
   deps = [
     "//base",
@@ -56,6 +58,7 @@ shared_library("libcontent_native_test") {
   sources = [ "shell_test_library_loader.cc" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
+  java_targets = [ ":content_shell_test_apk__test_apk" ]
 }
 
 android_resources("content_shell_java_resources") {
@@ -212,6 +215,7 @@ content_shell_apk_tmpl("content_shell_apk") {
   android_manifest = content_shell_manifest
   android_manifest_dep = ":content_shell_manifest"
   shared_libraries = [ ":libcontent_shell_content_view" ]
+  srcjar_deps = [ ":libcontent_shell_content_view__jni_registration" ]
   command_line_flags_file = "content-shell-command-line"
 }
 
@@ -221,6 +225,7 @@ content_shell_apk_tmpl("content_shell_test_apk") {
   android_manifest = content_shell_test_manifest
   android_manifest_dep = ":content_shell_test_manifest"
   shared_libraries = [ ":libcontent_native_test" ]
+  srcjar_deps = [ ":libcontent_native_test__jni_registration" ]
   deps = [
     "//base:base_java_test_support",
     "//base:base_javatests",

@@ -230,9 +230,8 @@ static void WriteAnrAsMime(crashpad::FileReader* anr_reader,
   crashpad::HTTPMultipartBuilder builder;
   builder.SetFormData("version", version_number);
   builder.SetFormData("product", "Chrome_Android");
-  std::string channel =
-      version_info::GetChannelString(version_info::android::GetChannel());
-  builder.SetFormData("channel", channel);
+  builder.SetFormData("channel", std::string(version_info::GetChannelString(
+                                     version_info::android::GetChannel())));
   if (!build_id.empty()) {
     builder.SetFormData("elf_build_id", build_id);
   }

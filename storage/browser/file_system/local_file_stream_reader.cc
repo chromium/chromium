@@ -204,7 +204,7 @@ void LocalFileStreamReader::DidOpenForRead(net::IOBuffer* buf,
 void LocalFileStreamReader::DidGetFileInfoForGetLength(
     net::Int64CompletionOnceCallback callback,
     base::FileErrorOr<base::File::Info> result) {
-  std::move(callback).Run([&]() -> int {
+  std::move(callback).Run([&]() -> int64_t {
     if (!result.has_value()) {
       return net::FileErrorToNetError(result.error());
     }

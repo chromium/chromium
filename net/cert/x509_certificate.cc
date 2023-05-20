@@ -133,12 +133,8 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBufferFromBytesWithSanityCheck(
 scoped_refptr<X509Certificate> X509Certificate::CreateFromBuffer(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates) {
-  DCHECK(cert_buffer);
-  auto cert = base::WrapRefCounted(
-      new X509Certificate(std::move(cert_buffer), std::move(intermediates)));
-  if (!cert->cert_buffer())
-    return nullptr;  // Initialize() failed.
-  return cert;
+  return CreateFromBufferUnsafeOptions(std::move(cert_buffer),
+                                       std::move(intermediates), {});
 }
 
 // static
@@ -147,11 +143,12 @@ scoped_refptr<X509Certificate> X509Certificate::CreateFromBufferUnsafeOptions(
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates,
     UnsafeCreateOptions options) {
   DCHECK(cert_buffer);
-  auto cert = base::WrapRefCounted(new X509Certificate(
-      std::move(cert_buffer), std::move(intermediates), options));
-  if (!cert->cert_buffer())
-    return nullptr;  // Initialize() failed.
-  return cert;
+  ParsedFields parsed;
+  if (!parsed.Initialize(cert_buffer.get(), options)) {
+    return nullptr;
+  }
+  return base::WrapRefCounted(new X509Certificate(
+      std::move(parsed), std::move(cert_buffer), std::move(intermediates)));
 }
 
 // static
@@ -706,32 +703,28 @@ bool X509Certificate::IsSelfSigned(CRYPTO_BUFFER* cert_buffer) {
 }
 
 X509Certificate::X509Certificate(
+    ParsedFields parsed,
     bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates)
-    : X509Certificate(std::move(cert_buffer), std::move(intermediates), {}) {}
-
-X509Certificate::X509Certificate(
-    bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
-    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates,
-    UnsafeCreateOptions options)
-    : cert_buffer_(std::move(cert_buffer)),
-      intermediate_ca_certs_(std::move(intermediates)) {
-  // Platform-specific initialization.
-  if (!Initialize(options) && cert_buffer_) {
-    // Signal initialization failure by clearing cert_buffer_.
-    cert_buffer_.reset();
-  }
-}
+    : parsed_(std::move(parsed)),
+      cert_buffer_(std::move(cert_buffer)),
+      intermediate_ca_certs_(std::move(intermediates)) {}
 
 X509Certificate::~X509Certificate() = default;
 
-bool X509Certificate::Initialize(UnsafeCreateOptions options) {
+X509Certificate::ParsedFields::ParsedFields() = default;
+X509Certificate::ParsedFields::ParsedFields(ParsedFields&&) = default;
+X509Certificate::ParsedFields::~ParsedFields() = default;
+
+bool X509Certificate::ParsedFields::Initialize(
+    const CRYPTO_BUFFER* cert_buffer,
+    X509Certificate::UnsafeCreateOptions options) {
   der::Input tbs_certificate_tlv;
   der::Input signature_algorithm_tlv;
   der::BitString signature_value;
 
-  if (!ParseCertificate(der::Input(CRYPTO_BUFFER_data(cert_buffer_.get()),
-                                   CRYPTO_BUFFER_len(cert_buffer_.get())),
+  if (!ParseCertificate(der::Input(CRYPTO_BUFFER_data(cert_buffer),
+                                   CRYPTO_BUFFER_len(cert_buffer)),
                         &tbs_certificate_tlv, &signature_algorithm_tlv,
                         &signature_value, nullptr)) {
     return false;

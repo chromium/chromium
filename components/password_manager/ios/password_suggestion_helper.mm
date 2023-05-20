@@ -97,6 +97,7 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
                                           displayDescription:realm
                                                         icon:nil
                                                   identifier:0
+                                           backendIdentifier:nil
                                               requiresReauth:YES]];
     }
   }

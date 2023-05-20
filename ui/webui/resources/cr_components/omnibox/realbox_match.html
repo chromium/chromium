@@ -221,10 +221,11 @@
     tabindex="2">
   </cr-icon-button>
 </div>
-<div class="container" aria-hidden="true">
+<div class="container" aria-hidden="true" hidden="[[!match.actions.length]]">
   <template is="dom-repeat" items="[[match.actions]]">
-    <cr-realbox-action id="action" action="[[item]]" action-index="[[actionIndex_(item)]]" on-execute-action="onExecuteAction_"
-                     tabindex="1">
+    <cr-realbox-action id="action" action="[[item]]"
+      action-index="[[actionIndex_(item)]]"
+      on-execute-action="onExecuteAction_" tabindex="1">
     </cr-realbox-action>
   </template>
 </div>

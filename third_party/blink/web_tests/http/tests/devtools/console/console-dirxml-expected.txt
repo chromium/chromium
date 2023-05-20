@@ -1,8 +1,8 @@
 Tests that console logging dumps proper messages.
 
-console-dirxml.js:17 #document
-console-dirxml.js:18 #document-fragment
-console-dirxml.js:19 <p></p>
-console-dirxml.js:20 [p]
-console-dirxml.js:21 (3) [document, document-fragment, span]
+console-dirxml.js:20 #document
+console-dirxml.js:21 #document-fragment
+console-dirxml.js:22 <p></p>
+console-dirxml.js:23 [p]
+console-dirxml.js:24 (3) [document, document-fragment, span]
 

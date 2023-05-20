@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -22,6 +23,7 @@
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/predictor_jank_tracker.h"
+#include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "cc/scheduler/scheduler.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -44,6 +46,8 @@ struct GlobalMetricsTrackers {
   raw_ptr<EventLatencyTracker, DanglingUntriaged> event_latency_tracker =
       nullptr;
   raw_ptr<PredictorJankTracker> predictor_jank_tracker = nullptr;
+  raw_ptr<ScrollJankDroppedFrameTracker> scroll_jank_dropped_frame_tracker =
+      nullptr;
 };
 
 // This is used for tracing and reporting the duration of pipeline stages within
@@ -574,6 +578,8 @@ class CC_EXPORT CompositorFrameReporter {
   std::vector<std::string> high_latency_substages_;
 
   ReporterType reporter_type_;
+
+  mutable base::MetricsSubSampler metrics_subsampler_;
 
   base::WeakPtrFactory<CompositorFrameReporter> weak_factory_{this};
 };

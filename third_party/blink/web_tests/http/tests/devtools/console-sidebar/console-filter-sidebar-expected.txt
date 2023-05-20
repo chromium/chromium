@@ -45,9 +45,9 @@ SIDEBAR:
 Running: selectingErrorGroup
 Selecting item: 1 error
 MESSAGES:
-console-filter-sidebar.js:19 Error from test
-error1 @ console-filter-sidebar.js:19
-(anonymous) @ console-filter-sidebar.js:55
+console-filter-sidebar.js:22 Error from test
+error1 @ console-filter-sidebar.js:22
+(anonymous) @ console-filter-sidebar.js:58
 
 SIDEBAR:
 > 4 messages
@@ -71,7 +71,7 @@ MESSAGES:
 log-source.js:3 Log from log-source
 log-source.js:8 Warning from log-source
 warn2 @ log-source.js:8
-(anonymous) @ console-filter-sidebar.js:51
+(anonymous) @ console-filter-sidebar.js:54
 
 Running: clearConsole
 SIDEBAR:

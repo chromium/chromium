@@ -248,6 +248,13 @@ const base::FeatureParam<OsIntegrationSubManagersStage>
         OsIntegrationSubManagersStage::kWriteConfig, &sub_manager_stages};
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+// If enabled, specified extensions cannot be closed via the task manager.
+BASE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension,
+             "DesktopTaskManagerEndProcessDisabledForExtension",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Generates customised default offline page that is shown when web app is
 // offline if no custom page is provided by developer.
 BASE_FEATURE(kPWAsDefaultOfflinePage,
@@ -398,6 +405,11 @@ BASE_FEATURE(kEnableWebHidOnExtensionServiceWorker,
 // Enable WebUSB on extension service workers.
 BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
              "EnableWebUsbOnExtensionServiceWorker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable extended descriptions for key settings in Chrome settings.
+BASE_FEATURE(kExtendedSettingsDescriptions,
+             "ExtendedSettingsDescriptions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -993,6 +1005,11 @@ BASE_FEATURE(kRemoveSupervisedUsersOnStartup,
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+// Enables extensions module in Safety Check.
+BASE_FEATURE(kSafetyCheckExtensions,
+             "SafetyCheckExtensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables notification permission module in Safety Check.
 BASE_FEATURE(kSafetyCheckNotificationPermissions,
              "SafetyCheckNotificationPermissions",
@@ -1131,9 +1148,9 @@ BASE_FEATURE(kTreatUnsafeDownloadsAsActive,
              "TreatUnsafeDownloadsAsActive",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Block downloads delivered over insecure transports (i.e. not over HTTPS).
-BASE_FEATURE(kBlockInsecureDownloads,
-             "BlockInsecureDownloads",
+// Show warnings on downloads not delivered over HTTPS.
+BASE_FEATURE(kInsecureDownloadWarnings,
+             "InsecureDownloadWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TrustSafetySentimentSurvey

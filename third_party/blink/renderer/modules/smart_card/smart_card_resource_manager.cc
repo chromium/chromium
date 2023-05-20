@@ -18,11 +18,13 @@
 namespace blink {
 
 namespace {
-const char kWatchForReadersNotSupported[] =
+constexpr char kWatchForReadersNotSupported[] =
     "Watching for reader addition/removal is not supported in this platform.";
-const char kContextGone[] = "Script context has shut down.";
-const char kFeaturePolicyBlocked[] =
+constexpr char kContextGone[] = "Script context has shut down.";
+constexpr char kFeaturePolicyBlocked[] =
     "Access to the feature \"smart-card\" is disallowed by permissions policy.";
+constexpr char kServiceDisconnected[] =
+    "Disconnected from the smart card service.";
 
 bool ShouldBlockSmartCardServiceCall(ExecutionContext* context,
                                      ExceptionState& exception_state) {
@@ -301,8 +303,28 @@ void SmartCardResourceManager::ResolveWatchForReadersPromise(
 
 void SmartCardResourceManager::CloseServiceConnection() {
   service_.reset();
-  // TODO(crbug.com/1386175): Deal with promises in
-  // get_readers_promises_ and watch_for_readers_promises_
+
+  // This loop is resolving promises with a value and so it is possible for
+  // script to be executed in the process of determining if the value is a
+  // thenable. Move the set to a local variable to prevent such execution from
+  // invalidating the iterator used by the loop.
+  HeapHashSet<Member<ScriptPromiseResolver>> get_readers_promises;
+  get_readers_promises.swap(get_readers_promises_);
+  for (auto& resolver : get_readers_promises) {
+    resolver->Resolve(HeapVector<Member<SmartCardReader>>());
+  }
+
+  // Similar protection is unnecessary when rejecting a promise.
+  for (auto& resolver : watch_for_readers_promises_) {
+    ScriptState* script_state = resolver->GetScriptState();
+    if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                       script_state)) {
+      continue;
+    }
+    ScriptState::Scope script_state_scope(script_state);
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     kServiceDisconnected);
+  }
 }
 
 }  // namespace blink

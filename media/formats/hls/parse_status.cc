@@ -67,8 +67,7 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kRenditionGroupDoesNotExist);
   }
 
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 #undef PARSE_STATUS_CODE_CASE

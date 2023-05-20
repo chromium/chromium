@@ -143,7 +143,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // GetAnchorRect() has changed. You only need to do this if you have
   // overridden GetAnchorRect() - if you are using an anchor view or anchor rect
   // normally, do not call this.
-  void OnAnchorBoundsChanged();
+  virtual void OnAnchorBoundsChanged();
 
   // Call this method to update view shown time stamp of underneath input
   // protectors.

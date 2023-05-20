@@ -8,24 +8,46 @@
 
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
+@interface KeyEquivalentAndModifierMask ()
+
+@property(copy) NSString* keyEquivalent;
+@property(readwrite) NSUInteger modifierMask;
+
+@end
+
+@implementation KeyEquivalentAndModifierMask
+
+@synthesize keyEquivalent = _keyEquivalent;
+@synthesize modifierMask = _modifierMask;
+
+- (void)dealloc {
+  [_keyEquivalent release];
+  [super dealloc];
+}
+
+@end
+
 namespace ui {
 
-void GetKeyEquivalentAndModifierMaskFromAccelerator(
-    const ui::Accelerator& accelerator,
-    NSString** key_equivalent,
-    NSUInteger* modifier_mask) {
+KeyEquivalentAndModifierMask* GetKeyEquivalentAndModifierMaskFromAccelerator(
+    const ui::Accelerator& accelerator) {
   DCHECK_NE(ui::VKEY_UNKNOWN, accelerator.key_code());
   NSUInteger cocoa_modifiers = 0;
-  if (accelerator.IsShiftDown())
+  if (accelerator.IsShiftDown()) {
     cocoa_modifiers |= NSEventModifierFlagShift;
-  if (accelerator.IsCtrlDown())
+  }
+  if (accelerator.IsCtrlDown()) {
     cocoa_modifiers |= NSEventModifierFlagControl;
-  if (accelerator.IsAltDown())
+  }
+  if (accelerator.IsAltDown()) {
     cocoa_modifiers |= NSEventModifierFlagOption;
-  if (accelerator.IsCmdDown())
+  }
+  if (accelerator.IsCmdDown()) {
     cocoa_modifiers |= NSEventModifierFlagCommand;
-  if (accelerator.IsFunctionDown())
+  }
+  if (accelerator.IsFunctionDown()) {
     cocoa_modifiers |= NSEventModifierFlagFunction;
+  }
 
   unichar shifted_character;
   unichar character;
@@ -36,10 +58,16 @@ void GetKeyEquivalentAndModifierMaskFromAccelerator(
   // If the key equivalent is itself shifted, then drop Shift from the modifier
   // flags, otherwise Shift will be required. E.g., curly braces and plus are
   // both inherently shifted, so the key equivalents shouldn't require Shift.
-  if (shifted_character != character)
+  if (shifted_character != character) {
     cocoa_modifiers &= ~NSEventModifierFlagShift;
-  *key_equivalent = [NSString stringWithFormat:@"%C", shifted_character];
-  *modifier_mask = cocoa_modifiers;
+  }
+
+  KeyEquivalentAndModifierMask* equivalent =
+      [[[KeyEquivalentAndModifierMask alloc] init] autorelease];
+  equivalent.keyEquivalent =
+      [NSString stringWithFormat:@"%C", shifted_character];
+  equivalent.modifierMask = cocoa_modifiers;
+  return equivalent;
 }
 
 }  // namespace ui

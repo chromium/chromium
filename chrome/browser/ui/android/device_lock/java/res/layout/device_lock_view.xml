@@ -61,14 +61,14 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
 
             <TextView
-                android:id="@+id/device_lock_highlighted_notice"
+                android:id="@+id/device_lock_notice"
                 android:layout_below="@id/device_lock_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="@string/device_lock_highlighted_notice"
+                android:text="@string/device_lock_notice"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
         </RelativeLayout>
 

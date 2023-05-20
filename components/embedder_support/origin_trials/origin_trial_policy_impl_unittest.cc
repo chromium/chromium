@@ -5,6 +5,7 @@
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -13,7 +14,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/embedder_support/origin_trials/features.h"
 #include "components/embedder_support/switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
 
 namespace embedder_support {
 
@@ -94,8 +98,6 @@ const uint8_t kToken3Signature[] = {
 const char kToken3SignatureEncoded[] =
     "M0k3DpK8+PZxqXpG1TVtMNaJ46RbC65sd0fpWiAUDW/etCDmzjrxy5L5r7KJGc41zGNfWdnvj/"
     "mhktqL2v3xCA==";
-const char kTokenSeparator[] = "|";
-
 class OriginTrialPolicyImplTest : public testing::Test {
  protected:
   OriginTrialPolicyImplTest()
@@ -109,12 +111,10 @@ class OriginTrialPolicyImplTest : public testing::Test {
             std::string(reinterpret_cast<const char*>(kToken3Signature),
                         std::size(kToken3Signature))),
         two_disabled_tokens_(
-            base::JoinString({kToken1SignatureEncoded, kToken2SignatureEncoded},
-                             kTokenSeparator)),
-        three_disabled_tokens_(
-            base::JoinString({kToken1SignatureEncoded, kToken2SignatureEncoded,
-                              kToken3SignatureEncoded},
-                             kTokenSeparator)),
+            {kToken1SignatureEncoded, kToken2SignatureEncoded}),
+        three_disabled_tokens_({kToken1SignatureEncoded,
+                                kToken2SignatureEncoded,
+                                kToken3SignatureEncoded}),
         manager_(base::WrapUnique(new OriginTrialPolicyImpl())),
         default_keys_(manager_->GetPublicKeys()) {}
 
@@ -131,8 +131,8 @@ class OriginTrialPolicyImplTest : public testing::Test {
   std::string token1_signature_;
   std::string token2_signature_;
   std::string token3_signature_;
-  std::string two_disabled_tokens_;
-  std::string three_disabled_tokens_;
+  std::vector<std::string> two_disabled_tokens_;
+  std::vector<std::string> three_disabled_tokens_;
 
  private:
   std::unique_ptr<OriginTrialPolicyImpl> manager_;
@@ -235,7 +235,7 @@ TEST_F(OriginTrialPolicyImplTest, NoDisabledTokens) {
 }
 
 TEST_F(OriginTrialPolicyImplTest, DisableOneToken) {
-  EXPECT_TRUE(manager()->SetDisabledTokens(kToken1SignatureEncoded));
+  EXPECT_TRUE(manager()->SetDisabledTokens({kToken1SignatureEncoded}));
   EXPECT_TRUE(manager()->IsTokenDisabled(token1_signature_));
   EXPECT_FALSE(manager()->IsTokenDisabled(token2_signature_));
 }
@@ -278,7 +278,7 @@ TEST_F(OriginTrialPolicyImplTest, DisableFeatureForUserAfterCheck) {
   EXPECT_FALSE(manager()->IsFeatureDisabledForUser("FrobulateThirdParty"));
 }
 
-// Tests for initialization from command line
+// Tests for initialization from command line and settings
 class OriginTrialPolicyImplInitializationTest
     : public OriginTrialPolicyImplTest {
  protected:
@@ -294,7 +294,6 @@ class OriginTrialPolicyImplInitializationTest
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     ASSERT_FALSE(command_line->HasSwitch(kOriginTrialPublicKey));
     ASSERT_FALSE(command_line->HasSwitch(kOriginTrialDisabledFeatures));
-    ASSERT_FALSE(command_line->HasSwitch(kOriginTrialDisabledTokens));
 
     // Setup command line with various updated values
     // New public key
@@ -303,11 +302,18 @@ class OriginTrialPolicyImplInitializationTest
     // One disabled feature
     command_line->AppendSwitchASCII(kOriginTrialDisabledFeatures,
                                     kOneDisabledFeature);
-    // One disabled token
-    command_line->AppendSwitchASCII(kOriginTrialDisabledTokens,
-                                    kToken1SignatureEncoded);
+    // One disabled token in the settings returned by the provider.
+    blink::mojom::OriginTrialsSettingsPtr settings =
+        blink::mojom::OriginTrialsSettings::New();
+    settings->disabled_tokens = {kToken1SignatureEncoded};
+    blink::OriginTrialsSettingsProvider::Get()->SetSettings(
+        std::move(settings));
 
     initialized_manager_ = base::WrapUnique(new OriginTrialPolicyImpl());
+
+    // Provider is no longer needed after manager is initialized.
+    // Reset the provider to free up the mock.
+    blink::OriginTrialsSettingsProvider::Get()->SetSettings(nullptr);
   }
 
  private:

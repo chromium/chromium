@@ -7,10 +7,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_css_style_declaration.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_return_value_for_core.h"
-#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -385,79 +383,6 @@ v8::Local<v8::Array> EnumerateIndexedProperties(v8::Isolate* isolate,
   for (uint32_t i = 0; i < length; ++i)
     elements.UncheckedAppend(v8::Integer::New(isolate, i));
   return v8::Array::New(isolate, elements.data(), elements.size());
-}
-
-void InstallCSSPropertyAttributes(
-    v8::Isolate* isolate,
-    const DOMWrapperWorld& world,
-    v8::Local<v8::Template> instance_template,
-    v8::Local<v8::Template> prototype_template,
-    v8::Local<v8::Template> interface_template,
-    v8::Local<v8::Signature> signature,
-    base::span<const char* const> css_property_names) {
-  const String kGetPrefix = "get ";
-  const String kSetPrefix = "set ";
-  for (const char* const property_name : css_property_names) {
-    v8::Local<v8::Value> v8_property_name = v8::External::New(
-        isolate,
-        const_cast<void*>(reinterpret_cast<const void*>(property_name)));
-    v8::Local<v8::FunctionTemplate> get_func = v8::FunctionTemplate::New(
-        isolate, CSSPropertyAttributeGet, v8_property_name, signature, 0,
-        v8::ConstructorBehavior::kThrow, v8::SideEffectType::kHasNoSideEffect);
-    v8::Local<v8::FunctionTemplate> set_func = v8::FunctionTemplate::New(
-        isolate, CSSPropertyAttributeSet, v8_property_name, signature, 1,
-        v8::ConstructorBehavior::kThrow, v8::SideEffectType::kHasSideEffect);
-    get_func->SetAcceptAnyReceiver(false);
-    set_func->SetAcceptAnyReceiver(false);
-    get_func->SetClassName(
-        V8AtomicString(isolate, String(kGetPrefix + property_name)));
-    set_func->SetClassName(
-        V8AtomicString(isolate, String(kSetPrefix + property_name)));
-    prototype_template->SetAccessorProperty(
-        V8AtomicString(isolate, property_name), get_func, set_func);
-  }
-}
-
-void CSSPropertyAttributeGet(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  CSSStyleDeclaration* blink_receiver =
-      V8CSSStyleDeclaration::ToWrappableUnsafe(info.This());
-  const char* property_name =
-      reinterpret_cast<const char*>(info.Data().As<v8::External>()->Value());
-  // TODO(andruud): AnonymousNamedGetter is not the best function.  Change the
-  // function to a more appropriate one.
-  auto&& return_value = blink_receiver->AnonymousNamedGetter(property_name);
-  bindings::V8SetReturnValue(info, return_value, info.GetIsolate(),
-                             bindings::V8ReturnValue::kNonNullable);
-}
-
-void CSSPropertyAttributeSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  v8::Isolate* isolate = info.GetIsolate();
-  const char* const class_like_name = "CSSStyleDeclaration";
-  const char* property_name =
-      reinterpret_cast<const char*>(info.Data().As<v8::External>()->Value());
-  ExceptionState exception_state(isolate, ExceptionState::kSetterContext,
-                                 class_like_name, property_name);
-
-  // [CEReactions]
-  CEReactionsScope ce_reactions_scope;
-
-  v8::Local<v8::Object> v8_receiver = info.This();
-  CSSStyleDeclaration* blink_receiver =
-      V8CSSStyleDeclaration::ToWrappableUnsafe(v8_receiver);
-  v8::Local<v8::Value> v8_property_value = info[0];
-  auto&& arg1_value = NativeValueTraits<IDLAny>::NativeValue(
-      isolate, v8_property_value, exception_state);
-  if (UNLIKELY(exception_state.HadException())) {
-    return;
-  }
-  v8::Local<v8::Context> receiver_context =
-      v8_receiver->GetCreationContextChecked();
-  ScriptState* receiver_script_state = ScriptState::From(receiver_context);
-  // TODO(andruud): AnonymousNamedSetter is not the best function.  Change the
-  // function to a more appropriate one.  It's better to pass |exception_state|
-  // as the implementation of AnonymousNamedSetter needs it.
-  blink_receiver->AnonymousNamedSetter(receiver_script_state, property_name,
-                                       arg1_value);
 }
 
 template <typename IDLType,

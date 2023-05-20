@@ -27,12 +27,12 @@ ENUM_FOR_COMPONENT(SHORTCUT,
 )
 
 struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
-  explicit Shortcut(const ShortcutId& shortcut_id);
+  Shortcut(const std::string& host_app_id, const std::string& local_id);
 
   Shortcut(const Shortcut&) = delete;
   Shortcut& operator=(const Shortcut&) = delete;
-  Shortcut(Shortcut&&);
-  Shortcut& operator=(Shortcut&&);
+  Shortcut(Shortcut&&) = delete;
+  Shortcut& operator=(Shortcut&&) = delete;
 
   ~Shortcut();
 
@@ -46,19 +46,23 @@ struct COMPONENT_EXPORT(SHORTCUT) Shortcut {
   // - host_app_id: app_1
   // - local_id: shortcut_1
   std::string ToString() const;
-
-  // Represents the unique identifier for a shortcut. This identifier should be
-  // unique within a profile, and stable across different user sessions.
-  ShortcutId shortcut_id;
   // Name of the shortcut.
   std::string name;
   // Shortcut creation source.
   ShortcutSource shortcut_source;
+
+  // 'host_app_id' and 'local_id' should not be changeable after creation.
   // The host app of the shortcut.
-  std::string host_app_id;
+  const std::string host_app_id;
   // The locally unique identifier for the shortcut within an app. This id would
   // be used to launch the shortcut or load shortcut icon from the app.
-  std::string local_id;
+  const std::string local_id;
+
+  // Represents the unique identifier for a shortcut. This identifier should be
+  // unique within a profile, and stable across different user sessions.
+  // 'shortcut_id' is generated from the hash of 'host_app_id' and 'local_id',
+  // these value should not be updated separately.
+  const ShortcutId shortcut_id;
 };
 
 using ShortcutPtr = std::unique_ptr<Shortcut>;
@@ -67,6 +71,10 @@ using Shortcuts = std::vector<ShortcutPtr>;
 // Creates a deep copy of `source_shortcuts`.
 COMPONENT_EXPORT(SHORTCUT)
 Shortcuts CloneShortcuts(const Shortcuts& source_shortcuts);
+
+COMPONENT_EXPORT(SHORTCUT)
+ShortcutId GenerateShortcutId(const std::string& host_app_id,
+                              const std::string& local_id);
 
 }  // namespace apps
 

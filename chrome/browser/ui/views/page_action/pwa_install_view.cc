@@ -31,6 +31,7 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
@@ -187,6 +188,10 @@ const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
 
 bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
                                    webapps::AppBannerManager* manager) {
+  if (blink::IsEmptyManifest(manager->manifest()) ||
+      !manager->manifest().id.is_valid()) {
+    return false;
+  }
   web_app::AppId app_id =
       web_app::GenerateAppIdFromManifest(manager->manifest());
 

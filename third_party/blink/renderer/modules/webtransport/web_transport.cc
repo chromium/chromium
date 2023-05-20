@@ -295,8 +295,8 @@ class WebTransport::DatagramUnderlyingSource final
 
   ScriptPromise Cancel(v8::Local<v8::Value> reason, ExceptionState&) override {
     uint8_t code = 0;
-    WebTransportError* exception = V8WebTransportError::ToImplWithTypeCheck(
-        script_state_->GetIsolate(), reason);
+    WebTransportError* exception =
+        V8WebTransportError::ToWrappable(script_state_->GetIsolate(), reason);
     if (exception) {
       code = exception->streamErrorCode().value_or(0);
     }

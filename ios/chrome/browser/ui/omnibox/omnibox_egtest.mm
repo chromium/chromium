@@ -294,6 +294,13 @@ void FocusFakebox() {
 // Tests that Search Copied Text menu button is shown with text in the clipboard
 // and is starting a search.
 - (void)testOmniboxMenuPasteTextToSearch {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446360): This test fails on iOS 16.4 devices too.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446360: Fails on iOS 16.4+ devices.");
+  }
+#endif
+
   FocusFakebox();
   NSString* textToSearch = @"TextToCopy";
   // Copy text in clipboard.
@@ -312,6 +319,13 @@ void FocusFakebox() {
 // Tests that Visit Copied Link menu button is shown with a link in the
 // clipboard and is visiting the URL.
 - (void)testOmniboxMenuPasteURLToSearch {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446360): This test fails on iOS 16.4 devices too.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446360: Fails on iOS 16.4+ devices.");
+  }
+#endif
+
   FocusFakebox();
   // Copy URL into clipboard.
   [ChromeEarlGrey copyTextToPasteboard:base::SysUTF8ToNSString(_URL1.spec())];
@@ -327,6 +341,13 @@ void FocusFakebox() {
 // Tests that Search Copied Image menu button is shown with an image in the
 // clipboard and is starting an image search.
 - (void)testOmniboxMenuPasteImageToSearch {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446360): This test fails on iOS 16.4 devices too.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446360: Fails on iOS 16.4+ devices.");
+  }
+#endif
+
   [self copyImageIntoClipboard];
 
   // Wait for the context menu to dismiss, so the omnibox can be tapped.
@@ -350,7 +371,8 @@ void FocusFakebox() {
 
 // Tests that the keyboard accessory's paste to search button is shown with a
 // text in the clipboard and is starting a search.
-- (void)testOmniboxKeyboardAccessoryPasteTextToSearch {
+// TODO(crbug.com/1445718): Re-enable when fixed.
+- (void)DISABLED_testOmniboxKeyboardAccessoryPasteTextToSearch {
   if (@available(iOS 16, *)) {
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithFeaturesEnabled:{kOmniboxKeyboardPasteButton}
@@ -389,7 +411,8 @@ void FocusFakebox() {
 
 // Tests that the keyboard accessory's paste to search button is shown with an
 // image in the clipboard and is starting an image search.
-- (void)testOmniboxKeyboardAccessoryPasteImageToSearch {
+// TODO(crbug.com/1445718): Re-enable when fixed.
+- (void)DISABLED_testOmniboxKeyboardAccessoryPasteImageToSearch {
   if (@available(iOS 16, *)) {
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithFeaturesEnabled:{kOmniboxKeyboardPasteButton}
@@ -911,6 +934,13 @@ void FocusFakebox() {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
   }
 
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446075): This test fails on iOS 16.4 devices too.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446075: Fails on iOS 16.4+ devices.");
+  }
+#endif
+
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1006,6 +1036,13 @@ void FocusFakebox() {
 // If the selected text is the entire omnibox field, select & SelectAll button
 // should be hidden.
 - (void)testSelection {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446075): This test fails on iOS 16.4 devices.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446075: Fails on iOS 16.4+ devices.");
+  }
+#endif
+
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1061,6 +1098,13 @@ void FocusFakebox() {
       !base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
   }
+
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446075): This test fails on iOS 16.4 devices too.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446075: Fails on iOS 16.4+ devices.");
+  }
+#endif
 
   NSString* copiedText = @"test no default match1";
 

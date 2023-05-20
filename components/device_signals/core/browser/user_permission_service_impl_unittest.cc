@@ -29,8 +29,6 @@ namespace device_signals {
 
 namespace {
 
-constexpr char kUserGaiaId[] = "some-gaia-id";
-
 class TestManagementService : public policy::ManagementService {
  public:
   TestManagementService() : ManagementService({}) {}
@@ -196,6 +194,11 @@ TEST_F(UserPermissionServiceImplTest,
   EXPECT_TRUE(permission_service_->ShouldCollectConsent());
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+namespace {
+constexpr char kUserGaiaId[] = "some-gaia-id";
+}  // namespace
+
 // Tests CanUserCollectSignals with a missing user ID.
 TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_EmptyUserId) {
   SetDeviceAsCloudManaged();
@@ -310,6 +313,7 @@ TEST_F(UserPermissionServiceImplTest,
   EXPECT_EQ(permission_service_->CanUserCollectSignals(user_context),
             UserPermission::kGranted);
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
 
 // Tests that signals can be collected if the user has already given their
 // consent.

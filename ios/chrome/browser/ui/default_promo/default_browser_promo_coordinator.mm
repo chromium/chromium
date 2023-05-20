@@ -177,8 +177,11 @@
     return;
   }
 
-  feature_engagement::TrackerFactory::GetForBrowserState(browserState)
-      ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+  tracker->NotifyEvent(
+      feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
 }
 
 // Records that a default browser promo has been shown. This needs to be called

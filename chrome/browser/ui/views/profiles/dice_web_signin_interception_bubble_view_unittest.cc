@@ -12,7 +12,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using SigninInterceptionType = DiceWebSigninInterceptor::SigninInterceptionType;
+using SigninInterceptionType = WebSigninInterceptor::SigninInterceptionType;
 
 class DiceWebSigninInterceptionBubbleViewTestBase : public testing::Test {
  public:
@@ -62,7 +62,7 @@ TEST_P(DiceWebSigninInterceptionBubbleViewSyncParamTest, HistogramTests) {
 
   base::HistogramTester histogram_tester;
 
-  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
       type, enterprise_account_, personal_account_);
 
   DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
@@ -125,7 +125,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, SyncHistograms) {
   SigninInterceptionResult result = SigninInterceptionResult::kAccepted;
-  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
       SigninInterceptionType::kEnterprise, enterprise_account_,
       personal_account_);
 
@@ -160,7 +160,7 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, EnterpriseHistograms) {
   // New account is Enterprise.
   {
     base::HistogramTester histogram_tester;
-    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+    WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
         SigninInterceptionType::kEnterprise, enterprise_account_,
         personal_account_);
     DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
@@ -176,7 +176,7 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, EnterpriseHistograms) {
                                          signin::ConsentLevel::kSync);
   {
     base::HistogramTester histogram_tester;
-    DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
+    WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
         SigninInterceptionType::kEnterprise, personal_account_,
         enterprise_account_);
     DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(

@@ -566,4 +566,39 @@ suite('PasswordsSectionTest', function() {
 
     assertFalse(isVisible(section.$.noPasswordsFound));
   });
+
+  test(
+      'clicking group navigates to details page and keeps old query',
+      async function() {
+        const query = new URLSearchParams();
+        query.set(UrlParam.SEARCH_TERM, 'test');
+        Router.getInstance().navigateTo(Page.PASSWORDS, null, query);
+
+        passwordManager.data.groups = [createCredentialGroup({
+          name: 'test.com',
+          credentials: [
+            createPasswordEntry({id: 0}),
+            createPasswordEntry({id: 1}),
+          ],
+        })];
+        passwordManager.setRequestCredentialsDetailsResponse(
+            passwordManager.data.groups[0]!.entries.slice());
+
+        const section = await createPasswordsSection();
+
+        const listEntry = section.shadowRoot!.querySelector<HTMLElement>(
+            'password-list-item');
+        assertTrue(!!listEntry);
+        listEntry.click();
+        assertEquals(
+            PasswordViewPageInteractions.CREDENTIAL_ROW_CLICKED,
+            await passwordManager.whenCalled('recordPasswordViewInteraction'));
+        assertArrayEquals(
+            [0, 1],
+            await passwordManager.whenCalled('requestCredentialsDetails'));
+
+        assertEquals(
+            Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
+        assertEquals(query, Router.getInstance().currentRoute.queryParameters);
+      });
 });

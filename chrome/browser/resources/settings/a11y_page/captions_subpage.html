@@ -22,15 +22,10 @@
   }
 </style>
 <template is="dom-if" if="[[enableLiveCaption_]]">
-<if expr="not is_chromeos">
   <settings-live-caption prefs="{{prefs}}"
       languages="[[languages]]"
       language-helper="[[languageHelper]]">
   </settings-live-caption>
-</if>
-<if expr="is_chromeos">
-  <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
-</if>
 </template>
 <div class="cr-row">
   <h2 class="start">$i18n{captionsPreferencesTitle}</h2>

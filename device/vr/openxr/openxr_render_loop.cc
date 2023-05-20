@@ -55,6 +55,7 @@ bool OpenXrRenderLoop::IsFeatureEnabled(
 }
 
 mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
+  DVLOG(3) << __func__;
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
   frame_data->frame_id = next_frame_id_;
 
@@ -127,7 +128,8 @@ void OpenXrRenderLoop::StartRuntime(
   openxr_ = OpenXrApiWrapper::Create(instance_);
   if (!openxr_) {
     DVLOG(1) << __func__ << " Could not create OpenXrApiWrapper";
-    return std::move(start_runtime_callback).Run(false);
+    std::move(start_runtime_callback).Run(false);
+    return;
   }
 
   // TODO(https://crbug.com/1441073): Consolidate to a single, cross-platform
@@ -138,8 +140,8 @@ void OpenXrRenderLoop::StartRuntime(
   graphics_binding_ = platform_helper_->GetGraphicsBinding();
 #endif
 
-  if (!graphics_binding_ || !graphics_binding_->Initialize()) {
-    DVLOG(1) << "Could not create or initialize graphics binding";
+  if (!graphics_binding_) {
+    DVLOG(1) << "Could not create graphics binding";
     // We aren't actually presenting yet; so ExitPresent won't clean us up.
     // Still call it to log the failure reason; but also explicitly call
     // StopRuntime, which should be resilient to duplicate calls.
@@ -179,8 +181,24 @@ void OpenXrRenderLoop::OnOpenXrSessionStarted(
     // Still call it to log the failure reason; but also explicitly call
     // StopRuntime, which should be resilient to duplicate calls.
     ExitPresent(ExitXrPresentReason::kOpenXrStartFailed);
-    StopRuntime();
-    std::move(start_runtime_callback).Run(false);
+
+    // We're only called from the OpenXrApiWrapper, which StopRuntime will
+    // destroy. To prevent some re-entrant behavior, yield to let it finish
+    // anything it's doing from before it called us before we stop the runtime.
+    task_runner()->PostTask(FROM_HERE,
+                            base::BindOnce(&OpenXrRenderLoop::StopRuntime,
+                                           weak_ptr_factory_.GetWeakPtr()));
+
+    // Technically until the StopRuntime task is called we can't service another
+    // session request, which theoretically could come in once we run this
+    // callback. Post a task to run it so that it runs after StopRuntime to
+    // avoid this potential (albeit unlikely) race.
+    task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](StartRuntimeCallback start_runtime_callback) {
+                         std::move(start_runtime_callback).Run(false);
+                       },
+                       std::move(start_runtime_callback)));
     return;
   }
 
@@ -297,8 +315,10 @@ bool OpenXrRenderLoop::IsUsingSharedImages() const {
 void OpenXrRenderLoop::SubmitFrame(int16_t frame_index,
                                    const gpu::MailboxHolder& mailbox,
                                    base::TimeDelta time_waited) {
+  DVLOG(3) << __func__ << " frame_index=" << frame_index;
   CHECK(!IsUsingSharedImages());
-  // TODO(alcooper): Finalize actual fallback path
+  DCHECK(BUILDFLAG(IS_ANDROID));
+  // TODO(alcooper): Finalize actual rendering path
   SubmitFrameMissing(frame_index, mailbox.sync_token);
 }
 
@@ -306,6 +326,7 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     const gpu::SyncToken& sync_token,
     base::TimeDelta time_waited) {
+  DVLOG(3) << __func__ << " frame_index=" << frame_index;
   gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   const GLuint id = gl->CreateGpuFenceCHROMIUM();

@@ -166,6 +166,7 @@ aggregate_vector_icons("components_vector_icons") {
     "settings.icon",
     "settings_chrome_refresh.icon",
     "settings_outline.icon",
+    "shopping_bag.icon",
     "sms.icon",
     "submenu_arrow.icon",
     "submenu_arrow_chrome_refresh.icon",

@@ -2295,7 +2295,11 @@ const AtomicString& AXNodeObject::EffectiveTarget() const {
   // to which target (browser context) a form would be submitted.
   const auto* anchor = DynamicTo<HTMLAnchorElement>(GetNode());
   if (anchor) {
-    return anchor->GetEffectiveTarget();
+    const AtomicString self_value("_self");
+    const AtomicString& effective_target = anchor->GetEffectiveTarget();
+    if (effective_target != self_value) {
+      return anchor->GetEffectiveTarget();
+    }
   }
   return AXObject::EffectiveTarget();
 }
@@ -4286,7 +4290,9 @@ void AXNodeObject::AddChildrenImpl() {
   DCHECK(children_dirty_);
 
   if (!CanHaveChildren()) {
-    NOTREACHED()
+    // TODO(crbug.com/1407397): Make sure this is no longer firing then
+    // transform this block to CHECK(CanHaveChildren());
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
         << "Should not reach AddChildren() if CanHaveChildren() is false.\n"
         << ToString(true, true);
     return;

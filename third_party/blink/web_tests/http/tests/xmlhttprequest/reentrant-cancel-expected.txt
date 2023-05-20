@@ -1,3 +1,4 @@
+CONSOLE WARNING: Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
 insertedText
 This tests that when we re-entrantly create and cancel XHRs, we don't try to disconnect the same CachedResourceClient multiple times from its CachedResource. We pass if we don't crash.
 DOMContentLoaded

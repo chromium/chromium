@@ -4,9 +4,9 @@
 
 'use strict';
 
-import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody} from './test_util.js';
-import {Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {Router} from 'chrome://os-settings/os_settings.js';
 
 suite('<app-management-main-view>', function() {
   let mainView;

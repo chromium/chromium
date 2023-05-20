@@ -6,7 +6,7 @@
  * Settings dialog is used to remove a bluetooth saved device from
  * the user's account.
  */
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 

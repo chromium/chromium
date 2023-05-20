@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/borealis/borealis_token_hardware_checker.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_features_util.h"
@@ -15,7 +17,7 @@ namespace {
 constexpr uint64_t kGibi = 1024ull * 1024 * 1024;
 
 // Regex used for CPU checks on intel processors, this means "any 11th
-// generation or greater i5/i7 processor".
+// generation or greater i{3,5,7} processor".
 constexpr char kBorealisCapableIntelCpuRegex[] = "[1-9][1-9].. Gen.*i[357]-";
 
 }  // namespace
@@ -90,15 +92,22 @@ AllowStatus BorealisTokenHardwareChecker::BoardSpecificChecks() const {
   } else if (IsBoard("draco")) {
     return AllowStatus::kAllowed;
   } else if (IsBoard("nissa")) {
-    // TODO(b/274537000): unblock for non-developer users.
-    if (HasNamedToken("nissa", "nissa/!wcers4vuP7+2a/X$C8",
-                      "24/U3nXWbTno/VJwp17HI+UDzWd77iXj5oDgavIZhoI=")) {
+    if (HasSufficientHardware(kBorealisCapableIntelCpuRegex) &&
+        InTargetSegment()) {
+      return AllowStatus::kAllowed;
+    } else if (HasNamedToken("nissa", "nissa/!wcers4vuP7+2a/X$C8",
+                             "24/U3nXWbTno/VJwp17HI+UDzWd77iXj5oDgavIZhoI=")) {
       return AllowStatus::kAllowed;
     }
   } else if (IsBoard("skyrim")) {
     // TODO(b/274537000): unblock for non-developer users.
     if (HasNamedToken("skyrim", "skyrim/!2-DxWY_cL/nXF1U+oV",
                       "esBGhWX18eOMlNrqOS5oEcFfyy0MbNJ5VWz+92iVOwk=")) {
+      return AllowStatus::kAllowed;
+    }
+  } else if (IsBoard("rex")) {
+    if (HasNamedToken("rex", "!P$z%iOvTg,5n3t@%8m",
+                      "+Ynue2NR7pnJrI9McC5aHhcO9OEW6q2dS0kr9fQaq2Q=")) {
       return AllowStatus::kAllowed;
     }
   }
@@ -118,6 +127,11 @@ bool BorealisTokenHardwareChecker::HasNamedToken(const char* name,
     return true;
   }
   return false;
+}
+
+bool BorealisTokenHardwareChecker::InTargetSegment() const {
+  return base::FeatureList::IsEnabled(
+      ash::features::kFeatureManagementSteamOnChromebook);
 }
 
 }  // namespace borealis

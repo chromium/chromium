@@ -715,6 +715,11 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
         send_renderer_information ||
         request.runtime_id == device::mojom::XRDeviceId::CARDBOARD_DEVICE_ID;
 #endif
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_ANDROID)
+    send_renderer_information =
+        send_renderer_information ||
+        request.runtime_id == device::mojom::XRDeviceId::OPENXR_DEVICE_ID;
+#endif
     if (send_renderer_information) {
       runtime_options->render_process_id =
           render_frame_host_->GetProcess()->GetID();

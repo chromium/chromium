@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view_factory.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -46,6 +46,7 @@ constexpr auto kDelayBeforeCollapsingChip = base::Seconds(12);
 // Abusive origins do not support expand animation, hence the dismiss timer
 // should be longer.
 constexpr auto kDelayBeforeCollapsingChipForAbusiveOrigins = base::Seconds(18);
+constexpr auto kPermissionChipAutoDismissDelay = base::Seconds(6);
 
 class BubbleButtonController : public views::ButtonController {
  public:
@@ -174,17 +175,19 @@ void ChipController::RestartTimersOnMouseHover() {
 void ChipController::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(GetBubbleWidget(), widget);
   ResetTimers();
-  if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
-      widget->closed_reason() ==
-          views::Widget::ClosedReason::kCloseButtonClicked) {
-    OnPromptBubbleDismissed();
-  }
 
   disallowed_custom_cursors_scope_.RunAndReset();
   widget->RemoveObserver(this);
 
-  CollapsePrompt(/*allow_restart=*/false);
   observation_.Reset();
+
+  if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
+      widget->closed_reason() ==
+          views::Widget::ClosedReason::kCloseButtonClicked) {
+    OnPromptBubbleDismissed();
+  } else {
+    CollapsePrompt(/*allow_restart=*/false);
+  }
 }
 
 void ChipController::OnWidgetActivationChanged(views::Widget* widget,
@@ -509,7 +512,7 @@ void ChipController::OpenPermissionPromptBubble() {
       PermissionPromptStyle::kChip) {
     // Loud prompt bubble
     raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble =
-        new PermissionPromptBubbleOneOriginView(
+        CreatePermissionPromptBubbleView(
             browser_,
             permission_prompt_model_->GetDelegate().value()->GetWeakPtr(),
             request_chip_shown_time_, PermissionPromptStyle::kChip);
@@ -572,27 +575,31 @@ void ChipController::OnPromptBubbleDismissed() {
   if (!permission_prompt_model_)
     return;
 
-  permission_prompt_model_->SetShouldDismiss(true);
   if (permission_prompt_model_->GetDelegate().has_value()) {
     permission_prompt_model_->GetDelegate().value()->SetDismissOnTabClose();
     // If the permission prompt bubble is closed, we count it as "Dismissed",
-    // hence it should record the time when the bubble is closed and not when
-    // the permission request is finalized.
+    // hence it should record the time when the bubble is closed.
     permission_prompt_model_->GetDelegate().value()->SetDecisionTime();
+    // If a permission popup bubble is closed/dismissed, a permission request
+    // should be dismissed as well.
+    permission_prompt_model_->GetDelegate().value()->Dismiss();
   }
 }
 
 void ChipController::OnPromptExpired() {
   AnnouncePermissionRequestForAccessibility(l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_EXPIRED_SCREENREADER_ANNOUNCEMENT));
+  if (active_chip_permission_request_manager_.has_value()) {
+    active_chip_permission_request_manager_.value()->RemoveObserver(this);
+    active_chip_permission_request_manager_.reset();
+  }
+
   if (permission_prompt_model_ &&
       permission_prompt_model_->GetDelegate().has_value()) {
-    if (permission_prompt_model_->ShouldDismiss()) {
-      permission_prompt_model_->GetDelegate().value()->Dismiss();
-    } else {
-      permission_prompt_model_->GetDelegate().value()->Ignore();
-    }
+    permission_prompt_model_->GetDelegate().value()->Ignore();
   }
+
+  ResetPermissionPromptChip();
 }
 
 void ChipController::OnRequestChipButtonPressed() {
@@ -646,13 +653,8 @@ void ChipController::StartDismissTimer() {
     return;
 
   if (permission_prompt_model_->ShouldExpand()) {
-    if (base::FeatureList::IsEnabled(
-            permissions::features::kPermissionChipAutoDismiss)) {
-      auto delay = base::Milliseconds(
-          permissions::features::kPermissionChipAutoDismissDelay.Get());
-      dismiss_timer_.Start(FROM_HERE, delay, this,
-                           &ChipController::OnPromptExpired);
-    }
+    dismiss_timer_.Start(FROM_HERE, kPermissionChipAutoDismissDelay, this,
+                         &ChipController::OnPromptExpired);
   } else {
     dismiss_timer_.Start(FROM_HERE, kDelayBeforeCollapsingChipForAbusiveOrigins,
                          this, &ChipController::OnPromptExpired);

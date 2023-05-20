@@ -27,7 +27,7 @@ android_resources("java_resources") {
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/translate/TranslateFeatureList.java",
+    "java/src/org/chromium/components/translate/TranslateFeatureMap.java",
     "java/src/org/chromium/components/translate/TranslateMenu.java",
     "java/src/org/chromium/components/translate/TranslateMenuHelper.java",
     "java/src/org/chromium/components/translate/TranslateMessage.java",
@@ -57,7 +57,7 @@ android_library("java") {
 
 static_library("android") {
   sources = [
-    "translate_feature_list.cc",
+    "translate_feature_map.cc",
     "translate_message.cc",
     "translate_message.h",
     "translate_utils.cc",
@@ -80,7 +80,7 @@ static_library("android") {
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/components/translate/TranslateFeatureList.java",
+    "java/src/org/chromium/components/translate/TranslateFeatureMap.java",
     "java/src/org/chromium/components/translate/TranslateMessage.java",
   ]
 }

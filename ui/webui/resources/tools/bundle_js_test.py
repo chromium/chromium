@@ -202,10 +202,10 @@ import './element_in_dir/element_in_dir.js';
         os.path.normpath('element_in_dir/element_in_dir.js'), depfile_d)
     self.assertIn(
         os.path.normpath(
-            '../gen/ui/webui/resources/tsc/js/scheme_relative_resource.js'),
+            'gen/ui/webui/resources/tsc/js/scheme_relative_resource.js'),
         depfile_d)
     self.assertIn(
-        os.path.normpath('../gen/ui/webui/resources/tsc/js/fake_resource.js'),
+        os.path.normpath('gen/ui/webui/resources/tsc/js/fake_resource.js'),
         depfile_d)
 
   def testMultiBundleBundle(self):
@@ -283,8 +283,7 @@ import './element_in_dir/element_in_dir.js';
 
     depfile_d = self._read_out_file('depfile.d')
     self.assertIn('element.js', depfile_d)
-    # Relative path from the src of the root module to the external root dir
-    relpath = os.path.relpath(custom_dir, self._tmp_src_dir)
+    relpath = os.path.relpath(custom_dir, _CWD)
     self.assertIn(
         os.path.normpath(
             os.path.join(relpath, 'external_dir', 'external_element.js')),
@@ -408,8 +407,7 @@ alert('hello from external_element_dep');''')
 
     depfile_d = self._read_out_file('depfile.d')
     self.assertIn('element.js', depfile_d)
-    # Relative path from the src of the root module to the external root dir
-    relpath = os.path.relpath(custom_dir_foo, self._tmp_src_dir)
+    relpath = os.path.relpath(custom_dir_foo, _CWD)
     self.assertIn(
         os.path.normpath(
             os.path.join(relpath, 'external_dir', 'external_element.js')),
@@ -418,12 +416,28 @@ alert('hello from external_element_dep');''')
         os.path.normpath(
             os.path.join(relpath, 'external_dir', 'sub_dir',
                          'external_element_dep.js')), depfile_d)
-    # Relative path from the src of the root module to the secondary dependency
-    # root dir.
-    relpath_bar = os.path.relpath(custom_dir_bar, self._tmp_src_dir)
+    relpath_bar = os.path.relpath(custom_dir_bar, _CWD)
     self.assertIn(
         os.path.normpath(os.path.join(relpath_bar, 'another_element.js')),
         depfile_d)
+
+  def testBundleWithBundleSubpath(self):
+    self._write_files_to_src_dir()
+    self._write_file_to_src_dir(
+        'subfolder/ui.js', '''
+import '../element.js';
+import '../element_in_dir/element_in_dir.js';
+''')
+    args = [
+        '--host',
+        'fake-host',
+        '--js_module_in_files',
+        'subfolder/ui.js',
+    ]
+    self._run_bundle(args)
+
+    self._check_output_js(os.path.normpath('subfolder/ui.rollup.js'))
+    self._check_output_depfile(False)
 
 
 if __name__ == '__main__':

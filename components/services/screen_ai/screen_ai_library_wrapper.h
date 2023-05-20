@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <cstdint>
+#include <vector>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -22,12 +23,24 @@ namespace screen_ai {
 // Wrapper class for Chrome Screen AI library.
 class ScreenAILibraryWrapper {
  public:
+  struct MainContentExtractionModelData {
+    MainContentExtractionModelData(std::vector<char> config,
+                                   std::vector<char> tflite);
+    MainContentExtractionModelData(const MainContentExtractionModelData&) =
+        delete;
+    MainContentExtractionModelData& operator=(
+        const MainContentExtractionModelData&) = delete;
+    ~MainContentExtractionModelData();
+    std::vector<char> config;
+    std::vector<char> tflite;
+  };
+
   ScreenAILibraryWrapper();
   ScreenAILibraryWrapper(const ScreenAILibraryWrapper&) = delete;
   ScreenAILibraryWrapper& operator=(const ScreenAILibraryWrapper&) = delete;
   ~ScreenAILibraryWrapper() = default;
 
-  bool Init(const base::FilePath& library_path);
+  bool Load(const base::FilePath& library_path);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetLogger();
@@ -37,8 +50,8 @@ class ScreenAILibraryWrapper {
   void EnableDebugMode();
   bool InitLayoutExtraction();
   bool InitOCR(const base::FilePath& models_folder);
-  bool InitMainContentExtraction(base::File& model_config_file,
-                                 base::File& model_tflite_file);
+  bool InitMainContentExtraction(
+      const MainContentExtractionModelData& model_data);
 
   absl::optional<chrome_screen_ai::VisualAnnotation> ExtractLayout(
       const SkBitmap& image);

@@ -112,6 +112,15 @@
     },
 
     'android_finch_smoke_tests': {
+      'chrome_finch_smoke_tests': {
+        'args': [
+          '--finch-seed-path',
+          '../../variations_seed',
+        ],
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
       'monochrome_finch_smoke_tests': {
         'args': [
           '--finch-seed-path',
@@ -293,44 +302,6 @@
       'aura_unittests': {},
       'compositor_unittests': {},
       'wm_unittests': {},
-    },
-
-    'backuprefptr_generic_gtests': {
-      'base_unittests': {},
-      'blink_common_unittests': {},
-      'blink_platform_unittests': {},
-      'cast_unittests': {},
-      'cc_unittests': {},
-      'components_unittests': {
-        'android_swarming': {
-          'shards': 6,
-        },
-      },
-      'content_browsertests': {
-        'android_swarming': {
-          'shards': 15,
-        },
-        'swarming': {
-          'shards': 8,
-        },
-      },
-      'content_unittests': {
-        'android_swarming': {
-          'shards': 3,
-        },
-      },
-      'unit_tests': {
-        'android_swarming': {
-          'shards': 2,
-        },
-      },
-      'webkit_unit_tests': {
-        'test': 'blink_unittests',
-        'android_swarming': {
-          'shards': 6,
-        },
-      },
-      'wtf_unittests': {},
     },
 
     'bfcache_android_specific_gtests': {
@@ -659,6 +630,15 @@
       'chrome_all_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:chrome" && !informational)',
         'timeout_sec': 21600,
+      },
+    },
+
+    # Test suite for running critical Tast tests.
+    'chromeos_chrome_criticalstaging_tast_tests': {
+      'chrome_criticalstaging_tast_tests': {
+        'tast_expr': '("group:mainline" && "dep:chrome" && informational && "group:criticalstaging")',
+        'timeout_sec': 7200,
+        'experiment_percentage': 100,
       },
     },
 
@@ -2814,16 +2794,20 @@
       },
     },
 
-    'gpu_default_and_optional_win_specific_gtests': {
-      # WebNN DirectML backend unit tests, which currently only run on
-      # Windows OS, and require physical hardware.
-      'services_webnn_unittests': {
+    'gpu_default_and_optional_win_media_foundation_specific_gtests': {
+      # MediaFoundation browser tests, which currently only run on Windows OS,
+      # and require physical hardware.
+      'media_foundation_browser_tests': {
         'args': [
-          '--gtest_filter=WebNN*',
+          '--gtest_filter=MediaFoundationEncryptedMediaTest*',
           '--use-gpu-in-tests'
         ],
-        'test': 'services_unittests',
+        'test': 'browser_tests',
+        'ci_only': True,
       },
+    },
+
+    'gpu_default_and_optional_win_specific_gtests': {
       'xr_browser_tests': {
         # The Windows machines this is run on should always meet all the
         # requirements, so skip the runtime checks to help catch issues, e.g.
@@ -2871,6 +2855,15 @@
           '--disable-gpu-sandbox',
         ],
         'test': 'gles2_conform_test',
+      },
+      # WebNN DirectML backend unit tests, which currently only run on
+      # Windows OS, and require physical hardware.
+      'services_webnn_unittests': {
+        'args': [
+          '--gtest_filter=WebNN*',
+          '--use-gpu-in-tests'
+        ],
+        'test': 'services_unittests',
       },
     },
 
@@ -3469,32 +3462,6 @@
       },
     },
 
-    'gpu_webgl2_conformance_gles_passthrough_representative_telemetry_tests': {
-      'webgl2_conformance_gles_passthrough_tests': {
-        'telemetry_test_name': 'webgl2_conformance',
-        'args': [
-          '--webgl-conformance-version=2.0.1',
-          # The current working directory when run via isolate is
-          # out/Debug or out/Release. Reference this file relatively to
-          # it.
-          '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json',
-          # On dual-GPU devices we want the high-performance GPU to be active
-          '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu',
-          '--test-filter=conformance/rendering/*::conformance2/rendering/*',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-      },
-    },
-
     'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
       'webgl2_conformance_gles_passthrough_tests': {
         'telemetry_test_name': 'webgl2_conformance',
@@ -3660,31 +3627,6 @@
       },
     },
 
-    'gpu_webgl_conformance_gles_passthrough_representative_telemetry_tests': {
-      'webgl_conformance_gles_passthrough': {
-        'telemetry_test_name': 'webgl1_conformance',
-        'args': [
-          # On dual-GPU devices we want the high-performance GPU to be active
-          '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu',
-          # The current working directory when run via isolate is
-          # out/Debug or out/Release. Reference this file relatively to
-          # it.
-          '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
-          '--test-filter=conformance/rendering/*',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-      },
-    },
-
     'gpu_webgl_conformance_gles_passthrough_telemetry_tests': {
       'webgl_conformance_gles_passthrough': {
         'telemetry_test_name': 'webgl1_conformance',
@@ -3699,6 +3641,9 @@
         ],
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
         'lacros_args': [
           '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
@@ -4147,18 +4092,6 @@
       },
     },
 
-    'lacros_variations_tast_tests': {
-      'lacros_variations_tast_tests': {
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/923426#c27
-        },
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'experiment_percentage': 100,
-      },
-    },
-
     'lacros_vm_gtests': {
       'base_unittests': {},
     },
@@ -4312,7 +4245,6 @@
         'name': 'interactive_ui_tests',
         'test': 'interactive_ui_tests',
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter',
         ],
         'swarming': {
@@ -4326,7 +4258,6 @@
         'name': 'interactive_ui_tests',
         'test': 'interactive_ui_tests',
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.beta.filter',
         ],
         'swarming': {
@@ -4340,7 +4271,6 @@
         'name': 'interactive_ui_tests',
         'test': 'interactive_ui_tests',
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.dev.filter',
         ],
         'swarming': {
@@ -4354,7 +4284,6 @@
         'name': 'interactive_ui_tests',
         'test': 'interactive_ui_tests',
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter',
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.stable.filter',
         ],
         'swarming': {
@@ -4528,6 +4457,7 @@
       'browser_tests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
+          '--enable-features=AsyncQuicSession',
         ],
         'swarming': {
           'shards': 10,
@@ -4537,12 +4467,14 @@
       'components_browsertests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
+          '--enable-features=AsyncQuicSession',
         ],
         'test': 'components_browsertests',
       },
       'content_browsertests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
+          '--enable-features=AsyncQuicSession',
         ],
         'swarming': {
           'shards': 10,
@@ -4552,6 +4484,7 @@
       'interactive_ui_tests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
+          '--enable-features=AsyncQuicSession',
         ],
         'swarming': {
           'shards': 3,
@@ -4561,6 +4494,7 @@
       'sync_integration_tests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
+          '--enable-features=AsyncQuicSession',
         ],
         'test': 'sync_integration_tests',
       },
@@ -5920,10 +5854,6 @@
       'webengine_android_gtests',
     ],
 
-    'backuprefptr_gtests': [
-      'backuprefptr_generic_gtests',
-    ],
-
     'bfcache_android_gtests': [
       'bfcache_android_specific_gtests',
       'bfcache_generic_gtests',
@@ -6514,6 +6444,7 @@
     'gpu_fyi_win_gtests': [
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
+      'gpu_default_and_optional_win_media_foundation_specific_gtests',
       'gpu_default_and_optional_win_specific_gtests',
       'gpu_desktop_specific_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',
@@ -6539,6 +6470,7 @@
     'gpu_fyi_win_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
+      'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
       'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
@@ -6795,6 +6727,11 @@
           'CROS_BRYA_RELEASE_LKGM',
         ]
       },
+      'chromeos_chrome_criticalstaging_tast_tests': {
+        'variants': [
+          'CROS_BRYA_RELEASE_LKGM',
+        ]
+      },
     },
 
     'chromeos_jacuzzi_skylab_tests': {
@@ -6909,12 +6846,12 @@
           'LACROS_ASH_TOT',
         ],
       },
-      'gpu_webgl_conformance_gles_passthrough_representative_telemetry_tests': {
+      'gpu_webgl_conformance_gles_passthrough_telemetry_tests': {
         'variants': [
           'LACROS_ASH_TOT',
         ],
       },
-      'gpu_webgl2_conformance_gles_passthrough_representative_telemetry_tests': {
+      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
         'variants': [
           'LACROS_ASH_TOT',
           ],
@@ -7382,19 +7319,6 @@
       },
     },
 
-    'lacros_device_or_vm_tast_tests': {
-      'lacros_all_tast_tests': {
-        'variants': [
-          'LACROS_EVE',
-        ]
-      },
-      'lacros_variations_tast_tests': {
-        'variants': [
-          'LACROS_BETTY_PI_ARC',
-        ]
-      },
-    },
-
     'lacros_device_or_vm_tests': {
       'lacros_all_tast_tests': {
         'variants': [
@@ -7456,7 +7380,7 @@
     'lacros_skylab_arm64': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_HEROBRINE_RELEASE_LKGM',
+          'CROS_STRONGBAD_RELEASE_LKGM',
         ]
       },
     },
@@ -7757,6 +7681,11 @@
     },
 
     'win_optional_gpu_tests_rel_gtests': {
+      'gpu_default_and_optional_win_media_foundation_specific_gtests': {
+        'variants': [
+          'WIN10_INTEL_UHD_630_STABLE',
+        ],
+      },
       'gpu_default_and_optional_win_specific_gtests': {
         'variants': [
           'WIN10_INTEL_UHD_630_STABLE',

@@ -50,6 +50,7 @@ class WebSocketHandshakeRequest;
 namespace blink {
 
 class CoreProbeSink;
+class OffscreenCanvas;
 class ThreadDebugger;
 
 namespace protocol {
@@ -143,6 +144,8 @@ inline CoreProbeSink* ToCoreProbeSink(EventTarget* event_target) {
   return event_target ? ToCoreProbeSink(event_target->GetExecutionContext())
                       : nullptr;
 }
+
+CoreProbeSink* ToCoreProbeSink(OffscreenCanvas* offscreen_canvas);
 
 CORE_EXPORT void AllAsyncTasksCanceled(ExecutionContext*);
 

@@ -196,13 +196,13 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     [_metadataLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh
                                       forAxis:UILayoutConstraintAxisHorizontal];
     [_metadataLabel
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
     [_metadataImage setContentHuggingPriority:UILayoutPriorityDefaultHigh
                                       forAxis:UILayoutConstraintAxisHorizontal];
     [_metadataImage
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
 

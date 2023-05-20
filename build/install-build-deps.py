@@ -191,6 +191,7 @@ def apt_update(options):
 # Packages needed for development
 def dev_list():
   packages = [
+      "binutils",
       "bison",
       "bzip2",
       "cdbs",
@@ -295,9 +296,6 @@ def dev_list():
 
   if package_exists("libinput-dev"):
     packages.append("libinput-dev")
-
-  if package_exists("snapcraft"):
-    packages.append("snapcraft")
 
   # Cross-toolchain strip is needed for building the sysroots.
   if package_exists("binutils-arm-linux-gnueabihf"):
@@ -461,11 +459,10 @@ def lib32_list(options):
     # g++-X.Y-multilib gives us the 32-bit support that we need. Find out the
     # appropriate value of X and Y by seeing what version the current
     # distribution's g++-multilib package depends on.
-    lines = (subprocess.check_output(
-        ["apt-cache", "depends", "g++-multilib",
-         "--important"]).decode().splitlines())
+    lines = subprocess.check_output(
+        ["apt-cache", "depends", "g++-multilib", "--important"]).decode()
     pattern = re.compile(r"g\+\+-[0-9.]+-multilib")
-    packages.extend(line.strip() for line in lines if pattern.match(line))
+    packages += re.findall(pattern, lines)
 
   return packages
 
@@ -535,6 +532,7 @@ def backwards_compatible_list(options):
       "msttcorefonts",
       "python-dev",
       "python-setuptools",
+      "snapcraft",
       "ttf-dejavu-core",
       "ttf-indic-fonts",
       "ttf-kochi-gothic",

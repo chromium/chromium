@@ -211,6 +211,8 @@ class StyleBuilderConverter {
                             const CSSValue&);  // clamps to [0,1]
   static ScopedCSSName* ConvertNoneOrCustomIdent(StyleResolverState&,
                                                  const CSSValue&);
+  static ScopedCSSName* ConvertCustomIdent(StyleResolverState&,
+                                           const CSSValue&);
   static ScopedCSSName* ConvertAnchorDefault(StyleResolverState&,
                                              const CSSValue&);
   static AnchorSpecifierValue* ConvertAnchorScroll(StyleResolverState&,
@@ -379,6 +381,8 @@ class StyleBuilderConverter {
                                                         const CSSValue&);
   static ScopedCSSNameList* ConvertViewTimelineName(StyleResolverState&,
                                                     const CSSValue&);
+  static ScopedCSSNameList* ConvertTimelineScope(StyleResolverState&,
+                                                 const CSSValue&);
 };
 
 template <typename T>

@@ -226,6 +226,14 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetRuntimeForOptions(
 }
 
 BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
+// OpenXR is the highest priority if it's available.
+#if BUILDFLAG(ENABLE_OPENXR)
+  auto* openxr = GetRuntime(device::mojom::XRDeviceId::OPENXR_DEVICE_ID);
+  if (openxr) {
+    return openxr;
+  }
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_CARDBOARD)
   auto* cardboard = GetRuntime(device::mojom::XRDeviceId::CARDBOARD_DEVICE_ID);
@@ -239,13 +247,6 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
     return gvr;
   }
 #endif
-#endif
-
-#if BUILDFLAG(ENABLE_OPENXR)
-  auto* openxr = GetRuntime(device::mojom::XRDeviceId::OPENXR_DEVICE_ID);
-  if (openxr) {
-    return openxr;
-  }
 #endif
 
   return nullptr;

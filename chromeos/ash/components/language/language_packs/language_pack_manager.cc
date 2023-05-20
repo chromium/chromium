@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/language/language_packs/language_packs_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
@@ -145,100 +146,6 @@ const base::flat_map<std::string, std::string>& GetAllBasePackDlcIds() {
       });
 
   return *all_dlc_ids;
-}
-
-// This function returns the enum value of a feature ID that matches the
-// corresponding value in the UMA Histogram enum.
-FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
-  if (feature_id == kHandwritingFeatureId) {
-    return FeatureIdsEnum::kHandwriting;
-  }
-  if (feature_id == kTtsFeatureId) {
-    return FeatureIdsEnum::kTts;
-  }
-
-  // Default value of unknown.
-  return FeatureIdsEnum::kUnknown;
-}
-
-// This function returns the enum value of a success or failure for a given
-// Feature ID. These values match the corresponding UMA histogram enum
-// "LanguagePackFeatureSuccess".
-FeatureSuccessEnum GetSuccessValueForUma(const std::string& feature_id,
-                                         const bool success) {
-  if (feature_id == kHandwritingFeatureId) {
-    if (success) {
-      return FeatureSuccessEnum::kHandwritingSuccess;
-    } else {
-      return FeatureSuccessEnum::kHandwritingFailure;
-    }
-  }
-  if (feature_id == kTtsFeatureId) {
-    if (success) {
-      return FeatureSuccessEnum::kTtsSuccess;
-    } else {
-      return FeatureSuccessEnum::kTtsFailure;
-    }
-  }
-
-  // Default value of unknown.
-  if (success) {
-    return FeatureSuccessEnum::kUnknownSuccess;
-  } else {
-    return FeatureSuccessEnum::kUnknownFailure;
-  }
-}
-
-DlcErrorTypeEnum GetDlcErrorTypeForUma(const std::string& error_str) {
-  if (error_str == dlcservice::kErrorNone) {
-    return DlcErrorTypeEnum::kErrorNone;
-  } else if (error_str == dlcservice::kErrorInternal) {
-    return DlcErrorTypeEnum::kErrorInternal;
-  } else if (error_str == dlcservice::kErrorBusy) {
-    return DlcErrorTypeEnum::kErrorBusy;
-  } else if (error_str == dlcservice::kErrorNeedReboot) {
-    return DlcErrorTypeEnum::kErrorNeedReboot;
-  } else if (error_str == dlcservice::kErrorInvalidDlc) {
-    return DlcErrorTypeEnum::kErrorInvalidDlc;
-  } else if (error_str == dlcservice::kErrorAllocation) {
-    return DlcErrorTypeEnum::kErrorAllocation;
-  } else if (error_str == dlcservice::kErrorNoImageFound) {
-    return DlcErrorTypeEnum::kErrorNoImageFound;
-  }
-
-  // Return unknown if we can't recognize the error.
-  LOG(ERROR) << "Wrong error message received from DLC Service";
-  return DlcErrorTypeEnum::kErrorUnknown;
-}
-
-// PackResult that is returned by an invalid feature ID is specified.
-PackResult CreateInvalidDlcPackResult() {
-  return {
-      .operation_error = dlcservice::kErrorInvalidDlc,
-      .pack_state = PackResult::WRONG_ID,
-  };
-}
-
-PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
-  PackResult result;
-
-  switch (dlc_state.state()) {
-    case dlcservice::DlcState_State_INSTALLED:
-      result.pack_state = PackResult::INSTALLED;
-      result.path = dlc_state.root_path();
-      break;
-    case dlcservice::DlcState_State_INSTALLING:
-      result.pack_state = PackResult::IN_PROGRESS;
-      break;
-    case dlcservice::DlcState_State_NOT_INSTALLED:
-      result.pack_state = PackResult::NOT_INSTALLED;
-      break;
-    default:
-      result.pack_state = PackResult::UNKNOWN;
-      break;
-  }
-
-  return result;
 }
 
 // Finds the ID of the DLC corresponding to the given spec.
@@ -423,6 +330,25 @@ void LanguagePackManager::InstallBasePack(
 
   InstallDlc(*dlc_id, base::BindOnce(&OnInstallDlcComplete, std::move(callback),
                                      feature_id));
+}
+
+void LanguagePackManager::UpdatePacksForOobe(const std::string& locale) {
+  if (!IsOobe()) {
+    DLOG(ERROR) << "Language Packs: UpdatePackForOobe called while not in OOBE";
+    return;
+  }
+
+  // For now, TTS is the only feature we want to install during OOBE.
+  // In the future we'll have a function that returns the list of features to
+  // install.
+  const std::string final_locale = ResolveLocaleForTts(locale);
+  const absl::optional<std::string> dlc_id =
+      GetDlcIdForLanguagePack(kTtsFeatureId, final_locale);
+
+  if (dlc_id) {
+    InstallDlc(*dlc_id, base::BindOnce(&OnInstallDlcComplete, base::DoNothing(),
+                                       kTtsFeatureId));
+  }
 }
 
 void LanguagePackManager::AddObserver(Observer* const observer) {

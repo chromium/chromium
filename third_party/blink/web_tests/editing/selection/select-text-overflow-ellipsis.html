@@ -8,6 +8,11 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    ::selection,
+    ::selection:window-inactive {
+      background-color: rgb(176, 176, 176);
+      color: black;
+    }
   </style>
   <body>
     <h3>Test for <a href='https://bugs.webkit.org/show_bug.cgi?id=29968'>WebKit bug 29968</a>: Selecting text with text-overflow ellipsis should not show cut off text</h3>

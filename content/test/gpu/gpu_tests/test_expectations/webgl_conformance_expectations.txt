@@ -326,6 +326,29 @@ crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array
 crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/reading/read-pixels-test.html [ Failure ]
 
+# Skipped due to low capacity of Lacros devices
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/ogles/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/canvas/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/canvas_sub_rectangle/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_data/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/svg_image/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/video/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/webgl_canvas/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_image_data/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_image/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_video/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_canvas/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_blob/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/textures/image_bitmap_from_image_bitmap/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/uniforms/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance/more/* [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome passthrough ] deqp/* [ Skip ]
+
+# Failures on Lacros, skip as failures causes re-login which takes ~1 min
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
@@ -418,12 +441,22 @@ crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-o
 
 ## D3D9 / AMD RX 5500 XT / Passthrough command decoder ##
 
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-non-reserved-words-5-of-8.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-too-many-uniforms.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/uninitialized-local-global-variables.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/ogles/GL/* [ RetryOnFailure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/reading/read-pixels-test.html [ Failure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/* [ RetryOnFailure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-active-bind.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-draw-with-2d-and-cube.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/uniform-default-values.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/conversions_scalar_to_scalar.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/swizzles_bvec4.html [ Failure ]
 
 ## win10 / angle-d3d11 / Passthrough command decoder failures ##
 
@@ -476,12 +509,11 @@ crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop
 
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/textures/misc/tex-input-validation.html [ Failure ]
-crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ RetryOnFailure ]
 
 ## Mac / M1 / OpenGL ##
 
 # No active browser window, but no crash stack.
-crbug.com/1240443 [ angle-opengl apple-apple-m1 monterey passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/1240443 [ angle-opengl mac-arm64 apple passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 ####################
 # Linux failures   #
@@ -527,6 +559,10 @@ crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constru
 # These video tests are flakey on many configurations.
 crbug.com/1347077 [ android-nexus-5x android-nougat angle-opengles passthrough qualcomm renderer-skia-gl target-cpu-64 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
+# Overlay scheduling issue can leave destroyed overlays around for tests that follow these. Creating confusing flakes.
+# Seen on Pixel-6 and Samsung, skipping generically for now.
+crbug.com/1445548 [ android no-passthrough ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
+crbug.com/1445548 [ android no-passthrough ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
 
 ## Nexus 5X ##
 
@@ -581,6 +617,7 @@ crbug.com/1276552 [ android-pixel-4 android-r passthrough qualcomm renderer-skia
 
 # Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1289303 [ android angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+crbug.com/1289303 [ android-pixel-4 android-r ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 ## Samsung failures ##
 
@@ -591,6 +628,7 @@ crbug.com/1372155 [ android android-sm-a135m ] conformance/offscreencanvas/conte
 crbug.com/1372155 [ android android-sm-a135m no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1372155 [ android android-sm-a135m ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/1445548 [ android android-sm-a235m no-passthrough ] conformance/extensions/oes-vertex-array-object-bufferData.html [ Failure ]
 
 
 ############

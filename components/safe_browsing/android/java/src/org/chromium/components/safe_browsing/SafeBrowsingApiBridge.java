@@ -15,7 +15,7 @@ import org.chromium.base.annotations.NativeMethods;
 /**
  * Helper for calling GMSCore Safe Browsing API from native code.
  *
- * The {@link #setHandler(SafeBrowsingApiHandler)} must be invoked first. After that
+ * The {@link #setHandler(SafetyNetApiHandler)} must be invoked first. After that
  * {@link #startUriLookup(long, String, int[])} and {@link #startAllowlistLookup(String, int)} can
  * be used to check the URLs. The handler would be initialized lazily on the first URL check.
  *
@@ -34,7 +34,7 @@ public final class SafeBrowsingApiBridge {
     private static boolean sHandlerInitCalled;
 
     @GuardedBy("sLock")
-    private static SafeBrowsingApiHandler sHandler;
+    private static SafetyNetApiHandler sHandler;
 
     @GuardedBy("sLock")
     private static UrlCheckTimeObserver sUrlCheckTimeObserver;
@@ -44,11 +44,11 @@ public final class SafeBrowsingApiBridge {
     }
 
     /**
-     * Sets the {@link SafeBrowsingApiHandler} object once and for the lifetime of this process.
+     * Sets the {@link SafetyNetApiHandler} object once and for the lifetime of this process.
      *
      * @param handler An instance that has not been initialized.
      */
-    public static void setHandler(SafeBrowsingApiHandler handler) {
+    public static void setHandler(SafetyNetApiHandler handler) {
         synchronized (sLock) {
             assert sHandler == null;
             sHandler = handler;
@@ -68,10 +68,10 @@ public final class SafeBrowsingApiBridge {
     }
 
     /**
-     * Initializes the singleton SafeBrowsingApiHandler instance on the first call. On subsequent
+     * Initializes the singleton SafetyNetApiHandler instance on the first call. On subsequent
      * calls it does nothing, returns the same value as returned on the first call.
      *
-     * The caller must {@link #setHandler(SafeBrowsingApiHandler)} first.
+     * The caller must {@link #setHandler(SafetyNetApiHandler)} first.
      *
      * @return true iff the initialization succeeded.
      */
@@ -87,7 +87,7 @@ public final class SafeBrowsingApiBridge {
      */
     public interface UrlCheckTimeObserver {
         /**
-         * @param urlCheckTimeDeltaMicros Time it took for {@link SafeBrowsingApiHandler} to check
+         * @param urlCheckTimeDeltaMicros Time it took for {@link SafetyNetApiHandler} to check
          * the URL.
          */
         void onUrlCheckTime(long urlCheckTimeDeltaMicros);
@@ -106,7 +106,7 @@ public final class SafeBrowsingApiBridge {
     }
 
     @GuardedBy("sLock")
-    private static SafeBrowsingApiHandler getHandler() {
+    private static SafetyNetApiHandler getHandler() {
         if (!sHandlerInitCalled) {
             sHandler = initHandler();
             sHandlerInitCalled = true;
@@ -115,14 +115,14 @@ public final class SafeBrowsingApiBridge {
     }
 
     /**
-     * Initializes the SafeBrowsingApiHandler, if supported.
+     * Initializes the SafetyNetApiHandler, if supported.
      *
-     * The caller must {@link #setHandler(SafeBrowsingApiHandler)} first.
+     * The caller must {@link #setHandler(SafetyNetApiHandler)} first.
      *
      * @return the handler if it is usable, or null if the API is not supported.
      */
     @GuardedBy("sLock")
-    private static SafeBrowsingApiHandler initHandler() {
+    private static SafetyNetApiHandler initHandler() {
         try (TraceEvent t = TraceEvent.scoped("SafeBrowsingApiBridge.initHandler")) {
             if (DEBUG) {
                 Log.i(TAG, "initHandler");
@@ -132,7 +132,7 @@ public final class SafeBrowsingApiBridge {
         }
     }
 
-    private static class LookupDoneObserver implements SafeBrowsingApiHandler.Observer {
+    private static class LookupDoneObserver implements SafetyNetApiHandler.Observer {
         @Override
         public void onUrlCheckDone(
                 long callbackId, int resultStatus, String metadata, long checkDelta) {
@@ -181,8 +181,6 @@ public final class SafeBrowsingApiBridge {
      * Must only be called if {@link #ensureInitialized()} returns true.
      *
      * @return true iff the uri is in the allowlist.
-     *
-     * TODO(crbug.com/995926): Make this call async.
      */
     @CalledByNative
     private static boolean startAllowlistLookup(String uri, int threatType) {

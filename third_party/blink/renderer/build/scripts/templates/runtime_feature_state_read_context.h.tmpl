@@ -7,9 +7,14 @@
 #define {{header_guard}}
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
+#include "url/origin.h"
 
 namespace content {
 class RuntimeFeatureStateControllerImpl;
@@ -41,6 +46,16 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
   }
   {% endfor %}
 
+  // TODO(https://crbug.com/1410784): Validate the list of `third_party_origins`
+  // against the ones the renderer process believes were active.
+  {% for feature in browser_read_access_with_third_party_features %}
+  bool Is{{feature.name}}EnabledForThirdParty(const url::Origin& first_party_origin,
+                                              const base::span<url::Origin>& third_party_origins) const {
+    return IsEnabledForThirdParty(
+        blink::mojom::RuntimeFeatureState::k{{feature.name}}, first_party_origin, third_party_origins);
+  }
+  {% endfor %}
+
  protected:
   bool IsEnabled(blink::mojom::RuntimeFeatureState feature) const {
     auto override_it = feature_overrides_.find(feature);
@@ -52,9 +67,34 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
     return initial_it->second;
   }
 
+  bool IsEnabledForThirdParty(blink::mojom::RuntimeFeatureState feature,
+                              const url::Origin& first_party_origin,
+                              const base::span<url::Origin>& third_party_origins) const {
+    auto override_it = possible_third_party_feature_overrides_.find(feature);
+    if (override_it == possible_third_party_feature_overrides_.end())
+      return false;
+
+    blink::TrialTokenValidator validator;
+    for (const auto& token : override_it->second) {
+      blink::TrialTokenResult result = validator.ValidateTokenAndTrial(
+          token, first_party_origin, third_party_origins, base::Time::Now());
+      if (result.Status() == blink::OriginTrialTokenStatus::kSuccess) {
+        return blink::origin_trials::IsTrialValid(result.ParsedToken()->feature_name()) &&
+          blink::origin_trials::IsTrialEnabledForBrowserProcessReadAccess(
+              result.ParsedToken()->feature_name());
+      }
+    }
+    return false;
+  }
+
   // Sparse map of overrides collected during initial navigation. This map
   // will be attached to the navigation on commit.
   base::flat_map<blink::mojom::RuntimeFeatureState, bool> feature_overrides_;
+
+  // Sparse map of overrides that might be needed for third-party contexts.
+  // Tokens must be validated once the attempting third-party origin is known.
+  base::flat_map<blink::mojom::RuntimeFeatureState,
+                 std::vector<std::string>> possible_third_party_feature_overrides_;
 
   // Values for all read/write features on context creation.
   base::flat_map<blink::mojom::RuntimeFeatureState, bool> initial_values_;
@@ -73,11 +113,16 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
   // the renderer process.
   void ApplyFeatureChange(
     const base::flat_map<blink::mojom::RuntimeFeatureState,
-                                       bool>& modified_features) {
+                                       bool>& modified_features,
+    const base::flat_map<blink::mojom::RuntimeFeatureState,
+                                       std::vector<std::string>>& possible_third_party_features) {
     // Feature values sent from the renderer process take precedence over state
     // held currently in the browser process, so insert_or_assign is used.
     for(auto const& feature : modified_features) {
       feature_overrides_.insert_or_assign(feature.first, feature.second);
+    }
+    for(auto const& feature : possible_third_party_features) {
+      possible_third_party_feature_overrides_.insert_or_assign(feature.first, feature.second);
     }
   }
 };

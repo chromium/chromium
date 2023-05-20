@@ -546,11 +546,17 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   }
 
   // Ignore a block flow (display:block, display:inline-block), unless it
-  // directly parents inline children.
+  // directly parents inline children and can have a caret inside of it.
   // This effectively trims a lot of uninteresting divs out of the tree.
   auto* block_flow = DynamicTo<LayoutBlockFlow>(*layout_object_);
   if (block_flow && block_flow->ChildrenInline() && block_flow->FirstChild()) {
-    return false;
+    // Require the ability to contain a caret -- this requirement is not
+    // strictly necessary, and could be removed, but caused about 20 test
+    // changes on each platform.
+    NGInlineCursor cursor(*block_flow);
+    if (cursor.HasRoot()) {
+      return false;
+    }
   }
 
   // By default, objects should be ignored so that the AX hierarchy is not

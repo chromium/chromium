@@ -149,11 +149,6 @@ bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() const {
       .has_value();
 }
 
-std::string AppBannerManagerDesktop::GetAppIdentifier() {
-  DCHECK(!blink::IsEmptyManifest(manifest()));
-  return web_app::GenerateAppIdUnhashedFromManifest(manifest());
-}
-
 web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));

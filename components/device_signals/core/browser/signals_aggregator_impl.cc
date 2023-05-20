@@ -34,6 +34,8 @@ SignalCollectionError PermissionToError(const UserPermission permission) {
       return SignalCollectionError::kInvalidUser;
     case UserPermission::kGranted:
       NOTREACHED();
+      ABSL_FALLTHROUGH_INTENDED;
+    case UserPermission::kUnsupported:
       return SignalCollectionError::kUnsupported;
   }
 }
@@ -63,6 +65,7 @@ SignalsAggregatorImpl::SignalsAggregatorImpl(
 
 SignalsAggregatorImpl::~SignalsAggregatorImpl() = default;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void SignalsAggregatorImpl::GetSignalsForUser(
     const UserContext& user_context,
     const SignalsAggregationRequest& request,
@@ -80,6 +83,7 @@ void SignalsAggregatorImpl::GetSignalsForUser(
       permission_service_->CanUserCollectSignals(user_context);
   GetSignalsWithPermission(permission, std::move(request), std::move(callback));
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
                                        GetSignalsCallback callback) {

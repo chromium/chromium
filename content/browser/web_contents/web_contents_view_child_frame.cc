@@ -40,7 +40,7 @@ class NoOpPopupMenuHelperDelegate : public PopupMenuHelper::Delegate {
 WebContentsViewChildFrame::WebContentsViewChildFrame(
     WebContentsImpl* web_contents,
     std::unique_ptr<WebContentsViewDelegate> delegate,
-    RenderViewHostDelegateView** delegate_view)
+    raw_ptr<RenderViewHostDelegateView>* delegate_view)
     : web_contents_(web_contents), delegate_(std::move(delegate)) {
   *delegate_view = this;
 }

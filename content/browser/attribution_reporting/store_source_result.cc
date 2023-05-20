@@ -14,14 +14,14 @@ namespace content {
 StoreSourceResult::StoreSourceResult(
     attribution_reporting::mojom::StoreSourceResult status,
     absl::optional<base::Time> min_fake_report_time,
-    absl::optional<int> max_destinations_per_source_site_reporting_origin,
+    absl::optional<int> max_destinations_per_source_site_reporting_site,
     absl::optional<int> max_sources_per_origin)
     : status(status),
       min_fake_report_time(min_fake_report_time),
-      max_destinations_per_source_site_reporting_origin(
-          max_destinations_per_source_site_reporting_origin),
+      max_destinations_per_source_site_reporting_site(
+          max_destinations_per_source_site_reporting_site),
       max_sources_per_origin(max_sources_per_origin) {
-  DCHECK(!max_destinations_per_source_site_reporting_origin.has_value() ||
+  DCHECK(!max_destinations_per_source_site_reporting_site.has_value() ||
          status == attribution_reporting::mojom::StoreSourceResult::
                        kInsufficientUniqueDestinationCapacity);
   DCHECK(!max_sources_per_origin.has_value() ||

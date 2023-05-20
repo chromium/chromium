@@ -14,7 +14,7 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/driver/trusted_vault_client.h"
+#include "components/sync/service/trusted_vault_client.h"
 #include "components/sync/test/fake_server.h"
 
 // Checker used to block until a Nigori with a given passphrase type is

@@ -26,7 +26,6 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 
@@ -124,13 +123,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
         notify: true,
       },
 
-      isPasswordNotesEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enablePasswordNotes');
-        },
-      },
-
       isPasswordVisible_: {
         type: Boolean,
         value: false,
@@ -145,7 +137,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
   private toastText_: string;
   credential: chrome.passwordsPrivate.PasswordUiEntry|null;
-  private isPasswordNotesEnabled_: boolean;
   private isPasswordVisible_: boolean;
   private showEditDialog_: boolean;
   private visibilityChangedListener_: () => void;
@@ -296,10 +287,6 @@ export class PasswordViewElement extends PasswordViewElementBase {
 
   private isFederated_(): boolean {
     return !!this.credential && !!this.credential.federationText;
-  }
-
-  private isNoteEnabled_(): boolean {
-    return !this.isFederated_() && this.isPasswordNotesEnabled_;
   }
 
   /** Handler to copy the password from the password field. */

@@ -64,8 +64,8 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AudioData* audio_data = V8AudioData::ToImplWithTypeCheck(
-      script_state->GetIsolate(), chunk.V8Value());
+  AudioData* audio_data =
+      V8AudioData::ToWrappable(script_state->GetIsolate(), chunk.V8Value());
   if (!audio_data) {
     exception_state.ThrowTypeError("Null audio data.");
     return ScriptPromise();

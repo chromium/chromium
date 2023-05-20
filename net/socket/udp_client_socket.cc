@@ -18,6 +18,11 @@ UDPClientSocket::UDPClientSocket(DatagramSocket::BindType bind_type,
                                  handles::NetworkHandle network)
     : socket_(bind_type, net_log, source), connect_using_network_(network) {}
 
+UDPClientSocket::UDPClientSocket(DatagramSocket::BindType bind_type,
+                                 NetLogWithSource source_net_log,
+                                 handles::NetworkHandle network)
+    : socket_(bind_type, source_net_log), connect_using_network_(network) {}
+
 UDPClientSocket::~UDPClientSocket() = default;
 
 int UDPClientSocket::Connect(const IPEndPoint& address) {
@@ -26,7 +31,10 @@ int UDPClientSocket::Connect(const IPEndPoint& address) {
     return ConnectUsingNetwork(connect_using_network_, address);
 
   connect_called_ = true;
-  int rv = socket_.Open(address.GetFamily());
+  int rv = OK;
+  if (!adopted_opened_socket_) {
+    rv = socket_.Open(address.GetFamily());
+  }
   if (rv != OK)
     return rv;
   return socket_.Connect(address);
@@ -38,9 +46,13 @@ int UDPClientSocket::ConnectUsingNetwork(handles::NetworkHandle network,
   connect_called_ = true;
   if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
     return ERR_NOT_IMPLEMENTED;
-  int rv = socket_.Open(address.GetFamily());
-  if (rv != OK)
+  int rv = OK;
+  if (!adopted_opened_socket_) {
+    rv = socket_.Open(address.GetFamily());
+  }
+  if (rv != OK) {
     return rv;
+  }
   rv = socket_.BindToNetwork(network);
   if (rv != OK)
     return rv;
@@ -53,8 +65,10 @@ int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   connect_called_ = true;
   if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
     return ERR_NOT_IMPLEMENTED;
-  int rv;
-  rv = socket_.Open(address.GetFamily());
+  int rv = OK;
+  if (!adopted_opened_socket_) {
+    rv = socket_.Open(address.GetFamily());
+  }
   if (rv != OK)
     return rv;
   // Calling connect() will bind a socket to the default network, however there
@@ -126,6 +140,7 @@ int UDPClientSocket::Write(
 
 void UDPClientSocket::Close() {
   socket_.Close();
+  adopted_opened_socket_ = false;
 }
 
 int UDPClientSocket::GetPeerAddress(IPEndPoint* address) const {
@@ -178,9 +193,13 @@ void UDPClientSocket::SetIOSNetworkServiceType(int ios_network_service_type) {
 #endif
 }
 
-void UDPClientSocket::AdoptOpenedSocket(AddressFamily address_family,
-                                        SocketDescriptor socket) {
-  socket_.AdoptOpenedSocket(address_family, socket);
+int UDPClientSocket::AdoptOpenedSocket(AddressFamily address_family,
+                                       SocketDescriptor socket) {
+  int rv = socket_.AdoptOpenedSocket(address_family, socket);
+  if (rv == OK) {
+    adopted_opened_socket_ = true;
+  }
+  return rv;
 }
 
 }  // namespace net

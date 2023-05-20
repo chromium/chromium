@@ -316,12 +316,17 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   virtual void OnMainFramePaint();
 
   void OnShutdownTaskQueue(const scoped_refptr<MainThreadTaskQueue>& queue);
+  void OnDetachTaskQueue(MainThreadTaskQueue&);
 
+  // TODO(crbug.com/1143007): Pass `queue` by reference now that the queue is
+  // guaranteed to be alive.
   void OnTaskStarted(
       MainThreadTaskQueue* queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
+  // TODO(crbug.com/1143007): Pass `queue` by reference now that the queue is
+  // guaranteed to be alive.
   void OnTaskCompleted(
       base::WeakPtr<MainThreadTaskQueue> queue,
       const base::sequence_manager::Task& task,
@@ -547,6 +552,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void WriteIntoTraceLocked(perfetto::TracedValue context,
                             base::TimeTicks optional_now) const;
   void CreateTraceEventObjectSnapshotLocked() const;
+
+  // Shuts down empty detached task queues, which are being kept alive to run
+  // pending tasks.
+  void ShutdownEmptyDetachedTaskQueues();
 
   static bool ShouldPrioritizeInputEvent(const WebInputEvent& web_input_event);
 
@@ -833,6 +842,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     std::unique_ptr<TaskAttributionTracker> task_attribution_tracker;
     Persistent<HeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>
         agent_group_schedulers;
+    // Task queues that have been detached from their scheduler and may have
+    // pending tasks that need to run.
+    WTF::HashSet<scoped_refptr<MainThreadTaskQueue>> detached_task_queues;
   };
 
   struct AnyThread {

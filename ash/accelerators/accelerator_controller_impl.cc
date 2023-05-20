@@ -91,8 +91,9 @@ int GetEncodedShortcut(const ui::Accelerator& accelerator) {
   }
 
   // Currently KeyboardCode only has 2^8 values. It will be a long time until we
-  // get to 2^16. Even if KeyboardCode has 2^28+ values for some reason, only
-  // the top 5 bits will be overwritten.
+  // get to 2^16. But if KeyboardCode has 2^28+ values for some reason, the top
+  // 5 bits will be overwritten.
+  DCHECK((0xF800 & accelerator.key_code()) == 0);
   return encoded_modifier | accelerator.key_code();
 }
 
@@ -773,6 +774,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return true;
     case AcceleratorAction::kToggleOverview:
       return accelerators::CanToggleOverview();
+    case AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup:
+      return accelerators::CanGroupOrUngroupWindows();
     case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
       return accelerators::CanMinimizeSnapGroupWindows();
     case AcceleratorAction::kToggleMultitaskMenu:
@@ -1347,6 +1350,9 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kToggleOverview:
       base::RecordAction(base::UserMetricsAction("Accel_Overview_F5"));
       accelerators::ToggleOverview();
+      break;
+    case AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup:
+      accelerators::GroupOrUngroupWindowsInSnapGroup();
       break;
     case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
       base::RecordAction(base::UserMetricsAction(

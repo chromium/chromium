@@ -331,7 +331,8 @@ struct MyStruct {
 };
 ```
 
-The typical fix is to change the type of the out argument:
+The typical fix is to change the type of the out argument
+(see also [an example CL here](https://crrev.com/c/4545743)):
 
 ```cpp
 void GetSomeClassPtr(raw_ptr<SomeClass>* out_arg) {

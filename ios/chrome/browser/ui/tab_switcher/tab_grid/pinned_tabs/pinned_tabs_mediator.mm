@@ -391,7 +391,6 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 #pragma mark - TabCollectionDragDropHandler
 
 - (UIDragItem*)dragItemForItemWithID:(NSString*)itemID {
-  _dragItemID = [itemID copy];
   web::WebState* webState =
       GetWebState(self.webStateList, WebStateSearchCriteria{
                                          .identifier = itemID,
@@ -399,6 +398,10 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
                                      });
 
   return CreateTabDragItem(webState);
+}
+
+- (void)dragWillBeginForItemWithID:(NSString*)itemID {
+  _dragItemID = [itemID copy];
 }
 
 - (void)dragSessionDidEnd {
@@ -561,10 +564,11 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
   loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
-  // Insert a new webState using the `INSERT_PINNED` flag.
+  // Insert a new webState using the `INSERT_PINNED` flag and activate it.
   self.webStateList->InsertWebState(
       base::checked_cast<int>(index), std::move(webState),
-      (WebStateList::INSERT_PINNED), WebStateOpener());
+      (WebStateList::INSERT_PINNED | WebStateList::INSERT_ACTIVATE),
+      WebStateOpener());
 }
 
 // Converts the collection view's item index to WebStateList index.

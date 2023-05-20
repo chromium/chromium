@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 static_library("webdata_services") {
   output_name = "webdata_services"
 
@@ -12,6 +14,7 @@ static_library("webdata_services") {
 
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/keyed_service/core",
@@ -23,7 +26,7 @@ static_library("webdata_services") {
     "//sql",
   ]
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "web_data_service_wrapper_factory.cc",
       "web_data_service_wrapper_factory.h",

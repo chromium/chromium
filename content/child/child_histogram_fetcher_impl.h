@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/writable_shared_memory_region.h"
+#include "content/common/histogram_fetcher.mojom-shared.h"
 #include "content/common/histogram_fetcher.mojom.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -54,6 +55,9 @@ class ChildHistogramFetcherImpl : public content::mojom::ChildHistogramFetcher {
 
   void GetChildNonPersistentHistogramData(
       HistogramDataCallback callback) override;
+
+  void Ping(mojom::UmaPingCallSource call_source,
+            PingCallback callback) override;
 
   // Extract snapshot data and then send it off to the Browser process.
   // Send only a delta to what we have already sent.

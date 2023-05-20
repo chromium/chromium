@@ -346,8 +346,7 @@ void UpdateOverviewHighlightForFocus(OverviewHighlightableView* target_view) {
                                    ->highlight_controller();
   DCHECK(highlight_controller);
 
-  if (highlight_controller->IsFocusHighlightVisible())
-    highlight_controller->MoveHighlightToView(target_view);
+  highlight_controller->MoveHighlightToView(target_view);
 }
 
 void UpdateOverviewHighlightForFocusAndSpokenFeedback(
@@ -360,10 +359,9 @@ void UpdateOverviewHighlightForFocusAndSpokenFeedback(
                                    ->overview_session()
                                    ->highlight_controller();
   DCHECK(highlight_controller);
-
-  if (highlight_controller->IsFocusHighlightVisible() ||
-      a11y_controller->spoken_feedback().enabled()) {
-    highlight_controller->MoveHighlightToView(target_view);
+  DCHECK(a11y_controller);
+  if (a11y_controller->spoken_feedback().enabled()) {
+    UpdateOverviewHighlightForFocus(target_view);
   }
 }
 

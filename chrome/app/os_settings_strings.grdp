@@ -323,7 +323,7 @@
     Desktop backgrounds match across devices
   </message>
   <message name="IDS_OS_SETTINGS_SYNC_APPS_TOOLTIP" desc="Tooltip shown next to the apps toggle in OS sync settings.">
-    Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account. Web apps will be synced through Chrome even if other browser sync features are turned off.
+    Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account. Web apps installed from Chrome browser will be synced even if browser sync is turned off.
   </message>
   <message name="IDS_OS_SETTINGS_SYNC_PRINTERS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of printers across devices.">
     Printers
@@ -3245,6 +3245,48 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_SCANNING_LAUNCH_APP_SUBLABEL" desc="Sub-label that describes the scanning app which lets users scan documents.">
     Scan documents and images
   </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_DEVICE_ERROR" translateable="false" desc="Error label to show under the destination dropdown when there is a mechanical error inside the printer.">
+    Mechanical issue. Check printer
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_DOOR_OPEN" translateable="false" desc="Error label to show under the destination dropdown when the printer has an open cover or door.">
+   Printer door is open
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_LOW_ON_INK" translateable="false" desc="Error label to show under the destination dropdown when the printer is low on ink.">
+    Low on ink
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_LOW_ON_PAPER" translateable="false" desc="Error label to show under the destination dropdown when the printer is low on paper">
+    Low on paper
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_OUT_OF_INK" translateable="false" desc="Error label to show under the destination dropdown when the printer is out of ink.">
+   Out of ink
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_OUT_OF_PAPER" translateable="false" desc="Error label to show under the destination dropdown when the printer is out of paper.">
+    Out of paper
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_OUPUT_ALMOST_FULL" translateable="false" desc="Error label to show under the destination dropdown when the printer's output tray is almost full.">
+    Output tray is almost full
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_OUPUT_FULL" translateable="false" desc="Error label to show under the destination dropdown when the printer's output tray is full.">
+    Output tray is full
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_PAPER_JAM" translateable="false" desc="Error label to show under the destination dropdown when the printer has a paper jam.">
+    Paper is jammed
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_PAUSED" translateable="false" desc="Error label to show under the destination dropdown when someone has put the printer into a paused state.">
+    Printer is paused
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_PRINTER_QUEUE_FULL" translateable="false" desc="Error label to show under the destination dropdown when the printer's job queue is full and is temporarily unable to accept more print jobs.">
+    Printer queue is full
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_PRINTER_UNREACHABLE" translateable="false" desc="Error label to show under the destination dropdown when the device is attempting to schedule a print job on the printer but can't get a connection to the printer">
+    Can’t connect to printer
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_STOPPED" translateable="false" desc="Error label to show under the destination dropdown when the printer is in the process of stopping or the printer is powered down.">
+    Printer has stopped
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_TRAY_MISSING" translateable="false" desc="Error label to show under the destination dropdown when the printer is missing a tray.">
+    Tray is missing
+  </message>
 
   <!-- Internet page (OS settings) -->
   <message name="IDS_SETTINGS_INTERNET_ADD_CELLULAR" desc="The accessibility label for the add cellular icon at Settings > Internet > Add Cellular label. This text will not be visible, but will be announced when ChromeVox is on and the user navigates to the icon. Clicking this icon will show a dialog that allows the user to activate a physical SIM or set up eSIM.">
@@ -3639,6 +3681,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_DESCRIPTION" desc="Settings > Internet > Network details: Description of the Passpoint network removal dialog.">
     By forgetting this network you will also remove the Passpoint subscription and its associated networks.
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_INFORMATION" desc="Settings > Network > Wi-Fi > Network details: Information on the Passpoint subscription displayed in the network removal dialog.">
+    Your Passpoint provider will be removed from this device only. To make changes to your subscription, contact the subscription provider.
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PROXY" desc="Settings > Internet > Network details: Proxy section label.">
     Proxy
@@ -4874,16 +4919,22 @@ Press an assigned switch or key to remove assignment.
     For <ph name="DEVICE_NAME">$1<ex>Internal Keyboard</ex></ph>, choose an action for each key
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS" desc="In Device Settings, the inverted checkbox label for interpreting the top-row keys as function keys instead.">
-    Use function keys as Chromebook top row keys
+    Use function keys as top row keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION" desc="In Device Settings, the inverted label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
-    F keys will now have the behavior as your Chromebook top row keys.
+    F keys will now have the behavior as system top-row keys
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES" desc="In Device Settings, the checkbox label to enable the meta key to switch the behavior of the top-row keys.">
-    Use the launcher key to change behavior of Chromebook top row keys
+  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_SEARCH" desc="In Device Settings, the checkbox label to enable the Search key to switch the behavior of the top-row keys.">
+    Use the search key to change the behavior of function keys
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION" desc="In Device Settings, the label describing how to use the meta key to switch the behavior of the top-row keys.">
-    Hold the launcher key to change between the function keys
+  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_SEARCH" desc="In Device Settings, the label describing how to use the Search key to switch the behavior of the top-row keys.">
+    Hold the search key to change between function keys and system top-row keys
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_LAUNCHER" desc="In Device Settings, the checkbox label to enable the launcher key to switch the behavior of the top-row keys.">
+    Use the launcher key to change the behavior of function keys
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_LAUNCHER" desc="In Device Settings, the label describing how to use the launcher key to switch the behavior of the top-row keys.">
+    Hold the launcher key to change between function keys and system top-row keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL" desc="In Keyboard remap keys subpage, the reset keys button label.">
     Reset keys
@@ -4920,6 +4971,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH" desc="In keyboard remap keys subpage, the label and dropdown list item for the Search key.">
     search
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LAUNCHER" desc="In keyboard remap keys subpage, the label and dropdown list item for the Launcher key.">
+    launcher
   </message>
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED" desc="In keyboard remap keys subpage, the dropdown list item for a disabled key.">
     disabled
@@ -5282,11 +5336,17 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_HW_MICROPHONE_TOGGLE_TOOLTIP" desc="Tooltip to display in the Privacy Hub subpage when the hardware microphone switch is engaged.">
     To turn on microphone access, turn on the physical microphone switch on your device
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SPEAK_ON_MUTE_DETECTION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable microphone from the privacy hub.">
+    Mute nudge
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SPEAK_ON_MUTE_DETECTION_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle in the Privacy controls (aka Privacy Hub) os-settings page.">
+    You'll get notified if you talk while your mic is muted when using certain apps, like video chat apps. Audio never leaves your device.
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_TITLE" desc="The title of the toggle to enable/disable geolocation from the privacy hub.">
     Location access
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_TOGGLE_DESC" desc="The title of the toggle to enable/disable geolocation from the privacy hub.">
-    Allow apps and websites and the system time zone to use the location determined by Google Location Service. If location access is turned off, your location may still be visible through your IP address.
+    Allow apps, websites, and system services to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device’s location.
   </message>
   <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
     <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> hardware support and stability

@@ -139,15 +139,15 @@ class BluetoothFeaturePodControllerTest
     if (IsQsRevampEnabled()) {
       auto* quick_settings_view =
           GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
-      EXPECT_TRUE(quick_settings_view->detailed_view());
+      EXPECT_TRUE(quick_settings_view->detailed_view_container());
       const views::View::Views& children =
-          quick_settings_view->detailed_view()->children();
+          quick_settings_view->detailed_view_container()->children();
       EXPECT_EQ(1u, children.size());
       EXPECT_STREQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
     } else {
-      EXPECT_TRUE(tray_view()->detailed_view());
+      EXPECT_TRUE(tray_view()->detailed_view_container());
       const views::View::Views& children =
-          tray_view()->detailed_view()->children();
+          tray_view()->detailed_view_container()->children();
       EXPECT_EQ(1u, children.size());
       EXPECT_STREQ("BluetoothDetailedViewLegacy",
                    children.at(0)->GetClassName());

@@ -10,9 +10,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/base/progress_marker_map.h"
-#include "components/sync/driver/sync_token_status.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/service/sync_token_status.h"
 
 namespace syncer {
 
@@ -76,11 +76,13 @@ void TestSyncService::ClearAuthError() {
   }
 }
 
-void TestSyncService::SetFirstSetupComplete(bool first_setup_complete) {
-  if (first_setup_complete)
-    user_settings_.SetFirstSetupComplete();
-  else
-    user_settings_.ClearFirstSetupComplete();
+void TestSyncService::SetInitialSyncFeatureSetupComplete(
+    bool initial_sync_feature_setup_complete) {
+  if (initial_sync_feature_setup_complete) {
+    user_settings_.SetInitialSyncFeatureSetupComplete();
+  } else {
+    user_settings_.ClearInitialSyncFeatureSetupComplete();
+  }
 }
 
 void TestSyncService::SetFailedDataTypes(const ModelTypeSet& types) {
@@ -298,6 +300,11 @@ void TestSyncService::RemoveProtocolEventObserver(
 
 void TestSyncService::GetAllNodesForDebugging(
     base::OnceCallback<void(base::Value::List)> callback) {}
+
+SyncService::ModelTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
+    ModelType type) const {
+  return ModelTypeDownloadStatus::kUpToDate;
+}
 
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 

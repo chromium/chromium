@@ -4,7 +4,7 @@
 
 #include "components/trusted_vault/trusted_vault_histograms.h"
 
-#include "components/sync/driver/trusted_vault_histograms.h"
+#include "components/sync/service/trusted_vault_histograms.h"
 
 namespace trusted_vault {
 

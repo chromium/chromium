@@ -5,6 +5,7 @@
 #include "ash/wm/desks/desk_bar_view_base.h"
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -30,9 +31,11 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/background.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/highlight_border.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -42,7 +45,7 @@ namespace {
 
 OverviewHighlightController* GetHighlightController() {
   auto* overview_controller = Shell::Get()->overview_controller();
-  DCHECK(overview_controller->InOverviewSession());
+  CHECK(overview_controller->InOverviewSession());
   return overview_controller->overview_session()->highlight_controller();
 }
 
@@ -62,6 +65,11 @@ void InitScrollContentsAnimationSettings(
     ui::ScopedLayerAnimationSettings& settings) {
   settings.SetTransitionDuration(kDeskBarScrollDuration);
   settings.SetTweenType(gfx::Tween::ACCEL_20_DECEL_60);
+}
+
+gfx::Rect GetGestureEventScreenRect(const ui::Event& event) {
+  CHECK(event.IsGestureEvent());
+  return event.AsGestureEvent()->details().bounding_box();
 }
 
 }  // namespace
@@ -97,22 +105,13 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       const gfx::Size zero_state_new_desk_button_size =
           zero_state_new_desk_button->GetPreferredSize();
 
-      // The presenter is shutdown early in the overview destruction process to
-      // prevent calls to the model. Some animations on the desk bar may still
-      // call this function past shutdown start. In this case we just continue
-      // as if the saved desk UI should be hidden.
-      OverviewSession* session = bar_view_->overview_grid()->overview_session();
-      const bool should_show_saved_desk_library =
-          saved_desk_util::IsSavedDesksEnabled() && session &&
-          !session->is_shutting_down() &&
-          session->saved_desk_presenter()->should_show_saved_desk_library();
       auto* zero_state_library_button = bar_view_->zero_state_library_button();
       const gfx::Size zero_state_library_button_size =
-          should_show_saved_desk_library
+          bar_view_->ShouldShowLibraryUi()
               ? zero_state_library_button->GetPreferredSize()
               : gfx::Size();
       const int width_for_zero_state_library_button =
-          should_show_saved_desk_library
+          bar_view_->ShouldShowLibraryUi()
               ? zero_state_library_button_size.width() +
                     kDeskBarZeroStateButtonSpacing
               : 0;
@@ -144,7 +143,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
                                      kDeskBarZeroStateButtonSpacing,
                                  kDeskBarZeroStateY),
                       zero_state_library_button_size));
-        zero_state_library_button->SetVisible(should_show_saved_desk_library);
+        zero_state_library_button->SetVisible(bar_view_->ShouldShowLibraryUi());
       }
       return;
     }
@@ -253,21 +252,12 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       const gfx::Size new_desk_button_size =
           new_desk_button->GetPreferredSize();
 
-      // The presenter is shutdown early in the overview destruction process to
-      // prevent calls to the model. Some animations on the desk bar may still
-      // call this function past shutdown start. In this case we just continue
-      // as if the saved desk UI should be hidden.
-      OverviewSession* session = bar_view_->overview_grid()->overview_session();
-      const bool should_show_saved_desk_library =
-          saved_desk_util::IsSavedDesksEnabled() && session &&
-          !session->is_shutting_down() &&
-          session->saved_desk_presenter()->should_show_saved_desk_library();
       auto* library_button = bar_view_->library_button();
       const gfx::Size library_button_size =
-          should_show_saved_desk_library ? library_button->GetPreferredSize()
-                                         : gfx::Size();
+          bar_view_->ShouldShowLibraryUi() ? library_button->GetPreferredSize()
+                                           : gfx::Size();
       const int width_for_library_button =
-          should_show_saved_desk_library
+          bar_view_->ShouldShowLibraryUi()
               ? library_button_size.width() + kDeskBarZeroStateButtonSpacing
               : 0;
 
@@ -296,7 +286,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
                                      kDeskBarZeroStateButtonSpacing,
                                  kDeskBarZeroStateY),
                       library_button_size));
-        library_button->SetVisible(should_show_saved_desk_library);
+        library_button->SetVisible(bar_view_->ShouldShowLibraryUi());
       }
       return;
     }
@@ -399,6 +389,62 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
   // Width of the scroll view. It is the contents' preferred width if it exceeds
   // the desk bar view's width or just the desk bar view's width if not.
   int width_ = 0;
+};
+
+// -----------------------------------------------------------------------------
+// DeskBarHoverObserver:
+
+class DeskBarHoverObserver : public ui::EventObserver {
+ public:
+  DeskBarHoverObserver(DeskBarViewBase* owner, aura::Window* widget_window)
+      : owner_(owner),
+        event_monitor_(views::EventMonitor::CreateWindowMonitor(
+            this,
+            widget_window,
+            {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_DRAGGED, ui::ET_MOUSE_RELEASED,
+             ui::ET_MOUSE_MOVED, ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_EXITED,
+             ui::ET_GESTURE_LONG_PRESS, ui::ET_GESTURE_LONG_TAP,
+             ui::ET_GESTURE_TAP, ui::ET_GESTURE_TAP_DOWN})) {}
+
+  DeskBarHoverObserver(const DeskBarHoverObserver&) = delete;
+  DeskBarHoverObserver& operator=(const DeskBarHoverObserver&) = delete;
+
+  ~DeskBarHoverObserver() override = default;
+
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override {
+    switch (event.type()) {
+      case ui::ET_MOUSE_PRESSED:
+      case ui::ET_MOUSE_DRAGGED:
+      case ui::ET_MOUSE_RELEASED:
+      case ui::ET_MOUSE_MOVED:
+      case ui::ET_MOUSE_ENTERED:
+      case ui::ET_MOUSE_EXITED:
+        owner_->OnHoverStateMayHaveChanged();
+        break;
+
+      case ui::ET_GESTURE_LONG_PRESS:
+      case ui::ET_GESTURE_LONG_TAP:
+        owner_->OnGestureTap(GetGestureEventScreenRect(event),
+                             /*is_long_gesture=*/true);
+        break;
+
+      case ui::ET_GESTURE_TAP:
+      case ui::ET_GESTURE_TAP_DOWN:
+        owner_->OnGestureTap(GetGestureEventScreenRect(event),
+                             /*is_long_gesture=*/false);
+        break;
+
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
+ private:
+  raw_ptr<DeskBarViewBase, ExperimentalAsh> owner_;
+
+  std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
 DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
@@ -651,7 +697,7 @@ void DeskBarViewBase::Layout() {
   const gfx::Insets insets = (type_ == Type::kOverview)
                                  ? overview_grid_->GetGridInsets()
                                  : gfx::Insets::TLBR(0, 0, 0, 0);
-  DCHECK(insets.left() == insets.right());
+  CHECK(insets.left() == insets.right());
   const int horizontal_padding =
       std::max(kDeskBarScrollViewMinimumHorizontalPadding, insets.left());
   left_scroll_button_->SetBounds(
@@ -707,6 +753,9 @@ void DeskBarViewBase::Init() {
   if (it != mini_views_.end()) {
     ScrollToShowViewIfNecessary(*it);
   }
+
+  hover_observer_ = std::make_unique<DeskBarHoverObserver>(
+      this, GetWidget()->GetNativeWindow());
 }
 
 bool DeskBarViewBase::IsZeroState() const {
@@ -789,7 +838,7 @@ void DeskBarViewBase::OnSavedDeskLibraryHidden() {
 }
 
 void DeskBarViewBase::NudgeDeskName(int desk_index) {
-  DCHECK_LT(desk_index, static_cast<int>(mini_views_.size()));
+  CHECK_LT(desk_index, static_cast<int>(mini_views_.size()));
 
   auto* name_view = mini_views_[desk_index]->desk_name_view();
   name_view->RequestFocus();
@@ -864,27 +913,25 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
   if (!saved_desk_util::IsSavedDesksEnabled()) {
     return;
   }
-  if (type_ != Type::kOverview) {
-    return;
-  }
 
-  const bool should_show_ui = overview_grid_->overview_session()
-                                  ->saved_desk_presenter()
-                                  ->should_show_saved_desk_library();
   const bool is_zero_state = IsZeroState();
 
-  zero_state_library_button_->SetVisible(should_show_ui && is_zero_state);
-  expanded_state_library_button_->SetVisible(should_show_ui && !is_zero_state);
+  zero_state_library_button_->SetVisible(ShouldShowLibraryUi() &&
+                                         is_zero_state);
+  expanded_state_library_button_->SetVisible(ShouldShowLibraryUi() &&
+                                             !is_zero_state);
 
-  // Removes the button from the tabbing order if it becomes invisible.
-  auto* highlight_controller = GetHighlightController();
-  if (!zero_state_library_button_->GetVisible()) {
-    highlight_controller->OnViewDestroyingOrDisabling(
-        zero_state_library_button_);
-  }
-  if (!expanded_state_library_button_->GetVisible()) {
-    highlight_controller->OnViewDestroyingOrDisabling(
-        expanded_state_library_button_->GetInnerButton());
+  if (type_ == Type::kOverview) {
+    // Removes the button from the tabbing order if it becomes invisible.
+    auto* highlight_controller = GetHighlightController();
+    if (!zero_state_library_button_->GetVisible()) {
+      highlight_controller->OnViewDestroyingOrDisabling(
+          zero_state_library_button_);
+    }
+    if (!expanded_state_library_button_->GetVisible()) {
+      highlight_controller->OnViewDestroyingOrDisabling(
+          expanded_state_library_button_->GetInnerButton());
+    }
   }
 
   const int begin_x = GetFirstMiniViewXOffset();
@@ -909,25 +956,18 @@ void DeskBarViewBase::UpdateLibraryButtonVisibilityCrOSNext() {
   if (!saved_desk_util::IsSavedDesksEnabled()) {
     return;
   }
-  if (type_ != Type::kOverview) {
-    return;
-  }
-
-  const bool should_show_ui = overview_grid_->overview_session()
-                                  ->saved_desk_presenter()
-                                  ->should_show_saved_desk_library();
 
   library_button_label_->SetVisible(
-      should_show_ui &&
+      ShouldShowLibraryUi() &&
       (library_button_->state() == CrOSNextDeskIconButton::State::kActive));
 
   // If the visibility of the library button doesn't change, return early.
-  if (library_button_->GetVisible() == should_show_ui) {
+  if (library_button_->GetVisible() == ShouldShowLibraryUi()) {
     return;
   }
 
-  library_button_->SetVisible(should_show_ui);
-  if (should_show_ui) {
+  library_button_->SetVisible(ShouldShowLibraryUi());
+  if (ShouldShowLibraryUi()) {
     if (overview_grid_->IsShowingSavedDeskLibrary()) {
       library_button_->UpdateState(CrOSNextDeskIconButton::State::kActive);
     } else {
@@ -947,6 +987,38 @@ void DeskBarViewBase::UpdateLibraryButtonVisibilityCrOSNext() {
   // desk button and then animates to the identity transform.
   PerformLibraryButtonVisibilityAnimation(mini_views_, new_desk_button_,
                                           begin_x - GetFirstMiniViewXOffset());
+}
+
+void DeskBarViewBase::OnHoverStateMayHaveChanged() {
+  for (auto* mini_view : mini_views_) {
+    mini_view->UpdateDeskButtonVisibility();
+  }
+}
+
+void DeskBarViewBase::OnGestureTap(const gfx::Rect& screen_rect,
+                                   bool is_long_gesture) {
+  for (auto* mini_view : mini_views_) {
+    mini_view->OnWidgetGestureTap(screen_rect, is_long_gesture);
+  }
+}
+
+bool DeskBarViewBase::ShouldShowLibraryUi() {
+  // Only update visibility when needed. This will save a lot of repeated work.
+  if (library_ui_visibility_ == LibraryUiVisibility::kToBeChecked) {
+    if (!saved_desk_util::IsSavedDesksEnabled() ||
+        Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      library_ui_visibility_ = LibraryUiVisibility::kHidden;
+    } else {
+      auto* desk_model = Shell::Get()->saved_desk_delegate()->GetDeskModel();
+      CHECK(desk_model);
+      size_t saved_desk_count = desk_model->GetDeskTemplateEntryCount() +
+                                desk_model->GetSaveAndRecallDeskEntryCount();
+      library_ui_visibility_ = saved_desk_count ? LibraryUiVisibility::kVisible
+                                                : LibraryUiVisibility::kHidden;
+    }
+  }
+
+  return library_ui_visibility_ == LibraryUiVisibility::kVisible;
 }
 
 void DeskBarViewBase::UpdateDeskIconButtonState(
@@ -1128,7 +1200,7 @@ int DeskBarViewBase::GetAdjustedUncroppedScrollPosition(int position) const {
     }
   }
 
-  DCHECK_LT(i, mini_views_size);
+  CHECK_LT(i, mini_views_size);
   if ((position - mini_view_bounds.x()) < mini_view_bounds.width() / 2) {
     adjusted_position = mini_view_bounds.x();
   } else {

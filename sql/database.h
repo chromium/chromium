@@ -18,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -40,12 +41,9 @@ struct sqlite3;
 struct sqlite3_file;
 struct sqlite3_stmt;
 
-namespace base {
-class FilePath;
-namespace trace_event {
+namespace base::trace_event {
 class ProcessMemoryDump;
-}  // namespace trace_event
-}  // namespace base
+}  // namespace base::trace_event
 
 namespace perfetto::protos::pbzero {
 class ChromeSqlDiagnostics;
@@ -335,6 +333,7 @@ class COMPONENT_EXPORT(SQL) Database {
     error_callback_ = std::move(callback);
   }
   void reset_error_callback() { error_callback_.Reset(); }
+  bool has_error_callback() const { return !error_callback_.is_null(); }
 
   // Developer-friendly database ID used in logging output and memory dumps.
   void set_histogram_tag(const std::string& tag);
@@ -702,6 +701,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Internal state accessed by other classes in //sql.
   sqlite3* db(InternalApiToken) const { return db_; }
   bool poisoned(InternalApiToken) const { return poisoned_; }
+  base::FilePath DbPath(InternalApiToken) const { return DbPath(); }
 
   // Interface with sql::test::ScopedErrorExpecter.
   using ScopedErrorExpecterCallback = base::RepeatingCallback<bool(int)>;

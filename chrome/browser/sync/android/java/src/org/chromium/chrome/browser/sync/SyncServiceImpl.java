@@ -31,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * This class mostly makes calls to native and contains a minimum of business logic. It is only
  * usable from the UI thread as the native SyncServiceImpl requires its access to be on the
- * UI thread. See components/sync/driver/sync_service_impl.h for more details.
+ * UI thread. See components/sync/service/sync_service_impl.h for more details.
  */
 public class SyncServiceImpl extends SyncService {
     // Can be null, i.e. 0, if no native sync service exists, e.g. when sync is disabled via CLI.
@@ -155,8 +155,8 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public void setFirstSetupComplete(int syncFirstSetupCompleteSource) {
-        SyncServiceImplJni.get().setFirstSetupComplete(
+    public void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource) {
+        SyncServiceImplJni.get().setInitialSyncFeatureSetupComplete(
                 mSyncServiceAndroidBridge, syncFirstSetupCompleteSource);
     }
 
@@ -393,7 +393,7 @@ public class SyncServiceImpl extends SyncService {
         boolean isTransportStateActive(long nativeSyncServiceAndroidBridge);
         void setSetupInProgress(long nativeSyncServiceAndroidBridge, boolean inProgress);
         boolean isInitialSyncFeatureSetupComplete(long nativeSyncServiceAndroidBridge);
-        void setFirstSetupComplete(
+        void setInitialSyncFeatureSetupComplete(
                 long nativeSyncServiceAndroidBridge, int syncFirstSetupCompleteSource);
         int[] getActiveDataTypes(long nativeSyncServiceAndroidBridge);
         int[] getSelectedTypes(long nativeSyncServiceAndroidBridge);

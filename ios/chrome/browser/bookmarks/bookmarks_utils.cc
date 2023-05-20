@@ -11,8 +11,8 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
-#include "ios/chrome/browser/prefs/pref_names.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;

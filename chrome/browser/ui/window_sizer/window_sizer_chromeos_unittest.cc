@@ -747,7 +747,7 @@ TEST_F(WindowSizerChromeOSTest, DefaultStateBecomesMaximized) {
 // in that this uses real ash shell implementations + StateProvider
 // rather than mocks.
 TEST_F(WindowSizerChromeOSTest, DefaultBoundsInTargetDisplay) {
-  UpdateDisplay("500x500,600x600");
+  UpdateDisplay("500x400,600x500");
 
   {
     // By default windows are placed on the primary display.

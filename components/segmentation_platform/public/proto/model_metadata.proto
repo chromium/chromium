@@ -151,6 +151,12 @@ message CustomInput {
     // Output type: float
     // Output length: 1
     FILL_DEVICE_PPI = 8;
+
+    // Fills metrics about a given tab. A `tab_id` and `session_tag` is expected
+    // from input_context.
+    // Output type: float
+    // Output length: `TabSessionSource::kNumInputs`
+    FILL_TAB_METRICS = 9;
   }
 
   // The fill type of the custom input.

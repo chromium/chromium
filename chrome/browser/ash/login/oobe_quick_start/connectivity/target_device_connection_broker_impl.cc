@@ -475,6 +475,13 @@ void TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising(
 void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionInitiated(
     const std::string& endpoint_id,
     const std::vector<uint8_t>& endpoint_info) {
+  if (is_resume_after_update_) {
+    QS_LOG(INFO) << "Skipped manual verification and will attempt an "
+                    "\"automatic handshake\": endpoint_id="
+                 << endpoint_id;
+    return;
+  }
+
   QS_LOG(INFO) << "Incoming Nearby Connection Initiated: endpoint_id="
                << endpoint_id
                << " use_pin_authentication=" << use_pin_authentication_;
@@ -510,7 +517,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
           &TargetDeviceConnectionBrokerImpl::OnConnectionAuthenticated,
           weak_ptr_factory_.GetWeakPtr()));
 
-  if (use_pin_authentication_) {
+  if (use_pin_authentication_ && !is_resume_after_update_) {
     QS_LOG(INFO) << "Pin authentication completed!";
     connection_->MarkConnectionAuthenticated();
   } else {

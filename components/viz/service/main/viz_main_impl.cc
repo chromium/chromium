@@ -276,7 +276,7 @@ void VizMainImpl::CreateFrameSinkManagerInternal(
 }
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
-void VizMainImpl::FilterDebugStream(base::Value filter_data) {
+void VizMainImpl::FilterDebugStream(base::Value::Dict filter_data) {
   VizDebugger::GetInstance()->FilterDebugStream(std::move(filter_data));
 }
 

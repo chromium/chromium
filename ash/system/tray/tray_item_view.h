@@ -50,6 +50,17 @@ class IconizedLabel : public views::Label {
 // Base-class for items in the tray. It makes sure the widget is updated
 // correctly when the visibility/size of the tray item changes. It also adds
 // animation when showing/hiding the item in the tray.
+//
+// A derived class can implement its own custom visibility animations by
+// overriding `PerformVisibilityAnimation()`. If the QS revamp is enabled, then
+// it is also important to override `ImmediatelyUpdateVisibility()`, which will
+// be called in certain scenarios like at the end of the
+// `NotificationCenterTray`'s hide animation or when the
+// `NotificationCenterTray`'s hide animation is interrupted by its show
+// animation. Also note that `IsAnimationEnabled()` should be checked whenever
+// attempting to perform the custom animations, as there are times when a
+// `TrayItemView`'s visibility should change but that change should not be
+// animated (for instance, when the `NotificationCenterTray` is hidden).
 class ASH_EXPORT TrayItemView : public views::View,
                                 public views::AnimationDelegateViews {
  public:
@@ -98,8 +109,12 @@ class ASH_EXPORT TrayItemView : public views::View,
   bool IsAnimating();
 
   // Updates this `TrayItemView`'s visibility according to `target_visible_`
-  // without animating.
-  void ImmediatelyUpdateVisibility();
+  // without animating. Only called when the QS revamp is enabled. This is
+  // called in certain scenarios like at the end of the
+  // `NotificationCenterTray`'s hide animation or when the
+  // `NotificationCenterTray`'s hide animation is interrupted by its show
+  // animation.
+  virtual void ImmediatelyUpdateVisibility();
 
   // Returns the target visibility. For testing only.
   bool target_visible_for_testing() const { return target_visible_; }
@@ -127,8 +142,14 @@ class ASH_EXPORT TrayItemView : public views::View,
   bool IsHorizontalAlignment() const;
 
   // Perform visibility animation for this view. This function can be overridden
-  // so that the visibility animation can be customized.
+  // so that the visibility animation can be customized. If the QS revamp is
+  // enabled then `ImmediatelyUpdateVisibility()` should also be overridden.
   virtual void PerformVisibilityAnimation(bool visible);
+
+  // Checks if we should use animation on visibility changes.
+  bool ShouldVisibilityChangeBeAnimated() const {
+    return disable_animation_count_ == 0u;
+  }
 
  private:
   // views::View.
@@ -151,9 +172,6 @@ class ASH_EXPORT TrayItemView : public views::View,
   // animation stage that fades and scales the tray item.
   double GetItemScaleProgressFromAnimationProgress(
       double animation_value) const;
-
-  // Checks if we should use animation on visibility changes.
-  bool IsAnimationEnabled() const { return disable_animation_count_ == 0u; }
 
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
 

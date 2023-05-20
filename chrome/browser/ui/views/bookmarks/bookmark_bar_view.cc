@@ -103,6 +103,7 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
@@ -620,15 +621,26 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
  public:
   METADATA_HEADER(ButtonSeparatorView);
   ButtonSeparatorView() {
-    // Total width of the separator and surrounding padding.
-    constexpr int kSeparatorWidth = 9;
-    constexpr int kPaddingWidth = kSeparatorWidth - kThickness;
-    constexpr int kLeadingPadding = (kPaddingWidth + 1) / 2;
+    const int leading_padding = features::IsChromeRefresh2023() ? 16 : 4;
+    const int trailing_padding = features::IsChromeRefresh2023() ? 8 : 3;
+    const int separator_thickness =
+        features::IsChromeRefresh2023() ? 2 : kThickness;
+    const gfx::Insets border_insets =
+        gfx::Insets::TLBR(0, leading_padding, 0, trailing_padding);
+    const ui::ColorId color_id = features::IsChromeRefresh2023()
+                                     ? kColorBookmarkBarSeparatorChromeRefresh
+                                     : kColorBookmarkBarSeparator;
 
-    SetColorId(kColorBookmarkBarSeparator);
-    SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        0, kLeadingPadding, 0, kPaddingWidth - kLeadingPadding)));
-    SetPreferredLength(gfx::kFaviconSize);
+    SetColorId(color_id);
+    SetPreferredSize(
+        gfx::Size(leading_padding + separator_thickness + trailing_padding,
+                  gfx::kFaviconSize));
+    if (features::IsChromeRefresh2023()) {
+      SetBorder(views::CreateThemedRoundedRectBorder(1, 100, border_insets,
+                                                     color_id));
+    } else {
+      SetBorder(views::CreateEmptyBorder(border_insets));
+    }
   }
   ButtonSeparatorView(const ButtonSeparatorView&) = delete;
   ButtonSeparatorView& operator=(const ButtonSeparatorView&) = delete;

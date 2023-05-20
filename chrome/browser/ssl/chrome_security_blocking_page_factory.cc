@@ -25,6 +25,7 @@
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
@@ -307,22 +308,27 @@ ChromeSecurityBlockingPageFactory::CreateInsecureFormBlockingPage(
 std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
 ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
     content::WebContents* web_contents,
-    const GURL& request_url) {
+    const GURL& request_url,
+    security_interstitials::https_only_mode::HttpInterstitialState
+        interstitial_state) {
   std::unique_ptr<HttpsOnlyModeControllerClient> client =
       std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
                                                       request_url);
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  bool is_under_advanced_protection =
+  interstitial_state.enabled_by_advanced_protection =
       profile &&
       safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
           profile)
           ->IsUnderAdvancedProtection();
+  // HFM interstitial with Site Engagement heuristic is only shown if the
+  // feature flag is enabled, so update the relevant flag here.
+  interstitial_state.enabled_by_engagement_heuristic =
+      interstitial_state.enabled_by_engagement_heuristic &&
+      base::FeatureList::IsEnabled(features::kHttpsFirstModeV2ForEngagedSites);
   auto page =
       std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
-          web_contents, request_url, std::move(client),
-          is_under_advanced_protection);
+          web_contents, request_url, std::move(client), interstitial_state);
   return page;
 }
 

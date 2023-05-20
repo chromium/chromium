@@ -64,45 +64,45 @@ JavascriptFrameworksUkmObserver::FlushMetricsOnAppEnterBackground(
 void JavascriptFrameworksUkmObserver::RecordJavascriptFrameworkPageLoad() {
   ukm::builders::JavascriptFrameworkPageLoad builder(
       GetDelegate().GetPageUkmSourceId());
+
+  using blink::LoadingBehaviorFlag;
+
+  auto is_detected = [&](LoadingBehaviorFlag flag) -> bool {
+    return (frameworks_detected_ & flag) != 0;
+  };
   builder
       .SetGatsbyPageLoad(
-          (frameworks_detected_ &
-           blink::LoadingBehaviorFlag::kLoadingBehaviorGatsbyFrameworkUsed) !=
-          0)
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorGatsbyFrameworkUsed))
       .SetNextJSPageLoad(
-          (frameworks_detected_ &
-           blink::LoadingBehaviorFlag::kLoadingBehaviorNextJSFrameworkUsed) !=
-          0)
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorNextJSFrameworkUsed))
       .SetNuxtJSPageLoad(
-          (frameworks_detected_ &
-           blink::LoadingBehaviorFlag::kLoadingBehaviorNuxtJSFrameworkUsed) !=
-          0)
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorNuxtJSFrameworkUsed))
       .SetSapperPageLoad(
-          (frameworks_detected_ &
-           blink::LoadingBehaviorFlag::kLoadingBehaviorSapperFrameworkUsed) !=
-          0)
-      .SetVuePressPageLoad(
-          (frameworks_detected_ &
-           blink::LoadingBehaviorFlag::kLoadingBehaviorVuePressFrameworkUsed) !=
-          0)
-      .SetAngularPageLoad(
-          (frameworks_detected_ &
-           blink::LoadingBehaviorFlag::kLoadingBehaviorAngularFrameworkUsed) !=
-          0)
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorSapperFrameworkUsed))
+      .SetVuePressPageLoad(is_detected(
+          LoadingBehaviorFlag::kLoadingBehaviorVuePressFrameworkUsed))
+      .SetAngularPageLoad(is_detected(
+          LoadingBehaviorFlag::kLoadingBehaviorAngularFrameworkUsed))
       .SetPreactPageLoad(
-          (frameworks_detected_ &
-           blink::LoadingBehaviorFlag::kLoadingBehaviorPreactFrameworkUsed) !=
-          0)
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorPreactFrameworkUsed))
       .SetReactPageLoad(
-          (frameworks_detected_ &
-           blink::LoadingBehaviorFlag::kLoadingBehaviorReactFrameworkUsed) != 0)
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorReactFrameworkUsed))
       .SetSveltePageLoad(
-          (frameworks_detected_ &
-           blink::LoadingBehaviorFlag::kLoadingBehaviorSvelteFrameworkUsed) !=
-          0)
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorSvelteFrameworkUsed))
       .SetVuePageLoad(
-          (frameworks_detected_ &
-           blink::LoadingBehaviorFlag::kLoadingBehaviorVueFrameworkUsed) != 0);
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorVueFrameworkUsed))
+      .SetDrupalPageLoad(
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorDrupalCMSUsed))
+      .SetJoomlaPageLoad(
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorJoomlaCMSUsed))
+      .SetShopifyPageLoad(
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorShopifyCMSUsed))
+      .SetSquarespacePageLoad(
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorSquarespaceCMSUsed))
+      .SetWixPageLoad(
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorWixCMSUsed))
+      .SetWordPressPageLoad(
+          is_detected(LoadingBehaviorFlag::kLoadingBehaviorWordPressCMSUsed));
   builder.Record(ukm::UkmRecorder::Get());
 }
 

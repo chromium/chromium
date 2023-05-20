@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "cc/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/timeline_range.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -53,6 +54,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   TimelinePhase Phase() { return CurrentPhaseAndTime().phase; }
 
   virtual bool IsDocumentTimeline() const { return false; }
+  virtual bool IsScrollSnapshotTimeline() const { return false; }
   virtual bool IsScrollTimeline() const { return false; }
   virtual bool IsViewTimeline() const { return false; }
 
@@ -63,6 +65,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // A timeline is monotonically increasing if its reported current time is
   // always greater than or equal than its previously reported current time.
   bool IsMonotonicallyIncreasing() const { return IsDocumentTimeline(); }
+  // https://drafts.csswg.org/web-animations-2/#progress-based-timeline
+  bool IsProgressBased() const { return IsScrollSnapshotTimeline(); }
   // Returns the initial start time for animations that are linked to this
   // timeline. This method gets invoked when initializing the start time of an
   // animation on this timeline for the first time. It exists because the
@@ -73,18 +77,29 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // consideration here: https://github.com/w3c/csswg-drafts/issues/2075.
   virtual absl::optional<base::TimeDelta> InitialStartTimeForAnimations() = 0;
 
-  virtual AnimationTimeDelta CalculateIntrinsicIterationDuration(
-      const absl::optional<TimelineOffset>& rangeStart,
-      const absl::optional<TimelineOffset>& rangeEnd,
-      const Timing&) {
-    return AnimationTimeDelta();
+  AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const Animation* animation,
+      const Timing& timing) {
+    return CalculateIntrinsicIterationDuration(
+        animation->GetRangeStartInternal(), animation->GetRangeEndInternal(),
+        timing);
   }
 
-  virtual AnimationTimeDelta CalculateIntrinsicIterationDuration(
-      const Animation*,
-      const Timing&) {
-    return AnimationTimeDelta();
+  AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const absl::optional<TimelineOffset>& range_start,
+      const absl::optional<TimelineOffset>& range_end,
+      const Timing& timing) {
+    // TODO(crbug.com/1441013): Support range start and end for scroll-timelines
+    // that are not view timelines.
+    return CalculateIntrinsicIterationDuration(
+        GetTimelineRange(),
+        IsViewTimeline() ? range_start : absl::optional<TimelineOffset>(),
+        IsViewTimeline() ? range_end : absl::optional<TimelineOffset>(),
+        timing);
   }
+
+  // See class TimelineRange.
+  virtual TimelineRange GetTimelineRange() const { return TimelineRange(); }
 
   Document* GetDocument() const { return document_; }
   virtual void AnimationAttached(Animation*);
@@ -139,6 +154,14 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
 
  protected:
   virtual PhaseAndTime CurrentPhaseAndTime() = 0;
+
+  virtual AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const TimelineRange&,
+      const absl::optional<TimelineOffset>& range_start,
+      const absl::optional<TimelineOffset>& range_end,
+      const Timing&) {
+    return AnimationTimeDelta();
+  }
 
   Member<Document> document_;
   unsigned outdated_animation_count_;

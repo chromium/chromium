@@ -7,7 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "components/sync/driver/syncable_service_based_model_type_controller.h"
+#include "components/sync/service/syncable_service_based_model_type_controller.h"
 
 class Profile;
 

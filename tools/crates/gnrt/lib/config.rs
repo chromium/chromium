@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! Parsing configuration file that customizes gnrt BUILD.gn output. Currently
+//! Configures gnrt behavior. Types match `gnrt_config.toml` fields. Currently
 //! only used for std bindings.
 
 use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
-/// Customizes GN output for a session.
 #[derive(Clone, Debug, Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct BuildConfig {
+    pub resolve: ResolveConfig,
     /// Configuration that applies to all crates
-    #[serde(rename = "all")]
+    #[serde(rename = "all-crates")]
     pub all_config: CrateConfig,
     /// Additional configuration options for specific crates. Keyed by crate
     /// name. Config is additive with `all_config`.
@@ -22,6 +22,15 @@ pub struct BuildConfig {
     pub per_crate_config: BTreeMap<String, CrateConfig>,
 }
 
+/// Influences dependency resolution for a session.
+#[derive(Clone, Debug, Default, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ResolveConfig {
+    /// The Cargo package to use as the root of the dependency graph.
+    pub root: String,
+}
+
+/// Customizes GN output for a crate.
 #[derive(Clone, Debug, Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct CrateConfig {
@@ -35,6 +44,9 @@ pub struct CrateConfig {
     pub rustflags: Vec<String>,
     /// Sets GN output_dir variable.
     pub output_dir: Option<String>,
+    /// Adds the specified default library configs in the target.
+    #[serde(default)]
+    pub add_library_configs: Vec<String>,
     /// Removes the specified default library configs in the target.
     #[serde(default)]
     pub remove_library_configs: Vec<String>,

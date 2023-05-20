@@ -55,7 +55,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
-import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
+import org.chromium.components.safe_browsing.SafetyNetApiHandler;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -131,10 +131,10 @@ public class SafeBrowsingTest {
     private static final String WEB_UI_HOST = "safe-browsing";
 
     /**
-     * A fake SafeBrowsingApiHandler which treats URLs ending in MALWARE_HTML_PATH as malicious URLs
+     * A fake SafetyNetApiHandler which treats URLs ending in MALWARE_HTML_PATH as malicious URLs
      * that should be blocked.
      */
-    public static class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
+    public static class MockSafetyNetApiHandler implements SafetyNetApiHandler {
         private Observer mObserver;
         private static final String SAFE_METADATA = "{}";
 
@@ -192,12 +192,12 @@ public class SafeBrowsingTest {
     }
 
     /**
-     * A fake AwBrowserContext which loads the MockSafeBrowsingApiHandler instead of the real one.
+     * A fake AwBrowserContext which loads the MockSafetyNetApiHandler instead of the real one.
      */
     private static class MockAwBrowserContext extends AwBrowserContext {
         public MockAwBrowserContext(SharedPreferences sharedPreferences) {
             super(sharedPreferences, 0, true);
-            SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
+            SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
         }
     }
 

@@ -130,8 +130,7 @@ std::string DisplaySurfaceTypeAsString(
     case DisplaySurfaceType::kScreen:
       return "screen";
   }
-  NOTREACHED();
-  return "error";
+  NOTREACHED_NORETURN();
 }
 
 void RunGetDisplayMedia(content::WebContents* tab,
@@ -857,8 +856,7 @@ class GetDisplayMediaVideoTrackBrowserTest
       case DisplaySurfaceType::kScreen:
         return "MediaStreamTrack";
     }
-    NOTREACHED();
-    return "Error";
+    NOTREACHED_NORETURN();
   }
 
  protected:

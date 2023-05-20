@@ -8,10 +8,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
+#include "content/browser/attribution_reporting/sql_utils.h"
+#include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -136,6 +139,91 @@ bool To53(sql::Database& db) {
   return true;
 }
 
+bool To54(sql::Database& db) {
+  static constexpr char kRateLimitTableSql[] =
+      "CREATE TABLE new_rate_limits("
+      "id INTEGER PRIMARY KEY NOT NULL,"
+      "scope INTEGER NOT NULL,"
+      "source_id INTEGER NOT NULL,"
+      "source_site TEXT NOT NULL,"
+      "destination_site TEXT NOT NULL,"
+      "context_origin TEXT NOT NULL,"
+      "reporting_origin TEXT NOT NULL,"
+      "reporting_site TEXT NOT NULL,"
+      "time INTEGER NOT NULL,"
+      "source_expiry_or_attribution_time INTEGER NOT NULL)";
+  if (!db.Execute(kRateLimitTableSql)) {
+    return false;
+  }
+
+  static constexpr char kPopulateSql[] =
+      "INSERT INTO new_rate_limits SELECT "
+      "id,scope,source_id,source_site,destination_site,context_origin,"
+      "reporting_origin,'',time,source_expiry_or_attribution_time "
+      "FROM rate_limits";
+  if (!db.Execute(kPopulateSql)) {
+    return false;
+  }
+
+  if (!db.Execute("DROP TABLE rate_limits")) {
+    return false;
+  }
+
+  if (!db.Execute("ALTER TABLE new_rate_limits RENAME TO rate_limits")) {
+    return false;
+  }
+
+  static constexpr char kGetReportingOriginSql[] =
+      "SELECT id,reporting_origin FROM rate_limits";
+  sql::Statement get_statement(db.GetUniqueStatement(kGetReportingOriginSql));
+
+  static constexpr char kSetReportingSiteSql[] =
+      "UPDATE rate_limits SET reporting_site=? WHERE id=?";
+  sql::Statement set_statement(db.GetUniqueStatement(kSetReportingSiteSql));
+
+  while (get_statement.Step()) {
+    int64_t id = get_statement.ColumnInt64(0);
+    auto reporting_origin = DeserializeOrigin(get_statement.ColumnString(1));
+
+    set_statement.Reset(/*clear_bound_vars=*/true);
+    set_statement.BindString(0,
+                             net::SchemefulSite(reporting_origin).Serialize());
+    set_statement.BindInt64(1, id);
+    if (!set_statement.Run()) {
+      return false;
+    }
+  }
+  if (!get_statement.Succeeded()) {
+    return false;
+  }
+
+  static constexpr char kRateLimitSourceSiteReportingSiteIndexSql[] =
+      "CREATE INDEX rate_limit_source_site_reporting_site_idx "
+      "ON rate_limits(source_site,reporting_site)"
+      "WHERE scope=0";
+  if (!db.Execute(kRateLimitSourceSiteReportingSiteIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kRateLimitReportingOriginIndexSql[] =
+      "CREATE INDEX rate_limit_reporting_origin_idx "
+      "ON rate_limits(scope,destination_site,source_site)";
+  if (!db.Execute(kRateLimitReportingOriginIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kRateLimitTimeIndexSql[] =
+      "CREATE INDEX rate_limit_time_idx ON rate_limits(time)";
+  if (!db.Execute(kRateLimitTimeIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kRateLimitImpressionIdIndexSql[] =
+      "CREATE INDEX rate_limit_source_id_idx "
+      "ON rate_limits(source_id)";
+  return db.Execute(kRateLimitImpressionIdIndexSql);
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database& db,
@@ -148,12 +236,13 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database& db,
   static_assert(AttributionStorageSql::kDeprecatedVersionNumber + 1 == 52,
                 "Remove migration(s) below.");
 
-  bool ok = MaybeMigrate(db, meta_table, 52, &To53);
+  bool ok = MaybeMigrate(db, meta_table, 52, &To53) &&  //
+            MaybeMigrate(db, meta_table, 53, &To54);
   if (!ok) {
     return false;
   }
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 53,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 54,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

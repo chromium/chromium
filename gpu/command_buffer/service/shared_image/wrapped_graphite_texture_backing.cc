@@ -140,7 +140,7 @@ bool WrappedGraphiteTextureBacking::Initialize() {
       graphite_textures_.clear();
       return false;
     }
-    graphite_textures_.push_back(std::move(texture));
+    graphite_textures_[plane] = std::move(texture);
   }
 
   return true;

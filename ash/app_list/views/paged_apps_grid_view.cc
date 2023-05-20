@@ -400,6 +400,10 @@ int PagedAppsGridView::GetNumberOfPulsingBlocksToShow(int item_count) const {
   return tiles_per_page - (item_count - tiles_on_first_page) % tiles_per_page;
 }
 
+bool PagedAppsGridView::IsAnimatingCardifiedState() const {
+  return is_animating_cardified_state_;
+}
+
 void PagedAppsGridView::MaybeStartCardifiedView() {
   if (!cardified_state_)
     StartAppsGridCardifiedView();
@@ -820,6 +824,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
     base::AutoReset<bool> auto_reset(&ignore_layout_, true);
     GetWidget()->LayoutRootViewIfNecessary();
   }
+  is_animating_cardified_state_ = true;
 
   // Resizing of AppListItemView icons can invalidate layout and cause a layout
   // while exiting cardified state. Keep ignoring layouts when exiting
@@ -970,6 +975,8 @@ void PagedAppsGridView::AnimateAppListItemsForCardifiedState(
 }
 
 void PagedAppsGridView::OnCardifiedStateAnimationDone() {
+  is_animating_cardified_state_ = false;
+
   DestroyLayerItemsIfNotNeeded();
 
   if (layer()->opacity() == 0.0f)

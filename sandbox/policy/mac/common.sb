@@ -342,3 +342,13 @@
       (syscall-number SYS_workq_kernreturn)
       (syscall-number SYS_workq_open)
 )))
+
+; Explicit denials. These are already covered by the blanket `(deny default)`,
+; but benefit from explanation as to why they're denied.
+(deny mach-lookup
+  ; CFPreferences falls back to in-process access to preference plists, known as
+  ; direct mode, when cfprefsd is inaccessible. This in-process access ensures
+  ; that our sandbox policy limits which preference domains can be accessed via
+  ; CFPreferences or NSUserDefaults.
+  (global-name "com.apple.cfprefsd.daemon")
+)

@@ -25,9 +25,8 @@ WritableStreamDefaultController* WritableStreamDefaultController::From(
     ScriptState* script_state,
     ScriptValue controller) {
   CHECK(controller.IsObject());
-  auto* controller_impl =
-      V8WritableStreamDefaultController::ToImplWithTypeCheck(
-          script_state->GetIsolate(), controller.V8Value().As<v8::Object>());
+  auto* controller_impl = V8WritableStreamDefaultController::ToWrappable(
+      script_state->GetIsolate(), controller.V8Value().As<v8::Object>());
   CHECK(controller_impl);
   return controller_impl;
 }

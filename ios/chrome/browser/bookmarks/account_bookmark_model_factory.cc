@@ -17,7 +17,6 @@
 #include "ios/chrome/browser/bookmarks/bookmark_client_impl.h"
 #include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_sync_service_factory.h"
-#import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -42,7 +41,8 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
       new bookmarks::BookmarkModel(std::make_unique<BookmarkClientImpl>(
           browser_state, /*managed_bookmark_service=*/nullptr,
           ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
-              browser_state))));
+              browser_state),
+          ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state))));
   bookmark_model->Load(browser_state->GetStatePath(),
                        bookmarks::StorageType::kAccount);
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)

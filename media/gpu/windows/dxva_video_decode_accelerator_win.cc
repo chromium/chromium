@@ -210,8 +210,7 @@ bool VideoPixelFormatToVizFormat(
       DCHECK_EQ(textures_per_picture, 2u);
       return false;
     default:  // Unsupported
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -3155,8 +3154,7 @@ uint32_t DXVAVideoDecodeAccelerator::GetTextureTarget() const {
     case PictureBufferMechanism::COPY_TO_RGB:
       return GL_TEXTURE_2D;
   }
-  NOTREACHED();
-  return 0;
+  NOTREACHED_NORETURN();
 }
 
 void DXVAVideoDecodeAccelerator::DisableSharedTextureSupport() {
@@ -3297,8 +3295,7 @@ bool DXVAVideoDecodeAccelerator::ShouldUseANGLEDevice() const {
     case PictureBufferMechanism::COPY_TO_RGB:
       return false;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 ID3D11Device* DXVAVideoDecodeAccelerator::D3D11Device() const {

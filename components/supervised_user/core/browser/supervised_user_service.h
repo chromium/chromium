@@ -145,18 +145,9 @@ class SupervisedUserService : public KeyedService,
   // who haven't yet seen the banner.
   void MarkFirstTimeInterstitialBannerShown() const;
 
- private:
-  friend class SupervisedUserServiceExtensionTestBase;
-  friend class ::SupervisedUserServiceFactory;
-  FRIEND_TEST_ALL_PREFIXES(
-      SupervisedUserServiceExtensionTest,
-      ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls);
-  FRIEND_TEST_ALL_PREFIXES(
-      SupervisedUserServiceExtensionTest,
-      ExtensionManagementPolicyProviderWithSUInitiatedInstalls);
-
   // Use |SupervisedUserServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
+  // Public to allow visibility to iOS factory.
   SupervisedUserService(
       KidsChromeManagementClient* kids_chrome_management_client,
       PrefService& user_prefs,
@@ -166,6 +157,16 @@ class SupervisedUserService : public KeyedService,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate,
       bool can_show_first_time_interstitial_banner);
+
+ private:
+  friend class SupervisedUserServiceExtensionTestBase;
+  friend class ::SupervisedUserServiceFactory;
+  FRIEND_TEST_ALL_PREFIXES(
+      SupervisedUserServiceExtensionTest,
+      ExtensionManagementPolicyProviderWithoutSUInitiatedInstalls);
+  FRIEND_TEST_ALL_PREFIXES(
+      SupervisedUserServiceExtensionTest,
+      ExtensionManagementPolicyProviderWithSUInitiatedInstalls);
 
   void SetActive(bool active);
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
 BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
@@ -43,6 +44,12 @@ size_t SearchPrefetchMaxCacheEntries();
 base::TimeDelta SearchPrefetchBlockHeadStart();
 
 BASE_DECLARE_FEATURE(kSearchNavigationPrefetch);
+
+// Feature params for the "pf" query param for suggest prefetch and navigation
+// prefetch respectively. This param allows the search server to treat the
+// requests differently based on the source.
+extern const base::FeatureParam<std::string> kSuggestPrefetchParam;
+extern const base::FeatureParam<std::string> kNavigationPrefetchParam;
 
 // An experimental feature to measure if starting search prefetches during
 // navigation events provides benefit over the typical navigation flow.

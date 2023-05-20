@@ -74,7 +74,7 @@ class PasswordManagerFeaturesUtilTestBase {
     sync_service_.SetTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service_.SetDisableReasons({});
-    sync_service_.SetFirstSetupComplete(true);
+    sync_service_.SetInitialSyncFeatureSetupComplete(true);
     ASSERT_TRUE(sync_service_.IsSyncFeatureEnabled());
   }
 

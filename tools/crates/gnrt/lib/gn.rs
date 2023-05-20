@@ -219,6 +219,7 @@ pub fn build_rule_from_std_dep(
 
     let rustc_metadata = config_field!(rustc_metadata).next().cloned();
 
+    let add_library_configs: Vec<String> = config_field!(add_library_configs).cloned().collect();
     let remove_library_configs: Vec<String> =
         config_field!(remove_library_configs).cloned().collect();
 
@@ -247,6 +248,7 @@ pub fn build_rule_from_std_dep(
     };
 
     apply_default_configs(&mut rule);
+    rule.add_library_configs.extend(add_library_configs);
     rule.remove_library_configs.extend(remove_library_configs);
 
     rule.features = dep

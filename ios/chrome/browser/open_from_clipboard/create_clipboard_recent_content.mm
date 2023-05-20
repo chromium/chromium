@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/open_from_clipboard/create_clipboard_recent_content.h"
 
 #import "components/open_from_clipboard/clipboard_recent_content_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 

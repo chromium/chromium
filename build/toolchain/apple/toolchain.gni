@@ -50,7 +50,7 @@ if (swift_toolchain_path == -1) {
     # the compiler is rolled to ensure that all outputs are regenerated. It must
     # be kept in sync with the `version` of `third_party/swift-toolchain` in
     # //DEPS.
-    swiftc_version = "swift-5.7-release"
+    swiftc_version = "swift-5.8-release"
 
     # Use the hermetic swift toolchain.
     swift_toolchain_path = "//third_party/swift-toolchain/"
@@ -87,8 +87,8 @@ tool_versions =
 # Shared toolchain definition. Invocations should set current_os to set the
 # build args in this definition. This is titled "single_apple_toolchain"
 # because it makes exactly one toolchain. Callers will normally want to
-# invoke instead "apple_toolchain" which may make an additional toolchain
-# without sanitizers.
+# invoke instead "apple_toolchain" which makes an additional toolchain for
+# Rust targets that are build-time artificts such as proc macros.
 template("single_apple_toolchain") {
   toolchain(target_name) {
     # When invoking this toolchain not as the default one, these args will be
@@ -104,10 +104,6 @@ template("single_apple_toolchain") {
       # ensure that it's always the same, regardless of the values that may be
       # set on those toolchains.
       host_toolchain = host_toolchain
-
-      # Similarly for the host toolchain which can be used to make .dylibs
-      # that will successfully load into prebuilt tools.
-      host_toolchain_no_sanitizers = host_toolchain_no_sanitizers
     }
 
     # When the invoker has explicitly overridden use_goma or cc_wrapper in the
@@ -792,8 +788,9 @@ template("single_apple_toolchain") {
   }
 }
 
-# Makes a single Apple toolchain, or possibly two if we need a
-# sanitizer-free equivalent.
+# Makes an Apple toolchain for the target, and an equivalent toolchain with the
+# prebuilt Rust stdlib for building proc macros (and other for-build-use
+# artifacts).
 template("apple_toolchain") {
   single_apple_toolchain(target_name) {
     assert(defined(invoker.toolchain_args),
@@ -809,9 +806,16 @@ template("apple_toolchain") {
     # toolchains, but presubmit checks require that we explicitly exclude them
   }
 
-  if (using_sanitizer) {
-    # Make an additional toolchain with no sanitizers.
-    single_apple_toolchain("${target_name}_no_sanitizers") {
+  if (enable_rust && current_toolchain == default_toolchain) {
+    # Make an additional toolchain which is used for making tools that are run
+    # on the host machine as part of the build process (such as proc macros
+    # and Cargo build scripts). This toolchain uses the prebuilt stdlib that
+    # comes with the compiler, so it doesn't have to wait for the stdlib to be
+    # built before building other stuff. And this ensures its proc macro
+    # outputs have the right ABI to be loaded by the compiler, and it can be
+    # used to compile build scripts that are part of the stdlib that is built
+    # for the default toolchain.
+    single_apple_toolchain("${target_name}_for_rust_host_build_tools") {
       assert(defined(invoker.toolchain_args),
              "Toolchains must declare toolchain_args")
       forward_variables_from(invoker,
@@ -824,7 +828,13 @@ template("apple_toolchain") {
       toolchain_args = {
         # Populate toolchain args from the invoker.
         forward_variables_from(invoker.toolchain_args, "*")
-        toolchain_disables_sanitizers = true
+        toolchain_for_rust_host_build_tools = true
+
+        # The host build tools are static release builds to make the Chromium
+        # build faster. They do not need PGO etc, so no official builds.
+        is_debug = false
+        is_component_build = false
+        is_official_build = false
       }
     }
   }

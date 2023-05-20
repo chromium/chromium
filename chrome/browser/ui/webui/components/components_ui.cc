@@ -83,6 +83,7 @@ void CreateAndAddComponentsUIHTMLSource(Profile* profile) {
   );
   source->UseStringsJs();
   source->AddResourcePath("components.js", IDR_COMPONENTS_COMPONENTS_JS);
+  source->AddResourcePath("components.css", IDR_COMPONENTS_COMPONENTS_CSS);
   source->SetDefaultResource(IDR_COMPONENTS_COMPONENTS_HTML);
 }
 

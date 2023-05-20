@@ -1,0 +1,60 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom;
+
+// Events sent back from the TTS engine in the OS browser process to the
+// service and indicate the progress of an utterance. The type can be:
+//   kStart as soon as speech has started,
+//   kEnd when the end of the utterance is reached,
+//   kWord when a word boundary is reached,
+//   kSentence when a sentence boundary is reached,
+//   kMarker when an SSML mark element is reached,
+//   kInterrupted when the utterance is stopped or interrupted before the end,
+//   kCancelled when it's removed from the queue before ever being synthesized,
+//   kError when any other error occurs.
+// When pausing speech, a kPause event is fired if a particular utterance
+// is paused in the middle, and kResume if an utterance resumes
+// speech. Note that kPause and kResume events may not fire if speech is paused
+// in-between utterances.
+enum TtsEventType {
+  kStart,
+  kEnd,
+  kWord,
+  kSentence,
+  kMarker,
+  kInterrupted,
+  kCancelled,
+  kError,
+  kPause,
+  kResume,
+};
+
+// A description of a voice available for speech synthesis.
+struct TtsVoice {
+  // The name of the voice.
+  string? voice_name;
+
+  // The language that this voice supports, in the form
+  // <em>language</em>-<em>region</em>. Examples: 'en', 'en-US',
+  // 'en-GB', 'zh-CN'.
+  string? lang;
+
+  // If true, the synthesis engine is a remote network resource. It may be
+  // higher latency and may incur bandwidth costs.
+  bool remote;
+
+  // The ID of the TTS engine providing this voice.
+  string? engine_id;
+
+  // All of the callback event types that this voice is capable of sending.
+  array<TtsEventType>? event_types;
+};
+
+// Provides speech. Implemented in the main OS browser process
+// and called from Accessibility Service Javascript.
+interface Tts {
+  // Gets an array of all available voices.
+  GetVoices() => (array<TtsVoice> voices);
+};

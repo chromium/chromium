@@ -75,7 +75,10 @@ base::Time ShellFederatedPermissionContext::GetAutoReauthnEmbargoStartTime(
   return base::Time();
 }
 
-void ShellFederatedPermissionContext::RecordDisplayAndEmbargo(
+void ShellFederatedPermissionContext::RecordEmbargoForAutoReauthn(
+    const url::Origin& relying_party_embedder) {}
+
+void ShellFederatedPermissionContext::RemoveEmbargoForAutoReauthn(
     const url::Origin& relying_party_embedder) {}
 
 void ShellFederatedPermissionContext::AddIdpSigninStatusObserver(
@@ -127,6 +130,15 @@ bool ShellFederatedPermissionContext::HasSharingPermission(
                                    std::get<2>(entry) &&
                                (skip_account_check ||
                                 account_id.value() == std::get<3>(entry));
+                      }) != sharing_permissions_.end();
+}
+
+bool ShellFederatedPermissionContext::HasSharingPermission(
+    const url::Origin& relying_party_requester) {
+  return std::find_if(sharing_permissions_.begin(), sharing_permissions_.end(),
+                      [&](const auto& entry) {
+                        return relying_party_requester.Serialize() ==
+                               std::get<0>(entry);
                       }) != sharing_permissions_.end();
 }
 

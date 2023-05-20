@@ -145,7 +145,7 @@ TestWebUI::CallData::~CallData() {
 }
 
 void TestWebUI::CallData::AppendArgument(base::Value arg) {
-  args_.push_back(std::move(arg));
+  args_.Append(std::move(arg));
 }
 
 }  // namespace content

@@ -27,7 +27,7 @@ namespace {
 
 // Helper to create parameters used for testing, when loading the intercept
 // bubble directly with the `debug` query param set.
-DiceWebSigninInterceptor::Delegate::BubbleParameters
+WebSigninInterceptor::Delegate::BubbleParameters
 CreateSampleBubbleParameters() {
   // Looks like the transparent checkerboard.
   std::string small_png =
@@ -51,8 +51,8 @@ CreateSampleBubbleParameters() {
   primary_account.picture_url = small_png;
   primary_account.hosted_domain = kNoHostedDomainFound;
 
-  return DiceWebSigninInterceptor::Delegate::BubbleParameters(
-      DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
+  return WebSigninInterceptor::Delegate::BubbleParameters(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser,
       intercepted_account, primary_account, SK_ColorMAGENTA);
 }
 
@@ -105,8 +105,7 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
 DiceWebSigninInterceptUI::~DiceWebSigninInterceptUI() = default;
 
 void DiceWebSigninInterceptUI::Initialize(
-    const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-        bubble_parameters,
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(int)> show_widget_with_height_callback,
     base::OnceCallback<void(SigninInterceptionUserChoice)>
         completion_callback) {

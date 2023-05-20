@@ -139,6 +139,10 @@ using password_manager::WarningType;
   [self.privacySafeBrowsingCoordinator stop];
   self.privacySafeBrowsingCoordinator.delegate = nil;
   self.privacySafeBrowsingCoordinator = nil;
+
+  [self.passwordCheckupCoordinator stop];
+  self.passwordCheckupCoordinator.delegate = nil;
+  self.passwordCheckupCoordinator = nil;
 }
 
 #pragma mark - SafetyCheckTableViewControllerPresentationDelegate
@@ -282,11 +286,6 @@ using password_manager::WarningType;
   [self.passwordIssuesCoordinator stop];
   self.passwordIssuesCoordinator.delegate = nil;
   self.passwordIssuesCoordinator = nil;
-}
-
-- (void)setShouldDismissOnAllIssuesGone {
-  // No-op: This method is only used in the context of a
-  // PasswordIssuesCoordinator.
 }
 
 #pragma mark - PrivacySafeBrowsingCoordinatorDelegate

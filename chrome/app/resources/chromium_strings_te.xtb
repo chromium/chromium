@@ -92,6 +92,7 @@
 <translation id="3179665906251668410">Chromium అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="3185330573522821672">మీ కొత్త Chromium ప్రొఫైల్‌ను అనుకూలంగా మార్చుకోండి</translation>
 <translation id="3190315855212034486">అయ్యో! Chromium క్రాష్ అయ్యింది. ఇప్పుడే మళ్లీ ప్రారంభించాలా?</translation>
+<translation id="3255926992597692024">పేమెంట్ ఆప్షన్‌లను పూరించడానికి సంబంధించిన సెట్టింగ్‌లను ఎడిట్ చేయడానికి Chromium ట్రై చేస్తోంది.</translation>
 <translation id="3258596308407688501">Chromium దీని డేటా డైరెక్టరీని చదవలేదు మరియు దీనిలో రాయ‌లేదు: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">Chromium వెర్షన్ <ph name="PRODUCT_VERSION" /> ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="3286538390144397061">ఇప్పుడు పునఃప్రారంభించండి</translation>
@@ -129,7 +130,6 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ఇప్పటికే ఈ Chromium ప్రొఫైల్‌కు సైన్ ఇన్ చేశారు. మీరు బ్రౌజ్ చేసిన వాటిని విడిగా ఉంచడానికి, Chromium మీ కోసం మీ సొంత ప్రొఫైల్‌ను క్రియేట్ చేయగలదు.</translation>
 <translation id="391789666908693569">మీ ఖాతాను <ph name="MANAGER_NAME" /> మేనేజ్ చేస్తున్నారు. మీ అడ్మినిస్ట్రేటర్ ఈ Chromium బ్రౌజర్ ప్రొఫైల్‌ను, అలాగే బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌ల వంటి దాని డేటాను చూడగలరు, ఎడిట్ చేయగలరు.</translation>
 <translation id="3945058413678539331">పాస్‌వర్డ్‌లను కాపీ చేయడానికి Chromium ప్రయత్నిస్తోంది. దీన్ని అనుమతించడానికి మీ Windows పాస్‌వర్డ్‌ను టైప్ చేయండి.</translation>
-<translation id="3962623956404948996">ఈ ఫైల్ ప్రమాదకరమైనది కావచ్చు, కాబట్టి దీనిని స్కాన్ చేయమని Chromium సిఫార్సు చేస్తోంది</translation>
 <translation id="3997429360543082038">ChromiumOS గురించి</translation>
 <translation id="4019629340646866719">ChromiumOS అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ప్రస్తుత సెట్టింగ్‌లను<ph name="END_LINK" /> రిపోర్ట్ చేయడం ద్వారా Chromiumను మెరుగుపరచడంలో సహాయపడండి</translation>
@@ -196,6 +196,7 @@
 <translation id="5653831366781983928">దయచేసి ఇప్పుడు Chromiumను మళ్ళీ ప్రారంభించండి</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumను ఈ భాషలో ప్రదర్శించు</translation>
+<translation id="585620188971323280">పేమెంట్ ఆప్షన్‌లను పూరించడానికి సంబంధించిన సెట్టింగ్‌లను ఎడిట్ చేయండి.</translation>
 <translation id="5862307444128926510">Chromiumకు స్వాగతం</translation>
 <translation id="5883558403894052917">ఈ ఐటెమ్‌లు మాల్‌వేర్‌ను కలిగి ఉన్నట్టుగా Chromium కనుగొన్నది:</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>

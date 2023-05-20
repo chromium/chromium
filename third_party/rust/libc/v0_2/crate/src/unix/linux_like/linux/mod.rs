@@ -1933,8 +1933,6 @@ pub const CLONE_PIDFD: ::c_int = 0x1000;
 // netinet/in.h
 // NOTE: These are in addition to the constants defined in src/unix/mod.rs
 
-/// Multipath TCP
-pub const IPPROTO_MPTCP: ::c_int = 262;
 #[deprecated(
     since = "0.2.80",
     note = "This value was increased in the newer kernel \
@@ -3193,6 +3191,19 @@ pub const ALG_SET_AEAD_AUTHSIZE: ::c_int = 5;
 
 pub const ALG_OP_DECRYPT: ::c_int = 0;
 pub const ALG_OP_ENCRYPT: ::c_int = 1;
+
+// include/uapi/linux/if.h
+pub const IF_OPER_UNKNOWN: ::c_int = 0;
+pub const IF_OPER_NOTPRESENT: ::c_int = 1;
+pub const IF_OPER_DOWN: ::c_int = 2;
+pub const IF_OPER_LOWERLAYERDOWN: ::c_int = 3;
+pub const IF_OPER_TESTING: ::c_int = 4;
+pub const IF_OPER_DORMANT: ::c_int = 5;
+pub const IF_OPER_UP: ::c_int = 6;
+
+pub const IF_LINK_MODE_DEFAULT: ::c_int = 0;
+pub const IF_LINK_MODE_DORMANT: ::c_int = 1;
+pub const IF_LINK_MODE_TESTING: ::c_int = 2;
 
 // include/uapi/linux/udp.h
 pub const UDP_CORK: ::c_int = 1;

@@ -108,10 +108,8 @@ constexpr char kChallengeV1[] =
     "}"
     "}";
 
-constexpr char kDeviceAffiliationId[] = "device_aid";
-constexpr char kProfileAffiliationId[] = "profile_aid";
-
 constexpr char kFakeCustomerId[] = "fake-customer-id";
+constexpr char kDifferentCustomerId[] = "different-customer-id";
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kFakeBrowserDMToken[] = "fake-browser-dm-token";
 constexpr char kFakeEnrollmentToken[] = "fake-enrollment-token";
@@ -181,21 +179,27 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     }
 
     policy_map.Set(policy::key::kContextAwareAccessSignalsAllowlist,
-                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_LEVEL_MANDATORY, GetPolicyScope(),
                    policy::POLICY_SOURCE_CLOUD, base::Value(std::move(list)),
                    nullptr);
 
     EXPECT_NO_FATAL_FAILURE(provider_.UpdateChromePolicy(policy_map));
     base::RunLoop().RunUntilIdle();
 
-    EXPECT_EQ(prefs(active_browser)
+    if (!active_browser) {
+      active_browser = browser();
+    }
+
+    EXPECT_EQ(GetProfilePrefs(*active_browser)
                   ->GetList(kContextAwareAccessSignalsAllowlistPref)
                   .empty(),
               as_empty_list);
     EXPECT_TRUE(
-        prefs(active_browser)
+        GetProfilePrefs(*active_browser)
             ->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref));
   }
+
+  virtual policy::PolicyScope GetPolicyScope() = 0;
 
   void SetChallengeHeader(const std::string& new_challenge_header) {
     test_header_ = new_challenge_header;
@@ -259,10 +263,8 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
     return active_browser->tab_strip_model()->GetActiveWebContents();
   }
 
-  PrefService* prefs(Browser* active_browser = nullptr) {
-    if (!active_browser)
-      active_browser = browser();
-    return active_browser->profile()->GetPrefs();
+  PrefService* GetProfilePrefs(Browser& active_browser) {
+    return active_browser.profile()->GetPrefs();
   }
 
   std::string GetChallengeResponseHeader() {
@@ -365,18 +367,24 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
   absl::optional<const net::test_server::HttpRequest>
       challenge_response_request_;
 
-  void SetPolicyValues(enterprise_management::PolicyData* browser_policy_data,
-                       enterprise_management::PolicyData* user_policy_data) {
-    browser_policy_data->set_obfuscated_customer_id(kFakeCustomerId);
-    browser_policy_data->add_device_affiliation_ids(kDeviceAffiliationId);
+  void SetPolicyValues(enterprise_management::PolicyData* machine_policy_data,
+                       enterprise_management::PolicyData* user_policy_data,
+                       bool is_affiliated = true) {
+    if (machine_policy_data) {
+      machine_policy_data->set_obfuscated_customer_id(kFakeCustomerId);
+      machine_policy_data->add_device_affiliation_ids(kFakeCustomerId);
+    }
 
-    user_policy_data->add_user_affiliation_ids(kProfileAffiliationId);
+    if (user_policy_data) {
+      user_policy_data->add_user_affiliation_ids(
+          is_affiliated ? kFakeCustomerId : kDifferentCustomerId);
+    }
   }
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
- public:
+ protected:
   DeviceTrustAshBrowserTest() {
     auto mock_challenge_key =
         std::make_unique<ash::attestation::MockTpmChallengeKey>();
@@ -408,11 +416,19 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
         std::move(device_policy_data));
     profile_policy_manager->core()->store()->set_policy_data_for_testing(
         std::move(user_policy_data));
+
+    // Fake that the device is managed.
+    management_service()->SetManagementAuthoritiesForTesting(
+        static_cast<int>(policy::EnterpriseManagementAuthority::CLOUD_DOMAIN));
   }
 
   void TearDownOnMainThread() override {
     ash::attestation::TpmChallengeKeyFactory::Create();
     DeviceTrustBrowserTestBase::TearDownOnMainThread();
+  }
+
+  policy::PolicyScope GetPolicyScope() override {
+    return policy::POLICY_SCOPE_USER;
   }
 
   void ManagementAddedAfterFirstCreationTry(bool is_enabled) {
@@ -421,9 +437,7 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
     SetPolicy(false);
 
     // Make the current context unmanaged.
-    auto* management_service =
-        policy::ManagementServiceFactory::GetForProfile(browser()->profile());
-    management_service->SetManagementAuthoritiesForTesting(
+    management_service()->SetManagementAuthoritiesForTesting(
         static_cast<int>(policy::EnterpriseManagementAuthority::NONE));
 
     // Try to create the device trust navigation throttle.
@@ -431,13 +445,18 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
                     MaybeCreateThrottleFor(&mock_nav_handle) == nullptr);
 
     // Make the current context managed again.
-    management_service->SetManagementAuthoritiesForTesting(
+    management_service()->SetManagementAuthoritiesForTesting(
         static_cast<int>(policy::EnterpriseManagementAuthority::CLOUD_DOMAIN));
 
     // Try to create the device trust navigation throttle.
     EXPECT_EQ(enterprise_connectors::DeviceTrustNavigationThrottle::
                       MaybeCreateThrottleFor(&mock_nav_handle) != nullptr,
               is_enabled);
+  }
+
+  policy::ManagementService* management_service() {
+    return policy::ManagementServiceFactory::GetForProfile(
+        browser()->profile());
   }
 };
 
@@ -492,6 +511,10 @@ class DeviceTrustDesktopBrowserTest : public DeviceTrustBrowserTestBase {
         browser()->profile()->GetUserCloudPolicyManager();
     profile_policy_manager->core()->store()->set_policy_data_for_testing(
         std::move(user_policy_data));
+  }
+
+  policy::PolicyScope GetPolicyScope() override {
+    return policy::POLICY_SCOPE_MACHINE;
   }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)

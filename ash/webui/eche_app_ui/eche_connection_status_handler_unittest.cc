@@ -137,7 +137,7 @@ class EcheConnectionStatusHandlerTest : public testing::Test {
   }
 
   mojom::ConnectionStatus GetConnectionStatusForUi() const {
-    return handler_->get_connection_status_for_ui_for_test();
+    return handler_->connection_status_for_ui();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -40,7 +40,7 @@ namespace ui {
 // when this goes out of scope.
 class COMPONENT_EXPORT(UI_BASE) ScopedCrTrackingArea {
  public:
-  // Takes ownership of |tracking_area| without retaining it.
+  // Takes ownership of |tracking_area|.
   explicit ScopedCrTrackingArea(CrTrackingArea* tracking_area = nil);
 
   ScopedCrTrackingArea(const ScopedCrTrackingArea&) = delete;

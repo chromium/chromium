@@ -11,5 +11,5 @@ enum TimelinePhase { "inactive", "before", "active", "after" };
 ] interface AnimationTimeline {
     readonly attribute CSSNumberish? currentTime;
     [RuntimeEnabled=ScrollTimeline] readonly attribute CSSNumberish? duration;
-    [RuntimeEnabled=ScrollTimeline] CSSNumericValue? getCurrentTime(optional DOMString rangeName = "cover");
+    [RuntimeEnabled=ScrollTimelineCurrentTime] CSSNumericValue? getCurrentTime(optional DOMString rangeName = "cover");
 };

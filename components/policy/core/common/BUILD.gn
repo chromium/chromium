@@ -374,6 +374,7 @@ source_set("internal") {
       "mac_util.h",
     ]
     frameworks = [ "Foundation.framework" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
 
     if (is_mac) {
       sources += [
@@ -390,7 +391,6 @@ source_set("internal") {
         "policy_loader_ios.h",
         "policy_loader_ios.mm",
       ]
-      configs += [ "//build/config/compiler:enable_arc" ]
     }
   }
 }
@@ -498,12 +498,15 @@ source_set("common_constants") {
     "proxy_settings_constants.h",
   ]
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_ios) {
     sources += [
       "policy_loader_ios_constants.h",
       "policy_loader_ios_constants.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "Foundation.framework" ]
   }
 }
@@ -611,6 +614,7 @@ source_set("unit_tests") {
   }
   if (is_apple) {
     sources += [ "mac_util_unittest.cc" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
 
     if (is_mac) {
       sources += [ "policy_loader_mac_unittest.cc" ]
@@ -618,7 +622,6 @@ source_set("unit_tests") {
 
     if (is_ios) {
       sources += [ "policy_loader_ios_unittest.mm" ]
-      configs += [ "//build/config/compiler:enable_arc" ]
     }
   }
   if (is_win || is_linux || is_chromeos) {

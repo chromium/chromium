@@ -39,8 +39,6 @@ bool Huffer::HuffDeflate(PuffReaderInterface* pr,
     auto final_bit = (header & 0x80) >> 7;
     auto type = (header & 0x60) >> 5;
     auto skipped_bits = header & 0x1F;
-    DVLOG(2) << "Write block type: "
-             << BlockTypeToString(static_cast<BlockType>(type));
 
     TEST_AND_RETURN_FALSE(bw->WriteBits(1, final_bit));
     TEST_AND_RETURN_FALSE(bw->WriteBits(2, type));
@@ -61,7 +59,6 @@ bool Huffer::HuffDeflate(PuffReaderInterface* pr,
           TEST_AND_RETURN_FALSE(bw->WriteBits(16, 0));
           TEST_AND_RETURN_FALSE(bw->WriteBits(16, ~0));
         } else {
-          LOG(ERROR) << "Uncompressed block did not end properly!";
           return false;
         }
         // We have to read a new block.
@@ -79,8 +76,6 @@ bool Huffer::HuffDeflate(PuffReaderInterface* pr,
         break;
 
       default:
-        LOG(ERROR) << "Invalid block compression type: "
-                   << static_cast<int>(type);
         return false;
     }
 
@@ -171,11 +166,9 @@ bool Huffer::HuffDeflate(PuffReaderInterface* pr,
           break;
         }
         case PuffData::Type::kBlockMetadata:
-          LOG(ERROR) << "Not expecing a metadata!";
           return false;
 
         default:
-          LOG(ERROR) << "Invalid block data type!";
           return false;
       }
     }

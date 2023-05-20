@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.privacy_sandbox.v4;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
@@ -20,6 +19,7 @@ import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogControlle
 import org.chromium.chrome.browser.privacy_sandbox.PromptAction;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
 
@@ -27,7 +27,7 @@ import org.chromium.ui.widget.CheckableImageView;
  * Dialog in the form of a consent shown for the Privacy Sandbox.
  */
 public class PrivacySandboxDialogConsentEEAV4
-        extends Dialog implements View.OnClickListener, DialogInterface.OnShowListener {
+        extends ChromeDialog implements View.OnClickListener, DialogInterface.OnShowListener {
     private static final int SPINNER_DURATION_MS = 1500;
     private static final int BACKGROUND_TRANSITION_DURATION_MS = 300;
 

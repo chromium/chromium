@@ -10,6 +10,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
@@ -47,6 +48,16 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 @implementation BookmarksFolderChooserTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector
+            (testCreateNewProfileFolderDefaultDestination)]) {
+    config.features_enabled.push_back(
+        bookmarks::kEnableBookmarksAccountStorage);
+  }
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
 
@@ -62,6 +73,82 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 #pragma mark - BookmarksFolderChooser Tests
+
+// Tests that new folder is created under `Mobile Bookmarks` by default.
+// TODO(crbug.com/1442459): Add this test after support is available.
+// - (void)testCreateNewAccountFolderDefaultDestination {}
+
+// Tests that new folder is created under `Mobile Bookmarks` by default.
+- (void)testCreateNewProfileFolderDefaultDestination {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Open `Folder 3` nested in `Folder 1->Folder 2`.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
+      performAction:grey_tap()];
+
+  // Long press on `Folder 3` and try to move it to a new folder.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 3")]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify default parent folder is 'Mobile Bookmarks'.
+  NSString* accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL,
+      base::SysNSStringToUTF16(@"Mobile Bookmarks"));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(@"Change Folder"),
+                                   grey_accessibilityLabel(accessibilityLabel),
+                                   nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that new folder is created under the old parent folder by default.
+- (void)testCreateNewFolderDefaultDestinationLegacy {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Open `Folder 3` nested in `Folder 1->Folder 2`.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
+      performAction:grey_tap()];
+
+  // Long press on `Folder 3` and try to move it to a new folder.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 3")]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify default parent folder is 'Folder 2'.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(@"Change Folder"),
+                                   grey_accessibilityLabel(@"Folder 2"), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
 
 // Tests moving bookmarks into a new folder created in the moving process.
 - (void)testCreateNewFolderWhileMovingBookmarks {
@@ -96,8 +183,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Choose to move the bookmark into a new folder.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkCreateNewFolderCellIdentifier)]
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
       performAction:grey_tap()];
 
   // Enter custom new folder name.
@@ -549,8 +636,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Choose to move the bookmark folder - "Folder 1" into a new folder.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkCreateNewFolderCellIdentifier)]
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
       performAction:grey_tap()];
 
   // Enter custom new folder name.
@@ -661,8 +748,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Choose to move into a new folder. By tapping on the New Folder Cell.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkCreateNewFolderCellIdentifier)]
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
       performAction:grey_tap()];
 
   // Enter custom new folder name.

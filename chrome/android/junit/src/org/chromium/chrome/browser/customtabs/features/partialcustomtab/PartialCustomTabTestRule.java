@@ -42,6 +42,8 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Implementation;
@@ -154,6 +156,8 @@ public class PartialCustomTabTestRule implements TestRule {
     DisplayMetrics mMetrics;
     @Mock
     ViewGroup mCompositorViewHolder;
+    @Captor
+    ArgumentCaptor<View.OnAttachStateChangeListener> mAttachStateChangeListener;
 
     Context mContext;
     List<WindowManager.LayoutParams> mAttributeResults;

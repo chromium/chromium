@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
@@ -319,11 +320,6 @@ SavedDeskPresenter::SavedDeskPresenter(OverviewSession* overview_session)
 
   auto* desk_model = GetDeskModel();
   desk_model_observation_.Observe(desk_model);
-
-  should_show_saved_desk_library_ =
-      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      (GetEntryCount(DeskTemplateType::kTemplate) +
-       GetEntryCount(DeskTemplateType::kSaveAndRecall)) > 0u;
 }
 
 SavedDeskPresenter::~SavedDeskPresenter() = default;
@@ -361,10 +357,6 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
   const bool in_tablet_mode =
       Shell::Get()->tablet_mode_controller()->InTabletMode();
 
-  const bool has_saved_desks =
-      (GetEntryCount(DeskTemplateType::kTemplate) +
-       GetEntryCount(DeskTemplateType::kSaveAndRecall)) > 0u;
-
   for (auto& overview_grid : overview_session_->grid_list()) {
     const bool is_showing_library = overview_grid->IsShowingSavedDeskLibrary();
 
@@ -373,13 +365,13 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
       overview_grid->HideSavedDeskLibrary(/*exit_overview=*/false);
     }
 
-    // The functions below reach into this class to determine whether the
-    // buttons should be shown or not. If we are already showing saved desk
-    // library, they should not go away (unless we're in tablet mode).
-    should_show_saved_desk_library_ =
-        !in_tablet_mode && (is_showing_library || has_saved_desks);
-
     if (LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view()) {
+      // Library UI needs an update. If it's currently in the library page, keep
+      // the UI visible.
+      desks_bar_view->set_library_ui_visibility(
+          (!in_tablet_mode && is_showing_library)
+              ? DeskBarViewBase::LibraryUiVisibility::kVisible
+              : DeskBarViewBase::LibraryUiVisibility::kToBeChecked);
       desks_bar_view->UpdateLibraryButtonVisibility();
       desks_bar_view->UpdateButtonsForSavedDeskGrid();
       overview_grid->UpdateSaveDeskButtons();
@@ -493,7 +485,7 @@ void SavedDeskPresenter::GetAllEntries(const base::Uuid& item_to_focus,
   if (result.status != desks_storage::DeskModel::GetAllEntriesStatus::kOk)
     return;
 
-  // This updates `should_show_saved_desk_library_`.
+  // This updates UI for saved desk library.
   UpdateUIForSavedDeskLibrary();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
@@ -580,10 +572,9 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
     }
   }
 
-  // Copy the index of the newly created desk to the saved desk. This ensures
+  // Copy the uuid of the newly created desk to the saved desk. This ensures
   // that apps appear on the right desk even if the user switches to another.
-  const int desk_index = DesksController::Get()->GetDeskIndex(new_desk);
-  saved_desk->SetDeskIndex(desk_index);
+  saved_desk->SetDeskUuid(new_desk->uuid());
 
   Shell::Get()->saved_desk_delegate()->LaunchAppsFromSavedDesk(
       std::move(saved_desk));
@@ -609,7 +600,7 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
 
   overview_session_->GetGridWithRootWindow(root_window)
       ->desks_bar_view()
-      ->NudgeDeskName(desk_index);
+      ->NudgeDeskName(DesksController::Get()->GetDeskIndex(new_desk));
 
   if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
     // Passing nullopt as type since this indicates that we don't want to record
@@ -732,7 +723,7 @@ void SavedDeskPresenter::AddOrUpdateUIEntries(
   if (new_entries.empty())
     return;
 
-  // This updates `should_show_saved_desk_library_`.
+  // This updates UI for saved desk library.
   UpdateUIForSavedDeskLibrary();
 
   for (auto& overview_grid : overview_session_->grid_list()) {
@@ -750,7 +741,7 @@ void SavedDeskPresenter::RemoveUIEntries(const std::vector<base::Uuid>& uuids) {
   if (uuids.empty())
     return;
 
-  // This updates `should_show_saved_desk_library_`.
+  // This updates UI for saved desk library.
   UpdateUIForSavedDeskLibrary();
 
   for (auto& overview_grid : overview_session_->grid_list()) {

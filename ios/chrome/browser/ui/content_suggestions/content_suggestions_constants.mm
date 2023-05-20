@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 
+#import "base/notreached.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -19,6 +21,9 @@ NSString* const kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix =
 NSString* const kContentSuggestionsShortcutsAccessibilityIdentifierPrefix =
     @"contentSuggestionsShortcutsAccessibilityIdentifierPrefix";
 
+NSString* const kMagicStackScrollViewAccessibilityIdentifier =
+    @"MagicStackScrollViewAccessibilityIdentifier";
+
 const CGFloat kMostVisitedBottomMargin = 13;
 
 const int kTileAblationImpressionThresholdMinutes = 5;
@@ -32,3 +37,17 @@ NSString* const kNumberOfNTPImpressionsRecordedKey =
 NSString* const kFirstImpressionRecordedTileAblationKey =
     @"kFirstImpressionRecordedTileAblationKey";
 NSString* const kDoneWithTileAblationKey = @"DoneWithTileAblation";
+
+ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
+    SetUpListItemType type) {
+  switch (type) {
+    case SetUpListItemType::kSignInSync:
+      return ContentSuggestionsModuleType::kSetUpListSync;
+    case SetUpListItemType::kDefaultBrowser:
+      return ContentSuggestionsModuleType::kSetUpListDefaultBrowser;
+    case SetUpListItemType::kAutofill:
+      return ContentSuggestionsModuleType::kSetUpListAutofill;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}

@@ -15,7 +15,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
@@ -128,8 +128,10 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   EXPECT_TRUE(base::CopyFile(filePath, newFilePath));
 
   // Only restore for session restore URLs.
-  ASSERT_TRUE(WebSessionStateTabHelper::FromWebState(web_state.get())
-                  ->RestoreSessionFromCache());
+  NSData* data = WebSessionStateTabHelper::FromWebState(web_state.get())
+                     ->FetchSessionFromCache();
+  ASSERT_TRUE(data);
+  EXPECT_TRUE(web_state->SetSessionStateData(data));
 
   // kChromeUIAboutNewTabURL should get rewritten to kChromeUINewTabURL.
   ASSERT_EQ(web_state->GetLastCommittedURL(), GURL(kChromeUINewTabURL));

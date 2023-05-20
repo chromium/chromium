@@ -99,8 +99,8 @@ class InterestGroupStorageTest : public testing::Test {
         /*priority_vector=*/{{{"a", 2}, {"b", -2.2}}},
         /*priority_signals_overrides=*/{{{"a", -2}, {"c", 10}, {"d", 1.2}}},
         /*seller_capabilities=*/
-        {{{full_origin, SellerCapabilities::kInterestGroupCounts},
-          {partial_origin, SellerCapabilities::kLatencyStats}}},
+        {{{full_origin, {SellerCapabilities::kInterestGroupCounts}},
+          {partial_origin, {SellerCapabilities::kLatencyStats}}}},
         /*all_sellers_capabilities=*/
         {SellerCapabilities::kInterestGroupCounts,
          SellerCapabilities::kLatencyStats},

@@ -48,6 +48,7 @@ class DotIndicator;
 namespace test {
 class AppsGridViewTest;
 class AppListMainViewTest;
+class RecentAppsViewTest;
 }  // namespace test
 
 // An application icon and title. Commonly part of the AppsGridView, but may be
@@ -254,6 +255,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Whether the context menu on a non-folder app item view is showing.
   bool IsShowingAppMenu() const;
 
+  // Whether the item can be dragged within its `context_`.
+  bool IsItemDraggable() const;
+
   bool is_folder() const { return is_folder_; }
 
   bool IsNotificationIndicatorShownForTest() const;
@@ -304,6 +308,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   friend class AppListItemViewTest;
   friend class AppListMainViewTest;
   friend class test::AppsGridViewTest;
+  friend class RecentAppsViewTest;
 
   enum UIState {
     UI_STATE_NORMAL,              // Normal UI (icon + label)

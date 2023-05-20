@@ -31,8 +31,8 @@ TEST_F(NotificationPermissionReviewServiceTest,
        IgnoreOriginForNotificationPermissionReview) {
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  std::string urls[] = {"https://google.com:443",
-                        "https://www.youtube.com:443"};
+  std::string urls[] = {"https://google.com:443", "https://www.youtube.com:443",
+                        "https://www.example.com:443"};
   map->SetContentSettingDefaultScope(GURL(urls[0]), GURL(),
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_ALLOW);
@@ -47,13 +47,44 @@ TEST_F(NotificationPermissionReviewServiceTest,
 
   // Add notification permission to block list and check if it will be not be
   // shown on the list.
+  auto pattern_to_ignore = ContentSettingsPattern::FromString(urls[0]);
   service->AddPatternToNotificationPermissionReviewBlocklist(
-      ContentSettingsPattern::FromString(urls[0]),
-      ContentSettingsPattern::Wildcard());
+      pattern_to_ignore, ContentSettingsPattern::Wildcard());
   notification_permissions = service->GetNotificationSiteListForReview();
   EXPECT_EQ(1UL, notification_permissions.size());
   EXPECT_EQ(notification_permissions[0].primary_pattern,
             ContentSettingsPattern::FromString(urls[1]));
+
+  ContentSettingsForOneType ignored_patterns;
+  map->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  EXPECT_EQ(ignored_patterns.size(), 1UL);
+  EXPECT_EQ(ignored_patterns[0].primary_pattern, pattern_to_ignore);
+
+  // On blocking notifications for an unrelated site, nothing changes.
+  map->SetContentSettingDefaultScope(GURL(urls[1]), GURL(),
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(service->GetNotificationSiteListForReview().size(), 1UL);
+  map->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  EXPECT_EQ(ignored_patterns.size(), 1UL);
+  EXPECT_EQ(ignored_patterns[0].primary_pattern, pattern_to_ignore);
+
+  // If the permissions for an element of the block list are modified (i.e. no
+  // longer ALLOWed), the element should be removed from the list.
+  map->SetContentSettingDefaultScope(GURL(urls[0]), GURL(),
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_BLOCK);
+  map->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  EXPECT_EQ(ignored_patterns.size(), 0UL);
+  EXPECT_EQ(service->GetNotificationSiteListForReview().size(), 1UL);
+  // The site is presented again if permissions are re-granted.
+  map->SetContentSettingDefaultScope(GURL(urls[0]), GURL(),
+                                     ContentSettingsType::NOTIFICATIONS,
+                                     CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(service->GetNotificationSiteListForReview().size(), 2UL);
 }
 
 // TODO(crbug.com/1363714): Move this test to ContentSettingsPatternTest.

@@ -71,25 +71,7 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
         notify: true,
       },
 
-      showAndroidApps: Boolean,
-
-      showArcvmManageUsb: Boolean,
-
-      showPluginVm: Boolean,
-
-      havePlayStoreApp: Boolean,
-
       androidAppsInfo: Object,
-
-      /**
-       * Whether the user is in guest mode.
-       */
-      isGuestMode_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isGuest');
-        },
-      },
 
       /**
        * Dictionary defining page availability.

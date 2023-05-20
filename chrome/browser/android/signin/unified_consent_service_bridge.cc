@@ -9,7 +9,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
 

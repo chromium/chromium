@@ -239,7 +239,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         [[SecondaryToolbarCoordinator alloc] initWithBrowser:browser_.get()];
 
     bubble_presenter_ = [[BubblePresenter alloc]
-        initWithBrowserState:chrome_browser_state_.get()];
+        initWithBrowserState:chrome_browser_state_.get()
+                webStateList:browser_->GetWebStateList()];
     [dispatcher startDispatchingToTarget:bubble_presenter_
                              forProtocol:@protocol(HelpCommands)];
 
@@ -288,6 +289,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.safeAreaProvider = safe_area_provider_;
     dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
     dependencies.applicationCommandsHandler = mockApplicationCommandHandler_;
+    dependencies.webStateUpdateBrowserAgent =
+        WebStateUpdateBrowserAgent::FromBrowser(browser_.get());
 
     bvc_ = [[BrowserViewController alloc]
         initWithBrowserContainerViewController:container_

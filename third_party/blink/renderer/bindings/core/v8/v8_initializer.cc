@@ -109,14 +109,9 @@ namespace blink {
 
 static String ExtractMessageForConsole(v8::Isolate* isolate,
                                        v8::Local<v8::Value> data) {
-  if (V8DOMWrapper::IsWrapper(isolate, data)) {
-    v8::Local<v8::Object> obj = v8::Local<v8::Object>::Cast(data);
-    const WrapperTypeInfo* type = ToWrapperTypeInfo(obj);
-    if (V8DOMException::GetWrapperTypeInfo()->IsSubclass(type)) {
-      DOMException* exception = V8DOMException::ToImpl(obj);
-      if (exception && !exception->MessageForConsole().empty())
-        return exception->ToStringForConsole();
-    }
+  DOMException* exception = V8DOMException::ToWrappable(isolate, data);
+  if (exception && !exception->MessageForConsole().empty()) {
+    return exception->ToStringForConsole();
   }
   return g_empty_string;
 }
@@ -415,7 +410,7 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
 
   // If the input is not a string or TrustedScript, pass it through.
   if (!source->IsString() && !is_code_like &&
-      !V8TrustedScript::HasInstance(source, isolate)) {
+      !V8TrustedScript::HasInstance(isolate, source)) {
     return {true, v8::MaybeLocal<v8::String>()};
   }
 

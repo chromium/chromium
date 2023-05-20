@@ -1379,7 +1379,8 @@ void ProfilePickerHandler::OnAccountRemoved(
   UpdateAvailableAccounts();
 }
 
-void ProfilePickerHandler::OnReauthDialogClosed() {
+void ProfilePickerHandler::OnReauthDialogClosed(
+    const account_manager::AccountUpsertionResult& result) {
   // After the reauth screen is closed, we can now reuse the profile picker
   // account list to select an account.
   FireWebUIListener("reauth-dialog-closed", base::Value());

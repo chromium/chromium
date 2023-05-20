@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "content/browser/buckets/bucket_host.h"
 #include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/buckets/bucket_utils.h"
 #include "content/browser/storage_partition_impl.h"
@@ -131,13 +132,13 @@ void BucketManagerHost::OpenBucket(const std::string& name,
 
 void BucketManagerHost::GetBucketForDevtools(
     const std::string& name,
-    GetBucketForDevtoolsCallback callback) {
+    mojo::PendingReceiver<blink::mojom::BucketHost> receiver) {
   GetQuotaManagerProxy()->GetBucketByNameUnsafe(
       storage_key_, name, blink::mojom::StorageType::kTemporary,
       base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&BucketManagerHost::DidGetBucket,
+      base::BindOnce(&BucketManagerHost::DidGetBucketForDevtools,
                      weak_factory_.GetWeakPtr(), receivers_.current_context(),
-                     std::move(callback)));
+                     std::move(receiver)));
 }
 
 void BucketManagerHost::Keys(KeysCallback callback) {
@@ -204,6 +205,7 @@ void BucketManagerHost::DidGetBucket(
           NOTREACHED_NORETURN();
         case storage::QuotaError::kNotFound:
         case storage::QuotaError::kDatabaseError:
+        case storage::QuotaError::kDatabaseDisabled:
         case storage::QuotaError::kUnknownError:
           return blink::mojom::BucketError::kUnknown;
       }
@@ -223,6 +225,27 @@ void BucketManagerHost::DidGetBucket(
   auto pending_remote = it->second->CreateStorageBucketBinding(bucket_context);
   std::move(callback).Run(std::move(pending_remote),
                           blink::mojom::BucketError::kUnknown);
+}
+
+void BucketManagerHost::DidGetBucketForDevtools(
+    base::WeakPtr<BucketContext> bucket_context,
+    mojo::PendingReceiver<blink::mojom::BucketHost> receiver,
+    storage::QuotaErrorOr<storage::BucketInfo> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!bucket_context || !result.has_value()) {
+    return;
+  }
+
+  const auto& bucket = result.value();
+  auto it = bucket_map_.find(bucket.id);
+  if (it == bucket_map_.end()) {
+    it = bucket_map_
+             .emplace(bucket.id, std::make_unique<BucketHost>(this, bucket))
+             .first;
+  }
+
+  it->second->PassStorageBucketBinding(bucket_context, std::move(receiver));
 }
 
 void BucketManagerHost::DidGetBuckets(

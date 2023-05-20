@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Открыть <ph name="TABS_COUNT_ONE" /> вкладку}one{Открыть <ph name="TABS_COUNT_MANY" /> вкладку}few{Открыть <ph name="TABS_COUNT_MANY" /> вкладки}many{Открыть <ph name="TABS_COUNT_MANY" /> вкладок}other{Открыть <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="4811934403802581334">Все выбранные вкладки с указанного устройства будут восстановлены.</translation>
 <translation id="5336031759968328813">Посмотреть все вкладки</translation>
+<translation id="8019269305087157499">Открыть</translation>
 <translation id="8725404154479306799">Восстанавливайте вкладки, открытые на старых устройствах</translation>
 </translationbundle>

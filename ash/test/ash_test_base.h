@@ -236,6 +236,9 @@ class AshTestBase : public testing::Test {
   bool ExitOverview(
       OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
+  // Sets shelf animation duration for all displays.
+  void SetShelfAnimationDuration(base::TimeDelta duration);
+
   // Waits for shelf animation in all displays.
   void WaitForShelfAnimation();
 

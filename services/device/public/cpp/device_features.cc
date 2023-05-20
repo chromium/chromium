@@ -17,7 +17,7 @@ BASE_FEATURE(kWinrtGeolocationImplementation,
              "WinrtGeolocationImplementation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables usage of the CoreLocation API for LocationProvider instead of
-// NetworkLocationProvider for macOS.
+// NetworkLocationProvider for macOS or iOS.
 BASE_FEATURE(kMacCoreLocationBackend,
              "MacCoreLocationBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);

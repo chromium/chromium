@@ -80,5 +80,24 @@ class BlinkPublicWebUnwantedDependenciesTest(unittest.TestCase):
     warnings = PRESUBMIT._CheckUnwantedDependencies(input_api, MockOutputApi())
     self.assertEqual([], warnings)
 
+
+class InteractiveUiTestLibIndluceTest(unittest.TestCase):
+  def testAdditionOfUnwantedDependency(self):
+    lines = ['#include "ui/base/test/ui_controls.h"',
+             '#include "ui/base/test/foo.h"',
+             '#include "chrome/test/base/interactive_test_utils.h"']
+    mock_input_api = MockInputApi()
+    mock_input_api.files = [
+      MockAffectedFile('foo_interactive_uitest.cc', lines),
+      MockAffectedFile('foo_browsertest.cc', lines),
+      MockAffectedFile('foo_interactive_browsertest.cc', lines),
+      MockAffectedFile('foo_unittest.cc', lines) ]
+    mock_output_api = MockOutputApi();
+    errors = PRESUBMIT._CheckNoInteractiveUiTestLibInNonInteractiveUiTest(
+        mock_input_api, mock_output_api)
+    self.assertEqual(1, len(errors))
+    # 2 lines from 2 files.
+    self.assertEqual(4, len(errors[0].items))
+
 if __name__ == '__main__':
   unittest.main()

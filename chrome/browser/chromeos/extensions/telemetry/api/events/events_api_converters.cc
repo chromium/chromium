@@ -61,6 +61,15 @@ cx_events::SdCardEventInfo UncheckedConvertPtr(
   return result;
 }
 
+cx_events::PowerEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryPowerEventInfoPtr ptr) {
+  cx_events::PowerEventInfo result;
+
+  result.event = Convert(ptr->state);
+
+  return result;
+}
+
 }  // namespace unchecked
 
 cx_events::AudioJackEvent Convert(
@@ -125,6 +134,22 @@ cx_events::SdCardEvent Convert(crosapi::TelemetrySdCardEventInfo::State state) {
   NOTREACHED();
 }
 
+cx_events::PowerEvent Convert(crosapi::TelemetryPowerEventInfo::State state) {
+  switch (state) {
+    case crosapi::TelemetryPowerEventInfo_State::kUnmappedEnumField:
+      return cx_events::PowerEvent::kNone;
+    case crosapi::TelemetryPowerEventInfo_State::kAcInserted:
+      return cx_events::PowerEvent::kAcInserted;
+    case crosapi::TelemetryPowerEventInfo_State::kAcRemoved:
+      return cx_events::PowerEvent::kAcRemoved;
+    case crosapi::TelemetryPowerEventInfo_State::kOsSuspend:
+      return cx_events::PowerEvent::kOsSuspend;
+    case crosapi::TelemetryPowerEventInfo_State::kOsResume:
+      return cx_events::PowerEvent::kOsResume;
+  }
+  NOTREACHED();
+}
+
 crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
   switch (input) {
     case cx_events::EventCategory::kNone:
@@ -137,6 +162,8 @@ crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
       return crosapi::TelemetryEventCategoryEnum::kUsb;
     case cx_events::EventCategory::kSdCard:
       return crosapi::TelemetryEventCategoryEnum::kSdCard;
+    case cx_events::EventCategory::kPower:
+      return crosapi::TelemetryEventCategoryEnum::kPower;
   }
   NOTREACHED();
 }

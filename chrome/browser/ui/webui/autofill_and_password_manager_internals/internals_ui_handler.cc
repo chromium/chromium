@@ -37,13 +37,15 @@ void CreateAndAddInternalsHTMLSource(Profile* profile,
                           IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_JS);
   source->SetDefaultResource(IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_HTML);
   // Data strings:
-  source->AddString(version_ui::kVersion, version_info::GetVersionNumber());
+  source->AddString(version_ui::kVersion,
+                    std::string(version_info::GetVersionNumber()));
   source->AddString(version_ui::kOfficial, version_info::IsOfficialBuild()
                                                ? "official"
                                                : "Developer build");
   source->AddString(version_ui::kVersionModifier,
                     chrome::GetChannelName(chrome::WithExtendedStable(true)));
-  source->AddString(version_ui::kCL, version_info::GetLastChange());
+  source->AddString(version_ui::kCL,
+                    std::string(version_info::GetLastChange()));
   source->AddString(version_ui::kUserAgent, embedder_support::GetUserAgent());
   source->AddString("app_locale", g_browser_process->GetApplicationLocale());
 }

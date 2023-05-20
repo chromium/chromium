@@ -65,8 +65,10 @@
 <translation id="4118525110028899586">Pozastavit nahrávání</translation>
 <translation id="4121305183798804752">Byl zjištěn dokument</translation>
 <translation id="414641094616694804">Rozlišení této kamery nelze změnit</translation>
+<translation id="4176463684765177261">Vypnuto</translation>
 <translation id="4269820728363426813">Zkopírovat adresu odkazu</translation>
 <translation id="428234092390943511">Miniatura stránky</translation>
+<translation id="4349714250734879769">Upravovat měřítko snímků pomocí Chromu</translation>
 <translation id="4383571725254449280">Vytisknout protokoly výkonu</translation>
 <translation id="4445542136948522167">Zastavit focení</translation>
 <translation id="4570032796877367747">Přední fotoaparát</translation>
@@ -148,6 +150,7 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="8145038249676204903">Přepnout na focení</translation>
 <translation id="8167081290930651932">Uložit jako fotku</translation>
 <translation id="8239780215768881278">Pořídit snímek videa</translation>
+<translation id="8346544573713510785">Upravovat měřítko snímků pomocí vrstvy HAL fotoaparátu</translation>
 <translation id="8425673304802773841">Naklonit dolů</translation>
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8629662593426079630">360p</translation>

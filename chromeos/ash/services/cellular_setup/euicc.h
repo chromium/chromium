@@ -43,6 +43,8 @@ class Euicc : public mojom::Euicc {
       const std::string& confirmation_code,
       bool is_install_via_qr_code,
       InstallProfileFromActivationCodeCallback callback) override;
+  void RequestAvailableProfiles(
+      RequestAvailableProfilesCallback callback) override;
   void RequestPendingProfiles(RequestPendingProfilesCallback callback) override;
   void GetEidQRCode(GetEidQRCodeCallback callback) override;
 
@@ -88,6 +90,10 @@ class Euicc : public mojom::Euicc {
   void PerformRequestPendingProfiles(
       RequestPendingProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnRequestAvailableProfiles(
+      RequestAvailableProfilesCallback callback,
+      mojom::ESimOperationResult result,
+      std::vector<CellularESimProfile> profile_list);
   void OnRefreshSmdxProfilesResult(
       RequestPendingProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,

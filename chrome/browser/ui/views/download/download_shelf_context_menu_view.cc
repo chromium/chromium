@@ -28,9 +28,9 @@ DownloadShelfContextMenuView::DownloadShelfContextMenuView(
 
 DownloadShelfContextMenuView::DownloadShelfContextMenuView(
     base::WeakPtr<DownloadUIModel> download_ui_model,
-    DownloadBubbleUIController* bubble_controller)
+    base::WeakPtr<DownloadBubbleUIController> bubble_controller)
     : DownloadShelfContextMenu(download_ui_model),
-      bubble_controller_(bubble_controller) {}
+      bubble_controller_(std::move(bubble_controller)) {}
 
 DownloadShelfContextMenuView::~DownloadShelfContextMenuView() = default;
 

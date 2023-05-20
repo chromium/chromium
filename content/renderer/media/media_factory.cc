@@ -266,8 +266,7 @@ std::unique_ptr<media::RendererImplFactory> CreateRendererImplFactory(
       media_log, decoder_factory,
       base::BindRepeating(&content::RenderThreadImpl::GetGpuFactories,
                           base::Unretained(render_thread)),
-      player_id,
-      render_frame->CreateSpeechRecognitionClient(base::OnceClosure()));
+      player_id, render_frame->CreateSpeechRecognitionClient());
 #endif
   return factory;
 }

@@ -24,6 +24,7 @@
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
@@ -45,7 +46,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search/ntp_features.h"
 #include "components/session_proto_db/session_proto_storage.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -341,8 +342,10 @@ void ShoppingService::OnProductInfoJsonSanitizationCompleted(
     MergeProductInfoData(cached_info, result.value().GetDict());
   }
 
-  metrics::RecordPDPStateWithLocalMeta(pdp_detected_by_server,
-                                       pdp_detected_by_client);
+  if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection)) {
+    metrics::RecordPDPStateWithLocalMeta(pdp_detected_by_server,
+                                         pdp_detected_by_client);
+  }
 }
 
 bool ShoppingService::CheckIsPDPFromMetaOnly(
@@ -515,6 +518,18 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
 size_t ShoppingService::GetMaxProductBookmarkUpdatesPerBatch() {
   return optimization_guide::features::
       MaxUrlsForOptimizationGuideServiceHintsFetch();
+}
+
+void ShoppingService::GetAllPriceTrackedBookmarks(
+    base::OnceCallback<void(std::vector<const bookmarks::BookmarkNode*>)>
+        callback) {
+  commerce::GetAllPriceTrackedBookmarks(this, bookmark_model_,
+                                        std::move(callback));
+}
+
+std::vector<const bookmarks::BookmarkNode*>
+ShoppingService::GetAllShoppingBookmarks() {
+  return commerce::GetAllShoppingBookmarks(bookmark_model_);
 }
 
 void ShoppingService::GetMerchantInfoForUrl(const GURL& url,

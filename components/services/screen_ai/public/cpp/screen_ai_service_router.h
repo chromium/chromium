@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_SERVICE_ROUTER_H_
 #define COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_SERVICE_ROUTER_H_
 
-#include <vector>
-
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
@@ -36,35 +34,23 @@ class ScreenAIServiceRouter : public KeyedService {
   void BindMainContentExtractor(
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor> receiver);
 
-  void LaunchIfNotRunning();
+  void InitializeOCRIfNeeded();
+  void InitializeMainContentExtractionIfNeeded();
 
  private:
-  // Triggers loading library and model files and library initialization after
-  // the service is up.
-  void LoadAndInitializeLibrary(
+  void InitializeMainContentExtraction(
+      mojo::PendingReceiver<mojom::MainContentExtractionService> receiver,
       std::unique_ptr<ComponentModelFiles> model_files);
+
+  void LaunchIfNotRunning();
 
   // Callback from Screen AI service with library load result.
   void SetLibraryLoadState(bool successful);
 
-  // Binds queued connections after library is ready.
-  void BindQueuedConnections();
-
-  // Queues for pending connections.
-  std::vector<mojo::PendingReceiver<mojom::ScreenAIAnnotator>>
-      pending_annotators_;
-  std::vector<mojo::PendingRemote<mojom::ScreenAIAnnotatorClient>>
-      pending_clients_;
-  std::vector<mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>>
-      pending_main_content_extractors_;
-
-  // Indicates that the service is created and the library is successfully
-  // loaded.
-  // TODO(crbug.com/1278249): Add a factory interface that returns an instance
-  // of `ScreenAIService` when library is initialized and remove this variable.
-  bool service_is_ready_{false};
-
-  mojo::Remote<mojom::ScreenAIService> screen_ai_service_;
+  mojo::Remote<mojom::ScreenAIServiceFactory> screen_ai_service_factory_;
+  mojo::Remote<mojom::OCRService> ocr_service_;
+  mojo::Remote<mojom::MainContentExtractionService>
+      main_content_extraction_service_;
 
   base::WeakPtrFactory<ScreenAIServiceRouter> weak_ptr_factory_{this};
 };

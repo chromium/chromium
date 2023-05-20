@@ -218,6 +218,8 @@ const TestCardFillData kElvisCardFillData("Elvis Presley",
                                           "2999",
                                           /*use_month_type*/ false);
 
+constexpr char kElvisProfileGuid[] = "00000000-0000-0000-0000-000000000001";
+
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {
@@ -1147,7 +1149,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   void CreateTestAutofillProfiles() {
     AutofillProfile profile1 = FillDataToAutofillProfile(kElvisAddressFillData);
-    profile1.set_guid("00000000-0000-0000-0000-000000000001");
+    profile1.set_guid(kElvisProfileGuid);
     personal_data().AddProfile(profile1);
 
     AutofillProfile profile2;
@@ -1551,37 +1553,37 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
   EXPECT_CALL(
       *single_field_form_fill_router_,
       OnSingleFieldSuggestionSelected(
-          test_value, Suggestion::FrontendId(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)))
+          test_value, Suggestion::FrontendId(PopupItemId::kAutocompleteEntry)))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, form, field);
+      test_value, PopupItemId::kAutocompleteEntry, form, field);
 
   EXPECT_CALL(
       *single_field_form_fill_router_,
       OnSingleFieldSuggestionSelected(
-          test_value, Suggestion::FrontendId(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)))
+          test_value, Suggestion::FrontendId(PopupItemId::kAutocompleteEntry)))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, form, field);
+      test_value, PopupItemId::kAutocompleteEntry, form, field);
 
   EXPECT_CALL(*single_field_form_fill_router_,
               OnSingleFieldSuggestionSelected(
-                  test_value, Suggestion::FrontendId(POPUP_ITEM_ID_IBAN_ENTRY)))
+                  test_value, Suggestion::FrontendId(PopupItemId::kIbanEntry)))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_IBAN_ENTRY, form, field);
+      test_value, PopupItemId::kIbanEntry, form, field);
 
   EXPECT_CALL(*single_field_form_fill_router_,
               OnSingleFieldSuggestionSelected(
-                  test_value, Suggestion::FrontendId(
-                                  POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY)))
+                  test_value,
+                  Suggestion::FrontendId(PopupItemId::kMerchantPromoCodeEntry)))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY, form, field);
+      test_value, PopupItemId::kMerchantPromoCodeEntry, form, field);
 }
 
 // Test that we return all address profile suggestions when all form fields
@@ -4830,8 +4832,8 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
 
     field.max_length = default_max_length;
     field.autocomplete_attribute = test_field.autocomplete_attribute;
-    field.parsed_autocomplete = ParseAutocompleteAttribute(
-        test_field.autocomplete_attribute, default_max_length);
+    field.parsed_autocomplete =
+        ParseAutocompleteAttribute(test_field.autocomplete_attribute);
     form_with_autocompletetype.fields.push_back(field);
   }
 
@@ -6968,20 +6970,14 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   test::CreateTestAddressFormData(&form);
   form.fields[3].value = u"Enter your address";
 
-  // Convert the state field to a <select> popup, to make sure that we only
-  // reject default values for text fields.
-  ASSERT_TRUE(form.fields[6].name == u"state");
-  form.fields[6].form_control_type = "select-one";
-  form.fields[6].value = u"Tennessee";
-
   FormsSeen({form});
 
   // Fill the form.
-  const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[3],
-                                     MakeFrontendId({.profile_id = guid}),
-                                     &response_data);
+  FillAutofillFormDataAndSaveResults(
+      form, form.fields[3], MakeFrontendId({.profile_id = kElvisProfileGuid}),
+      &response_data);
+
   // Set the address field's value back to the default value.
   response_data.fields[3].value = u"Enter your address";
 
@@ -6989,6 +6985,34 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   // the filled data, since the filled form is effectively missing an address.
   FormSubmitted(response_data);
   EXPECT_EQ(0, personal_data().num_times_save_imported_profile_called());
+}
+
+// Test that we save form data when a <select> in the form contains the
+// default value.
+TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+
+  // Convert the state field to a <select> popup, to make sure that we only
+  // reject default values for text fields.
+  ASSERT_TRUE(form.fields[6].name == u"state");
+  form.fields[6].form_control_type = "select-one";
+  form.fields[6].value = base::UTF8ToUTF16(kElvisAddressFillData.state);
+
+  FormsSeen({form});
+
+  // Fill the form.
+  FormData response_data;
+  FillAutofillFormDataAndSaveResults(
+      form, form.fields[3], MakeFrontendId({.profile_id = kElvisProfileGuid}),
+      &response_data);
+
+  FormSubmitted(response_data);
+  ASSERT_EQ(1, personal_data().num_times_save_imported_profile_called());
+  EXPECT_EQ(u"Tennessee",
+            personal_data().last_save_imported_profile()->GetRawInfo(
+                ADDRESS_HOME_STATE));
 }
 
 struct ProfileMatchingTypesTestCase {
@@ -8540,8 +8564,7 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   // Has less than 3 fields but has autocomplete attribute.
   const char* autocomplete = "given-name";
   form.fields[0].autocomplete_attribute = autocomplete;
-  form.fields[0].parsed_autocomplete =
-      ParseAutocompleteAttribute(autocomplete, form.fields[0].max_length);
+  form.fields[0].parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
 
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
@@ -8553,8 +8576,7 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
 
   // Has more than 3 fields and at least one autocomplete attribute.
   form.fields[0].autocomplete_attribute = autocomplete;
-  form.fields[0].parsed_autocomplete =
-      ParseAutocompleteAttribute(autocomplete, form.fields[0].max_length);
+  form.fields[0].parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Is off the record.
@@ -8777,7 +8799,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   Suggestion virtual_card_suggestion = Suggestion(
       "Virtual card",
       std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-      label, kVisaCard, autofill::POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
+      label, kVisaCard, autofill::PopupItemId::kVirtualCreditCardEntry);
 
   CheckSuggestions(
       form.fields[1].global_id(), virtual_card_suggestion,
@@ -8798,7 +8820,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
 
   virtual_card_suggestion =
       Suggestion("Virtual card", std::string("Elvis Presley"), label, kVisaCard,
-                 autofill::POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
+                 autofill::PopupItemId::kVirtualCreditCardEntry);
 
   CheckSuggestions(
       form.fields[0].global_id(), virtual_card_suggestion,
@@ -9909,7 +9931,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedForm) {
   CheckSuggestions(
       field.global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                 "", POPUP_ITEM_ID_MIXED_FORM_MESSAGE));
+                 "", PopupItemId::kMixedFormMessage));
 }
 
 // Test that if a form is mixed content we do not show a warning if the opt out
@@ -9950,7 +9972,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
   CheckSuggestions(
       field.global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                 "", POPUP_ITEM_ID_MIXED_FORM_MESSAGE));
+                 "", PopupItemId::kMixedFormMessage));
 
   // Pretend user started typing and make sure we no longer set suggestions.
   form.fields[0].value = u"Michael";
@@ -10540,7 +10562,7 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
           browser_autofill_manager_->GetPackedCreditCardID(7)),
       Suggestion(l10n_util::GetStringUTF8(
                      IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL),
-                 "", "", PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD));
+                 "", "", PopupItemId::kUseVirtualCard));
 }
 
 // Ensures the "Use a virtual card number" option should be shown when there are
@@ -10584,7 +10606,7 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
           browser_autofill_manager_->GetPackedCreditCardID(7)),
       Suggestion(l10n_util::GetStringUTF8(
                      IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL),
-                 "", "", PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD));
+                 "", "", PopupItemId::kUseVirtualCard));
 }
 #endif
 

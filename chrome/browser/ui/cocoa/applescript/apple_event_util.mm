@@ -15,6 +15,10 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace chrome::mac {
 
 namespace {

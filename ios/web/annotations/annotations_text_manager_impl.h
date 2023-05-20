@@ -63,6 +63,9 @@ class AnnotationsTextManagerImpl : public AnnotationsTextManager,
   // Id passed on to some callbacks and checked on followup calls to make
   // sure it matches with current manager's state.
   int seq_id_;
+
+  // Must be last member to ensure it is destroyed last.
+  base::WeakPtrFactory<AnnotationsTextManagerImpl> weak_factory_{this};
 };
 
 }  // namespace web

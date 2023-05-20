@@ -22,10 +22,13 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_util.h"
+#include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/printing_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "components/arc/intent_helper/custom_tab.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/filename_util.h"
@@ -325,6 +328,13 @@ void PrintSessionImpl::OnPreviewDocumentRead(
     pdf_flattener_.set_disconnect_handler(
         base::BindOnce(&PrintSessionImpl::OnPdfFlattenerDisconnected,
                        weak_ptr_factory_.GetWeakPtr()));
+    const PrefService* prefs =
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+            ->GetPrefs();
+    if (prefs->IsManagedPreference(prefs::kPdfUseSkiaRendererEnabled)) {
+      pdf_flattener_->SetUseSkiaRendererPolicy(
+          prefs->GetBoolean(prefs::kPdfUseSkiaRendererEnabled));
+    }
   }
 
   bool inserted = callbacks_.emplace(request_id, std::move(callback)).second;

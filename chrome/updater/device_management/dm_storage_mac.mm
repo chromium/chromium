@@ -128,6 +128,7 @@ TokenService::TokenService() {
 bool TokenService::StoreEnrollmentToken(const std::string& enrollment_token) {
   const base::FilePath enrollment_token_path = GetEnrollmentTokenFilePath();
   if (enrollment_token_path.empty() ||
+      !base::CreateDirectory(enrollment_token_path.DirName()) ||
       !base::ImportantFileWriter::WriteFileAtomically(enrollment_token_path,
                                                       enrollment_token)) {
     return false;
@@ -140,6 +141,7 @@ bool TokenService::StoreEnrollmentToken(const std::string& enrollment_token) {
 bool TokenService::StoreDmToken(const std::string& token) {
   const base::FilePath dm_token_path = GetDmTokenFilePath();
   if (dm_token_path.empty() ||
+      !base::CreateDirectory(dm_token_path.DirName()) ||
       !base::ImportantFileWriter::WriteFileAtomically(dm_token_path, token)) {
     return false;
   }

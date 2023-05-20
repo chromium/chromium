@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/audio_service_ash.h"
 
+#include "base/test/test_future.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/test/browser_task_environment.h"
@@ -49,15 +50,15 @@ class MockAudioChangeObserver : public mojom::AudioChangeObserver {
   MOCK_METHOD(void, OnLevelChangedMock, (const std::string& id, int32_t level));
   MOCK_METHOD(void, OnMuteChangedMock, (bool is_input, bool is_muted));
 
-  void Wait() { run_loop_.Run(); }
+  void Wait() { EXPECT_TRUE(waiter.Wait()); }
 
   auto GetRemote() { return receiver_.BindNewPipeAndPassRemote(); }
 
-  void Quit() { run_loop_.Quit(); }
+  void Quit() { waiter.SetValue(); }
 
  private:
   mojo::Receiver<crosapi::mojom::AudioChangeObserver> receiver_{this};
-  base::RunLoop run_loop_;
+  base::test::TestFuture<void> waiter;
 };
 
 class AudioServiceAshTest : public ::testing::Test {

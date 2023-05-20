@@ -81,6 +81,7 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kContentSettingsVersion,
       ContentSettingsPattern::kContentSettingsPatternVersion);
+  registry->RegisterBooleanPref(prefs::kInContextCookieControlsOpened, false);
 
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();

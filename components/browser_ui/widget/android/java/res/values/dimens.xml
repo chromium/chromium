@@ -64,8 +64,8 @@ found in the LICENSE file.
     <!-- SelectableListLayout dimensions -->
     <dimen name="selectable_list_action_bar_end_padding">6dp</dimen>
     <dimen name="toolbar_wide_display_start_offset">13dp</dimen>
-    <dimen name="search_toolbar_modern_bg_top_bottom_inset">8dp</dimen>
-    <dimen name="search_toolbar_modern_bg_lateral_inset">8dp</dimen>
+    <dimen name="search_toolbar_modern_bg_vertical_inset">8dp</dimen>
+    <dimen name="search_toolbar_modern_bg_horizontal_inset">8dp</dimen>
     <dimen name="selectable_list_toolbar_nav_button_start_offset">4dp</dimen>
     <dimen name="selectable_list_search_icon_end_padding">4dp</dimen>
     <dimen name="selectable_list_toolbar_height">56dp</dimen>

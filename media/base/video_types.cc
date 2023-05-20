@@ -307,8 +307,7 @@ size_t BitDepth(VideoPixelFormat format) {
     case PIXEL_FORMAT_RGBAF16:
       return 16;
   }
-  NOTREACHED();
-  return 0;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace media

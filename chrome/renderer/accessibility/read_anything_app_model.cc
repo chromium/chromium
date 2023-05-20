@@ -436,7 +436,9 @@ double ReadAnythingAppModel::GetLineSpacingValue(
     case read_anything::mojom::LineSpacing::kTightDeprecated:
       return 1.0;
     case read_anything::mojom::LineSpacing::kStandard:
-      return 1.15;
+      // This value needs to be at least 1.35 to avoid cutting off descenders
+      // with the highlight with larger fonts such as Poppins.
+      return 1.35;
     case read_anything::mojom::LineSpacing::kLoose:
       return 1.5;
     case read_anything::mojom::LineSpacing::kVeryLoose:
@@ -543,21 +545,21 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   // It's up to the consumer to pick but its generally good to prefer generated.
   for (const auto& event : event_generator) {
     switch (event.event_params.event) {
-      case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
-      case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
-        requires_distillation_ = true;
-        break;
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
-        if (event.event_params.event_from == ax::mojom::EventFrom::kUser) {
+        if (event.event_params.event_from == ax::mojom::EventFrom::kUser ||
+            event.event_params.event_from == ax::mojom::EventFrom::kAction) {
           requires_post_process_selection_ = true;
         }
+        break;
+      case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
+      case ui::AXEventGenerator::Event::ALERT:
+        requires_distillation_ = true;
         break;
 
       // Audit these events e.g. to trigger distillation.
       case ui::AXEventGenerator::Event::NONE:
       case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
       case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
-      case ui::AXEventGenerator::Event::ALERT:
       case ui::AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
       case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
       case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
@@ -574,7 +576,6 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::DETAILS_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
-      case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
       case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
       case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
       case ui::AXEventGenerator::Event::ENABLED_CHANGED:
@@ -618,6 +619,8 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
       case ui::AXEventGenerator::Event::ROLE_CHANGED:
       case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
+      case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
+      case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:

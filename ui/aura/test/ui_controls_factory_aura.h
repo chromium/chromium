@@ -6,20 +6,18 @@
 #define UI_AURA_TEST_UI_CONTROLS_FACTORY_AURA_H_
 
 #include "build/build_config.h"
-#include "ui/base/test/ui_controls_aura.h"
+
+namespace ui_controls {
+class UIControlsAura;
+}
 
 namespace aura {
 class WindowTreeHost;
 
 namespace test {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 ui_controls::UIControlsAura* CreateUIControlsAura(WindowTreeHost* host);
-
-#if BUILDFLAG(IS_OZONE)
-// Callback from Window Service with the result of posting an event. |result|
-// is true if event successfully processed and |closure| is an optional closure
-// to run when done (used in client code to wait for ack).
-void OnWindowServiceProcessedEvent(base::OnceClosure closure, bool result);
 #endif
 
 }  // namespace test

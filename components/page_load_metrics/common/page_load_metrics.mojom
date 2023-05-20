@@ -56,6 +56,10 @@ struct LargestContentfulPaintTiming {
   // TODO(crbug.com/657632): Use an optional enum.
   bool image_request_priority_valid = false;
   network.mojom.RequestPriority image_request_priority_value;
+
+  bool is_loaded_from_memory_cache = false;
+
+  bool is_preloaded_with_early_hints = false;
 };
 
 // TimeDeltas below relative to navigation start.
@@ -404,6 +408,17 @@ struct ServiceWorkerSubresourceLoadMetrics {
   // e.g. if there are two resources, and one is handed by the service worker,
   // and one did not, this flag will be true because one was network fallback.
   bool mock_fallback;
+
+  // True even if one dictionary sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool dictionary_handled;
+  // True even if one dictionary sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool dictionary_fallback;
 };
 
 // Enumeration of distinct cache types.

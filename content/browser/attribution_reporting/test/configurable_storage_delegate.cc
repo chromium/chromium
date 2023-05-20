@@ -29,7 +29,7 @@ namespace content {
 ConfigurableStorageDelegate::ConfigurableStorageDelegate()
     : AttributionStorageDelegate(AttributionConfig{
           .max_sources_per_origin = std::numeric_limits<int>::max(),
-          .max_destinations_per_source_site_reporting_origin =
+          .max_destinations_per_source_site_reporting_site =
               std::numeric_limits<int>::max(),
           .rate_limit =
               {
@@ -186,9 +186,9 @@ void ConfigurableStorageDelegate::set_max_reports_per_destination(
 }
 
 void ConfigurableStorageDelegate::
-    set_max_destinations_per_source_site_reporting_origin(int max) {
+    set_max_destinations_per_source_site_reporting_site(int max) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  config_.max_destinations_per_source_site_reporting_origin = max;
+  config_.max_destinations_per_source_site_reporting_site = max;
 }
 
 void ConfigurableStorageDelegate::set_aggregatable_budget_per_source(

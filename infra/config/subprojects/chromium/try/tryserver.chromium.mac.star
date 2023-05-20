@@ -329,7 +329,7 @@ try_.builder(
     name = "mac_upload_clang",
     executable = "recipe:chromium_toolchain/package_clang",
     builderless = False,
-    execution_timeout = 8 * time.hour,
+    execution_timeout = 6 * time.hour,
 )
 
 try_.builder(
@@ -350,7 +350,7 @@ try_.builder(
     name = "mac_upload_rust_arm",
     executable = "recipe:chromium_toolchain/package_rust",
     builderless = False,
-    execution_timeout = 8 * time.hour,
+    execution_timeout = 6 * time.hour,
 )
 
 try_.builder(
@@ -607,4 +607,5 @@ try_.gpu.optional_tests_builder(
 try_.builder(
     name = "mac-cr23-rel",
     mirrors = ["ci/mac-cr23-rel"],
+    os = os.MAC_DEFAULT,
 )

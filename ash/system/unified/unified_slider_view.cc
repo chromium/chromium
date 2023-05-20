@@ -22,6 +22,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -126,6 +127,7 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
       /*is_togglable=*/true,
       /*has_border=*/true));
   slider_button_->SetIconColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
+  slider_button_->SetFocusBehavior(FocusBehavior::NEVER);
 
   // Prevent an accessibility event while initiallizing this view.
   // Typically the first update of the slider value is conducted by the
@@ -191,6 +193,26 @@ void UnifiedSliderView::OnThemeChanged() {
     toast_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
+}
+
+void UnifiedSliderView::OnEvent(ui::Event* event) {
+  if (!event->IsKeyEvent()) {
+    views::View::OnEvent(event);
+    return;
+  }
+
+  auto* key_event = event->AsKeyEvent();
+  auto key_code = key_event->key_code();
+
+  // Only handles press event to avoid handling the event again when the key is
+  // released.
+  if (features::IsQsRevampEnabled() && key_code == ui::VKEY_RETURN &&
+      key_event->type() == ui::EventType::ET_KEY_PRESSED) {
+    slider_button_->NotifyClick(*event);
+    return;
+  }
+
+  views::View::OnEvent(event);
 }
 
 BEGIN_METADATA(UnifiedSliderView, views::View)

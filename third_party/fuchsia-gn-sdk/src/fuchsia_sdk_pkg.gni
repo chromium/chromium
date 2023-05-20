@@ -1,0 +1,89 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("config/config.gni")
+
+# Defines a Fuchsia SDK library target from source or prebuilt.
+#
+# If this target has header files, they are exposed via a config
+# object specifying the include_dirs.
+#
+# Shared libraries are copied to ${root_out_dir/lib} for packaging.
+#
+#
+# Parameters
+#
+#   package_name
+#     Optional: Name of the library. Default is target_name.
+#   sources
+#     Required: List of source files.
+#
+#   include_dirs
+#     Optional: include_dirs to add to the configuration for the
+#               target.
+#   library_name
+#     Optional: Name of the library. target_name is used if name
+#               is not specified explicitly.
+#
+#   shared_libs
+#     Optional: List of shared libraries for this target.
+#
+#   static_libs
+#     Optional: List of static libraries for this target.
+#
+#   sdk_dist_dir
+#     Optional: Directory of libraries to distribute in the
+#               target. Defaults to ${fuchsia_sdk}/arch/${target_cpu}/dist.
+#   deps
+#     Optional: List of other targets that this library depends on.
+#
+# Declares a package containing uncompiled code and/or precompiled libraries.
+#
+#
+template("fuchsia_sdk_pkg") {
+  config("${target_name}_config") {
+    forward_variables_from(invoker, [ "include_dirs" ])
+    visibility = [ ":${invoker.target_name}" ]
+  }
+
+  if (defined(invoker.shared_libs)) {
+    if (defined(invoker.sdk_dist_dir)) {
+      sdk_dist_dir = invoker.sdk_dist_dir
+    } else {
+      sdk_dist_dir = "${fuchsia_sdk}/arch/${target_cpu}/dist"
+    }
+
+    copy("${target_name}_dist_libs") {
+      sources = []
+      foreach(lib, invoker.shared_libs) {
+        sources += [ "${sdk_dist_dir}/lib${lib}.so" ]
+      }
+
+      outputs = [ "${root_out_dir}/lib/{{source_file_part}}" ]
+      visibility = [ ":${target_name}" ]
+    }
+  }
+
+  static_library(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "data",
+                             "deps",
+                             "public_deps",
+                             "sources",
+                             "testonly",
+                             "visibility",
+                           ])
+
+    public_configs = [ ":${invoker.target_name}_config" ]
+
+    if (defined(invoker.shared_libs)) {
+      configs += [ "${fuchsia_sdk}/build/config:sdk_lib_dirs_config" ]
+      libs = invoker.shared_libs
+      data_deps = [ ":${target_name}_dist_libs" ]
+    } else if (defined(invoker.static_libs)) {
+      libs = invoker.static_libs
+    }
+  }
+}

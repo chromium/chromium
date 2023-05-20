@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "components/sync/driver/trusted_vault_client.h"
+#include "components/sync/service/trusted_vault_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {

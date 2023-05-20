@@ -28,6 +28,8 @@ const ui::KeyboardDevice kSampleKeyboardBluetooth = {
     10, ui::INPUT_DEVICE_BLUETOOTH, "kSampleKeyboardBluetooth"};
 const ui::KeyboardDevice kSampleKeyboardUsb = {15, ui::INPUT_DEVICE_USB,
                                                "kSampleKeyboardUsb"};
+const ui::KeyboardDevice kSampleKeyboardUsb2 = {16, ui::INPUT_DEVICE_USB,
+                                                "kSampleKeyboardUsb2"};
 const ui::KeyboardDevice kLogitechMXKeysKeyboard = {
     20,
     ui::INPUT_DEVICE_BLUETOOTH,
@@ -121,23 +123,23 @@ class InputDeviceStateNotifierTest : public AshTestBase {
 };
 
 TEST_F(InputDeviceStateNotifierTest, ImpostersRemoved) {
-  ui::KeyboardDevice imposter_keyboard = kSampleKeyboardBluetooth;
+  ui::KeyboardDevice imposter_keyboard = kSampleKeyboardUsb;
   imposter_keyboard.suspected_imposter = true;
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
-      {imposter_keyboard, kSampleKeyboardUsb});
+      {imposter_keyboard, kSampleKeyboardUsb2});
   ASSERT_EQ(1u, devices_to_add_.size());
-  EXPECT_EQ(kSampleKeyboardUsb.name, devices_to_add_[0].name);
-  EXPECT_EQ(kSampleKeyboardUsb.id, devices_to_add_[0].id);
+  EXPECT_EQ(kSampleKeyboardUsb2.name, devices_to_add_[0].name);
+  EXPECT_EQ(kSampleKeyboardUsb2.id, devices_to_add_[0].id);
 
   imposter_keyboard.suspected_imposter = false;
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
-      {imposter_keyboard, kSampleKeyboardUsb});
+      {imposter_keyboard, kSampleKeyboardUsb2});
   ASSERT_EQ(2u, devices_to_add_.size());
   EXPECT_EQ(imposter_keyboard.name, devices_to_add_[0].name);
   EXPECT_EQ(imposter_keyboard.id, devices_to_add_[0].id);
-  EXPECT_EQ(kSampleKeyboardUsb.name, devices_to_add_[1].name);
-  EXPECT_EQ(kSampleKeyboardUsb.id, devices_to_add_[1].id);
+  EXPECT_EQ(kSampleKeyboardUsb2.name, devices_to_add_[1].name);
+  EXPECT_EQ(kSampleKeyboardUsb2.id, devices_to_add_[1].id);
 }
 
 // Since Logitech MX Keys pretends to be a mouse, it should always be shown as a

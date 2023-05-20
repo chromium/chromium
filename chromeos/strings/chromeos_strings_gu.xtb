@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને કદાચ તમારી પ્રવૃત્તિનું નિરીક્ષણ કરી શકે છે.</translation>
 <translation id="1478594628797167447">સ્કૅનર</translation>
 <translation id="1483493594462132177">મોકલો</translation>
+<translation id="1488850966314959671">કોઈ ચાલુ કરેલા કસ્ટમ APNsનો ઉપયોગ કરીને આ નેટવર્ક સાથે કનેક્ટ કરી શકતાં નથી. વધુ માહિતી માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> માટે ફર્મવેયર અપડેટ કરી રહ્યાં છીએ</translation>
 <translation id="1499041187027566160">વૉલ્યૂમ વધારો</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> આ વપરાશકર્તાને મેનેજ કરે છે તથા સેટિંગ અને વપરાશકર્તાની પ્રવૃત્તિને દૂરથી મેનેજ અને તેનું નિરીક્ષણ કરે એવું બની શકે.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">દૃશ્યતા</translation>
 <translation id="1672499492233627739">વેબકૅમના વીડિયોનું ફીડ</translation>
 <translation id="1676557873873341166">વીડિયો લઈ રહ્યાં છીએ</translation>
+<translation id="1684279041537802716">ઍક્સન્ટ રંગ</translation>
 <translation id="1703835215927279855">અક્ષર</translation>
 <translation id="1706391837335750954">DNS રિઝોલ્વરનું વર્તમાન પરીક્ષણ</translation>
 <translation id="1708602061922134366">Google વાદળી</translation>
@@ -217,6 +219,7 @@
 <translation id="2638662041295312666">સાઇન ઇન છબી</translation>
 <translation id="2640549051766135490">આલ્બમ <ph name="TITLE" /> <ph name="DESC" />ની પસંદગી કરી</translation>
 <translation id="267442004702508783">રિફ્રેશ કરો</translation>
+<translation id="268270014981824665">કીબોર્ડ ડિમ કરો</translation>
 <translation id="2712812801627182647">TLS પ્રમાણીકરણ કી</translation>
 <translation id="2713444072780614174">શ્વેત</translation>
 <translation id="2717139507051041123">ઘેરા રંગવાળો મોડ ચાલુ કરો</translation>
@@ -224,6 +227,7 @@
 <translation id="2744221223678373668">શેર કરેલી</translation>
 <translation id="2751739896257479635">EAP તબક્કા 2 માટેનું પ્રમાણીકરણ</translation>
 <translation id="2783010256799387990">પરીક્ષણ પાસ કર્યુ</translation>
+<translation id="2787435249130282949">વધુ બ્રાઇટ કીબોર્ડ</translation>
 <translation id="2789486458103222910">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2805756323405976993">ઍપ</translation>
 <translation id="28232023175184696">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. ફરી પ્રયાસ કરવા માટે ક્લિક કરો.</translation>
@@ -327,11 +331,13 @@
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
 <translation id="3771294271822695279">વીડિયો ફાઇલો</translation>
 <translation id="3784455785234192852">લૉક છે</translation>
+<translation id="380097101658023925">RGBના નિયંત્રણો</translation>
 <translation id="38114475217616659">બધો ઇતિહાસ સાફ કરો</translation>
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
 <translation id="3824259034819781947">ફાઇલ જોડો</translation>
 <translation id="3838338534323494292">નવો પાસવર્ડ</translation>
 <translation id="3845880861638660475">સંવાદ બંધ કરવા માટે <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> દબાવો.</translation>
+<translation id="3848280697030027394">કીબોર્ડને ઘેરું કરો</translation>
 <translation id="385051799172605136">પાછળ</translation>
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3862598938296403232">વર્ણન આવશ્યક છે</translation>
@@ -403,6 +409,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">બંધ કરો</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ફરી શરૂ કરી રહ્યાં છીએ</translation>
+<translation id="4395835743215824109">કીબોર્ડ કસ્ટમાઇઝ કરો</translation>
 <translation id="4415951057168511744">હાલનો અવતાર</translation>
 <translation id="4422041425070339732">તીર નીચે</translation>
 <translation id="4425149324548788773">મારી ડ્રાઇવ</translation>
@@ -426,6 +433,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh બૅટરી</translation>
 <translation id="4561801978359312462">સિમ કાર્ડ અનલૉક છે</translation>
 <translation id="4562494484721939086">કોઈ સેવા નથી</translation>
+<translation id="4573777384450697571">નિષ્ફળ થયું - સર્ટિફિકેટની સમયસીમા સમાપ્ત થઈ ગઈ</translation>
 <translation id="458794348635939462">બધા હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="4593212453765072419">પ્રોક્સી પ્રમાણીકરણ આવશ્યક છે</translation>
 <translation id="4609350030397390689">કીબોર્ડનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
@@ -442,6 +450,7 @@
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4744944742468440486">તમારી પસંદગી સંબંધિત માહિતી</translation>
+<translation id="4771607256327216405">કીબોર્ડને વધુ બ્રાઇટ કરો</translation>
 <translation id="4773299976671772492">રોક્યું</translation>
 <translation id="4782311465517282004">તમે જ્યારે રાઇટ ક્લિક કરો અથવા ટેક્સ્ટને ટચ કરીને થોડીવાર દબાવી રાખો ત્યારે વ્યાખ્યાઓ, અનુવાદો અથવા એકમના રૂપાંતરણો મેળવો</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ફોટો</translation>
@@ -490,6 +499,7 @@
 <translation id="500920857929044050">પરીક્ષણ રોકો</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">જ્યારે તમારી સ્ક્રીન નિષ્ક્રિય હોય, ત્યારે ફોટા, સમય, હવામાન અને મીડિયાની માહિતી બતાવો.</translation>
+<translation id="5038292761217083259">મલ્ટિકલર કીબોર્ડ</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5049856988445523908">સિમ કાર્ડ લૉક છે (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">જૂથનું નામ</translation>
@@ -539,7 +549,6 @@
 <translation id="5423849171846380976">સક્રિય કર્યું</translation>
 <translation id="5430931332414098647">ફટાફટ ટિથરિંગ</translation>
 <translation id="5431318178759467895">રંગ</translation>
-<translation id="5456936324019847994">ચાલુ કરેલા કોઈપણ કસ્ટમ APNs સાથે કનેક્ટ કરી શકાતું નથી. વધુ માહિતી માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="5457599981699367932">અતિથિ તરીકે બ્રાઉઝ કરો</translation>
 <translation id="54609108002486618">મેનેજ કરેલું</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} પ્રયત્ન બાકી}one{{0} પ્રયત્ન બાકી}other{{0} પ્રયત્ન બાકી}}</translation>
@@ -555,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ફરી સ્કૅન કરો</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">આ APNને બંધ કરી કે કાઢી શકતાં નથી. ખાતરી કરો કે જોડેલા APN જે ચાલુ કરેલા છે, તેને બંધ કરવામાં અથવા કાઢી નાખવામાં આવ્યા છે.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> કીનું પરીક્ષણ કર્યું</translation>
 <translation id="5620281292257375798">માત્ર આંતરિક</translation>
 <translation id="5649768706273821470">સાંભળો</translation>
@@ -639,6 +649,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="6285899124799306373">લૉન્ચર ખોલો</translation>
+<translation id="629550705077076970">કીબોર્ડ ડિમ કરવું</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />નું પરીક્ષણ રદ કરવામાં આવ્યું</translation>
 <translation id="631063167932043783">Explore ઍપ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> પર ફર્મવેયર અપડેટ કરો</translation>
@@ -657,6 +668,7 @@
 <translation id="6401427872449207797">બ્રાઉઝર દ્વારા શોધ</translation>
 <translation id="6410257289063177456">છબી ફાઇલો</translation>
 <translation id="641081527798843608">વિષય મેળ</translation>
+<translation id="6411934471898487866">કીબોર્ડનું બ્રાઇટનેસ</translation>
 <translation id="6412715219990689313">બિલ્ટ-ઇન કીબોર્ડ</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -710,7 +722,6 @@
 <translation id="6798678288485555829">ટેક્સ્ટ નૅવિગેશન</translation>
 <translation id="680983167891198932">કી</translation>
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
-<translation id="6838167112108853532">આ APNને બંધ કરી કે કાઢી શકતા નથી. ખાતરી કરો કે જોડેલા APN જે ચાલુ કરેલા છે, તેને બંધ કરવામાં અથવા કાઢી નાખવામાં આવ્યા છે.</translation>
 <translation id="6853312040151791195">ડિસ્ચાર્જ થવાની ટકાવારી</translation>
 <translation id="6889786074662672253">ફરી શરૂ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
 <translation id="6900701049656042631">આ આલ્બમમાં કોઈ ફોટા નથી. ફોટા ઉમેરવા માટે, <ph name="LINK" /> પર જાઓ</translation>
@@ -740,6 +751,7 @@
 <translation id="7130438335435247835">ઍક્સેસ પૉઇન્ટનું નામ (APN)</translation>
 <translation id="7131634559772719176">પ્રીસેટને કન્ફર્મ કરો</translation>
 <translation id="7134436342991564651">{0,plural, =1{સર્વરનું નામ}one{સર્વરનું નામ}other{સર્વરનું નામ}}</translation>
+<translation id="7135814714616751706">શૉર્ટકટ શોધો</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="714876143603641390">LAN કનેક્ટિવિટી</translation>
@@ -770,6 +782,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchમાં પરિણામ જોવા માટે, Search અને Space કી દબાવો.</translation>
 <translation id="7343649194310845056">નેટવર્ક ડિવાઇસ</translation>
+<translation id="7353413232959255829">શોધ પરિણામ <ph name="LIST_SIZE" />માંથી <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. શૉર્ટકટ પર નૅવિગેટ કરવા માટે Enter દબાવો.</translation>
 <translation id="7359657277149375382">ફાઇલ પ્રકાર</translation>
 <translation id="73631062356239394">ડાયગ્નોસ્ટિક ડેટા શેર કરો</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -806,10 +819,12 @@
 <translation id="7656388927906093505">ડિવાઇસ એક માઉસ છે.</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7665800271478495366">અવતાર બદલો</translation>
+<translation id="7683228889864052081">રંગની છટાવાળું કીબોર્ડ</translation>
 <translation id="7690294790491645610">નવા પાસવર્ડની પુષ્ટિ કરો</translation>
 <translation id="7701040980221191251">કોઈ નથી</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">કીબોર્ડની લાઇટ</translation>
 <translation id="773153675489693198">ચક્રની સંખ્યા</translation>
 <translation id="7747039790905080783">પહેલેથી-શેર કરેલી કી</translation>
 <translation id="7762130827864645708">પાસવર્ડ બદલવાનું સફળ રહ્યું. કૃપા કરીને હવેથી નવા પાસવર્ડનો ઉપયોગ કરો.</translation>
@@ -853,6 +868,7 @@
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8082366717211101304">Android ઍપથી DNSનું નિરાકરણ કરી શકતા નથી</translation>
+<translation id="8082644724189923105">કીબોર્ડ ઝોન</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8094062939584182041">Googleને આ સમસ્યા વિશે તમને ઇમેઇલ કરવાની મંજૂરી આપો</translation>
 <translation id="8104083085214006426">તમે ઓપન અને અસુરક્ષિત નેટવર્કનો ઉપયોગ કરી રહ્યાં છો</translation>
@@ -901,6 +917,7 @@
 <translation id="8456761643544401578">ઑટોમૅટિક ઘેરો મોડ</translation>
 <translation id="8461329675984532579">હોમ પ્રદાતાનું નામ</translation>
 <translation id="8475690821716466388">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP PSK પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
+<translation id="8476242415522716722">કીબોર્ડની ચમક ઓછી કરો</translation>
 <translation id="8477551185774834963">DNSની વિલંબતા મંજૂરીયોગ્ય થ્રેશોલ્ડ કરતાં થોડી વધુ છે</translation>
 <translation id="8483248364096924578">IP સરનામું</translation>
 <translation id="8491311378305535241">Android ઍપથી ફાયરવૉલ મારફતે HTTP વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>
@@ -944,6 +961,7 @@
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8855781559874488009">ફાયરવૉલ મારફતે HTTP વેબસાઇટ સાથે કનેક્ટ કરી શકતા નથી</translation>
 <translation id="885701979325669005">સ્ટોરેજ</translation>
+<translation id="885704831271383379">વધુ ઘેરું કીબોર્ડ</translation>
 <translation id="8863170912498892583">ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" માટે <ph name="INTENT" /> અને વધુ મેળવો</translation>
 <translation id="8864415976656252616">કોઈ સૂચિત કન્ટેન્ટ નથી. લોકપ્રિય સહાયક કન્ટેન્ટ જુઓ.</translation>
@@ -996,6 +1014,7 @@
 <translation id="9173638680043580060">એક મિનિટ કરતાં ઓછો સમય બાકી છે</translation>
 <translation id="917720651393141712">પરીક્ષણ કરો</translation>
 <translation id="9188992814426075118">તમારું કીબોર્ડ ઑટોમૅટિક રીતે તમારા વૉલપેપર સાથે મેળ કરી શકે છે</translation>
+<translation id="9189000703457422362">જેની ઑટોમૅટિક રીતે ભાળ મળી હોય તેવા APNsનો ઉપયોગ કરીને આ નેટવર્ક સાથે કનેક્ટ કરી શકતાં નથી. વધુ માહિતી માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android ઍપથી ગેટવે સાથે સંપર્ક કરી શકતા નથી</translation>
 <translation id="9211490828691860325">તમામ ડેસ્ક</translation>

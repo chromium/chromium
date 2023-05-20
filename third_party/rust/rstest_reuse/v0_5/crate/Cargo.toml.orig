@@ -1,0 +1,35 @@
+[package]
+authors = ["Michele d'Amico <michele.damico@gmail.com>"]
+categories = ["development-tools::testing"]
+description = """
+Reuse rstest attributes: create a set of tests and apply it 
+to every scenario you want to test.
+"""
+edition = "2018"
+homepage = "https://github.com/la10736/rstest"
+keywords = ["test", "fixture"]
+license = "MIT/Apache-2.0"
+name = "rstest_reuse"
+readme = "README.md"
+repository = "https://github.com/la10736/rstest"
+version = "0.5.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1.0.9"
+rand = "0.8.5"
+syn = {version = "1.0.72", features = ["full"]}
+
+[dev-dependencies]
+lazy_static = "1.4.0"
+rstest_test = {version = "0.10.0", path = "../rstest_test"}
+temp_testdir = "0.2.3"
+# To compile doc tests
+rstest = {version = "0.16.0"}
+
+[build-dependencies]
+rustc_version = "0.4.0"

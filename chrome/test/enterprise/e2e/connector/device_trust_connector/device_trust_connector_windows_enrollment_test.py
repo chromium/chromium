@@ -56,6 +56,7 @@ class DeviceTrustConnectorWindowsEnrollmentTest(ChromeEnterpriseTestCase):
 
     # Schedule to run device_trust_ui_test on GCP VM machines
     commonDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    self.EnableHistogramSupport(self.win_config['client'], commonDir)
     output = self.RunUITest(
         self.win_config['client'],
         os.path.join(commonDir, 'common', 'device_trust_ui_test.py'),

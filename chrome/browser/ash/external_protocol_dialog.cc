@@ -51,12 +51,12 @@ void OnArcHandled(const GURL& url,
   // Display the standard ExternalProtocolDialog if Guest OS has a handler.
   // Otherwise, if there is no handler and the URL is a Tel-link, show the No
   // Handler Tel Scheme dialog
-  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
-      guest_os::GetHandler(
+  absl::optional<guest_os::GuestOsUrlHandler> registration =
+      guest_os::GuestOsUrlHandler::GetForUrl(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()), url);
   if (registration) {
     new ExternalProtocolDialog(web_contents.get(), url,
-                               base::UTF8ToUTF16(registration->Name()),
+                               base::UTF8ToUTF16(registration->name()),
                                initiating_origin, initiator_document);
   } else if (url.scheme() == url::kTelScheme) {
     new ash::ExternalProtocolNoHandlersTelSchemeDialog(parent_window);

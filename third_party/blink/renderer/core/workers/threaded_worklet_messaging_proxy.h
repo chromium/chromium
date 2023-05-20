@@ -8,11 +8,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
+#include "third_party/blink/renderer/core/workers/threaded_worklet_object_proxy.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope_proxy.h"
 
 namespace blink {
 
-class ThreadedWorkletObjectProxy;
 class WorkerClients;
 class WorkletModuleResponsesMap;
 

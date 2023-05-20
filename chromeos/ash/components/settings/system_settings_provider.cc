@@ -5,7 +5,6 @@
 #include "chromeos/ash/components/settings/system_settings_provider.h"
 
 #include <memory>
-#include <string>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -60,7 +59,7 @@ void SystemSettingsProvider::Init() {
       std::make_unique<base::Value>(FineGrainedTimeZoneDetectionEnabled());
 }
 
-const base::Value* SystemSettingsProvider::Get(const std::string& path) const {
+const base::Value* SystemSettingsProvider::Get(base::StringPiece path) const {
   if (path == kSystemTimezone)
     return timezone_value_.get();
 
@@ -79,7 +78,7 @@ SystemSettingsProvider::PrepareTrustedValues(base::OnceClosure* cb) {
   return TRUSTED;
 }
 
-bool SystemSettingsProvider::HandlesSetting(const std::string& path) const {
+bool SystemSettingsProvider::HandlesSetting(base::StringPiece path) const {
   return path == kSystemTimezone || path == kPerUserTimezoneEnabled ||
          path == kFineGrainedTimeZoneResolveEnabled;
 }

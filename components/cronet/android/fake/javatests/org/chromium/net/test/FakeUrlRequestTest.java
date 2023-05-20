@@ -828,7 +828,7 @@ public class FakeUrlRequestTest {
             mFakeCronetEngine.shutdown();
             fail("Shutdown not checked for active requests.");
         } catch (IllegalStateException e) {
-            assertEquals("Cannot shutdown with active requests.", e.getMessage());
+            assertEquals("Cannot shutdown with running requests.", e.getMessage());
         }
         callback.waitForNextStep();
         assertEquals(ResponseStep.ON_RESPONSE_STARTED, callback.mResponseStep);

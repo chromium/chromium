@@ -1734,6 +1734,37 @@ void WebLocalFrameImpl::ExtendSelectionAndDelete(int before, int after) {
                                                                   after);
 }
 
+void WebLocalFrameImpl::ExtendSelectionAndReplace(
+    int before,
+    int after,
+    const WebString& replacement_text) {
+  TRACE_EVENT0("blink", "WebLocalFrameImpl::extendSelectionAndReplace");
+
+  // EditContext and WebPlugin do not support atomic replacement.
+  if (EditContext* edit_context =
+          GetFrame()->GetInputMethodController().GetActiveEditContext()) {
+    edit_context->ExtendSelectionAndDelete(before, after);
+    edit_context->CommitText(replacement_text, std::vector<ui::ImeTextSpan>(),
+                             blink::WebRange(), 0);
+    return;
+  }
+
+  if (WebPlugin* plugin = FocusedPluginIfInputMethodSupported()) {
+    plugin->ExtendSelectionAndDelete(before, after);
+    plugin->CommitText(replacement_text, std::vector<ui::ImeTextSpan>(),
+                       blink::WebRange(), 0);
+    return;
+  }
+
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  GetFrame()->GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+
+  GetFrame()->GetInputMethodController().ExtendSelectionAndReplace(
+      before, after, replacement_text);
+}
+
 void WebLocalFrameImpl::DeleteSurroundingText(int before, int after) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::deleteSurroundingText");
   if (WebPlugin* plugin = FocusedPluginIfInputMethodSupported()) {

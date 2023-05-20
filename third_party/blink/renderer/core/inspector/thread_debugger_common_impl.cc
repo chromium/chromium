@@ -303,12 +303,11 @@ ThreadDebuggerCommonImpl::serializeToWebDriverValue(
     v8::Local<v8::Value> v8_value,
     int max_depth) {
   // Serialize according to https://w3c.github.io/webdriver-bidi.
-  if (V8Node::HasInstance(v8_value, isolate_)) {
-    Node* node = V8Node::ToImplWithTypeCheck(isolate_, v8_value);
+  if (Node* node = V8Node::ToWrappable(isolate_, v8_value)) {
     return SerializeNodeToWebDriverValue(node, isolate_, max_depth);
   }
 
-  if (V8Window::HasInstance(v8_value, isolate_)) {
+  if (V8Window::HasInstance(isolate_, v8_value)) {
     return std::make_unique<v8_inspector::WebDriverValue>(
         ToV8InspectorStringBuffer("window"));
   }
@@ -329,21 +328,24 @@ ThreadDebuggerCommonImpl::valueSubtype(v8::Local<v8::Value> value) {
   static const char kBlob[] = "blob";
   static const char kTrustedType[] = "trustedtype";
 
-  if (V8Node::HasInstance(value, isolate_))
+  if (V8Node::HasInstance(isolate_, value)) {
     return ToV8InspectorStringBuffer(kNode);
-  if (V8NodeList::HasInstance(value, isolate_) ||
-      V8DOMTokenList::HasInstance(value, isolate_) ||
-      V8HTMLCollection::HasInstance(value, isolate_) ||
-      V8HTMLAllCollection::HasInstance(value, isolate_)) {
+  }
+  if (V8NodeList::HasInstance(isolate_, value) ||
+      V8DOMTokenList::HasInstance(isolate_, value) ||
+      V8HTMLCollection::HasInstance(isolate_, value) ||
+      V8HTMLAllCollection::HasInstance(isolate_, value)) {
     return ToV8InspectorStringBuffer(kArray);
   }
-  if (V8DOMException::HasInstance(value, isolate_))
+  if (V8DOMException::HasInstance(isolate_, value)) {
     return ToV8InspectorStringBuffer(kError);
-  if (V8Blob::HasInstance(value, isolate_))
+  }
+  if (V8Blob::HasInstance(isolate_, value)) {
     return ToV8InspectorStringBuffer(kBlob);
-  if (V8TrustedHTML::HasInstance(value, isolate_) ||
-      V8TrustedScript::HasInstance(value, isolate_) ||
-      V8TrustedScriptURL::HasInstance(value, isolate_)) {
+  }
+  if (V8TrustedHTML::HasInstance(isolate_, value) ||
+      V8TrustedScript::HasInstance(isolate_, value) ||
+      V8TrustedScriptURL::HasInstance(isolate_, value)) {
     return ToV8InspectorStringBuffer(kTrustedType);
   }
   return nullptr;
@@ -353,20 +355,15 @@ std::unique_ptr<v8_inspector::StringBuffer>
 ThreadDebuggerCommonImpl::descriptionForValueSubtype(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value> value) {
-  if (V8TrustedHTML::HasInstance(value, isolate_)) {
-    TrustedHTML* trusted_html =
-        V8TrustedHTML::ToImplWithTypeCheck(isolate_, value);
+  if (TrustedHTML* trusted_html = V8TrustedHTML::ToWrappable(isolate_, value)) {
     return ToV8InspectorStringBuffer(trusted_html->toString());
-  } else if (V8TrustedScript::HasInstance(value, isolate_)) {
-    TrustedScript* trusted_script =
-        V8TrustedScript::ToImplWithTypeCheck(isolate_, value);
+  } else if (TrustedScript* trusted_script =
+                 V8TrustedScript::ToWrappable(isolate_, value)) {
     return ToV8InspectorStringBuffer(trusted_script->toString());
-  } else if (V8TrustedScriptURL::HasInstance(value, isolate_)) {
-    TrustedScriptURL* trusted_script_url =
-        V8TrustedScriptURL::ToImplWithTypeCheck(isolate_, value);
+  } else if (TrustedScriptURL* trusted_script_url =
+                 V8TrustedScriptURL::ToWrappable(isolate_, value)) {
     return ToV8InspectorStringBuffer(trusted_script_url->toString());
-  } else if (V8Node::HasInstance(value, isolate_)) {
-    Node* node = V8Node::ToImplWithTypeCheck(isolate_, value);
+  } else if (Node* node = V8Node::ToWrappable(isolate_, value)) {
     StringBuilder description;
     switch (node->getNodeType()) {
       case Node::kElementNode: {
@@ -599,8 +596,9 @@ static EventTarget* FirstArgumentAsEventTarget(
   if (info.Length() < 1)
     return nullptr;
   if (EventTarget* target =
-          V8EventTarget::ToImplWithTypeCheck(info.GetIsolate(), info[0]))
+          V8EventTarget::ToWrappable(info.GetIsolate(), info[0])) {
     return target;
+  }
   return ToDOMWindow(info.GetIsolate(), info[0]);
 }
 
@@ -643,7 +641,7 @@ void ThreadDebuggerCommonImpl::GetAccessibleNameCallback(
   v8::Isolate* isolate = info.GetIsolate();
   v8::Local<v8::Value> value = info[0];
 
-  Node* node = V8Node::ToImplWithTypeCheck(isolate, value);
+  Node* node = V8Node::ToWrappable(isolate, value);
   if (node && !node->GetLayoutObject())
     return;
   if (auto* element = DynamicTo<Element>(node)) {
@@ -660,7 +658,7 @@ void ThreadDebuggerCommonImpl::GetAccessibleRoleCallback(
   v8::Isolate* isolate = info.GetIsolate();
   v8::Local<v8::Value> value = info[0];
 
-  Node* node = V8Node::ToImplWithTypeCheck(isolate, value);
+  Node* node = V8Node::ToWrappable(isolate, value);
   if (node && !node->GetLayoutObject())
     return;
   if (auto* element = DynamicTo<Element>(node)) {

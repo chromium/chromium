@@ -14,6 +14,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
@@ -167,8 +168,10 @@ bool CanSupportAudioType(const String& type) {
 }  // anonymous namespace
 
 MediaRecorderHandler::MediaRecorderHandler(
-    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner)
-    : main_thread_task_runner_(std::move(main_thread_task_runner)) {}
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+    KeyFrameRequestProcessor::Configuration key_frame_config)
+    : key_frame_config_(key_frame_config),
+      main_thread_task_runner_(std::move(main_thread_task_runner)) {}
 
 bool MediaRecorderHandler::CanSupportMimeType(const String& type,
                                               const String& web_codecs) {
@@ -356,7 +359,7 @@ bool MediaRecorderHandler::Start(int timeslice,
           std::make_unique<VideoTrackRecorderPassthrough>(
               main_thread_task_runner_, video_tracks_[0],
               std::move(on_passthrough_video_cb),
-              std::move(on_track_source_changed_cb)));
+              std::move(on_track_source_changed_cb), key_frame_config_));
     } else {
       const VideoTrackRecorder::OnEncodedVideoCB on_encoded_video_cb =
           base::BindPostTask(
@@ -370,7 +373,8 @@ bool MediaRecorderHandler::Start(int timeslice,
       video_recorders_.emplace_back(std::make_unique<VideoTrackRecorderImpl>(
           main_thread_task_runner_, video_codec_profile_, video_tracks_[0],
           std::move(on_encoded_video_cb), std::move(on_track_source_changed_cb),
-          std::move(on_video_error_cb), video_bits_per_second_));
+          std::move(on_video_error_cb), video_bits_per_second_,
+          key_frame_config_));
     }
   }
 
@@ -750,8 +754,10 @@ void MediaRecorderHandler::OnVideoFrameForTesting(
 void MediaRecorderHandler::OnEncodedVideoFrameForTesting(
     scoped_refptr<EncodedVideoFrame> frame,
     const base::TimeTicks& timestamp) {
-  for (const auto& recorder : video_recorders_)
-    recorder->OnEncodedVideoFrameForTesting(frame, timestamp);
+  for (const auto& recorder : video_recorders_) {
+    recorder->OnEncodedVideoFrameForTesting(base::TimeTicks::Now(), frame,
+                                            timestamp);
+  }
 }
 
 void MediaRecorderHandler::OnAudioBusForTesting(

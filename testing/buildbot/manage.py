@@ -291,7 +291,8 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
       if name in ninja_targets:
         ninja_targets_seen.add(name)
 
-    for d in data.get('instrumentation_tests', []):
+    for d in (data.get('instrumentation_tests', []) +
+              data.get('skylab_tests', [])):
       name = d['test']
       if (name not in ninja_targets and
           name not in SKIP_GN_ISOLATE_MAP_TARGETS):

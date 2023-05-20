@@ -15,6 +15,8 @@ namespace android_webview {
 // This surface is used to represent the underlying surface provided by the App
 // inside a hardware draw. Note that offscreen contexts will not be using this
 // GLSurface.
+//
+// Lifetime: WebView
 class AwGLSurface : public gl::GLSurfaceEGL {
  public:
   AwGLSurface(gl::GLDisplayEGL* display, bool is_angle);

@@ -8,5 +8,6 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
+  deps = [ "//ui/base" ]
   public_deps = [ "//base" ]
 }

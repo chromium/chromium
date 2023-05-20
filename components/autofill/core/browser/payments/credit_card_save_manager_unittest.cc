@@ -1646,14 +1646,11 @@ TEST_F(CreditCardSaveManagerTest,
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
-  // Create, fill and submit an address form in order to establish a recent
-  // profile which can be selected for the upload request.
-  FormData address_form;
-  test::CreateTestAddressFormData(&address_form);
-  FormsSeen(std::vector<FormData>(1, address_form));
-  // But omit the name:
-  ManuallyFillAddressForm("", "", "77401", "US", &address_form);
-  FormSubmitted(address_form);
+  // Add a profile without a name to the PersonalDataManager.
+  AutofillProfile profile;
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"77401");
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;
@@ -3851,14 +3848,11 @@ TEST_F(CreditCardSaveManagerTest,
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_PaymentsDecidesOfferToSaveIfNoName) {
-  // Create, fill and submit an address form in order to establish a recent
-  // profile which can be selected for the upload request.
-  FormData address_form;
-  test::CreateTestAddressFormData(&address_form);
-  FormsSeen(std::vector<FormData>(1, address_form));
-  // But omit the name:
-  ManuallyFillAddressForm("", "", "77401", "US", &address_form);
-  FormSubmitted(address_form);
+  // Add a profile without a name to the PersonalDataManager.
+  AutofillProfile profile;
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"77401");
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  personal_data().AddProfile(profile);
 
   // Set up our credit card form data.
   FormData credit_card_form;

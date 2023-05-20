@@ -80,12 +80,6 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
                        const std::vector<std::string>& upstart_env,
                        chromeos::VoidDBusMethodCallback callback) = 0;
 
-  // Starts authpolicyd.
-  virtual void StartAuthPolicyService() = 0;
-
-  // Restarts authpolicyd.
-  virtual void RestartAuthPolicyService() = 0;
-
   // Starts the media analytics process.
   // |upstart_env|: List of upstart environment variables to be passed to the
   // upstart service.

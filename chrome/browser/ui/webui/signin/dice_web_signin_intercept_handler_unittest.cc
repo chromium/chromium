@@ -45,7 +45,7 @@ struct BubbleStrings {
 using ExpectedStringGenerator = base::RepeatingCallback<BubbleStrings()>;
 
 struct TestParam {
-  DiceWebSigninInterceptor::SigninInterceptionType interception_type;
+  WebSigninInterceptor::SigninInterceptionType interception_type;
   policy::EnterpriseManagementAuthority management_authority;
   ExpectedStringGenerator expected_strings;
   ExpectedStringGenerator expected_strings_v2;
@@ -102,7 +102,7 @@ const ExpectedStringGenerator common_v2_strings_generator =
 // Permutations of supported bubbles.
 const TestParam kTestParams[] = {
     {
-        DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
+        WebSigninInterceptor::SigninInterceptionType::kMultiUser,
         policy::EnterpriseManagementAuthority::NONE,
         /*expected_strings=*/base::BindRepeating([]() {
           return BubbleStrings{
@@ -125,7 +125,7 @@ const TestParam kTestParams[] = {
         /*expected_strings_v2=*/common_v2_strings_generator,
     },
     {
-        DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
+        WebSigninInterceptor::SigninInterceptionType::kMultiUser,
         policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
         /*expected_strings=*/base::BindRepeating([]() {
           return BubbleStrings{
@@ -167,7 +167,7 @@ const TestParam kTestParams[] = {
         }),
     },
     {
-        DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
+        WebSigninInterceptor::SigninInterceptionType::kEnterprise,
         policy::EnterpriseManagementAuthority::NONE,
         /*expected_strings=*/base::BindRepeating([]() {
           return BubbleStrings{
@@ -207,7 +207,7 @@ const TestParam kTestParams[] = {
         }),
     },
     {
-        DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
+        WebSigninInterceptor::SigninInterceptionType::kEnterprise,
         policy::EnterpriseManagementAuthority::CLOUD_DOMAIN,
         /*expected_strings=*/base::BindRepeating([]() {
           return BubbleStrings{

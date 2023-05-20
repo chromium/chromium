@@ -184,10 +184,20 @@ public class AutofillPopupTest {
 
         // Add an Autofill profile.
         mHelper = new AutofillTestHelper();
-        AutofillProfile profile = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                FIRST_NAME + " " + LAST_NAME, COMPANY_NAME, STREET_ADDRESS_TEXTAREA, STATE, CITY,
-                DEPENDENT_LOCALITY, ZIP_CODE, SORTING_CODE, COUNTRY, PHONE_NUMBER, EMAIL,
-                LANGUAGE_CODE);
+        AutofillProfile profile = AutofillProfile.builder()
+                                          .setFullName(FIRST_NAME + " " + LAST_NAME)
+                                          .setCompanyName(COMPANY_NAME)
+                                          .setStreetAddress(STREET_ADDRESS_TEXTAREA)
+                                          .setRegion(STATE)
+                                          .setLocality(CITY)
+                                          .setDependentLocality(DEPENDENT_LOCALITY)
+                                          .setPostalCode(ZIP_CODE)
+                                          .setSortingCode(SORTING_CODE)
+                                          .setCountryCode(COUNTRY)
+                                          .setPhoneNumber(PHONE_NUMBER)
+                                          .setEmailAddress(EMAIL)
+                                          .setLanguageCode(LANGUAGE_CODE)
+                                          .build();
         mHelper.setProfile(profile);
         Assert.assertEquals(1, mHelper.getNumberOfProfilesToSuggest());
 

@@ -144,7 +144,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
             }
 
             @Override
-            public void onStartedShowing(@LayoutType int layout, boolean showToolbar) {
+            public void onStartedShowing(@LayoutType int layout) {
                 // The {@link SimpleAnimationLayout} is a special case, the intent is not to switch
                 // tabs, but to merely run an animation. In this case, do nothing. If the animation
                 // layout does result in a new tab {@link TabModelObserver#didSelectTab} will

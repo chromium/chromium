@@ -42,6 +42,12 @@ namespace base {
 namespace sequence_manager {
 namespace {
 
+// Whether SequenceManagerImpl records crash keys. Enable via Finch when needed
+// for an investigation. Disabled by default to avoid unnecessary overhead.
+BASE_FEATURE(kRecordSequenceManagerCrashKeys,
+             "RecordSequenceManagerCrashKeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ABSL_CONST_INIT thread_local internal::SequenceManagerImpl*
     thread_local_sequence_manager = nullptr;
 
@@ -151,6 +157,10 @@ char* PrependHexAddress(char* output, const void* address) {
 //       sequence managers on different threads (e.g. by using base::Thread).
 std::atomic_bool g_no_wake_ups_for_canceled_tasks{true};
 
+// Atomic to avoid TSAN flags when a test  tries to access the value before the
+// feature list is available.
+std::atomic_bool g_record_crash_keys = false;
+
 #if BUILDFLAG(IS_WIN)
 bool g_explicit_high_resolution_timer_win = false;
 #endif  // BUILDFLAG(IS_WIN)
@@ -220,7 +230,6 @@ SequenceManagerImpl::~SequenceManagerImpl() {
   controller_->RestoreDefaultTaskRunner();
 
   main_thread_only().active_queues.clear();
-  main_thread_only().queues_to_gracefully_shutdown.clear();
   main_thread_only().selector.SetTaskQueueSelectorObserver(nullptr);
 
   // In the case of an early startup exits or in some tests a NestingObserver
@@ -295,6 +304,10 @@ void SequenceManagerImpl::InitializeFeatures() {
   g_explicit_high_resolution_timer_win =
       FeatureList::IsEnabled(kExplicitHighResolutionTimerWin);
 #endif  // BUILDFLAG(IS_WIN)
+
+  g_record_crash_keys.store(
+      FeatureList::IsEnabled(kRecordSequenceManagerCrashKeys),
+      std::memory_order_relaxed);
   TaskQueueSelector::InitializeFeatures();
 }
 
@@ -408,12 +421,6 @@ bool SequenceManagerImpl::GetAddQueueTimeToTasks() {
 
 void SequenceManagerImpl::SetObserver(Observer* observer) {
   main_thread_only().observer = observer;
-}
-
-void SequenceManagerImpl::ShutdownTaskQueueGracefully(
-    std::unique_ptr<internal::TaskQueueImpl> task_queue) {
-  main_thread_only().queues_to_gracefully_shutdown[task_queue.get()] =
-      std::move(task_queue);
 }
 
 void SequenceManagerImpl::UnregisterTaskQueueImpl(
@@ -829,7 +836,9 @@ void SequenceManagerImpl::NotifyWillProcessTask(ExecutingTask* executing_task,
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "SequenceManagerImpl::NotifyWillProcessTaskObservers");
 
-  RecordCrashKeys(executing_task->pending_task);
+  if (g_record_crash_keys.load(std::memory_order_relaxed)) {
+    RecordCrashKeys(executing_task->pending_task);
+  }
 
   if (executing_task->task_queue->GetQuiescenceMonitored())
     main_thread_only().task_was_run_on_quiescence_monitored_queue = true;
@@ -1003,9 +1012,6 @@ Value::Dict SequenceManagerImpl::AsValueWithSelectorResult(
     active_queues.Append(queue->AsValue(now, force_verbose));
   state.Set("active_queues", std::move(active_queues));
   Value::List shutdown_queues;
-  for (const auto& pair : main_thread_only().queues_to_gracefully_shutdown)
-    shutdown_queues.Append(pair.first->AsValue(now, force_verbose));
-  state.Set("queues_to_gracefully_shutdown", std::move(shutdown_queues));
   Value::List queues_to_delete;
   for (const auto& pair : main_thread_only().queues_to_delete)
     queues_to_delete.Append(pair.first->AsValue(now, force_verbose));
@@ -1053,25 +1059,9 @@ void SequenceManagerImpl::ReclaimMemory() {
     auto* const queue = *it++;
     ReclaimMemoryFromQueue(queue, &lazy_now);
   }
-  for (auto it = main_thread_only().queues_to_gracefully_shutdown.begin();
-       it != main_thread_only().queues_to_gracefully_shutdown.end();) {
-    auto* const queue = it->first;
-    it++;
-    ReclaimMemoryFromQueue(queue, &lazy_now);
-  }
 }
 
 void SequenceManagerImpl::CleanUpQueues() {
-  for (auto it = main_thread_only().queues_to_gracefully_shutdown.begin();
-       it != main_thread_only().queues_to_gracefully_shutdown.end();) {
-    if (it->first->IsEmpty()) {
-      UnregisterTaskQueueImpl(std::move(it->second));
-      main_thread_only().active_queues.erase(it->first);
-      main_thread_only().queues_to_gracefully_shutdown.erase(it++);
-    } else {
-      ++it;
-    }
-  }
   main_thread_only().queues_to_delete.clear();
 }
 

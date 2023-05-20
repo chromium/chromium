@@ -1,8 +1,11 @@
+
+import {TestRunner} from 'test_runner';
+import {ApplicationTestRunner} from 'application_test_runner';
+import {NetworkTestRunner} from 'network_test_runner';
 (async function() {
   TestRunner.addResult(
       `Verifies that the main page request repeated by a service worker appears in the network log.`);
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
-  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console');
 
   await ApplicationTestRunner.resetState();
   await TestRunner.showPanel('network');

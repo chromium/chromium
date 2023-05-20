@@ -123,11 +123,6 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
         return mConnection.setEngagementSignalsCallback(sessionToken, callback, extras);
     }
 
-    @Override
-    protected int getGreatestScrollPercentage(CustomTabsSessionToken sessionToken, Bundle extras) {
-        return mConnection.getGreatestScrollPercentage(sessionToken, extras);
-    }
-
     private boolean isFirstRunDone() {
         if (mBindIntent == null) return true;
         boolean firstRunNecessary = FirstRunFlowSequencer.checkIfFirstRunIsNecessary(false, true);

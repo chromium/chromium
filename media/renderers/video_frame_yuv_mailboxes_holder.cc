@@ -40,8 +40,7 @@ viz::SharedImageFormat PlaneSharedImageFormat(int num_channels,
     case 4:
       return viz::SinglePlaneFormat::kRGBA_8888;
   }
-  NOTREACHED();
-  return viz::SinglePlaneFormat::kRGBA_8888;
+  NOTREACHED_NORETURN();
 }
 
 GLenum PlaneGLFormat(int num_channels, const gpu::Capabilities& capabilities) {

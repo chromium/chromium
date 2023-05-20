@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_MANAGER_UTIL_IOS_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_MANAGER_UTIL_IOS_H_
 
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace syncer {
 class SyncService;

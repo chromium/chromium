@@ -164,7 +164,6 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
  protected:
   TextControlElement(const QualifiedName&, Document&);
-  bool IsPlaceholderEmpty() const;
   virtual void UpdatePlaceholderText() = 0;
   virtual String GetPlaceholderValue() const = 0;
 

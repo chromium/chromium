@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_piece.h"
 
 namespace base {
 class Value;
@@ -43,7 +44,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettingsProvider {
   virtual ~CrosSettingsProvider();
 
   // Gets settings value of given |path| to |out_value|.
-  virtual const base::Value* Get(const std::string& path) const = 0;
+  virtual const base::Value* Get(base::StringPiece path) const = 0;
 
   // Requests the provider to fetch its values from a trusted store, if it
   // hasn't done so yet. Returns TRUSTED if the values returned by this provider
@@ -55,7 +56,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettingsProvider {
   virtual TrustedStatus PrepareTrustedValues(base::OnceClosure* callback) = 0;
 
   // Gets the namespace prefix provided by this provider.
-  virtual bool HandlesSetting(const std::string& path) const = 0;
+  virtual bool HandlesSetting(base::StringPiece path) const = 0;
 
   void SetNotifyObserversCallback(const NotifyObserversCallback& notify_cb);
 

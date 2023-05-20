@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/history/core/browser/history_client.h"
 #include "components/history/core/browser/history_service.h"
@@ -34,7 +35,7 @@ class HistoryClientImpl : public history::HistoryClient,
   ~HistoryClientImpl() override;
 
  private:
-  void StopObservingBookmarkModel();
+  void StopObservingBookmarkModels();
 
   // history::HistoryClient implementation.
   void OnHistoryServiceCreated(
@@ -58,15 +59,30 @@ class HistoryClientImpl : public history::HistoryClient,
   void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,
                                    const std::set<GURL>& removed_urls) override;
 
-  // BookmarkModel instance providing access to bookmarks. May be null during
-  // testing, and is null while shutting down.
-  bookmarks::BookmarkModel* local_or_syncable_bookmark_model_;
+  // Callback registered in `favicons_changed_subscription_`.
+  void OnFaviconsChanged(const std::set<GURL>& page_urls,
+                         const GURL& favicon_url);
+
+  // Called when bookmarks are removed from a model and calls
+  // `on_bookmarks_removed_`. `model` can be either `account_bookmark_model_` or
+  // `local_or_syncable_bookmark_model_`. A bookmark is considered truly removed
+  // only if it's not in any of the models.
+  void HandleBookmarksRemovedFromModel(bookmarks::BookmarkModel* model,
+                                       const std::set<GURL>& removed_urls);
+
+  // BookmarkModel instances providing access to bookmarks. May be null.
+  bookmarks::BookmarkModel* local_or_syncable_bookmark_model_ = nullptr;
+  bookmarks::BookmarkModel* account_bookmark_model_ = nullptr;
 
   // Callback invoked when URLs are removed from BookmarkModel.
   base::RepeatingCallback<void(const std::set<GURL>&)> on_bookmarks_removed_;
 
   // Subscription for notifications of changes to favicons.
   base::CallbackListSubscription favicons_changed_subscription_;
+
+  base::ScopedMultiSourceObservation<bookmarks::BookmarkModel,
+                                     bookmarks::BaseBookmarkModelObserver>
+      bookmark_model_observations_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_HISTORY_CLIENT_IMPL_H_

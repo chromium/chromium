@@ -13,13 +13,13 @@
 #import "base/values.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/weak_handle.h"
-#import "components/sync/driver/sync_internals_util.h"
-#import "components/sync/driver/sync_service.h"
-#import "components/sync/driver/sync_user_settings.h"
 #import "components/sync/engine/events/protocol_event.h"
 #import "components/sync/invalidations/sync_invalidations_service.h"
 #import "components/sync/model/type_entities_count.h"
 #import "components/sync/protocol/sync_invalidations_payload.pb.h"
+#import "components/sync/service/sync_internals_util.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/components/webui/web_ui_provider.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/webui/web_ui_ios.h"
@@ -188,7 +188,7 @@ void SyncInternalsMessageHandler::HandleRequestStart(
   // If the service was previously stopped with CLEAR_DATA, then the
   // "first-setup-complete" bit was also cleared, and now the service wouldn't
   // fully start up. So set that too.
-  service->GetUserSettings()->SetFirstSetupComplete(
+  service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 }
 

@@ -484,14 +484,14 @@ extensions::MessageBundle* LoadMessageCatalogs(
   GetAllFallbackLocales(default_locale, &all_fallback_locales);
 
   extensions::MessageBundle::CatalogVector catalogs;
-  for (size_t i = 0; i < all_fallback_locales.size(); ++i) {
+  for (const auto& all_fallback_locale : all_fallback_locales) {
     // Skip all parent locales that are not supplied.
     base::FilePath this_locale_path =
-        locale_path.AppendASCII(all_fallback_locales[i]);
+        locale_path.AppendASCII(all_fallback_locale);
     if (!base::PathExists(this_locale_path))
       continue;
     std::unique_ptr<base::Value::Dict> catalog = LoadMessageFile(
-        locale_path, all_fallback_locales[i], error, gzip_permission);
+        locale_path, all_fallback_locale, error, gzip_permission);
     if (!catalog.get()) {
       // If locale is valid, but messages.json is corrupted or missing, return
       // an error.

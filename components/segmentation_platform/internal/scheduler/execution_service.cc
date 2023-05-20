@@ -76,7 +76,7 @@ void ExecutionService::Initialize(
       model_executor_.get(), all_segment_ids, clock, platform_options);
 }
 
-void ExecutionService::OnNewModelInfoReady(
+void ExecutionService::OnNewModelInfoReadyLegacy(
     const proto::SegmentInfo& segment_info) {
   // TODO(crbug.com/1420015): Change path flow as
   // SPSI->RRM->EE::RequestModelExecution and migrate

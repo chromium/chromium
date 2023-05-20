@@ -28,8 +28,7 @@ const char* TrackTypeToStr(MediaTrack::Type type) {
     case MediaTrack::Video:
       return "video";
   }
-  NOTREACHED();
-  return "INVALID";
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace media

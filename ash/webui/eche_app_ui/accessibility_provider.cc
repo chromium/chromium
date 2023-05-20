@@ -4,8 +4,8 @@
 // found in the LICENSE file.
 
 #include "ash/webui/eche_app_ui/accessibility_provider.h"
+
 #include <cstdint>
-#include "ash/webui/eche_app_ui/accessibility_tree_converter.h"
 #include "base/notreached.h"
 
 namespace ash::eche_app {
@@ -19,6 +19,25 @@ void AccessibilityProvider::HandleAccessibilityEventReceived(
   auto mojom_event_data =
       converter.ConvertEventDataProtoToMojom(serialized_proto);
   NOTIMPLEMENTED();
+}
+
+void AccessibilityProvider::SetAccessibilityObserver(
+    mojo::PendingRemote<mojom::AccessibilityObserver> observer) {
+  observer_remote_.reset();
+  observer_remote_.Bind(std::move(observer));
+}
+
+void AccessibilityProvider::PerformAction(const ui::AXActionData& action) {
+  AccessibilityTreeConverter converter;
+  auto proto_action = converter.ConvertActionDataToProto(action);
+  if (proto_action.has_value()) {
+    size_t nbytes = proto_action->ByteSizeLong();
+    std::vector<uint8_t> serialized_proto(nbytes);
+    proto_action->SerializeToArray(serialized_proto.data(), nbytes);
+    observer_remote_->PerformAction(serialized_proto);
+  } else {
+    LOG(ERROR) << "Failed to serialize AXActionData to protobuf.";
+  }
 }
 
 void AccessibilityProvider::Bind(

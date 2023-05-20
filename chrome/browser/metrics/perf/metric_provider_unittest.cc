@@ -347,7 +347,7 @@ class MetricProviderSyncSettingsTest : public testing::Test {
     TestSyncService* sync_service = static_cast<TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile, base::BindRepeating(&TestingSyncFactoryFunction)));
-    sync_service->SetFirstSetupComplete(true);
+    sync_service->SetInitialSyncFeatureSetupComplete(true);
     return sync_service;
   }
 
@@ -419,7 +419,7 @@ TEST_F(MetricProviderSyncSettingsTest, SyncFeatureDisabled) {
   TestSyncService* sync_service2 =
       GetSyncService(testing_profile_manager_->CreateTestingProfile("user2"));
   EnableOSAppSync(sync_service2);
-  sync_service2->SetFirstSetupComplete(false);
+  sync_service2->SetInitialSyncFeatureSetupComplete(false);
 
   task_environment_.FastForwardBy(kPeriodicCollectionInterval);
 

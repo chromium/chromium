@@ -168,7 +168,7 @@ void PdfOcrController::StateChanged(ScreenAIInstallState::State state) {
 
     case ScreenAIInstallState::State::kDownloaded:
       screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-          ->LaunchIfNotRunning();
+          ->InitializeOCRIfNeeded();
       break;
 
     case ScreenAIInstallState::State::kReady:

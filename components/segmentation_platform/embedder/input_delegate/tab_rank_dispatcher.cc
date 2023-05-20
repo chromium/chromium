@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
+#include <memory>
 #include <queue>
+#include <vector>
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/embedder/tab_fetcher.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/prediction_options.h"
@@ -19,18 +22,14 @@ namespace segmentation_platform {
 namespace {
 constexpr uint32_t kTabCandidateLimit = 30;
 
-bool IsTabTooOld(base::Time now,
-                 base::Time last_modified_time,
-                 base::TimeDelta age_limit) {
-  return (now - last_modified_time) > age_limit;
-}
-
 }  // namespace
 
 TabRankDispatcher::TabRankDispatcher(
     SegmentationPlatformService* segmentation_service,
-    sync_sessions::SessionSyncService* session_sync_service)
-    : segmentation_service_(segmentation_service),
+    sync_sessions::SessionSyncService* session_sync_service,
+    std::unique_ptr<TabFetcher> tab_fetcher)
+    : tab_fetcher_(std::move(tab_fetcher)),
+      segmentation_service_(segmentation_service),
       session_sync_service_(session_sync_service) {}
 
 TabRankDispatcher::~TabRankDispatcher() = default;
@@ -38,49 +37,27 @@ TabRankDispatcher::~TabRankDispatcher() = default;
 void TabRankDispatcher::GetTopRankedTabs(const std::string& segmentation_key,
                                          const TabFilter& tab_filter,
                                          RankedTabsCallback callback) {
-  if (!session_sync_service_->GetOpenTabsUIDelegate()) {
-    std::move(callback).Run(false, {});
-    return;
-  }
-  const sync_sessions::SyncedSession* local_session = nullptr;
-  session_sync_service_->GetOpenTabsUIDelegate()->GetLocalSession(
-      &local_session);
-  std::vector<const sync_sessions::SyncedSession*> sessions;
-  session_sync_service_->GetOpenTabsUIDelegate()->GetAllForeignSessions(
-      &sessions);
-  if (local_session) {
-    sessions.push_back(local_session);
-  }
-  if (sessions.empty()) {
+  std::vector<TabFetcher::TabEntry> all_tabs;
+  tab_fetcher_->FillAllRemoteTabs(all_tabs);
+  tab_fetcher_->FillAllLocalTabs(all_tabs);
+  if (all_tabs.empty()) {
     std::move(callback).Run(false, {});
     return;
   }
 
-  const base::Time now = base::Time::Now();
   std::queue<RankedTab> candidate_tabs;
-  for (const auto* session : sessions) {
-    if (IsTabTooOld(now, session->GetModifiedTime(), tab_filter.max_tab_age)) {
-      continue;
-    }
-    session->GetSessionTag();
-    for (const auto& session_and_window : session->windows) {
-      const auto& window = session_and_window.second->wrapped_window;
-      for (const auto& tab : window.tabs) {
-        if (IsTabTooOld(now, tab->timestamp, tab_filter.max_tab_age)) {
-          continue;
-        }
-        candidate_tabs.push(RankedTab{.tab = tab.get(),
-                                      .session_tag = session->GetSessionTag()});
-      }
+  for (const auto& tab : all_tabs) {
+    if (tab_fetcher_->GetTimeSinceModified(tab) <= tab_filter.max_tab_age) {
+      candidate_tabs.push(RankedTab{.tab = tab});
     }
   }
   GetNextResult(segmentation_key, std::move(candidate_tabs),
-                std::set<RankedTab>(), std::move(callback));
+                std::multiset<RankedTab>(), std::move(callback));
 }
 
 void TabRankDispatcher::GetNextResult(const std::string& segmentation_key,
                                       std::queue<RankedTab> candidate_tabs,
-                                      std::set<RankedTab> results,
+                                      std::multiset<RankedTab> results,
                                       RankedTabsCallback callback) {
   if (candidate_tabs.empty()) {
     std::move(callback).Run(false, std::move(results));
@@ -95,9 +72,9 @@ void TabRankDispatcher::GetNextResult(const std::string& segmentation_key,
   scoped_refptr<InputContext> input_context =
       base::MakeRefCounted<InputContext>();
   input_context->metadata_args.emplace(
-      "session_tag", processing::ProcessedValue(tab.session_tag));
+      "session_tag", processing::ProcessedValue(tab.tab.session_tag));
   input_context->metadata_args.emplace(
-      "tab_id", processing::ProcessedValue(tab.tab->tab_id.id()));
+      "tab_id", processing::ProcessedValue(tab.tab.tab_id.id()));
   segmentation_service_->GetAnnotatedNumericResult(
       segmentation_key, options, input_context,
       base::BindOnce(&TabRankDispatcher::OnGetResult,
@@ -108,7 +85,7 @@ void TabRankDispatcher::GetNextResult(const std::string& segmentation_key,
 
 void TabRankDispatcher::OnGetResult(const std::string& segmentation_key,
                                     std::queue<RankedTab> candidate_tabs,
-                                    std::set<RankedTab> results,
+                                    std::multiset<RankedTab> results,
                                     RankedTabsCallback callback,
                                     RankedTab current_tab,
                                     const AnnotatedNumericResult& result) {

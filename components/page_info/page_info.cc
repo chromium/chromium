@@ -816,6 +816,11 @@ void PageInfo::OnAllowlistPasswordReuseButtonPressed() {
 #endif
 }
 
+void PageInfo::OnCookiesPageOpened() {
+  RecordPageInfoAction(PAGE_INFO_COOKIES_PAGE_OPENED);
+  delegate_->OnCookiesPageOpened();
+}
+
 permissions::ObjectPermissionContextBase* PageInfo::GetChooserContextFromUIInfo(
     const ChooserUIInfo& ui_info) const {
   return delegate_->GetChooserContext(ui_info.content_settings_type);

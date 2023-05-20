@@ -18,11 +18,13 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.chrome.browser.payments.test_support.ShadowProfile;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.PaymentFeatureList;
-import org.chromium.components.payments.test_support.ShadowPaymentFeatureList;
+import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
 import org.chromium.components.payments.test_support.ShadowWebContentsStatics;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -32,12 +34,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** A test for ChromePaymentRequestFactory. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowPaymentFeatureList.class, ShadowWebContentsStatics.class,
-                ShadowProfile.class})
+@Config(manifest = Config.NONE, shadows = {ShadowWebContentsStatics.class, ShadowProfile.class})
 public class ChromePaymentRequestFactoryTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+    @Rule
+    public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
+
     @Mock
     RenderFrameHost mRenderFrameHost;
     @Mock
@@ -47,7 +50,7 @@ public class ChromePaymentRequestFactoryTest {
 
     @Before
     public void setUp() {
-        ShadowPaymentFeatureList.setDefaultStatuses();
+        DefaultPaymentFeatureConfig.setDefaultFlagConfigurationForTesting();
 
         setWebContentsDestroyed(false);
         ShadowWebContentsStatics.setWebContents(mWebContents);
@@ -97,8 +100,8 @@ public class ChromePaymentRequestFactoryTest {
 
     @Test
     @Feature({"Payments"})
+    @DisableFeatures(PaymentFeatureList.WEB_PAYMENTS)
     public void testDisabledFeatureCausesInvalidPaymentRequest() {
-        ShadowPaymentFeatureList.setFeatureEnabled(PaymentFeatureList.WEB_PAYMENTS, false);
         Assert.assertTrue(
                 createFactory(mRenderFrameHost).createImpl() instanceof InvalidPaymentRequest);
     }

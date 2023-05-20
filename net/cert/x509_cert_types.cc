@@ -13,6 +13,8 @@ CertPrincipal::CertPrincipal() = default;
 
 CertPrincipal::CertPrincipal(const std::string& name) : common_name(name) {}
 
+CertPrincipal::CertPrincipal(CertPrincipal&&) = default;
+
 CertPrincipal::~CertPrincipal() = default;
 
 bool CertPrincipal::ParseDistinguishedName(

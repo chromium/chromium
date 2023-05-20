@@ -56,18 +56,18 @@ struct RowStrategyTestdata {
 const RowStrategyTestdata kTestcases[] = {
     RowStrategyTestdata{
         .frontend_ids = {Suggestion::FrontendId(1), Suggestion::FrontendId(2),
-                         POPUP_ITEM_ID_SEPARATOR,
-                         POPUP_ITEM_ID_AUTOFILL_OPTIONS},
+                         PopupItemId::kSeparator,
+                         PopupItemId::kAutofillOptions},
         .line_number = 1,
         .strategy_type = StrategyType::kSuggestion,
         .set_size = 3,
         .set_index = 2,
     },
     RowStrategyTestdata{
-        .frontend_ids = {POPUP_ITEM_ID_PASSWORD_ENTRY,
-                         POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY,
-                         POPUP_ITEM_ID_SEPARATOR,
-                         POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY},
+        .frontend_ids = {PopupItemId::kPasswordEntry,
+                         PopupItemId::kAccountStoragePasswordEntry,
+                         PopupItemId::kSeparator,
+                         PopupItemId::kAllSavedPasswordsEntry},
         .line_number = 0,
         .strategy_type = StrategyType::kPasswordSuggestion,
         .set_size = 3,
@@ -75,17 +75,17 @@ const RowStrategyTestdata kTestcases[] = {
     },
     RowStrategyTestdata{
         .frontend_ids = {Suggestion::FrontendId(1), Suggestion::FrontendId(2),
-                         POPUP_ITEM_ID_SEPARATOR,
-                         POPUP_ITEM_ID_AUTOFILL_OPTIONS},
+                         PopupItemId::kSeparator,
+                         PopupItemId::kAutofillOptions},
         .line_number = 3,
         .strategy_type = StrategyType::kFooter,
         .set_size = 3,
         .set_index = 3,
     },
     RowStrategyTestdata{
-        .frontend_ids = {POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                         POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                         POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY},
+        .frontend_ids = {PopupItemId::kAutocompleteEntry,
+                         PopupItemId::kAutocompleteEntry,
+                         PopupItemId::kAutocompleteEntry},
         .line_number = 1,
         .strategy_type = StrategyType::kSuggestion,
         .set_size = 3,
@@ -153,9 +153,9 @@ class PopupRowStrategyTest : public ChromeViewsTestBase {
 TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonRemovesEntry) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillShowAutocompleteDeleteButton};
-  SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+  SetSuggestions({PopupItemId::kAutocompleteEntry,
+                  PopupItemId::kAutocompleteEntry,
+                  PopupItemId::kAutocompleteEntry});
   std::unique_ptr<PopupRowStrategy> strategy =
       CreateStrategy(StrategyType::kSuggestion, /*line_number=*/1);
 
@@ -172,9 +172,9 @@ TEST_F(PopupRowStrategyTest, AutocompleteDeleteRecordsMetricOnDeletion) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillShowAutocompleteDeleteButton};
   base::HistogramTester histogram_tester;
-  SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+  SetSuggestions({PopupItemId::kAutocompleteEntry,
+                  PopupItemId::kAutocompleteEntry,
+                  PopupItemId::kAutocompleteEntry});
   std::unique_ptr<PopupRowStrategy> strategy =
       CreateStrategy(StrategyType::kSuggestion, /*line_number=*/1);
 
@@ -200,9 +200,9 @@ TEST_F(PopupRowStrategyTest,
   base::test::ScopedFeatureList feature_list{
       features::kAutofillShowAutocompleteDeleteButton};
   base::HistogramTester histogram_tester;
-  SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+  SetSuggestions({PopupItemId::kAutocompleteEntry,
+                  PopupItemId::kAutocompleteEntry,
+                  PopupItemId::kAutocompleteEntry});
   std::unique_ptr<PopupRowStrategy> strategy =
       CreateStrategy(StrategyType::kSuggestion, /*line_number=*/1);
 
@@ -224,9 +224,9 @@ TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonSetsAccessibility) {
   // Set the suggestion manually to check that the correct voice over text is
   // returned.
   controller().set_suggestions(
-      {Suggestion("Jane Doe", "", "", "", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY),
-       Suggestion("John Miller", "", "", "", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY),
-       Suggestion("Lori Smith", "", "", "", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)});
+      {Suggestion("Jane Doe", "", "", "", PopupItemId::kAutocompleteEntry),
+       Suggestion("John Miller", "", "", "", PopupItemId::kAutocompleteEntry),
+       Suggestion("Lori Smith", "", "", "", PopupItemId::kAutocompleteEntry)});
 
   std::unique_ptr<PopupRowStrategy> strategy =
       CreateStrategy(StrategyType::kSuggestion, /*line_number=*/1);
@@ -262,9 +262,9 @@ TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonSetsAccessibility) {
 TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonHasTooltip) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillShowAutocompleteDeleteButton};
-  SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
-                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+  SetSuggestions({PopupItemId::kAutocompleteEntry,
+                  PopupItemId::kAutocompleteEntry,
+                  PopupItemId::kAutocompleteEntry});
   std::unique_ptr<PopupRowStrategy> strategy =
       CreateStrategy(StrategyType::kSuggestion, /*line_number=*/1);
 

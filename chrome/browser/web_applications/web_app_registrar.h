@@ -199,7 +199,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   absl::optional<SkColor> GetAppDarkModeBackgroundColor(
       const AppId& app_id) const;
   const GURL& GetAppStartUrl(const AppId& app_id) const;
-  absl::optional<std::string> GetAppManifestId(const AppId& app_id) const;
+  ManifestId GetAppManifestId(const AppId& app_id) const;
   const std::string* GetAppLaunchQueryParams(const AppId& app_id) const;
   const apps::ShareTarget* GetAppShareTarget(const AppId& app_id) const;
   const apps::FileHandlers* GetAppFileHandlers(const AppId& app_id) const;
@@ -344,7 +344,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Computes and returns the unhashed app id from entries in the web app
   // manifest.
-  std::string GetComputedUnhashedAppId(const AppId& app_id) const;
+  GURL GetComputedManifestId(const AppId& app_id) const;
 
   // Returns whether the app should be opened in tabbed window mode.
   bool IsTabbedWindowModeEnabled(const AppId& app_id) const;

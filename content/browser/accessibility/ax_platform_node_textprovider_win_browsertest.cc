@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,
       <!DOCTYPE html>
       <html>
         <body>
-          <div style='overflow: hidden visible; width: 10em; height: 2.4em;'>
+          <div style='overflow: hidden; width: 10em; height: 2.1em;'>
             <span style='white-space: pre-line;'>AAA BBB
               CCCCCC
               DDDDDD</span>
@@ -197,6 +197,86 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,
   EXPECT_UIA_TEXTRANGE_EQ(array_data[0], L"AAA BBB");
   EXPECT_UIA_TEXTRANGE_EQ(array_data[1], L"CCCCCC");
 
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(text_provider_ranges.Get()));
+  text_provider_ranges.Reset();
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,
+                       GetVisibleRangesInContentEditable) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <div contenteditable="true">
+            <p>hello</p>
+          </div>
+        </body>
+      </html>
+  )HTML"));
+
+  auto* gc_node = FindNode(ax::mojom::Role::kGenericContainer, "hello");
+
+  ASSERT_NE(nullptr, gc_node);
+  EXPECT_EQ(1u, gc_node->PlatformChildCount());
+
+  ComPtr<ITextProvider> text_provider;
+  GetTextProviderFromTextNode(text_provider, gc_node);
+
+  base::win::ScopedSafearray text_provider_ranges;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_provider->GetVisibleRanges(text_provider_ranges.Receive()));
+  ASSERT_UIA_SAFEARRAY_OF_TEXTRANGEPROVIDER(text_provider_ranges.Get(), 1U);
+
+  ITextRangeProvider** array_data;
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
+      text_provider_ranges.Get(), reinterpret_cast<void**>(&array_data)));
+
+  // If the `embedded_object_character` was being exposed, the search for this
+  // string would fail.
+  // We have to use `FindText` instead of the `EXPECT_UIA_TEXTRANGE_EQ` macro
+  // since that macro uses `GetText` API which hardcodes the
+  // `AXEmbeddedObjectCharacter` to be exposed, which then in this case would
+  // mess up the text range. Filing a bug for `GetText`. CRBug: 1445692
+  base::win::ScopedBstr find_string(L"hello");
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider_found;
+  EXPECT_HRESULT_SUCCEEDED(array_data[0]->FindText(
+      find_string.Get(), false, false, &text_range_provider_found));
+  ASSERT_TRUE(text_range_provider_found.Get());
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(text_provider_ranges.Get()));
+  text_provider_ranges.Reset();
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextProviderWinBrowserTest,
+                       GetVisibleRangesForTextSlightlyOutsideContainer) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <div role='textbox' contenteditable="true" style='height: 10px;'>
+            <span style='height:20px; display:inline-block'>hello</span>
+          </div>
+        </body>
+      </html>
+  )HTML"));
+
+  auto* gc_node = FindNode(ax::mojom::Role::kTextField, "hello");
+
+  ASSERT_NE(nullptr, gc_node);
+  EXPECT_EQ(1u, gc_node->PlatformChildCount());
+
+  ComPtr<ITextProvider> text_provider;
+  GetTextProviderFromTextNode(text_provider, gc_node);
+
+  base::win::ScopedSafearray text_provider_ranges;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_provider->GetVisibleRanges(text_provider_ranges.Receive()));
+  ASSERT_UIA_SAFEARRAY_OF_TEXTRANGEPROVIDER(text_provider_ranges.Get(), 1U);
+
+  ITextRangeProvider** array_data;
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
+      text_provider_ranges.Get(), reinterpret_cast<void**>(&array_data)));
+
+  EXPECT_UIA_TEXTRANGE_EQ(array_data[0], L"hello");
   ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(text_provider_ranges.Get()));
   text_provider_ranges.Reset();
 }

@@ -9,10 +9,22 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "net/base/load_flags.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 namespace policy {
 
@@ -47,9 +59,139 @@ std::string FRERequirementToString(
   }
 }
 
-absl::optional<bool> g_unified_enrollment_kill_switch_;
+// Kill switch config request parameters.
+const net::NetworkTrafficAnnotationTag kKSConfigTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation(
+        "unified_state_determination_kill_switch",
+        R"(
+            semantics {
+              sender: "Unified State Determination"
+              description:
+                "Communication with the backend used to check whether "
+                "unified state determination should be enabled."
+              trigger: "Open device for the first time, powerwash the device."
+              data: "A simple GET HTTP request without user data."
+              destination: GOOGLE_OWNED_SERVICE
+              internal {
+                contacts {
+                  email: "sergiyb@google.com"
+                }
+                contacts {
+                  email: "chromeos-commercial-remote-management@google.com"
+                }
+              }
+              user_data {
+                type: NONE
+              }
+              last_reviewed: "2023-05-16"
+            }
+            policy {
+              cookies_allowed: NO
+              setting: "This feature cannot be controlled by Chrome settings."
+              chrome_policy {}
+            })");
+const char kKSConfigUrl[] =
+    "https://www.gstatic.com/chromeos-usd-experiment/v1.json";
+const base::TimeDelta kKSConfigFetchTimeout = base::Seconds(1);
+const int kKSConfigFetchRetries = 4;
+const size_t kKSConfigMaxSize = 1024;  // 1KB
+const char kKSConfigFetchMethod[] = "GET";
+const char kKSConfigDisableUpToVersionKey[] = "disable_up_to_version";
+
+// This value represents current version of the code. After we have enabled kill
+// switch for a particular version, we can increment it after fixing the logic.
+// The devices running new code will not be affected by kill switch and we can
+// test our fixes.
+// TODO(b/265923216): Change to 1 to launch unified state determination.
+const int kCodeVersion = 0;
+
+// When set to true, unified state determination is disabled.
+absl::optional<bool> g_unified_state_determination_kill_switch;
+
+void ParseKSConfig(base::OnceClosure init_callback,
+                   const std::string& response) {
+  absl::optional<base::Value> config = base::JSONReader::Read(response);
+  if (!config || !config->is_dict()) {
+    LOG(ERROR) << "Kill switch config is not valid JSON or not a dict";
+    std::move(init_callback).Run();
+    return;
+  }
+
+  absl::optional<int> disable_up_to_version =
+      config->GetDict().FindInt(kKSConfigDisableUpToVersionKey);
+  if (!disable_up_to_version) {
+    LOG(ERROR) << "Kill switch config is missing disable_up_to_version key or "
+                  "it is not an int";
+    std::move(init_callback).Run();
+    return;
+  }
+
+  g_unified_state_determination_kill_switch =
+      kCodeVersion <= disable_up_to_version;
+  std::move(init_callback).Run();
+}
+
+void FetchKSConfig(
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+    base::OnceClosure init_callback,
+    int retries_left,
+    std::unique_ptr<network::SimpleURLLoader> loader = nullptr,
+    std::unique_ptr<std::string> response = nullptr) {
+  if (!response && retries_left) {
+    auto request = std::make_unique<network::ResourceRequest>();
+    request->url = GURL(kKSConfigUrl);
+    request->method = kKSConfigFetchMethod;
+    request->load_flags = net::LOAD_DISABLE_CACHE;
+    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    VLOG(1) << "Sending kill switch config request to " << request->url;
+    loader = network::SimpleURLLoader::Create(std::move(request),
+                                              kKSConfigTrafficAnnotation);
+    loader->SetTimeoutDuration(kKSConfigFetchTimeout);
+    // Use the raw pointer to avoid calling on empty `loader` after std::move.
+    network::SimpleURLLoader* loader_ptr = loader.get();
+    loader_ptr->DownloadToString(
+        loader_factory.get(),
+        base::BindOnce(FetchKSConfig, loader_factory, std::move(init_callback),
+                       retries_left - 1, std::move(loader)),
+        kKSConfigMaxSize);
+    return;
+  }
+
+  // On any errors, assume kill switch is enabled and fallback to old logic.
+  g_unified_state_determination_kill_switch = true;
+  if (!response) {
+    LOG(ERROR) << "Kill switch config request failed with code "
+               << loader->NetError();
+    std::move(init_callback).Run();
+    return;
+  }
+
+  VLOG(1) << "Received kill switch config response after "
+          << (kKSConfigFetchRetries - retries_left) << " tries: " << *response;
+  ParseKSConfig(std::move(init_callback), *response);
+}
+
+bool IsUnifiedStateDeterminationDisabledByKillSwitch() {
+  // If AutoEnrollmentTypeChecker is not initialized, assume the kill switch is
+  // enabled. This is for legacy code that doesn't know about unified state
+  // determination. New code should wait for init to complete.
+  return g_unified_state_determination_kill_switch.value_or(true);
+}
 
 }  // namespace
+
+// static
+void AutoEnrollmentTypeChecker::Initialize(
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+    base::OnceClosure init_callback) {
+  FetchKSConfig(loader_factory, std::move(init_callback),
+                kKSConfigFetchRetries);
+}
+
+// static
+bool AutoEnrollmentTypeChecker::Initialized() {
+  return g_unified_state_determination_kill_switch.has_value();
+}
 
 // static
 bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
@@ -74,9 +216,10 @@ bool AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled() {
 
 // static
 bool AutoEnrollmentTypeChecker::IsFREEnabled() {
-  // To support legacy code that does not support unified enrollment yet, we
-  // pretend FRE is explicitly enabled, when unified enrollment is enabled. For
-  // example, this enables state keys to be uploaded with the policy fetches.
+  // To support legacy code that does not support unified state determination
+  // yet, we pretend FRE is explicitly enabled, when unified state determination
+  // is enabled. For example, this enables state keys to be uploaded with the
+  // policy fetches.
   // TODO(b/265923216): Migrate legacy code to support unified state
   // determination.
   if (IsUnifiedStateDeterminationEnabled()) {
@@ -137,10 +280,10 @@ bool AutoEnrollmentTypeChecker::IsEnabled() {
 AutoEnrollmentTypeChecker::FRERequirement
 AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
     ash::system::StatisticsProvider* statistics_provider) {
-  // To support legacy code that does not support unified enrollment yet, we
-  // pretend FRE is explicitly enabled, when unified enrollment is enabled. For
-  // example, this disables powerwash and TPM firmware updates during OOBE
-  // (since admin could have forbidden both).
+  // To support legacy code that does not support unified state determination
+  // yet, we pretend FRE is explicitly enabled, when unified state determination
+  // is enabled. For example, this disables powerwash and TPM firmware updates
+  // during OOBE (since admin could have forbidden both).
   // TODO(b/265923216): Migrate legacy code to support unified state
   // determination.
   if (IsUnifiedStateDeterminationEnabled()) {
@@ -314,8 +457,8 @@ AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
     ash::system::StatisticsProvider* statistics_provider,
     bool dev_disable_boot) {
   // The only user of this function is AutoEnrollmentController and it should
-  // not be calling it when unified enrollment is enabled. Instead, we fake
-  // explicitly forced re-enrollment to prevent users from skipping it.
+  // not be calling it when unified state determination is enabled. Instead, we
+  // fake explicitly forced re-enrollment to prevent users from skipping it.
   DCHECK(!IsUnifiedStateDeterminationEnabled());
 
   // Skip everything if neither FRE nor Initial Enrollment are enabled.
@@ -377,19 +520,19 @@ AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
 // static
 void AutoEnrollmentTypeChecker::
     SetUnifiedStateDeterminationKillSwitchForTesting(bool enabled) {
-  g_unified_enrollment_kill_switch_ = enabled;
+  g_unified_state_determination_kill_switch = enabled;
 }
 
 // static
-// As of today, the unified state determination is "killed" by default.
-// TODO(b/265923216): Implement fetching server-based kill switch.
-bool AutoEnrollmentTypeChecker::
-    IsUnifiedStateDeterminationDisabledByKillSwitch() {
-  if (!g_unified_enrollment_kill_switch_.has_value()) {
-    g_unified_enrollment_kill_switch_ = true;
-  }
+void AutoEnrollmentTypeChecker::
+    ClearUnifiedStateDeterminationKillSwitchForTesting() {
+  g_unified_state_determination_kill_switch.reset();
+}
 
-  return g_unified_enrollment_kill_switch_.value();
+// static
+bool AutoEnrollmentTypeChecker::
+    IsUnifiedStateDeterminationDisabledByKillSwitchForTesting() {
+  return IsUnifiedStateDeterminationDisabledByKillSwitch();
 }
 
 }  // namespace policy

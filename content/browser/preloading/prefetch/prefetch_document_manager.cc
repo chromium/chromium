@@ -190,8 +190,6 @@ void PrefetchDocumentManager::ProcessCandidates(
         prefetches.emplace_back(
             candidate->url,
             PrefetchType(
-                /*use_isolated_network_context=*/referring_site !=
-                    prefetch_site,
                 /*use_prefetch_proxy=*/
                 candidate->requires_anonymous_client_ip_when_cross_origin,
                 candidate->eagerness),
@@ -299,6 +297,8 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchProxyNotAvailable:
     case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
     case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
     case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
     case PrefetchStatus::kPrefetchNotUsedProbeFailed:
     case PrefetchStatus::kPrefetchNotStarted:
@@ -317,6 +317,7 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
     case PrefetchStatus::
         kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
+    case PrefetchStatus::kPrefetchEvicted:
       return true;
   }
 }
@@ -366,12 +367,50 @@ void PrefetchDocumentManager::OnPrefetchedHeadReceived(const GURL& url) {
   no_vary_search_helper_->AddUrl(url, *head);
 }
 
-void PrefetchDocumentManager::OnPrefetchSuccessful() {
+void PrefetchDocumentManager::OnPrefetchSuccessful(
+    PrefetchContainer* prefetch) {
   referring_page_metrics_.prefetch_successful_count++;
+  if (prefetch->GetPrefetchType().GetEagerness() ==
+      blink::mojom::SpeculationEagerness::kEager) {
+    number_eager_prefetches_completed_++;
+  } else {
+    completed_non_eager_prefetches_.push_back(prefetch->GetWeakPtr());
+  }
 }
 
 void PrefetchDocumentManager::EnableNoVarySearchSupport() {
   no_vary_search_support_enabled_ = true;
+}
+
+bool PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
+  DCHECK(PrefetchNewLimitsEnabled());
+  if (prefetch->GetPrefetchType().GetEagerness() ==
+      blink::mojom::SpeculationEagerness::kEager) {
+    // TODO(crbug.com/1445086): Implement eviction policies.
+    return number_eager_prefetches_completed_ <
+           MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits();
+  } else {
+    base::EraseIf(completed_non_eager_prefetches_,
+                  [&](const base::WeakPtr<PrefetchContainer>& prefetch) {
+                    return !prefetch;
+                  });
+    if (completed_non_eager_prefetches_.size() <
+        MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits()) {
+      return true;
+    }
+    // We are at capacity, and now need to evict the oldest non-eager prefetch
+    // to make space for a new one.
+    DCHECK(GetPrefetchService());
+    base::WeakPtr<PrefetchContainer> oldest_prefetch =
+        completed_non_eager_prefetches_.front();
+    // TODO(crbug.com/1445086): We should also be checking if the prefetch is
+    // currently being used to serve a navigation. In that scenario, evicting
+    // doesn't make sense.
+    GetPrefetchService()->EvictPrefetch(
+        oldest_prefetch->GetPrefetchContainerKey());
+    completed_non_eager_prefetches_.pop_front();
+    return true;
+  }
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);

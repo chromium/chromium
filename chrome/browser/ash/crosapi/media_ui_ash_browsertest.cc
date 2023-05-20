@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 
+#include "ash/system/media/media_tray.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -109,6 +110,15 @@ IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, AddObserver) {
 
   testing::Mock::VerifyAndClearExpectations(&observer);
   media_ui_ash()->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaUIAshBrowserTest, PinMediaTrayToShelfWhenShowing) {
+  ash::MediaTray::SetPinnedToShelf(false);
+  ASSERT_FALSE(ash::MediaTray::IsPinnedToShelf());
+  media_ui_ash()->ShowDevicePicker("placeholder_item_id");
+  // The media tray can only be shown when pinned to the shelf, so trying to
+  // show it should also cause it to be pinned.
+  EXPECT_TRUE(ash::MediaTray::IsPinnedToShelf());
 }
 
 }  // namespace crosapi

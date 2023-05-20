@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_structure_rationalizer.h"
 
 #include "base/containers/contains.h"
+#include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/rationalization_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -94,6 +95,63 @@ FormStructureRationalizer::FormStructureRationalizer(
     FormSignature form_signature)
     : fields_(*fields), form_signature_(form_signature) {}
 FormStructureRationalizer::~FormStructureRationalizer() = default;
+
+void FormStructureRationalizer::RationalizeAutocompleteAttributes(
+    LogManager* log_manager) {
+  for (const auto& field : *fields_) {
+    auto set_html_type = [&field](HtmlFieldType type) {
+      field->SetHtmlType(type, field->html_mode());
+    };
+    // The following rationalization operates only on text fields.
+    bool is_text_field = field->FormControlType() == FormControlType::kText ||
+                         field->FormControlType() == FormControlType::kTextarea;
+    if (!is_text_field) {
+      continue;
+    }
+    // TODO(crbug.com/1441057) For <select> elements we may rationalize the
+    // HtmlFieldType based on the length of option values.
+    switch (field->html_type()) {
+      case HtmlFieldType::kAdditionalName:
+        if (field->max_length == 1) {
+          set_html_type(HtmlFieldType::kAdditionalNameInitial);
+        }
+        break;
+      case HtmlFieldType::kCreditCardExp:
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillEnableExpirationDateImprovements)) {
+          set_html_type(CreditCardField::DetermineExpirationDateFormat(
+                            *field, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR)
+                                    .digits_in_expiration_year == 4
+                            ? HtmlFieldType::kCreditCardExpDate4DigitYear
+                            : HtmlFieldType::kCreditCardExpDate2DigitYear);
+        } else {
+          if (field->max_length == 5) {
+            set_html_type(HtmlFieldType::kCreditCardExpDate2DigitYear);
+          } else if (field->max_length == 7) {
+            set_html_type(HtmlFieldType::kCreditCardExpDate4DigitYear);
+          }
+        }
+        break;
+      case HtmlFieldType::kCreditCardExpYear:
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillEnableExpirationDateImprovements)) {
+          // TODO(crbug.com/1441057) Look for YYYY vs. YY in placeholder/label.
+          set_html_type(field->max_length == 4
+                            ? HtmlFieldType::kCreditCardExp4DigitYear
+                            : HtmlFieldType::kCreditCardExp2DigitYear);
+        } else {
+          if (field->max_length == 2) {
+            set_html_type(HtmlFieldType::kCreditCardExp2DigitYear);
+          } else if (field->max_length == 4) {
+            set_html_type(HtmlFieldType::kCreditCardExp4DigitYear);
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  }
+}
 
 void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
     LogManager* log_manager) {

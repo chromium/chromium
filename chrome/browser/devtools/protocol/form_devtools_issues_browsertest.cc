@@ -14,6 +14,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 
+// TODO(crbug.com/1399414): Refactor tests when we start emitting issues in
+// bulk, via checkFormsIssues command and FormIssuesAdded event.
 namespace autofill {
 
 namespace {
@@ -55,6 +57,15 @@ class AutofillFormDevtoolsProtocolTest : public DevToolsProtocolTestBase {
   base::test::ScopedFeatureList scoped_features_;
 };
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
+                       checkFormIssuesCommandReturnsIssuesList) {
+  NavigateToFormPageAndEnableAudits();
+  const base::Value::Dict* res = SendCommandSync("Audits.checkFormsIssues");
+  const base::Value::List* issues = res->FindListByDottedPath("formIssues");
+  ASSERT_NE(issues, nullptr);
+  ASSERT_EQ(issues->size(), 0ul);
+}
 
 IN_PROC_BROWSER_TEST_F(AutofillFormDevtoolsProtocolTest,
                        FormHasLabelAssociatedToNameAttribute) {

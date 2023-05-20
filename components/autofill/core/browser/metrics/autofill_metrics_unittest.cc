@@ -1912,8 +1912,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     base::UserActionTester user_action_tester;
     external_delegate_->OnQuery(form, form.fields.front(), gfx::RectF());
 
-    external_delegate_->DidAcceptSuggestion(
-        Suggestion(POPUP_ITEM_ID_CLEAR_FORM), 0);
+    external_delegate_->DidAcceptSuggestion(Suggestion(PopupItemId::kClearForm),
+                                            0);
 
     EXPECT_EQ(1, user_action_tester.GetActionCount("Autofill_ClearedForm"));
   }
@@ -7864,9 +7864,9 @@ TEST_F(AutofillMetricsTest, FormInteractionsAreCounted) {
   SimulateUserChangedTextField(form, field);
   // Simulate Autocomplete filling twice.
   autofill_manager().OnSingleFieldSuggestionSelected(
-      u"", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, form, field);
+      u"", PopupItemId::kAutocompleteEntry, form, field);
   autofill_manager().OnSingleFieldSuggestionSelected(
-      u"", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, form, field);
+      u"", PopupItemId::kAutocompleteEntry, form, field);
   // Simulate Autofill filling.
   FillTestProfile(form);
   SubmitForm(form);

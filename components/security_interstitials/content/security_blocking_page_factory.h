@@ -16,6 +16,7 @@
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 
 // An interface that the embedder implements to supply instances of security
 // blocking pages that are configured for that embedder.
@@ -85,8 +86,11 @@ class SecurityBlockingPageFactory {
                                  const GURL& request_url) = 0;
 
   virtual std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
-  CreateHttpsOnlyModeBlockingPage(content::WebContents* web_contents,
-                                  const GURL& request_url) = 0;
+  CreateHttpsOnlyModeBlockingPage(
+      content::WebContents* web_contents,
+      const GURL& request_url,
+      security_interstitials::https_only_mode::HttpInterstitialState
+          interstitial_state) = 0;
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SECURITY_BLOCKING_PAGE_FACTORY_H_

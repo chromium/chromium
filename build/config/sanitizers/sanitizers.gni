@@ -122,8 +122,9 @@ declare_args() {
 assert(!is_hwasan || (target_os == "android" && target_cpu == "arm64"),
        "HWASan only supported on Android ARM64 builds.")
 
-# Disable sanitizers for non-target toolchains.
-if (!is_a_target_toolchain || toolchain_disables_sanitizers) {
+# Disable sanitizers for non-target toolchains, and for the toolchain using
+# the prebuilt Rust stdlib which has no sanitizer support with it.
+if (!is_a_target_toolchain || toolchain_for_rust_host_build_tools) {
   is_asan = false
   is_cfi = false
   is_hwasan = false

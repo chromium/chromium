@@ -430,7 +430,7 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
         base::BindRepeating(&ClipboardHistoryControllerImpl::OnMenuClosed,
                             base::Unretained(this)),
         clipboard_history_.get());
-    context_menu_->Run(anchor_rect, source_type);
+    context_menu_->Run(anchor_rect, source_type, show_source);
 
     DCHECK(IsMenuShowing());
     accelerator_target_->OnMenuShown();
@@ -717,7 +717,7 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
 
       // TODO(b/264913203): Add proper string resources for toast.
       bool use_launcher_key =
-          Shell::Get()->keyboard_capability()->HasLauncherButton();
+          Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard();
       std::u16string shortcut_key = l10n_util::GetStringUTF16(
           use_launcher_key ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
                            : IDS_ASH_SHORTCUT_MODIFIER_SEARCH);

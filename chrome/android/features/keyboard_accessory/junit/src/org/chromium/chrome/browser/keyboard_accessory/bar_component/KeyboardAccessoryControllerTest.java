@@ -409,11 +409,11 @@ public class KeyboardAccessoryControllerTest {
         PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion passwordSuggestion1 = new AutofillSuggestion("John", "****",
-                /* itemTg= */ "", 0, false, PopupItemId.ITEM_ID_USERNAME_ENTRY, false, false, false,
+                /* itemTg= */ "", 0, false, PopupItemId.USERNAME_ENTRY, false, false, false,
                 /* featureForIPH= */ "");
         AutofillSuggestion passwordSuggestion2 = new AutofillSuggestion("Eva", "*******",
-                /* itemTag= */ "", 0, false, PopupItemId.ITEM_ID_PASSWORD_ENTRY, false, false,
-                false, /* featureForIPH= */ "");
+                /* itemTag= */ "", 0, false, PopupItemId.PASSWORD_ENTRY, false, false, false,
+                /* featureForIPH= */ "");
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
         autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[] {
                 passwordSuggestion1, passwordSuggestion2, passwordSuggestion2});

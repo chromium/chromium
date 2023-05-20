@@ -99,6 +99,8 @@ static_library("test_support") {
     "rectify_callback.h",
     "rectify_callback_internal.h",
     "repeating_test_future.h",
+    "scoped_amount_of_physical_memory_override.cc",
+    "scoped_amount_of_physical_memory_override.h",
     "scoped_command_line.cc",
     "scoped_command_line.h",
     "scoped_feature_list.cc",
@@ -176,6 +178,10 @@ static_library("test_support") {
       # TODO(rasikan): Add to ios and chromeos when unblocked by the chromiumos
       # change to add the shared lib to the chrome-binary-tests directory.
       public_deps += [ ":test_trace_processor" ]
+      sources += [
+        "test_trace_processor.cc",
+        "test_trace_processor.h",
+      ]
       if (is_ios) {
         deps += [
           ":test_trace_processor+bundle",
@@ -499,9 +505,9 @@ if (enable_base_tracing) {
     defines = [ "TEST_TRACE_PROCESSOR_IMPL" ]
     testonly = true
     sources = [
-      "test_trace_processor.cc",
-      "test_trace_processor.h",
       "test_trace_processor_export.h",
+      "test_trace_processor_impl.cc",
+      "test_trace_processor_impl.h",
     ]
     deps = [
       "//third_party/abseil-cpp:absl",
@@ -512,7 +518,7 @@ if (enable_base_tracing) {
     }
 
     if (is_ios) {
-      info_plist = "test_trace_processor.plist"
+      info_plist = "test_trace_processor_impl.plist"
       output_name = "TestTraceProcessor"
       bundle_deps_filter = [ "//third_party/icu:icudata" ]
     }
@@ -543,5 +549,11 @@ if (enable_base_tracing) {
       outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
       public_deps = [ ":test_trace_processor" ]
     }
+  }
+} else if (!is_component_build && is_mac) {
+  # Provide a dummy target in order for clients to not have to special-case
+  # the dependency.
+  group("test_trace_processor_bundle_data") {
+    testonly = true
   }
 }

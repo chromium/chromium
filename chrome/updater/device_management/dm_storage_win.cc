@@ -64,8 +64,8 @@ bool TokenService::IsEnrollmentMandatory() const {
 
 bool TokenService::StoreEnrollmentToken(const std::string& token) {
   base::win::RegKey key;
-  key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
-           Wow6432(KEY_WRITE));
+  key.Create(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
+             Wow6432(KEY_WRITE));
   return key.WriteValue(kRegValueEnrollmentToken,
                         base::SysUTF8ToWide(token).c_str()) == ERROR_SUCCESS;
 }
@@ -84,7 +84,7 @@ std::string TokenService::GetEnrollmentToken() const {
 
 bool TokenService::StoreDmToken(const std::string& token) {
   base::win::RegKey key;
-  key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment, Wow6432(KEY_WRITE));
+  key.Create(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment, Wow6432(KEY_WRITE));
   return key.WriteValue(kRegValueDmToken, base::SysUTF8ToWide(token).c_str()) ==
          ERROR_SUCCESS;
 }
@@ -107,7 +107,7 @@ bool TokenService::DeleteDmToken() {
   }
 
   // Delete the key if no other values are present.
-  base::win::RegKey(HKEY_LOCAL_MACHINE, L"", Wow6432(KEY_QUERY_VALUE))
+  base::win::RegKey(HKEY_LOCAL_MACHINE, L"", Wow6432(KEY_WRITE))
       .DeleteEmptyKey(kRegKeyCompanyEnrollment);
   return true;
 }

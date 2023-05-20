@@ -562,6 +562,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       int composition_end,
       const WebVector<ui::ImeTextSpan>& ime_text_spans) = 0;
   virtual void ExtendSelectionAndDelete(int before, int after) = 0;
+  virtual void ExtendSelectionAndReplace(int before,
+                                         int after,
+                                         const WebString& replacement_text) = 0;
 
   // Moves the selection extent point. This function does not allow the
   // selection to collapse. If the new extent is set to the same position as

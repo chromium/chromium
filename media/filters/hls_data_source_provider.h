@@ -26,10 +26,7 @@ constexpr size_t kDefaultReadSize = 0xFFFF;
 
 }  // namespace
 
-class HlsManifestDemuxerEngine;
-
-// Interface which can provide HlsManifestDemuxerEngine with data, respecting
-// byterange boundaries.
+// Interface which can provide data, respecting byterange boundaries.
 class MEDIA_EXPORT HlsDataSource {
  public:
   enum class ReadStatusCodes : StatusCodeType {
@@ -72,20 +69,12 @@ class MEDIA_EXPORT HlsDataSource {
   const absl::optional<size_t> size_;
 };
 
-// Interface which can provide the HlsManifestDemuxerEngine with data sources,
-// given a URI and an optional byterange. This interface should be used via
-// `base::SequenceBound` to proxy requests across the media thread and the main
-// thread.
+// Interface which can provide data sources, given a URI and an optional
+// byterange. This interface should be used via `base::SequenceBound` to proxy
+// requests across the media thread and the main thread.
 class MEDIA_EXPORT HlsDataSourceProvider {
  public:
   virtual ~HlsDataSourceProvider();
-
-  // Sets the owning HlsManifestDemuxerEngine for this HlsDataSourceProvider.
-  // This may only be called once.
-  virtual void SetOwner(HlsManifestDemuxerEngine*) = 0;
-
-  // API allowing an HlsManifestDemuxerEngine to make requests for external
-  // data.
   using RequestCb = base::OnceCallback<void(std::unique_ptr<HlsDataSource>)>;
   virtual void RequestDataSource(GURL uri,
                                  absl::optional<hls::types::ByteRange> range,

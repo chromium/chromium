@@ -19,4 +19,6 @@
   <!-- Third-party libraries, test infrastructure, build, and tooling can use
        System#exit freely. Feel free to add other test directories here. -->
   <suppress id="SystemExitCheck" files="src/(build|testing|third_party|tools|base/test)/"/>
+  <!-- jni_generator tests fail some checks. -->
+  <suppress checks=".*" files="base/android/jni_generator/.*"/>
 </suppressions>

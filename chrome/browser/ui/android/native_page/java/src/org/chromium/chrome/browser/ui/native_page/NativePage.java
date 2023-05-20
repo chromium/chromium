@@ -63,14 +63,6 @@ public interface NativePage {
     }
 
     /**
-     * @param defaultAlpha Default alpha if not customized.
-     * @return Alpha for the toolbar textbox.
-     */
-    default float getToolbarTextBoxAlpha(float defaultColor) {
-        return defaultColor;
-    }
-
-    /**
      * Reloads the native page.
      */
     default void reload() {}

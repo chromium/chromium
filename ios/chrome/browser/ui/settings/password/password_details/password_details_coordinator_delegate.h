@@ -14,10 +14,6 @@
 - (void)passwordDetailsCoordinatorDidRemove:
     (PasswordDetailsCoordinator*)coordinator;
 
-// Called when a passwword is currently being deleted from the
-// details page.
-- (void)passwordDetailsWillDeletePassword;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_COORDINATOR_DELEGATE_H_

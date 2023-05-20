@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">ما مِن فيديوهات حديثة.</translation>
 <translation id="3634507049637220048">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، يديرها المشرف، التفاصيل</translation>
 <translation id="3645233063072417428">تم نقل <ph name="NUMBER_OF_ITEMS" /> عنصر.</translation>
+<translation id="3658269352872031728">تم اختيار <ph name="SELECTED_FILE_COUNT" /> ملف.</translation>
 <translation id="3685122418104378273">‏يتم إيقاف مزامنة Google Drive بشكل تلقائي، عند استخدام بيانات الجوّال.</translation>
 <translation id="3689865792480713551">إلغاء <ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212">الشبكة <ph name="NETWORK_INDEX" /> من إجمالي <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، غير مفعّلة، <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">صورة <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">جارٍ حساب الحجم</translation>
 <translation id="554153475311314364">تحويل صوتي إلى اللغة اليونانية</translation>
+<translation id="5554171655917412781">تم اختيار <ph name="SELECTED_FOLDERS_COUNT" /> مجلد.</translation>
 <translation id="5580591966435005537">جهاز افتراضي</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">عرض علامات الترقيم هو عرض بالكامل</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">‏التايلاندية باستخدام لوحة مفاتيح Pattachote</translation>
 <translation id="57383366388012121">الشهر الماضي</translation>
 <translation id="5756666464756035725">‏QWERTY المجرية</translation>
+<translation id="5760252553414789727">تم اختيار <ph name="SELECTED_FILES_COUNT" /> عنصر.</translation>
 <translation id="5763377084591234761">الألمانية (سويسرا)</translation>
 <translation id="5769519078756170258">المضيف أو النطاق المراد استبعاده</translation>
 <translation id="5775750595919327203">الأردية</translation>
@@ -917,6 +920,7 @@
 <translation id="8264024885325823677">يتولى مشرفك إدارة هذا الإعداد.</translation>
 <translation id="8269755669432358899">تصغير لوحات التعليقات على الملفات</translation>
 <translation id="8280151743281770066">أرمينية صوتية</translation>
+<translation id="8285791779547722821">ملف <ph name="ORIGINAL_MIME_TYPE" /> مشفَّر.</translation>
 <translation id="8294431847097064396">المصدر</translation>
 <translation id="8297012244086013755">المجموعة رقم 3 الهانغولية (عدم التبديل)</translation>
 <translation id="8299269255470343364">اليابانية</translation>

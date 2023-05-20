@@ -74,8 +74,9 @@ void KioskAppMenuController::SendKioskApps() {
 
   KioskAppMenu::Get()->SetKioskApps(output);
   KioskAppLaunchError::Error error = KioskAppLaunchError::Get();
-  if (error == KioskAppLaunchError::Error::kNone)
+  if (error == KioskAppLaunchError::Error::kNone) {
     return;
+  }
 
   // Clear any old pending Kiosk launch errors
   KioskAppLaunchError::RecordMetricAndClear();
@@ -94,8 +95,9 @@ void KioskAppMenuController::ConfigureKioskCallbacks() {
 
 void KioskAppMenuController::LaunchApp(const KioskAppMenuEntry& app) {
   auto* host = LoginDisplayHost::default_host();
-  if (!app.account_id.is_valid())
+  if (!app.account_id.is_valid()) {
     return;
+  }
 
   policy::DeviceLocalAccount::Type type;
   if (!policy::IsDeviceLocalAccountUser(app.account_id.GetUserEmail(), &type)) {

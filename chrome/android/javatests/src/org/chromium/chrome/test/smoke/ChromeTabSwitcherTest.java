@@ -21,6 +21,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
@@ -37,6 +38,7 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 @LargeTest
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ChromeTabSwitcherTest {
+    private static final String TAG = "SmokeTest";
     private static final String ACTIVITY_NAME = "com.google.android.apps.chrome.IntentDispatcher";
     private static final String TEST_PAGE =
             "/chrome/android/javatests/src/org/chromium/chrome/test/smoke/test.html";
@@ -81,16 +83,27 @@ public class ChromeTabSwitcherTest {
         // Looks for the any view/layout with the chrome package name.
         IUi2Locator locatorChrome = Ui2Locators.withPackageName(mPackageName);
         // Wait until chrome shows up
+        Log.i(TAG, "Attempting to navigate through FRE");
         mFirstRunNavigator.waitUntilAnyVisible(locatorChrome);
 
         // Go through the FRE until you see ChromeTabbedActivity urlbar.
+        Log.i(TAG, "Waiting for omnibox to show URL");
         mFirstRunNavigator.navigateThroughFRE();
 
-        // FRE should be over and we should be shown the url we requested.
+        Log.i(TAG, "Waiting for omnibox to show URL");
         assert url.startsWith("http://");
+        String urlWithoutScheme = url.substring(7);
+        IUi2Locator dataUrlText = Ui2Locators.withText(urlWithoutScheme);
+        UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(dataUrlText);
 
+        Log.i(TAG, "Waiting 5 seconds to ensure background logic does not crash");
+        Thread.sleep(5000);
+
+        Log.i(TAG, "Activating tab switcher.");
         UiAutomatorUtils.getInstance().click(mTabSwitcherButton);
         UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(mTabSwitcherToolbar);
         UiAutomatorUtils.getInstance().getLocatorHelper().verifyOnScreen(mTabList);
+
+        Log.i(TAG, "Test complete.");
     }
 }

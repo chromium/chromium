@@ -179,9 +179,14 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_country(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_COUNTRY))));
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+          features::kAutofillEnableSupportForLandmark)) {
     specifics->set_address_home_landmark(
         TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LANDMARK))));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreets)) {
+    specifics->set_address_home_between_streets(TruncateUTF8(
+        UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_BETWEEN_STREETS))));
   }
   specifics->set_address_home_street_address(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))));
@@ -224,10 +229,16 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_COUNTRY)));
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+          features::kAutofillEnableSupportForLandmark)) {
     specifics->set_address_home_landmark_status(
         ConvertProfileToSpecificsVerificationStatus(
             entry.GetVerificationStatus(ADDRESS_HOME_LANDMARK)));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreets)) {
+    specifics->set_address_home_between_streets_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS)));
   }
   specifics->set_address_home_street_address_status(
       ConvertProfileToSpecificsVerificationStatus(
@@ -436,11 +447,20 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
           specifics.address_home_country_status()));
 
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+          features::kAutofillEnableSupportForLandmark)) {
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_LANDMARK, UTF8ToUTF16(specifics.address_home_landmark()),
         ConvertSpecificsToProfileVerificationStatus(
             specifics.address_home_landmark_status()));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreets)) {
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_BETWEEN_STREETS,
+        UTF8ToUTF16(specifics.address_home_between_streets()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_between_streets_status()));
   }
 
   // Set either the deprecated subparts (line1 & line2) or the full address

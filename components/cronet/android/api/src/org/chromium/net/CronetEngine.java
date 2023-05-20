@@ -738,16 +738,14 @@ public abstract class CronetEngine {
     }
 
     /**
-     * Returns the number of in-flight requests.
+     * Returns the number of active requests.
      * <p>
-     * A request is in-flight if its start() method has been called but it hasn't reached a final
-     * state yet. A request reaches the final state when one of the following callbacks has been
-     * called:
-     * <ul>
-     *    <li>onSucceeded</li>
-     *    <li>onCanceled</li>
-     *    <li>onFailed</li>
-     * </ul>
+     * A request becomes "active" in UrlRequest.start(), assuming that method
+     * does not throw an exception. It becomes inactive when all callbacks have
+     * returned and no additional callbacks can be triggered in the future. In
+     * practice, that means the request is inactive once
+     * onSucceeded/onCanceled/onFailed has returned and all request finished
+     * listeners have returned.
      *
      * <a href="https://developer.android.com/guide/topics/connectivity/cronet/lifecycle">Cronet
      *         requests's lifecycle</a> for more information.

@@ -424,10 +424,7 @@ class DCompImageBackingFactoryVisualTreeTest
 
     static_cast<ui::PlatformWindow*>(&window_)->Show();
     child_window_.Initialize();
-    ::SetWindowPos(child_window_.window(), nullptr, 0, 0, window_size_.width(),
-                   window_size_.height(),
-                   SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS |
-                       SWP_NOOWNERZORDER | SWP_NOZORDER);
+    child_window_.Resize(window_size_);
     ::SetParent(child_window_.window(), window_.hwnd());
   }
 

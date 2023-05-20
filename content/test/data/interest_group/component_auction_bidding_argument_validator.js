@@ -19,8 +19,8 @@ function generateBid(
       'bid': 2,
       'bidCurrency': 'USD',
       'adCost': 3,
-      'render': ad.renderUrl,
-      'adComponents': [interestGroup.adComponents[0].renderUrl],
+      'render': ad.renderURL,
+      'adComponents': [interestGroup.adComponents[0].renderURL],
       'allowComponentAuction': true,
   };
 }
@@ -40,7 +40,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 12) {
+  if (Object.keys(interestGroup).length !== 13) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -59,6 +59,12 @@ function validateInterestGroup(interestGroup) {
     interestGroup.priorityVector['FOO'] !== 2) {
     throw 'Incorrect priorityVector ' +
         JSON.stringify(interestGroup.priorityVector);
+  }
+
+  if (!interestGroup.biddingLogicURL.startsWith('https://a.test') ||
+      !interestGroup.biddingLogicURL.endsWith(
+          '/component_auction_bidding_argument_validator.js')) {
+    throw 'Incorrect biddingLogicURL ' + interestGroup.biddingLogicURL;
   }
 
   if (!interestGroup.biddingLogicUrl.startsWith('https://a.test') ||
@@ -82,7 +88,8 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup.trustedBiddingSignalsUrl.startsWith('https://a.test') ||
       !interestGroup.trustedBiddingSignalsUrl.includes(
           'trusted_bidding_signals.json')) {
-    throw 'Incorrect biddingLogicUrl ' + interestGroup.biddingLogicUrl;
+    throw 'Incorrect trustedBiddingSignalsUrl ' +
+        interestGroup.trustedBiddingSignalsUrl;
   }
 
   trustedBiddingSignalsKeysJson =
@@ -93,7 +100,7 @@ function validateInterestGroup(interestGroup) {
   }
 
   // TODO(crbug.com/1186444): Consider validating URL fields like
-  // interestGroup.biddingLogicUrl once we decide what to do about URL
+  // interestGroup.biddingLogicURL once we decide what to do about URL
   // normalization.
 
   // If userBiddingSignals is passed as a JSON string instead of an object,
@@ -108,6 +115,8 @@ function validateInterestGroup(interestGroup) {
 
   if (interestGroup.ads.length !== 1)
     throw 'Wrong ads.length ' + interestGroup.ads.length;
+  if (interestGroup.ads[0].renderURL !== 'https://example.com/render')
+    throw 'Wrong ads[0].renderURL ' + interestGroup.ads[0].renderURL;
   if (interestGroup.ads[0].renderUrl !== 'https://example.com/render')
     throw 'Wrong ads[0].renderUrl ' + interestGroup.ads[0].renderUrl;
   const adMetadataJson = JSON.stringify(interestGroup.ads[0].metadata);
@@ -116,6 +125,11 @@ function validateInterestGroup(interestGroup) {
 
   if (interestGroup.adComponents.length !== 1)
     throw 'Wrong adComponents.length ' + interestGroup.adComponents.length;
+  if (interestGroup.adComponents[0].renderURL !==
+        'https://example.com/render-component') {
+    throw 'Wrong adComponents[0].renderURL ' +
+        interestGroup.adComponents[0].renderURL;
+  }
   if (interestGroup.adComponents[0].renderUrl !==
         'https://example.com/render-component') {
     throw 'Wrong adComponents[0].renderUrl ' +
@@ -166,7 +180,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
   } else {
-    if (Object.keys(browserSignals).length !== 14) {
+    if (Object.keys(browserSignals).length !== 15) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -174,6 +188,8 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
       throw 'Wrong interestGroupOwner ' + browserSignals.interestGroupOwner;
     if (browserSignals.interestGroupName !== 'cars')
       throw 'Wrong interestGroupName ' + browserSignals.interestGroupName;
+    if (browserSignals.renderURL !== "https://example.com/render")
+      throw 'Wrong renderURL ' + browserSignals.renderURL;
     if (browserSignals.renderUrl !== "https://example.com/render")
       throw 'Wrong renderUrl ' + browserSignals.renderUrl;
     if (browserSignals.bid !== 2)

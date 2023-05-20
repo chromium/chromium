@@ -165,7 +165,7 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
 
   // Simulates an autofill event.
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      u"TestValue", POPUP_ITEM_ID_IBAN_ENTRY, form, field);
+      u"TestValue", PopupItemId::kIbanEntry, form, field);
 
   auto expected_data = base::JSONReader::ReadAndReturnValueWithError(
       kExpectedFeedbackDataJSON,
@@ -197,7 +197,7 @@ TEST_F(AutofillFeedbackDataUnitTest,
 
   // Simulates an autofill event.
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      u"TestValue", POPUP_ITEM_ID_IBAN_ENTRY, form, field);
+      u"TestValue", PopupItemId::kIbanEntry, form, field);
 
   // Advance the clock 4 minutes should disregard the last autofill event log.
   clock.Advance(base::Minutes(4));

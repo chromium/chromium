@@ -20,12 +20,6 @@ COMPONENT_EXPORT(BLINK_FEATURES) BASE_DECLARE_FEATURE(kSendMouseLeaveEvents);
 // is on installed PWA.
 COMPONENT_EXPORT(BLINK_FEATURES)
 BASE_DECLARE_FEATURE(kDontSendKeyEventsToJavascript);
-
-// Reduces the velocity of horizontal flings. This is an experiment to test
-// a simple means of making flings in mandatory scroll snap areas feel more
-// natural. See https://crbug.com/1189696 for details.
-COMPONENT_EXPORT(BLINK_FEATURES)
-BASE_DECLARE_FEATURE(kReduceHorizontalFlingVelocity);
 }
 
 #endif  // UI_EVENTS_BLINK_BLINK_FEATURES_H_

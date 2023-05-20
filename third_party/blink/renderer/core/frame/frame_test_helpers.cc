@@ -48,6 +48,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
@@ -82,7 +83,9 @@
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
@@ -378,8 +381,10 @@ WebViewHelper::WebViewHelper(
     CreateTestWebFrameWidgetCallback create_web_frame_callback)
     : web_view_(nullptr),
       agent_group_scheduler_(
-          scheduler::WebThreadScheduler::MainThreadScheduler()
-              .CreateWebAgentGroupScheduler()),
+          std::make_unique<blink::scheduler::WebAgentGroupScheduler>(
+              ThreadScheduler::Current()
+                  ->ToMainThreadScheduler()
+                  ->CreateAgentGroupScheduler())),
       platform_(Platform::Current()) {
   DocumentLoader::DisableCodeCacheForTesting();
   CreateTestWebFrameWidgetCallback create_callback =
@@ -720,7 +725,8 @@ void WebViewHelper::InitializeWebView(
                       /*opener=*/opener, mojo::NullAssociatedReceiver(),
                       *agent_group_scheduler_,
                       /*session_storage_namespace_id=*/base::EmptyString(),
-                      /*page_base_background_color=*/absl::nullopt));
+                      /*page_base_background_color=*/absl::nullopt,
+                      BrowsingContextGroupInfo::CreateUnique()));
   // This property must be set at initialization time, it is not supported to be
   // changed afterward, and does nothing.
   web_view_->GetSettings()->SetViewportEnabled(viewport_enabled_);
@@ -743,6 +749,22 @@ void WebViewHelper::InitializeWebView(
   }
 
   web_view_->SetDefaultPageScaleLimits(1, 4);
+}
+
+WebViewImpl* WebViewHelper::CreateWebView(WebViewClient* web_view_client,
+                                          bool compositing_enabled) {
+  return To<WebViewImpl>(
+      WebView::Create(web_view_client,
+                      /*is_hidden=*/false,
+                      /*is_prerendering=*/false,
+                      /*is_inside_portal=*/false,
+                      /*fenced_frame_mode=*/absl::nullopt, compositing_enabled,
+                      /*widgets_never_composited=*/false,
+                      /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
+                      *agent_group_scheduler_,
+                      /*session_storage_namespace_id=*/base::EmptyString(),
+                      /*page_base_background_color=*/absl::nullopt,
+                      BrowsingContextGroupInfo::CreateUnique()));
 }
 
 int TestWebFrameClient::loads_in_progress_ = 0;

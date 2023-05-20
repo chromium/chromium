@@ -187,10 +187,10 @@ void SkiaOutputSurfaceImplOnGpu::PromiseImageAccessHelper::BeginAccess(
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  // GL doesn't need semaphores.
-  if (!impl_on_gpu_->context_state_->GrContextIsGL()) {
-    DCHECK(begin_semaphores);
-    DCHECK(end_semaphores);
+  // Only Vulkan needs semaphores.
+  if (impl_on_gpu_->context_state_->GrContextIsVulkan()) {
+    CHECK(begin_semaphores);
+    CHECK(end_semaphores);
     begin_semaphores->reserve(image_contexts.size());
     // We may need one more space for the swap buffer semaphore.
     end_semaphores->reserve(image_contexts.size() + 1);
@@ -376,7 +376,7 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
   // SharedContextState, we need to explicitly invoke the factory's destructor
   // before deleting ImplOnGpu's other member variables.
   shared_image_factory_.reset();
-  if (has_context) {
+  if (has_context && gr_context()) {
     TRACE_EVENT0("viz", "Cleanup");
     absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
@@ -419,7 +419,7 @@ void SkiaOutputSurfaceImplOnGpu::Reshape(const SkImageInfo& image_info,
                                          gfx::OverlayTransform transform) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::Reshape");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(gr_context());
+  DCHECK(gr_context() || graphite_context());
 
   if (context_is_lost_)
     return;
@@ -492,6 +492,9 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
 
   if (graphite_recording) {
     CHECK(return_release_fence_cb.is_null());
+    promise_image_access_helper_.BeginAccess(std::move(image_contexts),
+                                             /*begin_semaphores=*/nullptr,
+                                             /*end_semaphores=*/nullptr);
     if (!scoped_output_device_paint_->Draw(std::move(graphite_recording),
                                            std::move(on_finished))) {
       FailedSkiaFlush("Graphite insertRecording failed.");
@@ -499,15 +502,14 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     return;
   }
 
-  // TODO(crbug.com/1434131): Implement resource cleanup for Graphite.
-  dependency_->ScheduleGrContextCleanup();
-
   {
     absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
     }
+    // TODO(crbug.com/1434131): Implement resource cleanup for Graphite.
+    dependency_->ScheduleGrContextCleanup();
 
     std::vector<GrBackendSemaphore> begin_semaphores;
     std::vector<GrBackendSemaphore> end_semaphores;
@@ -633,7 +635,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     bool is_overlay) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(ddl);
 
   if (context_is_lost_)
     return;
@@ -652,14 +653,27 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  const auto& characterization = ddl->characterization();
+
+  int sample_count = 0;
+  SkSurfaceProps surface_props;
+  if (ddl) {
+    sample_count = ddl->characterization().sampleCount();
+    surface_props = ddl->characterization().surfaceProps();
+  }
   auto local_scoped_access = skia_representation->BeginScopedWriteAccess(
-      characterization.sampleCount(), characterization.surfaceProps(),
-      update_rect, &begin_semaphores, &end_semaphores,
+      sample_count, surface_props, update_rect, &begin_semaphores,
+      &end_semaphores,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!local_scoped_access) {
     MarkContextLost(CONTEXT_LOST_UNKNOWN);
     return;
+  }
+
+  absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+  if (gr_context() && dependency_->GetGrShaderCache()) {
+    // TODO(crbug.com/1434131): Implement pipeline caching for Graphite.
+    cache_use.emplace(dependency_->GetGrShaderCache(),
+                      gpu::kDisplayCompositorClientId);
   }
 
   // When CompositorGpuThread is disabled, this cleanup for gpu main
@@ -699,13 +713,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   SkSurface* surface = scoped_access->surface();
   DCHECK(surface);
 
-  absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
-  if (dependency_->GetGrShaderCache()) {
-    // TODO(crbug.com/1434131): Implement pipeline caching for Graphite.
-    CHECK(gr_context());
-    cache_use.emplace(dependency_->GetGrShaderCache(),
-                      gpu::kDisplayCompositorClientId);
-  }
   promise_image_access_helper_.BeginAccess(std::move(image_contexts),
                                            &begin_semaphores, &end_semaphores);
 
@@ -1732,21 +1739,30 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
 
   context_state_ = dependency_->GetSharedContextState();
   DCHECK(context_state_);
-  if (!context_state_->gr_context()) {
-    DLOG(ERROR) << "Failed to create GrContext";
+  if (!context_state_->gr_context() && !context_state_->graphite_context()) {
+    DLOG(ERROR) << "Failed to create GrContext or GraphiteContext";
     return false;
   }
 
   if (is_using_vulkan()) {
-    if (!InitializeForVulkan())
+    if (!InitializeForVulkan()) {
       return false;
+    }
+  } else if (is_using_graphite_dawn()) {
+    if (!InitializeForDawn()) {
+      return false;
+    }
   } else {
-    if (!InitializeForGL())
+    if (!InitializeForGL()) {
       return false;
+    }
   }
 
-  max_resource_cache_bytes_ =
-      context_state_->gr_context()->getResourceCacheLimit();
+  if (context_state_->gr_context()) {
+    max_resource_cache_bytes_ =
+        context_state_->gr_context()->getResourceCacheLimit();
+  }
+
   if (context_state_)
     context_state_->AddContextLostObserver(this);
 
@@ -1957,18 +1973,27 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
           GetDidSwapBuffersCompleteCallback());
     }
 #elif BUILDFLAG(IS_WIN)
-    std::unique_ptr<SkiaOutputDeviceDawn> output_device =
-        std::make_unique<SkiaOutputDeviceDawn>(
-            dawn_context_provider_, gfx::SurfaceOrigin::kTopLeft,
-            shared_gpu_deps_->memory_tracker(),
-            GetDidSwapBuffersCompleteCallback());
-    const gpu::SurfaceHandle child_window_handle =
-        output_device->GetChildSurfaceHandle();
-    AddChildWindowToBrowser(child_window_handle);
+    auto output_device = std::make_unique<SkiaOutputDeviceDawn>(
+        context_state_, gfx::SurfaceOrigin::kTopLeft,
+        shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
+    AddChildWindowToBrowser(output_device->GetChildSurfaceHandle());
     output_device_ = std::move(output_device);
+#elif BUILDFLAG(IS_MAC)
+    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
+                                              gl::GLSurfaceFormat());
+    if (features::UseGpuVsync()) {
+      presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
+    }
+    output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
+        std::make_unique<OutputPresenterGL>(
+            presenter_, dependency_, shared_image_factory_.get(),
+            shared_image_representation_factory_.get()),
+        dependency_, shared_image_representation_factory_.get(),
+        shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
 #else
-    NOTREACHED();
-    return false;
+    NOTREACHED_NORETURN();
 #endif
   }
 #endif

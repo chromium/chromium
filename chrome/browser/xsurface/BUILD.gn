@@ -6,7 +6,6 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/xsurface/FeedActionsHandler.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/FeedLaunchReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/FeedNetworkRequestReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/FeedUserInteractionReliabilityLogger.java",
@@ -35,6 +34,9 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedUserInteractionReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/ReliabilityLoggingTestUtil.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/StreamType.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceRenderer.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceScope.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceScopeDependencyProvider.java",
   ]
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }

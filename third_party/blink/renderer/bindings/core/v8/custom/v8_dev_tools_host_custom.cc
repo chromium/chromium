@@ -160,7 +160,7 @@ void V8DevToolsHost::ShowContextMenuAtPointMethodCustom(
 
   Document* document = nullptr;
   if (info.Length() >= 4 && info[3]->IsObject()) {
-    document = V8HTMLDocument::ToImplWithTypeCheck(isolate, info[3]);
+    document = V8HTMLDocument::ToWrappable(isolate, info[3]);
   } else {
     LocalDOMWindow* window = EnteredDOMWindow(isolate);
     document = window ? window->document() : nullptr;
@@ -168,7 +168,8 @@ void V8DevToolsHost::ShowContextMenuAtPointMethodCustom(
   if (!document || !document->GetFrame())
     return;
 
-  DevToolsHost* devtools_host = V8DevToolsHost::ToImpl(info.Holder());
+  DevToolsHost* devtools_host =
+      V8DevToolsHost::ToWrappableUnsafe(info.Holder());
   devtools_host->ShowContextMenu(document->GetFrame(), x, y, std::move(items));
 }
 

@@ -22,17 +22,13 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+    <ImageView
         android:id="@+id/start_image"
-        android:layout_width="@dimen/improved_bookmark_icon_size"
-        android:layout_height="@dimen/improved_bookmark_icon_size"
+        android:layout_width="@dimen/improved_bookmark_start_image_size_compact"
+        android:layout_height="@dimen/improved_bookmark_start_image_size_compact"
         android:scaleType="center"
         android:importantForAccessibility="no"
-        android:background="@drawable/oval_surface_1"
-        app:cornerRadiusBottomStart="@dimen/default_rounded_corner_radius"
-        app:cornerRadiusBottomEnd="@dimen/default_rounded_corner_radius"
-        app:cornerRadiusTopStart="@dimen/default_rounded_corner_radius"
-        app:cornerRadiusTopEnd="@dimen/default_rounded_corner_radius" />
+        android:background="@drawable/oval_surface_1" />
 
     <View
         android:layout_width="16dp"

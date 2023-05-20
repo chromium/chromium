@@ -18,6 +18,7 @@ constexpr char kInternalKeyboardId[] = "test:internal";
 constexpr char kExternalMouseId[] = "test:mouse";
 constexpr char kPointingStickId[] = "test:pointingstick";
 constexpr char kExternalTouchpadId[] = "test:touchpad-external";
+constexpr int kSampleMinSensitivity = 1;
 constexpr int kSampleSensitivity = 3;
 constexpr int kSampleMaxSensitivity = 5;
 
@@ -57,6 +58,9 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   keyboard_external.settings = mojom::KeyboardSettings::New();
   auto& settings_external = *keyboard_external.settings;
   settings_external.top_row_are_fkeys = true;
+  settings_external.modifier_remappings = {
+      {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kControl},
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kCapsLock}};
 
   mojom::Keyboard keyboard_external_chromeos;
   keyboard_external_chromeos.device_key = kExternalChromeOSKeyboardId;
@@ -87,6 +91,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
       /*expected_count=*/0u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Keyboard.External.Modifiers."
+      "NumberOfRemappedKeysOnStart",
+      /*sample=*/3u, /*expected_bucket_count=*/1u);
 
   manager_.get()->RecordKeyboardInitialMetrics(keyboard_external_chromeos);
 
@@ -209,7 +217,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
 
   // Call record changed settings metrics.
   const auto old_setting = mouse.settings->Clone();
-  mouse.settings->sensitivity = kSampleMaxSensitivity;
+  mouse.settings->sensitivity = kSampleMinSensitivity;
   mouse.settings->reverse_scrolling = !mouse.settings->reverse_scrolling;
   manager_.get()->RecordMouseChangedMetrics(mouse, *old_setting);
   histogram_tester.ExpectTotalCount(
@@ -221,6 +229,13 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Mouse.ReverseScrolling.Changed",
       /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.Sensitivity.Increase",
+      /*expected_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Mouse.Sensitivity.Decrease",
+      /*sample=*/2u,
+      /*expected_bucket_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordPointingStickSettings) {
@@ -266,6 +281,13 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordPointingStickSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.PointingStick.SwapPrimaryButtons.Changed",
       /*expected_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.PointingStick.Sensitivity.Increase",
+      /*sample=*/2u,
+      /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.PointingStick.Sensitivity.Decrease",
+      /*expected_count=*/0);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
@@ -314,7 +336,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
       !touchpad_external.settings->tap_dragging_enabled;
   touchpad_external.settings->tap_to_click_enabled =
       !touchpad_external.settings->tap_to_click_enabled;
-  touchpad_external.settings->haptic_sensitivity = kSampleMaxSensitivity;
+  touchpad_external.settings->haptic_sensitivity = kSampleMinSensitivity;
 
   manager_.get()->RecordTouchpadChangedMetrics(touchpad_external, *old_setting);
   histogram_tester.ExpectTotalCount(
@@ -329,6 +351,13 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Changed",
       /*expected_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Increase",
+      /*sample=*/2u,
+      /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Decrease",
+      /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.TapDragging.Changed",
       /*expected_count=*/1u);
@@ -337,7 +366,14 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
       /*expected_count=*/1u);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Settings.Device.Touchpad.External.HapticSensitivity.Changed",
-      /*sample=*/5u, /*expected_bucket_count=*/1u);
+      /*sample=*/1u, /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Touchpad.External.HapticSensitivity.Increase",
+      /*expected_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Touchpad.External.HapticSensitivity.Decrease",
+      /*sample=*/2u,
+      /*expected_bucket_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
@@ -363,6 +399,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
       "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.MetaRemappedTo."
       "Initial",
       /*expected_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers."
+      "NumberOfRemappedKeysOnStart",
+      /*sample=*/1u, /*expected_bucket_count=*/1u);
 
   const auto old_settings = std::move(keyboard.settings);
   keyboard.settings = mojom::KeyboardSettings::New();
@@ -383,6 +423,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
       "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers."
       "AssistantRemappedTo.Changed",
       /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers."
+      "NumberOfRemappedKeysOnStart",
+      /*expected_count*/ 1u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest,
@@ -432,6 +476,36 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       1);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 2u);
+}
+
+TEST_F(InputDeviceSettingsMetricsManagerTest,
+       ResetKeyboardModifierRemappingsMetrics) {
+  mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
+  keyboard->device_key = kExternalKeyboardId;
+  keyboard->is_external = true;
+  keyboard->meta_key = mojom::MetaKey::kCommand;
+  keyboard->modifier_keys = {
+      ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kControl,
+      ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kCapsLock,
+      ui::mojom::ModifierKey::kEscape,    ui::mojom::ModifierKey::kBackspace,
+      ui::mojom::ModifierKey::kAssistant,
+  };
+  keyboard->settings = mojom::KeyboardSettings::New();
+  keyboard->settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kCapsLock},
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kAssistant}};
+
+  base::HistogramTester histogram_tester;
+  const auto default_settings = mojom::KeyboardSettings::New();
+  default_settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kControl, ui::mojom::ModifierKey::kMeta},
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kControl}};
+  SimulateUserLogin(kUser1);
+  manager_.get()->RecordKeyboardNumberOfKeysReset(*keyboard, *default_settings);
+  // Test the number of reset keys is correct.
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Keyboard.External.Modifiers.NumberOfKeysReset",
+      /*sample=*/3u, /*expected_bucket_count=*/1u);
 }
 
 }  // namespace ash

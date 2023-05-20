@@ -9,7 +9,7 @@
         overflow: visible;
       }
 
-      cr-icon-button([disabled]) {
+      cr-icon-button[disabled] {
         box-shadow: none;
       }
 
@@ -27,7 +27,8 @@
       }
 
       :host([keyboard-navigation-active]) cr-icon-button:focus {
-        box-shadow: var(--cr-elevation-4);
+        box-shadow: var(--cr-elevation-4),
+            inset 0 0 0 2px var(--cr-focus-outline-color);
       }
 
       cr-icon-button:active {

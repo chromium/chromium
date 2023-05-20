@@ -181,9 +181,18 @@ apps::Permissions CreatePermissions(
   apps::Permissions permissions;
   for (const auto& [arc_permission_type, arc_permission_state] :
        arc_permissions) {
+    apps::TriState value = arc_permission_state->granted
+                               ? apps::TriState::kAllow
+                               : apps::TriState::kBlock;
+    // Permissions in the one-time state will ask for permission again the next
+    // time they are used.
+    if (arc_permission_state->one_time) {
+      value = apps::TriState::kAsk;
+    }
+
     permissions.push_back(std::make_unique<apps::Permission>(
         GetPermissionType(arc_permission_type),
-        std::make_unique<apps::PermissionValue>(arc_permission_state->granted),
+        std::make_unique<apps::PermissionValue>(value),
         arc_permission_state->managed, arc_permission_state->details));
   }
   return permissions;

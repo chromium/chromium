@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Opna <ph name="TABS_COUNT_ONE" /> flipa}one{Opna <ph name="TABS_COUNT_MANY" /> flipa}other{Opna <ph name="TABS_COUNT_MANY" /> flipa}}</translation>
 <translation id="4811934403802581334">Allir valdir flipar úr tækinu sem er valið verða endurheimtir.</translation>
 <translation id="5336031759968328813">Yfirfara alla flipa</translation>
+<translation id="8019269305087157499">Opna frá</translation>
 <translation id="8725404154479306799">Sæktu flipa úr gömlum tækjum</translation>
 </translationbundle>

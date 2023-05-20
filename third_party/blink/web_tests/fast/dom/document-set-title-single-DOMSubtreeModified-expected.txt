@@ -1,3 +1,4 @@
+CONSOLE WARNING: Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
 On setting document.title, only one DOMSubtreeModified event is created.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

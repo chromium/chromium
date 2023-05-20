@@ -28,8 +28,8 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/browser/web_history_service.h"
 #include "components/history/core/browser/web_history_service_observer.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "url/gurl.h"
 
 FORWARD_DECLARE_TEST(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions);
@@ -228,7 +228,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
       scoped_refptr<QueryHistoryState> state,
       base::Time start_time,
       WebHistoryService::Request* request,
-      base::optional_ref<base::Value::Dict> results_dict);
+      base::optional_ref<const base::Value::Dict> results_dict);
 
   // Callback telling us whether other forms of browsing history were found
   // on the history server.

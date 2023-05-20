@@ -6,28 +6,17 @@
 
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 
-namespace ash {
-namespace eche_app {
+namespace ash::eche_app {
 
 AppsLaunchInfoProvider::AppsLaunchInfoProvider(
     EcheConnectionStatusHandler* connection_handler)
-    : eche_connection_status_handler_(connection_handler) {
-  eche_connection_status_handler_->AddObserver(this);
-}
+    : eche_connection_status_handler_(connection_handler) {}
 
-AppsLaunchInfoProvider::~AppsLaunchInfoProvider() {
-  eche_connection_status_handler_->RemoveObserver(this);
-}
-
-void AppsLaunchInfoProvider::OnConnectionStatusForUiChanged(
-    mojom::ConnectionStatus connection_status) {
-  last_connection_ = connection_status;
-}
-
-void AppsLaunchInfoProvider::SetEntryPoint(
+void AppsLaunchInfoProvider::SetAppLaunchInfo(
     mojom::AppStreamLaunchEntryPoint entry_point) {
   entry_point_ = entry_point;
+  last_connection_ =
+      eche_connection_status_handler_->connection_status_for_ui();
 }
 
-}  // namespace eche_app
-}  // namespace ash
+}  // namespace ash::eche_app

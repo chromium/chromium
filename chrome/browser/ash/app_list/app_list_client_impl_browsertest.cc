@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
                        OpenSearchResultOnPrimaryDisplay) {
   display::test::DisplayManagerTestApi display_manager(
       ash::ShellTestApi().display_manager());
-  display_manager.UpdateDisplay("400x300,500x500");
+  display_manager.UpdateDisplay("400x300,500x400");
 
   const display::Display& primary_display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
                        OpenSearchResultOnSecondaryDisplay) {
   display::test::DisplayManagerTestApi display_manager(
       ash::ShellTestApi().display_manager());
-  display_manager.UpdateDisplay("400x300,500x500");
+  display_manager.UpdateDisplay("400x300,500x400");
 
   const display::Display& secondary_display =
       display_manager.GetSecondaryDisplay();

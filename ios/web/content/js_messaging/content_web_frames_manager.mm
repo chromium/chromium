@@ -6,17 +6,21 @@
 
 #import <set>
 
-#import "base/ios/device_util.h"
+#import "base/no_destructor.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/unguessable_token.h"
 #import "components/js_injection/browser/js_communication_host.h"
 #import "content/public/browser/navigation_handle.h"
 #import "content/public/browser/page.h"
 #import "content/public/browser/web_contents.h"
 #import "ios/web/content/js_messaging/content_java_script_feature_manager.h"
+#import "ios/web/content/js_messaging/content_java_script_feature_util.h"
 #import "ios/web/content/js_messaging/content_web_frame.h"
 #import "ios/web/content/js_messaging/ios_web_message_host_factory.h"
 #import "ios/web/content/web_state/content_web_state.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/web_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,6 +34,23 @@ namespace {
 // messages to the browser.
 const char kHandlerNamePropertyName[] = "handler_name";
 const char kMessagePropertyName[] = "message";
+
+const char kSendWebKitMessageScriptName[] = "send_webkit_message";
+
+// This feature intercepts calls to window.webkit.messageHandlers and reroutes
+// them to window.webkitMessageHandler.
+JavaScriptFeature* GetSendWebKitMessageJavaScriptFeature() {
+  // Static storage is ok for `send_webkit_message_feature` as it holds no
+  // state.
+  static base::NoDestructor<JavaScriptFeature> send_webkit_message_feature(
+      ContentWorld::kPageContentWorld,
+      std::vector<const JavaScriptFeature::FeatureScript>(
+          {JavaScriptFeature::FeatureScript::CreateWithFilename(
+              kSendWebKitMessageScriptName,
+              JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+              JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}));
+  return send_webkit_message_feature.get();
+}
 
 }  // namespace
 
@@ -49,18 +70,17 @@ ContentWebFramesManager::ContentWebFramesManager(
       std::move(message_host_factory), u"webkitMessageHandler", {"*"});
 
   std::vector<JavaScriptFeature*> java_script_features;
-  java_script_features.push_back(
-      java_script_features::GetBaseJavaScriptFeature());
+  java_script_features.push_back(GetSendWebKitMessageJavaScriptFeature());
+  for (JavaScriptFeature* feature :
+       java_script_features::GetBuiltInJavaScriptFeaturesForContent(
+           content_web_state->GetBrowserState())) {
+    java_script_features.push_back(feature);
+  }
+  for (JavaScriptFeature* feature : GetWebClient()->GetJavaScriptFeatures(
+           content_web_state->GetBrowserState())) {
+    java_script_features.push_back(feature);
+  }
 
-  // TODO(crbug.com/1423527): Insert another feature that overrides the
-  // definition of sendWebKitMessage from common.js, to use
-  // webkitMessageHandler.postMessage.
-  java_script_features.push_back(
-      java_script_features::GetCommonJavaScriptFeature());
-  java_script_features.push_back(
-      java_script_features::GetMessageJavaScriptFeature());
-
-  // TODO(crbug.com/1423527): Insert other JavaScriptFeatures.
   js_feature_manager_ = std::make_unique<ContentJavaScriptFeatureManager>(
       std::move(java_script_features));
   js_feature_manager_->AddDocumentStartScripts(js_communication_host_.get());
@@ -104,10 +124,7 @@ WebFrame* ContentWebFramesManager::GetFrameWithId(const std::string& frame_id) {
 
 void ContentWebFramesManager::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  // TODO(crbug.com/1423527): Ensure that the random id chosen here is either
-  // injected into the frame or directly attached to JavaScript messages
-  // received from the frame, since features expect this.
-  std::string web_frame_id = ios::device_util::GetRandomId();
+  std::string web_frame_id = base::UnguessableToken::Create().ToString();
   auto web_frame = std::make_unique<ContentWebFrame>(
       web_frame_id, render_frame_host, content_web_state_);
   web_frames_[web_frame_id] = std::move(web_frame);
@@ -136,31 +153,28 @@ void ContentWebFramesManager::RenderFrameDeleted(
   content_to_web_id_map_.erase(web_id_it);
 }
 
-void ContentWebFramesManager::DOMContentLoaded(
-    content::RenderFrameHost* render_frame_host) {
-  js_feature_manager_->InjectDocumentEndScripts(render_frame_host);
-}
-
 void ContentWebFramesManager::PrimaryPageChanged(content::Page& page) {
   main_frame_content_id_ = page.GetMainDocument().GetGlobalId();
 }
 
-void ContentWebFramesManager::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  content::RenderFrameHost* render_frame_host =
-      navigation_handle->GetRenderFrameHost();
-
-  // Some navigations (e.g., downloads, 204 responses) do not have a
-  // RenderFrameHost.
-  if (!render_frame_host) {
-    return;
-  }
-
-  // TODO(crbug.com/1423527): Inject JavaScript to override `getFrameId` to
-  // return the WebFrame id chosen in `RenderFrameCreated`.
-
+void ContentWebFramesManager::DOMContentLoaded(
+    content::RenderFrameHost* render_frame_host) {
   content::GlobalRenderFrameHostId content_id =
       render_frame_host->GetGlobalId();
+  WebFrame* web_frame = WebFrameForContentId(content_id);
+
+  // Inject JavaScript to override `getFrameId` to return the WebFrame id chosen
+  // in `RenderFrameCreated`. This must happen even if the frame has already
+  // been added to `available_frame_hosts_`, since navigation to a new document
+  // will result in a fresh JavaScript execution context.
+  std::u16string format_string = u"__gCrWeb.frameId = '$1';";
+  std::u16string script_to_inject = base::ReplaceStringPlaceholders(
+      format_string, base::UTF8ToUTF16(web_frame->GetFrameId()),
+      /*offset=*/nullptr);
+  web_frame->ExecuteJavaScript(script_to_inject);
+
+  js_feature_manager_->InjectDocumentEndScripts(render_frame_host);
+
   if (available_frame_hosts_.count(content_id)) {
     return;
   }
@@ -172,7 +186,6 @@ void ContentWebFramesManager::DidFinishNavigation(
   // phase where JavaScript injection is not yet allowed. crbug.com/1183639
   // tracks delaying `RenderFrameCreated` until frames are past the
   // speculative state, which is not intended to be exposed to embedders.
-  WebFrame* web_frame = WebFrameForContentId(content_id);
   for (auto& observer : observers_) {
     observer.WebFrameBecameAvailable(this, web_frame);
   }

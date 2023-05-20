@@ -278,19 +278,16 @@ fn generate_for_std(_args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> R
     //   dependencies to the correct lib{core,alloc,std} when depended on by the
     //   Rust codebase (see
     //   https://github.com/rust-lang/rust/tree/master/library/rustc-std-workspace-core)
-    //
-    // libtest is the root of the std crate dependency tree, so start there.
-    let mut dependencies =
-        deps::collect_dependencies(&command.exec().unwrap(), Some(vec!["test".to_string()]), None);
+    let mut dependencies = deps::collect_dependencies(
+        &command.exec().unwrap(),
+        Some(vec![config.resolve.root.clone()]),
+        None,
+    );
 
     // Remove dev dependencies since tests aren't run. Also remove build deps
-    // since we configure flags and env vars manually. Include libtest
-    // explicitly since, as the root of collect_dependencies(), it doesn't get a
-    // dependency_kinds entry.
-    dependencies.retain(|dep| {
-        dep.package_name == "test"
-            || dep.dependency_kinds.contains_key(&deps::DependencyKind::Normal)
-    });
+    // since we configure flags and env vars manually. Include the root
+    // explicitly since it doesn't get a dependency_kinds entry.
+    dependencies.retain(|dep| dep.dependency_kinds.contains_key(&deps::DependencyKind::Normal));
 
     dependencies.sort_unstable_by(|a, b| {
         a.package_name.cmp(&b.package_name).then(a.version.cmp(&b.version))

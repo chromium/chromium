@@ -39,10 +39,19 @@ constexpr char kPreactPageLoad[] = "PreactPageLoad";
 constexpr char kReactPageLoad[] = "ReactPageLoad";
 constexpr char kSveltePageLoad[] = "SveltePageLoad";
 constexpr char kVuePageLoad[] = "VuePageLoad";
+constexpr char kDrupalPageLoad[] = "DrupalPageLoad";
+constexpr char kJoomlaPageLoad[] = "JoomlaPageLoad";
+constexpr char kShopifyPageLoad[] = "ShopifyPageLoad";
+constexpr char kSquarespacePageLoad[] = "SquarespacePageLoad";
+constexpr char kWixPageLoad[] = "WixPageLoad";
+constexpr char kWordPressPageLoad[] = "WordPressPageLoad";
 const std::vector<const char*> all_frameworks = {
-    kGatsbyJsPageLoad, kNextJsPageLoad,  kNuxtJsPageLoad, kSapperPageLoad,
-    kVuePressPageLoad, kAngularPageLoad, kPreactPageLoad, kReactPageLoad,
-    kSveltePageLoad,   kVuePageLoad,
+    kGatsbyJsPageLoad,  kNextJsPageLoad,      kNuxtJsPageLoad,
+    kSapperPageLoad,    kVuePressPageLoad,    kAngularPageLoad,
+    kPreactPageLoad,    kReactPageLoad,       kSveltePageLoad,
+    kVuePageLoad,       kDrupalPageLoad,      kJoomlaPageLoad,
+    kShopifyPageLoad,   kSquarespacePageLoad, kWixPageLoad,
+    kWordPressPageLoad,
 };
 
 }  // namespace
@@ -310,6 +319,42 @@ IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
                        VueFrameworkDetected3) {
   RunSingleFrameworkDetectionTest("/page_load_metrics/vue3_page.html",
                                   kVuePageLoad);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       DrupalCMSDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/drupal_page.html",
+                                  kDrupalPageLoad);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       JoomlaCMSDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/joomla_page.html",
+                                  kJoomlaPageLoad);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       ShopifyCMSDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/shopify_page.html",
+                                  kShopifyPageLoad);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       SquarespaceCMSDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/squarespace_page.html",
+                                  kSquarespacePageLoad);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       WixCMSDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/wix_page.html",
+                                  kWixPageLoad);
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       WordPressCMSDetected) {
+  RunSingleFrameworkDetectionTest("/page_load_metrics/wordpress_page.html",
+                                  kWordPressPageLoad);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,

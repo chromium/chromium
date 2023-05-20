@@ -413,7 +413,8 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
         continue;
       }
       CSSStyleSheet* css = To<CSSStyleSheet>(sheet);
-      StyleSheetContents* contents = css->Contents();
+      StyleSheetContents* contents =
+          MakeGarbageCollected<StyleSheetContents>(*css->Contents());
 
       // Inject the style sheet. It will not stay in sync with the opener.
       //

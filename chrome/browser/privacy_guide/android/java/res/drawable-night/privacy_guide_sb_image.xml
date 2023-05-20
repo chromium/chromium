@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="VectorRaster"
+    android:width="301dp"
+    android:height="131dp"
+    android:viewportWidth="301"
+    android:viewportHeight="131">
+  <path
+      android:pathData="M175.65,45.65V62.51c0,16.21 -10.69,31.17 -25.1,35.61 -14.42,-4.45 -25.11,-19.4 -25.11,-35.61V45.65L150.54,34.5l25.11,11.15Z"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#4285F4"
+      android:strokeLineCap="round"/>
+  <path
+      android:pathData="M168.44,51.56v12.19c0,11.72 -7.66,22.53 -18,25.75 -10.34,-3.22 -18,-14.03 -18,-25.75V51.56l18,-8.06 18,8.06Z"
+      android:fillColor="#1E8E3E"/>
+  <path
+      android:pathData="M245.44,100.5h-189"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#5F6368"/>
+  <path
+      android:pathData="M54.44,101.5h35c-3.72,-5.42 -10.17,-9 -17.5,-9 -7.33,0 -13.77,3.58 -17.5,9Z"
+      android:fillColor="#5F6368"/>
+  <path
+      android:pathData="M67.44,101.5h54c-5.75,-8.43 -15.69,-14 -27,-14 -11.31,0 -21.25,5.57 -27,14Z"
+      android:fillColor="#5F6368"/>
+  <path
+      android:pathData="M86.75,45.79c0,-9.73 -7.89,-17.62 -17.62,-17.62 -6.78,0 -12.67,3.83 -15.61,9.44 -0.87,-0.25 -1.8,-0.38 -2.76,-0.38 -5.14,0 -9.31,3.83 -9.31,8.56h45.31ZM208.44,60.13c0,-6.98 5.76,-12.64 12.87,-12.64 4.9,0 9.17,2.69 11.34,6.66a7.59,7.59 0,0 1,1.26 -0.1c3.75,0 6.78,2.72 6.78,6.08h-32.26Z"
+      android:fillColor="#1967D2"/>
+  <path
+      android:pathData="M150.44,10v9.5M201.44,61h-9.5M108.94,61h-9.5M186.5,24.94l-6.72,6.72M121.09,31.66l-6.72,-6.72"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#FDD663"/>
+  <path
+      android:pathData="m206.94,88.5 l3.5,12h-7l3.5,-12ZM222.44,83.5l6,17h-12l6,-17Z"
+      android:fillColor="#5F6368"/>
+  <path
+      android:pathData="m214.44,82.5 l6,18h-12l6,-18Z"
+      android:fillColor="#5F6368"/>
+  <path
+      android:pathData="M212.44,101.5h35c-3.72,-5.42 -10.17,-9 -17.5,-9 -7.33,0 -13.77,3.58 -17.5,9Z"
+      android:fillColor="#5F6368"/>
+</vector>

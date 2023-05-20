@@ -27,8 +27,8 @@ def fix_module_imports(header_path, output_path):
   header_contents = []
   with open(header_path, 'r') as header_file:
     for line in header_file:
-      if line == '#if __has_feature(modules)\n':
-        header_contents.append('#if 1  // #if __has_feature(modules)\n')
+      if line == '#if __has_feature(objc_modules)\n':
+        header_contents.append('#if 1  // #if __has_feature(objc_modules)\n')
         nesting_level = 1
         for line in header_file:
           if line == '#endif\n':

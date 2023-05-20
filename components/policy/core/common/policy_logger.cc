@@ -60,7 +60,7 @@ std::string GetLogSeverity(const PolicyLogger::Log::Severity log_severity) {
 // Constructs the URL for Chromium Code Search that points to the line of code
 // that generated the log and the Chromium git revision hash.
 std::string GetLineURL(const base::Location location) {
-  std::string last_change = version_info::GetLastChange();
+  std::string last_change(version_info::GetLastChange());
 
   // The substring separates the last change commit hash from the branch name on
   // the '-'.

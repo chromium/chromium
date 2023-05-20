@@ -42,7 +42,6 @@ class ASH_EXPORT GlanceablesTasksClient {
                                const std::string& task_id,
                                MarkAsCompletedCallback callback) = 0;
 
- protected:
   virtual ~GlanceablesTasksClient() = default;
 };
 

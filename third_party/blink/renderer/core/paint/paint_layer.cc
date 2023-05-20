@@ -698,7 +698,7 @@ void PaintLayer::ScrollContainerStatusChanged() {
 void PaintLayer::SetNeedsVisualOverflowRecalc() {
   DCHECK(IsSelfPaintingLayer());
 #if DCHECK_IS_ON()
-  GetLayoutObject().InvalidateVisualOverflow();
+  GetLayoutObject().InvalidateVisualOverflowForDCheck();
 #endif
   needs_visual_overflow_recalc_ = true;
   // |MarkAncestorChainForFlagsUpdate| will cause a paint property update which

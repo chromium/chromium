@@ -82,6 +82,8 @@ class P2PSocketClient : public network::mojom::P2PSocketClient {
   void SocketCreated(const net::IPEndPoint& local_address,
                      const net::IPEndPoint& remote_address) override;
   void SendComplete(const network::P2PSendPacketMetrics& send_metrics) override;
+  void SendBatchComplete(const std::vector<::network::P2PSendPacketMetrics>&
+                             send_metrics_batch) override;
   void DataReceived(
       std::vector<network::mojom::P2PReceivedPacketPtr> packets) override;
 

@@ -135,7 +135,8 @@ class SplitViewDragIndicators::RotatedImageLabelView
     layer()->SetFillsBoundsOpaquely(false);
 
     SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysBaseElevated, kSplitviewLabelRoundRectRadiusDp));
+        cros_tokens::kCrosSysSystemBaseElevated,
+        kSplitviewLabelRoundRectRadiusDp));
 
     SetBorder(std::make_unique<views::HighlightBorder>(
         /*corner_radius=*/kSplitviewLabelRoundRectRadiusDp,

@@ -40,8 +40,9 @@ malloc_zone_t* GetDefaultMallocZone() {
   vm_address_t* zones = nullptr;
   kern_return_t result =
       malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
-  if (result != KERN_SUCCESS)
+  if (result != KERN_SUCCESS) {
     abort_report_np("Cannot enumerate malloc() zones");
+  }
   return reinterpret_cast<malloc_zone_t*>(zones[0]);
 }
 
@@ -233,8 +234,9 @@ void EarlyMallocZoneRegistration() {
   // |g_delegating_zone|...|g_default_zone|purgeable_zone|
 
   // Sanity check.
-  if (GetDefaultMallocZone() != &g_delegating_zone)
+  if (GetDefaultMallocZone() != &g_delegating_zone) {
     abort_report_np("Failed to install the delegating zone as default.");
+  }
 }
 
 void AllowDoublePartitionAllocZoneRegistration() {
@@ -242,8 +244,9 @@ void AllowDoublePartitionAllocZoneRegistration() {
   vm_address_t* zones = nullptr;
   kern_return_t result =
       malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
-  if (result != KERN_SUCCESS)
+  if (result != KERN_SUCCESS) {
     abort_report_np("Cannot enumerate malloc() zones");
+  }
 
   // If PartitionAlloc is one of the zones, *change* its name so that
   // registration can happen multiple times. This works because zone

@@ -7,7 +7,5 @@
   "IKEv2.LocalIdentity": "local-id",
   "IKEv2.PSK": "some_preshared_key",
   "IKEv2.RemoteIdentity": "remote-id",
-  "SaveCredentials": true,
-  "StaticIPConfig": {
-  }
+  "SaveCredentials": true
 }

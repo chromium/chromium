@@ -83,6 +83,11 @@ bool FederatedIdentityPermissionContext::HasSharingPermission(
                                          identity_provider, account_id);
 }
 
+bool FederatedIdentityPermissionContext::HasSharingPermission(
+    const url::Origin& relying_party_requester) {
+  return sharing_context_->HasPermission(relying_party_requester);
+}
+
 void FederatedIdentityPermissionContext::GrantSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,

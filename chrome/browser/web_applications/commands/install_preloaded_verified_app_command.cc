@@ -137,7 +137,7 @@ void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
   }
 
   debug_value_.Set("manifest_parsed", true);
-  web_app_info_ = std::make_unique<WebAppInstallInfo>();
+  web_app_info_ = std::make_unique<WebAppInstallInfo>(manifest->id);
   web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
   UpdateWebAppInfoFromManifest(*manifest, manifest_url_, web_app_info_.get());
@@ -181,8 +181,7 @@ void InstallPreloadedVerifiedAppCommand::OnIconsRetrieved(
 
   PopulateOtherIcons(web_app_info_.get(), icons_map);
 
-  AppId app_id =
-      GenerateAppId(web_app_info_->manifest_id, web_app_info_->start_url);
+  AppId app_id = GenerateAppIdFromManifestId(web_app_info_->manifest_id);
 
   if (app_id != expected_id_) {
     Abort(CommandResult::kFailure,

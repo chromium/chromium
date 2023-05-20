@@ -107,7 +107,7 @@ void MerchantPromoCodeManager::UMARecorder::OnOffersSuggestionsShown(
 
 void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
     Suggestion::FrontendId frontend_id) {
-  if (frontend_id == PopupItemId::POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
+  if (frontend_id == PopupItemId::kMerchantPromoCodeEntry) {
     // We log every time an individual offer suggestion is selected, regardless
     // if the user is repeatedly autofilling the same field.
     autofill_metrics::LogIndividualOfferSuggestionEvent(
@@ -123,7 +123,7 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
               kOfferSuggestionSelectedOnce,
           AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER);
     }
-  } else if (frontend_id == PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS) {
+  } else if (frontend_id == PopupItemId::kSeePromoCodeDetails) {
     // We log every time the see offer details suggestion in the footer is
     // selected, regardless if the user is repeatedly autofilling the same
     // field.

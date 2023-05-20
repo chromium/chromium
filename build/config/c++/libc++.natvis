@@ -11,20 +11,20 @@
        * if T is empty and non-final the 3rd param is 1 and it derives from T
        * else it has a member variable __value_ of type T
   -->
-  <Type Name="std::Cr::__compressed_pair_elem&lt;*,*,0&gt;">
+  <Type Name="std::__Cr::__compressed_pair_elem&lt;*,*,0&gt;">
     <DisplayString>{__value_}</DisplayString>
     <Expand>
       <ExpandedItem>__value_</ExpandedItem>
     </Expand>
   </Type>
-  <Type Name="std::Cr::__compressed_pair_elem&lt;*,*,1&gt;">
+  <Type Name="std::__Cr::__compressed_pair_elem&lt;*,*,1&gt;">
     <DisplayString>{*($T1*)this}</DisplayString>
     <Expand>
       <ExpandedItem>*($T1*)this</ExpandedItem>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::array&lt;*,*&gt;">
+  <Type Name="std::__Cr::array&lt;*,*&gt;">
     <DisplayString>{{ size={$T2} }}</DisplayString>
     <Expand>
       <ArrayItems>
@@ -50,7 +50,7 @@
       and the inline data in the remaining storage.)
   -->
 
-  <Type Name="std::Cr::basic_string&lt;char,*&gt;">
+  <Type Name="std::__Cr::basic_string&lt;char,*&gt;">
     <!--<Intrinsic Name="is_long"
             Expression="((__rep*)&amp;__r_)-&gt;__s.__size_ &amp; 0x80" />-->
     <!-- The above doesn't work because of https://llvm.org/PR41615
@@ -85,7 +85,7 @@
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::basic_string&lt;wchar_t,*&gt;">
+  <Type Name="std::__Cr::basic_string&lt;wchar_t,*&gt;">
     <Intrinsic Name="is_long"
         Expression="*(((char*)this) + 3*sizeof(size_t) - 1) &amp; 0x80" />
     <DisplayString Condition="is_long()">{*(wchar_t**)this}</DisplayString>
@@ -113,7 +113,7 @@
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::deque&lt;*,*&gt;">
+  <Type Name="std::__Cr::deque&lt;*,*&gt;">
     <Intrinsic Name="size" Expression="*(size_type*)&amp;__size_" />
     <Intrinsic Name="block_size"
         Expression="sizeof($T1) &lt; 256 ? 4096 / sizeof($T1) : 16" />
@@ -129,7 +129,7 @@
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::forward_list&lt;*&gt;">
+  <Type Name="std::__Cr::forward_list&lt;*&gt;">
     <Intrinsic Name="head"
         Expression="((__node_pointer)&amp;__before_begin_)-&gt;__next_" />
     <DisplayString Condition="head() == 0">empty</DisplayString>
@@ -154,7 +154,7 @@
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::list&lt;*&gt;">
+  <Type Name="std::__Cr::list&lt;*&gt;">
     <Intrinsic Name="size" Expression="*(size_type*)&amp;__size_alloc_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
@@ -163,14 +163,14 @@
         <HeadPointer>__end_.__next_</HeadPointer>
         <NextPointer>__next_</NextPointer>
         <ValueNode>
-          ((std::Cr::list&lt;$T1,$T2&gt;::__node_pointer)this)
+          ((std::__Cr::list&lt;$T1,$T2&gt;::__node_pointer)this)
               -&gt;__value_
         </ValueNode>
       </LinkedListItems>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::map&lt;*&gt;">
+  <Type Name="std::__Cr::map&lt;*&gt;">
     <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
@@ -181,22 +181,22 @@
           ((__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
-          ((std::Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+          ((std::__Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
               -&gt;__left_
         </LeftPointer>
         <RightPointer>
-          ((std::Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+          ((std::__Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
               -&gt;__right_
         </RightPointer>
         <ValueNode>
-          ((std::Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+          ((std::__Cr::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
               -&gt;__value_.__cc_
         </ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::multimap&lt;*&gt;">
+  <Type Name="std::__Cr::multimap&lt;*&gt;">
     <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
@@ -207,22 +207,22 @@
           ((__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
-          ((std::Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+          ((std::__Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
               -&gt;__left_
         </LeftPointer>
         <RightPointer>
-          ((std::Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+          ((std::__Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
               -&gt;__right_
         </RightPointer>
         <ValueNode>
-          ((std::Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+          ((std::__Cr::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
               -&gt;__value_.__cc_
         </ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::multiset&lt;*&gt;">
+  <Type Name="std::__Cr::multiset&lt;*&gt;">
     <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
@@ -233,22 +233,22 @@
           ((__base::__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
-          ((std::Cr::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+          ((std::__Cr::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
               -&gt;__left_
         </LeftPointer>
         <RightPointer>
-          ((std::Cr::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+          ((std::__Cr::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
               -&gt;__right_
         </RightPointer>
         <ValueNode>
-          ((std::Cr::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+          ((std::__Cr::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
               -&gt;__value_
         </ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::priority_queue&lt;*&gt;">
+  <Type Name="std::__Cr::priority_queue&lt;*&gt;">
     <DisplayString>{c}</DisplayString>
     <Expand>
       <ExpandedItem>c</ExpandedItem>
@@ -256,7 +256,7 @@
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::set&lt;*&gt;">
+  <Type Name="std::__Cr::set&lt;*&gt;">
     <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>
@@ -267,108 +267,108 @@
           ((__base::__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
         </HeadPointer>
         <LeftPointer>
-          ((std::Cr::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+          ((std::__Cr::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
               -&gt;__left_
         </LeftPointer>
         <RightPointer>
-          ((std::Cr::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+          ((std::__Cr::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
               -&gt;__right_
         </RightPointer>
         <ValueNode>
-          ((std::Cr::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+          ((std::__Cr::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
               -&gt;__value_
         </ValueNode>
       </TreeItems>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::stack&lt;*&gt;">
-    <AlternativeType Name="std::Cr::queue&lt;*&gt;" />
+  <Type Name="std::__Cr::stack&lt;*&gt;">
+    <AlternativeType Name="std::__Cr::queue&lt;*&gt;" />
     <DisplayString>{c}</DisplayString>
     <Expand>
       <ExpandedItem>c</ExpandedItem>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::__tuple_leaf&lt;*,*,0&gt;">
+  <Type Name="std::__Cr::__tuple_leaf&lt;*,*,0&gt;">
     <DisplayString>{__value_}</DisplayString>
   </Type>
 
-  <Type Name="std::Cr::tuple&lt;&gt;">
+  <Type Name="std::__Cr::tuple&lt;&gt;">
     <DisplayString>()</DisplayString>
   </Type>
 
-  <Type Name="std::Cr::tuple&lt;*&gt;">
-    <DisplayString>({(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_})</DisplayString>
+  <Type Name="std::__Cr::tuple&lt;*&gt;">
+    <DisplayString>({(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_})</DisplayString>
       <Expand>
-          <Item Name="[0]">(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+          <Item Name="[0]">(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
       </Expand>
   </Type>
 
-  <Type Name="std::Cr::tuple&lt;*,*&gt;">
-    <DisplayString>({(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_})</DisplayString>
+  <Type Name="std::__Cr::tuple&lt;*,*&gt;">
+    <DisplayString>({(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_})</DisplayString>
     <Expand>
-      <Item Name="[0]">(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
-      <Item Name="[1]">(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[0]">(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::tuple&lt;*,*,*&gt;">
-    <DisplayString>({(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_})</DisplayString>
+  <Type Name="std::__Cr::tuple&lt;*,*,*&gt;">
+    <DisplayString>({(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_})</DisplayString>
     <Expand>
-      <Item Name="[0]">(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
-      <Item Name="[1]">(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
-      <Item Name="[2]">(std::Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
+      <Item Name="[0]">(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[2]">(std::__Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::tuple&lt;*,*,*,*&gt;">
-    <DisplayString>({(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_})</DisplayString>
+  <Type Name="std::__Cr::tuple&lt;*,*,*,*&gt;">
+    <DisplayString>({(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_})</DisplayString>
     <Expand>
-      <Item Name="[0]">(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
-      <Item Name="[1]">(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
-      <Item Name="[2]">(std::Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
-      <Item Name="[3]">(std::Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
+      <Item Name="[0]">(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[2]">(std::__Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
+      <Item Name="[3]">(std::__Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::tuple&lt;*,*,*,*,*&gt;">
-    <DisplayString>({(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_})</DisplayString>
+  <Type Name="std::__Cr::tuple&lt;*,*,*,*,*&gt;">
+    <DisplayString>({(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_})</DisplayString>
     <Expand>
-      <Item Name="[0]">(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
-      <Item Name="[1]">(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
-      <Item Name="[2]">(std::Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
-      <Item Name="[3]">(std::Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
-      <Item Name="[4]">(std::Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_</Item>
+      <Item Name="[0]">(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[2]">(std::__Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
+      <Item Name="[3]">(std::__Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
+      <Item Name="[4]">(std::__Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_</Item>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::tuple&lt;*,*,*,*,*,*&gt;">
-    <DisplayString>({(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;5,$T6,0&gt;)__base_})</DisplayString>
+  <Type Name="std::__Cr::tuple&lt;*,*,*,*,*,*&gt;">
+    <DisplayString>({(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;5,$T6,0&gt;)__base_})</DisplayString>
     <Expand>
-      <Item Name="[0]">(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
-      <Item Name="[1]">(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
-      <Item Name="[2]">(std::Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
-      <Item Name="[3]">(std::Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
-      <Item Name="[4]">(std::Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_</Item>
-      <Item Name="[5]">(std::Cr::__tuple_leaf&lt;5,$T6,0&gt;)__base_</Item>
+      <Item Name="[0]">(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[2]">(std::__Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
+      <Item Name="[3]">(std::__Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
+      <Item Name="[4]">(std::__Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_</Item>
+      <Item Name="[5]">(std::__Cr::__tuple_leaf&lt;5,$T6,0&gt;)__base_</Item>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::tuple&lt;*,*,*,*,*,*,*&gt;">
-    <DisplayString>({(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;5,$T6,0&gt;)__base_}, {(std::Cr::__tuple_leaf&lt;6,$T7,0&gt;)__base_})</DisplayString>
+  <Type Name="std::__Cr::tuple&lt;*,*,*,*,*,*,*&gt;">
+    <DisplayString>({(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;5,$T6,0&gt;)__base_}, {(std::__Cr::__tuple_leaf&lt;6,$T7,0&gt;)__base_})</DisplayString>
     <Expand>
-      <Item Name="[0]">(std::Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
-      <Item Name="[1]">(std::Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
-      <Item Name="[2]">(std::Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
-      <Item Name="[3]">(std::Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
-      <Item Name="[4]">(std::Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_</Item>
-      <Item Name="[5]">(std::Cr::__tuple_leaf&lt;5,$T6,0&gt;)__base_</Item>
-      <Item Name="[6]">(std::Cr::__tuple_leaf&lt;6,$T7,0&gt;)__base_</Item>
+      <Item Name="[0]">(std::__Cr::__tuple_leaf&lt;0,$T1,0&gt;)__base_</Item>
+      <Item Name="[1]">(std::__Cr::__tuple_leaf&lt;1,$T2,0&gt;)__base_</Item>
+      <Item Name="[2]">(std::__Cr::__tuple_leaf&lt;2,$T3,0&gt;)__base_</Item>
+      <Item Name="[3]">(std::__Cr::__tuple_leaf&lt;3,$T4,0&gt;)__base_</Item>
+      <Item Name="[4]">(std::__Cr::__tuple_leaf&lt;4,$T5,0&gt;)__base_</Item>
+      <Item Name="[5]">(std::__Cr::__tuple_leaf&lt;5,$T6,0&gt;)__base_</Item>
+      <Item Name="[6]">(std::__Cr::__tuple_leaf&lt;6,$T7,0&gt;)__base_</Item>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::unique_ptr&lt;*&gt;">
+  <Type Name="std::__Cr::unique_ptr&lt;*&gt;">
     <Intrinsic Name="value" Expression="*($T1**)&amp;__ptr_" />
     <SmartPointer Usage="Minimal">value()</SmartPointer>
       <DisplayString Condition="value() == 0">empty</DisplayString>
@@ -379,10 +379,10 @@
       </Expand>
   </Type>
 
-<Type Name="std::Cr::unordered_map&lt;*&gt;">
-    <AlternativeType Name="std::Cr::unordered_multimap&lt;*&gt;" />
-    <AlternativeType Name="std::Cr::unordered_multiset&lt;*&gt;" />
-    <AlternativeType Name="std::Cr::unordered_set&lt;*&gt;" />
+<Type Name="std::__Cr::unordered_map&lt;*&gt;">
+    <AlternativeType Name="std::__Cr::unordered_multimap&lt;*&gt;" />
+    <AlternativeType Name="std::__Cr::unordered_multiset&lt;*&gt;" />
+    <AlternativeType Name="std::__Cr::unordered_set&lt;*&gt;" />
     <Intrinsic Name="size" Expression="*(size_type*)&amp;__table_.__p2_" />
     <Intrinsic Name="bucket_count"
         Expression="*(size_type*)&amp;
@@ -415,14 +415,14 @@
   <!-- This is the node __value_ of an unordered_(multi)map. Expand it through
     a separate formatter instead of in the <Item> expression above so that the
     same <Type> works for unordered_(multi)set and unordered_(multi)map. -->
-  <Type Name="std::Cr::__hash_value_type&lt;*&gt;">
+  <Type Name="std::__Cr::__hash_value_type&lt;*&gt;">
     <DisplayString>{__cc}</DisplayString>
     <Expand>
       <ExpandedItem>__cc</ExpandedItem>
     </Expand>
   </Type>
 
-  <Type Name="std::Cr::vector&lt;*&gt;">
+  <Type Name="std::__Cr::vector&lt;*&gt;">
     <Intrinsic Name="size" Expression="__end_ - __begin_" />
     <DisplayString>{{ size={size()} }}</DisplayString>
     <Expand>

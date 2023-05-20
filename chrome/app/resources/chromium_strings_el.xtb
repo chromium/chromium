@@ -92,6 +92,7 @@
 <translation id="3179665906251668410">Άνοιγμα Συνδέσμου σε Παράθυρο ανών&amp;υμης περιήγησης Chromium</translation>
 <translation id="3185330573522821672">Προσαρμόστε το νέο σας προφίλ Chromium</translation>
 <translation id="3190315855212034486">Το Chromium παρουσίασε σφάλμα. Να γίνει επανεκκίνηση τώρα;</translation>
+<translation id="3255926992597692024">Το Chromium προσπαθεί να τροποποιήσει τις ρυθμίσεις για τη συμπλήρωση τρόπων πληρωμής.</translation>
 <translation id="3258596308407688501">Το Chromium δεν έχει δυνατότητα ανάγνωσης και εγγραφής στον κατάλογο δεδομένων του:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -131,7 +132,6 @@
 <translation id="390528597099634151">Ο χρήστης <ph name="EXISTING_USER" /> είναι συνδεδεμένος ήδη με αυτό το προφίλ Chromium. Για να διατηρήσει ξεχωριστά την περιήγησή σας, το Chromium μπορεί να δημιουργήσει το προφίλ σας για εσάς.</translation>
 <translation id="391789666908693569">Η διαχείριση του λογαριασμού σας γίνεται από τον διαχειριστή <ph name="MANAGER_NAME" />. Ο διαχειριστής σας μπορεί να δει και να επεξεργαστεί αυτό το προφίλ προγράμματος περιήγησης Chromium και τα δεδομένα του, όπως σελιδοδείκτες, ιστορικό και κωδικούς πρόσβασης.</translation>
 <translation id="3945058413678539331">Το Chromium προσπαθεί να αντιγράψει κωδικούς πρόσβασης. Για να επιτρέψετε αυτήν την ενέργεια, πληκτρολογήστε τον κωδικό πρόσβασης των Windows.</translation>
-<translation id="3962623956404948996">Το Chromium συνιστά τη σάρωση αυτού του αρχείου επειδή μπορεί να είναι επικίνδυνο</translation>
 <translation id="3997429360543082038">Σχετικά με το Chromium OS</translation>
 <translation id="4019629340646866719">Το Chromium OS υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />, όπως είναι το <ph name="BEGIN_LINK_LINUX_OSS" />περιβάλλον ανάπτυξης Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Συμβάλετε στη βελτίωση του Chromium, αναφέροντας τις <ph name="BEGIN_LINK" />τρέχουσες ρυθμίσεις<ph name="END_LINK" /></translation>
@@ -198,6 +198,7 @@
 <translation id="5653831366781983928">Επανεκκινήστε το Chromium τώρα</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Να εμφανίζεται το Chromium σε αυτήν τη γλώσσα</translation>
+<translation id="585620188971323280">να τροποποιήσει τις ρυθμίσεις για τη συμπλήρωση τρόπων πληρωμής.</translation>
 <translation id="5862307444128926510">Καλώς ήρθατε στο Chromium</translation>
 <translation id="5883558403894052917">Το Chromium εντόπισε κακόβουλο πρόγραμμα σε αυτά τα στοιχεία:</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>

@@ -121,6 +121,8 @@ blink_core_sources_loader = [
   "resource/image_resource_content.h",
   "resource/image_resource_info.h",
   "resource/image_resource_observer.h",
+  "resource/link_dictionary_resource.cc",
+  "resource/link_dictionary_resource.h",
   "resource/link_prefetch_resource.cc",
   "resource/link_prefetch_resource.h",
   "resource/multipart_image_resource_parser.cc",

@@ -10,7 +10,6 @@
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -23,6 +22,8 @@ class SizeF;
 }  // namespace gfx
 
 namespace chrome_pdf {
+
+void SetUseSkiaRendererPolicy(bool use_skia);
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Create a flattened PDF document from an existing PDF document.

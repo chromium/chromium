@@ -122,13 +122,6 @@ BASE_FEATURE(kUseSurfaceLayerForVideoDefault,
 BASE_FEATURE(kWebViewNewInvalidateHeuristic,
              "WebViewNewInvalidateHeuristic",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Historically media on android hardcoded SRGB color space because of lack of
-// color space support in surface control. This controls if we want to use real
-// color space in DisplayCompositor.
-BASE_FEATURE(kUseRealVideoColorSpaceForDisplay,
-             "UseRealVideoColorSpaceForDisplay",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kDrawPredictedInkPoint,
@@ -274,6 +267,18 @@ const base::FeatureParam<base::TimeDelta> kADPFBoostTimeout{
     &kEnableADPFScrollBoost, "adpf_boost_mode_timeout",
     base::Milliseconds(200)};
 
+// If enabled, Chrome uses ADPF(Android Dynamic Performance Framework) to
+// request more CPU resources in the middle of a frame production if the frame
+// is taking longer than expected.
+BASE_FEATURE(kEnableADPFMidFrameBoost,
+             "EnableADPFMidFrameBoost",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The deadline for requesting a boost in the middle of a frame production is
+// this multiplier * ADPF target_duration.
+const base::FeatureParam<double> kADPFMidFrameBoostDurationMultiplier{
+    &kEnableADPFMidFrameBoost, "adpf_mid_frame_boost_multiplier", 1.0};
+
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }
@@ -356,18 +361,6 @@ bool UseSurfaceLayerForVideo() {
   return true;
 #endif
 }
-
-#if BUILDFLAG(IS_ANDROID)
-bool UseRealVideoColorSpaceForDisplay() {
-  // We need Android S for proper color space support in SurfaceControl.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_S)
-    return false;
-
-  return base::FeatureList::IsEnabled(
-      features::kUseRealVideoColorSpaceForDisplay);
-}
-#endif
 
 // Used by Viz to determine if viz::DisplayScheduler should dynamically adjust
 // its frame deadline. Returns the percentile of historic draw times to base the

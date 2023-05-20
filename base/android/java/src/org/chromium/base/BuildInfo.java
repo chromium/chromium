@@ -289,14 +289,11 @@ public class BuildInfo {
     public static boolean targetsAtLeastU() {
         int target = ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
 
-        // Logic for pre-API-finalization:
-        return BuildCompat.isAtLeastU() && target == Build.VERSION_CODES.CUR_DEVELOPMENT;
-
         // Logic for after API finalization but before public SDK release has to
         // just hardcode the appropriate SDK integer. This will include Android
         // builds with the finalized SDK, and also pre-API-finalization builds
         // (because CUR_DEVELOPMENT == 10000).
-        // return target >= <integer placeholder for U>;
+        return target >= 34;
 
         // Once the public SDK is upstreamed we can use the defined constant,
         // deprecate this, then eventually inline this at all callsites and

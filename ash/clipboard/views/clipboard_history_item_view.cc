@@ -25,7 +25,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -270,7 +269,7 @@ const ClipboardHistoryItem* ClipboardHistoryItemView::GetClipboardHistoryItem()
 
 gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
   const int preferred_width =
-      views::MenuConfig::instance().touchable_menu_min_width;
+      clipboard_history_util::GetPreferredItemViewWidth();
   return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
 }
 

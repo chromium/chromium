@@ -38,19 +38,19 @@ TEST_F('TextDefaultsTest', 'All', function() {
 });
 
 GEN('#if !BUILDFLAG(IS_LINUX)');
-var TextDefaultsSystemFontTest = class extends TextDefaultsTest {
+var TextDefaultsNoSystemFontTest = class extends TextDefaultsTest {
   /** @override */
   get featureList() {
     return {
-      enabled: [
+      disabled: [
         'features::kWebUiSystemFont',
       ],
     };
   }
 }
 
-TEST_F('TextDefaultsSystemFontTest', 'All', function() {
-  runMochaSuite('TextDefaultsSystemFont')
+TEST_F('TextDefaultsNoSystemFontTest', 'All', function() {
+  runMochaSuite('TextDefaultsNoSystemFont')
 });
 GEN('#endif')
 

@@ -6,12 +6,14 @@
 
 #include "chrome/browser/mac/initial_prefs.h"
 
-namespace first_run {
-namespace internal {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace first_run::internal {
 
 base::FilePath InitialPrefsPath() {
   return initial_prefs::InitialPrefsPath();
 }
 
-}  // namespace internal
-}  // namespace first_run
+}  // namespace first_run::internal

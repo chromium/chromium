@@ -8,6 +8,10 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "components/sessions/core/session_id.h"
@@ -200,6 +204,89 @@ void SidePanelService::SetOpenSidePanelOnIconClick(
   ExtensionPrefs::Get(browser_context_)
       ->SetBooleanPref(extension_id, kOpenSidePanelOnIconClickPref,
                        open_side_panel_on_icon_click);
+}
+
+base::expected<bool, std::string> SidePanelService::OpenSidePanelForWindow(
+    const Extension& extension,
+    int window_id,
+    bool include_incognito_information) {
+  std::string error;
+  Browser* browser = ExtensionTabUtil::GetBrowserInProfileWithId(
+      Profile::FromBrowserContext(browser_context_), window_id,
+      include_incognito_information, &error);
+  if (!browser) {
+    return base::unexpected(error);
+  }
+
+  auto global_options = GetOptions(extension, absl::nullopt);
+  if (!global_options.path || !global_options.enabled.has_value() ||
+      !(*global_options.enabled)) {
+    return base::unexpected(
+        base::StringPrintf("No active side panel for windowId: %d", window_id));
+  }
+
+  side_panel_util::OpenGlobalExtensionSidePanel(
+      *browser, /*web_contents=*/nullptr, extension.id());
+  return true;
+}
+
+base::expected<bool, std::string> SidePanelService::OpenSidePanelForTab(
+    const Extension& extension,
+    int tab_id,
+    absl::optional<int> window_id,
+    bool include_incognito_information) {
+  // First, find the corresponding tab.
+  Browser* browser = nullptr;
+  content::WebContents* web_contents = nullptr;
+  if (!ExtensionTabUtil::GetTabById(tab_id, browser_context_,
+                                    include_incognito_information, &browser,
+                                    nullptr, &web_contents, nullptr)) {
+    return base::unexpected(
+        base::StringPrintf("No tab with tabId: %d", tab_id));
+  }
+
+  CHECK(browser);
+
+  // If both `tab_id` and `window_id` were provided, ensure the tab is in
+  // the specified window.
+  if (window_id && window_id != ExtensionTabUtil::GetWindowId(browser)) {
+    return base::unexpected(
+        "The specified tab does not belong to the specified window.");
+  }
+
+  // Next, determine if we an active side panel (contextual or global) for that
+  // tab.
+  api::side_panel::PanelOptions panel_options = GetOptions(extension, tab_id);
+  if (!panel_options.path || !panel_options.enabled.has_value() ||
+      !(*panel_options.enabled)) {
+    return base::unexpected(
+        base::StringPrintf("No active side panel for tabId: %d", tab_id));
+  }
+
+  // If we do have an active panel, check if it's a contextual panel.
+  bool has_contextual_panel = false;
+  auto panels_iter = panels_.find(extension.id());
+  if (panels_iter != panels_.end()) {
+    auto tab_panels_iter = panels_iter->second.find(tab_id);
+    if (tab_panels_iter != panels_iter->second.end()) {
+      auto& options = tab_panels_iter->second;
+      CHECK(options.path);
+      CHECK(options.enabled.has_value());
+      CHECK(options.enabled.value());
+      has_contextual_panel = true;
+    }
+  }
+
+  // Open the appropriate panel.
+  if (has_contextual_panel) {
+    side_panel_util::OpenContextualExtensionSidePanel(*browser, *web_contents,
+                                                      extension.id());
+  } else {
+    side_panel_util::OpenGlobalExtensionSidePanel(*browser, web_contents,
+                                                  extension.id());
+  }
+
+  return true;
 }
 
 void SidePanelService::AddObserver(Observer* observer) {

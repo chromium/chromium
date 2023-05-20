@@ -50,6 +50,10 @@ cargo_crate("lib") {
     "unicode-segment",
   ]
 }
+group("test_support") {
+  public_deps = [ ":lib" ]
+  testonly = true
+}
 cargo_crate("buildrs_support") {
   crate_name = "regex"
   epoch = "1"

@@ -108,8 +108,7 @@ CdmPromise::Exception ToCdmPromiseException(fuchsia::media::drm::Error error) {
 
     case fuchsia::media::drm::Error::NOT_PROVISIONED:
       // FuchsiaCdmManager is supposed to provision CDM.
-      NOTREACHED();
-      return CdmPromise::Exception::INVALID_STATE_ERROR;
+      NOTREACHED_NORETURN();
 
     case fuchsia::media::drm::Error::INTERNAL:
       DLOG(ERROR) << "CDM failed due to an internal error.";

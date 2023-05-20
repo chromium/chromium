@@ -43,9 +43,9 @@ class ASH_EXPORT CaptureModeTypeView : public views::View {
   // video capture type toggle buttons.
   raw_ptr<IconSwitch, ExperimentalAsh> capture_type_switch_;
 
-  // In the projector-initiated sessions, only `video_toggle_button_` is
-  // created. Otherwise, both toggle buttons are created. Image and video toggle
-  // buttons are owned by `capture_type_switch_`.
+  // Image and video toggle buttons are owned by `capture_type_switch_` which
+  // will be created based on the active behavior of the current capture mode
+  // session.
   raw_ptr<IconButton, ExperimentalAsh> image_toggle_button_ = nullptr;
   raw_ptr<IconButton, ExperimentalAsh> video_toggle_button_;
 };

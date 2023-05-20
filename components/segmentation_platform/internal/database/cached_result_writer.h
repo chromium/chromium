@@ -34,7 +34,7 @@ class CachedResultWriter {
   // Updates the prefs only if the previous result in the pref is expired or
   // unavailable or `force_refresh_results` is set as true. In both the above
   // cases, fetch result for model either from database or running the model.
-  void UpdatePrefsIfExpired(Config* config,
+  void UpdatePrefsIfExpired(const Config* config,
                             proto::ClientResult client_result,
                             const PlatformOptions& platform_options);
 
@@ -42,11 +42,11 @@ class CachedResultWriter {
   // Checks the following to determine whether to update pref with new result.
   // 1. Previous model results for client are either expired or unavailable.
   // 2. `force_refresh_results` option is set to true.
-  bool IsPrefUpdateRequiredForClient(Config* config,
+  bool IsPrefUpdateRequiredForClient(const Config* config,
                                      const PlatformOptions& platform_options);
 
   // Updates the supplied `client_result` as new result for the client in prefs.
-  void UpdateNewClientResultToPrefs(Config* config,
+  void UpdateNewClientResultToPrefs(const Config* config,
                                     const proto::ClientResult& client_result);
 
   // Helper class to read/write results to the prefs.

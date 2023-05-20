@@ -87,14 +87,12 @@ GuestViewManager* GuestViewManager::CreateWithDelegate(
     std::unique_ptr<GuestViewManagerDelegate> delegate) {
   GuestViewManager* guest_manager = FromBrowserContext(context);
   if (!guest_manager) {
-    if (g_factory) {
-      guest_manager =
-          g_factory->CreateGuestViewManager(context, std::move(delegate));
-    } else {
-      guest_manager = new GuestViewManager(context, std::move(delegate));
-    }
-    context->SetUserData(kGuestViewManagerKeyName,
-                         base::WrapUnique(guest_manager));
+    std::unique_ptr<GuestViewManager> new_manager =
+        g_factory
+            ? g_factory->CreateGuestViewManager(context, std::move(delegate))
+            : std::make_unique<GuestViewManager>(context, std::move(delegate));
+    guest_manager = new_manager.get();
+    context->SetUserData(kGuestViewManagerKeyName, std::move(new_manager));
   }
   return guest_manager;
 }

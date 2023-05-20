@@ -166,6 +166,7 @@ mojom("registration_mojom") {
     "//components/aggregation_service:mojom",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom:mojom_schemeful_site",
+    "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
 
@@ -259,6 +260,11 @@ mojom("registration_mojom") {
           default_constructible = false
           forward_declaration =
               "namespace attribution_reporting { class DestinationSet; }"
+        },
+        {
+          mojom = "attribution_reporting.mojom.OsRegistration"
+          cpp = "::std::vector<::GURL>"
+          move_only = true
         },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]

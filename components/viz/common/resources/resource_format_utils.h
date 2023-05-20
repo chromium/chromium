@@ -41,6 +41,10 @@ VIZ_RESOURCE_FORMAT_EXPORT int BitsPerPixel(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT ResourceFormat
 SkColorTypeToResourceFormat(SkColorType color_type);
 
+// Returns the single-plane SharedImageFormat corresponding to `color_type.`
+VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
+SkColorTypeToSinglePlaneSharedImageFormat(SkColorType color_type);
+
 // The following functions use unsigned int instead of GLenum, since including
 // third_party/khronos/GLES2/gl2.h causes redefinition errors as
 // macros/functions defined in it conflict with macros/functions defined in
@@ -69,10 +73,6 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int TextureStorageFormat(
 // Returns whether the format can be used with GpuMemoryBuffer texture storage.
 VIZ_RESOURCE_FORMAT_EXPORT bool IsGpuMemoryBufferFormatSupported(
     ResourceFormat format);
-
-// Returns whether the format can be used as a software bitmap for export to the
-// display compositor.
-VIZ_RESOURCE_FORMAT_EXPORT bool IsBitmapFormatSupported(ResourceFormat format);
 
 VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
 GetSharedImageFormat(gfx::BufferFormat format);

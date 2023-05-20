@@ -36,6 +36,9 @@ dictionary AuctionAdInterestGroup {
   // API users.
   record<USVString, sequence<DOMString>> sellerCapabilities;
   DOMString executionMode;
+  USVString biddingLogicURL;
+
+  [ImplementedAs=biddingLogicUrlDeprecated]
   USVString biddingLogicUrl;
   USVString biddingWasmHelperUrl;
   USVString updateUrl;

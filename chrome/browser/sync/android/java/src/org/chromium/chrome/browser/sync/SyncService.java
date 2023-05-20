@@ -176,7 +176,7 @@ public abstract class SyncService {
      */
     public abstract void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes);
 
-    public abstract void setFirstSetupComplete(int syncFirstSetupCompleteSource);
+    public abstract void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource);
 
     public abstract boolean isInitialSyncFeatureSetupComplete();
 

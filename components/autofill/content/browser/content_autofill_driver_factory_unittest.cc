@@ -122,6 +122,10 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               SetFieldsEligibleForManualFilling,
               (const std::vector<FieldRendererId>& fields),
               (override));
+  MOCK_METHOD(void,
+              GetPotentialLastFourCombinationsForStandaloneCvc,
+              (base::OnceCallback<void(const std::vector<std::string>&)>),
+              (override));
 
  private:
   mojo::AssociatedReceiverSet<mojom::AutofillAgent> receivers_;

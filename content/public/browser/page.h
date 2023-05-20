@@ -96,6 +96,9 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // is 1 (i.e. no magnification).
   virtual bool IsPageScaleFactorOne() = 0;
 
+  // Returns the MIME type bound to the Page contents after a navigation.
+  virtual const std::string& GetContentsMimeType() const = 0;
+
  private:
   // This method is needed to ensure that PageImpl can both implement a Page's
   // method and define a new GetMainDocument() returning RenderFrameHostImpl.

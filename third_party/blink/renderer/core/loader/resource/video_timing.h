@@ -74,6 +74,10 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
 
   base::TimeTicks DiscoveryTime() const override { return base::TimeTicks(); }
 
+  bool IsLoadedFromMemoryCache() const override { return false; }
+
+  bool IsPreloadedWithEarlyHints() const override { return false; }
+
  private:
   KURL url_;
   bool is_loaded_ = false;

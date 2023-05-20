@@ -12,6 +12,7 @@ import '../css/cros_button_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {dismissTimeOfDayBanner} from './ambient/ambient_controller.js';
+import {isAmbientModeAllowed} from './load_time_booleans.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {getTemplate} from './time_of_day_banner_element.html.js';
 
@@ -26,6 +27,12 @@ export class TimeOfDayBannerElement extends WithPersonalizationStore {
 
   private onDismissClick_() {
     dismissTimeOfDayBanner(this.getStore());
+  }
+
+  private getTimeOfDayBannerDescription_() {
+    return this.i18nAdvanced(
+        isAmbientModeAllowed() ? 'timeOfDayBannerDescription' :
+                                 'timeOfDayBannerDescriptionNoScreensaver');
   }
 }
 

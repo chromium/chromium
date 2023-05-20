@@ -5930,44 +5930,6 @@ TEST_F(StyleEngineTest, BorderWidthsAreRecalculatedWhenZoomChanges) {
   checkBorderWidth(1.0f);
 }
 
-TEST_F(StyleEngineTest, SubsequentSiblingRecalcFlatTree) {
-  GetDocument()
-      .documentElement()
-      ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
-    <div id="host">
-      <template shadowroot=open>
-        <slot name=a></slot>
-      </template>
-      <div slot=a id=target></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div slot=a></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div slot=a></div>
-    </div>
-  )HTML");
-
-  UpdateAllLifecyclePhasesForTest();
-
-  unsigned before_count = GetStyleEngine().StyleForElementCount();
-
-  Element* target = GetElementById("target");
-  ASSERT_TRUE(target);
-
-  target->SetInlineStyleProperty(CSSPropertyID::kScrollTimelineName, "foo");
-  UpdateAllLifecyclePhasesForTest();
-
-  unsigned after_count = GetStyleEngine().StyleForElementCount();
-
-  // Only the slotted elements should get style recalc.
-  EXPECT_EQ(3u, after_count - before_count);
-}
-
 TEST_F(StyleEngineTest, AnimationDelayShorthandFlags) {
   String css = "animation-delay:1s";
   {
@@ -6014,6 +5976,7 @@ TEST_F(StyleEngineTest, AnimationShorthandFlags) {
   {
     ScopedScrollTimelineForTest scroll_timeline_enabled(false);
     ScopedCSSAnimationDelayStartEndForTest start_end_enabled(false);
+    ScopedScrollTimelineCurrentTimeForTest current_time_enabled(false);
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);
     ASSERT_TRUE(set);
@@ -6104,6 +6067,7 @@ TEST_F(StyleEngineTest, AnimationDurationInitialValueWithScrollTimeline) {
 
 TEST_F(StyleEngineTest, AnimationDurationInitialValueWithoutScrollTimeline) {
   ScopedScrollTimelineForTest scroll_timeline_enabled(false);
+  ScopedScrollTimelineCurrentTimeForTest current_time_enabled(false);
 
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>

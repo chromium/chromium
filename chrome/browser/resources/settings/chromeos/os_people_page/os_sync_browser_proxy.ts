@@ -6,7 +6,7 @@
  * User preferences for OS sync. 'Registered' means the user has the option to
  * select a type. For example, a type might not be registered due to a feature
  * flag being disabled.
- * @see components/sync/driver/sync_service.h
+ * @see components/sync/service/sync_service.h
  *
  * TODO(jamescook): Encryption options.
  */

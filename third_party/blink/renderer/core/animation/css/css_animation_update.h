@@ -8,6 +8,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/css/css_timeline_map.h"
+#include "third_party/blink/renderer/core/animation/deferred_timeline.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
@@ -202,6 +203,15 @@ class CORE_EXPORT CSSAnimationUpdate final {
     changed_view_timelines_ = std::move(timelines);
   }
 
+  void SetChangedDeferredTimelines(CSSDeferredTimelineMap timelines) {
+    changed_deferred_timelines_ = std::move(timelines);
+  }
+
+  void SetChangedTimelineAttachments(TimelineAttachmentMap attachments) {
+    changed_timeline_attachments_ = std::move(attachments);
+  }
+
+  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
   void SetChangedAttachingTimelines(AttachingTimelineMap timelines) {
     changed_attaching_timelines_ = std::move(timelines);
   }
@@ -258,6 +268,14 @@ class CORE_EXPORT CSSAnimationUpdate final {
   const CSSViewTimelineMap& ChangedViewTimelines() const {
     return changed_view_timelines_;
   }
+  const CSSDeferredTimelineMap& ChangedDeferredTimelines() const {
+    return changed_deferred_timelines_;
+  }
+  const TimelineAttachmentMap& ChangedTimelineAttachments() const {
+    return changed_timeline_attachments_;
+  }
+
+  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
   const AttachingTimelineMap& ChangedAttachingTimelines() const {
     return changed_attaching_timelines_;
   }
@@ -291,6 +309,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
            !updated_compositor_keyframes_.empty() ||
            !changed_scroll_timelines_.empty() ||
            !changed_view_timelines_.empty() ||
+           !changed_deferred_timelines_.empty() ||
+           !changed_timeline_attachments_.empty() ||
            !changed_attaching_timelines_.empty();
   }
 
@@ -304,6 +324,10 @@ class CORE_EXPORT CSSAnimationUpdate final {
     visitor->Trace(active_interpolations_for_transitions_);
     visitor->Trace(changed_scroll_timelines_);
     visitor->Trace(changed_view_timelines_);
+    visitor->Trace(changed_deferred_timelines_);
+    visitor->Trace(changed_timeline_attachments_);
+
+    // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
     visitor->Trace(changed_attaching_timelines_);
   }
 
@@ -330,6 +354,10 @@ class CORE_EXPORT CSSAnimationUpdate final {
 
   CSSScrollTimelineMap changed_scroll_timelines_;
   CSSViewTimelineMap changed_view_timelines_;
+  CSSDeferredTimelineMap changed_deferred_timelines_;
+  TimelineAttachmentMap changed_timeline_attachments_;
+
+  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
   AttachingTimelineMap changed_attaching_timelines_;
 
   ActiveInterpolationsMap active_interpolations_for_animations_;

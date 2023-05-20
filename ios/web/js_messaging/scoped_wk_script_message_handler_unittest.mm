@@ -36,6 +36,35 @@ static NSString* kPostMessageScriptFormat =
     @"} catch (err) {"
     @"  false;"
     @"}";
+
+// The test asynchronous message handler name.
+static NSString* kScriptHandlerWithReplyName = @"FakeHandlerWithReplyName";
+
+// Fake result that native reply to JavaScript.
+const int kScriptHandlerReplyResult = 42;
+
+// A part of message of the error which will be hit when a messageHandler is
+// used before registration. Full error message should be `undefined is not an
+// object (evaluating
+// 'window.webkit.messageHandlers['FakeHandlerWithReplyName'].postMessage')`.
+static NSString* kScriptUndefinedObjectErrorMessage =
+    @"undefined is not an object";
+
+// Error message JavaScript will catch when `replyHandler` is deallocated before
+// it is called.
+static NSString* kScriptMessageNoReplyErrorMessage =
+    @"WKWebView API client did not respond to this postMessage";
+
+// Script which sends a post message to the native message handlers which can
+// reply to JavaScript asynchronously. Evaluation will result in value of
+// `kScriptHandlerReplyResult` on success, or the error message of the
+// JavaScript Error caught.
+static NSString* kPostMessageWithReplyHandlerScriptFormat =
+    @"try {"
+    @"  return await window.webkit.messageHandlers['%@'].postMessage(%d);"
+    @"} catch (err) {"
+    @"  return err.message;"
+    @"}";
 }
 
 namespace web {
@@ -56,6 +85,12 @@ class ScopedWKScriptMessageHandlerTest : public WebTestWithWebState {
   NSString* GetPostMessageScript() {
     return [NSString
         stringWithFormat:kPostMessageScriptFormat, kScriptHandlerName];
+  }
+
+  NSString* GetPostMessageWithReplyHandlerScript() {
+    return [NSString stringWithFormat:kPostMessageWithReplyHandlerScriptFormat,
+                                      kScriptHandlerWithReplyName,
+                                      kScriptHandlerReplyResult];
   }
 };
 
@@ -199,4 +234,278 @@ TEST_F(ScopedWKScriptMessageHandlerTest, ScriptMessageCrossWorldIsolated) {
   EXPECT_FALSE(handler_called);
 }
 
+// Tests that the ScopedWKScriptMessageHandler block with reply handler is
+// called and reply with correct result for an isolated content world.
+TEST_F(ScopedWKScriptMessageHandlerTest,
+       ScriptMessageWithReplyHandlerReceivedIsolatedWorld) {
+  __block WKScriptMessage* message = nil;
+
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler_with_reply =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerWithReplyName,
+          WKContentWorld.defaultClientWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message,
+                                ScriptMessageReplyHandler reply_handler) {
+            message = callback_message;
+            auto reply =
+                std::make_unique<base::Value>(kScriptHandlerReplyResult);
+            reply_handler(reply.get(), /*error_message=*/nil);
+          }));
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result = web::test::ExecuteAsyncJavaScript(
+      web_view, WKContentWorld.defaultClientWorld,
+      GetPostMessageWithReplyHandlerScript());
+  ASSERT_TRUE([result isKindOfClass:[NSNumber class]]);
+  EXPECT_EQ([result intValue], kScriptHandlerReplyResult);
+
+  ASSERT_TRUE(message);
+  EXPECT_NSEQ(message.name, kScriptHandlerWithReplyName);
+
+  ASSERT_TRUE([message.body isKindOfClass:[NSNumber class]]);
+  EXPECT_EQ([message.body intValue], kScriptHandlerReplyResult);
+}
+
+// Tests that the ScopedWKScriptMessageHandler block with reply handler is
+// called and reply with correct result for the page content world.
+TEST_F(ScopedWKScriptMessageHandlerTest,
+       ScriptMessageWithReplyHandlerReceivedPageWorld) {
+  __block WKScriptMessage* message = nil;
+
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler_with_reply =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerWithReplyName,
+          WKContentWorld.pageWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message,
+                                ScriptMessageReplyHandler reply_handler) {
+            message = callback_message;
+            auto reply =
+                std::make_unique<base::Value>(kScriptHandlerReplyResult);
+            reply_handler(reply.get(), /*error_message=*/nil);
+          }));
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result =
+      web::test::ExecuteAsyncJavaScript(web_view, WKContentWorld.pageWorld,
+                                        GetPostMessageWithReplyHandlerScript());
+  ASSERT_TRUE([result isKindOfClass:[NSNumber class]]);
+  EXPECT_EQ([result intValue], kScriptHandlerReplyResult);
+
+  ASSERT_TRUE(message);
+  EXPECT_NSEQ(message.name, kScriptHandlerWithReplyName);
+
+  ASSERT_TRUE([message.body isKindOfClass:[NSNumber class]]);
+  EXPECT_EQ([message.body intValue], kScriptHandlerReplyResult);
+}
+
+// Tests that the ScopedWKScriptMessageHandler block with reply handler is
+// called and reply with `undefined` result for the page content world.
+TEST_F(ScopedWKScriptMessageHandlerTest,
+       ScriptMessageWithReplyHandlerReceivedAndReplyUndefinedResult) {
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler_with_reply =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerWithReplyName,
+          WKContentWorld.defaultClientWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message,
+                                ScriptMessageReplyHandler reply_handler) {
+            reply_handler(/*reply=*/nullptr, /*error_message=*/nil);
+          }));
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result = web::test::ExecuteAsyncJavaScript(
+      web_view, WKContentWorld.defaultClientWorld,
+      GetPostMessageWithReplyHandlerScript());
+  ASSERT_FALSE(result);
+}
+
+// Tests that the ScopedWKScriptMessageHandler block with reply handler is
+// called and reply with `none` result for the page content world.
+TEST_F(ScopedWKScriptMessageHandlerTest,
+       ScriptMessageWithReplyHandlerReceivedAndReplyNoneResult) {
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler_with_reply =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerWithReplyName,
+          WKContentWorld.defaultClientWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message,
+                                ScriptMessageReplyHandler reply_handler) {
+            auto reply = std::make_unique<base::Value>();
+            reply_handler(reply.get(), /*error_message=*/nil);
+          }));
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result = web::test::ExecuteAsyncJavaScript(
+      web_view, WKContentWorld.defaultClientWorld,
+      GetPostMessageWithReplyHandlerScript());
+  ASSERT_TRUE([result isKindOfClass:[NSNull class]]);
+}
+
+// Tests that the ScopedWKScriptMessageHandler block with reply handler is
+// called and reply with error message when native can't reply a specific result
+// for an isolated content world.
+TEST_F(ScopedWKScriptMessageHandlerTest,
+       ScriptMessageWithReplyHandlerReceivedAndReplyWithErrorMessage) {
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler_with_reply =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerWithReplyName,
+          WKContentWorld.defaultClientWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message,
+                                ScriptMessageReplyHandler reply_handler) {
+            reply_handler(/*reply=*/nullptr, @"FakeReplyErrorMessage");
+          }));
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result = web::test::ExecuteAsyncJavaScript(
+      web_view, WKContentWorld.defaultClientWorld,
+      GetPostMessageWithReplyHandlerScript());
+  ASSERT_TRUE([result isKindOfClass:[NSString class]]);
+  EXPECT_NSEQ(result, @"FakeReplyErrorMessage");
+}
+
+// Tests that the ScopedWKScriptMessageHandler block with reply handler is
+// called but no reply to received message for an isolated content world.
+TEST_F(ScopedWKScriptMessageHandlerTest,
+       ScriptMessageWithReplyHandlerReceivedAndNoReply) {
+  __block bool handler_called = false;
+
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler_with_reply =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerWithReplyName,
+          WKContentWorld.defaultClientWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message,
+                                ScriptMessageReplyHandler reply_handler) {
+            handler_called = true;
+          }));
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result = web::test::ExecuteAsyncJavaScript(
+      web_view, WKContentWorld.defaultClientWorld,
+      GetPostMessageWithReplyHandlerScript());
+  ASSERT_TRUE([result isKindOfClass:[NSString class]]);
+  EXPECT_NSEQ(result, kScriptMessageNoReplyErrorMessage);
+
+  EXPECT_TRUE(handler_called);
+}
+
+// Tests that the ScopedWKScriptMessageHandler block with reply handler
+// is not called after deconstruction.
+TEST_F(ScopedWKScriptMessageHandlerTest,
+       ScriptMessageWithReplyHandlerNotReceivedAfterDeconstruction) {
+  __block int handler_called_count = 0;
+
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler_with_reply =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerWithReplyName,
+          WKContentWorld.defaultClientWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message,
+                                ScriptMessageReplyHandler reply_handler) {
+            handler_called_count++;
+            auto reply =
+                std::make_unique<base::Value>(kScriptHandlerReplyResult);
+            reply_handler(reply.get(), /*error_message=*/nil);
+          }));
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result = web::test::ExecuteAsyncJavaScript(
+      web_view, WKContentWorld.defaultClientWorld,
+      GetPostMessageWithReplyHandlerScript());
+  ASSERT_TRUE([result isKindOfClass:[NSNumber class]]);
+  EXPECT_EQ([result intValue], kScriptHandlerReplyResult);
+
+  scoped_handler_with_reply.reset();
+  // JavaScript exception should be thrown if script message handler was
+  // removed.
+  result = web::test::ExecuteAsyncJavaScript(
+      web_view, WKContentWorld.defaultClientWorld,
+      GetPostMessageWithReplyHandlerScript());
+  // `result` should be `err.message` of catched `err` now.
+  ASSERT_TRUE([result isKindOfClass:[NSString class]]);
+  // `undefined is not an object` error should be hit as message handler
+  // `FakeHandlerWithReplyName` was removed.
+  EXPECT_TRUE([result containsString:kScriptUndefinedObjectErrorMessage]);
+
+  EXPECT_EQ(1, handler_called_count);
+}
+
+// Tests that a script message handler with reply registered in the page content
+// world does not receive messages from an isolated world.
+TEST_F(ScopedWKScriptMessageHandlerTest,
+       ScriptMessageWithReplyHandlerCrossWorldPageContent) {
+  __block bool handler_called = false;
+
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler_with_reply =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerWithReplyName,
+          WKContentWorld.pageWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message,
+                                ScriptMessageReplyHandler reply_handler) {
+            reply_handler(/*reply=*/nullptr, /*error_message=*/nil);
+            handler_called = true;
+          }));
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result = web::test::ExecuteAsyncJavaScript(
+      web_view, WKContentWorld.defaultClientWorld,
+      GetPostMessageWithReplyHandlerScript());
+  // `result` should be `err.message` of catched `err` now.
+  ASSERT_TRUE([result isKindOfClass:[NSString class]]);
+  // `undefined is not an object` error should be hit as message handler
+  // `FakeHandlerWithReplyName` is not aded to corresponding content world.
+  EXPECT_TRUE([result containsString:kScriptUndefinedObjectErrorMessage]);
+  EXPECT_FALSE(handler_called);
+}
+
+// Tests that a script message handler with reply registered on an isolated
+// world does not receive messages from the page content world.
+TEST_F(ScopedWKScriptMessageHandlerTest,
+       ScriptMessageWithReplyHandlerCrossWorldIsolated) {
+  __block bool handler_called = false;
+
+  std::unique_ptr<ScopedWKScriptMessageHandler> scoped_handler_with_reply =
+      std::make_unique<ScopedWKScriptMessageHandler>(
+          GetUserContentController(), kScriptHandlerWithReplyName,
+          WKContentWorld.defaultClientWorld,
+          base::BindRepeating(^(WKScriptMessage* callback_message,
+                                ScriptMessageReplyHandler reply_handler) {
+            reply_handler(/*reply=*/nullptr, /*error_message=*/nil);
+            handler_called = true;
+          }));
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  id result =
+      web::test::ExecuteAsyncJavaScript(web_view, WKContentWorld.pageWorld,
+                                        GetPostMessageWithReplyHandlerScript());
+  // `result` should be `err.message` of catched `err` now.
+  ASSERT_TRUE([result isKindOfClass:[NSString class]]);
+  // `undefined is not an object` error should be hit as message handler
+  // `FakeHandlerWithReplyName` is not aded to corresponding content world.
+  EXPECT_TRUE([result containsString:kScriptUndefinedObjectErrorMessage]);
+  EXPECT_FALSE(handler_called);
+}
 }  // namespace web

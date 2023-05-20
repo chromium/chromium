@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.OutcomeReceiver;
 import android.os.Parcel;
+import android.util.Base64;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
@@ -68,6 +69,8 @@ import java.util.List;
 public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private static final String TAG = "Fido2Request";
     private static final String CRED_MAN_PREFIX = "androidx.credentials.";
+    private static final String GPM_COMPONENT_NAME = "com.google.android.gms/com.google.android.gms"
+            + ".auth.api.credentials.credman.service.PasswordAndPasskeyService";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
     static final String NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG =
@@ -76,6 +79,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     static final String CREDENTIAL_EXISTS_ERROR_MSG =
             "One of the excluded credentials exists on the local device";
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
+    static final String CRED_MAN_EXCEPTION_TYPE_USER_CANCEL =
+            "android.credentials.CreateCredentialException.TYPE_USER_CANCELED";
 
     private static Boolean sIsCredManEnabled;
 
@@ -89,8 +94,13 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private boolean mAppIdExtensionUsed;
     private boolean mEchoCredProps;
     private WebAuthnBrowserBridge mBrowserBridge;
+    private Object mCredentialManagerServiceForTesting;
+    private Class mCredManCreateRequestBuilderClassForTesting;
+    private Class mCredManGetRequestBuilderClassForTesting;
+    private Class mCredManCredentialOptionBuilderClassForTesting;
     private boolean mAttestationAcceptable;
     private boolean mIsCrossOrigin;
+    private boolean mOverrideVersionCheckForTesting;
 
     private enum ConditionalUiState {
         NONE,
@@ -131,15 +141,17 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         mMakeCredentialCallback = null;
     }
 
+    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private boolean isCredManEnabled() {
         if (sIsCredManEnabled == null) {
             sIsCredManEnabled =
-                    DeviceFeatureList.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN);
+                    DeviceFeatureList.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN)
+                    && (BuildCompat.isAtLeastU() || mOverrideVersionCheckForTesting);
         }
         return sIsCredManEnabled;
     }
 
-    @OptIn(markerClass = BuildCompat.PrereleaseSdkCheck.class)
+    @SuppressWarnings("NewApi")
     public void handleMakeCredentialRequest(PublicKeyCredentialCreationOptions options,
             RenderFrameHost frameHost, Origin origin, MakeCredentialResponseCallback callback,
             FidoErrorResponseCallback errorCallback) {
@@ -167,7 +179,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 || options.authenticatorSelection.residentKey == ResidentKeyRequirement.DISCOURAGED;
         mEchoCredProps = options.credProps;
 
-        if (isCredManEnabled() && BuildCompat.isAtLeastU()) {
+        if (isCredManEnabled()) {
             makeCredentialViaCredMan(options, origin);
             return;
         }
@@ -207,7 +219,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
     }
 
-    @OptIn(markerClass = BuildCompat.PrereleaseSdkCheck.class)
+    @SuppressWarnings("NewApi")
     public void handleGetAssertionRequest(PublicKeyCredentialRequestOptions options,
             RenderFrameHost frameHost, Origin callerOrigin, PaymentOptions payment,
             GetAssertionResponseCallback callback, FidoErrorResponseCallback errorCallback) {
@@ -244,7 +256,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         byte[] clientDataHash = null;
 
         // Payments should still go through Google Play Services.
-        if (payment == null && isCredManEnabled() && BuildCompat.isAtLeastU()) {
+        if (payment == null && isCredManEnabled()) {
             if (options.isConditional) {
                 mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
                 prefetchCredentialsViaCredMan(
@@ -393,6 +405,20 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     @VisibleForTesting
     public void overrideBrowserBridgeForTesting(WebAuthnBrowserBridge bridge) {
         mBrowserBridge = bridge;
+    }
+
+    @VisibleForTesting
+    public void setOverrideVersionCheckForTesting(boolean override) {
+        mOverrideVersionCheckForTesting = override;
+    }
+
+    @VisibleForTesting
+    public void setCredManClassesForTesting(Object credentialManager, Class createRequestBuilder,
+            Class getRequestBuilder, Class credentialOptionBuilder) {
+        mCredentialManagerServiceForTesting = credentialManager;
+        mCredManCreateRequestBuilderClassForTesting = createRequestBuilder;
+        mCredManGetRequestBuilderClassForTesting = getRequestBuilder;
+        mCredManCredentialOptionBuilderClassForTesting = credentialOptionBuilder;
     }
 
     private boolean apiAvailable() {
@@ -686,7 +712,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     }
 
     @VisibleForTesting
-    public String convertOriginToString(Origin origin) {
+    public static String convertOriginToString(Origin origin) {
         // Wrapping with GURLUtils.getOrigin() in order to trim default ports.
         return GURLUtils.getOrigin(
                 origin.getScheme() + "://" + origin.getHost() + ":" + origin.getPort());
@@ -706,12 +732,42 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         }
     }
 
+    @SuppressWarnings("WrongConstant")
+    Object credentialManagerService(Context context) {
+        if (mCredentialManagerServiceForTesting != null) {
+            return mCredentialManagerServiceForTesting;
+        }
+        // TODO: switch "credential" to `Context.CREDENTIAL_SERVICE` and remove the
+        // `@SuppressWarnings` when the Android U SDK is available.
+        return context.getSystemService("credential");
+    }
+
+    Class credManCreateRequestBuilderClass() throws ClassNotFoundException {
+        if (mCredManCreateRequestBuilderClassForTesting != null) {
+            return mCredManCreateRequestBuilderClassForTesting;
+        }
+        return Class.forName("android.credentials.CreateCredentialRequest$Builder");
+    }
+
+    Class credManGetRequestBuilderClass() throws ClassNotFoundException {
+        if (mCredManGetRequestBuilderClassForTesting != null) {
+            return mCredManGetRequestBuilderClassForTesting;
+        }
+        return Class.forName("android.credentials.GetCredentialRequest$Builder");
+    }
+
+    Class credManCredentialOptionBuilderClass() throws ClassNotFoundException {
+        if (mCredManCredentialOptionBuilderClassForTesting != null) {
+            return mCredManCredentialOptionBuilderClassForTesting;
+        }
+        return Class.forName("android.credentials.CredentialOption$Builder");
+    }
+
     /**
      * Create a credential using the Android 14 CredMan API.
      * TODO: update the version code to U when Chromium builds with Android 14 SDK.
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    @SuppressWarnings("WrongConstant")
     private void makeCredentialViaCredMan(
             PublicKeyCredentialCreationOptions options, Origin origin) {
         final String requestAsJson =
@@ -736,6 +792,16 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         requestBundle.putBoolean(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
 
+        final Bundle displayInfoBundle = new Bundle();
+        displayInfoBundle.putCharSequence(CRED_MAN_PREFIX + "BUNDLE_KEY_USER_ID",
+                Base64.encodeToString(
+                        options.user.id, Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP));
+        displayInfoBundle.putString(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_DEFAULT_PROVIDER", GPM_COMPONENT_NAME);
+
+        requestBundle.putBundle(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_DISPLAY_INFO", displayInfoBundle);
+
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
         OutcomeReceiver receiver = new OutcomeReceiver<Object, Throwable>() {
@@ -744,8 +810,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 String errorType = getCredManExceptionType(e);
                 Log.e(TAG, "CredMan CreateCredential call failed: %s",
                         errorType + " (" + e.getMessage() + ")");
-                if (errorType.equals(
-                            "android.credentials.CreateCredentialException.TYPE_USER_CANCELED")) {
+                if (errorType.equals(CRED_MAN_EXCEPTION_TYPE_USER_CANCEL)) {
                     returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                 } else {
                     // Includes:
@@ -795,8 +860,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         };
 
         try {
-            final Class createCredentialRequestBuilder =
-                    Class.forName("android.credentials.CreateCredentialRequest$Builder");
+            final Class createCredentialRequestBuilder = credManCreateRequestBuilderClass();
             final Object builder =
                     createCredentialRequestBuilder
                             .getConstructor(String.class, Bundle.class, Bundle.class)
@@ -808,9 +872,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             builderClass.getMethod("setOrigin", String.class)
                     .invoke(builder, convertOriginToString(origin));
             final Object request = builderClass.getMethod("build").invoke(builder);
-            // TODO: switch "credential" to `Context.CREDENTIAL_SERVICE` and remove the
-            // `@SuppressWarnings` when the Android U SDK is available.
-            final Object manager = context.getSystemService("credential");
+            final Object manager = credentialManagerService(context);
             try {
                 manager.getClass()
                         .getMethod("createCredential", Context.class, request.getClass(),
@@ -848,7 +910,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
      * TODO: update the version code to U when Chromium builds with Android 14 SDK.
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    @SuppressWarnings("WrongConstant")
     private void getCredentialViaCredMan(PublicKeyCredentialRequestOptions options, Origin origin) {
         final Context context = ContextUtils.getApplicationContext();
 
@@ -860,8 +921,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 String errorType = getCredManExceptionType(getCredentialException);
                 Log.e(TAG, "CredMan getCredential call failed: %s",
                         errorType + " (" + getCredentialException.getMessage() + ")");
-                if (errorType.equals(
-                            "android.credentials.GetCredentialException.TYPE_USER_CANCELED")) {
+                notifyBrowserOnCredManClosed(false);
+                if (errorType.equals(CRED_MAN_EXCEPTION_TYPE_USER_CANCEL)) {
                     returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                 } else {
                     // Includes:
@@ -893,6 +954,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                         Fido2CredentialRequestJni.get().getCredentialResponseFromJson(json);
                 if (responseSerialized == null) {
                     Log.e(TAG, "Failed to convert response from CredMan to Mojo object: %s", json);
+                    notifyBrowserOnCredManClosed(false);
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
                     return;
                 }
@@ -902,6 +964,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                                 ByteBuffer.wrap(responseSerialized));
                 if (response == null) {
                     Log.e(TAG, "Failed to parse Mojo object");
+                    notifyBrowserOnCredManClosed(false);
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
                     return;
                 }
@@ -909,6 +972,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 if (mAppIdExtensionUsed) {
                     response.echoAppidExtension = mAppIdExtensionUsed;
                 }
+                notifyBrowserOnCredManClosed(true);
                 mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS, response);
                 mGetAssertionCallback = null;
             }
@@ -920,10 +984,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                 return;
             }
-
-            // TODO: switch "credential" to `Context.CREDENTIAL_SERVICE` and remove the
-            // `@SuppressWarnings` when the Android U SDK is available.
-            final Object manager = context.getSystemService("credential");
+            final Object manager = credentialManagerService(context);
             try {
                 manager.getClass()
                         .getMethod("getCredential", Context.class, getCredentialRequest.getClass(),
@@ -961,7 +1022,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
      * TODO: update the version code to U when Chromium builds with Android 14 SDK.
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    @SuppressWarnings("WrongConstant")
     private void prefetchCredentialsViaCredMan(PublicKeyCredentialRequestOptions options,
             Origin origin, String callerOriginString, byte[] clientDataHash) {
         final Context context = ContextUtils.getApplicationContext();
@@ -1020,14 +1080,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     mBrowserBridge = new WebAuthnBrowserBridge();
                 }
                 mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
-                // TODO: Wire `hasPublicKeyCredentials`, `hasPublicKeyCredentials`,
-                // `hasRemoteResults` and `pendingGetCredentialHandle` instead of
-                // calling `onCredentialsDetailsListReceived`.
-                mBrowserBridge.onCredentialsDetailsListReceived(mFrameHost,
-                        new ArrayList<WebAuthnCredentialDetails>(), options.isConditional,
-                        (selectedCredentialId)
-                                -> maybeDispatchGetAssertionRequest(options, callerOriginString,
-                                        clientDataHash, selectedCredentialId));
+                mBrowserBridge.onCredManConditionalRequestPending(mFrameHost,
+                        hasPasswordCredentials || hasPublicKeyCredentials || hasRemoteResults,
+                        () -> getCredentialViaCredMan(options, origin));
             }
         };
 
@@ -1038,9 +1093,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 return;
             }
 
-            // TODO: switch "credential" to `Context.CREDENTIAL_SERVICE` and remove the
-            // `@SuppressWarnings` when the Android U SDK is available.
-            final Object manager = context.getSystemService("credential");
+            final Object manager = credentialManagerService(context);
             manager.getClass()
                     .getMethod("prepareGetCredential", getCredentialRequest.getClass(),
                             android.os.CancellationSignal.class,
@@ -1074,8 +1127,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         // Build the CredentialOption:
         Object credentialOption;
         try {
-            final Class<?> credentialOptionBuilderClass =
-                    Class.forName("android.credentials.CredentialOption$Builder");
+            final Class<?> credentialOptionBuilderClass = credManCredentialOptionBuilderClass();
             final Object credentialOptionBuilder =
                     credentialOptionBuilderClass
                             .getConstructor(String.class, Bundle.class, Bundle.class)
@@ -1096,8 +1148,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         }
 
         // Build the GetCredentialRequest:
-        final Class<?> getCredentialRequestBuilderClass =
-                Class.forName("android.credentials.GetCredentialRequest$Builder");
+        final Class<?> getCredentialRequestBuilderClass = credManGetRequestBuilderClass();
         final Object getCredentialRequestBuilderObject =
                 getCredentialRequestBuilderClass.getConstructor(Bundle.class)
                         .newInstance(new Bundle());
@@ -1143,8 +1194,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         return messageDigest.digest();
     }
 
+    private void notifyBrowserOnCredManClosed(boolean success) {
+        if (mConditionalUiState != ConditionalUiState.WAITING_FOR_SELECTION) return;
+        mBrowserBridge.onCredManUiClosed(mFrameHost, success);
+    }
+
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         String createOptionsToJson(ByteBuffer serializedOptions);
         byte[] makeCredentialResponseFromJson(String json);
         String getOptionsToJson(ByteBuffer serializedOptions);

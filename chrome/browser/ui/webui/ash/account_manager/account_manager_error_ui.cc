@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -21,12 +22,11 @@ AccountManagerErrorUI::AccountManagerErrorUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
           Profile::FromWebUI(web_ui), chrome::kChromeUIAccountManagerErrorHost);
+  webui::EnableTrustedTypesCSP(html_source);
 
   web_ui->RegisterMessageCallback(
       "closeDialog", base::BindRepeating(&WebDialogUI::CloseDialog,
                                          weak_factory_.GetWeakPtr()));
-
-  html_source->DisableTrustedTypesCSP();
 
   html_source->UseStringsJs();
   html_source->EnableReplaceI18nInJS();

@@ -84,6 +84,11 @@ class BASE_EXPORT CheckError {
   static CheckError DumpWillBeCheck(
       const char* condition,
       const base::Location& location = base::Location::Current());
+  // Takes ownership over (free()s after using) `log_message_str`, for use with
+  // DUMP_WILL_BE_CHECK_op macros.
+  static CheckError DumpWillBeCheckOp(
+      char* log_message_str,
+      const base::Location& location = base::Location::Current());
 
   static CheckError PCheck(
       const char* condition,
@@ -93,6 +98,9 @@ class BASE_EXPORT CheckError {
 
   static CheckError DPCheck(
       const char* condition,
+      const base::Location& location = base::Location::Current());
+
+  static CheckError DumpWillBeNotReachedNoreturn(
       const base::Location& location = base::Location::Current());
 
   static CheckError NotImplemented(

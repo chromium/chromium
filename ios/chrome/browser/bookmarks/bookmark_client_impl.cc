@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/metrics/user_metrics.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
@@ -17,16 +16,19 @@
 #include "components/history/core/browser/url_database.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
+#include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 
 BookmarkClientImpl::BookmarkClientImpl(
     ChromeBrowserState* browser_state,
     bookmarks::ManagedBookmarkService* managed_bookmark_service,
-    sync_bookmarks::BookmarkSyncService* bookmark_sync_service)
+    sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
+    BookmarkUndoService* bookmark_undo_service)
     : browser_state_(browser_state),
       managed_bookmark_service_(managed_bookmark_service),
-      bookmark_sync_service_(bookmark_sync_service) {}
+      bookmark_sync_service_(bookmark_sync_service),
+      bookmark_undo_service_(bookmark_undo_service) {}
 
 BookmarkClientImpl::~BookmarkClientImpl() {}
 
@@ -77,10 +79,6 @@ bool BookmarkClientImpl::IsPermanentNodeVisibleWhenEmpty(
   return type == bookmarks::BookmarkNode::MOBILE;
 }
 
-void BookmarkClientImpl::RecordAction(const base::UserMetricsAction& action) {
-  base::RecordAction(action);
-}
-
 bookmarks::LoadManagedNodeCallback
 BookmarkClientImpl::GetLoadManagedNodeCallback() {
   if (managed_bookmark_service_)
@@ -117,4 +115,13 @@ void BookmarkClientImpl::DecodeBookmarkSyncMetadata(
     const base::RepeatingClosure& schedule_save_closure) {
   bookmark_sync_service_->DecodeBookmarkSyncMetadata(
       metadata_str, schedule_save_closure, model_);
+}
+
+void BookmarkClientImpl::OnBookmarkNodeRemovedUndoable(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* parent,
+    size_t index,
+    std::unique_ptr<bookmarks::BookmarkNode> node) {
+  bookmark_undo_service_->AddUndoEntryForRemovedNode(model, parent, index,
+                                                     std::move(node));
 }

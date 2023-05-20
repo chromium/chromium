@@ -177,22 +177,19 @@ void CdmPrefServiceHelper::ClearCdmPreferenceData(
   ScopedDictPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
 
   std::vector<std::string> origins_to_delete;
-  for (auto key_value : *update) {
-    const std::string& origin = key_value.first;
-
+  for (auto [origin, origin_value] : *update) {
     // Null filter indicates that we should delete everything.
     if (filter && !filter.Run(GURL(origin)))
       continue;
 
-    const base::Value& origin_dict = key_value.second;
-    if (!origin_dict.is_dict()) {
+    auto* origin_dict = origin_value.GetIfDict();
+    if (!origin_dict) {
       DVLOG(ERROR) << "Could not parse the preference data. Removing entry.";
       origins_to_delete.push_back(origin);
       continue;
     }
 
-    std::unique_ptr<CdmPrefData> cdm_pref_data =
-        FromDictValue(origin_dict.GetDict());
+    std::unique_ptr<CdmPrefData> cdm_pref_data = FromDictValue(*origin_dict);
 
     if (!cdm_pref_data) {
       origins_to_delete.push_back(origin);
@@ -204,8 +201,8 @@ void CdmPrefServiceHelper::ClearCdmPreferenceData(
       origins_to_delete.push_back(origin);
     } else if (TimeIsBetween(cdm_pref_data->client_token_creation_time(), start,
                              end)) {
-      key_value.second.RemoveKey(kClientToken);
-      key_value.second.RemoveKey(kClientTokenCreationTime);
+      origin_dict->Remove(kClientToken);
+      origin_dict->Remove(kClientTokenCreationTime);
     }
   }
 

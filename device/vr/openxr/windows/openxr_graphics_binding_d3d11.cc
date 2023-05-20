@@ -8,6 +8,7 @@
 #include <wrl.h>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_platform.h"
@@ -32,7 +33,8 @@ OpenXrGraphicsBindingD3D11::OpenXrGraphicsBindingD3D11(
 
 OpenXrGraphicsBindingD3D11::~OpenXrGraphicsBindingD3D11() = default;
 
-bool OpenXrGraphicsBindingD3D11::Initialize() {
+bool OpenXrGraphicsBindingD3D11::Initialize(XrInstance instance,
+                                            XrSystemId system) {
   if (initialized_) {
     return true;
   }
@@ -48,7 +50,7 @@ bool OpenXrGraphicsBindingD3D11::Initialize() {
   }
 
   LUID luid;
-  if (!weak_platform_helper_->TryGetLuid(&luid)) {
+  if (!weak_platform_helper_->TryGetLuid(&luid, system)) {
     DVLOG(1) << __func__ << " Did not get a luid";
     return false;
   }
@@ -70,7 +72,8 @@ const void* OpenXrGraphicsBindingD3D11::GetSessionCreateInfo() const {
   return &binding_;
 }
 
-int64_t OpenXrGraphicsBindingD3D11::GetSwapchainFormat() const {
+int64_t OpenXrGraphicsBindingD3D11::GetSwapchainFormat(
+    XrSession session) const {
   // OpenXR's swapchain format expects to describe the texture content.
   // The result of a swapchain image created from OpenXR API always contains a
   // typeless texture. On the other hand, WebGL API uses CSS color convention

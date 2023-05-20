@@ -25,11 +25,17 @@ constexpr char kProductNameAndArtImageNotShownSuffix[] = "MetadataNotShown";
 
 // Enum for different types of form events. Used for metrics logging.
 enum class CardMetadataLoggingEvent {
-  // Suggestion was shown.
+  // Suggestions were shown.
   kShown = 0,
   // Suggestion was selected.
   kSelected = 1,
-  kMaxValue = kSelected,
+  // Suggestion was filled into the form.
+  kFilled = 2,
+  // Form was about to be submitted, after being filled with a suggestion.
+  kWillSubmit = 3,
+  // Form was submitted, after being filled with a suggestion.
+  kSubmitted = 4,
+  kMaxValue = kSubmitted,
 };
 
 using HasBeenLogged = base::StrongAlias<class HasBeenLoggedTag, bool>;

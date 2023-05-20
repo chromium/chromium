@@ -147,6 +147,11 @@ enum ModelType {
   // WebAuthn credentials, more commonly known as passkeys.
   WEBAUTHN_CREDENTIAL,
 
+  // Invitations for sending passwords. Outgoing invitation from one user will
+  // become an incoming one for another.
+  INCOMING_PASSWORD_SHARING_INVITATION,
+  OUTGOING_PASSWORD_SHARING_INVITATION,
+
   // Proxy types are excluded from the sync protocol, but are still considered
   // real user types. By convention, we prefix them with 'PROXY_' to distinguish
   // them from normal protocol types.
@@ -250,7 +255,9 @@ enum class ModelTypeForHistograms {
   kSavedTabGroups = 56,
   kPowerBookmark = 57,
   kWebAuthnCredentials = 58,
-  kMaxValue = kWebAuthnCredentials,
+  kIncomingPasswordSharingInvitations = 59,
+  kOutgoingPasswordSharingInvitations = 60,
+  kMaxValue = kOutgoingPasswordSharingInvitations,
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
@@ -306,7 +313,9 @@ constexpr ModelTypeSet ProtocolTypes() {
           CONTACT_INFO,
           SAVED_TAB_GROUP,
           POWER_BOOKMARK,
-          WEBAUTHN_CREDENTIAL};
+          WEBAUTHN_CREDENTIAL,
+          INCOMING_PASSWORD_SHARING_INVITATION,
+          OUTGOING_PASSWORD_SHARING_INVITATION};
 }
 
 // These are the normal user-controlled types. This is to distinguish from
@@ -390,7 +399,8 @@ constexpr ModelTypeSet ControlTypes() {
 // Types that may commit data, but should never be included in a GetUpdates.
 // These are never encrypted.
 constexpr ModelTypeSet CommitOnlyTypes() {
-  return {USER_EVENTS, USER_CONSENTS, SECURITY_EVENTS, SHARING_MESSAGE};
+  return {USER_EVENTS, USER_CONSENTS, SECURITY_EVENTS, SHARING_MESSAGE,
+          OUTGOING_PASSWORD_SHARING_INVITATION};
 }
 
 // Types for which downloaded updates are applied immediately, before all

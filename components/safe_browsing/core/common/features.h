@@ -21,6 +21,9 @@ BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 // Adds page load token to client safe browsing report.
 BASE_DECLARE_FEATURE(kAddPageLoadTokenToClientSafeBrowsingReport);
 
+// Enables logging new phishing prevention data.
+BASE_DECLARE_FEATURE(kAntiPhishingTelemetry);
+
 // Killswitch for client side phishing detection. Since client side models are
 // run on a large fraction of navigations, crashes due to the model are very
 // impactful, even if only a small fraction of users have a bad version of the

@@ -28,11 +28,6 @@ void PopulateSSLDebuggingStrings(const net::SSLInfo ssl_info,
                                  const base::Time time_triggered,
                                  base::Value::Dict& load_time_data);
 
-// Fills in the details for a legacy TLS error. Abstracts the strings for
-// access from ios/.
-void PopulateLegacyTLSStrings(base::Value* load_time_data,
-                              const std::u16string& hostname);
-
 }  // common_string_util
 
 }  // namespace security_interstitials

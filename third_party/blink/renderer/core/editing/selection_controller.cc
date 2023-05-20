@@ -429,6 +429,15 @@ bool SelectionController::HandleSingleClick(
           : visible_hit_position;
   const VisibleSelectionInFlatTree& selection =
       Selection().ComputeVisibleSelectionInFlatTree();
+  const bool is_editable = IsEditable(*inner_node);
+
+  if (frame_->GetEditor().Behavior().ShouldToggleMenuWhenCaretTapped() &&
+      is_editable && event.Event().FromTouch() && selection.IsCaret() &&
+      selection.Base() == position_to_use.GetPosition()) {
+    mouse_down_was_single_click_on_caret_ = true;
+    HandleTapOnCaret(event, selection.AsSelection());
+    return false;
+  }
 
   // Don't restart the selection when the mouse is pressed on an
   // existing selection so we can allow for text dragging.
@@ -483,7 +492,6 @@ bool SelectionController::HandleSingleClick(
   }
 
   bool is_handle_visible = false;
-  const bool is_editable = IsEditable(*inner_node);
   if (is_editable) {
     const bool is_text_box_empty =
         !RootEditableElement(*inner_node)->HasChildren();
@@ -519,6 +527,32 @@ bool SelectionController::HandleSingleClick(
   }
 
   return false;
+}
+
+// Returns true if the tap is processed.
+void SelectionController::HandleTapOnCaret(
+    const MouseEventWithHitTestResults& event,
+    const SelectionInFlatTree& selection) {
+  Node* inner_node = event.InnerNode();
+  const bool is_text_box_empty =
+      !RootEditableElement(*inner_node)->HasChildren();
+
+  // If the textbox is empty, tapping the caret should toggle showing/hiding the
+  // handle. Otherwise, always show the handle.
+  const bool should_show_handle =
+      !is_text_box_empty || !Selection().IsHandleVisible();
+
+  // Repaint the caret to ensure that the handle is shown if needed.
+  MarkSelectionEndpointsForRepaint(selection);
+  const bool did_select = UpdateSelectionForMouseDownDispatchingSelectStart(
+      inner_node, selection,
+      SetSelectionOptions::Builder()
+          .SetShouldShowHandle(should_show_handle)
+          .Build());
+  if (did_select) {
+    frame_->GetEventHandler().ShowNonLocatedContextMenu(nullptr,
+                                                        kMenuSourceTouch);
+  }
 }
 
 // Returns true if the tap is processed.
@@ -1081,6 +1115,7 @@ bool SelectionController::HandleMousePressEvent(
   mouse_down_may_start_select_ = (CanMouseDownStartSelect(event.InnerNode()) ||
                                   IsSelectionOverLink(event)) &&
                                  !event.GetScrollbar();
+  mouse_down_was_single_click_on_caret_ = false;
   mouse_down_was_single_click_in_selection_ = false;
   if (!Selection().IsAvailable()) {
     // "gesture-tap-frame-removed.html" reaches here.
@@ -1288,7 +1323,8 @@ void SelectionController::UpdateSelectionForContextMenuEvent(
     const PhysicalOffset& position) {
   if (!Selection().IsAvailable())
     return;
-  if (Selection().Contains(position) || hit_test_result.GetScrollbar() ||
+  if (mouse_down_was_single_click_on_caret_ || Selection().Contains(position) ||
+      hit_test_result.GetScrollbar() ||
       // FIXME: In the editable case, word selection sometimes selects content
       // that isn't underneath the mouse.
       // If the selection is non-editable, we do word selection to make it
@@ -1298,8 +1334,9 @@ void SelectionController::UpdateSelectionForContextMenuEvent(
             .ComputeVisibleSelectionInDOMTreeDeprecated()
             .IsContentEditable() ||
         (hit_test_result.InnerNode() &&
-         hit_test_result.InnerNode()->IsTextNode())))
+         hit_test_result.InnerNode()->IsTextNode()))) {
     return;
+  }
 
   // Context menu events are always allowed to perform a selection.
   base::AutoReset<bool> mouse_down_may_start_select_change(

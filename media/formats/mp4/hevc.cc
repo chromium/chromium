@@ -256,7 +256,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
               break;
             case H265SEIMessage::kSEIMasteringDisplayInfo:
               sei_msg.mastering_display_info.PopulateColorVolumeMetadata(
-                  hdr_metadata.color_volume_metadata);
+                  hdr_metadata.smpte_st_2086);
               break;
             case H265SEIMessage::kSEIAlphaChannelInfo:
               alpha_mode =

@@ -34,6 +34,9 @@
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
                                       kHighEfficiencyDialogBodyElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    HighEfficiencyBubbleView,
+    kHighEfficiencyDialogResourceViewElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
                                       kHighEfficiencyDialogOkButton);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HighEfficiencyBubbleView,
@@ -147,7 +150,8 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
     dialog_model_builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
             std::make_unique<HighEfficiencyResourceView>(memory_savings),
-            views::BubbleDialogModelHost::FieldType::kText));
+            views::BubbleDialogModelHost::FieldType::kText),
+        kHighEfficiencyDialogResourceViewElementId);
   }
 
   if (base::FeatureList::IsEnabled(

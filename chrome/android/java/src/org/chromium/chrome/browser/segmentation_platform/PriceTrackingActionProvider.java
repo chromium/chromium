@@ -41,7 +41,7 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
 
             shoppingService.getProductInfoForUrl(tab.getUrl(), (url, info) -> {
                 BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
-                boolean canTrackPrice = info != null;
+                boolean canTrackPrice = info != null && info.productClusterId.isPresent();
 
                 if (bookmarkId == null) {
                     signalAccumulator.setHasPriceTracking(canTrackPrice);

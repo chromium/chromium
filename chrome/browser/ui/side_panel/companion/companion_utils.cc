@@ -23,6 +23,13 @@ bool IsCompanionFeatureEnabled() {
   return base::FeatureList::IsEnabled(features::kSidePanelCompanion);
 }
 
+bool IsCompanionFeatureEnabledByPolicy(PrefService* pref_service) {
+  if (!pref_service) {
+    return false;
+  }
+  return pref_service->GetBoolean(prefs::kGoogleSearchSidePanelEnabled);
+}
+
 bool IsSearchInCompanionSidePanelSupported(const Browser* browser) {
   if (!browser) {
     return false;
@@ -31,7 +38,8 @@ bool IsSearchInCompanionSidePanelSupported(const Browser* browser) {
   DCHECK(profile);
   return search::DefaultSearchProviderIsGoogle(profile) &&
          !profile->IsOffTheRecord() && browser->is_type_normal() &&
-         IsCompanionFeatureEnabled();
+         IsCompanionFeatureEnabled() &&
+         IsCompanionFeatureEnabledByPolicy(profile->GetPrefs());
 }
 
 bool IsSearchWebInCompanionSidePanelSupported(const Browser* browser) {

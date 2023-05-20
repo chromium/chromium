@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
@@ -81,12 +82,13 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
+import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.tasks.SingleTabSwitcherCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -494,6 +496,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         // previously tracked Tab.
         if (mHomeSurfaceTracker != null && mHomeSurfaceTracker.isHomeSurfaceTab(mTab)) {
             showHomeSurfaceUi(mHomeSurfaceTracker.getLastActiveTabToTrack());
+            ReturnToChromeUtil.recordHomeSurfaceShown();
         }
 
         TraceEvent.end(TAG);
@@ -949,11 +952,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     @Override
-    public float getToolbarTextBoxAlpha(float defaultAlpha) {
-        return isLocationBarShownInNTP() ? 0.f : defaultAlpha;
-    }
-
-    @Override
     public boolean needsToolbarShadow() {
         return !mSearchProviderHasLogo;
     }
@@ -1091,11 +1089,41 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mSingleTabCardContainer = (FrameLayout) ((ViewStub) mNewTabPageLayout.findViewById(
                                                          R.id.tab_switcher_module_container_stub))
                                           .inflate();
+        updateSingleTabCardContainerMargins();
         mSingleTabSwitcherCoordinator = new SingleTabSwitcherCoordinator(mActivity,
                 mSingleTabCardContainer, mActivityLifecycleDispatcher, mTabModelSelector, true,
-                isScrollableMvtEnabled(mContext), mostRecentTab);
+                isScrollableMvtEnabled(mContext), mostRecentTab, this::onSingleTabCardClicked);
         mSingleTabSwitcherCoordinator.initWithNative();
         setSingleTabCardVisibility(true);
+    }
+
+    private void onSingleTabCardClicked() {
+        mTabModelSelector.getModel(false).closeTab(mTab);
+        if (mHomeSurfaceTracker != null) {
+            mHomeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(null, null);
+        }
+    }
+
+    /**
+     * Updates the margins for the single tab card container based on the type of MV tiles.
+     */
+    private void updateSingleTabCardContainerMargins() {
+        if (!mIsNtpAsHomeSurfaceEnabled) return;
+
+        MarginLayoutParams marginLayoutParams =
+                (MarginLayoutParams) mSingleTabCardContainer.getLayoutParams();
+        int SingleTabCardContainerTopAndBottomMargin;
+        if (isScrollableMvtEnabled(mContext)) {
+            SingleTabCardContainerTopAndBottomMargin =
+                    mNewTabPageLayout.getResources().getDimensionPixelOffset(
+                            R.dimen.single_tab_card_top_and_bottom_margin_carousel_mvt_tablet);
+        } else {
+            SingleTabCardContainerTopAndBottomMargin =
+                    mNewTabPageLayout.getResources().getDimensionPixelOffset(
+                            R.dimen.single_tab_card_top_and_bottom_margin_grid_mvt_tablet);
+        }
+        marginLayoutParams.topMargin = -SingleTabCardContainerTopAndBottomMargin;
+        marginLayoutParams.bottomMargin = SingleTabCardContainerTopAndBottomMargin;
     }
 
     /* Set the visibility of the single tab card.

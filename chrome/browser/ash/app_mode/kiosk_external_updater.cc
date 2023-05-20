@@ -350,8 +350,9 @@ bool KioskExternalUpdater::ShouldDoExternalUpdate(
 
   // Check minimum browser version.
   if (!min_browser_version.empty() &&
-      !ShouldUpdateForHigherVersion(min_browser_version,
-                                    version_info::GetVersionNumber(), true)) {
+      !ShouldUpdateForHigherVersion(
+          min_browser_version, std::string(version_info::GetVersionNumber()),
+          true)) {
     external_updates_[app_id].error = l10n_util::GetStringFUTF16(
         IDS_KIOSK_EXTERNAL_UPDATE_REQUIRE_HIGHER_BROWSER_VERSION,
         base::UTF8ToUTF16(min_browser_version));

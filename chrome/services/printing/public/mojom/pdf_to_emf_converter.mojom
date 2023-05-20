@@ -16,6 +16,11 @@ interface PdfToEmfConverter {
   ConvertPage(uint32 page_index) =>
       (mojo_base.mojom.ReadOnlySharedMemoryRegion? emf_region,
        float scale_factor);
+
+  // Sets the status for enterprise policy `kPdfUseSkiaRendererEnabled`. It
+  // should be called immediately once `mojom::NupPageConvert` remote is
+  // created and only when the enterprise policy is managed.
+  SetUseSkiaRendererPolicy(bool use_skia);
 };
 
 // Generates a PdfToEmfConverter, for converting a PDF to EMF.

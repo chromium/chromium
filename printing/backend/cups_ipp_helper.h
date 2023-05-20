@@ -31,6 +31,11 @@ COMPONENT_EXPORT(PRINT_BACKEND)
 void CapsAndDefaultsFromPrinter(const CupsPrinter& printer,
                                 PrinterSemanticCapsAndDefaults* printer_info);
 
+// Gets the printer margins for the provided paper size.
+COMPONENT_EXPORT(PRINT_BACKEND)
+gfx::Rect GetPrintableAreaForSize(const CupsPrinter& printer,
+                                  const gfx::Size& size_um);
+
 // Wraps `ipp` in unique_ptr with appropriate deleter
 COMPONENT_EXPORT(PRINT_BACKEND) ScopedIppPtr WrapIpp(ipp_t* ipp);
 

@@ -4,6 +4,7 @@
 
 import logging
 import os
+from posixpath import join
 import random
 import string
 import subprocess
@@ -234,6 +235,27 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     cmd = r'%s %s %s' % (self._pythonExecutablePath[instance_name], file_name,
                          args)
     return self.RunCommand(instance_name, cmd).decode()
+
+  def EnableHistogramSupport(self, instance_name, base_path):
+    """Enable histogram package support on an instance.
+
+    Note that base_path is the path to chrome/test/enterprise/e2e/connector.
+
+    Args:
+      instance_name: name of the instance.
+      base_path: the base path of the test in the chromium_src.
+    """
+    dest_path = join('c:', 'temp', 'histogram')
+    cmd = r'New-Item -ItemType Directory -Force -Path ' + dest_path
+    self.clients[instance_name].RunPowershell(cmd)
+
+    self.UploadFile(
+        self.win_config['client'],
+        os.path.join(base_path, 'common', 'histogram', '__init__.py'),
+        dest_path)
+    self.UploadFile(self.win_config['client'],
+                    os.path.join(base_path, 'common', 'histogram', 'util.py'),
+                    dest_path)
 
   def RunUITest(self, instance_name, test_file, timeout=300, args=[]):
     """Runs a UI test on an instance.

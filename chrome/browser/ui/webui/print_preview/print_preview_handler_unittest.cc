@@ -54,6 +54,10 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_sdk_manager.h"  //nogncheck
+#endif
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
@@ -423,11 +427,8 @@ class TestPrintPreviewHandlerForContentAnalysis
   ~TestPrintPreviewHandlerForContentAnalysis() override = default;
 
   bool print_called_after_scan() const { return print_called_after_scan_; }
-  bool finish_handle_print_if_allowed_called() const {
-    return finish_handle_print_if_allowed_called_;
-  }
 
- protected:
+ private:
   void FinishHandlePrint(UserActionBuckets user_action,
                          base::Value::Dict settings,
                          scoped_refptr<base::RefCountedMemory> data,
@@ -439,9 +440,7 @@ class TestPrintPreviewHandlerForContentAnalysis
                                            data, callback_id);
   }
 
- private:
   bool print_called_after_scan_ = false;
-  bool finish_handle_print_if_allowed_called_ = false;
 };
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
@@ -1565,11 +1564,8 @@ class ContentAnalysisPrintPreviewHandlerTest
 
     enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
     PrintPreviewHandlerTest::SetUp();
-    TestingProfile* main_profile =
-        PrintPreviewHandlerTest::testing_profile_manager()
-            ->CreateTestingProfile("Main Profile",
-                                   /*is_main_profile=*/true);
-    PrintPreviewHandlerTest::SetProfileForInitialSettings(main_profile);
+
+    // Set the policy that enables local content analysis for print.
     safe_browsing::SetAnalysisConnector(
         profile()->GetPrefs(), enterprise_connectors::AnalysisConnector::PRINT,
         R"({
@@ -1577,6 +1573,11 @@ class ContentAnalysisPrintPreviewHandlerTest
           "enable": [ {"url_list": ["*"], "tags": ["dlp"]} ],
           "block_until_verdict": 1
         })");
+  }
+
+  void TearDown() override {
+    PrintPreviewHandlerTest::TearDown();
+    enterprise_connectors::ContentAnalysisDelegate::EnableUIAfterTesting();
   }
 
   std::unique_ptr<TestPrintPreviewHandler> CreateHandler(
@@ -1612,9 +1613,19 @@ class ContentAnalysisPrintPreviewHandlerTest
  private:
   base::test::ScopedFeatureList feature_list_;
   base::RunLoop run_loop_;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // This installs a fake SDK manager that creates fake SDK clients when
+  // its GetClient() method is called. This is needed so that calls to
+  // ContentAnalysisSdkManager::Get()->GetClient() do not fail.
+  enterprise_connectors::FakeContentAnalysisSdkManager sdk_manager_;
+#endif
 };
 
 TEST_P(ContentAnalysisPrintPreviewHandlerTest, LocalScanBeforePrinting) {
+  TestingProfile* main_profile =
+      testing_profile_manager()->CreateTestingProfile("Main Profile",
+                                                      /*is_main_profile=*/true);
+  SetProfileForInitialSettings(main_profile);
   Initialize();
 
   base::Value::List print_args;
@@ -1644,4 +1655,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          /*scanning_allows_print=*/testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+
 }  // namespace printing

@@ -4,36 +4,38 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/test/block_cleanup_test.h"
+#import <memory>
 
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
+#import "base/mac/scoped_nsautorelease_pool.h"
+#import "ios/chrome/test/block_cleanup_test.h"
+
+BlockCleanupTest::BlockCleanupTest() = default;
+BlockCleanupTest::~BlockCleanupTest() = default;
 
 void BlockCleanupTest::SetUp() {
-  block_cleanup_pool_ = [[NSAutoreleasePool alloc] init];
+  pool_ = std::make_unique<base::mac::ScopedNSAutoreleasePool>();
 }
 
 void BlockCleanupTest::TearDown() {
-  // Block-copied items are released asynchronously; spin the loop to give them
-  // a chance to be cleaned up.
+  // Block-copied items are released asynchronously; spin the loop to give
+  // them a chance to be cleaned up.
   const NSTimeInterval kCleanupTime = 0.1;
   SpinRunLoop(kCleanupTime);
 
   // Drain the autorelease pool to finish cleaning up after blocks.
-  // TODO(rohitrao): Can this be an EXPECT, so as to not crash the whole suite?
-  DCHECK(block_cleanup_pool_);
-  [base::mac::ObjCCastStrict<NSAutoreleasePool>(block_cleanup_pool_) release];
-  block_cleanup_pool_ = nil;
+  DCHECK(pool_);
+  pool_.reset();
 
   PlatformTest::TearDown();
 }
 
 void BlockCleanupTest::SpinRunLoop(NSTimeInterval cleanup_time) {
-  NSDate* cleanup_start = [NSDate date];
-  while (fabs([cleanup_start timeIntervalSinceNow]) < cleanup_time) {
+  NSDate* cleanup_start = NSDate.date;
+  while (fabs(cleanup_start.timeIntervalSinceNow) < cleanup_time) {
     NSDate* beforeDate =
         [[NSDate alloc] initWithTimeIntervalSinceNow:cleanup_time];
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                             beforeDate:beforeDate];
+    [NSRunLoop.currentRunLoop runMode:NSDefaultRunLoopMode
+                           beforeDate:beforeDate];
   }
 }

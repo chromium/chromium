@@ -19,15 +19,15 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
-#import "components/sync/driver/sync_service.h"
-#import "components/sync/driver/sync_user_settings.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/authentication_service_observer.h"
 #import "ios/chrome/browser/signin/refresh_access_token_error.h"
@@ -234,7 +234,7 @@ AuthenticationService::ServiceStatus AuthenticationService::GetServiceStatus() {
 
 void AuthenticationService::OnApplicationWillEnterForeground() {
   if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    bool can_sync_start = sync_setup_service_->CanSyncFeatureStart();
+    bool can_sync_start = sync_setup_service_->IsSyncFeatureEnabled();
     LoginMethodAndSyncState loginMethodAndSyncState =
         can_sync_start ? SHARED_AUTHENTICATION_SYNC_ON
                        : SHARED_AUTHENTICATION_SYNC_OFF;
@@ -442,7 +442,7 @@ void AuthenticationService::SignOut(
   const bool is_managed =
       HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
   // Get first setup complete value before to stop the sync service.
-  const bool is_first_setup_complete =
+  const bool is_initial_sync_feature_setup_complete =
       sync_setup_service_->IsInitialSyncFeatureSetupComplete();
 
   auto* account_mutator = identity_manager_->GetPrimaryAccountMutator();
@@ -456,7 +456,8 @@ void AuthenticationService::SignOut(
 
   // Browsing data for managed account needs to be cleared only if sync has
   // started at least once.
-  if (force_clear_browsing_data || (is_managed && is_first_setup_complete)) {
+  if (force_clear_browsing_data ||
+      (is_managed && is_initial_sync_feature_setup_complete)) {
     delegate_->ClearBrowsingData(completion);
   } else if (completion) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

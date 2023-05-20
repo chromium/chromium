@@ -259,6 +259,10 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   GestureManager& GetGestureManager() const { return *gesture_manager_; }
 
+  KeyboardEventManager& GetKeyboardEventManager() const {
+    return *keyboard_event_manager_;
+  }
+
   void AnimateSnapFling(base::TimeTicks monotonic_time);
 
   void RecomputeMouseHoverStateIfNeeded();

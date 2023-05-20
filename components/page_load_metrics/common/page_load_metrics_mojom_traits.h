@@ -158,6 +158,15 @@ class StructTraits<
     return d.mock_fallback;
   }
 
+  static bool dictionary_handled(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.dictionary_handled;
+  }
+  static bool dictionary_fallback(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.dictionary_fallback;
+  }
+
   static bool Read(
       page_load_metrics::mojom::ServiceWorkerSubresourceLoadMetricsDataView
           data,

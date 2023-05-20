@@ -26,6 +26,17 @@ class COMPONENT_EXPORT(SWAP_MANAGEMENT) FakeSwapManagementClient
   void SwapZramEnableWriteback(
       uint32_t size,
       chromeos::VoidDBusMethodCallback callback) override;
+
+  void SwapZramSetWritebackLimit(
+      uint32_t limit,
+      chromeos::VoidDBusMethodCallback callback) override;
+
+  void SwapZramMarkIdle(uint32_t age,
+                        chromeos::VoidDBusMethodCallback callback) override;
+
+  void InitiateSwapZramWriteback(
+      swap_management::ZramWritebackMode mode,
+      chromeos::VoidDBusMethodCallback callback) override;
 };
 
 }  // namespace ash

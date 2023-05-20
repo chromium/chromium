@@ -7,8 +7,7 @@
 
 #include "build/build_config.h"
 
-namespace password_manager {
-namespace prefs {
+namespace password_manager::prefs {
 
 // Alphabetical list of preference names specific to the PasswordManager
 // component.
@@ -113,13 +112,6 @@ extern const char kTimesReenrolledToGoogleMobileServices[];
 // migration in an attempt to reenroll into the UPM experiment. Reset to zero
 // after a successful reenrollment.
 extern const char kTimesAttemptedToReenrollToGoogleMobileServices[];
-
-// Integer value indicating the number of consecutive times the password manager
-// auth error UI was displayed to the user. Reset once the error is resolved
-// (detected by a successful backend request) or when the user is unenrolled
-// from UPM.
-// Deprecated. TODO(crbug/1313893): cleanup.
-extern const char kTimesUPMAuthErrorShown[];
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -248,7 +240,6 @@ extern const char kAccountStorageNewFeatureIconImpressions[];
 extern const char kPasswordManagerPromoCardsList[];
 #endif
 
-}  // namespace prefs
-}  // namespace password_manager
+}  // namespace password_manager::prefs
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_PREF_NAMES_H_

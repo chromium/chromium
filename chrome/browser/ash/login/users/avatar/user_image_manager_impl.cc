@@ -277,8 +277,7 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
     }
     // Load default image from local cached version if available,
     // otherwise download from gstatic resources if possible.
-    if (image_cache_updated_ && !image_path_.empty() &&
-        base::PathExists(image_path_) && !base::DirectoryExists(image_path_)) {
+    if (image_cache_updated_ && !image_path_.empty()) {
       user_image_loader::StartWithFilePathAnimated(
           parent_->background_task_runner_, image_path_,
           base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),

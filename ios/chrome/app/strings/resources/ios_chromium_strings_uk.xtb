@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">Користувач <ph name="USER_EMAIL1" /> застосовував Chromium і зберіг закладки, паролі й інші налаштування на цьому пристрої.</translation>
 <translation id="372658070733623520">Щоб зберігати й використовувати дані Chromium в обліковому записі Google, підтвердьте свою особу.</translation>
 <translation id="3805899903892079518">Chromium не має доступу до ваших фото чи відео. Надайте доступ у меню iOS "Параметри &gt; Конфіденційність &gt; Фото".</translation>
+<translation id="3955621079070267756">Переходьте в Chromium із будь-якого додатка</translation>
 <translation id="4043291146360695975">Паролі збережено в Менеджері паролів лише на цьому пристрої.</translation>
 <translation id="4099085513035183040">Не підтримується в бета-версії Chromium</translation>
 <translation id="4432744876818348753">Увійдіть, щоб користуватися всіма можливостями Chromium.</translation>
@@ -101,7 +102,6 @@
 <translation id="7192111075364461693">Сповіщення Chromium зараз вимкнено в налаштуваннях пристрою.</translation>
 <translation id="7208566199746267865">З Chromium ви можете заощадити час, розмістивши свої облікові записи в Інтернеті. Додати або вилучити облікові записи можна в налаштуваннях.</translation>
 <translation id="725427773388857052">Chromium може захищати вас від порушень безпеки даних, ненадійних веб-сайтів тощо.</translation>
-<translation id="7255976941681861701">Ознайомтеся з новим меню Chromium</translation>
 <translation id="7269362888766543920">Через деякі доповнення Chromium аварійно завершує роботу. Спробуйте видалити їх.</translation>
 <translation id="7313655110045230863">Щоб зробити Chromium веб-переглядачем за умовчанням, відкрийте налаштування, натисніть "Веб-переглядач за умовчанням" і виберіть Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
@@ -144,5 +144,6 @@
 <translation id="9089354809943900324">Версія Chromium застаріла</translation>
 <translation id="9110075932708282655">Використовувати Chromium за умовчанням</translation>
 <translation id="921174536258924340">Chromium не вдалося перевірити всі паролі. Повторіть спробу завтра або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Автоматично відкривайте в Chromium посилання з повідомлень, документів і інших додатків.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

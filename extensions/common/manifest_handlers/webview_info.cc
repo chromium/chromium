@@ -106,11 +106,9 @@ void WebviewInfo::AddPartitionItem(std::unique_ptr<PartitionItem> item) {
   partition_items_.push_back(std::move(item));
 }
 
-WebviewHandler::WebviewHandler() {
-}
+WebviewHandler::WebviewHandler() = default;
 
-WebviewHandler::~WebviewHandler() {
-}
+WebviewHandler::~WebviewHandler() = default;
 
 bool WebviewHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<WebviewInfo> info(new WebviewInfo(extension->id()));

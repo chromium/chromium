@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
+#include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -320,7 +321,8 @@ bool ScrollManager::CanScroll(const ScrollState& scroll_state,
 bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
                                   ui::ScrollGranularity granularity,
                                   Node* start_node,
-                                  Node* mouse_press_node) {
+                                  Node* mouse_press_node,
+                                  bool scrolling_via_key) {
   Node* node = start_node;
 
   if (!node)
@@ -402,6 +404,8 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
 
     ScrollableArea::ScrollCallback callback(WTF::BindOnce(
         [](WeakPersistent<ScrollableArea> area,
+           WeakPersistent<KeyboardEventManager> keyboard_event_manager,
+           bool is_key_scroll,
            ScrollableArea::ScrollCompletionMode completion_mode) {
           if (area) {
             bool enqueue_scrollend =
@@ -417,10 +421,24 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
               }
             }
 
+            // For key-triggered scrolls, we defer firing scrollend till the
+            // accompanying keyup fires, unless the keyup happens before the
+            // scroll finishes. (Instant scrolls always finish before the
+            // keyup event.)
+            if (is_key_scroll && enqueue_scrollend && keyboard_event_manager) {
+              if (keyboard_event_manager->HasPendingScrollendOnKeyUp() ||
+                  !area->ScrollAnimatorEnabled()) {
+                keyboard_event_manager->SetScrollendEventTarget(area);
+                enqueue_scrollend = false;
+              }
+            }
             area->OnScrollFinished(enqueue_scrollend);
           }
         },
-        WrapWeakPersistent(scrollable_area)));
+        WrapWeakPersistent(scrollable_area),
+        WrapWeakPersistent(
+            &(frame_->GetEventHandler().GetKeyboardEventManager())),
+        scrolling_via_key));
     ScrollResult result = scrollable_area->UserScroll(
         granularity,
         ToScrollDelta(physical_direction,
@@ -437,13 +455,16 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
 bool ScrollManager::BubblingScroll(mojom::blink::ScrollDirection direction,
                                    ui::ScrollGranularity granularity,
                                    Node* starting_node,
-                                   Node* mouse_press_node) {
+                                   Node* mouse_press_node,
+                                   bool scrolling_via_key) {
   // The layout needs to be up to date to determine if we can scroll. We may be
   // here because of an onLoad event, in which case the final layout hasn't been
   // performed yet.
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kScroll);
-  if (LogicalScroll(direction, granularity, starting_node, mouse_press_node))
+  if (LogicalScroll(direction, granularity, starting_node, mouse_press_node,
+                    scrolling_via_key)) {
     return true;
+  }
 
   return frame_->BubbleLogicalScrollInParentFrame(direction, granularity);
 }

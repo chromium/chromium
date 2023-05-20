@@ -19,7 +19,6 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
-using base::UserMetricsAction;
 using bookmarks::BookmarkNode;
 using content::PageNavigator;
 using views::MenuItemView;

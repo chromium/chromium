@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.dumpAsText();
+function init() {
+    document.getElementById('test').addEventListener('DOMSubtreeModified',function () {
+		alert('Subtree modified!')
+	},false);
+}
+</script>
+<link rel="Top" id="test" href="#">
+</head>
+<body onload="init()">
+This tests that you can successfully add a DOMSubtreeModified event listener to a link element, and the page should load without crashing.
+</body>
+</html>

@@ -99,11 +99,10 @@ class CustomLinksManagerImplTest : public testing::Test {
  public:
   CustomLinksManagerImplTest() {
     CustomLinksManagerImpl::RegisterProfilePrefs(prefs_.registry());
-    base::Value::List defaults;
-    defaults.Append("pjkljhegncpnkpknbcohdijeoejaedia");
+    auto defaults =
+        base::Value::List().Append("pjkljhegncpnkpknbcohdijeoejaedia");
     prefs_.registry()->RegisterListPref(
-        webapps::kWebAppsMigratedPreinstalledApps,
-        base::Value(std::move(defaults)));
+        webapps::kWebAppsMigratedPreinstalledApps, std::move(defaults));
   }
 
   CustomLinksManagerImplTest(const CustomLinksManagerImplTest&) = delete;

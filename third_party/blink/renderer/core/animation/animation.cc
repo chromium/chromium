@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
+#include "third_party/blink/renderer/core/animation/timeline_range.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
@@ -372,7 +373,7 @@ bool Animation::ConvertCSSNumberishToTime(
     return true;
   }
 
-  if (timeline_ && timeline_->IsScrollTimeline()) {
+  if (timeline_ && timeline_->IsProgressBased()) {
     // Progress based timeline
     if (numberish->IsCSSNumericValue()) {
       CSSUnitValue* numberish_as_percentage =
@@ -517,8 +518,9 @@ V8CSSNumberish* Animation::startTime() const {
 V8CSSNumberish* Animation::ConvertTimeToCSSNumberish(
     absl::optional<AnimationTimeDelta> time) const {
   if (time) {
-    if (timeline_ && timeline_->IsScrollTimeline()) {
-      return To<ScrollTimeline>(*timeline_).ConvertTimeToProgress(time.value());
+    if (timeline_ && timeline_->IsScrollSnapshotTimeline()) {
+      return To<ScrollSnapshotTimeline>(*timeline_)
+          .ConvertTimeToProgress(time.value());
     }
     return MakeGarbageCollected<V8CSSNumberish>(time.value().InMillisecondsF());
   }
@@ -947,12 +949,6 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
 
   reset_current_time_on_resume_ = false;
 
-  // Set the timeline if needed for resolving timeline offsets in kefyrames.
-  if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(effect())) {
-    ViewTimeline* view_timeline = DynamicTo<ViewTimeline>(timeline);
-    keyframe_effect->Model()->SetViewTimelineIfRequired(view_timeline);
-  }
-
   if (timeline && !timeline->IsMonotonicallyIncreasing()) {
     ApplyPendingPlaybackRate();
     AnimationTimeDelta boundary_time =
@@ -1019,7 +1015,7 @@ absl::optional<AnimationTimeDelta> Animation::CalculateStartTime(
     if (timeline_time)
       start_time = timeline_time.value() - current_time / playback_rate_;
     // TODO(crbug.com/916117): Handle NaN time for scroll-linked animations.
-    DCHECK(start_time || timeline_->IsScrollTimeline());
+    DCHECK(start_time || timeline_->IsProgressBased());
   }
   return start_time;
 }
@@ -1151,12 +1147,20 @@ void Animation::setEffect(AnimationEffect* new_effect) {
   if (new_effect && new_effect->GetAnimation())
     new_effect->GetAnimation()->setEffect(nullptr);
 
+  // Clear timeline offsets for old effect.
+  ResolveTimelineOffsets(TimelineRange());
+
   // 6. Let the associated effect of the animation be the new effect.
   if (old_effect)
     old_effect->Detach();
   content_ = new_effect;
   if (new_effect)
     new_effect->Attach(this);
+
+  // Resolve timeline offsets for new effect.
+  ResolveTimelineOffsets(timeline() ? timeline()->GetTimelineRange()
+                                    : TimelineRange());
+
   SetOutdated();
 
   // 7. Run the procedure to update an animation’s finished state for animation
@@ -1175,9 +1179,6 @@ void Animation::setEffect(AnimationEffect* new_effect) {
     if (KeyframeEffect* keyframe_effect =
             DynamicTo<KeyframeEffect>(new_effect)) {
       keyframe_effect->SetIgnoreCSSKeyframes();
-      // Set the timeline if needed for resolving timeline offsets in kefyrames.
-      ViewTimeline* view_timeline = DynamicTo<ViewTimeline>(timeline());
-      keyframe_effect->Model()->SetViewTimelineIfRequired(view_timeline);
     }
   }
 
@@ -2074,9 +2075,9 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
   // If the scroll source is not composited, fall back to main thread.
   // TODO(crbug.com/476553): Once all ScrollNodes including uncomposited ones
   // are in the compositor, the animation should be composited.
-  if (timeline_ && timeline_->IsScrollTimeline() &&
+  if (timeline_ && timeline_->IsScrollSnapshotTimeline() &&
       !CompositorAnimations::CheckUsesCompositedScrolling(
-          To<ScrollTimeline>(*timeline_).ResolvedSource())) {
+          To<ScrollSnapshotTimeline>(*timeline_).ResolvedSource())) {
     reasons |= CompositorAnimations::kTimelineSourceHasInvalidCompositingState;
   }
 
@@ -2101,9 +2102,9 @@ base::TimeDelta Animation::ComputeCompositorTimeOffset() const {
   if (!playback_rate)
     return base::TimeDelta::Max();
 
-  // Don't set a compositor time offset for a scroll timeline. When we tick the
-  // animation, we pass "absolute" times to cc::KeyframeEffect::Pause.
-  if (timeline_ && timeline_->IsScrollTimeline()) {
+  // Don't set a compositor time offset for progress-based timelines. When we
+  // tick the animation, we pass "absolute" times to cc::KeyframeEffect::Pause.
+  if (timeline_ && timeline_->IsProgressBased()) {
     return base::TimeDelta();
   }
 
@@ -2167,7 +2168,8 @@ void Animation::StartAnimationOnCompositor(
   // the playback rate preserve current time even if the start time is set.
   // Asynchronous updates have an associated pending play or pending pause
   // task associated with them.
-  if (start_time_ && !PendingInternal()) {
+  if (start_time_ &&
+      (timeline()->IsScrollSnapshotTimeline() || !PendingInternal())) {
     start_time = timeline_->ZeroTime() + start_time_.value();
     if (reversed) {
       start_time =
@@ -2291,16 +2293,17 @@ void Animation::UpdateStartTimeForViewTimeline() {
   }
 
   double relative_offset =
-      boundary ? view_timeline->ToFractionalOffset(boundary.value())
+      boundary ? view_timeline->GetTimelineRange().ToFractionalOffset(
+                     boundary.value())
                : default_offset;
   AnimationTimeDelta duration = timeline_->GetDuration().value();
   start_time_ = duration * relative_offset;
+  SetCompositorPending(true);
 }
 
 void Animation::OnRangeUpdate() {
   // Change in animation range has no effect unless using a scroll-timeline.
-  ScrollTimeline* scroll_timeline = DynamicTo<ScrollTimeline>(timeline_.Get());
-  if (!scroll_timeline) {
+  if (!IsA<ScrollSnapshotTimeline>(timeline_.Get())) {
     return;
   }
 
@@ -2330,6 +2333,34 @@ void Animation::OnRangeUpdate() {
 
   // Inform devtools of a potential change to the play state.
   NotifyProbe();
+}
+
+namespace {
+
+double ResolveAnimationRange(const absl::optional<TimelineOffset>& offset,
+                             const TimelineRange& timeline_range,
+                             double default_value) {
+  if (offset.has_value()) {
+    return timeline_range.ToFractionalOffset(offset.value());
+  }
+  if (timeline_range.IsEmpty()) {
+    return 0;
+  }
+  return default_value;
+}
+
+}  // namespace
+
+bool Animation::ResolveTimelineOffsets(const TimelineRange& timeline_range) {
+  if (auto* keyframe_effect = DynamicTo<KeyframeEffect>(effect())) {
+    double range_start = ResolveAnimationRange(
+        GetRangeStartInternal(), timeline_range, /* default_value */ 0);
+    double range_end = ResolveAnimationRange(
+        GetRangeEndInternal(), timeline_range, /* default_value */ 1);
+    return keyframe_effect->Model()->ResolveTimelineOffsets(
+        timeline_range, range_start, range_end);
+  }
+  return false;
 }
 
 void Animation::CancelAnimationOnCompositor() {
@@ -2374,9 +2405,11 @@ bool Animation::AtScrollTimelineBoundary() {
   //     return false
   absl::optional<AnimationTimeDelta> timeline_duration =
       timeline_ ? timeline_->GetDuration() : absl::nullopt;
-  if (!timeline_ || !timeline_->IsScrollTimeline() || !timeline_duration ||
-      timeline_duration->is_zero() || playback_rate_ == 0)
+  if (!timeline_ || !timeline_->IsScrollSnapshotTimeline() ||
+      !timeline_duration || timeline_duration->is_zero() ||
+      playback_rate_ == 0) {
     return false;
+  }
 
   // 2.  Let effective start time be the animation's start time if resolved, or
   // zero otherwise.

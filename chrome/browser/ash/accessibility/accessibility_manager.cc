@@ -44,6 +44,8 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
 #include "chrome/browser/accessibility/accessibility_extension_api_chromeos.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_extension_loader.h"
 #include "chrome/browser/ash/accessibility/dictation.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
@@ -669,6 +671,14 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
                        weak_ptr_factory_.GetWeakPtr()));
     if (accessibility_service_client_)
       accessibility_service_client_->SetProfile(profile_);
+
+    if (::features::IsPdfOcrEnabled()) {
+      // Create PdfOcrController when both the PDF OCR feature flag and
+      // Chromevox are enabled.
+      ::screen_ai::PdfOcrControllerFactory::GetForProfile(profile());
+      // TODO(crbug.com/1393069): Destroy `PdfOcrController` when no longer
+      // needed.
+    }
   }
 
   if (spoken_feedback_enabled_ == enabled)

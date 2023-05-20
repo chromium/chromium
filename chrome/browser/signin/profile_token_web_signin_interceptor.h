@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/token_managed_profile_creator.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -34,24 +35,17 @@ class ProfileAttributesEntry;
 // * When the account is available on the web in the new profile:
 //   - A new browser window is created for the new profile,
 //   - The tab is moved to the new profile.
-class ProfileTokenWebSigninInterceptor : public KeyedService {
+class ProfileTokenWebSigninInterceptor : public WebSigninInterceptor,
+                                         public KeyedService {
  public:
   enum class SigninInterceptionType {
     kProfileSwitch,
     kEnterprise,
   };
 
-  class Delegate {
-   public:
-    virtual ~Delegate() = default;
-    virtual void ShowCreateNewProfileBubble(
-        const ProfileAttributesEntry* switch_to_profile,
-        base::OnceCallback<void(bool)> callback) = 0;
-  };
-
-  explicit ProfileTokenWebSigninInterceptor(Profile* profile);
-  ProfileTokenWebSigninInterceptor(Profile* profile,
-                                   std::unique_ptr<Delegate> delegate);
+  ProfileTokenWebSigninInterceptor(
+      Profile* profile,
+      std::unique_ptr<WebSigninInterceptor::Delegate> delegate);
   ~ProfileTokenWebSigninInterceptor() override;
 
   ProfileTokenWebSigninInterceptor(const ProfileTokenWebSigninInterceptor&) =
@@ -78,7 +72,7 @@ class ProfileTokenWebSigninInterceptor : public KeyedService {
 
   bool IsValidEnrollmentToken(const std::string& enrollment_token) const;
 
-  void OnProfileCreationChoice(bool accepted);
+  void OnProfileCreationChoice(SigninInterceptionResult create);
 
   // Called when the new browser is created after interception. Passed as
   // callback to `session_startup_helper_`.
@@ -96,6 +90,10 @@ class ProfileTokenWebSigninInterceptor : public KeyedService {
   std::string intercepted_id_;
   bool disable_browser_creation_after_interception_for_testing_ = false;
   raw_ptr<const ProfileAttributesEntry> switch_to_entry_ = nullptr;
+  SkColor profile_color_;
+  // Used to retain the interception UI bubble until profile creation completes.
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
+      interception_bubble_handle_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_PROFILE_TOKEN_WEB_SIGNIN_INTERCEPTOR_H_

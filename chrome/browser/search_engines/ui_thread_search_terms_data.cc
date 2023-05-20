@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
@@ -122,17 +123,14 @@ std::string UIThreadSearchTermsData::GetSuggestRequestIdentifier(
 // in UIThreadSearchTermsData since SearchTermsData cannot depend on src/chrome
 // as it is shared with iOS.
 std::string UIThreadSearchTermsData::GoogleImageSearchSource() const {
-  std::string version(version_info::GetProductName() + " " +
-                      version_info::GetVersionNumber());
-  if (version_info::IsOfficialBuild())
-    version += " (Official)";
-  version += " " + version_info::GetOSType();
   // Do not distinguish extended from regular stable in image search queries.
-  std::string modifier(
-      chrome::GetChannelName(chrome::WithExtendedStable(false)));
-  if (!modifier.empty())
-    version += " " + modifier;
-  return version;
+  const std::string channel_name =
+      chrome::GetChannelName(chrome::WithExtendedStable(false));
+  return base::StrCat({version_info::GetProductName(), " ",
+                       version_info::GetVersionNumber(),
+                       version_info::IsOfficialBuild() ? " (Official) " : " ",
+                       version_info::GetOSType(),
+                       channel_name.empty() ? "" : " ", channel_name});
 }
 
 size_t UIThreadSearchTermsData::EstimateMemoryUsage() const {

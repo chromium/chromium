@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -75,6 +76,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
   AppId InstallWebApp() {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = app_url();
+    web_app_info->manifest_id = GenerateManifestIdFromStartUrlOnly(app_url());
     web_app_info->scope = app_url().GetWithoutFilename();
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     web_app_info->title = u"Foo Bar";
@@ -84,6 +86,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
   WebAppInstallInfo GetNewInstallInfoWithTitle(std::u16string new_title) {
     WebAppInstallInfo info;
     info.start_url = app_url();
+    info.manifest_id = GenerateManifestIdFromStartUrlOnly(app_url());
     info.scope = app_url().GetWithoutFilename();
     info.user_display_mode = mojom::UserDisplayMode::kStandalone;
     info.title = new_title;

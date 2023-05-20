@@ -1367,7 +1367,7 @@ void SavePackage::GetSaveInfo() {
                          &website_save_dir, &download_save_dir);
   }
   std::string mime_type =
-      static_cast<PageImpl*>(page_.get())->contents_mime_type();
+      static_cast<PageImpl*>(page_.get())->GetContentsMimeType();
   bool can_save_as_complete = CanSaveAsComplete(mime_type);
   download::GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -1459,7 +1459,7 @@ void SavePackage::OnPathPicked(
   // TODO(asanka): This call may block on IO and shouldn't be made
   // from the UI thread.  See http://crbug.com/61827.
   std::string mime_type =
-      static_cast<PageImpl*>(page_.get())->contents_mime_type();
+      static_cast<PageImpl*>(page_.get())->GetContentsMimeType();
   net::GenerateSafeFileName(mime_type, false, &saved_main_file_path_);
 
   saved_main_directory_path_ = saved_main_file_path_.DirName();

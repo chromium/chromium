@@ -72,11 +72,11 @@ source_set("test_support") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/policy:policy",
-    "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:test_support",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/components/security_interstitials/safe_browsing:test_support",
     "//ios/components/webui:url_constants",
@@ -113,8 +113,6 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("block_cleanup_test") {
-  # TODO(crbug.com/733237): Replace this comment with an explicit disable_arc config.
-  # The files in this target depend on non-ARC memory management.
   testonly = true
   sources = [
     "block_cleanup_test.h",
@@ -125,6 +123,7 @@ source_set("block_cleanup_test") {
     "//base",
     "//testing/gtest",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("ios_chrome_unit_test_suite") {
@@ -140,7 +139,7 @@ source_set("ios_chrome_unit_test_suite") {
     "//components/content_settings/core/common",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/paths",
-    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/web/web_performance_metrics:unit_tests",
     "//ios/chrome/test:test_support",
     "//ios/components/webui:url_constants",
@@ -243,7 +242,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/net:unit_tests",
     "//ios/chrome/browser/ntp:unit_tests",
     "//ios/chrome/browser/omaha:unit_tests",
-    "//ios/chrome/browser/open_in:unit_tests",
     "//ios/chrome/browser/optimization_guide:unit_tests",
     "//ios/chrome/browser/overlays:unit_tests",
     "//ios/chrome/browser/overlays/public/common/confirmation:unit_tests",
@@ -271,6 +269,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/shared/coordinator/scene:unit_tests",
     "//ios/chrome/browser/shared/model/browser:unit_tests",
     "//ios/chrome/browser/shared/model/browser_state:unit_tests",
+    "//ios/chrome/browser/shared/model/url:unit_tests",
     "//ios/chrome/browser/shared/model/web_state_list:unit_tests",
     "//ios/chrome/browser/shared/public/commands:unit_tests",
     "//ios/chrome/browser/shared/ui/elements:unit_tests",
@@ -347,7 +346,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/ntp/metrics:unit_tests",
     "//ios/chrome/browser/ui/omnibox:unit_tests",
     "//ios/chrome/browser/ui/omnibox/popup:unit_tests",
-    "//ios/chrome/browser/ui/open_in:unit_tests",
     "//ios/chrome/browser/ui/overlays:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_banner:unit_tests",
     "//ios/chrome/browser/ui/overlays/infobar_banner/autofill_address_profile:unit_tests",
@@ -423,7 +421,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/whats_new/promo:unit_tests",
     "//ios/chrome/browser/update_client:unit_tests",
     "//ios/chrome/browser/upgrade:unit_tests",
-    "//ios/chrome/browser/url:unit_tests",
     "//ios/chrome/browser/url_loading:unit_tests",
     "//ios/chrome/browser/variations:unit_tests",
     "//ios/chrome/browser/voice:unit_tests",

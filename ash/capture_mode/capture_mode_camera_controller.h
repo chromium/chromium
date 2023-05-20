@@ -223,7 +223,7 @@ class ASH_EXPORT CaptureModeCameraController
   // http://b/230917107#comment12 for more details).
   void OnCaptureSessionStarted();
 
-  void OnRecordingStarted(CaptureModeBehavior* active_behavior);
+  void OnRecordingStarted(const CaptureModeBehavior* active_behavior);
   void OnRecordingEnded();
 
   // Called when the `CameraVideoFrameHandler` of the current

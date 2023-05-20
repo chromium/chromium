@@ -1,4 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/open_in/features.h",
-  "+ios/chrome/browser/ui/open_in/open_in_histograms.h",
-]

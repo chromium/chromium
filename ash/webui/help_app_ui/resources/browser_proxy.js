@@ -306,9 +306,10 @@ guestMessagePipe.registerHandler(Message.GET_DEVICE_INFO, async () => {
   return (await help_app.handler.getDeviceInfo()).deviceInfo;
 });
 
-guestMessagePipe.registerHandler(Message.OPEN_URL_IN_BROWSER, (url) => {
-  help_app.handler.openUrlInBrowser(toUrl(url));
-});
+guestMessagePipe.registerHandler(
+    Message.OPEN_URL_IN_BROWSER_AND_TRIGGER_INSTALL_DIALOG, (url) => {
+      help_app.handler.openUrlInBrowserAndTriggerInstallDialog(toUrl(url));
+    });
 
 /**
  * Compare two positions by their start index. Use for sorting.

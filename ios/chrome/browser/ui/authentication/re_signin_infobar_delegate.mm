@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
@@ -99,7 +100,8 @@ ReSignInInfoBarDelegate::ReSignInInfoBarDelegate(
     ChromeBrowserState* browser_state,
     id<SigninPresenter> presenter)
     : browser_state_(browser_state),
-      icon_([UIImage imageNamed:@"infobar_warning"]),
+      icon_(DefaultSymbolWithPointSize(kWarningFillSymbol,
+                                       kInfobarSymbolPointSize)),
       presenter_(presenter) {
   DCHECK(browser_state_);
   DCHECK(!browser_state_->IsOffTheRecord());

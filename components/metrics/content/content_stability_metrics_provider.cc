@@ -80,6 +80,13 @@ void ContentStabilityMetricsProvider::RenderProcessExited(
       extensions_helper_ && extensions_helper_->IsExtensionProcess(host);
   helper_.LogRendererCrash(was_extension_process, info.status, info.exit_code);
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ContentStabilityMetricsProvider::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  // In single-process mode, RenderProcessExited isn't called, so we ensure
+  // we remove observations here rather than there, to avoid later use-after-
+  // frees in single process mode.
   host_observation_.RemoveObservation(host);
 }
 

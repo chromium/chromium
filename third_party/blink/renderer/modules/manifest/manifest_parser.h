@@ -155,7 +155,7 @@ class MODULES_EXPORT ManifestParser {
   String ParseDescription(const JSONObject* object);
 
   // Parses the 'id' field of the manifest.
-  String ParseId(const JSONObject* object, const KURL& start_url);
+  KURL ParseId(const JSONObject* object, const KURL& start_url);
 
   // Parses the 'scope' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#scope-member. Returns the parsed KURL if
@@ -530,6 +530,8 @@ class MODULES_EXPORT ManifestParser {
   // Parses the 'scope_patterns' field of the 'tab_strip.home_tab' field
   // of the manifest.
   Vector<UrlPattern> ParseScopePatterns(const JSONObject* object);
+
+  String ParseVersion(const JSONObject* object);
 
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,

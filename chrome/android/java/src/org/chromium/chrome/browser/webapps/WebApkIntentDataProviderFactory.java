@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
+import android.content.res.Resources.Theme;
 import android.content.res.XmlResourceParser;
 import android.net.Uri;
 import android.os.Build;
@@ -252,6 +253,9 @@ public class WebApkIntentDataProviderFactory {
             return null;
         }
 
+        // Difficult to necessarily get the right theme from the other app. Use null instead.
+        Theme theme = null;
+
         int nameId = res.getIdentifier(RESOURCE_NAME, RESOURCE_STRING_TYPE, webApkPackageName);
         int shortNameId =
                 res.getIdentifier(RESOURCE_SHORT_NAME, RESOURCE_STRING_TYPE, webApkPackageName);
@@ -284,7 +288,7 @@ public class WebApkIntentDataProviderFactory {
                 IntentUtils.safeGetInt(bundle, WebApkMetaDataKeys.DEFAULT_BACKGROUND_COLOR_ID, 0);
         int defaultBackgroundColor = (defaultBackgroundColorId == 0)
                 ? SplashLayout.getDefaultBackgroundColor(appContext)
-                : ApiCompatibilityUtils.getColor(res, defaultBackgroundColorId);
+                : res.getColor(defaultBackgroundColorId, theme);
 
         int shellApkVersion =
                 IntentUtils.safeGetInt(bundle, WebApkMetaDataKeys.SHELL_APK_VERSION, 0);

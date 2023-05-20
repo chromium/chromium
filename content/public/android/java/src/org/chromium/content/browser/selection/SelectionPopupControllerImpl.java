@@ -38,6 +38,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -440,6 +441,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             int selectionStartOffset, boolean canSelectAll, boolean canRichlyEdit,
             boolean shouldSuggest, @MenuSourceType int sourceType,
             RenderFrameHost renderFrameHost) {
+        RecordHistogram.recordEnumeratedHistogram("Android.ShowSelectionMenuSourceType", sourceType,
+                MenuSourceType.MENU_SOURCE_TYPE_LAST + 1);
+
         int offsetBottom = bottom;
         offsetBottom += handleHeight;
         mSelectionRect.set(left, top, right, offsetBottom);

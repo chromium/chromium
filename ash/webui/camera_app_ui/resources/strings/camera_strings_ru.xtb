@@ -65,8 +65,10 @@
 <translation id="4118525110028899586">Приостановить запись</translation>
 <translation id="4121305183798804752">Обнаружен документ</translation>
 <translation id="414641094616694804">Разрешение этой камеры нельзя изменить</translation>
+<translation id="4176463684765177261">Отключено</translation>
 <translation id="4269820728363426813">Копировать адрес ссылки</translation>
 <translation id="428234092390943511">Уменьшенное изображение страницы</translation>
+<translation id="4349714250734879769">Масштабировать фреймы с помощью Chrome</translation>
 <translation id="4383571725254449280">Распечатать журнал производительности</translation>
 <translation id="4445542136948522167">Отменить съемку</translation>
 <translation id="4570032796877367747">Фронтальная камера</translation>
@@ -148,6 +150,7 @@
 <translation id="8145038249676204903">Переключиться на фотосъемку</translation>
 <translation id="8167081290930651932">Сохранить как фото</translation>
 <translation id="8239780215768881278">Сделать снимок</translation>
+<translation id="8346544573713510785">Масштабировать фреймы с помощью камеры HAL</translation>
 <translation id="8425673304802773841">Наклонить вниз</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8629662593426079630">360p</translation>

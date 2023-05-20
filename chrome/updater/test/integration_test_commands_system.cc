@@ -370,6 +370,9 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                 Param("silent", is_silent_install ? "true" : "false")});
   }
 
+  void DMDeregisterDevice() override { RunCommand("dm_deregister_device"); }
+  void DMCleanup() override { RunCommand("dm_cleanup"); }
+
  private:
   ~IntegrationTestCommandsSystem() override = default;
 

@@ -384,6 +384,10 @@ extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
 // Returns true if the feature to enable GM3 icons is enabled.
 bool IsChromeRefreshIconsEnabled();
 
+// Omnibox CR23 - suggestion icons.
+// Returns true if the feature to enable CR23 suggestion icons is enabled.
+bool IsChromeRefreshSuggestIconsEnabled();
+
 // Omnibox GM3 - text style.
 // Returns true if the feature to enable GM3 text styling is enabled.
 bool IsGM3TextStyleEnabled();
@@ -608,6 +612,9 @@ struct MLConfig {
   // Equivalent to omnibox::kMlUrlScoring.
   bool ml_url_scoring{false};
 
+  // If true, runs batch ML scoring of URL candidates.
+  bool ml_batch_url_scoring{false};
+
   // If true, runs the ML scoring model but does not assign new relevance scores
   // to the URL suggestions and does not rerank them.
   // Equivalent to OmniboxFieldTrial::kMlUrlScoringCounterfactual.
@@ -666,6 +673,9 @@ bool AreScoringSignalsAnnotatorsEnabled();
 // If enabled, runs the ML scoring model to assign new relevance scores to the
 // URL suggestions and reranks them.
 bool IsMlUrlScoringEnabled();
+
+// Whether batch ML url scoring is enabled.
+bool IsMlBatchUrlScoringEnabled();
 
 // If true, runs the ML scoring model but does not assign new relevance scores
 // to URL suggestions.

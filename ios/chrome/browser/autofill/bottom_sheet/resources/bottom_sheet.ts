@@ -22,6 +22,16 @@ let lastBlurredElement_: HTMLElement|null = null;
 let observedElements_: Element[] = [];
 
 /*
+ * Returns whether an element is of a type we wish to observe.
+ * Must be in sync with what is supported in showBottomSheet_.
+ * @private
+ */
+function isObservable_(element: HTMLElement): boolean {
+  return (element instanceof HTMLInputElement) ||
+      (element instanceof HTMLFormElement);
+}
+
+/*
  * Prepare and send message to show bottom sheet.
  * @private
  */
@@ -112,7 +122,8 @@ function attachListeners(renderer_ids: number[]): void {
     const element = gCrWeb.fill.getElementByUniqueID(renderer_id);
     // Only add element to list of observed elements if we aren't already
     // observing it.
-    if (element && !observedElements_.find(elem => elem === element)) {
+    if (element && isObservable_(element) &&
+        !observedElements_.find(elem => elem === element)) {
       elementsToObserve.push(element);
       if (document.activeElement === element) {
         if (element.value != '') {

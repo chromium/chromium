@@ -25,31 +25,25 @@
 
 import hashlib
 import json
-import platform
 import optparse
 import os
-import re
 import shutil
 import subprocess
 import sys
-try:
-  # For Python 3.0 and later
-  from urllib.request import urlopen
-except ImportError:
-  # Fall back to Python 2's urllib2
-  from urllib2 import urlopen
+from urllib.request import urlopen
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 URL_PREFIX = 'https://commondatastorage.googleapis.com'
 URL_PATH = 'chrome-linux-sysroot/toolchain'
 
-VALID_ARCHS = ('arm', 'arm64', 'i386', 'amd64', 'mips', 'mips64el')
+VALID_ARCHS = ('amd64', 'i386', 'armhf', 'arm64', 'armel', 'mipsel', 'mips64el')
 
 ARCH_TRANSLATIONS = {
     'x64': 'amd64',
     'x86': 'i386',
-    'mipsel': 'mips',
+    'arm': 'armhf',
+    'mips': 'mipsel',
     'mips64': 'mips64el',
 }
 

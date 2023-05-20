@@ -155,7 +155,6 @@ def CreateMetadata(apk_spec, include_file_details, shorten_path):
   logging.debug('Constructing APK metadata')
   apk_metadata = {}
   if include_file_details:
-    apk_metadata[models.METADATA_APK_SIZE] = os.path.getsize(apk_spec.apk_path)
     if apk_spec.mapping_path:
       apk_metadata[models.METADATA_PROGUARD_MAPPING_FILENAME] = shorten_path(
           apk_spec.mapping_path)
@@ -172,7 +171,7 @@ def CreateApkOtherSymbols(apk_spec):
   """Creates symbols for resources / assets within the apk.
 
   Returns:
-    A tuple of (section_ranges, raw_symbols, apk_metadata).
+    A tuple of (section_ranges, raw_symbols, apk_metadata, apk_metrics_by_file).
   """
   logging.info('Creating symbols for other APK entries')
   res_source_mapper = _ResourceSourceMapper(apk_spec.size_info_prefix,
@@ -219,6 +218,12 @@ def CreateApkOtherSymbols(apk_spec):
       models.METADATA_SIGNING_BLOCK_SIZE: signing_block_size,
   }
 
+  apk_metrics_by_file = {}
+  apk_metrics_by_file[posixpath.basename(apk_spec.apk_path)] = {
+      f'{models.METRICS_SIZE}/{models.METRICS_SIZE_APK_FILE}':
+      os.path.getsize(apk_spec.apk_path),
+  }
+
   # Overhead includes:
   #  * Size of all local zip headers (minus zipalign padding).
   #  * Size of central directory & end of central directory.
@@ -234,4 +239,4 @@ def CreateApkOtherSymbols(apk_spec):
   archive_util.ExtendSectionRange(section_ranges, models.SECTION_OTHER,
                                   sum(s.size for s in raw_symbols))
   file_format.SortSymbols(raw_symbols)
-  return section_ranges, raw_symbols, apk_metadata
+  return section_ranges, raw_symbols, apk_metadata, apk_metrics_by_file

@@ -87,7 +87,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/user_prefs/user_prefs.h"
@@ -1083,7 +1083,7 @@ bool ChromeAutofillClient::IsContextSecure() const {
 
 void ChromeAutofillClient::ExecuteCommand(Suggestion::FrontendId id) {
 #if BUILDFLAG(IS_ANDROID)
-  if (id.as_popup_item_id() == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
+  if (id.as_popup_item_id() == PopupItemId::kCreditCardSigninPromo) {
     auto* window = web_contents()->GetNativeView()->GetWindowAndroid();
     if (window) {
       SigninBridge::LaunchSigninActivity(

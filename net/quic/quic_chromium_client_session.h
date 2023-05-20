@@ -749,8 +749,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnPathDegrading() override;
   void OnForwardProgressMadeAfterPathDegrading() override;
   void OnKeyUpdate(quic::KeyUpdateReason reason) override;
-  std::unique_ptr<quic::QuicPathValidationContext>
-  CreateContextForMultiPortPath() override;
+  void CreateContextForMultiPortPath(
+      std::unique_ptr<quic::MultiPortPathContextObserver> context_observer)
+      override;
   void MigrateToMultiPortPath(
       std::unique_ptr<quic::QuicPathValidationContext> context) override;
 

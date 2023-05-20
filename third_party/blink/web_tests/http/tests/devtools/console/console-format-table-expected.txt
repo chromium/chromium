@@ -1,11 +1,11 @@
 Tests console.table.
 
-console-format-table.js:11 null
-console-format-table.js:13 Array of arrays
+console-format-table.js:14 null
+console-format-table.js:16 Array of arrays
 HEADER (index) | 0 | 1 | 2 | 
 ROW 1 | 2 | 3 | 
 ROW 4 | 5 | 6 | 
-console-format-table.js:16 Large array of arrays
+console-format-table.js:19 Large array of arrays
 HEADER (index) | 0 | 1 | 2 | 
 ROW 1 | 2 | 3 | 
 ROW 4 | 5 | 6 | 
@@ -15,56 +15,56 @@ ROW 1 | 2 | 3 |
 ROW 4 | 5 | 6 | 
 ROW 1 | 2 | 3 | 
 ROW 4 | 5 | 6 | 
-console-format-table.js:19 Array or array and object
+console-format-table.js:22 Array or array and object
 HEADER (index) | 0 | 1 | 2 | a | b | c | 
 ROW 1 | 2 | 3 | 
 ROW 1 | 2 | 3 | 
-console-format-table.js:22 Object table
+console-format-table.js:25 Object table
 HEADER (index) | a | b | 
 ROW 1 | 2 | 
 ROW 3 | 4 | 
-console-format-table.js:25 Null as columns
+console-format-table.js:28 Null as columns
 HEADER (index) | 0 | 1 | 2 | 
 ROW 1 | 2 | 3 | 
 ROW 4 | 5 | 6 | 
-console-format-table.js:28 Digit as columns
+console-format-table.js:31 Digit as columns
 HEADER (index) | 0 | 1 | 2 | 
 ROW 1 | 2 | 3 | 
 ROW 4 | 5 | 6 | 
-console-format-table.js:31 String as columns
+console-format-table.js:34 String as columns
 HEADER (index) | 0 | 
 ROW 1 | 
 ROW 4 | 
-console-format-table.js:34 Random string as columns
+console-format-table.js:37 Random string as columns
 HEADER (index) | Value | 
 ROW Array(3) | 
 ROW Array(3) | 
-console-format-table.js:37 Array of strings as columns
+console-format-table.js:40 Array of strings as columns
 HEADER (index) | a | b | 
 ROW 1 | 2 | 
 ROW 'foo' | 'bar' | 
-console-format-table.js:40 Good and bad column names
+console-format-table.js:43 Good and bad column names
 HEADER (index) | a | b | 
 ROW 1 | 2 | 
 ROW 'foo' | 
-console-format-table.js:43 Missing column name
+console-format-table.js:46 Missing column name
 HEADER (index) | Value | 
 ROW {…} | 
 ROW {…} | 
-console-format-table.js:46 Shallow array
+console-format-table.js:49 Shallow array
 HEADER (index) | Value | 
 ROW 1 | 
 ROW 'foo' | 
 ROW null | 
-console-format-table.js:49 Shallow array with 'Value' column
+console-format-table.js:52 Shallow array with 'Value' column
 HEADER (index) | Value | Value | 
 ROW 1 | 
 ROW 2 | 
-console-format-table.js:52 Deep and shallow array
+console-format-table.js:55 Deep and shallow array
 HEADER (index) | Value | 0 | 
 ROW 1 | 
 ROW 'foo' | 
 ROW 2 | 
-console-format-table.js:55 Non-standard call should use fallback
-console-format-table.js:56 foo (3) [1, 2, 3]
+console-format-table.js:58 Non-standard call should use fallback
+console-format-table.js:59 foo (3) [1, 2, 3]
 

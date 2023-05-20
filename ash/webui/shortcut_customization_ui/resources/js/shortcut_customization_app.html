@@ -50,27 +50,7 @@
     height: 72px;
   }
 
-  #restoreAllButton {
-    border-radius: 999px;
-  }
-
-  #keyboardSettingsLinkContainer {
-    margin-top: 12px;
-  }
-
-  #keyboardSettingsLinkContainer a {
-    align-items: center;
-    color: var(--cros-link-color);
-    display: flex;
-    font-weight: var(--shortcuts-font-weight-medium);
-    text-decoration: none;
-  }
-
-  #keyboardSettingsLinkContainer a iron-icon {
-    fill: var(--cros-link-color);
-    margin-inline-start: 4px;
-  }
-
+  #bottomNavContentDrawer,
   #bottomNavContentPanel {
     margin-inline-start: 12px;
   }
@@ -89,16 +69,18 @@
     <search-box hidden="[[shouldHideSearchBox()]]"></search-box>
   </div>
   <div slot="bottom-nav-content-panel" id="bottomNavContentPanel">
-    <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked"
-      hidden="[[shouldHideRestoreAllButton()]]">
-      [[i18n('resetAllShortcuts')]]
-    </cr-button>
-    <div id="keyboardSettingsLinkContainer">
-      <a id="keyboardSettingsLink" href="[[keyboardSettingsLink]]"">
-        <span>[[i18n('keyboardSettings')]]</span>
-        <iron-icon icon="shortcut-customization:open-in-new"></iron-icon>
-      </a>
-    </div>
+    <shortcuts-bottom-nav-content
+        keyboard-settings-link="[[keyboardSettingsLink]]"
+        restore-all-button-hidden="[[shouldHideRestoreAllButton()]]"
+        on-restore-all-default="onRestoreAllDefaultClicked">
+    </shortcuts-bottom-nav-content>
+  </div>
+  <div slot="bottom-nav-content-drawer" id="bottomNavContentDrawer">
+    <shortcuts-bottom-nav-content
+      keyboard-settings-link="[[keyboardSettingsLink]]"
+      restore-all-button-hidden="[[shouldHideRestoreAllButton()]]"
+      on-restore-all-default="onRestoreAllDefaultClicked">
+    </shortcuts-bottom-nav-content>
   </div>
 </navigation-view-panel>
 

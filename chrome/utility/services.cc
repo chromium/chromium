@@ -272,8 +272,8 @@ auto RunSpeechRecognitionService(
 #endif  // !BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-auto RunScreenAIService(
-    mojo::PendingReceiver<screen_ai::mojom::ScreenAIService> receiver) {
+auto RunScreenAIServiceFactory(
+    mojo::PendingReceiver<screen_ai::mojom::ScreenAIServiceFactory> receiver) {
   return std::make_unique<screen_ai::ScreenAIService>(std::move(receiver));
 }
 #endif
@@ -452,8 +452,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif  // !BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsScreenAIServiceNeeded())
-    services.Add(RunScreenAIService);
+  services.Add(RunScreenAIServiceFactory);
 #endif
 
 #if BUILDFLAG(IS_WIN)

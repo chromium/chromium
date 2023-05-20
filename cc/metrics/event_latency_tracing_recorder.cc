@@ -16,7 +16,7 @@
 namespace cc {
 namespace {
 
-constexpr char kTracingCategory[] = "cc,benchmark,input,event_latency";
+constexpr char kTracingCategory[] = "cc,benchmark,input,input.scrolling";
 constexpr base::TimeDelta high_latency_threshold = base::Milliseconds(90);
 
 constexpr perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(

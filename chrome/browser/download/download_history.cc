@@ -58,6 +58,10 @@
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/download/download_item_web_app_data.h"
+#endif
+
 using history::DownloadState;
 
 namespace {
@@ -180,6 +184,12 @@ history::DownloadRow GetDownloadRow(download::DownloadItem* item) {
   download.transient = item->IsTransient();
   download.by_ext_id = by_ext_id;
   download.by_ext_name = by_ext_name;
+#if !BUILDFLAG(IS_ANDROID)
+  if (DownloadItemWebAppData* web_app_data = DownloadItemWebAppData::Get(item);
+      web_app_data != nullptr) {
+    download.by_web_app_id = web_app_data->id();
+  }
+#endif
   download.download_slice_info = history::GetHistoryDownloadSliceInfos(*item);
   TruncatedDataUrlAtTheEndIfNeeded(&download.url_chain);
   return download;
@@ -223,6 +233,7 @@ ShouldUpdateHistoryResult ShouldUpdateHistory(
       (previous->transient != current.transient) ||
       (previous->by_ext_id != current.by_ext_id) ||
       (previous->by_ext_name != current.by_ext_name) ||
+      (previous->by_web_app_id != current.by_web_app_id) ||
       (previous->download_slice_info != current.download_slice_info)) {
     return ShouldUpdateHistoryResult::UPDATE;
   }
@@ -435,15 +446,32 @@ void DownloadHistory::LoadHistoryDownloads(
                                   history_reason)) {
       OnDownloadUpdated(notifier_.GetManager(), item);
     }
+
+    // The item was created already and observers were notified of its creation
+    // via OnDownloadCreated(). Since we are about to possibly add extra info to
+    // it (for extensions and web apps), we must notify observers again, after
+    // modification, so that observers who care about the extra info may have an
+    // updated view of the item.
+    bool should_update_observers = false;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     if (!row.by_ext_id.empty() && !row.by_ext_name.empty()) {
       SCOPED_UMA_HISTOGRAM_TIMER(
           "Download.LoadHistoryDownloads.AddExtensionInfoAndNotifyTime");
       new extensions::DownloadedByExtension(item, row.by_ext_id,
                                             row.by_ext_name);
-      item->UpdateObservers();
+      should_update_observers = true;
     }
 #endif
+#if !BUILDFLAG(IS_ANDROID)
+    if (!row.by_web_app_id.empty()) {
+      DownloadItemWebAppData::CreateAndAttachToItem(item, row.by_web_app_id);
+      should_update_observers = true;
+    }
+#endif
+    if (should_update_observers) {
+      item->UpdateObservers();
+    }
+
     DCHECK_EQ(DownloadHistoryData::PERSISTED,
               DownloadHistoryData::Get(item)->state());
   }

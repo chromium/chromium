@@ -3841,35 +3841,6 @@ IN_PROC_BROWSER_TEST_F(PreloadingHoldbackDevToolsProtocolTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
-                       RemoveStoredPrerenderActivationIfNavigateAway) {
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Make a prerendered page.
-  AddPrerender(kPrerenderingUrl);
-
-  Attach();
-  SendCommandSync("Preload.enable");
-  SendCommandSync("Runtime.enable");
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  WaitForNotification("Preload.prerenderAttemptCompleted", true);
-
-  // Navigate away from the prerendered page, and this should trigger the
-  // mechanism of removing the stored prerender activation.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-  ASSERT_FALSE(web_contents_impl
-                   ->last_navigation_was_prerender_activation_for_devtools());
-}
-
-IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
                        RenderFrameDevToolsAgentHostCacheEvictionCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL kInitialUrl = GetUrl("/empty.html");
@@ -3907,36 +3878,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   EXPECT_THAT(old_host->GetTitle(), testing::Eq(""));
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
-                       NewPrerenderActivationOverrideTheOldOne) {
-  base::HistogramTester histogram_tester;
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL kInitialUrl = GetUrl("/empty.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
-  const GURL kPrerenderingUrl2 = GetUrl("/title1.html?prerender2");
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Make a prerendered page.
-  AddPrerender(kPrerenderingUrl);
-
-  Attach();
-  SendCommandSync("Preload.enable");
-  SendCommandSync("Runtime.enable");
-  NavigatePrimaryPage(kPrerenderingUrl);
-
-  WaitForNotification("Preload.prerenderAttemptCompleted", true);
-
-  // Trigger another prerender activation.
-  AddPrerender(kPrerenderingUrl2);
-  NavigatePrimaryPage(kPrerenderingUrl2);
-  ASSERT_TRUE(web_contents_impl
-                  ->last_navigation_was_prerender_activation_for_devtools());
-}
-
 IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
                        PrerenderActivation) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -3962,8 +3903,7 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   NavigatePrimaryPage(kPrerenderingUrl);
   base::Value::Dict result =
       WaitForNotification("Preload.prerenderAttemptCompleted", true);
-  EXPECT_THAT(*result.FindString("finalStatus"),
-              Eq("OtherPrerenderedPageActivated"));
+  EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
 
   // TODO(crbug/1332386): Verifies that multiple activations can be received
   // properly when crbug/1350676 is ready. kPrerenderingUrl2 should be canceled

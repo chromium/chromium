@@ -92,6 +92,7 @@
 #include "content/public/utility/content_utility_client.h"
 #include "content/renderer/in_process_renderer_thread.h"
 #include "content/utility/in_process_utility_thread.h"
+#include "gin/thread_isolation.h"
 #include "gin/v8_initializer.h"
 #include "media/base/media.h"
 #include "media/media_buildflags.h"
@@ -997,6 +998,13 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 #endif  // !defined(OFFICIAL_BUILD)
 
   delegate_->PreSandboxStartup();
+
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // instantiate the ThreadIsolatedAllocator before we spawn threads
+  if (process_type == switches::kRendererProcess) {
+    gin::GetThreadIsolationData().InitializeBeforeThreadCreation();
+  }
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #if BUILDFLAG(IS_WIN)
   if (!sandbox::policy::Sandbox::Initialize(

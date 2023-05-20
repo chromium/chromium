@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {BindingsTestRunner} from 'bindings_test_runner';
+
 (async function() {
   TestRunner.addResult(`Verify that automapping works property when UISourceCodes come and go.\n`);
-  await TestRunner.loadTestModule('bindings_test_runner');
 
   var foo_js = {content: 'console.log(\'foo.js!\');', time: new Date('December 1, 1989')};
 

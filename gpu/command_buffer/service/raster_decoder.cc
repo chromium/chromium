@@ -769,6 +769,9 @@ class RasterDecoderImpl final : public RasterDecoder,
     access->ApplyBackendSurfaceEndState();
 
     if (graphite_context()) {
+      // SkSurface::flush doesn't flush GPU work, so it's necessary to snap and
+      // insert a recording here. It's also necessary to submit before dropping
+      // the scoped access since we want the Dawn texture to be alive on submit.
       GraphiteFlushAndSubmit();
     }
 

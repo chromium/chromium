@@ -34,8 +34,8 @@ source_set("history") {
     "//components/sync",
     "//components/version_info",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/url:constants",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
     "//ios/web",
@@ -52,7 +52,7 @@ source_set("history_utils") {
   ]
   deps = [
     "//components/dom_distiller/core",
-    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/components/webui:url_constants",
     "//url",
   ]
@@ -75,8 +75,8 @@ source_set("tab_helper") {
     "//ios/chrome/browser/complex_tasks",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/translate",
-    "//ios/chrome/browser/url:constants",
     "//ios/web",
     "//ui/base",
     "//url",
@@ -95,7 +95,7 @@ source_set("unit_tests") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/web",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

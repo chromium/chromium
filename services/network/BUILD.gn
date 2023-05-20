@@ -13,6 +13,8 @@ component("network_service") {
   sources = [
     "brokered_client_socket_factory.cc",
     "brokered_client_socket_factory.h",
+    "brokered_udp_client_socket.cc",
+    "brokered_udp_client_socket.h",
     "cache_transparency_settings.cc",
     "cache_transparency_settings.h",
     "chunked_data_pipe_upload_data_stream.cc",
@@ -382,6 +384,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "brokered_udp_client_socket_unittest.cc",
     "chunked_data_pipe_upload_data_stream_unittest.cc",
     "cookie_access_delegate_impl_unittest.cc",
     "cookie_manager_unittest.cc",

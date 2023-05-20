@@ -262,6 +262,27 @@ SearchTagRegistry::SearchConceptUpdates GetDarkModePrefChangedUpdates(
           {&GetDarkModeOffSearchConcept(), !dark_mode_on}};
 }
 
+const SearchConcept& GetDynamicColorSearchConcept() {
+  static const base::NoDestructor<const SearchConcept> search_concept({
+      .id = mojom::SearchConceptId::kDynamicColor,
+      .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR,
+      .alternate_message_ids =
+          {
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT1,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT2,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT3,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT4,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT5,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT6,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT7,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT8,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT9,
+          },
+      .relative_url = "",
+  });
+  return *search_concept;
+}
+
 const SearchConcept& GetKeyboardBacklightSearchConcept() {
   static const base::NoDestructor<const SearchConcept> search_concept({
       .id = mojom::SearchConceptId::kKeyboardBacklight,
@@ -328,6 +349,10 @@ SearchTagRegistry::SearchTagRegistry(
   if (::ash::features::IsRgbKeyboardEnabled() &&
       Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
     updates[&GetKeyboardBacklightSearchConcept()] = true;
+  }
+
+  if (::ash::features::IsPersonalizationJellyEnabled()) {
+    updates[&GetDynamicColorSearchConcept()] = true;
   }
 
   if (IsAmbientModeAllowed()) {

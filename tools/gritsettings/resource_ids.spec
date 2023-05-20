@@ -502,7 +502,7 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [2530],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/components/sync/driver/resources/resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/components/sync/service/resources/resources.grd": {
    "META": {"sizes": {"includes": [30],}},
     "includes": [2540],
   },

@@ -357,11 +357,13 @@ static bool IsImplicitProperty(v8::Isolate* isolate,
     return true;
   if (value->IsArray() && name == "length")
     return true;
-  if (V8Blob::HasInstance(value, isolate))
+  if (V8Blob::HasInstance(isolate, value)) {
     return name == "size" || name == "type";
-  if (V8File::HasInstance(value, isolate))
+  }
+  if (V8File::HasInstance(isolate, value)) {
     return name == "name" || name == "lastModified" ||
            name == "lastModifiedDate";
+  }
   return false;
 }
 
@@ -419,32 +421,29 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
       return nullptr;
     v8::Local<v8::Object> object = v8_value.As<v8::Object>();
 
-    if (V8Blob::HasInstance(object, isolate)) {
+    if (Blob* blob = V8Blob::ToWrappable(isolate, object)) {
       if (element == "size") {
-        v8_value = v8::Number::New(isolate, V8Blob::ToImpl(object)->size());
+        v8_value = v8::Number::New(isolate, blob->size());
         continue;
       }
       if (element == "type") {
-        v8_value = V8String(isolate, V8Blob::ToImpl(object)->type());
+        v8_value = V8String(isolate, blob->type());
         continue;
       }
       // Fall through.
     }
 
-    if (V8File::HasInstance(object, isolate)) {
+    if (File* file = V8File::ToWrappable(isolate, object)) {
       if (element == "name") {
-        v8_value = V8String(isolate, V8File::ToImpl(object)->name());
+        v8_value = V8String(isolate, file->name());
         continue;
       }
       if (element == "lastModified") {
-        v8_value =
-            v8::Number::New(isolate, V8File::ToImpl(object)->lastModified());
+        v8_value = v8::Number::New(isolate, file->lastModified());
         continue;
       }
       if (element == "lastModifiedDate") {
-        v8_value = V8File::ToImpl(object)
-                       ->lastModifiedDate(ScriptState::From(context))
-                       .V8Value();
+        v8_value = file->lastModifiedDate(ScriptState::From(context)).V8Value();
         continue;
       }
       // Fall through.
@@ -867,7 +866,7 @@ IDBKeyRange* NativeValueTraits<IDBKeyRange*>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  return V8IDBKeyRange::ToImplWithTypeCheck(isolate, value);
+  return V8IDBKeyRange::ToWrappable(isolate, value);
 }
 
 #if DCHECK_IS_ON()

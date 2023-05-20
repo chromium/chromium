@@ -7,14 +7,13 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/pickle.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
+#include "content/utility/sandbox_delegate_data.mojom.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/win/sandbox_win.h"
@@ -233,11 +232,13 @@ void AddPreloadLibraryDelegateData(
     sandbox::TargetPolicy* policy,
     std::vector<base::FilePath>& preload_libraries) {
   CHECK(!preload_libraries.empty());
-  base::Pickle pickle;
+  auto sandbox_config = content::mojom::sandbox::UtilityConfig::New();
   for (const auto& library_path : preload_libraries) {
-    library_path.WriteToPickle(&pickle);
+    sandbox_config->preload_libraries.push_back(library_path);
   }
-  policy->AddDelegateData(base::make_span(pickle.data(), pickle.size()));
+  std::vector<uint8_t> blob =
+      content::mojom::sandbox::UtilityConfig::Serialize(&sandbox_config);
+  policy->AddDelegateData(blob);
 }
 
 }  // namespace

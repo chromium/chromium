@@ -1,11 +1,11 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++ROLE_SYSTEM_STATICTEXT name='Some '
-++IA2_ROLE_MARK details-roles:comment definition doc-footnote
-++++ROLE_SYSTEM_STATICTEXT name='highlighted text'
-++ROLE_SYSTEM_STATICTEXT name=' example.'
-++IA2_ROLE_COMMENT
-++++ROLE_SYSTEM_STATICTEXT name='Good job!'
-++IA2_ROLE_FOOTNOTE
-++++ROLE_SYSTEM_STATICTEXT name='Some footnote.'
-++IA2_ROLE_PARAGRAPH READONLY
-++++ROLE_SYSTEM_STATICTEXT name='The meaning is.'
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE n_relations=0
+++ROLE_SYSTEM_STATICTEXT name='Some ' n_relations=0
+++IA2_ROLE_MARK details-roles:comment definition doc-footnote n_relations=1 details='IA2_ROLE_COMMENT,IA2_ROLE_FOOTNOTE,IA2_ROLE_PARAGRAPH'
+++++ROLE_SYSTEM_STATICTEXT name='highlighted text' n_relations=0
+++ROLE_SYSTEM_STATICTEXT name=' example.' n_relations=0
+++IA2_ROLE_COMMENT n_relations=1
+++++ROLE_SYSTEM_STATICTEXT name='Good job!' n_relations=0
+++IA2_ROLE_FOOTNOTE n_relations=1
+++++ROLE_SYSTEM_STATICTEXT name='Some footnote.' n_relations=0
+++IA2_ROLE_PARAGRAPH READONLY n_relations=1
+++++ROLE_SYSTEM_STATICTEXT name='The meaning is.' n_relations=0

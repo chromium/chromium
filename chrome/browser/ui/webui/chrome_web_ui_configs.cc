@@ -7,15 +7,15 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/chromeos/chrome_web_ui_configs_chromeos.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/ash/chrome_web_ui_configs_chromeos.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void RegisterChromeWebUIConfigs() {
   // Don't add calls to `AddWebUIConfig()` here. Add it in one of
   // the corresponding chrome_web_ui_configs_*.cc files. If an appropriate
   // file doesn't exist, please add one.
-#if BUILDFLAG(IS_CHROMEOS)
-  RegisterChromeOSChromeWebUIConfigs();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::RegisterAshChromeWebUIConfigs();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

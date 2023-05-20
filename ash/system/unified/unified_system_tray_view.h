@@ -158,13 +158,11 @@ class ASH_EXPORT UnifiedSystemTrayView : public views::View,
   FeaturePodsContainerView* feature_pods_container() {
     return feature_pods_container_;
   }
+  View* detailed_view_container() { return detailed_view_container_; }
 
   NotificationHiddenView* notification_hidden_view_for_testing() {
     return notification_hidden_view_;
   }
-
-  View* detailed_view() { return detailed_view_container_; }
-  View* detailed_view_for_testing() { return detailed_view_container_; }
   PageIndicatorView* page_indicator_view_for_test() {
     return page_indicator_view_;
   }

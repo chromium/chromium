@@ -330,15 +330,8 @@ import javax.annotation.concurrent.GuardedBy;
         for (Histogram histogram : cache.values()) {
             flushedHistogramSampleCount += histogram.flushTo(mDelegate);
         }
-        Log.i(TAG, "Flushed %d samples from %d histograms.", flushedHistogramSampleCount,
-                flushedHistogramCount);
-        // Using RecordHistogram here could cause an infinite recursion.
-        mDelegate.recordExponentialHistogram("UMA.JavaCachingRecorder.DroppedHistogramSampleCount",
-                droppedHistogramSampleCount, 1, 1_000_000, 50);
-        mDelegate.recordExponentialHistogram("UMA.JavaCachingRecorder.FlushedHistogramCount",
-                flushedHistogramCount, 1, 100_000, 50);
-        mDelegate.recordExponentialHistogram("UMA.JavaCachingRecorder.InputHistogramSampleCount",
-                flushedHistogramSampleCount + droppedHistogramSampleCount, 1, 1_000_000, 50);
+        Log.i(TAG, "Flushed %d samples from %d histograms, %d samples were dropped.",
+                flushedHistogramSampleCount, flushedHistogramCount, droppedHistogramSampleCount);
     }
 
     /**
@@ -355,11 +348,8 @@ import javax.annotation.concurrent.GuardedBy;
         for (UserAction userAction : cache) {
             userAction.flushTo(mDelegate);
         }
-        // Using RecordHistogram here could cause an infinite recursion.
-        mDelegate.recordExponentialHistogram("UMA.JavaCachingRecorder.DroppedUserActionCount",
-                droppedUserActionCount, 1, 1_000, 50);
-        mDelegate.recordExponentialHistogram("UMA.JavaCachingRecorder.InputUserActionCount",
-                cache.size() + droppedUserActionCount, 1, 10_000, 50);
+        Log.i(TAG, "Flushed %d user action samples, %d samples were dropped.", cache.size(),
+                droppedUserActionCount);
     }
 
     /**

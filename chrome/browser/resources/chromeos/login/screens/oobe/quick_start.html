@@ -16,12 +16,15 @@ found in the LICENSE file.
   div[clr=blue] {
     color: var(--google-blue-500);
   }
+
   div[clr=red] {
     color: var(--google-red-500);
   }
+
   div[clr=green] {
     color: var(--google-green-500);
   }
+
   div[clr=yellow] {
     color: var(--google-yellow-500);
   }
@@ -30,8 +33,7 @@ found in the LICENSE file.
     font-size: 22px;
   }
 </style>
-<oobe-loading-dialog id="loadingDialog" for-step="loading"
-    title-key="gaiaLoading">
+<oobe-loading-dialog id="loadingDialog" for-step="loading" title-key="gaiaLoading">
 </oobe-loading-dialog>
 <oobe-adaptive-dialog for-step="verification">
   <h1 slot="title">
@@ -40,12 +42,29 @@ found in the LICENSE file.
   </h1>
   <div id="code" class="layout horizontal" slot="content">
     <div id="qrCodeWrapper">
-      <canvas id="qrCodeCanvas" width="[[canvasSize_]]"
-          height="[[canvasSize_]]">
+      <canvas id="qrCodeCanvas" width="[[canvasSize_]]" height="[[canvasSize_]]">
     </div>
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button on-click="onNextClicked_"></oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+<oobe-adaptive-dialog for-step="connecting_to_wifi">
+  <h1 slot="title">
+    Connecting to Wifi
+  </h1>
+</oobe-adaptive-dialog>
+<oobe-adaptive-dialog for-step="connected_to_wifi">
+  <h1 slot="title">
+    Connected to Wifi
+  </h1>
+  <div slot="content">
+    <span>
+      SSID: [[ssid_]]
+    </span>
+    <span>
+      Password: [[password_]]
+    </span>
   </div>
 </oobe-adaptive-dialog>
 <oobe-adaptive-dialog for-step="figures">
@@ -59,27 +78,27 @@ found in the LICENSE file.
       <div class="layout vertical center">
         <div clr$="[[item.color]]">
           <template is="dom-if" if="[[isEq_(item.shape, shapes_.CIRCLE)]]">
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="50" cy="50" r="46" fill="currentColor">
               </circle>
             </svg>
           </template>
 
           <template is="dom-if" if="[[isEq_(item.shape, shapes_.DIAMOND)]]">
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-              <path d="M45.793 5.746L5.749 45.789a5.96 5.96 0 0 0 0 8.429L45.793 94.26a5.96 5.96 0 0 0 8.428 0l40.044-40.043a5.96 5.96 0 0 0 0-8.429L54.22 5.746a5.96 5.96 0 0 0-8.428 0z" fill="currentColor">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M45.793 5.746L5.749 45.789a5.96 5.96 0 0 0 0 8.429L45.793 94.26a5.96 5.96 0 0 0 8.428 0l40.044-40.043a5.96 5.96 0 0 0 0-8.429L54.22 5.746a5.96 5.96 0 0 0-8.428 0z"
+                fill="currentColor">
               </path>
             </svg>
           </template>
 
-          <template is="dom-if"
-              if="[[isEq_(item.shape, shapes_.TRIANGLE)]]">
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
+          <template is="dom-if" if="[[isEq_(item.shape, shapes_.TRIANGLE)]]">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_123_9159)">
-                <path d="M50 95.97H11.773a7.778 7.778 0 0 1-6.7-3.879 7.763 7.763 0 0 1-.023-7.737L43.267 7.879a7.76 7.76 0 0 1 6.728-3.887 7.768 7.768 0 0 1 6.728 3.887L94.95 84.354a7.763 7.763 0 0 1-2.862 10.573 7.778 7.778 0 0 1-3.871 1.043H50z" fill="currentColor">
+                <path
+                  d="M50 95.97H11.773a7.778 7.778 0 0 1-6.7-3.879 7.763 7.763 0 0 1-.023-7.737L43.267 7.879a7.76 7.76 0 0 1 6.728-3.887 7.768 7.768 0 0 1 6.728 3.887L94.95 84.354a7.763 7.763 0 0 1-2.862 10.573 7.778 7.778 0 0 1-3.871 1.043H50z"
+                  fill="currentColor">
                 </path>
               </g>
               <defs>
@@ -92,12 +111,10 @@ found in the LICENSE file.
           </template>
 
           <template is="dom-if" if="[[isEq_(item.shape, shapes_.SQUARE)]]">
-            <svg width="100" height="100" viewBox="0 0 100 100" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill="#fff" d="M0 0h100v100H0z">
               </path>
-              <rect x="4" y="4" width="92" height="92" rx="8"
-                fill="currentColor">
+              <rect x="4" y="4" width="92" height="92" rx="8" fill="currentColor">
               </rect>
             </svg>
           </template>

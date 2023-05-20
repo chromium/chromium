@@ -184,6 +184,21 @@ PrintViewManagerBase::~PrintViewManagerBase() {
   DisconnectFromCurrentPrintJob();
 }
 
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// TODO(crbug.com/892294):  Remove `DisableThirdPartyBlocking()` once OOP
+// printing is always enabled for Windows.
+// static
+void PrintViewManagerBase::DisableThirdPartyBlocking() {
+#if BUILDFLAG(ENABLE_OOP_PRINTING) && BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  if (!printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+    ModuleDatabase::DisableThirdPartyBlocking();
+  }
+#else
+  ModuleDatabase::DisableThirdPartyBlocking();
+#endif
+}
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 bool PrintViewManagerBase::PrintNow(content::RenderFrameHost* rfh) {
   // Remember the ID for `rfh`, to enable checking that the `RenderFrameHost`
   // is still valid after a possible inner message loop runs in
@@ -757,7 +772,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
 #endif
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-      scanning_data = enterprise_connectors::ShouldAnalyzeBeforePrintPreview(
+      scanning_data = enterprise_connectors::GetBeforePrintPreviewAnalysisData(
           web_contents());
   if (scanning_data) {
     auto scanning_done_callback = base::BindOnce(
@@ -1192,7 +1207,7 @@ void PrintViewManagerBase::CompleteScriptedPrint(
       &PrintViewManagerBase::ScriptedPrintReply, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), render_process_host->GetID());
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  ModuleDatabase::GetInstance()->DisableThirdPartyBlocking();
+  DisableThirdPartyBlocking();
 #endif
 
   std::unique_ptr<PrinterQuery> printer_query =

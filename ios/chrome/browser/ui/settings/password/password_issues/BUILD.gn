@@ -16,7 +16,7 @@ source_set("password_issues") {
     "//components/google/core/common",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common:features",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/net:crurl",

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -125,9 +126,9 @@ std::string BuildRequest() {
       "USER-AGENT: %s/%s %s\r\n"
       "\r\n",
       kDialRequestAddress, kDialRequestPort, kDialMaxResponseDelaySecs,
-      kDialSearchType, version_info::GetProductName().c_str(),
-      version_info::GetVersionNumber().c_str(),
-      version_info::GetOSType().c_str()));
+      kDialSearchType, version_info::GetProductName().data(),
+      version_info::GetVersionNumber().data(),
+      version_info::GetOSType().data()));
   // 1500 is a good MTU value for most Ethernet LANs.
   DCHECK_LE(request.size(), 1500U);
   return request;

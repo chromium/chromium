@@ -33,10 +33,10 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:password_controller_delegate",
     "//ios/chrome/browser/passwords:passwords",
-    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -67,6 +67,29 @@ source_set("common") {
   ]
 }
 
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "password_suggestion_bottom_sheet_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//components/password_manager/core/common:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/passwords:eg_test_support+eg2",
+    "//ios/chrome/browser/signin:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("eg_app_support+eg2") {
   configs += [
     "//build/config/compiler:enable_arc",
@@ -80,6 +103,9 @@ source_set("eg_app_support+eg2") {
   deps = [
     ":common",
     "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/test/app:test_support",
   ]

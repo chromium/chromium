@@ -10,15 +10,15 @@ build_webui("build") {
   static_files = [ "gpu_internals.html" ]
 
   web_component_files = [
-    "info_view.js",
-    "info_view_table.js",
-    "info_view_table_row.js",
+    "info_view.ts",
+    "info_view_table.ts",
+    "info_view_table_row.ts",
   ]
 
   non_web_component_files = [
-    "browser_bridge.js",
-    "gpu_internals.js",
-    "vulkan_info.js",
+    "browser_bridge.ts",
+    "gpu_internals.ts",
+    "vulkan_info.ts",
   ]
 
   mojo_files_deps = [ "//gpu/ipc/common:vulkan_interface_js__generator" ]

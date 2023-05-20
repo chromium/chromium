@@ -12,6 +12,7 @@
 #import "base/mac/scoped_nsobject.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/cocoa/views_hostable.h"
+#import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/native/native_view_host_test_base.h"
 #include "ui/views/view.h"
@@ -88,6 +89,11 @@ class NativeViewHostMacTest : public test::NativeViewHostTestBase {
     host()->Attach(native_view_.get());
   }
 
+  NSView* GetMovedContentViewForWidget(const std::unique_ptr<Widget>& widget) {
+    return (NSView*)widget->GetNativeWindowProperty(
+        views::NativeWidgetMacNSWindowHost::kMovedContentNSView);
+  }
+
  protected:
   base::scoped_nsobject<NSView> native_view_;
 };
@@ -135,6 +141,78 @@ TEST_F(NativeViewHostMacTest, Attach) {
   EXPECT_NSEQ(NSMakeRect(10, bottom, 80, 60), [native_view_ frame]);
 
   DestroyHost();
+}
+
+// If Widget A has been attached to Widget B, ensure Widget A maintains a
+// reference to its native view.
+TEST_F(NativeViewHostMacTest, CheckNativeViewReferenceOnAttach) {
+  CreateTopLevel();
+  CreateTestingHost();
+  toplevel()->GetRootView()->AddChildView(host());
+
+  // Create a second widget.
+  auto second_widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.delegate = nullptr;
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  second_widget->Init(std::move(params));
+
+  // No reference to its native view should exist currently.
+  EXPECT_EQ(GetMovedContentViewForWidget(second_widget), nullptr);
+
+  NSView* view = second_widget->GetNativeView().GetNativeNSView();
+  NSWindow* native_window = [view window];
+  host()->Attach(second_widget->GetNativeView());
+
+  // On Ventura, the attach rips Widget A's contentView from its window.
+  // NativeViewHostMac::AttachNativeView() should have stored a reference.
+  if (base::mac::IsAtLeastOS13()) {
+    EXPECT_EQ([native_window contentView], nullptr);
+    EXPECT_EQ(GetMovedContentViewForWidget(second_widget), view);
+  } else {
+    EXPECT_EQ([native_window contentView], view);
+  }
+
+  // After detatching, there should be no reference, and the native view should
+  // be restored to its widget's window.
+  host()->Detach();
+  EXPECT_EQ(GetMovedContentViewForWidget(second_widget), nullptr);
+  EXPECT_EQ([native_window contentView], view);
+
+  DestroyHost();
+}
+
+// On macOS13, if Widget A has been attached to Widget B, ensure Widget A's
+// reference to its native view disappears when the native view is freed.
+TEST_F(NativeViewHostMacTest, CheckNoNativeViewReferenceOnDestruct) {
+  if (!base::mac::IsAtLeastOS13()) {
+    return;
+  }
+
+  CreateTopLevel();
+  CreateTestingHost();
+  toplevel()->GetRootView()->AddChildView(host());
+
+  // Create a second widget.
+  auto second_widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.delegate = nullptr;
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  second_widget->Init(std::move(params));
+
+  // No reference should to the native view should exist currently.
+  EXPECT_EQ(GetMovedContentViewForWidget(second_widget), nullptr);
+
+  // Attaching the widget's native view should store a reference.
+  NSView* view = second_widget->GetNativeView().GetNativeNSView();
+  host()->Attach(second_widget->GetNativeView());
+  EXPECT_EQ(GetMovedContentViewForWidget(second_widget), view);
+
+  // Tearing down the destination widget (where we attached the second widget)
+  // will free the native view and should remove the reference.
+  DestroyHost();
+
+  EXPECT_EQ(GetMovedContentViewForWidget(second_widget), nullptr);
 }
 
 // Ensure the native view is integrated into the views accessibility

@@ -1,13 +1,21 @@
 use crate::ToTokens;
+use proc_macro2::extra::DelimSpan;
 use proc_macro2::{Span, TokenStream};
 
-pub trait Spanned {
+// Not public API other than via the syn crate. Use syn::spanned::Spanned.
+pub trait Spanned: private::Sealed {
     fn __span(&self) -> Span;
 }
 
 impl Spanned for Span {
     fn __span(&self) -> Span {
         *self
+    }
+}
+
+impl Spanned for DelimSpan {
+    fn __span(&self) -> Span {
+        self.join()
     }
 }
 
@@ -18,10 +26,11 @@ impl<T: ?Sized + ToTokens> Spanned for T {
 }
 
 fn join_spans(tokens: TokenStream) -> Span {
+    #[cfg(not(needs_invalid_span_workaround))]
+    let mut iter = tokens.into_iter().map(|tt| tt.span());
+
+    #[cfg(needs_invalid_span_workaround)]
     let mut iter = tokens.into_iter().filter_map(|tt| {
-        // FIXME: This shouldn't be required, since optimally spans should
-        // never be invalid. This filter_map can probably be removed when
-        // https://github.com/rust-lang/rust/issues/43081 is resolved.
         let span = tt.span();
         let debug = format!("{:?}", span);
         if debug.ends_with("bytes(0..0)") {
@@ -39,4 +48,15 @@ fn join_spans(tokens: TokenStream) -> Span {
     iter.fold(None, |_prev, next| Some(next))
         .and_then(|last| first.join(last))
         .unwrap_or(first)
+}
+
+mod private {
+    use crate::ToTokens;
+    use proc_macro2::extra::DelimSpan;
+    use proc_macro2::Span;
+
+    pub trait Sealed {}
+    impl Sealed for Span {}
+    impl Sealed for DelimSpan {}
+    impl<T: ?Sized + ToTokens> Sealed for T {}
 }

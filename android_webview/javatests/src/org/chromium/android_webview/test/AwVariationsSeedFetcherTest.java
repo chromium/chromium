@@ -236,6 +236,7 @@ public class AwVariationsSeedFetcherTest {
     @SmallTest
     public void testScheduleWithCorrectFastModeSettings() {
         try {
+            AwVariationsSeedFetcher.setUseSmallJitterForTesting();
             AwVariationsSeedFetcher.scheduleIfNeeded();
             mScheduler.assertScheduled();
             JobInfo pendingJob = mScheduler.getPendingJob(JOB_ID);
@@ -250,6 +251,9 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertTrue("Fast mode should enabled.",
                     pendingJob.getExtras().getBoolean(
                             AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE));
+            Assert.assertTrue("Fast mode jobs should be persisted", pendingJob.isPersisted());
+            Assert.assertEquals("Fast Mode backoff policy should be linear.",
+                    pendingJob.getBackoffPolicy(), JobInfo.BACKOFF_POLICY_LINEAR);
         } finally {
             mScheduler.clear();
         }
@@ -415,6 +419,45 @@ public class AwVariationsSeedFetcherTest {
         } finally {
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
         }
+    }
+
+    @Test
+    @SmallTest
+    public void testFastFetchJitterPeriodSettings() throws IOException, TimeoutException {
+        try {
+            TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
+            final Date date = mock(Date.class);
+            PersistableBundle bundle = new PersistableBundle();
+            bundle.putBoolean(AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE, true);
+
+            when(mMockJobParameters.getExtras()).thenReturn(bundle);
+            fetcher.onStartJob(mMockJobParameters);
+
+            Assert.assertFalse("neededReschedule should be false before making a request",
+                    fetcher.neededReschedule());
+            fetcher.helper.waitForCallback(
+                    "Timeout out waiting for AwVariationsSeedFetcher to call jobFinished",
+                    fetcher.helper.getCallCount());
+            Assert.assertTrue(
+                    "AwVariationsSeedFetcher should have scheduled periodic fast mode job after jitter period has expired",
+                    AwVariationsSeedFetcher.periodicFastModeJobScheduled());
+        } finally {
+            VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testPeriodicFastFetch() throws IOException, TimeoutException {
+        AwVariationsSeedFetcher.scheduleJob(
+                mScheduler, /*requireFastMode=*/true, /*requestPeriodicFastMode=*/false);
+        Assert.assertFalse("AwVariationsSeedFetcher should not schedule periodic fast mode job.",
+                AwVariationsSeedFetcher.periodicFastModeJobScheduled());
+
+        AwVariationsSeedFetcher.scheduleJob(
+                mScheduler, /*requireFastMode=*/true, /*requestPeriodicFastMode=*/true);
+        Assert.assertTrue("AwVariationsSeedFetcher should have scheduled periodic fast mode job.",
+                AwVariationsSeedFetcher.periodicFastModeJobScheduled());
     }
 
     @Test

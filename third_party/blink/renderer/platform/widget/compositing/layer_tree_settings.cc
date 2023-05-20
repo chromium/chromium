@@ -554,6 +554,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.disable_frame_rate_limit =
       cmd.HasSwitch(::switches::kDisableFrameRateLimit);
 
+  settings.enable_variable_refresh_rate =
+      ::features::IsVariableRefreshRateEnabled();
+
   return settings;
 }
 

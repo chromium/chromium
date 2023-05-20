@@ -139,8 +139,7 @@ bool RendererSandboxedProcessLauncherDelegateWin::InitializeConfig(
     }
   }
 
-  config->SetFilterEnvironment(base::FeatureList::IsEnabled(
-      sandbox::policy::features::kRendererFilterEnvironment));
+  config->SetFilterEnvironment(/*filter=*/true);
 
   ContentBrowserClient::ChildSpawnFlags flags(
       ContentBrowserClient::ChildSpawnFlags::kChildSpawnFlagNone);

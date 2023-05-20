@@ -134,9 +134,11 @@ void DocumentAnimations::UpdateAnimations(
   document_->GetWorkletAnimationController().UpdateAnimationStates();
   document_->GetFrame()->ScheduleNextServiceForScrollSnapshotClients();
   for (auto& timeline : timelines_) {
-    // ScrollTimelines are already handled as ScrollSnapshotClients above.
-    if (!timeline->IsScrollTimeline())
+    // ScrollSnapshotTimelines are already handled as ScrollSnapshotClients
+    // above.
+    if (!timeline->IsScrollSnapshotTimeline()) {
       timeline->ScheduleNextService();
+    }
   }
 }
 

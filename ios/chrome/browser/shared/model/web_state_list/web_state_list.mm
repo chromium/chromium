@@ -296,25 +296,11 @@ void WebStateList::CloseWebStateAt(int index, int close_flags) {
 }
 
 void WebStateList::CloseAllWebStates(int close_flags) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto lock = LockForMutation();
-  PerformBatchOperation(base::BindOnce(
-      [](int start_index, int close_flags, WebStateList* web_state_list) {
-        web_state_list->CloseAllWebStatesAfterIndexImpl(start_index,
-                                                        close_flags);
-      },
-      0, close_flags));
+  CloseAllWebStatesAfterIndex(0, close_flags);
 }
 
 void WebStateList::CloseAllNonPinnedWebStates(int close_flags) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto lock = LockForMutation();
-  PerformBatchOperation(base::BindOnce(
-      [](int start_index, int close_flags, WebStateList* web_state_list) {
-        web_state_list->CloseAllWebStatesAfterIndexImpl(start_index,
-                                                        close_flags);
-      },
-      GetIndexOfFirstNonPinnedWebState(), close_flags));
+  CloseAllWebStatesAfterIndex(GetIndexOfFirstNonPinnedWebState(), close_flags);
 }
 
 void WebStateList::ActivateWebStateAt(int index) {
@@ -498,6 +484,18 @@ void WebStateList::CloseWebStateAtImpl(int index, int close_flags) {
   }
 
   // Dropping detached_web_state will destroy it.
+}
+
+void WebStateList::CloseAllWebStatesAfterIndex(int start_index,
+                                               int close_flags) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto lock = LockForMutation();
+  PerformBatchOperation(base::BindOnce(
+      [](int start_index, int close_flags, WebStateList* web_state_list) {
+        web_state_list->CloseAllWebStatesAfterIndexImpl(start_index,
+                                                        close_flags);
+      },
+      start_index, close_flags));
 }
 
 void WebStateList::CloseAllWebStatesAfterIndexImpl(int start_index,

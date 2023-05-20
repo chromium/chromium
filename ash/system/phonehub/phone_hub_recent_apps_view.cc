@@ -164,6 +164,8 @@ PhoneHubRecentAppsView::HeaderView::HeaderView(
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorWarning));
     error_button_->SetImage(views::Button::STATE_NORMAL, image);
+    error_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TITLE));
     error_button_->SetVisible(false);
   }
 }
@@ -435,6 +437,10 @@ void PhoneHubRecentAppsView::Update() {
       SetVisible(true);
       break;
     case RecentAppsUiState::ITEMS_VISIBLE:
+      // Setting the visibility to false before re-constructing the view.
+      // Without doing this it would cause the view goes to blank when there's a
+      // UI change.
+      recent_app_buttons_view_->SetVisible(false);
       std::vector<phonehub::Notification::AppMetadata> recent_apps_list =
           recent_apps_interaction_handler_->FetchRecentAppMetadataList();
 

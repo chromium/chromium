@@ -126,6 +126,10 @@ class TestPersonalDataManager : public PersonalDataManager {
     return num_times_save_imported_profile_called_;
   }
 
+  AutofillProfile* last_save_imported_profile() {
+    return last_save_imported_profile_.get();
+  }
+
   int num_times_save_imported_credit_card_called() const {
     return num_times_save_imported_credit_card_called_;
   }
@@ -171,6 +175,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   std::string timezone_country_code_;
   std::string default_country_code_;
   int num_times_save_imported_profile_called_ = 0;
+  std::unique_ptr<AutofillProfile> last_save_imported_profile_;
   int num_times_save_imported_credit_card_called_ = 0;
   int num_times_save_upi_id_called_ = 0;
   absl::optional<bool> autofill_profile_enabled_;

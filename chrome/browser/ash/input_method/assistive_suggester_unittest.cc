@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
@@ -38,6 +39,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/controls/textfield/textfield.h"
 
 namespace ash::input_method {
 namespace {
@@ -1404,10 +1406,19 @@ class AssistiveSuggesterControlVLongpressTest : public AshTestBase {
     SetClipboardText("B");
     SetClipboardText("A");
 
-    // Create a test window for the clipboard history controller to recognize as
-    // a paste target.
-    gfx::Rect test_window_rect(100, 100, 100, 100);
-    std::unique_ptr<aura::Window> window(CreateTestWindow(test_window_rect));
+    // Create a textfield for the clipboard history controller to recognize as a
+    // paste target.
+    textfield_widget_ = CreateFramelessTestWidget();
+    textfield_widget_->SetBounds(gfx::Rect(100, 100, 100, 100));
+    textfield_ = textfield_widget_->SetContentsView(
+        std::make_unique<views::Textfield>());
+
+    // Set the textfield as the text input client so that its caret position can
+    // be queried.
+    IMEBridge::Get()
+        ->GetInputContextHandler()
+        ->GetInputMethod()
+        ->SetFocusedTextInputClient(textfield_);
   }
 
   void SetClipboardText(const std::string& text) {
@@ -1430,6 +1441,8 @@ class AssistiveSuggesterControlVLongpressTest : public AshTestBase {
   FakeSuggestionHandler suggestion_handler_;
   AssistiveSuggester assistive_suggester_;
   base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+  std::unique_ptr<views::Widget> textfield_widget_;
+  raw_ptr<views::Textfield> textfield_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -1441,7 +1454,13 @@ TEST_F(AssistiveSuggesterControlVLongpressTest,
   assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  EXPECT_TRUE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
+  auto* const controller = Shell::Get()->clipboard_history_controller();
+  EXPECT_TRUE(controller->IsMenuShowing());
+  // Precise anchoring logic may change as time goes on, so this test only
+  // assumes that the clipboard history menu should be left-aligned with the
+  // input field's caret.
+  EXPECT_EQ(controller->GetMenuBoundsInScreenForTest().x(),
+            textfield_->GetCaretBounds().x());
   histogram_tester_.ExpectUniqueSample(
       "Ash.ClipboardHistory.ContextMenu.ShowMenu",
       crosapi::mojom::ClipboardHistoryControllerShowSource::kControlVLongpress,

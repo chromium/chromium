@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -47,6 +48,15 @@ namespace {
 
 using KeyboardTopRowLayout = KeyboardCapability::KeyboardTopRowLayout;
 using DeviceType = KeyboardCapability::DeviceType;
+
+struct VendorProductId {
+  uint16_t vendor_id;
+  uint16_t product_id;
+  constexpr bool operator<(const VendorProductId& other) const {
+    return vendor_id == other.vendor_id ? product_id < other.product_id
+                                        : vendor_id < other.vendor_id;
+  }
+};
 
 // Represents scancode value seen in scan code mapping which denotes that the
 // FKey is missing on the physical device.
@@ -93,6 +103,12 @@ constexpr auto kVKeyToTopRowActionKeyMap =
         {VKEY_ALL_APPLICATIONS, TopRowActionKey::kAllApplications},
         {VKEY_EMOJI_PICKER, TopRowActionKey::kEmojiPicker},
         {VKEY_DICTATE, TopRowActionKey::kDictation},
+    });
+
+// Some ChromeOS compatible keyboards have a capslock key.
+constexpr auto kChromeOSKeyboardsWithCapsLock =
+    base::MakeFixedFlatSet<VendorProductId>({
+        {0x046d, 0xb370}  // Logitech Signature K650
     });
 
 class StubKeyboardCapabilityDelegate : public KeyboardCapability::Delegate {
@@ -312,7 +328,9 @@ KeyboardCapability::DeviceType IdentifyKeyboardType(
   if (keyboard_device.type == INPUT_DEVICE_INTERNAL) {
     VLOG(1) << "Internal keyboard '" << keyboard_device.name
             << "' connected: id=" << keyboard_device.id;
-    return KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+    return ash::switches::IsRevenBranding()
+               ? KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard
+               : KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
   }
 
   if (has_chromeos_top_row) {
@@ -641,25 +659,30 @@ KeyboardCapability::GetCorrespondingActionKeyForFKey(
 }
 
 bool KeyboardCapability::HasLauncherButton(
-    const absl::optional<KeyboardDevice>& keyboard) {
-  // Use current implementation. If keyboard is provided, launcher button
-  // depends on if this keyboard is layout2 type. If keyboard is not provided,
-  // launcher button depends on if any keyboard in DeviceDataManager is layout2
-  // type.
-  // TODO(zhangwenyu): Handle edge cases.
-  if (!keyboard.has_value()) {
-    for (const KeyboardDevice& keyboard_iter :
-         DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-      if (GetTopRowLayout(keyboard_iter) ==
-          KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2) {
-        return true;
-      }
-    }
-    return false;
+    const KeyboardDevice& keyboard) const {
+  // TODO(dpad): This is not entirely correct. Some devices which have custom
+  // top rows have a search icon on their keyboard (ie jinlon).
+  // In general, only chromebooks with layout1 top rows use the search icon.
+  auto top_row_layout = GetTopRowLayout(keyboard);
+  switch (top_row_layout) {
+    case KeyboardTopRowLayout::kKbdTopRowLayout1:
+      return false;
+    case KeyboardTopRowLayout::kKbdTopRowLayout2:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
+      return true;
   }
+}
 
-  return GetTopRowLayout(keyboard.value()) ==
-         KeyboardTopRowLayout::kKbdTopRowLayout2;
+bool KeyboardCapability::HasLauncherButtonOnAnyKeyboard() const {
+  for (const ui::KeyboardDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (HasLauncherButton(keyboard)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // static
@@ -750,16 +773,7 @@ std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
       mojom::ModifierKey::kAlt,
   };
 
-  const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
-  if (!keyboard_info) {
-    return modifier_keys;
-  }
-
-  // CapsLock exists on all non-chromeos keyboards.
-  if (keyboard_info->device_type !=
-          KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard &&
-      keyboard_info->device_type !=
-          KeyboardCapability::DeviceType::kDeviceInternalKeyboard) {
+  if (HasCapsLockKey(keyboard)) {
     modifier_keys.push_back(mojom::ModifierKey::kCapsLock);
   }
 
@@ -976,6 +990,12 @@ bool KeyboardCapability::HasAssistantKeyOnAnyKeyboard() const {
     }
   }
   return false;
+}
+
+bool KeyboardCapability::HasCapsLockKey(const KeyboardDevice& keyboard) const {
+  return !IsChromeOSKeyboard(keyboard) ||
+         kChromeOSKeyboardsWithCapsLock.contains(
+             {keyboard.vendor_id, keyboard.product_id});
 }
 
 void KeyboardCapability::OnDeviceListsComplete() {

@@ -15,11 +15,11 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/prefs/browser_prefs.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -195,7 +195,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     } else {
       title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
     }
-    OCMExpect([primary_button_ setTitle:title forState:UIControlStateNormal]);
+    OCMExpect([signin_promo_view_ configurePrimaryButtonWithTitle:title]);
     image_view_profile_image_ = nil;
   }
 
@@ -233,9 +233,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
                              ? identity_.userGivenName
                              : identity_.userEmail;
         std::u16string name16 = SysNSStringToUTF16(name);
-        OCMExpect([primary_button_
-            setTitle:GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)
-            forState:UIControlStateNormal]);
+        OCMExpect([signin_promo_view_
+            configurePrimaryButtonWithTitle:
+                GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)]);
         OCMExpect([secondary_button_
             setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
             forState:UIControlStateNormal]);
@@ -297,9 +297,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     NSString* name = identity_.userGivenName.length ? identity_.userGivenName
                                                     : identity_.userEmail;
     std::u16string name16 = SysNSStringToUTF16(name);
-    OCMExpect([primary_button_
-        setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
-        forState:UIControlStateNormal]);
+    OCMExpect([signin_promo_view_
+        configurePrimaryButtonWithTitle:GetNSString(
+                                            IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)]);
     image_view_profile_image_ = nil;
   }
 

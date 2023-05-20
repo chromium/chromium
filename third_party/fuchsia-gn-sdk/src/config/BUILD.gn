@@ -1,0 +1,89 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("config.gni")
+
+config("compiler") {
+  sdk_version = "${fuchsia_sdk_id}"
+  defines = [
+    # To force full builds after SDK updates in case of ABI changes.
+    "FUCHSIA_SDK_VERSION=$sdk_version",
+  ]
+  cflags = []
+  ldflags = []
+  if (current_cpu == "arm64") {
+    cflags += [ "--target=aarch64-fuchsia" ]
+  } else if (current_cpu == "x64") {
+    cflags += [ "--target=x86_64-fuchsia" ]
+  } else {
+    assert(false, "Unsupported architecture")
+  }
+
+  # Pass the target API level to the compiler if specified.
+  if (fuchsia_target_api_level != -1) {
+    cflags += [ "-ffuchsia-api-level=${fuchsia_target_api_level}" ]
+  }
+
+  # Add libfdio by default. This may change in future versions
+  # in order to move away from POSIX applications and towards
+  # the Fuchsia programming model.
+  ldflags += [
+    # We always want fdio or else e.g. stdio wouldn't be initialized if fdio
+    # happens to not be directly referenced. The common POSIX-y compiler setup
+    # uses -Wl,--as-needed which drops it if it's simply "-lfdio" from a libs
+    # setting. Disable --as-needed, add fdio, and then set back to --as-needed.
+    "-Wl,--no-as-needed",
+    "-lfdio",
+    "-Wl,--as-needed",
+  ]
+
+  lib_dirs = [ "${fuchsia_sdk}/arch/${current_cpu}/lib" ]
+
+  libs = [ "zircon" ]
+
+  ldflags += cflags
+  asmflags = cflags
+}
+
+# This should be applied to all targets.
+config("runtime_library") {
+  asmflags = []
+  cflags = []
+  cflags_c = []
+  cflags_cc = []
+  cflags_objc = []
+  cflags_objcc = []
+  defines = []
+  ldflags = []
+
+  sysroot = "${fuchsia_sdk}/arch/$current_cpu/sysroot"
+
+  # Pass the sysroot to all C compiler variants, the assembler, and linker.
+  cflags = [ "--sysroot=" + rebase_path(sysroot, root_build_dir) ]
+  ldflags = cflags
+  asmflags = cflags
+}
+
+# Copy the loader to place it at the expected path in the final package.
+copy("sysroot_dist_libs") {
+  sources = [ "${fuchsia_sdk}/arch/${target_cpu}/sysroot/dist/lib/ld.so.1" ]
+  outputs = [ "${root_out_dir}/lib/{{source_file_part}}" ]
+}
+
+# This adds the runtime deps for //build/config/compiler:runtime_library
+# as that is a config target and thus cannot include data_deps.
+group("runtime_library_group") {
+  data_deps = [
+    ":sysroot_dist_libs",
+
+    # This is used directly from //build/config/fuchsia:compiler and thus
+    # also needs to be included by default.
+    "${fuchsia_sdk}/pkg/fdio",
+  ]
+}
+
+config("sdk_lib_dirs_config") {
+  visibility = [ "${fuchsia_sdk}/*" ]
+  lib_dirs = [ "arch/${target_cpu}/lib" ]
+}

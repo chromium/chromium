@@ -35,7 +35,7 @@ class DlpPolicyEventBuilder {
 
   // Setters used to define event properties.
   void SetDestinationPattern(const std::string& dst_pattern);
-  void SetDestinationComponent(DlpRulesManager::Component dst_component);
+  void SetDestinationComponent(data_controls::Component dst_component);
   void SetContentName(const std::string& content_name);
 
   // Stops the creation and returns the created event.
@@ -66,7 +66,7 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
                                     const std::string& rule_id,
                                     DlpRulesManager::Level level);
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    DlpRulesManager::Component dst_component,
+                                    data_controls::Component dst_component,
                                     DlpRulesManager::Restriction restriction,
                                     const std::string& rule_name,
                                     const std::string& rule_id,
@@ -108,7 +108,7 @@ class DlpReportingManager {
                    const std::string& rule_name,
                    const std::string& rule_id);
   void ReportEvent(const std::string& src_pattern,
-                   DlpRulesManager::Component dst_component,
+                   data_controls::Component dst_component,
                    DlpRulesManager::Restriction restriction,
                    DlpRulesManager::Level level,
                    const std::string& rule_name,

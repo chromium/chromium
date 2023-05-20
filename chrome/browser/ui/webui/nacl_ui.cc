@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -187,15 +188,16 @@ bool NaClDomHandler::isPluginEnabled(size_t plugin_index) {
 
 void NaClDomHandler::AddOperatingSystemInfo(base::Value::List* list) {
   // Obtain the Chrome version info.
-  AddPair(list, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
-          ASCIIToUTF16(
-              version_info::GetVersionNumber() + " (" +
-              chrome::GetChannelName(chrome::WithExtendedStable(true)) + ")"));
+  AddPair(
+      list, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
+      ASCIIToUTF16(base::StrCat(
+          {version_info::GetVersionNumber(), " (",
+           chrome::GetChannelName(chrome::WithExtendedStable(true)), ")"})));
 
   // OS version information.
   // TODO(jvoung): refactor this to share the extra windows labeling
   // with about:flash, or something.
-  std::string os_label = version_info::GetOSType();
+  std::string os_label(version_info::GetOSType());
 #if BUILDFLAG(IS_WIN)
   base::win::OSInfo* os = base::win::OSInfo::GetInstance();
   switch (os->version()) {

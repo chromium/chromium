@@ -1,5 +1,6 @@
 include_rules = [
   "+components/account_id/account_id.h",
+  "+components/crx_file",
   "+components/services/app_service/public/cpp",
   "+content/public",
   "+ui/gfx/geometry",

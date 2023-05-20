@@ -48,8 +48,8 @@ source_set("app") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/url:constants",
     "//net",
     "//url",
   ]
@@ -91,8 +91,6 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/application_delegate:url_opener_params",
     "//ios/chrome/browser/metrics:metrics",
-    "//ios/chrome/browser/prefs:browser_prefs",
-    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:promos_manager",
     "//ios/chrome/browser/promos_manager:test_support",
@@ -103,6 +101,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/signin:test_support",
@@ -389,8 +389,12 @@ source_set("feed_app_agent") {
 source_set("app_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "application_storage_metrics.h",
+    "application_storage_metrics.mm",
     "chrome_overlay_window.h",
     "chrome_overlay_window.mm",
+    "features.h",
+    "features.mm",
     "main_application_delegate.h",
     "main_application_delegate.mm",
     "main_application_delegate_testing.h",
@@ -443,6 +447,7 @@ source_set("app_internal") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/metrics",
+    "//components/optimization_guide/core:features",
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs/ios",
@@ -469,6 +474,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",
     "//ios/chrome/browser/credential_provider:buildflags",
+    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/download/background_service:background_service",
     "//ios/chrome/browser/external_files",

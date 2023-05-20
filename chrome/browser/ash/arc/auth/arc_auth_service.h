@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
-#include "chrome/browser/ash/arc/auth/arc_active_directory_enrollment_token_fetcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -136,16 +135,6 @@ class ArcAuthService : public KeyedService,
   // Calls `mojom::OnAccountUpdated` with update type
   // `mojom::AccountUpdateType::REMOVAL` for the provided email.
   void RemoveAccountFromArc(const std::string& email);
-
-  // Callback when Active Directory Enrollment Token is fetched.
-  // |callback| is completed with |ArcAuthCodeStatus| and |AccountInfo|
-  // depending on the success / failure of the operation.
-  void OnActiveDirectoryEnrollmentTokenFetched(
-      ArcActiveDirectoryEnrollmentTokenFetcher* fetcher,
-      RequestPrimaryAccountInfoCallback callback,
-      ArcActiveDirectoryEnrollmentTokenFetcher::Status status,
-      const std::string& enrollment_token,
-      const std::string& user_id);
 
   // Issues a request for fetching AccountInfo for the Device Account.
   // |initial_signin| denotes whether this is the initial ARC provisioning flow

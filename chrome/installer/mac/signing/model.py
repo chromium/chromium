@@ -216,13 +216,15 @@ class NotarizeAndStapleLevel(enum.Enum):
     def should_staple(self):
         return self.value > self.WAIT_NOSTAPLE.value
 
-    @classmethod
-    def valid_strings(cls):
-        return tuple(level.name.lower().replace('_', '-') for level in cls)
+    def __str__(self):
+        return self.name.lower().replace('_', '-')
 
     @classmethod
     def from_string(cls, str):
-        return cls[str.upper().replace('-', '_')]
+        try:
+            return cls[str.upper().replace('-', '_')]
+        except KeyError:
+            raise ValueError(f'Invalid NotarizeAndStapleLevel: {str}')
 
 
 class NotarizationTool(enum.Enum):

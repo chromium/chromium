@@ -16,7 +16,6 @@ elf_arch=arm
 elf_build_id=WhatAnAmazingBuildId
 apk_file_name=test.apk
 apk_signature_block_size=0
-apk_size=139472373
 zipalign_padding=32
 Container <test.apk/test.so (armeabi-v7a)>
 Section .arsc: 0 bytes from 0 symbols.

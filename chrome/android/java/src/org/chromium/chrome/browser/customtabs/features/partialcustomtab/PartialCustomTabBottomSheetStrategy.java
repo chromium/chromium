@@ -15,7 +15,6 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -25,14 +24,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -52,6 +50,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
@@ -159,6 +158,12 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     @PartialCustomTabType
     public int getStrategyType() {
         return PartialCustomTabType.BOTTOM_SHEET;
+    }
+
+    @Override
+    @StringRes
+    public int getTypeStringId() {
+        return R.string.accessibility_partial_custom_tab_bottom_sheet;
     }
 
     @Override
@@ -642,14 +647,11 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             mVersionCompat.setImeStateCallback(this::onImeStateChanged);
         }
 
-        var am = (AccessibilityManager) mActivity.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        if (am != null && am.isTouchExplorationEnabled()) {
+        if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
             int textId = mStatus == HeightStatus.TOP ? R.string.accessibility_custom_tab_expanded
                                                      : R.string.accessibility_custom_tab_collapsed;
-            var event = AccessibilityEvent.obtain();
-            event.setEventType(AccessibilityEvent.TYPE_ANNOUNCEMENT);
-            event.getText().add(mActivity.getResources().getString(textId));
-            am.sendAccessibilityEvent(event);
+            getCoordinatorLayout().announceForAccessibility(
+                    mActivity.getResources().getString(textId));
         }
     }
 

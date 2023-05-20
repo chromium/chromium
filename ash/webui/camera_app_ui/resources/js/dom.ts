@@ -37,6 +37,7 @@ export function getAllFrom<T extends Element>(
   // check, then the `NodeListOf<Element>` (which is the original type of
   // `elements`) is actually a `NodeListOf<T>`, so we need to manually cast it
   // here.
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return elements as NodeListOf<T>;
 }
 

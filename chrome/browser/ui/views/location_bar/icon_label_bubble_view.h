@@ -100,6 +100,8 @@ class IconLabelBubbleView : public views::InkDropObserver,
   void SetPaintLabelOverSolidBackground(bool paint_label_over_solid_backround);
 
   void SetLabel(const std::u16string& label);
+  void SetLabel(const std::u16string& label,
+                const std::u16string& accessible_name);
   void SetFontList(const gfx::FontList& font_list);
 
   const views::ImageView* GetImageView() const { return image(); }

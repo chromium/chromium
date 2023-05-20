@@ -219,7 +219,8 @@ TEST_P(MainThreadScrollingReasonsTest,
   Element* element = GetFrame()->GetDocument()->getElementById("scrollable");
   element->setAttribute(
       "style",
-      "background-image: url('white-1x1.png'); background-attachment: fixed;",
+      "background-image: url('white-1x1.png'), url('white-1x1.png');"
+      "                  background-attachment: fixed, local;",
       ASSERT_NO_EXCEPTION);
 
   ForceFullCompositingUpdate();
@@ -257,7 +258,9 @@ TEST_P(MainThreadScrollingReasonsTest, ReportBackgroundAttachmentFixed) {
   std::string html = R"HTML(
     <style>
       body { width: 900px; height: 900px; }
-      #bg { background: url('white-1x1.png') fixed; }
+      #bg {
+        background: url('white-1x1.png') fixed, url('white-1x1.png') local;
+      }
     </style>
     <div id=bg>x</div>
   )HTML";

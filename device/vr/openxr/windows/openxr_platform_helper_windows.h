@@ -46,7 +46,7 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelperWindows
 
   // Called by the D3D11 GraphicsBinding to set up the texture helper and also
   // used when creating the XRDeviceData.
-  bool TryGetLuid(LUID* luid);
+  bool TryGetLuid(LUID* luid, XrSystemId system = XR_NULL_SYSTEM_ID);
 
  private:
   XrInstance GetOrCreateXrInstance();

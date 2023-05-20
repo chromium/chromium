@@ -17,6 +17,11 @@
 + (void)setUpMockReauthenticationModule;
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult;
++ (void)removeMockReauthenticationModule;
+
+// Sets the pref recording the number of times the bottom sheet was dismissed.
+// Used to either suppress or force the bottom sheet to appear in tests.
++ (void)setDismissCount:(int)dismissCount;
 
 @end
 

@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის გახსნა}other{<ph name="TABS_COUNT_MANY" /> ჩანართის გახსნა}}</translation>
 <translation id="4811934403802581334">ამჟამად არჩეული მოწყობილობიდან მოხდება ყველა არჩეული ჩანართის აღდგენა.</translation>
 <translation id="5336031759968328813">ყველა ჩანართის შემოწმება</translation>
+<translation id="8019269305087157499">გახსნა აქედან:</translation>
 <translation id="8725404154479306799">დაიბრუნეთ ჩანართები, რომლებიც ძველ მოწყობილობებზე დატოვეთ</translation>
 </translationbundle>

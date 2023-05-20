@@ -1,0 +1,22 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+source_set("sharing") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "share_file_download_tab_helper.h",
+    "share_file_download_tab_helper.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public",
+    "//ui/base:base",
+    "//url",
+  ]
+}

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/field_filler.h"
 
 #include <stdint.h>
+#include <array>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
@@ -716,15 +718,14 @@ std::u16string GetStateTextForInput(const std::u16string& state_value,
 }
 
 // Returns the appropriate expiration year from |credit_card| for the field.
-// Uses the |field_type| and the |field|'s max_length attribute to
+// Uses the |field|'s type and the |field|'s max_length attribute to
 // determine if the year needs to be truncated.
 std::u16string GetExpirationYearForInput(const CreditCard& credit_card,
-                                         ServerFieldType field_type,
                                          const AutofillField& field) {
-  std::u16string value;
-  value = field_type == CREDIT_CARD_EXP_2_DIGIT_YEAR
-              ? credit_card.Expiration2DigitYearAsString()
-              : credit_card.Expiration4DigitYearAsString();
+  ServerFieldType field_type = field.Type().GetStorableType();
+  std::u16string value = field_type == CREDIT_CARD_EXP_2_DIGIT_YEAR
+                             ? credit_card.Expiration2DigitYearAsString()
+                             : credit_card.Expiration4DigitYearAsString();
 
   // In case the field's max_length is less than the length of the year, shorten
   // the year to field.max_length.
@@ -763,72 +764,54 @@ std::u16string GetExpirationYearForVirtualCardPreviewInput(
 // padded. Returns an empty string in case of a failure.
 std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
                                          const AutofillField& field,
-                                         ServerFieldType field_type,
                                          std::string* failure_to_fill) {
-  const std::u16string kSeparator = u"/";
-  std::u16string month = credit_card.Expiration2DigitMonthAsString();
-  std::u16string two_digit_year = credit_card.Expiration2DigitYearAsString();
-  std::u16string four_digit_year = credit_card.Expiration4DigitYearAsString();
+  std::u16string mm = credit_card.Expiration2DigitMonthAsString();
+  std::u16string yy = credit_card.Expiration2DigitYearAsString();
+  std::u16string yyyy = credit_card.Expiration4DigitYearAsString();
 
-  // Check whether we find one of the standard format descriptors like
-  // "mm/yy", "mm/yyyy", "mm / yy", "mm-yyyy", ... in one of the human
-  // readable labels. In that case, follow the specified pattern.
-  std::vector<std::u16string> groups;
-  static const char16_t kFormatRegEx[] = u"mm(\\s?[/-]?\\s?)?yy(yy)?";
-  //                                          ^^^^ opt white space
-  //                                              ^^^^^ opt separator
-  //                                                   ^^^ opt white space
-  //                                                           ^^^^^ 4 digit
-  //                                                                 year?
-  // TODO(crbug/1326244): We should use language specific regex.
-  if (MatchesRegex<kFormatRegEx>(field.placeholder, &groups) ||
-      MatchesRegex<kFormatRegEx>(field.label, &groups)) {
-    bool is_two_digit_year = groups[2].empty();
-    std::u16string expiration_candidate =
-        base::StrCat({month, groups[1],
-                      is_two_digit_year ? two_digit_year : four_digit_year});
-    if (field.max_length == 0 ||
-        expiration_candidate.size() <= field.max_length) {
-      return expiration_candidate;
-    }
-    // Try once more with a stripped version of the separator if the previous
-    // version did not fit.
-    expiration_candidate =
-        base::StrCat({month, base::TrimWhitespace(groups[1], base::TRIM_ALL),
-                      is_two_digit_year ? two_digit_year : four_digit_year});
-    if (field.max_length == 0 ||
-        expiration_candidate.size() <= field.max_length) {
-      return expiration_candidate;
-    }
+  ServerFieldType field_type = field.Type().GetStorableType();
+  CreditCardField::ExpirationDateFormat format =
+      CreditCardField::DetermineExpirationDateFormat(field, field_type);
+
+  // In case of a server override, try whether the server's format fits and use
+  // it if possible.
+  // TODO(crbug.com/1441057): Experiment with choosing the server type (when
+  // it's not an override) over the format string found on the website.
+  std::u16string server_year;
+  if (field.server_type() == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR) {
+    server_year = yy;
+  } else if (field.server_type() == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
+    server_year = yyyy;
   }
-
-  switch (field.max_length) {
-    case 1:
-    case 2:
-    case 3:
-      if (failure_to_fill) {
-        *failure_to_fill +=
-            "Field to fill must have a max length of at least 4. ";
+  if (field.server_type_prediction_is_override() && !server_year.empty()) {
+    // Try several separators (longest to shortest), hoping that one fits.
+    std::array<std::u16string, 4> separator_candidates = {
+        format.separator,
+        std::u16string(base::TrimWhitespace(format.separator, base::TRIM_ALL)),
+        std::u16string(u"/"), std::u16string()};
+    for (const std::u16string& separator : separator_candidates) {
+      std::u16string expiration_candidate =
+          base::StrCat({mm, separator, server_year});
+      if (field.max_length == 0 ||
+          expiration_candidate.length() <= field.max_length) {
+        return expiration_candidate;
       }
-      return std::u16string();
-    case 4:
-      // Field likely expects MMYY
-      return month + two_digit_year;
-    case 5:
-      // Field likely expects MM/YY
-      return month + kSeparator + two_digit_year;
-    case 6:
-      // Field likely expects MMYYYY
-      return month + four_digit_year;
-    case 7:
-      // Field likely expects MM/YYYY
-      return month + kSeparator + four_digit_year;
-    default:
-      // Includes the case where max_length is not specified (0).
-      return field_type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
-                 ? month + kSeparator + two_digit_year
-                 : month + kSeparator + four_digit_year;
+    }
   }
+
+  // Now try the format data derived locally from the website.
+  std::u16string expiration_candidate =
+      base::StrCat({mm, format.separator,
+                    format.digits_in_expiration_year == 4 ? yyyy : yy});
+  if (field.max_length != 0 &&
+      expiration_candidate.length() > field.max_length) {
+    if (failure_to_fill) {
+      *failure_to_fill +=
+          "Field to fill must have a max length of at least 4. ";
+    }
+    return std::u16string();
+  }
+  return expiration_candidate;
 }
 
 // Returns the appropriate virtual_card expiration date from for the field based
@@ -921,11 +904,10 @@ std::u16string GetValueForCreditCard(const CreditCard& credit_card,
                                            action);
       case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
       case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
-        return GetExpirationDateForInput(credit_card, field, storable_type,
-                                         failure_to_fill);
+        return GetExpirationDateForInput(credit_card, field, failure_to_fill);
       case CREDIT_CARD_EXP_2_DIGIT_YEAR:
       case CREDIT_CARD_EXP_4_DIGIT_YEAR:
-        return GetExpirationYearForInput(credit_card, storable_type, field);
+        return GetExpirationYearForInput(credit_card, field);
       default:
         // All other cases handled here.
         return credit_card.GetInfo(storable_type, app_locale);

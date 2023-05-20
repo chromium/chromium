@@ -28,8 +28,7 @@ proto::EventType ToProtoEventType(CastLoggingEvent event) {
     TO_PROTO_ENUM(PACKET_RTX_REJECTED);
     TO_PROTO_ENUM(PACKET_RECEIVED);
   }
-  NOTREACHED();
-  return proto::UNKNOWN;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace cast

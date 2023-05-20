@@ -24,7 +24,6 @@ build_webui_tests("build") {
     "cellular_roaming_toggle_button_test.js",
     "crostini_extra_containers_subpage_test.js",
     "crostini_page_test.js",
-    "cups_printer_entry_tests.js",
     "cups_printer_landing_page_tests.js",
     "cups_printer_page_tests.js",
     "cups_printer_test_utils.js",
@@ -33,7 +32,6 @@ build_webui_tests("build") {
     "esim_remove_profile_dialog_test.js",
     "esim_rename_dialog_test.js",
     "fake_canvas_context.js",
-    "fake_cros_audio_config_test.js",
     "fake_input_method_private.js",
     "fake_language_settings_private.js",
     "fake_media_devices.ts",
@@ -70,7 +68,6 @@ build_webui_tests("build") {
     "os_paired_bluetooth_list_item_tests.js",
     "os_paired_bluetooth_list_tests.js",
     "os_page_availability_test.ts",
-    "os_people_page_test.js",
     "os_reset_page_test.js",
     "os_saved_devices_list_tests.js",
     "os_saved_devices_subpage_tests.js",
@@ -80,7 +77,6 @@ build_webui_tests("build") {
     "os_sync_controls_subpage_test.js",
     "people_page_account_manager_subpage_test.js",
     "personalization_page_with_personalization_hub_test.js",
-    "printer_status_tests.js",
     "search_engine_test.js",
     "select_to_speak_subpage_tests.js",
     "settings_traffic_counters_test.js",
@@ -145,6 +141,7 @@ build_webui_tests("build") {
     "date_time_page/timezone_subpage_test.ts",
 
     "device_page/device_page_tests.js",
+    "device_page/fake_cros_audio_config_test.ts",
     "device_page/fake_input_device_settings_provider_test.ts",
     "device_page/input_device_mojo_interface_provider_test.ts",
     "device_page/per_device_keyboard_remap_keys_test.ts",
@@ -181,7 +178,7 @@ build_webui_tests("build") {
     "multidevice_page/multidevice_feature_item_test.ts",
     "multidevice_page/multidevice_feature_toggle_test.ts",
     "multidevice_page/multidevice_notification_access_setup_dialog_test.ts",
-    "multidevice_page/multidevice_permissions_setup_dialog_tests.js",
+    "multidevice_page/multidevice_permissions_setup_dialog_test.ts",
     "multidevice_page/multidevice_smartlock_item_test.ts",
     "multidevice_page/multidevice_subpage_tests.js",
     "multidevice_page/multidevice_task_continuation_disabled_link_test.ts",
@@ -227,9 +224,13 @@ build_webui_tests("build") {
 
     "os_people_page/add_user_dialog_test.ts",
     "os_people_page/fingerprint_list_subpage_test.ts",
+    "os_people_page/os_people_page_test.ts",
+    "os_people_page/test_account_manager_browser_proxy.ts",
     "os_people_page/test_fingerprint_browser_proxy.ts",
 
+    "os_printing_page/cups_printers_entry_test.ts",
     "os_printing_page/os_printing_page_test.ts",
+    "os_printing_page/printer_status_test.ts",
 
     "os_privacy_page/os_privacy_page_test.js",
     "os_privacy_page/privacy_hub_subpage_test.ts",
@@ -245,6 +246,7 @@ build_webui_tests("build") {
 
     "os_settings_ui/os_settings_ui_about_page_test.js",
     "os_settings_ui/os_settings_ui_menu_test.js",
+    "os_settings_ui/os_settings_ui_page_availability_test.ts",
     "os_settings_ui/os_settings_ui_test.ts",
     "os_settings_ui/os_settings_hats_ui_test.ts",
     "os_settings_ui/test_os_settings_hats_browser_proxy.ts",
@@ -275,11 +277,11 @@ build_webui_tests("build") {
   ts_path_mappings = [
     # CrOS Settings browser tests should only import from one of the paths
     # below, so that tests work both in optimize_webui=true/false modes.
-    "chrome://os-settings/chromeos/os_settings.js|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/settings/chromeos/tsc/chromeos/os_settings.d.ts",
+    "chrome://os-settings/os_settings.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/settings/chromeos/tsc/os_settings.d.ts",
             target_gen_dir),
-    "chrome://os-settings/chromeos/lazy_load.js|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/settings/chromeos/tsc/chromeos/lazy_load.d.ts",
+    "chrome://os-settings/lazy_load.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/settings/chromeos/tsc/lazy_load.d.ts",
             target_gen_dir),
     "chrome://webui-test/chromeos/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",

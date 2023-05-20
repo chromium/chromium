@@ -294,7 +294,8 @@ void WebApkInstallTask::Start(ResultCallback callback) {
   std::unique_ptr<webapk::WebApk> webapk = std::make_unique<webapk::WebApk>();
   webapk->set_manifest_url(registrar.GetAppManifestUrl(app_id_).spec());
   webapk->set_requester_application_package(kRequesterPackageName);
-  webapk->set_requester_application_version(version_info::GetVersionNumber());
+  webapk->set_requester_application_version(
+      std::string(version_info::GetVersionNumber()));
 
   LoadWebApkInfo(std::move(webapk));
 }
@@ -563,7 +564,8 @@ void WebApkInstallTask::OnWebApkInfoFetchedFromCrosapi(
   }
 
   webapk->set_requester_application_package(kRequesterPackageName);
-  webapk->set_requester_application_version(version_info::GetVersionNumber());
+  webapk->set_requester_application_version(
+      std::string(version_info::GetVersionNumber()));
   LoadWebApkInfo(std::move(webapk));
 }
 

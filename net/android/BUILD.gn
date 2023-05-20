@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
+import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 
 android_library("net_java") {
@@ -78,7 +79,6 @@ android_library("net_java_test_support") {
     ":embedded_test_server_aidl_java",
     ":net_java",
     "//base:base_java",
-    "//base:base_java_test_support",
     "//base:base_java_url_utils_for_test",
     "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -126,7 +126,7 @@ source_set("java_test_native_support") {
   public_deps = [ "//net:net_test_jni_headers" ]
 }
 
-shared_library("net_java_test_native_support") {
+shared_library_with_jni("net_java_test_native_support") {
   testonly = true
   deps = [
     ":java_test_native_support",
@@ -135,6 +135,7 @@ shared_library("net_java_test_native_support") {
 
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
+  java_targets = [ ":net_test_support_apk" ]
 }
 
 android_apk("net_test_support_apk") {
@@ -143,7 +144,9 @@ android_apk("net_test_support_apk") {
   # Used as an additional_apk in test scripts.
   never_incremental = true
 
-  enable_multidex = true
+  # Multidex requires a custom Application class to initialize it. Simpler to
+  # just disable it.
+  enable_multidex = false
 
   # Required on Android Q+ to read from /sdcard when installing certs.
   target_sdk_version = 28
@@ -155,6 +158,7 @@ android_apk("net_test_support_apk") {
   android_manifest = "../test/android/javatests/AndroidManifest.xml"
   apk_name = "ChromiumNetTestSupport"
   shared_libraries = [ ":net_java_test_native_support" ]
+  srcjar_deps = [ ":net_java_test_native_support__jni_registration" ]
 }
 
 android_resources("net_unittests_apk_resources") {

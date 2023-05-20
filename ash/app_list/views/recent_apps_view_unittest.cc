@@ -45,6 +45,8 @@ aura::Window* FindMenuWindow(aura::Window* root) {
   return nullptr;
 }
 
+}  // namespace
+
 // Parameterized to test recent apps in the app list bubble and tablet mode.
 class RecentAppsViewTest : public AshTestBase,
                            public testing::WithParamInterface<bool> {
@@ -132,6 +134,11 @@ class RecentAppsViewTest : public AshTestBase,
     for (auto* view : views)
       ids.push_back(view->item()->id());
     return ids;
+  }
+
+ protected:
+  AppListItemView::DragState GetDragState(AppListItemView* view) {
+    return view->drag_state_;
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> test_api_;
@@ -435,5 +442,46 @@ TEST_P(RecentAppsViewTest, RemoveAppsRemovesFromRecentAppsUntilHides) {
   EXPECT_FALSE(GetRecentAppsView()->GetVisible());
 }
 
-}  // namespace
+TEST_P(RecentAppsViewTest, AttemptTouchDragRecentApp) {
+  AddAppResults(5);
+  ShowAppList();
+
+  AppListItemView* view = GetAppListItemViews()[0];
+  EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
+
+  auto* generator = GetEventGenerator();
+  gfx::Point from = view->GetBoundsInScreen().CenterPoint();
+  generator->MoveTouch(from);
+  generator->PressTouch();
+
+  // Attempt to fire the touch drag timer. Recent apps view should not trigger
+  // the timer.
+  EXPECT_FALSE(view->FireTouchDragTimerForTest());
+
+  // Verify the apps did not enter dragged state.
+  EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
+  EXPECT_TRUE(view->title()->GetVisible());
+}
+
+TEST_P(RecentAppsViewTest, AttemptMouseDragRecentApp) {
+  AddAppResults(5);
+  ShowAppList();
+
+  AppListItemView* view = GetAppListItemViews()[0];
+  EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
+
+  auto* generator = GetEventGenerator();
+  gfx::Point from = view->GetBoundsInScreen().CenterPoint();
+  generator->MoveMouseTo(from);
+  generator->PressLeftButton();
+
+  // Attempt to fire the mouse drag timer. Recent apps view should not trigger
+  // the timer.
+  EXPECT_FALSE(view->FireMouseDragTimerForTest());
+
+  // Verify the apps did not enter dragged state.
+  EXPECT_EQ(GetDragState(view), AppListItemView::DragState::kNone);
+  EXPECT_TRUE(view->title()->GetVisible());
+}
+
 }  // namespace ash

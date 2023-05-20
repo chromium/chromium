@@ -300,8 +300,7 @@ bool CaptureAccessHandlerBase::MatchesSession(const Session& session,
       return target_web_contents == web_contents->GetOutermostWebContents();
   }
 
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 void CaptureAccessHandlerBase::UpdateVideoScreenCaptureStatus(

@@ -255,10 +255,9 @@ bool BackForwardCacheCanStoreDocumentResult::CanStore() const {
     // If there are other reasons present outside of cache-control:no-store
     // related reasons, the page is not eligible for storing.
     return Difference(not_restored_reasons_,
-                      NotRestoredReasons(
-                          Reason::kCacheControlNoStore,
-                          Reason::kCacheControlNoStoreCookieModified,
-                          Reason::kCacheControlNoStoreHTTPOnlyCookieModified))
+                      {Reason::kCacheControlNoStore,
+                       Reason::kCacheControlNoStoreCookieModified,
+                       Reason::kCacheControlNoStoreHTTPOnlyCookieModified})
         .Empty();
   } else {
     return not_restored_reasons_.Empty();

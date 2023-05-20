@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -669,20 +670,18 @@ TEST_F(FormStructureTestImpl, IgnoreUnmappableAutocompleteValues) {
 TEST_F(FormStructureTestImpl, DetermineHeuristicTypes_AutocompleteFalse) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "DetermineHeuristicTypes_AutocompleteFalse",
-         .fields = {{.label = u"Name",
-                     .name = u"name",
-                     .autocomplete_attribute = "false",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "false", /*field_max_length=*/0)},
-                    {.role = ServerFieldType::EMAIL_ADDRESS,
-                     .autocomplete_attribute = "false",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "false", /*field_max_length=*/0)},
-                    {.role = ServerFieldType::ADDRESS_HOME_STATE,
-                     .autocomplete_attribute = "false",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "false", /*field_max_length=*/0),
-                     .form_control_type = "select-one"}}},
+         .fields =
+             {{.label = u"Name",
+               .name = u"name",
+               .autocomplete_attribute = "false",
+               .parsed_autocomplete = ParseAutocompleteAttribute("false")},
+              {.role = ServerFieldType::EMAIL_ADDRESS,
+               .autocomplete_attribute = "false",
+               .parsed_autocomplete = ParseAutocompleteAttribute("false")},
+              {.role = ServerFieldType::ADDRESS_HOME_STATE,
+               .autocomplete_attribute = "false",
+               .parsed_autocomplete = ParseAutocompleteAttribute("false"),
+               .form_control_type = "select-one"}}},
         {
             .determine_heuristic_type = true,
             .should_be_parsed = true,
@@ -721,26 +720,24 @@ TEST_F(FormStructureTestImpl, HeuristicsContactInfo) {
 TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttribute) {
   CheckFormStructureTestData(
       {{{.description_for_logging = "HeuristicsAutocompleteAttribute",
-         .fields = {{.label = u"",
-                     .name = u"field1",
-                     .autocomplete_attribute = "given-name",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "given-name", /*field_max_length=*/0)},
-                    {.label = u"",
-                     .name = u"field2",
-                     .autocomplete_attribute = "family-name",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "family-name", /*field_max_length=*/0)},
-                    {.label = u"",
-                     .name = u"field3",
-                     .autocomplete_attribute = "email",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "email", /*field_max_length=*/0)},
-                    {.label = u"",
-                     .name = u"field4",
-                     .autocomplete_attribute = "upi-vpa",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "upi-vpa", /*field_max_length=*/0)}}},
+         .fields =
+             {{.label = u"",
+               .name = u"field1",
+               .autocomplete_attribute = "given-name",
+               .parsed_autocomplete = ParseAutocompleteAttribute("given-name")},
+              {.label = u"",
+               .name = u"field2",
+               .autocomplete_attribute = "family-name",
+               .parsed_autocomplete =
+                   ParseAutocompleteAttribute("family-name")},
+              {.label = u"",
+               .name = u"field3",
+               .autocomplete_attribute = "email",
+               .parsed_autocomplete = ParseAutocompleteAttribute("email")},
+              {.label = u"",
+               .name = u"field4",
+               .autocomplete_attribute = "upi-vpa",
+               .parsed_autocomplete = ParseAutocompleteAttribute("upi-vpa")}}},
         {
             .determine_heuristic_type = true,
             .is_autofillable = true,
@@ -859,18 +856,18 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttributePhoneTypes) {
          .fields = {{.label = u"",
                      .name = u"field1",
                      .autocomplete_attribute = "tel-local",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "tel-local", /*field_max_length=*/0)},
+                     .parsed_autocomplete =
+                         ParseAutocompleteAttribute("tel-local")},
                     {.label = u"",
                      .name = u"field2",
                      .autocomplete_attribute = "tel-local-prefix",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "tel-local-prefix", /*field_max_length=*/0)},
+                     .parsed_autocomplete =
+                         ParseAutocompleteAttribute("tel-local-prefix")},
                     {.label = u"",
                      .name = u"field3",
                      .autocomplete_attribute = "tel-local-suffix",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "tel-local-suffix", /*field_max_length=*/0)}}},
+                     .parsed_autocomplete =
+                         ParseAutocompleteAttribute("tel-local-suffix")}}},
         {.determine_heuristic_type = true,
          .is_autofillable = true,
          .field_count = 3,
@@ -908,8 +905,8 @@ TEST_F(FormStructureTestImpl,
              "HeuristicsAndServerPredictions_ValidAutocompleteAttribute",
          .fields = {{.role = ServerFieldType::NAME_FIRST,
                      .autocomplete_attribute = "given-name",
-                     .parsed_autocomplete = ParseAutocompleteAttribute(
-                         "given-name", /*field_max_length=*/0)},
+                     .parsed_autocomplete =
+                         ParseAutocompleteAttribute("given-name")},
                     {.role = ServerFieldType::NAME_LAST},
                     {.role = ServerFieldType::EMAIL_ADDRESS}}},
         {.determine_heuristic_type = true,
@@ -932,8 +929,8 @@ TEST_F(FormStructureTestImpl,
                                        "UnrecognizedAutocompleteAttribute",
             .fields = {{.role = ServerFieldType::NAME_FIRST,
                         .autocomplete_attribute = "unrecognized",
-                        .parsed_autocomplete = ParseAutocompleteAttribute(
-                            "unrecognized", /*field_max_length=*/0)},
+                        .parsed_autocomplete =
+                            ParseAutocompleteAttribute("unrecognized")},
                        {.label = u"Middle Name", .name = u"middlename"},
                        {.role = ServerFieldType::NAME_LAST},
                        {.role = ServerFieldType::EMAIL_ADDRESS}},
@@ -2251,7 +2248,7 @@ TEST_P(ParameterizedFormStructureTest, EncodeQueryRequest) {
 
   // Prepare the expected proto string.
   AutofillPageQueryRequest query;
-  query.set_client_version(GetProductNameAndVersionForUserAgent());
+  query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   {
     AutofillPageQueryRequest::Form* query_form = query.add_forms();
     query_form->set_signature(form_signature.value());
@@ -2556,7 +2553,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1442000308");
@@ -2735,7 +2733,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1442000308");
@@ -2859,7 +2858,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1442000308");
@@ -2981,7 +2981,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   AutofillUploadContents upload;
   upload.set_submission(true);
   upload.set_submission_event(AutofillUploadContents::HTML_FORM_SUBMISSION);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1442000308");
@@ -3163,7 +3164,8 @@ TEST_F(FormStructureTestImpl,
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440000000000000000802");
@@ -3254,7 +3256,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithAutocomplete) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
@@ -3342,7 +3345,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
@@ -3427,7 +3431,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_ObservedSubmissionFalse) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(false);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
@@ -3501,7 +3506,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithLabels) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
@@ -3574,7 +3580,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithCssClassesAndIds) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
@@ -3657,7 +3664,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithFormName) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
@@ -3733,7 +3741,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestPartialMetadata) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
@@ -3818,7 +3827,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_DisabledMetadata) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(true);
   upload.set_data_present("1440");
@@ -3923,7 +3933,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
     upload.set_submission(true);
     upload.set_submission_event(
         AutofillUploadContents_SubmissionIndicatorEvent_NONE);
-    upload.set_client_version(GetProductNameAndVersionForUserAgent());
+    upload.set_client_version(
+        std::string(GetProductNameAndVersionForUserAgent()));
     upload.set_form_signature(form_structure->form_signature().value());
     upload.set_autofill_used(false);
     upload.set_data_present("0000000000001850");
@@ -3943,7 +3954,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
 
   const AutofillUploadContents upload_name_exp = [&] {
     AutofillUploadContents upload;
-    upload.set_client_version(GetProductNameAndVersionForUserAgent());
+    upload.set_client_version(
+        std::string(GetProductNameAndVersionForUserAgent()));
     upload.set_form_signature(form.fields[0].host_form_signature.value());
     upload.set_autofill_used(false);
     upload.set_data_present("0000000000001850");
@@ -3956,7 +3968,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
 
   const AutofillUploadContents upload_number = [&] {
     AutofillUploadContents upload;
-    upload.set_client_version(GetProductNameAndVersionForUserAgent());
+    upload.set_client_version(
+        std::string(GetProductNameAndVersionForUserAgent()));
     upload.set_form_signature(form.fields[1].host_form_signature.value());
     upload.set_autofill_used(false);
     upload.set_data_present("0000000000001850");
@@ -3967,7 +3980,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSubForms) {
 
   const AutofillUploadContents upload_cvc = [&] {
     AutofillUploadContents upload;
-    upload.set_client_version(GetProductNameAndVersionForUserAgent());
+    upload.set_client_version(
+        std::string(GetProductNameAndVersionForUserAgent()));
     upload.set_form_signature(form.fields[3].host_form_signature.value());
     upload.set_autofill_used(false);
     upload.set_data_present("0000000000001850");
@@ -4034,7 +4048,8 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure.form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("");
@@ -4295,7 +4310,8 @@ TEST_F(FormStructureTestImpl, CheckMultipleTypes) {
   // Prepare the expected proto string.
   AutofillUploadContents upload;
   upload.set_submission(true);
-  upload.set_client_version(GetProductNameAndVersionForUserAgent());
+  upload.set_client_version(
+      std::string(GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_structure->form_signature().value());
   upload.set_autofill_used(false);
   upload.set_data_present("1440000360000008");
@@ -4471,8 +4487,7 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_RichMetadata) {
     field.aria_description = ASCIIToUTF16(f.aria_description);
     field.css_classes = ASCIIToUTF16(f.css_classes);
     field.autocomplete_attribute = f.autocomplete;
-    field.parsed_autocomplete =
-        ParseAutocompleteAttribute(f.autocomplete, /*field_max_length=*/0);
+    field.parsed_autocomplete = ParseAutocompleteAttribute(f.autocomplete);
     field.unique_renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(field);
   }
@@ -4792,7 +4807,7 @@ TEST_F(FormStructureTestImpl, SkipFieldTest) {
 
   // Create the expected query and serialize it to a string.
   AutofillPageQueryRequest query;
-  query.set_client_version(GetProductNameAndVersionForUserAgent());
+  query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
 
@@ -4841,7 +4856,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_WithLabels) {
 
   // Create the expected query and serialize it to a string.
   AutofillPageQueryRequest query;
-  query.set_client_version(GetProductNameAndVersionForUserAgent());
+  query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
 
@@ -4892,7 +4907,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_WithLongLabels) {
 
   // Create the expected query and serialize it to a string.
   AutofillPageQueryRequest query;
-  query.set_client_version(GetProductNameAndVersionForUserAgent());
+  query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
 
@@ -4938,7 +4953,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_MissingNames) {
 
   // Create the expected query and serialize it to a string.
   AutofillPageQueryRequest query;
-  query.set_client_version(GetProductNameAndVersionForUserAgent());
+  query.set_client_version(std::string(GetProductNameAndVersionForUserAgent()));
   AutofillPageQueryRequest::Form* query_form = query.add_forms();
   query_form->set_signature(form_structure.form_signature().value());
 

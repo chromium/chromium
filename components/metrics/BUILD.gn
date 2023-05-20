@@ -228,6 +228,10 @@ if (!is_cronet_build || is_ios) {
       deps += [ ":jni_headers" ]
     }
 
+    if (is_apple) {
+      configs += [ "//build/config/compiler:enable_arc" ]
+    }
+
     if (is_ios) {
       sources += [
         "clean_exit_beacon_ios.mm",

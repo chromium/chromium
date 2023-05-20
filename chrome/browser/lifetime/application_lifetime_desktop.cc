@@ -308,8 +308,9 @@ bool AreAllBrowsersCloseable() {
 
   // If there are any downloads active, all browsers are not closeable.
   // However, this does not block for malicious downloads.
-  if (DownloadCoreService::NonMaliciousDownloadCountAllProfiles() > 0)
+  if (DownloadCoreService::BlockingShutdownCountAllProfiles() > 0) {
     return false;
+  }
 
   // Check TabsNeedBeforeUnloadFired().
   for (auto* browser : *BrowserList::GetInstance()) {

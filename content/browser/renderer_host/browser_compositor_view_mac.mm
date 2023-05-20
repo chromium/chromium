@@ -12,7 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -38,8 +38,10 @@ namespace {
 //   signals to shut down will come in very late, long after things that the
 //   ui::Compositor depend on have been destroyed).
 //   https://crbug.com/805726
-base::LazyInstance<std::set<BrowserCompositorMac*>>::Leaky
-    g_browser_compositors;
+std::set<BrowserCompositorMac*>& GetBrowserCompositors() {
+  static base::NoDestructor<std::set<BrowserCompositorMac*>> instance;
+  return *instance.get();
+}
 
 }  // namespace
 
@@ -54,7 +56,7 @@ BrowserCompositorMac::BrowserCompositorMac(
     : client_(client),
       accelerated_widget_mac_ns_view_(accelerated_widget_mac_ns_view),
       weak_factory_(this) {
-  g_browser_compositors.Get().insert(this);
+  GetBrowserCompositors().insert(this);
 
   root_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
   // Ensure that this layer draws nothing when it does not not have delegated
@@ -75,7 +77,7 @@ BrowserCompositorMac::~BrowserCompositorMac() {
   delegated_frame_host_.reset();
   root_layer_.reset();
 
-  size_t num_erased = g_browser_compositors.Get().erase(this);
+  size_t num_erased = GetBrowserCompositors().erase(this);
   DCHECK_EQ(1u, num_erased);
 }
 
@@ -138,9 +140,9 @@ void BrowserCompositorMac::UpdateSurfaceFromNSView(
   }
 
   if (recyclable_compositor_) {
-    recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                          current.device_scale_factor,
-                                          current.display_color_spaces);
+    recyclable_compositor_->UpdateSurface(
+        dfh_size_pixels_, current.device_scale_factor,
+        current.display_color_spaces, current.display_id);
   }
 }
 
@@ -160,9 +162,9 @@ void BrowserCompositorMac::UpdateSurfaceFromChild(
       dfh_device_scale_factor_ = new_device_scale_factor;
       root_layer_->SetBounds(gfx::Rect(dfh_size_dip_));
       if (recyclable_compositor_) {
-        recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                              current.device_scale_factor,
-                                              current.display_color_spaces);
+        recyclable_compositor_->UpdateSurface(
+            dfh_size_pixels_, current.device_scale_factor,
+            current.display_color_spaces, current.display_id);
       }
     }
     delegated_frame_host_->EmbedSurface(
@@ -252,9 +254,9 @@ void BrowserCompositorMac::TransitionToState(State new_state) {
     recyclable_compositor_ = std::make_unique<ui::RecyclableCompositorMac>(
         content::GetContextFactory());
     display::ScreenInfo current = client_->GetCurrentScreenInfo();
-    recyclable_compositor_->UpdateSurface(dfh_size_pixels_,
-                                          current.device_scale_factor,
-                                          current.display_color_spaces);
+    recyclable_compositor_->UpdateSurface(
+        dfh_size_pixels_, current.device_scale_factor,
+        current.display_color_spaces, current.display_id);
     recyclable_compositor_->compositor()->SetRootLayer(root_layer_.get());
     recyclable_compositor_->compositor()->SetBackgroundColor(background_color_);
     recyclable_compositor_->widget()->SetNSView(
@@ -273,9 +275,8 @@ void BrowserCompositorMac::DisableRecyclingForShutdown() {
   // Ensure that the client has destroyed its BrowserCompositorViewMac before
   // it dependencies are destroyed.
   // https://crbug.com/805726
-  while (!g_browser_compositors.Get().empty()) {
-    BrowserCompositorMac* browser_compositor =
-        *g_browser_compositors.Get().begin();
+  while (!GetBrowserCompositors().empty()) {
+    BrowserCompositorMac* browser_compositor = *GetBrowserCompositors().begin();
     browser_compositor->client_->DestroyCompositorForShutdown();
   }
 }

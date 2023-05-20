@@ -450,8 +450,7 @@ bool GzippedLogFileWriter::Write(const std::string& input) {
     }
   }
 
-  NOTREACHED();
-  return false;  // Appease compiler.
+  NOTREACHED_NORETURN();
 }
 
 bool GzippedLogFileWriter::Finalize() {
@@ -583,8 +582,7 @@ LogCompressor::Result GzipLogCompressor::Compress(const std::string& input,
       return result;
   }
 
-  NOTREACHED();
-  return Result::ERROR_ENCOUNTERED;  // Appease compiler.
+  NOTREACHED_NORETURN();
 }
 
 bool GzipLogCompressor::CreateFooter(std::string* output) {

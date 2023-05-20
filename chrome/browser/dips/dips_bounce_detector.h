@@ -339,4 +339,7 @@ class DIPSWebContentsObserver
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
+ukm::SourceId GetInitialRedirectSourceId(
+    content::NavigationHandle* navigation_handle);
+
 #endif  // CHROME_BROWSER_DIPS_DIPS_BOUNCE_DETECTOR_H_

@@ -133,6 +133,12 @@ ResourceFormat SkColorTypeToResourceFormat(SkColorType color_type) {
   NOTREACHED_NORETURN();
 }
 
+SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
+    SkColorType color_type) {
+  return SharedImageFormat::SinglePlane(
+      SkColorTypeToResourceFormat(color_type));
+}
+
 int BitsPerPixel(ResourceFormat format) {
   switch (format) {
     case RGBA_F16:
@@ -434,36 +440,6 @@ bool IsGpuMemoryBufferFormatSupported(ResourceFormat format) {
     case BGR_565:
     case RG_88:
     case RG16_EXT:
-    case YVU_420:
-    case YUV_420_BIPLANAR:
-    case YUVA_420_TRIPLANAR:
-    case P010:
-      return false;
-  }
-  NOTREACHED_NORETURN();
-}
-
-bool IsBitmapFormatSupported(ResourceFormat format) {
-  switch (format) {
-    case RGBA_8888:
-      return true;
-    case RGBA_4444:
-    case BGRA_8888:
-    case ALPHA_8:
-    case LUMINANCE_8:
-    case RGB_565:
-    case ETC1:
-    case RED_8:
-    case LUMINANCE_F16:
-    case RGBA_F16:
-    case R16_EXT:
-    case RG16_EXT:
-    case BGR_565:
-    case RG_88:
-    case RGBX_8888:
-    case BGRX_8888:
-    case RGBA_1010102:
-    case BGRA_1010102:
     case YVU_420:
     case YUV_420_BIPLANAR:
     case YUVA_420_TRIPLANAR:

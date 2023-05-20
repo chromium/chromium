@@ -936,14 +936,16 @@ TEST_F(TemplateURLTest, ReplaceOmniboxFocusType) {
 TEST_F(TemplateURLTest, ReplaceIsPrefetch) {
   struct TestData {
     const std::u16string search_term;
-    bool is_prefetch;
+    std::string prefetch_param;
     const std::string url;
     const std::string expected_result;
   } test_data[] = {
-      {u"foo", false, "{google:baseURL}?{searchTerms}&{google:prefetchSource}",
+      {u"foo", "", "{google:baseURL}?{searchTerms}&{google:prefetchSource}",
        "http://www.google.com/?foo&"},
-      {u"foo", true, "{google:baseURL}?{searchTerms}&{google:prefetchSource}",
+      {u"foo", "cs", "{google:baseURL}?{searchTerms}&{google:prefetchSource}",
        "http://www.google.com/?foo&pf=cs&"},
+      {u"foo", "op", "{google:baseURL}?{searchTerms}&{google:prefetchSource}",
+       "http://www.google.com/?foo&pf=op&"},
   };
   TemplateURLData data;
   data.input_encodings.push_back("UTF-8");
@@ -953,7 +955,7 @@ TEST_F(TemplateURLTest, ReplaceIsPrefetch) {
     EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
     ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
     TemplateURLRef::SearchTermsArgs search_terms_args(entry.search_term);
-    search_terms_args.is_prefetch = entry.is_prefetch;
+    search_terms_args.prefetch_param = entry.prefetch_param;
     GURL result(url.url_ref().ReplaceSearchTerms(search_terms_args,
                                                  search_terms_data_));
     ASSERT_TRUE(result.is_valid());

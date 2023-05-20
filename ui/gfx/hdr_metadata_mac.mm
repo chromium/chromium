@@ -15,8 +15,8 @@ namespace gfx {
 
 base::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
     const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
-  if (!hdr_metadata || hdr_metadata->max_content_light_level == 0.f ||
-      hdr_metadata->max_frame_average_light_level == 0.f) {
+  if (!hdr_metadata || hdr_metadata->cta_861_3.max_content_light_level == 0.f ||
+      hdr_metadata->cta_861_3.max_frame_average_light_level == 0.f) {
     return base::ScopedCFTypeRef<CFDataRef>();
   }
 
@@ -30,9 +30,9 @@ base::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
   // Values are stored in big-endian...
   ContentLightLevelInfoSEI sei;
   sei.max_content_light_level =
-      __builtin_bswap16(hdr_metadata->max_content_light_level);
+      __builtin_bswap16(hdr_metadata->cta_861_3.max_content_light_level);
   sei.max_frame_average_light_level =
-      __builtin_bswap16(hdr_metadata->max_frame_average_light_level);
+      __builtin_bswap16(hdr_metadata->cta_861_3.max_frame_average_light_level);
 
   return base::ScopedCFTypeRef<CFDataRef>(
       CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), 4));
@@ -51,8 +51,8 @@ base::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
                 "Must be 24 bytes");
 
   // Make a copy with all values populated, and which we can manipulate.
-  auto md = HDRMetadata::PopulateUnspecifiedWithDefaults(hdr_metadata)
-                .color_volume_metadata;
+  auto md =
+      HDRMetadata::PopulateUnspecifiedWithDefaults(hdr_metadata).smpte_st_2086;
 
   constexpr float kColorCoordinateUpperBound = 50000.0f;
   constexpr float kUnitOfMasteringLuminance = 10000.0f;

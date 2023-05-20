@@ -158,11 +158,15 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
         test_file_url_,
         FileSystemAccessWriteLockManager::WriteLockType::kShared);
     ASSERT_TRUE(lock);
+    auto swap_lock = manager_->TakeWriteLock(
+        test_swap_url_,
+        FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+    ASSERT_TRUE(swap_lock);
 
     handle_ = manager_->CreateFileWriter(
         FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
                                                     kFrameId),
-        test_file_url_, test_swap_url_, std::move(lock),
+        test_file_url_, test_swap_url_, std::move(lock), std::move(swap_lock),
         FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
                                                        permission_grant_),
         remote_.InitWithNewPipeAndPassReceiver(),
@@ -593,12 +597,16 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   auto lock = manager_->TakeWriteLock(
       test_file_url_, FileSystemAccessWriteLockManager::WriteLockType::kShared);
   ASSERT_TRUE(lock);
+  auto swap_lock = manager_->TakeWriteLock(
+      test_swap_url_,
+      FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  ASSERT_TRUE(swap_lock);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote;
   handle_ = manager_->CreateFileWriter(
       FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
                                                   kFrameId),
-      test_file_url_, test_swap_url_, std::move(lock),
+      test_file_url_, test_swap_url_, std::move(lock), std::move(swap_lock),
       FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
                                                      permission_grant_),
       remote.InitWithNewPipeAndPassReceiver(),

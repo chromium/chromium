@@ -16,6 +16,8 @@
 #include "ash/components/arc/test/fake_power_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_background_service_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_cpu_throttle_observer.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_display_power_observer.h"
@@ -117,7 +119,7 @@ class ArcIdleManagerTest : public testing::Test {
     return arc_service_manager_->arc_bridge_service();
   }
 
-  ArcIdleManager* arc_instance_throttle() { return arc_idle_manager_; }
+  ArcIdleManager* arc_idle_manager() { return arc_idle_manager_; }
 
   FakePowerInstance* power_instance() { return power_instance_.get(); }
 
@@ -246,6 +248,61 @@ TEST_F(ArcIdleManagerTest, TestThrottleInstance) {
   arc_window_observer()->SetActive(false);
   EXPECT_EQ(5U, interactive_enabled_counter());
   EXPECT_EQ(7U, interactive_disabled_counter());
+}
+
+// Tests that ArcIdleManager records the screen off time metric correctly.
+TEST_F(ArcIdleManagerTest, TestScreenOffTimerMetrics) {
+  // When no one blocks, it should enable idle (screen off);
+
+  on_battery_observer()->SetActive(false);
+  display_power_observer()->SetActive(false);
+  cpu_throttle_observer()->SetActive(false);
+  background_service_observer()->SetActive(false);
+  arc_window_observer()->SetActive(false);
+
+  // Count time from here.
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
+  base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Arc.IdleManager.ScreenOffTime",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 0);
+
+  // Battery observer blocking should caused idle disabled (screen back on).
+  on_battery_observer()->SetActive(true);
+  EXPECT_EQ(1U, interactive_enabled_counter());
+  EXPECT_EQ(2U, interactive_disabled_counter());
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Arc.IdleManager.ScreenOffTime",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+
+  // Fake a disconnection (aking to crash of SystemServer)
+  arc_idle_manager()->OnConnectionClosed();
+  // we are NOT throttled, shouldn't see any change
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Arc.IdleManager.ScreenOffTime",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+
+  // Sate change while we are not watching.
+  on_battery_observer()->SetActive(false);
+
+  // Fake system server coming back
+  arc_idle_manager()->OnConnectionReady();
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Arc.IdleManager.ScreenOffTime",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+
+  // Again, fake a disconnection (aking to crash of SystemServer)
+  arc_idle_manager()->OnConnectionClosed();
+
+  // This time, we should see a counter bump, as disconnection happened
+  // while we were throttled.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Arc.IdleManager.ScreenOffTime",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 2);
 }
 
 }  // namespace arc

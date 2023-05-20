@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/lazy_load.js';
 
-import {ConsentStatus, DspHotwordState, GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl, SettingsGoogleAssistantSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {ControlledButtonElement, CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {ConsentStatus, DspHotwordState, GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl, SettingsGoogleAssistantSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {ControlledButtonElement, CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';

@@ -489,8 +489,9 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
       // Continue to ProcessRequestsIfPossible() to satisfy pending sample
       // request by issuing DemuxerStream::Read() if necessary.
     } else {
-      NOTREACHED() << "Unexpected demuxer stream status. status=" << status
-                   << ", this=" << this;
+      NOTREACHED_NORETURN()
+          << "Unexpected demuxer stream status. status=" << status
+          << ", this=" << this;
     }
   }
 

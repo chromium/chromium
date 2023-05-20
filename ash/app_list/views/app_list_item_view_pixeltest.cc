@@ -16,12 +16,18 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
+#include "ash/drag_drop/drag_drop_controller.h"
+#include "ash/drag_drop/drag_drop_controller_test_api.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 
 namespace ash {
@@ -29,7 +35,8 @@ namespace ash {
 class AppListItemViewPixelTest
     : public AshTestBase,
       public testing::WithParamInterface<
-          std::tuple</*use_folder_icon_refresh=*/bool,
+          std::tuple</*use_drag_drop_refactor=*/bool,
+                     /*use_folder_icon_refresh=*/bool,
                      /*use_tablet_mode=*/bool,
                      /*use_dense_ui=*/bool,
                      /*use_rtl=*/bool,
@@ -51,13 +58,30 @@ class AppListItemViewPixelTest
     // As per `app_list_config_provider.cc`, dense values are used for screens
     // with width OR height <= 675.
     UpdateDisplay(use_dense_ui() ? "800x600" : "1200x800");
-    if (use_folder_icon_refresh()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kAppCollectionFolderRefresh);
+    auto enabled_features = std::vector<base::test::FeatureRef>();
+    auto disabled_features = std::vector<base::test::FeatureRef>();
+    if (use_drag_drop_refactor()) {
+      enabled_features.push_back(app_list_features::kDragAndDropRefactor);
+      auto* drag_controller = ShellTestApi().drag_drop_controller();
+      drag_drop_controller_test_api_ =
+          std::make_unique<DragDropControllerTestApi>(drag_controller);
+      drag_controller->SetDisableNestedLoopForTesting(true);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kAppCollectionFolderRefresh);
+      disabled_features.push_back(app_list_features::kDragAndDropRefactor);
     }
+
+    if (use_folder_icon_refresh()) {
+      enabled_features.push_back(features::kAppCollectionFolderRefresh);
+    } else {
+      disabled_features.push_back(features::kAppCollectionFolderRefresh);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void TearDown() override {
+    drag_drop_controller_test_api_.reset();
+    AshTestBase::TearDown();
   }
 
   // Creates multiple folders that contain from 1 app to `max_items` apps
@@ -118,21 +142,44 @@ class AppListItemViewPixelTest
     return base::JoinString({"app_list_item_view", stringified_params}, ".");
   }
 
-  bool use_folder_icon_refresh() const { return std::get<0>(GetParam()); }
-  bool use_tablet_mode() const { return std::get<1>(GetParam()); }
-  bool use_dense_ui() const { return std::get<2>(GetParam()); }
-  bool use_rtl() const { return std::get<3>(GetParam()); }
-  bool is_new_install() const { return std::get<4>(GetParam()); }
-  bool has_notification() const { return std::get<5>(GetParam()); }
+  views::Widget* GetDraggedWidget() {
+    return use_drag_drop_refactor()
+               ? drag_drop_controller_test_api_->drag_image_widget()
+               : GetAppsGridView()
+                     ->app_drag_icon_proxy_for_test()
+                     ->GetWidgetForTesting();
+  }
+
+  size_t GetRevisionNumber() {
+    size_t base_revision_number = 3;
+    if (use_folder_icon_refresh()) {
+      ++base_revision_number;
+    }
+    if (use_drag_drop_refactor()) {
+      ++base_revision_number;
+    }
+
+    return base_revision_number;
+  }
+
+  bool use_drag_drop_refactor() const { return std::get<0>(GetParam()); }
+  bool use_folder_icon_refresh() const { return std::get<1>(GetParam()); }
+  bool use_tablet_mode() const { return std::get<2>(GetParam()); }
+  bool use_dense_ui() const { return std::get<3>(GetParam()); }
+  bool use_rtl() const { return std::get<4>(GetParam()); }
+  bool is_new_install() const { return std::get<5>(GetParam()); }
+  bool has_notification() const { return std::get<6>(GetParam()); }
 
  private:
+  std::unique_ptr<DragDropControllerTestApi> drag_drop_controller_test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     AppListItemViewPixelTest,
-    testing::Combine(/*use_folder_icon_refresh=*/testing::Bool(),
+    testing::Combine(/*use_drag_drop_refactor=*/testing::Bool(),
+                     /*use_folder_icon_refresh=*/testing::Bool(),
                      /*use_tablet_mode=*/testing::Bool(),
                      /*use_dense_ui=*/testing::Bool(),
                      /*use_rtl=*/testing::Bool(),
@@ -269,9 +316,32 @@ TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
     folder_list.push_back(GetItemViewAt(i));
   }
 
-  for (int i = 0; i < max_items_in_folder; ++i) {
+  const size_t revision_number = GetRevisionNumber();
+
+  auto verify_folder_widget =
+      base::BindLambdaForTesting([&](int number_of_items) {
+        std::string filename =
+            base::NumberToString(number_of_items) + "_items_folder";
+        EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+            base::JoinString({GenerateScreenshotName(), filename}, "."),
+            revision_number, GetDraggedWidget()));
+        // Release the drag.
+        if (use_tablet_mode()) {
+          event_generator->ReleaseTouch();
+        } else {
+          event_generator->ReleaseLeftButton();
+        }
+      });
+
+  for (size_t i = 0; i < max_items_in_folder; ++i) {
     gfx::Point folder_icon_center =
         folder_list[i]->GetIconBoundsInScreen().CenterPoint();
+
+    if (use_drag_drop_refactor()) {
+      ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
+          base::BindRepeating(verify_folder_widget, /*number_of_items=*/i + 1),
+          /*quit_closure=*/base::DoNothing());
+    }
 
     // Start dragging the folder icon.
     if (use_tablet_mode()) {
@@ -288,19 +358,8 @@ TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
       event_generator->MoveMouseTo(grid_center);
     }
 
-    const int revision_number = use_folder_icon_refresh() ? 4 : 3;
-
-    std::string filename = base::NumberToString(i + 1) + "_items_folder";
-    EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-        base::JoinString({GenerateScreenshotName(), filename}, "."),
-        revision_number,
-        apps_grid_view->app_drag_icon_proxy_for_test()->GetWidgetForTesting()));
-
-    // Release the drag.
-    if (use_tablet_mode()) {
-      event_generator->ReleaseTouch();
-    } else {
-      event_generator->ReleaseLeftButton();
+    if (!use_drag_drop_refactor()) {
+      verify_folder_widget.Run(/*number_of_items=*/i + 1);
     }
   }
 }

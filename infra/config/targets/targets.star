@@ -431,6 +431,14 @@ targets.console_test_launcher(
     label = "//chrome/test:chrome_app_unittests",
 )
 
+targets.generated_script(
+    name = "chrome_criticalstaging_tast_tests",
+    label = "//chromeos:chrome_criticalstaging_tast_tests",
+    args = [
+        "--logs-dir=${ISOLATED_OUTDIR}",
+    ],
+)
+
 targets.console_test_launcher(
     name = "chrome_elf_unittests",
     label = "//chrome/chrome_elf:chrome_elf_unittests",
@@ -655,6 +663,11 @@ targets.script(
 targets.windowed_test_launcher(
     name = "chromedriver_unittests",
     label = "//chrome/test/chromedriver:chromedriver_unittests",
+)
+
+targets.generated_script(
+    name = "chrome_finch_smoke_tests",
+    label = "//clank/java:chrome_finch_smoke_tests",
 )
 
 targets.console_test_launcher(
@@ -1317,14 +1330,6 @@ targets.generated_script(
 targets.generated_script(
     name = "lacros_fyi_tast_tests",
     label = "//chromeos/lacros:lacros_fyi_tast_tests",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
-targets.generated_script(
-    name = "lacros_variations_tast_tests",
-    label = "//chromeos/lacros:lacros_variations_tast_tests",
     args = [
         "--logs-dir=${ISOLATED_OUTDIR}",
     ],

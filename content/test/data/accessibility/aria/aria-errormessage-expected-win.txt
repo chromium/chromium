@@ -1,6 +1,6 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE n_relations=0
 ++IA2_ROLE_SECTION n_relations=0
-++++ROLE_SYSTEM_TEXT name='Invalid is true' FOCUSABLE IA2_STATE_INVALID_ENTRY n_relations=1
+++++ROLE_SYSTEM_TEXT name='Invalid is true' FOCUSABLE IA2_STATE_INVALID_ENTRY n_relations=1 error='IA2_ROLE_PARAGRAPH'
 ++++ROLE_SYSTEM_TEXT name='Invalid is false' FOCUSABLE n_relations=0
 ++++ROLE_SYSTEM_TEXT name='Invalid is not set' FOCUSABLE n_relations=0
 ++IA2_ROLE_PARAGRAPH n_relations=1

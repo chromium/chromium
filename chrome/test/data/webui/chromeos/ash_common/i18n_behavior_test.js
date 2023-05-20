@@ -42,7 +42,8 @@ suite('I18nBehaviorModuleTest', function() {
 
   test('i18n advanced', function() {
     assertEquals(
-        allowedByDefault, I18nBehavior.i18nAdvanced('allowedByDefault'));
+        allowedByDefault,
+        I18nBehavior.i18nAdvanced('allowedByDefault').toString());
     I18nBehavior.i18nAdvanced('customAttr', {attrs: ['is']});
     I18nBehavior.i18nAdvanced('optionalTag', {tags: ['img']});
   });

@@ -39,4 +39,10 @@ suite('CustomElementTest', function() {
         testElement.$all('#content')[0] ===
         testElement.shadowRoot!.getElementById('content'));
   });
+
+  test('Test getRequiredElement()', function() {
+    assertTrue(
+        testElement.getRequiredElement('#content') ===
+        testElement.shadowRoot!.getElementById('content'));
+  });
 });

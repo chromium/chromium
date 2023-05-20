@@ -390,9 +390,8 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kHardwareProtected;
   gfx::ColorSpace video_color_space = gfx::ColorSpace::CreateJpeg();
-  gfx::HDRMetadata hdr_metadata = gfx::HDRMetadata();
-  hdr_metadata.max_content_light_level = 1000;
-  hdr_metadata.max_frame_average_light_level = 100;
+  gfx::HDRMetadata hdr_metadata =
+      gfx::HDRMetadata(gfx::HdrMetadataCta861_3(1000, 100));
 
   CREATE_SHARED_STATE();
 

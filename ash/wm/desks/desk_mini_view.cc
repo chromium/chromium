@@ -31,6 +31,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -240,7 +242,10 @@ void DeskMiniView::UpdateFocusColor() {
     new_focus_color_id = ui::kColorAshFocusRing;
   } else if (desk_->is_active() && owner_bar_->overview_grid() &&
              !owner_bar_->overview_grid()->IsShowingSavedDeskLibrary()) {
-    new_focus_color_id = kColorAshCurrentDeskColor;
+    new_focus_color_id =
+        chromeos::features::IsJellyrollEnabled()
+            ? cros_tokens::kCrosSysTertiary
+            : static_cast<ui::ColorId>(kColorAshCurrentDeskColor);
   } else {
     new_focus_color_id = absl::nullopt;
   }

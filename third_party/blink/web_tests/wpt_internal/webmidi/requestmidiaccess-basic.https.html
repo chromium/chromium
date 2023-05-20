@@ -3,14 +3,16 @@
 <head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 </head>
 <body>
 <script>
-assert_implements(navigator.requestMIDIAccess);
-
-test(() => {
-  const result = navigator.requestMIDIAccess();
-  assert_true(result instanceof Promise);
+promise_test(async (t) => {
+  assert_implements(navigator.requestMIDIAccess);
+  await test_driver.set_permission({name: 'midi'}, 'granted');
+  const result = await navigator.requestMIDIAccess();
+  assert_class_string(result, 'MIDIAccess');
 }, 'requestMIDIAccess is defined and callable');
 </script>
 </body>

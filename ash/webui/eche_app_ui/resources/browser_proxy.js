@@ -43,6 +43,13 @@ systemInfo.setSystemInfoObserver(
     systemInfoObserverRouter.$.bindNewPipeAndPassRemote());
 // Returns the remote for AccessibilityProvider.
 const accessibility = ash.echeApp.mojom.AccessibilityProvider.getRemote();
+// An object that receives requests for the AccessibilityObserver mojom
+// interface and dispatches them as callbacks. Setup the message
+const accessibilityObserverRouter =
+    new ash.echeApp.mojom.AccessibilityObserverCallbackRouter();
+// Set up a message pipe to the browser process to accessibility actions.
+accessibility.setAccessibilityObserver(
+    accessibilityObserverRouter.$.bindNewPipeAndPassRemote());
 
 const notificationGenerator =
     ash.echeApp.mojom.NotificationGenerator.getRemote();
@@ -147,6 +154,10 @@ systemInfoObserverRouter.onAndroidDeviceNetworkInfoChanged.addListener(
         /** @type {boolean} */ androidDeviceOnCellular,
       });
     });
+
+accessibilityObserverRouter.performAction.addListener(action => {
+  guestMessagePipe.sendMessage(Message.ACCESSIBILITY_PERFORM_ACTION, action);
+});
 
 // Add stream action listener and send result via pipes.
 streamActionObserverRouter.onStreamAction.addListener((action) => {

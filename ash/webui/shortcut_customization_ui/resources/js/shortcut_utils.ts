@@ -249,3 +249,12 @@ export const getURLForSearchResult = (searchResult: MojoSearchResult): URL => {
 export const isFunctionKey = (keycode: number): boolean => {
   return keycode >= kF11 && keycode <= kF24;
 };
+
+// TODO(longbowei): Update to dynamically check if all shortcuts within a
+// category are locked instead of hardcoding specific categories.
+export const isCategoryLocked = (category: AcceleratorCategory): boolean => {
+  return (
+      category === AcceleratorCategory.kBrowser ||
+      category === AcceleratorCategory.kText ||
+      category === AcceleratorCategory.kAccessibility);
+};

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import androidx.annotation.NonNull;
 
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.url.GURL;
 
 /** A mechanism for creating {@link SuggestionViewDelegate}s. */
@@ -27,6 +28,13 @@ public interface SuggestionHost {
      */
     void onSuggestionClicked(
             @NonNull AutocompleteMatch suggestion, int position, @NonNull GURL url);
+
+    /**
+     * Triggered when the user clicks one of the OmniboxActions attached to Suggestion.
+     *
+     * @param action the action the user interacted with
+     */
+    void onOmniboxActionClicked(@NonNull OmniboxAction action);
 
     /**
      * Triggered when the user long presses the omnibox suggestion.

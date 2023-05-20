@@ -359,8 +359,6 @@ File::Error File::OSErrorToFileError(DWORD last_error) {
     case ERROR_DISK_CORRUPT:  // The disk structure is corrupted and unreadable.
       return FILE_ERROR_IO;
     default:
-      UmaHistogramSparse("PlatformFile.UnknownErrors.Windows",
-                         static_cast<int>(last_error));
       // This function should only be called for errors.
       DCHECK_NE(static_cast<DWORD>(ERROR_SUCCESS), last_error);
       return FILE_ERROR_FAILED;

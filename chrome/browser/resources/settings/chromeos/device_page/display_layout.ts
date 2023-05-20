@@ -9,7 +9,7 @@
  */
 
 import 'chrome://resources/polymer/v3_0/paper-styles/shadow.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';

@@ -92,7 +92,7 @@ namespace {
 bool g_skip_startup_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
 bool g_override_previous_user_uninstall_for_testing_ = false;
-const std::vector<base::Value>* g_configs_for_testing = nullptr;
+const base::Value::List* g_configs_for_testing = nullptr;
 FileUtilsWrapper* g_file_utils_for_testing = nullptr;
 
 const char kHistogramMigrationDisabledReason[] =
@@ -571,7 +571,7 @@ void PreinstalledWebAppManager::
 }
 
 void PreinstalledWebAppManager::SetConfigsForTesting(
-    const std::vector<base::Value>* configs) {
+    const base::Value::List* configs) {
   g_configs_for_testing = configs;
 }
 

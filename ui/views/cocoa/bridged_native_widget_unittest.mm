@@ -296,6 +296,76 @@ NSTextInputContext* g_fake_current_input_context = nullptr;
 }
 @end
 
+// An NSTextStorage subclass for our DummyTextView, to work around test
+// failures with macOS 13. See crbug.com/1446817 .
+@interface DummyTextStorage : NSTextStorage {
+  base::scoped_nsobject<NSMutableAttributedString> _backingStore;
+}
+@end
+
+@implementation DummyTextStorage
+
+- (id)init {
+  self = [super init];
+  if (self) {
+    _backingStore.reset([[NSMutableAttributedString alloc] init]);
+  }
+  return self;
+}
+
+- (NSString*)string {
+  return [_backingStore string];
+}
+
+- (NSDictionary*)attributesAtIndex:(NSUInteger)location
+                    effectiveRange:(NSRangePointer)range {
+  return [_backingStore attributesAtIndex:location effectiveRange:range];
+}
+
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString*)str {
+  [self beginEditing];
+  [_backingStore replaceCharactersInRange:range withString:str];
+  [self edited:NSTextStorageEditedCharacters
+               range:range
+      changeInLength:str.length - range.length];
+  [self endEditing];
+}
+
+- (void)setAttributes:(NSDictionary<NSAttributedStringKey, id>*)attrs
+                range:(NSRange)range {
+  [self beginEditing];
+  [_backingStore setAttributes:attrs range:range];
+  [self edited:NSTextStorageEditedAttributes range:range changeInLength:0];
+  [self endEditing];
+}
+
+@end
+
+// An NSTextView subclass that uses its own NSTextStorage subclass, to work
+// around test failures with macOS 13. See crbug.com/1446817 .
+@interface DummyTextView : NSTextView {
+}
+@end
+
+@implementation DummyTextView
+
+- (instancetype)initWithFrame:(NSRect)frameRect
+                textContainer:(NSTextContainer*)container {
+  DummyTextStorage* textStorage = [[DummyTextStorage alloc] init];
+  NSTextContainer* textContainer = [[NSTextContainer alloc]
+      initWithSize:NSMakeSize(CGFLOAT_MAX, CGFLOAT_MAX)];
+  NSLayoutManager* layoutManager = [[NSLayoutManager alloc] init];
+
+  [layoutManager addTextContainer:textContainer];
+  [textStorage addLayoutManager:layoutManager];
+
+  self = [super initWithFrame:frameRect textContainer:textContainer];
+
+  return self;
+}
+
+@end
+
 @implementation NativeWidgetMacNSWindowForTesting
 
 // Preserves the value of the hasShadow flag. During testing, -hasShadow will
@@ -590,7 +660,7 @@ Textfield* BridgedNativeWidgetTest::InstallTextField(
   // Initialize the dummy text view. Initializing this with NSZeroRect causes
   // weird NSTextView behavior on OSX 10.9.
   dummy_text_view_.reset(
-      [[NSTextView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)]);
+      [[DummyTextView alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)]);
   [dummy_text_view_ setString:SysUTF16ToNSString(text)];
   return textfield;
 }

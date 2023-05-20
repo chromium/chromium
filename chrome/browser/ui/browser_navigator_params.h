@@ -26,6 +26,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/navigation/system_entropy.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -338,6 +339,12 @@ struct NavigateParams {
   // TypedNavigationUpgradeThrottle to determine if the navigation should be
   // observed and fall back to using http scheme if necessary.
   bool is_using_https_as_default_scheme = false;
+
+  // Indicates if the page load occurs during a non-optimal performance state.
+  // This value is only suggested based upon the load context, and can be
+  // overridden by other factors.
+  blink::mojom::SystemEntropy suggested_system_entropy =
+      blink::mojom::SystemEntropy::kNormal;
 
  private:
   NavigateParams();

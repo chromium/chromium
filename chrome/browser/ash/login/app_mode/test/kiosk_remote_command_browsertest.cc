@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
+#include "base/json/json_writer.h"
 #include "base/scoped_observation.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/repeating_test_future.h"
@@ -12,16 +12,12 @@
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/remote_commands/device_command_screenshot_job.h"
-#include "chrome/browser/ash/policy/remote_commands/device_command_set_volume_job.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/ash/policy/test_support/remote_commands_service_mixin.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/core/common/remote_commands/test_support/remote_command_builders.h"
 #include "components/policy/core/common/remote_commands/test_support/testing_remote_commands_server.h"
@@ -37,7 +33,6 @@ namespace em = enterprise_management;
 using policy::CloudPolicyClient;
 using policy::TestingRemoteCommandsServer;
 
-const char kDMToken[] = "dmtoken";
 const char kDeviceId[] = "kiosk-device";
 
 // workflow: COM_KIOSK_CUJ8_TASK1_WF1
@@ -51,43 +46,6 @@ constexpr char kKioskRemoteRebootCommandTag[] =
 // workflow: COM_KIOSK_CUJ8_TASK3_WF1
 constexpr char kKioskRemoteScreenshotCommandTag[] =
     "screenplay-110c74bf-7c94-4e88-8904-95b6bbc7d649";
-
-// Test `CloudPolicyClient` that interacts with `TestingRemoteCommandsServer`.
-class TestRemoteCommandsClient : public CloudPolicyClient {
- public:
-  explicit TestRemoteCommandsClient(TestingRemoteCommandsServer* server)
-      : CloudPolicyClient(nullptr /* service */,
-                          nullptr /* url_loader_factory */,
-                          CloudPolicyClient::DeviceDMTokenCallback()),
-        server_(server) {
-    dm_token_ = kDMToken;
-  }
-  TestRemoteCommandsClient(const TestRemoteCommandsClient&) = delete;
-  TestRemoteCommandsClient& operator=(const TestRemoteCommandsClient&) = delete;
-
-  ~TestRemoteCommandsClient() override = default;
-
- private:
-  void FetchRemoteCommands(
-      std::unique_ptr<policy::RemoteCommandJob::UniqueIDType> last_command_id,
-      const std::vector<em::RemoteCommandResult>& command_results,
-      em::PolicyFetchRequest::SignatureType signature_type,
-      RemoteCommandCallback callback) override {
-    std::vector<em::SignedData> commands =
-        server_->FetchCommands(std::move(last_command_id), command_results);
-
-    // Asynchronously send the response from the DMServer back to client.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  policy::DM_STATUS_SUCCESS, commands));
-  }
-
-  void FetchPolicy() override {
-    // Empty to avoid a crashing cloud policy fetch attempt in ash
-  }
-
-  raw_ptr<TestingRemoteCommandsServer> server_;
-};
 
 class TestRebootObserver : public chromeos::PowerManagerClient::Observer {
  public:
@@ -136,32 +94,18 @@ class TestAudioObserver : public ash::CrasAudioHandler::AudioObserver {
 
 }  // namespace
 
-// Kiosk tests with a fake device owner setup and a fake remote command client.
+// Kiosk tests with a fake device owner setup and a remote commands server
+// configured.
 class KioskRemoteCommandTest : public KioskBaseTest {
  public:
   KioskRemoteCommandTest() {
-    // Skip initial policy setup is needed to do a custom StartConnection below
-    device_state_.set_skip_initial_policy_setup(true);
-
-    settings_helper_.Set(kDeviceOwner,
-                         base::Value(test_owner_account_id_.GetUserEmail()));
+    settings_helper_.SetString(kDeviceOwner,
+                               test_owner_account_id_.GetUserEmail());
     login_manager_.AppendRegularUsers(1);
   }
 
   void SetUpOnMainThread() override {
     KioskBaseTest::SetUpOnMainThread();
-
-    remote_command_server_ = std::make_unique<TestingRemoteCommandsServer>();
-
-    // Create RemoteCommandsService
-    policy::BrowserPolicyConnectorAsh* const connector =
-        g_browser_process->platform_part()->browser_policy_connector_ash();
-
-    policy_manager_ = connector->GetDeviceCloudPolicyManager();
-    policy_manager_->StartConnection(std::make_unique<TestRemoteCommandsClient>(
-                                         remote_command_server_.get()),
-                                     connector->GetInstallAttributes());
-    SetPublicKeyAndDeviceId();
 
     // On real hardware volume change events are reported asynchronous, so
     // ensure the test behaves similar so they are realistic (and catch the
@@ -169,82 +113,24 @@ class KioskRemoteCommandTest : public KioskBaseTest {
     ash::FakeCrasAudioClient::Get()->send_volume_change_events_asynchronous();
   }
 
- protected:
-  void SetPublicKeyAndDeviceId() {
-    policy_manager_->core()
-        ->store()
-        ->set_policy_signature_public_key_for_testing(
-            policy::PolicyBuilder::GetPublicTestKeyAsString());
-
-    auto policy_data = std::make_unique<em::PolicyData>();
-    policy_data->set_device_id(kDeviceId);
-    policy_manager_->core()->store()->set_policy_data_for_testing(
-        std::move(policy_data));
+  policy::RemoteCommandBuilder BuildRemoteCommand() {
+    return policy::RemoteCommandBuilder().SetTargetDeviceId(kDeviceId);
   }
 
-  em::SignedData CreateSetVolumeRemoteCommand(int volume_level) {
-    std::string command_payload;
-    {
-      base::Value::Dict root_dict;
-      root_dict.Set(policy::DeviceCommandSetVolumeJob::kVolumeFieldName,
-                    volume_level);
-      base::JSONWriter::Write(root_dict, &command_payload);
-    }
-    em::SignedData signed_command =
-        policy::SignedDataBuilder()
-            .SetCommandId(remote_command_server_->GetNextCommandId())
-            .SetTargetDeviceId(kDeviceId)
-            .SetCommandType(em::RemoteCommand_Type_DEVICE_SET_VOLUME)
-            .SetCommandPayload(command_payload)
-            .Build();
-
-    return signed_command;
+  em::RemoteCommandResult IssueCommandAndGetResponse(
+      em::RemoteCommand command) {
+    return remote_commands_service_mixin_.SendRemoteCommand(command);
   }
 
-  em::SignedData CreateRebootRemoteCommand() {
-    em::SignedData signed_command =
-        policy::SignedDataBuilder()
-            .SetCommandId(remote_command_server_->GetNextCommandId())
-            .SetTargetDeviceId(kDeviceId)
-            .SetCommandType(em::RemoteCommand_Type_DEVICE_REBOOT)
-            .Build();
-    return signed_command;
+  void LaunchKioskApp() {
+    StartAppLaunchFromLoginScreen(
+        NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+    WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
+                                /*terminate_app=*/false,
+                                /*keep_app_open=*/true);
   }
 
-  em::SignedData CreateScreenshotRemoteCommand() {
-    constexpr char kMockUploadUrl[] = "http://example.com/upload";
-    std::string command_payload;
-    {
-      base::Value::Dict root_dict;
-      root_dict.Set(policy::DeviceCommandScreenshotJob::kUploadUrlFieldName,
-                    kMockUploadUrl);
-      base::JSONWriter::Write(root_dict, &command_payload);
-    }
-    em::SignedData signed_command =
-        policy::SignedDataBuilder()
-            .SetCommandId(remote_command_server_->GetNextCommandId())
-            .SetTargetDeviceId(kDeviceId)
-            .SetCommandType(em::RemoteCommand_Type_DEVICE_SCREENSHOT)
-            .SetCommandPayload(command_payload)
-            .Build();
-    return signed_command;
-  }
-
-  em::RemoteCommandResult IssueCommandAndGetResponse(em::SignedData command) {
-    using ServerResponseFuture =
-        base::test::TestFuture<const em::RemoteCommandResult&>;
-    ServerResponseFuture response_future;
-    remote_command_server_->IssueCommand(command,
-                                         response_future.GetCallback());
-
-    policy::RemoteCommandsService* const remote_commands_service =
-        policy_manager_->core()->remote_commands_service();
-    remote_commands_service->FetchRemoteCommands();
-
-    // Waits for (async) remote commands to finish
-    return response_future.Get();
-  }
-
+ private:
   LoginManagerMixin login_manager_{
       &mixin_host_,
       {{LoginManagerMixin::TestUserInfo{test_owner_account_id_}}}};
@@ -252,8 +138,9 @@ class KioskRemoteCommandTest : public KioskBaseTest {
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
-  std::unique_ptr<TestingRemoteCommandsServer> remote_command_server_;
-  raw_ptr<policy::DeviceCloudPolicyManagerAsh, ExperimentalAsh> policy_manager_;
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+  policy::RemoteCommandsServiceMixin remote_commands_service_mixin_{
+      mixin_host_, policy_test_server_mixin_};
 };
 
 IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
@@ -269,18 +156,17 @@ IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
   audio_observer.WaitForVolumeChange();
   ASSERT_EQ(kInitVolumePercent, audio_handler->GetOutputVolumePercent());
 
-  // Launch kiosk app
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
-                              /*terminate_app=*/false,
-                              /*keep_app_open=*/true);
+  LaunchKioskApp();
 
   // Create a remote command, enqueue from the server, fetch from the client
-  em::SignedData volume_command =
-      CreateSetVolumeRemoteCommand(kExpectedVolumePercent);
-
-  auto response = IssueCommandAndGetResponse(volume_command);
+  auto response = IssueCommandAndGetResponse(
+      BuildRemoteCommand()
+          .SetType(em::RemoteCommand_Type_DEVICE_SET_VOLUME)
+          .SetPayload(
+              base::WriteJson(base::Value::Dict()  //
+                                  .Set("volume", kExpectedVolumePercent))
+                  .value())
+          .Build());
 
   // Check that remote command passed and the new volume level was set
   EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
@@ -292,12 +178,7 @@ IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
 IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, RebootWithRemoteCommand) {
   base::AddFeatureIdTagToTestResult(kKioskRemoteRebootCommandTag);
 
-  // Launch kiosk app
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
-                              /*terminate_app=*/false,
-                              /*keep_app_open=*/true);
+  LaunchKioskApp();
 
   // Get PowerManagerClient and start observing a restart request
   chromeos::PowerManagerClient* power_manager_client =
@@ -308,8 +189,10 @@ IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, RebootWithRemoteCommand) {
   power_manager_client->AddObserver(&observer);
 
   // Create a remote command, enqueue from the server, fetch from the client
-  em::SignedData reboot_command = CreateRebootRemoteCommand();
-  auto response = IssueCommandAndGetResponse(reboot_command);
+  auto response = IssueCommandAndGetResponse(
+      BuildRemoteCommand()
+          .SetType(em::RemoteCommand_Type_DEVICE_REBOOT)
+          .Build());
 
   // Check that remote cmd passed and reboot was requested (via observer event)
   EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
@@ -321,24 +204,21 @@ IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, RebootWithRemoteCommand) {
 IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, ScreenshotWithRemoteCommand) {
   base::AddFeatureIdTagToTestResult(kKioskRemoteScreenshotCommandTag);
 
-  // Launch kiosk app
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
-  WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
-                              /*terminate_app=*/false,
-                              /*keep_app_open=*/true);
-
-  // Create a remote command, enqueue from the server, fetch from the client
-  em::SignedData screenshot_command = CreateScreenshotRemoteCommand();
+  LaunchKioskApp();
 
   // skips real image upload
   // TODO(b/269432279): Try real upload with local url and EmbeddedTestServer
   policy::DeviceCommandsFactoryAsh::set_commands_for_testing(true);
 
-  auto response = IssueCommandAndGetResponse(screenshot_command);
+  auto response = IssueCommandAndGetResponse(
+      BuildRemoteCommand()
+          .SetType(em::RemoteCommand_Type_DEVICE_SCREENSHOT)
+          .SetPayload(R"( {"fileUploadUrl": "http://example.com/upload"} )")
+          .Build());
 
   // Check that remote cmd passed
   EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS,
             response.result());
 }
+
 }  // namespace ash

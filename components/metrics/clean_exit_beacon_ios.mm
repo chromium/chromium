@@ -8,6 +8,10 @@
 
 #include "base/feature_list.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace metrics {
 namespace {
 
@@ -25,20 +29,20 @@ NSString* const kUserDefaultsFeatureFlagForExitedCleanlyBeacon =
 
 // static
 void CleanExitBeacon::SetUserDefaultsBeacon(bool exited_cleanly) {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   [defaults setBool:exited_cleanly forKey:kLastSessionExitedCleanly];
   [defaults synchronize];
 }
 
 // static
 bool CleanExitBeacon::ShouldUseUserDefaultsBeacon() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   return [defaults boolForKey:kUserDefaultsFeatureFlagForExitedCleanlyBeacon];
 }
 
 // static
 void CleanExitBeacon::SyncUseUserDefaultsBeacon() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   [defaults setBool:base::FeatureList::IsEnabled(
                         kUseUserDefaultsForExitedCleanlyBeacon)
              forKey:kUserDefaultsFeatureFlagForExitedCleanlyBeacon];
@@ -47,19 +51,19 @@ void CleanExitBeacon::SyncUseUserDefaultsBeacon() {
 
 // static
 bool CleanExitBeacon::HasUserDefaultsBeacon() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   return [defaults objectForKey:kLastSessionExitedCleanly] != nil;
 }
 
 // static
 bool CleanExitBeacon::GetUserDefaultsBeacon() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   return [defaults boolForKey:kLastSessionExitedCleanly];
 }
 
 // static
 void CleanExitBeacon::ResetUserDefaultsBeacon() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSUserDefaults* defaults = NSUserDefaults.standardUserDefaults;
   [defaults removeObjectForKey:kLastSessionExitedCleanly];
   [defaults synchronize];
 }

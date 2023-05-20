@@ -72,7 +72,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void OnDatagramProcessed(absl::optional<quic::MessageStatus> status);
 
   // QuicTransportClientSession::ClientVisitor methods.
-  void OnSessionReady(const spdy::Http2HeaderBlock&) override;
+  void OnSessionReady() override;
   void OnSessionClosed(quic::WebTransportSessionError error_code,
                        const std::string& error_message) override;
   void OnIncomingBidirectionalStreamAvailable() override;
@@ -178,7 +178,6 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   std::unique_ptr<DatagramClientSocket> socket_;
   std::unique_ptr<quic::QuicSpdyClientSession> session_;
   raw_ptr<quic::QuicConnection> connection_;  // owned by |session_|
-  raw_ptr<quic::QuicSpdyStream, DanglingUntriaged> connect_stream_ = nullptr;
   raw_ptr<quic::WebTransportSession, DanglingUntriaged> web_transport_session_ =
       nullptr;
   std::unique_ptr<QuicChromiumPacketReader> packet_reader_;

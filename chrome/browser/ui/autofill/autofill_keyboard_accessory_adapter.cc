@@ -78,7 +78,7 @@ void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
   front_element_ = absl::nullopt;
   for (int i = 0; i < GetLineCount(); ++i) {
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);
-    if (suggestion.frontend_id != POPUP_ITEM_ID_CLEAR_FORM) {
+    if (suggestion.frontend_id != PopupItemId::kClearForm) {
       labels_.push_back(CreateLabel(suggestion));
       continue;
     }

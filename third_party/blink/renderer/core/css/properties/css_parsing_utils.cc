@@ -4226,8 +4226,7 @@ CSSValue* ConsumeScrollFunction(CSSParserTokenRange& range,
     }
     if (!axis) {
       if ((axis = ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
-                               CSSValueID::kVertical, CSSValueID::kHorizontal>(
-               block))) {
+                               CSSValueID::kX, CSSValueID::kY>(block))) {
         continue;
       }
     }
@@ -4264,8 +4263,7 @@ CSSValue* ConsumeViewFunction(CSSParserTokenRange& range,
     }
     if (!axis) {
       if ((axis = ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
-                               CSSValueID::kVertical, CSSValueID::kHorizontal>(
-               block))) {
+                               CSSValueID::kX, CSSValueID::kY>(block))) {
         continue;
       }
     }
@@ -4302,7 +4300,7 @@ CSSValue* ConsumeAnimationTimeline(CSSParserTokenRange& range,
   if (auto* value = ConsumeIdent<CSSValueID::kNone, CSSValueID::kAuto>(range)) {
     return value;
   }
-  if (auto* value = ConsumeCustomIdent(range, context)) {
+  if (auto* value = ConsumeDashedIdent(range, context)) {
     return value;
   }
   if (auto* value = ConsumeViewFunction(range, context)) {
@@ -4456,8 +4454,8 @@ CSSValue* ConsumeSingleTimelineAttachment(CSSParserTokenRange& range) {
 }
 
 CSSValue* ConsumeSingleTimelineAxis(CSSParserTokenRange& range) {
-  return ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
-                      CSSValueID::kVertical, CSSValueID::kHorizontal>(range);
+  return ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline, CSSValueID::kX,
+                      CSSValueID::kY>(range);
 }
 
 CSSValue* ConsumeSingleTimelineName(CSSParserTokenRange& range,
@@ -4465,7 +4463,7 @@ CSSValue* ConsumeSingleTimelineName(CSSParserTokenRange& range,
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range)) {
     return value;
   }
-  return ConsumeCustomIdent(range, context);
+  return ConsumeDashedIdent(range, context);
 }
 
 namespace {
@@ -7274,22 +7272,40 @@ CSSValue* ConsumeContainerName(CSSParserTokenRange& range,
 }
 
 CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
+  // container-type: normal | [ [ size | inline-size ] || sticky ]
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNormal>(range)) {
     return value;
   }
 
-  if (CSSValue* value =
-          ConsumeIdent<CSSValueID::kSize, CSSValueID::kInlineSize>(range)) {
-    // Note that StyleBuilderConverter::ConvertFlags requires that values
-    // other than the ZeroValue appear in a CSSValueList, hence we return a list
-    // with one item here. Also note that the full grammar will require multiple
-    // list items in the future, if we add support for non-size container types.
-    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-    list->Append(*value);
-    return list;
-  }
+  CSSValue* size_value = nullptr;
+  CSSValue* sticky_value = nullptr;
 
-  return nullptr;
+  do {
+    if (!size_value) {
+      size_value =
+          ConsumeIdent<CSSValueID::kSize, CSSValueID::kInlineSize>(range);
+      if (size_value) {
+        continue;
+      }
+    }
+    if (!sticky_value &&
+        RuntimeEnabledFeatures::CSSStickyContainerQueriesEnabled()) {
+      sticky_value = ConsumeIdent<CSSValueID::kSticky>(range);
+      if (sticky_value) {
+        continue;
+      }
+    }
+    return nullptr;
+  } while (!range.AtEnd());
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (size_value) {
+    list->Append(*size_value);
+  }
+  if (sticky_value) {
+    list->Append(*sticky_value);
+  }
+  return list;
 }
 
 CSSValue* ConsumeSVGPaint(CSSParserTokenRange& range,

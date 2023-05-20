@@ -137,16 +137,14 @@ class ProfileReportGeneratorTest : public ::testing::Test {
 
 #if !BUILDFLAG(IS_ANDROID)
   void SetExtensionToPendingList(const std::vector<std::string>& ids) {
-    std::unique_ptr<base::Value> id_values =
-        std::make_unique<base::Value>(base::Value::Type::DICT);
+    base::Value::Dict id_values;
     for (const auto& id : ids) {
-      base::Value request_data(base::Value::Type::DICT);
-      request_data.SetKey(
-          extension_misc::kExtensionRequestTimestamp,
-          ::base::TimeToValue(base::Time::FromJavaTime(kFakeTime)));
-      request_data.SetKey(extension_misc::kExtensionWorkflowJustification,
-                          base::Value(kJustification));
-      id_values->SetKey(id, std::move(request_data));
+      id_values.Set(
+          id, base::Value::Dict()
+                  .Set(extension_misc::kExtensionRequestTimestamp,
+                       ::base::TimeToValue(base::Time::FromJavaTime(kFakeTime)))
+                  .Set(extension_misc::kExtensionWorkflowJustification,
+                       base::Value(kJustification)));
     }
     profile()->GetTestingPrefService()->SetUserPref(
         prefs::kCloudExtensionRequestIds, std::move(id_values));

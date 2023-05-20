@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="5">
+  <interface name="surface_augmenter" version="6">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -89,7 +89,7 @@
     </request>
   </interface>
 
-  <interface name="augmented_surface" version="3">
+  <interface name="augmented_surface" version="6">
     <description summary="delegate composition of a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to specify the delegated composition of the surface
@@ -169,6 +169,20 @@
       </description>
       <arg name="color" type="array"
            summary="overlay color represented by a SkColor4f"/>
+    </request>
+
+    <!-- Version 6 additions -->
+
+    <request name="set_trusted_damage" since="6">
+      <description summary="sets the trusted damage state of this surface">
+        When set, this surface trusts all damage reported to this surface and
+        descendant sub-surfaces is accurate, and will not try to recompute it.
+        If not set, various changes like adding or removing a sub-surface,
+        changing its position or stacking order, can cause full damage on this
+        surface.
+        The initial state is disabled.
+      </description>
+      <arg name="enabled" type="int"/>
     </request>
   </interface>
 

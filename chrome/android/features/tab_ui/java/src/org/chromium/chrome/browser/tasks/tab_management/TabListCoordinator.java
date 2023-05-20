@@ -507,7 +507,6 @@ public class TabListCoordinator
     void prepareTabSwitcherView() {
         registerLayoutChangeListener();
         mRecyclerView.prepareTabSwitcherView();
-        mMediator.prepareTabSwitcherView();
         mMediator.registerOnScrolledListener(mRecyclerView);
     }
 

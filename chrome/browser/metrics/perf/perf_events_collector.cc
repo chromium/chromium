@@ -226,10 +226,9 @@ const char kPerfDTLBMissesDAPSkylake[] =
     "-- record -a -e mem_inst_retired.stlb_miss_loads:pp -c 2003 -d";
 
 // ETM for ARM boards including trogdor and herobrine.
-// TODO(b/275560674): re-enable kernel ETM.
 const char kPerfETMCmd[] =
     "--run_inject --inject_args inject;--itrace=i512il;--strip -- record -a -e "
-    "cs_etm/autofdo/u";
+    "cs_etm/autofdo/";
 
 const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
     const CPUIdentity& cpuid) {

@@ -66,6 +66,14 @@ constexpr char kFloatingWorkspaceTabCountHistogramName[] =
 constexpr char kFloatingWorkspaceWindowAndTabCountHistogramName[] =
     "Ash.DeskTemplate.FloatingWorkspaceWindowAndTabCount";
 
+// Histogram names for admin templates.
+constexpr char kAdminTemplateWindowCountHistogramName[] =
+    "Ash.DeskTemplate.AdminTemplateWindowCount";
+constexpr char kAdminTemplateTabCountHistogramName[] =
+    "Ash.DeskTemplate.AdminTemplateTabCount";
+constexpr char kLaunchAdminTemplateHistogramName[] =
+    "Ash.DeskTamplate.LaunchAdminTemplate";
+
 // Wrappers calls base::uma with correct histogram name.
 void RecordLoadSavedDeskLibraryHistogram();
 void RecordDeleteSavedDeskHistogram(DeskTemplateType type);
@@ -81,6 +89,9 @@ ASH_EXPORT void RecordWindowAndTabCountHistogram(
     const DeskTemplate& desk_template);
 void RecordUnsupportedAppDialogShowHistogram(DeskTemplateType type);
 void RecordTimeBetweenSaveAndRecall(base::TimeDelta duration);
+void RecordAdminTemplateWindowAndTabCountHistogram(
+    const DeskTemplate& desk_template);
+void RecordLaunchAdminTemplateHistogram();
 
 }  // namespace ash
 

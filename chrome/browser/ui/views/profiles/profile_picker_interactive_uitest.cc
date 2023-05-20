@@ -343,8 +343,16 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
       CheckResult(HasPendingNav(), IsFalse()));
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NavigateBackFromNewProfileWithKeyboard \
+  DISABLED_NavigateBackFromNewProfileWithKeyboard
+#else
+#define MAYBE_NavigateBackFromNewProfileWithKeyboard \
+  NavigateBackFromNewProfileWithKeyboard
+#endif
+// TODO(crbug.com/1446225): re-enable this flaky test.
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
-                       NavigateBackFromNewProfileWithKeyboard) {
+                       MAYBE_NavigateBackFromNewProfileWithKeyboard) {
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
                      GURL("chrome://profile-picker/new-profile"));
   EXPECT_EQ(2, web_contents()->GetController().GetEntryCount());
@@ -356,6 +364,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
   // Navigate back with the keyboard.
   SendBackKeyboardCommand();
-  WaitForLoadStop(GURL("chrome://profile-picker"));
+  WaitForLoadStop(GURL("chrome://profile-picker"), web_contents());
   EXPECT_EQ(0, web_contents()->GetController().GetLastCommittedEntryIndex());
 }

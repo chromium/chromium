@@ -1289,11 +1289,11 @@ void WebTestControlHost::OnPixelDumpCaptured(const SkBitmap& snapshot) {
   // In the test: test_runner/notify_done_and_defered_close_dump_surface.html,
   // the |main_window_| is closed while waiting for the pixel dump. When this
   // happens, every window is closed and while pumping the message queue,
-  // OnPixelDumpCaptured is called with an empty snapshot.
-  if (!main_window_)
+  // OnPixelDumpCaptured is called with an empty snapshot. It is also possible
+  // to use a redirect to capture an empty snapshot - see crbug.com/1443169.
+  if (!main_window_ || snapshot.drawsNothing()) {
     return;
-
-  DCHECK(!snapshot.drawsNothing());
+  }
   pixel_dump_ = snapshot;
   waiting_for_pixel_results_ = false;
   ReportResults();

@@ -38,17 +38,33 @@ public class PaymentRequestShippingAddressAndOptionTest {
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address associated with a credit card.
-        String firstAddressId = helper.setProfile(new AutofillProfile("", "https://example.test",
-                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
-                "Los Angeles", "", "90291", "", "US", "555-555-5555", "", "en-US"));
+        String firstAddressId = helper.setProfile(AutofillProfile.builder()
+                                                          .setFullName("Jon Doe")
+                                                          .setCompanyName("Google")
+                                                          .setStreetAddress("340 Main St")
+                                                          .setRegion("CA")
+                                                          .setLocality("Los Angeles")
+                                                          .setPostalCode("90291")
+                                                          .setCountryCode("US")
+                                                          .setPhoneNumber("555-555-5555")
+                                                          .setLanguageCode("en-US")
+                                                          .build());
         helper.setCreditCard(new CreditCard("", "https://example.test", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                 firstAddressId, "" /* serverId */));
 
         // The user has a second address.
-        String secondAddressId = helper.setProfile(new AutofillProfile("", "https://example.test",
-                true, "" /* honorific prefix */, "Fred Doe", "Google", "340 Main St", "CA",
-                "Los Angeles", "", "90291", "", "US", "555-555-5555", "", "en-US"));
+        String secondAddressId = helper.setProfile(AutofillProfile.builder()
+                                                           .setFullName("Fred Doe")
+                                                           .setCompanyName("Google")
+                                                           .setStreetAddress("340 Main St")
+                                                           .setRegion("CA")
+                                                           .setLocality("Los Angeles")
+                                                           .setPostalCode("90291")
+                                                           .setCountryCode("US")
+                                                           .setPhoneNumber("555-555-5555")
+                                                           .setEmailAddress("en-US")
+                                                           .build());
 
         // Set the fist profile to have a better frecency score that the second one.
         helper.setProfileUseStatsForTesting(firstAddressId, 10, 10);

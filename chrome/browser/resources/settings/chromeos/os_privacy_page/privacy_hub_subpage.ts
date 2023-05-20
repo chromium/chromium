@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '/shared/settings/controls/settings_toggle_button.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import './metrics_consent_toggle_button.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
@@ -105,6 +105,17 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
       },
 
       /**
+       * Whether the part of speak-on-mute detection should be displayed.
+       */
+      showSpeakOnMuteDetectionPage_: {
+        type: Boolean,
+        readOnly: true,
+        value: () => {
+          return loadTimeData.getBoolean('showSpeakOnMuteDetectionPage');
+        },
+      },
+
+      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -112,6 +123,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         value: () => new Set<Setting>([
           Setting.kCameraOnOff,
           Setting.kMicrophoneOnOff,
+          Setting.kSpeakOnMuteDetectionOnOff,
           Setting.kGeolocationOnOff,
           Setting.kUsageStatsAndCrashReports,
         ]),
@@ -127,6 +139,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private microphoneHardwareToggleActive_: boolean;
   private shouldDisableMicrophoneToggle_: boolean;
   private showPrivacyHubMVPPage_: boolean;
+  private showSpeakOnMuteDetectionPage_: boolean;
 
   constructor() {
     super();

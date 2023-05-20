@@ -94,6 +94,7 @@
 <translation id="3179665906251668410">Chromium &amp;ଇନ୍‍କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="3185330573522821672">ଆପଣଙ୍କ ନୂଆ Chromium ପ୍ରୋଫାଇଲକୁ କଷ୍ଟମାଇଜ୍ କରନ୍ତୁ</translation>
 <translation id="3190315855212034486">ବାଃ! Chromium କ୍ରାସ୍ ହୋଇଯାଇଛି। ପୁଣିଥରେ ଲଞ୍ଚ କରିବେ?</translation>
+<translation id="3255926992597692024">ପେମେଣ୍ଟ ପଦ୍ଧତି ପୂରଣ କରିବା ପାଇଁ Chromium ସେଟିଂସ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="3258596308407688501">Chromium ଏହାର ଡାଟାକୁ ପଢ଼ି ପାରିବ ନାହିଁ ଏବଂ ଏଥିରେ ଲେଖି ପାରିବ ନାହିଁ:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -133,7 +134,6 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ଏହି Chromium ପ୍ରୋଫାଇଲରେ ପୂର୍ବରୁ ସାଇନ୍ ଇନ୍ କରିସାରିଛନ୍ତି। ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ ଅଲଗା ରଖିବା ପାଇଁ, Chromium ଆପଣଙ୍କ ପାଇଁ ଆପଣଙ୍କର ନିଜର ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିପାରିବ।</translation>
 <translation id="391789666908693569">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ <ph name="MANAGER_NAME" />ଙ୍କ ଦ୍ୱାରା ପରିଚାଳନା କରାଯାଉଛି। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଏହି Chromium ବ୍ରାଉଜର ପ୍ରୋଫାଇଲ ଏବଂ ଏହାର ବୁକମାର୍କ, ଇତିହାସ ଏବଂ ପାସୱାର୍ଡଗୁଡ଼ିକ ପରି ଡାଟାକୁ ଦେଖିପାରିବେ ଓ ଏଡିଟ କରିପାରିବେ।</translation>
 <translation id="3945058413678539331">Chromium ପାସୱାର୍ଡଗୁଡ଼ିକ କପି କରିବାକୁ ଚେଷ୍ଟା କରୁଛି। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ଆପଣଙ୍କର Windows ପାସୱାର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
-<translation id="3962623956404948996">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇଥାଇପାରେ ବୋଲି Chromium ଏହାକୁ ସ୍କାନ କରିବାକୁ ସୁପାରିଶ କରୁଛି</translation>
 <translation id="3997429360543082038">ChromiumOS ବିଷୟରେ</translation>
 <translation id="4019629340646866719">ChromiumOS <ph name="BEGIN_LINK_LINUX_OSS" />Linux ଡେଭେଲପମେଣ୍ଟ ପରିବେଶ<ph name="END_LINK_LINUX_OSS" /> ପରି ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ସାମ୍ପ୍ରତିକ ସେଟିଂସ୍‍<ph name="END_LINK" />ର ରିପୋର୍ଟ କରି Chromiumକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
@@ -200,6 +200,7 @@
 <translation id="5653831366781983928">ଦୟାକରି ବର୍ତ୍ତମାନ Chromium ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumକୁ ଏହି ଭାଷାରେ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
+<translation id="585620188971323280">ପେମେଣ୍ଟ ପଦ୍ଧତି ପୂରଣ କରିବା ପାଇଁ ସେଟିଂସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ।</translation>
 <translation id="5862307444128926510">Chromiumକୁ ସ୍ଵାଗତ</translation>
 <translation id="5883558403894052917">ଏହି ଆଇଟମଗୁଡ଼ିକରେ ମାଲୱେର୍ ଥିବା Chromium ଜାଣିବାକୁ ପାଇଛି:</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>

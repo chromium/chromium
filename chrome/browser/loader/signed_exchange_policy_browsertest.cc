@@ -12,9 +12,11 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
+#include "ui/base/l10n/l10n_util.h"
 
 class SignedExchangePolicyBrowserTest : public CertVerifierBrowserTest {
  public:
@@ -99,11 +101,14 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlockList) {
   EXPECT_EQ(blocked_page_title, contents->GetTitle());
 
   // Verify that the expected error page is being displayed.
-  EXPECT_EQ(true,
-            content::EvalJs(
-                contents,
-                "var textContent = document.body.textContent;"
-                "var hasError = "
-                "textContent.indexOf('ERR_BLOCKED_BY_ADMINISTRATOR') >= 0;"
-                "hasError;"));
+  EXPECT_EQ(
+      true,
+      content::EvalJs(
+          contents, content::JsReplace(
+                        "var textContent = document.body.textContent;"
+                        "var hasError = "
+                        "textContent.indexOf($1) >= 0;"
+                        "hasError;",
+                        l10n_util::GetStringUTF8(
+                            IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR))));
 }

@@ -11,5 +11,7 @@
 	</array>
 	<key>com.apple.developer.associated-domains.applinks.read-write</key>
 	<true/>
+	<key>com.apple.developer.web-browser.public-key-credential</key>
+	<true/>
 </dict>
 </plist>

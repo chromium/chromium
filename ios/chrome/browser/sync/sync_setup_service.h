@@ -10,7 +10,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace syncer {
 class SyncService;
@@ -29,8 +29,10 @@ class SyncSetupService : public KeyedService {
 
   ~SyncSetupService() override;
 
-  // Returns whether Sync-the-transport can start the Sync feature.
-  virtual bool CanSyncFeatureStart() const;
+  // Returns whether all conditions are satisfied for Sync-the-feature to start.
+  // This means that there is a Sync-consented account, no disable reasons, and
+  // first-time Sync setup has been completed by the user.
+  virtual bool IsSyncFeatureEnabled() const;
 
   // Returns whether the given datatype has been enabled for sync and its
   // initialization is complete (SyncEngineHost::OnEngineInitialized has been
@@ -40,7 +42,7 @@ class SyncSetupService : public KeyedService {
   // TODO(crbug.com/1429249): Rename to get rid of the `preferred` terminology.
   virtual bool IsDataTypePreferred(syncer::UserSelectableType datatype) const;
   // Enables or disables the given datatype. To be noted: this can be called at
-  // any time, but will only be meaningful if `CanSyncFeatureStart` is true and
+  // any time, but will only be meaningful if `IsSyncFeatureEnabled` is true and
   // `IsSyncEverythingEnabled` is false. Changes won't take effect in the sync
   // backend before the next call to `CommitChanges`.
   void SetDataTypeEnabled(syncer::UserSelectableType datatype, bool enabled);
@@ -67,7 +69,7 @@ class SyncSetupService : public KeyedService {
   // changes. PrepareForFirstSyncSetup() needs to be called before. This flag is
   // not set if the user didn't turn on sync.
   // This method should only be used with UnifiedConsent flag.
-  virtual void SetFirstSetupComplete(
+  virtual void SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource source);
 
   // Returns true if the user finished the Sync setup flow.

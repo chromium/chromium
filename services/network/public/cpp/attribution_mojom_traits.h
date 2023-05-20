@@ -36,14 +36,17 @@ struct COMPONENT_EXPORT(NETWORK_CPP_ATTRIBUTION_MOJOM_TRAITS)
     StructTraits<network::mojom::AttributionReportingRuntimeFeaturesDataView,
                  network::AttributionReportingRuntimeFeatures> {
   static bool cross_app_web_enabled(
-      const network::AttributionReportingRuntimeFeatures& runtime_features) {
-    return runtime_features.cross_app_web_enabled;
+      network::AttributionReportingRuntimeFeatures runtime_features) {
+    return runtime_features.Has(
+        network::AttributionReportingRuntimeFeature::kCrossAppWeb);
   }
 
   static bool Read(
       network::mojom::AttributionReportingRuntimeFeaturesDataView data,
       network::AttributionReportingRuntimeFeatures* out) {
-    out->cross_app_web_enabled = data.cross_app_web_enabled();
+    if (data.cross_app_web_enabled()) {
+      out->Put(network::AttributionReportingRuntimeFeature::kCrossAppWeb);
+    }
     return true;
   }
 };

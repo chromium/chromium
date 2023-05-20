@@ -7,6 +7,20 @@
 
 #include "third_party/skia/include/core/SkColorSpace.h"
 
+namespace skia {
+
+// Returns a transfer function that is equal to `alpha` * `x`.
+skcms_TransferFunction SK_API
+ScaleTransferFunction(const skcms_TransferFunction& f, float alpha);
+
+// Returns true if `y` = `alpha` * `x`, and computes and stores alpha if `alpha`
+// is non-nullptr. Returns false is `x` is the zero function or `alpha` is zero.
+bool SK_API IsScaledTransferFunction(const skcms_TransferFunction& x,
+                                     const skcms_TransferFunction& y,
+                                     float* alpha);
+
+}  // namespace skia
+
 namespace SkNamedTransferFnExt {
 
 ////////////////////////////////////////////////////////////////////////////////

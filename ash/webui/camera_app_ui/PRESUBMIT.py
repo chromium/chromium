@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import os
-import subprocess
 
 
 USE_PYTHON3 = True
@@ -33,6 +32,10 @@ def _CommonChecks(input_api, output_api):
     results += _CheckHtml(input_api, output_api)
   if any(f for f in affected if f.LocalPath() in STRING_RESOURCE_FILES):
     results += _CheckStringResouce(input_api, output_api)
+  if any(f
+         for f in affected
+         if f.LocalPath().endswith('.css') or f.LocalPath().endswith('.svg')):
+    results += _CheckColorTokens(input_api, output_api)
   if any(f for f in affected if f.LocalPath().endswith('metrics.ts')):
     results += _CheckModifyMetrics(input_api, output_api)
 
@@ -45,13 +48,32 @@ def _CheckHtml(input_api, output_api):
 
 
 def _CheckStringResouce(input_api, output_api):
-  rv = subprocess.call(['./resources/utils/cca.py', 'check-strings'])
+  rv = input_api.subprocess.call([
+      input_api.python3_executable, './resources/utils/cca.py',
+      'check-strings'
+  ])
 
   if rv:
     return [
         output_api.PresubmitPromptWarning(
             'String resources check failed, ' +
             'please make sure the relevant string files are all modified.')
+    ]
+
+  return []
+
+
+def _CheckColorTokens(input_api, output_api):
+  rv = input_api.subprocess.call([
+      input_api.python3_executable, './resources/utils/cca.py',
+      'check-color-tokens'
+  ])
+
+  if rv:
+    return [
+        output_api.PresubmitPromptWarning(
+            'Color token check failed, ' +
+            'please only use new dynamic color tokens in new CSS rules.')
     ]
 
   return []

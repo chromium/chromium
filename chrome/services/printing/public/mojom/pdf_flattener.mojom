@@ -15,4 +15,10 @@ interface PdfFlattener {
   // `flattened_pdf_region` contains the flattened PDF.
   FlattenPdf(mojo_base.mojom.ReadOnlySharedMemoryRegion src_pdf_region)
       => (mojo_base.mojom.ReadOnlySharedMemoryRegion? flattened_pdf_region);
+
+  // Sets the status for enterprise policy `kPdfUseSkiaRendererEnabled`. It
+  // should be called immediately once `mojom::PdfFlattener` remote is
+  // bound to the printing service and only when the enterprise policy is
+  // managed.
+  SetUseSkiaRendererPolicy(bool use_skia);
 };

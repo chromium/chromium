@@ -206,29 +206,33 @@ void BrowserAttestationService::OnResponseCreated(
   }
 
   // Add profile and/or device signature to the signed data.
-  SignedData signed_data;
+  auto signed_data = std::make_unique<SignedData>();
+  auto* signed_data_ptr = signed_data.get();
+
   auto barrier_closure = base::BarrierClosure(
       /*num_closures=*/attesters_.size(),
       base::BindOnce(&BrowserAttestationService::OnResponseSigned,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     encrypted_response.value(), std::ref(signed_data)));
+                     encrypted_response.value(), std::move(signed_data)));
 
   for (const auto& attester : attesters_) {
-    attester->SignResponse(levels, encrypted_response.value(),
-                           std::ref(signed_data), barrier_closure);
+    attester->SignResponse(levels, encrypted_response.value(), *signed_data_ptr,
+                           barrier_closure);
   }
 }
 
 void BrowserAttestationService::OnResponseSigned(
     AttestationCallback callback,
     const std::string& encrypted_response,
-    SignedData& signed_data) {
+    std::unique_ptr<SignedData> signed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(signed_data);
+
   // Encode the challenge-response values into a JSON string and return them.
-  signed_data.set_data(encrypted_response);
+  signed_data->set_data(encrypted_response);
 
   std::string serialized_attestation_response;
-  if (!signed_data.SerializeToString(&serialized_attestation_response)) {
+  if (!signed_data->SerializeToString(&serialized_attestation_response)) {
     std::move(callback).Run(
         {std::string(), DTAttestationResult::kFailedToSerializeResponse});
     return;
@@ -243,7 +247,7 @@ void BrowserAttestationService::OnResponseSigned(
   std::move(callback).Run(
       {json_response, json_response.empty()
                           ? DTAttestationResult::kEmptySerializedResponse
-                      : signed_data.has_signature()
+                      : signed_data->has_signature()
                           ? DTAttestationResult::kSuccess
                           : DTAttestationResult::kSuccessNoSignature});
 }

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -85,8 +86,8 @@ TEST_F(BluetoothDetailedViewImplPixelTest, Basics) {
   system_tray->bubble()
       ->unified_system_tray_controller()
       ->ShowBluetoothDetailedView();
-  views::View* detailed_view =
-      system_tray->bubble()->quick_settings_view()->detailed_view();
+  TrayDetailedView* detailed_view =
+      system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
   ASSERT_TRUE(detailed_view);
 
   // Compare pixels.

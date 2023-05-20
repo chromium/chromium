@@ -15,6 +15,10 @@
 #import "ui/base/cocoa/base_view.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Overrides events and actions for NSPopUpButtonCell.
 @interface FakeNSPopUpButtonCell : NSObject
 @end
@@ -33,7 +37,7 @@ namespace headless {
 
 namespace {
 
-// Swizzles all event and acctions for NSPopUpButtonCell to avoid showing in
+// Swizzles all event and actions for NSPopUpButtonCell to avoid showing in
 // headless mode.
 class HeadlessPopUpMethods {
  public:
@@ -74,8 +78,8 @@ void HeadlessBrowserImpl::PlatformInitialize() {
 
 void HeadlessBrowserImpl::PlatformStart() {
   // Disallow headless to be throttled as a background process.
-  [[NSProcessInfo processInfo] beginActivityWithOptions:kActivityOptions
-                                                 reason:kActivityReason];
+  [NSProcessInfo.processInfo beginActivityWithOptions:kActivityOptions
+                                               reason:kActivityReason];
 }
 
 void HeadlessBrowserImpl::PlatformInitializeWebContents(
@@ -94,8 +98,7 @@ void HeadlessBrowserImpl::PlatformSetWebContentsBounds(
   content::WebContents* content_web_contents = web_contents->web_contents();
 
   NSView* web_view = content_web_contents->GetNativeView().GetNativeNSView();
-  NSRect frame = gfx::ScreenRectToNSRect(bounds);
-  [web_view setFrame:frame];
+  web_view.frame = gfx::ScreenRectToNSRect(bounds);
 
   // Render widget host view is not ready at this point, so post a task to set
   // bounds at later time.

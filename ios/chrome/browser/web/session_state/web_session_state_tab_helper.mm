@@ -17,7 +17,7 @@
 #import "build/branding_buildflags.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache_factory.h"
@@ -90,22 +90,11 @@ ChromeBrowserState* WebSessionStateTabHelper::GetBrowserState() {
   return ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
 }
 
-bool WebSessionStateTabHelper::RestoreSessionFromCache() {
+NSData* WebSessionStateTabHelper::FetchSessionFromCache() {
   WebSessionStateCache* cache =
       WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
   NSData* data = [cache sessionStateDataForWebState:web_state_];
-  if (!data.length)
-    return false;
-
-  bool restore_session_succeeded = web_state_->SetSessionStateData(data);
-  UMA_HISTOGRAM_BOOLEAN("Session.WebStates.NativeRestoreSessionFromCache",
-                        restore_session_succeeded);
-  if (!restore_session_succeeded)
-    return false;
-
-  DCHECK(web_state_->GetNavigationItemCount());
-  web::GetWebClient()->CleanupNativeRestoreURLs(web_state_);
-  return true;
+  return data.length ? data : nil;
 }
 
 void WebSessionStateTabHelper::SaveSessionStateIfStale() {

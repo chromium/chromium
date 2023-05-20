@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/sync/driver/model_type_controller.h"
+#include "components/sync/service/model_type_controller.h"
 
 // Controls syncing of SHARING_MESSAGE.
 class SharingMessageModelTypeController : public syncer::ModelTypeController {

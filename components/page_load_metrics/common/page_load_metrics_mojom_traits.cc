@@ -56,6 +56,8 @@ bool StructTraits<
   out->speculation_rules_fallback = data.speculation_rules_fallback();
   out->mock_handled = data.mock_handled();
   out->mock_fallback = data.mock_fallback();
+  out->dictionary_handled = data.dictionary_handled();
+  out->dictionary_fallback = data.dictionary_fallback();
   return true;
 }
 

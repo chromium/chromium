@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.util;
 
-import org.chromium.android_webview.AwFeatureList;
+import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.JavascriptInjector;
@@ -34,7 +34,8 @@ public class JavascriptEventObserver {
     public void register(WebContents webContents, String name) {
         JavascriptInjector
                 .fromWebContents(webContents,
-                        AwFeatureList.isEnabled(AwFeatures.WEBVIEW_JAVA_JS_BRIDGE_MOJO))
+                        AwFeatureMap.getInstance().isEnabled(
+                                AwFeatures.WEBVIEW_JAVA_JS_BRIDGE_MOJO))
                 .addPossiblyUnsafeInterface(this, name, null);
     }
 

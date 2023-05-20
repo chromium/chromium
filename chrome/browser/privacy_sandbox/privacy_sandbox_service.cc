@@ -49,6 +49,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
 
 namespace {
@@ -68,7 +69,8 @@ bool AreThirdPartyCookiesBlocked(
 }
 
 // Sorts |topics| alphabetically by topic display name for display.
-void SortTopicsForDisplay(
+// In addition, removes duplicate topics.
+void SortAndDeduplicateTopicsForDisplay(
     std::vector<privacy_sandbox::CanonicalTopic>& topics) {
   std::sort(topics.begin(), topics.end(),
             [](const privacy_sandbox::CanonicalTopic& a,
@@ -76,6 +78,7 @@ void SortTopicsForDisplay(
               return a.GetLocalizedRepresentation() <
                      b.GetLocalizedRepresentation();
             });
+  topics.erase(std::unique(topics.begin(), topics.end()), topics.end());
 }
 
 // Returns whether |profile_type|, and the current browser session on CrOS,
@@ -88,7 +91,7 @@ bool IsRegularProfile(profile_metrics::BrowserProfileType profile_type) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Any Device Local account, which is a CrOS concept powering things like
   // Kiosks and Managed Guest Sessions, is not considered regular.
-  return !profiles::IsPublicSession() && !profiles::IsKioskSession() &&
+  return !profiles::IsPublicSession() && !chromeos::IsKioskSession() &&
          !profiles::IsChromeAppKioskSession();
 #else
   return true;
@@ -946,11 +949,7 @@ PrivacySandboxService::GetCurrentTopTopics() const {
   }
 
   auto topics = browsing_topics_service_->GetTopTopicsForDisplay();
-
-  // Topics returned by the backend may include duplicates. Sort into display
-  // order before removing them.
-  SortTopicsForDisplay(topics);
-  topics.erase(std::unique(topics.begin(), topics.end()), topics.end());
+  SortAndDeduplicateTopicsForDisplay(topics);
 
   return topics;
 }
@@ -974,7 +973,7 @@ PrivacySandboxService::GetBlockedTopics() const {
     }
   }
 
-  SortTopicsForDisplay(blocked_topics);
+  SortAndDeduplicateTopicsForDisplay(blocked_topics);
   return blocked_topics;
 }
 

@@ -18,6 +18,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #import "ui/base/cocoa/appkit_utils.h"
 #include "ui/base/cocoa/find_pasteboard.h"
+#include "ui/base/cocoa/tracking_area.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_mac.h"
 #include "ui/base/ime/input_method.h"
@@ -389,10 +390,12 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     options |= NSTrackingActiveInActiveApp | NSTrackingCursorUpdate;
   }
 
-  _cursorTrackingArea.reset([[CrTrackingArea alloc] initWithRect:NSZeroRect
-                                                         options:options
-                                                           owner:self
-                                                        userInfo:nil]);
+  base::scoped_nsobject<CrTrackingArea> trackingArea([[CrTrackingArea alloc]
+      initWithRect:NSZeroRect
+           options:options
+             owner:self
+          userInfo:nil]);
+  _cursorTrackingArea.reset(trackingArea.get());
   [self addTrackingArea:_cursorTrackingArea.get()];
 }
 

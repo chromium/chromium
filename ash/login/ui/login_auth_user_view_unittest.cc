@@ -226,63 +226,6 @@ TEST_P(LoginAuthUserViewUnittest, ShowingPasswordForcesOpaque) {
   EXPECT_TRUE(user_test.is_opaque());
 }
 
-// Verifies that pressing return with an empty password field when tap-to-unlock
-// is enabled attempts unlock.
-TEST_P(LoginAuthUserViewUnittest, PressReturnWithTapToUnlockEnabled) {
-  auto client = std::make_unique<MockLoginScreenClient>();
-
-  ui::test::EventGenerator* generator = GetEventGenerator();
-
-  LoginAuthUserView::TestApi auth_test(view_);
-  LoginPasswordView* password_view(auth_test.password_view());
-  LoginUserView* user_view(auth_test.user_view());
-
-  SetUserCount(1);
-
-  EXPECT_CALL(*client,
-              AuthenticateUserWithEasyUnlock(
-                  user_view->current_user().basic_user_info.account_id));
-  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
-                 LoginAuthUserView::AUTH_TAP);
-  password_view->Reset();
-
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
-  base::RunLoop().RunUntilIdle();
-}
-
-// Verifies that pressing return on the pin input field when tap-to-unlock
-// is enabled attempts unlock.
-TEST_P(LoginAuthUserViewUnittest, PressReturnOnPinWithTapToUnlockEnabled) {
-  auto client = std::make_unique<MockLoginScreenClient>();
-
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  LoginAuthUserView::TestApi auth_test(view_);
-  LoginUserView* user_view(auth_test.user_view());
-  LoginPinInputView* pin_input(auth_test.pin_input_view());
-
-  SetUserCount(1);
-
-  // One call using focus, and one direct call to the view.
-  EXPECT_CALL(*client,
-              AuthenticateUserWithEasyUnlock(
-                  user_view->current_user().basic_user_info.account_id))
-      .Times(2);
-  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
-                     LoginAuthUserView::AUTH_PIN | LoginAuthUserView::AUTH_TAP,
-                 /*show_pinpad_for_pw=*/false,
-                 /*virtual_keyboard_visible=*/false,
-                 /*autosubmit_pin_length=*/6);
-
-  // Call through correct focus.
-  pin_input->RequestFocus();
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
-
-  // Call the view directly as well.
-  pin_input->OnKeyPressed(ui::KeyEvent(
-      ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE));
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_P(LoginAuthUserViewUnittest, OnlineSignInMessage) {
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginAuthUserView::TestApi auth_test(view_);
@@ -310,8 +253,6 @@ TEST_P(LoginAuthUserViewUnittest, OnlineSignInMessage) {
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD);
   EXPECT_FALSE(online_sign_in_message->GetVisible());
   SetAuthMethods(LoginAuthUserView::AUTH_PIN);
-  EXPECT_FALSE(online_sign_in_message->GetVisible());
-  SetAuthMethods(LoginAuthUserView::AUTH_TAP);
   EXPECT_FALSE(online_sign_in_message->GetVisible());
 }
 
@@ -593,6 +534,11 @@ class LoginAuthUserViewAuthFactorsUnittest : public LoginAuthUserViewUnittest {
         std::make_unique<FakeSmartLockAuthFactorModelFactory>();
     SmartLockAuthFactorModel::Factory::SetFactoryForTesting(
         fake_smart_lock_auth_factor_model_factory_.get());
+  }
+
+  void TearDown() override {
+    SmartLockAuthFactorModel::Factory::SetFactoryForTesting(nullptr);
+    LoginAuthUserViewUnittest::TearDown();
   }
 
   std::unique_ptr<FakeSmartLockAuthFactorModelFactory>

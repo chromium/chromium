@@ -38,5 +38,6 @@ KeyedService* BookmarkSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return new sync_bookmarks::BookmarkSyncService(
-      BookmarkUndoServiceFactory::GetForProfileIfExists(profile));
+      BookmarkUndoServiceFactory::GetForProfileIfExists(profile),
+      /*wipe_model_on_stopping_sync_with_clear_data=*/false);
 }

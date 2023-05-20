@@ -35,12 +35,13 @@ void SettingsUserActionTracker::BindInterface(
 }
 
 void SettingsUserActionTracker::EndCurrentSession() {
-  // Session ended, so delete the per session tracker.
+  // reset the pointers
   per_session_tracker_.reset();
   receiver_.reset();
 }
 
 void SettingsUserActionTracker::OnBindingDisconnected() {
+  // Settings window is closed by the user, ending the current session.
   EndCurrentSession();
 }
 
@@ -72,7 +73,7 @@ void SettingsUserActionTracker::RecordSettingChange() {
 void SettingsUserActionTracker::RecordSettingChangeWithDetails(
     chromeos::settings::mojom::Setting setting,
     mojom::SettingChangeValuePtr value) {
-  per_session_tracker_->RecordSettingChange();
+  per_session_tracker_->RecordSettingChange(setting);
 
   // Get the primary section location of the changed setting and log the metric.
   chromeos::settings::mojom::Section section_id =

@@ -395,10 +395,7 @@ class IntentPickerAppListView
     DCHECK(!contents()->children().empty());
     const int row_height =
         contents()->children().front()->GetPreferredSize().height();
-    // TODO(djacobo): Replace this limit to correctly reflect the UI mocks,
-    // which now instead of limiting the results to 3.5 will allow whatever fits
-    // in 256pt. Using |kMaxAppResults| as a measure of how many apps we want to
-    // show.
+    // Use |kMaxAppResults| as a measure of how many apps we want to show.
     ClipHeightTo(row_height, (apps::kMaxAppResults + 0.5) * row_height);
   }
 

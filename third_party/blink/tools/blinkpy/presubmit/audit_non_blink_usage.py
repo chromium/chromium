@@ -1037,6 +1037,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/platform/graphics/compositing/pending_layer.cc',
+            'third_party/blink/renderer/platform/graphics/paint/paint_chunker.cc',
+        ],
+        'allowed': [
+            'color_utils::GetResultingPaintColor',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/inspector/inspector_contrast.cc',
             'third_party/blink/renderer/core/inspector/inspector_contrast.h'
         ],
@@ -1294,6 +1303,7 @@ _CONFIG = [
             'media::.+',
             'libyuv::.+',
             'viz::SkColorTypeToResourceFormat',
+            'viz::SkColorTypeToSinglePlaneSharedImageFormat',
         ]
     },
     {
@@ -1847,6 +1857,14 @@ _CONFIG = [
         ],
         'allowed': [
             'attribution_reporting:.*',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/highlight/highlight_style_utils.cc',
+        ],
+        'allowed': [
+            'shared_highlighting::kFragmentTextBackgroundColorARGB',
         ]
     },
 ]

@@ -135,7 +135,7 @@ public class BasicSuggestionProcessorUnitTest {
     public void setUp() {
         doReturn("").when(mUrlBarText).getTextWithoutAutocomplete();
         mProcessor = new BasicSuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, null, mUrlBarText, mIconFetcher, mIsBookmarked);
+                mSuggestionHost, mUrlBarText, mIconFetcher, mIsBookmarked);
     }
 
     /**

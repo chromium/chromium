@@ -68,7 +68,7 @@ constexpr char kIsFirstUserVerificationKey[] = "is_first_user_verification";
 
 // Key in UserVerificationRequested indicating if user verification was
 // requested
-constexpr char kAwaitingUserVerificationKey[] = "awaiting_user_verification";
+constexpr char kAwaitingUserVerificationKey[] = "await_user_verification";
 
 std::pair<int, absl::optional<cbor::Value>> CborDecodeGetAssertionResponse(
     base::span<const uint8_t> response) {
@@ -261,7 +261,7 @@ void QuickStartDecoder::DecodeUserVerificationRequested(
       message->GetPayload()->FindBool(kAwaitingUserVerificationKey);
   if (!is_awaiting_user_verification.has_value()) {
     LOG(ERROR) << "UserVerificationRequested message does not include "
-                  "await_user_verification.";
+                  "await_user_verification";
     std::move(callback).Run(
         nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
     return;

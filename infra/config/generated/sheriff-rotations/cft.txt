@@ -1,3 +1,4 @@
+ci/linux-arm64-rel-cft
 ci/linux-rel-cft
 ci/mac-rel-cft
 ci/win-rel-cft

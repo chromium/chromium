@@ -24,7 +24,6 @@ import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -54,9 +53,8 @@ public class EntitySuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param suggestionHost A handle to the object using the suggestions.
      */
     public EntitySuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            OmniboxActionDelegate omniboxActionDelegate,
             Supplier<ImageFetcher> imageFetcherSupplier) {
-        super(context, suggestionHost, omniboxActionDelegate, null);
+        super(context, suggestionHost, null);
         mSuggestionHost = suggestionHost;
         mPendingImageRequests = new HashMap<>();
         mImageFetcherSupplier = imageFetcherSupplier;

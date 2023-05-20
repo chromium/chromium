@@ -153,6 +153,15 @@ ChildWindowWin::~ChildWindowWin() {
   }
 }
 
+bool ChildWindowWin::Resize(const gfx::Size& size) {
+  // Force a resize and redraw (but not a move, activate, etc.).
+  constexpr UINT kFlags = SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOMOVE |
+                          SWP_NOOWNERZORDER | SWP_NOREDRAW |
+                          SWP_NOSENDCHANGING | SWP_NOZORDER;
+  return SetWindowPos(window_, nullptr, 0, 0, size.width(), size.height(),
+                      kFlags);
+}
+
 scoped_refptr<base::TaskRunner> ChildWindowWin::GetTaskRunnerForTesting() {
   DCHECK(thread_);
   return thread_->task_runner();

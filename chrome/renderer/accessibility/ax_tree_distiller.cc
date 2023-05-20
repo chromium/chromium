@@ -23,6 +23,7 @@ namespace {
 static const ax::mojom::Role kContentRoles[]{
     ax::mojom::Role::kHeading,
     ax::mojom::Role::kParagraph,
+    ax::mojom::Role::kNote,
 };
 
 // TODO: Consider moving this to AXNodeProperties.
@@ -97,46 +98,61 @@ AXTreeDistiller::~AXTreeDistiller() = default;
 void AXTreeDistiller::Distill(const ui::AXTree& tree,
                               const ui::AXTreeUpdate& snapshot,
                               const ukm::SourceId& ukm_source_id) {
+  // Try with the algorithm first.
+  std::vector<ui::AXNodeID> content_node_ids;
+  DistillViaAlgorithm(tree, &content_node_ids);
+
   // If Read Anything with Screen 2x is enabled and the main content extractor
-  // is bound, kick off Screen 2x run, which distills the AXTree in the utility
-  // process using ML.
+  // is bound, kick off Screen 2x run, which distills the AXTree in the
+  // utility process using ML.
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsReadAnythingWithScreen2xEnabled() &&
       main_content_extractor_.is_bound()) {
-    DistillViaScreen2x(tree, snapshot, ukm_source_id);
+    DistillViaScreen2x(tree, snapshot, ukm_source_id, &content_node_ids);
     return;
   }
 #endif
 
-  // Otherwise, distill the AXTree in process using the rules-based algorithm.
-  DistillViaAlgorithm(tree);
-}
-
-void AXTreeDistiller::DistillViaAlgorithm(const ui::AXTree& tree) {
-  std::vector<const ui::AXNode*> content_root_nodes;
-  std::vector<ui::AXNodeID> content_node_ids;
-  GetContentRootNodes(tree.root(), &content_root_nodes);
-  for (const ui::AXNode* content_root_node : content_root_nodes) {
-    AddContentNodesToVector(content_root_node, &content_node_ids);
-  }
+  // Ensure we still callback if Screen2x is not available.
   on_ax_tree_distilled_callback_.Run(tree.GetAXTreeID(), content_node_ids);
 }
 
+void AXTreeDistiller::DistillViaAlgorithm(
+    const ui::AXTree& tree,
+    std::vector<ui::AXNodeID>* content_node_ids) {
+  std::vector<const ui::AXNode*> content_root_nodes;
+  GetContentRootNodes(tree.root(), &content_root_nodes);
+  for (const ui::AXNode* content_root_node : content_root_nodes) {
+    AddContentNodesToVector(content_root_node, content_node_ids);
+  }
+}
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void AXTreeDistiller::DistillViaScreen2x(const ui::AXTree& tree,
-                                         const ui::AXTreeUpdate& snapshot,
-                                         const ukm::SourceId& ukm_source_id) {
+void AXTreeDistiller::DistillViaScreen2x(
+    const ui::AXTree& tree,
+    const ui::AXTreeUpdate& snapshot,
+    const ukm::SourceId& ukm_source_id,
+    std::vector<ui::AXNodeID>* content_node_ids_algorithm) {
   DCHECK(main_content_extractor_.is_bound());
+  // Make a copy of |content_node_ids_algorithm| rather than sending a pointer.
   main_content_extractor_->ExtractMainContent(
       snapshot, ukm_source_id,
       base::BindOnce(&AXTreeDistiller::ProcessScreen2xResult,
-                     weak_ptr_factory_.GetWeakPtr(), tree.GetAXTreeID()));
+                     weak_ptr_factory_.GetWeakPtr(), tree.GetAXTreeID(),
+                     *content_node_ids_algorithm));
 }
 
 void AXTreeDistiller::ProcessScreen2xResult(
     const ui::AXTreeID& tree_id,
-    const std::vector<ui::AXNodeID>& content_node_ids) {
-  on_ax_tree_distilled_callback_.Run(tree_id, content_node_ids);
+    std::vector<ui::AXNodeID> content_node_ids_algorithm,
+    const std::vector<ui::AXNodeID>& content_node_ids_screen2x) {
+  // Merge the results from the algorithm and from screen2x.
+  for (ui::AXNodeID content_node_id_screen2x : content_node_ids_screen2x) {
+    if (!base::Contains(content_node_ids_algorithm, content_node_id_screen2x)) {
+      content_node_ids_algorithm.push_back(content_node_id_screen2x);
+    }
+  }
+  on_ax_tree_distilled_callback_.Run(tree_id, content_node_ids_algorithm);
 
   // TODO(crbug.com/1266555): If no content nodes were identified, and
   // there is a selection, try sending Screen2x a partial tree just containing

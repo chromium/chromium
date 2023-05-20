@@ -679,6 +679,22 @@ TEST_P(ParameterizedNotificationListViewTest, ClearAllWithPinnedNotifications) {
   EXPECT_EQ(1u, message_list_view()->children().size());
 }
 
+TEST_P(ParameterizedNotificationListViewTest,
+       ClearAllWithStackingAndPinnedNotifications) {
+  AddNotification(/*pinned=*/true);
+  AddNotification(/*pinned=*/true);
+  AddNotification();
+  AddNotification();
+  AddNotification();
+  CreateMessageListView();
+
+  message_list_view()->set_stacked_notification_count(3);
+
+  message_list_view()->ClearAllWithAnimation();
+  AnimateUntilIdle();
+  EXPECT_EQ(2u, message_list_view()->children().size());
+}
+
 // Flaky: https://crbug.com/1292701.
 TEST_P(ParameterizedNotificationListViewTest,
        DISABLED_UserSwipesAwayNotification) {

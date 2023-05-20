@@ -50,7 +50,7 @@ bool DlpFilesEventStorage::StoreEventAndCheckIfItShouldBeReported(
     // `events_`.
     return (dst.component().has_value() &&
             dst.component().value() !=
-                DlpRulesManager::Component::kUnknownComponent) ||
+                data_controls::Component::kUnknownComponent) ||
            dst.url_or_path().has_value();
   }
 

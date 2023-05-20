@@ -21,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Field Type Constants
+using autofill::ADDRESS_HOME_BETWEEN_STREETS;
 using autofill::ADDRESS_HOME_CITY;
 using autofill::ADDRESS_HOME_COUNTRY;
 using autofill::ADDRESS_HOME_DEPENDENT_LOCALITY;
@@ -185,13 +186,6 @@ class AutofillProfileComparatorTest : public testing::Test {
     profile.SetRawInfo(BIRTHDATE_DAY, base::UTF8ToUTF16(day));
     profile.SetRawInfo(BIRTHDATE_MONTH, base::UTF8ToUTF16(month));
     profile.SetRawInfo(BIRTHDATE_4_DIGIT_YEAR, base::UTF8ToUTF16(year));
-    return profile;
-  }
-
-  AutofillProfile CreateProfileWithLandmark(const char* landmark) {
-    AutofillProfile profile;
-    profile.SetRawInfo(autofill::ADDRESS_HOME_LANDMARK,
-                       base::UTF8ToUTF16(landmark));
     return profile;
   }
 
@@ -1187,12 +1181,16 @@ TEST_F(AutofillProfileComparatorTest, MergeBirthdates) {
   }
 }
 
-TEST_F(AutofillProfileComparatorTest, MergeLandmarks) {
-  AutofillProfile empty = CreateProfileWithLandmark("");
-  AutofillProfile profile2 = CreateProfileWithLandmark("Red tree");
+TEST_F(AutofillProfileComparatorTest, MergeLandmarkAndBetweenStreets) {
+  AutofillProfile empty;
+  AutofillProfile profile2;
+  profile2.SetRawInfo(autofill::ADDRESS_HOME_LANDMARK, u"Landmark example");
+  profile2.SetRawInfo(autofill::ADDRESS_HOME_BETWEEN_STREETS,
+                      u"Between streets example");
 
   Address expected;
-  expected.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
+  expected.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark example");
+  expected.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Between streets example");
 
   MergeAddressesAndExpect(empty, profile2, expected);
 }
@@ -1238,6 +1236,10 @@ TEST_F(AutofillProfileComparatorTest,
       &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
       "company", "line1", "line2", "city", "state", "zip", "US", "phone");
 
+  existing_profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark example");
+  existing_profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS,
+                              u"Cross streets example");
+
   // A profile compared with itself cannot have different settings visible
   // values.
   EXPECT_FALSE(
@@ -1247,7 +1249,8 @@ TEST_F(AutofillProfileComparatorTest,
   // Test for most settings visible types that a change is correctly recognized.
   for (ServerFieldType changed_type :
        {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
-        ADDRESS_HOME_ZIP, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}) {
+        ADDRESS_HOME_ZIP, ADDRESS_HOME_LANDMARK, ADDRESS_HOME_BETWEEN_STREETS,
+        EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}) {
     // Make a fresh copy and test that the function returns false.
     AutofillProfile new_profile = existing_profile;
     EXPECT_FALSE(

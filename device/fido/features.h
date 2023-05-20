@@ -72,6 +72,10 @@ BASE_DECLARE_FEATURE(kWebAuthnPinRequiredMeansNotRecognized);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
 
+// Don't allow the old style JSON where values could be `null`.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnNoNullInJSON);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

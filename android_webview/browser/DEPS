@@ -104,6 +104,7 @@ include_rules = [
 
   "+third_party/blink/public/common/client_hints/enabled_client_hints.h",
   "+third_party/blink/public/common/features.h",
+  "+third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h",
   "+third_party/blink/public/common/origin_trials/trial_token_validator.h",
   "+third_party/blink/public/common/page_state/page_state.h",
   "+third_party/blink/public/common/permissions/permission_utils.h",

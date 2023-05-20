@@ -40,6 +40,9 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
   void StartWatchingPosition(bool high_accuracy) override;
   void StopWatchingPosition() override;
 
+  // Calls requestWhenInUseAuthorization from CLLocationManager.
+  void AppAttemptsToUseGeolocation() override;
+
  private:
   LocationSystemPermissionStatus GetSystemPermission() const;
 

@@ -47,6 +47,7 @@
 /apache-win32/bin/iconv/*.so
 /apache-win32/modules/*.dll
 /apache-win32/modules/*.so
+/apache-windows-arm64
 /arcore-android-sdk/src/
 /arcore-android-sdk/test-apks/arcore/*.apk
 /asan

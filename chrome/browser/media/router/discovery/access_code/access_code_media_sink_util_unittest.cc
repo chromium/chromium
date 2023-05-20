@@ -197,9 +197,10 @@ TEST_F(AccessCodeMediaSinkUtilTest, ParsedMediaSinkInternalEqualToOriginal) {
       CastDiscoveryType::kAccessCodeRememberedDevice;
   cast_sink.set_cast_data(cast_sink_data);
 
-  auto value_dict =
-      std::move(*CreateValueDictFromMediaSinkInternal(cast_sink).GetIfDict());
-  EXPECT_EQ(ParseValueDictIntoMediaSinkInternal(value_dict).value(), cast_sink);
+  EXPECT_EQ(ParseValueDictIntoMediaSinkInternal(
+                CreateValueDictFromMediaSinkInternal(cast_sink))
+                .value(),
+            cast_sink);
 }
 
 TEST_F(AccessCodeMediaSinkUtilTest, AddSinkResultMetricsHelper) {
@@ -243,11 +244,9 @@ TEST_F(AccessCodeMediaSinkUtilTest, GetIPEndPointFromValueDict) {
   cast_sink_data.discovery_type =
       CastDiscoveryType::kAccessCodeRememberedDevice;
   cast_sink.set_cast_data(cast_sink_data);
-
-  auto value_dict =
-      std::move(*CreateValueDictFromMediaSinkInternal(cast_sink).GetIfDict());
-
-  EXPECT_EQ(GetIPEndPointFromValueDict(value_dict).value(),
+  EXPECT_EQ(GetIPEndPointFromValueDict(
+                CreateValueDictFromMediaSinkInternal(cast_sink))
+                .value(),
             cast_sink.cast_data().ip_endpoint);
 }
 

@@ -25,6 +25,7 @@ build_webui("build") {
     "print_job_clear_history_dialog.ts",
     "print_job_entry.ts",
     "print_management.ts",
+    "printer_setup_info.ts",
   ]
 
   non_web_component_files = [ "mojo_interface_provider.ts" ]

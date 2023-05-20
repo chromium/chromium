@@ -41,29 +41,72 @@ public class PaymentRequestEmailTest {
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a valid email address on disk.
-        helper.setProfile(new AutofillProfile("", "https://example.test", true,
-                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
-                "", "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
+        helper.setProfile(AutofillProfile.builder()
+                                  .setFullName("Jon Doe")
+                                  .setCompanyName("Google")
+                                  .setStreetAddress("340 Main St")
+                                  .setRegion("CA")
+                                  .setLocality("Los Angeles")
+                                  .setPostalCode("90291")
+                                  .setCountryCode("US")
+                                  .setPhoneNumber("555-555-5555")
+                                  .setEmailAddress("jon.doe@google.com")
+                                  .setLanguageCode("en-US")
+                                  .build());
 
         // Add the same profile but with a different address.
-        helper.setProfile(new AutofillProfile("", "https://example.test", true,
-                "" /* honorific prefix */, "", "Google", "999 Main St", "CA", "Los Angeles", "",
-                "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
+        helper.setProfile(AutofillProfile.builder()
+                                  .setCompanyName("Google")
+                                  .setStreetAddress("999 Main St")
+                                  .setRegion("CA")
+                                  .setLocality("Los Angeles")
+                                  .setPostalCode("90291")
+                                  .setCountryCode("US")
+                                  .setPhoneNumber("555-555-5555")
+                                  .setEmailAddress("jon.doe@google.com")
+                                  .setLanguageCode("en-US")
+                                  .build());
 
         // Add the same profile but without a phone number.
-        helper.setProfile(new AutofillProfile("", "https://example.test", true,
-                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
-                "", "90291", "", "US", "" /* phone_number */, "jon.doe@google.com", "en-US"));
+        helper.setProfile(AutofillProfile.builder()
+                                  .setFullName("Jon Doe")
+                                  .setCompanyName("Google")
+                                  .setStreetAddress("340 Main St")
+                                  .setRegion("CA")
+                                  .setLocality("Los Angeles")
+                                  .setPostalCode("90291")
+                                  .setCountryCode("US")
+                                  .setPhoneNumber("" /* phone_number */)
+                                  .setEmailAddress("jon.doe@google.com")
+                                  .setLanguageCode("en-US")
+                                  .build());
 
         // Add the same profile but without an email.
-        helper.setProfile(new AutofillProfile("", "https://example.test", true,
-                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
-                "", "90291", "", "US", "555-555-5555", "" /* emailAddress */, "en-US"));
+        helper.setProfile(AutofillProfile.builder()
+                                  .setFullName("Jon Doe")
+                                  .setCompanyName("Google")
+                                  .setStreetAddress("340 Main St")
+                                  .setRegion("CA")
+                                  .setLocality("Los Angeles")
+                                  .setPostalCode("90291")
+                                  .setCountryCode("US")
+                                  .setPhoneNumber("555-555-5555")
+                                  .setEmailAddress("" /* emailAddress */)
+                                  .setLanguageCode("en-US")
+                                  .build());
 
         // Add the same profile but without a name.
-        helper.setProfile(new AutofillProfile("" /* name */, "https://example.test", true,
-                "" /* honorific prefix */, "", "Google", "340 Main St", "CA", "Los Angeles", "",
-                "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
+        helper.setProfile(AutofillProfile.builder()
+                                  .setCompanyName("Google")
+                                  .setStreetAddress("340 Main St")
+                                  .setRegion("CA")
+                                  .setLocality("Los Angeles")
+                                  .setPostalCode("90291")
+                                  .setCountryCode("US")
+                                  .setPhoneNumber("555-555-5555")
+                                  .setEmailAddress("jon.doe@google.com")
+                                  .setLanguageCode("en-US")
+                                  .build());
 
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);

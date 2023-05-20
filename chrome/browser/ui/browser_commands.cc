@@ -92,7 +92,6 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
-#include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
@@ -207,23 +206,6 @@ const char kOsOverrideForTabletSite[] = "Linux; Android 9; Chrome tablet";
 const char kChPlatformOverrideForTabletSite[] = "Android";
 const char kBackForwardNavigationIsTriggered[] =
     "back_forward_navigation_is_triggered";
-
-translate::TranslateBubbleUiEvent TranslateBubbleResultToUiEvent(
-    ShowTranslateBubbleResult result) {
-  switch (result) {
-    default:
-      NOTREACHED();
-      [[fallthrough]];
-    case ShowTranslateBubbleResult::SUCCESS:
-      return translate::TranslateBubbleUiEvent::BUBBLE_SHOWN;
-    case ShowTranslateBubbleResult::BROWSER_WINDOW_MINIMIZED:
-      return translate::TranslateBubbleUiEvent::
-          BUBBLE_NOT_SHOWN_WINDOW_MINIMIZED;
-    case ShowTranslateBubbleResult::EDITABLE_FIELD_IS_ACTIVE:
-      return translate::TranslateBubbleUiEvent::
-          BUBBLE_NOT_SHOWN_EDITABLE_FIELD_IS_ACTIVE;
-  }
-}
 
 // Creates a new tabbed browser window, with the same size, type and profile as
 // |original_browser|'s window, inserts |contents| into it, and shows it.
@@ -1454,12 +1436,9 @@ void Translate(Browser* browser) {
     else if (chrome_translate_client->GetLanguageState().IsPageTranslated())
       step = translate::TRANSLATE_STEP_AFTER_TRANSLATE;
   }
-  ShowTranslateBubbleResult result = browser->window()->ShowTranslateBubble(
+  browser->window()->ShowTranslateBubble(
       web_contents, step, source_language, target_language,
       translate::TranslateErrors::NONE, true);
-  if (result != ShowTranslateBubbleResult::SUCCESS)
-    translate::ReportTranslateBubbleUiAction(
-        TranslateBubbleResultToUiEvent(result));
 }
 
 void ManagePasswordsForPage(Browser* browser) {

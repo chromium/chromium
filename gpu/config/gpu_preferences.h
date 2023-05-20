@@ -41,8 +41,9 @@ enum class VulkanImplementationName : uint32_t {
 
 enum class WebGPUAdapterName : uint32_t {
   kDefault = 0,
-  kOpenGLES = 1,
-  kSwiftShader = 2,
+  kD3D11 = 1,
+  kOpenGLES = 2,
+  kSwiftShader = 3,
 };
 
 // Affecting how chromium handles GPUPowerPreference in
@@ -266,6 +267,9 @@ struct GPU_EXPORT GpuPreferences {
   // The adapter selecting strategy related to GPUPowerPreference.
   WebGPUPowerPreference use_webgpu_power_preference =
       WebGPUPowerPreference::kNone;
+
+  // Force the use of WebGPU Compatibility mode for all WebGPU content.
+  bool force_webgpu_compat = false;
 
   // The Dawn features(toggles) enabled on the creation of Dawn devices.
   std::vector<std::string> enabled_dawn_features_list;

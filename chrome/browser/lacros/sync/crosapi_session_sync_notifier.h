@@ -10,8 +10,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/lacros/sync/crosapi_session_sync_favicon_delegate.h"
 #include "chromeos/crosapi/mojom/synced_session_client.mojom.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

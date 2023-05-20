@@ -70,15 +70,18 @@ class UnifiedSystemTrayTest
         switches::kCameraEffectsSupportedByHardware);
 
     std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (IsQsRevampEnabled()) {
       enabled_features.push_back(features::kQsRevamp);
+    } else {
+      disabled_features.push_back(features::kQsRevamp);
     }
     if (IsVcControlsUiEnabled()) {
       fake_video_conference_tray_controller_ =
           std::make_unique<FakeVideoConferenceTrayController>();
       enabled_features.push_back(features::kVideoConference);
     }
-    feature_list_.InitWithFeatures(enabled_features, {});
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
     AshTestBase::SetUp();
   }
 
@@ -960,13 +963,15 @@ class UnifiedSystemTrayPrivacyIndicatorsTest
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kPrivacyIndicators};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kVideoConference};
     if (IsQsRevampEnabled()) {
       enabled_features.push_back(features::kQsRevamp);
+    } else {
+      disabled_features.push_back(features::kQsRevamp);
     }
 
-    scoped_feature_list_.InitWithFeatures(
-        enabled_features,
-        /*disabled_features=*/{features::kVideoConference});
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     AshTestBase::SetUp();
   }

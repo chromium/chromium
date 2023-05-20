@@ -6,7 +6,9 @@
 
 #include <set>
 
+#include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,6 +20,11 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace enterprise_signals {
 
@@ -40,9 +47,16 @@ base::Value::List GetUrls() {
 
 class UserDelegateImplTest : public testing::Test {
  protected:
-  void CreateDelegate(bool is_managed_user = true) {
+  void CreateDelegate(
+      bool is_managed_user = true,
+      absl::optional<base::FilePath> profile_path = absl::nullopt) {
     TestingProfile::Builder builder;
     builder.OverridePolicyConnectorIsManagedForTesting(is_managed_user);
+
+    if (profile_path) {
+      builder.SetPath(profile_path.value());
+    }
+
     testing_profile_ = builder.Build();
 
     fake_dt_connector_service_ = std::make_unique<
@@ -63,6 +77,21 @@ class UserDelegateImplTest : public testing::Test {
   std::unique_ptr<UserDelegateImpl> user_delegate_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that the sign-in profile is considered as sign-in context.
+TEST_F(UserDelegateImplTest, IsSigninContext_True) {
+  CreateDelegate(/*is_managed_user=*/true,
+                 base::FilePath(ash::kSigninBrowserContextBaseName));
+  EXPECT_TRUE(user_delegate_->IsSigninContext());
+}
+
+// Tests that a regular profile is not considered as sign-in context.
+TEST_F(UserDelegateImplTest, IsSigninContext_False) {
+  CreateDelegate();
+  EXPECT_FALSE(user_delegate_->IsSigninContext());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Tests that IsManagedUser returns false when the user is not managed.
 TEST_F(UserDelegateImplTest, IsManagedUser_False) {
   CreateDelegate(/*is_managed_user=*/false);
@@ -73,6 +102,19 @@ TEST_F(UserDelegateImplTest, IsManagedUser_False) {
 TEST_F(UserDelegateImplTest, IsManagedUser_True) {
   CreateDelegate();
   EXPECT_TRUE(user_delegate_->IsManagedUser());
+}
+
+// Tests that IsSameUser returns false when the identity manager
+// is a nullptr.
+TEST_F(UserDelegateImplTest, IsSameUser_NullManager) {
+  // Instantiate all of the dependencies and reset the delegate.
+  CreateDelegate();
+  user_delegate_ = std::make_unique<UserDelegateImpl>(
+      testing_profile_.get(), nullptr, fake_dt_connector_service_.get());
+
+  auto account = identity_test_env_.MakePrimaryAccountAvailable(
+      kUserEmail, signin::ConsentLevel::kSignin);
+  EXPECT_FALSE(user_delegate_->IsSameUser(account.gaia));
 }
 
 // Tests that IsSameUser returns false when given a different user.

@@ -49,7 +49,7 @@ class PlatformFontIOS : public PlatformFont {
                   int font_size,
                   int style,
                   Font::Weight weight);
-  ~PlatformFontIOS() override {}
+  ~PlatformFontIOS() override = default;
 
   // Initialize the object with the specified parameters.
   void InitWithNameSizeAndStyle(const std::string& font_name,
@@ -70,6 +70,9 @@ class PlatformFontIOS : public PlatformFont {
   int ascent_;
   int cap_height_;
   int average_width_;
+
+  // Details about how the font should be rendered.
+  FontRenderParams render_params_;
 };
 
 }  // namespace gfx

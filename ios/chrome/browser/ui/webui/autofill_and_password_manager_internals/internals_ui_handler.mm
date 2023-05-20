@@ -34,13 +34,15 @@ web::WebUIIOSDataSource* CreateInternalsHTMLSource(
                           IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_JS);
   source->SetDefaultResource(IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_HTML);
   // Data strings:
-  source->AddString(version_ui::kVersion, version_info::GetVersionNumber());
+  source->AddString(version_ui::kVersion,
+                    std::string(version_info::GetVersionNumber()));
   source->AddString(version_ui::kOfficial, version_info::IsOfficialBuild()
                                                ? "official"
                                                : "Developer build");
   source->AddString(version_ui::kVersionModifier,
-                    GetChannelString(GetChannel()));
-  source->AddString(version_ui::kCL, version_info::GetLastChange());
+                    std::string(GetChannelString(GetChannel())));
+  source->AddString(version_ui::kCL,
+                    std::string(version_info::GetLastChange()));
   source->AddString(version_ui::kUserAgent, web::GetWebClient()->GetUserAgent(
                                                 web::UserAgentType::MOBILE));
   source->AddString("app_locale",

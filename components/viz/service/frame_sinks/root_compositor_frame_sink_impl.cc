@@ -36,6 +36,10 @@
 #include "components/viz/service/frame_sinks/external_begin_frame_source_ios.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "components/viz/service/frame_sinks/external_begin_frame_source_mac.h"
+#endif
+
 namespace viz {
 
 class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
@@ -140,7 +144,10 @@ RootCompositorFrameSinkImpl::Create(
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceIOS>(restart_id);
 #else
-    if (params->disable_frame_rate_limit) {
+    // TODO(b/221220344): Support dynamically choosing the BeginFrameSource per
+    // VRR state changes.
+    if (params->disable_frame_rate_limit ||
+        params->enable_variable_refresh_rate) {
       synthetic_begin_frame_source =
           std::make_unique<BackToBackBeginFrameSource>(
               std::make_unique<DelayBasedTimeSource>(
@@ -159,11 +166,17 @@ RootCompositorFrameSinkImpl::Create(
       external_begin_frame_source = std::make_unique<GpuVSyncBeginFrameSource>(
           restart_id, output_surface.get());
     } else {
+      auto time_source = std::make_unique<DelayBasedTimeSource>(
+          base::SingleThreadTaskRunner::GetCurrentDefault().get());
+#if BUILDFLAG(IS_MAC)
       synthetic_begin_frame_source =
-          std::make_unique<DelayBasedBeginFrameSource>(
-              std::make_unique<DelayBasedTimeSource>(
-                  base::SingleThreadTaskRunner::GetCurrentDefault().get()),
-              restart_id);
+          std::make_unique<DelayBasedBeginFrameSourceMac>(
+              std::move(time_source), restart_id);
+#else
+      synthetic_begin_frame_source =
+          std::make_unique<DelayBasedBeginFrameSource>(std::move(time_source),
+                                                       restart_id);
+#endif
     }
 #endif  // BUILDFLAG(IS_ANDROID)
   }
@@ -277,9 +290,7 @@ void RootCompositorFrameSinkImpl::SetDisplayColorSpaces(
 
 #if BUILDFLAG(IS_MAC)
 void RootCompositorFrameSinkImpl::SetVSyncDisplayID(int64_t display_id) {
-  if (external_begin_frame_source_) {
-    external_begin_frame_source_->SetVSyncDisplayID(display_id);
-  }
+  begin_frame_source()->SetVSyncDisplayID(display_id);
 }
 #endif
 
@@ -676,7 +687,9 @@ BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
 
 void RootCompositorFrameSinkImpl::SetMaxVrrInterval(
     absl::optional<base::TimeDelta> max_vrr_interval) {
-  // TODO(b/221220344): Use VRR parameters in frame scheduling logic.
+  if (synthetic_begin_frame_source_) {
+    synthetic_begin_frame_source_->SetMaxVrrInterval(max_vrr_interval);
+  }
 }
 
 }  // namespace viz

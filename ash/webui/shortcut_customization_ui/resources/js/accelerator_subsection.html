@@ -1,4 +1,4 @@
-<style>
+<style include="shortcut-customization-shared">
   #container {
     border-spacing: 0;
     width: var(--cr-toolbar-field-width);
@@ -28,10 +28,27 @@
      * screen readers. */
     display: none;
   }
+
+  #title-container {
+    align-items: center;
+    display: flex;
+  }
+
+  iron-icon[icon='shortcut-customization:lock'] {
+    --iron-icon-width: 13px;
+    --iron-icon-height: 13px;
+  }
 </style>
 
 <table id="container" part="container">
-    <caption id="title">[[title]]</caption>
+    <caption>
+      <div id="title-container">
+        <div id="title">[[title]]</div>
+        <div class="lock-icon-container" hidden="[[!shouldShowLockIcon()]]">
+          <iron-icon icon="shortcut-customization:lock"></iron-icon>
+        </div>
+      </div>
+    </caption>
     <thead>
       <!-- Empty header rows are used so that ChromeVox correctly interprets
            this table as a data table and not a layout table.-->

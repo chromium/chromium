@@ -58,8 +58,10 @@ void HelpAppPageHandler::GetDeviceInfo(GetDeviceInfoCallback callback) {
   help_app_ui_->delegate()->GetDeviceInfo(std::move(callback));
 }
 
-void HelpAppPageHandler::OpenUrlInBrowser(const GURL& url) {
-  auto error_message = help_app_ui_->delegate()->OpenUrlInBrowser(url);
+void HelpAppPageHandler::OpenUrlInBrowserAndTriggerInstallDialog(
+    const GURL& url) {
+  auto error_message =
+      help_app_ui_->delegate()->OpenUrlInBrowserAndTriggerInstallDialog(url);
   if (error_message.has_value()) {
     receiver_.ReportBadMessage(error_message.value());
   }

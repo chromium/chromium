@@ -11,6 +11,9 @@
 #include "chrome/android/modules/dev_ui/provider/dev_ui_module_provider.h"
 #include "chrome/browser/dev_ui/android/dev_ui_loader_error_page.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/commerce/core/commerce_constants.h"
+#include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
+#include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
@@ -62,6 +65,7 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
          host == chrome::kChromeUIUserActionsHost ||
          host == chrome::kChromeUIWebApksHost ||
          host == chrome::kChromeUIWebRtcLogsHost ||
+         host == commerce::kChromeUICommerceInternalsHost ||
          host == content::kChromeUIPrivateAggregationInternalsHost ||
          host == content::kChromeUIAttributionInternalsHost ||
          host == content::kChromeUIBlobInternalsHost ||
@@ -74,7 +78,11 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
          host == content::kChromeUIQuotaInternalsHost ||
          host == content::kChromeUIServiceWorkerInternalsHost ||
          host == content::kChromeUIUkmHost ||
-         host == content::kChromeUIWebRTCInternalsHost;
+         host == content::kChromeUIWebRTCInternalsHost ||
+         host == history_clusters_internals::
+                     kChromeUIHistoryClustersInternalsHost ||
+         host == optimization_guide_internals::
+                     kChromeUIOptimizationGuideInternalsHost;
 }
 
 }  // namespace

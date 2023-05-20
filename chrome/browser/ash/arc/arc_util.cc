@@ -104,8 +104,9 @@ bool IsArcCompatibleFilesystem(const base::FilePath& path) {
 
   // If it can be verified it is not on ecryptfs, then it is ok.
   struct statfs statfs_buf;
-  if (statfs(path.value().c_str(), &statfs_buf) < 0)
+  if (statfs(path.value().c_str(), &statfs_buf) < 0) {
     return false;
+  }
   return statfs_buf.f_type != ECRYPTFS_SUPER_MAGIC;
 }
 
@@ -129,8 +130,9 @@ void StoreCompatibilityCheckResult(const AccountId& account_id,
 
     // TODO(kinaba): Remove this code for accounts without user prefs.
     // See the comment for |g_known_compatible_users| for the detail.
-    if (GetFileSystemCompatibilityPref(account_id) != kFileSystemCompatible)
+    if (GetFileSystemCompatibilityPref(account_id) != kFileSystemCompatible) {
       g_known_compatible_users.Get().insert(account_id);
+    }
   }
   std::move(callback).Run();
 }
@@ -191,9 +193,9 @@ bool IsArcAllowedForProfileInternal(const Profile* profile,
   }
 
   // Play Store requires an appropriate application install mechanism. Normal
-  // users do this through GAIA, but Kiosk and Active Directory users use
-  // different application install mechanism. ARC is not allowed otherwise
-  // (e.g. in public sessions). cf) crbug.com/605545
+  // users do this through GAIA, but Kiosk users use a different application
+  // install mechanism. ARC is not allowed otherwise (e.g. in public sessions,
+  // as described in crbug.com/605545).
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!IsArcAllowedForUser(user)) {
@@ -267,8 +269,9 @@ bool IsRealUserProfile(const Profile* profile) {
 }
 
 bool IsArcAllowedForProfile(const Profile* profile) {
-  if (!IsRealUserProfile(profile))
+  if (!IsRealUserProfile(profile)) {
     return false;
+  }
 
   auto it = g_profile_status_check.Get().find(profile);
 
@@ -319,8 +322,9 @@ bool IsArcBlockedDueToIncompatibleFileSystem(const Profile* profile) {
 
   // Test runs on Linux workstation does not have expected /etc/lsb-release
   // field nor profile creation step. Hence it returns a dummy test value.
-  if (!base::SysInfo::IsRunningOnChromeOS())
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
     return g_arc_blocked_due_to_incompatible_filesystem_for_testing;
+  }
 
   // Conducts the actual check, only when running on a real Chrome OS device.
   return !IsArcCompatibleFileSystemUsedForUser(user);
@@ -332,8 +336,9 @@ void SetArcBlockedDueToIncompatibleFileSystemForTesting(bool block) {
 
 bool IsArcCompatibleFileSystemUsedForUser(const user_manager::User* user) {
   // Returns false for profiles not associated with users (like sign-in profile)
-  if (!user)
+  if (!user) {
     return false;
+  }
 
   // ash::UserSessionManager does the actual file system check and stores
   // the result to prefs, so that it survives crash-restart.
@@ -393,8 +398,9 @@ bool SetArcPlayStoreEnabledForProfile(Profile* profile, bool enabled) {
     // TODO(khmel): Consider finding the better way handling this.
     ArcSessionManager* arc_session_manager = ArcSessionManager::Get();
     // |arc_session_manager| can be nullptr in unit_tests.
-    if (!arc_session_manager)
+    if (!arc_session_manager) {
       return false;
+    }
     if (enabled) {
       arc_session_manager->AllowActivation();
       arc_session_manager->RequestEnable();
@@ -409,35 +415,25 @@ bool SetArcPlayStoreEnabledForProfile(Profile* profile, bool enabled) {
 }
 
 bool AreArcAllOptInPreferencesIgnorableForProfile(const Profile* profile) {
-  // For Active Directory users, a LaForge account is created, where
-  // backup&restore and location services are not supported, hence the policies
-  // are unused.
-  if (IsActiveDirectoryUserForProfile(profile))
-    return true;
-
-  // Otherwise, the preferences are ignorable iff both backup&restore and
-  // location services are set by policy.
+  // The preferences are ignorable iff both backup&restore and location services
+  // are set by policy.
   const PrefService* prefs = profile->GetPrefs();
   return prefs->IsManagedPreference(prefs::kArcBackupRestoreEnabled) &&
          prefs->IsManagedPreference(prefs::kArcLocationServiceEnabled);
 }
 
-bool IsActiveDirectoryUserForProfile(const Profile* profile) {
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  return user ? user->IsActiveDirectoryUser() : false;
-}
-
 bool IsArcOobeOptInActive() {
   // No OOBE is expected in case Play Store is not available.
-  if (!IsPlayStoreAvailable())
+  if (!IsPlayStoreAvailable()) {
     return false;
+  }
 
   // Check if Chrome OS OOBE flow is currently showing.
   // TODO(b/65861628): Redesign the OptIn flow since there is no longer reason
   // to have two different OptIn flows.
-  if (!ash::LoginDisplayHost::default_host())
+  if (!ash::LoginDisplayHost::default_host()) {
     return false;
+  }
 
   // ARC OOBE opt-in will only be active if the user did not complete the
   // onboarding flow yet. The OnboardingCompletedVersion preference will only be
@@ -450,20 +446,24 @@ bool IsArcOobeOptInActive() {
 
 bool IsArcOobeOptInConfigurationBased() {
   // Ignore if not applicable.
-  if (!IsArcOobeOptInActive())
+  if (!IsArcOobeOptInActive()) {
     return false;
+  }
   // Check that configuration exist.
   auto* oobe_configuration = ash::OobeConfiguration::Get();
-  if (!oobe_configuration)
+  if (!oobe_configuration) {
     return false;
-  if (!oobe_configuration->CheckCompleted())
+  }
+  if (!oobe_configuration->CheckCompleted()) {
     return false;
+  }
   // Check configuration value that triggers automatic ARC TOS acceptance.
   auto& configuration = oobe_configuration->configuration();
   auto auto_accept =
       configuration.FindBool(ash::configuration::kArcTosAutoAccept);
-  if (!auto_accept)
+  if (!auto_accept) {
     return false;
+  }
   return *auto_accept;
 }
 
@@ -505,8 +505,9 @@ bool IsArcTermsOfServiceOobeNegotiationNeeded() {
 
   // Demo mode setup flow runs before user is created, therefore this condition
   // needs to be checked before any user related ones.
-  if (IsArcDemoModeSetupFlow())
+  if (IsArcDemoModeSetupFlow()) {
     return true;
+  }
 
   if (!user_manager::UserManager::Get()->IsUserLoggedIn()) {
     VLOG(1) << "Skip ARC Terms of Service screen because user is not "
@@ -523,12 +524,6 @@ bool IsArcTermsOfServiceOobeNegotiationNeeded() {
   if (profile->GetPrefs()->IsManagedPreference(prefs::kArcEnabled) &&
       !profile->GetPrefs()->GetBoolean(prefs::kArcEnabled)) {
     VLOG(1) << "Skip ARC Terms of Service screen because ARC is disabled.";
-    return false;
-  }
-
-  if (IsActiveDirectoryUserForProfile(profile)) {
-    VLOG(1) << "Skip ARC Terms of Service screen because it does not apply to "
-               "Active Directory users.";
     return false;
   }
 
@@ -564,7 +559,7 @@ void UpdateArcFileSystemCompatibilityPrefIfNeeded(
   DCHECK(callback);
 
   // If ARC is not available, skip the check.
-  // This shortcut is just for merginally improving the log-in performance on
+  // This shortcut is just for marginally improving the log-in performance on
   // old devices without ARC. We can always safely remove the following 4 lines
   // without changing any functionality when, say, the code clarity becomes
   // more important in the future.
@@ -606,15 +601,18 @@ ArcManagementTransition GetManagementTransition(const Profile* profile) {
 }
 
 bool IsPlayStoreAvailable() {
-  if (ShouldArcAlwaysStartWithNoPlayStore())
+  if (ShouldArcAlwaysStartWithNoPlayStore()) {
     return false;
+  }
 
-  if (!IsRobotOrOfflineDemoAccountMode())
+  if (!IsRobotOrOfflineDemoAccountMode()) {
     return true;
+  }
 
   // Demo Mode is the only public session scenario that can launch Play.
-  if (!ash::DemoSession::IsDeviceInDemoMode())
+  if (!ash::DemoSession::IsDeviceInDemoMode()) {
     return false;
+  }
 
   return ash::features::ShouldShowPlayStoreInDemoMode();
 }
@@ -627,8 +625,9 @@ bool ShouldStartArcSilentlyForManagedProfile(const Profile* profile) {
 
 aura::Window* GetArcWindow(int32_t task_id) {
   for (auto* window : ChromeShelfController::instance()->GetArcWindows()) {
-    if (arc::GetWindowTaskId(window) == task_id)
+    if (arc::GetWindowTaskId(window) == task_id) {
       return window;
+    }
   }
 
   return nullptr;
@@ -691,10 +690,10 @@ std::string GetHistogramNameByUserType(const std::string& base_name,
     }
     return base_name + ".RobotAccount";
   }
-  if (profile->IsChild())
+  if (profile->IsChild()) {
     return base_name + ".Child";
-  if (IsActiveDirectoryUserForProfile(profile))
-    return base_name + ".ActiveDirectory";
+  }
+
   return base_name +
          (policy_util::IsAccountManaged(profile) ? ".Managed" : ".Unmanaged");
 }

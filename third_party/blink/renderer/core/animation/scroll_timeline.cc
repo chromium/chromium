@@ -4,28 +4,12 @@
 
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 
-#include <tuple>
-
-#include "base/memory/values_equivalent.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
-#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
-#include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
-#include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
-#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
-#include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
-#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
 namespace blink {
 
@@ -39,9 +23,9 @@ ScrollOrientation ToPhysicalScrollOrientation(ScrollAxis axis,
       return is_horizontal ? kVerticalScroll : kHorizontalScroll;
     case ScrollAxis::kInline:
       return is_horizontal ? kHorizontalScroll : kVerticalScroll;
-    case ScrollAxis::kHorizontal:
+    case ScrollAxis::kX:
       return kHorizontalScroll;
-    case ScrollAxis::kVertical:
+    case ScrollAxis::kY:
       return kVerticalScroll;
   }
 }
@@ -105,77 +89,46 @@ ScrollTimeline::ScrollTimeline(Document* document,
 ScrollTimeline::ScrollTimeline(Document* document,
                                TimelineAttachment attachment_type,
                                ScrollTimelineAttachment* attachment)
-    : AnimationTimeline(document),
-      ScrollSnapshotClient(document->GetFrame()),
-      attachment_type_(attachment_type) {
+    : ScrollSnapshotTimeline(document), attachment_type_(attachment_type) {
   if (attachment) {
     attachments_.push_back(attachment);
   }
-  UpdateResolvedSource();
 }
 
-bool ScrollTimeline::IsActive() const {
-  return timeline_state_snapshotted_.phase != TimelinePhase::kInactive;
-}
-
-bool ScrollTimeline::ComputeIsResolved() const {
-  if (!CurrentAttachment()) {
-    return false;
+Element* ScrollTimeline::RetainingElement() const {
+  if (attachment_type_ == TimelineAttachment::kLocal) {
+    return CurrentAttachment()->GetReferenceElement();
   }
-  LayoutBox* layout_box =
-      resolved_source_ ? resolved_source_->GetLayoutBox() : nullptr;
-  return layout_box && layout_box->IsScrollContainer();
-}
-
-absl::optional<ScrollOffsets> ScrollTimeline::GetResolvedScrollOffsets() const {
-  return timeline_state_snapshotted_.scroll_offsets;
-}
-
-// TODO(crbug.com/1336260): Since phase can only be kActive or kInactive and
-// currentTime  can only be null if phase is inactive or before the first
-// snapshot we can probably drop phase.
-AnimationTimeline::PhaseAndTime ScrollTimeline::CurrentPhaseAndTime() {
-  return {timeline_state_snapshotted_.phase,
-          timeline_state_snapshotted_.current_time};
-}
-
-V8CSSNumberish* ScrollTimeline::ConvertTimeToProgress(
-    AnimationTimeDelta time) const {
-  return MakeGarbageCollected<V8CSSNumberish>(
-      CSSUnitValues::percent((time / GetDuration().value()) * 100));
-}
-
-V8CSSNumberish* ScrollTimeline::currentTime() {
-  // Compute time as a percentage based on the relative scroll position, where
-  // the start offset corresponds to 0% and the end to 100%.
-  auto current_time = timeline_state_snapshotted_.current_time;
-
-  if (current_time) {
-    return ConvertTimeToProgress(AnimationTimeDelta(current_time.value()));
-  }
+  // TODO(crbug.com/1425939): Remove this branch.
+  //
+  // The attachment concept is going away [1], at which point only local
+  // timelines will be reachable from JS, so we don't care about non-local
+  // timelines.
+  //
+  // A new concept similar to non-local timelines will be introduced, but such
+  // timelines will not be exposed to JS, and therefore the strong reference in
+  // blink::CSSAnimations is enough to keep the timeline alive.
+  //
+  // [1] https://github.com/w3c/csswg-drafts/issues/7759
   return nullptr;
-}
-
-V8CSSNumberish* ScrollTimeline::duration() {
-  return MakeGarbageCollected<V8CSSNumberish>(CSSUnitValues::percent(100));
 }
 
 // TODO(crbug.com/1060384): This section is missing from the spec rewrite.
 // Resolved to remove the before and after phases in
 // https://github.com/w3c/csswg-drafts/issues/7240.
 // https://drafts.csswg.org/scroll-animations-1/#current-time-algorithm
-ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
+ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
   TimelineState state;
-  UpdateResolvedSource();
+  state.resolved_source = ComputeResolvedSource();
 
   // 1. If scroll timeline is inactive, return an unresolved time value.
   // https://github.com/WICG/scroll-animations/issues/31
   // https://wicg.github.io/scroll-animations/#current-time-algorithm
-  if (!IsResolved()) {
+  if (!ComputeIsResolved(state.resolved_source)) {
     return state;
   }
-  DCHECK(resolved_source_);
-  LayoutBox* layout_box = resolved_source_->GetLayoutBox();
+  DCHECK(state.resolved_source);
+  LayoutBox* layout_box = state.resolved_source->GetLayoutBox();
 
   // Layout box and scrollable area must exist since the timeline is active.
   DCHECK(layout_box);
@@ -194,13 +147,6 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
          scrollable_area->MinimumScrollOffset().y() == 0);
   DCHECK(scrollable_area->MaximumScrollOffset().x() == 0 ||
          scrollable_area->MinimumScrollOffset().x() == 0);
-
-  // Record the scroll range for a quick validation check at the end
-  // of the layout process. If the cached values change, a fresh
-  // style + layout cycle is required. The check is performed only once
-  // per frame to avoid an infinite loop in the update cycle.
-  minimum_scroll_offset_ = scrollable_area->MinimumScrollOffset();
-  maximum_scroll_offset_ = scrollable_area->MaximumScrollOffset();
 
   ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
   auto physical_orientation =
@@ -243,110 +189,14 @@ void ScrollTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   state->scroll_offsets = absl::make_optional<ScrollOffsets>(0, end_offset);
 }
 
-// Scroll-linked animations are initialized with the start time of zero.
-absl::optional<base::TimeDelta>
-ScrollTimeline::InitialStartTimeForAnimations() {
-  return base::TimeDelta();
-}
-
-AnimationTimeDelta ScrollTimeline::CalculateIntrinsicIterationDuration(
-    const Animation* animation,
-    const Timing& timing) {
-  absl::optional<AnimationTimeDelta> duration = GetDuration();
-
-  // Only run calculation for progress based scroll timelines
-  if (duration) {
-    if (timing.iteration_count > 0) {
-      // duration represents 100% so we subtract percentage delays and divide it
-      // by iteration count to calculate the iteration duration.
-      double start_delay = timing.start_delay.relative_delay.value_or(0);
-      double end_delay = timing.end_delay.relative_delay.value_or(0);
-      double scale = (1 - start_delay - end_delay);
-      if (scale <= 0) {
-        return AnimationTimeDelta();
-      }
-
-      return scale * duration.value() / timing.iteration_count;
-    }
-  }
-  return AnimationTimeDelta();
-}
-
-void ScrollTimeline::ServiceAnimations(TimingUpdateReason reason) {
-  // When scroll timeline goes from inactive to active the animations may need
-  // to be started and possibly composited.
-  bool was_active =
-      last_current_phase_and_time_ &&
-      last_current_phase_and_time_.value().phase == TimelinePhase::kActive;
-  if (!was_active && IsActive())
-    MarkAnimationsCompositorPending();
-
-  AnimationTimeline::ServiceAnimations(reason);
-}
-
-bool ScrollTimeline::ShouldScheduleNextService() {
-  if (AnimationsNeedingUpdateCount() == 0)
-    return false;
-
-  auto state = ComputeTimelineState();
-  PhaseAndTime current_phase_and_time{state.phase, state.current_time};
-  return current_phase_and_time != last_current_phase_and_time_;
-}
-
-bool ScrollTimeline::CheckIfNeedsValidation() {
-  bool resolved = ComputeIsResolved();
-  if (resolved != is_resolved_) {
-    return true;
-  }
-
-  Node* source =
-      CurrentAttachment()
-          ? ResolveSource(CurrentAttachment()->ComputeSourceNoLayout())
-          : nullptr;
-  if (source != resolved_source_) {
-    return true;
-  }
-  DCHECK(!resolved || source);
-
-  if (resolved) {
-    LayoutBox* layout_box = source->GetLayoutBox();
-    PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
-    ScrollOffset min_scroll_offset = scrollable_area->MinimumScrollOffset();
-    ScrollOffset max_scroll_offset = scrollable_area->MaximumScrollOffset();
-    // Scroll range is cached during the snapshot update. If the values do not
-    // align, the timeline state is no longer valid.
-    if (min_scroll_offset != minimum_scroll_offset_ ||
-        max_scroll_offset != maximum_scroll_offset_) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void ScrollTimeline::ScheduleNextService() {
-  // See DocumentAnimations::UpdateAnimations() for why we shouldn't reach here.
-  NOTREACHED();
-}
-
-void ScrollTimeline::UpdateSnapshot() {
-  auto state = ComputeTimelineState();
-  bool invalidate_timing =
-      !state.HasConsistentLayout(timeline_state_snapshotted_);
-  timeline_state_snapshotted_ = state;
-  if (invalidate_timing) {
-    for (Animation* animation : GetAnimations()) {
-      animation->InvalidateNormalizedTiming();
-    }
-  }
-}
-
 Element* ScrollTimeline::source() const {
   return CurrentAttachment() ? CurrentAttachment()->ComputeSource() : nullptr;
 }
 
 void ScrollTimeline::AnimationAttached(Animation* animation) {
-  if (resolved_source_ && !HasAnimations())
-    resolved_source_->RegisterScrollTimeline(this);
+  if (RetainingElement() && !HasAnimations()) {
+    RetainingElement()->RegisterScrollTimeline(this);
+  }
 
   AnimationTimeline::AnimationAttached(animation);
 }
@@ -354,43 +204,21 @@ void ScrollTimeline::AnimationAttached(Animation* animation) {
 void ScrollTimeline::AnimationDetached(Animation* animation) {
   AnimationTimeline::AnimationDetached(animation);
 
-  if (resolved_source_ && !HasAnimations())
-    resolved_source_->UnregisterScrollTimeline(this);
-}
-
-void ScrollTimeline::WorkletAnimationAttached(WorkletAnimationBase* worklet) {
-  if (!resolved_source_)
-    return;
-  attached_worklet_animations_.insert(worklet);
-}
-
-void ScrollTimeline::UpdateResolvedSource() {
-  if (!CurrentAttachment()) {
-    is_resolved_ = ComputeIsResolved();
-    return;
+  if (RetainingElement() && !HasAnimations()) {
+    RetainingElement()->UnregisterScrollTimeline(this);
   }
+}
 
-  Node* old_resolved_source = resolved_source_.Get();
-  resolved_source_ =
-      ResolveSource(CurrentAttachment()->ComputeSourceNoLayout());
-  is_resolved_ = ComputeIsResolved();
-
-  if (old_resolved_source == resolved_source_.Get() || !HasAnimations())
-    return;
-
-  if (old_resolved_source)
-    old_resolved_source->UnregisterScrollTimeline(this);
-
-  if (resolved_source_)
-    resolved_source_->RegisterScrollTimeline(this);
+Node* ScrollTimeline::ComputeResolvedSource() const {
+  if (!CurrentAttachment()) {
+    return nullptr;
+  }
+  return ResolveSource(CurrentAttachment()->ComputeSourceNoLayout());
 }
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
-  visitor->Trace(resolved_source_);
-  visitor->Trace(attached_worklet_animations_);
   visitor->Trace(attachments_);
-  AnimationTimeline::Trace(visitor);
-  ScrollSnapshotClient::Trace(visitor);
+  ScrollSnapshotTimeline::Trace(visitor);
 }
 
 bool ScrollTimeline::Matches(TimelineAttachment attachment_type,
@@ -413,45 +241,6 @@ ScrollAxis ScrollTimeline::GetAxis() const {
     return attachment->GetAxis();
   }
   return ScrollAxis::kBlock;
-}
-
-void ScrollTimeline::InvalidateEffectTargetStyle() const {
-  for (Animation* animation : GetAnimations()) {
-    animation->InvalidateEffectTargetStyle();
-  }
-}
-
-bool ScrollTimeline::ValidateSnapshot() {
-  auto state = ComputeTimelineState();
-  if (ValidateTimelineOffsets() && timeline_state_snapshotted_ == state) {
-    return true;
-  }
-
-  timeline_state_snapshotted_ = state;
-
-  // Mark an attached animation's target as dirty if the play state is running
-  // or finished. Idle animations are not in effect and the effect of a paused
-  // animation is not impacted by timeline staleness.
-  for (Animation* animation : GetAnimations()) {
-    Animation::AnimationPlayState play_state =
-        animation->CalculateAnimationPlayState();
-    if (play_state != Animation::kRunning &&
-        play_state != Animation::kFinished) {
-      continue;
-    }
-
-    // The animation's effect target requires a style update to ensure that we
-    // pickup the new effect value.
-    animation->InvalidateEffectTargetStyle();
-    // Normalized timing needs to be reevaluated since the intrinsic iteration
-    // duration may be affected.
-    animation->InvalidateNormalizedTiming();
-    // The animation range may be affected, which in turn can affect animation
-    // start time as well as intrinsic iteration duration.
-    animation->OnRangeUpdate();
-  }
-
-  return false;
 }
 
 void ScrollTimeline::AddAttachment(ScrollTimelineAttachment* attachment) {
@@ -481,7 +270,7 @@ void ScrollTimeline::UpdateCompositorTimeline() {
 
   ToScrollTimeline(compositor_timeline_.get())
       ->UpdateScrollerIdAndScrollOffsets(
-          scroll_timeline_util::GetCompositorScrollElementId(resolved_source_),
+          scroll_timeline_util::GetCompositorScrollElementId(ResolvedSource()),
           GetResolvedScrollOffsets());
 }
 

@@ -4386,7 +4386,8 @@ IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
 }
 
 // Tests that when trying to commit an error page for a failed navigation, but
-// the renderer process of the, the navigation won't commit and won't crash.
+// the renderer process of the error page crashed, the navigation won't commit
+// and the browser won't crash.
 // Regression test for https://crbug.com/1444360.
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                        RendererCrashedBeforeCommitErrorPage) {
@@ -4437,22 +4438,17 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   manager.ResumeNavigation();
   installer.WaitForThrottleWillFail();
 
-  // Kill the error page process. This will cause for the navigation to `url_b2`
-  // to return early in `NavigationRequest::ReadyToCommitNavigation()` and not
+  // Kill the error page process. This will cause the navigation to `url_b2` to
+  // return early in `NavigationRequest::ReadyToCommitNavigation()` and not
   // commit a new error page.
-  RenderProcessHost* process_to_kill =
+  RenderProcessHost* process_to_crash =
       manager.GetNavigationHandle()->GetRenderFrameHost()->GetProcess();
-  ASSERT_TRUE(process_to_kill->IsInitializedAndNotDead());
-  {
-    // Trigger a renderer kill by calling DoSomething() which will cause a bad
-    // message to be reported.
-    RenderProcessHostBadIpcMessageWaiter kill_waiter(process_to_kill);
-    mojo::Remote<mojom::TestService> service;
-    process_to_kill->BindReceiver(service.BindNewPipeAndPassReceiver());
-    service->DoSomething(base::DoNothing());
-    EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
-  }
-  ASSERT_FALSE(process_to_kill->IsInitializedAndNotDead());
+  ASSERT_TRUE(process_to_crash->IsInitializedAndNotDead());
+  RenderProcessHostWatcher crash_observer(
+      process_to_crash, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process_to_crash->Shutdown(0);
+  crash_observer.Wait();
+  ASSERT_FALSE(process_to_crash->IsInitializedAndNotDead());
 
   // Resume the navigation, which won't commit.
   if (!ShouldCreateNewHostForAllFrames()) {

@@ -74,6 +74,10 @@ void TestSystemTrayClient::ShowPrivacyHubSettings() {
   show_os_settings_privacy_hub_count_++;
 }
 
+void TestSystemTrayClient::ShowSpeakOnMuteDetectionSettings() {
+  show_speak_on_mute_detection_count_++;
+}
+
 void TestSystemTrayClient::ShowSmartPrivacySettings() {
   show_os_smart_privacy_settings_count_++;
 }
@@ -108,6 +112,10 @@ void TestSystemTrayClient::ShowArcVpnCreate(const std::string& app_id) {
 void TestSystemTrayClient::ShowNetworkSettings(const std::string& network_id) {
   show_network_settings_count_++;
   last_network_settings_network_id_ = network_id;
+}
+
+void TestSystemTrayClient::ShowHotspotSubpage() {
+  show_hotspot_subpage_count_++;
 }
 
 void TestSystemTrayClient::ShowMultiDeviceSetup() {

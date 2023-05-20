@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 249 tests; 241 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 251 tests; 243 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -60,6 +60,8 @@ PASS inbound-rtp's playoutId
 PASS inbound-rtp's powerEfficientDecoder
 PASS inbound-rtp's framesAssembledFromMultiplePackets
 PASS inbound-rtp's totalAssemblyTime
+PASS inbound-rtp's retransmittedPacketsReceived
+PASS inbound-rtp's retransmittedBytesReceived
 PASS inbound-rtp's packetsReceived
 PASS inbound-rtp's packetsLost
 PASS inbound-rtp's jitter

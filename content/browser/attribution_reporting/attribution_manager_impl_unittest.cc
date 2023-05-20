@@ -2738,7 +2738,7 @@ class AttributionManagerImplDebugReportTest
  protected:
   void ConfigureStorageDelegate(
       ConfigurableStorageDelegate& delegate) const override {
-    delegate.set_max_destinations_per_source_site_reporting_origin(1);
+    delegate.set_max_destinations_per_source_site_reporting_site(1);
   }
 };
 

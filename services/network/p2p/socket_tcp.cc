@@ -379,6 +379,13 @@ void P2PSocketTcpBase::Send(base::span<const uint8_t> data,
   DoSend(packet_info.destination, data, packet_info.packet_options);
 }
 
+void P2PSocketTcpBase::SendBatch(
+    std::vector<mojom::P2PSendPacketPtr> packet_batch) {
+  for (auto& packet : packet_batch) {
+    Send(packet->data, packet->packet_info);
+  }
+}
+
 void P2PSocketTcpBase::SetOption(P2PSocketOption option, int32_t value) {
   switch (option) {
     case P2P_SOCKET_OPT_RCVBUF:

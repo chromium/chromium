@@ -142,7 +142,7 @@ class CONTENT_EXPORT DownloadManagerImpl
   void PostInitialization(DownloadInitializationDependency dependency) override;
   bool IsManagerInitialized() override;
   int InProgressCount() override;
-  int NonMaliciousInProgressCount() override;
+  int BlockingShutdownCount() override;
   BrowserContext* GetBrowserContext() override;
   void CheckForHistoryFilesRemoval() override;
   void OnHistoryQueryComplete(

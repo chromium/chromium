@@ -1,3 +1,4 @@
+#<skip -- crbug.com/1428967>
 Document
 ++Group IsControlElement=false
 ++++Edit Name='Invalid is true' ControllerFor='{region}'

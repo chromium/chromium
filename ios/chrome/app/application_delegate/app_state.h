@@ -13,13 +13,11 @@
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
 @class AppState;
-@protocol BrowserLauncher;
 class ChromeBrowserState;
 @class CommandDispatcher;
 @protocol ConnectionInformation;
 typedef NS_ENUM(NSUInteger, DefaultPromoType);
 @class SceneState;
-@class MainApplicationDelegate;
 @class MemoryWarningHelper;
 @class MetricsMediator;
 @protocol StartupInformation;
@@ -50,11 +48,8 @@ enum class PostCrashAction {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)
-initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
-     startupInformation:(id<StartupInformation>)startupInformation
-    applicationDelegate:(MainApplicationDelegate*)applicationDelegate
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStartupInformation:
+    (id<StartupInformation>)startupInformation NS_DESIGNATED_INITIALIZER;
 
 // Dispatcher for app-level commands for multiwindow use cases.
 // Most features should use the browser-level dispatcher instead.

@@ -141,6 +141,9 @@ export function getKeyboardShortcut(event: KeyboardEvent): KeyboardShortcut {
 }
 
 function isSupportedKeyboardKey(key: string): key is KeyboardKey {
+  // This is to workaround current TypeScript limitation on Set.has.
+  // See https://github.com/microsoft/TypeScript/issues/26255
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return KEYBOARD_KEY_SET.has(key as KeyboardKey);
 }
 
@@ -357,6 +360,9 @@ export function checkEnumVariant<T extends string>(
       !Object.values<string>(enumType).includes(value)) {
     return null;
   }
+  // The value is already checked that it's a member of the enum above, so it's
+  // safe to cast it to the enum.
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return value as T;
 }
 
@@ -511,4 +517,28 @@ export class FpsObserver {
   stop(): void {
     this.videoElement.cancelVideoFrameCallback(this.callbackId);
   }
+}
+
+/**
+ * Returns whether a FileSystemHandle is FileSystemFileHandle.
+ *
+ * This is needed since the type FileSystemHandle isn't a discriminated union
+ * now.
+ * See https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1494.
+ */
+export function isFileSystemFileHandle(handle: FileSystemHandle):
+    handle is FileSystemFileHandle {
+  return handle.kind === 'file';
+}
+
+/**
+ * Returns whether a FileSystemHandle is FileSystemDirectoryHandle.
+ *
+ * This is needed since the type FileSystemHandle isn't a discriminated union
+ * now.
+ * See https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1494.
+ */
+export function isFileSystemDirectoryHandle(handle: FileSystemHandle):
+    handle is FileSystemDirectoryHandle {
+  return handle.kind === 'directory';
 }

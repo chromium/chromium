@@ -169,13 +169,13 @@ TEST(HostCacheTest, GetEndpoints) {
                          HostCache::Entry::SOURCE_DNS);
 
   EXPECT_THAT(entry.GetEndpoints(),
-              Optional(ElementsAre(ExpectEndpointResult(ip_endpoints))));
+              ElementsAre(ExpectEndpointResult(ip_endpoints)));
 }
 
 TEST(HostCacheTest, GetEmptyEndpoints) {
   HostCache::Entry entry(ERR_NAME_NOT_RESOLVED, /*ip_endpoints=*/{},
                          /*aliases=*/{}, HostCache::Entry::SOURCE_DNS);
-  EXPECT_THAT(entry.GetEndpoints(), Optional(IsEmpty()));
+  EXPECT_THAT(entry.GetEndpoints(), IsEmpty());
 }
 
 TEST(HostCacheTest, GetEmptyEndpointsWithMetadata) {
@@ -194,12 +194,12 @@ TEST(HostCacheTest, GetEmptyEndpointsWithMetadata) {
   auto merged_entry = HostCache::Entry::MergeEntries(entry, metadata_entry);
 
   // Result should still be empty.
-  EXPECT_THAT(merged_entry.GetEndpoints(), Optional(IsEmpty()));
+  EXPECT_THAT(merged_entry.GetEndpoints(), IsEmpty());
 }
 
 TEST(HostCacheTest, GetMissingEndpoints) {
   HostCache::Entry entry(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
-  EXPECT_FALSE(entry.GetEndpoints());
+  EXPECT_THAT(entry.GetEndpoints(), IsEmpty());
 }
 
 TEST(HostCacheTest, GetMissingEndpointsWithMetadata) {
@@ -216,8 +216,8 @@ TEST(HostCacheTest, GetMissingEndpointsWithMetadata) {
 
   auto merged_entry = HostCache::Entry::MergeEntries(entry, metadata_entry);
 
-  // Result should still be `nullopt`.
-  EXPECT_FALSE(merged_entry.GetEndpoints());
+  // Result should still be empty.
+  EXPECT_THAT(merged_entry.GetEndpoints(), IsEmpty());
 }
 
 // Test that Keys without scheme are allowed and treated as completely different
@@ -1011,9 +1011,8 @@ TEST(HostCacheTest, PreserveActivePin) {
   const auto* pair1 = cache.Lookup(key, now);
   ASSERT_TRUE(pair1);
   const HostCache::Entry& result1 = pair1->second;
-  EXPECT_THAT(
-      result1.GetEndpoints(),
-      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint1)))));
+  EXPECT_THAT(result1.GetEndpoints(),
+              ElementsAre(ExpectEndpointResult(ElementsAre(endpoint1))));
   EXPECT_THAT(result1.pinning(), Optional(true));
 
   // Insert |entry2|, and verify that it when it is retrieved, it
@@ -1022,9 +1021,8 @@ TEST(HostCacheTest, PreserveActivePin) {
   const auto* pair2 = cache.Lookup(key, now);
   ASSERT_TRUE(pair2);
   const HostCache::Entry& result2 = pair2->second;
-  EXPECT_THAT(
-      result2.GetEndpoints(),
-      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint2)))));
+  EXPECT_THAT(result2.GetEndpoints(),
+              ElementsAre(ExpectEndpointResult(ElementsAre(endpoint2))));
   EXPECT_THAT(result2.pinning(), Optional(true));
 }
 
@@ -1051,9 +1049,8 @@ TEST(HostCacheTest, DontPreserveObsoletePin) {
   const auto* pair1 = cache.Lookup(key, now);
   ASSERT_TRUE(pair1);
   const HostCache::Entry& result1 = pair1->second;
-  EXPECT_THAT(
-      result1.GetEndpoints(),
-      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint1)))));
+  EXPECT_THAT(result1.GetEndpoints(),
+              ElementsAre(ExpectEndpointResult(ElementsAre(endpoint1))));
   EXPECT_THAT(result1.pinning(), Optional(true));
 
   // Make entry1 obsolete.
@@ -1065,9 +1062,8 @@ TEST(HostCacheTest, DontPreserveObsoletePin) {
   const auto* pair2 = cache.Lookup(key, now);
   ASSERT_TRUE(pair2);
   const HostCache::Entry& result2 = pair2->second;
-  EXPECT_THAT(
-      result2.GetEndpoints(),
-      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint2)))));
+  EXPECT_THAT(result2.GetEndpoints(),
+              ElementsAre(ExpectEndpointResult(ElementsAre(endpoint2))));
   EXPECT_THAT(result2.pinning(), Optional(false));
 }
 
@@ -1096,9 +1092,8 @@ TEST(HostCacheTest, Unpin) {
   const auto* pair1 = cache.Lookup(key, now);
   ASSERT_TRUE(pair1);
   const HostCache::Entry& result1 = pair1->second;
-  EXPECT_THAT(
-      result1.GetEndpoints(),
-      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint1)))));
+  EXPECT_THAT(result1.GetEndpoints(),
+              ElementsAre(ExpectEndpointResult(ElementsAre(endpoint1))));
   EXPECT_THAT(result1.pinning(), Optional(true));
 
   // Insert |entry2|, and verify that it when it is retrieved, it
@@ -1107,9 +1102,8 @@ TEST(HostCacheTest, Unpin) {
   const auto* pair2 = cache.Lookup(key, now);
   ASSERT_TRUE(pair2);
   const HostCache::Entry& result2 = pair2->second;
-  EXPECT_THAT(
-      result2.GetEndpoints(),
-      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint2)))));
+  EXPECT_THAT(result2.GetEndpoints(),
+              ElementsAre(ExpectEndpointResult(ElementsAre(endpoint2))));
   EXPECT_THAT(result2.pinning(), Optional(false));
 }
 
@@ -1511,11 +1505,10 @@ TEST(HostCacheTest, SerializeAndDeserializeAddresses) {
       restored_cache.LookupStale(key1, now, &stale);
   EXPECT_TRUE(result1);
   EXPECT_TRUE(result1->first.secure);
-  ASSERT_TRUE(result1->second.ip_endpoints());
-  EXPECT_FALSE(result1->second.text_records());
-  EXPECT_FALSE(result1->second.hostnames());
-  EXPECT_EQ(1u, result1->second.ip_endpoints()->size());
-  EXPECT_EQ(endpoint_ipv4, result1->second.ip_endpoints()->front());
+  EXPECT_THAT(result1->second.text_records(), IsEmpty());
+  EXPECT_THAT(result1->second.hostnames(), IsEmpty());
+  EXPECT_EQ(1u, result1->second.ip_endpoints().size());
+  EXPECT_EQ(endpoint_ipv4, result1->second.ip_endpoints().front());
   EXPECT_EQ(1, stale.network_changes);
   // Time to TimeTicks conversion is fuzzy, so just check that expected and
   // actual expiration times are close.
@@ -1528,10 +1521,9 @@ TEST(HostCacheTest, SerializeAndDeserializeAddresses) {
       restored_cache.LookupStale(key2, now, &stale);
   EXPECT_TRUE(result2);
   EXPECT_FALSE(result2->first.secure);
-  ASSERT_TRUE(result2->second.ip_endpoints());
-  EXPECT_EQ(2u, result2->second.ip_endpoints()->size());
-  EXPECT_EQ(endpoint_ipv6, result2->second.ip_endpoints()->front());
-  EXPECT_EQ(endpoint_ipv4, result2->second.ip_endpoints()->back());
+  EXPECT_EQ(2u, result2->second.ip_endpoints().size());
+  EXPECT_EQ(endpoint_ipv6, result2->second.ip_endpoints().front());
+  EXPECT_EQ(endpoint_ipv4, result2->second.ip_endpoints().back());
   EXPECT_EQ(1, stale.network_changes);
   EXPECT_GT(base::Milliseconds(100),
             (base::Seconds(-3) - stale.expired_by).magnitude());
@@ -1540,17 +1532,15 @@ TEST(HostCacheTest, SerializeAndDeserializeAddresses) {
   const std::pair<const HostCache::Key, HostCache::Entry>* result3 =
       restored_cache.Lookup(key3, now);
   EXPECT_TRUE(result3);
-  ASSERT_TRUE(result3->second.ip_endpoints());
-  EXPECT_EQ(1u, result3->second.ip_endpoints()->size());
-  EXPECT_EQ(endpoint_ipv4, result3->second.ip_endpoints()->front());
+  EXPECT_EQ(1u, result3->second.ip_endpoints().size());
+  EXPECT_EQ(endpoint_ipv4, result3->second.ip_endpoints().front());
 
   // The "foobar4.com" entry is still present and usable.
   const std::pair<const HostCache::Key, HostCache::Entry>* result4 =
       restored_cache.Lookup(key4, now);
   EXPECT_TRUE(result4);
-  ASSERT_TRUE(result4->second.ip_endpoints());
-  EXPECT_EQ(1u, result4->second.ip_endpoints()->size());
-  EXPECT_EQ(endpoint_ipv4, result4->second.ip_endpoints()->front());
+  EXPECT_EQ(1u, result4->second.ip_endpoints().size());
+  EXPECT_EQ(endpoint_ipv4, result4->second.ip_endpoints().front());
 
   EXPECT_EQ(2u, restored_cache.last_restore_size());
 }
@@ -1677,7 +1667,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Text) {
                      NetworkAnonymizationKey());
   key.secure = true;
   HostCache::Entry entry(OK, text_records, HostCache::Entry::SOURCE_DNS, ttl);
-  EXPECT_TRUE(entry.text_records());
+  EXPECT_THAT(entry.text_records(), Not(IsEmpty()));
 
   HostCache cache(kMaxCacheEntries);
   cache.Set(key, entry, now, ttl);
@@ -1695,7 +1685,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Text) {
   const std::pair<const HostCache::Key, HostCache::Entry>* result =
       restored_cache.LookupStale(key, now, &stale);
   EXPECT_THAT(result, Pointee(Pair(key, EntryContentsEqual(entry))));
-  EXPECT_THAT(result->second.text_records(), Optional(text_records));
+  EXPECT_THAT(result->second.text_records(), text_records);
 }
 
 TEST(HostCacheTest, SerializeAndDeserialize_Hostname) {
@@ -1708,7 +1698,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Hostname) {
                      DnsQueryType::A, 0, HostResolverSource::DNS,
                      NetworkAnonymizationKey());
   HostCache::Entry entry(OK, hostnames, HostCache::Entry::SOURCE_DNS, ttl);
-  EXPECT_TRUE(entry.hostnames());
+  EXPECT_THAT(entry.hostnames(), Not(IsEmpty()));
 
   HostCache cache(kMaxCacheEntries);
   cache.Set(key, entry, now, ttl);
@@ -1725,7 +1715,7 @@ TEST(HostCacheTest, SerializeAndDeserialize_Hostname) {
   const std::pair<const HostCache::Key, HostCache::Entry>* result =
       restored_cache.LookupStale(key, now, &stale);
   EXPECT_THAT(result, Pointee(Pair(key, EntryContentsEqual(entry))));
-  EXPECT_THAT(result->second.hostnames(), Optional(hostnames));
+  EXPECT_THAT(result->second.hostnames(), hostnames);
 }
 
 TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
@@ -1752,7 +1742,7 @@ TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
   std::set<std::string> canonical_names = {ipv6_alias, ipv4_alias};
   entry.set_canonical_names(canonical_names);
 
-  EXPECT_TRUE(entry.GetEndpoints());
+  EXPECT_THAT(entry.GetEndpoints(), Not(IsEmpty()));
 
   ConnectionEndpointMetadata metadata1;
   metadata1.supported_protocol_alpns = {"h3", "h2"};
@@ -1770,17 +1760,17 @@ TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
   auto merged_entry = HostCache::Entry::MergeEntries(entry, metadata_entry);
 
   EXPECT_THAT(merged_entry.GetEndpoints(),
-              Optional(ElementsAre(ExpectEndpointResult(ip_endpoints))));
+              ElementsAre(ExpectEndpointResult(ip_endpoints)));
   EXPECT_THAT(
       merged_entry.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(
+      testing::ElementsAre(
           ExpectConnectionEndpointMetadata(testing::ElementsAre("h3", "h2"),
                                            testing::ElementsAre('f', 'o', 'o'),
                                            ipv6_alias),
           ExpectConnectionEndpointMetadata(testing::ElementsAre("h2", "h4"),
-                                           IsEmpty(), ipv4_alias))));
+                                           IsEmpty(), ipv4_alias)));
   EXPECT_THAT(merged_entry.canonical_names(),
-              testing::Optional(UnorderedElementsAre(ipv4_alias, ipv6_alias)));
+              UnorderedElementsAre(ipv4_alias, ipv6_alias));
 
   HostCache cache(kMaxCacheEntries);
   cache.Set(key, merged_entry, now, ttl);
@@ -1805,19 +1795,19 @@ TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
   ASSERT_TRUE(result);
   EXPECT_THAT(result, Pointee(Pair(key, EntryContentsEqual(merged_entry))));
   EXPECT_THAT(result->second.GetEndpoints(),
-              Optional(ElementsAre(ExpectEndpointResult(ip_endpoints))));
+              ElementsAre(ExpectEndpointResult(ip_endpoints)));
   EXPECT_THAT(
       result->second.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(
+      testing::ElementsAre(
           ExpectConnectionEndpointMetadata(testing::ElementsAre("h3", "h2"),
                                            testing::ElementsAre('f', 'o', 'o'),
                                            ipv6_alias),
           ExpectConnectionEndpointMetadata(testing::ElementsAre("h2", "h4"),
-                                           IsEmpty(), ipv4_alias))));
+                                           IsEmpty(), ipv4_alias)));
   EXPECT_THAT(result->second.canonical_names(),
-              testing::Optional(UnorderedElementsAre(ipv4_alias, ipv6_alias)));
+              UnorderedElementsAre(ipv4_alias, ipv6_alias));
 
-  EXPECT_THAT(result->second.aliases(), Pointee(aliases));
+  EXPECT_EQ(result->second.aliases(), aliases);
 }
 
 TEST(HostCacheTest, DeserializeNoEndpointNoAliase) {
@@ -1857,8 +1847,8 @@ TEST(HostCacheTest, DeserializeNoEndpointNoAliase) {
       restored_cache.LookupStale(key, base::TimeTicks::Now(), &stale);
 
   ASSERT_TRUE(result);
-  EXPECT_THAT(result->second.aliases(), Pointee(ElementsAre()));
-  EXPECT_THAT(result->second.ip_endpoints(), Pointee(ElementsAre()));
+  EXPECT_THAT(result->second.aliases(), ElementsAre());
+  EXPECT_THAT(result->second.ip_endpoints(), ElementsAre());
 }
 
 TEST(HostCacheTest, DeserializeLegacyAddresses) {
@@ -1900,8 +1890,8 @@ TEST(HostCacheTest, DeserializeLegacyAddresses) {
 
   ASSERT_TRUE(result);
   EXPECT_THAT(result->second.ip_endpoints(),
-              Pointee(ElementsAreArray(MakeEndpoints({"2000::", "1.2.3.4"}))));
-  EXPECT_THAT(result->second.aliases(), Pointee(ElementsAre()));
+              ElementsAreArray(MakeEndpoints({"2000::", "1.2.3.4"})));
+  EXPECT_THAT(result->second.aliases(), ElementsAre());
 }
 
 TEST(HostCacheTest, DeserializeInvalidQueryTypeIntegrity) {
@@ -2061,17 +2051,14 @@ TEST(HostCacheTest, MergeEndpointsWithAliases) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.ip_endpoints());
-  EXPECT_THAT(*result.ip_endpoints(),
+  EXPECT_THAT(result.ip_endpoints(),
               ElementsAre(kEndpointFront, kEndpointBack));
-  EXPECT_THAT(result.text_records(), Optional(ElementsAre("text1", "text2")));
+  EXPECT_THAT(result.text_records(), ElementsAre("text1", "text2"));
 
-  EXPECT_THAT(result.hostnames(),
-              Optional(ElementsAre(kHostnameFront, kHostnameBack)));
+  EXPECT_THAT(result.hostnames(), ElementsAre(kHostnameFront, kHostnameBack));
 
-  ASSERT_TRUE(result.aliases());
   EXPECT_THAT(
-      *result.aliases(),
+      result.aliases(),
       UnorderedElementsAre("alias1", "alias2", "alias3", "alias4", "alias5"));
 }
 
@@ -2089,13 +2076,11 @@ TEST(HostCacheTest, MergeEndpointsKeepEndpointsOrder) {
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
 
-  ASSERT_TRUE(result.ip_endpoints());
   EXPECT_THAT(
-      *result.ip_endpoints(),
+      result.ip_endpoints(),
       ElementsAreArray(MakeEndpoints({"::1", "0.0.0.2", "0.0.0.4", "0.0.0.2",
                                       "0.0.0.2", "::3", "::3", "0.0.0.4"})));
-  ASSERT_TRUE(result.aliases());
-  EXPECT_THAT(*result.aliases(), UnorderedElementsAre("front", "back"));
+  EXPECT_THAT(result.aliases(), UnorderedElementsAre("front", "back"));
 }
 
 TEST(HostCacheTest, MergeMetadatas) {
@@ -2115,11 +2100,11 @@ TEST(HostCacheTest, MergeMetadatas) {
   HostCache::Entry result = HostCache::Entry::MergeEntries(front, back);
 
   // Expect `GetEndpoints()` to ignore metadatas if no `IPEndPoint`s.
-  EXPECT_FALSE(result.GetEndpoints());
+  EXPECT_THAT(result.GetEndpoints(), IsEmpty());
 
   // Expect order irrelevant for endpoint metadata merging.
   result = HostCache::Entry::MergeEntries(back, front);
-  EXPECT_FALSE(result.GetEndpoints());
+  EXPECT_THAT(result.GetEndpoints(), IsEmpty());
 }
 
 TEST(HostCacheTest, MergeMetadatasWithIpEndpointsDifferentCanonicalName) {
@@ -2136,7 +2121,7 @@ TEST(HostCacheTest, MergeMetadatasWithIpEndpointsDifferentCanonicalName) {
                                   HostCache::Entry::SOURCE_DNS);
 
   // Expect `GetEndpoints()` to always ignore metadatas with no `IPEndPoint`s.
-  EXPECT_FALSE(metadata_entry.GetEndpoints());
+  EXPECT_THAT(metadata_entry.GetEndpoints(), IsEmpty());
 
   // Merge in an `IPEndPoint` with different canonical name.
   IPEndPoint ip_endpoint(IPAddress(1, 1, 1, 1), 0);
@@ -2148,9 +2133,9 @@ TEST(HostCacheTest, MergeMetadatasWithIpEndpointsDifferentCanonicalName) {
       HostCache::Entry::MergeEntries(metadata_entry, with_ip_endpoint);
 
   // Expect `GetEndpoints()` not to return the metadata.
-  EXPECT_THAT(result.GetEndpoints(),
-              Optional(ElementsAre(
-                  ExpectEndpointResult(std::vector<IPEndPoint>{ip_endpoint}))));
+  EXPECT_THAT(
+      result.GetEndpoints(),
+      ElementsAre(ExpectEndpointResult(std::vector<IPEndPoint>{ip_endpoint})));
 
   // Expect merge order irrelevant.
   EXPECT_EQ(result,
@@ -2170,7 +2155,7 @@ TEST(HostCacheTest, MergeMetadatasWithIpEndpointsMatchingCanonicalName) {
                                   HostCache::Entry::SOURCE_DNS);
 
   // Expect `GetEndpoints()` to always ignore metadatas with no `IPEndPoint`s.
-  EXPECT_FALSE(metadata_entry.GetEndpoints());
+  EXPECT_THAT(metadata_entry.GetEndpoints(), IsEmpty());
 
   // Merge in an `IPEndPoint` with different canonical name.
   IPEndPoint ip_endpoint(IPAddress(1, 1, 1, 1), 0);
@@ -2181,10 +2166,10 @@ TEST(HostCacheTest, MergeMetadatasWithIpEndpointsMatchingCanonicalName) {
       HostCache::Entry::MergeEntries(metadata_entry, with_ip_endpoint);
 
   // Expect `GetEndpoints()` to return the metadata.
-  EXPECT_THAT(result.GetEndpoints(),
-              Optional(ElementsAre(
-                  ExpectEndpointResult(ElementsAre(ip_endpoint), metadata),
-                  ExpectEndpointResult(ElementsAre(ip_endpoint)))));
+  EXPECT_THAT(
+      result.GetEndpoints(),
+      ElementsAre(ExpectEndpointResult(ElementsAre(ip_endpoint), metadata),
+                  ExpectEndpointResult(ElementsAre(ip_endpoint))));
 
   // Expect merge order irrelevant.
   EXPECT_EQ(result,
@@ -2215,8 +2200,8 @@ TEST(HostCacheTest, MergeMultipleMetadatasWithIpEndpoints) {
       HostCache::Entry::MergeEntries(back, front);
 
   // Expect `GetEndpoints()` to always ignore metadatas with no `IPEndPoint`s.
-  EXPECT_FALSE(merged_metadatas.GetEndpoints());
-  EXPECT_FALSE(reversed_merged_metadatas.GetEndpoints());
+  EXPECT_THAT(merged_metadatas.GetEndpoints(), IsEmpty());
+  EXPECT_THAT(reversed_merged_metadatas.GetEndpoints(), IsEmpty());
 
   // Merge in an `IPEndPoint`.
   IPEndPoint ip_endpoint(IPAddress(1, 1, 1, 1), 0);
@@ -2231,10 +2216,10 @@ TEST(HostCacheTest, MergeMultipleMetadatasWithIpEndpoints) {
   // priority number.
   EXPECT_THAT(
       result.GetEndpoints(),
-      Optional(ElementsAre(
+      ElementsAre(
           ExpectEndpointResult(ElementsAre(ip_endpoint), back_metadata),
           ExpectEndpointResult(ElementsAre(ip_endpoint), front_metadata),
-          ExpectEndpointResult(ElementsAre(ip_endpoint)))));
+          ExpectEndpointResult(ElementsAre(ip_endpoint))));
 
   // Expect merge order irrelevant.
   EXPECT_EQ(result, HostCache::Entry::MergeEntries(reversed_merged_metadatas,
@@ -2285,15 +2270,13 @@ TEST(HostCacheTest, MergeEntries_frontEmpty) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.ip_endpoints());
-  EXPECT_THAT(*result.ip_endpoints(), ElementsAre(kEndpointBack));
-  EXPECT_THAT(result.text_records(), Optional(ElementsAre("text2")));
-  EXPECT_THAT(result.hostnames(), Optional(ElementsAre(kHostnameBack)));
+  EXPECT_THAT(result.ip_endpoints(), ElementsAre(kEndpointBack));
+  EXPECT_THAT(result.text_records(), ElementsAre("text2"));
+  EXPECT_THAT(result.hostnames(), ElementsAre(kHostnameBack));
 
   EXPECT_EQ(base::Hours(4), result.ttl());
 
-  ASSERT_TRUE(result.aliases());
-  EXPECT_THAT(*result.aliases(),
+  EXPECT_THAT(result.aliases(),
               UnorderedElementsAre("alias1", "alias2", "alias3"));
 }
 
@@ -2314,15 +2297,13 @@ TEST(HostCacheTest, MergeEntries_backEmpty) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.ip_endpoints());
-  EXPECT_THAT(*result.ip_endpoints(), ElementsAre(kEndpointFront));
-  EXPECT_THAT(result.text_records(), Optional(ElementsAre("text1")));
-  EXPECT_THAT(result.hostnames(), Optional(ElementsAre(kHostnameFront)));
+  EXPECT_THAT(result.ip_endpoints(), ElementsAre(kEndpointFront));
+  EXPECT_THAT(result.text_records(), ElementsAre("text1"));
+  EXPECT_THAT(result.hostnames(), ElementsAre(kHostnameFront));
 
   EXPECT_EQ(base::Minutes(5), result.ttl());
 
-  ASSERT_TRUE(result.aliases());
-  EXPECT_THAT(*result.aliases(),
+  EXPECT_THAT(result.aliases(),
               UnorderedElementsAre("alias1", "alias2", "alias3"));
 }
 
@@ -2336,9 +2317,9 @@ TEST(HostCacheTest, MergeEntries_bothEmpty) {
   EXPECT_EQ(ERR_NAME_NOT_RESOLVED, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  EXPECT_FALSE(result.ip_endpoints());
-  EXPECT_FALSE(result.text_records());
-  EXPECT_FALSE(result.hostnames());
+  EXPECT_THAT(result.ip_endpoints(), IsEmpty());
+  EXPECT_THAT(result.text_records(), IsEmpty());
+  EXPECT_THAT(result.hostnames(), IsEmpty());
   EXPECT_FALSE(result.has_ttl());
 }
 
@@ -2359,13 +2340,11 @@ TEST(HostCacheTest, MergeEntries_frontWithAliasesNoAddressesBackWithBoth) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.ip_endpoints());
-  EXPECT_THAT(*result.ip_endpoints(), ElementsAre(kEndpointBack));
+  EXPECT_THAT(result.ip_endpoints(), ElementsAre(kEndpointBack));
 
   EXPECT_EQ(base::Hours(4), result.ttl());
 
-  ASSERT_TRUE(result.aliases());
-  EXPECT_THAT(*result.aliases(),
+  EXPECT_THAT(result.aliases(),
               UnorderedElementsAre("alias0", "alias1", "alias2", "alias3"));
 }
 
@@ -2386,13 +2365,11 @@ TEST(HostCacheTest, MergeEntries_backWithAliasesNoAddressesFrontWithBoth) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.ip_endpoints());
-  EXPECT_THAT(*result.ip_endpoints(), ElementsAre(kEndpointFront));
+  EXPECT_THAT(result.ip_endpoints(), ElementsAre(kEndpointFront));
 
   EXPECT_EQ(base::Hours(4), result.ttl());
 
-  ASSERT_TRUE(result.aliases());
-  EXPECT_THAT(*result.aliases(),
+  EXPECT_THAT(result.aliases(),
               UnorderedElementsAre("alias0", "alias1", "alias2", "alias3"));
 }
 
@@ -2413,14 +2390,12 @@ TEST(HostCacheTest, MergeEntries_frontWithAddressesNoAliasesBackWithBoth) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.ip_endpoints());
-  EXPECT_THAT(*result.ip_endpoints(),
+  EXPECT_THAT(result.ip_endpoints(),
               ElementsAre(kEndpointFront, kEndpointBack));
 
   EXPECT_EQ(base::Hours(4), result.ttl());
 
-  ASSERT_TRUE(result.aliases());
-  EXPECT_THAT(*result.aliases(),
+  EXPECT_THAT(result.aliases(),
               UnorderedElementsAre("alias1", "alias2", "alias3"));
 }
 
@@ -2441,14 +2416,12 @@ TEST(HostCacheTest, MergeEntries_backWithAddressesNoAliasesFrontWithBoth) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.ip_endpoints());
-  EXPECT_THAT(*result.ip_endpoints(),
+  EXPECT_THAT(result.ip_endpoints(),
               ElementsAre(kEndpointFront, kEndpointBack));
 
   EXPECT_EQ(base::Hours(4), result.ttl());
 
-  ASSERT_TRUE(result.aliases());
-  EXPECT_THAT(*result.aliases(),
+  EXPECT_THAT(result.aliases(),
               UnorderedElementsAre("alias1", "alias2", "alias3"));
 }
 
@@ -2474,8 +2447,7 @@ TEST(HostCacheTest, MergeEntries_FrontCannonnamePreserved) {
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
 
-  ASSERT_TRUE(result.aliases());
-  EXPECT_THAT(*result.aliases(), UnorderedElementsAre("name1", "name2"));
+  EXPECT_THAT(result.aliases(), UnorderedElementsAre("name1", "name2"));
 }
 
 // Test that the back canonname can be used if there is no front cannonname.
@@ -2489,8 +2461,7 @@ TEST(HostCacheTest, MergeEntries_BackCannonnameUsable) {
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
 
-  ASSERT_TRUE(result.aliases());
-  EXPECT_THAT(*result.aliases(), UnorderedElementsAre("name2"));
+  EXPECT_THAT(result.aliases(), UnorderedElementsAre("name2"));
 }
 
 TEST(HostCacheTest, ConvertFromInternalAddressResult) {
@@ -2500,16 +2471,16 @@ TEST(HostCacheTest, ConvertFromInternalAddressResult) {
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
   constexpr base::TimeDelta kTtl3 = base::Minutes(55);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalDataResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalDataResult>(
       "endpoint.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       kEndpoints, std::vector<std::string>{}, std::vector<HostPortPair>{}));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl3,
       base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));
@@ -2542,16 +2513,16 @@ TEST(HostCacheTest, ConvertFromInternalMetadataResult) {
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
   constexpr base::TimeDelta kTtl3 = base::Minutes(55);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalMetadataResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalMetadataResult>(
       "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       kMetadatas));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl3,
       base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));
@@ -2578,16 +2549,16 @@ TEST(HostCacheTest, ConvertFromCompatibleOnlyInternalMetadataResult) {
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
   constexpr base::TimeDelta kTtl3 = base::Minutes(55);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalMetadataResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalMetadataResult>(
       "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       kMetadatas));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl3,
       base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));
@@ -2608,16 +2579,16 @@ TEST(HostCacheTest, ConvertFromInternalErrorResult) {
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
   constexpr base::TimeDelta kTtl3 = base::Minutes(55);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalErrorResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalErrorResult>(
       "endpoint.test", DnsQueryType::A, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       ERR_NAME_NOT_RESOLVED));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::A, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::A, base::TimeTicks() + kTtl3,
       base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));
@@ -2636,16 +2607,16 @@ TEST(HostCacheTest, ConvertFromNonCachableInternalErrorResult) {
   constexpr base::TimeDelta kTtl1 = base::Minutes(45);
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalErrorResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalErrorResult>(
       "endpoint.test", DnsQueryType::AAAA, /*expiration=*/absl::nullopt,
       /*timed_expiration=*/absl::nullopt,
       HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));
@@ -2664,12 +2635,12 @@ TEST(HostCacheTest, ConvertFromInternalAliasOnlyResult) {
   constexpr base::TimeDelta kTtl1 = base::Minutes(45);
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::A, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::A, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));

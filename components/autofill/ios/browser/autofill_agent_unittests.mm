@@ -10,6 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/ui/mock_autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -32,6 +33,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -42,8 +45,7 @@ using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
-using autofill::POPUP_ITEM_ID_CLEAR_FORM;
-using autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS;
+using autofill::PopupItemId;
 using autofill::PopupType;
 using base::test::ios::WaitUntilCondition;
 
@@ -221,13 +223,12 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   __block BOOL completion_handler_called = NO;
 
   autofill::MockAutofillPopupDelegate mock_delegate;
-  EXPECT_CALL(mock_delegate, GetPopupType);
   EXPECT_CALL(mock_delegate, OnPopupShown);
 
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", "", POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS));
+      autofill::Suggestion("", "", "", PopupItemId::kShowAccountCards));
   [autofill_agent_ showAutofillPopup:autofillSuggestions
                        popupDelegate:mock_delegate.GetWeakPtr()];
 
@@ -258,14 +259,14 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
 
   // "Show credit cards from account" should be the only suggestion.
   EXPECT_EQ(1U, completion_handler_suggestions.count);
-  EXPECT_EQ(POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS,
+  EXPECT_EQ(PopupItemId::kShowAccountCards,
             completion_handler_suggestions[0].identifier);
 }
 
 // Tests that only credit card suggestions would have icons.
 TEST_F(AutofillAgentTests,
        showAutofillPopup_ShowIconForCreditCardSuggestionsOnly) {
-  __block NSString* completion_handler_icon_name = nil;
+  __block UIImage* completion_handler_icon = nil;
 
   // Mock different popup types.
   testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
@@ -275,11 +276,20 @@ TEST_F(AutofillAgentTests,
       .WillOnce(testing::Return(PopupType::kUnspecified));
   // Initialize suggestion.
   std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion("", "", "icon", POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS)};
+      autofill::Suggestion("", "", "visaCC",
+                           autofill::Suggestion::FrontendId(1)),
+      // This suggestion has a valid credit card icon, but the Suggestion type
+      // (kShowAccountCards) is wrong.
+      autofill::Suggestion("", "", "visaCC",
+                           autofill::PopupItemId::kShowAccountCards),
+  };
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
                              id<FormSuggestionProvider> delegate) {
-    completion_handler_icon_name = [suggestions[0].icon copy];
+    ASSERT_EQ(2U, suggestions.count);
+    completion_handler_icon = [suggestions[0].icon copy];
+    // The non-credit card suggestion should never have an icon.
+    EXPECT_EQ(nil, suggestions[1].icon);
   };
 
   // Make credit card suggestion.
@@ -288,21 +298,100 @@ TEST_F(AutofillAgentTests,
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
-  EXPECT_NSEQ(@"icon", completion_handler_icon_name);
+  EXPECT_NE(nil, completion_handler_icon);
   // Make address suggestion.
   [autofill_agent_ showAutofillPopup:autofillSuggestions
                        popupDelegate:mock_delegate.GetWeakPtr()];
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
-  EXPECT_EQ(nil, completion_handler_icon_name);
+  EXPECT_EQ(nil, completion_handler_icon);
   // Make unspecified suggestion.
   [autofill_agent_ showAutofillPopup:autofillSuggestions
                        popupDelegate:mock_delegate.GetWeakPtr()];
   [autofill_agent_ retrieveSuggestionsForForm:nil
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
-  EXPECT_EQ(nil, completion_handler_icon_name);
+  EXPECT_EQ(nil, completion_handler_icon);
+}
+
+// Tests that an empty network icon in a credit card suggestion will not cause
+// any problems. Regression test for crbug.com/1446933
+TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
+  // Deliberately initialize this as non-nil, as we are expecting it to be set
+  // to nil by the test.
+  __block UIImage* completion_handler_icon = gfx::test::CreatePlatformImage();
+  ASSERT_NE(nil, completion_handler_icon);
+
+  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+  EXPECT_CALL(mock_delegate, GetPopupType)
+      .WillRepeatedly(testing::Return(PopupType::kCreditCards));
+
+  const std::string emptyIcon = "";
+  std::vector<autofill::Suggestion> autofillSuggestions = {autofill::Suggestion(
+      "", "", emptyIcon, autofill::Suggestion::FrontendId(1))};
+
+  // Completion handler to retrieve suggestions.
+  auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
+                             id<FormSuggestionProvider> delegate) {
+    completion_handler_icon = [suggestions[0].icon copy];
+  };
+
+  // Make credit card suggestion.
+  [autofill_agent_ showAutofillPopup:autofillSuggestions
+                       popupDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+  EXPECT_EQ(nil, completion_handler_icon);
+}
+
+// Tests that for credit cards, a custom icon is preferred over the default
+// icon.
+TEST_F(AutofillAgentTests,
+       showAutofillPopup_PreferCustomIconForCreditCardSuggestions) {
+  const std::string suggestion_network_icon = "visaCC";
+  UIImage* network_icon_image =
+      ui::ResourceBundle::GetSharedInstance()
+          .GetNativeImageNamed(
+              autofill::CreditCard::IconResourceId(suggestion_network_icon))
+          .ToUIImage();
+  gfx::Image custom_icon = gfx::test::CreateImage(5, 5);
+
+  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+  EXPECT_CALL(mock_delegate, GetPopupType)
+      .WillRepeatedly(testing::Return(PopupType::kCreditCards));
+
+  // Completion handler to retrieve suggestions.
+  __block UIImage* completion_handler_icon = nil;
+  auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
+                             id<FormSuggestionProvider> delegate) {
+    completion_handler_icon = [suggestions[0].icon copy];
+  };
+
+  // Initialize suggestion, initially without a custom icon.
+  std::vector<autofill::Suggestion> autofillSuggestions = {autofill::Suggestion(
+      "", "", suggestion_network_icon, autofill::Suggestion::FrontendId(1))};
+  ASSERT_TRUE(autofillSuggestions[0].custom_icon.IsEmpty());
+
+  // When the custom icon is not present, the default icon should be used.
+  [autofill_agent_ showAutofillPopup:autofillSuggestions
+                       popupDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+  EXPECT_TRUE(gfx::test::PlatformImagesEqual(completion_handler_icon,
+                                             network_icon_image));
+
+  // Now set a custom icon, which should override the default.
+  autofillSuggestions[0].custom_icon = custom_icon;
+  [autofill_agent_ showAutofillPopup:autofillSuggestions
+                       popupDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+  EXPECT_TRUE(gfx::test::PlatformImagesEqual(completion_handler_icon,
+                                             custom_icon.ToUIImage()));
 }
 
 // Tests that when Autofill suggestions are made available to AutofillAgent
@@ -319,7 +408,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(321)));
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", "", POPUP_ITEM_ID_CLEAR_FORM));
+      autofill::Suggestion("", "", "", PopupItemId::kClearForm));
   [autofill_agent_
       showAutofillPopup:autofillSuggestions
           popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
@@ -352,7 +441,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   // "Clear Form" should appear as the first suggestion. Otherwise, the order of
   // suggestions should not change.
   EXPECT_EQ(3U, completion_handler_suggestions.count);
-  EXPECT_EQ(POPUP_ITEM_ID_CLEAR_FORM,
+  EXPECT_EQ(PopupItemId::kClearForm,
             completion_handler_suggestions[0].identifier);
   EXPECT_EQ(123, completion_handler_suggestions[1].identifier);
   EXPECT_EQ(321, completion_handler_suggestions[2].identifier);
@@ -371,7 +460,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(321)));
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", "", POPUP_ITEM_ID_CLEAR_FORM));
+      autofill::Suggestion("", "", "", PopupItemId::kClearForm));
   [autofill_agent_
       showAutofillPopup:autofillSuggestions
           popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
@@ -402,7 +491,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   });
 
   EXPECT_EQ(3U, completion_handler_suggestions.count);
-  EXPECT_EQ(POPUP_ITEM_ID_CLEAR_FORM,
+  EXPECT_EQ(PopupItemId::kClearForm,
             completion_handler_suggestions[0].identifier);
   EXPECT_EQ(123, completion_handler_suggestions[1].identifier);
   EXPECT_EQ(321, completion_handler_suggestions[2].identifier);

@@ -223,7 +223,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
   // Resets account_selected state through JS to allow another account to be
   // selected, also resets `lacros_sign_in_provider_`.
-  void OnReauthDialogClosed();
+  void OnReauthDialogClosed(
+      const account_manager::AccountUpsertionResult& result);
 
   // AccountProfileMapper::Observer:
   void OnAccountUpserted(const base::FilePath& profile_path,

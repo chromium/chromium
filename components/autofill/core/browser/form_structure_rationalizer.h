@@ -32,6 +32,11 @@ class FormStructureRationalizer {
   FormStructureRationalizer& operator=(const FormStructureRationalizer&) =
       delete;
 
+  // Rationalizes autocomplete attributes like turning a generic
+  // autocomplete="cc-exp-year" into a 2 digit or 4 digit year if there are
+  // hints like max-length=4.
+  void RationalizeAutocompleteAttributes(LogManager* log_manager);
+
   // Tunes the fields with identical predictions.
   void RationalizeRepeatedFields(AutofillMetrics::FormInteractionsUkmLogger*,
                                  LogManager* log_manager);

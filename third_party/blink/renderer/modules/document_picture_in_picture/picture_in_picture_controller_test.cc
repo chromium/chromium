@@ -547,7 +547,7 @@ TEST_F(PictureInPictureControllerTestWithWidget,
 
   // Verify rejected with DOMExceptionCode::kInvalidStateError.
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
-  DOMException* dom_exception = V8DOMException::ToImplWithTypeCheck(
+  DOMException* dom_exception = V8DOMException::ToWrappable(
       promise.GetIsolate(), promise.V8Promise()->Result());
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kInvalidStateError),
@@ -813,6 +813,12 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   Document* pictureInPictureDocument = pictureInPictureWindow->document();
 
   // CSS for a blue background should have been copied from the opener.
+  EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
+            "rgb(0, 0, 255)");
+
+  // Changing the opener's sheets should not result in a change to PiP.
+  CSSStyleSheet* sheet = DynamicTo<CSSStyleSheet>(FindStyleSheetInOpener());
+  sheet->deleteRule(0, v8_scope.GetExceptionState());
   EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
             "rgb(0, 0, 255)");
 }

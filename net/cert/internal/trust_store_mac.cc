@@ -65,6 +65,8 @@ TrustStatus IsTrustDictionaryTrustedForPolicy(
     bool is_self_issued,
     const CFStringRef target_policy_oid,
     int* debug_info) {
+  crypto::GetMacSecurityServicesLock().AssertAcquired();
+
   // An empty trust dict should be interpreted as
   // kSecTrustSettingsResultTrustRoot. This is handled by falling through all
   // the conditions below with the default value of |trust_settings_result|.
@@ -130,11 +132,8 @@ TrustStatus IsTrustDictionaryTrustedForPolicy(
       *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_INVALID_POLICY_TYPE;
       return TrustStatus::UNSPECIFIED;
     }
-    base::ScopedCFTypeRef<CFDictionaryRef> policy_dict;
-    {
-      base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-      policy_dict.reset(SecPolicyCopyProperties(policy_ref));
-    }
+    base::ScopedCFTypeRef<CFDictionaryRef> policy_dict(
+        SecPolicyCopyProperties(policy_ref));
 
     // kSecPolicyOid is guaranteed to be present in the policy dictionary.
     CFStringRef policy_oid = base::mac::GetValueFromDictionary<CFStringRef>(
@@ -220,13 +219,12 @@ TrustStatus IsSecCertificateTrustedForPolicyInDomain(
     const CFStringRef policy_oid,
     SecTrustSettingsDomain trust_domain,
     int* debug_info) {
+  crypto::GetMacSecurityServicesLock().AssertAcquired();
+
   base::ScopedCFTypeRef<CFArrayRef> trust_settings;
-  OSStatus err;
-  {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    err = SecTrustSettingsCopyTrustSettings(cert_handle, trust_domain,
-                                            trust_settings.InitializeInto());
-  }
+  OSStatus err = SecTrustSettingsCopyTrustSettings(
+      cert_handle, trust_domain, trust_settings.InitializeInto());
+
   if (err == errSecItemNotFound) {
     // No trust settings for that domain.. try the next.
     return TrustStatus::UNSPECIFIED;
@@ -415,7 +413,7 @@ class TrustDomainCacheFullCerts {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;
       }
-      cert_issuer_source_.AddCert(parsed_cert);
+      cert_issuer_source_.AddCert(std::move(parsed_cert));
       trust_status_vector.emplace_back(x509_util::CalculateFingerprint256(cert),
                                        TrustStatusDetails());
     }
@@ -443,6 +441,8 @@ class TrustDomainCacheFullCerts {
                      TrustStoreMac::TrustImplType::kDomainCacheFullCerts);
       return cache_iter->second.trust_status;
     }
+
+    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
 
     // Cert has trust settings but trust has not been calculated yet.
     // Calculate it now, insert into cache, and return.

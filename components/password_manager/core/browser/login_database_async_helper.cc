@@ -54,8 +54,8 @@ bool LoginDatabaseAsyncHelper::Initialize(
     LOG(ERROR) << "Could not create/open login database.";
   }
   if (success) {
-    login_db_->password_sync_metadata_store().SetDeletionsHaveSyncedCallback(
-        base::BindRepeating(
+    login_db_->password_sync_metadata_store()
+        .SetPasswordDeletionsHaveSyncedCallback(base::BindRepeating(
             &LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced,
             weak_ptr_factory_.GetWeakPtr()));
 
@@ -255,8 +255,9 @@ PasswordChangesOrError LoginDatabaseAsyncHelper::RemoveLoginsByURLAndTime(
 
     // Do an immediate check for the case where there are already no unsynced
     // deletions.
-    if (!GetMetadataStore()->HasUnsyncedDeletions())
+    if (!GetMetadataStore()->HasUnsyncedPasswordDeletions()) {
       NotifyDeletionsHaveSynced(/*success=*/true);
+    }
   }
   return success ? changes
                  : PasswordChangesOrError(PasswordStoreBackendError(
@@ -379,7 +380,7 @@ void LoginDatabaseAsyncHelper::NotifyDeletionsHaveSynced(bool success) {
   // telling us that it won't commit them (because Sync was turned off
   // permanently). In either case, run the corresponding callbacks now (on the
   // main task runner).
-  DCHECK(!success || !GetMetadataStore()->HasUnsyncedDeletions());
+  DCHECK(!success || !GetMetadataStore()->HasUnsyncedPasswordDeletions());
   for (auto& callback : deletions_have_synced_callbacks_) {
     main_task_runner_->PostTask(FROM_HERE,
                                 base::BindOnce(std::move(callback), success));

@@ -20,6 +20,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -4643,14 +4644,15 @@ class FencedFrameReportEventBrowserTest
       kNoMeta,
       kNoDestination,
       kNoReportingURL,
-      kInvalidReportingURL
+      kInvalidReportingURL,
+      kExceedMaxEventDataLength
     };
 
     // Outcome of reportEvent.
     Result report_event_result = Result::kSuccess;
   };
 
-  std::string GetConsoleWarningPattern(Step::Result result) {
+  std::string GetErrorPattern(Step::Result result) {
     switch (result) {
       case Step::Result::kModeNotOpaque:
         return "Fenced event reporting is only available in the 'opaque-ads' "
@@ -4669,6 +4671,9 @@ class FencedFrameReportEventBrowserTest
       case Step::Result::kInvalidReportingURL:
         return "This frame registered invalid reporting url for destination * "
                "and event_type *";
+      case Step::Result::kExceedMaxEventDataLength:
+        return "The data provided to reportEvent() exceeds the maximum length, "
+               "which is 64KB.";
       default:
         return "";
     }
@@ -4920,8 +4925,7 @@ class FencedFrameReportEventBrowserTest
           };
       console_observer.SetFilter(base::BindRepeating(filter));
       if (step.report_event_result != Step::Result::kSuccess) {
-        console_observer.SetPattern(
-            GetConsoleWarningPattern(step.report_event_result));
+        console_observer.SetPattern(GetErrorPattern(step.report_event_result));
       }
 
       // Perform the reportEvent call, with a unique body.
@@ -4938,8 +4942,8 @@ class FencedFrameReportEventBrowserTest
                       step.event.type, step.event.reporting_destination)));
       } else {
         // Call reportEvent with `eventData`.
-        EXPECT_TRUE(
-            ExecJs(navigation_target_node,
+        EvalJsResult result =
+            EvalJs(navigation_target_node,
                    JsReplace(R"(
               window.fence.reportEvent({
                 eventType: $1,
@@ -4948,7 +4952,20 @@ class FencedFrameReportEventBrowserTest
               });
             )",
                              step.event.type, step.event.reporting_destination,
-                             step.event.data.value(), navigation_index)));
+                             step.event.data.value(), navigation_index));
+
+        if (step.report_event_result ==
+            Step::Result::kExceedMaxEventDataLength) {
+          // When eventData exceeds the length limit, a security error is thrown
+          // instead of a console error.
+          EXPECT_FALSE(result.error.empty());
+          EXPECT_THAT(
+              result.error,
+              testing::HasSubstr(GetErrorPattern(step.report_event_result)));
+          continue;
+        }
+
+        EXPECT_TRUE(result.error.empty());
       }
 
       // If relevant, check that the event report succeeded.
@@ -4966,9 +4983,9 @@ class FencedFrameReportEventBrowserTest
         }
         // Verify the request contains the eligibility header.
         if (step.expect_attribution_reporting_allowed) {
-          EXPECT_EQ(response.http_request()->headers.at(
-                        "Attribution-Reporting-Eligible"),
-                    "event-source");
+          ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+              response.http_request()->headers.at(
+                  "Attribution-Reporting-Eligible"));
         } else {
           EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                       "Attribution-Reporting-Eligible"));
@@ -5030,7 +5047,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
         return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
       };
   console_observer.SetFilter(base::BindRepeating(filter));
-  console_observer.SetPattern(GetConsoleWarningPattern(Step::Result::kNoMeta));
+  console_observer.SetPattern(GetErrorPattern(Step::Result::kNoMeta));
 
   // Perform the reportEvent call, with a unique body.
   const char report_event_script[] = R"(
@@ -5081,6 +5098,23 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                     /*data=*/absl::nullopt},
           .destination = {"a.test", "/fenced_frames/title1.html"},
           .report_event_result = Step::Result::kSuccess,
+      },
+  };
+  RunTest(config);
+}
+
+// The `eventData` field should not exceed the limit of 64KB.
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportEventEventDataExceedsLengthLimit) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .event = {/*type=*/"click", /*reporting_destination=*/"buyer",
+                    /*data=*/
+                    std::string(blink::kFencedFrameMaxBeaconLength + 1, '*')},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kExceedMaxEventDataLength,
       },
   };
   RunTest(config);
@@ -5479,9 +5513,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   // Verify the request has the correct content.
   EXPECT_EQ(reporting_response.http_request()->content, event_data);
   // Verify the request contains the eligibility header.
-  EXPECT_EQ(reporting_response.http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source");
+  ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+      reporting_response.http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
                               "Attribution-Reporting-Support"));
 }
@@ -5567,9 +5601,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_EQ(response.http_request()->content, event_data);
     EXPECT_EQ(response.http_request()->method,
               net::test_server::HttpMethod::METHOD_POST);
-    EXPECT_EQ(
-        response.http_request()->headers.at("Attribution-Reporting-Eligible"),
-        "event-source");
+    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+        response.http_request()->headers.at("Attribution-Reporting-Eligible"));
     EXPECT_TRUE(
         base::Contains(response.http_request()->headers, "Content-Length"));
     EXPECT_TRUE(
@@ -5604,9 +5637,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     // Check that the content body was stripped.
     EXPECT_TRUE(redirect_response.http_request()->content.empty());
     // These extra request headers were not stripped.
-    EXPECT_EQ(redirect_response.http_request()->headers.at(
-                  "Attribution-Reporting-Eligible"),
-              "event-source");
+    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+        redirect_response.http_request()->headers.at(
+            "Attribution-Reporting-Eligible"));
     EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                 "Attribution-Reporting-Support"));
   }
@@ -5700,9 +5733,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                                "Content-Type"));
     EXPECT_TRUE(
         base::Contains(reporting_response.http_request()->headers, "Origin"));
-    EXPECT_EQ(reporting_response.http_request()->headers.at(
-                  "Attribution-Reporting-Eligible"),
-              "event-source");
+    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+        reporting_response.http_request()->headers.at(
+            "Attribution-Reporting-Eligible"));
     EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
                                 "Attribution-Reporting-Support"));
 
@@ -5731,9 +5764,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     // Check that the content body was stripped.
     EXPECT_TRUE(redirect_response.http_request()->content.empty());
     // These extra request headers were not stripped.
-    EXPECT_EQ(redirect_response.http_request()->headers.at(
-                  "Attribution-Reporting-Eligible"),
-              "event-source");
+    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+        redirect_response.http_request()->headers.at(
+            "Attribution-Reporting-Eligible"));
     EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
                                 "Attribution-Reporting-Support"));
   }
@@ -5905,9 +5938,8 @@ IN_PROC_BROWSER_TEST_F(
   // Verify the request contains the eligibility header.
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, event_data);
-  EXPECT_EQ(
-      response.http_request()->headers.at("Attribution-Reporting-Eligible"),
-      "event-source");
+  ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+      response.http_request()->headers.at("Attribution-Reporting-Eligible"));
   EXPECT_EQ(
       response.http_request()->headers.at("Attribution-Reporting-Support"),
       "os, web");
@@ -5985,9 +6017,9 @@ IN_PROC_BROWSER_TEST_F(
   {
     reporting_response.WaitForRequest();
     EXPECT_EQ(reporting_response.http_request()->content, event_data);
-    EXPECT_EQ(reporting_response.http_request()->headers.at(
-                  "Attribution-Reporting-Eligible"),
-              "event-source");
+    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+        reporting_response.http_request()->headers.at(
+            "Attribution-Reporting-Eligible"));
     EXPECT_EQ(reporting_response.http_request()->headers.at(
                   "Attribution-Reporting-Support"),
               "web");
@@ -6337,17 +6369,31 @@ class FencedFrameAutomaticBeaconBrowserTest
                    ad_frame_execjs_options));
       } else {
         // Call `setReportEventDataForAutomaticBeacons()` with `eventData`.
-        EXPECT_TRUE(ExecJs(ad_frame_root_node,
-                           JsReplace(R"(
+        EvalJsResult result =
+            EvalJs(ad_frame_root_node,
+                   JsReplace(R"(
               window.fence.setReportEventDataForAutomaticBeacons({
                 eventType: $1,
                 eventData: $2,
                 destination: ['seller', 'buyer']
               });
             )",
-                                     blink::kFencedFrameTopNavigationBeaconType,
-                                     config.message.value()),
-                           ad_frame_execjs_options));
+                             blink::kFencedFrameTopNavigationBeaconType,
+                             config.message.value()),
+                   ad_frame_execjs_options);
+
+        if (config.message->length() > blink::kFencedFrameMaxBeaconLength) {
+          // When eventData exceeds the length limit, a security error is thrown
+          // instead of a console error.
+          EXPECT_FALSE(result.error.empty());
+          EXPECT_THAT(
+              result.error,
+              testing::HasSubstr("The data provided to "
+                                 "setReportEventDataForAutomaticBeacons() "
+                                 "exceeds the maximum length, which is 64KB."));
+        } else {
+          EXPECT_TRUE(result.error.empty());
+        }
       }
     }
 
@@ -6389,9 +6435,8 @@ class FencedFrameAutomaticBeaconBrowserTest
       EXPECT_EQ(response.http_request()->content, config.message);
     }
     // Verify the request contains the eligibility header.
-    EXPECT_EQ(
-        response.http_request()->headers.at("Attribution-Reporting-Eligible"),
-        "navigation-source");
+    ExpectValidAttributionReportingEligibleHeaderForNavigation(
+        response.http_request()->headers.at("Attribution-Reporting-Eligible"));
     EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                 "Attribution-Reporting-Support"));
     response.Done();
@@ -6437,6 +6482,17 @@ IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest, EmptyMessage) {
       .navigation_url = {"b.test", "/fenced_frames/title1.html"},
       .message = "",
       .expected_success = true,
+  };
+  RunTest(config);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
+                       MessageExceedsLengthLimit) {
+  Config config = {
+      .starting_url = {"a.test", "/fenced_frames/title1.html"},
+      .navigation_url = {"b.test", "/fenced_frames/title1.html"},
+      .message = std::string(blink::kFencedFrameMaxBeaconLength + 1, '*'),
+      .expected_success = false,
   };
   RunTest(config);
 }

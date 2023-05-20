@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -379,8 +380,8 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     // YUVABackendTexture for multiplanar formats.
     virtual sk_sp<SkImage> CreateSkImage(
         SharedContextState* context_state,
-        SkImage::TextureReleaseProc texture_release_proc = nullptr,
-        SkImage::ReleaseContext release_context = nullptr) = 0;
+        SkImages::TextureReleaseProc texture_release_proc = nullptr,
+        SkImages::ReleaseContext release_context = nullptr) = 0;
     // Creates an SkImage for the given `plane_index` for
     // multiplanar formats.
     virtual sk_sp<SkImage> CreateSkImageForPlane(
@@ -496,8 +497,8 @@ class GPU_GLES2_EXPORT SkiaGaneshImageRepresentation
     // GrYUVABackendTexture for multiplanar formats.
     sk_sp<SkImage> CreateSkImage(
         SharedContextState* context_state,
-        SkImage::TextureReleaseProc texture_release_proc = nullptr,
-        SkImage::ReleaseContext release_context = nullptr) override;
+        SkImages::TextureReleaseProc texture_release_proc = nullptr,
+        SkImages::ReleaseContext release_context = nullptr) override;
     // Creates an SkImage for the given `plane_index` from GrBackendTexture for
     // multiplanar formats.
     sk_sp<SkImage> CreateSkImageForPlane(
@@ -644,8 +645,8 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
     // YUVABackendTexture for multiplanar formats.
     sk_sp<SkImage> CreateSkImage(
         SharedContextState* context_state,
-        SkImage::TextureReleaseProc texture_release_proc = nullptr,
-        SkImage::ReleaseContext release_context = nullptr) override;
+        SkImages::TextureReleaseProc texture_release_proc = nullptr,
+        SkImages::ReleaseContext release_context = nullptr) override;
     // Creates an SkImage for the given `plane_index` from BackendTexture for
     // multiplanar formats.
     sk_sp<SkImage> CreateSkImageForPlane(

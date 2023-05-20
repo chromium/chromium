@@ -44,8 +44,7 @@ class User;
 }  // namespace user_manager
 
 // These methods are used by ash-chrome.
-namespace crosapi {
-namespace browser_util {
+namespace crosapi::browser_util {
 
 // Indicates how the decision for the usage of Lacros has been made.
 enum class LacrosLaunchSwitchSource {
@@ -534,7 +533,6 @@ bool ShouldEnforceAshExtensionKeepList();
 base::AutoReset<absl::optional<bool>> SetLacrosPrimaryBrowserForTest(
     absl::optional<bool> value);
 
-}  // namespace browser_util
-}  // namespace crosapi
+}  // namespace crosapi::browser_util
 
 #endif  // CHROME_BROWSER_ASH_CROSAPI_BROWSER_UTIL_H_

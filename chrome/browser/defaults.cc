@@ -46,12 +46,6 @@ const bool kShowHelpMenuItemIcon = false;
 
 const bool kDownloadPageHasShowInFolder = true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const bool kSyncAutoStarts = true;
-#else
-const bool kSyncAutoStarts = false;
-#endif
-
 #if BUILDFLAG(IS_LINUX)
 const bool kScrollEventChangesTab = true;
 #else

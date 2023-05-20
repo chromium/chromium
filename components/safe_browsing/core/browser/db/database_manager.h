@@ -199,10 +199,12 @@ class SafeBrowsingDatabaseManager
   //
 
   // Check if the |url| matches any of the full-length hashes from the download
-  // allowlist.  Returns true if there was a match and false otherwise. To make
-  // sure we are conservative we will return true if an error occurs.  This
-  // method must be called on the IO thread.
-  virtual bool MatchDownloadAllowlistUrl(const GURL& url) = 0;
+  // allowlist. Runs `callback` asynchronously with true if there was a match
+  // and false otherwise. To make sure we are conservative we will return true
+  // if an error occurs.  This method must be called on the IO thread.
+  virtual void MatchDownloadAllowlistUrl(
+      const GURL& url,
+      base::OnceCallback<void(bool)> callback) = 0;
 
   //
   // Methods to check the config of the DatabaseManager.

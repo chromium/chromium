@@ -72,14 +72,16 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
   bool LogicalScroll(mojom::blink::ScrollDirection,
                      ui::ScrollGranularity,
                      Node* start_node,
-                     Node* mouse_press_node);
+                     Node* mouse_press_node,
+                     bool scrolling_via_key = false);
 
   // Performs a logical scroll that chains, crossing frames, starting from
   // the given node or a reasonable default (focus/last clicked).
   bool BubblingScroll(mojom::blink::ScrollDirection,
                       ui::ScrollGranularity,
                       Node* starting_node,
-                      Node* mouse_press_node);
+                      Node* mouse_press_node,
+                      bool scrolling_via_key = false);
 
   // TODO(crbug.com/616491): Consider moving all gesture related functions to
   // another class.

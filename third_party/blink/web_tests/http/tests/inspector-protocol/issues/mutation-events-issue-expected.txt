@@ -1,0 +1,117 @@
+Verifies that adding Mutation Event listeners triggers a deprecation issue.
+Issue for DOMCharacterDataModified: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 15
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/mutation-events.html?DOMCharacterDataModified
+                }
+                type : DOMMutationEvents
+            }
+        }
+    }
+}
+Issue for DOMNodeInserted: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 15
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/mutation-events.html?DOMNodeInserted
+                }
+                type : DOMMutationEvents
+            }
+        }
+    }
+}
+Issue for DOMNodeInsertedIntoDocument: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 15
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/mutation-events.html?DOMNodeInsertedIntoDocument
+                }
+                type : DOMMutationEvents
+            }
+        }
+    }
+}
+Issue for DOMNodeRemoved: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 15
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/mutation-events.html?DOMNodeRemoved
+                }
+                type : DOMMutationEvents
+            }
+        }
+    }
+}
+Issue for DOMNodeRemovedFromDocument: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 15
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/mutation-events.html?DOMNodeRemovedFromDocument
+                }
+                type : DOMMutationEvents
+            }
+        }
+    }
+}
+Issue for DOMSubtreeModified: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 15
+                    lineNumber : 6
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/mutation-events.html?DOMSubtreeModified
+                }
+                type : DOMMutationEvents
+            }
+        }
+    }
+}
+Non-Mutation Event generated issue: PASS
+

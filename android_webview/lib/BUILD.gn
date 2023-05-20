@@ -67,11 +67,6 @@ source_set("webview_entry_point") {
   sources = [ "webview_entry_point.cc" ]
   defines = []
 
-  if (allow_jni_multiplexing) {
-    defines += [ "JNI_REGISTRATION_REQUIRED" ]
-    deps += [ "//android_webview:webview_jni_registration($default_toolchain)" ]
-  }
-
   if (webview_includes_weblayer) {
     defines += [ "WEBVIEW_INCLUDES_WEBLAYER" ]
     deps += [ "//weblayer:weblayer_lib" ]

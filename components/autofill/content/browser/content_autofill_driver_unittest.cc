@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
@@ -59,10 +60,12 @@ using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::Gt;
+using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::SizeIs;
+using ::testing::WithArg;
 
 namespace {
 
@@ -168,6 +171,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   MOCK_METHOD(void,
               TriggerReparseWithResponse,
               (base::OnceCallback<void(bool)>),
+              (override));
+
+  MOCK_METHOD(void,
+              GetPotentialLastFourCombinationsForStandaloneCvc,
+              (base::OnceCallback<void(const std::vector<std::string>&)>),
               (override));
 
  private:
@@ -754,6 +762,46 @@ TEST_P(ContentAutofillDriverTest, TriggerReparseInAllFrames) {
 
   EXPECT_FALSE(trigger_reparse_finished_callback.is_null());
   std::move(trigger_reparse_finished_callback).Run(true);
+}
+
+TEST_P(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {
+  base::RunLoop run_loop;
+  auto cb =
+      [](base::OnceCallback<void(const std::vector<std::string>&)> callback) {
+        std::vector<std::string> matches;
+        std::move(callback).Run(matches);
+      };
+  EXPECT_CALL(fake_agent_, GetPotentialLastFourCombinationsForStandaloneCvc)
+      .WillOnce(WithArg<0>(Invoke(cb)));
+
+  std::vector<std::string> matches = {"dummy data"};
+  driver()->browser_events().GetFourDigitCombinationsFromDOM(
+      base::BindLambdaForTesting([&](const std::vector<std::string>& result) {
+        matches = result;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(matches.empty());
+}
+
+TEST_P(ContentAutofillDriverTest,
+       GetFourDigitCombinationsFromDOM_SuccessfulMatches) {
+  base::RunLoop run_loop;
+  auto cb =
+      [](base::OnceCallback<void(const std::vector<std::string>&)> callback) {
+        std::vector<std::string> matches = {"1234"};
+        std::move(callback).Run(matches);
+      };
+  EXPECT_CALL(fake_agent_, GetPotentialLastFourCombinationsForStandaloneCvc)
+      .WillOnce(WithArg<0>(Invoke(cb)));
+  std::vector<std::string> matches;
+  driver()->browser_events().GetFourDigitCombinationsFromDOM(
+      base::BindLambdaForTesting([&](const std::vector<std::string>& result) {
+        matches = result;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_THAT(matches, ElementsAre("1234"));
 }
 
 INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverTest,

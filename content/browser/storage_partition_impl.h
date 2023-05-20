@@ -71,7 +71,6 @@ class BlobRegistryWrapper;
 class BluetoothAllowedDevicesMap;
 class BroadcastChannelService;
 class BrowsingDataFilterBuilder;
-class BrowsingTopicsURLLoaderService;
 class KeepAliveURLLoaderService;
 class BucketManager;
 class CacheStorageControlWrapper;
@@ -89,13 +88,13 @@ class LockManager;
 class MediaLicenseManager;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 class PaymentAppContextImpl;
-class PrefetchURLLoaderService;
 class PrivateAggregationManager;
 class PushMessagingContext;
 class ResourceCacheManager;
 class QuotaContext;
 class SharedStorageWorkletHostManager;
 class SharedWorkerServiceImpl;
+class SubresourceProxyingURLLoaderService;
 class NavigationOrDocumentHandle;
 
 class CONTENT_EXPORT StoragePartitionImpl
@@ -252,8 +251,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   BluetoothAllowedDevicesMap* GetBluetoothAllowedDevicesMap();
   BlobRegistryWrapper* GetBlobRegistry();
   storage::BlobUrlRegistry* GetBlobUrlRegistry();
-  PrefetchURLLoaderService* GetPrefetchURLLoaderService();
-  BrowsingTopicsURLLoaderService* GetBrowsingTopicsURLLoaderService();
+  SubresourceProxyingURLLoaderService* GetSubresourceProxyingURLLoaderService();
   KeepAliveURLLoaderService* GetKeepAliveURLLoaderService();
   CookieStoreManager* GetCookieStoreManager();
   FileSystemAccessManagerImpl* GetFileSystemAccessManager();
@@ -647,9 +645,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<BluetoothAllowedDevicesMap> bluetooth_allowed_devices_map_;
   scoped_refptr<BlobRegistryWrapper> blob_registry_;
   std::unique_ptr<storage::BlobUrlRegistry> blob_url_registry_;
-  std::unique_ptr<PrefetchURLLoaderService> prefetch_url_loader_service_;
-  std::unique_ptr<BrowsingTopicsURLLoaderService>
-      browsing_topics_url_loader_service_;
+  std::unique_ptr<SubresourceProxyingURLLoaderService>
+      subresource_proxying_url_loader_service_;
   std::unique_ptr<KeepAliveURLLoaderService> keep_alive_url_loader_service_;
   std::unique_ptr<CookieStoreManager> cookie_store_manager_;
   std::unique_ptr<BucketManager> bucket_manager_;

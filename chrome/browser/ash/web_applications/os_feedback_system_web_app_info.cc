@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -117,21 +118,28 @@ Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
   // This check is needed to enforce the policy no matter how and from where the
   // feedback tool is to be launched.
   if (IsUserFeedbackAllowed(profile)) {
-    apps::AppLaunchParams app_params(
-        params.app_id, params.container, params.disposition,
-        params.launch_source, params.display_id, params.launch_files,
-        params.intent ? params.intent->Clone() : nullptr);
-    // Take a screenshot and launch the app afterward.
-    ash::OsFeedbackScreenshotManager::GetInstance()->TakeScreenshot(
-        base::BindOnce(&OSFeedbackAppDelegate::OnScreenshotTaken,
-                       weak_ptr_factory_.GetWeakPtr(), profile, provider, url,
-                       std::move(app_params)));
+    // Check whether the feedback app is opened already. If yes, just show it.
+    Browser* browser = ash::FindSystemWebAppBrowser(
+        profile, ash::SystemWebAppType::OS_FEEDBACK);
+    if (browser) {
+      browser->window()->Show();
+    } else {
+      apps::AppLaunchParams app_params(
+          params.app_id, params.container, params.disposition,
+          params.launch_source, params.display_id, params.launch_files,
+          params.intent ? params.intent->Clone() : nullptr);
+      // Take a screenshot and launch the app afterward.
+      ash::OsFeedbackScreenshotManager::GetInstance()->TakeScreenshot(
+          base::BindOnce(&OSFeedbackAppDelegate::OnScreenshotTaken,
+                         weak_ptr_factory_.GetWeakPtr(), profile, provider, url,
+                         std::move(app_params)));
 
-    // Record an UMA histogram when feedback app is open from Launcher.
-    if (params.launch_source != apps::LaunchSource::kFromChromeInternal) {
-      UMA_HISTOGRAM_ENUMERATION("Feedback.RequestSource",
-                                chrome::kFeedbackSourceLauncher,
-                                chrome::kFeedbackSourceCount);
+      // Record an UMA histogram when feedback app is open from Launcher.
+      if (params.launch_source != apps::LaunchSource::kFromChromeInternal) {
+        UMA_HISTOGRAM_ENUMERATION("Feedback.RequestSource",
+                                  chrome::kFeedbackSourceLauncher,
+                                  chrome::kFeedbackSourceCount);
+      }
     }
   }
   // Return nullptr to tell the rest of the code SWA aborted the launch so that

@@ -331,6 +331,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK},
       {"apnSettingsZeroStateDescription",
        IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION},
+      {"apnSettingsDatabaseApnsErrorMessage",
+       IDS_SETTINGS_APN_DATABASE_APNS_ERROR_MESSAGE},
       {"apnSettingsCustomApnsErrorMessage",
        IDS_SETTINGS_APN_CUSTOM_APNS_ERROR_MESSAGE},
       {"apnMenuDetails", IDS_SETTINGS_APN_MENU_DETAILS},

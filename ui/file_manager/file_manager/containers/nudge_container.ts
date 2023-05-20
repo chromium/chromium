@@ -201,6 +201,8 @@ export class NudgeContainer {
       // Self dismissable nudge only dismisses if the user clicks on the nudge.
       this.nudge_.addEventListener(
           'pointerdown', () => this.closeNudge(this.currentNudgeType_), config);
+      anchor.addEventListener(
+          'pointerdown', () => this.closeNudge(this.currentNudgeType_), config);
       const dismissOnKeyDown = info.dismissOnKeyDown;
       if (dismissOnKeyDown) {
         document.addEventListener('keydown', (event: KeyboardEvent) => {

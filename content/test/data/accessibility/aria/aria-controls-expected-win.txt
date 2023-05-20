@@ -1,6 +1,6 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE n_relations=0
 ++ROLE_SYSTEM_MENUBAR IA2_STATE_HORIZONTAL n_relations=0
-++++ROLE_SYSTEM_MENUITEM name='File' n_relations=1
+++++ROLE_SYSTEM_MENUITEM name='File' n_relations=1 controllerFor='ROLE_SYSTEM_MENUPOPUP'
 ++++ROLE_SYSTEM_MENUITEM name='Edit' n_relations=0
 ++ROLE_SYSTEM_MENUPOPUP name='File' n_relations=1
 ++++ROLE_SYSTEM_MENUITEM name='New' n_relations=0

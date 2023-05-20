@@ -200,11 +200,13 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   letter_spacing_button_->SetBackground(
       views::CreateThemedSolidBackground(background_color_id));
 
-  decrease_text_size_button_->UpdateIcon(
-      kTextDecreaseIcon, kIconSize, foreground_color_id, focus_ring_color_id);
+  decrease_text_size_button_->UpdateIcon(kTextDecreaseIcon, kFontSizeIconSize,
+                                         foreground_color_id,
+                                         focus_ring_color_id);
 
-  increase_text_size_button_->UpdateIcon(
-      kTextIncreaseIcon, kIconSize, foreground_color_id, focus_ring_color_id);
+  increase_text_size_button_->UpdateIcon(kTextIncreaseIcon, kFontSizeIconSize,
+                                         foreground_color_id,
+                                         focus_ring_color_id);
 
   colors_button_->SetIcon(kPaletteIcon, kIconSize, foreground_color_id,
                           focus_ring_color_id);
@@ -213,11 +215,6 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
                                 foreground_color_id, focus_ring_color_id);
   letter_spacing_button_->SetIcon(kReadAnythingLetterSpacingIcon, kIconSize,
                                   foreground_color_id, focus_ring_color_id);
-
-  // Update fonts.
-  colors_button_->SetFont(font_name);
-  line_spacing_button_->SetFont(font_name);
-  letter_spacing_button_->SetFont(font_name);
 
   // Update the background colors for the dropdowns.
   colors_button_->SetDropdownColorIds(dropdown_color_id, foreground_color_id,

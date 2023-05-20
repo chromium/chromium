@@ -16,11 +16,13 @@
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -254,6 +256,12 @@ void FileManagerPrivateInternalGetPdfThumbnailFunction::FetchThumbnail(
   pdf_thumbnailer_.set_disconnect_handler(base::BindOnce(
       &FileManagerPrivateInternalGetPdfThumbnailFunction::ThumbnailDisconnected,
       base::Unretained(this)));
+  const PrefService* prefs =
+      Profile::FromBrowserContext(browser_context())->GetPrefs();
+  if (prefs && prefs->IsManagedPreference(prefs::kPdfUseSkiaRendererEnabled)) {
+    pdf_thumbnailer_->SetUseSkiaRendererPolicy(
+        prefs->GetBoolean(prefs::kPdfUseSkiaRendererEnabled));
+  }
   auto params = printing::mojom::ThumbParams::New(
       /*size_px=*/size, /*dpi=*/gfx::Size(kDpi, kDpi),
       /*stretch_to_bounds=*/false, /*keep_aspect_ratio=*/true);

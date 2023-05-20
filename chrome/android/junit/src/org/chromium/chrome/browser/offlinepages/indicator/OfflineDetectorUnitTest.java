@@ -8,13 +8,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.offlinepages.indicator.OfflineDetector.STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS;
 import static org.chromium.chrome.browser.offlinepages.indicator.OfflineDetector.STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS;
 import static org.chromium.chrome.browser.offlinepages.indicator.OfflineDetector.setMockElapsedTimeSupplier;
 
+import android.app.Application;
+import android.content.ContentResolver;
 import android.os.Handler;
+import android.provider.Settings;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,9 +54,14 @@ public class OfflineDetectorUnitTest {
     private int mIsForegroundNotificationsReceivedByObserver;
     private boolean mLastNotificationReceivedIsForeground;
 
+    private ContentResolver mContentResolver;
+    private Application mContext;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mContext = ApplicationProvider.getApplicationContext();
+        mContentResolver = mContext.getContentResolver();
 
         mElapsedTimeMs = 0;
         OfflineDetector.setMockElapsedTimeSupplier(() -> mElapsedTimeMs);
@@ -59,13 +70,14 @@ public class OfflineDetectorUnitTest {
 
         mOfflineDetector = new OfflineDetector((Boolean offline)
                                                        -> onConnectionStateChanged(offline),
-                (Boolean isForeground) -> onApplicationStateChanged(isForeground));
+                (Boolean isForeground) -> onApplicationStateChanged(isForeground), mContext);
         mOfflineDetector.setHandlerForTesting(mHandler);
     }
 
     @After
     public void tearDown() {
         OfflineDetector.setMockElapsedTimeSupplier(null);
+        Settings.System.putInt(mContentResolver, Settings.Global.AIRPLANE_MODE_ON, 0);
     }
 
     /**
@@ -461,6 +473,112 @@ public class OfflineDetectorUnitTest {
                 mLastNotificationReceivedIsForeground);
         assertTrue("Stored state matches last notification",
                 mOfflineDetector.isApplicationForeground());
+    }
+
+    @Test
+    public void testAirplaneModeToOffline() {
+        changeApplicationStateToBackground(false);
+
+        // Simulate offline + airplane mode.
+        Settings.System.putInt(mContentResolver, Settings.Global.AIRPLANE_MODE_ON, 1);
+        changeConnectionState(true);
+        assertEquals(1, mIsOfflineNotificationsReceivedByObserver);
+        assertFalse(mLastNotificationReceivedIsOffline);
+
+        // Advance time by a long duration (10 minutes).
+        advanceTimeByMs(10 * 60 * 1000);
+
+        // Simulate airplane mode change to false, while still offline.
+        final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        Settings.System.putInt(mContentResolver, Settings.Global.AIRPLANE_MODE_ON, 0);
+        changeConnectionState(true);
+
+        // Offline status shouldn't be communicated until
+        // SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS elapses.
+        verify(mHandler).postDelayed(captor.capture(),
+                eq(STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS));
+
+        assertEquals("Extra notification received even though device just changed to offline", 1,
+                mIsOfflineNotificationsReceivedByObserver);
+        assertFalse("Extra notification received even though device just changed to offline",
+                mLastNotificationReceivedIsOffline);
+
+        // Verify offline status is communicated if time elaspses.
+        advanceTimeByMs(STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS);
+        captor.getValue().run();
+
+        assertEquals("Notification count not updated after connection changed to offline", 2,
+                mIsOfflineNotificationsReceivedByObserver);
+        assertTrue("Notification not received after connection changed to offline",
+                mLastNotificationReceivedIsOffline);
+    }
+
+    @Test
+    public void testAirplaneModeToOnline() {
+        changeApplicationStateToBackground(false);
+
+        // Advance time by a long duration (10 minutes).
+        advanceTimeByMs(10 * 60 * 1000);
+
+        final ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+
+        // Start online.
+        changeConnectionState(true);
+        assertEquals(1, mIsOfflineNotificationsReceivedByObserver);
+        assertFalse(mLastNotificationReceivedIsOffline);
+
+        verify(mHandler).postDelayed(
+                captor.capture(), eq(STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS));
+
+        // Advance time by a long duration (10 minutes).
+        advanceTimeByMs(10 * 60 * 1000);
+
+        // Simulate offline + airplane mode.
+        Settings.System.putInt(mContentResolver, Settings.Global.AIRPLANE_MODE_ON, 1);
+        changeConnectionState(true);
+
+        // #updateState will still run again since connection state has changed.
+        verify(mHandler, times(2))
+                .postDelayed(captor.capture(), eq(STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS));
+
+        // Advance time after which runnable will execute
+        advanceTimeByMs(STATUS_INDICATOR_WAIT_ON_OFFLINE_DURATION_MS);
+        captor.getValue().run();
+
+        // Effective offline status hasn't changed.
+        assertEquals("Effective offline status didn't change", 1,
+                mIsOfflineNotificationsReceivedByObserver);
+        assertFalse(mLastNotificationReceivedIsOffline);
+
+        // Advance time by a long duration (10 minutes).
+        advanceTimeByMs(10 * 60 * 1000);
+
+        // Simulate airplane mode change to false, while still offline.
+        Settings.System.putInt(mContentResolver, Settings.Global.AIRPLANE_MODE_ON, 0);
+        changeConnectionState(true);
+
+        // Offline status shouldn't be communicated until
+        // SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS elapses.
+        verify(mHandler).postDelayed(captor.capture(),
+                eq(STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS));
+
+        assertEquals("Extra notification received even though device just changed to offline", 1,
+                mIsOfflineNotificationsReceivedByObserver);
+        assertFalse("Extra notification received even though device just changed to offline",
+                mLastNotificationReceivedIsOffline);
+
+        // Change to online before
+        // |STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS| duration is over.
+        // This should cancel the callbacks.
+        changeConnectionState(false);
+
+        // Advance time after which the offline state should be notified.
+        advanceTimeByMs(STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS);
+        captor.getValue().run();
+        assertEquals("Extra notification received even though device is now online", 1,
+                mIsOfflineNotificationsReceivedByObserver);
+        assertFalse("Extra notification received even though device is now online",
+                mLastNotificationReceivedIsOffline);
     }
 
     private void changeConnectionState(boolean offline) {

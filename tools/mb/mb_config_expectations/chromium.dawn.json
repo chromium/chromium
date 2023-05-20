@@ -27,6 +27,36 @@
       "use_remoteexec": true
     }
   },
+  "Dawn Android arm64 DEPS Release (Pixel 6)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_dawn": true,
+      "use_remoteexec": true
+    }
+  },
+  "Dawn Android arm64 Release (Pixel 6)": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_dawn": true,
+      "use_remoteexec": true
+    }
+  },
   "Dawn Linux TSAN Release": {
     "gn_args": {
       "dawn_enable_opengles": true,
@@ -59,6 +89,30 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
+      "use_dawn": true,
+      "use_remoteexec": true
+    }
+  },
+  "Dawn Mac arm64 DEPS Release (Apple M2)": {
+    "gn_args": {
+      "dawn_enable_opengles": true,
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_dawn": true,
+      "use_remoteexec": true
+    }
+  },
+  "Dawn Mac arm64 Release (Apple M2)": {
+    "gn_args": {
+      "dawn_enable_opengles": true,
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
       "use_dawn": true,
       "use_remoteexec": true
     }

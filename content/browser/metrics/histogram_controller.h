@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/timer/timer.h"
+#include "content/common/histogram_fetcher.mojom-shared.h"
 #include "content/common/histogram_fetcher.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -85,6 +87,22 @@ class HistogramController {
   content::mojom::ChildHistogramFetcher* GetChildHistogramFetcherInterface(
       T* host);
 
+  // Calls PingChildProcess() on ~10% of child processes. Not all child
+  // processes are pinged so as to avoid possibly "waking up" too many and
+  // causing unnecessary work.
+  void PingChildProcesses();
+
+  // Pings a child process through its |fetcher|. This does nothing except emit
+  // histograms (both on the browser process and the child process), with the
+  // goal of quantifying the amount of histogram samples lost from child
+  // processes.
+  void PingChildProcess(content::mojom::ChildHistogramFetcherProxy* fetcher,
+                        mojom::UmaPingCallSource call_source);
+
+  // Callback for when a child process has received a ping (see
+  // PingChildProcess()).
+  void Pong(mojom::UmaPingCallSource call_source);
+
   template <class T>
   void RemoveChildHistogramFetcherInterface(MayBeDangling<T> host);
 
@@ -94,6 +112,9 @@ class HistogramController {
 
   ChildHistogramFetcherMap<RenderProcessHost> renderer_histogram_fetchers_;
   ChildHistogramFetcherMap<ChildProcessHost> child_histogram_fetchers_;
+
+  // Used to call PingAllChildProcesses() every 5 minutes.
+  base::RepeatingTimer timer_;
 };
 
 }  // namespace content

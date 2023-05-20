@@ -35,8 +35,9 @@ _AAPT_PATH = lazy.WeakConstant(lambda: build_tools.GetPath('aapt'))
 _ANDROID_UTILS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'build',
                                    'android', 'gyp')
 _BUILD_UTILS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'build', 'util')
-_READOBJ_PATH = os.path.join(constants.ANDROID_NDK_ROOT, 'toolchains', 'llvm',
-                             'prebuilt', 'linux-x86_64', 'bin', 'llvm-readobj')
+_READOBJ_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party',
+                             'llvm-build', 'Release+Asserts', 'bin',
+                             'llvm-readobj')
 
 with host_paths.SysPath(host_paths.BUILD_COMMON_PATH):
   import perf_tests_results_helper  # pylint: disable=import-error

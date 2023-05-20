@@ -607,9 +607,10 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
   }
 #if BUILDFLAG(IS_ANDROID)
   void ShowKeyboardReplacingSurface(
-      mojom::SubmissionReadinessState submission_readiness) override {
+      mojom::SubmissionReadinessState submission_readiness,
+      bool is_webauthn_form) override {
     DeferMsg(&mojom::PasswordManagerDriver::ShowKeyboardReplacingSurface,
-             submission_readiness);
+             submission_readiness, is_webauthn_form);
   }
 #endif
   void CheckSafeBrowsingReputation(const GURL& form_action,
@@ -1065,10 +1066,14 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
   std::unique_ptr<FormData> form_data =
       form.IsNull() ? GetFormDataFromUnownedInputElements()
                     : GetFormDataFromWebForm(form);
+  bool is_webauthn_form =
+      std::any_of(form_data->fields.begin(), form_data->fields.end(),
+                  autofill::FieldHasWebAuthnAutocompleteAttribute);
   GetPasswordManagerDriver().ShowKeyboardReplacingSurface(
       form_data ? CalculateSubmissionReadiness(*form_data, username_element,
                                                password_element)
-                : mojom::SubmissionReadinessState::kNoInformation);
+                : mojom::SubmissionReadinessState::kNoInformation,
+      is_webauthn_form);
 
   keyboard_replacing_surface_state_ = KeyboardReplacingSurfaceState::kIsShowing;
   return true;
@@ -1945,8 +1950,9 @@ void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
 }
 
 void PasswordAutofillAgent::HidePopup() {
-  if (autofill_agent_)
-    autofill_agent_->GetAutofillDriver().HidePopup();
+  if (autofill_agent_ && autofill_agent_->unsafe_autofill_driver()) {
+    autofill_agent_->unsafe_autofill_driver()->HidePopup();
+  }
 }
 
 mojom::PasswordManagerDriver&

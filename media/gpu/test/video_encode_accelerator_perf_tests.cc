@@ -22,6 +22,7 @@
 #include "media/base/test_data_util.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/test/video.h"
+#include "media/gpu/test/video_encoder/bitstream_file_writer.h"
 #include "media/gpu/test/video_encoder/bitstream_validator.h"
 #include "media/gpu/test/video_encoder/decoder_buffer_validator.h"
 #include "media/gpu/test/video_encoder/video_encoder.h"
@@ -46,6 +47,7 @@ constexpr const char* usage_msg =
            [--codec=<codec>] [--svc_mode=<svc scalability mode>]
            [--bitrate_mode=(cbr|vbr)] [--reverse] [--bitrate=<bitrate>]
            [-v=<level>] [--vmodule=<config>] [--output_folder]
+           [--output_bitstream]
            [--disable_vaapi_lock]
            [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
@@ -88,6 +90,9 @@ The following arguments are supported:
   --output_folder       overwrite the output folder used to store
                         performance metrics, if not specified results
                         will be stored in the current working directory.
+  --output_bitstream    save the output bitstream in either H264 AnnexB
+                        format (for H264) or IVF format (for vp8 and
+                        vp9) to <output_folder>/<testname>.
   --disable_vaapi_lock  disable the global VA-API lock if applicable,
                         i.e., only on devices that use the VA-API with a libva
                         backend that's known to be thread-safe and only in
@@ -733,6 +738,13 @@ class VideoEncoderTest : public ::testing::Test {
           /*spatial_layer_index_to_decode=*/absl::nullopt,
           /*temporal_layer_index_to_decode=*/absl::nullopt,
           /*spatial_layer_resolutions=*/{}, decoder_buffer_validator_));
+      if (g_env->SaveOutputBitstream()) {
+        bitstream_processors.emplace_back(BitstreamFileWriter::Create(
+            g_env->OutputFilePath(VideoCodecProfileToVideoCodec(profile),
+                                  video->FilePath().BaseName()),
+            VideoCodecProfileToVideoCodec(profile), video->Resolution(),
+            video->FrameRate(), video->NumFrames()));
+      }
     } else {
       // Temporal/Spatial layer encoding.
       std::vector<gfx::Size> spatial_layer_resolutions;
@@ -745,6 +757,15 @@ class VideoEncoderTest : public ::testing::Test {
           bitstream_processors.push_back(CreateBitstreamValidator(
               profile, gfx::Rect(spatial_layer_resolutions[sid]), sid, tid,
               spatial_layer_resolutions, decoder_buffer_validator_));
+          if (g_env->SaveOutputBitstream()) {
+            bitstream_processors.emplace_back(BitstreamFileWriter::Create(
+                g_env->OutputFilePath(VideoCodecProfileToVideoCodec(profile),
+                                      video->FilePath().BaseName(), true, sid,
+                                      tid),
+                VideoCodecProfileToVideoCodec(profile),
+                spatial_layer_resolutions[sid], video->FrameRate(),
+                video->NumFrames(), sid, tid, spatial_layer_resolutions));
+          }
         }
       }
     }
@@ -909,6 +930,7 @@ int main(int argc, char** argv) {
   std::string codec = "h264";
   media::Bitrate::Mode bitrate_mode = media::Bitrate::Mode::kConstant;
   bool reverse = false;
+  bool output_bitstream = false;
   absl::optional<uint32_t> encode_bitrate;
   std::vector<base::test::FeatureRef> disabled_features;
   std::string svc_mode = "L1T1";
@@ -932,6 +954,8 @@ int main(int argc, char** argv) {
 
     if (it->first == "output_folder") {
       output_folder = it->second;
+    } else if (it->first == "output_bitstream") {
+      output_bitstream = true;
     } else if (it->first == "codec") {
       codec = it->second;
     } else if (it->first == "svc_mode") {
@@ -969,8 +993,8 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, false, base::FilePath(output_folder),
-          codec, svc_mode, false /* output_bitstream */, encode_bitrate,
-          bitrate_mode, reverse, media::test::FrameOutputConfig(),
+          codec, svc_mode, output_bitstream, encode_bitrate, bitrate_mode,
+          reverse, media::test::FrameOutputConfig(),
           /*enabled_features=*/{}, disabled_features);
   if (!test_environment)
     return EXIT_FAILURE;

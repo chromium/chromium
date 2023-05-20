@@ -257,12 +257,5 @@ export class MetadataItem {
      * @type {boolean|undefined}
      */
     this.shortcut;
-
-    /**
-     * Time in milliseconds since the epoch when the file last received a
-     * "completed" sync status.
-     * @type {number|undefined}
-     */
-    this.syncCompletedTime;
   }
 }

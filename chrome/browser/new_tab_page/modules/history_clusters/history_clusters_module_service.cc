@@ -11,6 +11,7 @@
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -142,12 +143,12 @@ HistoryClustersModuleService::~HistoryClustersModuleService() = default;
 
 void HistoryClustersModuleService::GetClusters(GetClustersCallback callback) {
   if (!history_clusters_service_->IsJourneysEnabled()) {
-    std::move(callback).Run({});
+    std::move(callback).Run({}, {});
     return;
   }
 
   if (!template_url_service_) {
-    std::move(callback).Run({});
+    std::move(callback).Run({}, {});
     return;
   }
 
@@ -278,7 +279,7 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
       // iterating until its over for the next phase of this project.
       GetClusters(begin_time, continuation_params, std::move(callback));
     } else {
-      std::move(callback).Run({});
+      std::move(callback).Run(/*clusters=*/{}, /*ranking_signals=*/{});
     }
 
     return;
@@ -296,13 +297,16 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   } else {
     SortClustersUsingHeuristic(category_boostlist_, clusters);
-    OnGetRankedClusters(std::move(callback), std::move(clusters));
+    OnGetRankedClusters(std::move(callback), std::move(clusters),
+                        /*ranking_signals=*/{});
   }
 }
 
 void HistoryClustersModuleService::OnGetRankedClusters(
     GetClustersCallback callback,
-    std::vector<history::Cluster> clusters) {
+    std::vector<history::Cluster> clusters,
+    base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
+        ranking_signals) {
   // Record metrics for top cluster.
   history::Cluster top_cluster = clusters.front();
   base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumVisits",
@@ -315,7 +319,7 @@ void HistoryClustersModuleService::OnGetRankedClusters(
     clusters.resize(max_clusters_to_return_);
   }
 
-  std::move(callback).Run(std::move(clusters));
+  std::move(callback).Run(std::move(clusters), std::move(ranking_signals));
 
   if (!IsCartModuleEnabled() || !cart_service_) {
     return;

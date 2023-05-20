@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -175,7 +176,20 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
       "ExternallyManagedAppManager::SynchronizeInstalledApps",
       std::make_unique<AllAppsLockDescription>(),
       base::BindOnce(
-          &ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired,
+          [](base::WeakPtr<ExternallyManagedAppManager> weak_this,
+             std::vector<ExternalInstallOptions> desired_apps_install_options,
+             ExternalInstallSource install_source, SynchronizeCallback callback,
+             AllAppsLock& lock) {
+            // To support the `base::Value` return value, this has to be a
+            // lambda instead of directly binding. This is because return values
+            // are not allowed when binding to a WeakPtr.
+            if (!weak_this) {
+              return base::Value();
+            }
+            return weak_this->SynchronizeInstalledAppsOnLockAcquired(
+                std::move(desired_apps_install_options), install_source,
+                std::move(callback), lock);
+          },
           weak_ptr_factory_.GetWeakPtr(),
           std::move(desired_apps_install_options), install_source,
           std::move(callback)));
@@ -475,11 +489,18 @@ bool ExternallyManagedAppManager::IsShuttingDown() {
   return is_in_shutdown_ || profile()->ShutdownStarted();
 }
 
-void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
+base::Value ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
     std::vector<ExternalInstallOptions> desired_apps_install_options,
     ExternalInstallSource install_source,
     SynchronizeCallback callback,
     AllAppsLock& lock) {
+  base::Value::Dict debug_info;
+  debug_info.Set("install_source", base::ToString(install_source));
+  base::Value::List* desired_installs =
+      debug_info.EnsureList("desired_apps_install_options");
+  for (const ExternalInstallOptions& option : desired_apps_install_options) {
+    desired_installs->Append(option.install_url.spec());
+  }
   std::vector<GURL> installed_urls;
   for (const auto& apps_it :
        lock.registrar().GetExternallyInstalledApps(install_source)) {
@@ -499,15 +520,23 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
 
   std::sort(installed_urls.begin(), installed_urls.end());
 
+  base::Value::List* desired_urls_debug = debug_info.EnsureList("desired_urls");
   std::vector<GURL> desired_urls;
   desired_urls.reserve(desired_apps_install_options.size());
-  for (const auto& info : desired_apps_install_options)
+  for (const auto& info : desired_apps_install_options) {
     desired_urls.push_back(info.install_url);
+    desired_urls_debug->Append(info.install_url.spec());
+  }
 
   std::sort(desired_urls.begin(), desired_urls.end());
 
   std::vector<GURL> urls_to_remove =
       base::STLSetDifference<std::vector<GURL>>(installed_urls, desired_urls);
+  base::Value::List* urls_to_remove_debug =
+      debug_info.EnsureList("urls_to_remove");
+  for (const GURL& url_to_remove : urls_to_remove) {
+    urls_to_remove_debug->Append(url_to_remove.spec());
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // This check ensures that on Chrome OS, the messages app is not uninstalled
@@ -533,7 +562,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::map<GURL, InstallResult>(),
                        std::map<GURL, bool>()));
-    return;
+    return base::Value(std::move(debug_info));
   }
 
   // Add the callback to a map and call once all installs/uninstalls finish.
@@ -553,6 +582,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
             &ExternallyManagedAppManager::UninstallForSynchronizeCallback,
             weak_ptr_factory_.GetWeakPtr(), install_source));
   }
+  return base::Value(std::move(debug_info));
 }
 
 void ExternallyManagedAppManager::SetRegistrationCallbackForTesting(

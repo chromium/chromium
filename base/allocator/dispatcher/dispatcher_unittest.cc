@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/allocator/buildflags.h"
@@ -108,14 +109,8 @@ struct PartitionAllocator {
   }
 
  private:
-  ThreadSafePartitionRoot alloc_{{
-      PartitionOptions::AlignedAlloc::kDisallowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kAllowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+  ThreadSafePartitionRoot alloc_{PartitionOptions{
+      .cookie = PartitionOptions::Cookie::kAllowed,
   }};
 };
 

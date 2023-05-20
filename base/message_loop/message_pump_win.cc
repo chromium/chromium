@@ -715,7 +715,6 @@ void MessagePumpForIO::DoRunLoop() {
     if (run_state_->should_quit)
       break;
 
-    run_state_->delegate->BeforeWait();
     more_work_is_plausible |= WaitForIOCompletion(0);
     if (run_state_->should_quit)
       break;

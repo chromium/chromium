@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
@@ -502,5 +503,133 @@ TEST_P(BaseSearchProviderTest, CreateOnDeviceSearchSuggestion) {
                               : AutocompleteMatchType::SEARCH_SUGGEST);
     ASSERT_EQ(match.suggest_type,
               is_tail_suggestion ? omnibox::TYPE_TAIL : omnibox::TYPE_QUERY);
+  }
+}
+
+TEST_P(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
+  using omnibox::ActionInfo;
+  // Correlation between ActionType and UMA-recorded bucket.
+  struct {
+    const char* test_name;
+    const char* base_url;
+    const char* action_url;
+    std::vector<std::pair<const char*, const char*>> search_params;
+
+    // query params order is not guaranteed to be the same across all platforms
+    // or even across multiple runs.
+    const char* expected_start_url;
+    std::vector<const char*> expect_query_param;
+    const char* expected_end_url;
+  } test_cases[]{
+      // clang-format off
+    // Cases explicitly not meant to produce any changes.
+    { "no change: no supplied url, no search params",
+      "https://www.google.com",
+      // ActionInfo action_uri and search_params:
+      "", {},
+      // Resulting action_uri: head, params, tail:
+      "", {}, ""},
+
+    { "no change: supplied url, no search params",
+      "https://www.google.com",
+      // ActionInfo action_uri and search_params:
+      "https://maps.google.com", {},
+      // Resulting action_uri: head, params, tail:
+      "https://maps.google.com", {}, ""},
+
+    { "no change: supplied url, search params ignored",
+      "https://www.google.com",
+      // ActionInfo action_uri and search_params:
+      "https://maps.google.com", {{"a", "3"}},
+      // Resulting action_uri: head, params, tail:
+      "https://maps.google.com", {}, ""},
+
+    { "no change: uri is serialized data",
+      "https://g.co:119/search?q=a#f",
+      // ActionInfo action_uri and search_params:
+      "fce2", {{"a", "3"}, {"b", "7"}},
+      // Resulting action_uri: head, params, tail:
+      "fce2", {}, ""},
+
+    // Cases meant to generate new URL:
+    // - action_uri has to be empty,
+    // - search_params have to be non-empty.
+    { "generate: domain only; single query param",
+      "https://g.co",
+      // ActionInfo action_uri and search_params:
+      "", {{"a", "3"}},
+      // Resulting action_uri: head, params, tail:
+      "https://g.co/?", {"a=3"}, ""},
+
+    { "generate: domain and path; single query param",
+      "https://g.co/search",
+      // ActionInfo action_uri and search_params:
+      "", {{"a", "3"}},
+      // Resulting action_uri: head, params, tail:
+      "https://g.co/search?", {"a=3"}, ""},
+
+    { "generate: domain, path, query; single query param",
+      "https://g.co/search?q=abc&oq=def",
+      // ActionInfo action_uri and search_params:
+      "", {{"a", "3"}},
+      // Resulting action_uri: head, params, tail:
+      "https://g.co/search?", {"a=3", "q=abc", "oq=def"}, ""},
+
+    { "generate: domain, path, query, fragment; single query param",
+      "https://g.co/search?q=abc&oq=def#fragment",
+      // ActionInfo action_uri and search_params:
+      "", {{"a", "3"}},
+      // Resulting action_uri: head, params, tail:
+      "https://g.co/search?", {"a=3", "q=abc", "oq=def"}, "#fragment"},
+
+    { "generate: domain, port, path, query, fragment; single query param",
+      "https://g.co:119/search?q=abc&oq=def#fragment",
+      // ActionInfo action_uri and search_params:
+      "", {{"a", "3"}},
+      // Resulting action_uri: head, params, tail:
+      "https://g.co:119/search?", {"a=3", "q=abc", "oq=def"}, "#fragment"},
+
+    { "generate: domain, port, path, query, fragment; multiple params",
+      "https://g.co:119/search?q=a#f",
+      // ActionInfo action_uri and search_params:
+      "", {{"a", "3"}, {"aa", "7"}},
+      // Resulting action_uri: head, params, tail:
+      "https://g.co:119/search?", {"a=3", "aa=7", "q=a"}, "#f"},
+      // clang-format on
+  };
+
+  for (const auto& test_case : test_cases) {
+    ActionInfo action_info;
+    action_info.set_action_uri(test_case.action_url);
+    for (const auto& param : test_case.search_params) {
+      action_info.mutable_search_parameters()->insert(
+          {param.first, param.second});
+    }
+
+    TemplateURLRef::SearchTermsArgs search_terms_args;
+    search_terms_args.additional_query_params = "never=used&shouldnt=be";
+    SearchTermsData search_terms_data;
+    TemplateURLData template_url_data;
+    template_url_data.SetURL(test_case.base_url);
+    auto template_url = std::make_unique<TemplateURL>(template_url_data);
+
+    auto action = BaseSearchProvider::CreateActionInSuggest(
+        std::move(action_info), template_url->url_ref(), search_terms_args,
+        search_terms_data);
+
+    auto* action_in_suggest = OmniboxActionInSuggest::FromAction(action.get());
+
+    const auto& action_uri = action_in_suggest->action_info_.action_uri();
+
+    EXPECT_THAT(action_uri, testing::StartsWith(test_case.expected_start_url))
+        << "while evaluating case `" << test_case.test_name << '`';
+
+    EXPECT_THAT(action_uri, testing::EndsWith(test_case.expected_end_url))
+        << "while evaluating case `" << test_case.test_name << '`';
+
+    for (auto* query_param : test_case.expect_query_param) {
+      EXPECT_THAT(action_uri, testing::HasSubstr(query_param))
+          << "while evaluating case `" << test_case.test_name << '`';
+    }
   }
 }

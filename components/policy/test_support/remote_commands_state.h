@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_POLICY_TEST_SUPPORT_REMOTE_COMMANDS_STATE_H_
 #define COMPONENTS_POLICY_TEST_SUPPORT_REMOTE_COMMANDS_STATE_H_
 
+#include <cstdint>
+
 #include "base/containers/flat_map.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
@@ -22,7 +24,7 @@ class RemoteCommandsState {
   class Observer {
    public:
     // Called when a remote command result is available.
-    virtual void OnRemoteCommandResultAvailable(int command_id) = 0;
+    virtual void OnRemoteCommandResultAvailable(int64_t command_id) = 0;
 
    protected:
     virtual ~Observer() = default;
@@ -56,13 +58,13 @@ class RemoteCommandsState {
   // a command ID == |id|.
   // If no result is available, returns false.
   // Expected to be called by tests to poll the remote command results.
-  bool GetRemoteCommandResult(int id, em::RemoteCommandResult* result);
+  bool GetRemoteCommandResult(int64_t id, em::RemoteCommandResult* result);
 
  private:
   base::Lock lock_;
 
   // Maps a command ID to an execution result of that command on the client.
-  base::flat_map<int, em::RemoteCommandResult> command_results_
+  base::flat_map<int64_t, em::RemoteCommandResult> command_results_
       GUARDED_BY(lock_);
 
   // Queue of pending remote commands.

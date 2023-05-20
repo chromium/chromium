@@ -10,6 +10,10 @@
 #include "content/public/browser/webui_config.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace ash {
 
 // The Web UI for chrome-untrusted://face-ml.
@@ -27,6 +31,9 @@ class FaceMLAppUntrustedUIConfig
   FaceMLAppUntrustedUIConfig()
       : SystemWebAppUntrustedUIConfig(kChromeUIFaceMLAppHost,
                                       SystemWebAppType::FACE_ML) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 }  // namespace ash

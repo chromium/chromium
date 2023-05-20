@@ -6,8 +6,10 @@
 #include <memory>
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/embedder/tab_fetcher.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
@@ -36,6 +38,7 @@ std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
     const base::Time& session_time) {
   auto session = std::make_unique<sync_sessions::SyncedSession>();
   session->SetModifiedTime(session_time);
+  session->SetSessionTag(tab_guid);
   auto window = std::make_unique<sync_sessions::SyncedSessionWindow>();
   auto tab = std::make_unique<sessions::SessionTab>();
   tab->timestamp = session_time;
@@ -43,6 +46,11 @@ std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
   window->wrapped_window.tabs.push_back(std::move(tab));
   session->windows[SessionID::NewUnique()] = std::move(window);
   return session;
+}
+
+const sessions::SessionTab* GetTab(
+    const sync_sessions::SyncedSession* session) {
+  return session->windows.begin()->second->wrapped_window.tabs[0].get();
 }
 
 class MockSessionSyncService : public sync_sessions::SessionSyncService {
@@ -75,12 +83,17 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   MockOpenTabsUIDelegate() {
     local_session_ =
         CreateNewSession(kLocalTabName, base::Time::Now() - kTime2);
+    session_to_tab_[kLocalTabName] = GetTab(local_session_.get());
     foreign_sessions_owned_.push_back(
         CreateNewSession(kRemoteTabName1, base::Time::Now() - kTime1));
     foreign_sessions_.push_back(foreign_sessions_owned_.back().get());
+    session_to_tab_[kRemoteTabName1] =
+        GetTab(foreign_sessions_owned_.back().get());
     foreign_sessions_owned_.push_back(
         CreateNewSession(kRemoteTabName2, base::Time::Now() - kTime3));
     foreign_sessions_.push_back(foreign_sessions_owned_.back().get());
+    session_to_tab_[kRemoteTabName2] =
+        GetTab(foreign_sessions_owned_.back().get());
   }
 
   bool GetAllForeignSessions(
@@ -100,10 +113,14 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
     return *local_session != nullptr;
   }
 
-  MOCK_METHOD3(GetForeignTab,
-               bool(const std::string& tag,
-                    const SessionID tab_id,
-                    const sessions::SessionTab** tab));
+  bool GetForeignTab(const std::string& tag,
+                     const SessionID tab_id,
+                     const sessions::SessionTab** tab) override {
+    auto it = session_to_tab_.find(tag);
+    EXPECT_TRUE(it != session_to_tab_.end());
+    *tab = it->second;
+    return true;
+  }
 
   MOCK_METHOD1(DeleteForeignSession, void(const std::string& tag));
 
@@ -120,6 +137,7 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
       foreign_sessions_owned_;
   std::vector<const sync_sessions::SyncedSession*> foreign_sessions_;
   std::unique_ptr<sync_sessions::SyncedSession> local_session_;
+  std::map<std::string, const sessions::SessionTab*> session_to_tab_;
 };
 
 AnnotatedNumericResult CreateResult(float val) {
@@ -149,7 +167,9 @@ class TabRankDispatcherTest : public testing::Test {
 };
 
 TEST_F(TabRankDispatcherTest, RankTabs) {
-  TabRankDispatcher dispatcher(&segmentation_service_, &session_sync_service_);
+  TabRankDispatcher dispatcher(
+      &segmentation_service_, &session_sync_service_,
+      std::make_unique<TabFetcher>(&session_sync_service_));
   TabRankDispatcher::TabFilter filter;
 
   testing::InSequence s;
@@ -163,19 +183,26 @@ TEST_F(TabRankDispatcherTest, RankTabs) {
   dispatcher.GetTopRankedTabs(
       kTabResumptionClassifierKey, filter,
       base::BindOnce(
-          [](bool success, std::set<TabRankDispatcher::RankedTab> tabs) {
+          [](TabFetcher* fetcher, bool success,
+             std::multiset<TabRankDispatcher::RankedTab> tabs) {
             ASSERT_EQ(tabs.size(), 3u);
-            EXPECT_EQ(tabs.begin()->tab->guid, kLocalTabName);
+            auto tab1 = fetcher->FindTab(tabs.begin()->tab);
+            auto tab2 = fetcher->FindTab((++tabs.begin())->tab);
+            auto tab3 = fetcher->FindTab(tabs.rbegin()->tab);
+            EXPECT_EQ(tab1.session_tab->guid, kLocalTabName);
             EXPECT_NEAR(tabs.begin()->model_score, 0.6, 0.001);
-            EXPECT_EQ((++tabs.begin())->tab->guid, kRemoteTabName1);
+            EXPECT_EQ(tab2.session_tab->guid, kRemoteTabName1);
             EXPECT_NEAR((++tabs.begin())->model_score, 0.5, 0.001);
-            EXPECT_EQ(tabs.rbegin()->tab->guid, kRemoteTabName2);
+            EXPECT_EQ(tab3.session_tab->guid, kRemoteTabName2);
             EXPECT_NEAR(tabs.rbegin()->model_score, 0.3, 0.001);
-          }));
+          },
+          dispatcher.tab_fetcher()));
 }
 
 TEST_F(TabRankDispatcherTest, FilterTabs) {
-  TabRankDispatcher dispatcher(&segmentation_service_, &session_sync_service_);
+  TabRankDispatcher dispatcher(
+      &segmentation_service_, &session_sync_service_,
+      std::make_unique<TabFetcher>(&session_sync_service_));
   TabRankDispatcher::TabFilter filter{.max_tab_age = kTime2 + base::Seconds(1)};
 
   testing::InSequence s;
@@ -187,13 +214,50 @@ TEST_F(TabRankDispatcherTest, FilterTabs) {
   dispatcher.GetTopRankedTabs(
       kTabResumptionClassifierKey, filter,
       base::BindOnce(
-          [](bool success, std::set<TabRankDispatcher::RankedTab> tabs) {
+          [](TabFetcher* fetcher, bool success,
+             std::multiset<TabRankDispatcher::RankedTab> tabs) {
             ASSERT_EQ(tabs.size(), 2u);
-            EXPECT_EQ(tabs.begin()->tab->guid, kLocalTabName);
+            auto tab1 = fetcher->FindTab(tabs.begin()->tab);
+            auto tab2 = fetcher->FindTab(tabs.rbegin()->tab);
+            EXPECT_EQ(tab1.session_tab->guid, kLocalTabName);
             EXPECT_NEAR(tabs.begin()->model_score, 0.6, 0.001);
-            EXPECT_EQ((++tabs.begin())->tab->guid, kRemoteTabName2);
-            EXPECT_NEAR((++tabs.begin())->model_score, 0.5, 0.001);
-          }));
+            EXPECT_EQ(tab2.session_tab->guid, kRemoteTabName2);
+            EXPECT_NEAR(tabs.rbegin()->model_score, 0.5, 0.001);
+          },
+          dispatcher.tab_fetcher()));
+}
+
+TEST_F(TabRankDispatcherTest, TabsWithSameScore) {
+  TabRankDispatcher dispatcher(
+      &segmentation_service_, &session_sync_service_,
+      std::make_unique<TabFetcher>(&session_sync_service_));
+  TabRankDispatcher::TabFilter filter;
+
+  testing::InSequence s;
+  EXPECT_CALL(segmentation_service_, GetAnnotatedNumericResult(_, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(CreateResult(0.3f)));
+  EXPECT_CALL(segmentation_service_, GetAnnotatedNumericResult(_, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(CreateResult(0.3f)));
+  EXPECT_CALL(segmentation_service_, GetAnnotatedNumericResult(_, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(CreateResult(0.6f)));
+
+  dispatcher.GetTopRankedTabs(
+      kTabResumptionClassifierKey, filter,
+      base::BindOnce(
+          [](TabFetcher* fetcher, bool success,
+             std::multiset<TabRankDispatcher::RankedTab> tabs) {
+            ASSERT_EQ(tabs.size(), 3u);
+            auto tab1 = fetcher->FindTab(tabs.begin()->tab);
+            auto tab2 = fetcher->FindTab((++tabs.begin())->tab);
+            auto tab3 = fetcher->FindTab(tabs.rbegin()->tab);
+            EXPECT_EQ(tab1.session_tab->guid, kLocalTabName);
+            EXPECT_NEAR(tabs.begin()->model_score, 0.6, 0.001);
+            EXPECT_TRUE(base::StartsWith(tab2.session_tab->guid, "remote_"));
+            EXPECT_NEAR((++tabs.begin())->model_score, 0.3, 0.001);
+            EXPECT_TRUE(base::StartsWith(tab3.session_tab->guid, "remote_"));
+            EXPECT_NEAR(tabs.rbegin()->model_score, 0.3, 0.001);
+          },
+          dispatcher.tab_fetcher()));
 }
 
 }  // namespace segmentation_platform

@@ -158,8 +158,13 @@ class PathContext(object):
       # below where these are patched.
       self.archive_name = 'chrome-win32.zip'
       self._archive_extract_dir = 'chrome-win32'
-    elif self.platform == 'android':
+      self._binary_name = 'chrome.exe'
+    elif self.platform in ('android', 'android64'):
       self._binary_name = 'apks/ChromePublic.apk'
+      self.archive_name = 'chrome-android.zip'
+      self._archive_extract_dir = 'chrome-android'
+    elif self.platform in ('webview', 'webview64'):
+      self._binary_name = 'apks/SystemWebView.apk'
       self.archive_name = 'chrome-android.zip'
       self._archive_extract_dir = 'chrome-android'
     else:
@@ -188,8 +193,10 @@ class PathContext(object):
       self._listing_platform_dir = 'Win/'
     elif self.platform == 'win64':
       self._listing_platform_dir = 'Win_x64/'
-    elif self.platform == 'android':
+    elif self.platform in ('android', 'webview'):
       self._listing_platform_dir = 'Android/'
+    elif self.platform in ('android64', 'webview64'):
+      self._listing_platform_dir = 'Android_Arm64/'
 
   def GetASANPlatformDir(self):
     """ASAN builds are in directories like "linux-release", or have filenames
@@ -674,11 +681,15 @@ def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
   runcommand = []
   # Ideally we'd use third_party/catapult for the adb command, but testers need
   # the script to be more portable without the chromium repo.
-  if context.platform == 'android':
+  if 'android' in context.platform:
     runcommand = ('adb install -d -r {} &&'
                   ' adb shell am start -a {} -p {}'.format(
                       os.path.abspath(context.GetLaunchPath(revision)),
                       _ANDROID_CHROME_INTENT, _ANDROID_CHROME_PACKAGE))
+  elif 'webview' in context.platform:
+    # Doesn't start an intent as testers use different apps for testing.
+    runcommand = 'adb install -d -r {}'.format(
+        os.path.abspath(context.GetLaunchPath(revision)))
   else:
     for token in shlex.split(command):
       if token == '%a':
@@ -691,8 +702,10 @@ def RunRevision(context, revision, zip_file, profile, num_runs, command, args):
   result = None
   try:
     for _ in range(num_runs):
+      use_shell = ('android' in context.platform
+                   or 'webview' in context.platform)
       subproc = subprocess.Popen(runcommand,
-                                 shell=context.platform == 'android',
+                                 shell=use_shell,
                                  bufsize=-1,
                                  stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
@@ -1228,6 +1241,9 @@ def main():
       'linux-arm',
       'chromeos',
       'android',
+      'android64',
+      'webview',
+      'webview64',
   ]
   parser.add_option('-a', '--archive',
                     choices=choices,

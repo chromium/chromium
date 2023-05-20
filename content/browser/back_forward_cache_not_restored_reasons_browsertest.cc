@@ -310,8 +310,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
   EXPECT_THAT(
       GetTreeResult()->GetDocumentResult(),
       MatchesDocumentResult(
-          NotRestoredReasons(NotRestoredReason::kRelatedActiveContentsExist,
-                             NotRestoredReason::kBrowsingInstanceNotSwapped),
+          NotRestoredReasons({NotRestoredReason::kRelatedActiveContentsExist,
+                              NotRestoredReason::kBrowsingInstanceNotSwapped}),
           BlockListedFeatures()));
 
   // Both reasons are recorded and sent to the renderer.

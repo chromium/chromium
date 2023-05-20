@@ -334,13 +334,6 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
         brp_group_name = "EnabledBeforeAlloc";
 #endif
         break;
-      case features::BackupRefPtrMode::kEnabledWithoutZapping:
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        brp_group_name = "EnabledPrevSlotWithoutZapping";
-#else
-        brp_group_name = "EnabledBeforeAllocWithoutZapping";
-#endif
-        break;
       case features::BackupRefPtrMode::kEnabledWithMemoryReclaimer:
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
         brp_group_name = "EnabledPrevSlotWithMemoryReclaimer";
@@ -363,6 +356,9 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
     if (features::kBackupRefPtrModeParam.Get() !=
         features::BackupRefPtrMode::kDisabled) {
       std::string process_selector;
+#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
+      process_selector = "AllProcesses";
+#else
       switch (features::kBackupRefPtrEnabledProcessesParam.Get()) {
         case features::BackupRefPtrEnabledProcesses::kBrowserOnly:
           process_selector = "BrowserOnly";
@@ -377,7 +373,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
           process_selector = "AllProcesses";
           break;
       }
-
+#endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
       brp_group_name += ("_" + process_selector);
     }
   }
@@ -419,6 +415,12 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   // This value is not surrounded by build flags as it is meant to be updated
   // manually in binary experiment patches.
   trials.emplace("VectorRawPtrExperiment", "Disabled");
+
+#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
+  trials.emplace(base::features::kRendererLiveBRPSyntheticTrialName, "Enabled");
+#else
+  trials.emplace(base::features::kRendererLiveBRPSyntheticTrialName, "Control");
+#endif
 
   return trials;
 }
@@ -893,15 +895,18 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 
   bool enable_brp = false;
   bool enable_brp_for_ash = false;
-  bool enable_brp_zapping = false;
   bool split_main_partition = false;
   bool use_dedicated_aligned_partition = false;
   bool process_affected_by_brp_flag = false;
   bool enable_memory_reclaimer = false;
+  size_t ref_count_size = 0;
 
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
     BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
+  process_affected_by_brp_flag = true;
+#else
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
     // No specified process type means this is the Browser process.
@@ -923,6 +928,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         break;
     }
   }
+#endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
 #endif  // (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) ||
         // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
@@ -939,9 +945,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         enable_memory_reclaimer = true;
         ABSL_FALLTHROUGH_INTENDED;
       case base::features::BackupRefPtrMode::kEnabled:
-        enable_brp_zapping = true;
-        ABSL_FALLTHROUGH_INTENDED;
-      case base::features::BackupRefPtrMode::kEnabledWithoutZapping:
         enable_brp = true;
         split_main_partition = true;
 #if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -972,6 +975,23 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         use_dedicated_aligned_partition = true;
         break;
     }
+
+    if (enable_brp) {
+      switch (base::features::kBackupRefPtrRefCountSizeParam.Get()) {
+        case base::features::BackupRefPtrRefCountSize::kNatural:
+          ref_count_size = 0;
+          break;
+        case base::features::BackupRefPtrRefCountSize::k4B:
+          ref_count_size = 4;
+          break;
+        case base::features::BackupRefPtrRefCountSize::k8B:
+          ref_count_size = 8;
+          break;
+        case base::features::BackupRefPtrRefCountSize::k16B:
+          ref_count_size = 16;
+          break;
+      }
+    }
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -985,13 +1005,15 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
                         base::features::kPartitionAllocBackupRefPtrForAsh);
 #endif
 
-  return {enable_brp,
-          enable_brp_for_ash,
-          enable_brp_zapping,
-          enable_memory_reclaimer,
-          split_main_partition,
-          use_dedicated_aligned_partition,
-          process_affected_by_brp_flag};
+  return {
+      enable_brp,
+      enable_brp_for_ash,
+      enable_memory_reclaimer,
+      split_main_partition,
+      use_dedicated_aligned_partition,
+      process_affected_by_brp_flag,
+      ref_count_size,
+  };
 }
 
 void PartitionAllocSupport::ReconfigureEarlyish(
@@ -1127,12 +1149,12 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
-      allocator_shim::EnableBrpZapping(brp_config.enable_brp_zapping),
       allocator_shim::EnableBrpPartitionMemoryReclaimer(
           brp_config.enable_brp_partition_memory_reclaimer),
       allocator_shim::SplitMainPartition(brp_config.split_main_partition),
       allocator_shim::UseDedicatedAlignedPartition(
           brp_config.use_dedicated_aligned_partition),
+      brp_config.ref_count_size,
       allocator_shim::AlternateBucketDistribution(bucket_distribution));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

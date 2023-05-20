@@ -103,6 +103,22 @@ const char kFormHTML[] =
     "  <INPUT type='submit' value='Login'/>"
     "</FORM>";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kFormWithUsernameFieldWebauthnHTML[] =
+    "<FORM id='LoginTestForm' action='http://www.example.com'>"
+    "  <INPUT type='text' id='username' autocomplete='webauthn'/>"
+    "  <INPUT type='password' id='password'/>"
+    "  <INPUT type='submit' value='Login'/>"
+    "</FORM>";
+
+const char kFormWithPasswordFieldWebauthnHTML[] =
+    "<FORM id='LoginTestForm' action='http://www.example.com'>"
+    "  <INPUT type='text' id='username'/>"
+    "  <INPUT type='password' id='password' autocomplete='webauthn'/>"
+    "  <INPUT type='submit' value='Login'/>"
+    "</FORM>";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kSocialNetworkPostFormHTML[] =
     "<FORM id='SocialMediaPostForm' action='http://www.chirper.com'>"
     "  <TEXTAREA id='new_chirp'>"
@@ -1803,7 +1819,8 @@ TEST_F(PasswordAutofillAgentTest, TryToShowKeyboardReplacingSurfaceUsername) {
 
   EXPECT_CALL(fake_driver_,
               ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kEmptyFields));
+                  autofill::mojom::SubmissionReadinessState::kEmptyFields,
+                  /*is_webauthn=*/false));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1817,7 +1834,37 @@ TEST_F(PasswordAutofillAgentTest, TryToShowKeyboardReplacingSurfacePassword) {
 
   EXPECT_CALL(fake_driver_,
               ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kEmptyFields));
+                  autofill::mojom::SubmissionReadinessState::kEmptyFields,
+                  /*is_webauthn=*/false));
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PasswordAutofillAgentTest,
+       TryToShowKeyboardReplacingSurfaceWithWebauthnField) {
+  LoadHTML(kFormWithUsernameFieldWebauthnHTML);
+  UpdateUrlForHTML(kFormWithUsernameFieldWebauthnHTML);
+  UpdateUsernameAndPasswordElements();
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
+      password_element_));
+  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
+
+  EXPECT_CALL(fake_driver_,
+              ShowKeyboardReplacingSurface(_, /*is_webauthn=*/true));
+  base::RunLoop().RunUntilIdle();
+
+  LoadHTML(kFormWithPasswordFieldWebauthnHTML);
+  UpdateUrlForHTML(kFormWithPasswordFieldWebauthnHTML);
+  UpdateUsernameAndPasswordElements();
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
+      password_element_));
+  EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
+
+  EXPECT_CALL(fake_driver_,
+              ShowKeyboardReplacingSurface(_, /*is_webauthn=*/true));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1838,7 +1885,8 @@ TEST_F(PasswordAutofillAgentTest,
   EXPECT_CALL(
       fake_driver_,
       ShowKeyboardReplacingSurface(
-          autofill::mojom::SubmissionReadinessState::kFieldAfterPasswordField));
+          autofill::mojom::SubmissionReadinessState::kFieldAfterPasswordField,
+          /*is_webauthn=*/false));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1896,7 +1944,8 @@ TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_NoUsernameField) {
 
   EXPECT_CALL(fake_driver_,
               ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kNoUsernameField));
+                  autofill::mojom::SubmissionReadinessState::kNoUsernameField,
+                  /*is_webauthn=*/false));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1917,7 +1966,8 @@ TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_FieldsInBetween) {
 
   EXPECT_CALL(fake_driver_, ShowKeyboardReplacingSurface(
                                 autofill::mojom::SubmissionReadinessState::
-                                    kFieldBetweenUsernameAndPassword));
+                                    kFieldBetweenUsernameAndPassword,
+                                /*is_webauthn=*/false));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1933,7 +1983,8 @@ TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_FieldAfterPassword) {
   EXPECT_CALL(
       fake_driver_,
       ShowKeyboardReplacingSurface(
-          autofill::mojom::SubmissionReadinessState::kFieldAfterPasswordField));
+          autofill::mojom::SubmissionReadinessState::kFieldAfterPasswordField,
+          /*is_webauthn=*/false));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1945,7 +1996,8 @@ TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_EmptyFields) {
 
   EXPECT_CALL(fake_driver_,
               ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kEmptyFields));
+                  autofill::mojom::SubmissionReadinessState::kEmptyFields,
+                  /*is_webauthn=*/false));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1958,10 +2010,10 @@ TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_MoreThanTwoFields) {
   EXPECT_TRUE(password_autofill_agent_->TryToShowKeyboardReplacingSurface(
       password_element_));
 
-  EXPECT_CALL(
-      fake_driver_,
-      ShowKeyboardReplacingSurface(
-          autofill::mojom::SubmissionReadinessState::kMoreThanTwoFields));
+  EXPECT_CALL(fake_driver_,
+              ShowKeyboardReplacingSurface(
+                  autofill::mojom::SubmissionReadinessState::kMoreThanTwoFields,
+                  /*is_webauthn=*/false));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1977,7 +2029,8 @@ TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_TwoFields) {
 
   EXPECT_CALL(fake_driver_,
               ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kTwoFields));
+                  autofill::mojom::SubmissionReadinessState::kTwoFields,
+                  /*is_webauthn=*/false));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1992,7 +2045,8 @@ TEST_F(PasswordAutofillAgentTest, SubmissionReadiness_NoPasswordField) {
 
   EXPECT_CALL(fake_driver_,
               ShowKeyboardReplacingSurface(
-                  autofill::mojom::SubmissionReadinessState::kNoPasswordField));
+                  autofill::mojom::SubmissionReadinessState::kNoPasswordField,
+                  /*is_webauthn=*/false));
   base::RunLoop().RunUntilIdle();
 }
 

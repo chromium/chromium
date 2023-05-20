@@ -115,8 +115,7 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       is_ad_related_(false),
       is_lcp_element_(false),
       is_changed_shortly_after_mouseover_(false),
-      has_sizes_attribute_in_img_or_sibling_(false),
-      is_lazy_loaded_(false) {}
+      has_sizes_attribute_in_img_or_sibling_(false) {}
 
 HTMLImageElement::~HTMLImageElement() = default;
 
@@ -346,8 +345,6 @@ void HTMLImageElement::ParseAttribute(
     if (loading == LoadingAttributeValue::kEager ||
         (loading == LoadingAttributeValue::kAuto)) {
       GetImageLoader().LoadDeferredImage();
-    } else {
-      is_lazy_loaded_ = true;
     }
   } else if (name == html_names::kFetchpriorityAttr &&
              RuntimeEnabledFeatures::PriorityHintsEnabled(
@@ -414,6 +411,11 @@ bool HTMLImageElement::SupportedImageType(
     return false;
   }
   return MIMETypeRegistry::IsSupportedImagePrefixedMIMEType(trimmed_type);
+}
+
+bool HTMLImageElement::HasLazyLoadingAttribute() const {
+  return GetLoadingAttributeValue(FastGetAttribute(html_names::kLoadingAttr)) ==
+         LoadingAttributeValue::kLazy;
 }
 
 // http://picture.responsiveimages.org/#update-source-set
@@ -933,7 +935,7 @@ bool HTMLImageElement::IsCollapsed() const {
 }
 
 void HTMLImageElement::SetAutoSizesUsecounter() {
-  if (is_lazy_loaded_ && listener_) {
+  if (listener_ && HasLazyLoadingAttribute()) {
     UseCounter::Count(
         GetDocument(),
         has_sizes_attribute_in_img_or_sibling_

@@ -226,7 +226,7 @@ void SkiaVkOzoneImageRepresentation::EndAccess(bool readonly) {
     SemaphoreHandle semaphore_handle = vk_implementation()->GetSemaphoreHandle(
         vk_device(), end_access_semaphore_);
     fence = std::move(semaphore_handle).ToGpuFenceHandle();
-    DCHECK(!fence.is_null());
+    DLOG_IF(ERROR, fence.is_null()) << "Failed to convert the external semaphore to fence.";
   }
 
   ozone_backing()->EndAccess(readonly, OzoneImageBacking::AccessStream::kVulkan,

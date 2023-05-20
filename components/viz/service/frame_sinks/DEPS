@@ -26,4 +26,8 @@ specific_include_rules = {
   "external_begin_frame_source_android.cc": [
     "+components/viz/service/service_jni_headers/ExternalBeginFrameSourceAndroid_jni.h",
   ],
+  "external_begin_frame_source_mac.h": [
+    "+ui/display/mac/display_link_mac.h",
+    "+ui/display/types/display_constants.h",
+  ],
 }

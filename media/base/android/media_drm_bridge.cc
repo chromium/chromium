@@ -92,10 +92,10 @@ std::string ConvertInitDataType(media::EmeInitDataType init_data_type) {
       return "video/mp4";
     case media::EmeInitDataType::KEYIDS:
       return "keyids";
-    default:
-      NOTREACHED();
-      return "unknown";
+    case media::EmeInitDataType::UNKNOWN:
+      NOTREACHED_NORETURN();
   }
+  NOTREACHED_NORETURN();
 }
 
 // Convert CdmSessionType to MediaDrmKeyType supported by MediaDrm.
@@ -123,8 +123,7 @@ CdmMessageType GetMessageType(RequestType request_type) {
       return CdmMessageType::LICENSE_RELEASE;
   }
 
-  NOTREACHED();
-  return CdmMessageType::LICENSE_REQUEST;
+  NOTREACHED_NORETURN();
 }
 
 CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
@@ -158,8 +157,7 @@ CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
       return CdmKeyInformation::EXPIRED;
   }
 
-  NOTREACHED();
-  return CdmKeyInformation::INTERNAL_ERROR;
+  NOTREACHED_NORETURN();
 }
 
 class KeySystemManager {
@@ -220,10 +218,7 @@ KeySystemManager* GetKeySystemManager() {
 // resolved.
 bool IsKeySystemSupportedWithTypeImpl(const std::string& key_system,
                                       const std::string& container_mime_type) {
-  if (key_system.empty()) {
-    NOTREACHED();
-    return false;
-  }
+  CHECK(!key_system.empty());
 
   UUID scheme_uuid = GetKeySystemManager()->GetUUID(key_system);
   if (scheme_uuid.empty()) {

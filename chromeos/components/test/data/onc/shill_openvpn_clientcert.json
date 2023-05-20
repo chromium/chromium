@@ -15,6 +15,5 @@
    "Provider.Type": "openvpn",
    "ProxyConfig": "{\"mode\":\"direct\"}",
    "SaveCredentials": true,
-   "StaticIPConfig": {},
    "Type": "vpn",
 }

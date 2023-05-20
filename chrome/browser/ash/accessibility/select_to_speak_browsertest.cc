@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 
   ShellTestApi shell_test_api;
   display::test::DisplayManagerTestApi(shell_test_api.display_manager())
-      .UpdateDisplay("1+0-800x800,801+1-800x800");
+      .UpdateDisplay("1+0-800x700,801+1-800x700");
   ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
   display::test::DisplayManagerTestApi display_manager_test_api(
       shell_test_api.display_manager());

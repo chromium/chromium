@@ -6,6 +6,8 @@ import("//build/config/ios/asset_catalog.gni")
 
 group("resources") {
   deps = [
+    ":set_up_list_all_set_left",
+    ":set_up_list_all_set_right",
     ":set_up_list_sparkle0",
     ":set_up_list_sparkle1",
     ":set_up_list_sparkle10",
@@ -42,6 +44,20 @@ group("resources") {
     ":set_up_list_sparkle7",
     ":set_up_list_sparkle8",
     ":set_up_list_sparkle9",
+  ]
+}
+
+imageset("set_up_list_all_set_left") {
+  sources = [
+    "set_up_list_all_set_left.imageset/Contents.json",
+    "set_up_list_all_set_left.imageset/set_up_list_all_set_left.png",
+  ]
+}
+
+imageset("set_up_list_all_set_right") {
+  sources = [
+    "set_up_list_all_set_right.imageset/Contents.json",
+    "set_up_list_all_set_right.imageset/set_up_list_all_set_right.png",
   ]
 }
 

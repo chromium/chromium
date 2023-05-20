@@ -7,8 +7,8 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/service/sync_service_impl.h"
 
 UpdatedProgressMarkerChecker::UpdatedProgressMarkerChecker(
     syncer::SyncServiceImpl* service)

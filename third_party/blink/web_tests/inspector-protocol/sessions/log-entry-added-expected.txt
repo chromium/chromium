@@ -20,7 +20,32 @@ From session1:
                     }
                 ]
             }
-            text : Added synchronous DOM mutation listener to a 'DOMSubtreeModified' event. Consider using MutationObserver to make the page more responsive.
+            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
+            timestamp : <number>
+        }
+    }
+    sessionId : <string>
+}
+From session1:
+{
+    method : Log.entryAdded
+    params : {
+        entry : {
+            level : warning
+            lineNumber : 0
+            source : deprecation
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 14
+                        functionName : 
+                        lineNumber : 0
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+            }
+            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
             timestamp : <number>
         }
     }
@@ -47,7 +72,57 @@ From session1:
                     }
                 ]
             }
-            text : Added synchronous DOM mutation listener to a 'DOMSubtreeModified' event. Consider using MutationObserver to make the page more responsive.
+            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
+            timestamp : <number>
+        }
+    }
+    sessionId : <string>
+}
+From session1:
+{
+    method : Log.entryAdded
+    params : {
+        entry : {
+            level : warning
+            lineNumber : 0
+            source : deprecation
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 14
+                        functionName : 
+                        lineNumber : 0
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+            }
+            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
+            timestamp : <number>
+        }
+    }
+    sessionId : <string>
+}
+From session2:
+{
+    method : Log.entryAdded
+    params : {
+        entry : {
+            level : warning
+            lineNumber : 0
+            source : deprecation
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 14
+                        functionName : 
+                        lineNumber : 0
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+            }
+            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
             timestamp : <number>
         }
     }
@@ -72,7 +147,32 @@ From session2:
                     }
                 ]
             }
-            text : Added synchronous DOM mutation listener to a 'DOMSubtreeModified' event. Consider using MutationObserver to make the page more responsive.
+            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
+            timestamp : <number>
+        }
+    }
+    sessionId : <string>
+}
+From session2:
+{
+    method : Log.entryAdded
+    params : {
+        entry : {
+            level : warning
+            lineNumber : 0
+            source : deprecation
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 14
+                        functionName : 
+                        lineNumber : 0
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+            }
+            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
             timestamp : <number>
         }
     }
@@ -99,7 +199,32 @@ From session2:
                     }
                 ]
             }
-            text : Added synchronous DOM mutation listener to a 'DOMSubtreeModified' event. Consider using MutationObserver to make the page more responsive.
+            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
+            timestamp : <number>
+        }
+    }
+    sessionId : <string>
+}
+From session2:
+{
+    method : Log.entryAdded
+    params : {
+        entry : {
+            level : warning
+            lineNumber : 0
+            source : deprecation
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 14
+                        functionName : 
+                        lineNumber : 0
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+            }
+            text : Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
             timestamp : <number>
         }
     }

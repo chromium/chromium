@@ -30,15 +30,23 @@ class Origin;
 
 namespace android_webview {
 
+extern const char kAndroidWebViewProductName[];
+
 namespace prefs {
 extern const char kClientHintsCachedPerOriginMap[];
 }  // namespace prefs
 
+// Lifetime: Profile
 class AwClientHintsControllerDelegate
     : public content::ClientHintsControllerDelegate {
  public:
   explicit AwClientHintsControllerDelegate(PrefService* pref_service);
   ~AwClientHintsControllerDelegate() override;
+
+  // Add an unique brand to the brand list to allow users distinguish Android
+  // and Android WebView using user-agent client hints.
+  static blink::UserAgentMetadata GetUserAgentMetadataOverrideBrand(
+      const PrefService* pref_service);
 
   network::NetworkQualityTracker* GetNetworkQualityTracker() override;
 

@@ -47,7 +47,6 @@ import './screens/common/tpm_error.js';
 import './screens/common/user_creation.js';
 import './screens/common/wrong_hwid.js';
 // SCREENS USED DURING THE LOGIN FLOW
-import './screens/login/active_directory_password_change.js';
 import './screens/login/arc_vm_data_migration.js';
 import './screens/login/cryptohome_recovery.js';
 import './screens/login/encryption_migration.js';
@@ -145,7 +144,6 @@ export const commonScreensList = [
  * List of screens that are used during the `login` flow only.
  */
 export const loginScreensList = [
-  {tag: 'active-directory-password-change-element', id: 'ad-password-change'},
   {
     tag: 'arc-vm-data-migration-element',
     id: 'arc-vm-data-migration',

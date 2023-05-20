@@ -437,11 +437,7 @@ void InSessionPasswordChangeManager::OnLockStateChanged(bool locked) {
 
 void InSessionPasswordChangeManager::OnTokenCreated(
     const std::string& sync_token) {
-  PrefService* prefs = primary_profile_->GetPrefs();
-
-  // Set token value in prefs for in-session operations and ephemeral users and
-  // local settings for login screen sync.
-  prefs->SetString(prefs::kSamlPasswordSyncToken, sync_token);
+  // Set token value in local state.
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), sync_token);
 }

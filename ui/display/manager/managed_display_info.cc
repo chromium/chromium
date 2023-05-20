@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -489,12 +488,7 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
 }
 
 void ManagedDisplayInfo::SetBounds(const gfx::Rect& new_bounds_in_native) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  static bool reject_square = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kRejectSquareDisplay);
-  if (reject_square)
-    DCHECK_NE(new_bounds_in_native.width(), new_bounds_in_native.height());
-#endif
+  DCHECK_NE(new_bounds_in_native.width(), new_bounds_in_native.height());
 
   bounds_in_native_ = new_bounds_in_native;
   size_in_pixel_ = new_bounds_in_native.size();

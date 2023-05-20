@@ -270,8 +270,7 @@ void TestRenderFrame::Navigate(
       /*subresource_overrides=*/absl::nullopt,
       blink::mojom::ControllerServiceWorkerInfoPtr(),
       blink::mojom::ServiceWorkerContainerInfoForClientPtr(),
-      /*prefetch_loader_factory=*/mojo::NullRemote(),
-      /*topics_loader_factory=*/mojo::NullRemote(),
+      /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
       /*keep_alive_loader_factory=*/mojo::NullRemote(), blink::DocumentToken(),
       base::UnguessableToken::Create(), blink::ParsedPermissionsPolicy(),
       blink::mojom::PolicyContainer::New(

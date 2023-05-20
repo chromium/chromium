@@ -147,6 +147,13 @@ namespace {
 
 LayoutUnit TextAreaIntrinsicInlineSize(const HTMLTextAreaElement& textarea,
                                        const LayoutBox& box) {
+  int scrollbar_thickness = 0;
+  if (!RuntimeEnabledFeatures::LayoutNewTextAreaScrollbarEnabled() ||
+      box.StyleRef().OverflowBlockDirection() == EOverflow::kScroll ||
+      box.StyleRef().OverflowBlockDirection() == EOverflow::kAuto) {
+    scrollbar_thickness = layout_text_control::ScrollbarThickness(box);
+  }
+
   // <textarea>'s intrinsic inline-size always contains the scrollbar thickness
   // regardless of actual existence of a scrollbar.
   //
@@ -154,7 +161,7 @@ LayoutUnit TextAreaIntrinsicInlineSize(const HTMLTextAreaElement& textarea,
   // ComputeIntrinsicLogicalWidths()|.
   return LayoutUnit(ceilf(layout_text_control::GetAvgCharWidth(box.StyleRef()) *
                           textarea.cols())) +
-         layout_text_control::ScrollbarThickness(box);
+         scrollbar_thickness;
 }
 
 LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
@@ -211,12 +218,15 @@ LayoutUnit TextAreaIntrinsicBlockSize(const HTMLTextAreaElement& textarea,
   const LayoutBox& inner_box = *inner_editor->GetLayoutBox();
   const ComputedStyle& inner_style = inner_box.StyleRef();
   // We are able to have a horizontal scrollbar if the overflow style is
-  // scroll, or if its auto and there's no word wrap.
+  // scroll, or if it's auto and there's no word wrap and new textarea
+  // scrollbar logic is disabled.
   int scrollbar_thickness = 0;
   if (box.StyleRef().OverflowInlineDirection() == EOverflow::kScroll ||
-      (box.StyleRef().OverflowInlineDirection() == EOverflow::kAuto &&
-       inner_style.OverflowWrap() == EOverflowWrap::kNormal))
+      (!RuntimeEnabledFeatures::LayoutNewTextAreaScrollbarEnabled() &&
+       box.StyleRef().OverflowInlineDirection() == EOverflow::kAuto &&
+       inner_style.OverflowWrap() == EOverflowWrap::kNormal)) {
     scrollbar_thickness = layout_text_control::ScrollbarThickness(box);
+  }
   return inner_box.FirstLineHeight() * textarea.rows() + scrollbar_thickness;
 }
 

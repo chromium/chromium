@@ -49,6 +49,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountUpsertionResult {
   // error state must not be NONE.
   static AccountUpsertionResult FromError(const GoogleServiceAuthError& error);
 
+  // If `status` is `kSuccess`, the reauthenticated/added account will be
+  // returned from `account`. Otherwise `account` will be `absl::nullopt`.
   Status status() const { return status_; }
 
   // The account that was added. Set iff `status` is set to `kSuccess`.

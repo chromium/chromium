@@ -486,8 +486,9 @@ CertificateErrorReport::CertificateErrorReport(
       chrome_browser_ssl::CertLoggerFeaturesInfo::ANDROID_AIA_FETCHING_ENABLED);
 #endif
 
-  cert_report_->set_chrome_version(version_info::GetVersionNumber());
-  cert_report_->set_os_type(version_info::GetOSType());
+  cert_report_->set_chrome_version(
+      std::string(version_info::GetVersionNumber()));
+  cert_report_->set_os_type(std::string(version_info::GetOSType()));
   cert_report_->set_os_version(base::SysInfo::OperatingSystemVersion());
   cert_report_->set_hardware_model_name(base::SysInfo::HardwareModelName());
   cert_report_->set_os_architecture(

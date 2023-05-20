@@ -17,7 +17,9 @@
 
 #if defined(__OBJC__)
 
-#import "base/mac/scoped_nsobject.h"
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class ASWebAuthenticationSessionRequest;
 
@@ -87,7 +89,7 @@ class API_AVAILABLE(macos(10.15)) AuthSessionRequest
   raw_ptr<Browser> browser_ = nullptr;
 
   // The request being serviced.
-  base::scoped_nsobject<ASWebAuthenticationSessionRequest> request_;
+  ASWebAuthenticationSessionRequest* __strong request_;
 
   // The scheme being watched for, canonicalized.
   std::string scheme_;

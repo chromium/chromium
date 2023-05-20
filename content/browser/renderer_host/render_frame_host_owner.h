@@ -10,6 +10,7 @@
 
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
@@ -24,10 +25,6 @@ class GURL;
 namespace net {
 class IsolationInfo;
 }  // namespace net
-
-namespace network {
-struct AttributionReportingRuntimeFeatures;
-}  // namespace network
 
 namespace url {
 class Origin;

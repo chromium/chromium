@@ -12,9 +12,9 @@ found in the LICENSE file.
         </shape>
     </item>
     <item
-        android:top="@dimen/search_toolbar_modern_bg_top_bottom_inset"
-        android:bottom="@dimen/search_toolbar_modern_bg_top_bottom_inset"
-        android:left="@dimen/search_toolbar_modern_bg_lateral_inset"
-        android:right="@dimen/search_toolbar_modern_bg_lateral_inset"
+        android:top="@dimen/search_toolbar_modern_bg_vertical_inset"
+        android:bottom="@dimen/search_toolbar_modern_bg_vertical_inset"
+        android:start="@dimen/search_toolbar_modern_bg_horizontal_inset"
+        android:end="@dimen/search_toolbar_modern_bg_horizontal_inset"
         android:drawable="@drawable/modern_toolbar_text_box_background" />
 </layer-list>

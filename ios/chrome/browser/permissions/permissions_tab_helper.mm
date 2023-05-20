@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/permissions_dialog_overlay.h"
 #import "ios/chrome/browser/permissions/permissions_infobar_delegate.h"
-#import "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,15 +43,13 @@ void HandlePermissionDialogResponse(
 PermissionsTabHelper::PermissionsTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   if (@available(iOS 15.0, *)) {
-    if (web::features::IsMediaPermissionsControlEnabled()) {
-      DCHECK(web_state);
-      permissions_to_state_ =
-          [web_state->GetStatesForAllPermissions() mutableCopy];
-      banner_queue_ = OverlayRequestQueue::FromWebState(
-          web_state, OverlayModality::kInfobarBanner);
-      inserter_ = InfobarOverlayRequestInserter::FromWebState(web_state);
-      web_state_->AddObserver(this);
-    }
+    DCHECK(web_state);
+    permissions_to_state_ =
+        [web_state->GetStatesForAllPermissions() mutableCopy];
+    banner_queue_ = OverlayRequestQueue::FromWebState(
+        web_state, OverlayModality::kInfobarBanner);
+    inserter_ = InfobarOverlayRequestInserter::FromWebState(web_state);
+    web_state_->AddObserver(this);
   }
 }
 
@@ -121,7 +118,7 @@ void PermissionsTabHelper::PermissionStateChanged(web::WebState* web_state,
 void PermissionsTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   DCHECK(banner_queue_);
-  if (web::features::IsMediaPermissionsControlEnabled()) {
+  if (@available(iOS 15.0, *)) {
     web_state_->RemoveObserver(this);
   }
   web_state_ = nullptr;

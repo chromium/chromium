@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 
@@ -62,16 +63,14 @@ void NonScannableAllocatorImpl<Quarantinable>::NotifyPCScanEnabled() {
 #if BUILDFLAG(USE_STARSCAN)
   allocator_.reset(partition_alloc::internal::MakePCScanMetadata<
                    partition_alloc::PartitionAllocator>());
-  allocator_->init({
-      partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
-      partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-      Quarantinable
-          ? partition_alloc::PartitionOptions::Quarantine::kAllowed
-          : partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-      partition_alloc::PartitionOptions::Cookie::kAllowed,
-      partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-      partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
-      partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+  allocator_->init(partition_alloc::PartitionOptions{
+      .quarantine =
+          Quarantinable
+              ? partition_alloc::PartitionOptions::Quarantine::kAllowed
+              : partition_alloc::PartitionOptions::Quarantine::kDisallowed,
+      .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
+      .backup_ref_ptr =
+          partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
   });
   if (Quarantinable) {
     partition_alloc::internal::PCScan::RegisterNonScannableRoot(

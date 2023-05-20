@@ -55,7 +55,7 @@ namespace {
 
 void RecordCTRMetrics(const char* name, PageActionCTREvent event) {
   base::UmaHistogramEnumeration(
-      base::StrCat({"PageActionController.", name, ".Icon.CTR"}), event);
+      base::StrCat({"PageActionController.", name, ".Icon.CTR2"}), event);
 }
 
 }  // namespace
@@ -70,6 +70,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
   DCHECK(params.icon_label_bubble_delegate);
   DCHECK(params.page_action_icon_delegate);
 
+  browser_ = params.browser;
   icon_container_ = icon_container;
 
   auto add_page_action_icon = [&params, this](PageActionIconType type,
@@ -296,6 +297,16 @@ PageActionIconType PageActionIconController::GetIconType(
 void PageActionIconController::UpdateAll() {
   for (auto icon_item : page_action_icon_views_)
     icon_item.second->Update();
+  if (!browser_ || !browser_->tab_strip_model() ||
+      !browser_->tab_strip_model()->GetActiveWebContents()) {
+    return;
+  }
+  const GURL url =
+      browser_->tab_strip_model()->GetActiveWebContents()->GetURL();
+  if (page_actions_excluded_from_logging_.find(url) ==
+      page_actions_excluded_from_logging_.end()) {
+    RecordMetricsOnURLChange(url);
+  }
 }
 
 bool PageActionIconController::IsAnyIconVisible() const {
@@ -331,11 +342,25 @@ void PageActionIconController::SetFontList(const gfx::FontList& font_list) {
 
 void PageActionIconController::OnPageActionIconViewShown(
     PageActionIconView* view) {
-  if (!view->should_record_metrics_if_shown()) {
+  if (!browser_ || !browser_->tab_strip_model() ||
+      !browser_->tab_strip_model()->GetActiveWebContents()) {
+    return;
+  }
+  GURL url = browser_->tab_strip_model()->GetActiveWebContents()->GetURL();
+  if (page_actions_excluded_from_logging_.find(url) ==
+      page_actions_excluded_from_logging_.end()) {
+    page_actions_excluded_from_logging_[url] = {};
+  }
+  std::vector<PageActionIconView*> excluded_actions_on_page =
+      page_actions_excluded_from_logging_[url];
+  if (!view->ephemeral() || std::find(excluded_actions_on_page.begin(),
+                                      excluded_actions_on_page.end(),
+                                      view) != excluded_actions_on_page.end()) {
     return;
   }
   RecordOverallMetrics();
   RecordIndividualMetrics(GetIconType(view), view);
+  page_actions_excluded_from_logging_[url].push_back(view);
 }
 
 void PageActionIconController::OnPageActionIconViewClicked(
@@ -374,30 +399,14 @@ void PageActionIconController::ReadyToCommitNavigation(
   if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
-  for (auto icon_item : page_action_icon_views_) {
-    if (!icon_item.second->ephemeral()) {
-      continue;
-    }
-    // Reset metrics logging, so that all page actions will log metrics the
-    // first time they are displayed on the new page.
-    icon_item.second->set_should_record_metrics_if_shown(true);
-  }
+  page_actions_excluded_from_logging_.erase(
+      navigation_handle->GetWebContents()->GetURL());
   max_actions_recorded_on_current_page_ = 0;
 }
 
 void PageActionIconController::PrimaryPageChanged(content::Page& page) {
-  // When the primary page has changed, log metrics for individual page actions
-  // as well as overall metrics.
-  RecordOverallMetrics();
-  for (auto icon_item : page_action_icon_views_) {
-    if (!icon_item.second->ephemeral() || !icon_item.second->GetVisible() ||
-        !icon_item.second->should_record_metrics_if_shown()) {
-      continue;
-    }
-    RecordIndividualMetrics(icon_item.first, icon_item.second);
-  }
-  base::UmaHistogramEnumeration("PageActionController.PagesWithActionsShown",
-                                PageActionPageEvent::kPageShown);
+  const GURL url = page.GetMainDocument().GetLastCommittedURL();
+  RecordMetricsOnURLChange(url);
 }
 
 int PageActionIconController::VisibleEphemeralActionCount() const {
@@ -408,14 +417,36 @@ int PageActionIconController::VisibleEphemeralActionCount() const {
       });
 }
 
+void PageActionIconController::RecordMetricsOnURLChange(GURL url) {
+  if (page_actions_excluded_from_logging_.find(url) ==
+      page_actions_excluded_from_logging_.end()) {
+    page_actions_excluded_from_logging_[url] = {};
+  }
+  std::vector<PageActionIconView*> excluded_actions_on_page =
+      page_actions_excluded_from_logging_[url];
+  RecordOverallMetrics();
+  for (auto icon_item : page_action_icon_views_) {
+    if (!icon_item.second->ephemeral() || !icon_item.second->GetVisible() ||
+        std::find(excluded_actions_on_page.begin(),
+                  excluded_actions_on_page.end(),
+                  icon_item.second) != excluded_actions_on_page.end()) {
+      continue;
+    }
+    RecordIndividualMetrics(icon_item.first, icon_item.second);
+    page_actions_excluded_from_logging_[url].push_back(icon_item.second);
+  }
+  base::UmaHistogramEnumeration("PageActionController.PagesWithActionsShown2",
+                                PageActionPageEvent::kPageShown);
+}
+
 void PageActionIconController::RecordOverallMetrics() {
   int num_actions_shown = VisibleEphemeralActionCount();
-  base::UmaHistogramExactLinear("PageActionController.NumberActionsShown",
+  base::UmaHistogramExactLinear("PageActionController.NumberActionsShown2",
                                 num_actions_shown, 20);
   // Record kActionShown if this is the first time an ephemeral action has been
   // shown on the current page.
   if (num_actions_shown > 0 && max_actions_recorded_on_current_page_ < 1) {
-    base::UmaHistogramEnumeration("PageActionController.PagesWithActionsShown",
+    base::UmaHistogramEnumeration("PageActionController.PagesWithActionsShown2",
                                   PageActionPageEvent::kActionShown);
   }
   // Record kMultipleActionsShown if this is the first time multiple ephemeral
@@ -425,7 +456,7 @@ void PageActionIconController::RecordOverallMetrics() {
   // and kMultipleActionsShown are not intended to be mutually exclusive, so in
   // this case we should log both.
   if (num_actions_shown > 1 && max_actions_recorded_on_current_page_ < 2) {
-    base::UmaHistogramEnumeration("PageActionController.PagesWithActionsShown",
+    base::UmaHistogramEnumeration("PageActionController.PagesWithActionsShown2",
                                   PageActionPageEvent::kMultipleActionsShown);
   }
   max_actions_recorded_on_current_page_ =
@@ -436,18 +467,17 @@ void PageActionIconController::RecordIndividualMetrics(
     PageActionIconType type,
     PageActionIconView* view) const {
   CHECK(view->ephemeral());
-  base::UmaHistogramEnumeration("PageActionController.Icon.CTR",
+  base::UmaHistogramEnumeration("PageActionController.Icon.CTR2",
                                 PageActionCTREvent::kShown);
   RecordCTRMetrics(view->name_for_histograms(), PageActionCTREvent::kShown);
-  base::UmaHistogramEnumeration("PageActionController.ActionTypeShown", type);
-  view->set_should_record_metrics_if_shown(false);
+  base::UmaHistogramEnumeration("PageActionController.ActionTypeShown2", type);
 }
 
 void PageActionIconController::RecordClickMetrics(
     PageActionIconType type,
     PageActionIconView* view) const {
   CHECK(view->ephemeral());
-  base::UmaHistogramEnumeration("PageActionController.Icon.CTR",
+  base::UmaHistogramEnumeration("PageActionController.Icon.CTR2",
                                 PageActionCTREvent::kClicked);
   RecordCTRMetrics(view->name_for_histograms(), PageActionCTREvent::kClicked);
   base::UmaHistogramExactLinear(

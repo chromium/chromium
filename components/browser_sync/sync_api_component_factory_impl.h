@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_api_component_factory.h"
+#include "components/sync/service/sync_api_component_factory.h"
 #include "components/version_info/version_info.h"
 
 namespace syncer {

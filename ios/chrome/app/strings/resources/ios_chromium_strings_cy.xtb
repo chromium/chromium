@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">Roedd <ph name="USER_EMAIL1" /> yn defnyddio Chromium a gadawodd nodau tudalen, cyfrineiriau, a gosodiadau eraill ar y ddyfais hon.</translation>
 <translation id="372658070733623520">I ddefnyddio a chadw data Chromium yn eich Cyfrif Google, cadarnhewch mai chi sydd yno.</translation>
 <translation id="3805899903892079518">Nid oes gan Chromium fynediad at eich lluniau na'ch fideos. Galluogi mynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>
+<translation id="3955621079070267756">Agor Chromium o Unrhyw Ap</translation>
 <translation id="4043291146360695975">Mae cyfrineiriau'n cael eu cadw i'r Rheolwr Cyfrineiriau ar y ddyfais hon yn unig.</translation>
 <translation id="4099085513035183040">Ni chefnogir ar Feta Chromium</translation>
 <translation id="4432744876818348753">Mewngofnodwch i gael y gorau o Chromium.</translation>
@@ -101,7 +102,6 @@
 <translation id="7192111075364461693">Mae hysbysiadau Chromium wedi'u diffodd yng ngosodiadau eich dyfais ar hyn o bryd.</translation>
 <translation id="7208566199746267865">Mae Chromium yn arbed amser i chi drwy ddod â'ch cyfrifon i'r we. Gallwch ychwanegu neu dynnu cyfrifon yn y Gosodiadau.</translation>
 <translation id="725427773388857052">Gall Chromium helpu i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor.</translation>
-<translation id="7255976941681861701">Dewch i adnabod y ddewislen Chromium newydd</translation>
 <translation id="7269362888766543920">Mae rhai ychwanegion yn achosi i Chromium dorri. Rhowch gynnig ar ddadosod nhw.</translation>
 <translation id="7313655110045230863">I wneud Chromium eich porwr diofyn, agorwch y Gosodiadau. Tapiwch Ap Pori Diofyn, a dewiswch Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
@@ -144,5 +144,6 @@ Pethau i'w hystyried:
 <translation id="9089354809943900324">Mae Chromium yn hen</translation>
 <translation id="9110075932708282655">Defnyddiwch Chromium yn ddiofyn</translation>
 <translation id="921174536258924340">Nid oedd modd i Chromium wirio'r holl gyfrineiriau. Rhowch gynnig arall arni yfory neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Defnyddio Chromium yn awtomatig pan fyddwch chi'n tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="985602178874221306">Awduron Chromium</translation>
 </translationbundle>

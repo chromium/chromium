@@ -102,6 +102,10 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
                      result_out);
   }
 
+  scoped_refptr<const ShapeResultView> ShapeLineAt(unsigned start,
+                                                   unsigned end,
+                                                   unsigned options);
+
   // Disable breaking at soft hyphens (U+00AD).
   bool IsSoftHyphenEnabled() const { return is_soft_hyphen_enabled_; }
   void DisableSoftHyphen() { is_soft_hyphen_enabled_ = false; }
@@ -147,6 +151,13 @@ class PLATFORM_EXPORT ShapingLineBreaker final {
                                                   unsigned first_safe,
                                                   unsigned range_start,
                                                   unsigned range_end);
+  scoped_refptr<const ShapeResultView> ConcatShapeResults(
+      unsigned start,
+      unsigned end,
+      unsigned first_safe,
+      unsigned last_safe,
+      scoped_refptr<const ShapeResult> line_start_result,
+      scoped_refptr<const ShapeResult> line_end_result);
 
   void SetBreakOffset(unsigned break_offset, const String&, Result*);
   void SetBreakOffset(const BreakOpportunity&, const String&, Result*);

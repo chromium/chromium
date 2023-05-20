@@ -11,16 +11,23 @@ enum HDRMode {
   kExtended,
 };
 
-// This defines a mojo transport format for gfx::HDRMetadata.
-// See ui/gfx/hdr_metadata.h for description.
-struct ColorVolumeMetadata {
+// Mojo equivalent of gfx::HdrMetadataCta861_3. No validation is done on any of
+// these values during serialization.
+struct HdrMetadataCta861_3 {
+  uint32 max_content_light_level;
+  uint32 max_frame_average_light_level;
+};
+
+// Mojo equivalent of gfx::HdrMetadataSmpteSt2086. No validation is done on any
+// of these values during serialization.
+struct HdrMetadataSmpteSt2086 {
   skia.mojom.SkColorSpacePrimaries primaries;
   float luminance_max;
   float luminance_min;
 };
 
+// Mojo equivalent of gfx::HDRMetadata.
 struct HDRMetadata {
-  ColorVolumeMetadata color_volume_metadata;
-  uint32 max_content_light_level;
-  uint32 max_frame_average_light_level;
+  HdrMetadataSmpteSt2086 smpte_st_2086;
+  HdrMetadataCta861_3 cta_861_3;
 };

@@ -8,7 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
-#include "components/sync/driver/data_type_controller.h"
+#include "components/sync/service/data_type_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -7,13 +7,12 @@
 #include "base/base64.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 
 namespace {
 
-const char kPEMSearchBlock[] = "-----BEGIN ";
-const char kPEMBeginBlock[] = "-----BEGIN %s-----";
-const char kPEMEndBlock[] = "-----END %s-----";
+constexpr base::StringPiece kPEMHeaderBeginBlock = "-----BEGIN ";
+constexpr base::StringPiece kPEMHeaderEndBlock = "-----END ";
+constexpr base::StringPiece kPEMHeaderTail = "-----";
 
 }  // namespace
 
@@ -38,7 +37,7 @@ PEMTokenizer::~PEMTokenizer() = default;
 bool PEMTokenizer::GetNext() {
   while (pos_ != StringPiece::npos) {
     // Scan for the beginning of the next PEM encoded block.
-    pos_ = str_.find(kPEMSearchBlock, pos_);
+    pos_ = str_.find(kPEMHeaderBeginBlock, pos_);
     if (pos_ == StringPiece::npos)
       return false;  // No more PEM blocks
 
@@ -77,7 +76,7 @@ bool PEMTokenizer::GetNext() {
     // appropriate search position to continue searching from and should not
     // be adjusted.
     if (it == block_types_.end())
-      pos_ += sizeof(kPEMSearchBlock);
+      pos_ += kPEMHeaderBeginBlock.size();
   }
 
   return false;
@@ -93,10 +92,12 @@ void PEMTokenizer::Init(StringPiece str,
   for (const auto& allowed_block_type : allowed_block_types) {
     PEMType allowed_type;
     allowed_type.type = allowed_block_type;
-    allowed_type.header =
-        base::StringPrintf(kPEMBeginBlock, allowed_block_type.c_str());
-    allowed_type.footer =
-        base::StringPrintf(kPEMEndBlock, allowed_block_type.c_str());
+    allowed_type.header = kPEMHeaderBeginBlock;
+    allowed_type.header.append(allowed_block_type);
+    allowed_type.header.append(kPEMHeaderTail);
+    allowed_type.footer = kPEMHeaderEndBlock;
+    allowed_type.footer.append(allowed_block_type);
+    allowed_type.footer.append(kPEMHeaderTail);
     block_types_.push_back(allowed_type);
   }
 }
@@ -119,9 +120,10 @@ std::string PEMEncode(base::StringPiece data, const std::string& type) {
       // newline characters for line wrapping in encoded data
       chunks);
 
-  pem_encoded = "-----BEGIN ";
+  pem_encoded = kPEMHeaderBeginBlock;
   pem_encoded.append(type);
-  pem_encoded.append("-----\n");
+  pem_encoded.append(kPEMHeaderTail);
+  pem_encoded.append("\n");
 
   for (size_t i = 0, chunk_offset = 0; i < chunks;
        ++i, chunk_offset += kChunkSize) {
@@ -129,9 +131,10 @@ std::string PEMEncode(base::StringPiece data, const std::string& type) {
     pem_encoded.append("\n");
   }
 
-  pem_encoded.append("-----END ");
+  pem_encoded.append(kPEMHeaderEndBlock);
   pem_encoded.append(type);
-  pem_encoded.append("-----\n");
+  pem_encoded.append(kPEMHeaderTail);
+  pem_encoded.append("\n");
   return pem_encoded;
 }
 

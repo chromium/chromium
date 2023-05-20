@@ -7,6 +7,7 @@ import {util} from '../../../common/js/util.js';
 import {ActionsModel} from '../actions_model.js';
 
 import {Command} from './command.js';
+import {FilesMenuItem} from './files_menu.js';
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
 
@@ -39,6 +40,7 @@ export class ActionsSubmenu {
    */
   addMenuItem_(options) {
     const menuItem = this.menu_.addMenuItem(options);
+    FilesMenuItem.decorate(menuItem);
     menuItem.parentNode.insertBefore(menuItem, this.separator_);
     this.items_.push(menuItem);
     return menuItem;

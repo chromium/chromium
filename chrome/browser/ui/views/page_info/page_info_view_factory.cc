@@ -542,6 +542,11 @@ const ui::ImageModel PageInfoViewFactory::GetValidCertificateIcon() {
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetInvalidCertificateIcon() {
+  if (features::IsChromeRefresh2023()) {
+    return ui::ImageModel::FromVectorIcon(
+        vector_icons::kCertificateOffChromeRefreshIcon, ui::kColorIcon,
+        GetIconSize());
+  }
   return ui::ImageModel::FromVectorIcon(vector_icons::kCertificateIcon,
                                         ui::kColorIcon, GetIconSize(),
                                         &vector_icons::kBlockedBadgeIcon);
@@ -552,7 +557,7 @@ const ui::ImageModel PageInfoViewFactory::GetSiteSettingsIcon() {
   return ui::ImageModel::FromVectorIcon(
       features::IsChromeRefresh2023() ? vector_icons::kSettingsChromeRefreshIcon
                                       : vector_icons::kSettingsIcon,
-      ui::kColorIcon);
+      ui::kColorIcon, GetIconSize());
 }
 
 // static
@@ -570,15 +575,10 @@ const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
 }
 
 // static
-const ui::ImageModel PageInfoViewFactory::GetSidePanelIcon() {
-  return ui::ImageModel::FromVectorIcon(kSidePanelIcon, ui::kColorIconSecondary,
-                                        GetIconSize());
-}
-
-// static
 const ui::ImageModel PageInfoViewFactory::GetConnectionNotSecureIcon() {
   return ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
-                                        ui::kColorAlertHighSeverity);
+                                        ui::kColorAlertHighSeverity,
+                                        GetIconSize());
 }
 
 // static

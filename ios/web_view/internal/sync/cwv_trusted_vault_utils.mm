@@ -4,7 +4,7 @@
 
 #import "ios/web_view/public/cwv_trusted_vault_utils.h"
 
-#import "components/sync/driver/trusted_vault_histograms.h"
+#import "components/sync/service/trusted_vault_histograms.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

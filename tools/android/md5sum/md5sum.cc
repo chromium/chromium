@@ -40,6 +40,7 @@ bool MD5Sum(const std::string& path, std::string* digest_string) {
   while ((len = fread(buf.get(), 1, kBufferSize, fd)) > 0)
     base::MD5Update(&ctx, base::StringPiece(buf.get(), len));
   if (ferror(fd)) {
+    fclose(fd);
     std::cerr << "Error reading file " << path << std::endl;
     return false;
   }

@@ -32,6 +32,7 @@ WebAppRegistryUpdate::~WebAppRegistryUpdate() = default;
 
 void WebAppRegistryUpdate::CreateApp(std::unique_ptr<WebApp> web_app) {
   DCHECK(update_data_);
+  CHECK(web_app->manifest_id().is_valid());
   DCHECK(!web_app->app_id().empty());
   DCHECK(!registrar_->GetAppById(web_app->app_id()));
   DCHECK(!base::Contains(update_data_->apps_to_create, web_app));

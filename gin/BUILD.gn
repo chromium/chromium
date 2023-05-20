@@ -55,6 +55,8 @@ component("gin") {
     "runner.h",
     "shell_runner.cc",
     "shell_runner.h",
+    "thread_isolation.cc",
+    "thread_isolation.h",
     "time_clamper.cc",
     "time_clamper.h",
     "try_catch.cc",
@@ -82,6 +84,12 @@ component("gin") {
       "v8_platform_page_allocator.cc",
       "v8_platform_page_allocator.h",
     ]
+    if (enable_pkeys) {
+      sources += [
+        "v8_platform_thread_isolated_allocator.cc",
+        "v8_platform_thread_isolated_allocator.h",
+      ]
+    }
   }
 
   if (v8_use_external_startup_data) {

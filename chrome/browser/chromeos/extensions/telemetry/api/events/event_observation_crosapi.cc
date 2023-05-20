@@ -89,6 +89,19 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
             browser_context_);
         break;
       }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kPowerEventInfo: {
+        base::Value::List args;
+        args.Append(
+            converters::ConvertStructPtr<api::os_events::PowerEventInfo>(
+                std::move(info->get_power_event_info()))
+                .ToValue());
+        event = std::make_unique<extensions::Event>(
+            extensions::events::OS_EVENTS_ON_POWER_EVENT,
+            api::os_events::OnPowerEvent::kEventName, std::move(args),
+            browser_context_);
+        break;
+      }
     }
 
     extensions::EventRouter::Get(browser_context_)

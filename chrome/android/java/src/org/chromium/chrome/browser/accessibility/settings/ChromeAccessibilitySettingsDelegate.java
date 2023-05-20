@@ -32,22 +32,36 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     }
 
     private static class ReaderForAccessibilityDelegate implements BooleanPreferenceDelegate {
+        private final Profile mProfile;
+
+        ReaderForAccessibilityDelegate(Profile profile) {
+            mProfile = profile;
+        }
+
         @Override
         public boolean isEnabled() {
-            return UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .getBoolean(Pref.READER_FOR_ACCESSIBILITY);
+            return UserPrefs.get(mProfile).getBoolean(Pref.READER_FOR_ACCESSIBILITY);
         }
 
         @Override
         public void setEnabled(boolean value) {
-            UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) value);
+            UserPrefs.get(mProfile).setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) value);
         }
+    }
+
+    private final Profile mProfile;
+
+    /**
+     * Constructs a delegate for the given profile.
+     * @param profile The profile associated with the delegate.
+     */
+    public ChromeAccessibilitySettingsDelegate(Profile profile) {
+        mProfile = profile;
     }
 
     @Override
     public BrowserContextHandle getBrowserContextHandle() {
-        return Profile.getLastUsedRegularProfile();
+        return mProfile;
     }
 
     @Override
@@ -60,7 +74,7 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
 
     @Override
     public BooleanPreferenceDelegate getReaderForAccessibilityDelegate() {
-        return new ReaderForAccessibilityDelegate();
+        return new ReaderForAccessibilityDelegate(mProfile);
     }
 
     @Override

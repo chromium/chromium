@@ -22,11 +22,11 @@ namespace sync_preferences {
 
 namespace {
 
-constexpr char kPref1[] = "pref1";
-constexpr char kPref2[] = "pref2";
-constexpr char kPref3[] = "pref3";
-constexpr char kPrefName[] = "pref";
-constexpr char kPriorityPrefName[] = "priority-pref";
+constexpr char kPref1[] = "regular.pref1";
+constexpr char kPref2[] = "regular.pref2";
+constexpr char kPref3[] = "regular.pref3";
+constexpr char kPrefName[] = "regular.pref";
+constexpr char kPriorityPrefName[] = "priority.pref";
 constexpr char kNonExistentPrefName[] = "nonexistent-pref";
 constexpr char kNonSyncablePrefName[] = "nonsyncable-pref";
 
@@ -44,7 +44,7 @@ base::Value MakeDict(
     const std::vector<std::pair<std::string, std::string>>& values) {
   base::Value::Dict dict;
   for (const auto& [key, value] : values) {
-    dict.Set(key, value);
+    dict.SetByDottedPath(key, value);
   }
   return base::Value(std::move(dict));
 }
@@ -81,6 +81,17 @@ testing::AssertionResult ValueInStoreIsAbsent(const PrefStore& store,
            << *actual_value;
   }
   return testing::AssertionSuccess();
+}
+
+testing::AssertionResult ValueInDictByDottedPathIs(
+    const base::Value::Dict& dict,
+    const std::string& key,
+    const base::Value& expected_value) {
+  if (const base::Value* actual_value = dict.FindByDottedPath(key);
+      actual_value && *actual_value == expected_value) {
+    return testing::AssertionSuccess();
+  }
+  return testing::AssertionFailure();
 }
 
 class MockPrefStoreObserver : public PrefStore::Observer {
@@ -351,10 +362,12 @@ TEST_F(DualLayerUserPrefStoreTest, ReadsFromBothStores) {
   base::Value::Dict expected_values;
   // For the pref that exists in both stores, the account value should take
   // precedence.
-  expected_values.Set(kPref1, "account_value1");
+  expected_values.SetByDottedPath(kPref1, "account_value1");
   // For the prefs that only exist in one store, their value should be returned.
-  expected_values.Set(kPref2, "local_value2");
-  expected_values.Set(kPref3, "account_value3");
+  expected_values.SetByDottedPath(kPref2, "local_value2");
+  expected_values.SetByDottedPath(kPref3, "account_value3");
+  // TODO(crbug.com/1446256): Also set expectations for GetValue() since
+  // GetValues() isn't used outside of tests and may not test the real codepath.
   EXPECT_EQ(store()->GetValues(), expected_values);
 }
 
@@ -451,7 +464,7 @@ TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromLocalToBothStores) {
   ASSERT_EQ(*mutable_value, original_value);
 
   // Update it!
-  mutable_value->SetStringKey("key", "new_value");
+  mutable_value->GetDict().Set("key", "new_value");
 
   const base::Value expected_value = mutable_value->Clone();
 
@@ -484,7 +497,7 @@ TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromAccountToBothStores) {
   ASSERT_EQ(*mutable_value, original_value);
 
   // Update it!
-  mutable_value->SetStringKey("key", "new_value");
+  mutable_value->GetDict().Set("key", "new_value");
 
   const base::Value expected_value = mutable_value->Clone();
 
@@ -521,7 +534,7 @@ TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromBothToBothStores) {
   ASSERT_EQ(*mutable_value, original_account_value);
 
   // Update it!
-  mutable_value->SetStringKey("key", "new_value");
+  mutable_value->GetDict().Set("key", "new_value");
 
   const base::Value expected_value = mutable_value->Clone();
 
@@ -555,7 +568,7 @@ TEST_F(DualLayerUserPrefStoreTest, ClearsMutableValueFromBothStores) {
   ASSERT_TRUE(mutable_value);
   ASSERT_EQ(*mutable_value, original_value);
 
-  mutable_value->SetStringKey("key", "new_value");
+  mutable_value->GetDict().Set("key", "new_value");
 
   // While the mutable value is "pending" (hasn't been "released" via
   // ReportValueChanged()), the pref gets cleared.
@@ -755,17 +768,17 @@ TEST_F(DualLayerUserPrefStoreTest, NotifiesOfMutableValuePrefChanges) {
 
   base::Value* value1 = nullptr;
   ASSERT_TRUE(store()->GetMutableValue(kPref1, &value1));
-  value1->SetStringKey("key1", "new_value1");
+  value1->GetDict().Set("key1", "new_value1");
   store()->ReportValueChanged(kPref1, 0);
 
   base::Value* value2 = nullptr;
   ASSERT_TRUE(store()->GetMutableValue(kPref2, &value2));
-  value2->SetStringKey("key2", "new_value2");
+  value2->GetDict().Set("key2", "new_value2");
   store()->ReportValueChanged(kPref2, 0);
 
   base::Value* value3 = nullptr;
   ASSERT_TRUE(store()->GetMutableValue(kPref3, &value3));
-  value3->SetStringKey("key3", "new_value3");
+  value3->GetDict().Set("key3", "new_value3");
   store()->ReportValueChanged(kPref3, 0);
 
   store()->RemoveObserver(&observer);
@@ -996,8 +1009,8 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
   }
   // Uses GetValues().
   {
-    ASSERT_TRUE(store()->GetValues().contains(kPref1));
-    EXPECT_EQ(*store()->GetValues().Find(kPref1), account_value);
+    EXPECT_TRUE(
+        ValueInDictByDottedPathIs(store()->GetValues(), kPref1, account_value));
   }
 
   // List prefs.
@@ -1024,8 +1037,8 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
   }
   // Uses GetValues().
   {
-    ASSERT_TRUE(store()->GetValues().contains(kPref2));
-    EXPECT_EQ(*store()->GetValues().Find(kPref2), account_list);
+    EXPECT_TRUE(
+        ValueInDictByDottedPathIs(store()->GetValues(), kPref2, account_list));
   }
 
   // Dictionary prefs.
@@ -1056,8 +1069,8 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
   }
   // Uses GetValues().
   {
-    ASSERT_TRUE(store()->GetValues().contains(kPref3));
-    EXPECT_EQ(*store()->GetValues().Find(kPref3), account_dict);
+    EXPECT_TRUE(
+        ValueInDictByDottedPathIs(store()->GetValues(), kPref3, account_dict));
   }
   // The local and the account stores are left untouched.
   EXPECT_TRUE(
@@ -1105,8 +1118,8 @@ TEST_F(DualLayerUserPrefStoreMergeTest, ShouldMergeMergeableListPref) {
   }
   // Uses GetValues().
   {
-    ASSERT_TRUE(store()->GetValues().contains(kPref1));
-    EXPECT_EQ(*store()->GetValues().Find(kPref1), merged_list);
+    EXPECT_TRUE(
+        ValueInDictByDottedPathIs(store()->GetValues(), kPref1, merged_list));
   }
 
   // The local and the account stores are left untouched.
@@ -1148,8 +1161,8 @@ TEST_F(DualLayerUserPrefStoreMergeTest, ShouldMergeMergeableDictPref) {
   }
   // Uses GetValues().
   {
-    ASSERT_TRUE(store()->GetValues().contains(kPref1));
-    EXPECT_EQ(*store()->GetValues().Find(kPref1), merged_dict);
+    EXPECT_TRUE(
+        ValueInDictByDottedPathIs(store()->GetValues(), kPref1, merged_dict));
   }
 
   // The local and the account stores are left untouched.
@@ -1186,8 +1199,8 @@ TEST_F(DualLayerUserPrefStoreMergeTest, ShouldMergeSpecialCasedMergeablePref) {
   }
   // Uses GetValues().
   {
-    ASSERT_TRUE(store()->GetValues().contains(kPref1));
-    EXPECT_EQ(*store()->GetValues().Find(kPref1), merged_value);
+    EXPECT_TRUE(
+        ValueInDictByDottedPathIs(store()->GetValues(), kPref1, merged_value));
   }
 
   // The local and the account stores are left untouched.

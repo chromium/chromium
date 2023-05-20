@@ -148,7 +148,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Test inline autocomplete of legacy text field implementation.
-- (void)testLegacyInlineAutocompleteSuggestion {
+// TODO(crbug.com/1445722): Re-enable when fixed.
+- (void)DISABLED_testLegacyInlineAutocompleteSuggestion {
   // Skip if new text field implementation is enabled.
   if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
     return;

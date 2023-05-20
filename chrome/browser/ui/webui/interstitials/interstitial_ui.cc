@@ -41,6 +41,7 @@
 #include "components/security_interstitials/content/mitm_software_blocking_page.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -68,8 +69,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"  // nogncheck
+#include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #endif
 
 using security_interstitials::TestSafeBrowsingBlockingPageQuiet;
@@ -276,7 +277,7 @@ CreateHttpsOnlyModePage(content::WebContents* web_contents) {
       web_contents, request_url,
       std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
                                                       request_url),
-      /*is_under_advanced_protection=*/false);
+      security_interstitials::https_only_mode::HttpInterstitialState{});
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingBlockingPage>

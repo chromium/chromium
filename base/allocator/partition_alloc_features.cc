@@ -81,12 +81,6 @@ BASE_FEATURE(kPartitionAllocPCScanRendererOnly,
              "PartitionAllocPCScanRendererOnly",
              FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, this instance belongs to the Control group of the BackupRefPtr
-// binary experiment.
-BASE_FEATURE(kPartitionAllocBackupRefPtrControl,
-             "PartitionAllocBackupRefPtrControl",
-             FEATURE_DISABLED_BY_DEFAULT);
-
 // Use a larger maximum thread cache cacheable bucket size.
 BASE_FEATURE(kPartitionAllocLargeThreadCacheSize,
              "PartitionAllocLargeThreadCacheSize",
@@ -143,10 +137,21 @@ const base::FeatureParam<BackupRefPtrEnabledProcesses>
       &kBackupRefPtrEnabledProcessesOptions
 };
 
+constexpr FeatureParam<BackupRefPtrRefCountSize>::Option
+    kBackupRefPtrRefCountSizeOptions[] = {
+        {BackupRefPtrRefCountSize::kNatural, "natural"},
+        {BackupRefPtrRefCountSize::k4B, "4B"},
+        {BackupRefPtrRefCountSize::k8B, "8B"},
+        {BackupRefPtrRefCountSize::k16B, "16B"}};
+
+const base::FeatureParam<BackupRefPtrRefCountSize>
+    kBackupRefPtrRefCountSizeParam{
+        &kPartitionAllocBackupRefPtr, "ref-count-size",
+        BackupRefPtrRefCountSize::kNatural, &kBackupRefPtrRefCountSizeOptions};
+
 constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
     {BackupRefPtrMode::kDisabled, "disabled"},
     {BackupRefPtrMode::kEnabled, "enabled"},
-    {BackupRefPtrMode::kEnabledWithoutZapping, "enabled-without-zapping"},
     {BackupRefPtrMode::kEnabledWithMemoryReclaimer,
      "enabled-with-memory-reclaimer"},
     {BackupRefPtrMode::kDisabledButSplitPartitions2Way,

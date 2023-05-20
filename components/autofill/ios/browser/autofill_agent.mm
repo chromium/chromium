@@ -62,6 +62,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
+#import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/geometry/rect.h"
 #import "url/gurl.h"
 
@@ -80,6 +81,7 @@ using base::NumberToString;
 using base::SysNSStringToUTF16;
 using base::SysNSStringToUTF8;
 using base::SysUTF16ToNSString;
+using base::SysUTF8ToNSString;
 
 namespace {
 
@@ -473,7 +475,13 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
       autofill_suggestion.frontend_id = frontend_id;
-      autofill_suggestion.payload = autofill::Suggestion::BackendId();
+      if (!suggestion.backendIdentifier.length) {
+        autofill_suggestion.payload = autofill::Suggestion::BackendId();
+      } else {
+        autofill_suggestion.payload = autofill::Suggestion::BackendId(
+            SysNSStringToUTF8(suggestion.backendIdentifier));
+      }
+
       _popupDelegate->DidAcceptSuggestion(autofill_suggestion, 0);
     }
     return;
@@ -495,7 +503,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   }
 
   if (frontend_id.as_popup_item_id() ==
-      autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
+      autofill::PopupItemId::kAutocompleteEntry) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         uniqueFieldID:uniqueFieldID
@@ -503,7 +511,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                 value:SysNSStringToUTF16(suggestion.value)
               inFrame:frame];
   } else if (frontend_id.as_popup_item_id() ==
-             autofill::POPUP_ITEM_ID_CLEAR_FORM) {
+             autofill::PopupItemId::kClearForm) {
     __weak AutofillAgent* weakSelf = self;
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
@@ -520,7 +528,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         }));
 
   } else if (frontend_id.as_popup_item_id() ==
-             autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
+             autofill::PopupItemId::kShowAccountCards) {
     autofill::BrowserAutofillManager* autofillManager =
         [self autofillManagerFromWebState:_webState webFrame:frame];
     if (autofillManager) {
@@ -624,14 +632,15 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     // for example. We can't include that enum because it's from WebKit, but
     // fortunately almost all the entries we are interested in (profile or
     // autofill entries) are zero or positive. Negative entries we are
-    // interested in is autofill::POPUP_ITEM_ID_CLEAR_FORM, used to show the
+    // interested in is autofill::PopupItemId::kClearForm, used to show the
     // "clear form" button.
     NSString* value = nil;
     NSString* displayDescription = nil;
+    UIImage* icon = nil;
     if (popup_suggestion.frontend_id.as_int() >= 0) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
       if (popup_suggestion.frontend_id ==
-              autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
+              autofill::PopupItemId::kAutocompleteEntry &&
           [_typedValue length] == 0) {
         continue;
       }
@@ -645,12 +654,29 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         displayDescription =
             SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
       }
+
+      // Only show icon for credit card suggestions.
+      if (delegate &&
+          delegate->GetPopupType() == autofill::PopupType::kCreditCards) {
+        // If available, the custom icon for the card is preferred over the
+        // generic network icon. The network icon may also be missing, in
+        // which case we do not set an icon at all.
+        if (!popup_suggestion.custom_icon.IsEmpty()) {
+          icon = popup_suggestion.custom_icon.ToUIImage();
+        } else if (!popup_suggestion.icon.empty()) {
+          const int resourceID =
+              autofill::CreditCard::IconResourceId(popup_suggestion.icon);
+          icon = ui::ResourceBundle::GetSharedInstance()
+                     .GetNativeImageNamed(resourceID)
+                     .ToUIImage();
+        }
+      }
     } else if (popup_suggestion.frontend_id ==
-               autofill::POPUP_ITEM_ID_CLEAR_FORM) {
+               autofill::PopupItemId::kClearForm) {
       // Show the "clear form" button.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
     } else if (popup_suggestion.frontend_id ==
-               autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
+               autofill::PopupItemId::kShowAccountCards) {
       // Show opt-in for showing cards from account.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
     }
@@ -662,16 +688,17 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         popup_suggestion.acceptance_a11y_announcement.has_value()
             ? SysUTF16ToNSString(*popup_suggestion.acceptance_a11y_announcement)
             : nil;
-    // Only show icon for credit card suggestions.
-    NSString* icon = delegate && delegate->GetPopupType() ==
-                                     autofill::PopupType::kCreditCards
-                         ? base::SysUTF8ToNSString(popup_suggestion.icon)
-                         : nil;
+
     FormSuggestion* suggestion = [FormSuggestion
                suggestionWithValue:value
                 displayDescription:displayDescription
                               icon:icon
                         identifier:popup_suggestion.frontend_id.as_int()
+                 backendIdentifier:
+                     SysUTF8ToNSString(
+                         popup_suggestion
+                             .GetPayload<autofill::Suggestion::BackendId>()
+                             .value())
                     requiresReauth:NO
         acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
@@ -681,7 +708,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     }
 
     // Put "clear form" entry at the front of the suggestions.
-    if (popup_suggestion.frontend_id == autofill::POPUP_ITEM_ID_CLEAR_FORM) {
+    if (popup_suggestion.frontend_id == autofill::PopupItemId::kClearForm) {
       [suggestions insertObject:suggestion atIndex:0];
     } else {
       [suggestions addObject:suggestion];

@@ -275,7 +275,8 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
   auto prompt_parameters =
       permissions::PermissionHatsTriggerHelper::PromptParametersForHaTS(
           request_type, action, prompt_disposition, prompt_disposition_reason,
-          gesture_type, version_info::GetChannelString(chrome::GetChannel()),
+          gesture_type,
+          std::string(version_info::GetChannelString(chrome::GetChannel())),
           is_post_prompt ? permissions::kOnPromptResolved
                          : permissions::kOnPromptAppearing,
           prompt_display_duration,

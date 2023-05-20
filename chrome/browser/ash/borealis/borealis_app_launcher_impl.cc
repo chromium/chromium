@@ -28,15 +28,6 @@ void BorealisAppLauncherImpl::Launch(std::string app_id,
 void BorealisAppLauncherImpl::Launch(std::string app_id,
                                      const std::vector<std::string>& args,
                                      OnLaunchedCallback callback) {
-  BorealisFeatures::AllowStatus allow_status =
-      borealis::BorealisService::GetForProfile(profile_)
-          ->Features()
-          .MightBeAllowed();
-  if (allow_status != BorealisFeatures::AllowStatus::kAllowed) {
-    LOG(WARNING) << "Borealis app launch blocked: " << allow_status;
-    std::move(callback).Run(LaunchResult::kError);
-    return;
-  }
   if (!borealis::BorealisService::GetForProfile(profile_)
            ->Features()
            .IsEnabled()) {

@@ -122,11 +122,6 @@ const char kOffsetParentNewSpecBehaviorEnabled[] =
 const char kSendMouseEventsDisabledFormControlsEnabled[] =
     "policy.send_mouse_events_disabled_form_controls_enabled";
 
-// If true then support for the PPB_VideoDecoder(Dev) API will be enabled;
-// otherwise the browser will decide whether the API is supported.
-const char kForceEnablePepperVideoDecoderDevAPI[] =
-    "policy.force_enable_pepper_video_decoder_dev_api";
-
 // Boolean controlling whether SafeSearch is mandatory for Google Web Searches.
 const char kForceGoogleSafeSearch[] = "settings.force_google_safesearch";
 

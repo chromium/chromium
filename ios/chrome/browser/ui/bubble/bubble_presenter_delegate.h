@@ -5,18 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_PRESENTER_DELEGATE_H_
 
-namespace web {
-class WebState;
-}
-
 @class BubblePresenter;
 
 // Delegate for the BubblePresenter.
 @protocol BubblePresenterDelegate
 
-// Returns the currently used WebState.
-- (web::WebState*)currentWebStateForBubblePresenter:
-    (BubblePresenter*)bubblePresenter;
 // Whether the root view is visible.
 - (BOOL)rootViewVisibleForBubblePresenter:(BubblePresenter*)bubblePresenter;
 // Scroll offset for the current tab.

@@ -50,17 +50,16 @@ class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
  public:
   // Creates a new timer owned by the ExecutionContext, starts it and returns
   // its ID.
-  static int Install(ExecutionContext*,
+  static int Install(ExecutionContext&,
                      ScheduledAction*,
                      base::TimeDelta timeout,
                      bool single_shot);
-  static void RemoveByID(ExecutionContext*, int timeout_id);
+  static void RemoveByID(ExecutionContext&, int timeout_id);
 
-  DOMTimer(ExecutionContext*,
+  DOMTimer(ExecutionContext&,
            ScheduledAction*,
            base::TimeDelta timeout,
-           bool single_shot,
-           int timeout_id);
+           bool single_shot);
   ~DOMTimer() override;
 
   // ExecutionContextLifecycleObserver

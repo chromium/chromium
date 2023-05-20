@@ -243,7 +243,7 @@ missing_new_fields,components/security_interstitials/content/common_name_mismatc
 missing_new_fields,components/signin/internal/identity_manager/account_fetcher_service.cc
 missing_new_fields,components/signin/internal/identity_manager/gaia_cookie_manager_service.cc
 missing_new_fields,components/spellcheck/browser/spelling_service_client.cc
-missing_new_fields,components/sync/driver/sync_stopped_reporter.cc
+missing_new_fields,components/sync/service/sync_stopped_reporter.cc
 missing_new_fields,components/sync/engine/net/http_bridge.cc
 missing_new_fields,components/translate/core/browser/translate_url_fetcher.cc
 missing_new_fields,components/trusted_vault/trusted_vault_request.cc

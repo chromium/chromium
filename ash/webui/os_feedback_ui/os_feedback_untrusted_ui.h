@@ -12,6 +12,7 @@
 #include "ui/webui/untrusted_web_ui_controller.h"
 
 namespace content {
+class BrowserContext;
 class WebUI;
 }  // namespace content
 
@@ -27,6 +28,9 @@ class OsFeedbackUntrustedUIConfig : public content::WebUIConfig {
  public:
   OsFeedbackUntrustedUIConfig();
   ~OsFeedbackUntrustedUIConfig() override;
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,

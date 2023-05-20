@@ -334,7 +334,7 @@ void OverviewSession::Shutdown() {
     }
     for (const auto& overview_item : overview_grid->window_list()) {
       overview_item->RestoreWindow(/*reset_transform=*/true,
-                                   was_saved_desk_library_showing);
+                                   /*animate=*/!was_saved_desk_library_showing);
     }
     remaining_items += overview_grid->size();
   }

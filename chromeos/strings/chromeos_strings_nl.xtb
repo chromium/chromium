@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Verzenden</translation>
+<translation id="1488850966314959671">Kan geen verbinding maken met dit netwerk via aangezette aangepaste APN's. Neem contact op met je mobiele provider voor meer informatie.</translation>
 <translation id="1491076385728777984">Firmware op <ph name="DEVICE_NAME" /> updaten</translation>
 <translation id="1499041187027566160">volume omhoog</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> beheert deze gebruiker en kan op afstand instellingen beheren en gebruikersactiviteit in de gaten houden.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Zichtbaarheid</translation>
 <translation id="1672499492233627739">Videofeed van webcam</translation>
 <translation id="1676557873873341166">Video opnemen</translation>
+<translation id="1684279041537802716">Accentkleur</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver aanwezig</translation>
 <translation id="1708602061922134366">Google-blauw</translation>
@@ -217,6 +219,7 @@
 <translation id="2638662041295312666">Inlogafbeelding</translation>
 <translation id="2640549051766135490">Album geselecteerd: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="267442004702508783">vernieuwen</translation>
+<translation id="268270014981824665">toetsenbord gedimd</translation>
 <translation id="2712812801627182647">TLS-verificatiesleutel</translation>
 <translation id="2713444072780614174">Wit</translation>
 <translation id="2717139507051041123">Modus voor donkere kleuren aanzetten</translation>
@@ -224,6 +227,7 @@
 <translation id="2744221223678373668">Gedeeld</translation>
 <translation id="2751739896257479635">EAP Phase 2-verificatie</translation>
 <translation id="2783010256799387990">GESLAAGD</translation>
+<translation id="2787435249130282949">toetsenbord helderder</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Kan geen verbinding maken met internet. Klik om het opnieuw te proberen.</translation>
@@ -327,11 +331,13 @@
 <translation id="3749289110408117711">Bestandsnaam</translation>
 <translation id="3771294271822695279">Videobestanden</translation>
 <translation id="3784455785234192852">Vergrendelen</translation>
+<translation id="380097101658023925">rgb-bedieningselementen</translation>
 <translation id="38114475217616659">Alle geschiedenis wissen</translation>
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
 <translation id="3824259034819781947">Bestanden bijvoegen</translation>
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
 <translation id="3845880861638660475">Druk op <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> om het dialoogvenster te sluiten.</translation>
+<translation id="3848280697030027394">toetsenbord donkerder maken</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3862598938296403232">Beschrijving is vereist</translation>
@@ -403,6 +409,7 @@
 <translation id="4382484599443659549">Pdf</translation>
 <translation id="4394049700291259645">Uitzetten</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> wordt opnieuw opgestart</translation>
+<translation id="4395835743215824109">toetsenbord aanpassen</translation>
 <translation id="4415951057168511744">Huidige avatar</translation>
 <translation id="4422041425070339732">pijl-omlaag</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
@@ -426,6 +433,7 @@
 <translation id="455835558791489930">Batterij van <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Simkaart ontgrendeld</translation>
 <translation id="4562494484721939086">Geen service</translation>
+<translation id="4573777384450697571">Mislukt: certificaat verlopen</translation>
 <translation id="458794348635939462">Kan niet alle hosts omzetten</translation>
 <translation id="4593212453765072419">Proxyverificatie vereist</translation>
 <translation id="4609350030397390689">Helderheid van toetsenbord verlagen</translation>
@@ -442,6 +450,7 @@
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="473775607612524610">Updaten</translation>
 <translation id="4744944742468440486">Informatie met betrekking tot je selectie</translation>
+<translation id="4771607256327216405">toetsenbord helderder maken</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
 <translation id="4782311465517282004">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto('s)</translation>
@@ -490,6 +499,7 @@
 <translation id="500920857929044050">Test stoppen</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Foto's, tijd, weer en mediagegevens tonen als je scherm inactief is.</translation>
+<translation id="5038292761217083259">toetsenbord meerkleurig</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5049856988445523908">Simkaart vergrendeld (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Groepsnaam</translation>
@@ -539,7 +549,6 @@
 <translation id="5423849171846380976">Geactiveerd</translation>
 <translation id="5430931332414098647">Instant-tethering</translation>
 <translation id="5431318178759467895">Kleur</translation>
-<translation id="5456936324019847994">Kan geen verbinding maken met aangezette aangepaste APN's. Neem contact op met je mobiele provider voor meer informatie.</translation>
 <translation id="5457599981699367932">Gebruiken als gast</translation>
 <translation id="54609108002486618">Beheerd</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Nog {0} poging}other{Nog {0} pogingen}}</translation>
@@ -555,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Opnieuw scannen</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Kan deze APN niet uitzetten of verwijderen. Zorg dat aangezette gekoppelde APN's uitstaan of zijn verwijderd.</translation>
 <translation id="5600027863942488546">De toets <ph name="KEY_NAME" /> is getest</translation>
 <translation id="5620281292257375798">Alleen voor intern gebruik</translation>
 <translation id="5649768706273821470">Luisteren</translation>
@@ -639,6 +649,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Donker thema aanzetten</translation>
 <translation id="6285899124799306373">launcher openen</translation>
+<translation id="629550705077076970">toetsenbord dimmen</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> is geannuleerd</translation>
 <translation id="631063167932043783">App verkennen</translation>
 <translation id="6319207335391420837">Firmware updaten op <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +668,7 @@
 <translation id="6401427872449207797">browserzoekopdracht</translation>
 <translation id="6410257289063177456">Afbeeldingsbestanden</translation>
 <translation id="641081527798843608">Overeenkomst van onderwerp</translation>
+<translation id="6411934471898487866">helderheid toetsenbord</translation>
 <translation id="6412715219990689313">Geïntegreerd toetsenbord</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -710,7 +722,6 @@
 <translation id="6798678288485555829">Tekstnavigatie</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
-<translation id="6838167112108853532">Kan deze APN niet uitzetten of verwijderen. Zorg dat aangezette gekoppelde APN's uitstaan of worden verwijderd.</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
 <translation id="6889786074662672253">Koppel dit externe apparaat niet los en zet je computer niet uit tijdens het opnieuw opstarten. Je kunt dit venster minimaliseren. Dit kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens dit proces.</translation>
 <translation id="6900701049656042631">Dit album bevat geen foto's. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
@@ -740,6 +751,7 @@
 <translation id="7130438335435247835">Toegangspuntnaam (APN)</translation>
 <translation id="7131634559772719176">Voorinstelling bevestigen</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
+<translation id="7135814714616751706">Sneltoetsen zoeken</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
@@ -770,6 +782,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; druk op de knop Zoeken en de spatiebalk om het resultaat te bekijken in Google Zoeken</translation>
 <translation id="7343649194310845056">Netwerkapparaten</translation>
+<translation id="7353413232959255829">Zoekresultaat <ph name="LIST_POSITION" /> van <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Druk op Enter om naar de snelkoppeling te gaan.</translation>
 <translation id="7359657277149375382">Bestandstype</translation>
 <translation id="73631062356239394">Diagnostische gegevens delen</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -806,10 +819,12 @@
 <translation id="7656388927906093505">Apparaat is een muis.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7665800271478495366">Avatar wijzigen</translation>
+<translation id="7683228889864052081">tint toetsenbord</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">toetsenbordlampje</translation>
 <translation id="773153675489693198">Aantal oplaadbeurten</translation>
 <translation id="7747039790905080783">Eerder gedeelde sleutel</translation>
 <translation id="7762130827864645708">Je wachtwoord is gewijzigd. Gebruik vanaf nu je nieuwe wachtwoord.</translation>
@@ -853,6 +868,7 @@
 <translation id="8075838845814659848">Resterende batterijlading</translation>
 <translation id="8076492880354921740">Tabbladen</translation>
 <translation id="8082366717211101304">Kan DNS niet omzetten vanuit Android-apps</translation>
+<translation id="8082644724189923105">toetsenbordzone</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8094062939584182041">Toestaan dat Google je e-mail stuurt over dit probleem</translation>
 <translation id="8104083085214006426">Je gebruikt een open of niet-beveiligd netwerk</translation>
@@ -901,6 +917,7 @@
 <translation id="8456761643544401578">Automatisch donkere modus</translation>
 <translation id="8461329675984532579">Naam thuisprovider</translation>
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
+<translation id="8476242415522716722">achtergrondverlichting toetsenbord</translation>
 <translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8491311378305535241">Kan geen verbinding maken met HTTP-websites via een firewall op Android-apparaten</translation>
@@ -944,6 +961,7 @@
 <translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8855781559874488009">Kan geen verbinding maken met HTTP-websites via een firewall</translation>
 <translation id="885701979325669005">Opslag</translation>
+<translation id="885704831271383379">toetsenbord donkerder</translation>
 <translation id="8863170912498892583">Donker thema aanzetten</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> ophalen voor <ph name="QUERY" /> en meer</translation>
 <translation id="8864415976656252616">Geen voorgestelde content. Bekijk de belangrijkste Help-content.</translation>
@@ -996,6 +1014,7 @@
 <translation id="9173638680043580060">Nog minder dan een minuut</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Je toetsenbord kan automatisch worden afgestemd op je achtergrond</translation>
+<translation id="9189000703457422362">Kan geen verbinding maken met dit netwerk via automatisch waargenomen APN's. Neem contact op met je mobiele provider voor meer informatie.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Kan geen verbinding maken met de gateway vanuit Android-apps</translation>
 <translation id="9211490828691860325">Alle bureaus</translation>

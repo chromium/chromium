@@ -565,9 +565,9 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
     }
     ash::Shell::Get()
         ->booting_animation_controller()
-        ->ShowAnimationWithEndCallback(
-            base::BindOnce(&LoginDisplayHostWebUI::BootingAnimationFinished,
-                           weak_factory_.GetWeakPtr()));
+        ->ShowAnimationWithEndCallback(base::BindOnce(
+            &LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed,
+            weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -693,8 +693,7 @@ void LoginDisplayHostWebUI::OnDisplayMetricsChanged(
   }
 
   if (GetOobeUI()) {
-    GetOobeUI()->GetCoreOobeView()->UpdateClientAreaSize(
-        primary_display.size());
+    GetOobeUI()->GetCoreOobe()->UpdateClientAreaSize(primary_display.size());
     if (changed_metrics & DISPLAY_METRIC_PRIMARY)
       GetOobeUI()->OnDisplayConfigurationChanged();
   }
@@ -705,13 +704,22 @@ void LoginDisplayHostWebUI::OnShowWebUITimeout() {
   ShowWebUI();
 }
 
-void LoginDisplayHostWebUI::BootingAnimationFinished() {
+void LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed() {
+  booting_animation_finished_playing_ = true;
+  if (webui_ready_to_take_over_) {
+    // This function is called by the AnimationObserver which can't destroy the
+    // animation on its own so we need to post a task to do so.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LoginDisplayHostWebUI::FinishBootingAnimation,
+                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void LoginDisplayHostWebUI::FinishBootingAnimation() {
   CHECK(features::IsOobeSimonEnabled());
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &BootingAnimationController::Finish,
-          ash::Shell::Get()->booting_animation_controller()->GetWeakPtr()));
+  ash::Shell::Get()->booting_animation_controller()->Finish();
+  GetOobeUI()->GetCoreOobe()->TriggerDown();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -770,6 +778,13 @@ void LoginDisplayHostWebUI::OnCurrentScreenChanged(OobeScreenId current_screen,
   }
 }
 
+void LoginDisplayHostWebUI::OnBackdropLoaded() {
+  webui_ready_to_take_over_ = true;
+  if (booting_animation_finished_playing_) {
+    FinishBootingAnimation();
+  }
+}
+
 void LoginDisplayHostWebUI::OnDestroyingOobeUI() {
   GetOobeUI()->RemoveObserver(this);
 }
@@ -783,7 +798,7 @@ bool LoginDisplayHostWebUI::HandleAccelerator(LoginAcceleratorAction action) {
     if (!GetOobeUI()) {
       return false;
     }
-    GetOobeUI()->GetCoreOobeView()->ToggleSystemInfo();
+    GetOobeUI()->GetCoreOobe()->ToggleSystemInfo();
     return true;
   }
 
@@ -1133,6 +1148,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().
     auto* display_host = new LoginDisplayHostWebUI();
+    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
     // Shows networks screen instead of enrollment screen to resume the
     // interrupted auto start enrollment flow because enrollment screen does
     // not handle flaky network. See http://crbug.com/332572

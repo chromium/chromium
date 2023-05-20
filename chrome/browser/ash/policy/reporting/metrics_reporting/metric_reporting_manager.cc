@@ -21,7 +21,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_collector.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_observer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_periodic_collector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
@@ -75,11 +76,6 @@ constexpr char kDisplaysTelemetry[] = "displays_telemetry";
 constexpr char kDeviceActivityTelemetry[] = "device_activity_telemetry";
 
 }  // namespace
-
-// static
-BASE_FEATURE(kEnableAppMetricsReporting,
-             "EnableAppMetricsReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool MetricReportingManager::Delegate::IsAffiliated(Profile* profile) const {
   const user_manager::User* const user =
@@ -212,7 +208,7 @@ MetricReportingManager::MetricReportingManager(
 void MetricReportingManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  app_usage_collector_.reset();
+  app_usage_observer_.reset();
   delegate_.reset();
   event_observer_managers_.clear();
   info_collectors_.clear();
@@ -308,22 +304,10 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
       /*init_delay=*/base::TimeDelta());
   InitPeripheralsCollectors();
 
-  // Start observing app events only if the app service is available for the
-  // given profile.
+  // Start observing app events and telemetry only if the app service is
+  // available for the given profile.
   if (delegate_->IsAppServiceAvailableForProfile(profile)) {
-    // Initialize the `AppUsageCollector` so we can start tracking app usage
-    // reports right away.
-    app_usage_collector_ =
-        AppUsageCollector::Create(profile, &reporting_settings_);
-    auto app_events_observer = std::make_unique<AppEventsObserver>(
-        std::make_unique<AppPlatformMetricsRetriever>(profile->GetWeakPtr()),
-        user_reporting_settings_.get());
-    InitEventObserverManager(
-        std::move(app_events_observer), user_event_report_queue_.get(),
-        user_reporting_settings_.get(),
-        /*enable_setting_path=*/::ash::reporting::kReportAppInventory,
-        metrics::kReportAppInventoryEnabledDefaultValue,
-        /*init_delay=*/base::TimeDelta());
+    InitAppCollectors(profile);
   }
 }
 
@@ -335,11 +319,6 @@ void MetricReportingManager::DelayedInitOnAffiliatedLogin(Profile* profile) {
   InitAudioCollectors();
   InitDisplayCollectors();
   InitDeviceActivityCollector();
-
-  if (base::FeatureList::IsEnabled(kEnableAppMetricsReporting) &&
-      delegate_->IsAppServiceAvailableForProfile(profile)) {
-    InitAppCollectors(profile);
-  }
 
   initial_upload_timer_.Start(FROM_HERE, GetUploadDelay(), this,
                               &MetricReportingManager::UploadTelemetry);
@@ -535,18 +514,33 @@ void MetricReportingManager::InitNetworkPeriodicCollector(
 
 void MetricReportingManager::InitAppCollectors(Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!base::Contains(telemetry_collectors_, kAppTelemetry));
+  DCHECK(user_event_report_queue_);
+  DCHECK(user_reporting_settings_);
+  DCHECK(user_telemetry_report_queue_);
+  // App events.
+  auto app_events_observer = std::make_unique<AppEventsObserver>(
+      std::make_unique<AppPlatformMetricsRetriever>(profile->GetWeakPtr()),
+      user_reporting_settings_.get());
+  InitEventObserverManager(
+      std::move(app_events_observer), user_event_report_queue_.get(),
+      user_reporting_settings_.get(),
+      /*enable_setting_path=*/::ash::reporting::kReportAppInventory,
+      metrics::kReportAppInventoryEnabledDefaultValue,
+      /*init_delay=*/base::TimeDelta());
+
+  // App telemetry.
+  app_usage_observer_ =
+      AppUsageObserver::Create(profile, user_reporting_settings_.get());
   auto app_usage_telemetry_sampler =
       std::make_unique<AppUsageTelemetrySampler>(profile->GetWeakPtr());
-  InitPeriodicCollector(
-      kAppTelemetry, app_usage_telemetry_sampler.get(),
-      user_telemetry_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kReportDeviceAppInfo,
-      metrics::kReportDeviceAppInfoDefaultValue,
-      ::ash::kDeviceActivityHeartbeatCollectionRateMs,
-      metrics::GetDefaultCollectionRate(
-          metrics::kDefaultDeviceActivityHeartbeatCollectionRate),
-      /*rate_unit_to_ms=*/1, delegate_->GetInitDelay());
+  auto app_usage_telemetry_collector =
+      std::make_unique<AppUsageTelemetryPeriodicCollector>(
+          app_usage_telemetry_sampler.get(), user_telemetry_report_queue_.get(),
+          user_reporting_settings_.get());
   samplers_.push_back(std::move(app_usage_telemetry_sampler));
+  telemetry_collectors_.insert(
+      {kAppTelemetry, std::move(app_usage_telemetry_collector)});
 }
 
 void MetricReportingManager::InitAudioCollectors() {

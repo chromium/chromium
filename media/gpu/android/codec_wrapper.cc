@@ -242,8 +242,7 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
       case MEDIA_CODEC_OK:
         break;
       default:
-        NOTREACHED();
-        return QueueStatus::kError;
+        NOTREACHED_NORETURN();
     }
   }
 
@@ -290,8 +289,7 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
       owned_input_buffer_ = input_buffer;
       return QueueStatus::kNoKey;
     default:
-      NOTREACHED();
-      return QueueStatus::kError;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -382,8 +380,7 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
         continue;
       }
       case MEDIA_CODEC_NO_KEY: {
-        NOTREACHED();
-        return DequeueStatus::kError;
+        NOTREACHED_NORETURN();
       }
     }
   }

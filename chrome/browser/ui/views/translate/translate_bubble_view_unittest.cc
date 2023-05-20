@@ -9,11 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
-#include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/translate/core/browser/translate_prefs.h"
@@ -238,20 +236,15 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(TranslateBubbleViewTest, TargetLanguageTabTriggersTranslate) {
-  base::HistogramTester histogram_tester;
   CreateAndShowBubble();
   EXPECT_FALSE(mock_model_->translate_called_);
 
   // Press the target language tab to start translation.
   bubble_->TabSelectedAt(1);
   EXPECT_TRUE(mock_model_->translate_called_);
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::TARGET_LANGUAGE_TAB_SELECTED, 1);
 }
 
 TEST_F(TranslateBubbleViewTest, OptionsMenuNeverTranslateLanguage) {
-  base::HistogramTester histogram_tester;
   CreateAndShowBubble();
 
   EXPECT_FALSE(bubble_->GetWidget()->IsClosed());
@@ -268,14 +261,9 @@ TEST_F(TranslateBubbleViewTest, OptionsMenuNeverTranslateLanguage) {
   EXPECT_TRUE(denial_button_clicked());
   EXPECT_TRUE(mock_model_->never_translate_language_);
   EXPECT_TRUE(bubble_->GetWidget()->IsClosed());
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::NEVER_TRANSLATE_LANGUAGE_MENU_CLICKED,
-      1);
 }
 
 TEST_F(TranslateBubbleViewTest, OptionsMenuNeverTranslateSite) {
-  base::HistogramTester histogram_tester;
   // NEVER_TRANSLATE_SITE should only show up for sites that can be blocklisted.
   mock_model_->SetCanAddSiteToNeverPromptList(true);
   CreateAndShowBubble();
@@ -294,13 +282,9 @@ TEST_F(TranslateBubbleViewTest, OptionsMenuNeverTranslateSite) {
   EXPECT_TRUE(denial_button_clicked());
   EXPECT_TRUE(mock_model_->never_translate_site_);
   EXPECT_TRUE(bubble_->GetWidget()->IsClosed());
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::NEVER_TRANSLATE_SITE_MENU_CLICKED, 1);
 }
 
 TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxShortcut) {
-  base::HistogramTester histogram_tester;
   mock_model_->SetShouldShowAlwaysTranslateShortcut(true);
   CreateAndShowBubble();
 
@@ -321,13 +305,9 @@ TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxShortcut) {
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_TRANSLATING,
             bubble_->GetViewState());
   EXPECT_EQ(bubble_->tabbed_pane_->GetSelectedTabIndex(), size_t{1});
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::ALWAYS_TRANSLATE_CHECKED, 1);
 }
 
 TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxAndCloseButton) {
-  base::HistogramTester histogram_tester;
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
 
@@ -344,21 +324,14 @@ TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxAndCloseButton) {
   PressButton(TranslateBubbleView::BUTTON_ID_ALWAYS_TRANSLATE);
   EXPECT_FALSE(mock_model_->should_always_translate_);
   EXPECT_EQ(0, mock_model_->set_always_translate_called_count_);
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::ALWAYS_TRANSLATE_UNCHECKED, 1);
 
   // Click the cancel button. The state is not saved.
   PressButton(TranslateBubbleView::BUTTON_ID_CLOSE);
   EXPECT_FALSE(mock_model_->should_always_translate_);
   EXPECT_EQ(0, mock_model_->set_always_translate_called_count_);
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::CLOSE_BUTTON_CLICKED, 1);
 }
 
 TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxAndDoneButton) {
-  base::HistogramTester histogram_tester;
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
 
@@ -379,13 +352,9 @@ TEST_F(TranslateBubbleViewTest, AlwaysTranslateCheckboxAndDoneButton) {
   PressButton(TranslateBubbleView::BUTTON_ID_DONE);
   EXPECT_TRUE(mock_model_->should_always_translate_);
   EXPECT_EQ(1, mock_model_->set_always_translate_called_count_);
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::DONE_BUTTON_CLICKED, 1);
 }
 
 TEST_F(TranslateBubbleViewTest, SourceResetButton) {
-  base::HistogramTester histogram_tester;
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
 
@@ -398,9 +367,6 @@ TEST_F(TranslateBubbleViewTest, SourceResetButton) {
   bubble_->SourceLanguageChanged();
   EXPECT_EQ(10u, bubble_->source_language_combobox_->GetSelectedIndex());
   EXPECT_TRUE(bubble_->advanced_reset_button_source_->GetEnabled());
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::SOURCE_LANGUAGE_MENU_ITEM_CLICKED, 1);
 
   // Press the reset button. Language should change back to initial selection.
   PressButton(TranslateBubbleView::BUTTON_ID_RESET);
@@ -409,7 +375,6 @@ TEST_F(TranslateBubbleViewTest, SourceResetButton) {
 }
 
 TEST_F(TranslateBubbleViewTest, TargetResetButton) {
-  base::HistogramTester histogram_tester;
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
 
@@ -422,9 +387,6 @@ TEST_F(TranslateBubbleViewTest, TargetResetButton) {
   bubble_->TargetLanguageChanged();
   EXPECT_EQ(10u, bubble_->target_language_combobox_->GetSelectedIndex());
   EXPECT_TRUE(bubble_->advanced_reset_button_target_->GetEnabled());
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::TARGET_LANGUAGE_MENU_ITEM_CLICKED, 1);
 
   // Press the reset button. Language should change back to initial selection.
   PressButton(TranslateBubbleView::BUTTON_ID_RESET);
@@ -432,7 +394,6 @@ TEST_F(TranslateBubbleViewTest, TargetResetButton) {
 }
 
 TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
-  base::HistogramTester histogram_tester;
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
 
@@ -447,16 +408,12 @@ TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
   EXPECT_TRUE(mock_model_->translate_called_);
   EXPECT_EQ(10, mock_model_->source_language_index_);
   EXPECT_EQ(20, mock_model_->target_language_index_);
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::DONE_BUTTON_CLICKED, 1);
 
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE,
             bubble_->GetViewState());
 }
 
 TEST_F(TranslateBubbleViewTest, TargetDoneButton) {
-  base::HistogramTester histogram_tester;
   CreateAndShowBubble();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
 
@@ -471,9 +428,6 @@ TEST_F(TranslateBubbleViewTest, TargetDoneButton) {
   EXPECT_TRUE(mock_model_->translate_called_);
   EXPECT_EQ(10, mock_model_->source_language_index_);
   EXPECT_EQ(20, mock_model_->target_language_index_);
-  histogram_tester.ExpectBucketCount(
-      translate::kTranslateBubbleUiEventHistogramName,
-      translate::TranslateBubbleUiEvent::DONE_BUTTON_CLICKED, 1);
 
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE,
             bubble_->GetViewState());

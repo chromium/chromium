@@ -10,6 +10,7 @@
 #include "ash/system/media/unified_media_controls_container.h"
 #include "ash/system/tray/interacted_by_tap_recorder.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
@@ -33,6 +34,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -315,6 +317,13 @@ void QuickSettingsView::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_SCROLL_FLING_START) {
     controller_->Fling(event->details().velocity_y());
   }
+}
+
+TrayDetailedView* QuickSettingsView::GetDetailedViewForTest() {
+  CHECK(!detailed_view_container_->children().empty());
+  views::View* view = detailed_view_container_->children()[0];
+  CHECK(views::IsViewClass<TrayDetailedView>(view));
+  return static_cast<TrayDetailedView*>(view);
 }
 
 BEGIN_METADATA(QuickSettingsView, views::View)

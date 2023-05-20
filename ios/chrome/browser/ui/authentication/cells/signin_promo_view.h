@@ -66,6 +66,9 @@
 // Stops the spinner on top of the primary button, and enables all buttons.
 - (void)stopSignInSpinner;
 
+// Configures primary button using UIButtonConfiguration.
+- (void)configurePrimaryButtonWithTitle:(NSString*)title;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_CELLS_SIGNIN_PROMO_VIEW_H_

@@ -18,7 +18,7 @@ source_set("tangible_sync") {
     "//base",
     "//components/consent_auditor",
     "//components/signin/public/identity_manager/objc",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//components/unified_consent",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/consent_auditor",

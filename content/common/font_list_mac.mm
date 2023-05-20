@@ -9,11 +9,16 @@
 
 #include <utility>
 
+#include "base/apple/bridging.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // The code here is unusually skeptical about the macOS APIs returning non-null
 // values. An earlier version was reverted due to crashing tests on bots running
@@ -67,13 +72,13 @@ class FontFamilyResolver {
   // fonts. This is not true on older version of macOS that Chrome still
   // supports. The unittest FontTest.GetFontListDoesNotIncludeHiddenFonts can be
   // used to determine when it's safe to slim down / remove this function.
-  static bool IsHiddenFontFamily(CFStringRef family_name) {
+  static bool IsHiddenFontFamily(NSString* family_name) {
     DCHECK(family_name != nullptr);
-    DCHECK_GT(CFStringGetLength(family_name), 0);
+    DCHECK_GT(family_name.length, 0u);
 
     // macOS 10.13 includes names that start with . (period). These fonts should
     // not be shown to users.
-    return CFStringGetCharacterAtIndex(family_name, 0) == '.';
+    return [family_name characterAtIndex:0] == '.';
   }
 
  private:
@@ -198,29 +203,29 @@ base::Value::List GetFontList_SlowBlocking() {
   @autoreleasepool {
     FontFamilyResolver resolver;
 
-    base::ScopedCFTypeRef<CFArrayRef> cf_family_names(
+    NSArray* family_names = base::apple::CFToNSOwnershipCast(
         CTFontManagerCopyAvailableFontFamilyNames());
-    DCHECK(cf_family_names != nullptr)
+    DCHECK(family_names != nil)
         << "CTFontManagerCopyAvailableFontFamilyNames returned null";
-    NSArray* family_names = base::mac::CFToNSCast(cf_family_names.get());
 
     // Maps localized font family names to non-localized names.
-    NSMutableDictionary* family_name_map = [NSMutableDictionary
-        dictionaryWithCapacity:CFArrayGetCount(cf_family_names)];
+    NSMutableDictionary* family_name_map =
+        [NSMutableDictionary dictionaryWithCapacity:family_names.count];
     for (NSString* family_name in family_names) {
-      DCHECK(family_name != nullptr)
+      DCHECK(family_name != nil)
           << "CTFontManagerCopyAvailableFontFamilyNames returned an array with "
           << "a null element";
 
-      CFStringRef family_name_cf = base::mac::NSToCFCast(family_name);
-      if (FontFamilyResolver::IsHiddenFontFamily(family_name_cf))
+      if (FontFamilyResolver::IsHiddenFontFamily(family_name)) {
         continue;
+      }
 
       base::ScopedCFTypeRef<CFStringRef> cf_normalized_family_name =
-          resolver.CopyLocalizedFamilyName(family_name_cf);
+          resolver.CopyLocalizedFamilyName(
+              base::apple::NSToCFPtrCast(family_name));
       DCHECK(cf_normalized_family_name != nullptr)
           << "FontFamilyResolver::CopyLocalizedFamilyName returned null";
-      family_name_map[base::mac::CFToNSCast(cf_normalized_family_name)] =
+      family_name_map[base::apple::CFToNSPtrCast(cf_normalized_family_name)] =
           family_name;
     }
 

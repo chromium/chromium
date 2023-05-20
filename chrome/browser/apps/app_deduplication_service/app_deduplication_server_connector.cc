@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_server_connector.h"
 
 #include "base/functional/callback.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_mapper.h"
 #include "chrome/browser/apps/app_deduplication_service/proto/app_deduplication.pb.h"
 #include "google_apis/google_api_keys.h"
@@ -55,6 +56,14 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     )");
 
+std::string BuildRequestBody(const apps::DeviceInfo& info) {
+  apps::proto::DeduplicateRequest request_proto;
+  *request_proto.mutable_device_context() = info.ToDeviceContext();
+  *request_proto.mutable_user_context() = info.ToUserContext();
+
+  return request_proto.SerializeAsString();
+}
+
 }  // namespace
 
 namespace apps {
@@ -64,6 +73,7 @@ AppDeduplicationServerConnector::AppDeduplicationServerConnector() = default;
 AppDeduplicationServerConnector::~AppDeduplicationServerConnector() = default;
 
 void AppDeduplicationServerConnector::GetDeduplicateAppsFromServer(
+    const DeviceInfo& device_info,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     GetDeduplicateAppsCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -82,8 +92,8 @@ void AppDeduplicationServerConnector::GetDeduplicateAppsFromServer(
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        kTrafficAnnotation);
   auto* loader_ptr = loader.get();
-  // Server expects an empty request.
-  loader_ptr->AttachStringForUpload("", "application/x-protobuf");
+  loader_ptr->AttachStringForUpload(BuildRequestBody(device_info),
+                                    "application/x-protobuf");
   loader_ptr->SetRetryOptions(
       3, network::SimpleURLLoader::RETRY_ON_5XX |
              network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);

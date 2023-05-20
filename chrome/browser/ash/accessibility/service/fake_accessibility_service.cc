@@ -6,8 +6,10 @@
 
 #include <tuple>
 
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/tts.mojom.h"
 
 namespace ash {
 
@@ -32,6 +34,12 @@ void FakeAccessibilityService::BindAnotherAutomation() {
 
   accessibility_service_client_remote_->BindAutomation(
       std::move(automation_remote), std::move(automation_client_receiver));
+}
+
+void FakeAccessibilityService::BindAnotherTts() {
+  mojo::PendingReceiver<ax::mojom::Tts> tts_receiver;
+  tts_remotes_.Add(tts_receiver.InitWithNewPipeAndPassRemote());
+  accessibility_service_client_remote_->BindTts(std::move(tts_receiver));
 }
 
 void FakeAccessibilityService::BindAssistiveTechnologyController(
@@ -104,6 +112,13 @@ void FakeAccessibilityService::WaitForAutomationEvents() {
   base::RunLoop runner;
   automation_events_closure_ = runner.QuitClosure();
   runner.Run();
+}
+
+void FakeAccessibilityService::RequestTtsVoices(
+    ax::mojom::Tts::GetVoicesCallback callback) {
+  for (auto& tts_client : tts_remotes_) {
+    tts_client->GetVoices(std::move(callback));
+  }
 }
 
 }  // namespace ash

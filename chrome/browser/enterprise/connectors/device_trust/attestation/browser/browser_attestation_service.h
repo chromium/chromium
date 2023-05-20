@@ -56,7 +56,7 @@ class BrowserAttestationService : public AttestationService {
 
   void OnResponseSigned(AttestationCallback callback,
                         const std::string& encrypted_response,
-                        SignedData& signed_data);
+                        std::unique_ptr<SignedData> signed_data);
 
   GoogleKeys google_keys_;
 

@@ -7,7 +7,7 @@
  * Settings subpage for managing Bluetooth saved devices.
  */
 
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import './os_saved_devices_list.js';
 
 import {FastPairSavedDevicesUiEvent, recordSavedDevicesUiEventMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';

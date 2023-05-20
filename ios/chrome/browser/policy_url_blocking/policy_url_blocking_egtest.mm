@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/policy/policy_constants.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -15,6 +16,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/net_errors.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -86,9 +88,9 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
-  [ChromeEarlGrey
-      waitForWebStateContainingText:net::ErrorToShortString(
-                                        net::ERR_BLOCKED_BY_ADMINISTRATOR)];
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      l10n_util::GetStringUTF8(
+                          IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR)];
 }
 
 // Tests that the NTP is not blocked by the wildcard blocklist.
@@ -112,9 +114,9 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
-  [ChromeEarlGrey
-      waitForWebStateContainingText:net::ErrorToShortString(
-                                        net::ERR_BLOCKED_BY_ADMINISTRATOR)];
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      l10n_util::GetStringUTF8(
+                          IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR)];
 }
 
 // Tests that pages are loaded when explicitly listed in the URLAllowlist.

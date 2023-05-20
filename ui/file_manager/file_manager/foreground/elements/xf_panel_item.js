@@ -177,8 +177,7 @@ export class PanelItem extends HTMLElement {
         break;
       case this.panelTypeInfo:
         this.setAttribute('indicator', 'status');
-        // TODO(b/281519804): Support 'warning' status.
-        this.setAttribute('status', 'failure');
+        this.setAttribute('status', 'warning');
         secondaryButton = document.createElement('xf-button');
         secondaryButton.id =
             (hasExtraButton) ? 'secondary-action' : 'primary-action';

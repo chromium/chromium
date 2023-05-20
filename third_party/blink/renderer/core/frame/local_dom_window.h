@@ -36,7 +36,6 @@
 #include "third_party/blink/public/common/frame/delegated_capability_request_token.h"
 #include "third_party/blink/public/common/frame/history_user_activation_state.h"
 #include "third_party/blink/public/common/metrics/post_message_counter.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -59,6 +58,7 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
@@ -506,8 +506,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     return closewatcher_stack_;
   }
 
-  void IncrementNavigationId() { navigation_id_++; }
-  uint32_t GetNavigationId() const { return navigation_id_; }
+  void GenerateNewNavigationId();
+
+  String GetNavigationId() const { return navigation_id_; }
 
   NavigationApi* navigation();
 
@@ -663,9 +664,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   bool is_picture_in_picture_window_ = false;
 
   // The navigation id of a document is to identify navigation of special types
-  // like bfcache navigation or soft navigation. It increments when navigations
+  // like bfcache navigation or soft navigation. It changes when navigations
   // of these types occur.
-  uint32_t navigation_id_ = kNavigationIdDefaultValue;
+  String navigation_id_;
 
   // Records whether this window has obtained storage access. It cannot be
   // revoked once set to true.

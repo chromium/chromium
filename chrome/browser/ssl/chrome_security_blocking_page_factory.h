@@ -16,6 +16,7 @@
 #include "components/security_interstitials/content/security_blocking_page_factory.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 
 // //chrome's implementation of the SecurityBlockingPageFactory interface.
 class ChromeSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
@@ -70,8 +71,11 @@ class ChromeSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
   CreateInsecureFormBlockingPage(content::WebContents* web_contents,
                                  const GURL& request_url) override;
   std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
-  CreateHttpsOnlyModeBlockingPage(content::WebContents* web_contents,
-                                  const GURL& request_url) override;
+  CreateHttpsOnlyModeBlockingPage(
+      content::WebContents* web_contents,
+      const GURL& request_url,
+      security_interstitials::https_only_mode::HttpInterstitialState
+          interstitial_state) override;
 
   // Overrides the calculation of whether the app is enterprise-managed for
   // tests.

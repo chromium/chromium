@@ -21,8 +21,7 @@ std::string MediaLogMessageLevelToString(MediaLogMessageLevel level) {
     case MediaLogMessageLevel::kDEBUG:
       return "debug";
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace media

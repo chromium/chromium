@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordDetailsCardElement, PasswordDetailsSectionElement, PasswordManagerImpl, PasswordViewPageInteractions, Router} from 'chrome://password-manager/password_manager.js';
+import {Page, PasswordDetailsCardElement, PasswordDetailsSectionElement, PasswordManagerImpl, PasswordViewPageInteractions, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -368,4 +368,24 @@ suite('PasswordDetailsSectionTest', function() {
             'password-details-card');
     assertEquals(2, entries.length);
   });
+
+  test(
+      'Clicking back navigates to passwords section and keeps old query',
+      async function() {
+        const group = createCredentialGroup({name: 'test.com'});
+        const query = new URLSearchParams();
+        query.set(UrlParam.SEARCH_TERM, 'bar');
+        Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group, query);
+
+        const section: PasswordDetailsSectionElement =
+            document.createElement('password-details-section');
+        document.body.appendChild(section);
+        await flushTasks();
+
+        assertEquals(
+            Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
+        section.$.backButton.click();
+        assertEquals(Page.PASSWORDS, Router.getInstance().currentRoute.page);
+        assertEquals(query, Router.getInstance().currentRoute.queryParameters);
+      });
 });

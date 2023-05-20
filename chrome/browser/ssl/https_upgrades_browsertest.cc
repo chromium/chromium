@@ -597,6 +597,12 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
+    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+        contents->GetPrimaryMainFrame(),
+        IsSiteEngagementHeuristicEnabled()
+            ? "You usually connect to this site securely"
+            : "You are seeing this warning because this site does not support "
+              "HTTPS."));
   } else {
     EXPECT_FALSE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
@@ -1079,12 +1085,15 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 }
 
 // Tests that navigating to an HTTPS page that downgrades to HTTP on the same
-// host will fail and trigger the HTTPS-Only Mode interstitial (due to the
-// redirect loop hitting the redirect limit).
-// TODO(crbug.com/1394910): Re-enable once redirect loops are handled by the
-// interceptor rather than relying on the net error.
+// host will fail and trigger the HTTPS-Only Mode interstitial (due to
+// interceptor detecting a redirect loop and triggering fallback).
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
-                       DISABLED_RedirectLoop_ShouldInterstitial) {
+                       RedirectLoop_ShouldInterstitial) {
+  // This test is only interesting if some form of HTTPS upgrading is enabled.
+  if (!IsHttpUpgradingEnabled()) {
+    return;
+  }
+
   // Set up a new test server instance so it can have a custom handler.
   net::EmbeddedTestServer downgrading_server{
       net::EmbeddedTestServer::TYPE_HTTPS};
@@ -1124,7 +1133,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   histograms()->ExpectTotalCount(kEventHistogram, 3);
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeNetError, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeRedirectLoop,
+                                  1);
 }
 
 // Tests that the security level is WARNING when the HTTPS-Only Mode
@@ -1940,6 +1950,44 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, crbug1431026) {
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
   }
+}
+
+// Tests that when the HTTPS-First Mode setting is toggled on or off, the
+// HTTP allowlist is cleared.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       TogglingSettingClearsAllowlist) {
+  auto http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Start by enabling HTTPS-First Mode.
+  SetPref(true);
+
+  // Navigate to a URL that will fail upgrades, and click through the
+  // interstitial to add it to the allowlist.
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+  ProceedThroughInterstitial(contents);
+
+  // Disable the HTTPS-First Mode pref. This should clear the allowlist.
+  SetPref(false);
+
+  // If HTTPS-Upgrades are enabled, navigating again should cause the site to
+  // get added back to the allowlist. If not, the HTTP URL will load normally as
+  // HTTPS-First Mode is disabled.
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Re-enable the HTTPS-First Mode pref. The allowlist should be cleared again.
+  SetPref(true);
+
+  // Navigate to a URL that will fail upgrades, and the interstitial should be
+  // shown again as the allowlist was cleared.
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 }
 
 // A simple test fixture that ensures the kHttpsFirstModeV2 feature is enabled

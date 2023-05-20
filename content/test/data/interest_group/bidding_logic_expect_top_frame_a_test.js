@@ -8,7 +8,7 @@ function generateBid(
   const ad = interestGroup.ads[0];
   if (browserSignals.topWindowHostname != 'a.test')
     throw new Error('Unexpected hostname:'  + browserSignals.topWindowHostname);
-  return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
+  return {'ad': ad, 'bid': 1, 'render': ad.renderURL};
 }
 
 function reportWin(

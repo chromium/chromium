@@ -510,6 +510,12 @@ TEST_F('PrintPreviewLinkContainerTest', 'SystemDialogLinkClick', function() {
   this.runMochaTest(link_container_test.TestNames.SystemDialogLinkClick);
 });
 
+TEST_F(
+    'PrintPreviewLinkContainerTest', 'SystemDialogLinkProperties', function() {
+      this.runMochaTest(
+          link_container_test.TestNames.SystemDialogLinkProperties);
+    });
+
 TEST_F('PrintPreviewLinkContainerTest', 'InvalidState', function() {
   this.runMochaTest(link_container_test.TestNames.InvalidState);
 });

@@ -25,6 +25,11 @@ import {getTemplate} from './shortcuts_page.html.js';
  *
  * TODO(jimmyxgong): Implement this skeleton element.
  */
+
+// 150ms is enough of delay to wait for the virtual keyboard to disappear and
+// resume with a smooth scroll.
+const kDefaultScrollTimeout = 150;
+
 export class ShortcutsPageElement extends PolymerElement implements
     RouteObserver {
   static get is(): string {
@@ -50,6 +55,7 @@ export class ShortcutsPageElement extends PolymerElement implements
 
   initialData: {category: AcceleratorCategory}|null;
   subcategories: AcceleratorSubcategory[];
+  private scrollTimeout: number = kDefaultScrollTimeout;
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 
@@ -132,7 +138,12 @@ export class ShortcutsPageElement extends PolymerElement implements
    * a search result.
    */
   onRouteChanged(url: URL): void {
-    this.maybeScrollToAcceleratorRowBasedOnUrl(url);
+    const didScroll = this.maybeScrollToAcceleratorRowBasedOnUrl(url);
+    if (didScroll) {
+      // Reset the route after scrolling so the app doesn't re-scroll when
+      // the user manually changes pages.
+      Router.getInstance().resetRoute();
+    }
   }
 
   /**
@@ -170,7 +181,20 @@ export class ShortcutsPageElement extends PolymerElement implements
       if (matchingAcceleratorRow) {
         // Use microtask timing to ensure that the scrolling action happens.
         microTask.run(() => {
-          matchingAcceleratorRow.scrollIntoView({behavior: 'smooth'});
+          // Note: There is a bug in which the onscreen virtual keyboard's close
+          // animation conflicts with smooth scrolling. Adding a 150ms handles
+          // the issue by waiting for the virtual keyboard close animation
+          // to finish.
+          if (this.scrollTimeout === 0) {
+            // Don't queue a timeout if there is no delay to be added. A zero
+            // timeout will still make the function an asynchronous call.
+            // This removes the need to use a flaky timeout for tests.
+            matchingAcceleratorRow.scrollIntoView({behavior: 'smooth'});
+          } else {
+            setTimeout(() => {
+              matchingAcceleratorRow.scrollIntoView({behavior: 'smooth'});
+            }, this.scrollTimeout);
+          }
         });
 
         // The scroll event did happen, so return true.
@@ -179,6 +203,10 @@ export class ShortcutsPageElement extends PolymerElement implements
     }
 
     return false;
+  }
+
+  setScrollTimeoutForTesting(timeout: number): void {
+    this.scrollTimeout = timeout;
   }
 
   static get template(): HTMLTemplateElement {

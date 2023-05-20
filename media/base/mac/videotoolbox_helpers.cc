@@ -163,8 +163,7 @@ OSStatus GetParameterSetAtIndex(VideoCodec codec,
           parameterSetSizeOut, parameterSetCountOut, NALUnitHeaderLengthOut);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     default:
-      NOTREACHED();
-      return kCMFormatDescriptionBridgeError_InvalidParameter;
+      NOTREACHED_NORETURN();
   }
 }
 

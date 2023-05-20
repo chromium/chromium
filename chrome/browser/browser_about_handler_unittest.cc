@@ -119,3 +119,9 @@ TEST_F(BrowserAboutHandlerTest, NoVirtualURLForFixup) {
   EXPECT_EQ(expected_virtual_url, entry->GetVirtualURL());
   EXPECT_EQ(expected_url, entry->GetURL());
 }
+
+TEST_F(BrowserAboutHandlerTest, HandleNonNavigationAboutURL_Invalid) {
+  GURL invalid_url("https:");
+  ASSERT_FALSE(invalid_url.is_valid());
+  EXPECT_FALSE(HandleNonNavigationAboutURL(invalid_url));
+}

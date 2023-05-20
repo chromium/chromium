@@ -49,8 +49,7 @@ gpu::TextureOwner::Mode GetTextureOwnerMode(
       return gpu::TextureOwner::Mode::kAImageReaderInsecureSurfaceControl;
   }
 
-  NOTREACHED();
-  return gpu::TextureOwner::Mode::kSurfaceTextureInsecure;
+  NOTREACHED_NORETURN();
 }
 
 // Run on the GPU main thread to allocate the texture owner, and return it

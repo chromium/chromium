@@ -32,10 +32,18 @@ void WebAuthnCredManDelegate::OnCredManConditionalRequestPending(
   full_assertion_request_ = std::move(full_assertion_request);
 }
 
-void WebAuthnCredManDelegate::TriggerFullRequest() {
-  if (full_assertion_request_.has_value()) {
-    full_assertion_request_->Run();
+void WebAuthnCredManDelegate::OnCredManUiClosed(bool success) {
+  if (!request_completion_callback_.is_null()) {
+    request_completion_callback_.Run(success);
   }
+}
+
+void WebAuthnCredManDelegate::TriggerFullRequest() {
+  if (full_assertion_request_.is_null() || !HasResults()) {
+    OnCredManUiClosed(false);
+    return;
+  }
+  full_assertion_request_.Run();
 }
 
 bool WebAuthnCredManDelegate::HasResults() {
@@ -43,8 +51,13 @@ bool WebAuthnCredManDelegate::HasResults() {
 }
 
 void WebAuthnCredManDelegate::CleanUpConditionalRequest() {
-  full_assertion_request_ = absl::nullopt;
+  full_assertion_request_.Reset();
   has_results_ = false;
+}
+
+void WebAuthnCredManDelegate::SetRequestCompletionCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  request_completion_callback_ = std::move(callback);
 }
 
 // static

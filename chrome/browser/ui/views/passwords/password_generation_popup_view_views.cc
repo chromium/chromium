@@ -43,6 +43,8 @@
 
 namespace {
 
+using password_manager::features::PasswordGenerationVariation;
+
 // The max width prevents the popup from growing too much when the password
 // field is too long.
 constexpr int kPasswordGenerationMaxWidth = 480;
@@ -98,6 +100,28 @@ std::unique_ptr<views::View> CreatePasswordStrengthView(
   password_strength_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   return password_strength_view;
+}
+
+// Returns the message id of the help text which may differ depending on
+// specific variation of `kPasswordGenerationExperiment` feature enabled.
+int GetHelpTextMessageId() {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationExperiment)) {
+    return IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER;
+  }
+
+  switch (
+      password_manager::features::kPasswordGenerationExperimentVariationParam
+          .Get()) {
+    case PasswordGenerationVariation::kTrustedAdvice:
+      return IDS_PASSWORD_GENERATION_HELP_TEXT_TRUSTED_ADVICE;
+    case PasswordGenerationVariation::kSafetyFirst:
+      return IDS_PASSWORD_GENERATION_HELP_TEXT_SAFETY_FIRST;
+    case PasswordGenerationVariation::kTrySomethingNew:
+      return IDS_PASSWORD_GENERATION_HELP_TEXT_TRY_SOMETHING_NEW;
+    case PasswordGenerationVariation::kConvenience:
+      return IDS_PASSWORD_GENERATION_HELP_TEXT_CONVENIENCE;
+  }
 }
 
 }  // namespace
@@ -357,8 +381,7 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
 
   views::StyledLabel* help_label =
       AddChildView(CreateGooglePasswordManagerLabel(
-          /*text_message_id=*/
-          IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
+          GetHelpTextMessageId(),
           /*link_message_id=*/
           IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
           controller_->GetPrimaryAccountEmail(),

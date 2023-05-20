@@ -138,7 +138,10 @@ class FakeWebAppProvider : public WebAppProvider {
   syncer::MockModelTypeChangeProcessor& processor() { return mock_processor_; }
 
  private:
-  void CheckNotStarted() const;
+  // CHECK that `Start()` has not been called on this provider, and also
+  // disconnect so that clients are forced to call `Start()` before accessing
+  // any subsystems.
+  void CheckNotStartedAndDisconnect();
 
   // WebAppProvider:
   void StartImpl() override;

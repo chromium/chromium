@@ -99,6 +99,12 @@ void GetMostRecentlyAddedEntries(BookmarkModel* model,
 // Returns true if |n1| was added more recently than |n2|.
 bool MoreRecentlyAdded(const BookmarkNode* n1, const BookmarkNode* n2);
 
+// Returns the most recently used bookmarks. This does not return folders,
+// only nodes of type url.
+void GetMostRecentlyUsedEntries(BookmarkModel* model,
+                                size_t count,
+                                std::vector<const BookmarkNode*>* nodes);
+
 // Returns up to |max_count| bookmarks from |model| whose url or title contain
 // the text |query.word_phrase_query| and exactly match |query.url| and
 // |query.title|, for all of the preceding fields that are not NULL.

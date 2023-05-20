@@ -697,8 +697,8 @@ export class Preview {
       if (marker !== this.focusMarker) {
         return;  // Focus was cancelled.
       }
-      const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
-      const clone = assertInstanceof(aim.cloneNode(true), HTMLObjectElement);
+      const aim = dom.get('#preview-focus-aim', HTMLElement);
+      const clone = assertInstanceof(aim.cloneNode(true), HTMLElement);
       clone.style.left = `${event.offsetX + this.video.offsetLeft}px`;
       clone.style.top = `${event.offsetY + this.video.offsetTop}px`;
       clone.hidden = false;
@@ -712,7 +712,7 @@ export class Preview {
    */
   private cancelFocus() {
     this.focusMarker = null;
-    const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
+    const aim = dom.get('#preview-focus-aim', HTMLElement);
     aim.hidden = true;
   }
 }

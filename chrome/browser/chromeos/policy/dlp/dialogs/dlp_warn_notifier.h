@@ -69,8 +69,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
       OnDlpRestrictionCheckedCallback callback,
       const std::vector<DlpConfidentialFile>& confidential_files,
       const DlpFileDestination& destination,
-      DlpFilesController::FileAction action,
-      gfx::NativeWindow modal_parent);
+      DlpFilesController::FileAction action);
 
   // Returns the number of active widgets, which equals the number of warning
   // dialogs shown conucrrently. Useful for testing to verify that the dialogs
@@ -83,8 +82,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
   // Helper method to create and show a DlpWarnDialog.
   virtual base::WeakPtr<views::Widget> ShowDlpWarningDialog(
       OnDlpRestrictionCheckedCallback callback,
-      DlpWarnDialog::DlpWarnDialogOptions options,
-      gfx::NativeWindow modal_parent = nullptr);
+      DlpWarnDialog::DlpWarnDialogOptions options);
 
   // Helper method to show the `widget`.
   virtual void ShowWidget(views::Widget* widget);

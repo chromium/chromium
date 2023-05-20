@@ -38,13 +38,28 @@ public class PaymentRequestUpdateWithTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "Lisa Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210",
-                "", "US", "555 123-4567", "lisa@simpson.com", ""));
-        String billingAddressId =
-                helper.setProfile(new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                        "Maggie Simpson", "Acme Inc.", "123 Main", "California", "Los Angeles", "",
-                        "90210", "", "Uzbekistan", "555 123-4567", "maggie@simpson.com", ""));
+        helper.setProfile(AutofillProfile.builder()
+                                  .setFullName("Lisa Simpson")
+                                  .setCompanyName("Acme Inc.")
+                                  .setStreetAddress("123 Main")
+                                  .setRegion("California")
+                                  .setLocality("Los Angeles")
+                                  .setPostalCode("90210")
+                                  .setCountryCode("US")
+                                  .setPhoneNumber("555 123-4567")
+                                  .setEmailAddress("lisa@simpson.com")
+                                  .build());
+        String billingAddressId = helper.setProfile(AutofillProfile.builder()
+                                                            .setFullName("Maggie Simpson")
+                                                            .setCompanyName("Acme Inc.")
+                                                            .setStreetAddress("123 Main")
+                                                            .setRegion("California")
+                                                            .setLocality("Los Angeles")
+                                                            .setPostalCode("90210")
+                                                            .setCountryCode("Uzbekistan")
+                                                            .setPhoneNumber("555 123-4567")
+                                                            .setEmailAddress("maggie@simpson.com")
+                                                            .build());
         helper.setCreditCard(new CreditCard("", "https://example.test", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
                 billingAddressId, "" /* serverId */));

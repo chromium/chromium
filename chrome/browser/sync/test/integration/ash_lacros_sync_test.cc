@@ -7,9 +7,9 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/sync/base/features.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_impl.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_impl.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/test/browser_test.h"
 
 namespace {

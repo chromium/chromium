@@ -89,9 +89,7 @@ void ImmersiveModeTabbedController::Enable() {
   ObserveChildWindows(tab_window_);
 
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
-  // Keep the titlebar hidden until the fullscreen transition is complete.
   NSToolbar* toolbar = [[[NSToolbar alloc] init] autorelease];
-  toolbar.visible = NO;
 
   // Remove the baseline separator for macOS 10.15 and earlier. This has no
   // effect on macOS 11 and above. See
@@ -135,6 +133,12 @@ void ImmersiveModeTabbedController::UpdateToolbarVisibility(
       break;
   }
   ImmersiveModeController::UpdateToolbarVisibility(style);
+
+  // During fullscreen restore or split screen restore tab window can be left
+  // without a parent, leading to the window being hidden which causes
+  // compositing to stop. This call ensures that tab window is parented to
+  // overlay window and is in the correct z-order.
+  OrderTabWindowZOrderOnTop();
 
   // macOS 10.15 does not call `OnTitlebarFrameDidChange` as often as newer
   // versions of macOS. Add a layout call here and in `RevealLock` and
@@ -207,14 +211,7 @@ void ImmersiveModeTabbedController::OnChildWindowAdded(NSWindow* child) {
     return;
   }
 
-  // Keep the tab window on top of its siblings. This will allow children of tab
-  // window to always be z-order on top of overlay window children.
-  // Practically this allows for the tab preview hover card to be z-order on top
-  // of omnibox results popup.
-  if (overlay_window().childWindows.lastObject != tab_window_) {
-    [overlay_window() removeChildWindow:tab_window_];
-    [overlay_window() addChildWindow:tab_window_ ordered:NSWindowAbove];
-  }
+  OrderTabWindowZOrderOnTop();
   ImmersiveModeController::OnChildWindowAdded(child);
 }
 
@@ -237,6 +234,17 @@ bool ImmersiveModeTabbedController::ShouldObserveChildWindow(NSWindow* child) {
 
 bool ImmersiveModeTabbedController::IsTabbed() {
   return true;
+}
+
+void ImmersiveModeTabbedController::OrderTabWindowZOrderOnTop() {
+  // Keep the tab window on top of its siblings. This will allow children of tab
+  // window to always be z-order on top of overlay window children.
+  // Practically this allows for the tab preview hover card to be z-order on top
+  // of omnibox results popup.
+  if (overlay_window().childWindows.lastObject != tab_window_) {
+    [overlay_window() removeChildWindow:tab_window_];
+    [overlay_window() addChildWindow:tab_window_ ordered:NSWindowAbove];
+  }
 }
 
 }  // namespace remote_cocoa

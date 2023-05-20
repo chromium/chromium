@@ -29,6 +29,10 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // A class that watches for invalidations of a window's touch bar by calls
 // to -setTouchBar:.
 //
@@ -84,7 +88,6 @@
 
 - (void)dealloc {
   [TouchBarInvalidationWatcher setTouchBarSwizzler].reset();
-  [super dealloc];
 }
 
 - (void)setTouchBar:(NSTouchBar*)aTouchBar {
@@ -137,7 +140,6 @@
 
 - (void)dealloc {
   [PageReloadWatcher setPageIsLoadingSwizzler].reset();
-  [super dealloc];
 }
 
 - (void)setIsPageLoading:(BOOL)flag {
@@ -153,7 +155,7 @@
 
 class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
  public:
-  BrowserWindowTouchBarControllerTest() : InProcessBrowserTest() {}
+  BrowserWindowTouchBarControllerTest() = default;
 
   BrowserWindowTouchBarControllerTest(
       const BrowserWindowTouchBarControllerTest&) = delete;

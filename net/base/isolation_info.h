@@ -144,14 +144,6 @@ class NET_EXPORT IsolationInfo {
   // unmodified.
   IsolationInfo CreateForRedirect(const url::Origin& new_origin) const;
 
-  // Intended for temporary use in locations that should be using main frame and
-  // frame origin, but are currently only using frame origin, because the
-  // creating object may be shared across main frame objects. Having a special
-  // constructor for these methods makes it easier to keep track of locating
-  // callsites that need to have their IsolationInfo filled in.
-  static IsolationInfo ToDoUseTopFrameOriginAsWell(
-      const url::Origin& incorrectly_used_frame_origin);
-
   RequestType request_type() const { return request_type_; }
 
   bool IsEmpty() const { return !top_frame_origin_; }

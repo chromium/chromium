@@ -70,11 +70,13 @@ void StatsCollector::ReportTracesAndHistsImpl(
     }
   }
   // Report UMA if process_name is set.
-  if (!process_name_)
+  if (!process_name_) {
     return;
+  }
   for (size_t id = 0; id < accumulated_events.size(); ++id) {
-    if (accumulated_events[id].is_zero())
+    if (accumulated_events[id].is_zero()) {
       continue;
+    }
     reporter.ReportStats(ToUMAString(static_cast<IdType<context>>(id)).c_str(),
                          accumulated_events[id].InMicroseconds());
   }
@@ -90,9 +92,10 @@ void StatsCollector::ReportSurvivalRate(
                     << survived_quarantine_size()
                     << ", swept bytes: " << swept_size()
                     << ", survival rate: " << survived_rate;
-  if (discarded_quarantine_size_)
+  if (discarded_quarantine_size_) {
     PA_PCSCAN_VLOG(2) << "discarded quarantine size: "
                       << discarded_quarantine_size_;
+  }
 }
 
 template base::TimeDelta StatsCollector::GetTimeImpl(

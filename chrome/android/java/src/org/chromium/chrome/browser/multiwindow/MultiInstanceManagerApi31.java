@@ -68,7 +68,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     // Instance ID for the activity associated with this manager.
     private int mInstanceId = INVALID_INSTANCE_ID;
 
-    private TabModelSelectorTabModelObserver mTabModelObserver;
     private Tab mActiveTab;
     private TabObserver mActiveTabObserver = new EmptyTabObserver() {
         @Override
@@ -693,10 +692,5 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                     "Android.MultiInstance.TotalDuration", current - startTime);
             prefs.writeLong(ChromePreferenceKeys.MULTI_INSTANCE_START_TIME, 0);
         }
-    }
-
-    @VisibleForTesting
-    TabModelSelectorTabModelObserver getTabModelObserverForTesting() {
-        return mTabModelObserver;
     }
 }

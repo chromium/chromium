@@ -15,7 +15,7 @@ absl::optional<MessagePortChannel>
 WebMessagePortConverter::DisentangleAndExtractMessagePortChannel(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value) {
-  MessagePort* port = V8MessagePort::ToImplWithTypeCheck(isolate, value);
+  MessagePort* port = V8MessagePort::ToWrappable(isolate, value);
   if (!port || port->IsNeutered())
     return absl::nullopt;
   return port->Disentangle();

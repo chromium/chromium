@@ -12,12 +12,17 @@ static_library("language_packs") {
     "language_pack_manager.h",
     "language_packs_impl.cc",
     "language_packs_impl.h",
+    "language_packs_util.cc",
+    "language_packs_util.h",
   ]
   deps = [
     "//base",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//chromeos/ash/components/language/public/mojom",
+    "//components/language/core/common",
+    "//components/session_manager:base",
+    "//components/session_manager/core:core",
   ]
 }
 
@@ -25,6 +30,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "language_pack_manager_unittest.cc",
+    "language_packs_util_unittest.cc",
     "metrics_unittest.cc",
   ]
   deps = [

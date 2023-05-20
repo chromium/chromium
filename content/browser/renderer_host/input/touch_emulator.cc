@@ -463,10 +463,12 @@ void TouchEmulator::InjectTouchEvent(const blink::WebTouchEvent& event,
 }
 
 void TouchEmulator::OnInjectedTouchCompleted() {
-  if (injected_touch_completion_callbacks_.empty())
+  if (injected_touch_completion_callbacks_.empty()) {
     return;
-  if (!injected_touch_completion_callbacks_.front().is_null())
+  }
+  if (!injected_touch_completion_callbacks_.front().is_null()) {
     std::move(injected_touch_completion_callbacks_.front()).Run();
+  }
   injected_touch_completion_callbacks_.pop();
 }
 

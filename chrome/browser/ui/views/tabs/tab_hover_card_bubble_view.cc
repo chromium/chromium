@@ -11,13 +11,10 @@
 #include <string>
 
 #include "base/containers/lru_cache.h"
-#include "base/i18n/break_iterator.h"
-#include "base/i18n/char_iterator.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -26,6 +23,8 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/tabs/fade_label_view.h"
+#include "chrome/browser/ui/views/tabs/filename_elider.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -46,10 +45,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/selection_model.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/gfx/text_elider.h"
-#include "ui/gfx/text_utils.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -122,367 +118,7 @@ bool UseAlternateHoverCardFormat() {
           0);
   return use_alternate_format != 0;
 }
-
-// Label that renders its background in a solid color. Placed in front of a
-// normal label either by being later in the draw order or on a layer, it can
-// be used to animate a fade-out.
-class SolidLabel : public views::Label {
- public:
-  METADATA_HEADER(SolidLabel);
-  using Label::Label;
-  SolidLabel() = default;
-  ~SolidLabel() override = default;
-
- protected:
-  // views::Label:
-  void OnPaintBackground(gfx::Canvas* canvas) override {
-    canvas->DrawColor(GetBackgroundColor());
-  }
-};
-
-BEGIN_METADATA(SolidLabel, views::Label)
-END_METADATA
-
-// Label that exposes the CreateRenderText() method, so that we can use
-// TabHoverCardBubbleView::FilenameElider to do a two-line elision of
-// filenames.
-class RenderTextFactoryLabel : public views::Label {
- public:
-  using Label::CreateRenderText;
-  using Label::Label;
-};
-
 }  // namespace
-
-// TabHoverCardBubbleView::FilenameElider:
-// ----------------------------------------------------------
-
-TabHoverCardBubbleView::FilenameElider::FilenameElider(
-    std::unique_ptr<gfx::RenderText> render_text)
-    : render_text_(std::move(render_text)) {}
-
-TabHoverCardBubbleView::FilenameElider::~FilenameElider() = default;
-
-std::u16string TabHoverCardBubbleView::FilenameElider::Elide(
-    const std::u16string& text,
-    const gfx::Rect& display_rect) const {
-  render_text_->SetText(text);
-  return ElideImpl(GetLineLengths(display_rect));
-}
-
-// static
-std::u16string::size_type
-TabHoverCardBubbleView::FilenameElider::FindImageDimensions(
-    const std::u16string& text) {
-  // We don't have regexes in Chrome, but we can still do a rough evaluation of
-  // the line to see if it ends with the expected pattern:
-  //
-  // title[ (width×height)]
-  //
-  // We'll look for the open parenthesis, then the rest of the size. Note that
-  // we don't have to worry about graphemes or combining characters because any
-  // character that's not of the expected type means there is no dimension.
-
-  // Find the start of the extension.
-  const auto paren_pos = text.find_last_of(u'(');
-  if (paren_pos == 0 || paren_pos == std::u16string::npos ||
-      text[paren_pos - 1] != u' ') {
-    return std::u16string::npos;
-  }
-
-  // Fast forward to the unicode character following the paren.
-  base::i18n::UTF16CharIterator it(
-      base::StringPiece16(text).substr(paren_pos + 1));
-
-  // Look for the image width.
-  if (!base::IsAsciiDigit(it.get())) {
-    return std::u16string::npos;
-  }
-  while (it.Advance() && base::IsAsciiDigit(it.get())) {
-    // empty loop
-  }
-
-  // Look for the × character and the height.
-  constexpr char16_t kMultiplicationSymbol = u'\u00D7';
-  if (it.end() || it.get() != kMultiplicationSymbol || !it.Advance() ||
-      !base::IsAsciiDigit(it.get())) {
-    return std::u16string::npos;
-  }
-  while (it.Advance() && base::IsAsciiDigit(it.get())) {
-    // empty loop
-  }
-
-  // Look for the closing parenthesis and make sure we've hit the end of the
-  // string.
-  if (it.end() || it.get() != u')')
-    return std::u16string::npos;
-  it.Advance();
-  return it.end() ? paren_pos : std::u16string::npos;
-}
-
-TabHoverCardBubbleView::FilenameElider::LineLengths
-TabHoverCardBubbleView::FilenameElider::GetLineLengths(
-    const gfx::Rect& display_rect) const {
-  const std::u16string text = render_text_->text();
-  render_text_->SetMaxLines(0);
-  render_text_->SetMultiline(false);
-  render_text_->SetWhitespaceElision(true);
-  render_text_->SetDisplayRect(display_rect);
-
-  // Set our temporary RenderText to the unelided text and elide the start of
-  // the string to give us a guess at where the second line of the label
-  // should start.
-  render_text_->SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
-  const std::u16string tentative_second_line = render_text_->GetDisplayText();
-
-  // If there is no elision, then the text will fit on a single line and
-  // there's nothing to do.
-  if (tentative_second_line == text)
-    return LineLengths(text.length(), text.length());
-
-  // If there's not enough space to display even a single character, there is
-  // also nothing to do; the result needs to be empty.
-  if (tentative_second_line.empty())
-    return LineLengths(0, 0);
-
-  LineLengths result;
-
-  // Since we truncated, expect the string to start with ellipsis, then
-  // calculate the length of the string sans ellipsis.
-  DCHECK_EQ(gfx::kEllipsisUTF16[0], tentative_second_line[0]);
-
-  // TODO(crbug.com/1239317): Elision is still a little flaky, so we'll make
-  // sure we didn't stop in the middle of a grapheme. The +1 is to move past
-  // the ellipsis which is not part of the original string.
-  size_t pos = text.length() - tentative_second_line.length() + 1;
-  if (!render_text_->IsGraphemeBoundary(pos))
-    pos = render_text_->IndexOfAdjacentGrapheme(pos, gfx::CURSOR_FORWARD);
-  result.second = text.length() - pos;
-
-  // Calculate the first line by aggressively truncating the text. This may
-  // cut the string somewhere other than a word boundary, but for very long
-  // filenames, it's probably best to fit as much of the name on the card as
-  // possible, even if we sacrifice a small amount of readability.
-  render_text_->SetElideBehavior(gfx::ElideBehavior::TRUNCATE);
-  result.first = render_text_->GetDisplayText().length();
-
-  // TOOD(crbug.com/1239317) Handle the case where we ended up in the middle
-  // of a grapheme.
-  if (!render_text_->IsGraphemeBoundary(result.first)) {
-    result.first = render_text_->IndexOfAdjacentGrapheme(result.first,
-                                                         gfx::CURSOR_BACKWARD);
-  }
-
-  return result;
-}
-
-std::u16string TabHoverCardBubbleView::FilenameElider::ElideImpl(
-    TabHoverCardBubbleView::FilenameElider::LineLengths line_lengths) const {
-  const std::u16string& text = render_text_->text();
-
-  // Validate the inputs. All of these are base assumptions.
-  DCHECK_LE(line_lengths.first, text.length());
-  DCHECK_LE(line_lengths.second, text.length());
-  DCHECK(render_text_->IsGraphemeBoundary(line_lengths.first));
-  DCHECK(render_text_->IsGraphemeBoundary(text.length() - line_lengths.second));
-
-  // If the entire text fits on a single line, use it as-is.
-  if (line_lengths.first == text.length() ||
-      line_lengths.second == text.length()) {
-    return text;
-  }
-
-  // If no characters will fit on one of the lines, return an empty string.
-  if (line_lengths.first == 0 || line_lengths.second == 0)
-    return std::u16string();
-
-  // Let's figure out where to actually start the second line. Strings that
-  // are too long for one line but fit on two lines tend to create some
-  // overlap between the first and second line, so take the maximum of the
-  // second line cut and the end of the first line.
-  const size_t second_line_cut = text.length() - line_lengths.second;
-  size_t cut_point = std::max(second_line_cut, line_lengths.first);
-
-  // We got the whole line if the cut point is the character immediately
-  // after the first line cuts off (otherwise we've truncated and need to
-  // show an ellipsis in the final string).
-  const bool is_whole_string = (cut_point == line_lengths.first);
-
-  // If there is some flexibility in where we make our cut point (that is, the
-  // potential first and second lines overlap), there are a few specific places
-  // we preferentially want to separate the lines.
-  bool adjusted_cut_point = false;
-  if (is_whole_string && cut_point >= second_line_cut) {
-    // First, if there are image dimensions, preferentially put those on the
-    // second line.
-    const auto paren_pos = FindImageDimensions(text);
-    if (paren_pos != std::u16string::npos && paren_pos >= second_line_cut &&
-        paren_pos <= cut_point) {
-      cut_point = paren_pos;
-      adjusted_cut_point = true;
-    }
-
-    // Second, we can break at the start of the file extension.
-    if (!adjusted_cut_point) {
-      const size_t dot_pos = text.find_last_of(u'.');
-      if (dot_pos != std::u16string::npos && dot_pos >= second_line_cut &&
-          dot_pos <= cut_point) {
-        cut_point = dot_pos;
-        adjusted_cut_point = true;
-      }
-    }
-  }
-
-  // TODO(dfried): possibly handle the case where we chop a section with bidi
-  // delimiters out or split it between lines.
-
-  // If we didn't put the extension on its own line, eliminate whitespace
-  // from the start of the second line (it looks weird).
-  if (!adjusted_cut_point) {
-    cut_point =
-        gfx::FindValidBoundaryAfter(text, cut_point, /*trim_whitespace =*/true);
-  }
-
-  // Reassemble the string. Start with the first line up to `cut_point` or the
-  // end of the line, whichever comes sooner.
-  std::u16string result =
-      text.substr(0, std::min(line_lengths.first, cut_point));
-  result.push_back(u'\n');
-
-  // If we're starting the second line with a file extension hint that the
-  // directionality of the text might change by using an FSI mark. Allowing
-  // the renderer to re-infer RTL-ness produces much better results in text
-  // rendering when an RTL filename has an ASCII extension.
-  //
-  // TODO(dfried): Currently we do put an FSI before an ellipsis; this
-  // results in the ellipsis being placed with the text that immediately
-  // follows it (making the point of elision more obvious). If the text
-  // following the cut is LTR it goes on the left, and if the text is RTL it
-  // goes on the right. Reconsider if/how we should set text direction
-  // following an ellipsis:
-  // - No FSI would cause the ellipsis to align with the preceding rather
-  //   than the following text. It would provide a bit more visual continuity
-  //   between lines, but might be confusing as to where the text picks back
-  //   up (as the next character might be on the opposite side of the line).
-  // - We could preserve elided directionality markers, but they could end up
-  //   aligning the ellipsis with text that is not present at all on the
-  //   label.
-  // - We could also force direction to match the start of the first line for
-  //   consistency but that could result in an ellipsis that matches neither
-  //   the preceding nor following text.
-  //
-  // TODO(dfried): move these declarations to rtl.h alongside e.g.
-  // base::i18n::kRightToLeftMark
-  constexpr char16_t kFirstStrongIsolateMark = u'\u2068';
-  constexpr char16_t kPopDirectionalIsolateMark = u'\u2069';
-  if (adjusted_cut_point || !is_whole_string)
-    result += kFirstStrongIsolateMark;
-  if (!is_whole_string)
-    result.push_back(gfx::kEllipsisUTF16[0]);
-  result.append(text.substr(cut_point));
-  // If we added an FSI, we should bracket it with a PDI.
-  if (adjusted_cut_point || !is_whole_string)
-    result += kPopDirectionalIsolateMark;
-  return result;
-}
-
-// TabHoverCardBubbleView::FadeLabel:
-// ----------------------------------------------------------
-
-// This view overlays and fades out an old version of the text of a label,
-// while displaying the new text underneath. It is used to fade out the old
-// value of the title and domain labels on the hover card when the tab switches
-// or the tab title changes.
-class TabHoverCardBubbleView::FadeLabel : public views::View {
- public:
-  FadeLabel(int context, int num_lines) {
-    primary_label_ = AddChildView(std::make_unique<RenderTextFactoryLabel>(
-        std::u16string(), context, views::style::STYLE_PRIMARY));
-    primary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    primary_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
-    primary_label_->SetMultiLine(num_lines > 1);
-    if (num_lines > 1)
-      primary_label_->SetMaxLines(num_lines);
-
-    label_fading_out_ = AddChildView(std::make_unique<SolidLabel>(
-        std::u16string(), context, views::style::STYLE_PRIMARY));
-    label_fading_out_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label_fading_out_->SetVerticalAlignment(gfx::ALIGN_TOP);
-    label_fading_out_->SetMultiLine(num_lines > 1);
-    if (num_lines > 1)
-      label_fading_out_->SetMaxLines(num_lines);
-    label_fading_out_->GetViewAccessibility().OverrideIsIgnored(true);
-
-    SetLayoutManager(std::make_unique<views::FillLayout>());
-  }
-
-  ~FadeLabel() override = default;
-
-  void SetText(std::u16string text, absl::optional<bool> is_filename) {
-    if (was_filename_.has_value())
-      SetMultilineParams(label_fading_out_, was_filename_.value());
-    label_fading_out_->SetText(primary_label_->GetText());
-    if (is_filename.has_value())
-      SetMultilineParams(primary_label_, is_filename.value());
-    was_filename_ = is_filename;
-    primary_label_->SetText(text);
-  }
-
-  // Sets the fade-out of the label as |percent| in the range [0, 1]. Since
-  // FadeLabel is designed to mask new text with the old and then fade away, the
-  // higher the percentage the less opaque the label.
-  void SetFade(double percent) {
-    percent_ = std::min(1.0, percent);
-    if (percent_ == 1.0)
-      label_fading_out_->SetText(std::u16string());
-    const SkAlpha alpha = base::saturated_cast<SkAlpha>(
-        std::numeric_limits<SkAlpha>::max() * (1.0 - percent_));
-    label_fading_out_->SetBackgroundColor(
-        SkColorSetA(label_fading_out_->GetBackgroundColor(), alpha));
-    label_fading_out_->SetEnabledColor(
-        SkColorSetA(label_fading_out_->GetEnabledColor(), alpha));
-  }
-
-  std::u16string GetText() const { return primary_label_->GetText(); }
-
-  // Returns a version of the text that's middle-elided on two lines.
-  std::u16string TruncateFilenameToTwoLines(const std::u16string& text) const {
-    FilenameElider elider(primary_label_->CreateRenderText());
-    gfx::Rect text_rect = primary_label_->GetContentsBounds();
-    text_rect.Inset(-gfx::ShadowValue::GetMargin(primary_label_->GetShadows()));
-    return elider.Elide(text, text_rect);
-  }
-
- protected:
-  // views::View:
-  gfx::Size GetMaximumSize() const override {
-    return gfx::Tween::SizeValueBetween(percent_,
-                                        label_fading_out_->GetPreferredSize(),
-                                        primary_label_->GetPreferredSize());
-  }
-
-  gfx::Size CalculatePreferredSize() const override {
-    return primary_label_->GetPreferredSize();
-  }
-
-  gfx::Size GetMinimumSize() const override {
-    return primary_label_->GetMinimumSize();
-  }
-
-  int GetHeightForWidth(int width) const override {
-    return primary_label_->GetHeightForWidth(width);
-  }
-
- private:
-  static void SetMultilineParams(views::Label* label, bool is_filename) {
-    label->SetElideBehavior(is_filename ? gfx::NO_ELIDE : gfx::ELIDE_TAIL);
-  }
-
-  raw_ptr<RenderTextFactoryLabel> primary_label_;
-  raw_ptr<SolidLabel> label_fading_out_;
-  absl::optional<bool> was_filename_;
-  double percent_ = 1.0;
-};
 
 // TabHoverCardBubbleView::ThumbnailView:
 // ----------------------------------------------------------
@@ -759,10 +395,10 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   // navigating through the tab strip.
   set_focus_traversable_from_anchor_view(false);
 
-  title_label_ = AddChildView(std::make_unique<FadeLabel>(
+  title_label_ = AddChildView(std::make_unique<FadeLabelView>(
       CONTEXT_TAB_HOVER_CARD_TITLE, kHoverCardTitleMaxLines));
-  domain_label_ = AddChildView(
-      std::make_unique<FadeLabel>(views::style::CONTEXT_DIALOG_BODY_TEXT, 1));
+  domain_label_ = AddChildView(std::make_unique<FadeLabelView>(
+      views::style::CONTEXT_DIALOG_BODY_TEXT, 1));
 
   if (TabHoverCardController::AreHoverCardImagesEnabled()) {
     if (UseAlternateHoverCardFormat()) {
@@ -878,7 +514,6 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   bool is_filename = false;
   if (domain_url.SchemeIsFile()) {
     is_filename = true;
-    title = title_label_->TruncateFilenameToTwoLines(title);
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
   } else {
     if (domain_url.SchemeIsBlob()) {
@@ -904,12 +539,12 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
       // to middle-elide.
       if (FilenameElider::FindImageDimensions(title) != std::u16string::npos) {
         is_filename = true;
-        title = title_label_->TruncateFilenameToTwoLines(title);
       }
     }
   }
-  title_label_->SetText(title, is_filename);
-  domain_label_->SetText(domain, absl::nullopt);
+
+  title_label_->SetData({title, is_filename});
+  domain_label_->SetData({domain, false});
 
   const bool alternate_layout = UseAlternateHoverCardFormat();
   if (alert_state_ != old_alert_state) {

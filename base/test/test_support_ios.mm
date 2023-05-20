@@ -73,6 +73,18 @@ bool IsSceneStartupEnabled() {
 @end
 #endif  // TARGET_IPHONE_SIMULATOR
 
+// Can be used to easily check if the current application is being used for
+// running tests.
+@interface ChromeUnitTestApplication : UIApplication
+- (BOOL)isRunningTests;
+@end
+
+@implementation ChromeUnitTestApplication
+- (BOOL)isRunningTests {
+  return YES;
+}
+@end
+
 // No-op scene delegate for unit tests. Note that this is created along with
 // the application delegate, so they need to be separate objects (the same
 // object can't be both the app and scene delegate, since new scene delegates
@@ -276,7 +288,8 @@ int RunTestsFromIOSApp() {
   // TestSuite::Run will have be passed via InitIOSRunHook which will execute
   // the TestSuite once the UIApplication is ready.
   @autoreleasepool {
-    return UIApplicationMain(g_argc, g_argv, nil, @"ChromeUnitTestDelegate");
+    return UIApplicationMain(g_argc, g_argv, @"ChromeUnitTestApplication",
+                             @"ChromeUnitTestDelegate");
   }
 }
 

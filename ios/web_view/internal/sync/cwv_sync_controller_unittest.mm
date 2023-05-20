@@ -4,39 +4,39 @@
 
 #import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
 
-#include <memory>
-#include <set>
+#import <memory>
+#import <set>
 
-#include "base/files/file_path.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/image_fetcher/ios/ios_image_decoder_impl.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/test_signin_client.h"
-#include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
-#include "components/signin/public/identity_manager/identity_manager_builder.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/driver/sync_service_observer.h"
+#import "base/files/file_path.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/test/task_environment.h"
+#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/image_fetcher/ios/ios_image_decoder_impl.h"
+#import "components/password_manager/core/browser/password_manager_features_util.h"
+#import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/test_signin_client.h"
+#import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
+#import "components/signin/public/identity_manager/identity_manager_builder.h"
+#import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/signin/public/identity_manager/primary_account_mutator.h"
+#import "components/sync/service/sync_service_observer.h"
 #import "components/sync/test/test_sync_service.h"
-#include "google_apis/gaia/google_service_auth_error.h"
-#include "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
+#import "google_apis/gaia/google_service_auth_error.h"
+#import "ios/web_view/internal/signin/web_view_device_accounts_provider_impl.h"
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_controller_delegate.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -82,7 +82,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
              gaiaID:base::SysUTF8ToNSString(account_info.gaia)];
 
   // Preconfigure TestSyncService as if it was enabled in transport mode.
-  sync_service_.SetFirstSetupComplete(false);
+  sync_service_.SetInitialSyncFeatureSetupComplete(false);
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service_.SetIsUsingExplicitPassphrase(false);
   sync_service_.SetAccountInfo(account_info);

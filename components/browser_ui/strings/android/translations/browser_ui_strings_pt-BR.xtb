@@ -263,7 +263,7 @@
 <translation id="5771720122942595109">Bloqueada: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5810805850857689118">Essa ação vai apagar todos os dados e cookies de <ph name="ORIGIN" /> e de todos os sites relacionados</translation>
-<translation id="5860033963881614850">Desativado</translation>
+<translation id="5860033963881614850">Desativada</translation>
 <translation id="5876056640971328065">Pausar vídeo</translation>
 <translation id="5884085660368669834">Preferência do site</translation>
 <translation id="5887687176710214216">Última visita: ontem</translation>
@@ -311,6 +311,7 @@
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="662080504995468778">Ficar</translation>
 <translation id="6643016212128521049">Limpar</translation>
+<translation id="6653342741369270081">Pressione o botão "Voltar" para sair da tela cheia.</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Downloads ativos</translation>
 <translation id="6722828510648505498">Bloquear solicitações de login de serviços de identificação.</translation>

@@ -164,10 +164,8 @@ class MediaCapabilitiesTestWithConfigType
         return kMediaSourceString;
       case ConfigType::kWebRtc:
         return kWebRtcString;
-      default:
-        NOTREACHED();
-        return "";
     }
+    NOTREACHED_NORETURN();
   }
 };
 

@@ -142,34 +142,12 @@
     "expires": "Sep 1, 2023"
   },
   {
-    "prefix": "composite-background-attachment-fixed",
-    "platforms": ["Linux"],
-    "bases": ["compositing/fixed-background-after-style-recalc.html",
-              "compositing/fixed-background-composited-html.html",
-              "compositing/fixed-background-negative-z-index-fixed.html",
-              "compositing/fixed-body-background-positioned.html",
-              "compositing/backgrounds",
-              "fast/backgrounds",
-              "paint/background",
-              "paint/invalidation/background",
-              "external/wpt/acid/acid2/reftest.html",
-              "external/wpt/css/CSS2/backgrounds",
-              "external/wpt/css/css-backgrounds",
-              "external/wpt/css/css-break/background-image-000.html",
-              "external/wpt/css/css-break/background-image-001.html",
-              "external/wpt/css/css-break/background-image-002.html",
-              "external/wpt/css/css-break/background-attachment-fixed.html"],
-    "args": ["--enable-features=CompositeBackgroundAttachmentFixed",
-             "--enable-prefer-compositing-to-lcd-text"],
-    "expires": "Aug 1, 2023"
-  },
-  {
     "prefix": "attribution-reporting-debug-mode",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/attribution-reporting"],
     "exclusive_tests": "ALL",
     "args": ["--attribution-reporting-debug-mode",
-             "--enable-features=AttributionReportingCrossAppWeb,AttributionReportingReportVerification,PrivacySandboxAdsAPIsOverride",
+             "--enable-features=AttributionReportingCrossAppWeb,AttributionReportingReportVerification,PrivacySandboxAdsAPIsOverride,PrivacySandboxAggregationService:trusted_server_url/https%3A%2F%2Fweb-platform.test%3A8444%2Fwpt_internal%2Fattribution-reporting%2Fresources%2FpublicKeys",
              "--additional-private-state-token-key-commitments={\"https://web-platform.test:8444\":{\"PrivateStateTokenV3VOPRF\":{\"protocol_version\":\"PrivateStateTokenV3VOPRF\",\"id\":1,\"batchsize\":1,\"keys\":{\"0\":{\"Y\":\"AAAAAASqh8oivosFN46xxx7zIK10bh07Younm5hZ90HgglQqOFUC8l2/VSlsOlReOHJ2CrfJ6CG1adnTkKJhZ0BtbSPWBwviQtdl64MWJc7sSg9HPvWfTjDigX5ihbzihG8V8aA=\",\"expiry\":\"253402300799000000\"}}}}}"],
     "expires": "Jul 1, 2023"
   },
@@ -219,7 +197,8 @@
     "bases": ["fast/scroll-behavior",
               "fast/scroll-snap",
               "fast/scrolling",
-              "external/wpt/css/cssom-view"],
+              "external/wpt/css/cssom-view",
+              "external/wpt/scroll-animations"],
     "exclusive_tests": ["fast/scrolling/scrollbars/mouse-scrolling-on-div-scrollbar-thumb-scaled.html"],
     "args": ["--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text"],
@@ -928,6 +907,16 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "fluent-non-overlay-scrollbar-hc",
+    "platforms": ["Win"],
+    "bases": ["virtual/fluent-non-overlay-scrollbar/composited",
+              "virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
+    "args": ["--enable-features=FluentScrollbar",
+             "--enable-threaded-compositing",
+             "--force-high-contrast"],
+    "expires": "Jul 1, 2023"
+  },
+  {
     "prefix": "fluent-non-overlay-scrollbar-dark-mode",
     "platforms": ["Win"],
     "bases": ["fast/forms/color-scheme/scrollbar"],
@@ -1314,7 +1303,30 @@
   {
     "prefix": "popover-hint-disabled",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/html/semantics/popovers/"],
+    "bases": [
+      "external/wpt/html/semantics/popovers/popover-anchor-idl-property.html",
+      "external/wpt/html/semantics/popovers/popover-anchor-nesting.html",
+      "external/wpt/html/semantics/popovers/popover-attribute-all-elements.html",
+      "external/wpt/html/semantics/popovers/popover-attribute-basic.html",
+      "external/wpt/html/semantics/popovers/popover-beforetoggle-opening-event.html",
+      "external/wpt/html/semantics/popovers/popover-change-type.html",
+      "external/wpt/html/semantics/popovers/popover-css-properties.tentative.html",
+      "external/wpt/html/semantics/popovers/popover-document-open.html",
+      "external/wpt/html/semantics/popovers/popover-events.html",
+      "external/wpt/html/semantics/popovers/popover-focus-2.html",
+      "external/wpt/html/semantics/popovers/popover-focus.html",
+      "external/wpt/html/semantics/popovers/popover-invoker-reset.html",
+      "external/wpt/html/semantics/popovers/popover-invoking-attribute.html",
+      "external/wpt/html/semantics/popovers/popover-light-dismiss.html",
+      "external/wpt/html/semantics/popovers/popover-move-documents.html",
+      "external/wpt/html/semantics/popovers/popover-overlay.html",
+      "external/wpt/html/semantics/popovers/popover-removal-2.html",
+      "external/wpt/html/semantics/popovers/popover-removal.html",
+      "external/wpt/html/semantics/popovers/popover-shadow-dom.html",
+      "external/wpt/html/semantics/popovers/popover-target-action-hover.tentative.html",
+      "external/wpt/html/semantics/popovers/popover-types-with-hints.tentative.html",
+      "external/wpt/html/semantics/popovers/popover-types.html"
+    ],
     "args": ["--enable-blink-features=HTMLPopoverAttribute",
       "--disable-blink-features=HTMLPopoverHint"],
     "expires": "Jan 1, 2024"
@@ -1974,6 +1986,17 @@
       "external/wpt/scheduler/task-controller-setPriority1.any.js"
     ],
     "args": ["--disable-blink-features=AbortSignalComposition"],
+    "expires": "Dec 21, 2023"
+  },
+  {
+    "prefix": "abort-signal-any-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/fetch/api/abort/general.any.js",
+      "external/wpt/service-workers/cache-storage/cache-abort.https.any.js",
+      "external/wpt/service-workers/cache-storage/cache-add.https.any.js"
+    ],
+    "args": ["--disable-blink-features=AbortSignalAny"],
     "expires": "Dec 21, 2023"
   },
   {

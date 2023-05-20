@@ -21,26 +21,32 @@
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/favicon/large_icon_cache.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/ios_most_visited_sites_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -50,6 +56,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
@@ -81,14 +90,12 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 @interface ContentSuggestionsCoordinator () <
     ContentSuggestionsMenuProvider,
-    ContentSuggestionsViewControllerAudience> {
-  // Observer bridge for mediator to listen to
-  // StartSurfaceRecentTabObserverBridge.
-  std::unique_ptr<StartSurfaceRecentTabObserverBridge> _startSurfaceObserver;
-}
+    ContentSuggestionsViewControllerAudience,
+    SetUpListDefaultBrowserPromoCoordinatorDelegate,
+    SetUpListViewDelegate>
+
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
-@property(nonatomic, strong) ActionSheetCoordinator* alertCoordinator;
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
 // Authentication Service for the user's signed-in state.
 @property(nonatomic, assign) AuthenticationService* authService;
@@ -103,7 +110,18 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 @end
 
-@implementation ContentSuggestionsCoordinator
+@implementation ContentSuggestionsCoordinator {
+  // Observer bridge for mediator to listen to
+  // StartSurfaceRecentTabObserverBridge.
+  std::unique_ptr<StartSurfaceRecentTabObserverBridge> _startSurfaceObserver;
+
+  // The coordinator that displays the Default Browser Promo for the Set Up
+  // List.
+  SetUpListDefaultBrowserPromoCoordinator* _defaultBrowserPromoCoordinator;
+
+  // The coordinator used to present an action sheet for the Set Up List menu.
+  ActionSheetCoordinator* _actionSheetCoordinator;
+}
 
 - (void)start {
   DCHECK(self.browser);
@@ -115,12 +133,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   }
 
   _started = YES;
-
-  // Make sure that the omnibox is unfocused to prevent having it visually
-  // focused while the NTP is just created (with the fakebox visible).
-  id<OmniboxCommands> omniboxCommandHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
-  [omniboxCommandHandler cancelOmniboxEdit];
 
   self.authService = AuthenticationServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
@@ -153,6 +165,14 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   self.contentSuggestionsMetricsRecorder =
       [[ContentSuggestionsMetricsRecorder alloc] init];
 
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
   self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc]
            initWithLargeIconService:largeIconService
                      largeIconCache:cache
@@ -160,6 +180,8 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
                    readingListModel:readingListModel
                         prefService:prefs
       isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider
+              authenticationService:authenticationService
+                    identityManager:identityManager
                             browser:self.browser];
   self.contentSuggestionsMediator.feedDelegate = self.feedDelegate;
   self.contentSuggestionsMediator.promosManager = promosManager;
@@ -186,24 +208,27 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   self.contentSuggestionsViewController.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
+  self.contentSuggestionsViewController.setUpListViewDelegate = self;
 
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;
 }
 
 - (void)stop {
-    // Reset the observer bridge object before setting
-    // `contentSuggestionsMediator` nil.
-    if (_startSurfaceObserver) {
+  // Reset the observer bridge object before setting
+  // `contentSuggestionsMediator` nil.
+  if (_startSurfaceObserver) {
     StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
         ->RemoveObserver(_startSurfaceObserver.get());
     _startSurfaceObserver.reset();
-    }
+  }
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
   self.contentSuggestionsViewController = nil;
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
+  [_defaultBrowserPromoCoordinator stop];
+  _defaultBrowserPromoCoordinator = nil;
   _started = NO;
 }
 
@@ -336,6 +361,102 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
                                                actionProvider:actionProvider];
+}
+
+#pragma mark - SetUpListViewDelegate
+
+- (void)didSelectSetUpListItem:(SetUpListItemType)type {
+  switch (type) {
+    case SetUpListItemType::kSignInSync:
+      [self showSignIn];
+      break;
+    case SetUpListItemType::kDefaultBrowser:
+      [self showDefaultBrowserPromo];
+      break;
+    case SetUpListItemType::kAutofill:
+      [self showCredentialProviderPromo];
+      break;
+    case SetUpListItemType::kFollow:
+      // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
+      NOTREACHED();
+  }
+}
+
+- (void)showSetUpListMenuWithButton:(UIButton*)button {
+  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                           title:nil
+                         message:nil
+                            rect:button.bounds
+                            view:button];
+
+  __weak ContentSuggestionsMediator* weakMediator =
+      self.contentSuggestionsMediator;
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_SET_UP_LIST_SETTINGS_TURN_OFF)
+                action:^{
+                  [weakMediator disableSetUpList];
+                }
+                 style:UIAlertActionStyleDefault];
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_SET_UP_LIST_SETTINGS_CANCEL)
+                action:nil
+                 style:UIAlertActionStyleCancel];
+  [_actionSheetCoordinator start];
+}
+
+#pragma mark - SetUpList Helpers
+
+// Shows the Default Browser Promo.
+- (void)showDefaultBrowserPromo {
+  // Stop the coordinator if it is already running. If the user swipes to
+  // dismiss a previous instance and then clicks the item again the
+  // previous instance may not have been stopped yet due to the animation.
+  [_defaultBrowserPromoCoordinator stop];
+  _defaultBrowserPromoCoordinator =
+      [[SetUpListDefaultBrowserPromoCoordinator alloc]
+          initWithBaseViewController:[self viewController]
+                             browser:self.browser
+                         application:[UIApplication sharedApplication]];
+  _defaultBrowserPromoCoordinator.delegate = self;
+  [_defaultBrowserPromoCoordinator start];
+}
+
+// Shows the SigninSync UI with the SetUpList access point.
+- (void)showSignIn {
+  ShowSigninCommandCompletionCallback callback = ^(BOOL success) {
+    PrefService* localState = GetApplicationContext()->GetLocalState();
+    set_up_list_prefs::MarkItemComplete(localState,
+                                        SetUpListItemType::kSignInSync);
+  };
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperationSigninAndSyncWithTwoScreens
+               identity:nil
+            accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+               callback:callback];
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
+              showSignin:command
+      baseViewController:self.viewController];
+}
+
+// Shows the Credential Provider Promo using the SetUpList trigger.
+- (void)showCredentialProviderPromo {
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                      CredentialProviderPromoCommands)
+      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
+                                                 SetUpList];
+}
+
+#pragma mark - SetUpListDefaultBrowserPromoCoordinatorDelegate
+
+- (void)setUpListDefaultBrowserPromoDidFinish:(BOOL)success {
+  [_defaultBrowserPromoCoordinator stop];
+  _defaultBrowserPromoCoordinator = nil;
 }
 
 #pragma mark - Helpers

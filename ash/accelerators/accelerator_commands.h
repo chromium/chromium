@@ -69,6 +69,10 @@ ASH_EXPORT bool CanLock();
 
 ASH_EXPORT bool CanMoveActiveWindowBetweenDisplays();
 
+ASH_EXPORT bool CanGroupOrUngroupWindows();
+
+ASH_EXPORT void GroupOrUngroupWindowsInSnapGroup();
+
 ASH_EXPORT bool CanMinimizeSnapGroupWindows();
 
 ASH_EXPORT void MinimizeWindowsInSnapGroup();

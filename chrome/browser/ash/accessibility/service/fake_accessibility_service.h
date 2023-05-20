@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_SERVICE_FAKE_ACCESSIBILITY_SERVICE_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SERVICE_FAKE_ACCESSIBILITY_SERVICE_H_
 
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/tts.mojom.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -73,15 +75,19 @@ class FakeAccessibilityService
     return enabled_ATs_;
   }
 
-  // Allows tests to bind Automation multiple times, mimicking multiple
+  // Allows tests to bind APIs multiple times, mimicking multiple
   // V8 instances in the service.
   void BindAnotherAutomation();
+  void BindAnotherTts();
 
   // Calls ax::mojom::AutomationClient::Enable or ::Disable.
   void AutomationClientEnable(bool enabled);
 
-  // Whats for Automation events to come in.
+  // Waits for Automation events to come in.
   void WaitForAutomationEvents();
+
+  // Sends a request from the service for the TTS voices list.
+  void RequestTtsVoices(ax::mojom::Tts::GetVoicesCallback callback);
 
   // Getters for automation events.
   std::vector<ui::AXTreeID> tree_destroyed_events() const {
@@ -109,6 +115,8 @@ class FakeAccessibilityService
 
   mojo::ReceiverSet<ax::mojom::Automation> automation_receivers_;
   mojo::RemoteSet<ax::mojom::AutomationClient> automation_client_remotes_;
+
+  mojo::RemoteSet<ax::mojom::Tts> tts_remotes_;
 
   mojo::ReceiverSet<ax::mojom::AssistiveTechnologyController>
       at_controller_receivers_;

@@ -14,6 +14,7 @@
 #include "ash/system/audio/mic_gain_slider_view.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/hover_highlight_view.h"
+#include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
@@ -35,6 +36,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/slider.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
@@ -142,6 +144,8 @@ class UnifiedAudioDetailedViewControllerTest
   void SetUp() override {
     if (IsQsRevampEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kQsRevamp);
     }
     AshTestBase::SetUp();
 
@@ -223,6 +227,46 @@ class UnifiedAudioDetailedViewControllerTest
           audio_detailed_view_controller_->CreateView().release()));
     }
     return audio_detailed_view_.get();
+  }
+
+  void CheckSliderFocusBehavior(views::Widget* widget,
+                                bool is_input_slider,
+                                uint64_t device_id) {
+    SCOPED_TRACE(
+        base::StringPrintf("Test params: is_input_slider=%d", is_input_slider));
+
+    auto sliders_map =
+        is_input_slider ? input_sliders_map_ : output_sliders_map_;
+    EXPECT_TRUE(sliders_map.find(device_id) != sliders_map.end());
+
+    auto* unified_slider_view =
+        static_cast<UnifiedSliderView*>(sliders_map.find(device_id)->second);
+    widget->SetContentsView(unified_slider_view);
+
+    views::Slider* slider = unified_slider_view->slider();
+    IconButton* slider_button = unified_slider_view->slider_button();
+    // Only the slider is focusable.
+    EXPECT_FALSE(slider_button->IsAccessibilityFocusable());
+    EXPECT_TRUE(slider->IsAccessibilityFocusable());
+
+    slider->RequestFocus();
+    EXPECT_STREQ(slider->GetFocusManager()->GetFocusedView()->GetClassName(),
+                 "QuickSettingsSlider");
+
+    const bool is_muted =
+        is_input_slider
+            ? cras_audio_handler_->IsInputMutedForDevice(device_id)
+            : cras_audio_handler_->IsOutputMutedForDevice(device_id);
+
+    // Presses the enter key when focused on the slider will toggle mute state.
+    GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+    if (is_input_slider) {
+      EXPECT_EQ(cras_audio_handler_->IsInputMutedForDevice(device_id),
+                !is_muted);
+    } else {
+      EXPECT_EQ(cras_audio_handler_->IsOutputMutedForDevice(device_id),
+                !is_muted);
+    }
   }
 
   HoverHighlightView* live_caption_view() {
@@ -606,6 +650,37 @@ TEST_P(UnifiedAudioDetailedViewControllerTest, LiveCaptionNotAvailable) {
     EXPECT_TRUE(live_caption_view());
   }
   EXPECT_FALSE(live_caption_enabled());
+}
+
+TEST_P(UnifiedAudioDetailedViewControllerTest, SliderFocusToggleMute) {
+  // Pre-revamped slider has a different focus behavior
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  std::unique_ptr<views::View> view =
+      audio_detailed_view_controller_->CreateView();
+  auto widget = CreateFramelessTestWidget();
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList({kInternalMic, kInternalSpeaker}));
+
+  // Sets the level to make sure the slider's volume is not 0. Otherwise the
+  // slider is still muted even if it's toggled on.
+  const int gain = 80;
+  cras_audio_handler_->SetVolumeGainPercentForDevice(kInternalMicId, gain);
+  cras_audio_handler_->SetVolumeGainPercentForDevice(kInternalSpeakerId, gain);
+
+  cras_audio_handler_->SwitchToDevice(
+      AudioDevice(GenerateAudioNode(kInternalMic)), true,
+      CrasAudioHandler::ACTIVATE_BY_USER);
+  CheckSliderFocusBehavior(widget.get(), /*is_input_slider=*/true,
+                           kInternalMicId);
+
+  cras_audio_handler_->SwitchToDevice(
+      AudioDevice(GenerateAudioNode(kInternalSpeaker)), true,
+      CrasAudioHandler::ACTIVATE_BY_USER);
+  CheckSliderFocusBehavior(widget.get(), /*is_input_slider=*/false,
+                           kInternalSpeakerId);
 }
 
 class UnifiedAudioDetailedViewControllerSodaTest

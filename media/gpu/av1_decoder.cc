@@ -66,8 +66,7 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
     case AV1PROFILE_PROFILE_PRO:
       return bit_depth == 8u || bit_depth == 10u || bit_depth == 12u;
     default:
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -93,14 +92,13 @@ VideoChromaSampling GetAV1ChromaSampling(
   }
 }
 
-void PopulateColorVolumeMetadata(
-    const libgav1::ObuMetadataHdrMdcv& mdcv,
-    gfx::ColorVolumeMetadata& color_volume_metadata) {
+void PopulateColorVolumeMetadata(const libgav1::ObuMetadataHdrMdcv& mdcv,
+                                 gfx::HdrMetadataSmpteSt2086& smpte_st_2086) {
   constexpr auto kChromaDenominator = 65536.0f;
   constexpr auto kLumaMaxDenoninator = 256.0f;
   constexpr auto kLumaMinDenoninator = 16384.0f;
   // display primaries are in R/G/B order in metadata_hdr_mdcv OBU Metadata.
-  color_volume_metadata.primaries = {
+  smpte_st_2086.primaries = {
       mdcv.primary_chromaticity_x[0] / kChromaDenominator,
       mdcv.primary_chromaticity_y[0] / kChromaDenominator,
       mdcv.primary_chromaticity_x[1] / kChromaDenominator,
@@ -109,16 +107,13 @@ void PopulateColorVolumeMetadata(
       mdcv.primary_chromaticity_y[2] / kChromaDenominator,
       mdcv.white_point_chromaticity_x / kChromaDenominator,
       mdcv.white_point_chromaticity_y / kChromaDenominator};
-  color_volume_metadata.luminance_max =
-      mdcv.luminance_max / kLumaMaxDenoninator;
-  color_volume_metadata.luminance_min =
-      mdcv.luminance_min / kLumaMinDenoninator;
+  smpte_st_2086.luminance_max = mdcv.luminance_max / kLumaMaxDenoninator;
+  smpte_st_2086.luminance_min = mdcv.luminance_min / kLumaMinDenoninator;
 }
 
 void PopulateHDRMetadata(const libgav1::ObuMetadataHdrCll& cll,
                          gfx::HDRMetadata& hdr_metadata) {
-  hdr_metadata.max_content_light_level = cll.max_cll;
-  hdr_metadata.max_frame_average_light_level = cll.max_fall;
+  hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(cll.max_cll, cll.max_fall);
 }
 }  // namespace
 
@@ -418,7 +413,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       if (!hdr_metadata_)
         hdr_metadata_ = gfx::HDRMetadata();
       PopulateColorVolumeMetadata(current_frame_->hdr_mdcv(),
-                                  hdr_metadata_->color_volume_metadata);
+                                  hdr_metadata_->smpte_st_2086);
       PopulateHDRMetadata(current_frame_->hdr_cll(), hdr_metadata_.value());
     }
 

@@ -205,9 +205,6 @@ class ShelfObserverIconTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     observer_ = std::make_unique<TestShelfObserver>(GetPrimaryShelf());
-    shelf_view_test_ = std::make_unique<ShelfViewTestAPI>(
-        GetPrimaryShelf()->GetShelfViewForTesting());
-    shelf_view_test_->SetAnimationDuration(base::Milliseconds(1));
   }
 
   void TearDown() override {
@@ -217,11 +214,8 @@ class ShelfObserverIconTest : public AshTestBase {
 
   TestShelfObserver* observer() { return observer_.get(); }
 
-  ShelfViewTestAPI* shelf_view_test() { return shelf_view_test_.get(); }
-
  private:
   std::unique_ptr<TestShelfObserver> observer_;
-  std::unique_ptr<ShelfViewTestAPI> shelf_view_test_;
 };
 
 // A ShelfItemDelegate that tracks selections and reports a custom action.
@@ -275,43 +269,35 @@ class EmptyContextMenuBuilder : public ShelfItemDelegate {
 };
 
 TEST_F(ShelfObserverIconTest, AddRemove) {
+  SetShelfAnimationDuration(base::Milliseconds(1));
+
   ShelfItem item;
   item.id = ShelfID("foo");
   item.type = TYPE_APP;
   EXPECT_FALSE(observer()->icon_positions_changed());
   const int shelf_item_index = ShelfModel::Get()->Add(
       item, std::make_unique<TestShelfItemDelegate>(item.id));
-  shelf_view_test()->RunMessageLoopUntilAnimationsDone();
+  WaitForShelfAnimation();
   EXPECT_TRUE(observer()->icon_positions_changed());
   observer()->Reset();
 
   EXPECT_FALSE(observer()->icon_positions_changed());
   ShelfModel::Get()->RemoveItemAt(shelf_item_index);
-  shelf_view_test()->RunMessageLoopUntilAnimationsDone();
+  WaitForShelfAnimation();
   EXPECT_TRUE(observer()->icon_positions_changed());
   observer()->Reset();
 }
 
-// Flaky on linux-chromeos-rel: https://crbug.com/1444582
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AddRemoveWithMultipleDisplays \
-  DISABLED_AddRemoveWithMultipleDisplays
-#else
-#define MAYBE_AddRemoveWithMultipleDisplays AddRemoveWithMultipleDisplays
-#endif
 // Make sure creating/deleting an window on one displays notifies a
 // shelf on external display as well as one on primary.
-TEST_F(ShelfObserverIconTest, MAYBE_AddRemoveWithMultipleDisplays) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
+TEST_F(ShelfObserverIconTest, AddRemoveWithMultipleDisplays) {
   UpdateDisplay("500x400,500x400");
+  SetShelfAnimationDuration(base::Milliseconds(1));
+
   observer()->Reset();
 
-  Shelf* second_shelf = Shelf::ForWindow(Shell::GetAllRootWindows()[1]);
-  TestShelfObserver second_observer(second_shelf);
-  ShelfViewTestAPI second_shelf_test_api(
-      second_shelf->GetShelfViewForTesting());
+  TestShelfObserver second_observer(
+      Shelf::ForWindow(Shell::GetAllRootWindows()[1]));
 
   ShelfItem item;
   item.id = ShelfID("foo");
@@ -322,8 +308,7 @@ TEST_F(ShelfObserverIconTest, MAYBE_AddRemoveWithMultipleDisplays) {
   // Add item and wait for all animations to finish.
   const int shelf_item_index = ShelfModel::Get()->Add(
       item, std::make_unique<TestShelfItemDelegate>(item.id));
-  shelf_view_test()->RunMessageLoopUntilAnimationsDone();
-  second_shelf_test_api.RunMessageLoopUntilAnimationsDone();
+  WaitForShelfAnimation();
 
   EXPECT_TRUE(observer()->icon_positions_changed());
   EXPECT_TRUE(second_observer.icon_positions_changed());
@@ -336,8 +321,7 @@ TEST_F(ShelfObserverIconTest, MAYBE_AddRemoveWithMultipleDisplays) {
 
   // Remove the item, and wait for all the animations to complete.
   ShelfModel::Get()->RemoveItemAt(shelf_item_index);
-  shelf_view_test()->RunMessageLoopUntilAnimationsDone();
-  second_shelf_test_api.RunMessageLoopUntilAnimationsDone();
+  WaitForShelfAnimation();
 
   EXPECT_TRUE(observer()->icon_positions_changed());
   EXPECT_TRUE(second_observer.icon_positions_changed());

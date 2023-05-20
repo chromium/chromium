@@ -64,18 +64,8 @@ public class FrozenNativePage implements NativePage {
     }
 
     @Override
-    public @ColorInt int getToolbarTextBoxBackgroundColor(@ColorInt int defaultColor) {
-        return defaultColor;
-    }
-
-    @Override
     public @ColorInt int getToolbarSceneLayerBackground(@ColorInt int defaultColor) {
         return defaultColor;
-    }
-
-    @Override
-    public float getToolbarTextBoxAlpha(float defaultAlpha) {
-        return 1.f;
     }
 
     @Override

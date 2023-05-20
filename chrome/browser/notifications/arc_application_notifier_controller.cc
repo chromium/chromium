@@ -54,15 +54,14 @@ ArcApplicationNotifierController::GetNotifierList(Profile* profile) {
       if (permission->permission_type != apps::PermissionType::kNotifications) {
         continue;
       }
-      DCHECK(absl::holds_alternative<bool>(permission->value->value));
       // Do not include notifier metadata for system apps.
       if (update.InstallReason() == apps::InstallReason::kSystem) {
         return;
       }
-      notifier_dataset.push_back(NotifierDataset{
+      notifier_dataset.emplace_back(
           update.AppId() /*app_id*/, update.ShortName() /*app_name*/,
           update.PublisherId() /*publisher_id*/,
-          absl::get<bool>(permission->value->value) /*enabled*/});
+          permission->IsPermissionEnabled() /*enabled*/);
     }
   });
 

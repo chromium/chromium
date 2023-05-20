@@ -137,7 +137,7 @@ Polymer({
    * @private
    */
   onShowPasswordTap_(event) {
-    if (event.type === 'touchend') {
+    if (event.type === 'touchend' && event.cancelable) {
       // Prevent touch from producing secondary mouse events
       // that may cause the tooltip to appear unnecessarily.
       event.preventDefault();
@@ -176,7 +176,9 @@ Polymer({
     // Prevent cursor navigation keys from working when the placeholder password
     // is displayed. This prevents using the arrows or home/end keys to
     // remove or change the selection.
-    event.preventDefault();
+    if (event.cancelable) {
+      event.preventDefault();
+    }
   },
 
   /**
@@ -197,7 +199,9 @@ Polymer({
     // selection when the placeholder password is displayed.  This prevents
     // the user from modifying the placeholder, only allows it to be left alone
     // or completely removed.
-    event.preventDefault();
+    if (event.cancelable) {
+      event.preventDefault();
+    }
   },
 
 });

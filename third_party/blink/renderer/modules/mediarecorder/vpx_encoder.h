@@ -39,7 +39,8 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
  private:
   // VideoTrackRecorder::Encoder implementation.
   void EncodeFrame(scoped_refptr<media::VideoFrame> frame,
-                   base::TimeTicks capture_timestamp) override;
+                   base::TimeTicks capture_timestamp,
+                   bool request_keyframe) override;
   bool CanEncodeAlphaChannel() const override;
 
   [[nodiscard]] bool ConfigureEncoder(const gfx::Size& size,

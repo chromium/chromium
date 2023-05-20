@@ -7,6 +7,7 @@
 #import <AppKit/AppKit.h>
 
 #include "base/mac/mac_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/platform_font_mac.h"
 
 namespace {
@@ -18,7 +19,6 @@ void InitMaterialMenuConfig(views::MenuConfig* config) {
   config->submenu_horizontal_inset = 0;
   config->minimum_text_item_height = 28;
   config->minimum_container_item_height = 40;
-  config->minimum_menu_width = 320;
   config->label_to_arrow_padding = 0;
   config->arrow_to_edge_padding = 16;
   config->check_width = 16;
@@ -36,6 +36,7 @@ void InitMaterialMenuConfig(views::MenuConfig* config) {
   config->auxiliary_corner_radius = 4;
   config->item_top_margin = 4;
   config->item_bottom_margin = 4;
+  config->item_horizontal_border_padding = 0;
 }
 
 }  // namespace
@@ -50,7 +51,9 @@ void MenuConfig::Init() {
   use_mnemonics = false;
   show_context_menu_accelerators = false;
   all_menus_use_prefix_selection = true;
-  InitMaterialMenuConfig(this);
+  if (!features::IsChromeRefresh2023()) {
+    InitMaterialMenuConfig(this);
+  }
 }
 
 }  // namespace views

@@ -58,6 +58,7 @@ namespace android_webview {
 // profile). Since there is only one pref service for a given browser context,
 // we cannot enable this feature via UserPrefs. Rather, we always keep the
 // feature enabled at the pref service, and control it via the delegates.
+// Lifetime: WebView
 class AwAutofillClient : public autofill::ContentAutofillClient {
  public:
   static AwAutofillClient* FromWebContents(content::WebContents* web_contents) {

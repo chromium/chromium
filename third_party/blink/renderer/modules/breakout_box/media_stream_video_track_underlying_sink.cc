@@ -84,8 +84,8 @@ ScriptPromise MediaStreamVideoTrackUnderlyingSink::write(
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VideoFrame* video_frame = V8VideoFrame::ToImplWithTypeCheck(
-      script_state->GetIsolate(), chunk.V8Value());
+  VideoFrame* video_frame =
+      V8VideoFrame::ToWrappable(script_state->GetIsolate(), chunk.V8Value());
   if (!video_frame) {
     exception_state.ThrowTypeError("Null video frame.");
     return ScriptPromise();

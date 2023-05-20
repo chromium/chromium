@@ -19,7 +19,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -33,9 +32,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -110,7 +108,7 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
     DownloadCoreService* service =
         DownloadCoreServiceFactory::GetForBrowserContext(profile);
     service->CancelDownloads();
-    DCHECK_EQ(0, service->NonMaliciousDownloadCount());
+    DCHECK_EQ(0, service->BlockingShutdownCount());
 
     // Take a ScopedProfileKeepAlive for the the deletion process to avoid the
     // profile from being randomly unloaded.
@@ -352,16 +350,6 @@ void DeleteProfileHelper::OnLoadProfileForProfileDeletion(
           SyncServiceFactory::GetForProfile(profile);
       // Ensure data is cleared even if sync was already off.
       sync_service->StopAndClear();
-    }
-
-    // Some platforms store passwords in keychains. They should be removed.
-    scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-        PasswordStoreFactory::GetForProfile(profile,
-                                            ServiceAccessType::EXPLICIT_ACCESS)
-            .get();
-    if (password_store.get()) {
-      password_store->RemoveLoginsCreatedBetween(base::Time(),
-                                                 base::Time::Max());
     }
 
     // The Profile Data doesn't get wiped until Chrome closes. Since we promised

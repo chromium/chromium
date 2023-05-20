@@ -39,11 +39,12 @@ class AssistiveTechnologyControllerImpl
           accessibility_client_remote);
 
   // Called by AutomationInternalBindings owned by a V8 instance
-  // to request binding of Automation and AutomationClient in the OS.
+  // to request binding of mojo interfaces in the OS.
   // mojom::AccessibilityServiceClient:
   void BindAutomation(mojo::PendingRemote<mojom::Automation> automation,
                       mojo::PendingReceiver<mojom::AutomationClient>
                           automation_client) override;
+  void BindTts(mojo::PendingReceiver<mojom::Tts> tts_receiver) override;
 
   // mojom::AssistiveTechnologyController:
   void EnableAssistiveTechnology(

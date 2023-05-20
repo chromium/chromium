@@ -109,21 +109,35 @@ export class PowerBookmarkRowElement extends PolymerElement {
     this.addEventListener('focus', this.onFocus_);
   }
 
+  override focus() {
+    this.$.crUrlListItem.focus();
+  }
+
   private onKeydown_(e: KeyboardEvent) {
-    if (e.shiftKey && e.key === 'Tab' &&
-        this.shadowRoot!.activeElement === this.$.crUrlListItem) {
+    if (this.shadowRoot!.activeElement !== this.$.crUrlListItem) {
+      return;
+    }
+    if (e.shiftKey && e.key === 'Tab') {
       // Hitting shift tab from CrUrlListItem to traverse focus backwards will
       // attempt to move focus to this element, which is responsible for
       // delegating focus but should itself not be focusable. So when the user
       // hits shift tab, immediately hijack focus onto itself so that the
       // browser moves focus to the focusable element before it once it
       // processes the shift tab.
-      this.focus();
+      super.focus();
+    } else if (e.key === 'Enter') {
+      // Prevent iron-list from moving focus.
+      e.stopPropagation();
     }
   }
 
-  private onFocus_() {
-    this.$.crUrlListItem.focus();
+  private onFocus_(e: FocusEvent) {
+    if (e.composedPath()[0] === this) {
+      // If trying to directly focus on this row, move the focus to the
+      // <cr-url-list-item>. Otherwise, UI might be trying to directly focus on
+      // a specific child (eg. the input).
+      this.$.crUrlListItem.focus();
+    }
   }
 
   private getItemSize_() {
@@ -151,18 +165,27 @@ export class PowerBookmarkRowElement extends PolymerElement {
   private onRowClicked_(event: MouseEvent) {
     // Ignore clicks on the row when it has an input, to ensure the row doesn't
     // eat input clicks.
-    if (!this.hasInput) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.dispatchEvent(new CustomEvent('row-clicked', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          bookmark: this.bookmark,
-          event: event,
-        },
-      }));
+    if (this.hasInput) {
+      return;
     }
+    event.preventDefault();
+    event.stopPropagation();
+    if (this.hasCheckbox) {
+      // Clicking the row should trigger a checkbox click rather than a
+      // standard row click.
+      const checkbox =
+          this.shadowRoot!.querySelector<CrCheckboxElement>('#checkbox')!;
+      checkbox.checked = !checkbox.checked;
+      return;
+    }
+    this.dispatchEvent(new CustomEvent('row-clicked', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        event: event,
+      },
+    }));
   }
 
   /**

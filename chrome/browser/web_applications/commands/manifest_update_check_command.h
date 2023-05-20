@@ -149,7 +149,7 @@ class ManifestUpdateCheckCommand : public WebAppCommandTemplate<AppLock> {
 
   // Temporary variables stored here while the update check progresses
   // asynchronously.
-  WebAppInstallInfo new_install_info_;
+  std::unique_ptr<WebAppInstallInfo> new_install_info_;
   IconBitmaps existing_app_icon_bitmaps_;
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
   ManifestDataChanges manifest_data_changes_;

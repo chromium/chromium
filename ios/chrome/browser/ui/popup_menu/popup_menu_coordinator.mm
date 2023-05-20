@@ -225,13 +225,14 @@ enum class IOSOverflowMenuActionType {
       UIContentSizeCategory contentSizeCategory =
           self.baseViewController.traitCollection.preferredContentSizeCategory;
 
+      self.overflowMenuMediator.isIncognito =
+          self.browser->GetBrowserState()->IsOffTheRecord();
       self.overflowMenuMediator.visibleDestinationsCount =
           [OverflowMenuUIConfiguration
               numDestinationsVisibleWithoutHorizontalScrollingForScreenWidth:
                   screenWidth
                                                       forContentSizeCategory:
                                                           contentSizeCategory];
-
       self.overflowMenuMediator.dispatcher =
           static_cast<id<ActivityServiceCommands, ApplicationCommands,
                          BrowserCoordinatorCommands, FindInPageCommands,
@@ -247,8 +248,6 @@ enum class IOSOverflowMenuActionType {
       self.overflowMenuMediator.navigationAgent =
           WebNavigationBrowserAgent::FromBrowser(self.browser);
       self.overflowMenuMediator.baseViewController = self.baseViewController;
-      self.overflowMenuMediator.isIncognito =
-          self.browser->GetBrowserState()->IsOffTheRecord();
       self.overflowMenuMediator.bookmarkModel =
           ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
               self.browser->GetBrowserState());

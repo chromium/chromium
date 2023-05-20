@@ -10,6 +10,13 @@ enum NavigationType {
     "back_forward",
     "prerender"
 };
+
+enum NavigationEntropy {
+    "high",
+    "normal",
+    ""
+};
+
 [
     Exposed=Window
 ]  interface PerformanceNavigationTiming : PerformanceResourceTiming {
@@ -24,5 +31,7 @@ enum NavigationType {
     readonly attribute NavigationType      type;
     readonly attribute unsigned short      redirectCount;
     [RuntimeEnabled=BackForwardCacheNotRestoredReasons, CallWith=ScriptState] readonly attribute object? notRestoredReasons;
+    [RuntimeEnabled=PerformanceNavigateSystemEntropy] readonly attribute NavigationEntropy systemEntropy;
+    [RuntimeEnabled=CriticalCHRestartNavigationTiming, CallWith=ScriptState] readonly attribute DOMHighResTimeStamp criticalCHRestart;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

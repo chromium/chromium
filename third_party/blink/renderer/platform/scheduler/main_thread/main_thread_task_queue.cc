@@ -136,7 +136,8 @@ MainThreadTaskQueue::MainThreadTaskQueue(
             web_scheduling_queue_type_.has_value());
   DCHECK_EQ(web_scheduling_priority_.has_value(),
             queue_type_ == QueueType::kWebScheduling);
-  if (task_queue_->HasImpl() && spec.should_notify_observers) {
+  CHECK(task_queue_->HasImpl());
+  if (spec.should_notify_observers) {
     if (params.queue_traits.can_be_throttled) {
       throttler_.emplace(task_queue_.get(),
                          main_thread_scheduler_->GetTickClock());
@@ -161,8 +162,9 @@ MainThreadTaskQueue::~MainThreadTaskQueue() {
 void MainThreadTaskQueue::OnTaskStarted(
     const base::sequence_manager::Task& task,
     const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  if (main_thread_scheduler_)
+  if (main_thread_scheduler_) {
     main_thread_scheduler_->OnTaskStarted(this, task, task_timing);
+  }
 }
 
 void MainThreadTaskQueue::OnTaskCompleted(
@@ -199,24 +201,28 @@ void MainThreadTaskQueue::OnTaskRunTimeReported(
   }
 }
 
-void MainThreadTaskQueue::DetachFromMainThreadScheduler() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-
-  // Frame has already been detached.
-  if (!main_thread_scheduler_)
+void MainThreadTaskQueue::DetachTaskQueue() {
+  // The task queue was already shut down, which happens in tests if the
+  // `agent_group_scheduler_` is GCed after the task queue impl is unregistered.
+  // TODO(crbug.com/1143007): AgentGroupSchedulerImpl should probably not be
+  // detaching shut down task queues.
+  if (!task_queue_->HasImpl()) {
     return;
+  }
+  // `main_thread_scheduler_` can be null in tests.
+  if (!main_thread_scheduler_) {
+    return;
+  }
 
-  task_queue_->SetOnTaskStartedHandler(
-      base::BindRepeating(&MainThreadSchedulerImpl::OnTaskStarted,
-                          main_thread_scheduler_->GetWeakPtr(), nullptr));
-  task_queue_->SetOnTaskCompletedHandler(
-      base::BindRepeating(&MainThreadSchedulerImpl::OnTaskCompleted,
-                          main_thread_scheduler_->GetWeakPtr(), nullptr));
+  task_queue_->ResetThrottler();
+  throttler_.reset();
+
+  // Detach from the underlying scheduler and transfer control to the main
+  // thread scheduler.
+  agent_group_scheduler_ = nullptr;
+  frame_scheduler_ = nullptr;
   on_ipc_task_posted_callback_handle_.reset();
-  task_queue_->SetTaskExecutionTraceLogger(
-      internal::TaskQueueImpl::TaskExecutionTraceLogger());
-
-  ClearReferencesToSchedulers();
+  main_thread_scheduler_->OnDetachTaskQueue(*this);
 }
 
 void MainThreadTaskQueue::SetOnIPCTaskPosted(
@@ -233,7 +239,12 @@ void MainThreadTaskQueue::DetachOnIPCTaskPostedWhileInBackForwardCache() {
 }
 
 void MainThreadTaskQueue::ShutdownTaskQueue() {
-  ClearReferencesToSchedulers();
+  if (main_thread_scheduler_) {
+    main_thread_scheduler_->OnShutdownTaskQueue(this);
+  }
+  main_thread_scheduler_ = nullptr;
+  agent_group_scheduler_ = nullptr;
+  frame_scheduler_ = nullptr;
   throttler_.reset();
   task_queue_->ShutdownTaskQueue();
 }
@@ -253,15 +264,6 @@ AgentGroupScheduler* MainThreadTaskQueue::GetAgentGroupScheduler() {
   return nullptr;
 }
 
-void MainThreadTaskQueue::ClearReferencesToSchedulers() {
-  if (main_thread_scheduler_) {
-    main_thread_scheduler_->OnShutdownTaskQueue(this);
-  }
-  main_thread_scheduler_ = nullptr;
-  agent_group_scheduler_ = nullptr;
-  frame_scheduler_ = nullptr;
-}
-
 FrameSchedulerImpl* MainThreadTaskQueue::GetFrameScheduler() const {
   DCHECK(task_queue_->task_runner()->BelongsToCurrentThread());
   return frame_scheduler_;
@@ -274,14 +276,19 @@ void MainThreadTaskQueue::SetFrameSchedulerForTest(
 
 void MainThreadTaskQueue::SetWebSchedulingPriority(
     WebSchedulingPriority priority) {
-  if (web_scheduling_priority_ == priority)
+  if (web_scheduling_priority_ == priority) {
     return;
+  }
   web_scheduling_priority_ = priority;
-  frame_scheduler_->OnWebSchedulingTaskQueuePriorityChanged(this);
+  if (frame_scheduler_) {
+    frame_scheduler_->OnWebSchedulingTaskQueuePriorityChanged(this);
+  }
 }
 
 void MainThreadTaskQueue::OnWebSchedulingTaskQueueDestroyed() {
-  frame_scheduler_->OnWebSchedulingTaskQueueDestroyed(this);
+  if (frame_scheduler_) {
+    frame_scheduler_->OnWebSchedulingTaskQueueDestroyed(this);
+  }
 }
 
 bool MainThreadTaskQueue::IsThrottled() const {
@@ -295,7 +302,7 @@ bool MainThreadTaskQueue::IsThrottled() const {
 
 MainThreadTaskQueue::ThrottleHandle MainThreadTaskQueue::Throttle() {
   DCHECK(CanBeThrottled());
-  return ThrottleHandle(AsWeakPtr());
+  return ThrottleHandle(*this);
 }
 
 void MainThreadTaskQueue::AddToBudgetPool(base::TimeTicks now,

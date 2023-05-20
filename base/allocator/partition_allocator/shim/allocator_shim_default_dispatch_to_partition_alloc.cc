@@ -157,15 +157,17 @@ class MainPartitionConstructor {
         // and only one is supported at a time.
         partition_alloc::PartitionOptions::ThreadCache::kDisabled;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    auto* new_root = new (buffer) partition_alloc::ThreadSafePartitionRoot({
-        partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
-        thread_cache,
-        partition_alloc::PartitionOptions::Quarantine::kAllowed,
-        partition_alloc::PartitionOptions::Cookie::kAllowed,
-        partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-        partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
-        partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-    });
+    auto* new_root = new (buffer) partition_alloc::ThreadSafePartitionRoot(
+        partition_alloc::PartitionOptions{
+            .aligned_alloc =
+                partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
+            .thread_cache = thread_cache,
+            .quarantine =
+                partition_alloc::PartitionOptions::Quarantine::kAllowed,
+            .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
+            .backup_ref_ptr =
+                partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+        });
 
     return new_root;
   }
@@ -546,10 +548,10 @@ void EnablePartitionAllocMemoryReclaimer() {
 
 void ConfigurePartitions(
     EnableBrp enable_brp,
-    EnableBrpZapping enable_brp_zapping,
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
+    size_t ref_count_size,
     AlternateBucketDistribution use_alternate_bucket_distribution) {
   // BRP cannot be enabled without splitting the main partition. Furthermore, in
   // the "before allocation" mode, it can't be enabled without further splitting
@@ -595,21 +597,22 @@ void ConfigurePartitions(
   // shouldn't bite us here. Mentioning just in case we move this code earlier.
   static partition_alloc::internal::base::NoDestructor<
       partition_alloc::ThreadSafePartitionRoot>
-      new_main_partition(partition_alloc::PartitionOptions(
-          !use_dedicated_aligned_partition
-              ? partition_alloc::PartitionOptions::AlignedAlloc::kAllowed
-              : partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
-          partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-          partition_alloc::PartitionOptions::Quarantine::kAllowed,
-          partition_alloc::PartitionOptions::Cookie::kAllowed,
-          enable_brp
-              ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
-              : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-          enable_brp_zapping
-              ? partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled
-              : partition_alloc::PartitionOptions::BackupRefPtrZapping::
-                    kDisabled,
-          partition_alloc::PartitionOptions::UseConfigurablePool::kNo));
+      new_main_partition(partition_alloc::PartitionOptions{
+          .aligned_alloc =
+              !use_dedicated_aligned_partition
+                  ? partition_alloc::PartitionOptions::AlignedAlloc::kAllowed
+                  : partition_alloc::PartitionOptions::AlignedAlloc::
+                        kDisallowed,
+          .thread_cache =
+              partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+          .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
+          .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
+          .backup_ref_ptr =
+              enable_brp
+                  ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
+                  : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+          .ref_count_size = ref_count_size,
+      });
   partition_alloc::ThreadSafePartitionRoot* new_root = new_main_partition.get();
 
   partition_alloc::ThreadSafePartitionRoot* new_aligned_root;
@@ -619,13 +622,15 @@ void ConfigurePartitions(
     static partition_alloc::internal::base::NoDestructor<
         partition_alloc::ThreadSafePartitionRoot>
         new_aligned_partition(partition_alloc::PartitionOptions{
-            partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
-            partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-            partition_alloc::PartitionOptions::Quarantine::kAllowed,
-            partition_alloc::PartitionOptions::Cookie::kAllowed,
-            partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-            partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
-            partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+            .aligned_alloc =
+                partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
+            .thread_cache =
+                partition_alloc::PartitionOptions::ThreadCache::kDisabled,
+            .quarantine =
+                partition_alloc::PartitionOptions::Quarantine::kAllowed,
+            .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
+            .backup_ref_ptr =
+                partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
         });
     new_aligned_root = new_aligned_partition.get();
   } else {

@@ -25,6 +25,7 @@ class PrivacyHubNotificationController;
 class PrivacyIndicatorsController;
 class ScreenSecurityController;
 class SessionLimitNotificationController;
+class SessionStateNotificationBlockerTest;
 class TracingNotificationController;
 class UpdateNotificationController;
 class WifiToggleNotificationController;
@@ -54,6 +55,7 @@ class SystemNotificationController {
   friend class ManagedSimLockNotifier;
   friend class PowerSoundsControllerTest;
   friend class PrivacyHubNotificationControllerTest;
+  friend class SessionStateNotificationBlockerTest;
   friend class UpdateNotificationControllerTest;
   const std::unique_ptr<AutoConnectNotifier> auto_connect_;
   const std::unique_ptr<CapsLockNotificationController> caps_lock_;

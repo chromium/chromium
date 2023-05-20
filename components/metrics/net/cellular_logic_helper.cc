@@ -4,9 +4,11 @@
 
 #include "components/metrics/net/cellular_logic_helper.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/metrics_features.h"
 #include "net/base/network_change_notifier.h"
 
 namespace metrics {
@@ -19,6 +21,14 @@ const int kStandardUploadIntervalSeconds = 5 * 60;  // Five minutes.
 const int kStandardUploadIntervalSeconds = 30 * 60;  // Thirty minutes.
 #endif
 
+// This parameter is intended to be used for Structured metrics, which is
+// currently only enabled on Chrome OS.
+//
+// This parameter should not be used for cellular devices.
+constexpr base::FeatureParam<int> kUmaUploadCadence{
+    &features::kStructuredMetrics, "uma_upload_cadence",
+    kStandardUploadIntervalSeconds};
+
 // Android-only cellular settings.
 #if BUILDFLAG(IS_ANDROID)
 const int kStandardUploadIntervalCellularSeconds = 15 * 60;  // Fifteen minutes.
@@ -28,10 +38,11 @@ const int kStandardUploadIntervalCellularSeconds = 15 * 60;  // Fifteen minutes.
 
 base::TimeDelta GetUploadInterval(bool use_cellular_upload_interval) {
 #if BUILDFLAG(IS_ANDROID)
-  if (use_cellular_upload_interval)
+  if (use_cellular_upload_interval) {
     return base::Seconds(kStandardUploadIntervalCellularSeconds);
+  }
 #endif
-  return base::Seconds(kStandardUploadIntervalSeconds);
+  return base::Seconds(kUmaUploadCadence.Get());
 }
 
 bool ShouldUseCellularUploadInterval() {

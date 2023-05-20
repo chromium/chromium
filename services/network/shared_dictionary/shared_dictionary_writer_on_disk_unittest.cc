@@ -165,13 +165,13 @@ void SharedDictionaryWriterOnDiskTest::RunSimpleWriteTest(
         return net::ERR_IO_PENDING;
       });
 
-  absl::optional<std::string> cache_key;
+  base::UnguessableToken cache_key_token = base::UnguessableToken::Create();
   disk_cache::EntryResultCallback create_entry_callback;
 
   EXPECT_CALL(*disk_cache->backend(), CreateEntry)
       .WillOnce([&](const std::string& key, net::RequestPriority priority,
                     disk_cache::EntryResultCallback callback) {
-        cache_key = key;
+        EXPECT_EQ(cache_key_token.ToString(), key);
         if (sync_create_entry) {
           return disk_cache::EntryResult::MakeCreated(entry.release());
         }
@@ -181,14 +181,13 @@ void SharedDictionaryWriterOnDiskTest::RunSimpleWriteTest(
   bool finish_callback_called = false;
   scoped_refptr<SharedDictionaryWriterOnDisk> writer =
       base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          cache_key_token,
           base::BindLambdaForTesting(
               [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-                  const net::SHA256HashValue& hash,
-                  const base::UnguessableToken& cache_key_token) {
+                  const net::SHA256HashValue& hash) {
                 EXPECT_EQ(SharedDictionaryWriterOnDisk::Result::kSuccess,
                           result);
                 EXPECT_EQ(kTestData.size(), size);
-                EXPECT_EQ(*cache_key, cache_key_token.ToString());
                 EXPECT_EQ(GetHash(kTestData), hash);
                 finish_callback_called = true;
               }),
@@ -242,18 +241,19 @@ void SharedDictionaryWriterOnDiskTest::RunCreateBackendFailureTest(
   disk_cache->Initialize();
 
   bool finish_callback_called = false;
-  scoped_refptr<SharedDictionaryWriterOnDisk> writer = base::MakeRefCounted<
-      SharedDictionaryWriterOnDisk>(
-      base::BindLambdaForTesting(
-          [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-              const net::SHA256HashValue& hash,
-              const base::UnguessableToken& cache_key_token) {
+  scoped_refptr<SharedDictionaryWriterOnDisk> writer =
+      base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          base::UnguessableToken::Create(),
+          base::BindLambdaForTesting([&](SharedDictionaryWriterOnDisk::Result
+                                             result,
+                                         size_t size,
+                                         const net::SHA256HashValue& hash) {
             EXPECT_EQ(
                 SharedDictionaryWriterOnDisk::Result::kErrorCreateEntryFailed,
                 result);
             finish_callback_called = true;
           }),
-      disk_cache->GetWeakPtr());
+          disk_cache->GetWeakPtr());
 
   writer->Initialize();
   writer->Append(kTestData.c_str(), kTestData.size());
@@ -296,18 +296,19 @@ void SharedDictionaryWriterOnDiskTest::RunCreateEntryFailureTest(
       });
 
   bool finish_callback_called = false;
-  scoped_refptr<SharedDictionaryWriterOnDisk> writer = base::MakeRefCounted<
-      SharedDictionaryWriterOnDisk>(
-      base::BindLambdaForTesting(
-          [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-              const net::SHA256HashValue& hash,
-              const base::UnguessableToken& cache_key_token) {
+  scoped_refptr<SharedDictionaryWriterOnDisk> writer =
+      base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          base::UnguessableToken::Create(),
+          base::BindLambdaForTesting([&](SharedDictionaryWriterOnDisk::Result
+                                             result,
+                                         size_t size,
+                                         const net::SHA256HashValue& hash) {
             EXPECT_EQ(
                 SharedDictionaryWriterOnDisk::Result::kErrorCreateEntryFailed,
                 result);
             finish_callback_called = true;
           }),
-      disk_cache->GetWeakPtr());
+          disk_cache->GetWeakPtr());
 
   writer->Initialize();
   writer->Append(kTestData.c_str(), kTestData.size());
@@ -383,10 +384,10 @@ void SharedDictionaryWriterOnDiskTest::RunWriteDataFailureTest(
   bool finish_callback_called = false;
   scoped_refptr<SharedDictionaryWriterOnDisk> writer =
       base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          base::UnguessableToken::Create(),
           base::BindLambdaForTesting(
               [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-                  const net::SHA256HashValue& hash,
-                  const base::UnguessableToken& cache_key_token) {
+                  const net::SHA256HashValue& hash) {
                 EXPECT_EQ(
                     SharedDictionaryWriterOnDisk::Result::kErrorWriteDataFailed,
                     result);
@@ -471,12 +472,12 @@ TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWrite) {
         return net::ERR_IO_PENDING;
       });
 
-  absl::optional<std::string> cache_key;
+  base::UnguessableToken cache_key_token = base::UnguessableToken::Create();
   disk_cache::EntryResultCallback create_entry_callback;
   EXPECT_CALL(*disk_cache->backend(), CreateEntry)
       .WillOnce([&](const std::string& key, net::RequestPriority priority,
                     disk_cache::EntryResultCallback callback) {
-        cache_key = key;
+        EXPECT_EQ(cache_key_token.ToString(), key);
         create_entry_callback = std::move(callback);
         return disk_cache::EntryResult::MakeError(net::ERR_IO_PENDING);
       });
@@ -484,14 +485,13 @@ TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWrite) {
   bool finish_callback_called = false;
   scoped_refptr<SharedDictionaryWriterOnDisk> writer =
       base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          cache_key_token,
           base::BindLambdaForTesting(
               [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-                  const net::SHA256HashValue& hash,
-                  const base::UnguessableToken& cache_key_token) {
+                  const net::SHA256HashValue& hash) {
                 EXPECT_EQ(SharedDictionaryWriterOnDisk::Result::kSuccess,
                           result);
                 EXPECT_EQ(kTestData1.size() + kTestData2.size(), size);
-                EXPECT_EQ(*cache_key, cache_key_token.ToString());
                 EXPECT_EQ(GetHash(kTestData1 + kTestData2), hash);
                 finish_callback_called = true;
               }),
@@ -546,12 +546,12 @@ TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWriteSyncWrite) {
         return base::checked_cast<int>(kTestData2.size());
       });
 
-  absl::optional<std::string> cache_key;
+  base::UnguessableToken cache_key_token = base::UnguessableToken::Create();
   disk_cache::EntryResultCallback create_entry_callback;
   EXPECT_CALL(*disk_cache->backend(), CreateEntry)
       .WillOnce([&](const std::string& key, net::RequestPriority priority,
                     disk_cache::EntryResultCallback callback) {
-        cache_key = key;
+        EXPECT_EQ(cache_key_token.ToString(), key);
         create_entry_callback = std::move(callback);
         return disk_cache::EntryResult::MakeError(net::ERR_IO_PENDING);
       });
@@ -559,14 +559,13 @@ TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWriteSyncWrite) {
   bool finish_callback_called = false;
   scoped_refptr<SharedDictionaryWriterOnDisk> writer =
       base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          cache_key_token,
           base::BindLambdaForTesting(
               [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-                  const net::SHA256HashValue& hash,
-                  const base::UnguessableToken& cache_key_token) {
+                  const net::SHA256HashValue& hash) {
                 EXPECT_EQ(SharedDictionaryWriterOnDisk::Result::kSuccess,
                           result);
                 EXPECT_EQ(kTestData1.size() + kTestData2.size(), size);
-                EXPECT_EQ(*cache_key, cache_key_token.ToString());
                 EXPECT_EQ(GetHash(kTestData1 + kTestData2), hash);
                 finish_callback_called = true;
               }),
@@ -634,10 +633,10 @@ TEST_F(SharedDictionaryWriterOnDiskTest, AsyncWriteFailureOnMultipleWrites) {
   bool finish_callback_called = false;
   scoped_refptr<SharedDictionaryWriterOnDisk> writer =
       base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          base::UnguessableToken::Create(),
           base::BindLambdaForTesting(
               [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-                  const net::SHA256HashValue& hash,
-                  const base::UnguessableToken& cache_key_token) {
+                  const net::SHA256HashValue& hash) {
                 EXPECT_EQ(
                     SharedDictionaryWriterOnDisk::Result::kErrorWriteDataFailed,
                     result);
@@ -697,10 +696,10 @@ TEST_F(SharedDictionaryWriterOnDiskTest, SyncWriteFailureOnMultipleWrites) {
   bool finish_callback_called = false;
   scoped_refptr<SharedDictionaryWriterOnDisk> writer =
       base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          base::UnguessableToken::Create(),
           base::BindLambdaForTesting(
               [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-                  const net::SHA256HashValue& hash,
-                  const base::UnguessableToken& cache_key_token) {
+                  const net::SHA256HashValue& hash) {
                 EXPECT_EQ(
                     SharedDictionaryWriterOnDisk::Result::kErrorWriteDataFailed,
                     result);
@@ -743,10 +742,10 @@ TEST_F(SharedDictionaryWriterOnDiskTest, AbortedWithoutWrite) {
   bool finish_callback_called = false;
   scoped_refptr<SharedDictionaryWriterOnDisk> writer =
       base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          base::UnguessableToken::Create(),
           base::BindLambdaForTesting(
               [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-                  const net::SHA256HashValue& hash,
-                  const base::UnguessableToken& cache_key_token) {
+                  const net::SHA256HashValue& hash) {
                 EXPECT_EQ(SharedDictionaryWriterOnDisk::Result::kErrorAborted,
                           result);
                 finish_callback_called = true;
@@ -795,10 +794,10 @@ TEST_F(SharedDictionaryWriterOnDiskTest, AbortedAfterWrite) {
   bool finish_callback_called = false;
   scoped_refptr<SharedDictionaryWriterOnDisk> writer =
       base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          base::UnguessableToken::Create(),
           base::BindLambdaForTesting(
               [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-                  const net::SHA256HashValue& hash,
-                  const base::UnguessableToken& cache_key_token) {
+                  const net::SHA256HashValue& hash) {
                 EXPECT_EQ(SharedDictionaryWriterOnDisk::Result::kErrorAborted,
                           result);
                 finish_callback_called = true;
@@ -840,10 +839,10 @@ TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeZero) {
   bool finish_callback_called = false;
   scoped_refptr<SharedDictionaryWriterOnDisk> writer =
       base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          base::UnguessableToken::Create(),
           base::BindLambdaForTesting(
               [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-                  const net::SHA256HashValue& hash,
-                  const base::UnguessableToken& cache_key_token) {
+                  const net::SHA256HashValue& hash) {
                 EXPECT_EQ(SharedDictionaryWriterOnDisk::Result::kErrorSizeZero,
                           result);
                 finish_callback_called = true;
@@ -873,29 +872,30 @@ TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitBeforeOnEntry) {
   std::unique_ptr<disk_cache::EntryMock> entry =
       std::make_unique<disk_cache::EntryMock>();
 
-  absl::optional<std::string> cache_key;
+  base::UnguessableToken cache_key_token = base::UnguessableToken::Create();
   disk_cache::EntryResultCallback create_entry_callback;
   EXPECT_CALL(*disk_cache->backend(), CreateEntry)
       .WillOnce([&](const std::string& key, net::RequestPriority priority,
                     disk_cache::EntryResultCallback callback) {
-        cache_key = key;
+        EXPECT_EQ(cache_key_token.ToString(), key);
         create_entry_callback = std::move(callback);
         return disk_cache::EntryResult::MakeError(net::ERR_IO_PENDING);
       });
 
   bool finish_callback_called = false;
-  scoped_refptr<SharedDictionaryWriterOnDisk> writer = base::MakeRefCounted<
-      SharedDictionaryWriterOnDisk>(
-      base::BindLambdaForTesting(
-          [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-              const net::SHA256HashValue& hash,
-              const base::UnguessableToken& cache_key_token) {
+  scoped_refptr<SharedDictionaryWriterOnDisk> writer =
+      base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          cache_key_token,
+          base::BindLambdaForTesting([&](SharedDictionaryWriterOnDisk::Result
+                                             result,
+                                         size_t size,
+                                         const net::SHA256HashValue& hash) {
             EXPECT_EQ(
                 SharedDictionaryWriterOnDisk::Result::kErrorSizeExceedsLimit,
                 result);
             finish_callback_called = true;
           }),
-      disk_cache->GetWeakPtr());
+          disk_cache->GetWeakPtr());
   writer->Initialize();
   writer->Append(kTestData1.c_str(), kTestData1.size());
   EXPECT_FALSE(finish_callback_called);
@@ -940,29 +940,30 @@ TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitAfterOnEntry) {
   bool entry_doom_called = false;
   EXPECT_CALL(*entry, Doom).WillOnce([&]() { entry_doom_called = true; });
 
-  absl::optional<std::string> cache_key;
+  base::UnguessableToken cache_key_token = base::UnguessableToken::Create();
   disk_cache::EntryResultCallback create_entry_callback;
   EXPECT_CALL(*disk_cache->backend(), CreateEntry)
       .WillOnce([&](const std::string& key, net::RequestPriority priority,
                     disk_cache::EntryResultCallback callback) {
-        cache_key = key;
+        EXPECT_EQ(cache_key_token.ToString(), key);
         create_entry_callback = std::move(callback);
         return disk_cache::EntryResult::MakeError(net::ERR_IO_PENDING);
       });
 
   bool finish_callback_called = false;
-  scoped_refptr<SharedDictionaryWriterOnDisk> writer = base::MakeRefCounted<
-      SharedDictionaryWriterOnDisk>(
-      base::BindLambdaForTesting(
-          [&](SharedDictionaryWriterOnDisk::Result result, size_t size,
-              const net::SHA256HashValue& hash,
-              const base::UnguessableToken& cache_key_token) {
+  scoped_refptr<SharedDictionaryWriterOnDisk> writer =
+      base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+          cache_key_token,
+          base::BindLambdaForTesting([&](SharedDictionaryWriterOnDisk::Result
+                                             result,
+                                         size_t size,
+                                         const net::SHA256HashValue& hash) {
             EXPECT_EQ(
                 SharedDictionaryWriterOnDisk::Result::kErrorSizeExceedsLimit,
                 result);
             finish_callback_called = true;
           }),
-      disk_cache->GetWeakPtr());
+          disk_cache->GetWeakPtr());
   writer->Initialize();
 
   disk_cache->RunCreateCacheBackendCallback();

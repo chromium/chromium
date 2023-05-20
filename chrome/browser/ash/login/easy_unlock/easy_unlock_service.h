@@ -23,6 +23,7 @@
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 class Profile;
@@ -202,6 +203,10 @@ class EasyUnlockService
 
   // Exposes the profile to which the service is attached to subclasses.
   Profile* profile() const { return profile_; }
+
+  void RecordAuthResult(
+      absl::optional<SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>
+          failure_reason);
 
   // Resets the Smart Lock state set by this service.
   void ResetSmartLockState();

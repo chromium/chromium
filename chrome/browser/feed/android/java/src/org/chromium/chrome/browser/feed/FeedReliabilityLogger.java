@@ -10,9 +10,9 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
-import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger;
-import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger.ClosedReason;
+import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 
@@ -32,11 +32,6 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
             @Nullable FeedUserInteractionReliabilityLogger userInteractionLogger) {
         mLaunchLogger = launchLogger;
         mUserInteractionLogger = userInteractionLogger;
-    }
-
-    /** Call this when the application is stoppped. */
-    public void onApplicationStopped() {
-        reportStreamClosed(ClosedReason.SUSPEND_APP);
     }
 
     /** Call this when the activity is paused. */
@@ -94,7 +89,6 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
         logLaunchFinishedIfInProgress(
                 DiscoverLaunchResult.SWITCHED_FEED_TABS, /*userMightComeBack=*/false);
         mLaunchLogger.logSwitchedFeeds(switchedToStream, SystemClock.elapsedRealtimeNanos());
-        reportStreamClosed(ClosedReason.SWITCH_STREAM);
     }
 
     /** Call this when the stream is binded. */
@@ -108,17 +102,16 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
     }
 
     /** Call this when the stream is unbinded. */
-    public void onUnbindStream() {
+    public void onUnbindStream(@ClosedReason int closedReason) {
         logLaunchFinishedIfInProgress(
                 DiscoverLaunchResult.FRAGMENT_STOPPED, /*userMightComeBack=*/false);
-        reportStreamClosed(ClosedReason.LEAVE_FEED);
+        reportStreamClosed(closedReason);
     }
 
     /** Call this when the card is about to open. */
     public void onOpenCard() {
         logLaunchFinishedIfInProgress(
                 DiscoverLaunchResult.CARD_TAPPED, /*userMightComeBack=*/false);
-        reportStreamClosed(ClosedReason.OPEN_CARD);
     }
 
     /** Call this when the view is barely visible for the first time. */

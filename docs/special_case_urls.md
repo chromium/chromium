@@ -73,13 +73,14 @@ important for most security checks to look at the origin rather than the URL
 (see [Origin vs URL](security/origin-vs-url.md)).
 
 
-## chrome: URLs
+## chrome: and os: URLs
 
 `chrome:` URLs are used for privileged pages that are part of Chromium, such as
-`chrome://settings`. Web pages are not allowed to navigate to them, to reduce
-the risk of privilege escalation attacks. Note that there are a subset of
-`chrome:` URLs that are used for debug commands, described under
-[Debug URLs](#debug-urls) below.
+`chrome://settings`. Similarly, `os:` URLs are privileged pages that are part of
+ChromiumOS. Web pages are not allowed to navigate to them, to reduce the risk of
+privilege escalation attacks. Note that there are a subset of `chrome:` URLs
+that are used for debug commands, described under [Debug URLs](#debug-urls)
+below.
 
 
 ## Debug URLs

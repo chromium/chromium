@@ -33,6 +33,10 @@
 #include "base/android/build_info.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/system/sys_info.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/win/rendering_window_manager.h"
 #elif BUILDFLAG(IS_MAC)
@@ -329,7 +333,7 @@ void GpuHostImpl::CloseChannel(int client_id) {
 }
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
-void GpuHostImpl::FilterVisualDebugStream(base::Value json) {
+void GpuHostImpl::FilterVisualDebugStream(base::Value::Dict json) {
   viz_main_->FilterDebugStream(std::move(json));
 }
 
@@ -420,6 +424,13 @@ std::string GpuHostImpl::GetShaderPrefixKey() {
     std::string build_fp =
         base::android::BuildInfo::GetInstance()->android_build_fp();
     shader_prefix_key_ += "-" + build_fp;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    // ChromeOS can update independently of Lacros and the GPU driver
+    // information is not enough to ensure blob compatibility. See
+    // crbug.com/1444684
+    std::string chromeos_version = base::SysInfo::OperatingSystemName() + " " +
+                                   base::SysInfo::OperatingSystemVersion();
+    shader_prefix_key_ += "-" + chromeos_version;
 #endif
   }
 

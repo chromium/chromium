@@ -72,7 +72,7 @@ void RootfsLacrosLoader::Reset() {
 }
 
 void RootfsLacrosLoader::GetVersion(
-    base::OnceCallback<void(base::Version)> callback) {
+    base::OnceCallback<void(const base::Version&)> callback) {
   // If version is already calculated, immediately return the cached value.
   // Calculate if not.
   // Note that version value is reset on reloading.
@@ -90,16 +90,16 @@ void RootfsLacrosLoader::GetVersion(
 }
 
 void RootfsLacrosLoader::OnGetVersion(
-    base::OnceCallback<void(base::Version)> callback,
+    base::OnceCallback<void(const base::Version&)> callback,
     base::Version version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   version_ = version;
-  std::move(callback).Run(version);
+  std::move(callback).Run(version_.value());
 }
 
 void RootfsLacrosLoader::OnVersionReadyToLoad(LoadCompletionCallback callback,
-                                              base::Version version) {
+                                              const base::Version& version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // `version_` must be already filled by `version`.

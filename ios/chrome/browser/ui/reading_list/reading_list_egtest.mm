@@ -158,10 +158,11 @@ void TapContextMenuButtonWithA11yLabelID(int a11y_label_id) {
 // scrolled down to find the entry.
 void PerformActionOnEntry(NSString* entryTitle, id<GREYAction> action) {
   ScrollToTop();
-  id<GREYMatcher> matcher =
-      grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(entryTitle),
-                 grey_ancestor(grey_kindOfClassName(@"TableViewURLCell")),
-                 grey_sufficientlyVisible(), nil);
+  id<GREYMatcher> matcher = grey_allOf(
+      grey_descendant(
+          chrome_test_util::StaticTextWithAccessibilityLabel(entryTitle)),
+      grey_kindOfClassName(@"TableViewURLCell"), grey_sufficientlyVisible(),
+      nil);
   [[[EarlGrey selectElementWithMatcher:matcher]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(kReadingListViewID)]

@@ -49,6 +49,19 @@
 #import "url/url_constants.h"
 
 namespace web {
+namespace {
+
+// Returns the session data blob from the cache for `weak_web_state`.
+NSData* FetchSessionDataBlob(base::WeakPtr<WebState> weak_web_state) {
+  web::WebState* web_state = weak_web_state.get();
+  if (!web_state) {
+    return nil;
+  }
+
+  return GetWebClient()->FetchSessionFromCache(web_state);
+}
+
+}  // namespace
 
 #pragma mark - WebStateImpl::RealizedWebState public methods
 
@@ -81,6 +94,11 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
   // Restore session history last because NavigationManagerImpl relies on
   // CRWWebController to restore history into the web view.
   if (session_storage) {
+    // Set the callback used to load the native session data blob from the
+    // session cache.
+    navigation_manager_->SetNativeSessionFetcher(
+        base::BindOnce(&FetchSessionDataBlob, owner_->GetWeakPtr()));
+
     // Session storage restore is asynchronous because it involves a page
     // load in WKWebView. Temporarily cache the restored session so it can
     // be returned if BuildSessionStorage() or GetTitle() is called before
@@ -95,8 +113,7 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
     // Update the BrowserState's CertificatePolicyCache with the newly
     // restored policy cache entries.
     DCHECK(certificate_policy_cache_);
-    certificate_policy_cache_->UpdateCertificatePolicyCache(
-        web::BrowserState::GetCertificatePolicyCache(params.browser_state));
+    certificate_policy_cache_->UpdateCertificatePolicyCache();
 
     // Restore the last active time, even if it is null, as that would mean
     // the session predates M-99 (when the last active time started to be
@@ -804,6 +821,8 @@ bool WebStateImpl::RealizedWebState::SetSessionStateData(NSData* data) {
           failedNavigationURLFromErrorPageFileURL:item->GetURL()]);
     }
   }
+
+  web::GetWebClient()->CleanupNativeRestoreURLs(owner_);
   return true;
 }
 

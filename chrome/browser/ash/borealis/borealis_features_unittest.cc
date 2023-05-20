@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/borealis/borealis_features_util.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
@@ -42,6 +43,12 @@ class BorealisFeaturesTest : public testing::Test {
     AllowBorealis(&profile_, &features_, user_manager_, /*also_enable=*/false);
   }
 
+  BorealisFeatures::AllowStatus GetStatus() {
+    base::test::TestFuture<BorealisFeatures::AllowStatus> status_future;
+    BorealisFeatures(&profile_).IsAllowed(status_future.GetCallback());
+    return status_future.Get();
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -53,45 +60,36 @@ class BorealisFeaturesTest : public testing::Test {
 TEST_F(BorealisFeaturesTest, DisallowedWhenFeatureIsDisabled) {
   features_.Reset();
   features_.InitAndDisableFeature(features::kBorealis);
-  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
-            BorealisFeatures::AllowStatus::kFeatureDisabled);
+  EXPECT_EQ(GetStatus(), BorealisFeatures::AllowStatus::kFeatureDisabled);
 }
-
 TEST_F(BorealisFeaturesTest, AllowedWhenFeatureIsEnabled) {
-  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
-            BorealisFeatures::AllowStatus::kAllowed);
+  EXPECT_EQ(GetStatus(), BorealisFeatures::AllowStatus::kAllowed);
 }
 
 TEST_F(BorealisFeaturesTest, UnenrolledUserPolicyAllowedByDefault) {
-  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
-            BorealisFeatures::AllowStatus::kAllowed);
+  EXPECT_EQ(GetStatus(), BorealisFeatures::AllowStatus::kAllowed);
 
   profile_.GetPrefs()->SetBoolean(prefs::kBorealisAllowedForUser, false);
-  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
-            BorealisFeatures::AllowStatus::kUserPrefBlocked);
+  EXPECT_EQ(GetStatus(), BorealisFeatures::AllowStatus::kUserPrefBlocked);
 }
 
 TEST_F(BorealisFeaturesTest, CanDisableByVmPolicy) {
-  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
-            BorealisFeatures::AllowStatus::kAllowed);
+  EXPECT_EQ(GetStatus(), BorealisFeatures::AllowStatus::kAllowed);
 
   profile_.ScopedCrosSettingsTestHelper()
       ->ReplaceDeviceSettingsProviderWithStub();
   profile_.ScopedCrosSettingsTestHelper()->GetStubbedProvider()->SetBoolean(
       ash::kVirtualMachinesAllowed, false);
 
-  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
-            BorealisFeatures::AllowStatus::kVmPolicyBlocked);
+  EXPECT_EQ(GetStatus(), BorealisFeatures::AllowStatus::kVmPolicyBlocked);
 }
 
 TEST_F(BorealisFeaturesTest, EnrolledUserPolicyDisabledByDefault) {
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
-            BorealisFeatures::AllowStatus::kUserPrefBlocked);
+  EXPECT_EQ(GetStatus(), BorealisFeatures::AllowStatus::kUserPrefBlocked);
   profile_.GetTestingPrefService()->SetManagedPref(
       prefs::kBorealisAllowedForUser, std::make_unique<base::Value>(true));
-  EXPECT_EQ(BorealisFeatures(&profile_).MightBeAllowed(),
-            BorealisFeatures::AllowStatus::kAllowed);
+  EXPECT_EQ(GetStatus(), BorealisFeatures::AllowStatus::kAllowed);
 }
 
 TEST_F(BorealisFeaturesTest, EnablednessDependsOnInstallation) {
@@ -178,7 +176,6 @@ TEST(BorealisFeaturesHelperTest, CheckFeatureHelperWithoutEnable) {
   TestingProfile profile;
   BorealisFeatures features(&profile);
   ScopedAllowBorealis allow(&profile, /*also_enable=*/false);
-  EXPECT_EQ(features.MightBeAllowed(), BorealisFeatures::AllowStatus::kAllowed);
   EXPECT_FALSE(features.IsEnabled());
   NiceCallbackFactory<void(BorealisFeatures::AllowStatus)> factory;
   EXPECT_CALL(factory, Call(BorealisFeatures::AllowStatus::kAllowed));

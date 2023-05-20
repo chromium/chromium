@@ -86,10 +86,10 @@
     padding-inline: var(--cr-section-padding) var(--cr-icon-ripple-padding);
     width: 100%;
   }
-  #topicSourceTextPlaceholder {
+  .topic-source-placeholder {
     height: 64px;
   }
-  #weatherUnitTextPlaceholder {
+  .weather-unit-placeholder {
     height: 48px;
   }
   .ambient-text-placeholder-0 {
@@ -142,26 +142,25 @@
             <h3 id="topicSourceTitle" class="ambient-subpage-element-title" aria-hidden="true">
               $i18n{ambientModeTopicSourceTitle}
             </h3>
-            <iron-list items="[[getPlaceholders_(2)]]" grid>
-              <template>
-                  <div id="topicSourceTextPlaceholder" class$="{{getClassContainer_(index)}}">
-                    <div class="ambient-primary-text-placeholder placeholder"></div>
-                    <div class="ambient-secondary-text-placeholder placeholder"></div>
-                  </div>
-              </template>
-            </iron-list>
+            <div class="ambient-text-placeholder-0 topic-source-placeholder">
+              <div class="ambient-primary-text-placeholder placeholder"></div>
+              <div class="ambient-secondary-text-placeholder placeholder"></div>
+            </div>
+            <div class="ambient-text-placeholder-1 topic-source-placeholder">
+              <div class="ambient-primary-text-placeholder placeholder"></div>
+              <div class="ambient-secondary-text-placeholder placeholder"></div>
+            </div>
           </div>
           <div id="weatherUnitPlaceholder">
             <h3 id="weatherTitle" class="ambient-subpage-element-title" aria-hidden="true">
               $i18n{ambientModeWeatherTitle}
             </h3>
-            <iron-list items="[[getPlaceholders_(2)]]" grid>
-              <template>
-                <div id="weatherUnitTextPlaceholder" class$="{{getClassContainer_(index)}}">
-                  <div class="ambient-secondary-text-placeholder placeholder"></div>
-                </div>
-              </template>
-            </iron-list>
+            <div class="ambient-text-placeholder-0 weather-unit-placeholder">
+              <div class="ambient-secondary-text-placeholder placeholder"></div>
+            </div>
+            <div class="ambient-text-placeholder-1 weather-unit-placeholder">
+              <div class="ambient-secondary-text-placeholder placeholder"></div>
+            </div>
           </div>
         </template>
         <template is="dom-if" if="[[!loading_]]">
@@ -222,26 +221,25 @@
             <h3 id="topicSourceTitle" class="ambient-subpage-element-title" aria-hidden="true">
               $i18n{ambientModeTopicSourceTitle}
             </h3>
-            <iron-list items="[[getPlaceholders_(2)]]" grid>
-              <template>
-                  <div id="topicSourceTextPlaceholder" class$="{{getClassContainer_(index)}}">
-                    <div class="ambient-primary-text-placeholder placeholder"></div>
-                    <div class="ambient-secondary-text-placeholder placeholder"></div>
-                  </div>
-              </template>
-            </iron-list>
+            <div class="ambient-text-placeholder-0 topic-source-placeholder">
+              <div class="ambient-primary-text-placeholder placeholder"></div>
+              <div class="ambient-secondary-text-placeholder placeholder"></div>
+            </div>
+            <div class="ambient-text-placeholder-1 topic-source-placeholder">
+              <div class="ambient-primary-text-placeholder placeholder"></div>
+              <div class="ambient-secondary-text-placeholder placeholder"></div>
+            </div>
           </div>
           <div id="weatherUnitPlaceholder">
             <h3 id="weatherTitle" class="ambient-subpage-element-title" aria-hidden="true">
               $i18n{ambientModeWeatherTitle}
             </h3>
-            <iron-list items="[[getPlaceholders_(2)]]" grid>
-              <template>
-                <div id="weatherUnitTextPlaceholder" class$="{{getClassContainer_(index)}}">
-                  <div class="ambient-secondary-text-placeholder placeholder"></div>
-                </div>
-              </template>
-            </iron-list>
+            <div class="ambient-text-placeholder-0 weather-unit-placeholder">
+              <div class="ambient-secondary-text-placeholder placeholder"></div>
+            </div>
+            <div class="ambient-text-placeholder-1 weather-unit-placeholder">
+              <div class="ambient-secondary-text-placeholder placeholder"></div>
+            </div>
           </div>
         </template>
         <template is="dom-if" if="[[!loading_]]">

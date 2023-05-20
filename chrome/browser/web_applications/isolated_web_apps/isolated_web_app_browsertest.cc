@@ -44,6 +44,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -52,6 +53,9 @@
 namespace web_app {
 
 namespace {
+
+using ::testing::Eq;
+using ::testing::StartsWith;
 
 const char kNonAppHost[] = "nonapp.com";
 
@@ -329,6 +333,24 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, WasmLoadableFromBytes) {
   )");
 
   EXPECT_EQ("loaded", result);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, BlobUrl) {
+  web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+      isolated_web_app_dev_server().GetOrigin());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  content::TestNavigationObserver navigation_observer(
+      content::WebContents::FromRenderFrameHost(app_frame));
+  EXPECT_TRUE(ExecJs(app_frame,
+                     "const blob = new Blob(['test'], {type : 'text/plain'});"
+                     "location.href = window.URL.createObjectURL(blob)"));
+  navigation_observer.Wait();
+
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_THAT(navigation_observer.last_net_error_code(), Eq(net::OK));
+  EXPECT_THAT(navigation_observer.last_navigation_url().spec(),
+              StartsWith("blob:" + url_info.origin().GetURL().spec()));
 }
 
 class IsolatedWebAppBrowserCookieTest : public IsolatedWebAppBrowserTest {

@@ -72,6 +72,10 @@ class AugmentedSurface : public SurfaceObserver {
     surface_->SetBackgroundColor(background_color);
   }
 
+  void SetTrustedDamage(bool trusted_damage) {
+    surface_->SetTrustedDamage(trusted_damage);
+  }
+
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override {
     surface->RemoveSurfaceObserver(this);
@@ -149,11 +153,19 @@ void augmented_surface_set_background_color(wl_client* client,
   GetUserDataAs<AugmentedSurface>(resource)->SetBackgroundColor(sk_color);
 }
 
+void augmented_surface_set_trusted_damage(wl_client* client,
+                                          wl_resource* resource,
+                                          int enabled) {
+  GetUserDataAs<AugmentedSurface>(resource)->SetTrustedDamage(enabled);
+}
+
 const struct augmented_surface_interface augmented_implementation = {
-    augmented_surface_destroy, augmented_surface_set_corners_DEPRECATED,
+    augmented_surface_destroy,
+    augmented_surface_set_corners_DEPRECATED,
     augmented_surface_set_destination_size,
     augmented_surface_set_rounded_corners_bounds,
-    augmented_surface_set_background_color};
+    augmented_surface_set_background_color,
+    augmented_surface_set_trusted_damage};
 
 ////////////////////////////////////////////////////////////////////////////////
 // augmented_sub_surface_interface:

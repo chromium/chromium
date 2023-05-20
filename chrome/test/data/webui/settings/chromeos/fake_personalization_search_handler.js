@@ -7,7 +7,7 @@
  * testing.
  */
 
-import {personalizationSearchMojom} from 'chrome://os-settings/chromeos/os_settings.js';
+import {personalizationSearchMojom} from 'chrome://os-settings/os_settings.js';
 
 /**
  * @implements {personalizationSearchMojom.SearchHandlerInterface}

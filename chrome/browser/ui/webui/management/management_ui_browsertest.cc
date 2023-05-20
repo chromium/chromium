@@ -6,6 +6,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +17,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -56,12 +58,24 @@ class ManagementUITest : public InProcessBrowserTest {
   }
 
  private:
+  // Force local machine to be unmanaged, so that variations in try bots and
+  // developer machines don't affect the tests. See https://crbug.com/1445255.
+  policy::ScopedManagementServiceOverrideForTesting platform_browser_mgmt_ = {
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE};
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
+
+// TODO(crbug.com/1443363): flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ManagementStateChange DISABLED_ManagementStateChange
+#else
+#define MAYBE_ManagementStateChange ManagementStateChange
+#endif
+IN_PROC_BROWSER_TEST_F(ManagementUITest, MAYBE_ManagementStateChange) {
   profile_policy_connector()->OverrideIsManagedForTesting(false);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://management")));

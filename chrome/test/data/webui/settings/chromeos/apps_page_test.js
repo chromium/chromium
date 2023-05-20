@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/os_settings.js';
 
-import {AndroidAppsBrowserProxyImpl, appNotificationHandlerMojom, Router, routes, routesMojom, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AndroidAppsBrowserProxyImpl, appNotificationHandlerMojom, Router, routes, routesMojom, setAppNotificationProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {createBoolPermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
@@ -204,10 +204,11 @@ suite('<os-apps-page> available settings rows', () => {
   let appsPage;
 
   function initPage() {
+    loadTimeData.overrideValues({isPlayStoreAvailable: true});
     appsPage = document.createElement('os-settings-apps-page');
-    appsPage.havePlayStoreApp = true;
     appsPage.prefs = getFakePrefs();
     document.body.appendChild(appsPage);
+    flush();
   }
 
   setup(async () => {
@@ -231,10 +232,11 @@ suite('<os-apps-page> available settings rows', () => {
       appsPage.shadowRoot.querySelector('#onStartupDropdown');
 
   test('Only App Management is shown', () => {
-    loadTimeData.overrideValues({showStartup: false});
+    loadTimeData.overrideValues({
+      showStartup: false,
+      androidAppsVisible: false,
+    });
     initPage();
-    appsPage.showAndroidApps = false;
-    flush();
 
     assertTrue(!!queryAppManagementRow());
     assertEquals(null, queryAndroidAppsRow());
@@ -242,10 +244,11 @@ suite('<os-apps-page> available settings rows', () => {
   });
 
   test('Android Apps and App Management are shown', () => {
-    loadTimeData.overrideValues({showStartup: false});
+    loadTimeData.overrideValues({
+      showStartup: false,
+      androidAppsVisible: true,
+    });
     initPage();
-    appsPage.showAndroidApps = true;
-    flush();
 
     assertTrue(!!queryAppManagementRow());
     assertTrue(!!queryAndroidAppsRow());
@@ -253,10 +256,11 @@ suite('<os-apps-page> available settings rows', () => {
   });
 
   test('Android Apps, On Startup, and App Management are shown', () => {
-    loadTimeData.overrideValues({showStartup: true});
+    loadTimeData.overrideValues({
+      showStartup: true,
+      androidAppsVisible: true,
+    });
     initPage();
-    appsPage.showAndroidApps = true;
-    flush();
 
     assertTrue(!!queryAppManagementRow());
     assertTrue(!!queryAndroidAppsRow());
@@ -286,7 +290,11 @@ suite('AppsPageTests', function() {
   }
 
   setup(async () => {
-    loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
+    loadTimeData.overrideValues({
+      showOsSettingsAppNotificationsRow: true,
+      isPlayStoreAvailable: true,
+      androidAppsVisible: true,
+    });
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
     AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
     PolymerTest.clearBody();
@@ -307,8 +315,6 @@ suite('AppsPageTests', function() {
 
   suite('Main Page', function() {
     setup(function() {
-      appsPage.showAndroidApps = true;
-      appsPage.havePlayStoreApp = true;
       appsPage.prefs = getFakePrefs();
       appsPage.androidAppsInfo = {
         playStoreEnabled: false,
@@ -400,7 +406,8 @@ suite('AppsPageTests', function() {
     });
 
     test('Deep link to manage android prefs', async () => {
-      appsPage.havePlayStoreApp = false;
+      // Simulate showing manage apps link
+      appsPage.set('isPlayStoreAvailable_', false);
       flush();
 
       const params = new URLSearchParams();
@@ -587,13 +594,13 @@ suite('AppsPageTests', function() {
 
     test('ManageUsbDevice', function() {
       // ARCVM is not enabled
-      subpage.showArcvmManageUsb = false;
+      subpage.isArcVmManageUsbAvailable = false;
       flush();
       assertFalse(
           !!subpage.shadowRoot.querySelector('#manageArcvmShareUsbDevices'));
 
       // ARCMV is enabled
-      subpage.showArcvmManageUsb = true;
+      subpage.isArcVmManageUsbAvailable = true;
       flush();
       assertTrue(
           !!subpage.shadowRoot.querySelector('#manageArcvmShareUsbDevices'));

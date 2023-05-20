@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
@@ -535,15 +536,27 @@ void EventTarget::AddedEventListener(
     }
   }
 
-  if (event_util::IsDOMMutationEventType(event_type)) {
+  WebFeature mutation_event_feature;
+  Document::ListenerType listener_type;
+  if (event_util::IsDOMMutationEventType(event_type, mutation_event_feature,
+                                         listener_type)) {
     if (ExecutionContext* context = GetExecutionContext()) {
       String message_text = String::Format(
-          "Added synchronous DOM mutation listener to a '%s' event. "
-          "Consider using MutationObserver to make the page more responsive.",
+          "Listener added for a synchronous '%s' DOM Mutation Event. "
+          "This event type is deprecated "
+          "(https://w3c.github.io/uievents/#legacy-event-types) "
+          "and work is underway to remove it from this browser. Usage of this "
+          "event listener will cause performance issues today, and represents "
+          "a risk of future incompatibility. Consider using MutationObserver "
+          "instead.",
           event_type.GetString().Utf8().c_str());
       PerformanceMonitor::ReportGenericViolation(
           context, PerformanceMonitor::kDiscouragedAPIUse, message_text,
           base::TimeDelta(), nullptr);
+      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kDeprecation,
+          mojom::blink::ConsoleMessageLevel::kWarning, message_text));
+      Deprecation::CountDeprecation(context, mutation_event_feature);
     }
   }
 }

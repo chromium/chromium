@@ -53,6 +53,8 @@ public class ClientHintsTest {
     private static final String[] ORIGIN_TRIAL_USER_AGENT_CLIENT_HINTS = {
             "sec-ch-ua-reduced", "sec-ch-ua-full"};
 
+    private static final String ANDROID_WEBVIEW_BRAND_NAME = "Android WebView";
+
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -483,6 +485,7 @@ public class ClientHintsTest {
                 Assert.assertFalse(uaItems[1].isEmpty());
                 // Verify navigator.userAgentData.brands.
                 Assert.assertFalse(uaItems[2].isEmpty());
+                Assert.assertTrue(uaItems[2].indexOf(ANDROID_WEBVIEW_BRAND_NAME) != -1);
             }
 
             JSUtils.executeJavaScriptAndWaitForResult(InstrumentationRegistry.getInstrumentation(),
@@ -527,7 +530,9 @@ public class ClientHintsTest {
                 // bitness is empty string on Android.
                 Assert.assertTrue(jsonObject.getString("bitness").isEmpty());
                 // brands should not be empty.
-                Assert.assertFalse(jsonObject.getString("brands").isEmpty());
+                String brands = jsonObject.getString("brands");
+                Assert.assertFalse(brands.isEmpty());
+                Assert.assertTrue(brands.indexOf(ANDROID_WEBVIEW_BRAND_NAME) != -1);
                 // mobile should not be empty.
                 Assert.assertFalse(jsonObject.getString("mobile").isEmpty());
                 // model should not be empty on Android.
@@ -539,7 +544,9 @@ public class ClientHintsTest {
                 // uaFullVersion should not be empty.
                 Assert.assertFalse(jsonObject.getString("uaFullVersion").isEmpty());
                 // fullVersionList should not be empty.
-                Assert.assertFalse(jsonObject.getString("fullVersionList").isEmpty());
+                String fullVersionList = jsonObject.getString("fullVersionList");
+                Assert.assertFalse(fullVersionList.isEmpty());
+                Assert.assertTrue(fullVersionList.indexOf(ANDROID_WEBVIEW_BRAND_NAME) != -1);
                 // wow64 returns false on Android.
                 Assert.assertFalse(jsonObject.getBoolean("wow64"));
             }

@@ -120,6 +120,12 @@ class CONTENT_EXPORT PrefetchService {
   // |all_prefetches_|.
   void RemovePrefetch(const PrefetchContainer::Key& prefetch_container_key);
 
+  // Destroys the prefetch with the given |prefetch_container_key|. Called
+  // to remove a prefetch when making room for a new prefetch, and sets the
+  // status to |PrefetchStatus::kPrefetchEvicted| before destruction to record
+  // this.
+  void EvictPrefetch(const PrefetchContainer::Key& prefetch_container_key);
+
   // Helper functions to control the behavior of the eligibility check when
   // testing.
   static void SetServiceWorkerContextForTesting(ServiceWorkerContext* context);
@@ -218,19 +224,26 @@ class CONTENT_EXPORT PrefetchService {
       base::WeakPtr<PrefetchContainer> prefetch_container);
   void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Starts the network request for the given |prefetch_container|.
+  // Starts the given |prefetch_container|.
   void StartSinglePrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
+
+  // Makes the network request for the given |prefetch_container| to the given
+  // |url|. This is called when initially starting a prefetch and when a
+  // redirect causes a change in network context and a new request needs to be
+  // made.
+  void MakePrefetchRequest(base::WeakPtr<PrefetchContainer> prefetch_container,
+                           const GURL& url);
 
   // Gets the URL loader for the given |prefetch_container|. If an override was
   // set by |SetURLLoaderFactoryForTesting|, then that will be returned instead.
   network::mojom::URLLoaderFactory* GetURLLoaderFactory(
-      base::WeakPtr<PrefetchContainer> prefetch_container);
+      base::WeakPtr<PrefetchContainer> prefetch_container,
+      const GURL& url);
 
   // Called when the request for |prefetch_container| is redirected.
-  PrefetchStreamingURLLoaderStatus OnPrefetchRedirect(
-      base::WeakPtr<PrefetchContainer> prefetch_container,
-      const net::RedirectInfo& redirect_info,
-      const network::mojom::URLResponseHead& response_head);
+  void OnPrefetchRedirect(base::WeakPtr<PrefetchContainer> prefetch_container,
+                          const net::RedirectInfo& redirect_info,
+                          const network::mojom::URLResponseHead& response_head);
 
   // Called when the response for |prefetch_container| has started. Based on
   // |head|, returns a status to inform the |PrefetchStreamingURLLoader| whether

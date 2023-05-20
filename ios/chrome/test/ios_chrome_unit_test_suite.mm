@@ -12,7 +12,7 @@
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
 #import "ios/chrome/browser/paths/paths.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"

@@ -251,7 +251,7 @@
 
   // FirstSetupComplete flag should be turned on after the authentication
   // service has granted user consent to start Sync when tapping "Yes, I'm in."
-  self.syncSetupService->SetFirstSetupComplete(
+  self.syncSetupService->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   self.syncSetupService->CommitSyncChanges();
 

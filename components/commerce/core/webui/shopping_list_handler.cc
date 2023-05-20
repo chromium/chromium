@@ -110,8 +110,7 @@ void ShoppingListHandler::GetAllPriceTrackedBookmarkProductInfo(
                                   std::vector<BookmarkProductInfoPtr>()));
     return;
   }
-  GetAllPriceTrackedBookmarks(
-      shopping_service_, bookmark_model_,
+  shopping_service_->GetAllPriceTrackedBookmarks(
       base::BindOnce(&ShoppingListHandler::OnFetchPriceTrackedBookmarks,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -137,7 +136,7 @@ void ShoppingListHandler::GetAllShoppingBookmarkProductInfo(
     return;
   }
   std::vector<const bookmarks::BookmarkNode*> bookmarks =
-      GetAllShoppingBookmarks(bookmark_model_);
+      shopping_service_->GetAllShoppingBookmarks();
 
   std::vector<BookmarkProductInfoPtr> info_list =
       BookmarkListToMojoList(*bookmark_model_, bookmarks, locale_);

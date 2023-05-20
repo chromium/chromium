@@ -13,6 +13,7 @@ proto_library("proto") {
     "web_app_share_target.proto",
     "web_app_tab_strip.proto",
     "web_app_translations.proto",
+    "web_app_url_pattern.proto",
   ]
   link_deps = [
     "//chrome/browser/ash/system_web_apps/types/proto",

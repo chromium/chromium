@@ -152,7 +152,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   // Then remove the AssistiveMultiWord check.
   if (strcmp(feature_name, "AssistiveMultiWord") == 0 ||
       strcmp(feature_name, features::kAssistMultiWord.name) == 0) {
-    return features::IsAssistiveMultiWordEnabled();
+    return base::FeatureList::IsEnabled(features::kAssistMultiWord);
   }
   if (strcmp(feature_name, features::kAutocorrectParamsTuning.name) == 0) {
     return base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning);

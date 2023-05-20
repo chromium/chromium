@@ -19,6 +19,7 @@ const char kDefaultBrowserItemState[] =
     "set_up_list.default_browser_item.state";
 const char kAutofillItemState[] = "set_up_list.autofill_item.state";
 const char kFollowItemState[] = "set_up_list.follow_item.state";
+const char kDisabled[] = "set_up_list.disabled";
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   int unknown = static_cast<int>(SetUpListItemState::kUnknown);
@@ -26,6 +27,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kDefaultBrowserItemState, unknown);
   registry->RegisterIntegerPref(kAutofillItemState, unknown);
   registry->RegisterIntegerPref(kFollowItemState, unknown);
+  registry->RegisterBooleanPref(kDisabled, false);
 }
 
 const char* PrefNameForItem(SetUpListItemType type) {
@@ -60,6 +62,14 @@ void MarkItemComplete(PrefService* prefs, SetUpListItemType type) {
   }
 
   SetItemState(prefs, type, SetUpListItemState::kCompleteInList);
+}
+
+bool IsSetUpListDisabled(PrefService* prefs) {
+  return prefs->GetBoolean(kDisabled);
+}
+
+void DisableSetUpList(PrefService* prefs) {
+  prefs->SetBoolean(kDisabled, true);
 }
 
 }  // namespace set_up_list_prefs

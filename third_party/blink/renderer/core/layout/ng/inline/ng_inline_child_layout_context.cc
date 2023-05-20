@@ -44,10 +44,10 @@ NGInlineChildLayoutContext::NGInlineChildLayoutContext(
 NGInlineChildLayoutContext::NGInlineChildLayoutContext(
     const NGInlineNode& node,
     NGBoxFragmentBuilder* container_builder,
-    NGLineInfoList* line_info_list)
+    NGScoreLineBreakContext* score_line_break_context)
     : container_builder_(container_builder),
       items_builder_(node, container_builder->GetWritingDirection()),
-      line_info_list_(line_info_list) {
+      score_line_break_context_(score_line_break_context) {
   container_builder->SetItemsBuilder(ItemsBuilder());
 }
 

@@ -29,12 +29,12 @@ const NEVER_SETTLED_PROMISE = new Promise<never>(
  *     response or will never be resolved if the window unload is about to
  *     happen.
  */
-async function wrapMojoResponse<T>(call: Promise<T>|undefined): Promise<T> {
+async function wrapMojoResponse(call: unknown): Promise<unknown> {
   const result = await Promise.race([windowUnload.wait(), call]);
   if (windowUnload.isSignaled()) {
     return NEVER_SETTLED_PROMISE;
   }
-  return result as T;
+  return result;
 }
 
 const mojoResponseHandler: ProxyHandler<MojoEndpoint> = {
@@ -48,8 +48,7 @@ const mojoResponseHandler: ProxyHandler<MojoEndpoint> = {
           // would be uncaught exception if we try to call the mojo function.
           return NEVER_SETTLED_PROMISE;
         }
-        return wrapMojoResponse(
-            Reflect.apply(val, target, args) as Promise<unknown>| undefined);
+        return wrapMojoResponse(Reflect.apply(val, target, args));
       };
     }
     return val;
@@ -73,6 +72,9 @@ function closeWhenUnload(endpoint: MojoEndpoint) {
  */
 export function wrapEndpoint<T extends MojoEndpoint>(endpoint: T): T {
   closeWhenUnload(endpoint);
+  // The mojoResponseHandler is designed to be able to handle all mojo
+  // connection proxies.
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return new Proxy(endpoint, mojoResponseHandler as ProxyHandler<T>);
 }
 

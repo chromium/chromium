@@ -4,12 +4,16 @@
 
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
-#include <ostream>
-
 #include <stddef.h>
+
+#include <ostream>
 
 #include "base/check.h"
 #include "ui/gfx/ios/uikit_util.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @implementation NSString (CrStringDrawing)
 
@@ -44,8 +48,9 @@
 - (NSString*)cr_stringByCuttingToIndex:(NSUInteger)index {
   if (index == 0)
     return @"";
-  if (index >= [self length])
-    return [[self retain] autorelease];
+  if (index >= self.length) {
+    return self;
+  }
   return [[self substringToIndex:(index - 1)] stringByAppendingString:@"…"];
 }
 
@@ -53,11 +58,11 @@
   CGSize sizeForGuess = CGSizeMake(bounds.width, CGFLOAT_MAX);
   // Use binary search on the string's length.
   size_t lo = 0;
-  size_t hi = [self length];
+  size_t hi = self.length;
   size_t guess = 0;
   for (guess = (lo + hi) / 2; lo < hi; guess = (lo + hi) / 2) {
     NSString* tempString = [self cr_stringByCuttingToIndex:guess];
-    UIFont* font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
+    UIFont* font = [UIFont systemFontOfSize:UIFont.labelFontSize];
     CGSize sizeGuess =
         [tempString cr_boundingSizeWithSize:sizeForGuess font:font];
     if (sizeGuess.height > bounds.height) {

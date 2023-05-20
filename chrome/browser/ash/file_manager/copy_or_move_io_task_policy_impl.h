@@ -68,6 +68,8 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
 
+  void Resume(ResumeParams params) override;
+
  private:
   // Verifies the transfer by performing enterprise connector scans.
   void VerifyTransfer() override;
@@ -99,6 +101,10 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // operation.
   std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
       size_t idx) override;
+
+  // Continues executing the IO task after DLP checks are done.
+  void OnCheckIfTransferAllowed(
+      std::set<storage::FileSystemURL> blocked_entries);
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;

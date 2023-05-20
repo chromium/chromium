@@ -230,5 +230,13 @@ bool TextInputTestHelper::ClickElement(const std::string& id,
   return true;
 }
 
+// static
+std::string TextInputTestHelper::GetElementInnerText(
+    const std::string& id,
+    content::WebContents* tab) {
+  return content::EvalJs(tab, "document.getElementById('" + id + "').innerText")
+      .ExtractString();
+}
+
 }  // namespace input_method
 }  // namespace ash

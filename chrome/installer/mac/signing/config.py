@@ -4,7 +4,7 @@
 
 import os.path
 
-from .model import Distribution, NotarizationTool
+from .model import Distribution, NotarizeAndStapleLevel, NotarizationTool
 
 
 class ConfigError(Exception):
@@ -37,7 +37,8 @@ class CodeSignConfig(object):
                  notary_asc_provider=None,
                  notary_team_id=None,
                  codesign_requirements_basic='',
-                 notarization_tool=None):
+                 notarization_tool=None,
+                 notarize=NotarizeAndStapleLevel.STAPLE):
         """Creates a CodeSignConfig that will sign the product using the static
         properties on the class, using the code signing identity passed to the
         constructor.
@@ -68,6 +69,7 @@ class CodeSignConfig(object):
                 otherwise.
             notarization_tool: The tool to use to communicate with the Apple
                 notary service. If None, the config will choose a default.
+            notarize: The |model.NotarizeAndStapleLevel|.
         """
         assert identity is not None
         assert type(identity) is str
@@ -79,6 +81,7 @@ class CodeSignConfig(object):
         self._codesign_requirements_basic = codesign_requirements_basic
         self._notary_team_id = notary_team_id
         self._notarization_tool = notarization_tool
+        self._notarize = notarize
 
     @staticmethod
     def is_chrome_branded():
@@ -152,6 +155,13 @@ class CodeSignConfig(object):
         appropriate for the active Config.notarization_tool.
         """
         return None
+
+    @property
+    def notarize(self):
+        """Returns the |model.NotarizeAndStapleLevel| that controls how, if
+        at all, notarization and stapling of CodeSignedProducts should occur.
+        """
+        return self._notarize
 
     @property
     def app_product(self):

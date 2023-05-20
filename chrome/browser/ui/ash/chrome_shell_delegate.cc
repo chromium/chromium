@@ -413,7 +413,7 @@ void ChromeShellDelegate::ForceSkipWarningUserOnClose(
 }
 
 std::string ChromeShellDelegate::GetVersionString() {
-  return version_info::GetVersionNumber();
+  return std::string(version_info::GetVersionNumber());
 }
 
 void ChromeShellDelegate::ShouldExitFullscreenBeforeLock(

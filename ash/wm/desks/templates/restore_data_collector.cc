@@ -79,9 +79,10 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
         BuildWindowInfo(window, /*activation_index=*/absl::nullopt,
                         /*for_saved_desks=*/true, mru_windows);
 
-    // Clear the desk ID in the WindowInfo that is to be stored in the template.
-    // It will be set to the ID of a newly created desk when launching.
+    // Clear the desk ID and uuid in the WindowInfo that is to be stored in the
+    // template. They will be set to the newly created desk when launching.
     window_info->desk_id.reset();
+    window_info->desk_guid = base::Uuid();
 
     ++call.pending_request_count;
     delegate->GetAppLaunchDataForSavedDesk(

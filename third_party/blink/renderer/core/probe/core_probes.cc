@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -94,6 +95,12 @@ AsyncTask::~AsyncTask() {
     ad_tracker_->DidFinishAsyncTask(task_context_);
 
   TRACE_EVENT_END("blink");  // "AsyncTask Run"
+}
+
+CoreProbeSink* ToCoreProbeSink(OffscreenCanvas* offscreen_canvas) {
+  return offscreen_canvas
+             ? ToCoreProbeSink(offscreen_canvas->GetExecutionContext())
+             : nullptr;
 }
 
 void AllAsyncTasksCanceled(ExecutionContext* context) {

@@ -61,7 +61,7 @@ class InternetHandler
       tether::GmsCoreNotificationsStateTracker*
           gms_core_notifications_state_tracker);
 
-  std::vector<base::Value> device_names_without_notifications_;
+  base::Value::List device_names_without_notifications_;
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 

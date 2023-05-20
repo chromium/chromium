@@ -6,10 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/sync/driver/trusted_vault_client.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "components/sync/service/trusted_vault_client.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -44,4 +44,9 @@ interface PdfToPwgRasterConverter {
           PwgRasterSettings pwg_raster_settings)
       => (mojo_base.mojom.ReadOnlySharedMemoryRegion? pwg_raster_region,
           uint32 page_count);
+
+  // Sets the status for enterprise policy `kPdfUseSkiaRendererEnabled`. It
+  // should be called immediately once `mojom::PdfToPwgRasterConverter` remote
+  // is bound and only when this policy is managed.
+  SetUseSkiaRendererPolicy(bool use_skia);
 };

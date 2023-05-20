@@ -1,0 +1,45 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.flags;
+
+import org.chromium.base.FeatureMap;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.build.annotations.MainDex;
+
+/**
+ * Java accessor for state of Chrome-layer feature flags.
+ *
+ * This class provides methods to access values of Chrome-layer feature flags, listed in
+ * {@link ChromeFeatureList} and to  their field trial parameters. The API to access those values
+ * is in the base class {@link FeatureMap} and is shared with other FeatureLists and FeatureMaps.
+ *
+ * The same functionality is provided through static methods in {@link ChromeFeatureList} for
+ * backwards compatibility and convenience.
+ */
+@JNINamespace("chrome::android")
+@MainDex
+public class ChromeFeatureMap extends FeatureMap {
+    private static final ChromeFeatureMap sInstance = new ChromeFeatureMap();
+
+    /** Prevent instantiation. */
+    private ChromeFeatureMap() {
+        super();
+    }
+
+    public static ChromeFeatureMap getInstance() {
+        return sInstance;
+    }
+
+    @Override
+    protected long getNativeMap() {
+        return ChromeFeatureMapJni.get().getNativeMap();
+    }
+
+    @NativeMethods
+    interface Natives {
+        long getNativeMap();
+    }
+}

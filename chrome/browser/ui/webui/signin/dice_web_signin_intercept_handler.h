@@ -21,8 +21,7 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
                                       public signin::IdentityManager::Observer {
  public:
   DiceWebSigninInterceptHandler(
-      const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-          bubble_parameters,
+      const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(int)> show_widget_with_height_callback,
       base::OnceCallback<void(SigninInterceptionUserChoice)>
           completion_callback);
@@ -73,7 +72,7 @@ class DiceWebSigninInterceptHandler : public content::WebUIMessageHandler,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_observation_{this};
-  DiceWebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
+  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
 
   base::OnceCallback<void(int)> show_widget_with_height_callback_;
   base::OnceCallback<void(SigninInterceptionUserChoice)> completion_callback_;

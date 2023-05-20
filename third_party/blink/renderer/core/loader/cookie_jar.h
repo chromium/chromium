@@ -29,6 +29,15 @@ class CookieJar : public GarbageCollected<CookieJar> {
       mojo::PendingRemote<network::mojom::blink::RestrictedCookieManager>
           cookie_manager);
 
+  // Invalidate cached string. To be called explicitly from Document. This is
+  // used in cases where a Document action could change the ability for
+  // CookieJar to return values to JS without changing the value of the cookies
+  // themselves. For example changing storage access can stop the JS from being
+  // able to access the document's Cookie without the value ever changing. In
+  // that case it's faulty to treat a subsequent request as a cache hit so we
+  // invalidate.
+  void InvalidateCache();
+
  private:
   bool RequestRestrictedCookieManagerIfNeeded();
 

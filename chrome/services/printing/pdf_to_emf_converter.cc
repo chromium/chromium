@@ -152,4 +152,8 @@ void PdfToEmfConverter::ConvertPage(uint32_t page_index,
   std::move(callback).Run(std::move(emf_region), scale_factor);
 }
 
+void PdfToEmfConverter::SetUseSkiaRendererPolicy(bool use_skia) {
+  chrome_pdf::SetUseSkiaRendererPolicy(use_skia);
+}
+
 }  // namespace printing

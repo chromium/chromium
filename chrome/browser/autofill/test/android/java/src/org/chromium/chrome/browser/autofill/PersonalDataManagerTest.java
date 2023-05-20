@@ -32,7 +32,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.ValueWithStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -76,24 +75,48 @@ public class PersonalDataManagerTest {
     }
 
     private AutofillProfile createTestProfile() {
-        return new AutofillProfile("" /* guid */, "" /* honorific prefix */, "John Major",
-                "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                "555 123-4567", "jm@example.com", "");
+        return AutofillProfile.builder()
+                .setFullName("John Major")
+                .setCompanyName("Acme Inc.")
+                .setStreetAddress("123 Main")
+                .setRegion("California")
+                .setLocality("Los Angeles")
+                .setPostalCode("90210")
+                .setCountryCode("US")
+                .setPhoneNumber("555 123-4567")
+                .setEmailAddress("jm@example.com")
+                .build();
     }
 
     @Test
     @SmallTest
     @Feature({"Autofill"})
     public void testAddAndEditProfiles() throws TimeoutException {
-        AutofillProfile profile = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "John Smith", "Acme Inc.", "1 Main\nApt A", "CA", "San Francisco", "", "94102", "",
-                "US", "4158889999", "john@acme.inc", "");
+        AutofillProfile profile = AutofillProfile.builder()
+                                          .setFullName("John Smith")
+                                          .setCompanyName("Acme Inc.")
+                                          .setStreetAddress("1 Main\nApt A")
+                                          .setRegion("CA")
+                                          .setLocality("San Francisco")
+                                          .setPostalCode("94102")
+                                          .setCountryCode("US")
+                                          .setPhoneNumber("4158889999")
+                                          .setEmailAddress("john@acme.inc")
+                                          .build();
         String profileOneGUID = mHelper.setProfile(profile);
         Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
 
-        AutofillProfile profile2 = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "John Hackock", "Acme Inc.", "1 Main\nApt A", "CA", "San Francisco", "", "94102",
-                "", "US", "4158889999", "john@acme.inc", "");
+        AutofillProfile profile2 = AutofillProfile.builder()
+                                           .setFullName("John Hackock")
+                                           .setCompanyName("Acme Inc.")
+                                           .setStreetAddress("1 Main\nApt A")
+                                           .setRegion("CA")
+                                           .setLocality("San Francisco")
+                                           .setPostalCode("94102")
+                                           .setCountryCode("US")
+                                           .setPhoneNumber("4158889999")
+                                           .setEmailAddress("john@acme.inc")
+                                           .build();
         String profileTwoGUID = mHelper.setProfile(profile2);
         Assert.assertEquals(2, mHelper.getNumberOfProfilesForSettings());
 
@@ -114,9 +137,18 @@ public class PersonalDataManagerTest {
     @SmallTest
     @Feature({"Autofill"})
     public void testUpdateLanguageCodeInProfile() throws TimeoutException {
-        AutofillProfile profile = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "John Smith", "Acme Inc.", "1 Main\nApt A", "CA", "San Francisco", "", "94102", "",
-                "US", "4158889999", "john@acme.inc", "fr");
+        AutofillProfile profile = AutofillProfile.builder()
+                                          .setFullName("John Smith")
+                                          .setCompanyName("Acme Inc.")
+                                          .setStreetAddress("1 Main\nApt A")
+                                          .setRegion("CA")
+                                          .setLocality("San Francisco")
+                                          .setPostalCode("94102")
+                                          .setCountryCode("US")
+                                          .setPhoneNumber("4158889999")
+                                          .setEmailAddress("john@acme.inc")
+                                          .setLanguageCode("fr")
+                                          .build();
         Assert.assertEquals("fr", profile.getLanguageCode());
         String profileOneGUID = mHelper.setProfile(profile);
         Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
@@ -297,14 +329,30 @@ public class PersonalDataManagerTest {
     public void testRespectCountryCodes() throws TimeoutException {
         // The constructor should accept country names and ISO 3166-1-alpha-2 country codes.
         // getCountryCode() should return a country code.
-        AutofillProfile profile1 = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "John Smith", "Acme Inc.", "1 Main\nApt A", "Quebec", "Montreal", "", "H3B 2Y5", "",
-                "Canada", "514-670-1234", "john@acme.inc", "");
+        AutofillProfile profile1 = AutofillProfile.builder()
+                                           .setFullName("John Smith")
+                                           .setCompanyName("Acme Inc.")
+                                           .setStreetAddress("1 Main\nApt A")
+                                           .setRegion("Quebec")
+                                           .setLocality("Montreal")
+                                           .setPostalCode("H3B 2Y5")
+                                           .setCountryCode("Canada")
+                                           .setPhoneNumber("514-670-1234")
+                                           .setEmailAddress("john@acme.inc")
+                                           .build();
         String profileGuid1 = mHelper.setProfile(profile1);
 
-        AutofillProfile profile2 = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "Greg Smith", "Ucme Inc.", "123 Bush\nApt 125", "Quebec", "Montreal", "", "H3B 2Y5",
-                "", "CA", "514-670-4321", "greg@ucme.inc", "");
+        AutofillProfile profile2 = AutofillProfile.builder()
+                                           .setFullName("Greg Smith")
+                                           .setCompanyName("Ucme Inc.")
+                                           .setStreetAddress("123 Bush\nApt 125")
+                                           .setRegion("Quebec")
+                                           .setLocality("Montreal")
+                                           .setPostalCode("H3B 2Y5")
+                                           .setCountryCode("CA")
+                                           .setPhoneNumber("514-670-4321")
+                                           .setEmailAddress("greg@ucme.inc")
+                                           .build();
         String profileGuid2 = mHelper.setProfile(profile2);
 
         Assert.assertEquals(2, mHelper.getNumberOfProfilesForSettings());
@@ -320,20 +368,23 @@ public class PersonalDataManagerTest {
     @SmallTest
     @Feature({"Autofill"})
     public void testRespectVerificationStatuses() throws TimeoutException {
-        AutofillProfile profileWithDifferentStatuses = new AutofillProfile("" /* guid */, true,
-                new ValueWithStatus("" /* honorific prefix */, VerificationStatus.NO_STATUS),
-                new ValueWithStatus("John Smith", VerificationStatus.PARSED),
-                new ValueWithStatus("" /* company */, VerificationStatus.NO_STATUS),
-                new ValueWithStatus("1 Main\nApt A", VerificationStatus.FORMATTED),
-                new ValueWithStatus("Quebec", VerificationStatus.OBSERVED),
-                new ValueWithStatus("Montreal", VerificationStatus.USER_VERIFIED),
-                new ValueWithStatus("" /* dependent locality */, VerificationStatus.NO_STATUS),
-                new ValueWithStatus("H3B 2Y5", VerificationStatus.SERVER_PARSED),
-                new ValueWithStatus("" /* sorting code */, VerificationStatus.NO_STATUS),
-                new ValueWithStatus("Canada", VerificationStatus.USER_VERIFIED),
-                new ValueWithStatus("" /* phone */, VerificationStatus.NO_STATUS),
-                new ValueWithStatus("" /* email */, VerificationStatus.NO_STATUS),
-                "" /* language code */);
+        AutofillProfile profileWithDifferentStatuses =
+                AutofillProfile.builder()
+                        .setGUID("")
+                        .setHonorificPrefix("", VerificationStatus.NO_STATUS)
+                        .setFullName("John Smith", VerificationStatus.PARSED)
+                        .setCompanyName("", VerificationStatus.NO_STATUS)
+                        .setStreetAddress("1 Main\nApt A", VerificationStatus.FORMATTED)
+                        .setRegion("Quebec", VerificationStatus.OBSERVED)
+                        .setLocality("Montreal", VerificationStatus.USER_VERIFIED)
+                        .setDependentLocality("", VerificationStatus.NO_STATUS)
+                        .setPostalCode("H3B 2Y5", VerificationStatus.SERVER_PARSED)
+                        .setSortingCode("", VerificationStatus.NO_STATUS)
+                        .setCountryCode("Canada", VerificationStatus.USER_VERIFIED)
+                        .setPhoneNumber("", VerificationStatus.NO_STATUS)
+                        .setEmailAddress("" /* email */, VerificationStatus.NO_STATUS)
+                        .setLanguageCode("")
+                        .build();
         String guid = mHelper.setProfile(profileWithDifferentStatuses);
         Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
 
@@ -374,10 +425,19 @@ public class PersonalDataManagerTest {
         final String streetAddress2 = streetAddress1 + "\n"
                 + "Fourth floor\n"
                 + "The red bell";
-        AutofillProfile profile = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "Monsieur Jean DELHOURME", "Acme Inc.", streetAddress1, "Tahiti", "Mahina",
-                "Orofara", "98709", "CEDEX 98703", "French Polynesia", "44.71.53", "john@acme.inc",
-                "");
+        AutofillProfile profile = AutofillProfile.builder()
+                                          .setFullName("Monsieur Jean DELHOURME")
+                                          .setCompanyName("Acme Inc.")
+                                          .setStreetAddress(streetAddress1)
+                                          .setRegion("Tahiti")
+                                          .setLocality("Mahina")
+                                          .setDependentLocality("Orofara")
+                                          .setPostalCode("98709")
+                                          .setSortingCode("CEDEX 98703")
+                                          .setCountryCode("French Polynesia")
+                                          .setPhoneNumber("44.71.53")
+                                          .setEmailAddress("john@acme.inc")
+                                          .build();
         String profileGuid1 = mHelper.setProfile(profile);
         Assert.assertEquals(1, mHelper.getNumberOfProfilesForSettings());
         AutofillProfile storedProfile1 = mHelper.getProfile(profileGuid1);
@@ -403,20 +463,47 @@ public class PersonalDataManagerTest {
     @SmallTest
     @Feature({"Autofill"})
     public void testLabels() throws TimeoutException {
-        AutofillProfile profile1 = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "John Major", "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "",
-                "US", "555 123-4567", "jm@example.com", "");
+        AutofillProfile profile1 = AutofillProfile.builder()
+                                           .setFullName("John Major")
+                                           .setCompanyName("Acme Inc.")
+                                           .setStreetAddress("123 Main")
+                                           .setRegion("California")
+                                           .setLocality("Los Angeles")
+                                           .setPostalCode("90210")
+                                           .setCountryCode("US")
+                                           .setPhoneNumber("555 123-4567")
+                                           .setEmailAddress("jm@example.com")
+                                           .build();
         // An almost identical profile.
-        AutofillProfile profile2 = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "John Major", "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "",
-                "US", "555 123-4567", "jm-work@example.com", "");
+        AutofillProfile profile2 = AutofillProfile.builder()
+                                           .setFullName("John Major")
+                                           .setCompanyName("Acme Inc.")
+                                           .setStreetAddress("123 Main")
+                                           .setRegion("California")
+                                           .setLocality("Los Angeles")
+                                           .setPostalCode("90210")
+                                           .setCountryCode("US")
+                                           .setPhoneNumber("555 123-4567")
+                                           .setEmailAddress("jm-work@example.com")
+                                           .build();
         // A different profile.
-        AutofillProfile profile3 = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "Jasper Lundgren", "", "1500 Second Ave", "California", "Hollywood", "", "90068",
-                "", "US", "555 123-9876", "jasperl@example.com", "");
+        AutofillProfile profile3 = AutofillProfile.builder()
+                                           .setFullName("Jasper Lundgren")
+                                           .setStreetAddress("1500 Second Ave")
+                                           .setRegion("California")
+                                           .setLocality("Hollywood")
+                                           .setPostalCode("90068")
+                                           .setCountryCode("US")
+                                           .setPhoneNumber("555 123-9876")
+                                           .setEmailAddress("jasperl@example.com")
+                                           .build();
         // A profile where a lot of stuff is missing.
-        AutofillProfile profile4 = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "Joe Sergeant", "", "", "Texas", "Fort Worth", "", "", "", "US", "", "", "");
+        AutofillProfile profile4 = AutofillProfile.builder()
+                                           .setFullName("Joe Sergeant")
+                                           .setRegion("Texas")
+                                           .setLocality("Fort Worth")
+                                           .setCountryCode("US")
+                                           .build();
 
         mHelper.setProfile(profile1);
         mHelper.setProfile(profile2);
@@ -444,15 +531,38 @@ public class PersonalDataManagerTest {
     @Feature({"Autofill"})
     public void testProfilesFrecency() throws TimeoutException {
         // Create 3 profiles.
-        AutofillProfile profile1 = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "John Major", "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "",
-                "US", "555 123-4567", "jm@example.com", "");
-        AutofillProfile profile2 = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "John Major", "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "",
-                "US", "555 123-4567", "jm-work@example.com", "");
-        AutofillProfile profile3 = new AutofillProfile("" /* guid */, "" /* honorific prefix */,
-                "Jasper Lundgren", "", "1500 Second Ave", "California", "Hollywood", "", "90068",
-                "", "US", "555 123-9876", "jasperl@example.com", "");
+        AutofillProfile profile1 = AutofillProfile.builder()
+                                           .setFullName("John Major")
+                                           .setCompanyName("Acme Inc.")
+                                           .setStreetAddress("123 Main")
+                                           .setRegion("California")
+                                           .setLocality("Los Angeles")
+                                           .setPostalCode("90210")
+                                           .setCountryCode("US")
+                                           .setPhoneNumber("555 123-4567")
+                                           .setEmailAddress("jm@example.com")
+                                           .build();
+        AutofillProfile profile2 = AutofillProfile.builder()
+                                           .setFullName("John Major")
+                                           .setCompanyName("Acme Inc.")
+                                           .setStreetAddress("123 Main")
+                                           .setRegion("California")
+                                           .setLocality("Los Angeles")
+                                           .setPostalCode("90210")
+                                           .setCountryCode("US")
+                                           .setPhoneNumber("555 123-4567")
+                                           .setEmailAddress("jm-work@example.com")
+                                           .build();
+        AutofillProfile profile3 = AutofillProfile.builder()
+                                           .setFullName("Jasper Lundgren")
+                                           .setStreetAddress("1500 Second Ave")
+                                           .setRegion("California")
+                                           .setLocality("Hollywood")
+                                           .setPostalCode("90068")
+                                           .setCountryCode("US")
+                                           .setPhoneNumber("555 123-9876")
+                                           .setEmailAddress("jasperl@example.com")
+                                           .build();
 
         String guid1 = mHelper.setProfile(profile1);
         String guid2 = mHelper.setProfile(profile2);

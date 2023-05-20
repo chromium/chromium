@@ -18,10 +18,8 @@ int MediaMessageIdToGrdId(media::MessageId message_id) {
     case media::COMMUNICATIONS_AUDIO_DEVICE_NAME:
       return IDS_COMMUNICATIONS_AUDIO_DEVICE_NAME;
 #endif
-    default:
-      NOTREACHED();
-      return 0;
   }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace

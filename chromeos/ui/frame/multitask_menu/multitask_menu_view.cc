@@ -33,6 +33,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace chromeos {
 
@@ -181,6 +182,8 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
       close_callback_(std::move(close_callback)) {
   DCHECK(window);
   DCHECK(close_callback_);
+  SetBackground(views::CreateThemedSolidBackground(
+      cros_tokens::kCrosSysSystemBaseElevated));
   SetUseDefaultFillLayout(true);
 
   window_observation_.Observe(window);

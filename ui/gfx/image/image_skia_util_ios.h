@@ -29,10 +29,10 @@ GFX_EXPORT gfx::ImageSkiaRep ImageSkiaRepOfScaleFromUIImage(
 
 // Converts to UIImage from ImageSkia. The returned UIImage will be at the scale
 // of the ImageSkiaRep in |image_skia| which most closely matches the device's
-// scale factor (eg Retina iPad -> 2x). Returns an autoreleased UIImage.
+// scale factor (eg Retina iPad -> 2x).
 GFX_EXPORT UIImage* UIImageFromImageSkia(const gfx::ImageSkia& image_skia);
 
-// Converts to UIImage from ImageSkiaRep. Returns an autoreleased UIImage.
+// Converts to UIImage from ImageSkiaRep.
 GFX_EXPORT UIImage* UIImageFromImageSkiaRep(
     const gfx::ImageSkiaRep& image_skia_rep);
 

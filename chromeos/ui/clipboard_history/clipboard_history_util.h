@@ -48,11 +48,10 @@ void PasteClipboardItemById(
     int event_flags,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source);
 
-// Returns the icon that represents a clipboard item with the specified
-// `display_format`.
+// Returns the icon that represents the `descriptor`.
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
-ui::ImageModel GetIconForDisplayFormat(
-    crosapi::mojom::ClipboardHistoryDisplayFormat display_format);
+ui::ImageModel GetIconForDescriptor(
+    const crosapi::mojom::ClipboardHistoryItemDescriptor& descriptor);
 
 }  // namespace chromeos::clipboard_history
 

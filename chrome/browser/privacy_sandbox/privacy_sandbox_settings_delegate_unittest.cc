@@ -129,6 +129,30 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
 }
 
 TEST_F(PrivacySandboxSettingsDelegateTest,
+       RestrictedNoticeRequiredWithoutAccountToken) {
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        "true"}});
+  // Sign the user in.
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+
+  // Initially the account capability will be in an unknown state
+  EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
+
+  // Enable the account capability
+  SetRestrictedNoticeCapability(kTestEmail, true);
+
+  // Remove the refresh token for the account
+  signin::RemoveRefreshTokenForPrimaryAccount(
+      identity_test_env()->identity_manager());
+
+  // Capability is fetched even if the token is not available
+  EXPECT_TRUE(delegate()->IsSubjectToM1NoticeRestricted());
+}
+
+TEST_F(PrivacySandboxSettingsDelegateTest,
        RestrictedNoticeRequiredForSignedOutUser) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,

@@ -433,9 +433,10 @@ data/accessibility/aria/aria-banner-expected-blink.txt
 data/accessibility/aria/aria-banner-expected-mac.txt
 data/accessibility/aria/aria-banner-expected-win.txt
 data/accessibility/aria/aria-banner.html
-data/accessibility/aria/aria-blockquote-expected-android.txt
 data/accessibility/aria/aria-blockquote-expected-auralinux.txt
+data/accessibility/aria/aria-blockquote-expected-blink.txt
 data/accessibility/aria/aria-blockquote-expected-mac.txt
+data/accessibility/aria/aria-blockquote-expected-uia-win.txt
 data/accessibility/aria/aria-blockquote-expected-win.txt
 data/accessibility/aria/aria-blockquote.html
 data/accessibility/aria/aria-braillelabel-expected-android-external.txt
@@ -700,7 +701,9 @@ data/accessibility/aria/aria-figure.html
 data/accessibility/aria/aria-flowto-expected-android-external.txt
 data/accessibility/aria/aria-flowto-expected-blink.txt
 data/accessibility/aria/aria-flowto-expected-mac.txt
+data/accessibility/aria/aria-flowto-expected-win.txt
 data/accessibility/aria/aria-flowto-multiple-expected-blink.txt
+data/accessibility/aria/aria-flowto-multiple-expected-win.txt
 data/accessibility/aria/aria-flowto-multiple.html
 data/accessibility/aria/aria-flowto.html
 data/accessibility/aria/aria-focusable-subwidget-not-editable-expected-win.txt
@@ -2639,8 +2642,13 @@ data/accessibility/html/blockquote-expected-mac.txt
 data/accessibility/html/blockquote-expected-uia-win.txt
 data/accessibility/html/blockquote-expected-win.txt
 data/accessibility/html/blockquote-levels-expected-android-external.txt
+data/accessibility/html/blockquote-levels-expected-android.txt
+data/accessibility/html/blockquote-levels-expected-auralinux.txt
+data/accessibility/html/blockquote-levels-expected-blink.txt
 data/accessibility/html/blockquote-levels-expected-fuchsia.txt
 data/accessibility/html/blockquote-levels-expected-mac.txt
+data/accessibility/html/blockquote-levels-expected-uia-win.txt
+data/accessibility/html/blockquote-levels-expected-win.txt
 data/accessibility/html/blockquote-levels.html
 data/accessibility/html/blockquote.html
 data/accessibility/html/body-expected-android-external.txt
@@ -3775,6 +3783,7 @@ data/accessibility/html/link-inside-heading-expected-uia-win.txt
 data/accessibility/html/link-inside-heading-expected-win.txt
 data/accessibility/html/link-inside-heading.html
 data/accessibility/html/link-target-expected-auralinux.txt
+data/accessibility/html/link-target-expected-blink.txt
 data/accessibility/html/link-target-expected-win.txt
 data/accessibility/html/link-target.html
 data/accessibility/html/link.html
@@ -5088,6 +5097,8 @@ data/attribution_reporting/aggregatable_report_goldens/latest/report_5.json
 data/attribution_reporting/aggregatable_report_goldens/latest/report_5_cleartext_payloads.json
 data/attribution_reporting/aggregatable_report_goldens/latest/report_6.json
 data/attribution_reporting/aggregatable_report_goldens/latest/report_6_cleartext_payloads.json
+data/attribution_reporting/aggregatable_report_goldens/latest/report_7.json
+data/attribution_reporting/aggregatable_report_goldens/latest/report_7_cleartext_payloads.json
 data/attribution_reporting/aggregatable_report_goldens/version_/private_key.txt
 data/attribution_reporting/aggregatable_report_goldens/version_/public_key.json
 data/attribution_reporting/aggregatable_report_goldens/version_/report_1.json
@@ -5105,6 +5116,7 @@ data/attribution_reporting/aggregatable_report_goldens/version_/report_6_clearte
 data/attribution_reporting/databases/version_51.sql
 data/attribution_reporting/databases/version_52.sql
 data/attribution_reporting/databases/version_53.sql
+data/attribution_reporting/databases/version_54.sql
 data/attribution_reporting/inject_cross_app_web_third_party_ot.js
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
@@ -6390,6 +6402,8 @@ data/permissions-policy2.html.mock-http-headers
 data/permissions-policy3.html
 data/permissions-policy3.html.mock-http-headers
 data/permissions-policy4.html
+data/plain.txt
+data/plain.txt.mock-http-headers
 data/pointerlock_on_dropped_elem.html
 data/popup.html
 data/portals/raster-expected.png
@@ -6632,6 +6646,9 @@ data/session_storage/partition_deprecation_trial.html.mock-http-headers
 data/set_cookie.html
 data/set_cookie.html.mock-http-headers
 data/set_document_cookie.html
+data/shared_dictionary/blank.html
+data/shared_dictionary/test.dict
+data/shared_dictionary/test.dict.mock-http-headers
 data/shared_storage/customizable_module.js
 data/shared_storage/customizable_script.js
 data/shared_storage/erroneous_function_module.js

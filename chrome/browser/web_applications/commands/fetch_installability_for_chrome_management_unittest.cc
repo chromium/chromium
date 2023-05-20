@@ -48,6 +48,7 @@ class FetchInstallabilityForChromeManagementTest : public WebAppTest {
   blink::mojom::ManifestPtr CreateManifest() {
     auto manifest = blink::mojom::Manifest::New();
     manifest->start_url = kWebAppUrl;
+    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl);
     manifest->scope = kWebAppScope;
     manifest->short_name = base::ASCIIToUTF16(kWebAppName);
     return manifest;

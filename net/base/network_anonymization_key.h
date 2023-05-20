@@ -124,19 +124,6 @@ class NET_EXPORT NetworkAnonymizationKey {
     return NetworkAnonymizationKey(top_frame_site, is_cross_site, nonce);
   }
 
-  // TODO(crbug/1372769)
-  // Intended for temporary use in locations that should be using main frame and
-  // frame origin, but are currently only using frame origin, because the
-  // creating object may be shared across main frame objects. Having a special
-  // constructor for these methods makes it easier to keep track of locating
-  // callsites that need to have their NetworkAnonymizationKey filled in.
-  static NetworkAnonymizationKey ToDoUseTopFrameOriginAsWell(
-      const url::Origin& incorrectly_used_frame_origin) {
-    net::SchemefulSite incorrectly_used_frame_site =
-        net::SchemefulSite(incorrectly_used_frame_origin);
-    return NetworkAnonymizationKey(incorrectly_used_frame_site, false);
-  }
-
   // Creates a transient non-empty NetworkAnonymizationKey by creating an opaque
   // origin. This prevents the NetworkAnonymizationKey from sharing data with
   // other NetworkAnonymizationKey.

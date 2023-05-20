@@ -8,9 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_version.h"
 #include "components/feed/core/v2/public/ntp_feed_content_fetcher.h"
@@ -88,16 +86,9 @@ void FeedHandler::ArticleOpened() {
   if (!browser)
     return;
 
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view)
-    return;
-
-  // TODO(https://crbug.com/1341399): When possible, show the side panel feed in
-  // a way that doesn't depend on Views and remove the DEPS rule.
-  if (browser_view->side_panel_coordinator()) {
-    browser_view->side_panel_coordinator()->Show(SidePanelEntry::Id::kFeed);
-  }
+  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
+  DCHECK(side_panel_ui);
+  side_panel_ui->Show(SidePanelEntryId::kFeed);
 }
 
 }  // namespace ntp

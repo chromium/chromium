@@ -30,7 +30,7 @@
 #import "components/search_engines/default_search_policy_handler.h"
 #import "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/sync/driver/sync_policy_handler.h"
+#import "components/sync/service/sync_policy_handler.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/unified_consent/pref_names.h"
 #import "components/variations/pref_names.h"
@@ -38,7 +38,7 @@
 #import "ios/chrome/browser/policy/browser_signin_policy_handler.h"
 #import "ios/chrome/browser/policy/new_tab_page_location_policy_handler.h"
 #import "ios/chrome/browser/policy/restrict_accounts_policy_handler.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

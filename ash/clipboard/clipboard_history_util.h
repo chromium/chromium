@@ -161,6 +161,9 @@ ASH_EXPORT ui::ImageModel GetHtmlPreviewPlaceholder();
 std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>
 GetItemDescriptorsFrom(const std::list<ClipboardHistoryItem>& items);
 
+// Calculates the preferred width for clipboard history menu item views.
+int GetPreferredItemViewWidth();
+
 }  // namespace clipboard_history_util
 }  // namespace ash
 

@@ -756,7 +756,7 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
   std::vector<std::string> disabled_path_list;
 
   // Build a list of dictionaries for each service in the list.
-  std::vector<base::Value> complete_dict_list;
+  base::Value::List complete_dict_list;
   for (const base::Value& value : complete_path_list) {
     std::string service_path = value.GetString();
     const base::Value::Dict* properties =
@@ -775,7 +775,7 @@ void FakeShillManagerClient::SortManagerServices(bool notify) {
 
     base::Value::Dict properties_copy = properties->Clone();
     properties_copy.Set(kPathKey, service_path);
-    complete_dict_list.emplace_back(std::move(properties_copy));
+    complete_dict_list.Append(std::move(properties_copy));
   }
 
   // Sort the service list using the same logic as Shill's Service::Compare.

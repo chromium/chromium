@@ -1,2 +1,3 @@
+CONSOLE WARNING: Listener added for a synchronous 'DOMNodeRemovedFromDocument' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
 CONSOLE MESSAGE: Failed to execute 'appendChild' on 'Node': Only one element on document allowed.
 If this does not assert in a debug build, the test passed.

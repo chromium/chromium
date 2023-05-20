@@ -30,6 +30,7 @@ source_set("command_ids") {
     "//build:chromeos_buildflags",
     "//components/services/screen_ai/buildflags",
   ]
+  deps = [ "//ui/base:constants" ]
 }
 
 # On Windows, links chrome_dll.rc. On other platforms, does nothing so you can
@@ -225,6 +226,7 @@ static_library("test_support") {
   if (is_mac) {
     sources += [ "chrome_main_mac.mm" ]
 
+    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [ "//chrome:chrome_framework" ]
   }
 

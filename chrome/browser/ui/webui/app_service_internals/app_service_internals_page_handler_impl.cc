@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_page_handler_impl.h"
 
 #include <algorithm>
+#include <functional>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -12,69 +13,42 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
+#include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom-forward.h"
+#include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
-AppServiceInternalsPageHandlerImpl::AppServiceInternalsPageHandlerImpl(
-    Profile* profile,
-    mojo::PendingReceiver<
-        mojom::app_service_internals::AppServiceInternalsPageHandler> receiver)
-    : profile_(profile), receiver_(this, std::move(receiver)) {}
+namespace {
 
-AppServiceInternalsPageHandlerImpl::~AppServiceInternalsPageHandlerImpl() =
-    default;
+std::vector<mojom::app_service_internals::AppInfoPtr> GetApps(
+    apps::AppServiceProxy* proxy) {
+  std::vector<mojom::app_service_internals::AppInfoPtr> apps;
 
-void AppServiceInternalsPageHandlerImpl::GetApps(GetAppsCallback callback) {
-  DCHECK(profile_);
+  proxy->AppRegistryCache().ForEachApp([&apps](const apps::AppUpdate& update) {
+    std::stringstream debug_info;
+    debug_info << update;
 
-  std::vector<mojom::app_service_internals::AppInfoPtr> result;
+    apps.emplace_back(absl::in_place, update.AppId(), update.Name(),
+                      debug_info.str());
+  });
 
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          profile_)) {
-    std::move(callback).Run(std::move(result));
-    return;
-  }
+  base::ranges::sort(apps, std::less<>(),
+                     [](const auto& app) { return app->name; });
 
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  DCHECK(proxy);
-
-  proxy->AppRegistryCache().ForEachApp(
-      [&result](const apps::AppUpdate& update) {
-        std::stringstream debug_info;
-        debug_info << update;
-
-        result.emplace_back(absl::in_place, update.AppId(), update.Name(),
-                            debug_info.str());
-      });
-
-  std::sort(result.begin(), result.end(),
-            [](const auto& a, const auto& b) { return a->name < b->name; });
-  std::move(callback).Run(std::move(result));
+  return apps;
 }
 
-void AppServiceInternalsPageHandlerImpl::GetPreferredApps(
-    GetPreferredAppsCallback callback) {
-  DCHECK(profile_);
-
-  std::vector<mojom::app_service_internals::PreferredAppInfoPtr> result;
-
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          profile_)) {
-    std::move(callback).Run(std::move(result));
-    return;
-  }
-
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  DCHECK(proxy);
-
+std::vector<mojom::app_service_internals::PreferredAppInfoPtr> GetPreferredApps(
+    apps::AppServiceProxy* proxy) {
   base::flat_map<std::string, std::stringstream> debug_info_map;
 
   for (const auto& preferred_app : proxy->PreferredAppsList().GetReference()) {
@@ -82,6 +56,7 @@ void AppServiceInternalsPageHandlerImpl::GetPreferredApps(
         << preferred_app->intent_filter->ToString() << std::endl;
   }
 
+  std::vector<mojom::app_service_internals::PreferredAppInfoPtr> preferred_apps;
   for (const auto& kv : debug_info_map) {
     auto ptr = mojom::app_service_internals::PreferredAppInfo::New();
     ptr->id = kv.first;
@@ -94,43 +69,70 @@ void AppServiceInternalsPageHandlerImpl::GetPreferredApps(
           [&ptr](const apps::AppUpdate& update) { ptr->name = update.Name(); });
     }
     ptr->preferred_filters = kv.second.str();
-    result.push_back(std::move(ptr));
+    preferred_apps.push_back(std::move(ptr));
   }
 
-  std::sort(result.begin(), result.end(),
-            [](const auto& a, const auto& b) { return a->name < b->name; });
-  std::move(callback).Run(std::move(result));
+  base::ranges::sort(preferred_apps, std::less<>(),
+                     [](const auto& app) { return app->name; });
+  return preferred_apps;
 }
 
-void AppServiceInternalsPageHandlerImpl::GetPromiseApps(
-    GetPromiseAppsCallback callback) {
-  DCHECK(profile_);
-  std::vector<mojom::app_service_internals::PromiseAppInfoPtr> result;
+std::vector<mojom::app_service_internals::PromiseAppInfoPtr> GetPromiseApps(
+    apps::AppServiceProxy* proxy) {
+  std::vector<mojom::app_service_internals::PromiseAppInfoPtr> promise_apps;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    std::move(callback).Run(std::move(result));
+  if (!ash::features::ArePromiseIconsEnabled() ||
+      !proxy->PromiseAppRegistryCache()) {
+    return promise_apps;
+  }
+
+  for (const auto& promise_app :
+       proxy->PromiseAppRegistryCache()->GetAllPromiseApps()) {
+    std::stringstream debug_info;
+    debug_info << *promise_app;
+    promise_apps.emplace_back(absl::in_place,
+                              promise_app.get()->package_id.ToString(),
+                              debug_info.str());
+  }
+
+  base::ranges::sort(promise_apps, std::less<>(), [](const auto& promise_app) {
+    return promise_app->package_id;
+  });
+
+#endif
+  return promise_apps;
+}
+
+}  // namespace
+
+AppServiceInternalsPageHandlerImpl::AppServiceInternalsPageHandlerImpl(
+    Profile* profile,
+    mojo::PendingReceiver<
+        mojom::app_service_internals::AppServiceInternalsPageHandler> receiver)
+    : profile_(profile), receiver_(this, std::move(receiver)) {}
+
+AppServiceInternalsPageHandlerImpl::~AppServiceInternalsPageHandlerImpl() =
+    default;
+
+void AppServiceInternalsPageHandlerImpl::GetDebugInfo(
+    GetDebugInfoCallback callback) {
+  CHECK(profile_);
+
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+          profile_)) {
+    std::move(callback).Run(std::move(nullptr));
     return;
   }
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  if (!proxy || !proxy->PromiseAppRegistryCache()) {
-    std::move(callback).Run(std::move(result));
-    return;
-  }
-  for (auto const& promise_app :
-       proxy->PromiseAppRegistryCache()->GetAllPromiseApps()) {
-    std::stringstream debug_info;
-    debug_info << *promise_app;
-    result.emplace_back(absl::in_place,
-                        promise_app.get()->package_id.ToString(),
-                        debug_info.str());
-  }
+  CHECK(proxy);
 
-  std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) {
-    return a->package_id < b->package_id;
-  });
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  mojom::app_service_internals::DebugInfoPtr result =
+      mojom::app_service_internals::DebugInfo::New();
+  result->app_list = GetApps(proxy);
+  result->preferred_app_list = GetPreferredApps(proxy);
+  result->promise_app_list = GetPromiseApps(proxy);
 
   std::move(callback).Run(std::move(result));
 }

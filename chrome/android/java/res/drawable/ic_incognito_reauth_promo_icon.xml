@@ -20,10 +20,10 @@ found in the LICENSE file.
       android:pathData="M43,26C40.817,26 39,27.828 39,30.143V36H47V30.143C47,27.828 45.183,26 43,26Z"
       android:strokeWidth="2"
       android:fillColor="#00000000"
-      android:strokeColor="@color/baseline_primary_200"/>
+      android:strokeColor="@color/baseline_primary_80"/>
   <path
       android:pathData="M50,33C51.105,33 52,33.895 52,35V45C52,46.105 51.105,47 50,47H36C34.895,47 34,46.105 34,45V35C34,33.895 34.895,33 36,33H50ZM43,42C41.895,42 41,41.105 41,40C41,38.895 41.895,38 43,38C44.105,38 45,38.895 45,40C45,41.105 44.105,42 43,42Z"
-      android:fillColor="@color/baseline_primary_200"
+      android:fillColor="@color/baseline_primary_80"
       android:fillType="evenOdd"/>
   <path
       android:pathData="M8.25,24.584H33.75V26.001H8.25V24.584Z"

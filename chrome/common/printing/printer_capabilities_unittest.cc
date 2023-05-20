@@ -206,7 +206,11 @@ TEST_F(PrinterCapabilitiesTest, UserDefinedPapers) {
 
   // Verify the 3 paper sizes are the ones in |caps->papers|, followed by the
   // ones in |user_defined_papers|.
+#if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
+  VerifyPaper((*media_option)[0], "0 x 0 mm", "om_100x234um_0x0mm", {100, 234});
+#else
   VerifyPaper((*media_option)[0], "printer_foo", "printer_vendor", {100, 234});
+#endif
   VerifyPaper((*media_option)[1], "foo", "vendor", {200, 300});
   VerifyPaper((*media_option)[2], "bar", "vendor", {600, 600});
 }
@@ -272,7 +276,8 @@ TEST_F(PrinterCapabilitiesTest, PaperLocalizationsApplied) {
 
   // Verify the paper sizes are the ones in `caps->papers` in the correct
   // order.
-  VerifyPaper((*media_option)[0], "2 x 3 in", "oe_2x3_2x3in", {50800, 76200});
+  VerifyPaper((*media_option)[0], "2 x 3 in", "om_50800x76200um_50x76mm",
+              {50800, 76200});
   VerifyPaper((*media_option)[1], "3.5 x 5 in", "oe_photo-l_3.5x5in",
               {88900, 127000});
   VerifyPaper((*media_option)[2], "4 x 4 in", "oe_square-photo_4x4in",
@@ -281,18 +286,19 @@ TEST_F(PrinterCapabilitiesTest, PaperLocalizationsApplied) {
               {101600, 152400});
   VerifyPaper((*media_option)[4], "5 x 5 in", "oe_square-photo_5x5in",
               {127000, 127000});
-  VerifyPaper((*media_option)[5], "1 x 1 mm", "om_1-x-1_1x1mm", {1000, 1000});
-  VerifyPaper((*media_option)[6], "210 x 330 mm", "om_folio_210x330mm",
+  VerifyPaper((*media_option)[5], "9 x 12.1 in", "om_228600x307340um_228x307mm",
+              {228600, 307340});
+  VerifyPaper((*media_option)[6], "1 x 1 mm", "om_1000x1000um_1x1mm",
+              {1000, 1000});
+  VerifyPaper((*media_option)[7], "210 x 330 mm", "om_folio_210x330mm",
               {210000, 330000});
-  VerifyPaper((*media_option)[7], "215 x 315 mm", "om_folio-sp_215x315mm",
+  VerifyPaper((*media_option)[8], "215 x 315 mm", "om_folio-sp_215x315mm",
               {215000, 315000});
-  VerifyPaper((*media_option)[8], "215 x 400 mm", "om_photo-21x40_215x400mm",
-              {215000, 400000});
-  VerifyPaper((*media_option)[9], "A4", "iso_a4_210x297mm", {210000, 297000});
-  VerifyPaper((*media_option)[10], "Custom 1 (9 x 12.1 in)",
-              "na_custom-1_9x12.1in", {228600, 307340});
-  VerifyPaper((*media_option)[11], "Custom 2 (299.6 x 405.3 mm)",
-              "na_custom-2_299.6x405.3mm", {299600, 405300});
+  VerifyPaper((*media_option)[9], "215 x 400 mm",
+              "om_215000x400000um_215x400mm", {215000, 400000});
+  VerifyPaper((*media_option)[10], "300 x 405 mm",
+              "om_299600x405300um_299x405mm", {299600, 405300});
+  VerifyPaper((*media_option)[11], "A4", "iso_a4_210x297mm", {210000, 297000});
   VerifyPaper((*media_option)[12], "Letter", "na_letter_8.5x11in",
               {215900, 279400});
   VerifyPaper((*media_option)[13], "foo", "vendor", {200, 300});

@@ -106,6 +106,15 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
     DCHECK(!IsUseCounted(feature));
   }
 
+  wtf_size_t DeferredTimelinesCount(Element* element) const {
+    ElementAnimations* element_animations = element->GetElementAnimations();
+    if (!element_animations) {
+      return 0;
+    }
+    CSSAnimations& css_animations = element_animations->CssAnimations();
+    return css_animations.timeline_data_.GetDeferredTimelines().size();
+  }
+
  private:
   void SetUpAnimationClockForTesting() {
     GetPage().Animator().Clock().ResetTimeForTesting();
@@ -1037,7 +1046,7 @@ TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .defer {
-        scroll-timeline: t1 defer;
+        scroll-timeline: --t1 defer;
       }
       #scroller {
         overflow: auto;
@@ -1049,7 +1058,7 @@ TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
         height: 200px;
       }
       .ancestor-timeline {
-        scroll-timeline: t1 ancestor;
+        scroll-timeline: --t1 ancestor;
       }
     </style>
     <div class=defer>
@@ -1073,6 +1082,29 @@ TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
 
   // No timeline data should linger on #scroller's CSSAnimations.
   EXPECT_FALSE(css_animations.HasTimelines());
+}
+
+TEST_P(CSSAnimationsTest, DeferredTimelineUpdate) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=target>Target</div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+
+  EXPECT_EQ(0u, DeferredTimelinesCount(target));
+
+  target->SetInlineStyleProperty(CSSPropertyID::kTimelineScope, "--t1");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, DeferredTimelinesCount(target));
+
+  target->SetInlineStyleProperty(CSSPropertyID::kTimelineScope, "--t1, --t2");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(2u, DeferredTimelinesCount(target));
+
+  target->SetInlineStyleProperty(CSSPropertyID::kTimelineScope, "none");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(0u, DeferredTimelinesCount(target));
 }
 
 }  // namespace blink

@@ -1520,7 +1520,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, SlowPageFill) {
       embedded_test_server()->GetURL("/password/infinite_password_form.html");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // Wait for autofill.
   BubbleObserver bubble_observer(WebContents());
@@ -4217,7 +4217,7 @@ class MockPrerenderPasswordManagerDriver
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
               ShowKeyboardReplacingSurface,
-              (autofill::mojom::SubmissionReadinessState),
+              (autofill::mojom::SubmissionReadinessState, bool),
               (override));
 #endif
   MOCK_METHOD(void,
@@ -4291,7 +4291,8 @@ class MockPrerenderPasswordManagerDriver
     ON_CALL(*this, ShowKeyboardReplacingSurface)
         .WillByDefault([this](autofill::mojom::SubmissionReadinessState
                                   submission_readiness) {
-          impl_->ShowKeyboardReplacingSurface(submission_readiness);
+          impl_->ShowKeyboardReplacingSurface(submission_readiness,
+                                              /*is_webauthn=*/false);
         });
 #endif
     ON_CALL(*this, CheckSafeBrowsingReputation)

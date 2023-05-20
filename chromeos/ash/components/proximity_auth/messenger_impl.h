@@ -37,7 +37,6 @@ class MessengerImpl : public Messenger,
   void AddObserver(MessengerObserver* observer) override;
   void RemoveObserver(MessengerObserver* observer) override;
   void DispatchUnlockEvent() override;
-  void RequestDecryption(const std::string& challenge) override;
   void RequestUnlock() override;
   ash::secure_channel::ClientChannel* GetChannel() const override;
 
@@ -67,10 +66,6 @@ class MessengerImpl : public Messenger,
   // Handles an incoming "status_update" |message|, parsing and notifying
   // observers of the content.
   void HandleRemoteStatusUpdateMessage(const base::Value::Dict& message);
-
-  // Handles an incoming "decrypt_response" message, parsing and notifying
-  // observers of the decrypted content.
-  void HandleDecryptResponseMessage(const base::Value::Dict& message);
 
   // Handles an incoming "unlock_response" message, notifying observers of the
   // response.

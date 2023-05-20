@@ -57,6 +57,10 @@ namespace breadcrumbs {
 class ApplicationBreadcrumbsLogger;
 }  // namespace breadcrumbs
 
+namespace embedder_support {
+class OriginTrialsSettingsStorage;
+}  // namespace embedder_support
+
 namespace extensions {
 class ChromeExtensionsBrowserClient;
 }
@@ -151,6 +155,8 @@ class BrowserProcessImpl : public BrowserProcess,
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
       override;
   network::NetworkQualityTracker* network_quality_tracker() override;
+  embedder_support::OriginTrialsSettingsStorage*
+  GetOriginTrialsSettingsStorage() override;
   ProfileManager* profile_manager() override;
   PrefService* local_state() override;
   variations::VariationsService* variations_service() override;
@@ -258,8 +264,6 @@ class BrowserProcessImpl : public BrowserProcess,
   bool created_profile_manager_ = false;
   std::unique_ptr<ProfileManager> profile_manager_;
 
-  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
-
   const std::unique_ptr<PrefService> local_state_;
 
   // |metrics_services_manager_| owns this.
@@ -277,6 +281,9 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<
       network::NetworkQualityTracker::RTTAndThroughputEstimatesObserver>
       network_quality_observer_;
+
+  std::unique_ptr<embedder_support::OriginTrialsSettingsStorage>
+      origin_trials_settings_storage_;
 
   bool created_icon_manager_ = false;
   std::unique_ptr<IconManager> icon_manager_;

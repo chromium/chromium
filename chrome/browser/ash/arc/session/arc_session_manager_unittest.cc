@@ -345,12 +345,14 @@ class ArcSessionManagerTestBase : public testing::Test {
 
   bool WaitForDataRemoved(ArcSessionManager::State expected_state) {
     if (arc_session_manager()->state() !=
-        ArcSessionManager::State::REMOVING_DATA_DIR)
+        ArcSessionManager::State::REMOVING_DATA_DIR) {
       return false;
+    }
 
     base::RunLoop().RunUntilIdle();
-    if (arc_session_manager()->state() != expected_state)
+    if (arc_session_manager()->state() != expected_state) {
       return false;
+    }
 
     return true;
   }
@@ -694,7 +696,7 @@ TEST_F(ArcSessionManagerTest, Provisioning_Success) {
   EXPECT_FALSE(arc_session_manager()->sign_in_start_time().is_null());
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 
-  // Here, provisining is not yet completed, so kArcSignedIn should be false.
+  // Here, provisioning is not yet completed, so kArcSignedIn should be false.
   EXPECT_FALSE(prefs->GetBoolean(prefs::kArcSignedIn));
   EXPECT_FALSE(arc_session_manager()->pre_start_time().is_null());
   EXPECT_FALSE(arc_session_manager()->start_time().is_null());
@@ -1200,7 +1202,7 @@ TEST_F(ArcSessionManagerTest,
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
   EXPECT_FALSE(arc_session_manager()->skipped_terms_of_service_negotiation());
 
-  // Simualate internal restart.
+  // Simulate internal restart.
   arc_session_manager()->StopAndEnableArc();
   // Fake ARC session implementation synchronously calls stop callback and
   // session manager should be reactivated at this moment.
@@ -1416,14 +1418,15 @@ ArcProvisioningResult CreateProvisioningResult(
             absl::get<arc::mojom::CloudProvisionFlowError>(error))));
   }
 
-  if (absl::holds_alternative<ArcStopReason>(error))
+  if (absl::holds_alternative<ArcStopReason>(error)) {
     return ArcProvisioningResult(absl::get<ArcStopReason>(error));
+  }
 
   return ArcProvisioningResult(ChromeProvisioningTimeout{});
 }
 
 struct ProvisioningErrorDisplayTestParam {
-  // the reason for arc instance stopping
+  // The reason for arc instance stopping.
   absl::variant<arc::mojom::GeneralSignInError,
                 arc::mojom::GMSSignInError,
                 arc::mojom::GMSCheckInError,
@@ -1432,10 +1435,10 @@ struct ProvisioningErrorDisplayTestParam {
                 ChromeProvisioningTimeout>
       error;
 
-  // the error sent to arc support host
+  // The error sent to arc support host.
   ArcSupportHost::Error message;
 
-  // the error code sent to arc support host
+  // The error code sent to arc support host.
   absl::optional<int> arg;
 };
 
@@ -1516,19 +1519,13 @@ TEST_F(ArcSessionManagerArcAlwaysStartTest, BaseWorkflow) {
 
 class ArcSessionManagerPolicyTest
     : public ArcSessionManagerTestBase,
-      public testing::WithParamInterface<
-          std::tuple<bool, bool, bool, int, int>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, int, int>> {
  public:
   void SetUp() override {
     ArcSessionManagerTestBase::SetUp();
     AccountId account_id;
-    if (is_active_directory_user()) {
-      account_id = AccountId(AccountId::AdFromUserEmailObjGuid(
-          profile()->GetProfileUserName(), "1234567890"));
-    } else {
-      account_id = AccountId(AccountId::FromUserEmailGaiaId(
-          profile()->GetProfileUserName(), "1234567890"));
-    }
+    account_id = AccountId(AccountId::FromUserEmailGaiaId(
+        profile()->GetProfileUserName(), "1234567890"));
     GetFakeUserManager()->AddUser(account_id);
     GetFakeUserManager()->LoginUser(account_id);
     // Mocks OOBE environment so that IsArcOobeOptInActive() returns true.
@@ -1547,12 +1544,10 @@ class ArcSessionManagerPolicyTest
 
   bool arc_enabled_pref_managed() const { return std::get<0>(GetParam()); }
 
-  bool is_active_directory_user() const { return std::get<1>(GetParam()); }
-
-  bool is_oobe_optin() const { return std::get<2>(GetParam()); }
+  bool is_oobe_optin() const { return std::get<1>(GetParam()); }
 
   base::Value backup_restore_pref_value() const {
-    switch (std::get<3>(GetParam())) {
+    switch (std::get<2>(GetParam())) {
       case 0:
         return base::Value();
       case 1:
@@ -1565,7 +1560,7 @@ class ArcSessionManagerPolicyTest
   }
 
   base::Value location_service_pref_value() const {
-    switch (std::get<4>(GetParam())) {
+    switch (std::get<3>(GetParam())) {
       case 0:
         return base::Value();
       case 1:
@@ -1593,15 +1588,13 @@ TEST_P(ArcSessionManagerPolicyTest, SkippingTerms) {
   EXPECT_FALSE(prefs->GetBoolean(prefs::kArcSignedIn));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kArcTermsAccepted));
 
-  EXPECT_EQ(is_active_directory_user(),
-            IsActiveDirectoryUserForProfile(profile()));
-
   // Enable ARC through user pref or by policy, according to the test parameter.
-  if (arc_enabled_pref_managed())
+  if (arc_enabled_pref_managed()) {
     prefs->SetManagedPref(prefs::kArcEnabled,
                           std::make_unique<base::Value>(true));
-  else
+  } else {
     prefs->SetBoolean(prefs::kArcEnabled, true);
+  }
   EXPECT_TRUE(IsArcPlayStoreEnabledForProfile(profile()));
 
   // Assign test values to the prefs.
@@ -1620,19 +1613,14 @@ TEST_P(ArcSessionManagerPolicyTest, SkippingTerms) {
   arc_session_manager()->Initialize();
   arc_session_manager()->RequestEnable();
 
-  // Terms of Service are skipped if ARC is enabled by policy and both policies
-  // are either managed or unused (for Active Directory users a LaForge
-  // account is created, not a full Dasher account, where the policies have no
-  // meaning).
-  // Terms of Service are skipped if ARC is enabled by policy and if it's in
-  // session opt-in.
-  const bool prefs_unused = is_active_directory_user();
+  // Terms of Service are skipped if ARC is enabled by policy AND (both policies
+  // are managed OR if ARC is in session opt-in).
   const bool backup_managed = backup_restore_pref_value().is_bool();
   const bool location_managed = location_service_pref_value().is_bool();
   const bool is_arc_oobe_optin = is_oobe_optin();
   const bool expected_terms_skipping =
-      arc_enabled_pref_managed() && ((backup_managed && location_managed) ||
-                                     prefs_unused || !is_arc_oobe_optin);
+      arc_enabled_pref_managed() &&
+      ((backup_managed && location_managed) || !is_arc_oobe_optin);
   EXPECT_EQ(ArcSessionManager::State::CHECKING_REQUIREMENTS,
             arc_session_manager()->state());
   EXPECT_EQ(IsArcOobeOptInActive(), is_arc_oobe_optin);
@@ -1654,10 +1642,12 @@ TEST_P(ArcSessionManagerPolicyTest, SkippingTerms) {
 
   // In case Tos is skipped, B&R and GLS should not be set if not managed.
   if (expected_terms_skipping) {
-    if (!backup_managed)
+    if (!backup_managed) {
       EXPECT_FALSE(prefs->GetBoolean(prefs::kArcBackupRestoreEnabled));
-    if (!location_managed)
+    }
+    if (!location_managed) {
       EXPECT_FALSE(prefs->GetBoolean(prefs::kArcLocationServiceEnabled));
+    }
   }
 
   // Managed values for the prefs are unset.
@@ -1681,7 +1671,6 @@ INSTANTIATE_TEST_SUITE_P(
     // testing::Values is incompatible with move-only types, hence ints are used
     // as a proxy for base::Value.
     testing::Combine(testing::Bool() /* arc_enabled_pref_managed */,
-                     testing::Bool() /* is_active_directory_user */,
                      testing::Bool() /* is_oobe_optin */,
                      /* backup_restore_pref_value */
                      testing::Values(0,   // base::Value()
@@ -1816,8 +1805,9 @@ class ArcSessionOobeOptInNegotiatorTest
     arc_session_manager()->SetProfile(profile());
     arc_session_manager()->Initialize();
 
-    if (IsArcPlayStoreEnabledForProfile(profile()))
+    if (IsArcPlayStoreEnabledForProfile(profile())) {
       arc_session_manager()->RequestEnable();
+    }
   }
 
   void TearDown() override {
@@ -1836,7 +1826,7 @@ class ArcSessionOobeOptInNegotiatorTest
 
   void EnableSessionManager() {
     // To match ConsolidatedConsentScreen logic where Google Play Store
-    // enabled preferencee is set to true on showing UI, which eventually
+    // enabled preference is set to true on showing UI, which eventually
     // triggers a call to RequestEnable().
     arc_session_manager()->RequestEnable();
   }
@@ -2020,7 +2010,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Verifies that Android container behaves as expected.* This checks:
 //   * Whether ARC++ container alive or not on error.
 //   * Whether Android data is removed or not on error.
-//   * ARC++ Container is restared on retry.
+//   * ARC++ Container is restarted on retry.
 TEST_P(ArcSessionRetryTest, ContainerRestarted) {
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
@@ -2051,7 +2041,7 @@ TEST_P(ArcSessionRetryTest, ContainerRestarted) {
   arc_session_manager()->OnRetryClicked();
 
   if (GetParam().data_removed) {
-    // Check state goes from REMOVING_DATA_DIR to CHECKING_REQUIREMENTS
+    // Check state goes from REMOVING_DATA_DIR to CHECKING_REQUIREMENTS.
     EXPECT_TRUE(
         WaitForDataRemoved(ArcSessionManager::State::CHECKING_REQUIREMENTS));
   }
@@ -2070,7 +2060,7 @@ TEST_P(ArcSessionRetryTest, ContainerRestarted) {
   arc_session_manager()->Shutdown();
 }
 
-// Test that when files have already been expaneded, AddObserver() immediately
+// Test that when files have already been expanded, AddObserver() immediately
 // calls OnPropertyFilesExpanded().
 TEST_F(ArcSessionManagerTest, FileExpansion_AlreadyDone) {
   arc_session_manager()->reset_property_files_expansion_result();

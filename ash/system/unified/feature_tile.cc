@@ -16,6 +16,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
@@ -26,6 +27,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 using views::FlexLayout;
@@ -42,7 +44,6 @@ constexpr int kButtonRadius = 16;
 constexpr float kFocusRingPadding = 3.0f;
 
 // Primary tile constants
-constexpr int kPrimarySubtitleLineHeight = 18;
 constexpr gfx::Size kDefaultSize(180, kFeatureTileHeight);
 constexpr gfx::Size kIconButtonSize(36, 52);
 constexpr int kIconButtonCornerRadius = 12;
@@ -57,9 +58,10 @@ constexpr gfx::Size kCompactSize(kCompactWidth, kFeatureTileHeight);
 constexpr gfx::Size kCompactIconButtonSize(kIconSize, kIconSize);
 constexpr gfx::Insets kCompactIconButtonMargins =
     gfx::Insets::TLBR(6, 22, 4, 22);
-constexpr gfx::Size kCompactTitleContainerSize(kCompactWidth, 34);
 constexpr gfx::Size kCompactTitleLabelSize(kCompactWidth - 32,
                                            kCompactTitleLineHeight * 2);
+constexpr gfx::Insets kCompactTitleLabelMargins =
+    gfx::Insets::TLBR(0, 16, 6, 16);
 
 // Creates an ink drop hover highlight for `host` with `color_id`.
 std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
@@ -148,48 +150,38 @@ void FeatureTile::CreateChildViews() {
   icon_button_->SetEnabled(false);
   icon_button_->SetCanProcessEventsWithinSubtree(false);
 
+  if (is_compact) {
+    label_ = AddChildView(std::make_unique<views::Label>());
+    label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    label_->SetAutoColorReadabilityEnabled(false);
+    label_->SetPreferredSize(kCompactTitleLabelSize);
+    label_->SetProperty(views::kMarginsKey, kCompactTitleLabelMargins);
+    label_->SetMultiLine(true);
+    label_->SetMaxLines(2);  // Elide after 2 lines.
+    // Compact labels use kCrosAnnotation2 with a shorter custom line height.
+    label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosAnnotation2));
+    label_->SetLineHeight(kCompactTitleLineHeight);
+    return;
+  }
+
   auto* title_container = AddChildView(std::make_unique<FlexLayoutView>());
   title_container->SetCanProcessEventsWithinSubtree(false);
-  title_container->SetOrientation(is_compact
-                                      ? views::LayoutOrientation::kHorizontal
-                                      : views::LayoutOrientation::kVertical);
+  title_container->SetOrientation(views::LayoutOrientation::kVertical);
   title_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  title_container->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  title_container->SetPreferredSize(is_compact ? kCompactTitleContainerSize
-                                               : kTitlesContainerSize);
+  title_container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  title_container->SetPreferredSize(kTitlesContainerSize);
 
   label_ = title_container->AddChildView(std::make_unique<views::Label>());
+  label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetAutoColorReadabilityEnabled(false);
-  label_->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
-      ash::TypographyToken::kCrosButton2));
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
 
-  if (is_compact) {
-    label_->SetPreferredSize(kCompactTitleLabelSize);
-    // TODO(b/259459827): verify multi-line text is rendering correctly, not
-    // clipping and center aligned.
-    label_->SetMultiLine(true);
-    label_->SetLineHeight(kCompactTitleLineHeight);
-    label_->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
-        ash::TypographyToken::kCrosAnnotation2));
-  } else {
-    sub_label_ =
-        title_container->AddChildView(std::make_unique<views::Label>());
-    sub_label_->SetAutoColorReadabilityEnabled(false);
-    sub_label_->SetFontList(
-        ash::TypographyProvider::Get()->ResolveTypographyToken(
-            ash::TypographyToken::kCrosAnnotation1));
-    sub_label_->SetLineHeight(kPrimarySubtitleLineHeight);
-    if (chromeos::features::IsJellyEnabled()) {
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                            *sub_label_);
-    }
-  }
-  if (chromeos::features::IsJellyEnabled()) {
-    TypographyProvider::Get()->StyleLabel(
-        is_compact ? TypographyToken::kCrosAnnotation2
-                   : TypographyToken::kCrosButton2,
-        *label_);
-  }
+  sub_label_ = title_container->AddChildView(std::make_unique<views::Label>());
+  sub_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  sub_label_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                        *sub_label_);
 }
 
 void FeatureTile::SetIconClickable(bool clickable) {

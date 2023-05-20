@@ -172,9 +172,6 @@ TEST_F(PasswordSyncTokenVerifierTest, SyncTokenNotSet) {
   verifier_->OnTokenFetched(kSyncToken);
   EXPECT_EQ(*known_user_->GetPasswordSyncToken(saml_login_account_id_),
             kSyncToken);
-  EXPECT_EQ(
-      primary_profile_->GetPrefs()->GetString(prefs::kSamlPasswordSyncToken),
-      kSyncToken);
 }
 
 TEST_F(PasswordSyncTokenVerifierTest, InitialSyncTokenListEmpty) {
@@ -184,9 +181,6 @@ TEST_F(PasswordSyncTokenVerifierTest, InitialSyncTokenListEmpty) {
   verifier_->OnTokenCreated(kSyncToken);
   EXPECT_EQ(*known_user_->GetPasswordSyncToken(saml_login_account_id_),
             kSyncToken);
-  EXPECT_EQ(
-      primary_profile_->GetPrefs()->GetString(prefs::kSamlPasswordSyncToken),
-      kSyncToken);
 }
 
 TEST_F(PasswordSyncTokenVerifierTest, SyncTokenInitForUser) {
@@ -197,9 +191,6 @@ TEST_F(PasswordSyncTokenVerifierTest, SyncTokenInitForUser) {
   verifier_->OnTokenCreated(kSyncToken);
   EXPECT_EQ(*known_user_->GetPasswordSyncToken(saml_login_account_id_),
             kSyncToken);
-  EXPECT_EQ(
-      primary_profile_->GetPrefs()->GetString(prefs::kSamlPasswordSyncToken),
-      kSyncToken);
   // Start regular polling after session init.
   test_environment_.FastForwardBy(kSyncTokenCheckInterval);
   OnTokenVerified(true);
@@ -208,10 +199,6 @@ TEST_F(PasswordSyncTokenVerifierTest, SyncTokenInitForUser) {
 
 TEST_F(PasswordSyncTokenVerifierTest, SyncTokenPrefsAreNotSyncable) {
   CreatePasswordSyncTokenVerifier();
-  EXPECT_EQ(primary_profile_->GetPrefs()
-                ->FindPreference(prefs::kSamlPasswordSyncToken)
-                ->registration_flags(),
-            PrefRegistry::NO_REGISTRATION_FLAGS);
   EXPECT_EQ(primary_profile_->GetPrefs()
                 ->FindPreference(prefs::kSamlInSessionPasswordChangeEnabled)
                 ->registration_flags(),

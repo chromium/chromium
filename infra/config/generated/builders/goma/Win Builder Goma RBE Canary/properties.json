@@ -15,7 +15,6 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "goma_enable_global_file_stat_cache",
                   "mb",
                   "goma_canary",
                   "goma_use_local"

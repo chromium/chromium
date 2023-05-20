@@ -52,9 +52,9 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
       PrefetchStatus prefetch_status);
   void DidUpdatePrerenderStatus(
       const base::UnguessableToken& initiator_devtools_navigation_token,
-      const std::string& initiating_frame_id,
       const GURL& prerender_url,
-      PreloadingTriggeringOutcome status);
+      PreloadingTriggeringOutcome status,
+      absl::optional<PrerenderFinalStatus> prerender_status);
 
  private:
   Response Enable() override;
@@ -65,17 +65,11 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
 
-  void RetrievePrerenderActivationFromWebContents();
   void SendInitialPreloadEnabledState();
 
   RenderFrameHostImpl* host_ = nullptr;
 
   bool enabled_ = false;
-
-  // `initiator_devtools_navigation_token` of the most recently activated
-  // prerender.
-  absl::optional<base::UnguessableToken>
-      last_activated_prerender_initiator_devtools_navigation_token_;
 
   std::unique_ptr<Preload::Frontend> frontend_;
 };

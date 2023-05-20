@@ -1288,12 +1288,12 @@ public class TabImpl implements Tab {
         mIsLoading = false;
 
         RewindableIterator<TabObserver> observers = getTabObservers();
-        // When the renderer crashes for a hidden tab, we can skip notifying the observers to crash
-        // the underlying tab. This is because it is safe to keep the tab around without a renderer
-        // process, and since the tab is hidden, we don't need to show a sad tab. Since we already
-        // call setNeedsReload, when the tab goes foreground it will be reloaded instead of showing
-        // a sad tab.
-        if (!isHidden()) {
+        // When the renderer crashes for a hidden spare tab, we can skip notifying the observers to
+        // crash the underlying tab. This is because it is safe to keep the spare tab around without
+        // a renderer process, and since the tab is hidden, we don't need to show a sad tab. When
+        // the spare tab is used for navigation it will create a new renderer process.
+        // TODO(crbug.com/1447250): Make this logic more robust for all hidden tab cases.
+        if (!WarmupManager.getInstance().isSpareTab(this)) {
             while (observers.hasNext()) observers.next().onCrash(this);
         }
         mIsBeingRestored = false;
@@ -1380,6 +1380,11 @@ public class TabImpl implements Tab {
         assert nativePtr != 0;
         assert mNativeTabAndroid == 0;
         mNativeTabAndroid = nativePtr;
+    }
+
+    @CalledByNative
+    private long getLastShownTimestamp() {
+        return CriticalPersistedTabData.from(this).getTimestampMillis();
     }
 
     @CalledByNative

@@ -40,8 +40,7 @@ std::unique_ptr<message_center::Notification>
 LockScreenNotificationController::CreateNotification() {
   message_center::RichNotificationData optional_fields;
   optional_fields.pinned = true;
-  optional_fields.priority =
-      message_center::NotificationPriority::SYSTEM_PRIORITY;
+  optional_fields.priority = message_center::NotificationPriority::MIN_PRIORITY;
   return ash::CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       kLockScreenNotificationId,

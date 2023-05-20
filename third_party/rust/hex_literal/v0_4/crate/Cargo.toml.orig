@@ -1,0 +1,11 @@
+[package]
+name = "hex-literal"
+version = "0.4.1"
+authors = ["RustCrypto Developers"]
+license = "MIT OR Apache-2.0"
+description = "Macro for converting hexadecimal string to a byte array at compile time"
+documentation = "https://docs.rs/hex-literal"
+repository = "https://github.com/RustCrypto/utils"
+keywords = ["hex", "literals"]
+edition = "2021"
+rust-version = "1.57"

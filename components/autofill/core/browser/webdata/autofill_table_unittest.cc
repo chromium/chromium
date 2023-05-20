@@ -175,8 +175,10 @@ class AutofillTableProfileTest
     if (profile_source() == AutofillProfile::Source::kAccount) {
       // Only enable support for new setting visible features for kAccount
       // source.
-      features_.InitAndEnableFeature(
-          features::kAutofillEnableNewStreetLevelFieldTypes);
+      features_.InitWithFeatures(
+          {features::kAutofillEnableSupportForLandmark,
+           features::kAutofillEnableSupportForBetweenStreets},
+          {});
     }
   }
   AutofillProfile::Source profile_source() const { return GetParam(); }
@@ -965,9 +967,15 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
       ADDRESS_HOME_PREMISE_NAME, u"Premise", VerificationStatus::kUserVerified);
   ASSERT_EQ(home_profile.GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Street Name");
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+          features::kAutofillEnableSupportForLandmark)) {
     home_profile.SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_LANDMARK, u"Red tree", VerificationStatus::kObserved);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreets)) {
+    home_profile.SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva",
+        VerificationStatus::kObserved);
   }
 
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
@@ -1218,8 +1226,12 @@ TEST_P(AutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90025");
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+          features::kAutofillEnableSupportForLandmark)) {
     profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreets)) {
+    profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva");
   }
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
@@ -1665,15 +1677,8 @@ TEST_F(AutofillTableTest, RemoveAutofillDataModifiedBetween) {
 }
 
 TEST_F(AutofillTableTest, RemoveOriginURLsModifiedBetween) {
-  // Populate the autofill_profiles and credit_cards tables.
+  // Populate the credit_cards table.
   ASSERT_TRUE(db_->GetSQLConnection()->Execute(
-      "INSERT INTO autofill_profiles (guid, origin, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000000', '', 11);"
-      "INSERT INTO autofill_profiles (guid, origin, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000001', "
-      "       'https://www.example.com/', 21);"
-      "INSERT INTO autofill_profiles (guid, origin, date_modified) "
-      "VALUES('00000000-0000-0000-0000-000000000002', 'Chrome settings', 31);"
       "INSERT INTO credit_cards (guid, origin, date_modified) "
       "VALUES('00000000-0000-0000-0000-000000000003', '', 17);"
       "INSERT INTO credit_cards (guid, origin, date_modified) "
@@ -1684,24 +1689,8 @@ TEST_F(AutofillTableTest, RemoveOriginURLsModifiedBetween) {
       "       37);"));
 
   // Remove all origin URLs set in the bounded time range [21,27).
-  std::vector<std::unique_ptr<AutofillProfile>> profiles;
   table_->RemoveOriginURLsModifiedBetween(Time::FromTimeT(21),
-                                          Time::FromTimeT(27), &profiles);
-  ASSERT_EQ(1UL, profiles.size());
-  EXPECT_EQ("00000000-0000-0000-0000-000000000001", profiles[0]->guid());
-  sql::Statement s_autofill_profiles_bounded(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "SELECT date_modified, origin FROM autofill_profiles"));
-  ASSERT_TRUE(s_autofill_profiles_bounded.is_valid());
-  ASSERT_TRUE(s_autofill_profiles_bounded.Step());
-  EXPECT_EQ(11, s_autofill_profiles_bounded.ColumnInt64(0));
-  EXPECT_EQ(std::string(), s_autofill_profiles_bounded.ColumnString(1));
-  ASSERT_TRUE(s_autofill_profiles_bounded.Step());
-  EXPECT_EQ(21, s_autofill_profiles_bounded.ColumnInt64(0));
-  EXPECT_EQ(std::string(), s_autofill_profiles_bounded.ColumnString(1));
-  ASSERT_TRUE(s_autofill_profiles_bounded.Step());
-  EXPECT_EQ(31, s_autofill_profiles_bounded.ColumnInt64(0));
-  EXPECT_EQ(kSettingsOrigin, s_autofill_profiles_bounded.ColumnString(1));
+                                          Time::FromTimeT(27));
   sql::Statement s_credit_cards_bounded(
       db_->GetSQLConnection()->GetUniqueStatement(
           "SELECT date_modified, origin FROM credit_cards"));
@@ -1717,22 +1706,7 @@ TEST_F(AutofillTableTest, RemoveOriginURLsModifiedBetween) {
   EXPECT_EQ(kSettingsOrigin, s_credit_cards_bounded.ColumnString(1));
 
   // Remove all origin URLS.
-  profiles.clear();
-  table_->RemoveOriginURLsModifiedBetween(Time(), Time(), &profiles);
-  EXPECT_EQ(0UL, profiles.size());
-  sql::Statement s_autofill_profiles_all(
-      db_->GetSQLConnection()->GetUniqueStatement(
-          "SELECT date_modified, origin FROM autofill_profiles"));
-  ASSERT_TRUE(s_autofill_profiles_all.is_valid());
-  ASSERT_TRUE(s_autofill_profiles_all.Step());
-  EXPECT_EQ(11, s_autofill_profiles_all.ColumnInt64(0));
-  EXPECT_EQ(std::string(), s_autofill_profiles_all.ColumnString(1));
-  ASSERT_TRUE(s_autofill_profiles_all.Step());
-  EXPECT_EQ(21, s_autofill_profiles_all.ColumnInt64(0));
-  EXPECT_EQ(std::string(), s_autofill_profiles_all.ColumnString(1));
-  ASSERT_TRUE(s_autofill_profiles_all.Step());
-  EXPECT_EQ(31, s_autofill_profiles_all.ColumnInt64(0));
-  EXPECT_EQ(kSettingsOrigin, s_autofill_profiles_all.ColumnString(1));
+  table_->RemoveOriginURLsModifiedBetween(Time(), Time());
   sql::Statement s_credit_cards_all(db_->GetSQLConnection()->GetUniqueStatement(
       "SELECT date_modified, origin FROM credit_cards"));
   ASSERT_TRUE(s_credit_cards_all.is_valid());

@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/loader/resource_cache_manager.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -93,7 +94,14 @@ class ResourceCacheTest : public ContentBrowserTest {
 
 // Tests that histograms are recorded when there are two renderers that have
 // the same process isolation policy.
-IN_PROC_BROWSER_TEST_F(ResourceCacheTest, RecordHistograms) {
+// TODO(https://crbug.com/1446495): Flaky on Android. Enable this if we run
+// an experiment on Android. No plan to run an experiment on Android for now.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_RecordHistograms DISABLED_RecordHistograms
+#else
+#define MAYBE_RecordHistograms RecordHistograms
+#endif
+IN_PROC_BROWSER_TEST_F(ResourceCacheTest, MAYBE_RecordHistograms) {
   const GURL kUrl = embedded_test_server()->GetURL("/simple_page.html");
   const GURL kScriptUrl = embedded_test_server()->GetURL("/cacheable.js");
 
@@ -184,7 +192,17 @@ IN_PROC_BROWSER_TEST_F(ResourceCacheTest, HostingRendererDisconnected) {
 
 // Tests that same-origin-same-process navigation doesn't change resource cache
 // hosting renderer.
-IN_PROC_BROWSER_TEST_F(ResourceCacheTest, HostingRendererNavigateToSameOrigin) {
+// TODO(https://crbug.com/1446495): Flaky on Android. Enable this if we run
+// an experiment on Android. No plan to run an experiment on Android for now.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_HostingRendererNavigateToSameOrigin \
+  DISABLED_HostingRendererNavigateToSameOrigin
+#else
+#define MAYBE_HostingRendererNavigateToSameOrigin \
+  HostingRendererNavigateToSameOrigin
+#endif
+IN_PROC_BROWSER_TEST_F(ResourceCacheTest,
+                       MAYBE_HostingRendererNavigateToSameOrigin) {
   const GURL kUrl = embedded_test_server()->GetURL("/simple_page.html");
   const GURL kScriptUrl = embedded_test_server()->GetURL("/cacheable.js");
 

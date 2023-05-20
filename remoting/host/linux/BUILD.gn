@@ -51,6 +51,12 @@ if (enable_me2me_host) {
     }
   }
 
+  copy("remoting_me2me_host_copy_crash_uploader") {
+    sources = [ "$root_build_dir/remoting_crash_uploader" ]
+    outputs = [ "$root_build_dir/remoting/crash-uploader" ]
+    deps = [ "//remoting/host/crash:remoting_crash_uploader" ]
+  }
+
   remoting_localize("url_forwarder_desktop_entry") {
     sources = [ "crd-url-forwarder.desktop.jinja2" ]
     locale_list = remoting_locales_without_pseudolocales
@@ -65,6 +71,7 @@ if (enable_me2me_host) {
 
   group("remoting_dev_me2me_host") {
     deps = [
+      ":remoting_me2me_host_copy_crash_uploader",
       ":remoting_me2me_host_copy_host_wrapper",
       ":remoting_me2me_host_copy_script",
       ":remoting_me2me_host_copy_setup_url_forwarder_script",
@@ -73,6 +80,7 @@ if (enable_me2me_host) {
       ":remoting_native_messaging_host",
       ":url_forwarder_desktop_entry",
       "//remoting/host:remoting_me2me_host",
+      "//remoting/host/crash:remoting_crash_uploader",
       "//remoting/host/remote_open_url",
       "//remoting/host/webauthn:remote_webauthn",
     ]

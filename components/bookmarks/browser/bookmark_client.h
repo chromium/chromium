@@ -18,10 +18,6 @@
 
 class GURL;
 
-namespace base {
-struct UserMetricsAction;
-}
-
 namespace bookmarks {
 
 class BookmarkModel;
@@ -69,10 +65,6 @@ class BookmarkClient {
   // to always be visible or to only show them when not empty.
   virtual bool IsPermanentNodeVisibleWhenEmpty(BookmarkNode::Type type) = 0;
 
-  // Wrapper around RecordAction defined in base/metrics/user_metrics.h
-  // that ensure that the action is posted from the correct thread.
-  virtual void RecordAction(const base::UserMetricsAction& action) = 0;
-
   // Returns a task that will be used to load a managed root node. This task
   // will be invoked in the Profile's IO task runner.
   virtual LoadManagedNodeCallback GetLoadManagedNodeCallback() = 0;
@@ -101,6 +93,14 @@ class BookmarkClient {
   virtual void DecodeBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) = 0;
+
+  // Similar to BookmarkModelObserver::BookmarkNodeRemoved(), but transfers
+  // ownership of BookmarkNode, which allows undoing the operation.
+  virtual void OnBookmarkNodeRemovedUndoable(
+      BookmarkModel* model,
+      const BookmarkNode* parent,
+      size_t index,
+      std::unique_ptr<BookmarkNode> node) = 0;
 };
 
 }  // namespace bookmarks

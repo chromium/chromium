@@ -8,9 +8,9 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
@@ -298,7 +298,7 @@ TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(
   text_style.shadow = nullptr;
   if (marker.GetType() == DocumentMarker::kTextMatch)
     return text_style;
-  return HighlightPaintingUtils::HighlightPaintingStyle(
+  return HighlightStyleUtils::HighlightPaintingStyle(
       document, style, node, kPseudoIdTargetText, text_style, paint_info);
 }
 }  // namespace blink

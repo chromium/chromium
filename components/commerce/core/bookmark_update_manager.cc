@@ -85,7 +85,7 @@ void BookmarkUpdateManager::RunUpdate() {
   ScheduleUpdate();
 
   std::vector<const bookmarks::BookmarkNode*> nodes =
-      GetAllShoppingBookmarks(bookmark_model_);
+      shopping_service_->GetAllShoppingBookmarks();
 
   if (nodes.empty()) {
     return;

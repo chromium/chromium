@@ -4,6 +4,7 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 
+#include <string>
 #include <vector>
 
 #include "ash/clipboard/clipboard_history_util.h"
@@ -155,7 +156,8 @@ ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
       display_format_(CalculateDisplayFormat(*this)),
       display_image_(DetermineDisplayImage(*this)),
       display_text_(DetermineDisplayText(*this)),
-      icon_(DetermineIcon(*this)) {}
+      icon_(DetermineIcon(*this)),
+      file_count_(clipboard_history_util::GetCountOfCopiedFiles(data_)) {}
 
 ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem& other)
     : id_(other.id_),
@@ -165,7 +167,8 @@ ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem& other)
       display_format_(other.display_format_),
       display_image_(other.display_image_),
       display_text_(other.display_text_),
-      icon_(other.icon_) {}
+      icon_(other.icon_),
+      file_count_(other.file_count_) {}
 
 ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
     : id_(std::move(other.id_)),
@@ -175,7 +178,8 @@ ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
       display_format_(std::move(other.display_format_)),
       display_image_(std::move(other.display_image_)),
       display_text_(std::move(other.display_text_)),
-      icon_(std::move(other.icon_)) {}
+      icon_(std::move(other.icon_)),
+      file_count_(std::move(other.file_count_)) {}
 
 ClipboardHistoryItem::~ClipboardHistoryItem() = default;
 

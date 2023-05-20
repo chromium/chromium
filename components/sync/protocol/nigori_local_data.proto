@@ -98,6 +98,9 @@ message NigoriModel {
 
   // Some debug-only fields for passphrase type TRUSTED_VAULT_PASSPHRASE.
   optional NigoriSpecifics.TrustedVaultDebugInfo trusted_vault_debug_info = 13;
+
+  // Current Public-key.
+  optional PublicKey public_key = 14;
 }
 
 // Sync proto to store Nigori data in storage. Proto should be encrypted with

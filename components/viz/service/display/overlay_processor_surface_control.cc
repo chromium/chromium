@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/android/build_info.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_transform_utils.h"
@@ -32,9 +34,7 @@ gfx::RectF ClipFromOrigin(gfx::RectF input) {
 
 }  // namespace
 
-OverlayProcessorSurfaceControl::OverlayProcessorSurfaceControl()
-    : OverlayProcessorUsingStrategy(),
-      use_real_color_space_(features::UseRealVideoColorSpaceForDisplay()) {
+OverlayProcessorSurfaceControl::OverlayProcessorSurfaceControl() {
   // Android webview never sets |frame_sequence_number_| for the overlay
   // processor. Android Chrome does set this variable because it does call draw.
   // However, it also may not update this variable when displaying an overlay.
@@ -66,16 +66,15 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
   DCHECK(!candidates->empty());
 
   for (auto& candidate : *candidates) {
-    // If we're going to use real color space from media codec, we should check
-    // if it's supported.
-    if (use_real_color_space_) {
-      if (!gfx::SurfaceControl::SupportsColorSpace(candidate.color_space)) {
-        candidate.overlay_handled = false;
-        return;
-      }
-    } else {
-      candidate.color_space = gfx::ColorSpace::CreateSRGB();
+    if (auto override_color_space = GetOverrideColorSpace()) {
+      candidate.color_space = override_color_space.value();
       candidate.hdr_metadata.reset();
+    }
+
+    // Check if the ColorSpace is supported
+    if (!gfx::SurfaceControl::SupportsColorSpace(candidate.color_space)) {
+      candidate.overlay_handled = false;
+      return;
     }
 
     // Check if screen rotation matches.
@@ -167,6 +166,21 @@ void OverlayProcessorSurfaceControl::SetDisplayTransformHint(
 void OverlayProcessorSurfaceControl::SetViewportSize(
     const gfx::Size& viewport_size) {
   viewport_size_ = viewport_size;
+}
+
+absl::optional<gfx::ColorSpace>
+OverlayProcessorSurfaceControl::GetOverrideColorSpace() {
+  // Historically, android media was hardcoding color space to srgb and it
+  // wasn't possible to overlay with arbitrary colorspace on pre-S devices, so
+  // we keep old behaviour there.
+  static bool is_older_than_s =
+      base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_S;
+  if (is_older_than_s) {
+    return gfx::ColorSpace::CreateSRGB();
+  }
+
+  return absl::nullopt;
 }
 
 }  // namespace viz

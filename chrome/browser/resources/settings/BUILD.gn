@@ -69,7 +69,6 @@ build_webui("build") {
   # -----------------web_component_files start ---------------------------------
   web_component_files = [
     "a11y_page/a11y_page.ts",
-    "a11y_page/live_caption_section.ts",
     "about_page/about_page.ts",
     "appearance_page/appearance_fonts_page.ts",
     "appearance_page/appearance_page.ts",
@@ -216,7 +215,6 @@ build_webui("build") {
 
   if (!is_chromeos_ash) {
     web_component_files += [
-      "a11y_page/live_translate_section.ts",
       "people_page/manage_profile.ts",
       "relaunch_confirmation_dialog.ts",
       "languages_page/add_languages_dialog.ts",
@@ -229,6 +227,8 @@ build_webui("build") {
 
   if (!is_chromeos) {
     web_component_files += [
+      "a11y_page/live_caption_section.ts",
+      "a11y_page/live_translate_section.ts",
       "default_browser_page/default_browser_page.ts",
       "people_page/import_data_dialog.ts",
     ]
@@ -238,9 +238,11 @@ build_webui("build") {
     web_component_files += [ "languages_page/edit_dictionary_page.ts" ]
   }
 
-  if (!is_mac) {
+  if (!is_chromeos && !is_mac) {
     web_component_files += [ "a11y_page/captions_subpage.ts" ]
-  } else {
+  }
+
+  if (is_mac) {
     web_component_files += [ "autofill_page/passkey_edit_dialog.ts" ]
   }
 
@@ -304,13 +306,13 @@ build_webui("build") {
     "router.ts",
     "safety_check_page/safety_check_browser_proxy.ts",
     "safety_check_page/safety_check_extensions_browser_proxy.ts",
+    "safety_hub/safety_hub_browser_proxy.ts",
     "search_engines_page/search_engines_browser_proxy.ts",
     "search_settings.ts",
     "settings.ts",
     "settings_page/main_page_mixin.ts",
     "site_settings/constants.ts",
     "site_settings/site_settings_mixin.ts",
-    "site_settings/site_settings_permissions_browser_proxy.ts",
     "site_settings/site_settings_prefs_browser_proxy.ts",
     "site_settings/website_usage_browser_proxy.ts",
     "site_settings_page/site_settings_page_util.ts",

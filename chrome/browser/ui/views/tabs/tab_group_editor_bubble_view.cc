@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -203,6 +204,17 @@ class TabGroupEditorBubbleDelegate : public ui::DialogModelDelegate {
     if (title_at_opening_ != GetTitle()) {
       base::RecordAction(
           base::UserMetricsAction("TabGroups_TabGroupBubble_NameChanged"));
+    }
+
+    if (browser_->tab_strip_model()->group_model()->ContainsTabGroup(group_)) {
+      const int tab_count = browser_->tab_strip_model()
+                                ->group_model()
+                                ->GetTabGroup(group_)
+                                ->tab_count();
+      if (tab_count > 0) {
+        base::UmaHistogramCounts100("TabGroups.TabGroupBubble.TabCount",
+                                    tab_count);
+      }
     }
   }
 
@@ -755,6 +767,17 @@ void TabGroupEditorBubbleView::OnBubbleClose() {
   if (title_at_opening_ != title_field_->GetText()) {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_NameChanged"));
+  }
+
+  if (browser_->tab_strip_model()->group_model()->ContainsTabGroup(group_)) {
+    const int tab_count = browser_->tab_strip_model()
+                              ->group_model()
+                              ->GetTabGroup(group_)
+                              ->tab_count();
+    if (tab_count > 0) {
+      base::UmaHistogramCounts100("TabGroups.TabGroupBubble.TabCount",
+                                  tab_count);
+    }
   }
 }
 

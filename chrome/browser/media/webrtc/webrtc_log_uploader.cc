@@ -377,9 +377,9 @@ void WebRtcLogUploader::SetupMultipart(
 #endif
   net::AddMultipartValueForUpload("prod", product, kWebrtcLogMultipartBoundary,
                                   "", post_data);
-  net::AddMultipartValueForUpload("ver",
-                                  version_info::GetVersionNumber() + "-webrtc",
-                                  kWebrtcLogMultipartBoundary, "", post_data);
+  net::AddMultipartValueForUpload(
+      "ver", base::StrCat({version_info::GetVersionNumber(), "-webrtc"}),
+      kWebrtcLogMultipartBoundary, "", post_data);
   net::AddMultipartValueForUpload("guid", "0", kWebrtcLogMultipartBoundary, "",
                                   post_data);
   net::AddMultipartValueForUpload("type", "webrtc_log",

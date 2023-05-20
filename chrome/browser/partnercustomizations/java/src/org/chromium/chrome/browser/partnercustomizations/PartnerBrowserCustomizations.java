@@ -17,7 +17,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -209,23 +208,16 @@ public class PartnerBrowserCustomizations {
                     CustomizationProviderDelegateImpl delegate =
                             new CustomizationProviderDelegateImpl();
 
-                    if (ChromeFeatureList.sPartnerHomepageInitialLoadImprovement.isEnabled()) {
-                        // Refresh the homepage first, as it has potential impact on the URL to use
-                        // for the initial tab.
-                        if (isCancelled()) return null;
-                        mHomepageUriChanged = refreshHomepage(delegate);
-                    }
+                    // Refresh the homepage first, as it has potential impact on the URL to use
+                    // for the initial tab.
+                    if (isCancelled()) return null;
+                    mHomepageUriChanged = refreshHomepage(delegate);
 
                     if (isCancelled()) return null;
                     refreshIncognitoModeDisabled(delegate);
 
                     if (isCancelled()) return null;
                     refreshBookmarksEditingDisabled(delegate);
-
-                    if (!ChromeFeatureList.sPartnerHomepageInitialLoadImprovement.isEnabled()) {
-                        if (isCancelled()) return null;
-                        mHomepageUriChanged = refreshHomepage(delegate);
-                    }
                 } catch (Exception e) {
                     Log.w(TAG, "Fetching partner customizations failed", e);
                 }

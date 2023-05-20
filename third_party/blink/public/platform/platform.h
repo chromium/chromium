@@ -441,13 +441,6 @@ class BLINK_PLATFORM_EXPORT Platform {
     bool prefer_low_power_gpu = false;
     bool fail_if_major_performance_caveat = false;
     ContextType context_type = kGLES2ContextType;
-    // Offscreen contexts usually share a surface for the default frame buffer
-    // since they aren't rendering to it. Setting any of the following
-    // attributes causes creation of a custom surface owned by the context.
-    bool support_alpha = false;
-    bool support_depth = false;
-    bool support_antialias = false;
-    bool support_stencil = false;
 
     // Offscreen contexts created for WebGL should not need the RasterInterface
     // or GrContext. If either of these are set to false, it will not be
@@ -475,7 +468,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // created or initialized.
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
   CreateOffscreenGraphicsContext3DProvider(const ContextAttributes&,
-                                           const WebURL& top_document_url,
+                                           const WebURL& document_url,
                                            GraphicsInfo*);
 
   // Returns a newly allocated and initialized offscreen context provider,
@@ -488,7 +481,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // backed by an independent context. Returns null if the context cannot be
   // created or initialized.
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
-  CreateWebGPUGraphicsContext3DProvider(const WebURL& top_document_url);
+  CreateWebGPUGraphicsContext3DProvider(const WebURL& document_url);
 
   virtual gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() {
     return nullptr;
@@ -596,10 +589,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual bool UsesFakeCodecForPeerConnection() { return false; }
 
   virtual bool IsWebRtcEncryptionEnabled() { return true; }
-
-  virtual bool IsWebRtcStunOriginEnabled() { return false; }
-
-  virtual bool IsWebRtcSrtpAesGcmEnabled() { return false; }
 
   virtual bool IsWebRtcSrtpEncryptedHeadersEnabled() { return false; }
 

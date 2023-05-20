@@ -58,16 +58,25 @@ function initGA(
   // The type of .ga on Window doesn't include undefined, but since this part
   // is setup code for ga, it's possible to have a undefined case here. Disable
   // eslint which would think the condition is always true.
-  /* eslint-disable @typescript-eslint/strict-boolean-expressions */
+  //
+  // The type assertion is also needed since this part of invariant is
+  // maintained by ga itself, and all our usage only use the function call
+  // interface.
+  /* eslint-disable
+       @typescript-eslint/strict-boolean-expressions,
+       @typescript-eslint/consistent-type-assertions */
   window.ga = window.ga || ((...args: unknown[]) => {
                              (window.ga.q = window.ga.q || []).push(args);
                            }) as UniversalAnalytics.ga;
-  /* eslint-enable @typescript-eslint/strict-boolean-expressions */
+  /* eslint-enable
+       @typescript-eslint/strict-boolean-expressions,
+       @typescript-eslint/consistent-type-assertions */
   window.ga.l = Date.now();
   const a = document.createElement('script');
   const m = document.getElementsByTagName('script')[0];
   a.async = true;
   // TypeScript doesn't support setting .src to TrustedScriptURL yet.
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   a.src = gaLibraryURL as unknown as string;
   assert(m.parentNode !== null);
   m.parentNode.insertBefore(a, m);

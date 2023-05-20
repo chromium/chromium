@@ -7,11 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+
 // Enum specifying the type of Content Suggestions a module is showing.
 enum class ContentSuggestionsModuleType {
   kMostVisited,
   kShortcuts,
   kReturnToRecentTab,
+  kSetUpListSync,
+  kSetUpListDefaultBrowser,
+  kSetUpListAutofill,
+  kCompactedSetUpList,
 };
 
 // Represents the content suggestions collection view.
@@ -27,6 +33,9 @@ extern NSString* const
 // Represents the shortcuts of the content suggestions.
 extern NSString* const
     kContentSuggestionsShortcutsAccessibilityIdentifierPrefix;
+
+// Represents the Magic Stack ScrollView.
+extern NSString* const kMagicStackScrollViewAccessibilityIdentifier;
 
 // The bottom margin below the Most Visited section.
 extern const CGFloat kMostVisitedBottomMargin;
@@ -56,5 +65,10 @@ extern NSString* const kNumberOfNTPImpressionsRecordedKey;
 // Stores the first NTP impression for the MVT experiment.
 extern NSString* const kFirstImpressionRecordedTileAblationKey;
 extern NSString* const kDoneWithTileAblationKey;
+
+// Returns the matching ContentSuggestionsModuleType for a given
+// SetUpListItemType `type`.
+ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(
+    SetUpListItemType type);
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSTANTS_H_

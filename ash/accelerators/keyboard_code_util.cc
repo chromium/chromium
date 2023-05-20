@@ -34,9 +34,10 @@ absl::optional<std::u16string> GetSpecialStringForKeyboardCode(
       msg_id = IDS_KSV_MODIFIER_SHIFT;
       break;
     case ui::VKEY_COMMAND:
-      msg_id = Shell::Get()->keyboard_capability()->HasLauncherButton()
-                   ? IDS_KSV_MODIFIER_LAUNCHER
-                   : IDS_KSV_MODIFIER_SEARCH;
+      msg_id =
+          Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()
+              ? IDS_KSV_MODIFIER_LAUNCHER
+              : IDS_KSV_MODIFIER_SEARCH;
       break;
     case ui::VKEY_ESCAPE:
       msg_id = IDS_KSV_KEY_ESCAPE;

@@ -227,18 +227,4 @@ NGParagraphLineBreaker::AttemptParagraphBalancingCore(
       normal_lines.BreakToken());
 }
 
-// static
-void NGParagraphLineBreaker::PrepareForNextLine(
-    LayoutUnit balanced_available_width,
-    NGLineLayoutOpportunity* line_opportunity) {
-  DCHECK_GE(line_opportunity->line_right_offset,
-            line_opportunity->line_left_offset);
-  DCHECK_EQ(line_opportunity->line_left_offset,
-            line_opportunity->float_line_left_offset);
-  DCHECK_EQ(line_opportunity->line_right_offset,
-            line_opportunity->float_line_right_offset);
-  line_opportunity->line_right_offset =
-      line_opportunity->line_left_offset + balanced_available_width;
-}
-
 }  // namespace blink

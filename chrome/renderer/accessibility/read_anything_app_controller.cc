@@ -463,9 +463,8 @@ void ReadAnythingAppController::Distill() {
 void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
-  // Reset state.
-  // TODO(accessibility): this call resets selection, so it's not completely
-  // clear what `PostProcessSelection` does below.
+  // Reset state, including the current side panel selection so we can update
+  // it based on the new main panel selection in PostProcessSelection below.
   model_.Reset(content_node_ids);
 
   // Return early if any of the following scenarios occurred while waiting for
@@ -488,7 +487,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     model_.ComputeDisplayNodeIdsForDistilledTree();
   }
 
-  // Draw selection (if one exists) and the content.
+  // Draw the selection in the side panel (if one exists in the main panel) and
+  // the content if the selection is not in the distilled content.
   PostProcessSelection();
 
   // TODO(crbug.com/1266555): If no content nodes were identified, the
@@ -653,6 +653,16 @@ std::string ReadAnythingAppController::GetHtmlTag(
     return "div";
   }
 
+  // Some divs are marked with role=heading and aria-level=# to indicate
+  // the heading level, so use the <h#> tag directly.
+  if (ax_node->GetRole() == ax::mojom::Role::kHeading) {
+    std::string aria_level;
+    ax_node->GetHtmlAttribute("aria-level", &aria_level);
+    if (!aria_level.empty()) {
+      return "h" + aria_level;
+    }
+  }
+
   // Replace mark element with bold element for readability
   std::string html_tag =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
@@ -762,13 +772,21 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
     return;
   }
 
-  // Ignore the selection if it's collapsed, which is created by a simple click.
-  if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id)) {
+  // Ignore the new selection if it's collapsed, which is created by a simple
+  // click, unless there was a previous selection, in which case the click
+  // clears the selection, so we should tell the main page to clear too.
+  if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id) &&
+      !model_.has_selection()) {
     return;
   }
 
   ui::AXNode* focus_node = model_.GetAXNode(focus_node_id);
   ui::AXNode* anchor_node = model_.GetAXNode(anchor_node_id);
+  if (!focus_node || !anchor_node) {
+    // Sometimes when the side panel size is adjusted, a focus or anchor node
+    // may be null. Return early if this happens.
+    return;
+  }
   // Some text fields, like Gmail, allow a <div> to be returned as a focus
   // node for selection, most frequently when a triple click causes an entire
   // range of text to be selected, including non-text nodes. This can cause

@@ -26,6 +26,8 @@ constexpr int kAxisSize = 2;
 // Total key size for ActionMoveKey.
 constexpr size_t kActionMoveKeysSize = 4;
 
+constexpr char16_t kUnknownBind[] = u"?";
+
 // Directions from up, left, down, right.
 constexpr int kDirection[kActionMoveKeysSize][kAxisSize] = {{0, -1},
                                                             {-1, 0},

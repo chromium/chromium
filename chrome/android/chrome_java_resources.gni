@@ -478,7 +478,6 @@ chrome_java_resources = [
   "java/res/layout/autofill_server_data_label.xml",
   "java/res/layout/autofill_server_data_text_label.xml",
   "java/res/layout/autofill_update_address_profile_prompt.xml",
-  "java/res/layout/automotive_layout_with_back_button_toolbar.xml",
   "java/res/layout/bookmark_edit.xml",
   "java/res/layout/bookmark_folder_select_activity.xml",
   "java/res/layout/bookmark_main.xml",

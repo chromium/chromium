@@ -12,12 +12,12 @@ found in the LICENSE file.
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
         <!-- Color palettes -->
-        <item name="colorPrimary">@color/baseline_primary_600</item>
+        <item name="colorPrimary">@color/baseline_primary_40</item>
         <item name="colorPrimaryDark">@android:color/black</item>
-        <item name="colorPrimaryInverse">@color/baseline_primary_200</item>
-        <item name="colorOnPrimary">@color/baseline_primary_0</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_80</item>
+        <item name="colorOnPrimary">@color/baseline_primary_100</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_90</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_10</item>
         <item name="colorSecondaryContainer">@color/baseline_secondary_100</item>
         <item name="colorOnSecondaryContainer">@color/baseline_secondary_900</item>
         <item name="colorAccent">@macro/default_control_color_active</item>
@@ -112,12 +112,12 @@ found in the LICENSE file.
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
          <!-- Color palettes -->
-        <item name="colorPrimary">@color/baseline_primary_600</item>
+        <item name="colorPrimary">@color/baseline_primary_40</item>
         <item name="colorPrimaryDark">@android:color/black</item>
-        <item name="colorPrimaryInverse">@color/baseline_primary_200</item>
-        <item name="colorOnPrimary">@color/baseline_primary_0</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_80</item>
+        <item name="colorOnPrimary">@color/baseline_primary_100</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_90</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_10</item>
         <item name="colorSecondaryContainer">@color/baseline_secondary_100</item>
         <item name="colorOnSecondaryContainer">@color/baseline_secondary_900</item>
         <item name="colorAccent">@macro/default_control_color_active</item>
@@ -179,12 +179,12 @@ found in the LICENSE file.
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
         <!-- Color palettes -->
-        <item name="colorPrimary">@color/baseline_primary_600</item>
+        <item name="colorPrimary">@color/baseline_primary_40</item>
         <item name="colorPrimaryDark">@android:color/black</item>
-        <item name="colorPrimaryInverse">@color/baseline_primary_200</item>
-        <item name="colorOnPrimary">@color/baseline_primary_0</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_80</item>
+        <item name="colorOnPrimary">@color/baseline_primary_100</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_90</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_10</item>
         <item name="colorSecondaryContainer">@color/baseline_secondary_100</item>
         <item name="colorOnSecondaryContainer">@color/baseline_secondary_900</item>
         <item name="colorAccent">@macro/default_control_color_active</item>

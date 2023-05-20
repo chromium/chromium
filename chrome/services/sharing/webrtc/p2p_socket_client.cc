@@ -126,6 +126,16 @@ void P2PSocketClient::SendComplete(
     delegate_->OnSendComplete(send_metrics);
 }
 
+void P2PSocketClient::SendBatchComplete(
+    const std::vector<::network::P2PSendPacketMetrics>& send_metrics_batch) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (delegate_) {
+    for (const auto& send_metrics : send_metrics_batch) {
+      delegate_->OnSendComplete(send_metrics);
+    }
+  }
+}
+
 void P2PSocketClient::DataReceived(
     std::vector<network::mojom::P2PReceivedPacketPtr> packets) {
   DCHECK(!packets.empty());

@@ -11,9 +11,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -353,9 +355,26 @@ int AccessCodeCastIntegrationBrowserTest::WaitForAddSinkErrorCode(
 
 void AccessCodeCastIntegrationBrowserTest::WaitForPrefRemoval(
     const MediaSink::Id& sink_id) {
-  while (GetPrefUpdater()->GetMediaSinkInternalValueBySinkId(sink_id)) {
+  while (HasSinkInDevicesDict(sink_id)) {
     SpinRunLoop(AccessCodeCastSinkService::kExpirationDelay);
   }
+}
+
+bool AccessCodeCastIntegrationBrowserTest::HasSinkInDevicesDict(
+    const MediaSink::Id& sink_id) {
+  base::test::TestFuture<base::Value::Dict> media_sink;
+  GetPrefUpdater()->GetMediaSinkInternalValueBySinkId(sink_id,
+                                                      media_sink.GetCallback());
+
+  return !media_sink.Get().empty();
+}
+
+absl::optional<base::Time>
+AccessCodeCastIntegrationBrowserTest::GetDeviceAddedTimeFromDict(
+    const MediaSink::Id& sink_id) {
+  base::test::TestFuture<absl::optional<base::Time>> time;
+  GetPrefUpdater()->GetDeviceAddedTime(sink_id, time.GetCallback());
+  return time.Get();
 }
 
 void AccessCodeCastIntegrationBrowserTest::TearDownOnMainThread() {
@@ -392,7 +411,8 @@ AccessCodeCastIntegrationBrowserTest::CreateAccessCodeCastSinkService(
   Profile* profile = Profile::FromBrowserContext(context);
   return base::WrapUnique(new AccessCodeCastSinkService(
       profile, media_router_, mock_cast_media_sink_service_impl(),
-      DiscoveryNetworkMonitor::GetInstance(), profile->GetPrefs()));
+      DiscoveryNetworkMonitor::GetInstance(), profile->GetPrefs(),
+      std::make_unique<AccessCodeCastPrefUpdaterImpl>(profile->GetPrefs())));
 }
 
 MockCastMediaSinkServiceImpl*
@@ -582,11 +602,11 @@ void AccessCodeCastIntegrationBrowserTest::UpdateDeviceAddedTime(
     const MediaSinkInternal& cast_sink) {
   // Record the device added time of saved sinks to verify that this does not
   // change when the channel is opened.
-  if (!GetPrefUpdater()->GetDeviceAddedTime(cast_sink.id()).has_value()) {
+  auto fetched_added_time = GetDeviceAddedTimeFromDict(cast_sink.id());
+  if (!fetched_added_time.has_value()) {
     return;
   }
-  device_added_time_ =
-      GetPrefUpdater()->GetDeviceAddedTime(cast_sink.id()).value();
+  device_added_time_ = fetched_added_time.value();
 }
 
 }  // namespace media_router

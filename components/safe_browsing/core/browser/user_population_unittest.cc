@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/user_population.h"
 
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/buildflags.h"
@@ -158,8 +159,8 @@ TEST(GetUserPopulationTest, PopulatesUserAgent) {
   base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
   std::string user_agent =
-      version_info::GetProductNameAndVersionForUserAgent() + "/" +
-      version_info::GetOSType();
+      base::StrCat({version_info::GetProductNameAndVersionForUserAgent(), "/",
+                    version_info::GetOSType()});
   ChromeUserPopulation population =
       GetUserPopulation(pref_service.get(), false, false, false, false, nullptr,
                         absl::optional<size_t>(), absl::optional<size_t>(),

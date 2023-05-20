@@ -333,8 +333,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                 // state. Use onStartedHiding to avoid the bottom sheet being visible during the
                 // transition if there is one.
                 @Override
-                public void onStartedHiding(
-                        int layoutType, boolean showToolbar, boolean delayAnimation) {
+                public void onStartedHiding(int layoutType) {
                     if (layoutType != LayoutType.SIMPLE_ANIMATION) {
                         mSheetController.clearRequestsAndHide();
                     }

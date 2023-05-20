@@ -94,11 +94,10 @@ bool ExtensionJSBrowserTest::RunJavascriptTestF(bool is_async,
   args.emplace_back(test_name);
   std::vector<std::u16string> scripts;
 
-  base::Value test_runner_params(base::Value::Type::DICT);
+  base::Value::Dict test_runner_params;
   if (embedded_test_server()->Started()) {
-    test_runner_params.SetKey(
-        "testServerBaseUrl",
-        base::Value(embedded_test_server()->base_url().spec()));
+    test_runner_params.Set("testServerBaseUrl",
+                           embedded_test_server()->base_url().spec());
   }
 
   if (!libs_loaded_) {

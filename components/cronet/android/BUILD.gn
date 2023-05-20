@@ -49,7 +49,7 @@ generate_jni("cronet_jni_headers") {
 }
 
 generate_jni_registration("cronet_jni_registration") {
-  targets = [ ":cronet_impl_native_base_java" ]
+  java_targets = [ ":cronet_impl_native_base_java" ]
   manual_jni_registration = true
 
   # JNI generated is used for test and non-test apks.
@@ -313,6 +313,7 @@ android_library("cronet_impl_common_base_java") {
     "java/src/org/chromium/net/impl/NoOpLogger.java",
     "java/src/org/chromium/net/impl/Preconditions.java",
     "java/src/org/chromium/net/impl/QuicExceptionImpl.java",
+    "java/src/org/chromium/net/impl/RefCountDelegate.java",
     "java/src/org/chromium/net/impl/RequestFinishedInfoImpl.java",
     "java/src/org/chromium/net/impl/UrlRequestBase.java",
     "java/src/org/chromium/net/impl/UrlRequestBuilderImpl.java",
@@ -879,6 +880,7 @@ generate_jni("cronet_tests_jni_headers") {
 
 shared_library("cronet_tests") {
   testonly = true
+  assert_no_deps = [ ":cronet_static" ]
   sources = [
     # While "cronet_tests" cannot depend on "cronet_static", and hence cannot
     # call any Cronet functions, it can access fields of Cronet objects, so add
@@ -905,7 +907,6 @@ shared_library("cronet_tests") {
   ]
 
   deps = [
-    ":cronet",
     ":cronet_tests_jni_headers",
     "//base",
     "//base:i18n",
@@ -1003,8 +1004,10 @@ android_library("cronet_common_javatests") {
            "//base:base_java",
            "//base:jni_java",
            "//build/android:build_java",
+           "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
            "//third_party/android_sdk:android_test_base_java",
            "//third_party/androidx:androidx_annotation_annotation_java",
+           "//third_party/google-truth:google_truth_java",
            "//third_party/junit",
          ] + cronet_tests_androidx_common_srcs
 }
@@ -1103,6 +1106,8 @@ android_library("cronet_javatests") {
     ":cronet_api_java",
     ":cronet_impl_all_java",
     ":cronet_urlconnection_impl_java",
+    "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/android_sdk:android_test_base_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -1152,8 +1157,10 @@ instrumentation_test_apk("cronet_test_instrumentation_apk") {
            "//build/android:build_java",
            "//net/android:net_java",
            "//net/android:net_java_test_support",
+           "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
            "//third_party/android_sdk:android_test_base_java",
            "//third_party/android_sdk:android_test_mock_java",
+           "//third_party/google-truth:google_truth_java",
            "//third_party/hamcrest:hamcrest_core_java",
            "//third_party/junit",
            "//third_party/netty-tcnative:netty-tcnative-so",
@@ -1175,6 +1182,10 @@ instrumentation_test_apk("cronet_test_instrumentation_apk") {
       "test/proguard.cfg",
     ]
   }
+  srcjar_deps = [
+    ":cronet_jni_registration",
+    ":cronet_tests_jni_registration",
+  ]
 }
 
 android_resources("cronet_smoketests_platform_only_apk_resources") {
@@ -1201,9 +1212,11 @@ instrumentation_test_apk(
            ":cronet_impl_platform_base_java",
            ":cronet_smoketests_platform_only_apk_resources",
            "//base:base_java_test_support",
+           "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
            "//third_party/android_sdk:android_test_base_java",
            "//third_party/android_sdk:android_test_mock_java",
            "//third_party/androidx:androidx_multidex_multidex_java",
+           "//third_party/google-truth:google_truth_java",
            "//third_party/junit",
            "//third_party/netty4:netty_all_java",
          ] + cronet_tests_androidx_common_srcs
@@ -1217,6 +1230,10 @@ instrumentation_test_apk(
       "test/proguard.cfg",
     ]
   }
+
+  # There is no native in this apk. However, since we depend on //base, we
+  # need something that provides a GEN_JNI, as //base uses GEN_JNI.
+  srcjar_deps = [ ":cronet_jni_registration" ]
 }
 
 instrumentation_test_apk(
@@ -1236,8 +1253,10 @@ instrumentation_test_apk(
            "//base:base_java_test_support",
            "//base:jni_java",
            "//build/android:build_java",
+           "//third_party/android_deps:com_googlecode_java_diff_utils_diffutils_java",
            "//third_party/android_sdk:android_test_base_java",
            "//third_party/android_sdk:android_test_mock_java",
+           "//third_party/google-truth:google_truth_java",
            "//third_party/junit",
            "//third_party/netty4:netty_all_java",
          ] + cronet_tests_androidx_common_srcs
@@ -1252,6 +1271,10 @@ instrumentation_test_apk(
       "test/proguard.cfg",
     ]
   }
+
+  # There is no native in this apk. However, since we depend on //base, we
+  # need something that provides a GEN_JNI, as //base uses GEN_JNI.
+  srcjar_deps = [ ":cronet_jni_registration" ]
 }
 
 android_apk("cronet_perf_test_apk") {
@@ -1290,6 +1313,10 @@ android_apk("cronet_perf_test_apk") {
     ]
     enable_proguard_checks = false
   }
+  srcjar_deps = [
+    ":cronet_jni_registration",
+    ":cronet_tests_jni_registration",
+  ]
 }
 
 test("cronet_unittests_android") {
@@ -1374,7 +1401,7 @@ android_java_prebuilt("repackage_test_jars_without_jni_java") {
 
 # ...then, generate the final, merged GEN_JNI class...
 generate_jni_registration("cronet_tests_jni_registration") {
-  targets = _test_deps
+  java_targets = _test_deps
   manual_jni_registration = true
   testonly = true
   module_name = "cronet_tests"

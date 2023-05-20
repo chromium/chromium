@@ -99,6 +99,12 @@ class SavedTabGroupModel {
   // Calls the observer function SavedTabGroupUpdatedLocally.
   void UpdateTabInGroup(const base::Uuid& group_id, SavedTabGroupTab tab);
 
+  // Updates `tab` with a new `local_id`. Unlike `UpdateTabInGroup`, this method
+  // does not notify observers, as this is not a change we want to sync.
+  void UpdateLocalTabId(const base::Uuid& group_id,
+                        SavedTabGroupTab tab,
+                        absl::optional<base::Token> local_id);
+
   // Removes saved tab `tab_id` in the specified group denoted by
   // `group_id` if it exists. We delete the group instead if the last tab is
   // removed from it. If `update_tab_positions` is true, update the positions of

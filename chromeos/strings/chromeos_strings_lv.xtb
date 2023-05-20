@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> pārvalda šo ierīci un, iespējams, var pārraudzīt jūsu darbību.</translation>
 <translation id="1478594628797167447">Skeneris</translation>
 <translation id="1483493594462132177">Sūtīt</translation>
+<translation id="1488850966314959671">Nevienu iespējotu pielāgoto APN nevar izmantot, lai izveidotu savienojumu ar šo tīklu. Lai iegūtu plašāku informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
 <translation id="1491076385728777984">Notiek ierīces “<ph name="DEVICE_NAME" />” aparātprogrammatūras atjaunināšana</translation>
 <translation id="1499041187027566160">palielināt skaļumu</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> pārvalda šo lietotāju un, iespējams, var attālināti pārvaldīt iestatījumus un pārraudzīt lietotāja darbības.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Redzamība</translation>
 <translation id="1672499492233627739">Tīmekļa kameras video plūsma</translation>
 <translation id="1676557873873341166">Notiek videoklipa uzņemšana</translation>
+<translation id="1684279041537802716">Izcēluma krāsa</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS atrisinātāja pieejamība</translation>
 <translation id="1708602061922134366">Google zila</translation>
@@ -116,7 +118,9 @@
 <translation id="1801418420130173017">Atspējot tumšo motīvu</translation>
 <translation id="1807246157184219062">Gaišs</translation>
 <translation id="1827738518074806965">Mākslas galerija</translation>
+<translation id="1836553715834333258">Sistēmas krāsa</translation>
 <translation id="1838374766361614909">Notīrīt meklēšanas vaicājumu</translation>
+<translation id="1840474674287087346">Darbvirsmas krāsa</translation>
 <translation id="1851218745569890714">Videokonferences</translation>
 <translation id="1852934301711881861">Instalēt Chrome OS Flex</translation>
 <translation id="1856388568474281774">Lejupvērstais bulttaustiņš</translation>
@@ -217,6 +221,7 @@
 <translation id="2638662041295312666">Pierakstīšanās attēls</translation>
 <translation id="2640549051766135490">Atlasīts albums <ph name="TITLE" />: <ph name="DESC" /></translation>
 <translation id="267442004702508783">atsvaidzināt</translation>
+<translation id="268270014981824665">aptumšot tastatūru</translation>
 <translation id="2712812801627182647">TLS autentifikācijas atslēga</translation>
 <translation id="2713444072780614174">Balta</translation>
 <translation id="2717139507051041123">Atspējot tumšo krāsu režīmu</translation>
@@ -224,6 +229,7 @@
 <translation id="2744221223678373668">Koplietojamie</translation>
 <translation id="2751739896257479635">EAP 2. fāzes autentificēšana</translation>
 <translation id="2783010256799387990">NOKĀRTOTS</translation>
+<translation id="2787435249130282949">gaišāka tastatūra</translation>
 <translation id="2789486458103222910">Labi</translation>
 <translation id="2805756323405976993">Lietotnes</translation>
 <translation id="28232023175184696">Nevar izveidot savienojumu ar internetu. Noklikšķiniet, lai mēģinātu vēlreiz.</translation>
@@ -327,11 +333,13 @@
 <translation id="3749289110408117711">Faila nosaukums</translation>
 <translation id="3771294271822695279">Video faili</translation>
 <translation id="3784455785234192852">Bloķēt</translation>
+<translation id="380097101658023925">RGB vadīklas</translation>
 <translation id="38114475217616659">Notīrīt visu vēsturi</translation>
 <translation id="3820172043799983114">PIN nav derīgs.</translation>
 <translation id="3824259034819781947">Pievienot failus</translation>
 <translation id="3838338534323494292">Jaunā parole</translation>
 <translation id="3845880861638660475">Lai aizvērtu dialoglodziņu, nospiediet taustiņu kombināciju <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
+<translation id="3848280697030027394">aptumšot tastatūru</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3862598938296403232">Nepieciešams apraksts</translation>
@@ -403,6 +411,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Atspējot</translation>
 <translation id="439429847087949098">Notiek ierīces “<ph name="DEVICE_NAME" />” restartēšana</translation>
+<translation id="4395835743215824109">tastatūras pielāgošana</translation>
 <translation id="4415951057168511744">Pašreizējais iemiesojums</translation>
 <translation id="4422041425070339732">lejupvērstais bulttaustiņš</translation>
 <translation id="4425149324548788773">Mans disks</translation>
@@ -414,6 +423,7 @@
 <translation id="4454245904991689773">Skenēto attēlu saglabāšanas vieta</translation>
 <translation id="4479639480957787382">tīkls Ethernet</translation>
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
+<translation id="4500966230243561393">Saskarnes krāsa</translation>
 <translation id="4503223151711056411">Kreisais bulttaustiņš</translation>
 <translation id="4507392511610824664">palielināt spilgtumu</translation>
 <translation id="4511264077854731334">Portāls</translation>
@@ -426,6 +436,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh akumulators</translation>
 <translation id="4561801978359312462">SIM karte atbloķēta</translation>
 <translation id="4562494484721939086">Nav pakalpojuma</translation>
+<translation id="4573777384450697571">Neizdevās — beidzies sertifikāta derīguma termiņš</translation>
 <translation id="458794348635939462">Neizdevās atrisināt visu saimniekdatoru nosaukumus</translation>
 <translation id="4593212453765072419">Nepieciešama starpniekservera autentifikācija</translation>
 <translation id="4609350030397390689">Samazināt tastatūras spilgtumu</translation>
@@ -442,6 +453,7 @@
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4744944742468440486">Ar atlasīto saturu saistīta informācija</translation>
+<translation id="4771607256327216405">palielināt tastatūras spilgtumu</translation>
 <translation id="4773299976671772492">Pārtraukts</translation>
 <translation id="4782311465517282004">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot</translation>
 <translation id="4791000909649665275">Fotoattēlu skaits: <ph name="NUMBER" /></translation>
@@ -490,6 +502,8 @@
 <translation id="500920857929044050">Apturēt pārbaudi</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kad ekrāns ir īslaicīgi neaktīvs, tiek rādīti fotoattēli, laiks, informācija par laikapstākļiem un multivides informācija.</translation>
+<translation id="5035083460461104704">Motīva krāsa</translation>
+<translation id="5038292761217083259">daudzkrāsaina tastatūra</translation>
 <translation id="5039804452771397117">Atļaut</translation>
 <translation id="5049856988445523908">SIM karte bloķēta (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grupas nosaukums</translation>
@@ -539,7 +553,6 @@
 <translation id="5423849171846380976">Aktivizēts</translation>
 <translation id="5430931332414098647">Tūlītēja piesaiste</translation>
 <translation id="5431318178759467895">Krāsās</translation>
-<translation id="5456936324019847994">Nevar izveidot savienojumu ne ar vienu iespējoto pielāgoto APN. Lai iegūtu plašāku informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
 <translation id="5457599981699367932">Pārlūkot kā viesim</translation>
 <translation id="54609108002486618">Pārvaldītais</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Atlicis {0} mēģinājums.}zero{Atlikuši {0} mēģinājumi.}one{Atlicis {0} mēģinājums.}other{Atlikuši {0} mēģinājumi.}}</translation>
@@ -555,6 +568,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Atkārtoti skenēt</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
+<translation id="5584044598279886848">Nevar atspējot vai noņemt šo APN. Iespējotie pievienotie APN ir jāatspējo vai jānoņem.</translation>
 <translation id="5600027863942488546">Taustiņš “<ph name="KEY_NAME" />” ir pārbaudīts</translation>
 <translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5649768706273821470">Klausīties</translation>
@@ -639,6 +653,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Ieslēgt tumšo motīvu</translation>
 <translation id="6285899124799306373">atvērt palaišanas programmu</translation>
+<translation id="629550705077076970">tastatūras aptumšošana</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: pārbaude ir atcelta.</translation>
 <translation id="631063167932043783">Lietotne Izpēte</translation>
 <translation id="6319207335391420837">Ierīces “<ph name="DEVICE_NAME" />” aparātprogrammatūras atjaunināšana</translation>
@@ -657,6 +672,7 @@
 <translation id="6401427872449207797">meklēšana pārlūkā</translation>
 <translation id="6410257289063177456">Attēlu faili</translation>
 <translation id="641081527798843608">Temata atbilstība</translation>
+<translation id="6411934471898487866">tastatūras spilgtums</translation>
 <translation id="6412715219990689313">Iebūvētā tastatūra</translation>
 <translation id="6417265370957905582">Google asistents</translation>
 <translation id="6423239382391657905">Atvērt VPN</translation>
@@ -710,7 +726,6 @@
 <translation id="6798678288485555829">Navigācija tekstā</translation>
 <translation id="680983167891198932">Atslēga</translation>
 <translation id="6816797338148849397">Ir pieejama informācija, kas saistīta ar jūsu atlasīto saturu. Lai piekļūtu informācijai, nospiediet augšupvērsto bulttaustiņu.</translation>
-<translation id="6838167112108853532">Nevar atspējot vai noņemt šo APN. Iespējotie pievienotie APN ir jāatspējo vai jānoņem.</translation>
 <translation id="6853312040151791195">Izlādes ātrums</translation>
 <translation id="6889786074662672253">Kamēr notiek restartēšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Restartēšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
 <translation id="6900701049656042631">Šajā albumā nav fotoattēlu. Lai pievienotu fotoattēlus, pārejiet uz vietni <ph name="LINK" />.</translation>
@@ -740,6 +755,7 @@
 <translation id="7130438335435247835">Piekļuves punkta nosaukums (APN)</translation>
 <translation id="7131634559772719176">Pirmsiestatījuma apstiprināšana</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nosaukumu serveris}zero{Nosaukumu serveri}one{Nosaukumu serveri}other{Nosaukumu serveri}}</translation>
+<translation id="7135814714616751706">Meklēt īsinājumtaustiņus</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
 <translation id="714876143603641390">LAN savienojamība</translation>
@@ -770,6 +786,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; lai skatītu rezultātu Google meklēšanā, nospiediet meklēšanas taustiņu un atstarpes taustiņu.</translation>
 <translation id="7343649194310845056">Tīkla ierīces</translation>
+<translation id="7353413232959255829"><ph name="LIST_POSITION" />. meklēšanas rezultāts no <ph name="LIST_SIZE" /> rezultātiem vaicājumam <ph name="SEARCH_RESULT_TEXT" />. Lai pārietu uz saīsni, nospiediet taustiņu Enter.</translation>
 <translation id="7359657277149375382">Faila tips</translation>
 <translation id="73631062356239394">Diagnostikas datu kopīgošana</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -801,15 +818,18 @@
 <translation id="7618774594543487847">Neitrāls</translation>
 <translation id="7620771111601174153">Uzzināt vairāk palīdzības centrā</translation>
 <translation id="763165478673169849">Pēdējās atiestatīšanas laiks</translation>
+<translation id="7633068090678117093">Fona attēls</translation>
 <translation id="7648838807254605802">Liels HTTPS latentums</translation>
 <translation id="765159867434478292">Sadalīt</translation>
 <translation id="7656388927906093505">Ierīce ir pele.</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7665800271478495366">Mainīt iemiesojumu</translation>
+<translation id="7683228889864052081">tastatūras nokrāsa</translation>
 <translation id="7690294790491645610">Apstipriniet jauno paroli</translation>
 <translation id="7701040980221191251">Nav</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">tastatūras apgaismojums</translation>
 <translation id="773153675489693198">Ciklu laiks</translation>
 <translation id="7747039790905080783">Iepriekš kopīgota atslēga</translation>
 <translation id="7762130827864645708">Parole ir sekmīgi nomainīta. Lūdzu, turpmāk izmantojiet jauno paroli.</translation>
@@ -853,6 +873,7 @@
 <translation id="8075838845814659848">Atlikusī akumulatora enerģija</translation>
 <translation id="8076492880354921740">Cilnes</translation>
 <translation id="8082366717211101304">Nevar atrast DNS no Android lietotnēm</translation>
+<translation id="8082644724189923105">tastatūras zona</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
 <translation id="8094062939584182041">Atļaut Google nosūtīt jums e-pasta ziņojumu par šo problēmu</translation>
 <translation id="8104083085214006426">Jūs izmantojat atvērtu un nedrošu tīklu</translation>
@@ -901,6 +922,7 @@
 <translation id="8456761643544401578">Automātisks tumšais režīms</translation>
 <translation id="8461329675984532579">Mājas pakalpojumu sniedzēja nosaukums</translation>
 <translation id="8475690821716466388">Wi-Fi tīkls aizsargā nedrošs protokols WEP PSK</translation>
+<translation id="8476242415522716722">apakšējais tastatūras apgaismojums</translation>
 <translation id="8477551185774834963">DNS latentums nedaudz pārsniedz pieļaujamo slieksni</translation>
 <translation id="8483248364096924578">IP adrese</translation>
 <translation id="8491311378305535241">Nevar izveidot savienojumu ar HTTP vietnēm no Android lietotnēm, ja ir iespējots ugunsmūris</translation>
@@ -944,6 +966,7 @@
 <translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8855781559874488009">Nevar izveidot savienojumu ar HTTP vietnēm, ja ir iespējots ugunsmūris</translation>
 <translation id="885701979325669005">Krātuve</translation>
+<translation id="885704831271383379">tumšāka tastatūra</translation>
 <translation id="8863170912498892583">Iespējot tumšo motīvu</translation>
 <translation id="8863888432376731307">Pieejama informācija par vaicājumu “<ph name="QUERY" />”: <ph name="INTENT" /> un daudz kas cits</translation>
 <translation id="8864415976656252616">Nav ieteikta satura. Skatiet populārāko palīdzības saturu.</translation>
@@ -961,6 +984,7 @@
 <translation id="8930521118335213258">Vienādranga ierīce</translation>
 <translation id="8930622219860340959">Bezvadu</translation>
 <translation id="8936793075252196307">Klienta IP adrese</translation>
+<translation id="8944651180182756621">Palaidēja krāsa</translation>
 <translation id="894617464444543719">Ierīce ir tālrunis.</translation>
 <translation id="8957423540740801332">pa labi</translation>
 <translation id="8968751544471797276">Uzlādes ātrums</translation>
@@ -994,8 +1018,10 @@
 <translation id="9149391708638971077">Veikt atmiņas pārbaudi</translation>
 <translation id="9161276708550942948">atstarpes taustiņš</translation>
 <translation id="9173638680043580060">Atlicis mazāk par minūti</translation>
+<translation id="9174334653006917325">Lietotāja saskarnes krāsa</translation>
 <translation id="917720651393141712">Testēt</translation>
 <translation id="9188992814426075118">Tastatūra var automātiski pielāgot jūsu fona tapeti.</translation>
+<translation id="9189000703457422362">Nevar izveidot savienojumu ar šo tīklu, izmantojot automātiski noteiktos APN. Lai iegūtu plašāku informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Nevar sazināties ar vārteju no Android lietotnēm</translation>
 <translation id="9211490828691860325">Visas darbvietas</translation>

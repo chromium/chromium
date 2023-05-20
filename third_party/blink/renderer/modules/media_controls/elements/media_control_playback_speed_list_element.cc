@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -59,8 +60,9 @@ static const PlaybackSpeed kPlaybackSpeeds[] = {
 
 const QualifiedName& PlaybackRateAttrName() {
   // Save the playback rate in an attribute.
-  DEFINE_STATIC_LOCAL(QualifiedName, playback_rate_attr,
-                      (g_null_atom, "data-playback-rate", g_null_atom));
+  DEFINE_STATIC_LOCAL(
+      QualifiedName, playback_rate_attr,
+      (g_null_atom, AtomicString("data-playback-rate"), g_null_atom));
   return playback_rate_attr;
 }
 
@@ -91,7 +93,7 @@ class MediaControlPlaybackSpeedListElement::RequestAnimationFrameCallback final
 MediaControlPlaybackSpeedListElement::MediaControlPlaybackSpeedListElement(
     MediaControlsImpl& media_controls)
     : MediaControlPopupMenuElement(media_controls) {
-  setAttribute(html_names::kRoleAttr, "menu");
+  setAttribute(html_names::kRoleAttr, AtomicString("menu"));
   setAttribute(html_names::kAriaLabelAttr,
                WTF::AtomicString(GetLocale().QueryString(
                    IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_SUBMENU_TITLE)));
@@ -168,13 +170,15 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
       GetDocument(), CreateElementFlags());
   playback_speed_item_input->SetShadowPseudoId(
       AtomicString("-internal-media-controls-playback-speed-list-item-input"));
-  playback_speed_item_input->setAttribute(html_names::kAriaHiddenAttr, "true");
+  playback_speed_item_input->setAttribute(html_names::kAriaHiddenAttr,
+                                          keywords::kTrue);
   playback_speed_item_input->setType(input_type_names::kCheckbox);
   playback_speed_item_input->SetFloatingPointAttribute(PlaybackRateAttrName(),
                                                        playback_rate);
   if (playback_rate == MediaElement().playbackRate()) {
     playback_speed_item_input->SetChecked(true);
-    playback_speed_item->setAttribute(html_names::kAriaCheckedAttr, "true");
+    playback_speed_item->setAttribute(html_names::kAriaCheckedAttr,
+                                      keywords::kTrue);
     checked_item_ = playback_speed_item;
   }
   // Allows to focus the list entry instead of the button.
@@ -187,7 +191,8 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
   auto* playback_speed_label_span =
       MakeGarbageCollected<HTMLSpanElement>(GetDocument());
   playback_speed_label_span->setInnerText(playback_speed_label);
-  playback_speed_label_span->setAttribute(html_names::kAriaHiddenAttr, "true");
+  playback_speed_label_span->setAttribute(html_names::kAriaHiddenAttr,
+                                          keywords::kTrue);
   playback_speed_item->setAttribute(html_names::kAriaLabelAttr,
                                     WTF::AtomicString(playback_speed_label));
   playback_speed_item->ParserAppendChild(playback_speed_label_span);
@@ -199,12 +204,12 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
 Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedHeaderItem() {
   auto* header_item = MakeGarbageCollected<HTMLLabelElement>(GetDocument());
   header_item->SetShadowPseudoId(
-      "-internal-media-controls-playback-speed-list-header");
+      AtomicString("-internal-media-controls-playback-speed-list-header"));
   header_item->ParserAppendChild(
       Text::Create(GetDocument(),
                    GetLocale().QueryString(
                        IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_SUBMENU_TITLE)));
-  header_item->setAttribute(html_names::kRoleAttr, "button");
+  header_item->setAttribute(html_names::kRoleAttr, AtomicString("button"));
   header_item->setAttribute(html_names::kAriaLabelAttr,
                             AtomicString(GetLocale().QueryString(
                                 IDS_AX_MEDIA_BACK_TO_OPTIONS_BUTTON)));
@@ -231,7 +236,7 @@ void MediaControlPlaybackSpeedListElement::RefreshPlaybackSpeedListMenu() {
     playback_speed_item->setAttribute(html_names::kAriaPosinsetAttr,
                                       WTF::AtomicString::Number(i + 1));
     playback_speed_item->setAttribute(html_names::kRoleAttr,
-                                      "menuitemcheckbox");
+                                      AtomicString("menuitemcheckbox"));
     ParserAppendChild(playback_speed_item);
   }
   RequestAnimationFrameCallback* callback =

@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/file_util_icu.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
@@ -30,6 +29,10 @@
 #include "net/base/filename_util.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using content::BrowserContext;
 using content::StoragePartition;

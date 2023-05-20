@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_HISTOGRAMS_H_
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_HISTOGRAMS_H_
 
-#include "components/sync/driver/trusted_vault_histograms.h"
+#include "components/sync/service/trusted_vault_histograms.h"
 
 namespace trusted_vault {
 

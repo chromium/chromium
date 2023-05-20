@@ -15,21 +15,17 @@ namespace ash {
 namespace eche_app {
 
 // A class to store app stream entry point and last connection status.
-class AppsLaunchInfoProvider : public EcheConnectionStatusHandler::Observer {
+class AppsLaunchInfoProvider {
  public:
   explicit AppsLaunchInfoProvider(EcheConnectionStatusHandler*);
-  ~AppsLaunchInfoProvider() override;
+  ~AppsLaunchInfoProvider() = default;
 
   AppsLaunchInfoProvider(const AppsLaunchInfoProvider&) = delete;
   AppsLaunchInfoProvider& operator=(const AppsLaunchInfoProvider&) = delete;
 
-  // EcheConnectionStatusHandler::Observer:
-  void OnConnectionStatusForUiChanged(
-      mojom::ConnectionStatus connection_status) override;
+  void SetAppLaunchInfo(mojom::AppStreamLaunchEntryPoint entry_point);
 
-  void SetEntryPoint(mojom::AppStreamLaunchEntryPoint entry_point);
-
-  mojom::ConnectionStatus GetConnectionStatusForUi() {
+  mojom::ConnectionStatus GetConnectionStatusFromLastAttempt() {
     return last_connection_;
   }
 

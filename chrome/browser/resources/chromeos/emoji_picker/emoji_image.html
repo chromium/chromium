@@ -1,4 +1,8 @@
 <style>
+.emoji-image-container {
+  position: relative;
+}
+
 .emoji-image {
   background-color: var(--cros-button-stroke-color-secondary-disabled);
   border: none;
@@ -39,15 +43,53 @@
     opacity: 1;
   }
 }
+
+.emoji-image-clear {
+  background-color: var(--cros-bg-color);
+  border: 2px solid transparent;
+  border-radius: 4px;
+  box-shadow: var(--cr-elevation-1);
+  color: var(--cros-text-color-secondary);
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  height: var(--emoji-size);
+  outline: none;
+  padding: 7px 11px 7px 11px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  width: fit-content;
+  z-index: 200;
+}
+
+.emoji-image-clear:focus,
+.emoji-image-clear:active {
+  border: 2px solid var(--cros-toggle-color);
+}
+
 </style>
 
-<img data-index$="[[index]]"
-  class$="[[getImageClassName(loading)]]"
-  is="cr-auto-img"
-  auto-src="[[getUrl()]]"
-  alt$="[[item.base.name]]"
-  load="lazy"
-  on-mouseenter="handleMouseEnter"
-  on-focus="handleFocus"
-  on-click="handleClick"
-  on-load="handleLoad">
+<div class="emoji-image-container"
+  on-contextmenu="handleContextMenu"
+  on-mouseleave="handleMouseLeave"
+  style$="[[getStyles(item)]]">
+  <img data-index$="[[index]]"
+    class$="[[getImageClassName(loading)]]"
+    is="cr-auto-img"
+    auto-src="[[getUrl(item)]]"
+    alt$="[[item.base.name]]"
+    load="lazy"
+    on-mouseenter="handleMouseEnter"
+    on-focus="handleFocus"
+    on-click="handleClick"
+    on-load="handleLoad">
+
+  <template is="dom-if" if="[[showClearButton]]">
+    <button class="emoji-image-clear" on-click="handleClear">
+      Remove from recently used GIFs
+    </button>
+  </template>
+</div>

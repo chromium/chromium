@@ -121,26 +121,29 @@
     </template>
   </if>
 </div>
-<h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>
-<div class="card" id="blockedSites">
-  <div class="flex-centered single-line-label">
-    <div id="blockedSitesHeader" class="cr-secondary-text label">
-      [[getBlockedSitesDescription_(blockedSites_)]]
-    </div>
-  </div>
-  <div id="blockedSitesList" class="hr" hidden="[[!blockedSites_.length]]">
-    <template is="dom-repeat" items="[[blockedSites_]]">
-      <div class="flex-centered">
-        <site-favicon class="favicon" domain="[[item.urls.link]]">
-        </site-favicon>
-        <div class="blocked-site-content flex-centered" first$="[[!index]]">
-          <div class="label site-url">[[item.urls.shown]]</div>
-          <cr-icon-button class="icon-clear" id="removeBlockedValueButton"
-              on-click="onRemoveBlockedSiteClick_" title="$i18n{deletePassword}"
-              aria-label="[[getAriaLabelForBlockedSite_(item)]]">
-          </cr-icon-button>
-        </div>
+<div hidden="[[!blockedSites_.length]]">
+  <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>
+  <div class="card" id="blockedSites">
+    <div class="flex-centered single-line-label">
+      <div id="blockedSitesHeader" class="cr-secondary-text label">
+        $i18n{blockedSitesDescription}
       </div>
-    </template>
+    </div>
+    <div id="blockedSitesList" class="hr">
+      <template is="dom-repeat" items="[[blockedSites_]]">
+        <div class="flex-centered">
+          <site-favicon class="favicon" domain="[[item.urls.link]]">
+          </site-favicon>
+          <div class="blocked-site-content flex-centered" first$="[[!index]]">
+            <div class="label site-url">[[item.urls.shown]]</div>
+            <cr-icon-button class="icon-clear" id="removeBlockedValueButton"
+                on-click="onRemoveBlockedSiteClick_"
+                title="$i18n{deletePassword}"
+                aria-label="[[getAriaLabelForBlockedSite_(item)]]">
+            </cr-icon-button>
+          </div>
+        </div>
+      </template>
+    </div>
   </div>
 </div>

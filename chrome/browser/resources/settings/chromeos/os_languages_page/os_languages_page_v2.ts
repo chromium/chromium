@@ -20,7 +20,7 @@ import './change_device_language_dialog.js';
 import './os_add_languages_dialog.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import '/shared/settings/controls/settings_toggle_button.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';

@@ -11,7 +11,8 @@
 # Please see //extensions/docs/new_api_proposal.md for details.
 
 # For Extensions and Apps APIs.
-rdevlin.cronin@chromium.org
+rdevlin.cronin@chromium.org  # Primary for extensions APIs
+tjudkins@chromium.org        # Secondary for extensions APIs
 
 # For Chrome OS apps APIs.
 tbarzic@chromium.org

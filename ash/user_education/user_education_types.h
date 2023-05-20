@@ -21,6 +21,15 @@ enum class HelpBubbleId {
   kMaxValue = kWelcomeTourStatusArea,
 };
 
+// Each value uniquely identifies a style of help bubble. Help bubbles of
+// different styles may differ both in terms of appearance as well as behavior.
+enum class HelpBubbleStyle {
+  kMinValue,
+  kDialog = kMinValue,
+  kNudge,
+  kMaxValue = kNudge,
+};
+
 // Each value uniquely identifies a ping. Used to gate creation of new pings to
 // avoid spamming the user.
 enum class PingId {

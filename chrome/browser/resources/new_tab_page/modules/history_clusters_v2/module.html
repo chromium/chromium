@@ -1,7 +1,13 @@
 <style include="cr-icons">
   :host {
-    height: 500px;
+    --grid-gap: 8px;
+    height: 410px;
+    margin: 8px;
     width: 100%;
+  }
+
+  :host([format='wide']) {
+    height: 244px;
   }
 
   cr-icon-button {
@@ -14,17 +20,47 @@
   }
 
   #doneButton {
-    --cr-icon-image: url(chrome://resources/images/icon_checkmark.svg);
+      --cr-icon-image: url(chrome://resources/images/icon_checkmark.svg);
   }
 
-  ntp-module-header::part(title) {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  #layout {
+    display: grid;
+    grid-gap: var(--grid-gap);
+    grid-template: repeat(7, 1fr) / repeat(2, 1fr);
+    height: 100%;
+  }
+
+  :host([format='wide']) #layout  {
+    grid-template: repeat(4, 1fr) / repeat(4, 1fr);
+  }
+
+  ntp-module-header-v2 {
+    grid-column: 1 / 3;
+    grid-row: 1 / 3;
+  }
+
+  #first-tile {
+    grid-column: 1 / 2;
+    grid-row: 3 / 6;
+  }
+
+  #last-tile {
+    grid-column: 2 / 3;
+    grid-row: 3 / 6;
+  }
+
+  :host([format='wide']) #first-tile {
+    grid-column: 3 / 4;
+    grid-row: 1 / 5;
+  }
+
+  :host([format='wide']) #last-tile {
+    grid-column: 4 / 5;
+    grid-row: 1 / 5;
   }
 </style>
-<div id="content">
-    <ntp-module-header-v2
+<div id="layout">
+  <ntp-module-header-v2
       disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
                                   'modulesJourneyDisable')]]"
@@ -41,6 +77,14 @@
       [[i18n('modulesJourneysOpenAllInNewTabGroupButtonText')]]
     </button>
   </ntp-module-header-v2>
+  <ntp-history-clusters-visit-tile id="first-tile"
+      visit="[[cluster.visits.0]]" on-click="onVisitTileClick_"
+      on-aux-click="onVisitTileClick_">
+  </ntp-history-clusters-visit-tile>
+  <ntp-history-clusters-visit-tile id="last-tile"
+      visit="[[cluster.visits.1]]" on-click="onVisitTileClick_"
+      on-aux-click="onVisitTileClick_">
+  </ntp-history-clusters-visit-tile>
 </div>
 <cr-lazy-render id="infoDialogRender">
   <template>

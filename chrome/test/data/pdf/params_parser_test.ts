@@ -401,4 +401,54 @@ chrome.test.runTests([
 
     chrome.test.succeed();
   },
+  async function testParamsViewFitBH() {
+    const paramsParser = getParamsParser();
+
+    // Checking #view=FitB.
+    let params =
+        await paramsParser.getViewportFromUrlParams(`${URL}#view=FitBH`);
+    chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX_WIDTH, params.view);
+    chrome.test.assertTrue(params.boundingBox !== undefined);
+    chrome.test.assertEq(10, params.boundingBox.x);
+    chrome.test.assertEq(15, params.boundingBox.y);
+    chrome.test.assertEq(200, params.boundingBox.width);
+    chrome.test.assertEq(300, params.boundingBox.height);
+
+    params =
+        await paramsParser.getViewportFromUrlParams(`${URL}#view=FitBH,100`);
+    chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX_WIDTH, params.view);
+    chrome.test.assertTrue(params.boundingBox !== undefined);
+    chrome.test.assertEq(10, params.boundingBox.x);
+    chrome.test.assertEq(15, params.boundingBox.y);
+    chrome.test.assertEq(200, params.boundingBox.width);
+    chrome.test.assertEq(300, params.boundingBox.height);
+    chrome.test.assertEq(100, params.viewPosition);
+
+    chrome.test.succeed();
+  },
+  async function testParamsViewFitBV() {
+    const paramsParser = getParamsParser();
+
+    // Checking #view=FitB.
+    let params =
+        await paramsParser.getViewportFromUrlParams(`${URL}#view=FitBV`);
+    chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX_HEIGHT, params.view);
+    chrome.test.assertTrue(params.boundingBox !== undefined);
+    chrome.test.assertEq(10, params.boundingBox.x);
+    chrome.test.assertEq(15, params.boundingBox.y);
+    chrome.test.assertEq(200, params.boundingBox.width);
+    chrome.test.assertEq(300, params.boundingBox.height);
+
+    params =
+        await paramsParser.getViewportFromUrlParams(`${URL}#view=FitBV,100`);
+    chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX_HEIGHT, params.view);
+    chrome.test.assertTrue(params.boundingBox !== undefined);
+    chrome.test.assertEq(10, params.boundingBox.x);
+    chrome.test.assertEq(15, params.boundingBox.y);
+    chrome.test.assertEq(200, params.boundingBox.width);
+    chrome.test.assertEq(300, params.boundingBox.height);
+    chrome.test.assertEq(100, params.viewPosition);
+
+    chrome.test.succeed();
+  },
 ]);

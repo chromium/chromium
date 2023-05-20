@@ -75,8 +75,7 @@ bool FirstPartySetsPolicyServiceFactory::ServiceIsCreatedWithBrowserContext()
 
 void FirstPartySetsPolicyServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(kFirstPartySetsOverrides,
-                                   base::Value::Dict());
+  registry->RegisterDictionaryPref(kFirstPartySetsOverrides);
 }
 
 }  // namespace first_party_sets

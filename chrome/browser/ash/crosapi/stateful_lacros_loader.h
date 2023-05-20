@@ -39,7 +39,8 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
   void Load(LoadCompletionCallback callback) override;
   void Unload() override;
   void Reset() override;
-  void GetVersion(base::OnceCallback<void(base::Version)> callback) override;
+  void GetVersion(
+      base::OnceCallback<void(const base::Version&)> callback) override;
 
  private:
   // Called after Load.
@@ -49,12 +50,12 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
 
   // Called in GetVersion sequence on IsInstalledMayBlock returns result.
   void OnCheckInstalledToGetVersion(
-      base::OnceCallback<void(base::Version)> callback,
+      base::OnceCallback<void(const base::Version&)> callback,
       bool is_installed);
 
   // Called after gettin version from CrOSComponentManager::GetVersion.
   void OnGetVersionFromComponentManager(
-      base::OnceCallback<void(base::Version)> callback,
+      base::OnceCallback<void(const base::Version&)> callback,
       const base::Version& version);
 
   // Called in Unload sequence.

@@ -48,5 +48,11 @@ void SetItemState(PrefService* prefs,
 // Marks the item as completed.
 void MarkItemComplete(PrefService* prefs, SetUpListItemType type);
 
+// Returns `true` if the Set Up List has been disabled.
+bool IsSetUpListDisabled(PrefService* prefs);
+
+// Disables the SetUpList.
+void DisableSetUpList(PrefService* prefs);
+
 }  // namespace set_up_list_prefs
 #endif  // IOS_CHROME_BROWSER_NTP_SET_UP_LIST_PREFS_H_

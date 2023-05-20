@@ -37,6 +37,7 @@ namespace saved_desk_util {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDeskTemplatesEnabled, false);
+  registry->RegisterListPref(prefs::kAppLaunchAutomation);
 }
 
 bool AreDesksTemplatesEnabled() {

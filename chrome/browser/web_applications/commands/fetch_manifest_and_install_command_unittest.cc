@@ -136,6 +136,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
     manifest->name = u"foo";
     manifest->short_name = u"bar";
     manifest->start_url = kWebAppUrl;
+    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl);
     manifest->display = blink::mojom::DisplayMode::kStandalone;
     return manifest;
   }

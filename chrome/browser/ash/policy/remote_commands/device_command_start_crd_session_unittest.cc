@@ -27,10 +27,14 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_service.h"
 #include "remoting/host/chromeos/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -271,6 +275,8 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
 
+    ASSERT_TRUE(profile_manager_.SetUp());
+
     user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
     arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
     web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
@@ -292,6 +298,8 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     web_kiosk_app_manager_.reset();
     arc_kiosk_app_manager_.reset();
 
+    profile_ = nullptr;
+
     DeviceSettingsTestBase::TearDown();
   }
 
@@ -300,14 +308,21 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
                              const std::string& error_message);
   Payload CreateNotIdlePayload(int idle_time_in_sec);
 
+  void StartSessionOfTypeWithProfile(TestSessionType user_session_type) {
+    profile_ = test::StartSessionOfTypeWithProfile(
+        user_session_type, user_manager(), profile_manager_);
+  }
   void LogInAsKioskUser() {
-    test::StartSessionOfType(TestSessionType::kAutoLaunchedWebKioskSession,
-                             user_manager());
+    StartSessionOfTypeWithProfile(
+        TestSessionType::kAutoLaunchedWebKioskSession);
   }
 
   void LogInAsRegularUser() {
-    test::StartSessionOfType(TestSessionType::kUnaffiliatedUserSession,
-                             user_manager());
+    StartSessionOfTypeWithProfile(TestSessionType::kUnaffiliatedUserSession);
+  }
+
+  void LogInAsAffiliatedUser() {
+    StartSessionOfTypeWithProfile(TestSessionType::kAffiliatedUserSession);
   }
 
   void SetDeviceIdleTime(int idle_time_in_sec) {
@@ -365,6 +380,12 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     return success;
   }
 
+  void SetKioskTroubleshootingPolicyValue(bool enabled) {
+    ASSERT_TRUE(profile_);
+    profile_->GetPrefs()->SetBoolean(prefs::kKioskTroubleshootingToolsEnabled,
+                                     enabled);
+  }
+
   void RunJob(DeviceCommandStartCrdSessionJob& job,
               base::OnceClosure on_done_closure = base::OnceClosure()) {
     bool launched = job.Run(base::Time::Now(), base::TimeTicks::Now(),
@@ -395,6 +416,9 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   StubCrdHostDelegate crd_host_delegate_;
 
   test::ScopedFakeCrosNetworkConfig fake_cros_network_config_;
+
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  TestingProfile* profile_ = nullptr;
 };
 
 // Fixture for tests parameterized over the possible session types
@@ -402,6 +426,11 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 class DeviceCommandStartCrdSessionJobTestParameterized
     : public DeviceCommandStartCrdSessionJobTest,
       public ::testing::WithParamInterface<test::TestSessionType> {};
+
+// Fixture for tests parameterized over boolean values.
+class DeviceCommandStartCrdSessionJobTestBoolParameterized
+    : public DeviceCommandStartCrdSessionJobTest,
+      public ::testing::WithParamInterface<bool> {};
 
 Payload DeviceCommandStartCrdSessionJobTest::CreateSuccessPayload(
     const std::string& access_code) {
@@ -453,7 +482,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
 
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   Result result = RunJobAndWaitForResult();
 
   bool is_supported = [&]() {
@@ -576,6 +605,29 @@ TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldPassAdminEmailToDelegate) {
             crd_host_delegate().session_parameters().admin_email);
 }
 
+TEST_P(DeviceCommandStartCrdSessionJobTestBoolParameterized,
+       ShouldPassAllowTroubleshootingToolsToDelegateForKiosk) {
+  LogInAsKioskUser();
+
+  SetKioskTroubleshootingPolicyValue(GetParam());
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
+
+  EXPECT_EQ(
+      GetParam(),
+      crd_host_delegate().session_parameters().allow_troubleshooting_tools);
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobTestBoolParameterized,
+       ShouldNotPassAllowTroubleshootingToolsToDelegateForUser) {
+  LogInAsAffiliatedUser();
+
+  SetKioskTroubleshootingPolicyValue(GetParam());
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
+
+  EXPECT_FALSE(
+      crd_host_delegate().session_parameters().allow_troubleshooting_tools);
+}
+
 TEST_F(DeviceCommandStartCrdSessionJobTest,
        ShouldNotSetAdminEmailWhenNotSpecifiedInPayload) {
   LogInAsKioskUser();
@@ -596,7 +648,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
     return;
   }
 
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   Result result =
       RunJobAndWaitForResult(Payload().Set("ackedUserPresence", false));
 
@@ -638,7 +690,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
     return;
   }
 
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   Result result =
       RunJobAndWaitForResult(Payload().Set("ackedUserPresence", true));
 
@@ -661,7 +713,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
     return;
   }
 
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   Result result =
       RunJobAndWaitForResult(Payload().Set("ackedUserPresence", true));
 
@@ -705,7 +757,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
 
   base::HistogramTester histogram_tester;
 
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   RunJobAndWaitForResult();
 
   UmaSessionType expected_session_type = [&]() {
@@ -756,7 +808,7 @@ TEST_P(DeviceCommandStartCrdSessionJobTestParameterized,
     return;
   }
   base::HistogramTester histogram_tester;
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   RunJobAndWaitForResult();
   crd_host_delegate().TerminateCrdSession(duration);
 
@@ -882,7 +934,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   TestSessionType user_session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
 
   auto payload_without_crd_session_type = Payload();
 
@@ -904,7 +956,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   TestSessionType user_session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
 
   Result result = RunJobAndWaitForResult(
       Payload().Set("crdSessionType", CrdSessionType::REMOTE_SUPPORT_SESSION));
@@ -924,7 +976,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
   TestSessionType user_session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(user_session_type)));
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   AddActiveManagedNetwork();
 
   Result result = RunJobAndWaitForResult(
@@ -993,7 +1045,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     return;
   }
 
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
 
   EXPECT_ERROR(result, ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
@@ -1168,7 +1220,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     return;
   }
   AddActiveManagedNetwork();
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
 
   histogram_tester.ExpectUniqueSample(
@@ -1189,7 +1241,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     return;
   }
   AddActiveManagedNetwork();
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
 
   histogram_tester.ExpectUniqueSample(
@@ -1224,7 +1276,7 @@ TEST_P(DeviceCommandStartCrdSessionJobRemoteAccessTestParameterized,
     return;
   }
   AddActiveManagedNetwork();
-  StartSessionOfType(user_session_type, user_manager());
+  StartSessionOfTypeWithProfile(user_session_type);
   Result result = RunJobAndWaitForResult(RemoteAccessPayload());
   crd_host_delegate().TerminateCrdSession(duration);
 
@@ -1263,5 +1315,8 @@ INSTANTIATE_TEST_SUITE_P(
                       TestSessionType::kAffiliatedUserSession,
                       TestSessionType::kUnaffiliatedUserSession,
                       TestSessionType::kNoSession));
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeviceCommandStartCrdSessionJobTestBoolParameterized,
+                         testing::Bool());
 
 }  // namespace policy

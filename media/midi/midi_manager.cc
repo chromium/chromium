@@ -95,12 +95,8 @@ void MidiManager::StartSession(MidiManagerClient* client) {
   {
     base::AutoLock auto_lock(lock_);
 
-    if (clients_.find(client) != clients_.end() ||
-        pending_clients_.find(client) != pending_clients_.end()) {
-      // Should not happen. But just in case the renderer is compromised.
-      NOTREACHED();
-      return;
-    }
+    CHECK(clients_.find(client) == clients_.end());
+    CHECK(pending_clients_.find(client) == pending_clients_.end());
 
     if (initialization_state_ == InitializationState::COMPLETED) {
       // Platform dependent initialization was already finished for previously

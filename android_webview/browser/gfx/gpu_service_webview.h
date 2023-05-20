@@ -26,6 +26,8 @@ namespace android_webview {
 // This class acts like GpuServiceImpl for WebView. It owns gpu service objects
 // and provides handle to these gpu objects for WebView. There is only one copy
 // of this class in WebView.
+//
+// Lifetime: Singleton
 class GpuServiceWebView {
  public:
   // This static function makes sure there is a single copy of this class.

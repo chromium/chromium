@@ -316,4 +316,34 @@ std::vector<uint32_t> EnumerateSupportedPixFmts(
   return pix_fmts;
 }
 
+void GetSupportedResolution(
+    const base::RepeatingCallback<int(int, void*)>& ioctl_cb,
+    uint32_t pixelformat,
+    gfx::Size* min_resolution,
+    gfx::Size* max_resolution) {
+  constexpr gfx::Size kDefaultMaxCodedSize(1920, 1088);
+  *max_resolution = kDefaultMaxCodedSize;
+  constexpr gfx::Size kDefaultMinCodedSize(16, 16);
+  *min_resolution = kDefaultMinCodedSize;
+
+  v4l2_frmsizeenum frame_size;
+  memset(&frame_size, 0, sizeof(frame_size));
+  frame_size.pixel_format = pixelformat;
+  if (ioctl_cb.Run(VIDIOC_ENUM_FRAMESIZES, &frame_size) == kIoctlOk) {
+    if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
+      max_resolution->SetSize(frame_size.stepwise.max_width,
+                              frame_size.stepwise.max_height);
+      min_resolution->SetSize(frame_size.stepwise.min_width,
+                              frame_size.stepwise.min_height);
+    } else {
+#if BUILDFLAG(IS_CHROMEOS)
+      // All of Chrome-supported implementations support STEPWISE only.
+      CHECK_EQ(frame_size.type, V4L2_FRMSIZE_TYPE_STEPWISE);
+#endif
+    }
+  } else {
+    DLOGF(INFO) << "VIDIOC_ENUM_FRAMESIZES failed, using default values";
+  }
+}
+
 }  // namespace media

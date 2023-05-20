@@ -1,6 +1,12 @@
-#![allow(clippy::assertions_on_result_states, clippy::non_ascii_literal)]
+#![allow(
+    clippy::assertions_on_result_states,
+    clippy::items_after_statements,
+    clippy::non_ascii_literal,
+    clippy::octal_escapes
+)]
 
 use proc_macro2::{Ident, Literal, Punct, Spacing, Span, TokenStream, TokenTree};
+use std::iter;
 use std::panic;
 use std::str::{self, FromStr};
 
@@ -109,11 +115,34 @@ fn literal_string() {
     assert_eq!(Literal::string("foo").to_string(), "\"foo\"");
     assert_eq!(Literal::string("\"").to_string(), "\"\\\"\"");
     assert_eq!(Literal::string("didn't").to_string(), "\"didn't\"");
+    assert_eq!(
+        Literal::string("a\00b\07c\08d\0e\0").to_string(),
+        "\"a\\x000b\\x007c\\08d\\0e\\0\"",
+    );
 }
 
 #[test]
 fn literal_raw_string() {
     "r\"\r\n\"".parse::<TokenStream>().unwrap();
+
+    fn raw_string_literal_with_hashes(n: usize) -> String {
+        let mut literal = String::new();
+        literal.push('r');
+        literal.extend(iter::repeat('#').take(n));
+        literal.push('"');
+        literal.push('"');
+        literal.extend(iter::repeat('#').take(n));
+        literal
+    }
+
+    raw_string_literal_with_hashes(255)
+        .parse::<TokenStream>()
+        .unwrap();
+
+    // https://github.com/rust-lang/rust/pull/95251
+    raw_string_literal_with_hashes(256)
+        .parse::<TokenStream>()
+        .unwrap_err();
 }
 
 #[test]
@@ -122,6 +151,10 @@ fn literal_byte_string() {
     assert_eq!(
         Literal::byte_string(b"\0\t\n\r\"\\2\x10").to_string(),
         "b\"\\0\\t\\n\\r\\\"\\\\2\\x10\"",
+    );
+    assert_eq!(
+        Literal::byte_string(b"a\00b\07c\08d\0e\0").to_string(),
+        "b\"a\\x000b\\x007c\\08d\\0e\\0\"",
     );
 }
 
@@ -238,6 +271,30 @@ fn literal_parse() {
     assert!("- 1".parse::<Literal>().is_err());
     assert!("- 1.0".parse::<Literal>().is_err());
     assert!("-\"\"".parse::<Literal>().is_err());
+}
+
+#[test]
+fn literal_span() {
+    let positive = "0.1".parse::<Literal>().unwrap();
+    let negative = "-0.1".parse::<Literal>().unwrap();
+    let subspan = positive.subspan(1..2);
+
+    #[cfg(not(span_locations))]
+    {
+        let _ = negative;
+        assert!(subspan.is_none());
+    }
+
+    #[cfg(span_locations)]
+    {
+        assert_eq!(positive.span().start().column, 0);
+        assert_eq!(positive.span().end().column, 3);
+        assert_eq!(negative.span().start().column, 0);
+        assert_eq!(negative.span().end().column, 4);
+        assert_eq!(subspan.unwrap().source_text().unwrap(), ".");
+    }
+
+    assert!(positive.subspan(1..4).is_none());
 }
 
 #[test]
@@ -629,4 +686,17 @@ fn check_spans_internal(ts: TokenStream, lines: &mut &[(usize, usize, usize, usi
             }
         }
     }
+}
+
+#[test]
+fn byte_order_mark() {
+    let string = "\u{feff}foo";
+    let tokens = string.parse::<TokenStream>().unwrap();
+    match tokens.into_iter().next().unwrap() {
+        TokenTree::Ident(ident) => assert_eq!(ident, "foo"),
+        _ => unreachable!(),
+    }
+
+    let string = "foo\u{feff}";
+    string.parse::<TokenStream>().unwrap_err();
 }

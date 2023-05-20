@@ -69,8 +69,8 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
   weak_ptr_ = weak_factory_.GetWeakPtr();
 
   if (!WillGetGmbConfigFromGpu()) {
-    native_configurations_ = gpu::GetNativeGpuMemoryBufferConfigurations(
-        gpu_memory_buffer_support_.get());
+    native_configurations_ =
+        gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
     native_configurations_initialized_.Set();
   }
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
@@ -475,7 +475,7 @@ void HostGpuMemoryBufferManager::OnGpuMemoryBufferAllocated(
 bool HostGpuMemoryBufferManager::CreateBufferUsesGpuService(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
-  return gpu_memory_buffer_support_->GetNativeGpuMemoryBufferType() !=
+  return gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferType() !=
              gfx::EMPTY_BUFFER &&
          IsNativeGpuMemoryBufferConfiguration(format, usage);
 }

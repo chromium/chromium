@@ -1486,6 +1486,10 @@ absl::optional<int> AppsGridView::TilesPerPage(int page) const {
   return *max_rows * cols();
 }
 
+bool AppsGridView::IsAnimatingCardifiedState() const {
+  return false;
+}
+
 bool AppsGridView::MaybeStartPageFlip() {
   return false;
 }
@@ -2961,6 +2965,10 @@ bool AppsGridView::ItemViewsRequireLayers() const {
 
   if (setting_up_ideal_bounds_animation_)
     return true;
+
+  if (IsAnimatingCardifiedState()) {
+    return true;
+  }
 
   return false;
 }

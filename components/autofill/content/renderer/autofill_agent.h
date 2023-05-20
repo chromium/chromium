@@ -12,10 +12,10 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/content/renderer/form_cache.h"
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -39,6 +39,7 @@ class WebFormElement;
 namespace autofill {
 
 struct FormData;
+class FormCache;
 class PasswordAutofillAgent;
 class PasswordGenerationAgent;
 class FieldDataManager;
@@ -49,6 +50,14 @@ class FieldDataManager;
 // Each AutofillAgent is associated with exactly one RenderFrame and
 // communicates with exactly one ContentAutofillDriver throughout its entire
 // lifetime.
+//
+// AutofillAgent is deleted asynchronously because it may itself take action
+// that (via JavaScript) causes the associated RenderFrame's deletion.
+// AutofillAgent is pending deletion between OnDestruct() and ~AutofillAgent().
+// To handle this state, care must be taken to check for nullptrs:
+// - `unsafe_autofill_driver()`
+// - `unsafe_render_frame()`
+// - `form_cache_`
 //
 // This RenderFrame owns all forms and fields in the renderer-browser
 // communication:
@@ -82,8 +91,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::AutofillAgent> pending_receiver);
 
-  // Callers should not store the returned value longer than a function scope.
-  mojom::AutofillDriver& GetAutofillDriver();
+  // Callers must not store the returned value longer than a function scope.
+  // unsafe_autofill_driver() is nullptr if unsafe_render_frame() is nullptr and
+  // the `autofill_driver_` has not been bound yet.
+  mojom::AutofillDriver* unsafe_autofill_driver();
   mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
   // mojom::AutofillAgent:
@@ -117,6 +128,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void EnableHeavyFormDataScraping() override;
   void SetFieldsEligibleForManualFilling(
       const std::vector<FieldRendererId>& fields) override;
+  void GetPotentialLastFourCombinationsForStandaloneCvc(
+      base::OnceCallback<void(const std::vector<std::string>&)>
+          potential_matches) override;
 
   void FormControlElementClicked(const blink::WebFormControlElement& element);
 
@@ -212,7 +226,7 @@ class AutofillAgent : public content::RenderFrameObserver,
     FieldRendererId focused_field_id_;
     mojom::FocusedFieldType focused_field_type_ =
         mojom::FocusedFieldType::kUnknown;
-    AutofillAgent* agent_ = nullptr;
+    AutofillAgent& agent_;
   };
 
   // content::RenderFrameObserver:
@@ -223,6 +237,22 @@ class AutofillAgent : public content::RenderFrameObserver,
   void AccessibilityModeChanged(const ui::AXMode& mode) override;
   void OnDestruct() override;
 
+  // The RenderFrame* is nullptr while the AutofillAgent is pending deletion,
+  // between OnDestruct() and ~AutofillAgent().
+  content::RenderFrame* unsafe_render_frame() const {
+    return content::RenderFrameObserver::render_frame();
+  }
+
+  // Use unsafe_render_frame() instead.
+  template <typename T = int>
+  content::RenderFrame* render_frame(T* = 0) const {
+    static_assert(
+        std::is_void_v<T>,
+        "Beware that the RenderFrame may become nullptr by OnDestruct() "
+        "because AutofillAgent destructs itself asynchronously. Use "
+        "unsafe_render_frame() instead and make test that it is non-nullptr.");
+  }
+
   // Fires Mojo messages for a given form submission.
   void FireHostSubmitEvents(const blink::WebFormElement& form,
                             bool known_success,
@@ -230,10 +260,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   void FireHostSubmitEvents(const FormData& form_data,
                             bool known_success,
                             mojom::SubmissionSource source);
-
-  // Shuts the AutofillAgent down on RenderFrame deletion. Safe to call multiple
-  // times.
-  void Shutdown();
 
   // blink::WebAutofillClient:
   void TextFieldDidEndEditing(const blink::WebInputElement& element) override;
@@ -259,6 +285,8 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebFormControlElement& element) override;
   void FormElementReset(const blink::WebFormElement& form) override;
   void PasswordFieldReset(const blink::WebInputElement& element) override;
+  std::vector<blink::WebAutofillClient::FormIssue>
+  ProccessFormsAndReturnIssues() override;
 
   void HandleFocusChangeComplete();
   void SendFocusedInputChangedNotificationToBrowser(
@@ -302,8 +330,20 @@ class AutofillAgent : public content::RenderFrameObserver,
   void DoPreviewFieldWithValue(const std::u16string& value,
                                blink::WebInputElement& node);
 
-  // Notifies browser of new fillable forms in |render_frame|.
-  void ProcessForms();
+  // Notifies the AutofillDriver in the browser process of new and/or removed
+  // forms, modulo throttling.
+  //
+  // Throttling means that the actual work -- that is, extracting the forms and
+  // invoking AutofillDriver::FormsSeen() -- is delayed by (at least) 100 ms.
+  // All subsequent calls within the next (at least) 100 ms return early.
+  //
+  // Calls `callback(true)` asynchronously after the timer is completed.
+  // Otherwise, calls `callback(false)` immediately.
+  void ProcessForms(base::OneShotTimer& timer,
+                    base::OnceCallback<void(bool)> callback);
+
+  // Extracts new and/or removed forms and triggers AutofillDriver::FormsSeen().
+  void ProcessFormsUnthrottled(base::OnceCallback<void(bool)> callback);
 
   // Hides any currently showing Autofill popup.
   void HidePopup();
@@ -334,9 +374,13 @@ class AutofillAgent : public content::RenderFrameObserver,
   void BatchSelectOptionChange(const blink::WebFormControlElement& element);
   void BatchDataListOptionChange(const blink::WebFormControlElement& element);
 
-  // Formerly cached forms for all frames, now only caches forms for the current
-  // frame.
-  FormCache form_cache_;
+  // Return the next web node of `current_node` in the DOM. `next` determines
+  // the direction to traverse in.
+  blink::WebNode NextWebNode(const blink::WebNode& current_node, bool next);
+
+  // Contains the form of the document. Does not survive navigations and is
+  // reset when the AutofillAgent is pending deletion.
+  std::unique_ptr<FormCache> form_cache_;
 
   PasswordAutofillAgent* password_autofill_agent_;      // Weak reference.
   PasswordGenerationAgent* password_generation_agent_;  // Weak reference.
@@ -416,8 +460,13 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Timers for throttling handling of frequent events.
   base::OneShotTimer select_option_change_batch_timer_;
   base::OneShotTimer datalist_option_change_batch_timer_;
-  base::OneShotTimer reparse_timer_;
-  base::OneShotTimer reparse_with_response_timer_;
+  // TODO(crbug.com/1444566): Merge some or all of these timers?
+  base::OneShotTimer process_forms_after_dynamic_change_timer_;
+  base::OneShotTimer process_forms_reparse_timer_;
+  base::OneShotTimer process_forms_reparse_with_response_timer_;
+
+  // True iff DidDispatchDOMContentLoadedEvent() fired.
+  bool is_dom_content_loaded_ = false;
 
   // Will be set when accessibility mode changes, depending on what the new mode
   // is.

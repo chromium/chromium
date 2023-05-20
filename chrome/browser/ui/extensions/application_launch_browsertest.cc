@@ -22,7 +22,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
   display::DisplayManager* display_manager =
       ash::Shell::Get()->display_manager();
   display::test::DisplayManagerTestApi display_manager_test(display_manager);
-  display_manager_test.UpdateDisplay("800x800,801+0-800x800");
+  display_manager_test.UpdateDisplay("800x750,801+0-800x750");
   int64_t display1 = screen->GetPrimaryDisplay().id();
   int64_t display2 = display_manager_test.GetSecondaryDisplay().id();
   EXPECT_EQ(2, screen->GetNumDisplays());

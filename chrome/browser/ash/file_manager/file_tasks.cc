@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
+#include "chrome/browser/ash/file_manager/uma_enums.gen.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -484,6 +486,78 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
       modal_parent);
 }
 
+void RecordDriveOfflineUMAsGotDocsOfflineStats(
+    bool open_available,
+    drive::FileError error,
+    drivefs::mojom::DocsOfflineStatsPtr stats) {
+  // Adjust counts. Record 0 if docs offline extension was not available,
+  // otherwise add 1 to distinguish from error.
+  int total = 0;
+  int available = 0;
+  int unavailable = 0;
+  if (error == drive::FileError::FILE_ERROR_OK) {
+    total = stats->total + 1;
+    available = stats->available_offline + 1;
+    unavailable = stats->total - stats->available_offline + 1;
+  }
+
+  std::string name_prefix =
+      base::StrCat({"FileBrowser.DriveOfflineHostedCount.OpenFile",
+                    open_available ? "Available" : "Unavailable"});
+  base::UmaHistogramCounts100000(name_prefix + ".Total", total);
+  base::UmaHistogramCounts100000(name_prefix + ".Available", available);
+  base::UmaHistogramCounts100000(name_prefix + ".Unavailable", unavailable);
+
+  // Record percentage using unadjusted values when total > 0.
+  if (stats->total > 0) {
+    base::UmaHistogramPercentage(name_prefix + ".AvailablePercent",
+                                 stats->available_offline * 100 / stats->total);
+  }
+}
+
+void RecordDriveOfflineUMAsGotMetadata(
+    Profile* profile,
+    ViewFileType type,
+    drive::FileError error,
+    drivefs::mojom::FileMetadataPtr metadata) {
+  bool open_available = false;
+  bool hosted = false;
+  if (error == drive::FileError::FILE_ERROR_OK) {
+    open_available = metadata->available_offline;
+    hosted = metadata->type == drivefs::mojom::FileMetadata::Type::kHosted;
+  }
+  std::string name =
+      base::StrCat({"FileBrowser.DriveOfflineOpen.",
+                    open_available ? "Available" : "Unavailable"});
+  base::UmaHistogramEnumeration(name, type);
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+
+  // Collect docs offline stats for hosted files.
+  if (integration_service && integration_service->IsMounted() && hosted) {
+    integration_service->GetDocsOfflineStats(base::BindOnce(
+        &RecordDriveOfflineUMAsGotDocsOfflineStats, open_available));
+  }
+}
+
+void RecordDriveOfflineUMAs(Profile* profile,
+                            const std::vector<FileSystemURL>& file_urls) {
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  if (!integration_service || !integration_service->IsMounted()) {
+    return;
+  }
+
+  for (const FileSystemURL& file_url : file_urls) {
+    if (file_url.type() == storage::kFileSystemTypeDriveFs) {
+      integration_service->GetMetadata(
+          file_url.path(),
+          base::BindOnce(&RecordDriveOfflineUMAsGotMetadata, profile,
+                         GetViewFileType(file_url.path())));
+    }
+  }
+}
+
 }  // namespace
 
 ResultingTasks::ResultingTasks() = default;
@@ -769,6 +843,7 @@ bool ExecuteFileTask(Profile* profile,
   // TODO(crbug.com/1005640): Move recording this metric to the App Service when
   // file handling is supported there.
   apps::RecordAppLaunch(task.app_id, apps::LaunchSource::kFromFileManager);
+  RecordDriveOfflineUMAs(profile, file_urls);
 
   if (auto* notifier = FileTasksNotifier::GetForProfile(profile)) {
     notifier->NotifyFileTasks(file_urls);

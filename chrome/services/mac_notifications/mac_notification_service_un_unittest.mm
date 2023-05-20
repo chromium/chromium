@@ -38,6 +38,13 @@ namespace mac_notifications {
 
 namespace {
 
+struct NotificationActionParams {
+  NSString* action_identifier;
+  NotificationOperation operation;
+  int button_index;
+  absl::optional<std::u16string> reply;
+};
+
 class MockNotificationActionHandler
     : public mojom::MacNotificationActionHandler {
  public:
@@ -560,13 +567,6 @@ TEST_F(MacNotificationServiceUNTest, InitializeDeliveredNotifications) {
         }));
   }
 }
-
-struct NotificationActionParams {
-  NSString* action_identifier;
-  NotificationOperation operation;
-  int button_index;
-  absl::optional<std::u16string> reply;
-};
 
 TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
   if (@available(macOS 10.14, *)) {

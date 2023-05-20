@@ -98,6 +98,30 @@ interface Screen2xMainContentExtractor {
     (array<int32> content_node_ids);
 };
 
+// Provides an interface to the OCR functionality of the Screen AI service.
+// This interface gets bound only after Screen AI service loads its library and
+// initializes it for OCR.
+// OCR service can receive multiple annotator pipelines and provide results for
+// them separately.
+interface OCRService {
+  // Binds a new annotator to the service.
+  BindAnnotator(pending_receiver<ScreenAIAnnotator> annotator);
+
+  // Binds a client to receive update messages for annotation service.
+  BindAnnotatorClient(pending_remote<ScreenAIAnnotatorClient> annotator_client);
+};
+
+// Provides an interface to the Main Content Extraction functionalities of the
+// Screen AI service.
+// This interface gets bound only after Screen AI service loads its library and
+// initializes for Main Content Extraction.
+// Main Content Extraction service can receive multiple annotator pipelines and
+// provide results for them separately.
+interface MainContentExtractionService {
+  // Binds a new main content extractor to the service.
+  BindMainContentExtractor(pending_receiver<Screen2xMainContentExtractor>
+    main_content_extractor);
+};
 
 // The service runs in a sandboxed process to run Screen AI service library. The
 // library provides two AI modules:
@@ -105,27 +129,32 @@ interface Screen2xMainContentExtractor {
 //      image in a PDF and add more details to the accessibility tree.
 //   2) A text processing module that receives the accessibility tree and
 //      returns the main content of the tree.
+// The services require initialization before running. This factory interface
+// binds interfaces to the actual services after library load and initialization
+// for each of them.
 [ServiceSandbox=sandbox.mojom.Sandbox.kScreenAI]
-interface ScreenAIService {
+interface ScreenAIServiceFactory {
   // Triggers the service to load and initialize the Screen AI library at
-  // |library_path|. |screen2x_model_config| and |screen2x_model| are already
-  // open file handles to Screen2x model files. The rest of model files are
-  // read from |library_path| folder.
+  // |library_path| for OCR. Model files are read from |library_path| folder.
   // This should be called from the browser process.
-  // TODO(https://crbug.com/1278249): Read all model files from file handles.
-  LoadAndInitializeLibrary(
-    mojo_base.mojom.ReadOnlyFile screen2x_model_config,
-    mojo_base.mojom.ReadOnlyFile screen2x_model,
-    mojo_base.mojom.FilePath library_path) =>
+  // TODO(crbug.com/1443341): Read all model files from file handles.
+  InitializeOCR(
+    mojo_base.mojom.FilePath library_path,
+    pending_receiver<OCRService> ocr_service_receiver) =>
       (bool initialized);
 
-  // Binds a new annotator to the service.
-  BindAnnotator(pending_receiver<ScreenAIAnnotator> annotator);
+  // Triggers the service to load and initialize the Screen AI library at
+  // |library_path| for main content extraction.
+  // |screen2x_model_config| and |screen2x_model| are already open file handles
+  // to Screen2x model files.
+  // This should be called from the browser process.
+  InitializeMainContentExtraction(
+    mojo_base.mojom.ReadOnlyFile screen2x_model_config,
+    mojo_base.mojom.ReadOnlyFile screen2x_model,
+    mojo_base.mojom.FilePath library_path,
+    pending_receiver<MainContentExtractionService>
+      main_content_extractor_service) =>
+      (bool initialized);
 
-  // Binds a client to receive update messages for annotation service.
-  BindAnnotatorClient(pending_remote<ScreenAIAnnotatorClient> annotator_client);
-
-  // Binds a new main content extractor to the service.
-  BindMainContentExtractor(pending_receiver<Screen2xMainContentExtractor>
-    main_content_extractor);
+  // TODO(crbug.com/1443349): Add Initialization for Layout Extractor.
 };

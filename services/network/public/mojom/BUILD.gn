@@ -381,6 +381,7 @@ mojom("mojom_attribution") {
         {
           mojom = "network.mojom.AttributionReportingRuntimeFeatures"
           cpp = "::network::AttributionReportingRuntimeFeatures"
+          copyable_pass_by_value = true
         },
       ]
       traits_headers =

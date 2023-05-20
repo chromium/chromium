@@ -111,6 +111,9 @@ bool SignalStorageConfig::MeetsSignalCollectionRequirementForSignal(
     uint64_t signal_hash,
     uint64_t event_hash,
     proto::SignalType signal_type) {
+  if (min_signal_collection_length.is_zero()) {
+    return true;
+  }
   const proto::SignalStorageConfig* config =
       FindSignal(signal_hash, event_hash, signal_type);
   if (!config || config->collection_start_time_s() == 0)

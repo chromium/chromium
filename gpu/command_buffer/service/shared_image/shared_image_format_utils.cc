@@ -257,7 +257,8 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index,
-    bool mipmapped) {
+    bool mipmapped,
+    bool root_surface) {
   if (gr_context_type == GrContextType::kGraphiteMetal) {
 #if BUILDFLAG(SKIA_USE_METAL)
     MTLPixelFormat mtl_pixel_format =
@@ -283,15 +284,19 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
   } else {
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
 #if BUILDFLAG(SKIA_USE_DAWN)
-    wgpu::TextureFormat wgpu_format = ToDawnFormat(format, plane_index);
+    // TODO(crbug.com/1445450): Add support for multiplanar formats, passing
+    // |plane_index|.
+    wgpu::TextureFormat wgpu_format = ToDawnFormat(format);
     if (wgpu_format != wgpu::TextureFormat::Undefined) {
       skgpu::graphite::DawnTextureInfo dawn_texture_info;
       dawn_texture_info.fSampleCount = 1;
       dawn_texture_info.fFormat = wgpu_format;
-      // TODO(sunnyps): Revisit this when implementing wrapped graphite backings
-      // for render passes - do we also need CopySrc and/or CopyDst?
       dawn_texture_info.fUsage = wgpu::TextureUsage::RenderAttachment |
                                  wgpu::TextureUsage::TextureBinding;
+      if (!root_surface) {
+        dawn_texture_info.fUsage |=
+            (wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst);
+      }
       dawn_texture_info.fMipmapped =
           mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
       return dawn_texture_info;

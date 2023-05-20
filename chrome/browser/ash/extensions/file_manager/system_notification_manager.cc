@@ -23,6 +23,9 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
@@ -172,7 +175,7 @@ std::u16string GetPolicyNotificationMessage(const ProgressStatus& status) {
 // TODO(b/279435843): Replace with translation strings.
 std::u16string GetPolicyNotificationCancelButton(const ProgressStatus& status) {
   if (status.HasWarning()) {
-    return u"Cancel";
+    return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL);
   } else {
     return u"Dismiss";
   }
@@ -358,13 +361,12 @@ SystemNotificationManager::CreateIOTaskProgressNotification(
   std::vector<message_center::ButtonInfo> notification_buttons;
 
   // Add "Cancel" button.
-  notification_buttons.emplace_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL)));
+  notification_buttons.emplace_back(
+      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL));
 
   if (paused) {  // For paused tasks, add "Open Files app" button.
-    notification_buttons.emplace_back(
-        message_center::ButtonInfo(l10n_util::GetStringUTF16(
-            IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL)));
+    notification_buttons.emplace_back(l10n_util::GetStringUTF16(
+        IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL));
   }
 
   notification->set_buttons(notification_buttons);
@@ -736,11 +738,20 @@ void SystemNotificationManager::HandleIOTaskProgress(
   // notification.
   if (status.HasWarning() || status.HasPolicyError()) {
     Dismiss(id);
-    // TODO(aidazolic): Pass a real continue callback.
     std::unique_ptr<message_center::Notification> notification =
-        MakeDataProtectionPolicyNotification(
-            id, status,
-            /*continue_callback=*/base::DoNothing());
+        MakeDataProtectionPolicyNotification(id, status);
+    GetNotificationDisplayService()->Display(
+        NotificationHandler::Type::TRANSIENT, *notification,
+        /*metadata=*/nullptr);
+    return;
+  }
+
+  // If the task is currently in the scanning state, show a data protection
+  // progress notification.
+  if (status.IsScanning()) {
+    Dismiss(id);
+    std::unique_ptr<message_center::Notification> notification =
+        MakeDataProtectionPolicyProgressNotification(id, status);
     GetNotificationDisplayService()->Display(
         NotificationHandler::Type::TRANSIENT, *notification,
         /*metadata=*/nullptr);
@@ -765,10 +776,11 @@ void SystemNotificationManager::HandleIOTaskProgress(
   } else {
     title = GetIOTaskMessage(profile_, status);
     int message_id = IDS_FILE_BROWSER_CONFLICT_DIALOG_MESSAGE;
-    if (status.pause_params.conflict_is_directory) {
+    if (status.pause_params.conflict_params.has_value() &&
+        status.pause_params.conflict_params->conflict_is_directory) {
       message_id = IDS_FILE_BROWSER_CONFLICT_DIALOG_FOLDER_MESSAGE;
     }
-    auto& item_name = status.pause_params.conflict_name;
+    auto& item_name = status.pause_params.conflict_params->conflict_name;
     message = GetStringFUTF16(message_id, base::UTF8ToUTF16(item_name));
   }
 
@@ -813,21 +825,19 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
 }
 
 void SystemNotificationManager::HandleDataProtectionPolicyNotificationClick(
-    file_manager::io_task::IOTaskId task_id,
-    const std::string& notification_id,
-    DataProtectionWarningContinueCallback callback,
+    base::RepeatingClosure proceed_callback,
+    base::RepeatingClosure cancel_callback,
     absl::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
   }
 
   if (button_index.value() == 0) {
-    CancelTask(task_id);
+    proceed_callback.Run();
   }
 
-  if (button_index.value() == 1) {
-    Dismiss(notification_id);
-    callback.Run();
+  if (button_index.value() == 1 && cancel_callback) {
+    cancel_callback.Run();
   }
 }
 
@@ -1055,8 +1065,7 @@ SystemNotificationManager::MakeRemovableNotification(
 std::unique_ptr<message_center::Notification>
 SystemNotificationManager::MakeDataProtectionPolicyNotification(
     const std::string& notification_id,
-    const file_manager::io_task::ProgressStatus& status,
-    DataProtectionWarningContinueCallback continue_callback) {
+    const file_manager::io_task::ProgressStatus& status) {
   std::u16string title = GetPolicyNotificationTitle(status);
   std::u16string message = GetPolicyNotificationMessage(status);
   std::u16string cancel_button = GetPolicyNotificationCancelButton(status);
@@ -1064,41 +1073,52 @@ SystemNotificationManager::MakeDataProtectionPolicyNotification(
   std::vector<message_center::ButtonInfo> notification_buttons;
   notification_buttons.emplace_back(cancel_button);
 
-  DataProtectionWarningContinueCallback callback;
+  base::RepeatingClosure proceed_callback;
+  base::RepeatingClosure cancel_callback;
   if (status.HasWarning()) {
     notification_buttons.emplace_back(
         GetPolicyNotificationProceedButton(status));
     if (status.sources.size() == 1) {
-      // If there's only one file, the user can continue the action directly
-      // from the notification.
-      callback = continue_callback;
+      // Single file: the user can continue the action directly from the
+      // notification.
+      proceed_callback =
+          base::BindRepeating(&SystemNotificationManager::ResumeTask,
+                              weak_ptr_factory_.GetWeakPtr(), status.task_id);
     } else {
-      // If there's more than one file, add the "Review" button. The user can
-      // continue the action from the dialog.
-      callback = base::BindRepeating(
-          &SystemNotificationManager::ShowPolicyWarningDialog,
-          weak_ptr_factory_.GetWeakPtr(), std::move(continue_callback));
+      // Multiple files: add the "Review" button. The user can continue the
+      // action from the dialog.
+      proceed_callback = base::BindRepeating(
+          &SystemNotificationManager::ShowDataProtectionPolicyDialog,
+          weak_ptr_factory_.GetWeakPtr(), status.task_id,
+          policy::FilesDialogType::kWarning);
     }
+    cancel_callback =
+        base::BindRepeating(&SystemNotificationManager::CancelTask,
+                            weak_ptr_factory_.GetWeakPtr(), status.task_id);
   } else {  // Error - some files couldn't be transferred.
-    DCHECK(status.policy_error.has_value());
+    DCHECK(status.HasPolicyError());
     if (status.policy_error !=
             file_manager::io_task::PolicyErrorType::kDlpWarningTimeout &&
         status.sources.size() > 1) {
       // If more than one file was blocked, add the "Review" button.
       notification_buttons.emplace_back(
           GetPolicyNotificationProceedButton(status));
-      callback =
-          base::BindRepeating(&SystemNotificationManager::ShowPolicyErrorDialog,
-                              weak_ptr_factory_.GetWeakPtr());
+      proceed_callback = base::BindRepeating(
+          &SystemNotificationManager::ShowDataProtectionPolicyDialog,
+          weak_ptr_factory_.GetWeakPtr(), status.task_id,
+          policy::FilesDialogType::kError);
     }
+    cancel_callback =
+        base::BindRepeating(&SystemNotificationManager::Dismiss,
+                            weak_ptr_factory_.GetWeakPtr(), notification_id);
   }
 
   scoped_refptr<message_center::NotificationDelegate> delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&SystemNotificationManager::
                                   HandleDataProtectionPolicyNotificationClick,
-                              weak_ptr_factory_.GetWeakPtr(), status.task_id,
-                              notification_id, callback));
+                              weak_ptr_factory_.GetWeakPtr(), proceed_callback,
+                              cancel_callback));
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(notification_id, title, message, delegate);
 
@@ -1107,13 +1127,32 @@ SystemNotificationManager::MakeDataProtectionPolicyNotification(
   return notification;
 }
 
-void SystemNotificationManager::ShowPolicyWarningDialog(
-    DataProtectionWarningContinueCallback callback) {
-  // TODO(b/279436140): Create a dialog.
+std::unique_ptr<message_center::Notification>
+SystemNotificationManager::MakeDataProtectionPolicyProgressNotification(
+    const std::string& notification_id,
+    const file_manager::io_task::ProgressStatus& status) {
+  // TODO(b/279435843): Replace with translation strings.
+  std::u16string message =
+      u"Checking files with your organization's security policies.";
+  // TODO(b/282130948): Set progress value.
+  return CreateIOTaskProgressNotification(status.task_id, notification_id,
+                                          app_name_, message, /*paused=*/false,
+                                          /*progress=*/0);
 }
 
-void SystemNotificationManager::ShowPolicyErrorDialog() {
-  // TODO(b/279436140): Create a dialog.
+void SystemNotificationManager::ShowDataProtectionPolicyDialog(
+    file_manager::io_task::IOTaskId task_id,
+    policy::FilesDialogType type) {
+  policy::FilesPolicyNotificationManager* manager =
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          profile_);
+  if (!manager) {
+    LOG(ERROR) << "No FilesPolicyNotificationManager instantiated,"
+                  "can't show policy dialog for task_id "
+               << task_id;
+    return;
+  }
+  manager->ShowDialog(task_id, type);
 }
 
 void SystemNotificationManager::CancelTask(
@@ -1122,6 +1161,16 @@ void SystemNotificationManager::CancelTask(
     io_task_controller_->Cancel(task_id);
   } else {
     LOG(ERROR) << "No TaskController, can't cancel task_id: " << task_id;
+  }
+}
+
+void SystemNotificationManager::ResumeTask(
+    file_manager::io_task::IOTaskId task_id) {
+  if (io_task_controller_) {
+    // TODO(b/281973963): Pass resume reason.
+    io_task_controller_->Resume(task_id, {});
+  } else {
+    LOG(ERROR) << "No TaskController, can't resume task_id: " << task_id;
   }
 }
 

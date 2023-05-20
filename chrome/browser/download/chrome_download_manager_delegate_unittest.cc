@@ -1439,6 +1439,9 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
   const GURL kSecureUrl("https://example.net/");
   const GURL kInsecureUrl("http://example.net/");
   const GURL kBlobFile("blob:null/xyz.foo");
+  const GURL kTextFile("http://example.com/foo.txt");
+  const GURL kImageFile("http://example.com/foo.png");
+  const GURL kMovieFile("http://example.com/foo.mp4");
   const GURL kSecureFile("https://example.com/foo");
   const GURL kInsecureFile("http://example.com/foo");
   const auto kSecureOrigin = Origin::Create(GURL("https://example.org"));
@@ -1455,32 +1458,48 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
     download::DownloadInterruptReason expected_interrupt_reason;
     download::DownloadItem::InsecureDownloadStatus
         expected_insecure_download_status;
+
+    const std::string test_name;
   } kTestCases[] = {
       // Secure files, with or without redirects, shouldn't be blocked.
       {kSecureFile, kSecureOrigin, kSecureUrl,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
-       download::DownloadItem::InsecureDownloadStatus::SAFE},
+       download::DownloadItem::InsecureDownloadStatus::SAFE,
+       "secure_with_secure_redirect"},
       {kSecureFile, kSecureOrigin, absl::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
-       download::DownloadItem::InsecureDownloadStatus::SAFE},
+       download::DownloadItem::InsecureDownloadStatus::SAFE,
+       "secure_no_redirect"},
       // Secure files initiated from insecure origins should be blocked.
       {kSecureFile, kInsecureOrigin, absl::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
-       download::DownloadItem::InsecureDownloadStatus::BLOCK},
+       download::DownloadItem::InsecureDownloadStatus::BLOCK,
+       "insecure_no_redirect"},
       // Insecure files initiated from secure origins should be silently blocked
       // as mixed downloads.
       {kInsecureFile, kSecureOrigin, absl::nullopt,
        download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED,
-       download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK},
+       download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK, "mixdl"},
       // Secure files initiated from secure origins but redirected insecurely
       // should be silently blocked as mixed downloads.
       {kSecureFile, kSecureOrigin, kInsecureUrl,
        download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED,
-       download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK},
+       download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK,
+       "insecure_redirect"},
       // Blobs initiated from secure origins shouldn't be blocked.
       {kBlobFile, kSecureOrigin, kSecureUrl,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
-       download::DownloadItem::InsecureDownloadStatus::SAFE},
+       download::DownloadItem::InsecureDownloadStatus::SAFE, "secure_blob"},
+      // Text, images, audio, etc shouldn't be blocked, even when insecure.
+      {kTextFile, kInsecureOrigin, kInsecureUrl,
+       download::DOWNLOAD_INTERRUPT_REASON_NONE,
+       download::DownloadItem::InsecureDownloadStatus::SAFE, "insecure_txt"},
+      {kImageFile, kInsecureOrigin, kInsecureUrl,
+       download::DOWNLOAD_INTERRUPT_REASON_NONE,
+       download::DownloadItem::InsecureDownloadStatus::SAFE, "insecure_png"},
+      {kMovieFile, kInsecureOrigin, kInsecureUrl,
+       download::DOWNLOAD_INTERRUPT_REASON_NONE,
+       download::DownloadItem::InsecureDownloadStatus::SAFE, "insecure_mp4"},
   };
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -1489,8 +1508,12 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
   content::PluginService::GetInstance()->Init();
 #endif
 
+  // Warning behavior is slightly different with HFM enabled. Enabled behavior
+  // is tested in another test.
+  pref_service()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kBlockInsecureDownloads);
+  feature_list.InitAndEnableFeature(features::kInsecureDownloadWarnings);
 
   for (const auto& test_case : kTestCases) {
     std::unique_ptr<download::MockDownloadItem> download_item =
@@ -1500,10 +1523,50 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
 
     DetermineDownloadTargetResult result;
     DetermineDownloadTarget(download_item.get(), &result);
-    EXPECT_EQ(test_case.expected_interrupt_reason, result.interrupt_reason);
+    EXPECT_EQ(test_case.expected_interrupt_reason, result.interrupt_reason)
+        << "Bad interrupt reason for " << test_case.test_name;
     EXPECT_EQ(test_case.expected_insecure_download_status,
-              result.insecure_download_status);
+              result.insecure_download_status)
+        << "Bad insecure download status for " << test_case.test_name;
   }
+}
+
+// Verify that insecure downloads not blocked normally are blocked when
+// HTTPS-First mode is enabled.
+TEST_F(ChromeDownloadManagerDelegateTest,
+       InsecureDownloadsBlocked_ExclusionsRemovedInHFM) {
+  const GURL kRedirectUrl("http://example.org/");
+  const GURL kFinalUrl("http://example.org/xyz.txt");
+  const auto kInitiator = Origin::Create(GURL("http://example.org"));
+
+  pref_service()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+
+  DetermineDownloadTargetResult result;
+  base::HistogramTester histograms;
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kInsecureDownloadWarnings);
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
+                                             kRedirectUrl);
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+  // DownloadTargetDeterminer looks for plugin handlers if there's an
+  // extension.
+  content::PluginService::GetInstance()->Init();
+#endif
+
+  DetermineDownloadTarget(download_item.get(), &result);
+  EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, result.interrupt_reason);
+  EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::BLOCK,
+            result.insecure_download_status);
+  histograms.ExpectUniqueSample(
+      kInsecureDownloadHistogramName,
+      InsecureDownloadSecurityStatus::kInitiatorInsecureFileInsecure, 1);
+  ExpectExtensionOnlyIn(InsecureDownloadExtensions::kText,
+                        kInsecureDownloadExtensionInitiatorInsecure,
+                        kInsecureDownloadHistogramTargetInsecure, histograms);
 }
 
 // Test that we block context-menu-initiated downloads if initiator is insecure.
@@ -1526,7 +1589,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       .WillByDefault(Return(download::DownloadSource::CONTEXT_MENU));
   DetermineDownloadTargetResult result;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kBlockInsecureDownloads);
+  feature_list.InitAndEnableFeature(features::kInsecureDownloadWarnings);
 
   DetermineDownloadTarget(download_item.get(), &result);
 

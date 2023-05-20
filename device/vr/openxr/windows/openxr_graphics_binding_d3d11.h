@@ -28,9 +28,9 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
   ~OpenXrGraphicsBindingD3D11() override;
 
   // OpenXrGraphicsBinding
-  bool Initialize() override;
+  bool Initialize(XrInstance instance, XrSystemId system) override;
   const void* GetSessionCreateInfo() const override;
-  int64_t GetSwapchainFormat() const override;
+  int64_t GetSwapchainFormat(XrSession session) const override;
   XrResult EnumerateSwapchainImages(
       const XrSwapchain& color_swapchain,
       std::vector<SwapChainInfo>& color_swapchain_images) const override;

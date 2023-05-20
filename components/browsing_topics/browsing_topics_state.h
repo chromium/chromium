@@ -70,9 +70,8 @@ class BrowsingTopicsState
   // remove the entry from `epochs_`.
   void ClearOneEpoch(size_t epoch_index);
 
-  // Clear the topic and observing domains data for `topic` and
-  // `taxonomy_version`.
-  void ClearTopic(Topic topic, int taxonomy_version);
+  // Clear the topic and observing domains data for `topic`.
+  void ClearTopic(Topic topic);
 
   // Clear the observing domains data in `epochs_`  that match
   // `hashed_context_domain`.

@@ -9,6 +9,7 @@
 #include <map>
 
 #include "base/android/jni_android.h"
+#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/viz_utils.h"
@@ -20,6 +21,15 @@
 #include "ui/gfx/icc_profile.h"
 
 namespace ui {
+
+namespace {
+
+// Feature controlling whether or not HDR is enabled on Android.
+// TODO(https://crbug.com/1430768): Leave this as a kill switch until Android U
+// ships.
+BASE_FEATURE(kAndroidHDR, "AndroidHDR", base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 using base::android::AttachCurrentThread;
 using display::Display;
@@ -87,25 +97,51 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
   if (!Display::HasForceDeviceScaleFactor())
     display->set_device_scale_factor(dipScale);
 
-  // TODO: Low-end devices should specify RGB_565 as the buffer format for
-  // opaque content.
-  if (isWideColorGamut) {
-    gfx::DisplayColorSpaces display_color_spaces{
-        gfx::ColorSpace::CreateDisplayP3D65(), gfx::BufferFormat::RGBA_8888};
-    if (features::IsDynamicColorGamutEnabled()) {
-      auto srgb = gfx::ColorSpace::CreateSRGB();
-      for (auto needs_alpha : {true, false}) {
-        display_color_spaces.SetOutputColorSpaceAndBufferFormat(
-            gfx::ContentColorUsage::kSRGB, needs_alpha, srgb,
-            gfx::BufferFormat::RGBA_8888);
+  {
+    // Decide the color space to use for sRGB, WCG, and HDR content. By default,
+    // everything is crushed into sRGB.
+    gfx::ColorSpace cs_for_srgb = gfx::ColorSpace::CreateSRGB();
+    gfx::ColorSpace cs_for_wcg = cs_for_srgb;
+    if (isWideColorGamut) {
+      // If the device supports WCG, then use P3 for the output surface when
+      // there is WCG content on screen.
+      cs_for_wcg = gfx::ColorSpace::CreateDisplayP3D65();
+      // If dynamically changing color gamut is disallowed, then use P3 even
+      // when all content is sRGB.
+      if (!features::IsDynamicColorGamutEnabled()) {
+        cs_for_srgb = cs_for_wcg;
       }
     }
-    display_color_spaces.SetHDRMaxLuminanceRelative(hdrMaxLuminanceRatio);
-    display->set_color_spaces(display_color_spaces);
-  } else {
+    // The color space for HDR is scaled to reach the maximum luminance ratio.
+    gfx::ColorSpace cs_for_hdr = cs_for_wcg;
+    if (base::FeatureList::IsEnabled(kAndroidHDR) &&
+        hdrMaxLuminanceRatio > 1.f) {
+      skcms_TransferFunction trfn;
+      cs_for_hdr.GetTransferFunction(&trfn);
+      trfn = skia::ScaleTransferFunction(trfn, hdrMaxLuminanceRatio);
+      cs_for_hdr = gfx::ColorSpace(
+          cs_for_hdr.GetPrimaryID(), gfx::ColorSpace::TransferID::CUSTOM_HDR,
+          gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL,
+          nullptr, &trfn);
+    }
+    // Propagate this into the DisplayColorSpaces.
     gfx::DisplayColorSpaces display_color_spaces(gfx::ColorSpace::CreateSRGB(),
                                                  gfx::BufferFormat::RGBA_8888);
     display_color_spaces.SetHDRMaxLuminanceRelative(hdrMaxLuminanceRatio);
+    for (auto needs_alpha : {true, false}) {
+      // TODO: Low-end devices should specify RGB_565 as the buffer format for
+      // opaque content.
+      display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+          gfx::ContentColorUsage::kSRGB, needs_alpha, cs_for_srgb,
+          gfx::BufferFormat::RGBA_8888);
+      display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+          gfx::ContentColorUsage::kWideColorGamut, needs_alpha, cs_for_wcg,
+          gfx::BufferFormat::RGBA_8888);
+      // TODO(https://crbug.com/1430768): Use 10-bit surfaces for opaque HDR.
+      display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+          gfx::ContentColorUsage::kHDR, needs_alpha, cs_for_hdr,
+          gfx::BufferFormat::RGBA_8888);
+    }
     display->set_color_spaces(display_color_spaces);
   }
 

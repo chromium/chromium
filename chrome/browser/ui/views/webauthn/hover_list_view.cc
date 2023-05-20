@@ -16,6 +16,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -42,7 +43,7 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           vector_icons::kSubmenuArrowIcon, ui::kColorIcon, kChevronSize));
 
-  constexpr int kIconSize = 20;
+  const int kIconSize = features::IsChromeRefresh2023() ? 24 : 20;
   auto item_image = std::make_unique<views::ImageView>(icon);
   item_image->SetImageSize(gfx::Size(kIconSize, kIconSize));
 

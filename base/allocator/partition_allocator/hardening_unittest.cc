@@ -27,14 +27,8 @@ TEST(HardeningTest, PartialCorruption) {
   std::string important_data("very important");
   char* to_corrupt = const_cast<char*>(important_data.c_str());
 
-  PartitionRoot<ThreadSafe> root({
-      PartitionOptions::AlignedAlloc::kAllowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kDisallowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+  PartitionRoot<ThreadSafe> root(PartitionOptions{
+      .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
 
@@ -58,14 +52,8 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
   std::string important_data("very important");
   char* to_corrupt = const_cast<char*>(important_data.c_str());
 
-  PartitionRoot<ThreadSafe> root({
-      PartitionOptions::AlignedAlloc::kAllowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kDisallowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+  PartitionRoot<ThreadSafe> root(PartitionOptions{
+      .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
 
@@ -85,14 +73,8 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
 }
 
 TEST(HardeningTest, MetadataPointerCrashing) {
-  PartitionRoot<ThreadSafe> root({
-      PartitionOptions::AlignedAlloc::kAllowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kDisallowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+  PartitionRoot<ThreadSafe> root(PartitionOptions{
+      .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
 
@@ -118,14 +100,8 @@ TEST(HardeningTest, MetadataPointerCrashing) {
 #if !BUILDFLAG(IS_ANDROID)
 
 TEST(HardeningTest, SuccessfulCorruption) {
-  PartitionRoot<ThreadSafe> root({
-      PartitionOptions::AlignedAlloc::kAllowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kDisallowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+  PartitionRoot<ThreadSafe> root(PartitionOptions{
+      .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
 

@@ -196,8 +196,8 @@ void WaylandZAuraOutputManager::OnDeviceScaleFactor(
     wl_output* output,
     uint32_t scale_as_uint) {
   auto* self = static_cast<WaylandZAuraOutputManager*>(data);
-  float scale = base::bit_cast<float>(scale_as_uint);
-  self->pending_output_metrics_map_[self->GetId(output)].scale_factor = scale;
+  self->pending_output_metrics_map_[self->GetId(output)].scale_factor =
+      base::bit_cast<float>(scale_as_uint);
 }
 
 // static
@@ -264,7 +264,9 @@ void WaylandZAuraOutputManager::OnOverscanInsets(
     int32_t left,
     int32_t bottom,
     int32_t right) {
-  // TODO(crbug.com/1432295): Handle overscan.
+  auto* self = static_cast<WaylandZAuraOutputManager*>(data);
+  self->pending_output_metrics_map_[self->GetId(output)]
+      .physical_overscan_insets = gfx::Insets::TLBR(top, left, bottom, right);
 }
 
 }  // namespace ui

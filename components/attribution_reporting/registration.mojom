@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
 
 struct DebugKey {
   uint64 value;
@@ -162,4 +163,11 @@ struct TriggerRegistration {
   // Specifies whether to include source registration time in aggregatable
   // reports.
   SourceRegistrationTimeConfig source_registration_time_config;
+};
+
+// Represents a source or trigger registration that will be passed to the OS, if supported.
+struct OsRegistration {
+  // The URLs to which the OS will make a request in order to retrieve the actual
+  // source or trigger registration.
+  array<url.mojom.Url> urls;
 };

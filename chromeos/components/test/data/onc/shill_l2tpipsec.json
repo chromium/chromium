@@ -10,6 +10,5 @@
   "L2TPIPsec.User": "some username",
   "L2TPIPsec.XauthPassword": "some xauth password",
   "L2TPIPsec.XauthUser": "some xauth username",
-  "SaveCredentials": true,
-  "StaticIPConfig": {}
+  "SaveCredentials": true
 }

@@ -30,6 +30,10 @@ class CONTENT_EXPORT TouchSelectionControllerClientManager {
 
   virtual void DidStopFlinging() = 0;
 
+  virtual void OnSwipeToMoveCursorBegin() = 0;
+
+  virtual void OnSwipeToMoveCursorEnd() = 0;
+
   // The manager uses this class' methods to notify observers about important
   // events.
   class CONTENT_EXPORT Observer : public base::CheckedObserver {

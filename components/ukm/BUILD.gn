@@ -93,7 +93,7 @@ static_library("observers") {
     "//components/history/core/browser",
     "//components/metrics",
     "//components/sync/base",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//google_apis",
     "//services/metrics/public/cpp:metrics_cpp",
   ]

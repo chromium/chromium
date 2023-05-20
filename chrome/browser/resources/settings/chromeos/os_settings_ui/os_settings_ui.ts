@@ -20,8 +20,8 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../os_settings_menu/os_settings_menu.js';
 import '../os_settings_main/os_settings_main.js';
 import '../os_toolbar/os_toolbar.js';
-import '../../settings_shared.css.js';
-import '../../settings_vars.css.js';
+import '../settings_shared.css.js';
+import '../settings_vars.css.js';
 
 import {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
@@ -140,17 +140,9 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
         },
       },
 
-      havePlayStoreApp_: Boolean,
-
-      showAndroidApps_: Boolean,
-
-      showArcvmManageUsb_: Boolean,
-
       showToolbar_: Boolean,
 
       showNavMenu_: Boolean,
-
-      showPluginVm_: Boolean,
 
       /**
        * The threshold at which the toolbar will change from normal to narrow
@@ -169,12 +161,8 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private advancedOpenedInMenu_: boolean;
   private toolbarSpinnerActive_: boolean;
   private pageAvailability_: OsPageAvailability;
-  private havePlayStoreApp_: boolean;
-  private showAndroidApps_: boolean;
-  private showArcvmManageUsb_: boolean;
   private showToolbar_: boolean;
   private showNavMenu_: boolean;
-  private showPluginVm_: boolean;
   private narrowThreshold_: number;
   private activeRoute_: Route|null;
   private scrollEndDebouncer_: Debouncer|null;
@@ -226,10 +214,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
           loadTimeData.getString('controlledSettingChildRestriction'),
     };
 
-    this.havePlayStoreApp_ = loadTimeData.getBoolean('havePlayStoreApp');
-    this.showAndroidApps_ = loadTimeData.getBoolean('androidAppsVisible');
-    this.showArcvmManageUsb_ = loadTimeData.getBoolean('showArcvmManageUsb');
-    this.showPluginVm_ = loadTimeData.getBoolean('showPluginVm');
     this.showNavMenu_ = !loadTimeData.getBoolean('isKioskModeActive');
     this.showToolbar_ = !loadTimeData.getBoolean('isKioskModeActive');
 
@@ -244,32 +228,14 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.addEventListener('refresh-pref', this.onRefreshPref_);
     this.addEventListener('user-action-setting-change', this.onSettingChange_);
 
-    // If navigation menu is not shown, do not listen to the drawer.
-    if (!this.showNavMenu_) {
-      return;
-    }
-
-    microTask.run(() => {
-      // Lazy-create the drawer the first time it is opened or swiped into
-      // view.
-      const drawer = this.getDrawer_();
-      listenOnce(drawer, 'cr-drawer-opening', () => {
-        const drawerTemplate = castExists(
-            this.shadowRoot!.querySelector<DomIf>('#drawerTemplate'));
-        drawerTemplate.if = true;
-      });
-
-      window.addEventListener('popstate', () => {
-        drawer.cancel();
-      });
-    });
-
     this.addEventListener(
         'search-changed',
         () => {
           this.osSettingsHatsBrowserProxy_.settingsUsedSearch();
         },
         /*AddEventListenerOptions=*/ {once: true});
+
+    this.listenForDrawerOpening_();
   }
 
   override connectedCallback() {
@@ -374,6 +340,30 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     }
 
     return this.getToolbar_().getSearchField().isSearchFocused();
+  }
+
+  /**
+   * Listen for the drawer opening event and lazily create the drawer the first
+   * time it is opened or swiped into view.
+   */
+  private listenForDrawerOpening_(): void {
+    // If navigation menu is not shown, do not listen for the drawer opening
+    if (!this.showNavMenu_) {
+      return;
+    }
+
+    microTask.run(() => {
+      const drawer = this.getDrawer_();
+      listenOnce(drawer, 'cr-drawer-opening', () => {
+        const drawerTemplate = castExists(
+            this.shadowRoot!.querySelector<DomIf>('#drawerTemplate'));
+        drawerTemplate.if = true;
+      });
+
+      window.addEventListener('popstate', () => {
+        drawer.cancel();
+      });
+    });
   }
 
   private getDrawer_(): CrDrawerElement {

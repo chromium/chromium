@@ -13,7 +13,7 @@
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/sync/test/fake_model_type_controller_delegate.h"
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
@@ -176,7 +176,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     SyncSetupServiceMock* syncSetupService = static_cast<SyncSetupServiceMock*>(
         SyncSetupServiceFactory::GetForBrowserState(
             chrome_browser_state_.get()));
-    ON_CALL(*syncSetupService, CanSyncFeatureStart())
+    ON_CALL(*syncSetupService, IsSyncFeatureEnabled())
         .WillByDefault(Return(syncEnabled));
     ON_CALL(*syncSetupService,
             IsDataTypePreferred(syncer::UserSelectableType::kTabs))

@@ -41,6 +41,7 @@
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 #include "media/video/h264_level_limits.h"
 #include "media/video/h264_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -228,8 +229,9 @@ bool V4L2VideoEncodeAccelerator::Initialize(
 
   gfx::Size min_resolution;
   gfx::Size max_resolution;
-  device_->GetSupportedResolution(output_format_fourcc_, &min_resolution,
-                                  &max_resolution);
+  GetSupportedResolution(base::BindRepeating(&V4L2Device::Ioctl, device_),
+                         output_format_fourcc_, &min_resolution,
+                         &max_resolution);
   if (config.input_visible_size.width() < min_resolution.width() ||
       config.input_visible_size.height() < min_resolution.height() ||
       config.input_visible_size.width() > max_resolution.width() ||
@@ -1397,8 +1399,7 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
         break;
       }
       default:
-        NOTREACHED();
-        return false;
+        NOTREACHED_NORETURN();
     }
 
     input_buf.SetPlaneBytesUsed(i, bytesused);

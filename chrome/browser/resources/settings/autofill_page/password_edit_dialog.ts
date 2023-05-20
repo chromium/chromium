@@ -266,16 +266,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         type: Boolean,
         computed:
             'computeIsSaveButtonDisabled_(websiteUrls_, websiteInputInvalid_, ' +
-            'usernameInputInvalid_, password_, noteInvalid_, ' +
-            'isPasswordNotesEnabled_)',
-      },
-
-      /* If true, note field will be shown and used when saving the password. */
-      isPasswordNotesEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enablePasswordNotes');
-        },
+            'usernameInputInvalid_, password_, noteInvalid_)',
       },
 
       /* Enables dispatching change events and extending auth. */
@@ -315,7 +306,6 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   private usernameInputInvalid_: boolean;
   private password_: string;
   private isSaveButtonDisabled_: boolean;
-  private isPasswordNotesEnabled_: boolean;
   private isPasswordViewPageEnabled_: boolean;
 
   override connectedCallback() {
@@ -376,13 +366,12 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   private computeIsSaveButtonDisabled_(): boolean {
     return !this.websiteUrls_ || this.websiteInputInvalid_ ||
         this.usernameInputInvalid_ || !this.password_.length ||
-        (this.isPasswordNotesEnabled_ && this.noteInvalid_);
+        this.noteInvalid_;
   }
 
   private shouldShowNote_(): boolean {
-    return this.isPasswordNotesEnabled_ &&
-        (this.dialogMode === PasswordDialogMode.EDIT ||
-         this.dialogMode === PasswordDialogMode.ADD);
+    return this.dialogMode === PasswordDialogMode.EDIT ||
+        this.dialogMode === PasswordDialogMode.ADD;
   }
 
   private isNoteLongerThanOrEqualTo_(characterCount: number): boolean {
@@ -536,7 +525,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
           useAccountStore: useAccountStore,
         })
         .then(() => {
-          if (this.isPasswordNotesEnabled_ && !!this.note_.trim()) {
+          if (this.note_.trim()) {
             recordPasswordNoteAction(
                 PasswordNoteAction.NOTE_ADDED_IN_ADD_DIALOG);
           }
@@ -550,31 +539,27 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     const params: chrome.passwordsPrivate.ChangeSavedPasswordParams = {
       username: this.username_,
       password: this.password_,
+      note: this.note_,
     };
-    if (this.isPasswordNotesEnabled_) {
-      params.note = this.note_;
-    }
 
     PasswordManagerImpl.getInstance()
         .changeSavedPassword(this.existingEntry!.id, params)
         .then(newId => {
-          if (this.isPasswordNotesEnabled_) {
-            const newNote = this.note_.trim();
-            const oldNote = this.existingEntry!.note === undefined ?
-                '' :
-                this.existingEntry!.note;
-            if (oldNote === newNote) {
-              recordPasswordNoteAction(PasswordNoteAction.NOTE_NOT_CHANGED);
-            } else if (oldNote !== '' && newNote !== '') {
-              recordPasswordNoteAction(
-                  PasswordNoteAction.NOTE_EDITED_IN_EDIT_DIALOG);
-            } else if (oldNote !== '') {
-              recordPasswordNoteAction(
-                  PasswordNoteAction.NOTE_REMOVED_IN_EDIT_DIALOG);
-            } else {
-              recordPasswordNoteAction(
-                  PasswordNoteAction.NOTE_ADDED_IN_EDIT_DIALOG);
-            }
+          const newNote = this.note_.trim();
+          const oldNote = this.existingEntry!.note === undefined ?
+              '' :
+              this.existingEntry!.note;
+          if (oldNote === newNote) {
+            recordPasswordNoteAction(PasswordNoteAction.NOTE_NOT_CHANGED);
+          } else if (oldNote !== '' && newNote !== '') {
+            recordPasswordNoteAction(
+                PasswordNoteAction.NOTE_EDITED_IN_EDIT_DIALOG);
+          } else if (oldNote !== '') {
+            recordPasswordNoteAction(
+                PasswordNoteAction.NOTE_REMOVED_IN_EDIT_DIALOG);
+          } else {
+            recordPasswordNoteAction(
+                PasswordNoteAction.NOTE_ADDED_IN_EDIT_DIALOG);
           }
           if (this.isPasswordViewPageEnabled_) {
             const newEntry = {

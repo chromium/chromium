@@ -96,7 +96,6 @@
     _credential = credential;
     _reauthenticationModule = reauthModule;
     _context = context;
-    _shouldDismissOnAllPasswordsGone = YES;
   }
   return self;
 }
@@ -118,7 +117,6 @@
     _affiliatedGroup = affiliatedGroup;
     _reauthenticationModule = reauthModule;
     _context = context;
-    _shouldDismissOnAllPasswordsGone = YES;
   }
   return self;
 }
@@ -283,13 +281,10 @@
                                      title:title
                                    message:message
                              barButtonItem:self.viewController.deleteButton];
-
-  __weak __typeof(self.delegate) weakDelegate = self.delegate;
   __weak __typeof(self.mediator) weakMediator = self.mediator;
   [self.actionSheetCoordinator
       addItemWithTitle:buttonText
                 action:^{
-                  [weakDelegate passwordDetailsWillDeletePassword];
                   [weakMediator removeCredential:password];
                 }
                  style:UIAlertActionStyleDestructive];
@@ -355,7 +350,11 @@
 - (void)onAllPasswordsDeleted {
   DCHECK_EQ(self.baseNavigationController.topViewController,
             self.viewController);
-  if (_shouldDismissOnAllPasswordsGone) {
+  // For password details opened outside of the settings context.
+  if (_context == DetailsContext::kOutsideSettings) {
+    [self passwordDetailsTableViewControllerWasDismissed];
+  } else {
+    // For password details opened from the Password Manager in the settings.
     [self.baseNavigationController popViewControllerAnimated:YES];
   }
 }

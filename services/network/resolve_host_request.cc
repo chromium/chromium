@@ -169,7 +169,7 @@ ResolveHostRequest::GetEndpointResultsWithMetadata() const {
   const net::HostResolverEndpointResults* endpoint_results =
       internal_request_->GetEndpointResults();
 
-  if (!endpoint_results || endpoint_results->size() <= 1) {
+  if (!endpoint_results) {
     return absl::nullopt;
   }
 
@@ -189,18 +189,20 @@ ResolveHostRequest::GetEndpointResultsWithMetadata() const {
 }
 
 void ResolveHostRequest::SignalNonAddressResults() {
-  if (cancelled_)
+  if (cancelled_) {
     return;
+  }
   DCHECK(internal_request_);
 
-  if (internal_request_->GetTextResults()) {
-    response_client_->OnTextResults(
-        internal_request_->GetTextResults().value());
+  if (internal_request_->GetTextResults() &&
+      !internal_request_->GetTextResults()->empty()) {
+    response_client_->OnTextResults(*internal_request_->GetTextResults());
   }
 
-  if (internal_request_->GetHostnameResults()) {
+  if (internal_request_->GetHostnameResults() &&
+      !internal_request_->GetHostnameResults()->empty()) {
     response_client_->OnHostnameResults(
-        internal_request_->GetHostnameResults().value());
+        *internal_request_->GetHostnameResults());
   }
 }
 

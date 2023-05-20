@@ -32,10 +32,9 @@ class WebSessionStateTabHelper
 
   ~WebSessionStateTabHelper() override;
 
-  // If kRestoreSessionFromCache is enabled restore `web_state`'s WKWebView
-  // using the previously saved sessionState data via the WebSessionStateCache.
-  // Returns true if the session could be restored.
-  bool RestoreSessionFromCache();
+  // Returns the WKWebView session data blob from cache or nil if the feature
+  // is disabled or the data not found in the cache.
+  NSData* FetchSessionFromCache();
 
   // Calls SaveSessionState if the tab helper is stale.
   void SaveSessionStateIfStale();

@@ -59,4 +59,9 @@ interface PdfNupConverter {
   // Sets the URL which is committed in the main frame of the WebContents,
   // for use in crash diagnosis.
   SetWebContentsURL(url.mojom.Url url);
+
+  // Sets the status for enterprise policy `kPdfUseSkiaRendererEnabled`. It
+  // should be called immediately once `mojom::NupPageConvert` remote is
+  // created and only when the enterprise policy is managed.
+  SetUseSkiaRendererPolicy(bool use_skia);
 };

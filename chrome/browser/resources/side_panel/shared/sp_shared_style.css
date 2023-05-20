@@ -57,6 +57,12 @@
   border-bottom-right-radius: 12px;
   box-sizing: border-box;
   margin-inline-end: calc(-1 * var(--sp-body-padding));
+  padding-block-end: var(--sp-card-block-padding);
+}
+
+:host-context([chrome-refresh-2023]) .sp-scroller .sp-card,
+:host-context([chrome-refresh-2023]):host-context(.sp-scroller) .sp-card {
+  margin-inline-end: 0; /* sp-scroller's scrollbar takes the space instead. */
 }
 
 :host-context([chrome-refresh-2023]) .sp-labelless-input {
@@ -79,11 +85,6 @@
   --cr-input-padding-end: 8px;
   --cr-input-padding-start: 8px;
   --cr-input-padding-top: 8px;
-}
-
-:host-context([chrome-refresh-2023]) .sp-labelless-input:hover {
-  --cr-input-background-color:
-      var(--color-side-panel-textfield-background-hover);
 }
 
 .sp-icon-buttons-row {

@@ -8,9 +8,9 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings_impl.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings_impl.h"
 #include "components/sync/test/test_sync_service.h"
 
 namespace syncer {
@@ -46,12 +46,12 @@ TestSyncUserSettings::TestSyncUserSettings(TestSyncService* service)
 TestSyncUserSettings::~TestSyncUserSettings() = default;
 
 bool TestSyncUserSettings::IsInitialSyncFeatureSetupComplete() const {
-  return first_setup_complete_;
+  return initial_sync_feature_setup_complete_;
 }
 
-void TestSyncUserSettings::SetFirstSetupComplete(
+void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete(
     SyncFirstSetupCompleteSource source) {
-  SetFirstSetupComplete();
+  SetInitialSyncFeatureSetupComplete();
 }
 
 bool TestSyncUserSettings::IsSyncEverythingEnabled() const {
@@ -68,6 +68,15 @@ void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
     selected_types_.PutAll(UserSelectableTypeSet::All());
   } else {
     selected_types_ = types;
+  }
+}
+
+void TestSyncUserSettings::SetSelectedType(UserSelectableType type,
+                                           bool is_type_on) {
+  if (is_type_on) {
+    selected_types_.Put(type);
+  } else {
+    selected_types_.Remove(type);
   }
 }
 
@@ -231,12 +240,12 @@ std::unique_ptr<Nigori> TestSyncUserSettings::GetDecryptionNigoriKey() const {
   return nullptr;
 }
 
-void TestSyncUserSettings::SetFirstSetupComplete() {
-  first_setup_complete_ = true;
+void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete() {
+  initial_sync_feature_setup_complete_ = true;
 }
 
-void TestSyncUserSettings::ClearFirstSetupComplete() {
-  first_setup_complete_ = false;
+void TestSyncUserSettings::ClearInitialSyncFeatureSetupComplete() {
+  initial_sync_feature_setup_complete_ = false;
 }
 
 void TestSyncUserSettings::SetTypeIsManaged(UserSelectableType type,

@@ -130,6 +130,11 @@ export class AcceleratorLookupManager {
     return this.layoutInfoProvider.getAcceleratorName(source, action);
   }
 
+  getAcceleratorCategory(source: number|string, action: number|string):
+      AcceleratorCategory {
+    return this.layoutInfoProvider.getAcceleratorCategory(source, action);
+  }
+
   /**
    * Returns the uuid of an accelerator if the
    * accelerator exists. Otherwise returns `undefined`.
@@ -433,6 +438,7 @@ function createSanitizedLayoutInfo(entry: MojoLayoutInfo): LayoutInfo {
 type AcceleratorLayoutLookupMap =
     Map<AcceleratorCategory, Map<AcceleratorSubcategory, LayoutInfo[]>>;
 type AcceleratorNameLookupMap = Map<AcceleratorId, AcceleratorName>;
+type AcceleratorCategoryLookupMap = Map<AcceleratorId, AcceleratorCategory>;
 
 interface LayoutProviderInterface {
   getAcceleratorLayout(
@@ -442,6 +448,8 @@ interface LayoutProviderInterface {
       Map<AcceleratorSubcategory, LayoutInfo[]>|undefined;
   getAcceleratorName(source: number|string, action: number|string):
       AcceleratorName;
+  getAcceleratorCategory(source: number|string, action: number|string):
+      AcceleratorCategory;
   initializeLayoutInfo(layoutInfoList: MojoLayoutInfo[]): void;
   resetLookupMaps(): void;
 }
@@ -464,6 +472,11 @@ class LayoutInfoProvider implements LayoutProviderInterface {
    * the value as the string corresponding to the accelerator's name.
    */
   private acceleratorNameLookup: AcceleratorNameLookupMap = new Map();
+  /**
+   * A map with the string key formatted as `${source_id}-${action_id}` and
+   * the value corresponding to the accelerator's category.
+   */
+  private acceleratorCategoryLookup: AcceleratorCategoryLookupMap = new Map();
 
   getAcceleratorLayout(
       category: AcceleratorCategory,
@@ -488,6 +501,16 @@ class LayoutInfoProvider implements LayoutProviderInterface {
     return acceleratorName;
   }
 
+  getAcceleratorCategory(source: number|string, action: number|string):
+      AcceleratorCategory {
+    const uuid: AcceleratorId = getAcceleratorId(source, action);
+    const acceleratorCategory = this.acceleratorCategoryLookup.get(uuid);
+    // The value of 'acceleratorCategory' could possibly be '0' (representing
+    // 'kGeneral'). So we should only assert that it's not 'undefined'.
+    assert(acceleratorCategory !== undefined);
+    return acceleratorCategory;
+  }
+
   initializeLayoutInfo(layoutInfoList: MojoLayoutInfo[]): void {
     this.initializeCategoryMaps(layoutInfoList);
     for (const entry of layoutInfoList) {
@@ -501,6 +524,8 @@ class LayoutInfoProvider implements LayoutProviderInterface {
       const layoutInfo = createSanitizedLayoutInfo(entry);
       this.getAcceleratorLayout(entry.category, entry.subCategory)
           .push(layoutInfo);
+      this.addEntrytoAcceleratorCategoryLookup(
+          getAcceleratorId(entry.source, entry.action), entry.category);
       this.addEntrytoAcceleratorNameLookup(
           getAcceleratorId(entry.source, entry.action), layoutInfo.description);
     }
@@ -524,8 +549,14 @@ class LayoutInfoProvider implements LayoutProviderInterface {
     this.acceleratorNameLookup.set(uuid, description);
   }
 
+  private addEntrytoAcceleratorCategoryLookup(
+      uuid: string, category: AcceleratorCategory): void {
+    this.acceleratorCategoryLookup.set(uuid, category);
+  }
+
   resetLookupMaps(): void {
     this.acceleratorLayoutLookup.clear();
     this.acceleratorNameLookup.clear();
+    this.acceleratorCategoryLookup.clear();
   }
 }

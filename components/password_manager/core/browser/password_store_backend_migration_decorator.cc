@@ -13,8 +13,8 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace password_manager {

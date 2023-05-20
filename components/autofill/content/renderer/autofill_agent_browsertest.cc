@@ -28,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -40,6 +41,9 @@ using ::testing::SizeIs;
 namespace autofill {
 
 namespace {
+
+// The throttling amount of ProcessForms().
+constexpr base::TimeDelta kFormsSeenThrottle = base::Milliseconds(100);
 
 class MockAutofillDriver : public mojom::AutofillDriver {
  public:
@@ -184,6 +188,13 @@ class AutofillAgentTest : public content::RenderViewTest {
     RenderViewTest::TearDown();
   }
 
+  // AutofillDriver::FormsSeen() is throttled indirectly because some callsites
+  // of AutofillAgent::ProcessForms() are throttled. This function blocks until
+  // FormsSeen() has happened.
+  void WaitForFormsSeen() {
+    task_environment_.FastForwardBy(kFormsSeenThrottle * 3 / 2);
+  }
+
   AutofillAgentTestApi test_api() {
     return AutofillAgentTestApi(autofill_agent_.get());
   }
@@ -202,7 +213,10 @@ class AutofillAgentTest : public content::RenderViewTest {
 class AutofillAgentTestWithFeatures : public AutofillAgentTest {
  public:
   AutofillAgentTestWithFeatures() {
-    scoped_features_.InitAndEnableFeature(features::kAutofillAcrossIframes);
+    scoped_features_.InitWithFeatures(
+        {features::kAutofillAcrossIframes,
+         blink::features::kAutofillDetectRemovedFormControls},
+        {});
   }
 
  private:
@@ -212,11 +226,13 @@ class AutofillAgentTestWithFeatures : public AutofillAgentTest {
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_Empty) {
   EXPECT_CALL(autofill_driver_, FormsSeen).Times(0);
   LoadHTML(R"(<body> </body>)");
+  WaitForFormsSeen();
 }
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NoEmpty) {
   EXPECT_CALL(autofill_driver_, FormsSeen).Times(0);
   LoadHTML(R"(<body> <form></form> </body>)");
+  WaitForFormsSeen();
 }
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewFormUnowned) {
@@ -225,6 +241,7 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewFormUnowned) {
                                               HasNumChildFrames(0)),
                         SizeIs(0)));
   LoadHTML(R"(<body> <input> </body>)");
+  WaitForFormsSeen();
 }
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewForm) {
@@ -233,6 +250,7 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewForm) {
                                               HasNumChildFrames(0)),
                         SizeIs(0)));
   LoadHTML(R"(<body> <form><input></form> </body>)");
+  WaitForFormsSeen();
 }
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewIframe) {
@@ -241,6 +259,7 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_NewIframe) {
                                               HasNumChildFrames(1)),
                         SizeIs(0)));
   LoadHTML(R"(<body> <form><iframe></iframe></form> </body>)");
+  WaitForFormsSeen();
 }
 
 TEST_F(AutofillAgentTestWithFeatures, FormsSeen_UpdatedForm) {
@@ -250,6 +269,7 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_UpdatedForm) {
                                                 HasNumChildFrames(0)),
                           SizeIs(0)));
     LoadHTML(R"(<body> <form><input></form> </body>)");
+    WaitForFormsSeen();
   }
   {
     EXPECT_CALL(autofill_driver_,
@@ -258,37 +278,40 @@ TEST_F(AutofillAgentTestWithFeatures, FormsSeen_UpdatedForm) {
                           SizeIs(0)));
     ExecuteJavaScriptForTests(
         R"(document.forms[0].appendChild(document.createElement('input'));)");
-    content::RunAllTasksUntilIdle();
-    // Called explicitly because the event is throttled.
-    test_api().DidAddOrRemoveFormRelatedElementsDynamically();
+    WaitForFormsSeen();
   }
 }
 
-TEST_F(AutofillAgentTestWithFeatures, FormsSeen_RemovedForm) {
+TEST_F(AutofillAgentTestWithFeatures, FormsSeen_RemovedInput) {
   {
     EXPECT_CALL(autofill_driver_, FormsSeen(SizeIs(1), SizeIs(0)));
     LoadHTML(R"(<body> <form><input></form> </body>)");
+    WaitForFormsSeen();
   }
   {
     EXPECT_CALL(autofill_driver_,
                 FormsSeen(SizeIs(0), HasSingleElementWhich(IsFormId(1))));
-    ExecuteJavaScriptForTests(R"(document.forms[0].remove();)");
-    content::RunAllTasksUntilIdle();
-    // Called explicitly because the event is throttled.
-    test_api().DidAddOrRemoveFormRelatedElementsDynamically();
+    ExecuteJavaScriptForTests(R"(document.forms[0].elements[0].remove();)");
+    WaitForFormsSeen();
   }
 }
 
 TEST_F(AutofillAgentTestWithFeatures, TriggerReparseWithResponse) {
+  EXPECT_CALL(autofill_driver_, FormsSeen);
+  LoadHTML(R"(<body> <input> </body>)");
+  WaitForFormsSeen();
   base::MockOnceCallback<void(bool)> mock_callback;
   EXPECT_CALL(mock_callback, Run).Times(0);
   autofill_agent_->TriggerReparseWithResponse(mock_callback.Get());
-  task_environment_.FastForwardBy(base::Milliseconds(50));
+  task_environment_.FastForwardBy(kFormsSeenThrottle / 2);
   EXPECT_CALL(mock_callback, Run(true));
-  task_environment_.FastForwardBy(base::Milliseconds(50));
+  task_environment_.FastForwardBy(kFormsSeenThrottle / 2);
 }
 
 TEST_F(AutofillAgentTestWithFeatures, TriggerReparseWithResponse_CalledTwice) {
+  EXPECT_CALL(autofill_driver_, FormsSeen);
+  LoadHTML(R"(<body> <input> </body>)");
+  WaitForFormsSeen();
   base::MockOnceCallback<void(bool)> mock_callback;
   autofill_agent_->TriggerReparseWithResponse(mock_callback.Get());
   EXPECT_CALL(mock_callback, Run(false));

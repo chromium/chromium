@@ -22,8 +22,9 @@ enum VulkanImplementationName {
 // Corresponds to gpu::WebGPUAdapterName.
 enum WebGPUAdapterName {
   kDefault = 0,
-  kOpenGLES = 1,
-  kSwiftShader = 2,
+  kD3D11 = 1,
+  kOpenGLES = 2,
+  kSwiftShader = 3,
 };
 
 // Corresponds to gpu::WebGPUPowerPreference.
@@ -104,6 +105,7 @@ struct GpuPreferences {
   bool enable_unsafe_webgpu;
   WebGPUAdapterName use_webgpu_adapter;
   WebGPUPowerPreference use_webgpu_power_preference;
+  bool force_webgpu_compat;
   DawnBackendValidationLevel enable_dawn_backend_validation;
   array<string> enabled_dawn_features_list;
   array<string> disabled_dawn_features_list;

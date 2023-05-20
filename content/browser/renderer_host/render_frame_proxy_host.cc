@@ -213,8 +213,7 @@ bool RenderFrameProxyHost::OnMessageReceived(const IPC::Message& msg) {
 }
 
 std::string RenderFrameProxyHost::ToDebugString() {
-  return "RFPH:" +
-         GetRenderViewHost()->GetDelegate()->GetCreatorLocation().ToString();
+  return "RFPH:" + frame_tree_node_->current_frame_host()->ToDebugString();
 }
 
 bool RenderFrameProxyHost::InitRenderFrameProxy(
@@ -758,6 +757,9 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // See also https://crbug.com/647772.
   // TODO(clamy): The transition should probably be changed for POST navigations
   // to PAGE_TRANSITION_FORM_SUBMIT. See https://crbug.com/829827.
+  // TODO(https://crbug.com/1261963): Determine which source_site_instance from
+  // site_instance_group_ to use for navigations to about:blank, once
+  // RenderFrameProxyHost no longer has a site_instance_.
   frame_tree_node_->navigator().NavigateFromFrameProxy(
       current_rfh, validated_url,
       base::OptionalToPtr(params->initiator_frame_token), GetProcess()->GetID(),

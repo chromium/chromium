@@ -44,7 +44,7 @@ constexpr SkColor kArrowColorAfterActivation = SK_ColorWHITE;
 
 // Parameters defining the background circle of the affordance.
 constexpr int kBackgroundRadius = 20;
-constexpr SkColor kBackgroundColorBeforeActication = SK_ColorWHITE;
+constexpr SkColor kBackgroundColorBeforeActivation = SK_ColorWHITE;
 constexpr SkColor kBackgroundColorAfterActivation = gfx::kGoogleBlue600;
 constexpr int kBgShadowOffsetY = 2;
 constexpr int kBgShadowBlurRadius = 8;
@@ -404,7 +404,7 @@ void Affordance::OnPaintLayer(const ui::PaintContext& context) {
   bg_flags.setAntiAlias(true);
   bg_flags.setStyle(cc::PaintFlags::kFill_Style);
   bg_flags.setColor(progress >= 1.0f ? kBackgroundColorAfterActivation
-                                     : kBackgroundColorBeforeActication);
+                                     : kBackgroundColorBeforeActivation);
   gfx::ShadowValues shadow;
   shadow.emplace_back(gfx::Vector2d(0, kBgShadowOffsetY), kBgShadowBlurRadius,
                       kBgShadowColor);

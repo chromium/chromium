@@ -10,8 +10,8 @@
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 
@@ -79,8 +79,8 @@ void UnifiedConsentService::OnStateChanged(syncer::SyncService* sync) {
   // Start observing pref changes when the user enters sync setup.
   // Note: Only |sync->IsSetupInProgress()| is used (i.e. no check for
   // |IsInitialSyncFeatureSetupComplete()|), because on Android
-  // |SetFirstSetupComplete()| is called automatically during the first setup,
-  // i.e. the value could change in the meantime.
+  // |SetInitialSyncFeatureSetupComplete()| is called automatically during the
+  // first setup, i.e. the value could change in the meantime.
   if (sync->IsSetupInProgress() && !pref_service_->IsSyncing()) {
     StartObservingServicePrefChanges();
   } else {

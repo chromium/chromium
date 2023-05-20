@@ -11,7 +11,6 @@
 
 <div id="camera">
   <settings-toggle-button
-      class="settings-box first"
       pref="{{prefs.ash.user.camera_allowed}}"
       id="cameraToggle"
       label="$i18n{cameraToggleTitle}"
@@ -40,7 +39,7 @@
 
 <div id="microphone">
   <settings-toggle-button
-      class="settings-box"
+      class="hr"
       pref="{{prefs.ash.user.microphone_allowed}}"
       id="microphoneToggle"
       label="$i18n{microphoneToggleTitle}"
@@ -73,29 +72,42 @@
   </div>
 </div>
 
+<template is="dom-if" if="[[showSpeakOnMuteDetectionPage_]]" restamp>
+  <settings-toggle-button
+      class="hr"
+      pref="{{prefs.ash.user.speak_on_mute_detection_enabled}}"
+      id="speakonmuteDetectionToggle"
+      label="$i18n{speakOnMuteDetectionToggleTitle}"
+      sub-label="$i18n{speakOnMuteDetectionToggleSubtext}"
+      deep-link-focus-id$="[[Setting.kSpeakOnMuteDetectionOnOff]]"
+      learn-more-url="$i18n{speakOnMuteDetectionLearnMoreURL}">
+  </settings-toggle-button>
+</template>
+
 <!-- Location toggle is not to be shown in dogfooded version of Privacy Hub -->
 <template is="dom-if" if="[[showPrivacyHubMVPPage_]]" restamp>
   <settings-toggle-button
-      class="settings-box"
+      class="hr"
       pref="{{prefs.ash.user.geolocation_allowed}}"
       id="geolocationToggle"
       label="$i18n{geolocationToggleTitle}"
       sub-label="$i18n{geolocationToggleDesc}"
-      deep-link-focus-id$="[[Setting.kGeolocationOnOff]]">
+      deep-link-focus-id$="[[Setting.kGeolocationOnOff]]"
+      learn-more-url="$i18n{geolocationToggleLearnMoreURL}">
   </settings-toggle-button>
 </template>
 
 <if expr="_google_chrome">
   <settings-metrics-consent-toggle-button
-      class="settings-box no-padding"
       id="metricsConsentToggle"
       deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
-      prefs="{{prefs}}">
+      prefs="{{prefs}}"
+      class="hr">
   </settings-metrics-consent-toggle-button>
 </if>
 
 <settings-toggle-button
-    class="settings-box"
+    class="hr"
     id="suggested-content"
     pref="{{prefs.settings.suggested_content_enabled}}"
     label="$i18n{enableSuggestedContent}"

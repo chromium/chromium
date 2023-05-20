@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GIN_V8_PLATFROM_PAGE_ALLOCATOR_H_
-#define GIN_V8_PLATFROM_PAGE_ALLOCATOR_H_
+#ifndef GIN_V8_PLATFORM_PAGE_ALLOCATOR_H_
+#define GIN_V8_PLATFORM_PAGE_ALLOCATOR_H_
 
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -61,4 +61,4 @@ class GIN_EXPORT PageAllocator final : public v8::PageAllocator {
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
-#endif  // GIN_V8_PLATFROM_PAGE_ALLOCATOR_H_
+#endif  // GIN_V8_PLATFORM_PAGE_ALLOCATOR_H_

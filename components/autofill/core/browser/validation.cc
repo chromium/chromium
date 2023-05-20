@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/geo/state_names.h"
@@ -129,30 +128,6 @@ bool IsValidCreditCardSecurityCode(const std::u16string& code,
                                    CvcType cvc_type) {
   return code.length() == GetCvcLengthForCardNetwork(card_network, cvc_type) &&
          base::ContainsOnlyChars(code, u"0123456789");
-}
-
-bool IsValidCreditCardNumberForBasicCardNetworks(
-    const std::u16string& text,
-    const std::set<std::string>& supported_basic_card_networks,
-    std::u16string* error_message) {
-  DCHECK(error_message);
-
-  // The type check is cheaper than the credit card number check.
-  const std::string basic_card_issuer_network =
-      data_util::GetPaymentRequestData(CreditCard::GetCardNetwork(text))
-          .basic_card_issuer_network;
-  if (!supported_basic_card_networks.count(basic_card_issuer_network)) {
-    *error_message = l10n_util::GetStringUTF16(
-        IDS_PAYMENTS_VALIDATION_UNSUPPORTED_CREDIT_CARD_TYPE);
-    return false;
-  }
-
-  if (IsValidCreditCardNumber(text))
-    return true;
-
-  *error_message = l10n_util::GetStringUTF16(
-      IDS_PAYMENTS_CARD_NUMBER_INVALID_VALIDATION_MESSAGE);
-  return false;
 }
 
 bool IsValidEmailAddress(const std::u16string& text) {

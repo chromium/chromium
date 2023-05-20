@@ -219,7 +219,12 @@ if (is_android || (is_chromeos_ash && is_chromeos_device)) {
       # another variable.
       chrome_orderfile_path = default_chrome_orderfile
     } else if (is_chromeos_ash && is_chromeos_device) {
-      chrome_orderfile_path = "//chromeos/profiles/chromeos.orderfile.txt"
+      if (chromeos_afdo_platform == "arm" ||
+          chromeos_afdo_platform == "arm-exp") {
+        chrome_orderfile_path = "//chromeos/profiles/chromeos.arm.orderfile.txt"
+      } else {
+        chrome_orderfile_path = "//chromeos/profiles/chromeos.orderfile.txt"
+      }
     }
   }
 }
@@ -765,6 +770,11 @@ config("compiler") {
     # arm32.
     if (!is_android || current_cpu == "arm64") {
       cflags += [ "-fwhole-program-vtables" ]
+
+      # whole-program-vtables implies -fsplit-lto-unit, and Rust needs to match
+      # behaviour.
+      rustflags += [ "-Zsplit-lto-unit" ]
+
       if (!is_win) {
         ldflags += [ "-fwhole-program-vtables" ]
       }
@@ -902,6 +912,35 @@ config("compiler") {
     asmflags += cflags_c
   }
 
+  if (is_chromeos_device && !is_nacl) {
+    # On ChromeOS devices, we want to ensure we're using Chrome's allocator
+    # symbols for all C++ new/delete operator overloads. PartitionAlloc
+    # and other local allocators should always take precedence over system or
+    # preloaded allocators. These are the mangled symbol names.
+    # See b/280115910 for details.
+    ldflags += [
+      "-Wl,--export-dynamic-symbol=_ZdaPv,-u,_ZdaPv",
+      "-Wl,--export-dynamic-symbol=_ZdaPvRKSt9nothrow_t,-u,_ZdaPvRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_ZdlPv,-u,_ZdlPv",
+      "-Wl,--export-dynamic-symbol=_ZdlPvm,-u,_ZdlPvm",
+      "-Wl,--export-dynamic-symbol=_ZdlPvRKSt9nothrow_t,-u,_ZdlPvRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_Znam,-u,_Znam",
+      "-Wl,--export-dynamic-symbol=_ZnamRKSt9nothrow_t,-u,_ZnamRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_Znwm,-u,_Znwm",
+      "-Wl,--export-dynamic-symbol=_ZnwmRKSt9nothrow_t,-u,_ZnwmRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_ZdaPvmSt11align_val_t,-u,_ZdaPvmSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZdaPvSt11align_val_t,-u,_ZdaPvSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZdaPvSt11align_val_tRKSt9nothrow_t,-u,_ZdaPvSt11align_val_tRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_ZdlPvmSt11align_val_t,-u,_ZdlPvmSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZdlPvSt11align_val_t,-u,_ZdlPvSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZdlPvSt11align_val_tRKSt9nothrow_t,-u,_ZdlPvSt11align_val_tRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_ZnamSt11align_val_t,-u,_ZnamSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZnamSt11align_val_tRKSt9nothrow_t,-u,_ZnamSt11align_val_tRKSt9nothrow_t",
+      "-Wl,--export-dynamic-symbol=_ZnwmSt11align_val_t,-u,_ZnwmSt11align_val_t",
+      "-Wl,--export-dynamic-symbol=_ZnwmSt11align_val_tRKSt9nothrow_t,-u,_ZnwmSt11align_val_tRKSt9nothrow_t",
+    ]
+  }
+
   # Rust compiler flags setup.
   # ---------------------------
   rustflags += [
@@ -946,7 +985,6 @@ config("compiler") {
     # sequences, ignoring the platform, when stderr is not a terminal.
     rustflags += [ "--color=always" ]
   }
-
   if (rust_abi_target != "") {
     rustflags += [ "--target=$rust_abi_target" ]
   }
@@ -956,6 +994,16 @@ config("compiler") {
   }
   if (is_official_build) {
     rustflags += [ "-Ccodegen-units=1" ]
+  }
+  if (!rust_prebuilt_stdlib) {
+    # When building against the Chromium Rust stdlib (which we compile) always
+    # abort instead of unwinding when panic occurs. In official builds, panics
+    # abort immediately (this is configured in the stdlib) to keep binary size
+    # down. So we unconditionally match behaviour in unofficial too.
+    rustflags += [
+      "-Cpanic=abort",
+      "-Zpanic_abort_tests",
+    ]
   }
 }
 
@@ -2594,6 +2642,13 @@ config("minimal_symbols") {
     # Functions, files, and line tables only.
     cflags = []
 
+    if (is_clang) {
+      cflags += [
+        # Disable putting the compiler command line into the debug info to
+        # prevent some types of non-determinism.
+        "-gno-codeview-command-line",
+      ]
+    }
     if (is_clang && use_lld && use_ghash) {
       cflags += [ "-gcodeview-ghash" ]
       ldflags = [ "/DEBUG:GHASH" ]

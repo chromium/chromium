@@ -396,6 +396,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-underline-offset
     text-underline-position
     text-wrap
+    timeline-scope
     toggle-group
     toggle-root
     toggle-trigger

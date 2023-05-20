@@ -92,8 +92,8 @@ class CONTENT_EXPORT AttributionStorageDelegate {
 
   // Returns the maximum number of distinct attribution destinations that can
   // be in storage at any time for sources with the same <source site,
-  // reporting origin>.
-  int GetMaxDestinationsPerSourceSiteReportingOrigin() const;
+  // reporting site>.
+  int GetMaxDestinationsPerSourceSiteReportingSite() const;
 
   // Returns the rate limits for capping contributions per window.
   AttributionConfig::RateLimitConfig GetRateLimits() const;

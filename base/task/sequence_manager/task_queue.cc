@@ -53,10 +53,6 @@ TaskQueue::TaskQueue(std::unique_ptr<internal::TaskQueueImpl> impl,
       name_(impl_->GetProtoName()) {}
 
 TaskQueue::~TaskQueue() {
-  ShutdownTaskQueueGracefully();
-}
-
-void TaskQueue::ShutdownTaskQueueGracefully() {
   // scoped_refptr guarantees us that this object isn't used.
   if (!impl_)
     return;
@@ -65,8 +61,7 @@ void TaskQueue::ShutdownTaskQueueGracefully() {
 
   // If we've not been unregistered then this must occur on the main thread.
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  impl_->ResetThrottler();
-  impl_->sequence_manager()->ShutdownTaskQueueGracefully(TakeTaskQueueImpl());
+  ShutdownTaskQueue();
 }
 
 TaskQueue::TaskTiming::TaskTiming(bool has_wall_time, bool has_thread_time)

@@ -824,7 +824,7 @@ using CanAssignReferenceWrapper = TrueAlias<
       auto* invoker = this->invoker_;                                          \
       if (!std::is_const<QualifiedTestType>::value &&                          \
           std::is_rvalue_reference<QualifiedTestType>::value) {                \
-        ABSL_HARDENING_ASSERT([this]() {                                       \
+        ABSL_ASSERT([this]() {                                                 \
           /* We checked that this isn't const above, so const_cast is safe */  \
           const_cast<Impl*>(this)->invoker_ = InvokedAfterMove;                \
           return this->HasValue();                                             \

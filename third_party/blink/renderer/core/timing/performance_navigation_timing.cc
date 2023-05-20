@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_navigation_timing_activation_start.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/delivery_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
@@ -26,6 +27,28 @@
 namespace blink {
 
 using network::mojom::blink::NavigationDeliveryType;
+
+namespace {
+
+String GetSystemEntropy(DocumentLoader* loader) {
+  if (loader) {
+    switch (loader->GetTiming().SystemEntropyAtNavigationStart()) {
+      case mojom::blink::SystemEntropy::kHigh:
+        CHECK(loader->GetFrame()->IsOutermostMainFrame());
+        return "high";
+      case mojom::blink::SystemEntropy::kNormal:
+        CHECK(loader->GetFrame()->IsOutermostMainFrame());
+        return "normal";
+      case mojom::blink::SystemEntropy::kEmpty:
+        CHECK(!loader->GetFrame()->IsOutermostMainFrame());
+        return g_empty_string;
+    }
+  }
+
+  return g_empty_string;
+}
+
+}  // namespace
 
 PerformanceNavigationTiming::PerformanceNavigationTiming(
     LocalDOMWindow& window,
@@ -315,6 +338,28 @@ ScriptValue PerformanceNavigationTiming::NotRestoredReasonsBuilder(
   return builder.GetScriptValue();
 }
 
+AtomicString PerformanceNavigationTiming::systemEntropy() const {
+  if (DomWindow()) {
+    blink::UseCounter::Count(DomWindow()->document(),
+                             WebFeature::kPerformanceNavigateSystemEntropy);
+  }
+
+  return AtomicString(GetSystemEntropy(GetDocumentLoader()));
+}
+
+DOMHighResTimeStamp PerformanceNavigationTiming::criticalCHRestart(
+    ScriptState* script_state) const {
+  ExecutionContext::From(script_state)
+      ->CountUse(WebFeature::kCriticalCHRestartNavigationTiming);
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing) {
+    return 0.0;
+  }
+  return Performance::MonotonicTimeToDOMHighResTimeStamp(
+      TimeOrigin(), timing->CriticalCHRestart(), AllowNegativeValues(),
+      CrossOriginIsolatedCapability());
+}
+
 void PerformanceNavigationTiming::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   PerformanceResourceTiming::BuildJSONValue(builder);
@@ -339,6 +384,17 @@ void PerformanceNavigationTiming::BuildJSONValue(
                 notRestoredReasons(builder.GetScriptState()));
     ExecutionContext::From(builder.GetScriptState())
         ->CountUse(WebFeature::kBackForwardCacheNotRestoredReasons);
+  }
+
+  if (RuntimeEnabledFeatures::PerformanceNavigateSystemEntropyEnabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
+    builder.Add("systemEntropy", GetSystemEntropy(GetDocumentLoader()));
+  }
+
+  if (RuntimeEnabledFeatures::CriticalCHRestartNavigationTimingEnabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
+    builder.Add("criticalCHRestart",
+                criticalCHRestart(builder.GetScriptState()));
   }
 }
 

@@ -580,7 +580,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.ActivateStatus" enum="FwupdReturnValue"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>campello@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
@@ -590,7 +590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.UpdateDuration" units="seconds"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>campello@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
@@ -600,12 +600,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Fwupd.UpdateStatus" enum="FwupdReturnValue"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>campello@google.com</owner>
   <owner>chromeos-fwupd@google.com</owner>
   <summary>
     Indicates the return value of a firmware update operation via fwupd.
     Reported once per update operation.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Hibernate.Abort" enum="CrosHibernateAbortReason"
+    expires_after="2024-05-09">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    The reason why an attempt to hibernate was aborted. Reported when a
+    hibernation attempt is aborted.
   </summary>
 </histogram>
 
@@ -631,16 +642,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Hibernate.Duration.SetupLVMFiles" units="seconds"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The duration in seconds we wait for hibernate files to be setup on ChromeOS
-    devices with LVM. Reported at hibernate.
-  </summary>
-</histogram>
-
 <histogram name="Platform.Hibernate.ExcessMemoryAvailable" units="MiB"
     expires_after="2023-08-04">
   <owner>asavery@chromium.org</owner>
@@ -653,65 +654,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Hibernate.IO.PreloadImage.Duration" units="seconds"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
+<histogram name="Platform.Hibernate.HibernateDuration" units="hours"
+    expires_after="2024-05-10">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
   <summary>
-    The duration in seconds spent preloading the hibernate image on ChromeOS
-    devices. Reported at resume from hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.PreloadImage.Rate" units="MiB/s"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The rate in MiB/s we are preloading the hibernate image on ChromeOS devices.
-    Reported at resume from hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.PreloadImage.Size" units="KiB"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The size in KiB of the hibernate image we preload on ChromeOS devices.
-    Reported at resume from hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.ReadAllData.Duration" units="seconds"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The total duration in seconds spent preloading and moving the hibernate
-    image on ChromeOS devices. This should be the summation of the preloading
-    and main image durations. Reported at resume from hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.ReadAllData.Rate" units="MiB/s"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The rate in MiB/s we preloaded and moved the hibernate image on ChromeOS
-    devices. Reported at resume from hibernate.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Hibernate.IO.ReadAllData.Size" units="KiB"
-    expires_after="2023-08-04">
-  <owner>asavery@chromium.org</owner>
-  <owner>evgreen@chromium.org</owner>
-  <summary>
-    The size in KiB of the hibernate image we preload and move on ChromeOS
-    devices. This should be the summation of the preloaded and main image sizes.
-    Reported at resume from hibernate.
+    Time the system was hibernated. Reported at resume from hibernate.
   </summary>
 </histogram>
 
@@ -1336,7 +1285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.MemoryUsage" units="0.1MiB"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1384,7 +1333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.StorageUsage" units="MiB"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>xuhong@chromium.org</owner>
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -1476,7 +1425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.MountEncrypted.EncryptionKeyStatus"
-    enum="MountEncryptedEncryptionKeyStatus" expires_after="2023-09-10">
+    enum="MountEncryptedEncryptionKeyStatus" expires_after="2023-11-12">
   <owner>apronin@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -1488,7 +1437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.MountEncrypted.SystemKeyStatus"
-    enum="MountEncryptedSystemKeyStatus" expires_after="2023-09-10">
+    enum="MountEncryptedSystemKeyStatus" expires_after="2023-11-12">
   <owner>apronin@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -1594,7 +1543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SmartTransferErrors" units="units"
-    expires_after="2023-09-08">
+    expires_after="2023-11-12">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
   <summary>Disk communication errors (SMART 199), sent at boot.</summary>
@@ -1696,7 +1645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.StatefulWritesDaily" units="KiB"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>asavery@chromium.org</owner>
   <owner>gwendal@chromium.org</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -1742,7 +1691,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.SwapInDaily" units="pages" expires_after="2023-09-03">
+<histogram name="Platform.SwapInDaily" units="pages" expires_after="2023-11-12">
   <owner>asavery@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>Number of pages swapped IN over a day, sampled daily.</summary>
@@ -1767,7 +1716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.SwapOutDaily" units="pages"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>asavery@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <summary>Number of pages swapped OUT over a day, sampled daily.</summary>
@@ -1801,7 +1750,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.AuthErrorCode" enum="TPMResultCodeEnum"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -1832,7 +1781,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.DictionaryAttackCounter" units="units"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>cylai@chromium.org</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -1852,7 +1801,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.ErrorCode" enum="TPMResultCodeEnum"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -1970,7 +1919,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.VersionFingerprint" enum="TPMVersionFingerprint"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>mnissler@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -2041,7 +1990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.FirstTimeoutWritingTime" units="seconds"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>System uptime when first timeout writing TPM command occurs</summary>
@@ -2069,7 +2018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.TransitionedWriteErrorNo"
-    enum="PopularOSErrno" expires_after="2023-08-01">
+    enum="PopularOSErrno" expires_after="2023-11-12">
   <owner>cylai@google.com</owner>
   <owner>chingkang@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -2403,16 +2352,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Cr50"/>
     <variant name="Ti50"/>
   </token>
-</histogram>
-
-<histogram name="PlatformFile.UnknownErrors.Windows" enum="WinGetLastError"
-    expires_after="M95">
-  <owner>dmurph@chromium.org</owner>
-  <owner>pwnall@chromium.org</owner>
-  <summary>
-    Errors returned by CreateFile on Windows that PlatformFileError doesn't yet
-    support.
-  </summary>
 </histogram>
 
 </histograms>

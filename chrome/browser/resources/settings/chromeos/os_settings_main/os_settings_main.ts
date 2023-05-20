@@ -14,8 +14,8 @@ import 'chrome://resources/js/search_highlight_utils.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_about_page/os_about_page.js';
 import '../os_settings_page/os_settings_page.js';
-import '../../settings_shared.css.js';
-import '../../settings_vars.css.js';
+import '../settings_shared.css.js';
+import '../settings_vars.css.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -93,12 +93,6 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
        * Dictionary defining page availability.
        */
       pageAvailability: Object,
-
-      showAndroidApps: Boolean,
-
-      showArcvmManageUsb: Boolean,
-
-      havePlayStoreApp: Boolean,
     };
   }
 
@@ -106,9 +100,6 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
   advancedToggleExpanded: boolean;
   toolbarSpinnerActive: boolean;
   pageAvailability: OsPageAvailability;
-  showAndroidApps: boolean;
-  showArcvmManageUsb: boolean;
-  havePlayStoreApp: boolean;
   private overscroll_: number;
   private showPages_: MainPageVisibility;
   private showingSubpage_: boolean;

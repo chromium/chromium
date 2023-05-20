@@ -155,8 +155,8 @@ class WebAppPolicyManager {
 
   void OverrideManifest(const GURL& custom_values_key,
                         blink::mojom::ManifestPtr& manifest) const;
-  RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicyByUnhashedAppId(
-      const std::string& unhashed_app_id) const;
+  RunOnOsLoginPolicy GetUrlRunOnOsLoginPolicyByManifestId(
+      const std::string& manifest_id) const;
 
   // Parses install options from a `base::Value::Dict`, which represents one
   // entry of the kWepAppInstallForceList. If the value contains a custom_name

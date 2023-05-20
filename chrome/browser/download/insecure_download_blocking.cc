@@ -15,9 +15,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/download/public/common/download_stats.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -75,6 +77,10 @@ const base::FeatureParam<std::string> kWarnExtensionList(
     &features::kTreatUnsafeDownloadsAsActive,
     "WarnExtensionList",
     "");
+
+const char kSafeExtensions[] =
+    ("txt,css,json,csv,tsv,jpg,jpeg,png,gif,tif,tiff,ico,webp,aac,midi,ogg,"
+     "wav,webm,mp3,webm,mp4,mpeg,mov,wmv");
 
 // Map the string file extension to the corresponding histogram enum.
 InsecureDownloadExtensions GetExtensionEnumFromString(
@@ -366,20 +372,23 @@ bool ContainsExtension(const std::string& extension_list,
 
 // Just print a descriptive message to the console about the blocked download.
 // |is_blocked| indicates whether this download will be blocked now.
-void PrintConsoleMessage(const InsecureDownloadData& data, bool is_blocked) {
+void PrintConsoleMessage(const InsecureDownloadData& data) {
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(data.item_);
   if (!web_contents) {
     return;
   }
 
-  // When no initiator is defined, the file isn't mixed but is still insecure.
-  if (!data.initiator_.has_value()) {
+  if (data.is_mixed_content_) {
     web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         base::StringPrintf(
-            "The file at '%s' was %s an insecure connection. "
-            "This file should be served over HTTPS.",
+            "Mixed Content: The site at '%s' was loaded over a secure "
+            "connection, but the file at '%s' was %s an insecure "
+            "connection. This file should be served over HTTPS. "
+            "See https://blog.chromium.org/2020/02/"
+            "protecting-users-from-insecure.html for more details.",
+            data.initiator_->GetURL().spec().c_str(),
             data.item_->GetURL().spec().c_str(),
             (data.is_redirect_chain_secure_ ? "loaded over"
                                             : "redirected through")));
@@ -389,19 +398,11 @@ void PrintConsoleMessage(const InsecureDownloadData& data, bool is_blocked) {
   web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(
-          "Mixed Content: The site at '%s' was loaded over a secure "
-          "connection, but the file at '%s' was %s an insecure "
-          "connection. This file should be served over HTTPS. "
-          "This download %s. See "
-          "https://blog.chromium.org/2020/02/"
-          "protecting-users-from-insecure.html"
-          " for more details.",
-          data.initiator_->GetURL().spec().c_str(),
+          "The file at '%s' was %s an insecure connection. "
+          "This file should be served over HTTPS.",
           data.item_->GetURL().spec().c_str(),
           (data.is_redirect_chain_secure_ ? "loaded over"
-                                          : "redirected through"),
-          (is_blocked ? "has been blocked"
-                      : "will be blocked in future versions of Chrome")));
+                                          : "redirected through")));
 }
 
 bool IsDownloadPermittedByContentSettings(
@@ -434,6 +435,11 @@ bool IsDownloadPermittedByContentSettings(
   return false;
 }
 
+bool IsHttpsFirstModeEnabled(Profile* profile) {
+  PrefService* prefs = profile->GetPrefs();
+  return prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+}
+
 }  // namespace
 
 InsecureDownloadStatus GetInsecureDownloadStatusForDownload(
@@ -442,12 +448,28 @@ InsecureDownloadStatus GetInsecureDownloadStatusForDownload(
     const download::DownloadItem* item) {
   InsecureDownloadData data(path, item);
 
+  // If the download is fully secure, early abort.
+  if (!data.is_insecure_download_) {
+    return InsecureDownloadStatus::SAFE;
+  }
+
+  // Print a console message for all varieties of insecure downloads.
+  PrintConsoleMessage(data);
+
+  if (IsDownloadPermittedByContentSettings(profile, data.initiator_)) {
+    return InsecureDownloadStatus::SAFE;
+  }
+
   // When enabled, show a visible (bypassable) warning on insecure downloads.
   // Since mixed download blocking is more severe, exclude mixed downloads from
   // this early-return to let the mixed download logic below apply.
-  if (base::FeatureList::IsEnabled(features::kBlockInsecureDownloads) &&
+  if (base::FeatureList::IsEnabled(features::kInsecureDownloadWarnings) &&
       data.is_insecure_download_ && !data.is_mixed_content_) {
-    PrintConsoleMessage(data, true);
+    // Except when using HFM, don't warn on files that are likely to be safe.
+    if (!IsHttpsFirstModeEnabled(profile) &&
+        ContainsExtension(kSafeExtensions, data.extension_)) {
+      return InsecureDownloadStatus::SAFE;
+    }
     return InsecureDownloadStatus::BLOCK;
   }
 
@@ -457,19 +479,11 @@ InsecureDownloadStatus GetInsecureDownloadStatusForDownload(
 
   // As of M81, print a console message even if no other blocking is enabled.
   if (!base::FeatureList::IsEnabled(features::kTreatUnsafeDownloadsAsActive)) {
-    PrintConsoleMessage(data, false);
-    return InsecureDownloadStatus::SAFE;
-  }
-
-  if (IsDownloadPermittedByContentSettings(profile, data.initiator_)) {
-    PrintConsoleMessage(data, false);
     return InsecureDownloadStatus::SAFE;
   }
 
   if (ContainsExtension(kSilentBlockExtensionList.Get(), data.extension_) !=
       kTreatSilentBlockListAsAllowlist.Get()) {
-    PrintConsoleMessage(data, true);
-
     // Only permit silent blocking when not initiated by an explicit user
     // action.  Otherwise, fall back to visible blocking.
     auto download_source = data.item_->GetDownloadSource();
@@ -483,17 +497,14 @@ InsecureDownloadStatus GetInsecureDownloadStatusForDownload(
 
   if (ContainsExtension(kBlockExtensionList.Get(), data.extension_) !=
       kTreatBlockListAsAllowlist.Get()) {
-    PrintConsoleMessage(data, true);
     return InsecureDownloadStatus::BLOCK;
   }
 
   if (ContainsExtension(kWarnExtensionList.Get(), data.extension_) !=
       kTreatWarnListAsAllowlist.Get()) {
-    PrintConsoleMessage(data, true);
     return InsecureDownloadStatus::WARN;
   }
 
   // The download is still mixed content, but we're not blocking it yet.
-  PrintConsoleMessage(data, false);
   return InsecureDownloadStatus::SAFE;
 }

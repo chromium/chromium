@@ -934,3 +934,36 @@ testcase.searchTrashedFiles = async () => {
       appId, TestEntryInfo.getExpectedRows([ENTRIES.hello, helloTrashinfo]),
       {ignoreLastModifiedTime: true, ignoreFileSize: true});
 };
+
+/**
+ * Checcks that finding files directly in Shared with me, or in folders nested
+ * in Shared with me, works.
+ */
+testcase.searchSharedWithMe = async () => {
+  // Create a shared file for nested directory. It must have SHARED_WITH_ME
+  // attribute on it, as NESTED_SHARED_WITH_ME does not have shared metadata
+  // set on it.
+  const nestedTestSharedFile = ENTRIES.sharedWithMeDirectoryFile.cloneWith({
+    sharedOption: SharedOption.SHARED_WITH_ME,
+    targetPath: 'Shared Directory/nested.txt',
+    nameText: 'nested.txt',
+  });
+  // Open Files app on Drive containing "Shared with me" file entries.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
+    ENTRIES.testSharedFile,
+    ENTRIES.sharedWithMeDirectory,
+    nestedTestSharedFile,
+  ]);
+
+  await navigateWithDirectoryTree(appId, '/Shared with me');
+
+  // Find the specific file, test.txt
+  await remoteCall.typeSearchText(appId, 'test.txt');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.testSharedFile]));
+
+  // Search for the file nested in the shared directory.
+  await remoteCall.typeSearchText(appId, 'nested.txt');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([nestedTestSharedFile]));
+};

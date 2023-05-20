@@ -1,0 +1,121 @@
+<style include="cr-shared-style settings-shared">
+  .cr-row-no-top-gap {
+    margin-bottom: var(--cr-section-vertical-margin);
+    min-height: auto;
+  }
+
+  .preview-box {
+    all: initial;
+    align-items: center;
+    background-image:
+      url(chrome://theme/IDR_ACCESSIBILITY_CAPTIONS_PREVIEW_BACKGROUND);
+    background-position: center;
+    background-size: cover;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    margin: var(--cr-section-padding);
+    margin-inline-start: var(--cr-section-indent-padding);
+    min-height: 112px;
+    padding: 20px;
+    text-align: center;
+  }
+</style>
+<template is="dom-if" if="[[enableLiveCaption_]]">
+  <settings-live-caption prefs="{{prefs}}"></settings-live-caption>
+</template>
+<div class="cr-row">
+  <h2 class="start">$i18n{captionsPreferencesTitle}</h2>
+</div>
+<div class="cr-row first cr-row-no-top-gap">
+  <div class="start">$i18n{captionsPreferencesSubtitle}</div>
+</div>
+<div class="preview-box">
+  <span style="
+      font-size:[[prefs.accessibility.captions.text_size.value]];
+      font-family:[[getFontFamily_(
+          prefs.accessibility.captions.text_font.value)]];
+      background-color: [[computeBackgroundColor_(
+          prefs.accessibility.captions.background_opacity.value,
+          prefs.accessibility.captions.background_color.value)]];
+      color: [[computeTextColor_(
+          prefs.accessibility.captions.text_opacity.value,
+          prefs.accessibility.captions.text_color.value)]];
+      text-shadow: [[prefs.accessibility.captions.text_shadow.value]];
+      padding: [[computePadding_(
+          prefs.accessibility.captions.text_size.value)]]">
+    $i18n{quickBrownFox}
+  </span>
+</div>
+<div class="list-frame">
+  <div class="list-item underbar first">
+    <div class="start cr-padded-text" aria-hidden="true">
+      $i18n{captionsTextSize}
+    </div>
+    <settings-dropdown-menu id="captionsTextSize"
+        label="$i18n{captionsTextSize}"
+        pref="{{prefs.accessibility.captions.text_size}}"
+        menu-options="[[textSizeOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="list-item underbar">
+    <div class="start cr-padded-text" aria-hidden="true">
+      $i18n{captionsTextFont}
+    </div>
+    <settings-dropdown-menu id="captionsTextFont"
+        label="$i18n{captionsTextFont}"
+        pref="{{prefs.accessibility.captions.text_font}}"
+        menu-options="[[textFontOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="list-item underbar">
+    <div class="start cr-padded-text" aria-hidden="true">
+      $i18n{captionsTextColor}
+    </div>
+    <settings-dropdown-menu id="captionsTextColor"
+        label="$i18n{captionsTextColor}"
+        pref="{{prefs.accessibility.captions.text_color}}"
+        menu-options="[[colorOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="list-item underbar">
+    <div class="start cr-padded-text" aria-hidden="true">
+      $i18n{captionsTextOpacity}
+    </div>
+    <settings-dropdown-menu id="captionsTextOpacity"
+        label="$i18n{captionsTextOpacity}"
+        pref="{{prefs.accessibility.captions.text_opacity}}"
+        menu-options="[[textOpacityOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="list-item underbar">
+    <div class="start cr-padded-text" aria-hidden="true">
+      $i18n{captionsTextShadow}
+    </div>
+    <settings-dropdown-menu id="captionsTextShadow"
+        label="$i18n{captionsTextShadow}"
+        pref="{{prefs.accessibility.captions.text_shadow}}"
+        menu-options="[[textShadowOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="list-item underbar">
+    <div class="start cr-padded-text" aria-hidden="true">
+      $i18n{captionsBackgroundColor}
+    </div>
+    <settings-dropdown-menu id="captionsBackgroundColor"
+        label="$i18n{captionsBackgroundColor}"
+        pref="{{prefs.accessibility.captions.background_color}}"
+        menu-options="[[colorOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="list-item">
+    <div class="start cr-padded-text" aria-hidden="true">
+      $i18n{captionsBackgroundOpacity}
+    </div>
+    <settings-dropdown-menu id="captionsBackgroundOpacity"
+        label="$i18n{captionsBackgroundOpacity}"
+        pref="{{prefs.accessibility.captions.background_opacity}}"
+        menu-options="[[backgroundOpacityOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+</div>

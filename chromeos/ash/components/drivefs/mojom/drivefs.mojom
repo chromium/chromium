@@ -158,6 +158,9 @@ interface DriveFs {
   // Pulls the updated file content from the server into the cache, if a newer
   // revision is available.
   GetItemFromCloudStore(mojo_base.mojom.FilePath path) => (FileError error);
+
+  // Gets counts of files in docs offline extension.
+  GetDocsOfflineStats() => (FileError error, DocsOfflineStats counts);
 };
 
 // Implemented by Chrome, used from DriveFS.
@@ -227,14 +230,6 @@ interface DriveFsDelegate {
   // Invoked when the syncing status changes for items that are being tracked by
   // the mirror stack.
   OnMirrorSyncingStatusUpdate(SyncingStatus status);
-
-  // Invoked when the syncing status changes for items that are being tracked by
-  // either the streaming or the mirror stack - with the guarantee that if an
-  // event is dispatched for a given path, then a "completed" event will also
-  // eventually be dispatched for the same path (i.e., paths never linger in an
-  // incompleted state).
-  // For more details, see: b/269694669
-  OnItemProgress(ProgressEvent progress_event);
 };
 
 [Extensible]
@@ -562,22 +557,6 @@ struct ItemEvent {
   [MinVersion=2] bool is_download = false;
 };
 
-// A report of a change in the Sync Progress of a file or folder.
-struct ProgressEvent {
-  // The stable ID used by DriveFS.
-  int64 stable_id;
-
-  // Absolute path of the file or directory.
-  string path;
-
-  // Progress given by signed byte, ranging from 0 to 100.
-  // * 0 progress is considered "queued";
-  // * 100 progress is considered "completed";
-  // * Anything in between is considered "in progress";
-  // * Other values are not defined.
-  uint8 progress;
-};
-
 struct SyncingStatus {
   array<ItemEvent> item_events;
 };
@@ -817,3 +796,13 @@ interface HttpDelegate {
   // See |URLLoaderClient::OnComplete|
   OnRequestComplete(HttpCompletionStatus status);
 };
+
+// Counts of files in docs offline extension.
+struct DocsOfflineStats {
+  // The total number of files. -1 when extension is not available.
+  int32 total;
+
+  // The number of files available offline. -1 when extension is not available.
+  int32 available_offline;
+};
+

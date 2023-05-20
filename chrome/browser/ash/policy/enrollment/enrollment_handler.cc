@@ -31,7 +31,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
-#include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -691,33 +690,7 @@ void EnrollmentHandler::StartStoreRobotAuth() {
 void EnrollmentHandler::OnDeviceAccountTokenStored() {
   DCHECK_EQ(STEP_STORE_ROBOT_AUTH, enrollment_step_);
   SetStep(STEP_STORE_POLICY);
-  if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
-    CHECK(install_attributes_->IsActiveDirectoryManaged());
-    // Update device settings so that in case of Active Directory unsigned
-    // policy is accepted.
-    ash::DeviceSettingsService::Get()->SetDeviceMode(
-        install_attributes_->GetMode());
-    ash::AuthPolicyClient::Get()->RefreshDevicePolicy(
-        base::BindOnce(&EnrollmentHandler::HandleActiveDirectoryPolicyRefreshed,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    store_->InstallInitialPolicy(*policy_);
-  }
-}
-
-void EnrollmentHandler::HandleActiveDirectoryPolicyRefreshed(
-    authpolicy::ErrorType error) {
-  DCHECK_EQ(STEP_STORE_POLICY, enrollment_step_);
-
-  if (error != authpolicy::ERROR_NONE) {
-    LOG(ERROR) << "Failed to load Active Directory policy.";
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::ACTIVE_DIRECTORY_POLICY_FETCH_FAILED));
-    return;
-  }
-
-  // After that, the enrollment flow continues in one of the OnStore* observers.
-  store_->Load();
+  store_->InstallInitialPolicy(*policy_);
 }
 
 void EnrollmentHandler::Stop() {

@@ -208,6 +208,9 @@ bool HasTimelines(const StyleResolverState& state) {
   if (state.StyleBuilder().ViewTimelineName()) {
     return true;
   }
+  if (state.StyleBuilder().TimelineScope()) {
+    return true;
+  }
   if (ElementAnimations* element_animations = GetElementAnimations(state)) {
     return element_animations->CssAnimations().HasTimelines();
   }

@@ -25,14 +25,13 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/follow/follow_java_script_feature.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/ntp/browser_policy_new_tab_page_rewriter.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
@@ -43,11 +42,12 @@
 #import "ios/chrome/browser/search_engines/search_engine_tab_helper_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/windowed_container_view.h"
 #import "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
-#import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web/browser_about_rewriter.h"
 #import "ios/chrome/browser/web/chrome_main_parts.h"
 #import "ios/chrome/browser/web/error_page_util.h"
@@ -177,7 +177,7 @@ NSString* GetHttpsOnlyModeErrorPageHtml(web::WebState* web_state,
 // form "productname/version". Used as part of the user agent string.
 std::string GetMobileProduct() {
   return base::StringPrintf(kProductTagWithPlaceholder,
-                            version_info::GetVersionNumber().c_str());
+                            version_info::GetVersionNumber().data());
 }
 
 // Returns a string describing the product name and version, of the
@@ -303,7 +303,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(autofill::FormHandlersJavaScriptFeature::GetInstance());
   features.push_back(
       autofill::SuggestionControllerJavaScriptFeature::GetInstance());
-  features.push_back(BottomSheetJavaScriptFeature::GetInstance());
+  features.push_back(AutofillBottomSheetJavaScriptFeature::GetInstance());
   features.push_back(FontSizeJavaScriptFeature::GetInstance());
   features.push_back(ImageFetchJavaScriptFeature::GetInstance());
   features.push_back(
@@ -436,10 +436,13 @@ void ChromeWebClient::LogDefaultUserAgent(web::WebState* web_state,
                             !use_desktop_agent);
 }
 
-bool ChromeWebClient::RestoreSessionFromCache(web::WebState* web_state) const {
-  return web::UseNativeSessionRestorationCache() &&
-         WebSessionStateTabHelper::FromWebState(web_state)
-             ->RestoreSessionFromCache();
+NSData* ChromeWebClient::FetchSessionFromCache(web::WebState* web_state) const {
+  if (!web::UseNativeSessionRestorationCache()) {
+    return nil;
+  }
+
+  return WebSessionStateTabHelper::FromWebState(web_state)
+      ->FetchSessionFromCache();
 }
 
 void ChromeWebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {

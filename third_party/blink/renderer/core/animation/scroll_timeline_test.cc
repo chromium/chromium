@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -61,6 +62,13 @@ class ScrollTimelineTest : public RenderingTest {
     GetPage().Animator().ServiceScriptedAnimations(new_time);
   }
 
+  wtf_size_t TimelinesCount() const {
+    return GetDocument()
+        .GetDocumentAnimations()
+        .GetTimelinesForTesting()
+        .size();
+  }
+
   wtf_size_t AnimationsCount() const {
     wtf_size_t count = 0;
     for (auto timeline :
@@ -73,30 +81,49 @@ class ScrollTimelineTest : public RenderingTest {
 
 class TestScrollTimeline : public ScrollTimeline {
  public:
-  TestScrollTimeline(Document* document, Element* source)
+  TestScrollTimeline(Document* document, Element* source, bool snapshot = true)
       : ScrollTimeline(document,
                        TimelineAttachment::kLocal,
                        ScrollTimeline::ReferenceType::kSource,
                        source,
-                       ScrollAxis::kVertical) {
-    UpdateSnapshot();
+                       ScrollAxis::kY) {
+    if (snapshot) {
+      UpdateSnapshot();
+    }
   }
 
   void Trace(Visitor* visitor) const override {
     ScrollTimeline::Trace(visitor);
   }
+
+  // UpdateSnapshot has 'protected' visibility.
+  void UpdateSnapshotForTesting() { UpdateSnapshot(); }
+
+  AnimationTimeDelta CalculateIntrinsicIterationDurationForTest(
+      const absl::optional<TimelineOffset>& range_start,
+      const absl::optional<TimelineOffset>& range_end) {
+    Timing timing;
+    timing.iteration_count = 1;
+    TimelineRange timeline_range = GetTimelineRange();
+    return CalculateIntrinsicIterationDuration(timeline_range, range_start,
+                                               range_end, timing);
+  }
 };
 
 class TestViewTimeline : public ViewTimeline {
  public:
-  TestViewTimeline(Document* document, Element* subject)
+  TestViewTimeline(Document* document, Element* subject, bool snapshot = true)
       : ViewTimeline(document,
                      TimelineAttachment::kLocal,
                      subject,
-                     ScrollAxis::kVertical,
+                     ScrollAxis::kY,
                      TimelineInset()) {
-    UpdateSnapshot();
+    if (snapshot) {
+      UpdateSnapshot();
+    }
   }
+
+  void UpdateSnapshotForTesting() { UpdateSnapshot(); }
 };
 
 TEST_F(ScrollTimelineTest, CurrentTimeIsNullIfSourceIsNotScrollable) {
@@ -754,6 +781,60 @@ TEST_F(ScrollTimelineTest, WeakReferences) {
   EXPECT_EQ(0u, scroll_timeline->GetAnimations().size());
 }
 
+TEST_F(ScrollTimelineTest, WeakViewTimelines) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='scroller'>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  wtf_size_t base_count = TimelinesCount();
+
+  StaticElementList* list = GetDocument().QuerySelectorAll("#scroller > div");
+  ASSERT_TRUE(list);
+  EXPECT_EQ(10u, list->length());
+
+  HeapVector<Member<Animation>> animations;
+
+  for (wtf_size_t i = 0; i < list->length(); ++i) {
+    Element* element = list->item(i);
+    Animation* animation = CreateTestAnimation(
+        MakeGarbageCollected<TestViewTimeline>(&GetDocument(), element));
+    animation->play();
+    animations.push_back(animation);
+  }
+
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(base_count + 10u, TimelinesCount());
+
+  // With all animations canceled, there should be no reason for the timelines
+  // to persist anymore.
+  for (const Member<Animation>& animation : animations) {
+    animation->cancel();
+  }
+  animations.clear();
+
+  // SimulateFrame needed to lose all strong references the animations,
+  // see ScrollTimelineTest.WeakReferences.
+  SimulateFrame();
+  UpdateAllLifecyclePhasesForTest();
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  EXPECT_EQ(base_count, TimelinesCount());
+}
+
 TEST_F(ScrollTimelineTest, ScrollTimelineOffsetZoom) {
   using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
 
@@ -862,6 +943,138 @@ TEST_F(ScrollTimelineTest, ViewTimelineOffsetZoom) {
     ASSERT_TRUE(timeline->endOffset());
     EXPECT_EQ("300px", timeline->endOffset()->toString());
   }
+}
+
+TEST_F(ScrollTimelineTest, ScrollTimelineGetTimelineRange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow-y: auto;
+        width: 100px;
+        height: 100px;
+      }
+      .spacer {
+        height: 400px;
+      }
+    }
+    </style>
+    <div id='scroller'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  auto* timeline = MakeGarbageCollected<TestScrollTimeline>(
+      &GetDocument(), GetElementById("scroller"), /* snapshot */ false);
+
+  // GetTimelineRange before taking a snapshot.
+  EXPECT_TRUE(timeline->GetTimelineRange().IsEmpty());
+
+  timeline->UpdateSnapshotForTesting();
+  EXPECT_EQ(TimelineRange(TimelineRange::ScrollOffsets(0, 300)),
+            timeline->GetTimelineRange());
+}
+
+TEST_F(ScrollTimelineTest, ViewTimelineGetTimelineRange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow-y: auto;
+        width: 100px;
+        height: 100px;
+        border: 20px solid black;
+      }
+      .spacer {
+        height: 200px;
+      }
+      #subject {
+        height: 100px;
+      }
+    }
+    </style>
+    <div id='scroller'>
+      <div class='spacer'></div>
+      <div id='subject'></div>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  auto* timeline = MakeGarbageCollected<TestViewTimeline>(
+      &GetDocument(), GetElementById("subject"), /* snapshot */ false);
+
+  // GetTimelineRange before taking a snapshot.
+  EXPECT_TRUE(timeline->GetTimelineRange().IsEmpty());
+
+  timeline->UpdateSnapshotForTesting();
+  EXPECT_EQ(TimelineRange(TimelineRange::ScrollOffsets(100, 300),
+                          /* subject_size */ 100),
+            timeline->GetTimelineRange());
+}
+
+TEST_F(ScrollTimelineTest, ScrollTimelineCalculateIntrinsicIterationDuration) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow-y: auto;
+        width: 100px;
+        height: 100px;
+      }
+      .spacer {
+        height: 400px;
+      }
+    }
+    </style>
+    <div id='scroller'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  auto* timeline = MakeGarbageCollected<TestScrollTimeline>(
+      &GetDocument(), GetElementById("scroller"));
+
+  AnimationTimeDelta duration = timeline->GetDuration().value();
+
+  using NamedRange = TimelineOffset::NamedRange;
+
+  // [0, 300]
+  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+      duration, timeline->CalculateIntrinsicIterationDurationForTest(
+                    /* range_start */ absl::optional<TimelineOffset>(),
+                    /* range_end */ absl::optional<TimelineOffset>())));
+
+  // [0, 300] (explicit)
+  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+      duration,
+      timeline->CalculateIntrinsicIterationDurationForTest(
+          /* range_start */ TimelineOffset(NamedRange::kNone, Length::Fixed(0)),
+          /* range_end */ TimelineOffset(NamedRange::kNone,
+                                         Length::Fixed(300)))));
+
+  // [50, 200]
+  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+      duration / 2.0, timeline->CalculateIntrinsicIterationDurationForTest(
+                          /* range_start */
+                          TimelineOffset(NamedRange::kNone, Length::Fixed(50)),
+                          /* range_end */ TimelineOffset(NamedRange::kNone,
+                                                         Length::Fixed(200)))));
+
+  // [50, 200] (kEntry)
+  // The name part of the TimelineOffset is ignored.
+  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+      duration / 2.0,
+      timeline->CalculateIntrinsicIterationDurationForTest(
+          /* range_start */
+          TimelineOffset(NamedRange::kEntry, Length::Fixed(50)),
+          /* range_end */
+          TimelineOffset(NamedRange::kEntry, Length::Fixed(200)))));
+
+  // [50, 50]
+  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+      AnimationTimeDelta(),
+      timeline->CalculateIntrinsicIterationDurationForTest(
+          /* range_start */
+          TimelineOffset(NamedRange::kNone, Length::Fixed(50)),
+          /* range_end */ TimelineOffset(NamedRange::kNone,
+                                         Length::Fixed(50)))));
 }
 
 }  //  namespace blink

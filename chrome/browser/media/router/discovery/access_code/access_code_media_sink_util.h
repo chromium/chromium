@@ -23,7 +23,8 @@ using NetworkInfo = chrome_browser_media::proto::NetworkInfo;
 std::pair<absl::optional<MediaSinkInternal>, CreateCastMediaSinkResult>
 CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device);
 
-base::Value CreateValueDictFromMediaSinkInternal(const MediaSinkInternal& sink);
+base::Value::Dict CreateValueDictFromMediaSinkInternal(
+    const MediaSinkInternal& sink);
 absl::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
     const base::Value::Dict& value_dict);
 

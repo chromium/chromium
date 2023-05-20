@@ -45,6 +45,7 @@ class WebGPUTest : public testing::Test {
     SharedMemoryLimits shared_memory_limits =
         SharedMemoryLimits::ForWebGPUContext();
     bool force_fallback_adapter = false;
+    bool compatibility_mode = false;
     bool enable_unsafe_webgpu = false;
 
     // By default, disable the blocklist so all adapters

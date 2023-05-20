@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
-#include "components/sync/driver/active_devices_provider.h"
+#include "components/sync/service/active_devices_provider.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
 namespace browser_sync {

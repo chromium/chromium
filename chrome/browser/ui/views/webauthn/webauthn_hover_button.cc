@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/border.h"
@@ -127,8 +128,12 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   // icon, the left inset would be 12dp, but we don't currently have a button
   // with such an icon.)
 
-  const int vert_inset = is_two_line ? 8 : 12;
-  constexpr int horz_inset = 8;
+  int vert_inset = is_two_line ? 8 : 12;
+  int horz_inset = 8;
+  if (features::IsChromeRefresh2023()) {
+    vert_inset = is_two_line ? 10 : 16;
+    horz_inset = 16;
+  }
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(vert_inset, horz_inset, vert_inset, horz_inset)));
 }

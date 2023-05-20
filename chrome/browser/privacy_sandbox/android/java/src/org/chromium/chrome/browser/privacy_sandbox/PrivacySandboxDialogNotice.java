@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +11,13 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
  * Dialog in the form of a notice shown for the Privacy Sandbox.
  */
-public class PrivacySandboxDialogNotice extends Dialog implements View.OnClickListener {
+public class PrivacySandboxDialogNotice extends ChromeDialog implements View.OnClickListener {
     private Context mContext;
     private SettingsLauncher mSettingsLauncher;
 

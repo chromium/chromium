@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
   LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
       <!DOCTYPE html>
       <html>
-        <body role="none">
+        <body>
           <dialog open>Example Text</dialog>
         </body>
       </html>
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
   LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
       <!DOCTYPE html>
       <html>
-        <body role="none">
+        <body>
           <dialog open aria-modal="false">Example Text</dialog>
         </body>
       </html>
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
   LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
       <!DOCTYPE html>
       <html>
-        <body role="none">
+        <body>
           <dialog open aria-modal="true">Example Text</dialog>
         </body>
       </html>

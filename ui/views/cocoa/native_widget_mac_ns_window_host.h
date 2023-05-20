@@ -24,7 +24,6 @@
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 #include "ui/compositor/layer_owner.h"
-#include "ui/display/mac/display_link_mac.h"
 #include "ui/views/cocoa/drag_drop_client_mac.h"
 #include "ui/views/cocoa/native_widget_mac_event_monitor.h"
 #include "ui/views/views_export.h"
@@ -69,9 +68,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
       gfx::NativeWindow window);
   static NativeWidgetMacNSWindowHost* GetFromNativeView(gfx::NativeView view);
 
-  // Key used to bind the content NSView to the overlay widget in immersive
-  // mode.
-  static const char kImmersiveContentNSView[];
+  // Key used to bind the content NSView to the widget when it becomes
+  // a child widget.
+  static const char kMovedContentNSView[];
 
   // Unique integer id handles are used to bridge between the
   // NativeWidgetMacNSWindowHost in one process and the NativeWidgetNSWindowHost
@@ -419,12 +418,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // ui::AcceleratedWidgetMacNSView:
   void AcceleratedWidgetCALayerParamsUpdated() override;
 
-  // If `display_link_` is valid and `display_link_updater_` does not exist,
-  // create it. It will call back to OnVSyncParametersUpdated with new VSync
-  // parameters.
-  void RequestVSyncParametersUpdate();
-  void OnVSyncParametersUpdated(ui::VSyncParamsMac params);
-
   // The id that this bridge may be looked up from.
   const uint64_t widget_id_;
   const raw_ptr<views::NativeWidgetMac>
@@ -489,15 +482,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   // The display that the window is currently on.
   display::Display display_;
-
-  // Display link for getting vsync info for `display_`, and VSyncCallbackMac to
-  // use for callbacks.
-  scoped_refptr<ui::DisplayLinkMac> display_link_;
-  std::unique_ptr<ui::VSyncCallbackMac> display_link_updater_;
-
-  // Updating VSync parameters can be expensive, so set this to the next time
-  // when we should update VSync parameters.
-  base::TimeTicks display_link_next_update_time_;
 
   // The geometry of the window and its contents view, in screen coordinates.
   gfx::Rect window_bounds_in_screen_;

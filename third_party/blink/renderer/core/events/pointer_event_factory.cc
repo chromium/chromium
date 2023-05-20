@@ -273,8 +273,9 @@ PointerEventInit* PointerEventFactory::ConvertIdTypeButtonsEvent(
 void PointerEventFactory::SetEventSpecificFields(
     PointerEventInit* pointer_event_init,
     const AtomicString& type) {
-  pointer_event_init->setBubbles(type != event_type_names::kPointerenter &&
-                                 type != event_type_names::kPointerleave);
+  bool is_pointer_enter_or_leave = type == event_type_names::kPointerenter ||
+                                   type == event_type_names::kPointerleave;
+  pointer_event_init->setBubbles(!is_pointer_enter_or_leave);
   pointer_event_init->setCancelable(
       type != event_type_names::kPointerenter &&
       type != event_type_names::kPointerleave &&
@@ -282,8 +283,10 @@ void PointerEventFactory::SetEventSpecificFields(
       type != event_type_names::kPointerrawupdate &&
       type != event_type_names::kGotpointercapture &&
       type != event_type_names::kLostpointercapture);
-
-  pointer_event_init->setComposed(true);
+  pointer_event_init->setComposed(
+      RuntimeEnabledFeatures::NonComposedEnterLeaveEventsEnabled()
+          ? !is_pointer_enter_or_leave
+          : true);
   pointer_event_init->setDetail(0);
 }
 

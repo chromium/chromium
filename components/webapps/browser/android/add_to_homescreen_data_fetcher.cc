@@ -254,6 +254,7 @@ void AddToHomescreenDataFetcher::OnDidGetManifestAndIcons(
   raw_primary_icon_ = *data.primary_icon;
   has_maskable_primary_icon_ = data.has_maskable_primary_icon;
   shortcut_info_.best_primary_icon_url = (*data.primary_icon_url);
+  shortcut_info_.is_primary_icon_maskable = data.has_maskable_primary_icon;
 
   // Save the splash screen URL for the later download.
   shortcut_info_.UpdateBestSplashIcon(*data.manifest);

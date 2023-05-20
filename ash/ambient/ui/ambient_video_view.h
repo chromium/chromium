@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/constants/ambient_video.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/view.h"
 
@@ -19,31 +21,36 @@ namespace ash {
 
 class AmbientSlideshowPeripheralUi;
 class AmbientViewDelegate;
+class AshWebView;
 
 // Plays a video on loop. The entire contents of the view are filled with the
 // rendered video. Internally, this is implemented by rendering a simple HTML
 // page with a <video> element in it.
 class ASH_EXPORT AmbientVideoView : public views::View {
  public:
-  // |video_path|: Path of the video to play.
+  // |video_file|: Name of video file to play.
   // |html_path|: Path of the HTML source file with the <video> element in it.
   //              This is loaded by constructing a "file://" URL pointing to
-  //              this HTML file. The |video_path| is passed to the HTML via
+  //              this HTML file. The |video_file| is passed to the HTML via
   //              a query parameter in the URL like so:
-  //              file://<html_path>?video_src=file://<video_path>
+  //              file://<html_path>?video_src=<video_file>
   //
   // Important Note:
-  // The parent directories for |video_path| and |html_path| must be present
-  // in the allowlist in chrome/browser/net/chrome_network_delegate.cc, or the
-  // webpage will fail to load.
-  AmbientVideoView(const base::FilePath& video_path,
+  // The parent directory for |html_path| and the directory of the video itself
+  // (currently hard-coded in the HTML file) must be present in the allowlist in
+  // chrome/browser/net/chrome_network_delegate.cc, or the webpage will fail to
+  // load.
+  AmbientVideoView(base::StringPiece video_file,
                    const base::FilePath& html_path,
+                   AmbientVideo video,
                    AmbientViewDelegate* view_delegate);
   AmbientVideoView(const AmbientVideoView&) = delete;
   AmbientVideoView& operator=(const AmbientVideoView&) = delete;
   ~AmbientVideoView() override;
 
  private:
+  const AmbientVideo video_;
+  base::raw_ptr<AshWebView> ash_web_view_ = nullptr;
   // Per UX: Uses the exact same spec for peripheral UI elements (weather, time,
   // etc) as the slideshow theme.
   const std::unique_ptr<AmbientSlideshowPeripheralUi> peripheral_ui_;

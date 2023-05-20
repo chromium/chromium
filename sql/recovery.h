@@ -11,14 +11,158 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/internal_api_token.h"
+#include "sql/sqlite_result_code_values.h"
 
 namespace base {
 class FilePath;
 }
 
 namespace sql {
+
+// WARNING: This API is still experimental. If you're looking to add corruption
+// recovery to your feature that uses SQLite, use the `Recovery` class below...
+// for now! See https://crbug.com/1385500.
+//
+// Uses SQLite's built-in corruption recovery module to recover the database.
+// See https://www.sqlite.org/recovery.html
+class COMPONENT_EXPORT(SQL) BuiltInRecovery {
+ public:
+  enum class Strategy {
+    // Razes the database if it could not be recovered.
+    kRecoverOrRaze,
+
+    // Razes the database if it could not be recovered, or if a valid meta table
+    // with a version value could not be determined from the recovered database.
+    // Use this strategy if your client makes assertions about the version of
+    // the database schema.
+    kRecoverWithMetaVersionOrRaze,
+
+    // TODO(https://crbug.com/1385500): Consider exposing a way to keep around a
+    // successfully-recovered, but unsuccessfully-restored database if needed.
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
+  enum class Result {
+    // Outcome not yet known. This value should never be logged.
+    kUnknown = 0,
+
+    // Successfully completed the full database recovery process.
+    kSuccess = 1,
+
+    // Failed to initialize and configure the sqlite3_recover object.
+    kFailedRecoveryInit = 2,
+
+    // Failed to run recovery with the sqlite3_recover object.
+    kFailedRecoveryRun = 3,
+
+    // The database was successfully recovered to a backup, but we could not
+    // open the newly-recovered database in order to copy it to the original
+    // database.
+    kFailedToOpenRecoveredDatabase = 4,
+
+    // The database was successfully recovered to a backup, but a meta table
+    // could not be found in the recovered database.
+    // Only valid when using Strategy::kRecoverWithMetaVersionOrRaze.
+    kFailedMetaTableDoesNotExist = 5,
+
+    // The database was successfully recovered to a backup, but the meta table
+    // could not be initialized.
+    // Only valid when using Strategy::kRecoverWithMetaVersionOrRaze.
+    kFailedMetaTableInit = 6,
+
+    // The database was successfully recovered to a backup, but a valid
+    // (meaning, positive) version number could not be read from the meta table.
+    // Only valid when using Strategy::kRecoverWithMetaVersionOrRaze.
+    kFailedMetaTableVersionWasInvalid = 7,
+
+    // Failed to initialize and configure the sqlite3_backup object.
+    kFailedBackupInit = 8,
+
+    // Failed to run backup with the sqlite3_backup object.
+    kFailedBackupRun = 9,
+    kMaxValue = kFailedBackupRun,
+  };
+
+  // TODO(https://crbug.com/1385500): `BuiltInRecovery` is not yet supported on
+  // Fuchsia.
+  static bool IsSupported() {
+#if BUILDFLAG(IS_FUCHSIA)
+    return false;
+#else
+    return true;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+  }
+
+  // Returns true if `RecoverDatabase()` can plausibly fix `database` given this
+  // `extended_error`. This does not guarantee that `RecoverDatabase()` will
+  // successfully recover the database.
+  //
+  // Note that even if this method returns true, the database's error callback
+  // must be reset before recovery can be attempted.
+  static bool ShouldAttemptRecovery(Database* database, int extended_error);
+
+  // Attempts to recover `database`, and razes the database if it could not be
+  // recovered according to `strategy`. After attempting recovery, the database
+  // can be re-opened and assumed to be free of corruption.
+  //
+  // It is not considered an error if some or all of the data cannot be
+  // recovered due to database corruption, so it is possible that some records
+  // could not be salvaged from the corrupted database.
+  // TODO(https://crbug.com/1385500): Support the lost-and-found table if the
+  // need arises to try to restore all these records.
+  //
+  // It is illegal to attempt recovery if:
+  //   - `database` is null,
+  //   - `database` is not open,
+  //   - `database` is an in-memory or temporary database, or
+  //   - `database` has an error callback set
+  //
+  // During the recovery process, `database` is poisoned so that operations on
+  // the stack do not accidentally disrupt the restored data.
+  //
+  // Returns a SQLite error code specifying whether the database was
+  // successfully recovered.
+  [[nodiscard]] static SqliteResultCode RecoverDatabase(Database* database,
+                                                        Strategy strategy);
+
+  BuiltInRecovery(const BuiltInRecovery&) = delete;
+  BuiltInRecovery& operator=(const BuiltInRecovery&) = delete;
+
+ private:
+  BuiltInRecovery(Database* database, Strategy strategy);
+  ~BuiltInRecovery();
+
+  // Entry point.
+  SqliteResultCode RecoverAndReplaceDatabase();
+
+  // Use SQLite's corruption recovery module to store the recovered content in
+  // `recover_db_`. See https://www.sqlite.org/recovery.html
+  SqliteResultCode AttemptToRecoverDatabaseToBackup();
+
+  bool RecoveredDbHasValidMetaTable();
+
+  // Use SQLite's Online Backup API to replace the original database with
+  // `recover_db_`. See https://www.sqlite.org/backup.html
+  SqliteResultCode ReplaceOriginalWithRecoveredDb();
+
+  void SetRecoverySucceeded();
+  void SetRecoveryFailed(Result failure_result);
+
+  const Strategy strategy_;
+
+  // Result of the recovery. This value must be set to something other than
+  // `kUnknown` before this object is destroyed.
+  Result result_ = Result::kUnknown;
+
+  raw_ptr<Database> db_;  // Original Database connection.
+  Database recover_db_;   // Recovery Database connection.
+
+  base::FilePath recovery_database_path_;
+};
 
 // Recovery module for sql/.  The basic idea is to create a fresh database and
 // populate it with the recovered contents of the original database.  If
@@ -63,7 +207,6 @@ namespace sql {
 //
 // If Recovered() is not called, then RazeAndPoison() is called on
 // orig_db.
-
 class COMPONENT_EXPORT(SQL) Recovery {
  public:
   Recovery(const Recovery&) = delete;

@@ -5,10 +5,8 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#include "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -50,14 +48,7 @@
 }
 
 - (UIImage* __nullable)icon {
-  if ([_formSuggestion.icon length] == 0) {
-    return nil;
-  }
-  int resourceID = autofill::CreditCard::IconResourceId(
-      base::SysNSStringToUTF8(_formSuggestion.icon));
-  return ui::ResourceBundle::GetSharedInstance()
-      .GetNativeImageNamed(resourceID)
-      .ToUIImage();
+  return [_formSuggestion.icon copy];
 }
 
 - (BOOL)isPasswordSuggestion {

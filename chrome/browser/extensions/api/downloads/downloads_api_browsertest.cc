@@ -551,7 +551,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
   DownloadItem* CreateFirstSlowTestDownload() {
     DownloadManager* manager = GetCurrentManager();
 
-    EXPECT_EQ(0, manager->NonMaliciousInProgressCount());
+    EXPECT_EQ(0, manager->BlockingShutdownCount());
     EXPECT_EQ(0, manager->InProgressCount());
     if (manager->InProgressCount() != 0)
       return nullptr;
@@ -574,7 +574,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     const GURL url = embedded_test_server()->GetURL(path);
     ui_test_utils::NavigateToURLWithDisposition(
         current_browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
 
     response->WaitForRequest();
     response->Send(
@@ -4337,7 +4337,7 @@ IN_PROC_BROWSER_TEST_F(
     std::unique_ptr<content::DownloadTestObserver> observer(
         new JustInProgressDownloadObserver(manager, 1));
     ASSERT_EQ(0, manager->InProgressCount());
-    ASSERT_EQ(0, manager->NonMaliciousInProgressCount());
+    ASSERT_EQ(0, manager->BlockingShutdownCount());
     // Tabs created just for a download are automatically closed, invalidating
     // the download's WebContents. Downloads without WebContents cannot be
     // resumed. http://crbug.com/225901
@@ -4347,7 +4347,7 @@ IN_PROC_BROWSER_TEST_F(
         // NetworkService shipping.
         // TODO(https://crbug.com/700382): Fix or delete this test.
         GURL(), WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     observer->WaitForFinished();
     EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::IN_PROGRESS));
     DownloadManager::DownloadVector items;

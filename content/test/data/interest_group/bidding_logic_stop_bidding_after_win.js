@@ -9,7 +9,7 @@ const bid = browserSignals.prevWins.length < 1 ? 2 : 0;
 return {
   'ad': 'example',
   'bid': bid,
-  'render': interestGroup.ads[0].renderUrl
+  'render': interestGroup.ads[0].renderURL
 };
 }
 

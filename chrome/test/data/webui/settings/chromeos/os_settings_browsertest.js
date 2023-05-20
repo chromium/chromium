@@ -241,14 +241,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
  [
-   'CupsPrinterEntry', 'cups_printer_entry_tests.js', {
-     enabled: [
-       'ash::features::kPrinterSettingsRevamp',
-       'ash::features::kPrinterSettingsPrinterStatus'
-     ]
-   }
- ],
- [
    'CupsPrinterLandingPage', 'cups_printer_landing_page_tests.js',
    {enabled: ['ash::features::kPrinterSettingsPrinterStatus']}
  ],
@@ -259,6 +251,9 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['DateTimePage', 'date_time_page_tests.js'],
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
+ [
+   'DevicePageFakeCrosAudioConfig', 'device_page/fake_cros_audio_config_test.js'
+ ],
  [
    'DevicePageFakeInputDeviceSettingsProvider',
    'device_page/fake_input_device_settings_provider_test.js'
@@ -314,7 +309,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
- ['FakeCrosAudioConfig', 'fake_cros_audio_config_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
  [
@@ -412,7 +406,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  [
    'MultidevicePageMultidevicePermissionsSetupDialog',
-   'multidevice_page/multidevice_permissions_setup_dialog_tests.js',
+   'multidevice_page/multidevice_permissions_setup_dialog_test.js',
  ],
  [
    'MultidevicePageMultideviceSmartlockItem',
@@ -550,12 +544,26 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
  ['OsPageAvailability', 'os_page_availability_test.js'],
+ ['OsPeoplePage', 'os_people_page/os_people_page_test.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
  [
    'OsPeoplePageFingerprintListSubpage',
    'os_people_page/fingerprint_list_subpage_test.js'
  ],
  ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
+ [
+   'OsPrintingPageCupsPrintersEntry',
+   'os_printing_page/cups_printers_entry_test.js', {
+     enabled: [
+       'ash::features::kPrinterSettingsRevamp',
+       'ash::features::kPrinterSettingsPrinterStatus'
+     ]
+   }
+ ],
+ [
+   'OsPrintingPagePrinterStatus',
+   'os_printing_page/printer_status_test.js',
+ ],
  ['OsPrivacyPage', 'os_privacy_page/os_privacy_page_test.js'],
  [
    'OsPrivacyPagePrivacyHubSubpage',
@@ -578,6 +586,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
  ['OsSettingsUiAboutPage', 'os_settings_ui/os_settings_ui_about_page_test.js'],
  ['OsSettingsUiMenu', 'os_settings_ui/os_settings_ui_menu_test.js'],
+ [
+   'OsSettingsUiPageAvailability',
+   'os_settings_ui/os_settings_ui_page_availability_test.js',
+ ],
  ['OsSettingsUiToolbar', 'os_settings_ui/os_settings_ui_toolbar_test.js'],
  [
    'OsSettingsUiUserActionRecorder',
@@ -590,7 +602,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'ParentalControlsPage',
    'parental_controls_page/parental_controls_page_test.js'
  ],
- ['PeoplePage', 'os_people_page_test.js'],
  [
    'PeoplePageAccountManagerSubpage',
    'people_page_account_manager_subpage_test.js',
@@ -604,10 +615,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'PersonalizationPageWithPersonalizationHub',
    'personalization_page_with_personalization_hub_test.js',
- ],
- [
-   'PrinterStatus',
-   'printer_status_tests.js',
  ],
  ['ResetPage', 'os_reset_page_test.js'],
  [

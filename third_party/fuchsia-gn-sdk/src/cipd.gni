@@ -1,0 +1,159 @@
+# Copyright 2020 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("config/config.gni")
+
+# Prepares a CIPD package and generates a package definition.
+#
+# Example:
+#
+# ```
+#   fuchsia_cipd_package("chromedriver") {
+#     package = "path/to/cipd/package"
+#     description = "Prebuilt test binary."
+#     install_mode = "copy"
+#     deps = [ "//path/to:test_binary_target" ]
+#     sources = [ "//path/to:test_binary_file" ]
+#   }
+# ```
+#
+# Parameters:
+#   package:
+#     The path where the package will be located inside the CIPD repository.
+#
+#     Type: string
+#
+#   package_root: [Optional]
+#     CIPD package root directory. All file and directory paths specifed are
+#     relative to this path. Defaults to $target_gen_dir/$target_name
+#         if unspecified.
+#
+#     Type: file path
+#
+#   package_definition_name:  [Optional]
+#     CIPD package definition filename. Defaults to "cipd.yaml" if unspecified.
+#
+#     Type: filename
+#
+#   package_definition_dir: [Optional]
+#     CIPD package definition directory. Defaults to $package_root if unspecified.
+#
+#     Type: file path
+#
+#   description:
+#     Sets the "description" field in CIPD package definition.
+#
+#     Type: string
+#
+#   install_mode: [Optional]
+#     Specifies the installation mode, should be either `symlink` or `copy`.
+#      Defaults to `symlink` if unspecified.
+#
+#     Type: string
+#
+#   files:  [Optional]
+#     List of files relative to $package_root to include in the
+#       package definition.
+#
+#     Type: list of files
+#
+#   directories:  [Optional]
+#     List of directories relative to $package_root to include in the
+#       package definition.
+#
+#     Type: list of directories
+#
+#   sources:  [Optional]
+#     List of files to copy into $package_root and include in
+#       the package definition.
+#
+#     Type: list of files
+#
+#   use_absolute_root_path: [Optional]
+#     The value of `root` in the cipd package definition is written as an absolute path.
+#       Default value is False, indicating to use relative paths, following the GN conventions of being relative to
+#       $root_build_dir.
+#
+#     Type: boolean
+#
+#   Standard parameters:
+#     * deps
+#     * public deps
+#     * visibility
+#     * testonly
+#
+#
+template("fuchsia_cipd_package") {
+  forward_variables_from(invoker,
+                         [
+                           "deps",
+                           "data",
+                           "data_deps",
+                           "sources",
+                           "testonly",
+                         ])
+
+  assert(defined(invoker.sources) || defined(invoker.directories),
+         "sources or directories must be specified.")
+
+  _install_mode = "symlink"
+  if (defined(invoker.install_mode)) {
+    _install_mode = invoker.install_mode
+  }
+  assert(_install_mode == "copy" || _install_mode == "symlink",
+         "\"install_mode\" arg should be either \"copy\" or \"symlink\".")
+
+  _package_definition_name = "cipd.yaml"
+  if (defined(invoker.package_definition_name)) {
+    _package_definition_name = invoker.package_definition_name
+  }
+
+  _package_root = "${target_gen_dir}/${target_name}"
+  if (defined(invoker.package_root)) {
+    _package_root = invoker.package_root
+  }
+
+  _package_definition_dir = _package_root
+  if (defined(invoker.package_definition_dir)) {
+    _package_definition_dir = invoker.package_definition_dir
+  }
+
+  _root_base_path = root_build_dir
+  if (defined(invoker.use_absolute_root_path) &&
+      invoker.use_absolute_root_path) {
+    _root_base_path = ""
+  }
+
+  action(target_name) {
+    script = "${fuchsia_sdk}/build/prepare_cipd_package_definition.py"
+    depfile = "$target_gen_dir/$target_name.d"
+    _definition_path = "${_package_definition_dir}/${_package_definition_name}"
+    outputs = [ _definition_path ]
+
+    args = [
+      "--pkg-name",
+      invoker.package,
+      "--description",
+      invoker.description,
+      "--pkg-root",
+      rebase_path(_package_root, _root_base_path),
+      "--install-mode",
+      _install_mode,
+      "--pkg-def",
+      rebase_path(_definition_path, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+    ]
+
+    if (defined(invoker.sources)) {
+      args += [ "--copy-files" ] + rebase_path(sources, root_build_dir)
+    }
+    if (defined(invoker.files)) {
+      args += [ "--files" ] + invoker.files
+    }
+    if (defined(invoker.directories)) {
+      args += [ "--directories" ] + invoker.directories
+    }
+  }
+}

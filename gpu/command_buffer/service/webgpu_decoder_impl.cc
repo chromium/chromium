@@ -53,6 +53,7 @@
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <dawn/native/D3D11Backend.h>
 #include <dawn/native/D3D12Backend.h>
 #include "ui/gl/gl_angle_util_win.h"
 #endif
@@ -383,7 +384,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   void DiscoverAdapters();
 
   WGPUAdapter CreatePreferredAdapter(WGPUPowerPreference power_preference,
-                                     bool force_fallback) const;
+                                     bool force_fallback,
+                                     bool compatibility_mode) const;
 
   // Decide if a device feature is exposed to render process.
   bool IsFeatureExposed(WGPUAdapter adapter, WGPUFeatureName feature) const;
@@ -446,6 +448,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
   WebGPUPowerPreference use_webgpu_power_preference_ =
       WebGPUPowerPreference::kNone;
+  bool force_webgpu_compat_ = false;
   std::vector<std::string> require_enabled_toggles_;
   std::vector<std::string> require_disabled_toggles_;
   bool allow_unsafe_apis_;
@@ -1102,6 +1105,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   enable_unsafe_webgpu_ = gpu_preferences.enable_unsafe_webgpu;
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;
+  force_webgpu_compat_ = gpu_preferences.force_webgpu_compat;
   require_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   require_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
 
@@ -1189,6 +1193,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(WGPUAdapter adapter,
     case WGPUFeatureName_TimestampQueryInsidePasses:
     case WGPUFeatureName_PipelineStatisticsQuery:
     case WGPUFeatureName_ChromiumExperimentalDp4a:
+    // TODO(dawn:1664): Enable Float32Filterable by default once it is tested.
+    case WGPUFeatureName_Float32Filterable:
     // TODO(crbug.com/1258986): DawnMultiPlanarFormats is a stable feature in
     // Dawn, but currently we hide it from Render process as unsafe apis, so
     // that 0-copy code path, which explicitly checks this feature, is protected
@@ -1248,8 +1254,9 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
 #endif  // BUILDFLAG(IS_LINUX)
   }
 
-  WGPUAdapter adapter =
-      CreatePreferredAdapter(options->powerPreference, force_fallback_adapter);
+  WGPUAdapter adapter = CreatePreferredAdapter(
+      options->powerPreference, force_fallback_adapter,
+      options->compatibilityMode || force_webgpu_compat_);
 
   if (adapter == nullptr) {
     // There are no adapters to return since webgpu is not supported here
@@ -1524,8 +1531,15 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
   d3d11_device.As(&dxgi_device);
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   dxgi_device->GetAdapter(&dxgi_adapter);
-  dawn::native::d3d12::AdapterDiscoveryOptions options(std::move(dxgi_adapter));
-  dawn_instance_->DiscoverAdapters(&options);
+
+  dawn::native::d3d12::AdapterDiscoveryOptions d3d12Options(dxgi_adapter);
+  dawn_instance_->DiscoverAdapters(&d3d12Options);
+
+  if (use_webgpu_adapter_ == WebGPUAdapterName::kD3D11) {
+    dawn::native::d3d11::AdapterDiscoveryOptions d3d11Options(
+        std::move(dxgi_adapter));
+    dawn_instance_->DiscoverAdapters(&d3d11Options);
+  }
 
 #if BUILDFLAG(ENABLE_VULKAN)
   // Also discover the SwiftShader adapter. It will be discovered by default
@@ -1549,7 +1563,8 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
 
 WGPUAdapter WebGPUDecoderImpl::CreatePreferredAdapter(
     WGPUPowerPreference power_preference,
-    bool force_fallback) const {
+    bool force_fallback,
+    bool compatibility_mode) const {
   // Build the list of available adapters.
   std::vector<dawn::native::Adapter> adapters;
   for (dawn::native::Adapter& adapter : dawn_instance_->GetAdapters()) {
@@ -1574,7 +1589,15 @@ WGPUAdapter WebGPUDecoderImpl::CreatePreferredAdapter(
       continue;
     }
 
-    if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
+    if (compatibility_mode != adapterProperties.compatibilityMode) {
+      continue;
+    }
+
+    if (use_webgpu_adapter_ == WebGPUAdapterName::kD3D11) {
+      if (adapterProperties.backendType == WGPUBackendType_D3D11) {
+        adapters.push_back(adapter);
+      }
+    } else if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
       if (adapterProperties.backendType == WGPUBackendType_OpenGLES) {
         adapters.push_back(adapter);
       }

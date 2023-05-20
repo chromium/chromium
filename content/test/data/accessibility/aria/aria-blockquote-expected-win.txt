@@ -1,3 +1,3 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_SECTION xml-roles:blockquote
+++IA2_ROLE_BLOCK_QUOTE xml-roles:blockquote
 ++++ROLE_SYSTEM_STATICTEXT name='Blockquote'

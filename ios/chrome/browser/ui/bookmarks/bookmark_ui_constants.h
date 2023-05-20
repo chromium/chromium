@@ -66,8 +66,14 @@ extern const CGFloat kBookmarkCellHorizontalTrailingInset;
 extern const CGFloat kBookmarkCellHorizontalAccessoryViewSpacing;
 
 // Cell accessibility constants:
-// Accessibility identifier of the Create NewFolder Button.
-extern NSString* const kBookmarkCreateNewFolderCellIdentifier;
+// Accessibility identifier of the Create NewFolder Button in profile bookmarks
+// section.
+extern NSString* const kBookmarkCreateNewProfileFolderCellIdentifier;
+
+// Cell accessibility constants:
+// Accessibility identifier of the Create NewFolder Button in account bookmarks
+// section.
+extern NSString* const kBookmarkCreateNewAccountFolderCellIdentifier;
 
 // Empty state accessibility constants:
 // Accessibility identifier for the explanatory label in the empty state.

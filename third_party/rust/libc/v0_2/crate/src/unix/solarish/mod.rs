@@ -2584,6 +2584,8 @@ const _CMSG_HDR_ALIGNMENT: usize = 4;
 
 const _CMSG_DATA_ALIGNMENT: usize = ::mem::size_of::<::c_int>();
 
+const NEWDEV: ::c_int = 1;
+
 const_fn! {
     {const} fn _CMSG_HDR_ALIGN(p: usize) -> usize {
         (p + _CMSG_HDR_ALIGNMENT - 1) & !(_CMSG_HDR_ALIGNMENT - 1)
@@ -2599,7 +2601,7 @@ f! {
         _CMSG_DATA_ALIGN(cmsg.offset(1) as usize) as *mut ::c_uchar
     }
 
-    pub fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
+    pub {const} fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
         _CMSG_DATA_ALIGN(::mem::size_of::<::cmsghdr>()) as ::c_uint + length
     }
 
@@ -3198,6 +3200,10 @@ extern "C" {
     ) -> ::c_int;
 
     pub fn sync();
+
+    fn __major(version: ::c_int, devnum: ::dev_t) -> ::major_t;
+    fn __minor(version: ::c_int, devnum: ::dev_t) -> ::minor_t;
+    fn __makedev(version: ::c_int, majdev: ::major_t, mindev: ::minor_t) -> ::dev_t;
 }
 
 #[link(name = "sendfile")]
@@ -3252,6 +3258,18 @@ extern "C" {
         tpe: ::lgrp_rsrc_t,
     ) -> ::c_int;
     pub fn lgrp_root(cookie: ::lgrp_cookie_t) -> ::lgrp_id_t;
+}
+
+pub unsafe fn major(device: ::dev_t) -> ::major_t {
+    __major(NEWDEV, device)
+}
+
+pub unsafe fn minor(device: ::dev_t) -> ::minor_t {
+    __minor(NEWDEV, device)
+}
+
+pub unsafe fn makedev(maj: ::major_t, min: ::minor_t) -> ::dev_t {
+    __makedev(NEWDEV, maj, min)
 }
 
 mod compat;

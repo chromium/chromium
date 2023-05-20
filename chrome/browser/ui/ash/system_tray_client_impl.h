@@ -72,6 +72,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowPowerSettings() override;
   void ShowPrivacyAndSecuritySettings() override;
   void ShowPrivacyHubSettings() override;
+  void ShowSpeakOnMuteDetectionSettings() override;
   void ShowSmartPrivacySettings() override;
   void ShowChromeSlow() override;
   void ShowIMESettings() override;
@@ -93,6 +94,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowThirdPartyVpnCreate(const std::string& extension_id) override;
   void ShowArcVpnCreate(const std::string& app_id) override;
   void ShowNetworkSettings(const std::string& network_id) override;
+  void ShowHotspotSubpage() override;
   void ShowMultiDeviceSetup() override;
   void ShowFirmwareUpdate() override;
   void SetLocaleAndExit(const std::string& locale_iso_code) override;

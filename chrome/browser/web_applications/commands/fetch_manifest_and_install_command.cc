@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -190,7 +191,6 @@ void FetchManifestAndInstallCommand::StartWithLock(
         base::BindOnce(&FetchManifestAndInstallCommand::OnGetWebAppInstallInfo,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
-    web_app_info_ = std::make_unique<WebAppInstallInfo>();
     FetchManifest();
   }
 }
@@ -275,6 +275,9 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
     return;
   }
   if (opt_manifest) {
+    if (!web_app_info_) {
+      web_app_info_ = std::make_unique<WebAppInstallInfo>(opt_manifest->id);
+    }
     UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
                                  web_app_info_.get());
     LogInstallInfo();
@@ -298,7 +301,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   const bool skip_page_favicons =
       opt_manifest_ && !opt_manifest_->icons.empty();
 
-  app_id_ = GenerateAppId(web_app_info_->manifest_id, web_app_info_->start_url);
+  app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id);
 
   app_lock_description_ =
       command_manager()->lock_manager().UpgradeAndAcquireLock(
@@ -575,10 +578,7 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
 }
 
 void FetchManifestAndInstallCommand::LogInstallInfo() {
-  debug_log_.Set("manifest_id",
-                 web_app_info_->manifest_id.has_value()
-                     ? base::Value(web_app_info_->manifest_id.value())
-                     : base::Value());
+  debug_log_.Set("manifest_id", web_app_info_->manifest_id.spec());
   debug_log_.Set("start_url", web_app_info_->start_url.spec());
   debug_log_.Set("name", web_app_info_->title);
 }

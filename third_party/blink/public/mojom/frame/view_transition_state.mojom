@@ -17,6 +17,7 @@ struct ViewTransitionElement {
   viz.mojom.ViewTransitionElementResourceId snapshot_id;
   int32 paint_order;
   bool is_root;
+  gfx.mojom.RectF? captured_rect_in_layout_space;
 
   // TODO(khushalsagar): Add writing mode.
 };

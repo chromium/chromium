@@ -49,7 +49,6 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = [
-                "goma_enable_global_file_stat_cache",
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
@@ -73,7 +72,6 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = [
-                "goma_enable_global_file_stat_cache",
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,

@@ -486,7 +486,8 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
     {
       // Undo the change. This information might be used during activation so
       // we should not change it.
-      base::AutoReset<bool> resetter(&search_terms_args.is_prefetch, true);
+      base::AutoReset<std::string> resetter(&search_terms_args.prefetch_param,
+                                            kSuggestPrefetchParam.Get());
       const TemplateURL* default_provider =
           template_url_service->GetDefaultSearchProvider();
       CHECK(default_provider);
@@ -494,7 +495,7 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
           search_terms_args, template_url_service->search_terms_data(),
           /*post_content=*/nullptr));
     }
-    CHECK(!search_terms_args.is_prefetch);
+    CHECK(search_terms_args.prefetch_param.empty());
   }
 
   StartPrerenderSearchResultInternal(canonical_search_url, prerender_url,

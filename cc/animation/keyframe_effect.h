@@ -98,7 +98,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   void UpdateState(bool start_ready_keyframe_models, AnimationEvents* events);
   void UpdateTickingState();
 
-  void Pause(base::TimeDelta pause_offset,
+  void Pause(base::TimeTicks timeline_time,
              PauseCondition = PauseCondition::kUnconditional);
 
   void AddKeyframeModel(

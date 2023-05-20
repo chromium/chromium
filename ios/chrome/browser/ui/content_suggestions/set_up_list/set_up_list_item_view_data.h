@@ -21,6 +21,9 @@ enum class SetUpListItemType;
 // Indicates whether this item is complete.
 @property(nonatomic, readonly) BOOL complete;
 
+// YES if this view should configure itself with a compacted layout.
+@property(nonatomic, assign) BOOL compactLayout;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SET_UP_LIST_SET_UP_LIST_ITEM_VIEW_DATA_H_

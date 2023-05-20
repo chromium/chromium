@@ -11,10 +11,13 @@
 #include "base/hash/hash.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/browser_process.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -84,7 +87,7 @@ void TargetDeviceBootstrapController::StartAdvertising() {
 
   status_.step = Step::ADVERTISING;
   connection_broker_->StartAdvertising(
-      this, /*use_pin_authentication=*/false,
+      this, /*use_pin_authentication=*/true,
       base::BindOnce(&TargetDeviceBootstrapController::OnStartAdvertisingResult,
                      weak_ptr_factory_.GetWeakPtr()));
   NotifyObservers();
@@ -106,8 +109,6 @@ void TargetDeviceBootstrapController::PrepareForUpdate() {
     return;
   }
 
-  // TODO(b/234655072): Implement 3 second timeout for invocation of
-  // OnNotifySourceOfUpdateResponse() callback.
   authenticated_connection_->NotifySourceOfUpdate(
       session_id_,
       base::BindOnce(
@@ -142,7 +143,8 @@ void TargetDeviceBootstrapController::OnQRCodeVerificationRequested(
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
     base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
         authenticated_connection) {
-  constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION};
+  constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION,
+                                     Step::PIN_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
   authenticated_connection_ = authenticated_connection;
@@ -155,6 +157,7 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
   status_.step = Step::CONNECTED;
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();
+  AttemptWifiCredentialTransfer();
 }
 
 void TargetDeviceBootstrapController::OnConnectionRejected() {
@@ -167,6 +170,7 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
     TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_CLOSED;
+  authenticated_connection_.reset();
   NotifyObservers();
 }
 
@@ -178,8 +182,9 @@ void TargetDeviceBootstrapController::NotifyObservers() {
 
 void TargetDeviceBootstrapController::OnStartAdvertisingResult(bool success) {
   DCHECK_EQ(status_.step, Step::ADVERTISING);
-  if (success)
+  if (success) {
     return;
+  }
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::START_ADVERTISING_FAILED;
   NotifyObservers();
@@ -198,6 +203,8 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
   CHECK(authenticated_connection_);
 
   if (ack_successful) {
+    QS_LOG(INFO) << "Update ack sucessfully received. Preparing to resume "
+                    "Quick Start after the update.";
     PrefService* prefs = g_browser_process->local_state();
     prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
     base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
@@ -207,6 +214,89 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
   authenticated_connection_->Close(
       TargetDeviceConnectionBroker::ConnectionClosedReason::
           kTargetDeviceUpdate);
+}
+
+void TargetDeviceBootstrapController::WaitForUserVerification(
+    base::OnceClosure on_verification) {
+  authenticated_connection_->WaitForUserVerification(base::BindOnce(
+      &TargetDeviceBootstrapController::OnUserVerificationResult,
+      weak_ptr_factory_.GetWeakPtr(), std::move(on_verification)));
+}
+
+void TargetDeviceBootstrapController::OnUserVerificationResult(
+    base::OnceClosure on_verification,
+    absl::optional<mojom::UserVerificationResponse>
+        user_verification_response) {
+  if (!user_verification_response.has_value() ||
+      user_verification_response->result ==
+          mojom::UserVerificationResult::kUserNotVerified) {
+    status_.step = Step::ERROR;
+    status_.payload = ErrorCode::USER_VERIFICATION_FAILED;
+    NotifyObservers();
+    return;
+  }
+
+  std::move(on_verification).Run();
+}
+
+void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
+  status_.step = Step::CONNECTING_TO_WIFI;
+  status_.payload.emplace<absl::monostate>();
+
+  WaitForUserVerification(base::BindOnce(
+      &TargetDeviceConnectionBroker::AuthenticatedConnection::
+          RequestWifiCredentials,
+      authenticated_connection_, session_id_,
+      base::BindOnce(
+          &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
+          weak_ptr_factory_.GetWeakPtr())));
+
+  NotifyObservers();
+}
+
+void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
+    absl::optional<mojom::WifiCredentials> credentials) {
+  CHECK_EQ(status_.step, Step::CONNECTING_TO_WIFI);
+  if (!credentials.has_value()) {
+    status_.step = Step::ERROR;
+    status_.payload = ErrorCode::WIFI_CREDENTIALS_NOT_RECEIVED;
+    NotifyObservers();
+    return;
+  }
+
+  status_.step = Step::CONNECTED_TO_WIFI;
+  status_.payload.emplace<absl::monostate>();
+  status_.ssid = credentials->ssid;
+  status_.password = credentials->password;
+  NotifyObservers();
+}
+
+void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
+  CHECK(authenticated_connection_);
+
+  status_.step = Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
+
+  // TODO: Actually pass through a real challenge here.
+  authenticated_connection_->RequestAccountTransferAssertion(
+      "",
+      base::BindOnce(&TargetDeviceBootstrapController::OnFidoAssertionReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TargetDeviceBootstrapController::OnFidoAssertionReceived(
+    absl::optional<FidoAssertionInfo> assertion) {
+  if (!assertion.has_value()) {
+    status_.step = Step::ERROR;
+    status_.payload = ErrorCode::GAIA_ASSERTION_NOT_RECEIVED;
+    NotifyObservers();
+    return;
+  }
+
+  status_.step = Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
 }
 
 }  // namespace ash::quick_start

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.pwd_migration;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,11 +27,6 @@ public class PasswordMigrationWarningCoordinator {
 
     public void showWarning() {
         mMediator.showWarning();
-    }
-
-    @VisibleForTesting
-    PropertyModel getModelForTesting() {
-        return mMediator.getModel();
     }
 
     static void setUpModelChangeProcessors(PropertyModel model, PasswordMigrationWarningView view) {

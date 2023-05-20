@@ -738,6 +738,7 @@ void InputMethodAsh::MaybeProcessPendingInputMethodResult(ui::KeyEvent* event,
         ui::KeyEvent ch_event(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
                               ui::EF_NONE);
         ch_event.set_character(ch);
+        ui::SetKeyboardImeFlags(&ch_event, ui::kPropertyKeyboardImeHandledFlag);
         client->InsertChar(ch_event);
       }
     } else if (pending_commit_->text.empty()) {

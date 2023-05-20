@@ -9,8 +9,8 @@
 
 #include "base/functional/bind.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/driver/sync_client.h"
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/service/sync_client.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 ServerPassphraseTypeChecker::ServerPassphraseTypeChecker(

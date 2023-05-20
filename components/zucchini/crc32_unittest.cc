@@ -41,7 +41,9 @@ TEST(Crc32Test, All) {
   EXPECT_EQ(0x0762F38BU,
             CalculateCrc32(std::begin(bytes), std::begin(bytes) + 9));
 
+#if GTEST_HAS_DEATH_TEST
   EXPECT_DCHECK_DEATH(CalculateCrc32(std::begin(bytes) + 1, std::begin(bytes)));
+#endif
 }
 
 }  // namespace zucchini

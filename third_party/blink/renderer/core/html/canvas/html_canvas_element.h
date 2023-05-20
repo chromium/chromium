@@ -274,7 +274,7 @@ class CORE_EXPORT HTMLCanvasElement final
   }
 
   const KURL& GetExecutionContextUrl() const override {
-    return GetDocument().TopDocument().Url();
+    return GetDocument().Url();
   }
 
   DispatchEventResult HostDispatchEvent(Event* event) override {

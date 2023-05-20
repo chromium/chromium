@@ -48,6 +48,8 @@ source_set("android") {
 
     if (enable_openxr) {
       sources += [
+        "openxr_device_provider.cc",
+        "openxr_device_provider.h",
         "openxr_platform_helper_android.cc",
         "openxr_platform_helper_android.h",
       ]
@@ -80,6 +82,8 @@ source_set("android") {
         "//device/vr",
         "//third_party/openxr:openxr_headers",
       ]
+
+      public_configs = [ "//third_party/openxr:config" ]
     }
 
     libs = [ "android" ]

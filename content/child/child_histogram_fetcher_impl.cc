@@ -11,18 +11,21 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_delta_serialization.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "content/child/child_process.h"
+#include "content/common/histogram_fetcher.mojom-shared.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace content {
 
-ChildHistogramFetcherFactoryImpl::ChildHistogramFetcherFactoryImpl() {}
+ChildHistogramFetcherFactoryImpl::ChildHistogramFetcherFactoryImpl() = default;
 
-ChildHistogramFetcherFactoryImpl::~ChildHistogramFetcherFactoryImpl() {}
+ChildHistogramFetcherFactoryImpl::~ChildHistogramFetcherFactoryImpl() = default;
 
 void ChildHistogramFetcherFactoryImpl::Create(
     mojo::PendingReceiver<content::mojom::ChildHistogramFetcherFactory>
@@ -41,6 +44,10 @@ void ChildHistogramFetcherFactoryImpl::CreateFetcher(
     base::GlobalHistogramAllocator::CreateWithSharedMemoryRegion(shared_memory);
   }
 
+  // Emit a local histogram, which should not be reported to servers. This is
+  // monitored from the serverside.
+  LOCAL_HISTOGRAM_BOOLEAN("UMA.LocalHistogram", true);
+
   base::PersistentHistogramAllocator* global_allocator =
       base::GlobalHistogramAllocator::Get();
   if (global_allocator)
@@ -50,9 +57,9 @@ void ChildHistogramFetcherFactoryImpl::CreateFetcher(
                               std::move(receiver));
 }
 
-ChildHistogramFetcherImpl::ChildHistogramFetcherImpl() {}
+ChildHistogramFetcherImpl::ChildHistogramFetcherImpl() = default;
 
-ChildHistogramFetcherImpl::~ChildHistogramFetcherImpl() {}
+ChildHistogramFetcherImpl::~ChildHistogramFetcherImpl() = default;
 
 // Extract snapshot data and then send it off to the Browser process.
 // Send only a delta to what we have already sent.
@@ -83,6 +90,26 @@ void ChildHistogramFetcherImpl::GetChildNonPersistentHistogramData(
   count++;
   LOCAL_HISTOGRAM_COUNTS("Histogram.ChildProcessHistogramSentCount", count);
 #endif
+}
+
+void ChildHistogramFetcherImpl::Ping(mojom::UmaPingCallSource call_source,
+                                     PingCallback callback) {
+  // Since the ChildHistogramFetcherImpl instance was created after setting up
+  // the shared memory (if there was one -- see CreateFetcher()), this histogram
+  // will live in it (i.e., it should have the |kIsPersistent| flag).
+  const char* histogram_name = nullptr;
+  switch (call_source) {
+    case mojom::UmaPingCallSource::PERIODIC:
+      histogram_name = "UMA.ChildProcess.Ping.Periodic";
+      break;
+    case mojom::UmaPingCallSource::SHARED_MEMORY_SET_UP:
+      histogram_name = "UMA.ChildProcess.Ping.SharedMemorySetUp";
+      break;
+  }
+  base::UmaHistogramEnumeration(histogram_name,
+                                mojom::UmaChildPingStatus::CHILD_RECEIVED_IPC);
+
+  std::move(callback).Run();
 }
 
 }  // namespace content

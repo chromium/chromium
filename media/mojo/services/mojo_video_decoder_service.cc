@@ -117,7 +117,8 @@ class VideoFrameHandleReleaserImpl final
 
  private:
   // TODO(sandersd): Also track age, so that an overall limit can be enforced.
-  std::map<base::UnguessableToken, scoped_refptr<VideoFrame>> video_frames_;
+  base::flat_map<base::UnguessableToken, scoped_refptr<VideoFrame>>
+      video_frames_;
 };
 
 MojoVideoDecoderService::MojoVideoDecoderService(

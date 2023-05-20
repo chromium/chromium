@@ -42,11 +42,20 @@ absl::optional<ui::KeyboardDevice> GetPriorityExternalKeyboard() {
   absl::optional<ui::KeyboardDevice> priority_keyboard;
   for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    // If the input device settings controlled does not recognize the device as
+    // a keyboard, skip it.
+    if (features::IsInputDeviceSettingsSplitEnabled() &&
+        Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
+            keyboard.id) == nullptr) {
+      continue;
+    }
+
     const auto device_type =
         Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
     switch (device_type) {
       case DeviceType::kDeviceUnknown:
       case DeviceType::kDeviceInternalKeyboard:
+      case DeviceType::kDeviceInternalRevenKeyboard:
         break;
       case DeviceType::kDeviceExternalChromeOsKeyboard:
       case DeviceType::kDeviceExternalAppleKeyboard:
@@ -66,11 +75,20 @@ absl::optional<ui::KeyboardDevice> GetPriorityExternalKeyboard() {
 absl::optional<ui::KeyboardDevice> GetInternalKeyboard() {
   for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    // If the input device settings controlled does not recognize the device as
+    // a keyboard, skip it.
+    if (features::IsInputDeviceSettingsSplitEnabled() &&
+        Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
+            keyboard.id) == nullptr) {
+      continue;
+    }
+
     const auto device_type =
         Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
     switch (device_type) {
       case DeviceType::kDeviceUnknown:
       case DeviceType::kDeviceInternalKeyboard:
+      case DeviceType::kDeviceInternalRevenKeyboard:
         return keyboard;
       case DeviceType::kDeviceExternalChromeOsKeyboard:
       case DeviceType::kDeviceExternalAppleKeyboard:

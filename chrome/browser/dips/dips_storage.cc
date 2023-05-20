@@ -227,21 +227,21 @@ std::set<std::string> DIPSStorage::FilterSitesWithoutInteraction(
 }
 
 std::vector<std::string> DIPSStorage::GetSitesThatBounced(
-    const base::TimeDelta& grace_period) const {
+    base::TimeDelta grace_period) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   return db_->GetSitesThatBounced(grace_period);
 }
 
 std::vector<std::string> DIPSStorage::GetSitesThatBouncedWithState(
-    const base::TimeDelta& grace_period) const {
+    base::TimeDelta grace_period) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   return db_->GetSitesThatBouncedWithState(grace_period);
 }
 
 std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage(
-    const base::TimeDelta& grace_period) const {
+    base::TimeDelta grace_period) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
   return db_->GetSitesThatUsedStorage(grace_period);

@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/current_thread.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/external_metrics.h"
 #include "components/metrics/structured/histogram_util.h"
@@ -75,7 +76,11 @@ StructuredMetricsRecorder::~StructuredMetricsRecorder() {
 void StructuredMetricsRecorder::EnableRecording() {
   DCHECK(base::CurrentUIThread::IsSet());
   // Enable recording only if structured metrics' feature flag is enabled.
-  recording_enabled_ = base::FeatureList::IsEnabled(kStructuredMetrics);
+  recording_enabled_ =
+      base::FeatureList::IsEnabled(features::kStructuredMetrics);
+  if (external_metrics_.get() != nullptr) {
+    external_metrics_->EnableRecording();
+  }
   if (recording_enabled_) {
     CacheDisallowedProjectsSet();
   }
@@ -84,6 +89,9 @@ void StructuredMetricsRecorder::EnableRecording() {
 void StructuredMetricsRecorder::DisableRecording() {
   DCHECK(base::CurrentUIThread::IsSet());
   recording_enabled_ = false;
+  if (external_metrics_.get() != nullptr) {
+    external_metrics_->DisableRecording();
+  }
   disallowed_projects_.clear();
 }
 
@@ -196,8 +204,8 @@ void StructuredMetricsRecorder::OnProfileAdded(
 
   // We do not handle multiprofile, instead initializing with the state stored
   // in the first logged-in user's cryptohome. So if a second profile is added
-  // we should ignore it. All init state beyond |InitState::kUninitialized| mean
-  // a profile has already been added.
+  // we should ignore it. All init state beyond |InitState::kUninitialized|
+  // mean a profile has already been added.
   if (init_state_ != InitState::kUninitialized) {
     return;
   }
@@ -227,6 +235,10 @@ void StructuredMetricsRecorder::OnProfileAdded(
           &StructuredMetricsRecorder::OnExternalMetricsCollected,
           weak_factory_.GetWeakPtr()));
 
+  if (recording_enabled_) {
+    external_metrics_->EnableRecording();
+  }
+
   // See DisableRecording for more information.
   if (purge_state_on_init_) {
     Purge();
@@ -244,8 +256,8 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
     LogEventRecordingState(EventRecordingState::kRecordingDisabled);
     return;
   } else if (init_state_ != InitState::kInitialized) {
-    // If keys have not loaded yet, then hold the data in memory until the keys
-    // have been loaded.
+    // If keys have not loaded yet, then hold the data in memory until the
+    // keys have been loaded.
     LogEventRecordingState(EventRecordingState::kProviderUninitialized);
     RecordEventBeforeInitialization(event);
     return;
@@ -269,8 +281,8 @@ absl::optional<int> StructuredMetricsRecorder::LastKeyRotation(
   DCHECK(device_key_data_->is_initialized());
 
   // |project_name_hash| could store its keys in either the profile or device
-  // key data, so check both. As they cannot both contain the same name hash, at
-  // most one will return a non-nullopt value.
+  // key data, so check both. As they cannot both contain the same name hash,
+  // at most one will return a non-nullopt value.
   absl::optional<int> profile_day =
       profile_key_data_->LastKeyRotation(project_name_hash);
   absl::optional<int> device_day =
@@ -419,9 +431,9 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
     case IdScope::kPerDevice:
       // For event sequence, use the profile key for now to hash strings.
       //
-      // TODO(crbug/1399632): Event sequence is considered a structured metrics
-      // project. Once the client supports device/profile split of events like
-      // structured metrics, remove this.
+      // TODO(crbug/1399632): Event sequence is considered a structured
+      // metrics project. Once the client supports device/profile split of
+      // events like structured metrics, remove this.
       if (project_validator->event_type() ==
           StructuredEventProto_EventType_SEQUENCE) {
         key_data = profile_key_data_.get();
@@ -453,8 +465,8 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
       break;
   }
 
-  // Set the event type. Do this with a switch statement to catch when the event
-  // type is UNKNOWN or uninitialized.
+  // Set the event type. Do this with a switch statement to catch when the
+  // event type is UNKNOWN or uninitialized.
   switch (project_validator->event_type()) {
     case StructuredEventProto_EventType_REGULAR:
     case StructuredEventProto_EventType_RAW_STRING:
@@ -473,14 +485,14 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
     const std::string& metric_name = metric.first;
     const Event::MetricValue& metric_value = metric.second;
 
-    // Validate that both name and metric type are valid structured metrics. If
-    // a metric is invalid, then ignore the metric so that other valid metrics
-    // are added to the proto.
+    // Validate that both name and metric type are valid structured metrics.
+    // If a metric is invalid, then ignore the metric so that other valid
+    // metrics are added to the proto.
     absl::optional<EventValidator::MetricMetadata> metadata =
         event_validator->GetMetricMetadata(metric_name);
 
-    // Checks that the metrics defined are valid. If not valid, then the metric
-    // will be ignored.
+    // Checks that the metrics defined are valid. If not valid, then the
+    // metric will be ignored.
     bool is_valid =
         metadata.has_value() && metadata->metric_type == metric_value.type;
     DCHECK(is_valid);

@@ -7,8 +7,15 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <set>
+
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
+#include "base/types/expected.h"
 #include "net/base/net_export.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/public/dns_query_type.h"
@@ -16,6 +23,7 @@
 namespace net {
 
 class DnsResponse;
+class HostResolverInternalResult;
 
 // Higher-level parser to take a DnsResponse and extract results.
 class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
@@ -40,7 +48,16 @@ class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
     kUnexpected,
   };
 
-  explicit DnsResponseResultExtractor(const DnsResponse* response);
+  using ResultsOrError =
+      base::expected<std::set<std::unique_ptr<HostResolverInternalResult>>,
+                     ExtractionError>;
+
+  // References must stay alive for the life of the created extractor.
+  explicit DnsResponseResultExtractor(
+      const DnsResponse& response,
+      const base::Clock& clock = *base::DefaultClock::GetInstance(),
+      const base::TickClock& tick_clock =
+          *base::DefaultTickClock::GetInstance());
   ~DnsResponseResultExtractor();
 
   DnsResponseResultExtractor(const DnsResponseResultExtractor&) = delete;
@@ -58,17 +75,14 @@ class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
   // May have the side effect of recording metrics about DnsResponses as they
   // are parsed, so while not an absolute requirement, any given DnsResponse
   // should only be used and extracted from at most once.
-  ExtractionError ExtractDnsResults(DnsQueryType query_type,
-                                    base::StringPiece original_domain_name,
-                                    uint16_t request_port,
-                                    HostCache::Entry* out_results) const;
-
-  // Creates the results of a NODATA response (successfully parsed but without
-  // any results) appropriate for `query_type`.
-  static HostCache::Entry CreateEmptyResult(DnsQueryType query_type);
+  ResultsOrError ExtractDnsResults(DnsQueryType query_type,
+                                   base::StringPiece original_domain_name,
+                                   uint16_t request_port) const;
 
  private:
-  const raw_ptr<const DnsResponse, DanglingUntriaged> response_;
+  const raw_ref<const DnsResponse> response_;
+  const raw_ref<const base::Clock> clock_;
+  const raw_ref<const base::TickClock> tick_clock_;
 };
 
 }  // namespace net

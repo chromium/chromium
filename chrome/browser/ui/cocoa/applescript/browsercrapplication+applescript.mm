@@ -9,7 +9,6 @@
 #include <map>
 
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -23,6 +22,10 @@
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/window_applescript.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using bookmarks::BookmarkModel;
 
@@ -46,8 +49,8 @@ using bookmarks::BookmarkModel;
       continue;
     }
 
-    WindowAppleScript* aWindow = [[[WindowAppleScript alloc]
-        initWithBrowser:browser_it->second] autorelease];
+    WindowAppleScript* aWindow =
+        [[WindowAppleScript alloc] initWithBrowser:browser_it->second];
     [aWindow setContainer:self property:AppleScript::kWindowsProperty];
     [result addObject:aWindow];
   }
@@ -96,9 +99,8 @@ using bookmarks::BookmarkModel;
     return nil;
   }
 
-  BookmarkFolderAppleScript* otherBookmarks =
-      [[[BookmarkFolderAppleScript alloc]
-          initWithBookmarkNode:model->other_node()] autorelease];
+  BookmarkFolderAppleScript* otherBookmarks = [[BookmarkFolderAppleScript alloc]
+      initWithBookmarkNode:model->other_node()];
   [otherBookmarks setContainer:self
                       property:AppleScript::kBookmarkFoldersProperty];
   return otherBookmarks;
@@ -121,8 +123,8 @@ using bookmarks::BookmarkModel;
     return nullptr;
   }
 
-  BookmarkFolderAppleScript* bookmarksBar = [[[BookmarkFolderAppleScript alloc]
-      initWithBookmarkNode:model->bookmark_bar_node()] autorelease];
+  BookmarkFolderAppleScript* bookmarksBar = [[BookmarkFolderAppleScript alloc]
+      initWithBookmarkNode:model->bookmark_bar_node()];
   [bookmarksBar setContainer:self
                     property:AppleScript::kBookmarkFoldersProperty];
   return bookmarksBar;

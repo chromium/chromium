@@ -137,7 +137,7 @@ void HistoryCounter::OnGetLocalHistoryCount(
 
 void HistoryCounter::OnGetWebHistoryCount(
     history::WebHistoryService::Request* request,
-    base::optional_ref<base::Value::Dict> result) {
+    base::optional_ref<const base::Value::Dict> result) {
   // Ensure that all callbacks are on the same thread, so that we do not need
   // a mutex for |MergeResults|.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

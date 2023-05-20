@@ -415,6 +415,70 @@ TEST_P(FastPairDataEncryptorImplTest,
   }
 }
 
+TEST_P(FastPairDataEncryptorImplTest, VerifyEncryptedAdditionalData_Success) {
+  // Values from Fast Pair Spec successful test:
+  // https://developers.google.com/nearby/fast-pair/specifications/appendix/testcases#hmac-sha256
+  std::vector<uint8_t> encrypted_additional_data{
+      0xEE, 0x4A, 0x24, 0x83, 0x73, 0x80, 0x52, 0xE4, 0x4E,
+      0x9B, 0x2A, 0x14, 0x5E, 0x5D, 0xDF, 0xAA, 0x44, 0xB9,
+      0xE5, 0x53, 0x6A, 0xF4, 0x38, 0xE1, 0xE5, 0xC6};
+
+  std::array<uint8_t, kPrivateKeyByteSize> secret_key = {
+      0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
+      0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF};
+
+  std::array<uint8_t, kNonceSizeBytes> nonce = {0x00, 0x01, 0x02, 0x03,
+                                                0x04, 0x05, 0x06, 0x07};
+
+  std::array<uint8_t, kHmacVerifyLenBytes> expected = {0x55, 0xEC, 0x5E, 0x60,
+                                                       0x55, 0xAF, 0x6E, 0x92};
+
+  // Set up
+  std::vector<uint8_t> secret_key_vec(secret_key.data(),
+                                      secret_key.data() + secret_key.size());
+  SuccessfulSetUp(secret_key_vec);
+
+  // Test only if pairing protocol is Subsequent, which occurs in
+  // SuccessfulSetUp() when GetParam() == 0, so that the device's account key is
+  // used as the secret key in `data_encryptor_`.
+  if (!GetParam()) {
+    EXPECT_TRUE(data_encryptor_->VerifyEncryptedAdditionalData(
+        expected, nonce, encrypted_additional_data));
+  }
+}
+
+TEST_P(FastPairDataEncryptorImplTest, VerifyEncryptedAdditionalData_Failure) {
+  // Values from Fast Pair Spec successful test:
+  // https://developers.google.com/nearby/fast-pair/specifications/appendix/testcases#hmac-sha256
+  std::vector<uint8_t> encrypted_additional_data{
+      0xEE, 0x4A, 0x24, 0x83, 0x73, 0x80, 0x52, 0xE4, 0x4E,
+      0x9B, 0x2A, 0x14, 0x5E, 0x5D, 0xDF, 0xAA, 0x44, 0xB9,
+      0xE5, 0x53, 0x6A, 0xF4, 0x38, 0xE1, 0xE5, 0xC6};
+
+  std::array<uint8_t, kPrivateKeyByteSize> secret_key = {
+      0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
+      0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF};
+
+  std::array<uint8_t, kNonceSizeBytes> nonce = {0x00, 0x01, 0x02, 0x03,
+                                                0x04, 0x05, 0x06, 0x07};
+
+  std::array<uint8_t, kHmacVerifyLenBytes> expected = {0x00, 0x01, 0x02, 0x03,
+                                                       0x04, 0x05, 0x06, 0x07};
+
+  // Set up
+  std::vector<uint8_t> secret_key_vec(secret_key.data(),
+                                      secret_key.data() + secret_key.size());
+  SuccessfulSetUp(secret_key_vec);
+
+  // Test only if pairing protocol is Subsequent, which occurs in
+  // SuccessfulSetUp() when GetParam() == 0, so that the device's account key is
+  // used as the secret key in `data_encryptor_`.
+  if (!GetParam()) {
+    EXPECT_FALSE(data_encryptor_->VerifyEncryptedAdditionalData(
+        expected, nonce, encrypted_additional_data));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(FastPairDataEncryptorImplTest,
                          FastPairDataEncryptorImplTest,
                          testing::Bool());

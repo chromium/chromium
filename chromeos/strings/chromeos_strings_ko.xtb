@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" />에서 이 기기를 관리하며 내 활동을 모니터링할 수도 있습니다.</translation>
 <translation id="1478594628797167447">스캐너</translation>
 <translation id="1483493594462132177">보내기</translation>
+<translation id="1488850966314959671">사용 설정된 맞춤 APN을 사용하여 이 네트워크에 연결할 수 없습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> 펌웨어 업데이트 중</translation>
 <translation id="1499041187027566160">볼륨 크게</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" />에서 이 사용자를 관리하며, 원격으로 설정을 관리하고 사용자 활동을 모니터링할 수 있습니다.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">공개 여부</translation>
 <translation id="1672499492233627739">웹캠 동영상 피드</translation>
 <translation id="1676557873873341166">동영상 촬영 중</translation>
+<translation id="1684279041537802716">강조 색상</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 리졸버 존재</translation>
 <translation id="1708602061922134366">Google 블루</translation>
@@ -217,6 +219,7 @@
 <translation id="2638662041295312666">로그인 이미지</translation>
 <translation id="2640549051766135490">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택됨</translation>
 <translation id="267442004702508783">새로고침</translation>
+<translation id="268270014981824665">키보드 밝기 낮추기</translation>
 <translation id="2712812801627182647">TLS 인증 키</translation>
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2717139507051041123">어두운 색상 모드 사용</translation>
@@ -224,6 +227,7 @@
 <translation id="2744221223678373668">공유</translation>
 <translation id="2751739896257479635">EAP 2단계 인증</translation>
 <translation id="2783010256799387990">통과</translation>
+<translation id="2787435249130282949">키보드 더 밝게</translation>
 <translation id="2789486458103222910">확인</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="28232023175184696">인터넷에 연결할 수 없습니다. 다시 시도하려면 클릭하세요.</translation>
@@ -327,11 +331,13 @@
 <translation id="3749289110408117711">파일 이름</translation>
 <translation id="3771294271822695279">동영상 파일</translation>
 <translation id="3784455785234192852">잠금</translation>
+<translation id="380097101658023925">RGB 제어</translation>
 <translation id="38114475217616659">모든 기록 삭제</translation>
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="3824259034819781947">파일 첨부</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
 <translation id="3845880861638660475"><ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />를 눌러 대화상자를 닫습니다.</translation>
+<translation id="3848280697030027394">키보드 어둡게</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3862598938296403232">설명은 필수 항목입니다.</translation>
@@ -403,6 +409,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">사용 중지</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> 다시 시작 중</translation>
+<translation id="4395835743215824109">키보드 맞춤설정</translation>
 <translation id="4415951057168511744">현재 아바타</translation>
 <translation id="4422041425070339732">아래쪽 화살표입니다</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
@@ -426,6 +433,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh 배터리</translation>
 <translation id="4561801978359312462">SIM이 잠금 해제됨</translation>
 <translation id="4562494484721939086">서비스 불가</translation>
+<translation id="4573777384450697571">실패 - 인증서 만료</translation>
 <translation id="458794348635939462">모든 호스트를 확인할 수 없습니다.</translation>
 <translation id="4593212453765072419">프록시 인증이 필요합니다.</translation>
 <translation id="4609350030397390689">키보드 밝기 낮추기</translation>
@@ -442,6 +450,7 @@
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4744944742468440486">선택 항목 관련 정보</translation>
+<translation id="4771607256327216405">키보드 밝게</translation>
 <translation id="4773299976671772492">중지됨</translation>
 <translation id="4782311465517282004">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다</translation>
 <translation id="4791000909649665275">사진 <ph name="NUMBER" />장</translation>
@@ -490,6 +499,7 @@
 <translation id="500920857929044050">테스트 중지</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">화면이 유휴 상태일 때 사진, 시간, 날씨, 미디어 정보를 표시합니다.</translation>
+<translation id="5038292761217083259">키보드 여러 색상</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5049856988445523908">SIM 잠김(<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">그룹 이름</translation>
@@ -539,7 +549,6 @@
 <translation id="5423849171846380976">활성화됨</translation>
 <translation id="5430931332414098647">인스턴트 테더링</translation>
 <translation id="5431318178759467895">컬러</translation>
-<translation id="5456936324019847994">사용 설정된 맞춤 APN에 연결할 수 없습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="5457599981699367932">게스트로 로그인</translation>
 <translation id="54609108002486618">관리</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{남은 시도 {0}회}other{남은 시도 {0}회}}</translation>
@@ -555,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">다시 스캔</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">이 APN을 사용 중지하거나 삭제할 수 없습니다. 사용 설정 및 연결된 APN이 사용 중지되거나 삭제되었는지 확인하세요.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> 키는 테스트했습니다.</translation>
 <translation id="5620281292257375798">내부용</translation>
 <translation id="5649768706273821470">듣기</translation>
@@ -639,6 +649,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">어두운 테마 사용 설정</translation>
 <translation id="6285899124799306373">런처 열기</translation>
+<translation id="629550705077076970">키보드 밝기 낮추기</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="631063167932043783">탐색 앱</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> 펌웨어 업데이트</translation>
@@ -657,6 +668,7 @@
 <translation id="6401427872449207797">브라우저 검색</translation>
 <translation id="6410257289063177456">이미지 파일</translation>
 <translation id="641081527798843608">주제 일치</translation>
+<translation id="6411934471898487866">키보드 밝기</translation>
 <translation id="6412715219990689313">내장 키보드</translation>
 <translation id="6417265370957905582">Google 어시스턴트</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -710,7 +722,6 @@
 <translation id="6798678288485555829">텍스트 탐색</translation>
 <translation id="680983167891198932">키</translation>
 <translation id="6816797338148849397">선택 항목과 관련된 정보를 이용할 수 있습니다. 액세스하려면 위쪽 화살표 키를 사용하세요.</translation>
-<translation id="6838167112108853532">이 APN을 사용 중지하거나 삭제할 수 없습니다. 사용 설정 및 연결된 APN이 사용 중지되거나 삭제되었는지 확인하세요.</translation>
 <translation id="6853312040151791195">방전 속도</translation>
 <translation id="6889786074662672253">다시 시작하는 동안 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 다시 시작하는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="6900701049656042631">앨범에 사진이 없습니다. 사진을 추가하려면 <ph name="LINK" />(으)로 이동하세요.</translation>
@@ -740,6 +751,7 @@
 <translation id="7130438335435247835">액세스포인트 네임(APN)</translation>
 <translation id="7131634559772719176">미리 설정 확인</translation>
 <translation id="7134436342991564651">{0,plural, =1{네임서버}other{네임서버}}</translation>
+<translation id="7135814714616751706">바로가기 검색</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="714876143603641390">LAN 연결</translation>
@@ -770,6 +782,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" />, Search와 Space키를 눌러 Google 검색에서 검색결과를 확인하세요.</translation>
 <translation id="7343649194310845056">네트워크 기기</translation>
+<translation id="7353413232959255829">검색 결과 <ph name="LIST_SIZE" />개 중 <ph name="LIST_POSITION" />번: <ph name="SEARCH_RESULT_TEXT" />. 바로가기로 이동하려면 Enter를 누르세요.</translation>
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="73631062356239394">진단 데이터 공유</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -806,10 +819,12 @@
 <translation id="7656388927906093505">마우스 기기입니다.</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7665800271478495366">아바타 변경</translation>
+<translation id="7683228889864052081">키보드 색조</translation>
 <translation id="7690294790491645610">새 비밀번호 확인</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">키보드 조명</translation>
 <translation id="773153675489693198">사이클 수</translation>
 <translation id="7747039790905080783">사전 공유 키</translation>
 <translation id="7762130827864645708">비밀번호가 변경되었습니다. 지금부터 새로운 비밀번호를 사용해 주세요.</translation>
@@ -853,6 +868,7 @@
 <translation id="8075838845814659848">배터리 잔량</translation>
 <translation id="8076492880354921740">탭</translation>
 <translation id="8082366717211101304">Android 앱에서 DNS를 변환할 수 없습니다.</translation>
+<translation id="8082644724189923105">키보드 영역</translation>
 <translation id="808894953321890993">비밀번호 변경</translation>
 <translation id="8094062939584182041">Google에서 이 문제에 관한 이메일을 보내도록 허용</translation>
 <translation id="8104083085214006426">안전하지 않은 개방형 네트워크를 사용하고 있습니다.</translation>
@@ -901,6 +917,7 @@
 <translation id="8456761643544401578">자동 어두운 모드</translation>
 <translation id="8461329675984532579">홈 공급자 이름</translation>
 <translation id="8475690821716466388">Wi-Fi 네트워크가 약한 프로토콜 WEP PSK로 보호되었습니다.</translation>
+<translation id="8476242415522716722">키보드 언더글로우</translation>
 <translation id="8477551185774834963">DNS 지연 시간이 허용되는 기준을 약간 초과했습니다.</translation>
 <translation id="8483248364096924578">IP 주소</translation>
 <translation id="8491311378305535241">Android 앱에서 방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>
@@ -944,6 +961,7 @@
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8855781559874488009">방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>
 <translation id="885701979325669005">저장소</translation>
+<translation id="885704831271383379">키보드 더 어둡게</translation>
 <translation id="8863170912498892583">어두운 테마 사용</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />"의 <ph name="INTENT" /> 확인 등</translation>
 <translation id="8864415976656252616">추천 콘텐츠가 없습니다. 상위 도움말 콘텐츠를 참고하세요.</translation>
@@ -996,6 +1014,7 @@
 <translation id="9173638680043580060">1분 미만 남음</translation>
 <translation id="917720651393141712">테스트</translation>
 <translation id="9188992814426075118">키보드 백라이트가 배경화면에 어울리게 자동으로 설정됩니다.</translation>
+<translation id="9189000703457422362">자동으로 감지된 APN을 사용하여 이 네트워크에 연결할 수 없습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android 앱에서 게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="9211490828691860325">모든 데스크</translation>

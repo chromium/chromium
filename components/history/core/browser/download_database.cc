@@ -316,6 +316,10 @@ bool DownloadDatabase::MigrateDownloadSliceFinished() {
                                    "INTEGER NOT NULL DEFAULT 0");
 }
 
+bool DownloadDatabase::MigrateDownloadByWebApp() {
+  return EnsureColumnExists("by_web_app_id", "VARCHAR NOT NULL DEFAULT ''");
+}
+
 bool DownloadDatabase::InitDownloadTable() {
   const std::string kSchema = base::StringPrintf(
       "CREATE TABLE %s ("
@@ -350,6 +354,8 @@ bool DownloadDatabase::InitDownloadTable() {
       "by_ext_id VARCHAR NOT NULL,"       // ID of extension that started the
                                           // download
       "by_ext_name VARCHAR NOT NULL,"     // name of extension
+      "by_web_app_id VARCHAR NOT NULL,"   // ID of web app that started the
+                                          // download.
       "etag VARCHAR NOT NULL,"            // ETag
       "last_modified VARCHAR NOT NULL,"   // Last-Modified header
       "mime_type VARCHAR(255) NOT NULL,"  // MIME type.
@@ -450,8 +456,8 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
           "danger_type, interrupt_reason, hash, end_time, opened, "
           "last_access_time, transient, referrer, site_url, "
           "embedder_download_data, tab_url, tab_referrer_url, http_method, "
-          "by_ext_id, by_ext_name, etag, last_modified FROM %s ORDER BY "
-          "start_time",
+          "by_ext_id, by_ext_name, by_web_app_id, etag, last_modified FROM %s "
+          "ORDER BY start_time",
           kDownloadsTable)
           .c_str()));
 
@@ -494,6 +500,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
     info->http_method = statement_main.ColumnString(column++);
     info->by_ext_id = statement_main.ColumnString(column++);
     info->by_ext_name = statement_main.ColumnString(column++);
+    info->by_web_app_id = statement_main.ColumnString(column++);
     info->etag = statement_main.ColumnString(column++);
     info->last_modified = statement_main.ColumnString(column++);
 
@@ -598,7 +605,7 @@ bool DownloadDatabase::UpdateDownload(const DownloadRow& data) {
                          "danger_type=?, interrupt_reason=?, hash=?, "
                          "end_time=?, total_bytes=?, "
                          "opened=?, last_access_time=?, transient=?, "
-                         "by_ext_id=?, by_ext_name=?, "
+                         "by_ext_id=?, by_ext_name=?, by_web_app_id=?, "
                          "etag=?, last_modified=? WHERE id=?",
                          kDownloadsTable)
           .c_str()));
@@ -620,6 +627,7 @@ bool DownloadDatabase::UpdateDownload(const DownloadRow& data) {
   statement.BindInt(column++, (data.transient ? 1 : 0));
   statement.BindString(column++, data.by_ext_id);
   statement.BindString(column++, data.by_ext_name);
+  statement.BindString(column++, data.by_web_app_id);
   statement.BindString(column++, data.etag);
   statement.BindString(column++, data.last_modified);
   statement.BindInt64(column++, DownloadIdToInt(data.id));
@@ -682,10 +690,10 @@ bool DownloadDatabase::CreateDownload(const DownloadRow& info) {
             "state, danger_type, interrupt_reason, hash, end_time, opened, "
             "last_access_time, transient, referrer, site_url, "
             "embedder_download_data, tab_url, tab_referrer_url, http_method, "
-            "by_ext_id, by_ext_name, etag, last_modified) "
+            "by_ext_id, by_ext_name, by_web_app_id, etag, last_modified) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
             "        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-            "        ?, ?, ?, ?, ?, ?, ?)",
+            "        ?, ?, ?, ?, ?, ?, ?, ?)",
             kDownloadsTable)
             .c_str()));
 
@@ -717,6 +725,7 @@ bool DownloadDatabase::CreateDownload(const DownloadRow& info) {
     statement_insert.BindString(column++, info.http_method);
     statement_insert.BindString(column++, info.by_ext_id);
     statement_insert.BindString(column++, info.by_ext_name);
+    statement_insert.BindString(column++, info.by_web_app_id);
     statement_insert.BindString(column++, info.etag);
     statement_insert.BindString(column++, info.last_modified);
     if (!statement_insert.Run()) {

@@ -619,7 +619,6 @@ void ModelTypeWorker::ApplyUpdates(StatusController* status, bool cycle_done) {
   // other types wait for the cycle to complete before applying any updates.
   // Note that the initial sync technically isn't started/done yet but by the
   // time this value is persisted to disk on the model thread it will be.
-  model_type_state_.set_initial_sync_done_deprecated(true);
   if (cycle_done) {
     model_type_state_.set_initial_sync_state(
         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);

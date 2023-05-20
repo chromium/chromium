@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -94,8 +93,6 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<const PasswordForm*> non_federated_same_scheme_;
   std::vector<const PasswordForm*> best_matches_;
   std::vector<const PasswordForm*> insecure_credentials_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
   bool is_blocklisted_ = false;
   absl::optional<PasswordStoreBackendError> profile_store_backend_error_;
 };

@@ -275,6 +275,7 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementPermissionAllowed", IDS_APP_MANAGEMENT_PERMISSION_ALLOWED},
       {"appManagementPermissionAllowedWithDetails",
        IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_WITH_DETAILS},
+      {"appManagementPermissionAsk", IDS_APP_MANAGEMENT_PERMISSION_ASK},
       {"appManagementPermissionDenied", IDS_APP_MANAGEMENT_PERMISSION_DENIED},
       {"appManagementPermissionsLabel", IDS_APP_MANAGEMENT_PERMISSIONS},
       {"appManagementPinToShelfLabel", IDS_APP_MANAGEMENT_PIN_TO_SHELF},
@@ -444,7 +445,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   // visible once settings app is registered.
   html_source->AddBoolean("androidAppsVisible",
                           arc::IsArcAllowedForProfile(profile()));
-  html_source->AddBoolean("havePlayStoreApp", arc::IsPlayStoreAvailable());
+  html_source->AddBoolean("isPlayStoreAvailable", arc::IsPlayStoreAvailable());
 
   html_source->AddBoolean(
       "showOsSettingsAppNotificationsRow",
@@ -452,7 +453,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "showOsSettingsAppBadgingToggle",
       base::FeatureList::IsEnabled(features::kOsSettingsAppBadgingToggle));
-  html_source->AddBoolean("showArcvmManageUsb", arc::IsArcVmEnabled());
+  html_source->AddBoolean("isArcVmEnabled", arc::IsArcVmEnabled());
 
   AddAppManagementStrings(html_source);
   AddGuestOsStrings(html_source);
@@ -616,7 +617,7 @@ void AppsSection::AddPluginVmLoadTimeData(
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("showPluginVm",
+  html_source->AddBoolean("isPluginVmAvailable",
                           ShowPluginVm(profile(), *pref_service_));
   html_source->AddString(
       "pluginVmSharedPathsInstructionsLocate",

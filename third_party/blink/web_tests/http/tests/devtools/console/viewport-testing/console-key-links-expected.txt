@@ -9,7 +9,7 @@ Setting focus in prompt:
 Shift+Tab:
 Viewport virtual selection: 2
 activeElement: SPAN.devtools-link
-active text: console-key-links.js:26
+active text: console-key-links.js:29
 
 ArrowUp:
 Viewport virtual selection: 2
@@ -19,12 +19,12 @@ active text: www.chromium.org/2
 ArrowUp:
 Viewport virtual selection: 2
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-links.js:26 www.chromium.org/2
+active text: console-key-links.js:29 www.chromium.org/2
 
 ArrowUp:
 Viewport virtual selection: 1
 activeElement: SPAN.devtools-link
-active text: console-key-links.js:26
+active text: console-key-links.js:29
 
 ArrowUp:
 Viewport virtual selection: 1
@@ -39,7 +39,7 @@ active text: www.chromium.org/1a
 ArrowUp:
 Viewport virtual selection: 1
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-links.js:26 Text around www.chromium.org/1a multiple links, www.chromium.org/1b
+active text: console-key-links.js:29 Text around www.chromium.org/1a multiple links, www.chromium.org/1b
 
 ArrowDown:
 Viewport virtual selection: 1
@@ -54,12 +54,12 @@ active text: www.chromium.org/1b
 ArrowDown:
 Viewport virtual selection: 1
 activeElement: SPAN.devtools-link
-active text: console-key-links.js:26
+active text: console-key-links.js:29
 
 ArrowDown:
 Viewport virtual selection: 2
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-links.js:26 www.chromium.org/2
+active text: console-key-links.js:29 www.chromium.org/2
 
 ArrowDown:
 Viewport virtual selection: 2
@@ -69,7 +69,7 @@ active text: www.chromium.org/2
 ArrowDown:
 Viewport virtual selection: 2
 activeElement: SPAN.devtools-link
-active text: console-key-links.js:26
+active text: console-key-links.js:29
 
 Running: testNavigatingLinksInStackTrace
 Evaluating: fn1()
@@ -96,17 +96,17 @@ ArrowUp:
 Viewport virtual selection: 0
 Is trace expanded: NO
 activeElement: DIV.console-message-wrapper.console-from-api.console-error-level.console-selected
-active text: foo.js:18 Custom error with link www.chromium.org/linkInErrMsg
-fn1 @ foo.js:18
-(anonymous) @ console-key-links.js:71
+active text: foo.js:21 Custom error with link www.chromium.org/linkInErrMsg
+fn1 @ foo.js:21
+(anonymous) @ console-key-links.js:74
 
 ArrowRight:
 Viewport virtual selection: 0
 Is trace expanded: YES
 activeElement: DIV.console-message-wrapper.console-from-api.console-error-level.console-selected
-active text: foo.js:18 Custom error with link www.chromium.org/linkInErrMsg
-fn1 @ foo.js:18
-(anonymous) @ console-key-links.js:71
+active text: foo.js:21 Custom error with link www.chromium.org/linkInErrMsg
+fn1 @ foo.js:21
+(anonymous) @ console-key-links.js:74
 
 ArrowDown:
 Viewport virtual selection: 0
@@ -118,39 +118,39 @@ ArrowDown:
 Viewport virtual selection: 0
 Is trace expanded: YES
 activeElement: SPAN.devtools-link
-active text: foo.js:18
+active text: foo.js:21
 
 ArrowDown:
 Viewport virtual selection: 0
 Is trace expanded: YES
 activeElement: SPAN.devtools-link
-active text: foo.js:18
+active text: foo.js:21
 
 ArrowDown:
 Viewport virtual selection: 0
 Is trace expanded: YES
 activeElement: SPAN.devtools-link
-active text: console-key-links.js:71
+active text: console-key-links.js:74
 
 ArrowDown:
 Viewport virtual selection: 0
 Is trace expanded: YES
 activeElement: SPAN.devtools-link
-active text: console-key-links.js:71
+active text: console-key-links.js:74
 
 ArrowLeft:
 Viewport virtual selection: 0
 Is trace expanded: YES
 activeElement: DIV.console-message-wrapper.console-from-api.console-error-level.console-selected
-active text: foo.js:18 Custom error with link www.chromium.org/linkInErrMsg
-fn1 @ foo.js:18
-(anonymous) @ console-key-links.js:71
+active text: foo.js:21 Custom error with link www.chromium.org/linkInErrMsg
+fn1 @ foo.js:21
+(anonymous) @ console-key-links.js:74
 
 ArrowLeft:
 Viewport virtual selection: 0
 Is trace expanded: NO
 activeElement: DIV.console-message-wrapper.console-from-api.console-error-level.console-selected
-active text: foo.js:18 Custom error with link www.chromium.org/linkInErrMsg
-fn1 @ foo.js:18
-(anonymous) @ console-key-links.js:71
+active text: foo.js:21 Custom error with link www.chromium.org/linkInErrMsg
+fn1 @ foo.js:21
+(anonymous) @ console-key-links.js:74
 

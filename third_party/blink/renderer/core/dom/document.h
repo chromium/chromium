@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -1999,6 +2000,8 @@ class CORE_EXPORT Document : public ContainerNode,
                            BeforeMatchExpandedHiddenMatchableUkm);
   FRIEND_TEST_ALL_PREFIXES(TextFinderSimTest,
                            BeforeMatchExpandedHiddenMatchableUkmNoHandler);
+  FRIEND_TEST_ALL_PREFIXES(DictionaryLoadFromHeaderTest,
+                           LoadDictionaryFromHeader);
 
   // Listed elements that are not associated to a <form> element.
   class UnassociatedListedElementsList {
@@ -2110,8 +2113,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   void AddMutationEventListenerTypeIfEnabled(ListenerType);
 
-  void DidAddOrRemoveFormRelatedElementsTimerFired(TimerBase*);
-
   void ClearFocusedElementTimerFired(TimerBase*);
 
   bool HaveScriptBlockingStylesheetsLoaded() const;
@@ -2201,6 +2202,12 @@ class CORE_EXPORT Document : public ContainerNode,
       ScriptPromiseResolver* resolver,
       bool use_existing_status,
       mojom::blink::PermissionStatus status);
+
+  // Fetch the compression dictionary sent in the response header after the
+  // document load completes.
+  void FetchDictionaryFromLinkHeader();
+
+  Resource* GetPendingLinkPreloadForTesting(const KURL&);
 
   const DocumentToken token_;
 
@@ -2524,8 +2531,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<Document> template_document_;
   Member<Document> template_document_host_;
-
-  HeapTaskRunnerTimer<Document> did_add_or_remove_form_related_elements_timer_;
 
   HeapHashSet<Member<SVGUseElement>> use_elements_needing_update_;
 

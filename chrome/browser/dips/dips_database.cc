@@ -544,7 +544,7 @@ std::vector<std::string> DIPSDatabase::GetAllSitesForTesting() {
 }
 
 std::vector<std::string> DIPSDatabase::GetSitesThatBounced(
-    const base::TimeDelta& grace_period) {
+    base::TimeDelta grace_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return {};
@@ -567,7 +567,7 @@ std::vector<std::string> DIPSDatabase::GetSitesThatBounced(
 }
 
 std::vector<std::string> DIPSDatabase::GetSitesThatBouncedWithState(
-    const base::TimeDelta& grace_period) {
+    base::TimeDelta grace_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return {};
@@ -591,7 +591,7 @@ std::vector<std::string> DIPSDatabase::GetSitesThatBouncedWithState(
 }
 
 std::vector<std::string> DIPSDatabase::GetSitesThatUsedStorage(
-    const base::TimeDelta& grace_period) {
+    base::TimeDelta grace_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
     return {};

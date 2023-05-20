@@ -6,8 +6,8 @@
 
 #import "base/metrics/histogram_macros.h"
 #import "components/google/core/common/google_util.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"

@@ -18,7 +18,6 @@
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_utils.h"
-#include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/native_widget_types.h"
@@ -36,7 +35,6 @@ using ui_controls::LEFT;
 using ui_controls::MIDDLE;
 using ui_controls::MouseButton;
 using ui_controls::RIGHT;
-using ui_controls::UIControlsAura;
 using ui_controls::UP;
 
 aura::Window* RootWindowForPoint(const gfx::Point& point,

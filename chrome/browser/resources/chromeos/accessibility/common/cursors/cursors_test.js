@@ -31,6 +31,8 @@ AccessibilityExtensionCursorsTest = class extends CommonE2ETestBase {
     await importModule(
         'AutomationPredicate', '/common/automation_predicate.js');
     await importModule('constants', '/common/constants.js');
+    await importModule(
+        'createMockNode', '/common/testing/test_node_generator.js');
     // Various aliases
     globalThis.CHARACTER = CursorUnit.CHARACTER;
     globalThis.WORD = CursorUnit.WORD;
@@ -712,6 +714,50 @@ AX_TEST_F(
         // Reached first word of first object.
         [WORD, DIRECTIONAL, BACKWARD, {index: 0, value: 'Inline text content'}],
       ]);
+    });
+
+AX_TEST_F(
+    'AccessibilityExtensionCursorsTest', 'MovementByNodeInPdf',
+    async function() {
+      const root =
+          createMockNode({role: chrome.automation.RoleType.ROOT_WEB_AREA});
+      const pdfRoot = createMockNode(
+          {role: chrome.automation.RoleType.PDF_ROOT, parent: root, root});
+      const paragraph1 = createMockNode({
+        role: chrome.automation.RoleType.PARAGRAPH,
+        display: 'block',
+        parent: pdfRoot,
+        pdfRoot,
+      });
+      const text1 = createMockNode({
+        role: chrome.automation.RoleType.STATIC_TEXT,
+        parent: paragraph1,
+        pdfRoot,
+        name: 'First text in PDF',
+      });
+      const paragraph2 = createMockNode({
+        role: chrome.automation.RoleType.PARAGRAPH,
+        display: 'block',
+        parent: pdfRoot,
+        pdfRoot,
+      });
+      const text2 = createMockNode({
+        role: chrome.automation.RoleType.STATIC_TEXT,
+        parent: paragraph2,
+        pdfRoot,
+        name: 'Second text in PDF',
+      });
+
+      let cursor = new Cursor(root.firstChild, 0);
+      assertEquals(chrome.automation.RoleType.PDF_ROOT, cursor.node.role);
+
+      cursor = cursor.move(NODE, DIRECTIONAL, FORWARD);
+      assertEquals(chrome.automation.RoleType.STATIC_TEXT, cursor.node.role);
+      assertEquals('First text in PDF', cursor.node.name);
+
+      cursor = cursor.move(NODE, DIRECTIONAL, FORWARD);
+      assertEquals(chrome.automation.RoleType.STATIC_TEXT, cursor.node.role);
+      assertEquals('Second text in PDF', cursor.node.name);
     });
 
 TEST_F('AccessibilityExtensionCursorsTest', 'CopiedSelection', function() {

@@ -19,6 +19,7 @@
 #include "components/search_engines/template_url_service_observer.h"
 
 class Browser;
+class PrefService;
 class Profile;
 
 // SearchCompanionSidePanelCoordinator handles the creation and registration of
@@ -35,13 +36,15 @@ class SearchCompanionSidePanelCoordinator
       const SearchCompanionSidePanelCoordinator&) = delete;
   ~SearchCompanionSidePanelCoordinator() override;
 
-  static bool IsSupported(Profile* profile, bool include_dsp_check = true);
+  // If `include_runtime_checks` is true, then the method returns true if the
+  // runtime checks also return true.
+  static bool IsSupported(Profile* profile, bool include_runtime_checks);
 
   bool Show(SidePanelOpenTrigger side_panel_open_trigger);
-  BrowserView* GetBrowserView();
-  std::u16string GetTooltipForToolbarButton();
+  BrowserView* GetBrowserView() const;
+  std::u16string GetTooltipForToolbarButton() const;
 
-  std::u16string name() { return name_; }
+  std::u16string name() const { return name_; }
   const gfx::VectorIcon& icon() { return *icon_; }
 
   // TabStripModelObserver:
@@ -65,10 +68,23 @@ class SearchCompanionSidePanelCoordinator
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
 
+  // Updates CSC availability in Side Panel.
+  void UpdateCompanionAvailabilityInSidePanel();
+
+  // Called if there is a change in the state of policy pref.
+  void OnPolicyPrefChanged();
+
+  // Returns true if CSC runtime checks pass.
+  bool DoCompanionRuntimeChecksPass() const;
+
   raw_ptr<Browser> browser_;
   std::u16string name_;
   const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
+  raw_ptr<PrefService> pref_service_;
   bool dsp_is_google_ = false;
+  bool csc_enabled_via_policy_ = false;
+
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};

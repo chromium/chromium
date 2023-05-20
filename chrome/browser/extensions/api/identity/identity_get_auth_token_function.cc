@@ -44,6 +44,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #endif
@@ -60,11 +61,11 @@ bool IsBrowserSigninAllowed(Profile* profile) {
 }
 
 std::string GetOAuth2MintTokenFlowVersion() {
-  return version_info::GetVersionNumber();
+  return std::string(version_info::GetVersionNumber());
 }
 
 std::string GetOAuth2MintTokenFlowChannel() {
-  return version_info::GetChannelString(chrome::GetChannel());
+  return std::string(version_info::GetChannelString(chrome::GetChannel()));
 }
 
 void RecordFunctionResult(const IdentityGetAuthTokenError& error,
@@ -264,7 +265,7 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
           IdentityGetAuthTokenError::State::kNotAllowlistedInPublicSession));
       return;
     }
-    if (profiles::IsKioskSession()) {
+    if (chromeos::IsKioskSession()) {
       StartMintTokenFlow(IdentityMintRequestQueue::MINT_TYPE_NONINTERACTIVE);
       return;
     }
@@ -487,7 +488,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
                                             kNotAllowlistedInPublicSession));
           return;
         }
-        if (profiles::IsKioskSession()) {
+        if (chromeos::IsKioskSession()) {
           gaia_mint_token_mode_ = OAuth2MintTokenFlow::MODE_MINT_TOKEN_FORCE;
           if (g_browser_process->browser_policy_connector()
                   ->IsDeviceEnterpriseManaged()) {

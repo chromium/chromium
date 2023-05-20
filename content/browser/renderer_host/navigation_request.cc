@@ -82,6 +82,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/subframe_history_navigation_throttle.h"
+#include "content/browser/renderer_host/system_entropy_utils.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/scoped_active_url.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -1379,6 +1380,10 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*not_restored_reasons=*/nullptr,
           /*load_with_storage_access=*/load_with_storage_access);
 
+  commit_params->navigation_timing->system_entropy_at_navigation_start =
+      SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
+          frame_tree_node, blink::mojom::SystemEntropy::kNormal);
+
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
   // TODO(https://crbug.com/1074464): Find a way to DCHECK that the routing ID
@@ -1558,6 +1563,10 @@ NavigationRequest::CreateForSynchronousRendererCommit(
     navigation_request->commit_params_->storage_key =
         blink::StorageKey::Create(origin, top_level_site, ancestor_chain_bit);
   }
+  navigation_request->commit_params_->navigation_timing
+      ->system_entropy_at_navigation_start =
+      SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
+          frame_tree_node, blink::mojom::SystemEntropy::kNormal);
   navigation_request->commit_params_->session_storage_key =
       frame_tree_node->frame_tree().GetSessionStorageKey(
           navigation_request->commit_params_->storage_key);
@@ -1686,30 +1695,6 @@ NavigationRequest::NavigationRequest(
 
   // Ensure the blink::RuntimeFeatureStateContext is initialized.
   runtime_feature_state_context_ = blink::RuntimeFeatureStateContext();
-
-  // There should be no navigations to about:newtab, about:version or other
-  // similar URLs (see https://crbug.com/1145717):
-  //
-  // 1. For URLs coming from outside the browser (e.g. from user input into the
-  //    omnibox, from other apps, etc) the //content embedder should fix
-  //    the URL using the url_formatter::FixupURL API from
-  //    //components/url_formatter (which would for example translate
-  //    "about:version" into "chrome://version/", "localhost:1234" into
-  //    "http://localhost:1234/", etc.).
-  //
-  // 2. Most tests should directly use correct, final URLs (e.g.
-  //    chrome://version instead of about:version;  or about:blank instead of
-  //    about://blank).  Similarly, links in the product (e.g. links inside
-  //    chrome://about/) should use correct, final URLs.
-  //
-  // 3. Renderer-initiated navigations (e.g. ones initiated via
-  //    <a href="...">...</a> links embedded in web pages) should typically be
-  //    blocked (via RenderProcessHostImpl::FilterURL).
-  if (GetURL().SchemeIs(url::kAboutScheme) && !GetURL().IsAboutBlank() &&
-      !GetURL().IsAboutSrcdoc()) {
-    NOTREACHED();
-    base::debug::DumpWithoutCrashing();
-  }
 
   TRACE_EVENT1("navigation", "NavigationRequest::NavigationRequest",
                "navigation_request", this);
@@ -1848,8 +1833,9 @@ NavigationRequest::NavigationRequest(
     ui::PageTransition transition =
         ui::PageTransitionFromInt(common_params_->transition);
     GetContentClient()->browser()->OverrideNavigationParams(
-        source_site_instance_.get(), &transition, &is_renderer_initiated,
-        &referrer, &common_params_->initiator_origin);
+        source_site_instance_->GetProcess()->GetProcessLock().site_url(),
+        &transition, &is_renderer_initiated, &referrer,
+        &common_params_->initiator_origin);
     common_params_->transition = transition;
     common_params_->referrer =
         blink::mojom::Referrer::New(referrer.url, referrer.policy);
@@ -3463,15 +3449,18 @@ bool NavigationRequest::IsOriginAgentClusterOptInRequested() {
   // We explicitly do not honor Origin-Agent-Cluster headers in redirects and
   // may only consider them in final responses, according to spec.
   // https://crbug.com/1329061
-  if (state_ < WILL_PROCESS_RESPONSE)
+  if (state_ < WILL_PROCESS_RESPONSE || state_ == WILL_FAIL_REQUEST) {
     return false;
+  }
 
-  if (!response())
+  if (!response()) {
     return false;
+  }
 
   // Do not attempt isolation if the feature is not enabled.
-  if (!SiteIsolationPolicy::IsOriginAgentClusterEnabled())
+  if (!SiteIsolationPolicy::IsOriginAgentClusterEnabled()) {
     return false;
+  }
 
   return response_head_->parsed_headers->origin_agent_cluster ==
          network::mojom::OriginAgentClusterValue::kTrue;
@@ -3481,11 +3470,13 @@ bool NavigationRequest::IsOriginAgentClusterOptOutRequested() {
   // We explicitly do not honor Origin-Agent-Cluster headers in redirects and
   // may only consider them in final responses, according to spec.
   // https://crbug.com/1329061
-  if (state_ < WILL_PROCESS_RESPONSE)
+  if (state_ < WILL_PROCESS_RESPONSE || state_ == WILL_FAIL_REQUEST) {
     return false;
+  }
 
-  if (!response())
+  if (!response()) {
     return false;
+  }
 
   // We only allow explicit opt-outs when OAC-by-default is enabled. The
   // following check will be false if IsOriginAgentClusterEnabled() is false.
@@ -7120,11 +7111,11 @@ void NavigationRequest::DidCommitNavigation(
 
   // TODO(https://crbug.com/1399499): consider using NavigationOrDocumentHandle
   // instead once we can get a WeakDocumentPtr from NavigationOrDocumentHandle.
-  if (topics_url_loader_service_bind_context_) {
+  if (subresource_proxying_url_loader_service_bind_context_) {
     DCHECK(!IsSameDocument());
 
-    topics_url_loader_service_bind_context_->OnDidCommitNavigation(
-        GetRenderFrameHost()->GetWeakDocumentPtr());
+    subresource_proxying_url_loader_service_bind_context_
+        ->OnDidCommitNavigation(GetRenderFrameHost()->GetWeakDocumentPtr());
   }
 }
 

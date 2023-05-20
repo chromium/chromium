@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 
-#import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "testing/gtest/include/gtest/gtest.h"
 

@@ -77,13 +77,15 @@ using autofill::PopupType;
   NSArray* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:0
+                      backendIdentifier:nil
                          requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:1
+                      backendIdentifier:nil
                          requiresReauth:NO]
   ];
   return [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
@@ -382,13 +384,15 @@ TEST_F(FormSuggestionControllerTest,
   NSArray* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:0
+                      backendIdentifier:nil
                          requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:1
+                      backendIdentifier:nil
                          requiresReauth:NO]
   ];
   TestSuggestionProvider* provider1 =
@@ -432,8 +436,9 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   NSArray* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:0
+                      backendIdentifier:nil
                          requiresReauth:NO],
   ];
   TestSuggestionProvider* provider =
@@ -468,8 +473,9 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
 TEST_F(FormSuggestionControllerTest, AutofillSuggestionIPH) {
   FormSuggestion* suggestion = [FormSuggestion suggestionWithValue:@"foo"
                                                 displayDescription:nil
-                                                              icon:@""
+                                                              icon:nil
                                                         identifier:0
+                                                 backendIdentifier:nil
                                                     requiresReauth:NO];
   suggestion.featureForIPH = @"YES";
   NSArray* suggestions = @[ suggestion ];

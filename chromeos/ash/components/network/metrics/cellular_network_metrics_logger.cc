@@ -149,6 +149,19 @@ void CellularNetworkMetricsLogger::LogModifyCustomApnResult(
   }
 }
 
+// static
+void CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
+    UnmanagedApnMigrationType type) {
+  base::UmaHistogramEnumeration(kCustomApnsUnmanagedMigrationTypeHistogram,
+                                type);
+}
+
+// static
+void CellularNetworkMetricsLogger::LogManagedCustomApnMigrationType(
+    ManagedApnMigrationType type) {
+  base::UmaHistogramEnumeration(kCustomApnsManagedMigrationTypeHistogram, type);
+}
+
 void CellularNetworkMetricsLogger::OnConnectionResult(
     const std::string& guid,
     const absl::optional<std::string>& shill_error) {

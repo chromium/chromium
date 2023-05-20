@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/file_system_provider/notification_manager.h"
 #include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "extensions/browser/event_router.h"
 
@@ -53,6 +55,9 @@ namespace {
 // Timeout in seconds, before a file system operation request is considered as
 // stale and hence aborted.
 constexpr base::TimeDelta kDefaultOperationTimeout = base::Seconds(10);
+
+// Operation timeout for the ODFS extension.
+constexpr base::TimeDelta kODFSOperationTimeout = base::Seconds(30);
 
 extensions::file_system_provider::ServiceWorkerLifetimeManager*
 GetServiceWorkerLifetimeManager(Profile* profile) {
@@ -878,9 +883,17 @@ void ProvidedFileSystem::OnLacrosOperationForwarded(int request_id,
 }
 
 void ProvidedFileSystem::ConstructRequestManager() {
+  const extensions::ExtensionId& extension_id =
+      file_system_info_.provider_id().GetExtensionId();
+  base::TimeDelta operation_timeout = kDefaultOperationTimeout;
+  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
+      extension_id == extension_misc::kODFSExtensionId) {
+    // Longer timeout for ODFS.
+    operation_timeout = kODFSOperationTimeout;
+  }
+
   request_manager_ = std::make_unique<OperationRequestManager>(
-      profile_, file_system_info_.provider_id().GetExtensionId(),
-      notification_manager_.get(), kDefaultOperationTimeout);
+      profile_, extension_id, notification_manager_.get(), operation_timeout);
 }
 
 }  // namespace file_system_provider

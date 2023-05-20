@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 120 tests; 116 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 120 tests; 117 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS round(10,10) should be used-value-equivalent to 10
 PASS mod(1,1) should be used-value-equivalent to 0
 PASS rem(1,1) should be used-value-equivalent to 0
@@ -27,7 +27,7 @@ PASS calc(mod(18,5) * 2 + mod(17,5)) should be used-value-equivalent to 8
 PASS calc(rem(mod(18,5),5)) should be used-value-equivalent to 3
 PASS calc(rem(mod(18,5),mod(17,5))) should be used-value-equivalent to 1
 PASS calc(mod(-140,-90)) should be used-value-equivalent to -50
-FAIL calc(mod(rem(1,18)* -1,5)) should be used-value-equivalent to 4 assert_equals: calc(mod(rem(1,18)* -1,5)) and 4 serialize to the same thing in used values. expected "matrix(4, 0, 0, 4, 0, 0)" but got "matrix(-1, 0, 0, -1, 0, 0)"
+PASS calc(mod(rem(1,18)* -1,5)) should be used-value-equivalent to 4
 PASS round(10px,6px) should be used-value-equivalent to 12px
 PASS round(10cm,6cm) should be used-value-equivalent to 12cm
 PASS round(10mm,6mm) should be used-value-equivalent to 12mm

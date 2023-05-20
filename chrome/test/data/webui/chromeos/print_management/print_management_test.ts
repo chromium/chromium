@@ -9,12 +9,15 @@ import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {setMetadataProviderForTesting} from 'chrome://print-management/mojo_interface_provider.js';
 import {PrintJobEntryElement} from 'chrome://print-management/print_job_entry.js';
 import {PrintManagementElement} from 'chrome://print-management/print_management.js';
+import {PrinterSetupInfoElement} from 'chrome://print-management/printer_setup_info.js';
 import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 export function initPrintJobEntryElement(): PrintJobEntryElement {
   const element = document.createElement('print-job-entry');
@@ -736,15 +739,45 @@ suite('PrintManagementTest', () => {
     verifyPrintJobs(expectedPrintJobArr, getHistoryPrintJobEntries(page!));
   });
 
-  test('OngoingPrintJobEmptyState', async () => {
+  // Verify expected elements display when there are no print jobs and flag is
+  // off.
+  test('EmptyState_SetupAssistanceFlagOff', async () => {
+    // Ensure printer setup assistance flag is disabled for test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: false,
+    });
     await initializePrintManagementApp(/*expectedArr=*/[]);
     await mojoApi_.whenCalled('getPrintJobs');
     flush();
+
     // Assert that ongoing list is empty and the empty state message is
     // not hidden.
     assertTrue(!querySelector(page!, '#ongoingList'));
+    assertFalse(
+        querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden as
+        boolean);
     assertTrue(
-        !querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden);
+        querySelector<PrinterSetupInfoElement>(
+            page!, PrinterSetupInfoElement.is)
+            ?.hidden as boolean);
+  });
+
+  // Verify expected elements display when there are no print jobs and flag is
+  // on.
+  test('EmptyState_SetupAssistanceFlagOn', async () => {
+    // Ensure printer setup assistance flag is enabled for test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: true,
+    });
+    await initializePrintManagementApp(/*expectedArr=*/[]);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+
+    // Assert that printer setup UI is not hidden when flag enabled.
+    assertFalse(
+        querySelector<PrinterSetupInfoElement>(
+            page!, PrinterSetupInfoElement.is)
+            ?.hidden as boolean);
   });
 
   test('CancelOngoingPrintJob', async () => {
@@ -1087,5 +1120,80 @@ suite('PrintJobEntryTest', () => {
     flush();
     assertEquals(
         jobEntryTestElement.getFileIconClass(), 'flex-center file-icon-yellow');
+  });
+});
+
+suite('PrinterSetupInfoTest', () => {
+  let printerSetupInfoElement: PrinterSetupInfoElement|null = null;
+
+  teardown(() => {
+    if (printerSetupInfoElement) {
+      printerSetupInfoElement.remove();
+    }
+    printerSetupInfoElement = null;
+  });
+
+  function initPrinterSetupInfoElement(): Promise<void> {
+    const element = document.createElement(PrinterSetupInfoElement.is);
+    document.body.appendChild(element);
+    printerSetupInfoElement = element as PrinterSetupInfoElement;
+
+    return flushTasks();
+  }
+
+  /**
+   * Gets the trimmed text content for the requested element in the
+   * PrinterSetupInfoElement shadowDOM. Both `printerSetupInfoElement` and the
+   * element being looked up cannot be null.
+   */
+  function getElementTextContent(selector: string): string {
+    assertTrue(!!printerSetupInfoElement);
+    const element =
+        querySelector<HTMLElement>(printerSetupInfoElement!, selector);
+    assertTrue(!!element);
+
+    return element!.textContent?.trim() ?? '';
+  }
+
+  /**
+   * Gets the localized string matching the provided localization key using the
+   * `i18n` function on `PrinterSetupInfoElement`.
+   */
+  function getLocalizedString(localizationKey: string): string {
+    assertTrue(!!printerSetupInfoElement);
+
+    return printerSetupInfoElement!.i18n(localizationKey);
+  }
+
+  // Verify core elements of element rendered.
+  test('ensureBasicLayoutRenders', async () => {
+    await initPrinterSetupInfoElement();
+
+    assertTrue(isVisible(
+        querySelector<IronIconElement>(printerSetupInfoElement!, 'iron-icon')));
+    assertTrue(isVisible(querySelector<HTMLHeadingElement>(
+        printerSetupInfoElement!, '.message-heading')));
+    assertTrue(isVisible(querySelector<HTMLParagraphElement>(
+        printerSetupInfoElement!, '.message-detail')));
+    assertTrue(isVisible(
+        querySelector<CrButtonElement>(printerSetupInfoElement!, 'cr-button')));
+  });
+
+  // Verify expected localized strings are used in UI.
+  test('ensureLocalizedStringsMatch', async () => {
+    await initPrinterSetupInfoElement();
+
+    const expectedNoJobsMessage = getLocalizedString('emptyStateNoJobsMessage');
+    const expectedOpenPrinterSettingsMessage =
+        getLocalizedString('emptyStatePrinterSettingsMessage');
+    const expectedButtonLabel = getLocalizedString('managePrintersButtonLabel');
+
+    // Assert text content matches localized strings.
+    assertEquals(
+        expectedNoJobsMessage, getElementTextContent('.message-heading'));
+    assertEquals(
+        expectedOpenPrinterSettingsMessage,
+        getElementTextContent('.message-detail'));
+    assertEquals(expectedButtonLabel, getElementTextContent('cr-button'));
   });
 });

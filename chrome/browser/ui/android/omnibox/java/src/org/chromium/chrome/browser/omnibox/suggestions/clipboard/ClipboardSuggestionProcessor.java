@@ -38,7 +38,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      */
     public ClipboardSuggestionProcessor(
             Context context, SuggestionHost suggestionHost, FaviconFetcher faviconFetcher) {
-        super(context, suggestionHost, null, faviconFetcher);
+        super(context, suggestionHost, faviconFetcher);
     }
 
     @Override
@@ -69,6 +69,11 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                 new SuggestionSpannable(suggestion.getDescription()));
 
         setupContentField(suggestion, model, /* showContent = */ false);
+    }
+
+    @Override
+    public boolean allowOmniboxActions() {
+        return false;
     }
 
     /**

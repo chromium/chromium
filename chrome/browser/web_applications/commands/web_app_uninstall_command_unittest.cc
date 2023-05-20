@@ -390,12 +390,15 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
 // This is called once on Windows because OsUninstallRegistration is limited to
 // WIN.
 #if BUILDFLAG(IS_WIN)
-  EXPECT_CALL(*os_integration_manager_,
-              MacAppShimOnAppInstalledForProfile(app_id))
-      .Times(1);
-  EXPECT_CALL(*os_integration_manager_,
-              RegisterWebAppOsUninstallation(app_id, testing::_))
-      .Times(1);
+  // Enabling Execution bypasses the normal OS integration flow.
+  if (!AreSubManagersExecuteEnabled()) {
+    EXPECT_CALL(*os_integration_manager_,
+                MacAppShimOnAppInstalledForProfile(app_id))
+        .Times(1);
+    EXPECT_CALL(*os_integration_manager_,
+                RegisterWebAppOsUninstallation(app_id, testing::_))
+        .Times(1);
+  }
   EXPECT_CALL(*os_integration_manager_,
               Synchronize(app_id, testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>());

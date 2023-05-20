@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
 
 #import "base/no_destructor.h"
-#import "base/strings/stringprintf.h"
+#import "base/strings/strcat.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/common/channel_info.h"
@@ -26,9 +26,8 @@ IOSChromeUpdateQueryParamsDelegate::GetInstance() {
 }
 
 std::string IOSChromeUpdateQueryParamsDelegate::GetExtraParams() {
-  return base::StringPrintf(
-      "&prodchannel=%s&prodversion=%s&lang=%s", GetChannelString().c_str(),
-      version_info::GetVersionNumber().c_str(), GetLang().c_str());
+  return base::StrCat({"&prodchannel=", GetChannelString(), "&prodversion=",
+                       version_info::GetVersionNumber(), "&lang=", GetLang()});
 }
 
 // static

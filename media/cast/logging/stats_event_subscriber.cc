@@ -313,8 +313,7 @@ const char* StatsEventSubscriber::CastStatToString(CastStat stat) {
     STAT_ENUM_TO_STRING(E2E_LATENCY_MS_HISTO);
     STAT_ENUM_TO_STRING(LATE_FRAME_MS_HISTO);
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 const int kDefaultMaxLatencyBucketMs = 800;

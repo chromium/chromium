@@ -9,6 +9,7 @@
 
 #include "base/notreached.h"
 #include "base/sanitizer_buildflags.h"
+#include "base/strings/string_piece.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/version_info/channel.h"
@@ -27,19 +28,19 @@ const std::string GetProductNameAndVersionForReducedUserAgent(
     const std::string& build_version);
 
 // Returns the product name, e.g. "Chromium" or "Google Chrome".
-constexpr std::string GetProductName() {
+constexpr base::StringPiece GetProductName() {
   return PRODUCT_NAME;
 }
 
 // Returns the version number, e.g. "6.0.490.1".
-constexpr std::string GetVersionNumber() {
+constexpr base::StringPiece GetVersionNumber() {
   return PRODUCT_VERSION;
 }
 
 // Returns the product name and version information for the User-Agent header,
 // in the format: Chrome/<major_version>.<minor_version>.<build>.<patch>.
-constexpr std::string GetProductNameAndVersionForUserAgent() {
-  return "Chrome/" + GetVersionNumber();
+constexpr base::StringPiece GetProductNameAndVersionForUserAgent() {
+  return "Chrome/" PRODUCT_VERSION;
 }
 
 // Returns the major component (aka the milestone) of the version as an int,
@@ -53,7 +54,7 @@ std::string GetMajorVersionNumber();
 const base::Version& GetVersion();
 
 // Returns a version control specific identifier of this release.
-constexpr std::string GetLastChange() {
+constexpr base::StringPiece GetLastChange() {
   return LAST_CHANGE;
 }
 
@@ -65,7 +66,7 @@ constexpr bool IsOfficialBuild() {
 }
 
 // Returns the OS type, e.g. "Windows", "Linux", "FreeBSD", ...
-constexpr std::string GetOSType() {
+constexpr base::StringPiece GetOSType() {
 #if BUILDFLAG(IS_WIN)
   return "Windows";
 #elif BUILDFLAG(IS_IOS)
@@ -97,7 +98,7 @@ constexpr std::string GetOSType() {
 
 // Returns a string equivalent of |channel|, independent of whether the build
 // is branded or not and without any additional modifiers.
-constexpr std::string GetChannelString(Channel channel) {
+constexpr base::StringPiece GetChannelString(Channel channel) {
   switch (channel) {
     case Channel::STABLE:
       return "stable";
@@ -114,7 +115,7 @@ constexpr std::string GetChannelString(Channel channel) {
 }
 
 // Returns a list of sanitizers enabled in this build.
-constexpr std::string GetSanitizerList() {
+constexpr base::StringPiece GetSanitizerList() {
   return ""
 #if defined(ADDRESS_SANITIZER)
          "address "

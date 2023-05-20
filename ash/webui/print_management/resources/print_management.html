@@ -103,6 +103,12 @@
     margin-bottom: 0;
     margin-top: 0;
   }
+
+  printer-setup-info {
+    align-items: center;
+    flex: 1 1 auto;
+    height: 100%;
+  }
 </style>
 
 <div class="main-container margin-border">
@@ -164,6 +170,8 @@
     <div id="ongoingEmptyState" hidden="[[ongoingPrintJobs.length]]">
       [[i18n('noPrintJobInProgress')]]
     </div>
+
+    <printer-setup-info hidden$="[[!showSetupAssistance]]"></printer-setup-info>
 
     <template is="dom-if" if="[[printJobs.length]]" restamp>
       <div id="historyHeaderContainer" class="column-headers flex-center">

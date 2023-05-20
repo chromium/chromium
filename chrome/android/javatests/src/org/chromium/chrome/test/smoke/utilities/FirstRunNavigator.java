@@ -6,6 +6,7 @@ package org.chromium.chrome.test.smoke.utilities;
 
 import org.hamcrest.Matchers;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
@@ -20,6 +21,7 @@ import java.util.concurrent.Callable;
  * FirstRunNavigator is used to Navigate through FRE page.
  */
 public class FirstRunNavigator {
+    public static final String TAG = "FirstRunNavigator";
     public static final long TIMEOUT_MS = 20000L;
     public static final long UI_CHECK_INTERVAL = 1000L;
 
@@ -68,6 +70,7 @@ public class FirstRunNavigator {
             // Different FRE versions show up randomly and in different order,
             // figure out which one we are on and proceed.
             if (uiLocatorHelper.isOnScreen(urlBar)) {
+                Log.i(TAG, "FRE is done (Found URL bar).");
                 // FRE is over.
                 break;
             } else if (uiLocatorHelper.isOnScreen(playServicesUpdateText)) {
@@ -75,22 +78,30 @@ public class FirstRunNavigator {
                 // Otherwise its just a toast/notification that should not
                 // interfere with the test.
                 if (uiLocatorHelper.isOnScreen(updatePlayServicesPanel)) {
+                    Log.i(TAG, "Dismissing Play Services dialog");
                     UiAutomatorUtils.getInstance().clickOutsideOf(updatePlayServicesPanel);
+                } else {
+                    Log.i(TAG, "Ignoring Play Services toast");
                 }
             } else if (uiLocatorHelper.isOnScreen(noAddAccountButton)) {
                 // Do not add an account.
+                Log.i(TAG, "Clicking through add account dialog");
                 UiAutomatorUtils.getInstance().click(noAddAccountButton);
             } else if (uiLocatorHelper.isOnScreen(signinSkipButton)) {
                 // Do not sign in with an account.
+                Log.i(TAG, "Clicking through sign in dialog via \"skip\"");
                 UiAutomatorUtils.getInstance().click(signinSkipButton);
             } else if (uiLocatorHelper.isOnScreen(signinContinueButton)) {
                 // Sometimes there is only the continue button (eg: when signin is
                 // disabled.)
+                Log.i(TAG, "Clicking through sign in dialog via \"continue\"");
                 UiAutomatorUtils.getInstance().click(signinContinueButton);
             } else if (uiLocatorHelper.isOnScreen(signinProgressSpinner)) {
                 // Do nothing and wait.
+                Log.i(TAG, "Waiting for progress spinner");
             } else if (uiLocatorHelper.isOnScreen(defaultSearchEngineNextButton)) {
                 // Just press next on choosing the default SE.
+                Log.i(TAG, "Clicking through search engine selection");
                 UiAutomatorUtils.getInstance().click(defaultSearchEngineNextButton);
             } else {
                 throw new RuntimeException("Unexpected FRE or Start page detected.");

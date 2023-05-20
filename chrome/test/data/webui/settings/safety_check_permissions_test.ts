@@ -8,29 +8,29 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MetricsBrowserProxyImpl, Route, Router, routes, SafetyCheckIconStatus, SafetyCheckInteractions, SettingsRoutes, SettingsSafetyCheckNotificationPermissionsElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckUnusedSitePermissionsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {ContentSettingsTypes, NotificationPermission, UnusedSitePermissions, SiteSettingsPermissionsBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSettingsTypes, NotificationPermission, UnusedSitePermissions, SafetyHubBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertSafetyCheckChild} from './safety_check_test_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestSiteSettingsPermissionsBrowserProxy} from './test_site_settings_permissions_browser_proxy.js';
+import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 // clang-format on
 
 suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
   let page: SettingsSafetyCheckUnusedSitePermissionsElement;
   let testRoutes: SettingsRoutes;
-  let browserProxy: TestSiteSettingsPermissionsBrowserProxy;
+  let browserProxy: TestSafetyHubBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   const origin1 = 'www.example1.com';
   const origin2 = 'www.example2.com';
 
   setup(function() {
-    browserProxy = new TestSiteSettingsPermissionsBrowserProxy();
-    SiteSettingsPermissionsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(browserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     testRoutes = {
@@ -221,7 +221,7 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
   let testRoutes: SettingsRoutes;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   let prefsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
-  let permissionsBrowserProxy: TestSiteSettingsPermissionsBrowserProxy;
+  let permissionsBrowserProxy: TestSafetyHubBrowserProxy;
   const notificationElementName =
       'settings-safety-check-notification-permissions';
   const unusedSiteElementName = 'settings-safety-check-unused-site-permissions';
@@ -245,9 +245,8 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     prefsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(prefsBrowserProxy);
-    permissionsBrowserProxy = new TestSiteSettingsPermissionsBrowserProxy();
-    SiteSettingsPermissionsBrowserProxyImpl.setInstance(
-        permissionsBrowserProxy);
+    permissionsBrowserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(permissionsBrowserProxy);
     testRoutes = {
       PRIVACY: new Route('/privacy'),
       BASIC: new Route('/'),

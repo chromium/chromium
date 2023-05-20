@@ -157,8 +157,7 @@ MediaSessionUserAction MediaSessionActionToUserAction(
     case media_session::mojom::MediaSessionAction::kNextSlide:
       return MediaSessionUserAction::kNextSlide;
   }
-  NOTREACHED();
-  return MediaSessionUserAction::kPlay;
+  NOTREACHED_NORETURN();
 }
 
 // If the string is not empty then push it to the back of a vector.

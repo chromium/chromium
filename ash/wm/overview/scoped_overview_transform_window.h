@@ -96,11 +96,11 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   int GetTopInset() const;
 
   // Restores and animates the managed window to its non overview mode state. If
-  // `animate_back` is false, the window will just be restored and not animated.
-  // If |reset_transform| equals false, the window's transform will not be reset
-  // to identity transform when exiting the overview mode. See
-  // OverviewItem::RestoreWindow() for details why we need this.
-  void RestoreWindow(bool reset_transform, bool was_saved_desk_grid_showing);
+  // `animate` is false, the window will just be restored and not animated. If
+  // `reset_transform` equals false, the window's transform will not be reset to
+  // identity transform when exiting the overview mode. See
+  // `OverviewItem::RestoreWindow()` for details why we need this.
+  void RestoreWindow(bool reset_transform, bool animate);
 
   // Prepares for overview mode by doing any necessary actions before entering.
   void PrepareForOverview();

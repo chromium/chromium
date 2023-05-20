@@ -1372,6 +1372,8 @@ std::string UrlRequestDestinationToString(
       return "FENCED_FRAME";
     case ClientSafeBrowsingReportRequest::WEB_IDENTITY:
       return "WEB_IDENTITY";
+    case ClientSafeBrowsingReportRequest::DICTIONARY:
+      return "DICTIONARY";
   }
 }
 

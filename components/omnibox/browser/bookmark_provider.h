@@ -51,12 +51,6 @@ class BookmarkProvider : public AutocompleteProvider {
   // |matches_|.
   void DoAutocomplete(const AutocompleteInput& input);
 
-  // Get the matches from |local_or_syncable_bookmark_model_| using the
-  // appropriate matching algorithm, determined by |GetMatchingAlgorithm()|.
-  std::vector<bookmarks::TitledUrlMatch> GetMatchesWithBookmarkPaths(
-      const AutocompleteInput& input,
-      size_t kMaxBookmarkMatches);
-
   // Allow short input word prefix matching only if the input is longer than 3
   // chars.
   query_parser::MatchingAlgorithm GetMatchingAlgorithm(AutocompleteInput input);
@@ -72,6 +66,7 @@ class BookmarkProvider : public AutocompleteProvider {
 
   const raw_ptr<AutocompleteProviderClient> client_;
   const raw_ptr<bookmarks::BookmarkModel> local_or_syncable_bookmark_model_;
+  const raw_ptr<bookmarks::BookmarkModel> account_bookmark_model_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_BOOKMARK_PROVIDER_H_

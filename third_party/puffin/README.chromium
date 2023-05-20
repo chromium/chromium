@@ -58,3 +58,4 @@ This is an existing bug in the AOSP implementation, will notify the owners.
 subblocks.
 - Removing complete_static_lib = true from libpuffpatch to fix duplicate symbol
 issue in nonembedded android component_updater.
+- Removing logs to reduce chromium binary size.

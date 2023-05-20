@@ -41,7 +41,7 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
   scoped_refptr<Data> GetPublicData() const override;
   void SetCapability(const std::string& path,
                      base::Value proposed_value) override;
-  void MergeDictionary(const base::Value& dict_value) override;
+  void MergeDictionary(const base::Value::Dict& dict) override;
   void AddCapabilitiesObserver(Observer* observer) override;
   void RemoveCapabilitiesObserver(Observer* observer) override;
 

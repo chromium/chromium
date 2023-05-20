@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="VectorRaster"
+    android:width="300dp"
+    android:height="131dp"
+    android:viewportWidth="300"
+    android:viewportHeight="131">
+  <path
+      android:pathData="M139.63,97.5A19.93,19.93 0,0 0,138 99.57h35c-3.72,-5.42 -10.17,-9 -17.5,-9 -4.06,0 -7.85,1.1 -11.06,3.01V97.5h-4.8Z"
+      android:fillColor="#5F6368"/>
+  <path
+      android:pathData="M196.86,65.86c0,-8.44 6.84,-15.29 15.29,-15.29 5.88,0 10.99,3.32 13.55,8.19a8.74,8.74 0,0 1,2.4 -0.33c4.46,0 8.08,3.33 8.08,7.43h-39.31ZM102.56,42.1c0,-6.98 -5.76,-12.64 -12.87,-12.64 -4.9,0 -9.17,2.69 -11.34,6.66a7.58,7.58 0,0 0,-1.26 -0.1c-3.75,0 -6.78,2.72 -6.78,6.08h32.26Z"
+      android:fillColor="#1967D2"/>
+  <path
+      android:pathData="M55,100.4h189M55,100.57h189"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#5F6368"/>
+  <path
+      android:pathData="M97.44,55.5L143.44,55.5A2,2 0,0 1,145.44 57.5L145.44,96.5A2,2 0,0 1,143.44 98.5L97.44,98.5A2,2 0,0 1,95.44 96.5L95.44,57.5A2,2 0,0 1,97.44 55.5z"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#BDC1C6"/>
+  <path
+      android:pathData="M109.44,55.5a2,2 0,0 1,2 2v1h34"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#BDC1C6"/>
+  <path
+      android:pathData="M111.44,56.5h33v2h-33z"
+      android:fillColor="#BDC1C6"/>
+  <path
+      android:pathData="M105.44,69.5h30v12h-30zM105.44,85.5h15v2h-15z"
+      android:fillColor="#1E8E3E"/>
+  <path
+      android:pathData="m176.84,81.64 l6.47,6.47M164.69,86.68c9.49,0 17.19,-7.7 17.19,-17.19 0,-9.49 -7.7,-17.19 -17.19,-17.19 -9.49,0 -17.19,7.7 -17.19,17.19 0,9.49 7.7,17.19 17.19,17.19Z"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:fillColor="#00000000"
+      android:strokeColor="#4285F4"
+      android:strokeLineCap="round"/>
+  <group>
+    <clip-path
+        android:pathData="M164.69,83.61c7.8,0 14.12,-6.32 14.12,-14.12s-6.32,-14.12 -14.12,-14.12c-7.8,0 -14.12,6.32 -14.12,14.12 0,7.8 6.32,14.12 14.12,14.12Z"/>
+    <path
+        android:pathData="M164.69,83.61c7.8,0 14.12,-6.32 14.12,-14.12s-6.32,-14.12 -14.12,-14.12c-7.8,0 -14.12,6.32 -14.12,14.12 0,7.8 6.32,14.12 14.12,14.12Z"
+        android:strokeWidth="4"
+        android:fillColor="#00000000"
+        android:strokeColor="#5F6368"/>
+  </group>
+  <path
+      android:pathData="m182.69,86.32 l-1.18,1.18a1.89,1.89 0,0 0,0 2.67l8.63,8.63a1.89,1.89 0,0 0,2.67 0l1.18,-1.18a1.89,1.89 0,0 0,0 -2.67l-8.63,-8.63a1.89,1.89 0,0 0,-2.67 0Z"
+      android:fillColor="#4285F4"/>
+</vector>

@@ -49,8 +49,8 @@ namespace ash::video_conference {
 namespace {
 
 const int kReturnToAppPanelRadius = 16;
-const int kReturnToAppPanelTopPadding = 12;
-const int kReturnToAppPanelBottomPadding = 8;
+const int kReturnToAppPanelExpandedTopPadding = 12;
+const int kReturnToAppPanelVerticalPadding = 8;
 const int kReturnToAppPanelSidePadding = 16;
 const int kReturnToAppPanelSpacing = 8;
 const int kReturnToAppButtonTopRowSpacing = 12;
@@ -433,14 +433,15 @@ ReturnToAppPanel::ReturnToAppContainer::ReturnToAppContainer()
           kPanelBoundsChangeAnimationDuration,
           gfx::LinearAnimation::kDefaultFrameRate,
           /*delegate=*/this)) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
+  auto flex_layout = std::make_unique<views::FlexLayout>();
+  flex_layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetDefault(views::kMarginsKey,
-                  gfx::Insets::TLBR(0, 0, kReturnToAppPanelSpacing, 0))
-      .SetInteriorMargin(gfx::Insets::TLBR(kReturnToAppPanelTopPadding, 0,
-                                           kReturnToAppPanelBottomPadding, 0));
+                  gfx::Insets::TLBR(0, 0, kReturnToAppPanelSpacing, 0));
+  layout_manager_ = SetLayoutManager(std::move(flex_layout));
+  AdjustLayoutForExpandCollapseState(/*expanded=*/false);
+
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase, kReturnToAppPanelRadius));
 }
@@ -454,6 +455,14 @@ void ReturnToAppPanel::ReturnToAppContainer::StartExpandCollapseAnimation() {
 
   animation_->Start();
   StartRecordAnimationSmoothness(GetWidget(), throughput_tracker_);
+}
+
+void ReturnToAppPanel::ReturnToAppContainer::AdjustLayoutForExpandCollapseState(
+    bool expanded) {
+  layout_manager_->SetInteriorMargin(
+      gfx::Insets::TLBR(expanded ? kReturnToAppPanelExpandedTopPadding
+                                 : kReturnToAppPanelVerticalPadding,
+                        0, kReturnToAppPanelVerticalPadding, 0));
 }
 
 void ReturnToAppPanel::ReturnToAppContainer::AnimationProgressed(
@@ -535,6 +544,7 @@ bool ReturnToAppPanel::IsExpandCollapseAnimationRunning() {
 void ReturnToAppPanel::OnExpandedStateChanged(bool expanded) {
   container_view_->set_height_before_animation(
       container_view_->GetPreferredSize().height());
+  container_view_->AdjustLayoutForExpandCollapseState(expanded);
 
   for (auto* child : container_view_->children()) {
     // Skip the first child since we always show the summary row. Otherwise,

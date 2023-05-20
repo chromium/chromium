@@ -59,7 +59,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/navigation_entry.h"
@@ -180,6 +180,12 @@ ChromeAutocompleteProviderClient::GetTopSites() {
 bookmarks::BookmarkModel*
 ChromeAutocompleteProviderClient::GetLocalOrSyncableBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
+}
+
+bookmarks::BookmarkModel*
+ChromeAutocompleteProviderClient::GetAccountBookmarkModel() {
+  // TODO(crbug.com/1446620): Plumb factory when available.
+  return nullptr;
 }
 
 history::URLDatabase* ChromeAutocompleteProviderClient::GetInMemoryDatabase() {

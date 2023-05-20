@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/skia/include/core/SkColorFilter.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -694,12 +694,10 @@ SkColor4f PendingLayer::ComputeBackgroundColor() const {
   }
   SkColor4f background_color = background_colors.back();
   background_colors.pop_back();
+
   for (const SkColor4f& color : base::Reversed(background_colors)) {
-    if (auto color_filter =
-            SkColorFilters::Blend(color, nullptr, SkBlendMode::kSrcOver)) {
-      background_color =
-          color_filter->filterColor4f(background_color, nullptr, nullptr);
-    }
+    background_color = SkColor4f::FromColor(color_utils::GetResultingPaintColor(
+        color.toSkColor(), background_color.toSkColor()));
   }
   return background_color;
 }

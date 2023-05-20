@@ -26,6 +26,7 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierContent = kSectionIdentifierEnumZero,
 };
@@ -37,6 +38,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSaveCredentials,
   ItemTypeCancel,
 };
+
+const CGFloat kSymbolSize = 15;
+}  // namespace
 
 @interface InfobarPasswordTableViewController () <UITextFieldDelegate>
 // Properties backing InfobarPasswordModalConsumer interface.
@@ -183,7 +187,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
   self.passwordItem.textFieldValue = self.maskedPassword;
   self.passwordItem.identifyingIcon =
-      [UIImage imageNamed:@"infobar_reveal_password_icon"];
+      DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
   self.passwordItem.identifyingIconEnabled = YES;
   self.passwordItem.hideIcon = YES;
   self.passwordItem.identifyingIconAccessibilityLabel = l10n_util::GetNSString(
@@ -366,7 +370,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.passwordMasked = !self.passwordMasked;
   if (self.passwordMasked) {
     self.passwordItem.identifyingIcon =
-        [UIImage imageNamed:@"infobar_reveal_password_icon"];
+        DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
     self.passwordItem.textFieldValue = self.maskedPassword;
     self.passwordItem.identifyingIconAccessibilityLabel =
         l10n_util::GetNSString(
@@ -375,7 +379,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         recordModalEvent:MobileMessagesPasswordsModalEvent::MaskedPassword];
   } else {
     self.passwordItem.identifyingIcon =
-        [UIImage imageNamed:@"infobar_hide_password_icon"];
+        DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize);
     self.passwordItem.textFieldValue = self.unmaskedPassword;
     self.passwordItem.identifyingIconAccessibilityLabel =
         l10n_util::GetNSString(

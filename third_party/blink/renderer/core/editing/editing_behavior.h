@@ -23,6 +23,7 @@
 
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -115,6 +116,13 @@ class CORE_EXPORT EditingBehavior {
   // table, but allows mergin otherwise.
   bool ShouldMergeContentWithTablesOnBackspace() const {
     return type_ == mojom::blink::EditingBehavior::kEditingMacBehavior;
+  }
+
+  // On ChromeOS, tapping the caret should toggle showing/hiding the touch
+  // selection quick menu.
+  bool ShouldToggleMenuWhenCaretTapped() const {
+    return type_ == mojom::blink::EditingBehavior::kEditingChromeOSBehavior &&
+           RuntimeEnabledFeatures::TouchTextEditingRedesignEnabled();
   }
 
   // Support for global selections, used on platforms like the X Window

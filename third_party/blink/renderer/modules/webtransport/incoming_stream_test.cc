@@ -257,7 +257,7 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithoutFin) {
   ScriptPromiseTester result3_tester(script_state, result3);
   result3_tester.WaitUntilSettled();
   EXPECT_TRUE(result3_tester.IsRejected());
-  DOMException* exception = V8DOMException::ToImplWithTypeCheck(
+  DOMException* exception = V8DOMException::ToWrappable(
       scope.GetIsolate(), result3_tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->code(),
@@ -353,7 +353,7 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithoutFin) {
   ScriptPromiseTester result2_tester(script_state, result2);
   result2_tester.WaitUntilSettled();
   EXPECT_TRUE(result2_tester.IsRejected());
-  DOMException* exception = V8DOMException::ToImplWithTypeCheck(
+  DOMException* exception = V8DOMException::ToWrappable(
       scope.GetIsolate(), result2_tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->code(),

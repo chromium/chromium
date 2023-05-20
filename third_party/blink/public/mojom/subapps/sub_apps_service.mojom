@@ -9,7 +9,7 @@ enum SubAppsServiceResultCode {
   kFailure,
 };
 
-// `unhashed_app_id_path` is the sub app id generated according to
+// `manifest_id_path` is the sub app id generated according to
 // https://www.w3.org/TR/appmanifest/#dfn-identity, but only the path component
 // of the full url.
 // `install_url_path` is a path to a page hosting or containing a link to the
@@ -18,12 +18,12 @@ enum SubAppsServiceResultCode {
 // collision in the Android mojo bindings (interface name "SubAppsService" plus
 // method name "Add" plus suffix "Params" create the colliding name).
 struct SubAppsServiceAddParameters {
-  string unhashed_app_id_path;
+  string manifest_id_path;
   string install_url_path;
 };
 
 struct SubAppsServiceAddResult {
-  string unhashed_app_id_path;
+  string manifest_id_path;
   SubAppsServiceResultCode result_code;
 };
 
@@ -33,12 +33,12 @@ struct SubAppsServiceListResult {
 };
 
 struct SubAppsServiceListResultEntry {
-  string unhashed_app_id_path;
+  string manifest_id_path;
   string app_name;
 };
 
 struct SubAppsServiceRemoveResult {
-  string unhashed_app_id_path;
+  string manifest_id_path;
   SubAppsServiceResultCode result_code;
 };
 
@@ -60,5 +60,5 @@ interface SubAppsService {
 
   // Uninstalls the sub-apps represented by the given argument previously
   // installed via the `Add` method by the same app making the current API call.
-  Remove(array<string> unhashed_app_id_paths) => (array<SubAppsServiceRemoveResult> result);
+  Remove(array<string> manifest_id_paths) => (array<SubAppsServiceRemoveResult> result);
 };

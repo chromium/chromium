@@ -1,0 +1,7 @@
+Name: ppv-lite86
+URL: https://crates.io/crates/ppv-lite86
+Description: Implementation of the crypto-simd API for x86
+Version: 0.2.17
+Security Critical: yes
+License: Apache 2.0
+Revision: 325fd94cf15c0abfcc5b4631993b48abcf0f1cf1

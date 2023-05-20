@@ -18,6 +18,10 @@
 // conforming to this protocol.
 - (UIDragItem*)dragItemForItemWithID:(NSString*)itemID;
 
+// Tells the receiver that the drag session will begin for the item with
+// `itemID`.
+- (void)dragWillBeginForItemWithID:(NSString*)itemID;
+
 // Tells the receiver that the drag session did end.
 - (void)dragSessionDidEnd;
 

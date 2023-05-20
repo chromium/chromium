@@ -108,7 +108,7 @@ FormData GetFormData(const FormDescription& d) {
     if (!dd.autocomplete_attribute.empty()) {
       ff.autocomplete_attribute = dd.autocomplete_attribute;
       ff.parsed_autocomplete =
-          ParseAutocompleteAttribute(dd.autocomplete_attribute, ff.max_length);
+          ParseAutocompleteAttribute(dd.autocomplete_attribute);
     }
     if (dd.label)
       ff.label = *dd.label;

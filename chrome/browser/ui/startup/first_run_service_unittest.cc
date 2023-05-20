@@ -224,7 +224,7 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<FirstRunFieldTrialTestParams>& params) {
       return base::StringPrintf(
           "%02.0fpctEntropy%s", params.param.entropy_value * 100,
-          version_info::GetChannelString(params.param.channel).c_str());
+          version_info::GetChannelString(params.param.channel).data());
     });
 
 // Tests to verify the logic for synthetic trial registration that we use to

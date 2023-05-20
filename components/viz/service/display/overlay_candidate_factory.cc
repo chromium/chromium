@@ -386,54 +386,75 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     }
   }
 
-  // The delegate might not support specifying |clip_rect| so if not, apply it
-  // to the |display_rect| and |uv_rect| directly.
-  if (is_delegated_context_ && !supports_clip_rect_) {
-    // A clip rect cannot be applied directly to any rects in content space if
-    // we have a non-axis-aligned transform between content and target space.
-    // There are no platforms that support arbitrary transforms but do not
-    // support clip rects, so we DCHECK here instead of returning an error.
-    DCHECK(absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
-
-    gfx::RectF clip_to_apply = candidate.display_rect;
-
-    auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>();
-    if (rpdq) {
-      auto filter_it = render_pass_filters_->find(rpdq->render_pass_id);
-      if (filter_it != render_pass_filters_->end()) {
-        clip_to_apply =
-            gfx::RectF(GetExpandedRectWithPixelMovingForegroundFilter(
-                *rpdq, *filter_it->second));
+  if (is_delegated_context_) {
+    // Lacros cannot currently delegate clip rects on quads that extend outside
+    // the primary rect. This is because there are bugs that cause the Lacros
+    // window and drop shadow to move incorrectly in that case.
+    bool quad_within_window = primary_rect_.Contains(candidate.display_rect);
+    bool transform_supports_clipping =
+        supports_arbitrary_transform_ ||
+        absl::holds_alternative<gfx::OverlayTransform>(candidate.transform);
+    bool has_content_clipping = quad->visible_rect != quad->rect;
+    bool can_delegate_clipping = supports_clip_rect_ && quad_within_window &&
+                                 transform_supports_clipping &&
+                                 !has_content_clipping;
+    if (can_delegate_clipping) {
+      if (candidate.clip_rect.has_value() && candidate.clip_rect->IsEmpty()) {
+        return CandidateStatus::kFailVisible;
+      }
+    } else {
+      // Apply clipping to the |display_rect| and |uv_rect| directly.
+      auto status = DoGeometricClipping(quad, candidate);
+      if (status != CandidateStatus::kSuccess) {
+        return status;
       }
     }
+  }
 
-    if (candidate.clip_rect.has_value()) {
-      clip_to_apply.Intersect(gfx::RectF(*candidate.clip_rect));
+  return CandidateStatus::kSuccess;
+}
+
+OverlayCandidate::CandidateStatus OverlayCandidateFactory::DoGeometricClipping(
+    const DrawQuad* quad,
+    OverlayCandidate& candidate) const {
+  gfx::RectF clip_to_apply = candidate.display_rect;
+
+  auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>();
+  if (rpdq) {
+    auto filter_it = render_pass_filters_->find(rpdq->render_pass_id);
+    if (filter_it != render_pass_filters_->end()) {
+      clip_to_apply = gfx::RectF(GetExpandedRectWithPixelMovingForegroundFilter(
+          *rpdq, *filter_it->second));
     }
+  }
 
-    // TODO(rivr): Apply the same |visible_rect| and |display_rect| clip logic
-    // when delegating |clip_rect|.
-    if (quad->visible_rect != quad->rect) {
-      auto visible_rect = gfx::RectF(quad->visible_rect);
-      visible_rect = sqs->quad_to_target_transform.MapRect(visible_rect);
-      clip_to_apply.Intersect(visible_rect);
-    }
+  if (candidate.clip_rect.has_value()) {
+    clip_to_apply.Intersect(gfx::RectF(*candidate.clip_rect));
+  }
 
-    // TODO(https://crbug.com/1300552) : Tile quads can overlay other quads
-    // and the window by one pixel. Exo does not yet clip these quads so we
-    // need to clip here with the |primary_rect|.
-    clip_to_apply.Intersect(primary_rect_);
+  // TODO(rivr): Apply the same |visible_rect| and |display_rect| clip logic
+  // when delegating |clip_rect|.
+  if (quad->visible_rect != quad->rect) {
+    auto visible_rect = gfx::RectF(quad->visible_rect);
+    visible_rect =
+        quad->shared_quad_state->quad_to_target_transform.MapRect(visible_rect);
+    clip_to_apply.Intersect(visible_rect);
+  }
 
-    if (clip_to_apply.IsEmpty()) {
-      return CandidateStatus::kFailVisible;
-    }
+  // TODO(https://crbug.com/1300552) : Tile quads can overlay other quads
+  // and the window by one pixel. Exo does not yet clip these quads so we
+  // need to clip here with the |primary_rect|.
+  clip_to_apply.Intersect(primary_rect_);
 
-    // Render passes must be clipped after drawing in 'PrepareRenderPassOverlay'
-    // as filters can expand their display size.
-    if (!rpdq) {
-      OverlayCandidate::ApplyClip(candidate, clip_to_apply);
-      candidate.clip_rect = absl::nullopt;
-    }
+  if (clip_to_apply.IsEmpty()) {
+    return CandidateStatus::kFailVisible;
+  }
+
+  // Render passes must be clipped after drawing in 'PrepareRenderPassOverlay'
+  // as filters can expand their display size.
+  if (!rpdq) {
+    OverlayCandidate::ApplyClip(candidate, clip_to_apply);
+    candidate.clip_rect = absl::nullopt;
   }
 
   return CandidateStatus::kSuccess;

@@ -33,6 +33,9 @@ class FederatedIdentityAccountKeyedPermissionContext
   FederatedIdentityAccountKeyedPermissionContext& operator=(
       const FederatedIdentityAccountKeyedPermissionContext&) = delete;
 
+  // Returns whether the given relying party has any FedCM permission.
+  bool HasPermission(const url::Origin& relying_party_requester);
+
   // Returns whether there is an existing permission for the
   // (relying_party_requester, relying_party_embedder, identity_provider,
   // account_id) tuple. `account_id` can be omitted to represent "sharing

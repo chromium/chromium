@@ -252,15 +252,16 @@ NSArray<NSValue*>* StringRangeInLines(NSAttributedString* attributed_string,
 /// Draws a maximum of `numberOfLines` lines in `requestedRect`.
 - (void)drawMultilineInRect:(CGRect)requestedRect {
   DCHECK(self.isMultilineEnabled);
+
+  const CGFloat lineHeight = self.font.lineHeight;
+  if (!lineHeight || !self.attributedText) {
+    return;
+  }
+
   // Force NSLineBreakByWordWrapping to be able to draw multiple lines.
   NSAttributedString* wrappingString =
       [self attributedString:self.attributedText
            withLineBreakMode:NSLineBreakByWordWrapping];
-
-  const CGFloat lineHeight = self.font.lineHeight;
-  if (!lineHeight) {
-    return;
-  }
 
   NSArray<NSValue*>* stringRangeForLines =
       StringRangeInLines(wrappingString, requestedRect.size.width);

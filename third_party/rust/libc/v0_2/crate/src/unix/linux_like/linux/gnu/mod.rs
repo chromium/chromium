@@ -1240,9 +1240,6 @@ extern "C" {
     pub fn reallocarray(ptr: *mut ::c_void, nmemb: ::size_t, size: ::size_t) -> *mut ::c_void;
 
     pub fn ctermid(s: *mut ::c_char) -> *mut ::c_char;
-}
-
-extern "C" {
     pub fn ioctl(fd: ::c_int, request: ::c_ulong, ...) -> ::c_int;
     pub fn backtrace(buf: *mut *mut ::c_void, sz: ::c_int) -> ::c_int;
     pub fn glob64(
@@ -1331,9 +1328,6 @@ extern "C" {
     /// GNU version of `basename(3)`, defined in `string.h`.
     #[link_name = "basename"]
     pub fn gnu_basename(path: *const ::c_char) -> *mut ::c_char;
-}
-
-extern "C" {
     pub fn dlmopen(lmid: Lmid_t, filename: *const ::c_char, flag: ::c_int) -> *mut ::c_void;
     pub fn dlinfo(handle: *mut ::c_void, request: ::c_int, info: *mut ::c_void) -> ::c_int;
     pub fn dladdr1(
@@ -1343,15 +1337,10 @@ extern "C" {
         flags: ::c_int,
     ) -> ::c_int;
     pub fn malloc_trim(__pad: ::size_t) -> ::c_int;
-}
-
-extern "C" {
     pub fn gnu_get_libc_release() -> *const ::c_char;
     pub fn gnu_get_libc_version() -> *const ::c_char;
-}
 
-// posix/spawn.h
-extern "C" {
+    // posix/spawn.h
     // Added in `glibc` 2.29
     pub fn posix_spawn_file_actions_addchdir_np(
         actions: *mut ::posix_spawn_file_actions_t,
@@ -1372,10 +1361,8 @@ extern "C" {
         actions: *mut ::posix_spawn_file_actions_t,
         tcfd: ::c_int,
     ) -> ::c_int;
-}
 
-// mntent.h
-extern "C" {
+    // mntent.h
     pub fn getmntent_r(
         stream: *mut ::FILE,
         mntbuf: *mut ::mntent,

@@ -8,15 +8,14 @@
  * per-device-keyboard subsection settings in system settings.
  */
 
-import '../../icons.html.js';
-import '../../settings_shared.css.js';
+import '../icons.html.js';
+import '../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '/shared/settings/controls/settings_radio_group.js';
 import '/shared/settings/controls/settings_slider.js';
 import '/shared/settings/controls/settings_toggle_button.js';
-import '../../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import './input_device_settings_shared.css.js';
@@ -35,7 +34,7 @@ import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings, MetaKey} from './input_device_settings_types.js';
 import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
@@ -226,6 +225,11 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private getKeyboardName(): string {
     return this.keyboard.isExternal ? this.keyboard.name :
                                       this.i18n('builtInKeyboardName');
+  }
+
+  private isChromeOsKeyboard(): boolean {
+    return this.keyboard.metaKey === MetaKey.kLauncher ||
+        this.keyboard.metaKey === MetaKey.kSearch;
   }
 }
 

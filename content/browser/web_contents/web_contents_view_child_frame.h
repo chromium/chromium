@@ -24,7 +24,7 @@ class WebContentsViewChildFrame : public WebContentsView,
  public:
   WebContentsViewChildFrame(WebContentsImpl* web_contents,
                             std::unique_ptr<WebContentsViewDelegate> delegate,
-                            RenderViewHostDelegateView** delegate_view);
+                            raw_ptr<RenderViewHostDelegateView>* delegate_view);
 
   WebContentsViewChildFrame(const WebContentsViewChildFrame&) = delete;
   WebContentsViewChildFrame& operator=(const WebContentsViewChildFrame&) =

@@ -152,9 +152,14 @@ class ContentAutofillDriver : public AutofillDriver,
   // autofill::AutofillDriver:
   // These are the non-event functions from autofill::AutofillDriver. The events
   // are defined in the private part below.
+  LocalFrameToken GetFrameToken() const override;
+  absl::optional<LocalFrameToken> Resolve(FrameToken query) override;
+  ContentAutofillDriver* GetParent() override;
   bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
+  bool IsInFencedFrameRoot() const override;
   bool IsPrerendering() const override;
+  bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
   ui::AXTreeID GetAxTreeId() const override;
   bool RendererIsAvailable() override;
@@ -169,24 +174,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // informs the renderer of some event.
   virtual void OnContextMenuShownInField(const FormGlobalId& form_global_id,
                                          const FieldGlobalId& field_global_id);
-
-  // Triggers a reparse of the new forms in the AutofillAgent. This is necessary
-  // when a form is seen in a child frame and it is not known which form is its
-  // parent.
-  //
-  // Generally, this may happen because AutofillAgent is only notified about
-  // newly created form control elements.
-  //
-  // For example, consider a parent frame with a form that contains an <iframe>.
-  // Suppose the parent form is seen (processed by AutofillDriver::FormsSeen())
-  // before the iframe is loaded. Loading a cross-origin page into the iframe
-  // changes the iframe's frame token. Then, the frame token in the parent
-  // form's FormData::child_frames is outdated. When a form is seen in the child
-  // frame, it is not known *which* form in the parent frame is its parent
-  // form. In this scenario, a reparse is triggered.
-  //
-  // Virtual for testing.
-  virtual void TriggerReparse();
 
   // Indicates that the `potentially_submitted_form_` has probably been
   // submitted if the feature AutofillProbableFormSubmissionInBrowser is
@@ -248,9 +235,13 @@ class ContentAutofillDriver : public AutofillDriver,
       const mojom::AutofillState state) override;
   void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) override;
+  void TriggerReparse() override;
   void TriggerReparseInAllFrames(
       base::OnceCallback<void(bool success)> trigger_reparse_finished_callback)
       override;
+  void GetFourDigitCombinationsFromDOM(
+      base::OnceCallback<void(const std::vector<std::string>&)>
+          potential_matches) override;
 
   // mojom::AutofillDriver:
   // Events triggered by the renderer. These events are routed by

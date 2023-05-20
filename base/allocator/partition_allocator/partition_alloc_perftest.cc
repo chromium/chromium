@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_for_testing.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/timer/lap_timer.h"
@@ -100,14 +101,8 @@ class PartitionAllocator : public Allocator {
   void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 
  private:
-  ThreadSafePartitionRoot alloc_{{
-      PartitionOptions::AlignedAlloc::kDisallowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kAllowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+  ThreadSafePartitionRoot alloc_{PartitionOptions{
+      .cookie = PartitionOptions::Cookie::kAllowed,
   }};
 };
 
@@ -132,17 +127,10 @@ class PartitionAllocatorWithThreadCache : public Allocator {
 
  private:
   static constexpr partition_alloc::PartitionOptions kOpts = {
-    PartitionOptions::AlignedAlloc::kDisallowed,
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    PartitionOptions::ThreadCache::kEnabled,
-#else
-    PartitionOptions::ThreadCache::kDisabled,
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    PartitionOptions::Quarantine::kDisallowed,
-    PartitionOptions::Cookie::kAllowed,
-    PartitionOptions::BackupRefPtr::kDisabled,
-    PartitionOptions::BackupRefPtrZapping::kDisabled,
-    PartitionOptions::UseConfigurablePool::kNo,
+    .thread_cache = PartitionOptions::ThreadCache::kEnabled,
+#endif
+    .cookie = PartitionOptions::Cookie::kAllowed,
   };
   PartitionAllocatorForTesting<internal::ThreadSafe, internal::DisallowLeaks>
       allocator_{kOpts};
@@ -174,14 +162,8 @@ class PartitionAllocatorWithAllocationStackTraceRecorder : public Allocator {
 
  private:
   bool const register_hooks_;
-  ThreadSafePartitionRoot alloc_{{
-      PartitionOptions::AlignedAlloc::kDisallowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kAllowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+  ThreadSafePartitionRoot alloc_{PartitionOptions{
+      .cookie = PartitionOptions::Cookie::kAllowed,
   }};
   ::base::allocator::dispatcher::Dispatcher& dispatcher_ =
       ::base::allocator::dispatcher::Dispatcher::GetInstance();

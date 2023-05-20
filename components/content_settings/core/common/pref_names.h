@@ -85,6 +85,8 @@ extern const char kEnableQuietNotificationPermissionUi[];
 extern const char kQuietNotificationPermissionUiEnablingMethod[];
 extern const char kQuietNotificationPermissionUiDisabledTime[];
 
+extern const char kInContextCookieControlsOpened[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kNotificationsVibrateEnabled[];
 extern const char kDesktopSitePeripheralSettingEnabled[];

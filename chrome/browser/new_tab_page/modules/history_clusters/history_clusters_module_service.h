@@ -24,6 +24,7 @@ struct QueryClustersContinuationParams;
 
 class CartService;
 class HistoryClustersModuleRanker;
+class HistoryClustersModuleRankingSignals;
 class OptimizationGuideKeyedService;
 class TemplateURLService;
 
@@ -38,8 +39,9 @@ class HistoryClustersModuleService : public KeyedService {
       OptimizationGuideKeyedService* optimization_guide_keyed_service);
   ~HistoryClustersModuleService() override;
 
-  using GetClustersCallback =
-      base::OnceCallback<void(std::vector<history::Cluster>)>;
+  using GetClustersCallback = base::OnceCallback<void(
+      std::vector<history::Cluster>,
+      base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>;
 
   // Queries clusters and invokes `callback` when clusters are ready.
   //
@@ -63,8 +65,11 @@ class HistoryClustersModuleService : public KeyedService {
       history_clusters::QueryClustersContinuationParams continuation_params);
 
   // Callback invoked when `module_ranker_` returns ranked clusters.
-  void OnGetRankedClusters(GetClustersCallback callback,
-                           std::vector<history::Cluster> clusters);
+  void OnGetRankedClusters(
+      GetClustersCallback callback,
+      std::vector<history::Cluster> clusters,
+      base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
+          ranking_signals);
 
   // The filtering parameters to use for all calls to fetch clusters.
   const history_clusters::QueryClustersFilterParams filter_params_;

@@ -406,7 +406,7 @@ void BrowserFrameViewWin::ResetWindowControls() {
 void BrowserFrameViewWin::OnThemeChanged() {
   BrowserNonClientFrameView::OnThemeChanged();
   if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
-    SetSystemTitlebarAttributes();
+    SetSystemMicaTitlebarAttributes();
   }
 }
 
@@ -632,26 +632,24 @@ bool BrowserFrameViewWin::ShouldShowWindowTitle(TitlebarType type) const {
 
 void BrowserFrameViewWin::TabletModeChanged() {
   if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
-    SetSystemTitlebarAttributes();
+    SetSystemMicaTitlebarAttributes();
   }
 }
 
-void BrowserFrameViewWin::SetSystemTitlebarAttributes() {
-  if (SystemTitlebarSupportsDarkMode()) {
-    const BOOL dark_titlebar_enabled = GetNativeTheme()->ShouldUseDarkColors();
-    DwmSetWindowAttribute(views::HWNDForWidget(frame()),
-                          DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_titlebar_enabled,
-                          sizeof(dark_titlebar_enabled));
-  }
+void BrowserFrameViewWin::SetSystemMicaTitlebarAttributes() {
+  CHECK(SystemTitlebarCanUseMicaMaterial());
 
-  if (ShouldBrowserUseMicaTitlebar(browser_view())) {
-    const DWM_SYSTEMBACKDROP_TYPE dwm_backdrop_type =
-        browser_view()->GetTabStripVisible() ? DWMSBT_TABBEDWINDOW
-                                             : DWMSBT_MAINWINDOW;
-    DwmSetWindowAttribute(views::HWNDForWidget(frame()),
-                          DWMWA_SYSTEMBACKDROP_TYPE, &dwm_backdrop_type,
-                          sizeof(dwm_backdrop_type));
-  }
+  const BOOL dark_titlebar_enabled = GetNativeTheme()->ShouldUseDarkColors();
+  DwmSetWindowAttribute(views::HWNDForWidget(frame()),
+                        DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_titlebar_enabled,
+                        sizeof(dark_titlebar_enabled));
+
+  const DWM_SYSTEMBACKDROP_TYPE dwm_backdrop_type =
+      browser_view()->GetTabStripVisible() ? DWMSBT_TABBEDWINDOW
+                                           : DWMSBT_MAINWINDOW;
+  DwmSetWindowAttribute(views::HWNDForWidget(frame()),
+                        DWMWA_SYSTEMBACKDROP_TYPE, &dwm_backdrop_type,
+                        sizeof(dwm_backdrop_type));
 }
 
 SkColor BrowserFrameViewWin::GetTitlebarColor() const {

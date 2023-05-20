@@ -83,7 +83,11 @@ const stateValues =
  * Asserts input string is valid state.
  */
 export function assertState(s: string): StateUnion {
+  // This is to workaround current TypeScript limitation on Set.has.
+  // See https://github.com/microsoft/TypeScript/issues/26255
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   assert((stateValues as Set<string>).has(s), `No such state: ${s}`);
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return s as StateUnion;
 }
 

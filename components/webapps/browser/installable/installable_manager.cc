@@ -688,6 +688,9 @@ bool InstallableManager::IsManifestValidForWebApp(
   if (!manifest.start_url.is_valid()) {
     valid_manifest_->errors.push_back(START_URL_NOT_VALID);
     is_valid = false;
+  } else {
+    // If the start_url is valid, the id must be valid.
+    CHECK(manifest.id.is_valid());
   }
 
   if ((!manifest.name || manifest.name->empty()) &&

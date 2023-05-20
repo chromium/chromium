@@ -333,6 +333,15 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
                      std::move(callback), std::move(error_callback));
 }
 
+void ManagedNetworkConfigurationHandlerImpl::ClearShillProperties(
+    const std::string& service_path,
+    const std::vector<std::string>& names,
+    base::OnceClosure callback,
+    network_handler::ErrorCallback error_callback) {
+  network_configuration_handler_->ClearShillProperties(
+      service_path, names, std::move(callback), std::move(error_callback));
+}
+
 void ManagedNetworkConfigurationHandlerImpl::SetManagedActiveProxyValues(
     const std::string& guid,
     base::Value::Dict* dictionary) {

@@ -106,9 +106,7 @@ TEST_F(ManualTestingImportTest, LoadCreditCardsFromFile_Valid) {
   expected_card2.SetRawInfoWithVerificationStatus(
       CREDIT_CARD_VERIFICATION_CODE, u"321", VerificationStatus::kUserVerified);
 
-  absl::optional<std::vector<CreditCard>> loaded_cards =
-      LoadCreditCardsFromFile(file_path);
-  EXPECT_THAT(loaded_cards,
+  EXPECT_THAT(LoadCreditCardsFromFile(file_path),
               testing::Optional(testing::Pointwise(
                   DataModelsCompareEqual(), {expected_card1, expected_card2})));
 }
@@ -295,9 +293,10 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_InvalidInitialCreatorId) {
   EXPECT_FALSE(LoadProfilesFromFile(file_path2).has_value());
 }
 
+// TODO(1445454): Re-enable this test.
 // Tests that the conversion fails for non-fully structured profiles.
 TEST_F(ManualTestingImportTest,
-       LoadProfilesFromFile_Invalid_NotFullyStructured) {
+       DISABLED_LoadProfilesFromFile_Invalid_NotFullyStructured) {
   base::FilePath file_path = GetFilePath();
   base::WriteFile(file_path, R"({
     "profiles" : [

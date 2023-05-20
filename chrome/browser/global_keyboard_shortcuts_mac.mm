@@ -24,6 +24,10 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Returns a ui::Accelerator given a KeyboardShortcutData.
@@ -170,16 +174,15 @@ const std::vector<NSMenuItem*>& GetMenuItemsNotPresentInMainMenu() {
     std::vector<NSMenuItem*> menu_items;
     for (const auto& shortcut : GetShortcutsNotPresentInMainMenu()) {
       ui::Accelerator accelerator = AcceleratorFromShortcut(shortcut);
-      NSString* key_equivalent = nil;
-      NSUInteger modifier_mask = 0;
-      ui::GetKeyEquivalentAndModifierMaskFromAccelerator(
-          accelerator, &key_equivalent, &modifier_mask);
+      KeyEquivalentAndModifierMask* equivalent =
+          ui::GetKeyEquivalentAndModifierMaskFromAccelerator(accelerator);
 
       // Intentionally leaked!
-      NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@""
-                                                    action:nullptr
-                                             keyEquivalent:key_equivalent];
-      item.keyEquivalentModifierMask = modifier_mask;
+      NSMenuItem* item =
+          [[NSMenuItem alloc] initWithTitle:@""
+                                     action:nullptr
+                              keyEquivalent:equivalent.keyEquivalent];
+      item.keyEquivalentModifierMask = equivalent.modifierMask;
 
       // We store the command in the tag.
       item.tag = shortcut.chrome_command;

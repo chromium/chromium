@@ -24,9 +24,9 @@ BUILD_CONFIG_OUT_DIRECTORY = 'out_directory'
 METRICS_COUNT = 'COUNT'
 METRICS_COUNT_RELOCATIONS = 'Relocations'
 METRICS_SIZE = 'SIZE'
+METRICS_SIZE_APK_FILE = 'APK File'
 
 METADATA_APK_FILENAME = 'apk_file_name'  # Path relative to output_directory.
-METADATA_APK_SIZE = 'apk_size'  # File size of apk in bytes.
 METADATA_APK_SPLIT_NAME = 'apk_split_name'  # Name of the split if applicable.
 METADATA_ZIPALIGN_OVERHEAD = 'zipalign_padding'  # Overhead from zipalign.
 METADATA_SIGNING_BLOCK_SIZE = 'apk_signature_block_size'  # Size in bytes.
@@ -374,6 +374,7 @@ class SizeInfo(BaseSizeInfo):
   """
   __slots__ = (
       'size_path',
+      'is_sparse',
   )
 
   def __init__(self,
@@ -381,9 +382,11 @@ class SizeInfo(BaseSizeInfo):
                containers,
                raw_symbols,
                symbols=None,
-               size_path=None):
+               size_path=None,
+               is_sparse=False):
     super().__init__(build_config, containers, raw_symbols, symbols=symbols)
     self.size_path = size_path
+    self.is_sparse = is_sparse
 
   @property
   def metadata_legacy(self):
@@ -415,6 +418,10 @@ class DeltaSizeInfo(BaseSizeInfo):
     super().__init__(None, containers, raw_symbols)
     self.before = before
     self.after = after
+
+  @property
+  def is_sparse(self):
+    return self.before.is_sparse and self.after.is_sparse
 
 
 class BaseSymbol:

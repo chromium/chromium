@@ -14,7 +14,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/update_client/activity_data_service.h"
-#include "components/update_client/buildflags.h"
 
 namespace update_client {
 
@@ -25,11 +24,7 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("protocol", request.protocol_version);
   request_node.Set("ismachine", request.is_machine);
   request_node.Set("dedup", "cr");
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
   request_node.Set("acceptformat", "crx3,puff");
-#else
-  request_node.Set("acceptformat", "crx3");
-#endif
   if (!request.additional_attributes.empty()) {
     for (const auto& attr : request.additional_attributes)
       request_node.Set(attr.first, attr.second);

@@ -9,11 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "remoting/base/host_settings.h"
-
-namespace base {
-class Value;
-}
 
 namespace remoting {
 
@@ -45,7 +42,7 @@ class FileHostSettings final : public HostSettings {
 
   // TODO(yuweih): This needs to be guarded with a lock if we detect changes of
   // the settings file.
-  std::unique_ptr<base::Value> settings_;
+  absl::optional<base::Value::Dict> settings_;
 };
 
 }  // namespace remoting

@@ -59,7 +59,7 @@ namespace ui_test_utils {
 //    Navigation
 enum BrowserTestWaitFlags {
   // Don't wait for anything.
-  BROWSER_TEST_NONE = 0,
+  BROWSER_TEST_NO_WAIT = 0,
   // Wait for a new browser.
   BROWSER_TEST_WAIT_FOR_BROWSER = 1 << 0,
   // Wait for a new tab.

@@ -85,6 +85,9 @@ pub const SO_BINDTOIFINDEX: ::c_int = 62;
 // pub const SO_PREFER_BUSY_POLL: ::c_int = 69;
 // pub const SO_BUSY_POLL_BUDGET: ::c_int = 70;
 
+pub const FICLONE: ::c_ulong = 0x80049409;
+pub const FICLONERANGE: ::c_ulong = 0x8020940D;
+
 // Defined in unix/linux_like/mod.rs
 // pub const SCM_TIMESTAMP: ::c_int = SO_TIMESTAMP;
 pub const SCM_TIMESTAMPNS: ::c_int = SO_TIMESTAMPNS;

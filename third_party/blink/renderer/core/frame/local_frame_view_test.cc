@@ -213,7 +213,8 @@ TEST_F(LocalFrameViewTest,
   SetBodyInnerHTML(R"HTML(
     <style>
       .fixed-background {
-        background: linear-gradient(blue, red) fixed;
+        background: linear-gradient(blue, red) fixed,
+                    linear-gradient(white, black) local;
       }
     </style>
     <div id="div" style="width: 5000px; height: 5000px"></div>

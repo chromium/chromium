@@ -39,6 +39,10 @@ namespace viz {
 class VulkanContextProvider;
 }  // namespace viz
 
+namespace skgpu::graphite {
+struct InsertRecordingInfo;
+}  // namespace skgpu::graphite
+
 namespace gpu {
 
 #if BUILDFLAG(ENABLE_VULKAN)

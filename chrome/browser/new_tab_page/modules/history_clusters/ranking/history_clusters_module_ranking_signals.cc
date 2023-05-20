@@ -4,9 +4,12 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 
+#include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 HistoryClustersModuleRankingSignals::HistoryClustersModuleRankingSignals(
     const std::vector<CartDB::KeyAndValue>& active_carts,
@@ -37,7 +40,8 @@ HistoryClustersModuleRankingSignals::HistoryClustersModuleRankingSignals(
               visit.normalized_url,
               net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
       for (auto cart : active_carts) {
-        if (cart.first == visit_tld) {
+        if (CartProcessor::IsCartAssociatedWithVisitURL(cart,
+                                                        visit.normalized_url)) {
           cart_tlds.insert(visit_tld);
         }
       }
@@ -54,3 +58,15 @@ HistoryClustersModuleRankingSignals::~HistoryClustersModuleRankingSignals() =
     default;
 HistoryClustersModuleRankingSignals::HistoryClustersModuleRankingSignals(
     const HistoryClustersModuleRankingSignals&) = default;
+
+void HistoryClustersModuleRankingSignals::PopulateUkmEntry(
+    ukm::builders::NewTabPage_HistoryClusters* ukm_entry_builder) const {
+  ukm_entry_builder->SetMinutesSinceMostRecentVisit(
+      ukm::GetExponentialBucketMin(duration_since_most_recent_visit.InMinutes(),
+                                   /*bucket_spacing=*/1.3));
+  ukm_entry_builder->SetBelongsToBoostedCategory(belongs_to_boosted_category);
+  ukm_entry_builder->SetNumVisitsWithImage(num_visits_with_image);
+  ukm_entry_builder->SetNumTotalVisits(num_total_visits);
+  ukm_entry_builder->SetNumUniqueHosts(num_unique_hosts);
+  ukm_entry_builder->SetNumAbandonedCarts(num_abandoned_carts);
+}

@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-
-import com.google.common.collect.ImmutableMap;
 
 import org.chromium.base.FieldTrialList;
 import org.chromium.base.annotations.CalledByNative;
@@ -42,106 +39,23 @@ import java.util.Map;
  * value in shared preferences.
  */
 public class CachedFeatureFlags {
-    /**
-     * Non-dynamic preference keys used historically for specific features.
-     *
-     * Do not add new values to this list. To add a new cached feature flag, just follow the
-     * instructions in the class javadoc.
-     */
-    private static final Map<String, String> sNonDynamicPrefKeys =
-            ImmutableMap.<String, String>builder()
-                    .put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED,
-                            ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED)
-                    .put(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
-                            ChromePreferenceKeys
-                                    .FLAGS_CACHED_SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT)
-                    .put(ChromeFeatureList.START_SURFACE_ANDROID,
-                            ChromePreferenceKeys.FLAGS_CACHED_START_SURFACE_ENABLED)
-                    .put(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                            ChromePreferenceKeys.FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED)
-                    .put(ChromeFeatureList.TAB_GROUPS_ANDROID,
-                            ChromePreferenceKeys.FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED)
-                    .build();
-
-    private static ValuesReturned sValuesReturned = new ValuesReturned();
     private static ValuesOverridden sValuesOverridden = new ValuesOverridden();
-    private static CachedFlagsSafeMode sSafeMode = new CachedFlagsSafeMode();
 
     private static String sReachedCodeProfilerTrialGroup;
 
-    /**
-     * Rules from highest to lowest priority:
-     * 1. If the flag has been forced by @EnableFeatures/@DisableFeatures or
-     *    {@link CachedFlag#setForTesting}, the forced value is returned.
-     * 2. If a value was previously returned in the same run, the same value is returned for
-     *    consistency.
-     * 3. If native is loaded, the value from {@link ChromeFeatureList} is returned.
-     * 4. If in a previous run, the value from {@link ChromeFeatureList} was cached to SharedPrefs,
-     *    it is returned.
-     * 5. The default value passed as a parameter is returned.
-     */
     @CalledByNative
     @AnyThread
-    static boolean isEnabled(String featureName, boolean defaultValue) {
-        sSafeMode.onFlagChecked();
+    static boolean isEnabled(String featureName) {
+        CachedFlag cachedFlag = ChromeFeatureList.sAllCachedFlags.get(featureName);
+        assert cachedFlag != null;
 
-        String preferenceName = getPrefForFeatureFlag(featureName);
-
-        Boolean flag;
-        synchronized (sValuesReturned.boolValues) {
-            flag = sValuesReturned.boolValues.get(preferenceName);
-            if (flag != null) {
-                return flag;
-            }
-
-            flag = sSafeMode.isEnabled(featureName, preferenceName, defaultValue);
-            if (flag == null) {
-                SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
-                if (prefs.contains(preferenceName)) {
-                    flag = prefs.readBoolean(preferenceName, false);
-                } else {
-                    flag = defaultValue;
-                }
-            }
-
-            sValuesReturned.boolValues.put(preferenceName, flag);
-        }
-        return flag;
-    }
-
-    /**
-     * Caches the value of a feature from {@link ChromeFeatureList} to SharedPrefs.
-     *
-     * @param featureName the feature name from ChromeFeatureList.
-     */
-    static void cacheFeature(String featureName) {
-        String preferenceName = getPrefForFeatureFlag(featureName);
-        boolean isEnabledInNative = ChromeFeatureList.isEnabled(featureName);
-        SharedPreferencesManager.getInstance().writeBoolean(preferenceName, isEnabledInNative);
-    }
-
-    /**
-     * Forces a feature to be enabled or disabled for testing.
-     *
-     * Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations or
-     *      {@link CachedFlag#setForTesting(Boolean)} instead.
-     *
-     * @param featureName the feature name from ChromeFeatureList.
-     * @param value the value that {@link CachedFlag#isEnabled()} will be forced to return. If null,
-     *     remove any values previously forced.
-     */
-    static void setForTesting(String featureName, @Nullable Boolean value) {
-        String preferenceName = getPrefForFeatureFlag(featureName);
-        synchronized (sValuesReturned.boolValues) {
-            sValuesReturned.boolValues.put(preferenceName, value);
-        }
+        return cachedFlag.isEnabled();
     }
 
     /**
      * Sets the feature flags to use in JUnit and instrumentation tests.
      *
-     * Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations or
-     *      {@link CachedFlag#setForTesting(Boolean)} instead.
+     * Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations instead.
      */
     @VisibleForTesting
     public static void setFeaturesForTesting(Map<String, Boolean> features) {
@@ -149,9 +63,7 @@ public class CachedFeatureFlags {
 
         sValuesOverridden.enableOverrides();
 
-        for (Map.Entry<String, Boolean> entry : features.entrySet()) {
-            setForTesting(entry.getKey(), entry.getValue());
-        }
+        CachedFlag.setFeaturesForTesting(features);
     }
 
     /**
@@ -171,7 +83,7 @@ public class CachedFeatureFlags {
      */
     public static void cacheAdditionalNativeFlags() {
         cacheNetworkServiceWarmUpEnabled();
-        sSafeMode.cacheSafeModeForCachedFlagsEnabled();
+        CachedFlagsSafeMode.getInstance().cacheSafeModeForCachedFlagsEnabled();
         cacheReachedCodeProfilerTrialGroup();
 
         // Propagate REACHED_CODE_PROFILER feature value to LibraryLoader. This can't be done in
@@ -258,156 +170,140 @@ public class CachedFeatureFlags {
      * Call when entering an initialization flow that should result in caching flags.
      */
     public static void onStartOrResumeCheckpoint() {
-        sSafeMode.onStartOrResumeCheckpoint();
+        CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
     }
 
     /**
      * Call when aborting an initialization flow that would have resulted in caching flags.
      */
     public static void onPauseCheckpoint() {
-        sSafeMode.onPauseCheckpoint();
+        CachedFlagsSafeMode.getInstance().onPauseCheckpoint();
     }
 
     /**
      * Call when finishing an initialization flow with flags having been cached successfully.
      */
     public static void onEndCheckpoint() {
-        sSafeMode.onEndCheckpoint(sValuesReturned);
+        CachedFlagsSafeMode.getInstance().onEndCheckpoint();
     }
 
     public static @CachedFlagsSafeMode.Behavior int getSafeModeBehaviorForTesting() {
-        return sSafeMode.getBehaviorForTesting();
+        return CachedFlagsSafeMode.getInstance().getBehaviorForTesting();
     }
 
     @AnyThread
     static boolean getConsistentBooleanValue(String preferenceName, boolean defaultValue) {
-        sSafeMode.onFlagChecked();
+        CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         if (sValuesOverridden.isEnabled()) {
             return sValuesOverridden.getBool(preferenceName, defaultValue);
         }
 
         Boolean value;
-        synchronized (sValuesReturned.boolValues) {
-            value = sValuesReturned.boolValues.get(preferenceName);
+        synchronized (ValuesReturned.sBoolValues) {
+            value = ValuesReturned.sBoolValues.get(preferenceName);
             if (value != null) {
                 return value;
             }
 
-            value = sSafeMode.getBooleanFieldTrialParam(preferenceName, defaultValue);
+            value = CachedFlagsSafeMode.getInstance().getBooleanFieldTrialParam(
+                    preferenceName, defaultValue);
             if (value == null) {
                 value = SharedPreferencesManager.getInstance().readBoolean(
                         preferenceName, defaultValue);
             }
 
-            sValuesReturned.boolValues.put(preferenceName, value);
+            ValuesReturned.sBoolValues.put(preferenceName, value);
         }
         return value;
     }
 
     @AnyThread
     static String getConsistentStringValue(String preferenceName, String defaultValue) {
-        sSafeMode.onFlagChecked();
+        CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         if (sValuesOverridden.isEnabled()) {
             return sValuesOverridden.getString(preferenceName, defaultValue);
         }
 
         String value;
-        synchronized (sValuesReturned.stringValues) {
-            value = sValuesReturned.stringValues.get(preferenceName);
+        synchronized (ValuesReturned.sStringValues) {
+            value = ValuesReturned.sStringValues.get(preferenceName);
             if (value != null) {
                 return value;
             }
 
-            value = sSafeMode.getStringFieldTrialParam(preferenceName, defaultValue);
+            value = CachedFlagsSafeMode.getInstance().getStringFieldTrialParam(
+                    preferenceName, defaultValue);
             if (value == null) {
                 value = SharedPreferencesManager.getInstance().readString(
                         preferenceName, defaultValue);
             }
 
-            sValuesReturned.stringValues.put(preferenceName, value);
+            ValuesReturned.sStringValues.put(preferenceName, value);
         }
         return value;
     }
 
     @AnyThread
     static int getConsistentIntValue(String preferenceName, int defaultValue) {
-        sSafeMode.onFlagChecked();
+        CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         if (sValuesOverridden.isEnabled()) {
             return sValuesOverridden.getInt(preferenceName, defaultValue);
         }
 
         Integer value;
-        synchronized (sValuesReturned.intValues) {
-            value = sValuesReturned.intValues.get(preferenceName);
+        synchronized (ValuesReturned.sIntValues) {
+            value = ValuesReturned.sIntValues.get(preferenceName);
             if (value != null) {
                 return value;
             }
 
-            value = sSafeMode.getIntFieldTrialParam(preferenceName, defaultValue);
+            value = CachedFlagsSafeMode.getInstance().getIntFieldTrialParam(
+                    preferenceName, defaultValue);
             if (value == null) {
                 value = SharedPreferencesManager.getInstance().readInt(
                         preferenceName, defaultValue);
             }
 
-            sValuesReturned.intValues.put(preferenceName, value);
+            ValuesReturned.sIntValues.put(preferenceName, value);
         }
         return value;
     }
 
     @AnyThread
     static double getConsistentDoubleValue(String preferenceName, double defaultValue) {
-        sSafeMode.onFlagChecked();
+        CachedFlagsSafeMode.getInstance().onFlagChecked();
 
         if (sValuesOverridden.isEnabled()) {
             return sValuesOverridden.getDouble(preferenceName, defaultValue);
         }
 
         Double value;
-        synchronized (sValuesReturned.doubleValues) {
-            value = sValuesReturned.doubleValues.get(preferenceName);
+        synchronized (ValuesReturned.sDoubleValues) {
+            value = ValuesReturned.sDoubleValues.get(preferenceName);
             if (value != null) {
                 return value;
             }
 
-            value = sSafeMode.getDoubleFieldTrialParam(preferenceName, defaultValue);
+            value = CachedFlagsSafeMode.getInstance().getDoubleFieldTrialParam(
+                    preferenceName, defaultValue);
             if (value == null) {
                 value = SharedPreferencesManager.getInstance().readDouble(
                         preferenceName, defaultValue);
             }
 
-            sValuesReturned.doubleValues.put(preferenceName, value);
+            ValuesReturned.sDoubleValues.put(preferenceName, value);
         }
         return value;
     }
 
-    @AnyThread
-    private static String getPrefForFeatureFlag(String featureName) {
-        String legacyPrefKey = sNonDynamicPrefKeys.get(featureName);
-        if (legacyPrefKey == null) {
-            return ChromePreferenceKeys.FLAGS_CACHED.createKey(featureName);
-        } else {
-            return legacyPrefKey;
-        }
-    }
-
     @VisibleForTesting
     public static void resetFlagsForTesting() {
-        sValuesReturned.clearForTesting();
+        ValuesReturned.clearForTesting();
         sValuesOverridden.removeOverrides();
-        sSafeMode.clearMemoryForTesting();
-    }
-
-    @VisibleForTesting
-    public static void resetDiskForTesting() {
-        SharedPreferencesManager.getInstance().removeKeysWithPrefix(
-                ChromePreferenceKeys.FLAGS_CACHED);
-        for (Map.Entry<String, String> e : sNonDynamicPrefKeys.entrySet()) {
-            String prefKey = e.getValue();
-            SharedPreferencesManager.getInstance().removeKey(prefKey);
-        }
+        CachedFlagsSafeMode.getInstance().clearMemoryForTesting();
     }
 
     @VisibleForTesting
@@ -417,7 +313,7 @@ public class CachedFeatureFlags {
 
     @VisibleForTesting
     static void setSafeModeExperimentEnabledForTesting(Boolean value) {
-        sSafeMode.setExperimentEnabledForTesting(value);
+        CachedFlagsSafeMode.getInstance().setExperimentEnabledForTesting(value);
     }
 
     @NativeMethods

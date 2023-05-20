@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -56,8 +57,9 @@ XrResult OpenXrPlatformHelper::CreateInstance(
       << "Each Process is only allowed one XrInstance at a time";
   XrInstanceCreateInfo instance_create_info = {XR_TYPE_INSTANCE_CREATE_INFO};
 
-  std::string application_name = version_info::GetProductName() + " " +
-                                 version_info::GetMajorVersionNumber();
+  std::string application_name =
+      base::StrCat({version_info::GetProductName(), " ",
+                    version_info::GetMajorVersionNumber()});
   size_t dest_size =
       std::size(instance_create_info.applicationInfo.applicationName);
   size_t src_size =
@@ -136,6 +138,8 @@ XrResult OpenXrPlatformHelper::CreateInstance(
 
   if (create_info.has_value()) {
     instance_create_info.next = GetPlatformCreateInfo(create_info.value());
+  } else if (BUILDFLAG(IS_ANDROID)) {
+    LOG(ERROR) << "Android was missing CreateInfo";
   }
 
   XrResult result = xrCreateInstance(&instance_create_info, instance);

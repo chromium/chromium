@@ -853,8 +853,7 @@ void OverviewGrid::RemoveAllItemsForSavedDeskLaunch() {
 
     for (auto& item : window_list_) {
       item->RevertHideForSavedDeskLibrary(/*animate=*/false);
-      item->RestoreWindow(/*reset_transform=*/true,
-                          /*was_saved_desk_library_showing=*/true);
+      item->RestoreWindow(/*reset_transform=*/true, /*animate=*/false);
     }
   }
   window_list_.clear();

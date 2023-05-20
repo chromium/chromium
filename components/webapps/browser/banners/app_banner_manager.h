@@ -15,6 +15,7 @@
 #include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/pwa_install_path_tracker.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -458,6 +459,10 @@ class AppBannerManager : public content::WebContentsObserver,
 
   // Fetches the data required to display a banner for the current page.
   raw_ptr<InstallableManager, DanglingUntriaged> manager_;
+
+  // Measures site UKMs once the AppBannerManager triggers a pipeline and
+  // triggers a ML model to promote installability of an app.
+  raw_ptr<MLInstallabilityPromoter, DanglingUntriaged> ml_promoter_;
 
   // The manifest object. This is never null, it will instead be an empty
   // manifest so callers don't have to worry about null checks.

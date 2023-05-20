@@ -8,6 +8,8 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/system_dialog_delegate_view.h"
+#include "ash/style/typography.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
@@ -15,10 +17,12 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/env.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -29,6 +33,8 @@ namespace ash {
 
 namespace {
 
+constexpr int kUnsupportedAppsViewSpacing = 8;
+
 std::u16string GetStringWithQuotes(const std::u16string& str) {
   return u"\"" + str + u"\"";
 }
@@ -36,15 +42,12 @@ std::u16string GetStringWithQuotes(const std::u16string& str) {
 }  // namespace
 
 // The client view of the dialog. Contains a label which is a description, and
-// optionally a couple images of unsupported apps. This dialog will block the
-// entire system.
+// optionally a couple images of unsupported apps.
 class SavedDeskDialog : public views::DialogDelegateView {
  public:
   METADATA_HEADER(SavedDeskDialog);
 
   SavedDeskDialog() {
-    SetModalType(ui::MODAL_TYPE_SYSTEM);
-    SetShowCloseButton(false);
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(IDS_APP_CANCEL));
 
@@ -118,8 +121,9 @@ namespace ash {
 SavedDeskDialogController::SavedDeskDialogController() = default;
 
 SavedDeskDialogController::~SavedDeskDialogController() {
-  if (dialog_widget_ && !dialog_widget_->IsClosed())
+  if (dialog_widget_ && !dialog_widget_->IsClosed()) {
     dialog_widget_->CloseNow();
+  }
 }
 
 void SavedDeskDialogController::ShowUnsupportedAppsDialog(
@@ -149,39 +153,84 @@ void SavedDeskDialogController::ShowUnsupportedAppsDialog(
         IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_DIALOG_DESCRIPTION;
   }
 
-  auto dialog =
-      views::Builder<SavedDeskDialog>()
-          .SetTitleText(
-              unsupported_apps_template_->type() == DeskTemplateType::kTemplate
-                  ? IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_TEMPLATE_DIALOG_TITLE
-                  : IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_DESK_DIALOG_TITLE)
-          .SetConfirmButtonText(
-              IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_CONFIRM_BUTTON)
-          .SetDescriptionText(l10n_util::GetStringUTF16(app_description_id))
-          .SetCancelCallback(base::BindOnce(
-              &SavedDeskDialogController::OnUserCanceledUnsupportedAppsDialog,
-              weak_ptr_factory_.GetWeakPtr()))
-          .SetCloseCallback(base::BindOnce(
-              &SavedDeskDialogController::OnUserCanceledUnsupportedAppsDialog,
-              weak_ptr_factory_.GetWeakPtr()))
-          .SetAcceptCallback(base::BindOnce(
-              &SavedDeskDialogController::OnUserAcceptedUnsupportedAppsDialog,
-              weak_ptr_factory_.GetWeakPtr()))
-          .AddChildren(
-              views::Builder<views::Label>()
-                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
-                                             gfx::Font::Weight::MEDIUM))
-                  .SetEnabledColor(
-                      AshColorProvider::Get()->GetContentLayerColor(
-                          AshColorProvider::ContentLayerType::
-                              kTextColorPrimary))
-                  .SetText(l10n_util::GetStringUTF16(
-                      IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER)),
-              views::Builder<SavedDeskIconContainer>()
-                  .PopulateIconContainerFromWindows(unsupported_apps))
-          .Build();
-  CreateDialogWidget(std::move(dialog), root_window);
+  if (chromeos::features::IsJellyEnabled()) {
+    auto unsupported_apps_view = std::make_unique<views::BoxLayoutView>();
+    unsupported_apps_view->SetOrientation(
+        views::BoxLayout::Orientation::kVertical);
+    unsupported_apps_view->SetBetweenChildSpacing(kUnsupportedAppsViewSpacing);
+
+    auto label_view = std::make_unique<views::Label>();
+    label_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *label_view);
+    label_view->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    label_view->SetText(l10n_util::GetStringUTF16(
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER));
+    unsupported_apps_view->AddChildView(std::move(label_view));
+
+    auto icon_container_view = std::make_unique<SavedDeskIconContainer>();
+    icon_container_view->PopulateIconContainerFromWindows(unsupported_apps);
+    unsupported_apps_view->AddChildView(std::move(icon_container_view));
+    auto dialog =
+        views::Builder<SystemDialogDelegateView>()
+            .SetTitleText(l10n_util::GetStringUTF16(
+                unsupported_apps_template_->type() ==
+                        DeskTemplateType::kTemplate
+                    ? IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_TEMPLATE_DIALOG_TITLE
+                    : IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_DESK_DIALOG_TITLE))
+            .SetAcceptButtonText(l10n_util::GetStringUTF16(
+                IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_CONFIRM_BUTTON))
+            .SetDescription(l10n_util::GetStringUTF16(app_description_id))
+            .SetCancelCallback(base::BindOnce(
+                &SavedDeskDialogController::OnUserCanceledUnsupportedAppsDialog,
+                weak_ptr_factory_.GetWeakPtr()))
+            .SetCloseCallback(base::BindOnce(
+                &SavedDeskDialogController::OnUserCanceledUnsupportedAppsDialog,
+                weak_ptr_factory_.GetWeakPtr()))
+            .SetAcceptCallback(base::BindOnce(
+                &SavedDeskDialogController::OnUserAcceptedUnsupportedAppsDialog,
+                weak_ptr_factory_.GetWeakPtr()))
+            .Build();
+    dialog->SetAdditionalContentView(std::move(unsupported_apps_view));
+    dialog->SetAdditionalContentCrossAxisAlignment(
+        views::LayoutAlignment::kStart);
+    CreateDialogWidget(std::move(dialog), root_window);
+  } else {
+    auto dialog =
+        views::Builder<SavedDeskDialog>()
+            .SetTitleText(
+                unsupported_apps_template_->type() ==
+                        DeskTemplateType::kTemplate
+                    ? IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_TEMPLATE_DIALOG_TITLE
+                    : IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_IN_DESK_DIALOG_TITLE)
+            .SetConfirmButtonText(
+                IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_CONFIRM_BUTTON)
+            .SetDescriptionText(l10n_util::GetStringUTF16(app_description_id))
+            .SetCancelCallback(base::BindOnce(
+                &SavedDeskDialogController::OnUserCanceledUnsupportedAppsDialog,
+                weak_ptr_factory_.GetWeakPtr()))
+            .SetCloseCallback(base::BindOnce(
+                &SavedDeskDialogController::OnUserCanceledUnsupportedAppsDialog,
+                weak_ptr_factory_.GetWeakPtr()))
+            .SetAcceptCallback(base::BindOnce(
+                &SavedDeskDialogController::OnUserAcceptedUnsupportedAppsDialog,
+                weak_ptr_factory_.GetWeakPtr()))
+            .AddChildren(
+                views::Builder<views::Label>()
+                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                    .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
+                                               14, gfx::Font::Weight::MEDIUM))
+                    .SetEnabledColor(
+                        AshColorProvider::Get()->GetContentLayerColor(
+                            AshColorProvider::ContentLayerType::
+                                kTextColorPrimary))
+                    .SetText(l10n_util::GetStringUTF16(
+                        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER)),
+                views::Builder<SavedDeskIconContainer>()
+                    .PopulateIconContainerFromWindows(unsupported_apps))
+            .Build();
+    CreateDialogWidget(std::move(dialog), root_window);
+  }
   RecordUnsupportedAppDialogShowHistogram(unsupported_apps_template_->type());
 }
 
@@ -191,31 +240,56 @@ void SavedDeskDialogController::ShowReplaceDialog(
     DeskTemplateType template_type,
     base::OnceClosure on_accept_callback,
     base::OnceClosure on_cancel_callback) {
-  if (!CanShowDialog())
+  if (!CanShowDialog()) {
     return;
-
-  auto dialog =
-      views::Builder<SavedDeskDialog>()
-          .SetTitleText(
-              template_type == DeskTemplateType::kTemplate
-                  ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_TITLE
-                  : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_TITLE)
-          .SetConfirmButtonText(
-              IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_CONFIRM_BUTTON)
-          .SetDescriptionText(l10n_util::GetStringFUTF16(
-              template_type == DeskTemplateType::kTemplate
-                  ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
-                  : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
-              GetStringWithQuotes(template_name)))
-          .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
-              template_type == DeskTemplateType::kTemplate
-                  ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
-                  : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
-              template_name))
-          .SetAcceptCallback(std::move(on_accept_callback))
-          .SetCancelCallback(std::move(on_cancel_callback))
-          .Build();
-  CreateDialogWidget(std::move(dialog), root_window);
+  }
+  if (chromeos::features::IsJellyEnabled()) {
+    auto dialog =
+        views::Builder<SystemDialogDelegateView>()
+            .SetTitleText(l10n_util::GetStringUTF16(
+                template_type == DeskTemplateType::kTemplate
+                    ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_TITLE
+                    : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_TITLE))
+            .SetAcceptButtonText(l10n_util::GetStringUTF16(
+                IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_CONFIRM_BUTTON))
+            .SetDescription(l10n_util::GetStringFUTF16(
+                template_type == DeskTemplateType::kTemplate
+                    ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
+                    : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
+                GetStringWithQuotes(template_name)))
+            .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+                template_type == DeskTemplateType::kTemplate
+                    ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
+                    : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
+                template_name))
+            .SetAcceptCallback(std::move(on_accept_callback))
+            .SetCancelCallback(std::move(on_cancel_callback))
+            .Build();
+    CreateDialogWidget(std::move(dialog), root_window);
+  } else {
+    auto dialog =
+        views::Builder<SavedDeskDialog>()
+            .SetTitleText(
+                template_type == DeskTemplateType::kTemplate
+                    ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_TITLE
+                    : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_TITLE)
+            .SetConfirmButtonText(
+                IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_CONFIRM_BUTTON)
+            .SetDescriptionText(l10n_util::GetStringFUTF16(
+                template_type == DeskTemplateType::kTemplate
+                    ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
+                    : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
+                GetStringWithQuotes(template_name)))
+            .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+                template_type == DeskTemplateType::kTemplate
+                    ? IDS_ASH_DESKS_TEMPLATES_REPLACE_TEMPLATE_DIALOG_DESCRIPTION
+                    : IDS_ASH_DESKS_TEMPLATES_REPLACE_DESK_DIALOG_DESCRIPTION,
+                template_name))
+            .SetAcceptCallback(std::move(on_accept_callback))
+            .SetCancelCallback(std::move(on_cancel_callback))
+            .Build();
+    CreateDialogWidget(std::move(dialog), root_window);
+  }
 }
 
 void SavedDeskDialogController::ShowDeleteDialog(
@@ -223,28 +297,48 @@ void SavedDeskDialogController::ShowDeleteDialog(
     const std::u16string& template_name,
     DeskTemplateType template_type,
     base::OnceClosure on_accept_callback) {
-  if (!CanShowDialog())
+  if (!CanShowDialog()) {
     return;
-
-  auto dialog =
-      views::Builder<SavedDeskDialog>()
-          .SetTitleText(
-              template_type == DeskTemplateType::kTemplate
-                  ? IDS_ASH_DESKS_TEMPLATES_DELETE_TEMPLATE_DIALOG_TITLE
-                  : IDS_ASH_DESKS_TEMPLATES_DELETE_DESK_DIALOG_TITLE)
-          .SetButtonLabel(
-              ui::DIALOG_BUTTON_OK,
-              l10n_util::GetStringUTF16(
-                  IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON))
-          .SetDescriptionText(l10n_util::GetStringFUTF16(
-              IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION,
-              GetStringWithQuotes(template_name)))
-          .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
-              IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION, template_name))
-          .SetAcceptCallback(std::move(on_accept_callback))
-          .Build();
-
-  CreateDialogWidget(std::move(dialog), root_window);
+  }
+  if (chromeos::features::IsJellyEnabled()) {
+    auto dialog =
+        views::Builder<SystemDialogDelegateView>()
+            .SetTitleText(l10n_util::GetStringUTF16(
+                template_type == DeskTemplateType::kTemplate
+                    ? IDS_ASH_DESKS_TEMPLATES_DELETE_TEMPLATE_DIALOG_TITLE
+                    : IDS_ASH_DESKS_TEMPLATES_DELETE_DESK_DIALOG_TITLE))
+            .SetDescription(l10n_util::GetStringFUTF16(
+                IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION,
+                GetStringWithQuotes(template_name)))
+            .SetAcceptButtonText(l10n_util::GetStringUTF16(
+                IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON))
+            .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+                IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION,
+                template_name))
+            .SetAcceptCallback(std::move(on_accept_callback))
+            .Build();
+    CreateDialogWidget(std::move(dialog), root_window);
+  } else {
+    auto dialog =
+        views::Builder<SavedDeskDialog>()
+            .SetTitleText(
+                template_type == DeskTemplateType::kTemplate
+                    ? IDS_ASH_DESKS_TEMPLATES_DELETE_TEMPLATE_DIALOG_TITLE
+                    : IDS_ASH_DESKS_TEMPLATES_DELETE_DESK_DIALOG_TITLE)
+            .SetButtonLabel(
+                ui::DIALOG_BUTTON_OK,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON))
+            .SetDescriptionText(l10n_util::GetStringFUTF16(
+                IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION,
+                GetStringWithQuotes(template_name)))
+            .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+                IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION,
+                template_name))
+            .SetAcceptCallback(std::move(on_accept_callback))
+            .Build();
+    CreateDialogWidget(std::move(dialog), root_window);
+  }
 }
 
 void SavedDeskDialogController::OnWidgetDestroying(views::Widget* widget) {
@@ -268,7 +362,7 @@ void SavedDeskDialogController::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void SavedDeskDialogController::CreateDialogWidget(
-    std::unique_ptr<SavedDeskDialog> dialog,
+    std::unique_ptr<views::WidgetDelegate> dialog,
     aura::Window* root_window) {
   // We should not get here with an active dialog.
   DCHECK_EQ(dialog_widget_, nullptr);
@@ -276,9 +370,22 @@ void SavedDeskDialogController::CreateDialogWidget(
   // The dialog will show on the display associated with `root_window`, and will
   // block all input since it is system modal.
   DCHECK(root_window->IsRootWindow());
-  dialog_widget_ = views::DialogDelegate::CreateDialogWidget(
-      std::move(dialog),
-      /*context=*/root_window, /*parent=*/nullptr);
+  dialog->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  dialog->SetShowCloseButton(false);
+
+  if (chromeos::features::IsJellyEnabled()) {
+    views::Widget::InitParams params;
+    params.type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
+    params.parent = root_window;
+    params.delegate = dialog.release();
+
+    dialog_widget_ = new views::Widget();
+    dialog_widget_->Init(std::move(params));
+  } else {
+    dialog_widget_ = views::DialogDelegate::CreateDialogWidget(
+        std::move(dialog),
+        /*context=*/root_window, /*parent=*/nullptr);
+  }
   dialog_widget_->GetNativeWindow()->SetName("TemplateDialogForTesting");
   dialog_widget_->Show();
   dialog_widget_observation_.Observe(dialog_widget_.get());

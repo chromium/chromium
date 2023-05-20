@@ -23,13 +23,11 @@ import {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
 import {recipeTasksDescriptor} from './recipes/module.js';
-import {recipeTasksDescriptor as recipeTasksV2Descriptor} from './recipes_v2/module.js';
 
 const modulesRedesignedEnabled: boolean =
     loadTimeData.getBoolean('modulesRedesignedEnabled');
 export const descriptors: ModuleDescriptor[] = [];
-descriptors.push(
-    modulesRedesignedEnabled ? recipeTasksV2Descriptor : recipeTasksDescriptor);
+descriptors.push(recipeTasksDescriptor);
 descriptors.push(chromeCartDescriptor);
 descriptors.push(
     modulesRedesignedEnabled ? driveV2Descriptor : driveDescriptor);

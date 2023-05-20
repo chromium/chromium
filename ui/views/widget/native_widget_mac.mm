@@ -310,11 +310,11 @@ const Widget* NativeWidgetMac::GetWidget() const {
 }
 
 gfx::NativeView NativeWidgetMac::GetNativeView() const {
-  // The immersive mode's overlay widget content view is moved to an another
-  // NSWindow when entering fullscreen. When the view is moved, the current
-  // content view will be nil. Return the cached original content view instead.
+  // When a widget becomes a subwidget, its contentView moves to an another
+  // NSWindow. When this happens, the window's contentView will be nil.
+  // Return the cached original contentView instead.
   NSView* contentView = (NSView*)GetNativeWindowProperty(
-      views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView);
+      views::NativeWidgetMacNSWindowHost::kMovedContentNSView);
   if (contentView) {
     return gfx::NativeView(contentView);
   }

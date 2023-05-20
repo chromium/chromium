@@ -67,7 +67,7 @@ class WebSocketStreamTest : public ::testing::Test {
   bool IsDOMException(ScriptState* script_state,
                       ScriptValue value,
                       DOMExceptionCode code) {
-    auto* dom_exception = V8DOMException::ToImplWithTypeCheck(
+    auto* dom_exception = V8DOMException::ToWrappable(
         script_state->GetIsolate(), value.V8Value());
     if (!dom_exception)
       return false;

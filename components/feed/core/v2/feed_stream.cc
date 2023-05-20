@@ -333,14 +333,17 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
     stream_metadata =
         feedstore::MetadataForStream(metadata, result.stream_type);
   }
-  const MetricsReporter::LoadStreamResultSummary result_summary = {
-      result.load_from_store_status,
-      result.final_status,
-      result.load_type == LoadType::kInitialLoad,
-      result.loaded_new_content_from_network,
-      result.stored_content_age,
-      GetContentOrder(result.stream_type),
-      stream_metadata};
+
+  MetricsReporter::LoadStreamResultSummary result_summary;
+  result_summary.load_from_store_status = result.load_from_store_status;
+  result_summary.final_status = result.final_status;
+  result_summary.is_initial_load = result.load_type == LoadType::kInitialLoad;
+  result_summary.loaded_new_content_from_network =
+      result.loaded_new_content_from_network;
+  result_summary.stored_content_age = result.stored_content_age;
+  result_summary.content_order = GetContentOrder(result.stream_type);
+  result_summary.stream_metadata = stream_metadata;
+
   metrics_reporter_->OnLoadStream(stream.type, result_summary, content_stats,
                                   std::move(result.latencies));
 
@@ -565,6 +568,7 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
     DLOG(ERROR) << "Ignoring LoadMore() before the model is loaded";
     return std::move(callback).Run(false);
   }
+
   // We want to abort early to avoid showing a loading spinner if it's not
   // necessary.
   if (ShouldMakeFeedQueryRequest(surface.GetStreamType(), LoadType::kLoadMore,
@@ -620,6 +624,12 @@ void FeedStream::ManualRefresh(const StreamType& stream_type,
   if (stream.model_loading_in_progress || stream.surfaces.empty()) {
     return std::move(callback).Run(false);
   }
+
+  // The user has manually pulled to refresh. In this case we allow resetting
+  // the request throttler. Without this, it's likely the user will hit a
+  // request limit.
+  feed::prefs::SetThrottlerRequestCounts({}, *profile_prefs_);
+
   stream.model_loading_in_progress = true;
 
   stream.surface_updater->LoadStreamStarted(/*manual_refreshing=*/true);

@@ -9,6 +9,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace chromeos {
 
@@ -34,7 +35,7 @@ MultitaskButton::MultitaskButton(PressedCallback callback,
   SetPreferredSize(is_portrait_mode_ ? kMultitaskButtonPortraitSize
                                      : kMultitaskButtonLandscapeSize);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColor(kMultitaskButtonDefaultColor);
+  views::InkDrop::Get(this)->SetBaseColor(cros_tokens::kCrosSysOnSurface);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kMultitaskBaseButtonBorderRadius);
   SetAccessibleName(name);
@@ -53,19 +54,28 @@ void MultitaskButton::PaintButtonContents(gfx::Canvas* canvas) {
   pattern_flags.setAntiAlias(true);
   pattern_flags.setStyle(cc::PaintFlags::kFill_Style);
 
+  const auto* color_provider = GetColorProvider();
+
   if (paint_as_active_ || GetState() == Button::STATE_HOVERED ||
       GetState() == Button::STATE_PRESSED) {
-    fill_flags.setColor(kMultitaskButtonViewHoverColor);
-    border_flags.setColor(kMultitaskButtonPrimaryHoverColor);
-    pattern_flags.setColor(gfx::kGoogleBlue600);
+    fill_flags.setColor(SkColorSetA(color_provider->GetColor(cros_tokens::kCrosSysPrimary),
+                  kMultitaskHoverBackgroundOpacity));
+    const auto hovered_color =
+      color_provider->GetColor(cros_tokens::kCrosSysPrimary);
+    border_flags.setColor(hovered_color);
+    pattern_flags.setColor(hovered_color);
   } else if (GetState() == Button::STATE_DISABLED) {
-    fill_flags.setColor(kMultitaskButtonViewHoverColor);
-    border_flags.setColor(kMultitaskButtonDisabledColor);
-    pattern_flags.setColor(kMultitaskButtonDisabledColor);
+    // TODO(b/281107973): Get colors from UX for when button is disabled
+    fill_flags.setColor(cros_tokens::kButtonBackgroundColorPrimaryDisabled);
+    border_flags.setColor(cros_tokens::kIconColorDisabled);
+    pattern_flags.setColor(cros_tokens::kIconColorDisabled);
   } else {
     fill_flags.setColor(SK_ColorTRANSPARENT);
-    border_flags.setColor(kMultitaskButtonDefaultColor);
-    pattern_flags.setColor(kMultitaskButtonDefaultColor);
+    const auto default_color =
+        SkColorSetA(color_provider->GetColor(cros_tokens::kCrosSysOnSurface),
+                    kMultitaskDefaultButtonOpacity);
+    border_flags.setColor(default_color);
+    pattern_flags.setColor(default_color);
   }
 
   canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()),

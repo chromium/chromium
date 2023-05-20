@@ -213,8 +213,8 @@ std::vector<uint8_t> FastPairDataEncryptorImpl::CreateAdditionalDataPacket(
     std::array<uint8_t, kNonceSizeBytes> nonce,
     const std::vector<uint8_t>& additional_data) {
   const std::vector<uint8_t> encrypted_additional_data =
-      fast_pair_encryption::EncryptAdditionalData(secret_key_, nonce,
-                                                  additional_data);
+      EncryptAdditionalDataWithSecretKey(nonce, additional_data);
+
   const std::array<uint8_t, fast_pair_encryption::kHmacSizeBytes> hmac =
       fast_pair_encryption::GenerateHmacSha256(secret_key_, nonce,
                                                encrypted_additional_data);
@@ -236,6 +236,30 @@ std::vector<uint8_t> FastPairDataEncryptorImpl::CreateAdditionalDataPacket(
                                 encrypted_additional_data.end());
   additional_data_packet.shrink_to_fit();
   return additional_data_packet;
+}
+
+bool FastPairDataEncryptorImpl::VerifyEncryptedAdditionalData(
+    const std::array<uint8_t, kHmacVerifyLenBytes> hmacSha256First8Bytes,
+    std::array<uint8_t, kNonceSizeBytes> nonce,
+    const std::vector<uint8_t>& encrypted_additional_data) {
+  const std::array<uint8_t, fast_pair_encryption::kHmacSizeBytes>
+      hmac_calculated = fast_pair_encryption::GenerateHmacSha256(
+          secret_key_, nonce, encrypted_additional_data);
+  CHECK(hmac_calculated.size() >= kHmacVerifyLenBytes);
+  for (size_t i = 0; i < kHmacVerifyLenBytes; i++) {
+    if (hmacSha256First8Bytes[i] != hmac_calculated[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::vector<uint8_t>
+FastPairDataEncryptorImpl::EncryptAdditionalDataWithSecretKey(
+    std::array<uint8_t, kNonceSizeBytes> nonce,
+    const std::vector<uint8_t>& additional_data) {
+  return fast_pair_encryption::EncryptAdditionalData(secret_key_, nonce,
+                                                     additional_data);
 }
 
 }  // namespace quick_pair

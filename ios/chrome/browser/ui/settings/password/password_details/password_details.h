@@ -26,7 +26,9 @@ typedef NS_ENUM(NSInteger, CredentialType) {
 // Enum which represents the entry point from which the password details are
 // accessed.
 enum class DetailsContext {
-  kGeneral,  // When accessed from any context other than Password Checkup.
+  kPasswordSettings,   // When accessed from any context other than Password
+                       // Checkup inside the settings context.
+  kOutsideSettings,    // When accessed outside the settings context.
   kCompromisedIssues,  // When accessed from the compromised issues page.
   kDismissedWarnings,  // When accessed from the dismissed warnings page.
   kReusedIssues,       // When accessed from the reused issues page.

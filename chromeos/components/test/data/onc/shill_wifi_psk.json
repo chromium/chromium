@@ -5,7 +5,6 @@
    "Passphrase": "some passphrase",
    "ProxyConfig": "{\"mode\":\"fixed_servers\",\"server\":\"ftp=192.168.2.1:8889;http=192.168.2.1:8889;socks=socks4://192.168.2.1:8889;https=192.168.2.1:8889\"}",
    "SecurityClass": "psk",
-   "StaticIPConfig": {},
    "Type": "wifi",
    "WiFi.HexSSID": "4F70656E577274", // "OpenWrt"
    "WiFi.HiddenSSID": false,

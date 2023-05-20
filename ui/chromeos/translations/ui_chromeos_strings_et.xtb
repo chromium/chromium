@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Hiljutisi videoid pole</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, võrku haldab teie administraator, üksikasjad</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> üksust on teisaldatud.</translation>
+<translation id="3658269352872031728">Valitud on <ph name="SELECTED_FILE_COUNT" /> faili</translation>
 <translation id="3685122418104378273">Google Drive'i sünkroonimine on mobiilse andmeside kasutamisel vaikimisi keelatud.</translation>
 <translation id="3689865792480713551">Tühista <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Võrk <ph name="NETWORK_INDEX" /> <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, inaktiveeritud, <ph name="CONNECTION_STATUS" />, signaalitugevus <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-pilt</translation>
 <translation id="5534520101572674276">Suuruse arvutamine</translation>
 <translation id="554153475311314364">kreeka, transliteratsioon</translation>
+<translation id="5554171655917412781">Valitud on <ph name="SELECTED_FOLDERS_COUNT" /> kausta</translation>
 <translation id="5580591966435005537">Virtuaalmasin</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
 <translation id="5583664733673201137">Kirjavahemärkide laius on täislaius</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">tai, Pattachote klaviatuuriga</translation>
 <translation id="57383366388012121">Eelmine kuu</translation>
 <translation id="5756666464756035725">Ungari QWERTY-klaviatuur</translation>
+<translation id="5760252553414789727">Valitud on <ph name="SELECTED_FILES_COUNT" /> üksust</translation>
 <translation id="5763377084591234761">saksa (Šveits)</translation>
 <translation id="5769519078756170258">Välistatav host või domeen</translation>
 <translation id="5775750595919327203">urdu</translation>
@@ -917,6 +920,7 @@
 <translation id="8264024885325823677">Seda seadet haldab administraator.</translation>
 <translation id="8269755669432358899">Ahenda failide tagasisidepaneelid</translation>
 <translation id="8280151743281770066">Armeenia foneetiline</translation>
+<translation id="8285791779547722821">Krüpteeritud <ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">Allikas</translation>
 <translation id="8297012244086013755">Hanguli 3. seade (tõstuklahv puudub)</translation>
 <translation id="8299269255470343364">jaapani keel</translation>

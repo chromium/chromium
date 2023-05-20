@@ -12,6 +12,11 @@ dd {
     text-overflow: ellipsis;
     text-decoration: inherit;
 }
+::selection,
+::selection:window-inactive {
+  background-color: rgb(176, 176, 176);
+  color: black;
+}
 </style>
 <p>crbug.com/642454: Select all text in mixed ltr-rtl in rtl flow. None of the dots in the ellipsis should be selected.</p>
 <dl>

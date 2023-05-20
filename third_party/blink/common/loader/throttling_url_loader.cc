@@ -244,6 +244,10 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
 
   void Detach() { loader_ = nullptr; }
 
+  void DidRestartForCriticalClientHint() override {
+    loader_->DidRestartForCriticalClientHint();
+  }
+
  private:
   // This class helps ThrottlingURLLoader to keep track of whether it is being
   // called by its throttles.
@@ -560,6 +564,10 @@ void ThrottlingURLLoader::StartNow() {
         // Use status code 307 to preserve the method, so POST requests work.
         net::HTTP_TEMPORARY_REDIRECT, throttle_will_start_redirect_url_,
         absl::nullopt, false, false, false);
+
+    // Set Critical-CH restart info and clear for next redirect.
+    redirect_info.critical_ch_restart_time = critical_ch_restart_time_;
+    critical_ch_restart_time_ = base::TimeTicks();
 
     bool should_clear_upload = false;
     net::RedirectUtil::UpdateHttpRequest(

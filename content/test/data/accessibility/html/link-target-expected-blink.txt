@@ -1,0 +1,30 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='Top context.'
+++++++++++inlineTextBox name='Top context.'
+++++++iframe
+++++++++rootWebArea
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++paragraph
+++++++++++++++++staticText name='First context.'
+++++++++++++++++++inlineTextBox name='First context.'
+++++++++++++++link name='Self target. Opens in this iframe. '
+++++++++++++++++staticText name='Self target. Opens in this iframe. '
+++++++++++++++++++inlineTextBox name='Self target. Opens in this iframe. '
+++++++++++++++link name='Parent target. Opens in the body of the whole page.' linkTarget='_parent'
+++++++++++++++++staticText name='Parent target. Opens in the body of the whole page.'
+++++++++++++++++++inlineTextBox name='Parent '
+++++++++++++++++++inlineTextBox name='target. Opens in the body of the whole page.'
+++++++link name='Base target. Open in blank. ' linkTarget='_top'
+++++++++staticText name='Base target. Open in blank. '
+++++++++++inlineTextBox name='Base target. Open in blank. '
+++++++link name='Top target. Opens in current context. ' linkTarget='_top'
+++++++++staticText name='Top target. Opens in current context. '
+++++++++++inlineTextBox name='Top target. Opens in current context. '
+++++++link name='Opens in iframe.' linkTarget='iframeContext'
+++++++++staticText name='Opens in iframe.'
+++++++++++inlineTextBox name='Opens in '
+++++++++++inlineTextBox name='iframe.'

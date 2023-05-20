@@ -10,8 +10,8 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/webui/web_ui_test_utils.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -56,7 +56,7 @@ using chrome_test_util::ForwardButton;
   [ChromeEarlGrey loadURL:WebUIPageUrlWithHost(kChromeUIVersionHost)];
 
   // Verify that app version is present on the page.
-  const std::string version = version_info::GetVersionNumber();
+  const std::string version(version_info::GetVersionNumber());
   [ChromeEarlGrey waitForWebStateContainingText:version];
 
   NSString* userAgent = [ChromeEarlGrey mobileUserAgentString];

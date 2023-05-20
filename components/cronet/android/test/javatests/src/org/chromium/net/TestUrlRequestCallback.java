@@ -4,7 +4,8 @@
 
 package org.chromium.net;
 
-import static junit.framework.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -298,10 +299,10 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         assertFalse(mOnCanceledCalled);
         assertNull(mError);
         if (mCallbackExceptionThrown) {
-            assertTrue(error instanceof CallbackException);
+            assertThat(error).isInstanceOf(CallbackException.class);
             assertContains("Exception received from UrlRequest.Callback", error.getMessage());
             assertNotNull(error.getCause());
-            assertTrue(error.getCause() instanceof IllegalStateException);
+            assertThat(error).hasCauseThat().isInstanceOf(IllegalStateException.class);
             assertContains("Listener Exception.", error.getCause().getMessage());
         }
 
@@ -351,7 +352,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
 
     private void checkExecutorThread() {
         if (!mAllowDirectExecutor) {
-            assertEquals(mExecutorThread, Thread.currentThread());
+            assertThat(Thread.currentThread()).isEqualTo(mExecutorThread);
         }
     }
 

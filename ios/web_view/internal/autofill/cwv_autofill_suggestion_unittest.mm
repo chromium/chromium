@@ -27,8 +27,9 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
   FormSuggestion* formSuggestion =
       [FormSuggestion suggestionWithValue:@"TestValue"
                        displayDescription:@"TestDisplayDescription"
-                                     icon:@"TestIcon"
+                                     icon:nil
                                identifier:1337
+                        backendIdentifier:nil
                            requiresReauth:NO];
   CWVAutofillSuggestion* suggestion =
       [[CWVAutofillSuggestion alloc] initWithFormSuggestion:formSuggestion

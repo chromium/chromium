@@ -58,7 +58,7 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
  private:
   // Turns an IDBValue into a set of IndexedDBExternalObjects in
   // |external_objects|.
-  void CreateExternalObjects(
+  uint64_t CreateExternalObjects(
       blink::mojom::IDBValuePtr& value,
       std::vector<IndexedDBExternalObject>* external_objects);
 

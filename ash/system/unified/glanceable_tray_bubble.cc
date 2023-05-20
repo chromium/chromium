@@ -8,6 +8,8 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/system/tray/tray_utils.h"
+#include "ash/system/unified/glanceable_tray_bubble_view.h"
+#include "ash/system/unified/tasks_bubble_view.h"
 
 namespace ash {
 
@@ -27,15 +29,16 @@ GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray) : tray_(tray) {
   init_params.reroute_event_handler = true;
   init_params.translucent = true;
 
-  bubble_view_ = new TrayBubbleView(init_params);
+  bubble_view_ = new GlanceableTrayBubbleView(init_params, tray_->shelf());
 
+  // bubble_widget_ takes ownership of the bubble_view_.
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_widget_->AddObserver(this);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
   bubble_view_->InitializeAndShowBubble();
 
   tray->tray_event_filter()->AddBubble(this);
-  UpdateBubble();
+  bubble_view_->UpdateBubble();
 }
 
 GlanceableTrayBubble::~GlanceableTrayBubble() {
@@ -68,17 +71,8 @@ views::Widget* GlanceableTrayBubble::GetBubbleWidget() const {
   return bubble_widget_;
 }
 
-void GlanceableTrayBubble::UpdateBubble() {
-  // TODO(b:277268122): set real contents for glanceables view.
-  if (!title_label_) {
-    title_label_ = bubble_view_->AddChildView(std::make_unique<views::Label>());
-    title_label_->SetText(u"Temp Title Label for Glanceables");
-  }
-
-  int max_height = CalculateMaxTrayBubbleHeight();
-  bubble_view_->SetMaxHeight(max_height);
-  bubble_view_->ChangeAnchorAlignment(tray_->shelf()->alignment());
-  bubble_view_->ChangeAnchorRect(tray_->shelf()->GetSystemTrayAnchorRect());
+TasksBubbleView* GlanceableTrayBubble::GetTasksView() const {
+  return bubble_view_->GetTasksView();
 }
 
 bool GlanceableTrayBubble::IsBubbleActive() const {

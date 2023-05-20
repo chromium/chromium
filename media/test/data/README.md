@@ -196,6 +196,78 @@ EncoderApp --CTUSize=128 -c sample_scaling_list.cfg -f 8 \
 Please be noted sample_scaling_list.cfg is the file with the same name from VTM
 sample configure.
 
+#### bbb_rpl_in_ph_nut.vvc
+VVC stream generated with VTM that is used to verify parsing of complex picture
+header structure in a separate PH NALU.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
+ffmpeg -i bbb.y4m -vf scale=1920x1080 bbb_1920x1080.yuv
+EncoderApp -f 5 --EnablePicPartitioning=1 --CTUSize=128 \
+  --TileColumnWidthArray=5,5,5 --TileRowHeightArray=3,3 --RasterScanSlices=0 \
+  --RectSliceFixedWidth=0 --RectSliceFixedHeight=0 \
+  --RectSlicePositions=0,19,30,34,45,64,75,79,90,109,120,124,5,24,35,39,50,69,\
+80,84,95,114,125,129,10,29,40,44,55,74,85,89,100,119,130,134 \
+  --SliceLevelRpl=0 --SliceLevelDblk=0 --SliceLevelSao=0 --SliceLevelAlf=0 \
+  --SliceLevelDeltaQp=0 --ALF=1 --JointCbCr=1 --SAO=1 --WeightedPredP=1 \
+  --WeightedPredB=1 --WeightedPredMethod=4 --CCALF=1 \
+  --VirtualBoundariesPresentInSPSFlag=0 --SliceLevelWeightedPrediction=0
+```
+
+#### bbb_rpl_in_slice.vvc
+VVC stream generated with VTM that is used to verify slice header which contains
+RPL and pred_weight_table directly in it, instead of the picture header structure
+that is part of slice header.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
+ffmpeg -i bbb.y4m -vf scale=1920x1080 bbb_1920x1080.yuv
+EncoderApp -f 5 --EnablePicPartitioning=1 --CTUSize=128 \
+  --SliceLevelRpl=1 --SliceLevelDblk=1 --SliceLevelSao=1 --SliceLevelAlf=1 \
+  --SliceLevelDeltaQp=1 --ALF=1 --JointCbCr=1 --SAO=1 --WeightedPredP=1 \
+  --WeightedPredB=1 --WeightedPredMethod=4 --CCALF=1 \
+  --VirtualBoundariesPresentInSPSFlag=0 --SliceLevelWeightedPrediction=1
+```
+
+#### bbb_slice_with_entrypoints
+VVC stream generated with VTM that is used to verify slices with entrypoints
+specified in slice header, and also with deblocking filter params in it.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
+ffmpeg -i bbb.y4m -vf scale=1920x1080 bbb_1920x1080.yuv
+EncoderApp --EnablePicPartitioning=1 --CTUSize=128 --TileColumnWidthArray=5 \
+  --TileRowHeightArray=3 --RasterScanSlices=1 --RasterSliceSizes=15 \
+  --DisableLoopFilterAcrossTiles=0 --DisableLoopFilterAcrossSlices \
+  --SliceLevelRpl=0 --SliceLevelDblk=0 --SliceLevelSao=0 --SliceLevelAlf=0 \
+  --SliceLevelWeightedPrediction=0 --VirtualBoundariesPresentInSPSFlag=0 \
+  --DeblockingFilterOffsetInPPS=0 --DeblockingFilterDisable=0 \
+  --DeblockingFilterBetaOffset_div2=-2 --DeblockingFilterTcOffset_div2=-2 \
+  --DeblockingFilterCbBetaOffset_div2=-2 --DeblockingFilterCbTcOffset_div2=0 \
+  --DeblockingFilterCrBetaOffset_div2=-2 --DeblockingFilterCrTcOffset_div2=0 \
+  --DeblockingFilterMetric=0 --EntryPointsPresent=1 --WaveFrontSynchro=1 \
+  -f 2 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_9tiles.vvc
+```
+
+#### bbb_2_subpictures_8_slices
+VVC stream generated with VTM that is used to verify VVC slice parser on stream
+that is with multiple subpictures.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
+ffmpeg -i bbb.y4m -vf scale=1920x1080 bbb_1920x1080.yuv
+EncoderApp --EnablePicPartitioning=1 --CTUSize=128 --TileColumnWidthArray=3,4 \
+ --TileRowHeightArray=3 --RasterScanSlices=0 --RectSliceFixedWidth=0 \
+ --RectSliceFixedHeight=0 --RectSlicePositions=0,17,30,32,45,62,75,77,3,85,90,\
+ 130,11,89,101,134 --DisableLoopFilterAcrossTiles=1 \
+ --DisableLoopFilterAcrossSlices=1 --SubPicInfoPresentFlag=1 --NumSubPics=2 \
+ --SubPicCtuTopLeftX=0,11 --SubPicCtuTopLeftY=0,0 --SubPicWidth=11,4 \
+ --SubPicHeight=9,9 --SubPicTreatedAsPicFlag=1,1 \
+ --LoopFilterAcrossSubpicEnabledFlag=0,0 \
+ --SubPicIdMappingExplicitlySignalledFlag=0 \
+ -f 2 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_9tiles.vvc
+```
+
 ### AV1
 
 Unless noted otherwise, the codec string is `av01.0.04M.08` for 8-bit files,

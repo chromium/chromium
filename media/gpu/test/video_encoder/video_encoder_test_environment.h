@@ -73,6 +73,12 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   const VideoBitrateAllocation& BitrateAllocation() const;
   // Whether the encoded bitstream is saved to disk.
   bool SaveOutputBitstream() const;
+  // Get the output file path for a bitstream to be saved to disk.
+  base::FilePath OutputFilePath(const VideoCodec& codec,
+                                const base::FilePath& base_name,
+                                bool svc_enable = false,
+                                int spatial_idx = 0,
+                                int temporal_idx = 0) const;
   // True if the video should play backwards at reaching the end of video.
   // Otherwise the video loops. See the comment in AlignedDataHelper for detail.
   bool Reverse() const;

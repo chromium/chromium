@@ -30,7 +30,7 @@ class PendingLinkPreload final : public SingleModuleClient {
   bool HasResource() const { return finish_observer_.Get(); }
   bool MatchesMedia() const { return matches_media_; }
   void SetMatchesMedia(bool matches) { matches_media_ = matches; }
-  Resource* GetResourceForTesting();
+  Resource* GetResourceForTesting() const;
 
   void Trace(Visitor*) const override;
 

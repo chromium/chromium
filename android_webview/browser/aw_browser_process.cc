@@ -20,6 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "components/component_updater/android/component_loader_policy.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -65,6 +66,9 @@ AwBrowserProcess::AwBrowserProcess(
 
   app_link_manager_ =
       std::make_unique<EnterpriseAuthenticationAppLinkManager>(local_state());
+
+  origin_trials_settings_storage_ =
+      std::make_unique<embedder_support::OriginTrialsSettingsStorage>();
 }
 
 AwBrowserProcess::~AwBrowserProcess() {
@@ -229,6 +233,11 @@ void AwBrowserProcess::OnAuthPrefsChanged() {
 EnterpriseAuthenticationAppLinkManager*
 AwBrowserProcess::GetEnterpriseAuthenticationAppLinkManager() {
   return app_link_manager_.get();
+}
+
+embedder_support::OriginTrialsSettingsStorage*
+AwBrowserProcess::GetOriginTrialsSettingsStorage() {
+  return origin_trials_settings_storage_.get();
 }
 
 // static

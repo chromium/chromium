@@ -510,6 +510,11 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       "realboxMatchSearchboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
 
+  source->AddString("realboxWidthBehavior",
+                    base::GetFieldTrialParamValueByFeature(
+                        ntp_features::kRealboxWidthBehavior,
+                        ntp_features::kNtpRealboxWidthBehaviorParam));
+
   source->AddString(
       "realboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
@@ -682,14 +687,16 @@ RealboxHandler::RealboxHandler(
       web_contents_(web_contents),
       metrics_reporter_(metrics_reporter),
       page_handler_(this, std::move(pending_page_handler)) {
+  // Indirectly observe all the `AutocompleteController` instances registered
+  // with the `AutocompleteControllerEmitter`. In addition to observing the
+  // instance associated with this handler, `RealboxHandler` also observes
+  // omnibox's instance for when it is used in the context of the WebUI omnibox.
   controller_emitter_observation_.Observe(
       AutocompleteControllerEmitter::GetForBrowserContext(profile_));
 
   controller_ = std::make_unique<OmniboxController>(
+      /*view=*/nullptr,
       /*edit_model_delegate=*/this,
-      std::make_unique<AutocompleteController>(
-          std::make_unique<ChromeAutocompleteProviderClient>(profile_),
-          AutocompleteClassifier::DefaultOmniboxProviders()),
       std::make_unique<RealboxOmniboxClient>(profile_, web_contents_));
 }
 

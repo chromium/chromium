@@ -11,6 +11,7 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_main_parts.h"
+#include "android_webview/browser/aw_client_hints_controller_delegate.h"
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
@@ -55,6 +56,7 @@
 #include "build/build_config.h"
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
+#include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
@@ -1026,7 +1028,7 @@ std::string AwContentBrowserClient::GetUserAgent() {
 }
 
 blink::UserAgentMetadata AwContentBrowserClient::GetUserAgentMetadata() {
-  return embedder_support::GetUserAgentMetadata(
+  return AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
       browser_context_->GetPrefService());
 }
 
@@ -1098,6 +1100,13 @@ void AwContentBrowserClient::OnDisplayInsecureContent(
 // static
 void AwContentBrowserClient::DisableCreatingThreadPool() {
   g_should_create_thread_pool = false;
+}
+
+blink::mojom::OriginTrialsSettingsPtr
+AwContentBrowserClient::GetOriginTrialsSettings() {
+  return AwBrowserProcess::GetInstance()
+      ->GetOriginTrialsSettingsStorage()
+      ->GetSettings();
 }
 
 bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(

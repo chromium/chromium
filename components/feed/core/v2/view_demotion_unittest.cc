@@ -4,6 +4,7 @@
 
 #include "components/feed/core/v2/view_demotion.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/config.h"
@@ -79,6 +80,8 @@ TEST_F(ViewDemotionTest, TotalViewsOfFewDocsCanExceedLimit) {
 }
 
 TEST_F(ViewDemotionTest, TotalDocumentsExceedsLimit) {
+  base::HistogramTester histograms;
+
   base::Time now = base::Time::Now();
   std::vector<feedstore::DocView> views = {
       CreateDocView(9, now - base::Hours(8)),
@@ -100,6 +103,9 @@ TEST_F(ViewDemotionTest, TotalDocumentsExceedsLimit) {
   EXPECT_THAT(digest.old_doc_views,
               UnorderedElementsAre(EqualsProto(views[0]), EqualsProto(views[6]),
                                    EqualsProto(views[7])));
+
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.DroppedDocumentViewCount", 3, 1);
 }
 
 }  // namespace

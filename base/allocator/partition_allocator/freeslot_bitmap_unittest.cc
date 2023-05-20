@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_page.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // This test is disabled when MEMORY_TOOL_REPLACES_ALLOCATOR is defined because
@@ -33,14 +34,8 @@ class PartitionAllocFreeSlotBitmapTest : public ::testing::Test {
     // Allocates memory and creates a pseudo superpage in it. We need to
     // allocate |2 * kSuperPageSize| so that a whole superpage is contained in
     // the allocated region.
-    allocator_.init({
-        PartitionOptions::AlignedAlloc::kDisallowed,
-        PartitionOptions::ThreadCache::kDisabled,
-        PartitionOptions::Quarantine::kDisallowed,
-        PartitionOptions::Cookie::kAllowed,
-        PartitionOptions::BackupRefPtr::kDisabled,
-        PartitionOptions::BackupRefPtrZapping::kDisabled,
-        PartitionOptions::UseConfigurablePool::kNo,
+    allocator_.init(PartitionOptions{
+        .cookie = PartitionOptions::Cookie::kAllowed,
     });
     allocated_ptr_ = reinterpret_cast<uintptr_t>(
         allocator_.root()->Alloc(2 * kSuperPageSize, ""));

@@ -153,4 +153,9 @@ public class SemanticColorUtils {
         final @ColorInt int fallback = context.getColor(R.color.default_text_color_link_baseline);
         return MaterialColors.getColor(context, R.attr.globalLinkTextColor, fallback);
     }
+
+    /** Returns the semantic color values that corresponds to colorPrimaryContainer. */
+    public static @ColorInt int getColorPrimaryContainer(Context context) {
+        return resolve(R.attr.colorPrimaryContainer, context);
+    }
 }

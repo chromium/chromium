@@ -7,6 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace base::features {
 
@@ -22,6 +23,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kSupportsUserDataFlatHashMap);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
+extern const BASE_EXPORT FeatureParam<bool>
+    kPartialLowEndModeExcludeLowEndBackgroundCleanup;
 #endif
 
 }  // namespace base::features

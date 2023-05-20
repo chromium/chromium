@@ -6,6 +6,8 @@ assert(is_chromeos, "beto-core is used by Nearby Share which is CrOS only")
 
 import("//build/rust/cargo_crate.gni")
 import("//build/rust/rust_static_library.gni")
+import("//build/rust/rust_unit_test.gni")
+import("//build/rust/rust_unit_tests_group.gni")
 import("//testing/test.gni")
 
 executable("ldt_c_sample") {
@@ -45,6 +47,7 @@ rust_static_library("ldt_np_adv_ffi") {
 }
 
 cargo_crate("crypto_provider_boringssl") {
+  build_native_rust_unit_tests = true
   crate_type = "rlib"
   crate_root = "src/nearby/crypto/crypto_provider_boringssl/src/lib.rs"
   sources = [ "src/nearby/presence/ldt_tbc/src/lib.rs" ]
@@ -53,16 +56,14 @@ cargo_crate("crypto_provider_boringssl") {
     ":crypto_provider_stubs",
     "//third_party/boringssl:bssl_crypto",
   ]
+  dev_deps = [ ":crypto_provider_test" ]
 }
 
 cargo_crate("crypto_provider") {
+  build_native_rust_unit_tests = false
   crate_type = "rlib"
   crate_root = "src/nearby/crypto/crypto_provider/src/lib.rs"
-  sources = [
-    "src/nearby/crypto/crypto_provider/src/aes/cbc.rs",
-    "src/nearby/crypto/crypto_provider/src/aes/mod.rs",
-    "src/nearby/crypto/crypto_provider/src/lib.rs",
-  ]
+  sources = [ "src/nearby/crypto/crypto_provider/src/lib.rs" ]
   features = [
     "alloc",
     "std",
@@ -70,15 +71,51 @@ cargo_crate("crypto_provider") {
   ]
 }
 
+cargo_crate("crypto_provider_test") {
+  build_native_rust_unit_tests = false
+  testonly = true
+  crate_type = "rlib"
+  crate_root = "src/nearby/crypto/crypto_provider_test/src/lib.rs"
+  sources = [ "src/nearby/crypto/crypto_provider_test/src/lib.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":rand_ext",
+    ":test_helper",
+    "//third_party/rust/hex/v0_4:test_support",
+    "//third_party/rust/hex_literal/v0_4:test_support",
+    "//third_party/rust/rand/v0_8:test_support",
+    "//third_party/rust/rstest/v0_17:test_support",
+    "//third_party/rust/rstest_reuse/v0_5:test_support",
+    "//third_party/rust/wycheproof/v0_4:test_support",
+  ]
+}
+
 cargo_crate("crypto_provider_stubs") {
+  build_native_rust_unit_tests = false
   crate_type = "rlib"
   crate_root = "src/nearby/crypto/crypto_provider_stubs/src/lib.rs"
   sources = [ "src/nearby/crypto/crypto_provider_stubs/src/lib.rs" ]
   deps = [ ":crypto_provider" ]
 }
 
+cargo_crate("crypto_provider_default") {
+  testonly = true
+  build_native_rust_unit_tests = false
+  crate_type = "rlib"
+  crate_root = "src/nearby/crypto/crypto_provider_default/src/lib.rs"
+  sources = [ "src/nearby/crypto/crypto_provider_default/src/lib.rs" ]
+  edition = "2021"
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_boringssl",
+    "//third_party/rust/cfg_if/v1:lib",
+  ]
+  features = [ "boringssl" ]
+}
+
 cargo_crate("ldt_np_adv") {
   crate_type = "rlib"
+  build_native_rust_unit_tests = true
   crate_root = "src/nearby/presence/ldt_np_adv/src/lib.rs"
   sources = [ "src/nearby/presence/ldt_np_adv/src/lib.rs" ]
   deps = [
@@ -89,10 +126,20 @@ cargo_crate("ldt_np_adv") {
     ":np_hkdf",
     ":xts_aes",
   ]
+  dev_deps = [
+    ":crypto_provider_default",
+    ":rand_ext",
+    ":test_helper",
+    "//third_party/rust/anyhow/v1:test_support",
+    "//third_party/rust/hex/v0_4:test_support",
+    "//third_party/rust/rand/v0_8:test_support",
+    "//third_party/rust/serde_json/v1:test_support",
+  ]
 }
 
 cargo_crate("ldt") {
   crate_type = "rlib"
+  build_native_rust_unit_tests = false
   crate_root = "src/nearby/presence/ldt/src/lib.rs"
   sources = [ "src/nearby/presence/ldt/src/lib.rs" ]
   deps = [
@@ -101,8 +148,61 @@ cargo_crate("ldt") {
   ]
 }
 
+rust_unit_tests_group("ldt_all_tests") {
+  deps = [
+    ":ldt_roundtrip_tests",
+    ":ldt_test_vectors",
+    ":ldt_tests",
+    ":np_hkdf_tests",
+    ":xts_nist_test_vectors",
+    ":xts_roundtrip_tests",
+  ]
+}
+
+rust_unit_test("ldt_tests") {
+  crate_root = "src/nearby/presence/ldt/tests/tests.rs"
+  sources = [ "src/nearby/presence/ldt/tests/tests.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_default",
+    ":ldt",
+    ":xts_aes",
+  ]
+}
+
+rust_unit_test("ldt_roundtrip_tests") {
+  crate_root = "src/nearby/presence/ldt/tests/ldt_roundtrip.rs"
+  sources = [ "src/nearby/presence/ldt/tests/ldt_roundtrip.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_default",
+    ":ldt",
+    ":ldt_tbc",
+    ":rand_ext",
+    ":xts_aes",
+    "//third_party/rust/rand/v0_8:test_support",
+  ]
+}
+
+rust_unit_test("ldt_test_vectors") {
+  crate_root = "src/nearby/presence/ldt/tests/ldt_test_vectors.rs"
+  sources = [ "src/nearby/presence/ldt/tests/ldt_test_vectors.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_default",
+    ":ldt",
+    ":ldt_tbc",
+    ":test_helper",
+    ":xts_aes",
+    "//third_party/rust/anyhow/v1:test_support",
+    "//third_party/rust/rand/v0_8:test_support",
+    "//third_party/rust/serde_json/v1:test_support",
+  ]
+}
+
 cargo_crate("ldt_tbc") {
   crate_type = "rlib"
+  build_native_rust_unit_tests = false
   crate_root = "src/nearby/presence/ldt_tbc/src/lib.rs"
   sources = [ "src/nearby/presence/ldt_tbc/src/lib.rs" ]
   deps = [ ":crypto_provider" ]
@@ -110,18 +210,21 @@ cargo_crate("ldt_tbc") {
 
 cargo_crate("array_view") {
   crate_type = "rlib"
+  build_native_rust_unit_tests = true
   crate_root = "src/nearby/presence/array_view/src/lib.rs"
   sources = [ "src/nearby/presence/array_view/src/lib.rs" ]
 }
 
 cargo_crate("array_ref") {
   crate_type = "rlib"
+  build_native_rust_unit_tests = false
   crate_root = "src/nearby/presence/array_ref/src/lib.rs"
   sources = [ "src/nearby/presence/array_ref/src/lib.rs" ]
 }
 
 cargo_crate("np_hkdf") {
   crate_type = "rlib"
+  build_native_rust_unit_tests = false
   crate_root = "src/nearby/presence/np_hkdf/src/lib.rs"
   sources = [ "src/nearby/presence/np_hkdf/src/lib.rs" ]
   deps = [
@@ -131,13 +234,93 @@ cargo_crate("np_hkdf") {
   ]
 }
 
+rust_unit_test("np_hkdf_tests") {
+  crate_root = "src/nearby/presence/np_hkdf/tests/test_vectors.rs"
+  sources = [ "src/nearby/presence/np_hkdf/tests/test_vectors.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_default",
+    ":np_hkdf",
+    ":rand_ext",
+    ":test_helper",
+    "//third_party/rust/anyhow/v1:test_support",
+    "//third_party/rust/hex/v0_4:test_support",
+    "//third_party/rust/rand/v0_8:test_support",
+    "//third_party/rust/serde_json/v1:test_support",
+  ]
+}
+
 cargo_crate("xts_aes") {
   crate_type = "rlib"
+  build_native_rust_unit_tests = true
   crate_root = "src/nearby/presence/xts_aes/src/lib.rs"
   sources = [ "src/nearby/presence/xts_aes/src/lib.rs" ]
   deps = [
     ":array_ref",
     ":crypto_provider",
     ":ldt_tbc",
+  ]
+  dev_deps = [
+    ":test_helper",
+    "//third_party/rust/hex/v0_4:test_support",
+  ]
+}
+
+rust_unit_test("xts_roundtrip_tests") {
+  crate_root = "src/nearby/presence/xts_aes/tests/xts_roundtrip_tests.rs"
+  sources = [ "src/nearby/presence/xts_aes/tests/xts_roundtrip_tests.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_default",
+    ":ldt_tbc",
+    ":rand_ext",
+    ":xts_aes",
+    "//third_party/rust/rand/v0_8:test_support",
+  ]
+}
+
+rust_unit_test("xts_nist_test_vectors") {
+  crate_root = "src/nearby/presence/xts_aes/tests/xts_nist_test_vectors.rs"
+  sources = [ "src/nearby/presence/xts_aes/tests/xts_nist_test_vectors.rs" ]
+  deps = [
+    ":crypto_provider",
+    ":crypto_provider_default",
+    ":ldt_tbc",
+    ":test_helper",
+    ":xts_aes",
+    "//third_party/rust/anyhow/v1:test_support",
+    "//third_party/rust/hex/v0_4:test_support",
+    "//third_party/rust/regex/v1:test_support",
+  ]
+}
+
+# rust test targets
+cargo_crate("test_helper") {
+  testonly = true
+  build_native_rust_unit_tests = false
+  crate_type = "rlib"
+  crate_root = "src/nearby/presence/test_helper/src/lib.rs"
+  sources = [ "src/nearby/presence/test_helper/src/lib.rs" ]
+  edition = "2021"
+  rustenv = [ "WORKSPACE_DIR=" + rebase_path("src/nearby/") ]
+  deps = [
+    "//third_party/rust/hex/v0_4:test_support",
+    "//third_party/rust/serde_json/v1:test_support",
+  ]
+}
+
+# rust test targets
+cargo_crate("rand_ext") {
+  testonly = true
+  build_native_rust_unit_tests = false
+  crate_type = "rlib"
+  crate_root = "src/nearby/presence/rand_ext/src/lib.rs"
+  sources = [ "src/nearby/presence/rand_ext/src/lib.rs" ]
+  edition = "2021"
+  deps = [
+    ":crypto_provider",
+    "//third_party/rust/log/v0_4:test_support",
+    "//third_party/rust/rand/v0_8:test_support",
+    "//third_party/rust/rand_pcg/v0_3:test_support",
   ]
 }

@@ -75,6 +75,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
@@ -189,6 +190,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/browser/language_state.h"
@@ -298,6 +300,11 @@
 // To avoid conflicts with the macro from the Windows SDK...
 #undef LoadAccelerators
 #endif
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/accessibility/pdf_ocr_controller.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
@@ -763,6 +770,17 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&BrowserView::MaybeInitializeWebUITabStrip,
                                     browser_view_->GetAsWeakPtr()));
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      // TODO(crbug.com/1442928): Check if PdfOcrController is correctly
+      // created on windows, macOS, and linux when screen reader is on.
+      if (features::IsPdfOcrEnabled()) {
+        screen_ai::PdfOcrControllerFactory::GetForProfile(
+            browser_view_->GetProfile());
+        // TODO(crbug.com/1393069): Destroy `PdfOcrController` when no longer
+        // needed.
+      }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     }
   }
 
@@ -897,7 +915,9 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       this, is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft));
   left_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
-  side_panel_coordinator_ = std::make_unique<SidePanelCoordinator>(this);
+
+  SidePanelUI::SetSidePanelUIForBrowser(
+      browser_.get(), std::make_unique<SidePanelCoordinator>(this));
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -965,6 +985,13 @@ BrowserView::~BrowserView() {
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
   RemoveAllChildViews();
+
+  SidePanelUI::RemoveSidePanelUIForBrowser(browser_.get());
+}
+
+SidePanelCoordinator* BrowserView::side_panel_coordinator() {
+  return static_cast<SidePanelCoordinator*>(
+      SidePanelUI::GetSidePanelUIForBrowser(browser_.get()));
 }
 
 // static
@@ -2199,7 +2226,7 @@ bool BrowserView::IsBorderlessModeEnabled() const {
 void BrowserView::ShowSidePanel(
     absl::optional<SidePanelEntry::Id> entry_id,
     absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
-  side_panel_coordinator_->Show(entry_id, open_trigger);
+  side_panel_coordinator()->Show(entry_id, open_trigger);
 }
 
 bool BrowserView::AppUsesBorderlessMode() const {
@@ -3829,7 +3856,7 @@ void BrowserView::AddedToWidget() {
       toolbar()->side_panel_container()->ObserveSidePanelView(
           unified_side_panel_);
     } else {
-      unified_side_panel_->AddObserver(side_panel_coordinator_.get());
+      unified_side_panel_->AddObserver(side_panel_coordinator());
     }
   }
 

@@ -16,6 +16,11 @@ BASE_FEATURE(kApiRuntimeGetContexts,
              "ApiRuntimeGetContexts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls the availability of the sidePanel.open() API.
+BASE_FEATURE(kApiSidePanelOpen,
+             "ApiSidePanelOpen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////

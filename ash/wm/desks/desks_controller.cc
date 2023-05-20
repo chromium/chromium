@@ -182,7 +182,7 @@ void RemoveAllWindowsFromOverview() {
       // overview transformation to the windows again when appending those
       // windows back to the overview grid regardless of whether those windows
       // were already in that transformation.
-      overview_item->RestoreWindow(/*reset_transform=*/true);
+      overview_item->RestoreWindow(/*reset_transform=*/true, /*animate=*/false);
       overview_session->RemoveItem(overview_item);
     }
   }
@@ -553,6 +553,15 @@ Desk* DesksController::GetPreviousDesk(bool use_target_active_desk) const {
 Desk* DesksController::GetDeskByUuid(const base::Uuid& desk_uuid) const {
   auto it = base::ranges::find(desks_, desk_uuid, &Desk::uuid);
   return it != desks_.end() ? it->get() : nullptr;
+}
+
+int DesksController::GetDeskIndexByUuid(const base::Uuid& desk_uuid) const {
+  for (size_t i = 0; i < desks_.size(); ++i) {
+    if (desk_uuid == desks_[i]->uuid()) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 bool DesksController::CanRemoveDesks() const {
@@ -1276,13 +1285,11 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
   // not be visible on all desks.
   if (!desks_util::IsWindowVisibleOnAllWorkspaces(
           existing_app_instance_window)) {
-    // The index of the target desk is found in `app_restore_data`. If it isn't
-    // set, or out of bounds, then we default to the rightmost desk.
-    const int rightmost_desk_index = desks_.size() - 1;
-    const int target_desk_index =
-        std::min(app_restore_data.desk_id.value_or(rightmost_desk_index),
-                 rightmost_desk_index);
-    Desk* target_desk = desks_[target_desk_index].get();
+    // The uuid of the target desk is found in `app_restore_data`. If it isn't
+    // set, or is invalid, then we default to the rightmost desk.
+    Desk* target_desk = app_restore_data.desk_guid.is_valid()
+                            ? GetDeskByUuid(app_restore_data.desk_guid)
+                            : desks_.back().get();
 
     DCHECK(src_desk);
     if (src_desk != target_desk) {

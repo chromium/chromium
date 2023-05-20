@@ -10,9 +10,8 @@
 
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
-import '../../settings_shared.css.js';
 import '../os_settings_icons.html.js';
 
 import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdown_menu.js';

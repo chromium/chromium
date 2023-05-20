@@ -1,0 +1,41 @@
+[package]
+authors = ["Michele d'Amico <michele.damico@gmail.com>"]
+categories = ["development-tools::testing"]
+description = """
+Rust fixture based test framework. It use procedural macro
+to implement fixtures and table based tests.
+"""
+edition = "2018"
+homepage = "https://github.com/la10736/rstest"
+keywords = ["test", "fixture"]
+license = "MIT/Apache-2.0"
+name = "rstest"
+readme = "README.md"
+repository = "https://github.com/la10736/rstest"
+version = "0.17.0"
+
+[features]
+async-timeout = ["dep:futures", "dep:futures-timer", "rstest_macros/async-timeout"]
+default = ["async-timeout"]
+
+[lib]
+
+[dependencies]
+futures = {version = "0.3.21", optional = true}
+futures-timer = {version = "3.0.2", optional = true}
+rstest_macros = {version = "0.17.0", path = "../rstest_macros", default-features = false}
+
+[dev-dependencies]
+actix-rt = "2.7.0"
+async-std = {version = "1.12.0", features = ["attributes"]}
+lazy_static = "1.4.0"
+mytest = {package = "rstest", version = "0.16.0", default-features = false}
+pretty_assertions = "1.2.1"
+rstest_reuse = {version = "0.5.0", path = "../rstest_reuse"}
+rstest_test = {version = "0.11.0", path = "../rstest_test"}
+temp_testdir = "0.2.3"
+tokio = {version = "1.19.2", features = ["rt", "macros"]}
+unindent = "0.2.1"
+
+[build-dependencies]
+rustc_version = "0.4.0"

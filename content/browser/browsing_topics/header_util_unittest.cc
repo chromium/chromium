@@ -79,7 +79,6 @@ TEST_F(BrowsingTopicsUtilTest, DeriveTopicsHeaderValue_EmptyTopics) {
   std::vector<blink::mojom::EpochTopicPtr> topics;
 
   std::string header_value = DeriveTopicsHeaderValue(topics);
-
   EXPECT_TRUE(header_value.empty());
 }
 
@@ -97,10 +96,7 @@ TEST_F(BrowsingTopicsUtilTest, DeriveTopicsHeaderValue_OneTopic) {
 
   std::string header_value = DeriveTopicsHeaderValue(topics);
 
-  EXPECT_EQ(
-      header_value,
-      "1;version=\"chrome.1:1:2\";config_version=\"chrome.1\";model_version="
-      "\"2\";taxonomy_version=\"1\"");
+  EXPECT_EQ(header_value, "1;v=\"chrome.1:1:2\"");
 }
 
 TEST_F(BrowsingTopicsUtilTest, DeriveTopicsHeaderValue_TwoTopics) {
@@ -127,11 +123,44 @@ TEST_F(BrowsingTopicsUtilTest, DeriveTopicsHeaderValue_TwoTopics) {
 
   std::string header_value = DeriveTopicsHeaderValue(topics);
 
-  EXPECT_EQ(header_value,
-            "1;version=\"chrome.1:1:2\";config_version=\"chrome.1\";model_"
-            "version=\"2\";taxonomy_version=\"1\", "
-            "2;version=\"chrome.1:3:4\";config_version=\"chrome.1\";model_"
-            "version=\"4\";taxonomy_version=\"3\"");
+  EXPECT_EQ(header_value, "1;v=\"chrome.1:1:2\", 2;v=\"chrome.1:3:4\"");
+}
+
+TEST_F(BrowsingTopicsUtilTest,
+       DeriveTopicsHeaderValue_SkipVersionIfSameWithBefore) {
+  std::vector<blink::mojom::EpochTopicPtr> topics;
+
+  {
+    blink::mojom::EpochTopicPtr topic = blink::mojom::EpochTopic::New();
+    topic->topic = 1;
+    topic->config_version = "chrome.1";
+    topic->taxonomy_version = "1";
+    topic->model_version = "2";
+    topic->version = "chrome.1:1:2";
+    topics.push_back(std::move(topic));
+  }
+  {
+    blink::mojom::EpochTopicPtr topic = blink::mojom::EpochTopic::New();
+    topic->topic = 2;
+    topic->config_version = "chrome.1";
+    topic->taxonomy_version = "1";
+    topic->model_version = "2";
+    topic->version = "chrome.1:1:2";
+    topics.push_back(std::move(topic));
+  }
+  {
+    blink::mojom::EpochTopicPtr topic = blink::mojom::EpochTopic::New();
+    topic->topic = 3;
+    topic->config_version = "chrome.1";
+    topic->taxonomy_version = "3";
+    topic->model_version = "4";
+    topic->version = "chrome.1:3:4";
+    topics.push_back(std::move(topic));
+  }
+
+  std::string header_value = DeriveTopicsHeaderValue(topics);
+
+  EXPECT_EQ(header_value, "1;v=\"chrome.1:1:2\", 2, 3;v=\"chrome.1:3:4\"");
 }
 
 TEST_F(BrowsingTopicsUtilTest,

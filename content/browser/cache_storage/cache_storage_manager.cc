@@ -134,12 +134,14 @@ enum class IndexResult {
 };
 
 IndexResult ValidateIndex(proto::CacheStorageIndex index) {
-  if (!index.has_origin())
+  if (!index.has_origin()) {
     return IndexResult::kMissingOrigin;
+  }
 
   GURL url(index.origin());
-  if (url.is_empty())
+  if (url.is_empty()) {
     return IndexResult::kEmptyOriginUrl;
+  }
 
   // TODO(https://crbug.com/1199077): Consider adding a
   // 'index.has_storage_key()' check here once we've ensured that a
@@ -183,8 +185,9 @@ void ValidateAndAddUsageFromPath(
       index_file_directory_path.AppendASCII(CacheStorage::kIndexFileName);
   base::File::Info file_info;
   base::Time index_last_modified;
-  if (GetFileInfo(index_path, &file_info))
+  if (GetFileInfo(index_path, &file_info)) {
     index_last_modified = file_info.last_modified;
+  }
   std::string protobuf;
   base::ReadFileToString(index_path, &protobuf);
 
@@ -265,8 +268,9 @@ void ValidateAndAddUsageFromPath(
               : storage::mojom::CacheStorageOwner::kCacheAPI;
       auto other_owner_path = CacheStorageManager::ConstructBucketPath(
           profile_path, bucket_locator, other_owner);
-      if (index_file_directory_path == other_owner_path)
+      if (index_file_directory_path == other_owner_path) {
         return;
+      }
     }
     RecordIndexValidationResult(IndexResult::kPathMismatch);
     return;
@@ -617,16 +621,18 @@ CacheStorageHandle CacheStorageManager::OpenCacheStorage(
 void CacheStorageManager::NotifyCacheListChanged(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& observer : observers_)
-    observer->OnCacheListChanged(bucket_locator.storage_key);
+  for (const auto& observer : observers_) {
+    observer->OnCacheListChanged(bucket_locator);
+  }
 }
 
 void CacheStorageManager::NotifyCacheContentChanged(
     const storage::BucketLocator& bucket_locator,
     const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& observer : observers_)
-    observer->OnCacheContentChanged(bucket_locator.storage_key, name);
+  for (const auto& observer : observers_) {
+    observer->OnCacheContentChanged(bucket_locator, name);
+  }
 }
 
 void CacheStorageManager::CacheStorageUnreferenced(
@@ -657,8 +663,9 @@ void CacheStorageManager::GetAllStorageKeysUsage(
 
   if (IsMemoryBacked()) {
     for (const auto& bucket_details : cache_storage_map_) {
-      if (bucket_details.first.second != owner)
+      if (bucket_details.first.second != owner) {
         continue;
+      }
       const storage::BucketLocator& bucket_locator = bucket_details.first.first;
       usages.emplace_back(bucket_locator, storage::mojom::StorageUsageInfo::New(
                                               bucket_locator.storage_key,
@@ -790,12 +797,14 @@ void CacheStorageManager::GetStorageKeys(
   if (IsMemoryBacked()) {
     std::vector<blink::StorageKey> storage_keys;
     for (const auto& key_value : cache_storage_map_) {
-      if (key_value.first.second != owner)
+      if (key_value.first.second != owner) {
         continue;
+      }
 
       const storage::BucketLocator& bucket_locator = key_value.first.first;
-      if (!bucket_locator.is_default)
+      if (!bucket_locator.is_default) {
         continue;
+      }
 
       storage_keys.push_back(bucket_locator.storage_key);
     }
@@ -926,8 +935,9 @@ void CacheStorageManager::DeleteOriginData(
     // search for the corresponding `storage::BucketLocator` keys, given a
     // `blink::StorageKey`.
     for (const auto& key_value : cache_storage_map_) {
-      if (key_value.first.second != owner)
+      if (key_value.first.second != owner) {
         continue;
+      }
       const storage::BucketLocator& bucket_locator = key_value.first.first;
       if (!BucketMatchesOriginsForDeletion(bucket_locator, origins)) {
         continue;
@@ -1055,8 +1065,9 @@ void CacheStorageManager::DeleteBucketDidClose(
       -bucket_size, base::Time::Now(),
       base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());
 
-  if (owner == storage::mojom::CacheStorageOwner::kCacheAPI)
+  if (owner == storage::mojom::CacheStorageOwner::kCacheAPI) {
     NotifyCacheListChanged(bucket_locator);
+  }
 
   if (IsMemoryBacked()) {
     scheduler_task_runner_->PostTask(
@@ -1132,8 +1143,9 @@ bool CacheStorageManager::IsValidQuotaStorageKey(
 void CacheStorageManager::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
+  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
+  }
 
   for (auto& entry : cache_storage_map_) {
     entry.second->ReleaseUnreferencedCaches();

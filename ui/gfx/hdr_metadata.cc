@@ -11,48 +11,45 @@
 
 namespace gfx {
 
-ColorVolumeMetadata::ColorVolumeMetadata() = default;
-ColorVolumeMetadata::ColorVolumeMetadata(const ColorVolumeMetadata& rhs) =
-    default;
-ColorVolumeMetadata& ColorVolumeMetadata::operator=(
-    const ColorVolumeMetadata& rhs) = default;
+std::string HdrMetadataCta861_3::ToString() const {
+  std::stringstream ss;
+  ss << std::fixed << std::setprecision(4)
+     << "{maxCLL:" << max_content_light_level
+     << ", maxFALL:" << max_frame_average_light_level << "}";
+  return ss.str();
+}
 
-ColorVolumeMetadata::ColorVolumeMetadata(const SkColorSpacePrimaries& primaries,
-                                         float luminance_max,
-                                         float luminance_min)
+HdrMetadataSmpteSt2086::HdrMetadataSmpteSt2086() = default;
+HdrMetadataSmpteSt2086::HdrMetadataSmpteSt2086(
+    const HdrMetadataSmpteSt2086& rhs) = default;
+HdrMetadataSmpteSt2086& HdrMetadataSmpteSt2086::operator=(
+    const HdrMetadataSmpteSt2086& rhs) = default;
+
+HdrMetadataSmpteSt2086::HdrMetadataSmpteSt2086(
+    const SkColorSpacePrimaries& primaries,
+    float luminance_max,
+    float luminance_min)
     : primaries(primaries),
       luminance_max(luminance_max),
       luminance_min(luminance_min) {}
 
-std::string ColorVolumeMetadata::ToString() const {
+std::string HdrMetadataSmpteSt2086::ToString() const {
   std::stringstream ss;
-  ss << std::fixed << std::setprecision(4);
-  ss << "{";
-  ss << "red:[" << primaries.fRX << ", " << primaries.fRY << "], ";
-  ss << "green:[" << primaries.fGX << ", " << primaries.fGY << "], ";
-  ss << "blue:[" << primaries.fBX << ", " << primaries.fBY << "], ";
-  ss << "whitePoint:[" << primaries.fWX << ", " << primaries.fWY << "], ";
-  ss << "minLum:" << luminance_min << ", "
-     << "maxLum:" << luminance_max;
-  ss << "}";
+  ss << std::fixed << std::setprecision(4) << "{"
+     << "red:[" << primaries.fRX << ", " << primaries.fRY << "], "
+     << "green:[" << primaries.fGX << ", " << primaries.fGY << "], "
+     << "blue:[" << primaries.fBX << ", " << primaries.fBY << "], "
+     << "whitePoint:[" << primaries.fWX << ", " << primaries.fWY << "], "
+     << "minLum:" << luminance_min << ", "
+     << "maxLum:" << luminance_max << "}";
   return ss.str();
 }
-
-HDRMetadata::HDRMetadata() = default;
-HDRMetadata::HDRMetadata(const ColorVolumeMetadata& color_volume_metadata,
-                         unsigned max_content_light_level,
-                         unsigned max_frame_average_light_level)
-    : color_volume_metadata(color_volume_metadata),
-      max_content_light_level(max_content_light_level),
-      max_frame_average_light_level(max_frame_average_light_level) {}
-HDRMetadata::HDRMetadata(const HDRMetadata& rhs) = default;
-HDRMetadata& HDRMetadata::operator=(const HDRMetadata& rhs) = default;
 
 // static
 HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
     const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
   const HDRMetadata defaults(
-      ColorVolumeMetadata(SkNamedPrimariesExt::kRec2020, 10000.f, 0.f), 0, 0);
+      HdrMetadataSmpteSt2086(SkNamedPrimariesExt::kRec2020, 10000.f, 0.f));
 
   if (!hdr_metadata)
     return defaults;
@@ -60,16 +57,14 @@ HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
   HDRMetadata result = *hdr_metadata;
 
   // If the gamut is unspecified, replace it with the default Rec2020.
-  if (result.color_volume_metadata.primaries == SkNamedPrimariesExt::kInvalid) {
-    result.color_volume_metadata.primaries =
-        defaults.color_volume_metadata.primaries;
+  if (result.smpte_st_2086.primaries == SkNamedPrimariesExt::kInvalid) {
+    result.smpte_st_2086.primaries = defaults.smpte_st_2086.primaries;
   }
 
   // If the max luminance is unspecified, replace it with the default 10,000
   // nits.
-  if (result.color_volume_metadata.luminance_max == 0.f) {
-    result.color_volume_metadata.luminance_max =
-        defaults.color_volume_metadata.luminance_max;
+  if (result.smpte_st_2086.luminance_max == 0.f) {
+    result.smpte_st_2086.luminance_max = defaults.smpte_st_2086.luminance_max;
   }
 
   return result;
@@ -78,9 +73,8 @@ HDRMetadata HDRMetadata::PopulateUnspecifiedWithDefaults(
 std::string HDRMetadata::ToString() const {
   std::stringstream ss;
   ss << "{";
-  ss << "smpteSt2086:" << color_volume_metadata.ToString() << ", ";
-  ss << "maxCLL:" << max_content_light_level << ", ";
-  ss << "maxFALL:" << max_frame_average_light_level;
+  ss << "smpte_st_2086:" << smpte_st_2086.ToString();
+  ss << ", cta_861_3:" << cta_861_3.ToString() << ", ";
 
   if (extended_range_brightness) {
     ss << "cur_ratio: " << extended_range_brightness->current_buffer_ratio;

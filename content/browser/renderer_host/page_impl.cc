@@ -95,6 +95,10 @@ bool PageImpl::IsPageScaleFactorOne() {
   return GetPageScaleFactor() == 1.f;
 }
 
+const std::string& PageImpl::GetContentsMimeType() const {
+  return contents_mime_type_;
+}
+
 void PageImpl::OnFirstVisuallyNonEmptyPaint() {
   did_first_visually_non_empty_paint_ = true;
   delegate_->OnFirstVisuallyNonEmptyPaint(*this);

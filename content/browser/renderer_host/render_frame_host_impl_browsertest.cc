@@ -3702,16 +3702,16 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
   // Simulate getting WebSocket in a feature vector from the renderer.
   main_frame->DidChangeBackForwardCacheDisablingFeatures(
-      CreateBlockingDetails(BlocklistedFeature::kWebSocket));
+      CreateBlockingDetails({BlocklistedFeature::kWebSocket}));
   ASSERT_EQ(main_frame->GetBackForwardCacheDisablingFeatures(),
-            BlocklistedFeatures(BlocklistedFeature::kWebSocket));
+            BlocklistedFeatures({BlocklistedFeature::kWebSocket}));
 
   // Simulate the browser side reporting WebRTC usage.
   main_frame->OnBackForwardCacheDisablingStickyFeatureUsed(
       static_cast<BlocklistedFeature>(BlocklistedFeature::kWebRTC));
   ASSERT_EQ(main_frame->GetBackForwardCacheDisablingFeatures(),
-            BlocklistedFeatures(BlocklistedFeature::kWebSocket,
-                                BlocklistedFeature::kWebRTC));
+            BlocklistedFeatures(
+                {BlocklistedFeature::kWebSocket, BlocklistedFeature::kWebRTC}));
 
   // Simulate a feature vector being updated from the renderer with some
   // features being activated and some being deactivated.
@@ -3722,8 +3722,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
        BlocklistedFeature::kMainResourceHasCacheControlNoCache}));
   ASSERT_EQ(main_frame->GetBackForwardCacheDisablingFeatures(),
             BlocklistedFeatures(
-                BlocklistedFeature::kWebRTC,
-                BlocklistedFeature::kMainResourceHasCacheControlNoCache));
+                {BlocklistedFeature::kWebRTC,
+                 BlocklistedFeature::kMainResourceHasCacheControlNoCache}));
 
   // Navigate away and expect that no values persist the navigation.
   // Note that we are still simulating the renderer call, otherwise features

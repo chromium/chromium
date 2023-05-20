@@ -21,6 +21,7 @@ namespace ash {
 
 struct AmbientSettings;
 class AmbientUiSettings;
+class AshWebView;
 enum class AmbientUiMode;
 
 namespace ambient {
@@ -54,6 +55,10 @@ ASH_EXPORT void RecordAmbientModePhotoOrientationMatch(
 
 ASH_EXPORT void RecordAmbientModeStartupTime(
     base::TimeDelta startup_time,
+    const AmbientUiSettings& ui_settings);
+
+ASH_EXPORT void RecordAmbientModeVideoSmoothness(
+    AshWebView* web_view,
     const AmbientUiSettings& ui_settings);
 
 // Records metrics that track the total usage of each orientation in ambient

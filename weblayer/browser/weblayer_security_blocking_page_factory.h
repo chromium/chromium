@@ -72,8 +72,11 @@ class WebLayerSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
   CreateInsecureFormBlockingPage(content::WebContents* web_contents,
                                  const GURL& request_url) override;
   std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
-  CreateHttpsOnlyModeBlockingPage(content::WebContents* web_contents,
-                                  const GURL& request_url) override;
+  CreateHttpsOnlyModeBlockingPage(
+      content::WebContents* web_contents,
+      const GURL& request_url,
+      security_interstitials::https_only_mode::HttpInterstitialState
+          interstitial_state) override;
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the URL that will be navigated to when the user clicks on the

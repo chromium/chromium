@@ -252,6 +252,9 @@ void SavedTabGroupModel::AddTabToGroup(const base::Uuid& group_id,
     for (auto& observer : observers_) {
       observer.SavedTabGroupUpdatedLocally(group_id, tab_id);
     }
+
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_SavedTabGroups_TabAdded"));
   }
 }
 
@@ -259,11 +262,30 @@ void SavedTabGroupModel::UpdateTabInGroup(const base::Uuid& group_id,
                                           SavedTabGroupTab tab) {
   absl::optional<int> group_index = GetIndexOf(group_id);
   CHECK(group_index.has_value());
+
+  const SavedTabGroupTab* const old_tab =
+      saved_tab_groups_[group_index.value()].GetTab(tab.saved_tab_guid());
+
+  if (old_tab->url() != tab.url()) {
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_SavedTabGroups_TabNavigated"));
+  }
+
   saved_tab_groups_[group_index.value()].UpdateTab(tab);
 
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(group_id, tab.saved_tab_guid());
   }
+}
+
+void SavedTabGroupModel::UpdateLocalTabId(
+    const base::Uuid& group_id,
+    SavedTabGroupTab tab,
+    absl::optional<base::Token> local_id) {
+  absl::optional<int> group_index = GetIndexOf(group_id);
+  CHECK(group_index.has_value());
+  tab.SetLocalTabID(local_id);
+  saved_tab_groups_[group_index.value()].UpdateTab(tab);
 }
 
 void SavedTabGroupModel::RemoveTabFromGroup(const base::Uuid& group_id,
@@ -303,6 +325,9 @@ void SavedTabGroupModel::RemoveTabFromGroup(const base::Uuid& group_id,
     for (auto& observer : observers_) {
       observer.SavedTabGroupUpdatedLocally(group_id, copy_tab_id);
     }
+
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_SavedTabGroups_TabRemoved"));
   }
 }
 
@@ -366,8 +391,8 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeTab(
 }
 
 void SavedTabGroupModel::Reorder(const base::Uuid& id, int new_index) {
-  DCHECK_GE(new_index, 0);
-  DCHECK_LT(new_index, Count());
+  CHECK_GE(new_index, 0);
+  CHECK_LT(new_index, Count());
 
   absl::optional<int> index = GetIndexOf(id);
   CHECK(index.has_value());
@@ -479,7 +504,7 @@ void SavedTabGroupModel::OnGroupClosedInTabStrip(
   saved_group.SetLocalGroupId(absl::nullopt);
 
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(saved_group.saved_guid());
+    observer.SavedTabGroupLocalIdChanged(saved_group.saved_guid());
   }
 
   base::RecordAction(
@@ -497,7 +522,7 @@ void SavedTabGroupModel::OnGroupOpenedInTabStrip(
   saved_group.SetLocalGroupId(tab_group_id);
 
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(saved_group.saved_guid());
+    observer.SavedTabGroupLocalIdChanged(saved_group.saved_guid());
   }
 }
 

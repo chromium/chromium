@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/files/file_util.h"
 #import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
@@ -13,7 +11,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
-#import "ios/chrome/browser/open_in/open_in_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
@@ -21,23 +18,15 @@
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_download_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/open_in/features.h"
-#import "ios/chrome/browser/ui/open_in/open_in_histograms.h"
+#import "ios/chrome/browser/sharing/share_file_download_tab_helper.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_presentation.h"
 #import "ios/chrome/browser/ui/sharing/qr_generator/qr_generator_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/share_download_overlay_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/share_file_download_metrics.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/download/crw_web_view_download.h"
-#import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/navigation/navigation_manager.h"
-#import "net/base/load_flags.h"
-#import "net/base/mac/url_conversions.h"
-#import "services/network/public/cpp/resource_request.h"
-#import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "services/network/public/cpp/simple_url_loader.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -140,17 +129,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 @end
 
-@implementation SharingCoordinator {
-  // Loader used to redownload the document and save it in the sandbox.
-  // TODO(crbug.com/1357553): Remove when Open In download experiment is
-  // finished.
-  std::unique_ptr<network::SimpleURLLoader> _urlLoader;
-
-  // URLLoaderFactory instance needed for URLLoader.
-  // TODO(crbug.com/1357553): Remove when Open In download experiment is
-  // finished.
-  scoped_refptr<network::SharedURLLoaderFactory> _urlLoaderFactory;
-}
+@implementation SharingCoordinator
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
@@ -222,8 +201,8 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 - (void)start {
   web::WebState* currentWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  if (currentWebState && OpenInTabHelper::ShouldDownload(currentWebState) &&
-      IsOpenInActivitiesInShareButtonEnabled()) {
+  if (currentWebState &&
+      ShareFileDownloadTabHelper::ShouldDownload(currentWebState)) {
     // Creating the directory can block the main thread, so perform it on a
     // background sequence, then on current sequence complete the workflow.
     __weak SharingCoordinator* weakSelf = self;
@@ -264,8 +243,6 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 - (void)activityServiceDidEndPresenting {
   [self.activityServiceCoordinator stop];
   self.activityServiceCoordinator = nil;
-
-  _urlLoader.reset();
 
   // If a new download with a file with the same name exist it will throw an
   // error in downloadDidFailWithError method.
@@ -329,52 +306,18 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 - (void)startDownloadFromWebState:(web::WebState*)webState {
   self.isDownloadCanceled = NO;
   NSString* tempDirPath = GetTemporaryDocumentDirectory();
-  OpenInTabHelper* helper = OpenInTabHelper::FromWebState(webState);
+  ShareFileDownloadTabHelper* helper =
+      ShareFileDownloadTabHelper::FromWebState(webState);
   self.filePath = [tempDirPath
       stringByAppendingPathComponent:base::SysUTF16ToNSString(
                                          helper->GetFileNameSuggestion())];
   self.fileNSURL = [NSURL fileURLWithPath:self.filePath];
 
-  if (@available(iOS 14.5, *)) {
-    if (IsOpenInNewDownloadEnabled()) {
       __weak SharingCoordinator* weakSelf = self;
       webState->DownloadCurrentPage(self.filePath, self,
                                     ^(id<CRWWebViewDownload> download) {
                                       weakSelf.download = download;
                                     });
-      return;
-    }
-  }
-
-  // Download the document and save it at `self.filePath`.
-  // TODO(crbug.com/1357553): Remove when Open In download experiment is
-  // finished.
-  web::NavigationItem* item =
-      webState->GetNavigationManager()->GetLastCommittedItem();
-  const GURL& last_committed_url = item ? item->GetURL() : GURL::EmptyGURL();
-
-  auto resourceRequest = std::make_unique<network::ResourceRequest>();
-  resourceRequest->url = last_committed_url;
-  resourceRequest->load_flags = net::LOAD_SKIP_CACHE_VALIDATION;
-
-  _urlLoader = network::SimpleURLLoader::Create(std::move(resourceRequest),
-                                                NO_TRAFFIC_ANNOTATION_YET);
-
-  _urlLoaderFactory = webState->GetBrowserState()->GetSharedURLLoaderFactory();
-
-  __weak SharingCoordinator* weakSelf = self;
-  _urlLoader->DownloadToFile(
-      std::move(_urlLoaderFactory).get(),
-      base::BindOnce(^(base::FilePath filePath) {
-        if (!weakSelf.isDownloadCanceled) {
-          if ([weakSelf hasValidFileAtURL:weakSelf.fileNSURL]) {
-            [weakSelf downloadDidFinish];
-          } else {
-            [weakSelf downloadDidFailWithError:nil];
-          }
-        }
-      }),
-      base::FilePath(base::SysNSStringToUTF8(self.filePath)));
 }
 
 // Shows an overlayed spinner on the top view to indicate that a file download
@@ -442,19 +385,17 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 - (void)cancelDownload {
   [self stopDisplayDownloadOverlay];
-  if (@available(iOS 14.5, *)) {
-    self.isCancelling = YES;
-    __weak SharingCoordinator* weakSelf = self;
-    [self.download cancelDownload:^() {
-      weakSelf.isDownloadCanceled = YES;
-      weakSelf.isCancelling = NO;
-      if (weakSelf.shouldRestartCoordinator) {
-        // Self will be destroyed after this call so it should not be used
-        // anymore.
-        [weakSelf stopAndStartNewCoordinator];
-      }
-    }];
-  }
+  self.isCancelling = YES;
+  __weak SharingCoordinator* weakSelf = self;
+  [self.download cancelDownload:^() {
+    weakSelf.isDownloadCanceled = YES;
+    weakSelf.isCancelling = NO;
+    if (weakSelf.shouldRestartCoordinator) {
+      // Self will be destroyed after this call so it should not be used
+      // anymore.
+      [weakSelf stopAndStartNewCoordinator];
+    }
+  }];
   UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
                             OpenInDownloadResult::kCanceled);
 }

@@ -125,6 +125,8 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(GURL page_url) {
       pref_service_->GetInteger(kMsbbPromoDeclinedCountPref));
   promo_state->set_exps_promo_denial_count(
       pref_service_->GetInteger(kExpsPromoDeclinedCountPref));
+  promo_state->set_exps_promo_shown_count(
+      pref_service_->GetInteger(kExpsPromoShownCountPref));
 
   std::string base64_encoded_proto;
   base::Base64Encode(url_params.SerializeAsString(), &base64_encoded_proto);

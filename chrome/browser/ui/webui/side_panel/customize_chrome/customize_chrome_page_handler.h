@@ -30,6 +30,18 @@ class WebContents;
 
 class Profile;
 
+/**
+ * Places where the chrome web store can be opened from in Customize Chrome.
+ * This enum must match the numbering for NTPChromeWebStoreOpen in enums.xml.
+ * These values are persisted to logs. Entries should not be renumbered, removed
+ * or reused.
+ */
+enum class NtpChromeWebStoreOpen {
+  kAppearance = 0,
+  kCollections = 1,
+  kMaxValue = kCollections,
+};
+
 class CustomizeChromePageHandler
     : public side_panel::mojom::CustomizeChromePageHandler,
       public NtpBackgroundServiceObserver,

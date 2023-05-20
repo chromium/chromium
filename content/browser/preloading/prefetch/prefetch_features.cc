@@ -14,4 +14,8 @@ BASE_FEATURE(kPrefetchRedirects,
              "PrefetchRedirects",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchNewLimits,
+             "PrefetchNewLimits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace content::features

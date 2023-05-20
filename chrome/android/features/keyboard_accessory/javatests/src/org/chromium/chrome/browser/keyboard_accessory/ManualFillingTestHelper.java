@@ -356,15 +356,42 @@ public class ManualFillingTestHelper {
     }
 
     public static void createAutofillTestProfiles() throws TimeoutException {
-        new AutofillTestHelper().setProfile(new AutofillProfile("", "" /* honorific prefix */,
-                "Johnathan Smithonian-Jackson", "Acme Inc", "1 Main\nApt A", "CA", "San Francisco",
-                "", "94102", "", "US", "(415) 888-9999", "john.sj@acme-mail.inc", "en"));
-        new AutofillTestHelper().setProfile(new AutofillProfile("", "" /* honorific prefix */,
-                "Jane Erika Donovanova", "Acme Inc", "1 Main\nApt A", "CA", "San Francisco", "",
-                "94102", "", "US", "(415) 999-0000", "donovanova.j@acme-mail.inc", "en"));
-        new AutofillTestHelper().setProfile(new AutofillProfile("", "" /* honorific prefix */,
-                "Marcus McSpartangregor", "Acme Inc", "1 Main\nApt A", "CA", "San Francisco", "",
-                "94102", "", "US", "(415) 999-0000", "marc@acme-mail.inc", "en"));
+        new AutofillTestHelper().setProfile(AutofillProfile.builder()
+                                                    .setFullName("Johnathan Smithonian-Jackson")
+                                                    .setCompanyName("Acme Inc")
+                                                    .setStreetAddress("1 Main\nApt A")
+                                                    .setRegion("CA")
+                                                    .setLocality("San Francisco")
+                                                    .setPostalCode("94102")
+                                                    .setCountryCode("US")
+                                                    .setPhoneNumber("(415) 888-9999")
+                                                    .setEmailAddress("john.sj@acme-mail.inc")
+                                                    .setLanguageCode("en")
+                                                    .build());
+        new AutofillTestHelper().setProfile(AutofillProfile.builder()
+                                                    .setFullName("Jane Erika Donovanova")
+                                                    .setCompanyName("Acme Inc")
+                                                    .setStreetAddress("1 Main\nApt A")
+                                                    .setRegion("CA")
+                                                    .setLocality("San Francisco")
+                                                    .setPostalCode("94102")
+                                                    .setCountryCode("US")
+                                                    .setPhoneNumber("(415) 999-0000")
+                                                    .setEmailAddress("donovanova.j@acme-mail.inc")
+                                                    .setLanguageCode("en")
+                                                    .build());
+        new AutofillTestHelper().setProfile(AutofillProfile.builder()
+                                                    .setFullName("Marcus McSpartangregor")
+                                                    .setCompanyName("Acme Inc")
+                                                    .setStreetAddress("1 Main\nApt A")
+                                                    .setRegion("CA")
+                                                    .setLocality("San Francisco")
+                                                    .setPostalCode("94102")
+                                                    .setCountryCode("US")
+                                                    .setPhoneNumber("(415) 999-0000")
+                                                    .setEmailAddress("marc@acme-mail.inc")
+                                                    .setLanguageCode("en")
+                                                    .build());
     }
 
     public static void disableServerPredictions() {

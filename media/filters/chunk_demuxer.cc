@@ -392,9 +392,7 @@ void ChunkDemuxerStream::CompletePendingReadIfPossible_Locked() {
 
   switch (state_) {
     case UNINITIALIZED:
-      requested_buffer_count_ = 0;
-      NOTREACHED();
-      return;
+      NOTREACHED_NORETURN();
     case RETURNING_ABORT_FOR_READS:
       // Null buffers should be returned in this state since we are waiting
       // for a seek. Any buffers in the SourceBuffer should NOT be returned
@@ -1573,8 +1571,7 @@ ChunkDemuxerStream* ChunkDemuxer::CreateDemuxerStream(
       break;
 
     case DemuxerStream::UNKNOWN:
-      NOTREACHED();
-      return nullptr;
+      NOTREACHED_NORETURN();
   }
 
   std::unique_ptr<ChunkDemuxerStream> stream =

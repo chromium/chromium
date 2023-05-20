@@ -143,6 +143,8 @@ TEST_F(BluetoothDetailedViewImplTest,
   bluetooth_detailed_view_->UpdateBluetoothEnabledState(true);
 
   EXPECT_EQ(u"On", toggle_row->text_label()->GetText());
+  EXPECT_EQ(u"Toggle Bluetooth. Bluetooth is on.",
+            toggle_row->GetTooltipText());
   EXPECT_TRUE(toggle_button->GetIsOn());
   EXPECT_EQ(u"Toggle Bluetooth. Bluetooth is on.",
             toggle_button->GetTooltipText());
@@ -151,6 +153,8 @@ TEST_F(BluetoothDetailedViewImplTest,
   bluetooth_detailed_view_->UpdateBluetoothEnabledState(false);
 
   EXPECT_EQ(u"Off", toggle_row->text_label()->GetText());
+  EXPECT_EQ(u"Toggle Bluetooth. Bluetooth is off.",
+            toggle_row->GetTooltipText());
   EXPECT_FALSE(toggle_button->GetIsOn());
   EXPECT_EQ(u"Toggle Bluetooth. Bluetooth is off.",
             toggle_button->GetTooltipText());

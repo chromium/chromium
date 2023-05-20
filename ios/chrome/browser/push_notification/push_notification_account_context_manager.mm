@@ -8,12 +8,12 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -93,7 +93,12 @@
 - (BOOL)isPushNotificationEnabledForClient:(PushNotificationClientId)clientID
                                 forAccount:(const std::string&)gaiaID {
   ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
-  DCHECK(browserState);
+  // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
+  // ConsistencySigninPromo UI updates the BrowserStateInfoCache.
+  if (!browserState) {
+    return false;
+  }
+
   std::string key =
       PushNotificationClientManager::PushNotificationClientIdToString(clientID);
   return browserState->GetPrefs()

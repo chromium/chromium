@@ -722,6 +722,8 @@ def main():
       '-DLLVM_ENABLE_CURL=OFF',
       # Build libclang.a as well as libclang.so
       '-DLIBCLANG_BUILD_STATIC=ON',
+      # Don't try to use ZStd (crbug.com/1444500).
+      '-DLLVM_ENABLE_ZSTD=OFF',
   ]
 
   if sys.platform == 'darwin':

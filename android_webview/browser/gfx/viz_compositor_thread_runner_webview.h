@@ -37,6 +37,8 @@ namespace android_webview {
 // in VizMainImpl, which may cause confusion for developers. If this proves to
 // be common, then an alternative is assume viz runs in the browser process
 // and directly connect viz classes to mojo end points in the browser.
+//
+// Lifetime: Singleton
 class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
  public:
   static VizCompositorThreadRunnerWebView* GetInstance();

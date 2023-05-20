@@ -1425,7 +1425,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
           .GetAppIdForSystemApp(SystemWebAppType::SHORTCUT_CUSTOMIZATION)
           .value();
   Browser* browser;
-  EXPECT_TRUE(LaunchApp(SystemWebAppType::SHORTCUT_CUSTOMIZATION, &browser));
+  content::WebContents* web_contents =
+      LaunchApp(SystemWebAppType::SHORTCUT_CUSTOMIZATION, &browser);
+  EXPECT_TRUE(web_contents);
 
   std::unique_ptr<ui::SimpleMenuModel> menu_model;
   {
@@ -1459,9 +1461,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerShortcutTest, ShortcutUrl) {
   check_shortcut(menu_model->GetItemCount() - 1, 1, u"Two");
 
   const int command_id = LAUNCH_APP_SHORTCUT_FIRST + 1;
-  ui_test_utils::UrlLoadObserver url_observer(
-      GURL("chrome://test-system-app/pwa.html#two"),
-      content::NotificationService::AllSources());
+  content::LoadStopObserver url_observer(web_contents);
   menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id).value(),
                           ui::EF_LEFT_MOUSE_BUTTON);
   url_observer.Wait();

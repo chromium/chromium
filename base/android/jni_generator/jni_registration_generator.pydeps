@@ -5,5 +5,7 @@
 ../../../build/android/gyp/util/build_utils.py
 ../../../build/gn_helpers.py
 ../../../build/zip_helpers.py
+java_lang_classes.py
 jni_generator.py
 jni_registration_generator.py
+type_resolver.py

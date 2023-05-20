@@ -1448,6 +1448,8 @@ struct BrowserPostLoginParams {
 };
 
 // Parameters to specify OpenUrl behavior.
+// Next version: 3
+// Next id: 3
 [Stable]
 struct OpenUrlParams {
   // Decides the disposition of the opening page.
@@ -1467,6 +1469,9 @@ struct OpenUrlParams {
 
     // Opens the given URL in a new window.
     [MinVersion=1] kNewWindow = 3,
+
+    // Opens the given URL in an incognito window.
+    [MinVersion=2] kOffTheRecord = 4,
   };
   WindowOpenDisposition disposition@0;
 

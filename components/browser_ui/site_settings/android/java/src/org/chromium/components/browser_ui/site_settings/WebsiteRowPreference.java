@@ -63,12 +63,20 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         updateSummary();
     }
 
+    /**
+     * Handles the click on the row by opening the appropriate SettingsFragment.
+     * @param args the result of getArguments()
+     * @param fromGrouped whether this is invoked from GroupedWebsitesSettings
+     */
     @SuppressWarnings("WrongConstant")
-    public void handleClick(Bundle args) {
+    public void handleClick(Bundle args, boolean fromGrouped) {
         getExtras().putSerializable(mSiteEntry instanceof Website
                         ? SingleWebsiteSettings.EXTRA_SITE
                         : GroupedWebsitesSettings.EXTRA_GROUP,
                 mSiteEntry);
+        if (fromGrouped) {
+            getExtras().putBoolean(SingleWebsiteSettings.EXTRA_FROM_GROUPED, true);
+        }
         setFragment(mSiteEntry instanceof Website ? SingleWebsiteSettings.class.getName()
                                                   : GroupedWebsitesSettings.class.getName());
         getExtras().putInt(SettingsNavigationSource.EXTRA_KEY,

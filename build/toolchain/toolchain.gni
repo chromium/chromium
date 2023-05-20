@@ -20,10 +20,10 @@ declare_args() {
   # Used for binary size analysis.
   generate_linker_map = is_android && is_official_build
 
-  # Whether this toolchain should avoid building any sanitizer support
-  # because it's a host toolchain where we aim to make shared objects that may
-  # be loaded by prebuilt binaries without sanitizer support.
-  toolchain_disables_sanitizers = false
+  # Whether this toolchain is to be used for building host tools that are
+  # consumed during the build process. That includes proc macros and Cargo build
+  # scripts.
+  toolchain_for_rust_host_build_tools = false
 }
 
 if (generate_linker_map) {
@@ -83,15 +83,10 @@ if (host_os == "win") {
       rebase_path("//build/toolchain/win/tool_wrapper.py", root_build_dir)
 
   stamp_command = "cmd /c type nul > \"{{output}}\""
-  copy_command =
-      "\"$python_path\" $_tool_wrapper_path recursive-mirror {{source}} {{output}}"
+  copy_command = "\"$python_path\" $_tool_wrapper_path recursive-mirror {{source}} {{output}}"
 } else {
   stamp_command = "touch {{output}}"
   copy_command = "ln -f {{source}} {{output}} 2>/dev/null || (rm -rf {{output}} && cp -af {{source}} {{output}})"
-}
-
-if (!defined(toolchain_disables_sanitizers)) {
-  toolchain_disables_sanitizers = false
 }
 
 # This variable is true if the current toolchain is one of the target

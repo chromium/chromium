@@ -367,7 +367,7 @@ template("create_signed_bundle") {
   }
 }
 
-# Generates Info.plist files for Mac apps and frameworks.
+# Generates Info.plist files for iOS apps and frameworks.
 #
 # Arguments
 #

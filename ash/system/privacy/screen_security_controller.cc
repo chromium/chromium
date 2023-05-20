@@ -173,6 +173,9 @@ void ScreenSecurityController::OnScreenAccessStart(
     return;
 
   CreateNotification(access_app_name, /*is_screen_access_notification=*/true);
+  if (features::IsPrivacyIndicatorsEnabled()) {
+    UpdatePrivacyIndicatorsScreenShareStatus(/*is_screen_sharing=*/true);
+  }
 }
 
 void ScreenSecurityController::OnScreenAccessStop() {
@@ -181,6 +184,10 @@ void ScreenSecurityController::OnScreenAccessStop() {
   }
 
   StopAllSessions(/*is_screen_access=*/true);
+
+  if (features::IsPrivacyIndicatorsEnabled()) {
+    UpdatePrivacyIndicatorsScreenShareStatus(/*is_screen_sharing=*/false);
+  }
 }
 
 void ScreenSecurityController::OnRemotingScreenShareStart(

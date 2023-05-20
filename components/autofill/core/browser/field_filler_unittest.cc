@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/credit_card_field.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -649,6 +650,7 @@ struct FillUtilExpirationDateTestCase {
   std::u16string expected_value;
   bool expected_response;
   const char* opt_label = nullptr;
+  ServerFieldType server_override = UNKNOWN_TYPE;
 };
 
 class ExpirationDateTest
@@ -662,6 +664,20 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
   field.SetHtmlType(test_case.field_type, HtmlFieldMode());
   field.max_length = test_case.field_max_length;
 
+  CreditCardField::ExpirationDateFormat format =
+      CreditCardField::DetermineExpirationDateFormat(
+          field, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
+  field.set_heuristic_type(PatternSource::kLegacy,
+                           format.digits_in_expiration_year == 2
+                               ? CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
+                               : CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
+  if (test_case.server_override != UNKNOWN_TYPE) {
+    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+        prediction;
+    prediction.set_type(test_case.server_override);
+    prediction.set_override(true);
+    field.set_server_predictions({prediction});
+  }
   if (test_case.opt_label)
     field.label = base::UTF8ToUTF16(test_case.opt_label);
 
@@ -782,8 +798,31 @@ INSTANTIATE_TEST_SUITE_P(
             "MM/YYYY"},
         // Empty strings are handled gracefully.
         FillUtilExpirationDateTestCase{
-            HtmlFieldType::kCreditCardExpDate4DigitYear, 5, u"03/22", true,
-            ""}));
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 5, u"03/22", true, ""},
+
+        // Test manual server overrides:
+        // Even if the label indicates a mm/yy, a server override for a 4 digit
+        // year should be honored if it fits.
+        FillUtilExpirationDateTestCase{
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 0, u"03/2022", true,
+            "mm/yy", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+        // Follow the server if it overrides a shorter date format.
+        FillUtilExpirationDateTestCase{
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 0, u"03/22", true,
+            "mm/yyyy", CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+        // Follow the server but preserve the separator if possible.
+        FillUtilExpirationDateTestCase{
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 0, u"03 - 22", true,
+            "mm - yyyy", CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+        // Follow the server but preserve the separator if possible, even if
+        // that means that whitespaces need to be pruned.
+        FillUtilExpirationDateTestCase{
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 5, u"03-22", true,
+            "mm - yy", CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+        // If the server format just does not fit, fall back to heuristics.
+        FillUtilExpirationDateTestCase{
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 4, u"0322", true,
+            "mm/yy", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}));
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
   std::vector<const char*> kOptions = {

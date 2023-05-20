@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -46,15 +47,16 @@ mojom::MetaKey GetMetaKeyForKeyboard(const ui::KeyboardDevice& keyboard) {
     case ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
     case ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard:
     case ui::KeyboardCapability::DeviceType::kDeviceHotrodRemote:
-    case ui::KeyboardCapability::DeviceType::kDeviceUnknown:
     case ui::KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard:
       return Shell::Get()->keyboard_capability()->HasLauncherButton(keyboard)
                  ? mojom::MetaKey::kLauncher
                  : mojom::MetaKey::kSearch;
     case ui::KeyboardCapability::DeviceType::kDeviceExternalAppleKeyboard:
       return mojom::MetaKey::kCommand;
+    case ui::KeyboardCapability::DeviceType::kDeviceUnknown:
     case ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard:
     case ui::KeyboardCapability::DeviceType::kDeviceExternalUnknown:
+    case ui::KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard:
       return mojom::MetaKey::kExternalMeta;
   };
 }
@@ -140,8 +142,16 @@ bool KeyboardSettingsAreValid(
           settings.top_row_are_fkeys) {
     return false;
   }
-  return keyboard.is_external || (settings.suppress_meta_fkey_rewrites ==
-                                  kDefaultSuppressMetaFKeyRewrites);
+
+  const bool is_non_chromeos_keyboard =
+      (keyboard.meta_key != mojom::MetaKey::kLauncher &&
+       keyboard.meta_key != mojom::MetaKey::kSearch);
+  const bool is_meta_suppressed_setting_default =
+      settings.suppress_meta_fkey_rewrites == kDefaultSuppressMetaFKeyRewrites;
+
+  // The suppress_meta_fkey_rewrites setting can only be changed if the device
+  // is a non-chromeos keyboard.
+  return is_non_chromeos_keyboard || is_meta_suppressed_setting_default;
 }
 
 // The haptic_enabled and haptic_sensitivity are allowed to change only if the
@@ -914,6 +924,22 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
   }
 
   RefreshStoredLoginScreenPointingStickSettings();
+}
+
+void InputDeviceSettingsControllerImpl::
+    RestoreDefaultKeyboardModifierRemappings(DeviceId id) {
+  DCHECK(base::Contains(keyboards_, id));
+  auto& keyboard = *keyboards_.at(id);
+  mojom::KeyboardSettingsPtr new_settings = keyboard.settings->Clone();
+  new_settings->modifier_remappings = {};
+  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+    new_settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
+        ui::mojom::ModifierKey::kMeta;
+    new_settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
+        ui::mojom::ModifierKey::kControl;
+  }
+  metrics_manager_->RecordKeyboardNumberOfKeysReset(keyboard, *new_settings);
+  SetKeyboardSettings(id, std::move(new_settings));
 }
 
 void InputDeviceSettingsControllerImpl::InitializeKeyboardSettings(

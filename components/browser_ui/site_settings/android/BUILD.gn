@@ -73,6 +73,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/FPSCookieSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ForwardingManagedPreferenceDelegate.java",
     "java/src/org/chromium/components/browser_ui/site_settings/FourStateCookieSettingsPreference.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/GroupedWebsitesActivityHolder.java",
     "java/src/org/chromium/components/browser_ui/site_settings/GroupedWebsitesSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/LocalStorageInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/LocationCategory.java",

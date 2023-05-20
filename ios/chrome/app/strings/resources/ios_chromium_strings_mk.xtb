@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> користеше Chromium и остави обележувачи, лозинки и други поставки на уредов.</translation>
 <translation id="372658070733623520">За да користите и зачувувате податоци од Chromium во вашата сметка на Google, потврдете го вашиот идентитет.</translation>
 <translation id="3805899903892079518">Chromium нема пристап до фотографиите или видеата. Овозможете пристап во Поставки на iOS &gt; Приватност &gt; Фотографии.</translation>
+<translation id="3955621079070267756">Отворете Chromium од која било апликација</translation>
 <translation id="4043291146360695975">Лозинките се зачувани во „Управникот со лозинки“ само на уредов.</translation>
 <translation id="4099085513035183040">Не е поддржана на Chromium Beta</translation>
 <translation id="4432744876818348753">Најавете се за да извадите максимум од Chromium.</translation>
@@ -101,7 +102,6 @@
 <translation id="7192111075364461693">Во моментов, известувањата за Chromium се исклучени во вашите поставки за уредот.</translation>
 <translation id="7208566199746267865">Chromium ви заштедува време со тоа што ви ги носи сметките на Интернет. Може да додавате или отстранувате сметки во „Поставки“.</translation>
 <translation id="725427773388857052">Chromium може да ве штити од упад во податоците, небезбедни веб-сајтови и друго.</translation>
-<translation id="7255976941681861701">Запознајте се со новото мени на Chromium</translation>
 <translation id="7269362888766543920">Некои додатоци предизвикуваат падови на Chromium. Обидете се да ги деинсталирате.</translation>
 <translation id="7313655110045230863">За да го поставите Chromium како стандарден прелистувач, отворете „Поставки“. Допрете „Стандардна апликација за прелистување“ и изберете Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
@@ -142,5 +142,6 @@
 <translation id="9089354809943900324">Chromium е застарен</translation>
 <translation id="9110075932708282655">Користете ја Chromium како стандардна</translation>
 <translation id="921174536258924340">Chromium не може да ги провери сите лозинки. Обидете се пак утре или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">Автоматски користете Chromium кога ќе допрете линкови во пораките, документите и другите апликации.</translation>
 <translation id="985602178874221306">Автори на Chromium</translation>
 </translationbundle>

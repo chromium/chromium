@@ -1305,6 +1305,43 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyError) {
   ASSERT_EQ(0u, GetNotificationCount());
 }
 
+TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
+  // The system notification only sees the IOTask ProgressStatus.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kScanning;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.total_bytes = 100;
+  status.bytes_transferred = 0;
+  status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
+                              absl::nullopt);
+  status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));
+
+  // Send the scanning progress.
+  auto* notification_manager = GetSystemNotificationManager();
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Check: We have the 1 notification.
+  ASSERT_EQ(1u, GetNotificationCount());
+
+  TestNotificationStrings notification_strings =
+      notification_platform_bridge->GetNotificationStringsById(
+          "swa-file-operation-1");
+
+  // Check: the expected strings match.
+  EXPECT_EQ(notification_strings.title, u"Files");
+  EXPECT_EQ(notification_strings.message,
+            u"Checking files with your organization's security policies.");
+
+  // Send the success progress status.
+  status.bytes_transferred = 100;
+  status.state = file_manager::io_task::State::kSuccess;
+  notification_manager->HandleIOTaskProgress(status);
+
+  // Notification should disappear.
+  ASSERT_EQ(0u, GetNotificationCount());
+}
+
 std::u16string kGoogleDrive = u"Google Drive";
 
 // Tests all the various error notifications.

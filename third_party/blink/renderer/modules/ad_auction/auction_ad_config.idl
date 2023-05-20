@@ -16,7 +16,11 @@ dictionary AuctionReportBuyersConfig {
 
 dictionary AuctionAdConfig {
   required USVString seller;
-  required USVString decisionLogicUrl;
+  /* required */ USVString decisionLogicURL;
+  [ImplementedAs=decisionLogicUrlDeprecated]
+  USVString decisionLogicUrl;
+  USVString trustedScoringSignalsURL;
+  [ImplementedAs=trustedScoringSignalsUrlDeprecated]
   USVString trustedScoringSignalsUrl;
   sequence<USVString> interestGroupBuyers;
   any auctionSignals;

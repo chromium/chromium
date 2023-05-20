@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/android/chrome_jni_headers/TrustedVaultClient_jni.h"
-#include "components/sync/driver/sync_service_utils.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "content/public/browser/browser_thread.h"
 
 TrustedVaultClientAndroid::OngoingFetchKeys::OngoingFetchKeys(

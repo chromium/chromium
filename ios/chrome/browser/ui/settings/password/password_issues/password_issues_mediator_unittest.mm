@@ -64,6 +64,9 @@ constexpr char kUsername2[] = "bob";
 
 constexpr char kPassword[] = "s3cre3t";
 constexpr char kPassword2[] = "s3cre3t2";
+constexpr char kStrongPassword[] = "pmsFlsnoab4nsl#losb@skpfnsbkjb^klsnbs!cns";
+constexpr char kStrongPassword2[] = "sfdf#losb@sdf^klsnbs!cns";
+constexpr char kStrongPassword3[] = "sdfsdfwer@313QaDSdsd!cns";
 
 NSString* GetUsername() {
   return base::SysUTF8ToNSString(kUsername);
@@ -293,15 +296,15 @@ TEST_F(PasswordIssuesMediatorTest, TestPasswordIssuesFilteredByWarningType) {
   // Weak.
   MakeTestPasswordIssue(kExampleCom, kUsername, kPassword, InsecureType::kWeak);
   // Reused.
-  MakeTestPasswordIssue(kExampleCom2, kUsername, kPassword,
+  MakeTestPasswordIssue(kExampleCom2, kUsername, kStrongPassword,
                         InsecureType::kReused);
-  MakeTestPasswordIssue(kExampleCom3, kUsername2, kPassword,
+  MakeTestPasswordIssue(kExampleCom3, kUsername2, kStrongPassword,
                         InsecureType::kReused);
   // Dismissed Compromised
-  MakeTestPasswordIssue(kExampleCom3, kUsername, kPassword,
+  MakeTestPasswordIssue(kExampleCom3, kUsername, kStrongPassword2,
                         InsecureType::kLeaked, /*muted=*/true);
   // Compromised.
-  MakeTestPasswordIssue(kExampleCom, kUsername2, kPassword,
+  MakeTestPasswordIssue(kExampleCom, kUsername2, kStrongPassword3,
                         InsecureType::kPhished);
   RunUntilIdle();
 

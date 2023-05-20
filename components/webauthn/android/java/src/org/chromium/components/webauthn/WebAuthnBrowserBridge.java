@@ -72,6 +72,23 @@ public class WebAuthnBrowserBridge {
     }
 
     /**
+     * Notifies the C++ side that the credMan UI is closed.
+     *
+     * @param frameHost The RenderFrameHost related to this CredMan call
+     * @param success true iff user is authenticated
+     */
+    public void onCredManUiClosed(RenderFrameHost frameHost, boolean success) {
+        if (mNativeWebAuthnBrowserBridge == 0) {
+            mNativeWebAuthnBrowserBridge =
+                    WebAuthnBrowserBridgeJni.get().createNativeWebAuthnBrowserBridge(
+                            WebAuthnBrowserBridge.this);
+        }
+
+        WebAuthnBrowserBridgeJni.get().onCredManUiClosed(
+                mNativeWebAuthnBrowserBridge, frameHost, success);
+    }
+
+    /**
      * Notifies the native code that an outstanding Conditional UI request initiated through
      * onCredentialsDetailsListReceived has been completed or canceled.
      *
@@ -114,6 +131,8 @@ public class WebAuthnBrowserBridge {
                 RenderFrameHost frameHost, boolean isConditionalRequest, Callback<byte[]> callback);
         void onCredManConditionalRequestPending(long nativeWebAuthnBrowserBridge,
                 RenderFrameHost frameHost, boolean hasResults, Runnable fullAssertion);
+        void onCredManUiClosed(
+                long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost, boolean success);
         void cleanupRequest(long nativeWebAuthnBrowserBridge, RenderFrameHost frameHost);
     }
 }

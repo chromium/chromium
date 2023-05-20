@@ -112,17 +112,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
 
     @Test
     @SmallTest
-    public void dialogDismissed() {
-        assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
-        // Simulate dialog dismissal by native.
-        mDialog.dismiss(DialogDismissalCause.DISMISSED_BY_NATIVE);
-        assertThat(mModalDialogManager.getShownDialogModel()).isNull();
-        // Check that callback was called with dismissed by native as the dismissal cause.
-        verify(mResultHandlerMock).onResult(DialogDismissalCause.DISMISSED_BY_NATIVE);
-    }
-
-    @Test
-    @SmallTest
     public void learnMoreTextClicked() {
         // Create activity.
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();

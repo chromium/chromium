@@ -18,10 +18,10 @@ import java.util.Map;
  */
 public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
     /**
-     * A fake SafeBrowsingApiHandler which verifies the parameters of the overridden functions and
+     * A fake SafetyNetApiHandler which verifies the parameters of the overridden functions and
      * returns lookup result based on preset values.
      */
-    public static class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
+    public static class MockSafetyNetApiHandler implements SafetyNetApiHandler {
         private Observer mObserver;
         // The result that will be returned in {@link #startUriLookup(long, String, int[])}.
         private static int sResult = SafeBrowsingResult.SUCCESS;
@@ -94,7 +94,7 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
     @CalledByNative
     static void setUp() {
-        SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
+        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
     }
 
     @CalledByNative
@@ -104,26 +104,26 @@ public class SafeBrowsingApiHandlerBridgeNativeUnitTestHelper {
 
     @CalledByNative
     static void setExpectedThreatsOfInterest(String uri, int[] threatsOfInterest) {
-        MockSafeBrowsingApiHandler.setExpectedThreatsOfInterest(uri, threatsOfInterest);
+        MockSafetyNetApiHandler.setExpectedThreatsOfInterest(uri, threatsOfInterest);
     }
 
     @CalledByNative
     static void setMetadata(String uri, String metadata) {
-        MockSafeBrowsingApiHandler.setMetadata(uri, metadata);
+        MockSafetyNetApiHandler.setMetadata(uri, metadata);
     }
 
     @CalledByNative
     static void setCsdAllowlistMatch(String uri, boolean match) {
-        MockSafeBrowsingApiHandler.setCsdAllowlistMatch(uri, match);
+        MockSafetyNetApiHandler.setCsdAllowlistMatch(uri, match);
     }
 
     @CalledByNative
     static void setHighConfidenceAllowlistMatch(String uri, boolean match) {
-        MockSafeBrowsingApiHandler.setHighConfidenceAllowlistMatch(uri, match);
+        MockSafetyNetApiHandler.setHighConfidenceAllowlistMatch(uri, match);
     }
 
     @CalledByNative
     static void setResult(int result) {
-        MockSafeBrowsingApiHandler.setResult(result);
+        MockSafetyNetApiHandler.setResult(result);
     }
 }

@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -38,6 +39,8 @@
 namespace {
 
 const char kCookiesDialogHistogramName[] = "Privacy.CookiesInUseDialog.Action";
+const char kDeleteBrowsingDataActionName[] =
+    "Privacy.DeleteBrowsingData.Action";
 
 void ClickButton(views::Button* button) {
   views::test::ButtonTestApi test_api(button);
@@ -301,6 +304,10 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
   histograms.ExpectBucketCount(
       kCookiesDialogHistogramName,
       static_cast<int>(PageSpecificSiteDataDialogAction::kSiteDeleted), 1);
+  histograms.ExpectBucketCount(
+      kDeleteBrowsingDataActionName,
+      browsing_data::DeleteBrowsingDataAction::kCookiesInUseDialog, 1);
+
   EXPECT_EQ(1, user_actions.GetActionCount(remove_action));
 }
 

@@ -1093,6 +1093,9 @@ bool RTCPeerConnectionHandler::Initialize(
   CopyConstraintsIntoRtcConfiguration(context, media_constraints,
                                       &configuration_);
 
+  configuration_.media_config.video.enable_send_packet_batching =
+      base::FeatureList::IsEnabled(kWebRtcSendPacketBatch);
+
   peer_connection_observer_ =
       MakeGarbageCollected<Observer>(weak_factory_.GetWeakPtr(), task_runner_);
   native_peer_connection_ = dependency_factory_->CreatePeerConnection(
@@ -1544,6 +1547,54 @@ void RTCPeerConnectionHandler::RestartIce() {
 void RTCPeerConnectionHandler::GetStandardStatsForTracker(
     rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> observer) {
   native_peer_connection_->GetStats(observer.get());
+}
+
+void RTCPeerConnectionHandler::EmitCurrentStateForTracker() {
+  if (!peer_connection_tracker_) {
+    return;
+  }
+  RTC_DCHECK(native_peer_connection_);
+  const webrtc::SessionDescriptionInterface* local_desc =
+      native_peer_connection_->local_description();
+  // If the local desc is an answer, emit it after the offer.
+  if (local_desc != nullptr &&
+      local_desc->GetType() == webrtc::SdpType::kOffer) {
+    std::string local_sdp;
+    if (local_desc->ToString(&local_sdp)) {
+      peer_connection_tracker_->TrackSetSessionDescription(
+          this, String(local_sdp),
+          String(SdpTypeToString(local_desc->GetType())),
+          PeerConnectionTracker::kSourceLocal);
+    }
+  }
+  const webrtc::SessionDescriptionInterface* remote_desc =
+      native_peer_connection_->remote_description();
+  if (remote_desc != nullptr) {
+    std::string remote_sdp;
+    if (remote_desc->ToString(&remote_sdp)) {
+      peer_connection_tracker_->TrackSetSessionDescription(
+          this, String(remote_sdp),
+          String(SdpTypeToString(remote_desc->GetType())),
+          PeerConnectionTracker::kSourceRemote);
+    }
+  }
+
+  if (local_desc != nullptr &&
+      local_desc->GetType() != webrtc::SdpType::kOffer) {
+    std::string local_sdp;
+    if (local_desc->ToString(&local_sdp)) {
+      peer_connection_tracker_->TrackSetSessionDescription(
+          this, String(local_sdp),
+          String(SdpTypeToString(local_desc->GetType())),
+          PeerConnectionTracker::kSourceLocal);
+    }
+  }
+  peer_connection_tracker_->TrackSignalingStateChange(
+      this, native_peer_connection_->signaling_state());
+  peer_connection_tracker_->TrackIceConnectionStateChange(
+      this, native_peer_connection_->standardized_ice_connection_state());
+  peer_connection_tracker_->TrackConnectionStateChange(
+      this, native_peer_connection_->peer_connection_state());
 }
 
 void RTCPeerConnectionHandler::GetStats(RTCStatsRequest* request) {

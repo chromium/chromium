@@ -12,4 +12,5 @@ enum GPUPowerPreference {
 dictionary GPURequestAdapterOptions {
     GPUPowerPreference powerPreference;
     boolean forceFallbackAdapter = false;
+    [RuntimeEnabled=WebGPUDeveloperFeatures] boolean compatibilityMode = false;
 };

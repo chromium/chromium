@@ -425,7 +425,7 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
     // There could be a race condition though if the previous slot is
     // freed/retagged concurrently, so ideally the ref count should occupy its
     // own MTE granule.
-    // TODO(richard.townsend@arm.com): improve this.
+    // TODO(crbug.com/1445816): improve this.
     return static_cast<PartitionRefCount*>(TagAddr(refcount_address));
   } else {
     // No need to tag, as the metadata region isn't protected by MTE.

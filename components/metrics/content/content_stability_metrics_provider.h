@@ -82,6 +82,7 @@ class ContentStabilityMetricsProvider
   void RenderProcessExited(
       content::RenderProcessHost* host,
       const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
   // content::NotificationObserver:
   void Observe(int type,

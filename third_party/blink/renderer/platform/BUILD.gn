@@ -409,6 +409,7 @@ component("platform") {
     "bindings/callback_method_retriever.cc",
     "bindings/callback_method_retriever.h",
     "bindings/cross_thread_copier.h",
+    "bindings/custom_wrappable.cc",
     "bindings/custom_wrappable.h",
     "bindings/dictionary_base.cc",
     "bindings/dictionary_base.h",
@@ -469,7 +470,6 @@ component("platform") {
     "bindings/v8_binding.cc",
     "bindings/v8_binding.h",
     "bindings/v8_binding_macros.h",
-    "bindings/v8_cross_origin_callback_info.h",
     "bindings/v8_cross_origin_property_support.cc",
     "bindings/v8_cross_origin_property_support.h",
     "bindings/v8_dom_activity_logger.cc",
@@ -841,6 +841,7 @@ component("platform") {
     "graphics/compositor_mutator_client.cc",
     "graphics/compositor_mutator_client.h",
     "graphics/cpu/arm/webgl_image_conversion_neon.h",
+    "graphics/cpu/loongarch64/webgl_image_conversion_lsx.h",
     "graphics/cpu/mips/webgl_image_conversion_msa.h",
     "graphics/cpu/x86/webgl_image_conversion_sse.h",
     "graphics/crossfade_generated_image.cc",
@@ -1577,6 +1578,13 @@ component("platform") {
     if (get_path_info(_output, "extension") != "pickle") {
       sources += [ _output ]
     }
+  }
+
+  if (current_cpu == "loong64") {
+    cflags = [
+      "-mlsx",
+      "-flax-vector-conversions",
+    ]
   }
 
   if (is_apple) {

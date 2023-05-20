@@ -28,6 +28,7 @@
 
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -91,6 +92,12 @@ class CORE_EXPORT DocumentLoadTiming final {
     can_request_from_previous_document_ = value;
   }
 
+  void SetSystemEntropyAtNavigationStart(mojom::blink::SystemEntropy value) {
+    system_entropy_at_navigation_start_ = value;
+  }
+
+  void SetCriticalCHRestart(base::TimeTicks critical_ch_restart);
+
   base::TimeTicks InputStart() const { return input_start_; }
   absl::optional<base::TimeDelta> UserTimingMarkFullyLoaded() const {
     return user_timing_mark_fully_loaded_;
@@ -121,6 +128,7 @@ class CORE_EXPORT DocumentLoadTiming final {
   bool CanRequestFromPreviousDocument() const {
     return can_request_from_previous_document_;
   }
+  base::TimeTicks CriticalCHRestart() const { return critical_ch_restart_; }
 
   base::TimeTicks ReferenceMonotonicTime() const {
     return reference_monotonic_time_;
@@ -130,6 +138,10 @@ class CORE_EXPORT DocumentLoadTiming final {
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
   void SetClockForTesting(const base::Clock* clock);
+
+  mojom::blink::SystemEntropy SystemEntropyAtNavigationStart() const {
+    return system_entropy_at_navigation_start_;
+  }
 
  private:
   void MarkRedirectEnd();
@@ -157,6 +169,7 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks load_event_start_;
   base::TimeTicks load_event_end_;
   base::TimeTicks activation_start_;
+  base::TimeTicks critical_ch_restart_;
 
   const base::Clock* clock_;
   const base::TickClock* tick_clock_;
@@ -166,6 +179,8 @@ class CORE_EXPORT DocumentLoadTiming final {
   uint16_t redirect_count_ = 0;
   bool has_cross_origin_redirect_ = false;
   bool can_request_from_previous_document_ = false;
+  mojom::blink::SystemEntropy system_entropy_at_navigation_start_ =
+      mojom::blink::SystemEntropy::kNormal;
 };
 
 }  // namespace blink

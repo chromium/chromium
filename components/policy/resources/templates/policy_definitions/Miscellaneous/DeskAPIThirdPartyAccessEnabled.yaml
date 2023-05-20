@@ -7,8 +7,8 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:115-
 items:
 - caption: Enable Desk API for third-party ChromeOS control
   value: true

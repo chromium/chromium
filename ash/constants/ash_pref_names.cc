@@ -1010,6 +1010,19 @@ const char kUserCameraAllowed[] = "ash.user.camera_allowed";
 // A boolean pref indicating whether the microphone is allowed to be used.
 const char kUserMicrophoneAllowed[] = "ash.user.microphone_allowed";
 
+// A boolean pref indicating whether a user has enabled the speak-on-mute
+// detection.
+const char kUserSpeakOnMuteDetectionEnabled[] =
+    "ash.user.speak_on_mute_detection_enabled";
+// A boolean pref indicating whether a speak-on-mute detection opt-in nudge
+// should be displayed to the user.
+const char kShouldShowSpeakOnMuteOptInNudge[] =
+    "ash.user.should_show_speak_on_mute_opt_in_nudge";
+// An integer pref counting the number of times speak-on-mute detection opt-in
+// nudge has been displayed to the user.
+const char kSpeakOnMuteOptInNudgeShownCount[] =
+    "ash.user.speak_on_mute_opt_in_nudge_shown_count";
+
 // A boolean pref indicating whether the geolocation is allowed for the user.
 const char kUserGeolocationAllowed[] = "ash.user.geolocation_allowed";
 // An enum pref indicating whether the geolocation is allowed outside user
@@ -1242,6 +1255,10 @@ const char kFastPairEnabled[] = "ash.fast_pair.enabled";
 // Boolean pref indicating a user entered Bluetooth pairing flow from a fast
 // pair entry point.
 const char kUserPairedWithFastPair[] = "ash.user.paired_with_fast_pair";
+
+// A list pref that contains predefined automation configured by policy
+// administrators.
+const char kAppLaunchAutomation[] = "ash.app_launch_automation";
 
 // A boolean pref that controls whether the user is allowed to use the Desk
 // Templates feature - including creating Desks templates and using predefined

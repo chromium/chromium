@@ -97,16 +97,6 @@ cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() {
 void PaintRenderingContext2D::WillDraw(const SkIRect&,
                                        CanvasPerformanceMonitor::DrawType) {}
 
-void PaintRenderingContext2D::ValidateStateStackWithCanvas(
-    const cc::PaintCanvas* canvas) const {
-#if DCHECK_IS_ON()
-  if (canvas) {
-    DCHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
-              state_stack_.size() + 1);
-  }
-#endif
-}
-
 sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(container_size_, this);
 }

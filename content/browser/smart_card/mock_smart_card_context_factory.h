@@ -41,6 +41,12 @@ class MockSmartCardContextFactory
                ConnectCallback callback),
               (override));
 
+  // Expect a Connect("Fake reader", kShared, kT1) call.
+  // A pending remote for the given `connection_receiver` will be passed to
+  // the call result on success.
+  void ExpectConnectFakeReaderSharedT1(
+      mojo::Receiver<device::mojom::SmartCardConnection>& connection_receiver);
+
  private:
   mojo::ReceiverSet<device::mojom::SmartCardContextFactory> receivers_;
   mojo::ReceiverSet<device::mojom::SmartCardContext> context_receivers_;

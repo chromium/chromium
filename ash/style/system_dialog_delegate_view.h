@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -54,13 +55,14 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   SystemDialogDelegateView& operator=(const SystemDialogDelegateView&) = delete;
   ~SystemDialogDelegateView() override;
 
-  // Sets the leading icon of the dialog. There is no icon dy default.
+  // Sets the leading icon of the dialog. There is no icon by default.
   void SetIcon(const gfx::VectorIcon& icon);
 
   // Sets title and description text. There will be no title or description if
   // their texts are empty.
   void SetTitleText(const std::u16string& title);
   void SetDescription(const std::u16string& description);
+  void SetDescriptionAccessibleName(const std::u16string& accessible_name);
 
   // Sets the text of accept and cancel buttons. The default accept button text
   // is "OK", and cancel button is "Cancel".
@@ -99,6 +101,10 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
     SetAdditionalViewInButtonRowInternal(std::move(view));
     return raw_ptr;
   }
+
+  // Sets the cross axis alignment of current additional content which is center
+  // aligned by default.
+  void SetAdditionalContentCrossAxisAlignment(views::LayoutAlignment alignment);
 
   // views::WidgetDelegateView:
   gfx::Size GetMinimumSize() const override;
@@ -149,6 +155,7 @@ BEGIN_VIEW_BUILDER(ASH_EXPORT,
 VIEW_BUILDER_PROPERTY(const gfx::VectorIcon&, Icon, const gfx::VectorIcon&)
 VIEW_BUILDER_PROPERTY(const std::u16string&, TitleText)
 VIEW_BUILDER_PROPERTY(const std::u16string&, Description)
+VIEW_BUILDER_PROPERTY(const std::u16string&, DescriptionAccessibleName)
 VIEW_BUILDER_PROPERTY(const std::u16string&, AcceptButtonText)
 VIEW_BUILDER_PROPERTY(const std::u16string&, CancelButtonText)
 VIEW_BUILDER_PROPERTY(base::OnceClosure, AcceptCallback)
@@ -156,6 +163,8 @@ VIEW_BUILDER_PROPERTY(base::OnceClosure, CancelCallback)
 VIEW_BUILDER_PROPERTY(base::OnceClosure, CloseCallback)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, AdditionalContentView)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, AdditionalViewInButtonRow)
+VIEW_BUILDER_PROPERTY(views::LayoutAlignment,
+                      AdditionalContentCrossAxisAlignment)
 END_VIEW_BUILDER
 
 }  // namespace ash

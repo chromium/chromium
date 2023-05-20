@@ -154,11 +154,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     virtual ~Delegate() = default;
   };
 
+  using LottieData = std::vector<uint8_t>;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  using LottieImageParseFunction =
-      gfx::ImageSkia (*)(const std::string& bytes_string);
-  using LottieThemedImageParseFunction =
-      ui::ImageModel (*)(const std::string& bytes_string);
+  using LottieImageParseFunction = gfx::ImageSkia (*)(LottieData);
+  using LottieThemedImageParseFunction = ui::ImageModel (*)(LottieData);
 #endif
 
   // Initialize the ResourceBundle for this process. Does not take ownership of
@@ -303,6 +302,12 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // gfx::Image will perform a conversion, rather than using the native image
   // loading code of ResourceBundle.
   gfx::Image& GetNativeImageNamed(int resource_id);
+
+  // Loads a Lottie resource from `resource_id` and returns its decompressed
+  // contents. Returns `absl::nullopt` if `resource_id` does not index a
+  // Lottie resource. The output of this is suitable for passing to
+  // `SkottieWrapper`.
+  absl::optional<LottieData> GetLottieData(int resource_id) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets a themed Lottie image (not animated) with the specified |resource_id|
@@ -530,12 +535,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
                         size_t size,
                         SkBitmap* bitmap,
                         bool* fell_back_to_1x);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Creates the |bytes_string| from a Lottie asset, given the |resource_id|.
-  // Returns false if the resource is not a Lottie asset.
-  bool LoadLottieBytesString(int resource_id, std::string* bytes_string) const;
-#endif
 
   // Returns an empty image for when a resource cannot be loaded. This is a
   // bright red bitmap.

@@ -44,9 +44,9 @@ performance.getEntriesByName('https://a.test/style.css')[0].initiatorType
 // => 'early-hints'
 ```
 
-Caveat: `initiatorType` may not always set to "early-hints" due to an
-implementation limitation. We would like to fix the issue in the future.
+### Reliability of `initiatorType`
 
-## Resources
-
-* [Fastly's test page](https://early-hints.fastlylabs.com/)
+Due to an implementation limitation, `initiatorType` may not always set to
+"early-hints". See
+[the proposal](https://docs.google.com/document/d/1V7xX2cRNxcsuIrtZk4srdZuqXynnYlPG9fFDnELXC_Y/edit?usp=sharing)
+for more details.

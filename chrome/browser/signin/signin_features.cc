@@ -83,3 +83,9 @@ BASE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin,
 BASE_FEATURE(kDisallowManagedProfileSignout,
              "DisallowManagedProfileSignout",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_ANDROID) && \
+    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+BASE_FEATURE(kWaffle, "Waffle", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_ANDROID) &&
+        // BUILDFLAG(GOOGLE_CHROME_BRANDING)

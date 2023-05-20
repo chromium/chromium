@@ -8,7 +8,7 @@ import './arc_detail_view.js';
 import './chrome_app_detail_view.js';
 import './plugin_vm_page/plugin_vm_detail_view.js';
 import './borealis_page/borealis_detail_view.js';
-import '../../../settings_shared.css.js';
+import '../../settings_shared.css.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction, AppType} from 'chrome://resources/cr_components/app_management/constants.js';

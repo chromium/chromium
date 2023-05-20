@@ -24,8 +24,8 @@ result size: 0
 result: 
 Received exception, name: TypeError, message: Failed to execute 'readAsText' on 'FileReaderSync': parameter 1 is not of type 'Blob'.
 Test reading an empty file as data URL
-result size: 5
-result: data:
+result size: 37
+result: data:application/octet-stream;base64,
 Received exception, name: TypeError, message: Failed to execute 'readAsDataURL' on 'FileReaderSync': parameter 1 is not of type 'Blob'.
 Test reading a UTF-8 file as array buffer
 result size: 5
@@ -80,7 +80,7 @@ result size: 5
 result: Hello
 result size: 9
 result: 0x0 0x1 0x2 0x80 0x81 0x82 0xfd 0xfe 0xff
-result size: 5
-result: data:
+result size: 37
+result: data:application/octet-stream;base64,
 DONE
 

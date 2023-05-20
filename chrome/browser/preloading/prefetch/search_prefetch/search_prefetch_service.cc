@@ -81,10 +81,10 @@ namespace {
 GURL GetPreloadURLFromMatch(
     const TemplateURLRef::SearchTermsArgs& search_terms_args_from_match,
     TemplateURLService* template_url_service,
-    bool attach_prefetch_information) {
+    std::string prefetch_param) {
   // Copy the search term args, so we can modify them for just the prefetch.
   auto search_terms_args = search_terms_args_from_match;
-  search_terms_args.is_prefetch = attach_prefetch_information;
+  search_terms_args.prefetch_param = prefetch_param;
   const TemplateURL* default_provider =
       template_url_service->GetDefaultSearchProvider();
   DCHECK(default_provider);
@@ -751,7 +751,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     if (BaseSearchProvider::ShouldPrefetch(match)) {
       MaybePrefetchURL(
           GetPreloadURLFromMatch(*match.search_terms_args, template_url_service,
-                                 /*attach_prefetch_information=*/true),
+                                 kSuggestPrefetchParam.Get()),
           web_contents);
     }
     if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
@@ -838,9 +838,9 @@ void SearchPrefetchService::OnNavigationLikely(
     search_terms_args_for_prefetch = match.search_terms_args.get();
   }
 
-  GURL preload_url = GetPreloadURLFromMatch(
-      *search_terms_args_for_prefetch, template_url_service,
-      /*attach_prefetch_information=*/true);
+  GURL preload_url = GetPreloadURLFromMatch(*search_terms_args_for_prefetch,
+                                            template_url_service,
+                                            kNavigationPrefetchParam.Get());
 
   content::PreloadingURLMatchCallback same_url_matcher =
       base::BindRepeating(&IsSearchDestinationMatch, canonical_search_url,
@@ -1054,7 +1054,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
   DCHECK(web_contents);
   GURL prefetch_url =
       GetPreloadURLFromMatch(*match.search_terms_args, template_url_service,
-                             /*attach_prefetch_information=*/true);
+                             kSuggestPrefetchParam.Get());
   MaybePrefetchURL(prefetch_url, web_contents);
   if (!BaseSearchProvider::ShouldPrerender(match))
     return;
@@ -1088,7 +1088,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
   // recognize prefetch traffic, because it should not send network requests.
   GURL prerender_url =
       GetPreloadURLFromMatch(*match.search_terms_args, template_url_service,
-                             /*attach_prefetch_information=*/false);
+                             /*prefetch_param=*/"");
   prefetch_request_iter->second->MaybeStartPrerenderSearchResult(
       *prerender_manager, prerender_url, *preloading_attempt);
 }

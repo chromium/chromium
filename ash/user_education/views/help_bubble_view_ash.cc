@@ -10,7 +10,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/style/style_util.h"
+#include "ash/style/typography.h"
+#include "ash/user_education/user_education_types.h"
+#include "ash/user_education/user_education_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -31,6 +35,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_utils.h"
@@ -63,6 +68,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -75,6 +81,18 @@ constexpr int kBubbleMaxWidthDip = 340;
 
 // The insets from the bubble border to the text inside.
 constexpr auto kBubbleContentsInsets = gfx::Insets::VH(16, 20);
+
+// Corner radii for the help bubble. Note that when the help bubble is not
+// center aligned with its anchor, the corner closest to the anchor has a
+// smaller radius.
+constexpr int kBubbleCornerRadiusDefault = 24;
+constexpr int kBubbleCornerRadiusSmall = 2;
+
+// Margins for the help bubble.
+constexpr int kBubbleMargins = 8;
+
+// Shadow elevation for the help bubble.
+constexpr int kBubbleShadowElevation = 3;
 
 // Translates from HelpBubbleArrow to the Views equivalent.
 views::BubbleBorder::Arrow TranslateArrow(
@@ -281,16 +299,18 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     user_education::HelpBubbleParams params)
     : BubbleDialogDelegateView(anchor.view,
                                TranslateArrow(params.arrow),
-                               views::BubbleBorder::STANDARD_SHADOW) {
-  if (anchor.rect.has_value()) {
-    SetForceAnchorRect(anchor.rect.value());
-  } else {
-    // When hosted within a `views::ScrollView`, the anchor view may be
-    // (partially) outside the viewport. Ensure that the anchor view is visible.
-    anchor.view->ScrollViewToVisible();
-  }
-  DCHECK(anchor.view)
-      << "A bubble that closes on blur must be initially focused.";
+                               views::BubbleBorder::STANDARD_SHADOW),
+      id_(id),
+      style_(user_education_util::GetHelpBubbleStyle(params.extended_properties)
+                 .value_or(HelpBubbleStyle::kDialog)) {
+  // NOTE: Nudge style help bubbles cannot activate.
+  SetCanActivate(style_ != HelpBubbleStyle::kNudge);
+
+  // When hosted within a `views::ScrollView`, the anchor view may be
+  // (partially) outside the viewport. Ensure that the anchor view is visible.
+  CHECK(anchor.view);
+  anchor.view->ScrollViewToVisible();
+
   UseCompactMargins();
 
   // Default timeout depends on whether non-close buttons are present.
@@ -366,16 +386,19 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
 
   // Add title (optional) and body label.
   if (!params.title_text.empty()) {
-    labels_.push_back(top_text_container->AddChildView(
-        std::make_unique<views::Label>(params.title_text)));
+    labels_.push_back(
+        top_text_container->AddChildView(bubble_utils::CreateLabel(
+            TypographyToken::kCrosBody1, params.title_text)));
     views::Label* label =
-        AddChildViewAt(std::make_unique<views::Label>(params.body_text),
+        AddChildViewAt(bubble_utils::CreateLabel(TypographyToken::kCrosBody1,
+                                                 params.body_text),
                        GetIndexOf(button_container).value());
     labels_.push_back(label);
     label->SetProperty(views::kElementIdentifierKey, kBodyTextIdForTesting);
   } else {
-    views::Label* label = top_text_container->AddChildView(
-        std::make_unique<views::Label>(params.body_text));
+    views::Label* label =
+        top_text_container->AddChildView(bubble_utils::CreateLabel(
+            TypographyToken::kCrosBody1, params.body_text));
     labels_.push_back(label);
     label->SetProperty(views::kElementIdentifierKey, kBodyTextIdForTesting);
   }
@@ -388,24 +411,30 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   }
 
   // Add close button.
-  std::u16string alt_text = params.close_button_alt_text;
+  // NOTE: Nudge style help bubbles do not have buttons.
+  if (style_ != HelpBubbleStyle::kNudge) {
+    std::u16string alt_text = params.close_button_alt_text;
 
-  // This can be empty if a test doesn't set it. Set a reasonable default to
-  // avoid an assertion (generated when a button with no text has no
-  // accessible name).
-  if (alt_text.empty()) {
-    alt_text = l10n_util::GetStringUTF16(IDS_CLOSE);
+    // This can be empty if a test doesn't set it. Set a reasonable default to
+    // avoid an assertion (generated when a button with no text has no
+    // accessible name).
+    if (alt_text.empty()) {
+      alt_text = l10n_util::GetStringUTF16(IDS_CLOSE);
+    }
+
+    // Since we set the cancel callback, we will use CancelDialog() to dismiss.
+    close_button_ =
+        (params.progress ? progress_container : top_text_container)
+            ->AddChildView(std::make_unique<ClosePromoButton>(
+                alt_text, base::BindRepeating(&DialogDelegate::CancelDialog,
+                                              base::Unretained(this))));
   }
 
-  // Since we set the cancel callback, we will use CancelDialog() to dismiss.
-  close_button_ =
-      (params.progress ? progress_container : top_text_container)
-          ->AddChildView(std::make_unique<ClosePromoButton>(
-              alt_text, base::BindRepeating(&DialogDelegate::CancelDialog,
-                                            base::Unretained(this))));
-
   // Add other buttons.
+  // NOTE: Nudge style help bubbles do not have buttons.
   if (!params.buttons.empty()) {
+    CHECK_NE(style_, HelpBubbleStyle::kNudge);
+
     auto run_callback_and_close = [](HelpBubbleViewAsh* bubble_view,
                                      base::OnceClosure callback) {
       // We want to call the button callback before deleting the bubble in case
@@ -601,17 +630,13 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
-  // This gets reset to the platform default when we call CreateBubble(), so we
-  // have to change it afterwards:
+  // This gets reset to the platform default when we call `CreateBubble()`, so
+  // we have to change it afterwards. Note that rounded corners are updated
+  // *after* adjusting bounds since they are dependent on the help bubble's
+  // position relative to its anchor.
   set_adjust_if_offscreen(true);
-  auto* const frame_view = GetBubbleFrameView();
-  frame_view->SetCornerRadius(
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kHigh));
-  frame_view->SetDisplayVisibleArrow(
-      anchor.show_arrow &&
-      params.arrow != user_education::HelpBubbleArrow::kNone);
   SizeToContents();
+  UpdateRoundedCorners();
 
   widget->ShowInactive();
   auto* const anchor_bubble =
@@ -636,6 +661,20 @@ void HelpBubbleViewAsh::MaybeStartAutoCloseTimer() {
 void HelpBubbleViewAsh::OnTimeout() {
   std::move(timeout_callback_).Run();
   GetWidget()->Close();
+}
+
+std::unique_ptr<views::NonClientFrameView>
+HelpBubbleViewAsh::CreateNonClientFrameView(views::Widget* widget) {
+  auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
+  frame_ptr->bubble_border()->set_md_shadow_elevation(kBubbleShadowElevation);
+  frame_ptr->set_use_anchor_window_bounds(false);
+  return frame;
+}
+
+void HelpBubbleViewAsh::OnAnchorBoundsChanged() {
+  views::BubbleDialogDelegateView::OnAnchorBoundsChanged();
+  UpdateRoundedCorners();
 }
 
 bool HelpBubbleViewAsh::OnMousePressed(const ui::MouseEvent& event) {
@@ -667,12 +706,19 @@ void HelpBubbleViewAsh::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
+void HelpBubbleViewAsh::OnWidgetBoundsChanged(views::Widget* widget,
+                                              const gfx::Rect& bounds) {
+  views::BubbleDialogDelegateView::OnWidgetBoundsChanged(widget, bounds);
+  UpdateRoundedCorners();
+}
+
 void HelpBubbleViewAsh::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
 
   const auto* color_provider = GetColorProvider();
-  const SkColor background_color =
-      color_provider->GetColor(cros_tokens::kCrosSysDialogContainer);
+  const SkColor background_color = color_provider->GetColor(
+      style_ == HelpBubbleStyle::kDialog ? cros_tokens::kCrosSysDialogContainer
+                                         : cros_tokens::kCrosSysBaseElevated);
   set_color(background_color);
 
   const SkColor foreground_color =
@@ -706,27 +752,39 @@ gfx::Size HelpBubbleViewAsh::CalculatePreferredSize() const {
 }
 
 gfx::Rect HelpBubbleViewAsh::GetAnchorRect() const {
-  gfx::Rect default_anchor_rect = BubbleDialogDelegateView::GetAnchorRect();
-  if (!local_anchor_bounds_) {
-    return default_anchor_rect;
+  // Update `anchor_rect` to respect margins.
+  gfx::Rect anchor_rect = BubbleDialogDelegateView::GetAnchorRect();
+  anchor_rect.Outset(kBubbleMargins);
+
+  // Update `anchor_rect` so that the anchor view and help bubble view are
+  // corner-aligned instead of edge-aligned, as would be the default.
+  switch (GetBubbleFrameView()->bubble_border()->arrow()) {
+    case views::BubbleBorder::LEFT_TOP:
+    case views::BubbleBorder::TOP_LEFT:
+      anchor_rect = gfx::Rect(anchor_rect.bottom_right(), gfx::Size());
+      break;
+    case views::BubbleBorder::RIGHT_TOP:
+    case views::BubbleBorder::TOP_RIGHT:
+      anchor_rect = gfx::Rect(anchor_rect.bottom_left(), gfx::Size());
+      break;
+    case views::BubbleBorder::BOTTOM_LEFT:
+    case views::BubbleBorder::LEFT_BOTTOM:
+      anchor_rect = gfx::Rect(anchor_rect.top_right(), gfx::Size());
+      break;
+    case views::BubbleBorder::BOTTOM_RIGHT:
+    case views::BubbleBorder::RIGHT_BOTTOM:
+      anchor_rect = gfx::Rect(anchor_rect.origin(), gfx::Size());
+      break;
+    case views::BubbleBorder::BOTTOM_CENTER:
+    case views::BubbleBorder::LEFT_CENTER:
+    case views::BubbleBorder::RIGHT_CENTER:
+    case views::BubbleBorder::TOP_CENTER:
+    case views::BubbleBorder::NONE:
+    case views::BubbleBorder::FLOAT:
+      break;
   }
 
-  // Ensure that we are not trying to clamp the anchor bounds to a completely
-  // empty bounds.
-  gfx::Size size = default_anchor_rect.size();
-  size.SetToMax({1, 1});
-
-  // Clamp the local bounds to the size of the anchor view.
-  const int left = std::clamp(local_anchor_bounds_->x(), 0, size.width() - 1);
-  const int right = std::clamp(local_anchor_bounds_->right(), 1, size.width());
-  const int top = std::clamp(local_anchor_bounds_->y(), 0, size.height() - 1);
-  const int bottom =
-      std::clamp(local_anchor_bounds_->bottom(), 1, size.height());
-  gfx::Rect result(left, top, right - left, bottom - top);
-
-  // Translate back to screen coordinates.
-  result.Offset(default_anchor_rect.OffsetFromOrigin());
-  return result;
+  return anchor_rect;
 }
 
 // static
@@ -763,10 +821,33 @@ views::LabelButton* HelpBubbleViewAsh::GetNonDefaultButtonForTesting(
   return non_default_buttons_[index];
 }
 
-void HelpBubbleViewAsh::SetForceAnchorRect(gfx::Rect force_anchor_rect) {
-  force_anchor_rect.Offset(
-      -views::BubbleDialogDelegateView::GetAnchorRect().OffsetFromOrigin());
-  local_anchor_bounds_ = force_anchor_rect;
+void HelpBubbleViewAsh::UpdateRoundedCorners() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  // Alias constants to avoid line wrapping below.
+  constexpr float kDefault = kBubbleCornerRadiusDefault;
+  constexpr float kSmall = kBubbleCornerRadiusSmall;
+
+  // Cache anchor and help bubble bounds in screen coordinates.
+  const gfx::Rect anchor_rect = GetAnchorRect();
+  const gfx::Point anchor_center = anchor_rect.CenterPoint();
+  const gfx::Rect bounds_rect = GetBoundsInScreen();
+  const gfx::Point bounds_center = bounds_rect.CenterPoint();
+
+  // When the help bubble is not center aligned with its anchor, the corner
+  // closest to the anchor has a smaller radius.
+  const int dx = anchor_center.x() - bounds_center.x();
+  const int dy = anchor_center.y() - bounds_center.y();
+  const float upper_left = dx < 0 && dy < 0 ? kSmall : kDefault;
+  const float upper_right = dx > 0 && dy < 0 ? kSmall : kDefault;
+  const float lower_right = dx > 0 && dy > 0 ? kSmall : kDefault;
+  const float lower_left = dx < 0 && dy > 0 ? kSmall : kDefault;
+
+  // Update rounded corners.
+  GetBubbleFrameView()->bubble_border()->set_rounded_corners(
+      gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left));
 }
 
 BEGIN_METADATA(HelpBubbleViewAsh, views::BubbleDialogDelegateView)

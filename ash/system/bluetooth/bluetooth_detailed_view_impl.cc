@@ -30,6 +30,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
@@ -87,14 +88,16 @@ void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(bool enabled) {
       enabled ? IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_SHORT
               : IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_SHORT));
 
-  // Update the toggle button tooltip.
-  std::u16string toggle_tooltip =
+  // Update the toggle row and button tooltips. The entire row is clickable.
+  std::u16string tooltip_template =
       enabled ? l10n_util::GetStringUTF16(
                     IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP)
               : l10n_util::GetStringUTF16(
                     IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP);
-  toggle_button_->SetTooltipText(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, toggle_tooltip));
+  std::u16string tooltip_text = l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, tooltip_template);
+  toggle_row_->SetTooltipText(tooltip_text);
+  toggle_button_->SetTooltipText(tooltip_text);
 
   // Ensure the toggle button is in sync with the current Bluetooth state.
   if (toggle_button_->GetIsOn() != enabled) {
@@ -196,6 +199,12 @@ void BluetoothDetailedViewImpl::CreateTopContainer() {
   // Allow the row to be taller than a typical tray menu item.
   toggle_row_->SetExpandable(true);
   toggle_row_->tri_view()->SetInsets(kToggleRowTriViewInsets);
+
+  // ChromeVox users will just use the `toggle_row_` to toggle. Otherwise there
+  // is too much repetition in the accessibility descriptions.
+  toggle_icon_->GetViewAccessibility().OverrideIsIgnored(true);
+  toggle_row_->text_label()->GetViewAccessibility().OverrideIsIgnored(true);
+  toggle_button_->GetViewAccessibility().OverrideIsIgnored(true);
 }
 
 void BluetoothDetailedViewImpl::CreateMainContainer() {

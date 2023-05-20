@@ -21,6 +21,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
@@ -55,6 +56,9 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(
         vector_icon, cros_tokens::kCrosSysOnSurface));
     entry_row()->AddViewAndLabel(std::move(image_view),
                                  l10n_util::GetStringUTF16(label_id));
+    // The tooltip provides a better accessibility label than the default
+    // provided by AddViewAndLabel() above.
+    entry_row()->SetAccessibleName(u"");
     if (chromeos::features::IsJellyEnabled()) {
       entry_row()->text_label()->SetEnabledColorId(
           cros_tokens::kCrosSysOnSurface);
@@ -63,6 +67,10 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(
     }
     entry_row()->SetExpandable(true);
     entry_row()->AddRightView(qs_toggle.release());
+    // ChromeVox users will use the entire row to toggle the feature.
+    entry_row()->left_view()->GetViewAccessibility().OverrideIsIgnored(true);
+    entry_row()->text_label()->GetViewAccessibility().OverrideIsIgnored(true);
+    qs_toggle_->GetViewAccessibility().OverrideIsIgnored(true);
   } else {
     container()->AddView(TriView::Container::END, toggle.release());
   }
@@ -78,25 +86,17 @@ void NetworkListNetworkHeaderView::SetToggleState(bool enabled,
     // Update the on/off label.
     entry_row()->text_label()->SetText(l10n_util::GetStringUTF16(
         is_on ? enabled_label_id_ : IDS_ASH_QUICK_SETTINGS_NETWORK_DISABLED));
-
-    qs_toggle_->SetEnabled(enabled);
-    qs_toggle_->SetCanProcessEventsWithinSubtree(enabled);
-    if (animate_toggle) {
-      qs_toggle_->AnimateIsOn(is_on);
-    } else {
-      qs_toggle_->SetIsOn(is_on);
-    }
-    return;
   }
 
-  toggle_->SetEnabled(enabled);
-  toggle_->SetAcceptsEvents(enabled);
+  auto toggle = features::IsQsRevampEnabled() ? qs_toggle_ : toggle_;
+  toggle->SetEnabled(enabled);
+  toggle->SetAcceptsEvents(enabled);
   if (animate_toggle) {
-    toggle_->AnimateIsOn(is_on);
+    toggle->AnimateIsOn(is_on);
     return;
   }
 
-  toggle_->SetIsOn(is_on);
+  toggle->SetIsOn(is_on);
 }
 
 void NetworkListNetworkHeaderView::AddExtraButtons() {}
@@ -104,11 +104,8 @@ void NetworkListNetworkHeaderView::AddExtraButtons() {}
 void NetworkListNetworkHeaderView::OnToggleToggled(bool is_on) {}
 
 void NetworkListNetworkHeaderView::SetToggleVisibility(bool visible) {
-  if (features::IsQsRevampEnabled()) {
-    qs_toggle_->SetVisible(visible);
-  } else {
-    toggle_->SetVisible(visible);
-  }
+  auto toggle = features::IsQsRevampEnabled() ? qs_toggle_ : toggle_;
+  toggle->SetVisible(visible);
 }
 
 void NetworkListNetworkHeaderView::ToggleButtonPressed() {
@@ -123,14 +120,9 @@ void NetworkListNetworkHeaderView::UpdateToggleState(bool has_new_state) {
   // disabling of mobile radio. The toggle will get unlocked in the next
   // call to SetToggleState(). Note that we don't disable/enable
   // because that would clear focus.
-  if (features::IsQsRevampEnabled()) {
-    qs_toggle_->SetAcceptsEvents(false);
-    OnToggleToggled(has_new_state ? qs_toggle_->GetIsOn()
-                                  : !qs_toggle_->GetIsOn());
-  } else {
-    toggle_->SetAcceptsEvents(false);
-    OnToggleToggled(has_new_state ? toggle_->GetIsOn() : !toggle_->GetIsOn());
-  }
+  auto toggle = features::IsQsRevampEnabled() ? qs_toggle_ : toggle_;
+  toggle->SetAcceptsEvents(false);
+  OnToggleToggled(has_new_state ? toggle->GetIsOn() : !toggle->GetIsOn());
 }
 
 }  // namespace ash

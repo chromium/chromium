@@ -243,6 +243,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest,
   blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
   manifest->name = base::UTF8ToUTF16(std::string(kDefaultAppName));
   manifest->start_url = GURL(kStartUrl);
+  manifest->id = GenerateManifestIdFromStartUrlOnly(manifest->start_url);
   // Populate manifest with 2 icons:
   blink::Manifest::ImageResource icon;
   icon.src = GURL(kDefaultAppIconUrl1);

@@ -9,6 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
+
+namespace sync_pb {
+class WebauthnCredentialSpecifics;
+}
+
 namespace password_manager {
 
 // Represents a Web Authentication passkey credential to be displayed in
@@ -21,6 +27,9 @@ class PasskeyCredential {
     kWindowsHello,
     kOther,
   };
+
+  static std::vector<PasskeyCredential> FromCredentialSpecifics(
+      base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys);
 
   PasskeyCredential(Source source,
                     std::string rp_id,

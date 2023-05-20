@@ -7,7 +7,7 @@
 import {FakePageHandler} from './fake_page_handler.js';
 import {replaceBody} from './test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {Router} from 'chrome://os-settings/os_settings.js';
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
 suite('<app-management-app-item>', () => {

@@ -75,18 +75,12 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
     return nullptr;
   }
 
-  const absl::optional<std::vector<std::string>>& GetTextResults()
-      const override {
-    static const base::NoDestructor<absl::optional<std::vector<std::string>>>
-        nullopt_result;
-    return *nullopt_result;
+  const std::vector<std::string>* GetTextResults() const override {
+    return nullptr;
   }
 
-  const absl::optional<std::vector<HostPortPair>>& GetHostnameResults()
-      const override {
-    static const base::NoDestructor<absl::optional<std::vector<HostPortPair>>>
-        nullopt_result;
-    return *nullopt_result;
+  const std::vector<HostPortPair>* GetHostnameResults() const override {
+    return nullptr;
   }
 
   const std::set<std::string>* GetDnsAliasResults() const override {
@@ -519,16 +513,6 @@ AddressList HostResolver::EndpointResultToAddressList(
   list.SetDnsAliases(std::move(aliases_vector));
 
   return list;
-}
-
-// static
-std::vector<IPEndPoint> HostResolver::GetNonProtocolEndpoints(
-    base::span<const HostResolverEndpointResult> endpoints) {
-  auto non_protocol_endpoint =
-      base::ranges::find_if(endpoints, &EndpointResultIsNonProtocol);
-  if (non_protocol_endpoint == endpoints.end())
-    return std::vector<IPEndPoint>();
-  return non_protocol_endpoint->ip_endpoints;
 }
 
 // static

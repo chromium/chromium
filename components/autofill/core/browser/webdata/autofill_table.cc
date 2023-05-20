@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -1075,6 +1076,7 @@ std::vector<ServerFieldType> GetStoredContactInfoTypes() {
           ADDRESS_HOME_APT_NUM,
           ADDRESS_HOME_FLOOR,
           ADDRESS_HOME_LANDMARK,
+          ADDRESS_HOME_BETWEEN_STREETS,
           EMAIL_ADDRESS,
           PHONE_HOME_WHOLE_NUMBER,
           BIRTHDATE_DAY,
@@ -1114,8 +1116,13 @@ bool AddAutofillProfileToContactInfoTable(sql::Database* db,
     return false;
   for (ServerFieldType type : GetStoredContactInfoTypes()) {
     if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableNewStreetLevelFieldTypes) &&
+            features::kAutofillEnableSupportForLandmark) &&
         type == ADDRESS_HOME_LANDMARK) {
+      continue;
+    }
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForBetweenStreets) &&
+        type == ADDRESS_HOME_BETWEEN_STREETS) {
       continue;
     }
     InsertBuilder(db, s, kContactInfoTypeTokensTable,
@@ -2874,44 +2881,11 @@ bool AutofillTable::RemoveAutofillDataModifiedBetween(
 
 bool AutofillTable::RemoveOriginURLsModifiedBetween(
     const base::Time& delete_begin,
-    const base::Time& delete_end,
-    std::vector<std::unique_ptr<AutofillProfile>>* profiles) {
+    const base::Time& delete_end) {
   DCHECK(delete_end.is_null() || delete_begin < delete_end);
 
   time_t delete_begin_t = delete_begin.ToTimeT();
   time_t delete_end_t = GetEndTime(delete_end);
-
-  // Remember Autofill profiles with URL origins in the time range.
-  sql::Statement s_profiles_get;
-  SelectBetween(db_, s_profiles_get, kAutofillProfilesTable, {kGuid, kOrigin},
-                kDateModified, delete_begin_t, delete_end_t);
-
-  std::vector<std::string> profile_guids;
-  while (s_profiles_get.Step()) {
-    std::string guid = s_profiles_get.ColumnString(0);
-    std::string origin = s_profiles_get.ColumnString(1);
-    if (GURL(origin).is_valid())
-      profile_guids.push_back(guid);
-  }
-  if (!s_profiles_get.Succeeded())
-    return false;
-
-  // Clear out the origins for the found Autofill profiles.
-  for (const std::string& guid : profile_guids) {
-    sql::Statement s_profile;
-    UpdateBuilder(db_, s_profile, kAutofillProfilesTable, {kOrigin}, "guid=?");
-    s_profile.BindString(0, "");
-    s_profile.BindString(1, guid);
-    if (!s_profile.Run())
-      return false;
-
-    std::unique_ptr<AutofillProfile> profile =
-        GetAutofillProfile(guid, AutofillProfile::Source::kLocalOrSyncable);
-    if (!profile)
-      return false;
-
-    profiles->push_back(std::move(profile));
-  }
 
   // Remember Autofill credit cards with URL origins in the time range.
   sql::Statement s_credit_cards_get;

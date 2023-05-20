@@ -21,6 +21,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/pwg_raster_settings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
@@ -122,7 +123,8 @@ class PdfToPwgRasterBrowserTest : public InProcessBrowserTest {
                base::ReadOnlySharedMemoryRegion* pwg_region) {
     bool called = false;
     base::RunLoop run_loop;
-    converter_->Start(pdf_data, conversion_settings, bitmap_settings,
+    converter_->Start(/*use_skia=*/absl::nullopt, pdf_data, conversion_settings,
+                      bitmap_settings,
                       base::BindOnce(&ResultCallbackImpl, &called, pwg_region,
                                      run_loop.QuitClosure()));
     run_loop.Run();

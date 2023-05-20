@@ -16,7 +16,7 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
-import '../../settings_vars.css.js';
+import '../settings_vars.css.js';
 import './internet_shared.css.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 

@@ -174,7 +174,7 @@ void StatefulLacrosLoader::Reset() {
 }
 
 void StatefulLacrosLoader::GetVersion(
-    base::OnceCallback<void(base::Version)> callback) {
+    base::OnceCallback<void(const base::Version&)> callback) {
   // If version is already calculated, immediately return the cached value.
   // Calculate if not.
   // Note that version value is reset on reloading.
@@ -219,20 +219,21 @@ void StatefulLacrosLoader::OnLoad(
 
   component_manager_->GetVersion(
       lacros_component_name_,
-      base::BindOnce(&StatefulLacrosLoader::OnGetVersionFromComponentManager,
-                     weak_factory_.GetWeakPtr(),
-                     base::BindOnce(
-                         [](LoadCompletionCallback callback,
-                            const base::FilePath& path, base::Version version) {
-                           if (callback) {
-                             std::move(callback).Run(std::move(version), path);
-                           }
-                         },
-                         std::move(callback), path)));
+      base::BindOnce(
+          &StatefulLacrosLoader::OnGetVersionFromComponentManager,
+          weak_factory_.GetWeakPtr(),
+          base::BindOnce(
+              [](LoadCompletionCallback callback, const base::FilePath& path,
+                 const base::Version& version) {
+                if (callback) {
+                  std::move(callback).Run(std::move(version), path);
+                }
+              },
+              std::move(callback), path)));
 }
 
 void StatefulLacrosLoader::OnCheckInstalledToGetVersion(
-    base::OnceCallback<void(base::Version)> callback,
+    base::OnceCallback<void(const base::Version&)> callback,
     bool is_installed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -249,7 +250,7 @@ void StatefulLacrosLoader::OnCheckInstalledToGetVersion(
 }
 
 void StatefulLacrosLoader::OnGetVersionFromComponentManager(
-    base::OnceCallback<void(base::Version)> callback,
+    base::OnceCallback<void(const base::Version&)> callback,
     const base::Version& version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

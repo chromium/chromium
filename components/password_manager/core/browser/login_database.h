@@ -229,16 +229,21 @@ class LoginDatabase {
     ~SyncMetadataStore() override;
 
    private:
-    // Reads all the stored sync entities metadata in a MetadataBatch. Returns
-    // nullptr in case of failure.
-    std::unique_ptr<syncer::MetadataBatch> GetAllSyncEntityMetadata();
+    // Reads all the stored sync entities metadata for |model_type| in a
+    // MetadataBatch. Returns nullptr in case of failure. This is currently used
+    // only for passwords.
+    std::unique_ptr<syncer::MetadataBatch> GetAllSyncEntityMetadata(
+        syncer::ModelType model_type);
 
-    // Reads the stored ModelTypeState. Returns nullptr in case of failure.
-    std::unique_ptr<sync_pb::ModelTypeState> GetModelTypeState();
+    // Reads the stored ModelTypeState for |model_type|. Returns nullptr in case
+    // of failure. This is currently used only for passwords.
+    std::unique_ptr<sync_pb::ModelTypeState> GetModelTypeState(
+        syncer::ModelType model_type);
 
     // PasswordStoreSync::MetadataStore implementation.
-    std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata() override;
-    void DeleteAllSyncMetadata() override;
+    std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata(
+        syncer::ModelType model_type) override;
+    void DeleteAllSyncMetadata(syncer::ModelType model_type) override;
     bool UpdateEntityMetadata(syncer::ModelType model_type,
                               const std::string& storage_key,
                               const sync_pb::EntityMetadata& metadata) override;
@@ -249,9 +254,9 @@ class LoginDatabase {
         const sync_pb::ModelTypeState& model_type_state) override;
 
     bool ClearModelTypeState(syncer::ModelType model_type) override;
-    void SetDeletionsHaveSyncedCallback(
+    void SetPasswordDeletionsHaveSyncedCallback(
         base::RepeatingCallback<void(bool)> callback) override;
-    bool HasUnsyncedDeletions() override;
+    bool HasUnsyncedPasswordDeletions() override;
 
     raw_ptr<sql::Database> const db_;
     // A callback to be invoked whenever all pending deletions have been
@@ -259,7 +264,8 @@ class LoginDatabase {
     // by Sync - see
     // PasswordStoreSync::MetadataStore::SetDeletionsHaveSyncedCallback for more
     // details.
-    base::RepeatingCallback<void(bool)> deletions_have_synced_callback_;
+    base::RepeatingCallback<void(bool)>
+        password_deletions_have_synced_callback_;
   };
 
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseTest, AddLoginWithEncryptedPassword);

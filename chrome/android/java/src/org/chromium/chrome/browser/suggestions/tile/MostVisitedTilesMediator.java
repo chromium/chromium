@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.UPDATE_INTERVAL_PADDINGS_TABLET;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -43,7 +45,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private static final String TAG = "TopSites";
 
     // There's a limit of 12 in {@link MostVisitedSitesBridge#setObserver}.
-    private static final int MAX_RESULTS = 12;
+    static final int MAX_RESULTS = 12;
 
     private final Resources mResources;
     private final UiConfig mUiConfig;
@@ -52,6 +54,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private final PropertyModel mModel;
     private final boolean mIsScrollableMVTEnabled;
     private final boolean mIsTablet;
+    private final boolean mIsMultiColumnFeedOnTabletEnabled;
     private final int mTileViewLandscapePadding;
     private final int mTileViewPortraitEdgePadding;
     private final Runnable mSnapshotTileGridChangedRunnable;
@@ -68,7 +71,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
             ViewStub noMvPlaceholderStub, TileRenderer renderer, PropertyModel propertyModel,
             boolean shouldShowSkeletonUIPreNative, boolean isScrollableMVTEnabled, boolean isTablet,
             @Nullable Runnable snapshotTileGridChangedRunnable,
-            @Nullable Runnable tileCountChangedRunnable) {
+            @Nullable Runnable tileCountChangedRunnable, boolean isMultiColumnFeedOnTabletEnabled) {
         mResources = resources;
         mUiConfig = uiConfig;
         mRenderer = renderer;
@@ -88,6 +91,9 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         maybeSetPortraitIntervalPaddingsForCarousel();
 
         if (shouldShowSkeletonUIPreNative) maybeShowMvTilesPreNative();
+
+        mIsMultiColumnFeedOnTabletEnabled = isMultiColumnFeedOnTabletEnabled;
+        mModel.set(IS_MULTI_COLUMN_FEED_ON_TABLET_ENABLED, mIsMultiColumnFeedOnTabletEnabled);
     }
 
     /**
@@ -239,6 +245,14 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         // If it's gird layout (mIsScrollableMVTEnabled is false), the paddings are handled in
         // {@link MostVisitedTilesGridLayout}
         if (!mIsScrollableMVTEnabled || mMvTilesLayout.getChildCount() < 1) return;
+
+        if (mIsMultiColumnFeedOnTabletEnabled) {
+            mModel.set(HORIZONTAL_EDGE_PADDINGS, 0);
+            mModel.set(UPDATE_INTERVAL_PADDINGS_TABLET,
+                    mResources.getConfiguration().orientation
+                            == Configuration.ORIENTATION_LANDSCAPE);
+            return;
+        }
 
         if (mResources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             mModel.set(HORIZONTAL_EDGE_PADDINGS, mTileViewLandscapePadding);

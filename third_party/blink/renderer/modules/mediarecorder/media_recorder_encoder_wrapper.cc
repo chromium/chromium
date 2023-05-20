@@ -18,8 +18,11 @@ namespace blink {
 
 MediaRecorderEncoderWrapper::EncodeTask::EncodeTask(
     scoped_refptr<media::VideoFrame> frame,
-    base::TimeTicks capture_timestamp)
-    : frame(std::move(frame)), capture_timestamp(capture_timestamp) {}
+    base::TimeTicks capture_timestamp,
+    bool request_keyframe)
+    : frame(std::move(frame)),
+      capture_timestamp(capture_timestamp),
+      request_keyframe(request_keyframe) {}
 
 MediaRecorderEncoderWrapper::EncodeTask::~EncodeTask() = default;
 
@@ -140,14 +143,16 @@ void MediaRecorderEncoderWrapper::InitializeDone(media::EncoderStatus status) {
 
 void MediaRecorderEncoderWrapper::EncodeFrame(
     scoped_refptr<media::VideoFrame> frame,
-    base::TimeTicks capture_timestamp) {
+    base::TimeTicks capture_timestamp,
+    bool request_keyframe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("media", "MediaRecorderEncoderWrapper::EncodeFrame");
   if (state_ == State::kInError) {
     CHECK(!on_error_cb_);
     return;
   }
-  pending_encode_tasks_.emplace_back(std::move(frame), capture_timestamp);
+  pending_encode_tasks_.emplace_back(std::move(frame), capture_timestamp,
+                                     request_keyframe);
   if (state_ == State::kEncoding) {
     EncodePendingTasks();
   }
@@ -176,12 +181,14 @@ void MediaRecorderEncoderWrapper::EncodePendingTasks() {
     }
     params_in_encode_.emplace_back(media::Muxer::VideoParameters(*task.frame),
                                    task.capture_timestamp);
+    bool request_keyframe = task.request_keyframe;
     auto frame = std::move(task.frame);
     pending_encode_tasks_.pop_front();
     // Encode() calls EncodeDone() and OutputEncodeData() within a call because
     // we DisablePostedCallbacks(). Therefore, |params_in_encode_| and
     // |pending_encode_tasks_| must be changed before calling Encode().
-    encoder_->Encode(std::move(frame), media::VideoEncoder::EncodeOptions(),
+    encoder_->Encode(std::move(frame),
+                     media::VideoEncoder::EncodeOptions(request_keyframe),
                      WTF::BindOnce(&MediaRecorderEncoderWrapper::EncodeDone,
                                    weak_factory_.GetWeakPtr()));
   }

@@ -887,6 +887,17 @@ TEST_F(PageSpecificContentSettingsTest, Topics) {
                         topic);
   EXPECT_TRUE(pscs->HasAccessedTopics());
   EXPECT_THAT(pscs->GetAccessedTopics(), testing::Contains(topic));
+
+  // Check that pscs->GetAccessedTopics() does not return the same topic ID
+  // twice.
+  privacy_sandbox::CanonicalTopic duplicate_topic(
+      browsing_topics::Topic(1), kTopicsAPITestTaxonomyVersion - 1);
+  pscs->OnTopicAccessed(url::Origin::Create(GURL("https://foo.com")), false,
+                        duplicate_topic);
+  EXPECT_TRUE(pscs->HasAccessedTopics());
+  auto accessed_topics = pscs->GetAccessedTopics();
+  EXPECT_EQ(accessed_topics.size(), 1U);
+  EXPECT_THAT(accessed_topics, testing::Contains(topic));
 }
 
 class PageSpecificContentSettingsWithFencedFrameTest

@@ -4,6 +4,7 @@ cablev2_authenticator_module_desc = {
   java_deps = [ "//chrome/android/modules/cablev2_authenticator/internal:java" ]
   native_deps =
       [ "//chrome/android/modules/cablev2_authenticator/internal:native" ]
+  jni_registration = "//chrome/android/modules/cablev2_authenticator/internal:cablev2_authenticator__jni_registration($default_toolchain)"
   load_native_on_get_impl = true
   uses_split = "chrome"
 }

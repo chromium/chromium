@@ -216,15 +216,6 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   return r;
 }
 
-void FormCache::Reset() {
-  synthetic_form_ = FormData();
-  parsed_forms_.clear();
-  initial_select_values_.clear();
-  initial_selectmenu_values_.clear();
-  initial_checked_state_.clear();
-  fields_eligible_for_manual_filling_.clear();
-}
-
 void FormCache::ClearElement(WebFormControlElement& control_element,
                              const WebFormControlElement& trigger_element) {
   // Don't modify the value of disabled fields.

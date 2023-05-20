@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -38,7 +39,8 @@ constexpr char kLastGetDataFromServerTimestamp[] =
 
 AppDeduplicationService::AppDeduplicationService(Profile* profile)
     : profile_(profile),
-      server_connector_(std::make_unique<AppDeduplicationServerConnector>()) {
+      server_connector_(std::make_unique<AppDeduplicationServerConnector>()),
+      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
   app_provisioning_data_observeration_.Observe(
       AppProvisioningDataManager::Get());
   app_registry_cache_observation_.Observe(
@@ -64,7 +66,9 @@ void AppDeduplicationService::StartLoginFlow() {
       std::abs((GetServerPref() - base::Time::Now()).InHours());
 
   if (hours_diff >= 24) {
-    GetDeduplicateDataFromServer();
+    device_info_manager_->GetDeviceInfo(
+        base::BindOnce(&AppDeduplicationService::GetDeduplicateDataFromServer,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     // Read most recent data from cache.
     cache_->ReadDeduplicationCache(base::BindOnce(
@@ -241,7 +245,8 @@ absl::optional<uint32_t> AppDeduplicationService::FindDuplicationIndex(
   return absl::nullopt;
 }
 
-void AppDeduplicationService::GetDeduplicateDataFromServer() {
+void AppDeduplicationService::GetDeduplicateDataFromServer(
+    DeviceInfo device_info) {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile_->GetURLLoaderFactory();
   if (!url_loader_factory.get()) {
@@ -253,7 +258,7 @@ void AppDeduplicationService::GetDeduplicateDataFromServer() {
     return;
   }
   server_connector_->GetDeduplicateAppsFromServer(
-      url_loader_factory,
+      device_info, url_loader_factory,
       base::BindOnce(
           &AppDeduplicationService::OnGetDeduplicateDataFromServerCompleted,
           weak_ptr_factory_.GetWeakPtr()));

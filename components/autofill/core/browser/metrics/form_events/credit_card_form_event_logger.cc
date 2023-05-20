@@ -78,7 +78,7 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN_ONCE,
         form);
   }
-  // Log issuer-specific metrics on whether metadata was shown.
+  // Log issuer-specific metrics on whether card suggestions shown had metadata.
   LogCardWithMetadataFormEventMetric(
       autofill_metrics::CardMetadataLoggingEvent::kShown,
       metadata_logging_context_,
@@ -188,6 +188,19 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
       break;
   }
 
+  metadata_logging_context_ =
+      autofill_metrics::GetMetadataLoggingContext({credit_card});
+  // Log if the filled suggestion had metadata.
+  Log(metadata_logging_context_.card_metadata_available
+          ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_FILLED
+          : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED,
+      form);
+  // Log issuer-specific metrics on whether a card suggestion with metadata
+  // was filled.
+  LogCardWithMetadataFormEventMetric(
+      autofill_metrics::CardMetadataLoggingEvent::kFilled,
+      metadata_logging_context_, HasBeenLogged());
+
   if (!has_logged_suggestion_filled_) {
     has_logged_suggestion_filled_ = true;
     logged_suggestion_filled_was_server_data_ =
@@ -271,6 +284,14 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
   } else {
     Log(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, form);
   }
+
+  // Log issuer-specific metrics on whether a card suggestion with metadata
+  // was filled before submission.
+  if (has_logged_suggestion_filled_) {
+    LogCardWithMetadataFormEventMetric(
+        autofill_metrics::CardMetadataLoggingEvent::kWillSubmit,
+        metadata_logging_context_, HasBeenLogged(false));
+  }
 }
 
 void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
@@ -299,6 +320,20 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
   if (has_logged_suggestion_filled_ && has_eligible_offer_) {
     base::UmaHistogramBoolean("Autofill.Offer.SubmittedCardHasOffer",
                               card_selected_has_offer_);
+  }
+
+  if (has_logged_suggestion_filled_) {
+    // Log issuer-specific metrics on whether a card suggestion with metadata
+    // was filled before submission.
+    LogCardWithMetadataFormEventMetric(
+        autofill_metrics::CardMetadataLoggingEvent::kSubmitted,
+        metadata_logging_context_, HasBeenLogged(false));
+    // If a card suggestion was filled before submission, log it for metadata.
+    // This event can only be triggered once per page load
+    Log(metadata_logging_context_.card_metadata_available
+            ? FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SUBMITTED_ONCE
+            : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SUBMITTED_ONCE,
+        form);
   }
 }
 
@@ -420,7 +455,7 @@ bool CreditCardFormEventLogger::DoesCardHaveOffer(
 
 bool CreditCardFormEventLogger::DoSuggestionsIncludeVirtualCard() {
   auto is_virtual_card = [](const Suggestion& suggestion) {
-    return suggestion.frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+    return suggestion.frontend_id == PopupItemId::kVirtualCreditCardEntry;
   };
   return base::ranges::any_of(suggestions_, is_virtual_card);
 }

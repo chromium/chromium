@@ -445,24 +445,44 @@ TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
 // permissions controls updates the page contents.
 TEST_F(ExtensionsSitePermissionsPageViewUnitTest,
        PageNavigationWithMenuOpen_UserMaintainsRuntimeHostPermissionsControls) {
-  auto extension =
-      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  constexpr char kUrlA[] = "http://www.a.com";
+  const GURL url_A(kUrlA);
+  auto extension = InstallExtension("Extension", {"activeTab"}, {url_A.spec()});
 
-  NavigateAndCommit("http://www.a.com");
-
+  NavigateAndCommit(kUrlA);
   ShowSitePermissionsPage(extension->id());
+
+  // Menu should be open in site permissions page because the extension has site
+  // permissions.
   EXPECT_FALSE(IsMainPageOpened());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
 
-  // While the menu is open, navigate to an url where extension also should have
-  // a site permissions page.
+  auto* on_click_button =
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnClick);
+  auto* on_site_button = site_permissions_page()->GetSiteAccessButtonForTesting(
+      PermissionsManager::UserSiteAccess::kOnSite);
+  auto* on_all_sites_button =
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnAllSites);
+
+  // Extension requested access to url A, thus user can select "on site" or "on
+  // click" access.
+  EXPECT_TRUE(on_click_button->GetEnabled());
+  EXPECT_TRUE(on_site_button->GetEnabled());
+  EXPECT_FALSE(on_all_sites_button->GetEnabled());
+
+  // While the menu is open, navigate to an url where the extension should
+  // also have a site permissions page.
   NavigateAndCommit("http://www.b.com");
 
   // Menu should stay open in site permissions page for `extension`.
   EXPECT_FALSE(IsMainPageOpened());
   EXPECT_TRUE(IsSitePermissionsPageOpened(extension->id()));
-}
 
-// TODO(crbug.com/1390952): Verify page content changes when extension is
-// updated. This will be easier to do once we have the site access radio
-// buttons, as we can change to the correct site access.
+  // Extension didn't request specific access to url B, but it has active tab
+  // access. Thus, user can only select "on click" access.
+  EXPECT_TRUE(on_click_button->GetEnabled());
+  EXPECT_FALSE(on_site_button->GetEnabled());
+  EXPECT_FALSE(on_all_sites_button->GetEnabled());
+}

@@ -1,0 +1,23 @@
+<style include="cr-shared-style">
+  /* Override the default padding of a cr-row to 0. The template inside has
+     left and right padding. */
+  .cr-row-with-template {
+    padding: 0;
+  }
+
+  /* Ensure the toggle button stretches the width of its container despite
+     removing its parent's padding. */
+  #liveCaptionToggleButton {
+    width: 100%;
+  }
+</style>
+<template is="dom-if" if="[[!enableLiveCaptionMultiLanguage_]]">
+  <div class="cr-row cr-row-with-template first">
+    <settings-toggle-button id="liveCaptionToggleButton"
+        pref="{{prefs.accessibility.captions.live_caption_enabled}}"
+        on-change="onLiveCaptionEnabledChanged_"
+        label="$i18n{captionsEnableLiveCaptionTitle}"
+        sub-label="[[enableLiveCaptionSubtitle_]]">
+    </settings-toggle-button>
+  </div>
+</template>

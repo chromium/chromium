@@ -74,14 +74,22 @@ class PrefsAsh : public mojom::Prefs,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PrefsAshTest, LocalStatePrefs);
+  FRIEND_TEST_ALL_PREFIXES(PrefsAshTest, CrosSettingsPrefs);
+
+  enum class AshPrefSource {
+    kNormal = 0,
+    kExtensionControlled = 1,
+    kCrosSettings = 2,
+  };
 
   struct State {
     PrefService* pref_service;
     PrefChangeRegistrar* registrar;
-    bool is_extension_controlled_pref;
+    AshPrefSource pref_source;
     std::string path;
   };
   absl::optional<State> GetState(mojom::PrefPath path);
+  const base::Value* GetValueForState(absl::optional<State> state);
 
   void OnPrefChanged(mojom::PrefPath path);
   void OnDisconnect(mojom::PrefPath path, mojo::RemoteSetElementId id);
@@ -97,6 +105,10 @@ class PrefsAsh : public mojom::Prefs,
   PrefChangeRegistrar local_state_registrar_;
   std::unique_ptr<PrefChangeRegistrar> profile_prefs_registrar_;
   PrefChangeRegistrar extension_prefs_registrar_;
+
+  // CrosSettings doesn't support PrefService and therefore also doesn't support
+  // PrefChangeRegistrar, so track these separately.
+  std::map<mojom::PrefPath, base::CallbackListSubscription> cros_settings_subs_;
 
   // This class supports any number of connections.
   mojo::ReceiverSet<mojom::Prefs> receivers_;

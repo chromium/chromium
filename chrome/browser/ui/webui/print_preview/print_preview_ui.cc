@@ -96,7 +96,7 @@ namespace printing {
 namespace {
 
 #if BUILDFLAG(IS_MAC)
-const char16_t kBasicPrintShortcut[] = u"\u0028\u21e7\u2318\u0050\u0029";
+const char16_t kBasicPrintShortcut[] = u"(\u2325\u2318P)";
 #elif !BUILDFLAG(IS_CHROMEOS)
 const char16_t kBasicPrintShortcut[] = u"(Ctrl+Shift+P)";
 #endif

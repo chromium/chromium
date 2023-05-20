@@ -29,9 +29,9 @@
 #include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 #include "build/build_config.h"
 
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/mac_util.h"
-#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+#endif
 
 #if BUILDFLAG(USE_STARSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
@@ -108,7 +108,6 @@ namespace partition_alloc {
 #if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
 
 namespace {
-
 internal::Lock g_root_enumerator_lock;
 }
 
@@ -804,8 +803,34 @@ void PartitionRoot<thread_safe>::DestructForTesting() {
 
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 template <bool thread_safe>
-void PartitionRoot<thread_safe>::EnableMac11MallocSizeHackForTesting() {
+void PartitionRoot<thread_safe>::InitMac11MallocSizeHackUsableSize(
+    size_t ref_count_size) {
   flags.mac11_malloc_size_hack_enabled_ = true;
+
+  // 0 means reserve just enough extras to fit PartitionRefCount.
+  if (!ref_count_size) {
+    ref_count_size = sizeof(internal::PartitionRefCount);
+  }
+  // Request of 32B will fall into a 48B bucket in the presence of BRP
+  // ref-count, yielding |48 - ref_count_size| of actual usable space.
+  flags.mac11_malloc_size_hack_usable_size_ = 48 - ref_count_size;
+}
+
+template <bool thread_safe>
+void PartitionRoot<thread_safe>::EnableMac11MallocSizeHackForTesting(
+    size_t ref_count_size) {
+  flags.mac11_malloc_size_hack_enabled_ = true;
+  InitMac11MallocSizeHackUsableSize(ref_count_size);
+}
+
+template <bool thread_safe>
+void PartitionRoot<thread_safe>::EnableMac11MallocSizeHackIfNeeded(
+    size_t ref_count_size) {
+  flags.mac11_malloc_size_hack_enabled_ =
+      flags.brp_enabled_ && internal::base::mac::IsOS11();
+  if (flags.mac11_malloc_size_hack_enabled_) {
+    InitMac11MallocSizeHackUsableSize(ref_count_size);
+  }
 }
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 
@@ -870,10 +895,6 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       return;
     }
 
-    // Swaps out the active no-op tagging intrinsics with MTE-capable ones, if
-    // running on the right hardware.
-    ::partition_alloc::internal::InitializeMTESupportIfNeeded();
-
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
     // Reserve address space for partition alloc.
     internal::PartitionAddressSpace::Init();
@@ -889,14 +910,9 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     flags.brp_enabled_ =
         opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kEnabled;
-    flags.brp_zapping_enabled_ =
-        opts.backup_ref_ptr_zapping ==
-        PartitionOptions::BackupRefPtrZapping::kEnabled;
-    PA_CHECK(!flags.brp_zapping_enabled_ || flags.brp_enabled_);
-#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
-    flags.mac11_malloc_size_hack_enabled_ =
-        flags.brp_enabled_ && internal::base::mac::IsOS11();
-#endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
+#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+    EnableMac11MallocSizeHackIfNeeded(opts.ref_count_size);
+#endif
 #else   // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_CHECK(opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled);
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -938,7 +954,12 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       // TODO(tasak): In the PUT_REF_COUNT_IN_PREVIOUS_SLOT case, ref-count is
       // stored out-of-line for single-slot slot spans, so no need to
       // add/subtract its size in this case.
-      flags.extras_size += internal::kPartitionRefCountSizeAdjustment;
+      size_t ref_count_size = opts.ref_count_size;
+      if (!ref_count_size) {
+        ref_count_size = internal::kPartitionRefCountSizeAdjustment;
+      }
+      PA_CHECK(internal::kPartitionRefCountSizeAdjustment <= ref_count_size);
+      flags.extras_size += ref_count_size;
       flags.extras_offset += internal::kPartitionRefCountOffsetAdjustment;
     }
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)

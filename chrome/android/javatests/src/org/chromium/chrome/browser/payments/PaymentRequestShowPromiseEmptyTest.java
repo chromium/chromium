@@ -36,9 +36,17 @@ public class PaymentRequestShowPromiseEmptyTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        new AutofillTestHelper().setProfile(new AutofillProfile("", "https://example.test", true,
-                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
-                "", "90291", "", "US", "650-253-0000", "", "en-US"));
+        new AutofillTestHelper().setProfile(AutofillProfile.builder()
+                                                    .setFullName("Jon Doe")
+                                                    .setCompanyName("Google")
+                                                    .setStreetAddress("340 Main St")
+                                                    .setRegion("CA")
+                                                    .setLocality("Los Angeles")
+                                                    .setPostalCode("90291")
+                                                    .setCountryCode("US")
+                                                    .setPhoneNumber("650-253-0000")
+                                                    .setLanguageCode("en-US")
+                                                    .build());
     }
 
     @Test

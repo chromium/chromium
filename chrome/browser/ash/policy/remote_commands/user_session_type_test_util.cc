@@ -7,6 +7,8 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -105,6 +107,21 @@ void StartSessionOfType(TestSessionType session_type,
   }
 
   user_manager.LoginUser(CreateUserOfType(session_type, user_manager));
+}
+
+TestingProfile* StartSessionOfTypeWithProfile(
+    TestSessionType session_type,
+    ash::FakeChromeUserManager& user_manager,
+    TestingProfileManager& profile_manager) {
+  if (session_type == TestSessionType::kNoSession) {
+    // Nothing to do if we don't need a session.
+    return nullptr;
+  }
+
+  AccountId account_id = CreateUserOfType(session_type, user_manager);
+  user_manager.LoginUser(account_id);
+  return profile_manager.CreateTestingProfile(account_id.GetUserEmail(),
+                                              /* is_main_profile= */ true);
 }
 
 }  // namespace policy::test

@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -60,10 +61,10 @@ class CrosSettings {
   virtual ~CrosSettings();
 
   // Helper function to test if the given |path| is a valid cros setting.
-  static bool IsCrosSettings(const std::string& path);
+  static bool IsCrosSettings(base::StringPiece path);
 
   // Returns setting value for the given |path|.
-  const base::Value* GetPref(const std::string& path) const;
+  const base::Value* GetPref(base::StringPiece path) const;
 
   // Requests that all providers ensure the values they are serving were read
   // from a trusted store:
@@ -84,13 +85,13 @@ class CrosSettings {
   // These are convenience forms of Get().  The value will be retrieved
   // and the return value will be true if the |path| is valid and the value at
   // the end of the path can be returned in the form specified.
-  bool GetBoolean(const std::string& path, bool* out_value) const;
-  bool GetInteger(const std::string& path, int* out_value) const;
-  bool GetDouble(const std::string& path, double* out_value) const;
-  bool GetString(const std::string& path, std::string* out_value) const;
-  bool GetList(const std::string& path,
+  bool GetBoolean(base::StringPiece path, bool* out_value) const;
+  bool GetInteger(base::StringPiece path, int* out_value) const;
+  bool GetDouble(base::StringPiece path, double* out_value) const;
+  bool GetString(base::StringPiece path, std::string* out_value) const;
+  bool GetList(base::StringPiece path,
                const base::Value::List** out_value) const;
-  bool GetDictionary(const std::string& path,
+  bool GetDictionary(base::StringPiece path,
                      const base::Value::Dict** out_value) const;
 
   // Checks if the given username is on the list of users allowed to sign-in to
@@ -127,7 +128,7 @@ class CrosSettings {
       base::RepeatingClosure callback);
 
   // Returns the provider that handles settings with the |path| or prefix.
-  CrosSettingsProvider* GetProvider(const std::string& path) const;
+  CrosSettingsProvider* GetProvider(base::StringPiece path) const;
 
   const SupervisedUserCrosSettingsProvider*
   supervised_user_cros_settings_provider() const {

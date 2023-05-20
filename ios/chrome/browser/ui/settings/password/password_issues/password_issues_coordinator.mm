@@ -48,7 +48,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
     case WarningType::kDismissedWarningsWarning:
       return DetailsContext::kDismissedWarnings;
     case WarningType::kNoInsecurePasswordsWarning:
-      return DetailsContext::kGeneral;
+      return DetailsContext::kPasswordSettings;
   }
 }
 
@@ -66,10 +66,6 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   // Coordinator for password issues displaying dismissed compromised
   // credentials.
   PasswordIssuesCoordinator* _dismissedPasswordIssuesCoordinator;
-
-  // Flag indicating if the coordinator should dismiss its view controller
-  // because the last password issue was resolved by a password deletion.
-  BOOL _shouldDismissOnAllIssuesGone;
 
   // Flag indicating if the coordinator should dismiss its view controller after
   // the view controller of a child coordinator is removed from the stack. When
@@ -176,8 +172,6 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
                           reauthModule:self.reauthModule
                                context:ComputeDetailsContextFromWarningType(
                                            _warningType)];
-  self.passwordDetails.shouldDismissOnAllPasswordsGone =
-      !self.mediator.hasOneIssueLeft;
   self.passwordDetails.delegate = self;
   [self.passwordDetails start];
 }
@@ -195,11 +189,8 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 }
 
 - (void)dismissAfterAllIssuesGone {
-  // Early return if the last issue was not resolved by a password deletion, but
-  // by a password change. When the last issue is resolved by a password change,
-  // the details page has to be dismissed manually by the user.
-  if (_shouldDismissOnAllIssuesGone) {
-    [self navigateToPreviousViewController];
+  if (self.baseNavigationController.topViewController == self.viewController) {
+    [self.baseNavigationController popViewControllerAnimated:NO];
   } else {
     _shouldDismissAfterChildCoordinatorRemoved = YES;
   }
@@ -217,11 +208,6 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   [self onChildCoordinatorDidRemove];
 }
 
-- (void)passwordDetailsWillDeletePassword {
-  _shouldDismissOnAllIssuesGone = self.mediator.hasOneIssueLeft;
-  [self.delegate setShouldDismissOnAllIssuesGone];
-}
-
 #pragma mark - PasswordIssuesCoordinatorDelegate
 
 - (void)passwordIssuesCoordinatorDidRemove:
@@ -230,10 +216,6 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   [self stopDismissedPasswordIssuesCoordinator];
 
   [self onChildCoordinatorDidRemove];
-}
-
-- (void)setShouldDismissOnAllIssuesGone {
-  _shouldDismissOnAllIssuesGone = self.mediator.hasOneIssueLeft;
 }
 
 #pragma mark - Private
@@ -255,31 +237,10 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
     CHECK_EQ(self.baseNavigationController.topViewController,
              self.viewController);
     _shouldDismissAfterChildCoordinatorRemoved = NO;
-    [self.baseNavigationController popViewControllerAnimated:NO];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.baseNavigationController popViewControllerAnimated:NO];
+    });
   }
-}
-
-// Navigates to the previous view controller in the navigation stack.
-- (void)navigateToPreviousViewController {
-  UINavigationController* baseNavigationController =
-      self.baseNavigationController;
-  NSInteger indexInNavigationController =
-      [baseNavigationController.viewControllers
-          indexOfObject:self.viewController];
-
-  // Nothing to do if viewController was already removed from the navigation
-  // stack.
-  if (indexInNavigationController == NSNotFound) {
-    return;
-  }
-
-  CHECK_GT(indexInNavigationController, 0);
-
-  // Go to previous view controller in navigation stack.
-  [baseNavigationController
-      popToViewController:baseNavigationController
-                              .viewControllers[indexInNavigationController - 1]
-                 animated:YES];
 }
 
 @end

@@ -32,7 +32,9 @@
 #include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 #include "url/mojom/origin_mojom_traits.h"
+#include "url/mojom/url_gurl_mojom_traits.h"
 #include "url/origin.h"
 
 namespace mojo {
@@ -317,6 +319,20 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static bool Read(
       attribution_reporting::mojom::AggregatableDedupKeyDataView data,
       attribution_reporting::AggregatableDedupKey* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::OsRegistrationDataView,
+                 std::vector<GURL>> {
+  static const std::vector<GURL>& urls(const std::vector<GURL>& urls) {
+    return urls;
+  }
+
+  static bool Read(attribution_reporting::mojom::OsRegistrationDataView data,
+                   std::vector<GURL>* out) {
+    return data.ReadUrls(out);
+  }
 };
 
 }  // namespace mojo

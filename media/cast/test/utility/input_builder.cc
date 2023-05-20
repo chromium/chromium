@@ -41,10 +41,7 @@ std::string InputBuilder::GetStringInput() const {
   printf("# ");
   fflush(stdout);
   char raw_input[128];
-  if (!fgets(raw_input, 128, stdin)) {
-    NOTREACHED();
-    return std::string();
-  }
+  CHECK(fgets(raw_input, sizeof(raw_input), stdin));
 
   std::string input = raw_input;
   input = input.substr(0, input.size() - 1);  // Strip last \n.

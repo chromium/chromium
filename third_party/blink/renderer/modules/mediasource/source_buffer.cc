@@ -260,11 +260,11 @@ void SourceBuffer::Dispose() {
 }
 
 AtomicString SourceBuffer::SegmentsKeyword() {
-  return "segments";
+  return AtomicString("segments");
 }
 
 AtomicString SourceBuffer::SequenceKeyword() {
-  return "sequence";
+  return AtomicString("sequence");
 }
 
 void SourceBuffer::setMode(const AtomicString& new_mode,
@@ -1391,7 +1391,7 @@ AtomicString SourceBuffer::DefaultTrackLabel(
   // Spec: https://w3c.github.io/media-source/#sourcebuffer-default-track-label
   const TrackDefault* track_default =
       GetTrackDefault(track_type, byte_stream_track_id);
-  return track_default ? AtomicString(track_default->label()) : "";
+  return track_default ? AtomicString(track_default->label()) : g_empty_atom;
 }
 
 AtomicString SourceBuffer::DefaultTrackLanguage(
@@ -1401,7 +1401,7 @@ AtomicString SourceBuffer::DefaultTrackLanguage(
   // https://w3c.github.io/media-source/#sourcebuffer-default-track-language
   const TrackDefault* track_default =
       GetTrackDefault(track_type, byte_stream_track_id);
-  return track_default ? AtomicString(track_default->language()) : "";
+  return track_default ? AtomicString(track_default->language()) : g_empty_atom;
 }
 
 void SourceBuffer::AddPlaceholderCrossThreadTracks(

@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
@@ -118,17 +119,6 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.image_url = GURL(suggestion.entity_info().image_url());
   match.entity_id = suggestion.entity_info().entity_id();
 
-  // Attach Actions in Suggest to the newly created match on Android if Google
-  // is the default search engine.
-  if (is_android &&
-      search::TemplateURLIsGoogle(template_url, search_terms_data)) {
-    for (const omnibox::ActionInfo& action_info :
-         suggestion.entity_info().action_suggestions()) {
-      match.actions.emplace_back(
-          base::MakeRefCounted<OmniboxActionInSuggest>(action_info));
-    }
-  }
-
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
   match.suggestion_group_id = suggestion.suggestion_group_id();
@@ -203,7 +193,48 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.transition = suggestion.from_keyword() ? ui::PAGE_TRANSITION_KEYWORD
                                                : ui::PAGE_TRANSITION_GENERATED;
 
+  // Attach Actions in Suggest to the newly created match on Android if Google
+  // is the default search engine.
+  if (is_android &&
+      search::TemplateURLIsGoogle(template_url, search_terms_data)) {
+    for (const omnibox::ActionInfo& action_info :
+         suggestion.entity_info().action_suggestions()) {
+      match.actions.emplace_back(CreateActionInSuggest(action_info, search_url,
+                                                       *match.search_terms_args,
+                                                       search_terms_data));
+    }
+  }
+
   return match;
+}
+
+scoped_refptr<OmniboxAction> BaseSearchProvider::CreateActionInSuggest(
+    omnibox::ActionInfo action_info,
+    const TemplateURLRef& search_url,
+    const TemplateURLRef::SearchTermsArgs& original_search_terms_args,
+    const SearchTermsData& search_terms_data) {
+  // If the Action's URL is empty, but the Action supplies additional search
+  // parameters, compute new URL based on the base URL (that is specific to
+  // the entire suggestion).
+  if (action_info.action_uri().empty() &&
+      !action_info.search_parameters().empty()) {
+    auto action_search_terms_args = original_search_terms_args;
+    std::string query_params;
+    for (const auto& param : action_info.search_parameters()) {
+      // Supply additional Query Parameters as instructed by the provider.
+      if (!query_params.empty()) {
+        query_params += '&';
+      }
+      query_params += param.first + "=" + param.second;
+    }
+    action_search_terms_args.additional_query_params = query_params;
+    action_info.set_action_uri(
+        GURL(search_url.ReplaceSearchTerms(action_search_terms_args,
+                                           search_terms_data))
+            .spec());
+  }
+
+  return base::MakeRefCounted<OmniboxActionInSuggest>(std::move(action_info));
 }
 
 // static

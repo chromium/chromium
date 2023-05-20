@@ -724,6 +724,27 @@ test(function() {
 
 }, 'Testing EditContext GC');
 
+test(() => {
+    let div = document.createElement("div");
+    document.body.appendChild(div);
+    let divText = "Hello World";
+    div.innerText = divText;
+    div.editContext = new EditContext();
+    div.focus();
+
+    let got_textupdate_event = false;
+    div.editContext.addEventListener("textupdate", e => {
+      got_textupdate_event = true;
+    });
+
+    div.editContext = null;
+    eventSender.keyDown("a");
+
+    assert_false(got_textupdate_event, "Shouldn't have received textupdate event after editContext was detached");
+
+    document.body.removeChild(div);
+  }, "EditContext should not receive events after being detached from element");
+
 </script>
 </body>
 </html>

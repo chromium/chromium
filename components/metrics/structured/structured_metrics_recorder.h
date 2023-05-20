@@ -95,6 +95,7 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   friend class StructuredMetricsRecorderHwidTest;
   friend class TestStructuredMetricsRecorder;
   friend class TestStructuredMetricsProvider;
+  friend class StructuredMetricsServiceTest;
 
   // files that are asynchronously read from disk at startup. When all files
   // have been read, the provider has been initialized.

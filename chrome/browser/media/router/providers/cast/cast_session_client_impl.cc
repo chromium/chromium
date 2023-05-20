@@ -28,21 +28,21 @@ void ReportClientMessageParseError(const MediaRoute::Id& route_id,
 // Traverses a JSON value, recursively removing any dict entries whose value is
 // null.
 void RemoveNullFields(base::Value& value) {
-  if (value.is_list()) {
-    for (auto& item : value.GetList()) {
+  if (auto* list = value.GetIfList()) {
+    for (auto& item : *list) {
       RemoveNullFields(item);
     }
-  } else if (value.is_dict()) {
+  } else if (auto* dict = value.GetIfDict()) {
     std::vector<std::string> to_remove;
-    for (auto pair : value.GetDict()) {
-      if (pair.second.is_none()) {
-        to_remove.push_back(pair.first);
+    for (auto [key, val] : *dict) {
+      if (val.is_none()) {
+        to_remove.push_back(key);
       } else {
-        RemoveNullFields(pair.second);
+        RemoveNullFields(val);
       }
     }
     for (const auto& key : to_remove) {
-      value.RemoveKey(key);
+      dict->Remove(key);
     }
   }
 }

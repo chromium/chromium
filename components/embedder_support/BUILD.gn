@@ -41,7 +41,7 @@ source_set("unit_tests") {
   sources = [
     "origin_trials/component_updater_utils_unittest.cc",
     "origin_trials/origin_trial_policy_impl_unittest.cc",
-    "origin_trials/origin_trials_settings_manager_unittest.cc",
+    "origin_trials/origin_trials_settings_storage_unittest.cc",
   ]
 
   if (!is_ios) {
@@ -56,6 +56,7 @@ source_set("unit_tests") {
     "//components/component_updater/installer_policies",
     "//components/embedder_support",
     "//components/embedder_support/origin_trials",
+    "//components/embedder_support/origin_trials:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/version_info:version_info",

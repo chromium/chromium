@@ -51,9 +51,12 @@ class HlsDataSourceImpl final : public media::HlsDataSource {
             ReadCb callback) override {
     DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-    // Read into the byterange, if one was given.
-    // Caller will be using 0-based positions regardless.
     if (range_.has_value()) {
+      if (pos >= range_->GetLength()) {
+        std::move(callback).Run(HlsDataSource::ReadStatusCodes::kError);
+        return;
+      }
+      size = std::min(size, range_->GetLength() - pos);
       pos += range_->GetOffset();
     }
 
@@ -127,19 +130,11 @@ HlsDataSourceProviderImpl::HlsDataSourceProviderImpl(
       tick_clock);
 }
 
-void HlsDataSourceProviderImpl::SetOwner(
-    media::HlsManifestDemuxerEngine* owner) {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DCHECK(!owner_ && owner);
-  owner_ = owner;
-}
-
 void HlsDataSourceProviderImpl::RequestDataSource(
     GURL uri,
     absl::optional<media::hls::types::ByteRange> range,
     RequestCb callback) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DCHECK(owner_);
 
   // TODO(https://crbug.com/1379488): Find a way to force
   // `MultiBufferDataSource` to limit its requests to within `range`.

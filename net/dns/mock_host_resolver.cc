@@ -200,20 +200,16 @@ class MockHostResolverBase::RequestImpl
     return base::OptionalToPtr(endpoint_results_);
   }
 
-  const absl::optional<std::vector<std::string>>& GetTextResults()
-      const override {
+  const std::vector<std::string>* GetTextResults() const override {
     DCHECK(complete_);
-    static const base::NoDestructor<absl::optional<std::vector<std::string>>>
-        nullopt_result;
-    return *nullopt_result;
+    static const base::NoDestructor<std::vector<std::string>> empty_result;
+    return empty_result.get();
   }
 
-  const absl::optional<std::vector<HostPortPair>>& GetHostnameResults()
-      const override {
+  const std::vector<HostPortPair>* GetHostnameResults() const override {
     DCHECK(complete_);
-    static const base::NoDestructor<absl::optional<std::vector<HostPortPair>>>
-        nullopt_result;
-    return *nullopt_result;
+    static const base::NoDestructor<std::vector<HostPortPair>> empty_result;
+    return empty_result.get();
   }
 
   const std::set<std::string>* GetDnsAliasResults() const override {
@@ -1030,11 +1026,9 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
     if (cache_result) {
       rv = cache_result->second.error();
       if (rv == OK) {
-        *out_endpoints = cache_result->second.GetEndpoints().value();
+        *out_endpoints = cache_result->second.GetEndpoints();
 
-        if (cache_result->second.aliases()) {
-          *out_aliases = *cache_result->second.aliases();
-        }
+        *out_aliases = cache_result->second.aliases();
         *out_stale_info = std::move(stale_info);
       }
 
@@ -1444,13 +1438,11 @@ class HangingHostResolver::RequestImpl
     base::ImmediateCrash();
   }
 
-  const absl::optional<std::vector<std::string>>& GetTextResults()
-      const override {
+  const std::vector<std::string>* GetTextResults() const override {
     base::ImmediateCrash();
   }
 
-  const absl::optional<std::vector<HostPortPair>>& GetHostnameResults()
-      const override {
+  const std::vector<HostPortPair>* GetHostnameResults() const override {
     base::ImmediateCrash();
   }
 

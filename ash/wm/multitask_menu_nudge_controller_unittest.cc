@@ -28,6 +28,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/wm/features.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -185,6 +186,58 @@ TEST_F(MultitaskMenuNudgeControllerTest,
           .CenterPoint());
   GetEventGenerator()->ClickLeftButton();
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+}
+
+// Tests that there is no crash after entering tablet mode with the multitask
+// menu created on the secondary display. Regression test for b/278165707.
+TEST_F(MultitaskMenuNudgeControllerTest,
+       NoCrashAfterEnterTabletFromMultidisplay) {
+  UpdateDisplay("800x600,801+0-800x600");
+
+  auto window = CreateAppWindow(gfx::Rect(900, 0, 300, 300));
+  ASSERT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
+
+  // Ensure that the clamshell nudge is closed and advance the clock so that the
+  // tablet one will show.
+  FireDismissNudgeTimer(window.get());
+  test_clock_.Advance(base::Hours(26));
+
+  // We use non zero duration since we want to mimic real behavior of stacking
+  // order changed on `window` before tablet mode is entered.
+  ui::ScopedAnimationDurationScaleMode scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  TabletModeControllerTestApi().EnterTabletMode();
+}
+
+// Tests that there is no crash after a window is placed such that the nudge
+// widget should be offscreen. Regression test for b/282994793.
+TEST_F(MultitaskMenuNudgeControllerTest,
+       NoCrashAfterActivatingMostlyOffscreenWindowMultidisplay) {
+  // Crash is multidisplay related since it involves switching root windows.
+  UpdateDisplay("1600x1000,1601+0-1200x1000");
+
+  // Create two windows so we can reactivate `window2` to simulate the crash
+  // because the window manager will shift `window2` onscreen if we try to
+  // create it offscreen directly.
+  auto window1 = CreateAppWindow(gfx::Rect(300, 300));
+  auto window2 = CreateAppWindow(gfx::Rect(1000, 300));
+
+  // Place `window2` mostly offscreen on primary display, such that on
+  // activation, the nudge widget should not be seen.
+  window2->SetBounds(gfx::Rect(1400, 0, 1000, 300));
+  ASSERT_EQ(Shell::GetAllRootWindows()[0], window2->GetRootWindow());
+
+  // The nudge widget was shown on `window1` since it was created first. Dismiss
+  // it and advance the clock so it will show on the next window activation.
+  ASSERT_TRUE(GetNudgeWidgetForWindow(window1.get()));
+  FireDismissNudgeTimer(window1.get());
+  wm::ActivateWindow(window1.get());
+  test_clock_.Advance(base::Hours(26));
+
+  // Activate `window2`. Verify that the nudge widget is not created since the
+  // anchor is invisible.
+  wm::ActivateWindow(window2.get());
+  EXPECT_FALSE(GetNudgeWidgetForWindow(window2.get()));
 }
 
 TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {

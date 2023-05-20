@@ -65,6 +65,7 @@ class ASH_EXPORT NotificationCenterTray : public TrayBackgroundView,
   views::Widget* GetBubbleWidget() const override;
   void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
                                     bool visible) override;
+  void UpdateLayout() override;
 
   // ash::TrayItemView::Observer:
   void OnTrayItemVisibilityAboutToChange(bool target_visibility) override;

@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -120,7 +121,8 @@ public class BookmarkSaveFlowMediator
                                 ? R.string.bookmark_save_flow_title_move
                                 : R.string.bookmark_save_flow_title));
         mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON,
-                BookmarkUtils.getFolderIcon(mContext, bookmarkId.getType()));
+                BookmarkUtils.getFolderIcon(
+                        mContext, bookmarkId.getType(), BookmarkRowDisplayPref.COMPACT));
         mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON_ENABLED,
                 BookmarkUtils.isMovable(item));
         mPropertyModel.set(BookmarkSaveFlowProperties.SUBTITLE_TEXT,

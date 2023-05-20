@@ -190,10 +190,6 @@ class BASE_EXPORT SequenceManagerImpl
   void UnregisterTaskQueueImpl(
       std::unique_ptr<internal::TaskQueueImpl> task_queue);
 
-  // Schedule a call to UnregisterTaskQueueImpl as soon as it's safe to do so.
-  void ShutdownTaskQueueGracefully(
-      std::unique_ptr<internal::TaskQueueImpl> task_queue);
-
   scoped_refptr<const AssociatedThreadId> associated_thread() const {
     return associated_thread_;
   }
@@ -331,19 +327,14 @@ class BASE_EXPORT SequenceManagerImpl
     TimeTicks next_time_to_reclaim_memory;
 
     // List of task queues managed by this SequenceManager.
-    // - active_queues contains queues that are still running tasks.
-    //   Most often they are owned by relevant TaskQueues, but
-    //   queues_to_gracefully_shutdown_ are included here too.
-    // - queues_to_gracefully_shutdown contains queues which should be deleted
-    //   when they become empty.
+    // - active_queues contains queues that are still running tasks, which are
+    //   are owned by relevant TaskQueues.
     // - queues_to_delete contains soon-to-be-deleted queues, because some
     //   internal scheduling code does not expect queues to be pulled
     //   from underneath.
 
     std::set<internal::TaskQueueImpl*> active_queues;
 
-    std::map<internal::TaskQueueImpl*, std::unique_ptr<internal::TaskQueueImpl>>
-        queues_to_gracefully_shutdown;
     std::map<internal::TaskQueueImpl*, std::unique_ptr<internal::TaskQueueImpl>>
         queues_to_delete;
 

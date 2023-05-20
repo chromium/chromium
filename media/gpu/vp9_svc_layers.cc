@@ -174,8 +174,7 @@ std::vector<VP9SVCLayers::FrameConfig> GetTemporalLayersReferencePattern(
               FrameConfig(1, kReference, kUpdate, true),
               FrameConfig(2, kNone, kReference, true)};
     default:
-      NOTREACHED();
-      return {};
+      NOTREACHED_NORETURN();
   }
 }
 }  // namespace

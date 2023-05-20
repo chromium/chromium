@@ -11,7 +11,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -254,8 +254,9 @@ TEST_F(ManageSyncSettingsMediatorTest,
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
   FirstSetupSyncOnWithConsentEnabled();
   EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
-      .WillOnce(Return(syncer::MockSyncService::DisableReasonSet()))
-      .WillOnce(Return(syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
+      .WillOnce(Return(syncer::SyncService::DisableReasonSet()))
+      .WillOnce(Return(syncer::SyncService::DisableReasonSet(
+          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})));
 
   // Loads the Sync page once in success state.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
@@ -279,8 +280,9 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceMultipleErrors) {
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
   EXPECT_CALL(*sync_service_mock_, GetDisableReasons())
-      .WillOnce(Return(syncer::MockSyncService::DisableReasonSet()))
-      .WillOnce(Return(syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY));
+      .WillOnce(Return(syncer::SyncService::DisableReasonSet()))
+      .WillOnce(Return(syncer::SyncService::DisableReasonSet(
+          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})));
 
   // Loads the Sync page once in the disabled by enterprise policy error state.
   [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];

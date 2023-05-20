@@ -319,3 +319,25 @@ const string kDetailedBuildInfoSubpagePath = "help/details";
 // Kerberos section.
 const string kKerberosSectionPath = "kerberos";
 const string kKerberosAccountsV2SubpagePath = "kerberos/kerberosAccounts";
+
+// The properties should match the top-level section paths defined above
+// Keep alphabetized
+struct OsPageAvailability {
+  bool apps;
+  bool bluetooth;
+  bool crostini;
+  bool dateTime;
+  bool device;
+  bool files;
+  bool internet;
+  bool kerberos;
+  bool multidevice;
+  bool osAccessibility;
+  bool osLanguages;
+  bool osPeople;
+  bool osPrinting;
+  bool osPrivacy;
+  bool osReset;
+  bool osSearch;
+  bool personalization;
+};

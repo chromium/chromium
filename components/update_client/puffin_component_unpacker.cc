@@ -91,7 +91,7 @@ void PuffinComponentUnpacker::BeginUnzipping() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath& destination = unpack_path_;
   if (!base::CreateNewTempDirectory(
-          FILE_PATH_LITERAL("chrome_ComponentUnpacker_BeginUnzipping"),
+          FILE_PATH_LITERAL("chrome_PuffinComponentUnpacker_BeginUnzipping"),
           &destination)) {
     VLOG(1) << "Unable to create temporary directory for unpacking.";
     EndUnpacking(UnpackerError::kUnzipPathError, 0);

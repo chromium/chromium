@@ -8,10 +8,10 @@ import("//testing/test.gni")
 
 group("sync") {
   public_deps = [
-    "//components/sync/driver",
     "//components/sync/engine",
     "//components/sync/model",
     "//components/sync/nigori",
+    "//components/sync/service",
   ]
   if (!is_android) {
     public_deps += [ "//components/trusted_vault" ]
@@ -195,22 +195,6 @@ source_set("unit_tests") {
     "base/sync_util_unittest.cc",
     "base/unique_position_unittest.cc",
     "base/weak_handle_unittest.cc",
-    "driver/backend_migrator_unittest.cc",
-    "driver/data_type_manager_impl_unittest.cc",
-    "driver/glue/sync_engine_impl_unittest.cc",
-    "driver/glue/sync_transport_data_prefs_unittest.cc",
-    "driver/model_load_manager_unittest.cc",
-    "driver/model_type_controller_unittest.cc",
-    "driver/passphrase_type_metrics_provider_unittest.cc",
-    "driver/sync_auth_manager_unittest.cc",
-    "driver/sync_internals_util_unittest.cc",
-    "driver/sync_service_crypto_unittest.cc",
-    "driver/sync_service_impl_startup_unittest.cc",
-    "driver/sync_service_impl_unittest.cc",
-    "driver/sync_service_utils_unittest.cc",
-    "driver/sync_session_durations_metrics_recorder_unittest.cc",
-    "driver/sync_stopped_reporter_unittest.cc",
-    "driver/sync_user_settings_impl_unittest.cc",
     "engine/backoff_delay_provider_unittest.cc",
     "engine/bookmark_update_preprocessing_unittest.cc",
     "engine/cancelation_signal_unittest.cc",
@@ -265,6 +249,22 @@ source_set("unit_tests") {
     "protocol/model_type_state_helper_unittest.cc",
     "protocol/proto_enum_conversions_unittest.cc",
     "protocol/proto_value_conversions_unittest.cc",
+    "service/backend_migrator_unittest.cc",
+    "service/data_type_manager_impl_unittest.cc",
+    "service/glue/sync_engine_impl_unittest.cc",
+    "service/glue/sync_transport_data_prefs_unittest.cc",
+    "service/model_load_manager_unittest.cc",
+    "service/model_type_controller_unittest.cc",
+    "service/passphrase_type_metrics_provider_unittest.cc",
+    "service/sync_auth_manager_unittest.cc",
+    "service/sync_internals_util_unittest.cc",
+    "service/sync_service_crypto_unittest.cc",
+    "service/sync_service_impl_startup_unittest.cc",
+    "service/sync_service_impl_unittest.cc",
+    "service/sync_service_utils_unittest.cc",
+    "service/sync_session_durations_metrics_recorder_unittest.cc",
+    "service/sync_stopped_reporter_unittest.cc",
+    "service/sync_user_settings_impl_unittest.cc",
   ]
 
   if (is_chromeos) {
@@ -318,14 +318,10 @@ source_set("unit_tests") {
   }
 
   if (!is_ios) {
-    sources += [ "driver/sync_policy_handler_unittest.cc" ]
+    sources += [ "service/sync_policy_handler_unittest.cc" ]
     deps += [
       "//components/policy:generated",
       "//components/policy/core/browser",
     ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
   }
 }

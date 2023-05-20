@@ -235,6 +235,11 @@ class WaylandSurface {
   // compositor accelerators, e.g: Alt+Tab, etc.
   void SetKeyboardShortcutsInhibition(bool enabled);
 
+  // Set the trusted damage flag on this surface to be active, if the surface
+  // augmenter protocol is available. This only needs to be set on the root
+  // surface for a window.
+  void EnableTrustedDamageIfPossible();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
                            DoesNotCreateSurfaceSyncOnCommitWithoutBuffers);

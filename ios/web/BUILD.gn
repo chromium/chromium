@@ -4,6 +4,7 @@
 
 import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -660,11 +661,16 @@ optimize_js("common_js") {
   sources = [ "web_state/js/resources/common.js" ]
 }
 
-optimize_js("message_js") {
+optimize_ts("message_js") {
   visibility = [ ":web" ]
 
-  primary_script = "js_messaging/resources/message.js"
-  sources = [ "js_messaging/resources/message.js" ]
+  sources = [ "js_messaging/resources/message.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 bundle_data("navigation_resources") {

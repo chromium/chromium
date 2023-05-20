@@ -21,9 +21,9 @@
 namespace ash::user_education_util {
 namespace {
 
-// Key used for help bubble ID in
-// `user_education::HelpBubbleParams::ExtendedProperties`.
+// Keys used in `user_education::HelpBubbleParams::ExtendedProperties`.
 constexpr char kHelpBubbleIdKey[] = "helpBubbleId";
+constexpr char kHelpBubbleStyleKey[] = "helpBubbleStyle";
 
 // Helpers ---------------------------------------------------------------------
 
@@ -64,6 +64,14 @@ user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
   return extended_properties;
 }
 
+user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
+    HelpBubbleStyle help_bubble_style) {
+  user_education::HelpBubbleParams::ExtendedProperties extended_properties;
+  extended_properties.values().Set(kHelpBubbleStyleKey,
+                                   static_cast<int>(help_bubble_style));
+  return extended_properties;
+}
+
 const AccountId& GetAccountId(const UserSession* user_session) {
   return user_session ? user_session->user_info.account_id : EmptyAccountId();
 }
@@ -73,6 +81,16 @@ HelpBubbleId GetHelpBubbleId(
         extended_properties) {
   return static_cast<HelpBubbleId>(
       extended_properties.values().FindInt(kHelpBubbleIdKey).value());
+}
+
+absl::optional<HelpBubbleStyle> GetHelpBubbleStyle(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties) {
+  if (absl::optional<int> help_bubble_style =
+          extended_properties.values().FindInt(kHelpBubbleStyleKey)) {
+    return static_cast<HelpBubbleStyle>(help_bubble_style.value());
+  }
+  return absl::nullopt;
 }
 
 views::View* GetMatchingViewInRootWindow(int64_t display_id,

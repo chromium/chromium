@@ -22,6 +22,7 @@ class PdfFlattener : public printing::mojom::PdfFlattener {
   // printing::mojom::PdfFlattener:
   void FlattenPdf(base::ReadOnlySharedMemoryRegion src_pdf_region,
                   FlattenPdfCallback callback) override;
+  void SetUseSkiaRendererPolicy(bool use_skia) override;
 };
 
 }  // namespace printing

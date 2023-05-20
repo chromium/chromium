@@ -81,6 +81,7 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   enum class Disposition {
     kNewForegroundTab,
     kNewWindow,
+    kOffTheRecord,
     kSwitchToTab,
   };
   virtual void OpenUrl(const GURL& url,

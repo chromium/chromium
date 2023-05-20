@@ -31,28 +31,28 @@ class NET_EXPORT TrustStoreAndroid : public TrustStore,
   // Load user settings from Android.
   void Initialize();
 
+  // TrustStore:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
-
   CertificateTrust GetTrust(const ParsedCertificate* cert,
                             base::SupportsUserData* debug_data) override;
 
   // CertDatabase::Observer:
   void OnCertDBChanged() override;
 
-  // Have this object start listening for CertDB changes.
+  // Have this object start listening for CertDatabase changes.
   // This function is not thread safe, and must be called from a sequence.
   void ObserveCertDBChanges();
 
  private:
-  bool is_observing_certdb_changes = false;
-
   // Inner Impl class for use in initializing stores.
   class Impl;
 
   // Loads user settings from Windows CertStores if not already done and
   // returns scoped_refptr<Impl>.
   scoped_refptr<Impl> MaybeInitializeAndGetImpl();
+
+  bool is_observing_certdb_changes_ = false;
 
   base::Lock init_lock_;
   scoped_refptr<Impl> impl_ GUARDED_BY(init_lock_);

@@ -4,6 +4,7 @@
 
 #include "content/browser/gpu/browser_child_process_backgrounded_bridge.h"
 
+#include "base/mac/mac_util.h"
 #include "base/process/process.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/gpu/gpu_process_host.h"
@@ -95,6 +96,9 @@ class BrowserChildProcessBackgroundedBridgeTest
 
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
                        InitiallyForegrounded) {
+  if (base::mac::IsAtLeastOS13()) {
+    GTEST_SKIP() << "Flaking on macOS 13: https://crbug.com/1444130";
+  }
   // Set the browser process as foregrounded.
   SetProcessBackgrounded(base::Process::Current().Pid(), false);
 

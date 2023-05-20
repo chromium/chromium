@@ -87,6 +87,9 @@ void AddItemIfNotNil(NSMutableArray* array, id item) {
 + (instancetype)buildFromPrefs:(PrefService*)prefs
                     localState:(PrefService*)localState
          authenticationService:(AuthenticationService*)authService {
+  if (set_up_list_prefs::IsSetUpListDisabled(localState)) {
+    return nil;
+  }
   NSMutableArray<SetUpListItem*>* items =
       [[NSMutableArray<SetUpListItem*> alloc] init];
   AddItemIfNotNil(items, BuildItem(SetUpListItemType::kSignInSync, prefs,
@@ -123,6 +126,15 @@ void AddItemIfNotNil(NSMutableArray* array, id item) {
   _prefChangeRegistrar.RemoveAll();
   _prefObserverBridge.reset();
   _localState = nullptr;
+}
+
+- (BOOL)allItemsComplete {
+  for (SetUpListItem* item in _items) {
+    if (!item.complete) {
+      return NO;
+    }
+  }
+  return YES;
 }
 
 #pragma mark - PrefObserverDelegate

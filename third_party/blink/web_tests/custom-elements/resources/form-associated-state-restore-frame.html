@@ -31,6 +31,7 @@ customElements.define('my-control-1', MyControl1);
 <my-control-1 id="readonly" readonly></my-control-1>
 <fieldset disabled><my-control-1 id="fieldset-disabled"></my-control-1></fieldset>
 <my-control-2></my-control-2>
+<my-control-3></my-control-3>
 </form>
 
 <script>
@@ -61,12 +62,46 @@ function upgradeMyControl2() {
   customElements.upgrade($('my-control-2'));
 }
 
+function upgradeMyControl3() {
+  class MyControl3 extends HTMLElement {
+    static get formAssociated() { return true; }
+    constructor() {
+      super();
+      this.internals_ = this.attachInternals();
+      this.value_ = 'initial';
+      this.state_ = 'initial/initial';
+    }
+    get value() {
+      return this.value_;
+    }
+    get state() {
+      return this.state_;
+    }
+    set value(v) {
+      this.value_ = v;
+      this.state_ = v + '/' + v;
+      this.internals_.setFormValue(this.value_, this.state_);
+    }
+    // formStateRestoreCallback should be called with state intead of value.
+    // See crbug.com/1429585
+    formStateRestoreCallback(state, mode) {
+      let index = state.indexOf('/');
+      this.value = state.substring(0, index);
+      this.lastRestoreMode = mode;
+      this.lastRestoreState = state;
+    }
+  }
+  customElements.define('my-control-3', MyControl3);
+  customElements.upgrade($('my-control-3'));
+}
+
 function runTest() {
   let state = $('#emptyOnFirstVisit');
   if (!state.value) {
     // First visit
     state.value = 'visited';
     upgradeMyControl2();
+    upgradeMyControl3();
 
     $('my-control-1').value = 'edit1';
     $('#focus').value = 'edit3';
@@ -75,10 +110,12 @@ function runTest() {
     $('#readonly').value = 'edit6';
     $('#fieldset-disabled').value = 'edit7';
     $('my-control-2').value = 'edit2';
+    $('my-control-3').value = 'edit8';
     setTimeout(() => { $('form').submit(); }, 100);
   } else {
     // Second visit
     upgradeMyControl2();
+    upgradeMyControl3();
     parent.doneTest();
   }
 }

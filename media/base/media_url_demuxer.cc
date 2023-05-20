@@ -28,8 +28,7 @@ MediaUrlDemuxer::~MediaUrlDemuxer() = default;
 
 // Should never be called since MediaResource::Type is URL.
 std::vector<DemuxerStream*> MediaUrlDemuxer::GetAllStreams() {
-  NOTREACHED();
-  return std::vector<DemuxerStream*>();
+  NOTREACHED_NORETURN();
 }
 
 const MediaUrlParams& MediaUrlDemuxer::GetMediaUrlParams() const {

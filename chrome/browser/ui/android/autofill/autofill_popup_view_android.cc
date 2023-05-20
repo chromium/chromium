@@ -133,9 +133,9 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
         controller_->GetRemovalConfirmationText(i, nullptr, nullptr);
     bool is_label_multiline =
         suggestion.frontend_id ==
-            POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE ||
-        suggestion.frontend_id == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO ||
-        suggestion.frontend_id == POPUP_ITEM_ID_MIXED_FORM_MESSAGE;
+            PopupItemId::kInsecureContextPaymentDisabledMessage ||
+        suggestion.frontend_id == PopupItemId::kCreditCardSigninPromo ||
+        suggestion.frontend_id == PopupItemId::kMixedFormMessage;
 
     Java_AutofillPopupBridge_addToAutofillSuggestionArray(
         env, java_object_, data_array, i,

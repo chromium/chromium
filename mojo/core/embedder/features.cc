@@ -39,11 +39,5 @@ BASE_FEATURE(kMojoIpcz, "MojoIpcz", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMojoIpcz, "MojoIpcz", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kMojoDirectSharedMemoryAndroid,
-             "MojoDirectSharedMemoryAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 }  // namespace core
 }  // namespace mojo

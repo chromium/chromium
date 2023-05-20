@@ -250,7 +250,7 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.MAC_ANY,
-    xcode = xcode.x14main,
+    xcode = xcode.x14betabots,
 )
 
 builder(
@@ -290,7 +290,7 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.MAC_ANY,
-    xcode = xcode.x14main,
+    xcode = xcode.x14betabots,
 )
 
 builder(

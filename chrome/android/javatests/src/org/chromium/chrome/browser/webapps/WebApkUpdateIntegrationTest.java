@@ -32,15 +32,16 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.test.MockCertVerifierRuleAndroid;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.components.webapk.proto.WebApkProto;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.io.FileInputStream;
@@ -50,7 +51,6 @@ import java.io.FileInputStream;
 @DoNotBatch(reason = "The update pipeline runs once per startup.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ChromeSwitches.CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP})
-@DisableFeatures({ChromeFeatureList.PWA_UPDATE_DIALOG_FOR_NAME})
 public class WebApkUpdateIntegrationTest {
     public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
 
@@ -73,8 +73,8 @@ public class WebApkUpdateIntegrationTest {
     private static final String WEBAPK_START_URL =
             "/chrome/test/data/banners/manifest_test_page.html";
     private static final String WEBAPK_SCOPE_URL = "/chrome/test/data/banners/";
-    private static final String WEBAPK_NAME = "Name";
-    private static final String WEBAPK_SHORT_NAME = "Short Name";
+    private static final String WEBAPK_NAME = "Manifest test app";
+    private static final String WEBAPK_SHORT_NAME = "Manifest test app";
     private static final String WEBAPK_MANIFEST_ID = "/id";
     private static final String WEBAPK_APP_KEY = "/key";
     private static final String ICON_URL = "/chrome/test/data/banners/image-512px.png";
@@ -84,8 +84,6 @@ public class WebApkUpdateIntegrationTest {
     private static final int SHELL_APK_VERSION = 1000;
     private static final String THEME_COLOR = "1L";
     private static final String BACKGROUND_COLOR = "2L";
-    private static final int PRIMARY_ICON_ID = 12;
-    private static final int PRIMARY_MASKABLE_ICON_ID = 14;
 
     private EmbeddedTestServer mTestServer;
     private Context mContextToRestore;
@@ -116,12 +114,6 @@ public class WebApkUpdateIntegrationTest {
                 }
             };
         }
-    }
-
-    private void waitForHistogram(String name, int count) {
-        CriteriaHelper.pollUiThread(() -> {
-            return RecordHistogram.getHistogramTotalCountForTesting(name) >= count;
-        }, "waitForHistogram timeout", 10000, 200);
     }
 
     @Before
@@ -159,9 +151,25 @@ public class WebApkUpdateIntegrationTest {
         bundle.putString(WebApkMetaDataKeys.SCOPE, mTestServer.getURL(WEBAPK_SCOPE_URL));
         bundle.putString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
                 ICON_URL + " " + ICON_MURMUR2_HASH);
-        bundle.putInt(WebApkMetaDataKeys.ICON_ID, PRIMARY_ICON_ID);
-        bundle.putInt(WebApkMetaDataKeys.MASKABLE_ICON_ID, PRIMARY_MASKABLE_ICON_ID);
         return bundle;
+    }
+
+    // Wait for the name change dialog and dismiss it.
+    private void waitForDialog() {
+        CriteriaHelper.pollUiThread(() -> {
+            ModalDialogManager manager = mActivityTestRule.getActivity().getModalDialogManager();
+            PropertyModel dialog = manager.getCurrentDialogForTest();
+            if (dialog == null) return false;
+            dialog.get(ModalDialogProperties.CONTROLLER)
+                    .onClick(dialog, ModalDialogProperties.ButtonType.POSITIVE);
+            return true;
+        });
+    }
+
+    private void waitForHistogram(String name, int count) {
+        CriteriaHelper.pollUiThread(() -> {
+            return RecordHistogram.getHistogramTotalCountForTesting(name) >= count;
+        }, "waitForHistogram timeout", 10000, 200);
     }
 
     private WebApkProto.WebApk parseRequestProto(String path) throws Exception {
@@ -182,6 +190,7 @@ public class WebApkUpdateIntegrationTest {
         assertEquals(ActivityType.WEB_APK, activity.getActivityType());
         assertEquals(pageUrl, activity.getIntentDataProvider().getUrlToLoad());
 
+        waitForDialog();
         waitForHistogram("WebApk.Update.RequestQueued", 1);
 
         WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(

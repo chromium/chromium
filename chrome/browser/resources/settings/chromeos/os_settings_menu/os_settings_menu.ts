@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import '../os_settings_icons.html.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -159,7 +159,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         label: this.i18n('multidevicePageTitle'),
       },
       {
-        pageName: 'people',
+        pageName: 'osPeople',
         path: routesMojom.PEOPLE_SECTION_PATH,
         icon: 'cr:person',
         label: this.i18n('osPeoplePageTitle'),
@@ -183,13 +183,13 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         label: this.i18n('personalizationPageTitle'),
       },
       {
-        pageName: 'search',
+        pageName: 'osSearch',
         path: routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH,
         icon: 'cr:search',
         label: this.i18n('osSearchPageTitle'),
       },
       {
-        pageName: 'privacy',
+        pageName: 'osPrivacy',
         path: routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH,
         icon: 'cr:security',
         label: this.i18n('privacyPageTitle'),
@@ -201,7 +201,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         label: this.i18n('appsPageTitle'),
       },
       {
-        pageName: 'a11y',
+        pageName: 'osAccessibility',
         path: routesMojom.ACCESSIBILITY_SECTION_PATH,
         icon: 'os-settings:accessibility',
         label: this.i18n('a11yPageTitle'),
@@ -221,7 +221,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         label: this.i18n('dateTimePageTitle'),
       },
       {
-        pageName: 'languages',
+        pageName: 'osLanguages',
         path: routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH,
         icon: 'os-settings:language',
         label: this.i18n('osLanguagesPageTitle'),
@@ -233,7 +233,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         label: this.i18n('filesPageTitle'),
       },
       {
-        pageName: 'printing',
+        pageName: 'osPrinting',
         path: routesMojom.PRINTING_SECTION_PATH,
         icon: 'os-settings:print',
         label: this.i18n('printingPageTitle'),
@@ -245,7 +245,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         label: this.i18n('crostiniPageTitle'),
       },
       {
-        pageName: 'reset',
+        pageName: 'osReset',
         path: routesMojom.RESET_SECTION_PATH,
         icon: 'os-settings:restore',
         label: this.i18n('resetPageTitle'),

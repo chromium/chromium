@@ -233,4 +233,9 @@ void RunOfflineInstall(UpdaterScope scope,
   // TODO(crbug.com/1286574).
 }
 
+base::CommandLine MakeElevated(base::CommandLine command_line) {
+  command_line.PrependWrapper("/usr/bin/sudo");
+  return command_line;
+}
+
 }  // namespace updater::test

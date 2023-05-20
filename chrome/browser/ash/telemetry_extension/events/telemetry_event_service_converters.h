@@ -29,6 +29,9 @@ crosapi::mojom::TelemetryUsbEventInfoPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetrySdCardEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::SdCardEventInfoPtr input);
 
+crosapi::mojom::TelemetryPowerEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::PowerEventInfoPtr input);
+
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input);
 
@@ -63,6 +66,9 @@ crosapi::mojom::TelemetryUsbEventInfo::State Convert(
 
 crosapi::mojom::TelemetrySdCardEventInfo::State Convert(
     cros_healthd::mojom::SdCardEventInfo::State input);
+
+crosapi::mojom::TelemetryPowerEventInfo::State Convert(
+    cros_healthd::mojom::PowerEventInfo::State input);
 
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input);

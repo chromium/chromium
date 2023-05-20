@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
@@ -98,11 +100,13 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mRenderer = new TileRenderer(
                 mActivity, SuggestionsConfig.getTileStyle(mUiConfig), TITLE_LINES, null);
 
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mMediator = new MostVisitedTilesMediator(activity.getResources(), mUiConfig, tilesLayout,
                 mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub), mRenderer,
-                propertyModel, shouldShowSkeletonUIPreNative, isScrollableMVTEnabled,
-                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                snapshotTileGridChangedRunnable, tileCountChangedRunnable);
+                propertyModel, shouldShowSkeletonUIPreNative, isScrollableMVTEnabled, isTablet,
+                snapshotTileGridChangedRunnable, tileCountChangedRunnable,
+                StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet)
+                        && FeedFeatures.isMultiColumnFeedEnabled(activity));
     }
 
     /**

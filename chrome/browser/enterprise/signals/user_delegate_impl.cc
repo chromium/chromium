@@ -16,6 +16,10 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace enterprise_signals {
 
 using DTCPolicyLevel = enterprise_connectors::DTCPolicyLevel;
@@ -42,10 +46,15 @@ UserDelegateImpl::UserDelegateImpl(
       identity_manager_(identity_manager),
       device_trust_connector_service_(device_trust_connector_service) {
   CHECK(profile_);
-  CHECK(identity_manager_);
 }
 
 UserDelegateImpl::~UserDelegateImpl() = default;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool UserDelegateImpl::IsSigninContext() const {
+  return ash::ProfileHelper::IsSigninProfile(profile_);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool UserDelegateImpl::IsAffiliated() const {
   return chrome::enterprise_util::IsProfileAffiliated(profile_);
@@ -62,9 +71,11 @@ bool UserDelegateImpl::IsManagedUser() const {
 }
 
 bool UserDelegateImpl::IsSameUser(const std::string& gaia_id) const {
-  return identity_manager_->GetPrimaryAccountId(
+  return identity_manager_ &&
+         identity_manager_->GetPrimaryAccountId(
              signin::ConsentLevel::kSignin) ==
-         identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id).account_id;
+             identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id)
+                 .account_id;
 }
 
 std::set<policy::PolicyScope> UserDelegateImpl::GetPolicyScopesNeedingSignals()

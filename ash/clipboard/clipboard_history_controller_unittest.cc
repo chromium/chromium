@@ -16,6 +16,7 @@
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/color_util.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/location.h"
@@ -31,16 +32,21 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -51,12 +57,24 @@ using crosapi::mojom::ClipboardHistoryControllerShowSource;
 
 namespace {
 
-void FlushMessageLoop() {
-  base::RunLoop run_loop;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+// Matchers --------------------------------------------------------------------
+
+MATCHER_P2(MenuItemsMatch, labels, icons, "") {
+  if (arg.size() != labels.size() || arg.size() != icons.size()) {
+    return false;
+  }
+
+  for (size_t index = 0; index < labels.size(); ++index) {
+    if (arg[index].label != labels[index] ||
+        !gfx::test::AreImagesEqual(arg[index].icon, icons[index])) {
+      return false;
+    }
+  }
+
+  return true;
 }
+
+// Helper classes --------------------------------------------------------------
 
 // A mocked clipboard history controller observer.
 class MockObserver : public ClipboardHistoryController::Observer {
@@ -104,6 +122,24 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
 
   void OnShutdown() override {}
 };
+
+// Describes a menu item consisting of a label and an icon.
+struct MenuItemDescriptor {
+  MenuItemDescriptor(const std::u16string& input_label,
+                     const gfx::Image& input_icon)
+      : label(input_label), icon(input_icon) {}
+  const std::u16string label;
+  const gfx::Image icon;
+};
+
+// Helper functions ------------------------------------------------------------
+
+void FlushMessageLoop() {
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
 
 void ExpectHistoryItemImageMatchesBitmap(const ClipboardHistoryItem& item,
                                          const SkBitmap& expected_bitmap) {
@@ -960,32 +996,85 @@ class ClipboardHistoryRefreshDisplayFormatTest
     GetEventGenerator()->ClickRightButton();
   }
 
-  // Writes clipboard data and returns an array of the clipboard history display
-  // text. The clipboard data is written based on the test parameter. The
-  // returned array follows the reverse clipboard data writing order.
-  std::vector<std::u16string> WriteClipboardDataBasedOnParam() {
+  // Writes clipboard data. Returns the the descriptors of the expected
+  // clipboard history submenu items. The returned arrays follow the reverse
+  // clipboard data writing order. Returns an empty array if the clipboard
+  // history refresh feature is disabled.
+  std::vector<MenuItemDescriptor> WriteClipboardDataBasedOnParam() {
+    const ui::ColorProvider* color_provider = GetPrimaryWindowColorProvider();
+    CHECK(color_provider);
+    auto get_icon = [color_provider](const gfx::VectorIcon& icon) {
+      return gfx::Image(ui::ImageModel::FromVectorIcon(icon,
+                                                       ui::kColorSysSecondary,
+                                                       /*icon_size=*/20)
+                            .Rasterize(color_provider));
+    };
+
+    const bool refresh_feature_enabled =
+        chromeos::features::IsClipboardHistoryRefreshEnabled();
     switch (GetDisplayFormat()) {
       case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
         WriteTextToClipboardAndConfirm(u"A");
         WriteTextToClipboardAndConfirm(u"B");
-        return std::vector<std::u16string>{u"B", u"A"};
+        if (refresh_feature_enabled) {
+          return {{u"B", get_icon(chromeos::kTextIcon)},
+                  {u"A", get_icon(chromeos::kTextIcon)}};
+        }
+        break;
       case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
         WriteImageToClipboardAndConfirm(
             gfx::test::CreateBitmap(/*width=*/3, /*height=*/3));
         WriteImageToClipboardAndConfirm(
             gfx::test::CreateBitmap(/*width=*/2, /*height=*/2));
-        return std::vector<std::u16string>{u"Image", u"Image"};
+        if (refresh_feature_enabled) {
+          return {{u"Image", get_icon(chromeos::kFiletypeImageIcon)},
+                  {u"Image", get_icon(chromeos::kFiletypeImageIcon)}};
+        }
+        break;
       case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
         WriteHtmlAndConfirm("<table>A</table>");
         WriteHtmlAndConfirm("<table>B></table>");
-        return std::vector<std::u16string>{u"HTML Content", u"HTML Content"};
+        if (refresh_feature_enabled) {
+          return {{u"HTML Content", get_icon(vector_icons::kCodeIcon)},
+                  {u"HTML Content", get_icon(vector_icons::kCodeIcon)}};
+        }
+        break;
       case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
-        // TODO(b/278915828): Modify this part when other display formats are
-        // supported.
-        [[fallthrough]];
+        // Use dummy file paths. The corresponding files do not have to exist
+        // because only file extensions are required to calculate icons.
+
+        // Copy a single file.
+        WriteFilePathsAndConfirm({u"dummy_file.webm"});
+
+        // Copy multiple files at the same time.
+        WriteFilePathsAndConfirm({u"dummy_child1.jpg", u"dummy_child2.png"});
+
+        if (refresh_feature_enabled) {
+          return {{u"dummy_child1.jpg, dummy_child2.png",
+                   get_icon(vector_icons::kContentCopyIcon)},
+                  {u"dummy_file.webm", get_icon(chromeos::kFiletypeVideoIcon)}};
+        }
+        break;
       case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
         NOTREACHED_NORETURN();
     }
+
+    return {};
+  }
+
+  void WriteFilePathsAndConfirm(const std::vector<std::u16string>& file_paths) {
+    {
+      base::Pickle pickle;
+      ui::WriteCustomDataToPickle(
+          std::unordered_map<std::u16string, std::u16string>(
+              {{u"fs/sources", base::JoinString(file_paths, u"\n")}}),
+          &pickle);
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WritePickledData(pickle,
+                           ui::ClipboardFormatType::WebCustomDataType());
+    }
+
+    WaitForOperationConfirmed();
   }
 
   void WriteHtmlAndConfirm(const std::string& html) {
@@ -1002,6 +1091,13 @@ class ClipboardHistoryRefreshDisplayFormatTest
     return std::get<1>(GetParam());
   }
 
+  const ui::ColorProvider* GetPrimaryWindowColorProvider() {
+    auto* color_provider_source = ColorUtil::GetColorProviderSourceForWindow(
+        Shell::GetPrimaryRootWindow());
+    auto* color_provider = color_provider_source->GetColorProvider();
+    return color_provider;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1014,7 +1110,8 @@ INSTANTIATE_TEST_SUITE_P(
         /*display_format_under_test=*/testing::Values(
             crosapi::mojom::ClipboardHistoryDisplayFormat::kText,
             crosapi::mojom::ClipboardHistoryDisplayFormat::kPng,
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml)));
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml,
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kFile)));
 
 // Verifies that the clipboard history submenu model of the text services
 // context menu in Ash works as expected.
@@ -1040,8 +1137,13 @@ TEST_P(ClipboardHistoryRefreshDisplayFormatTest, TextServicesSubMenu) {
   // clipboard history.
   EXPECT_FALSE(target_command_parent_model->IsEnabledAt(target_command_index));
 
-  const std::vector<std::u16string> expected_display_text_array =
+  const bool is_refresh_enabled =
+      chromeos::features::IsClipboardHistoryRefreshEnabled();
+
+  // Write clipboard data.
+  const std::vector<MenuItemDescriptor> expected_submenu_items =
       WriteClipboardDataBasedOnParam();
+  ASSERT_EQ(expected_submenu_items.empty(), !is_refresh_enabled);
 
   // Close the textfield menu then reshow.
   GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
@@ -1057,21 +1159,23 @@ TEST_P(ClipboardHistoryRefreshDisplayFormatTest, TextServicesSubMenu) {
   // history.
   EXPECT_TRUE(target_command_parent_model->IsEnabledAt(target_command_index));
 
-  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+  if (is_refresh_enabled) {
     // If the refresh feature is enabled, the clipboard history menu item is a
     // submenu item.
     EXPECT_EQ(target_command_parent_model->GetTypeAt(target_command_index),
               ui::MenuModel::ItemType::TYPE_SUBMENU);
 
     // Check the submenu model data.
-    ASSERT_EQ(submenu_model->GetItemCount(), 2u);
-    EXPECT_EQ(submenu_model->GetLabelAt(0), expected_display_text_array[0]);
-    EXPECT_EQ(submenu_model->GetLabelAt(1), expected_display_text_array[1]);
-    const ui::ImageModel expected_icon(
-        chromeos::clipboard_history::GetIconForDisplayFormat(
-            GetDisplayFormat()));
-    EXPECT_EQ(submenu_model->GetIconAt(0), expected_icon);
-    EXPECT_EQ(submenu_model->GetIconAt(1), expected_icon);
+    const ui::ColorProvider* color_provider = GetPrimaryWindowColorProvider();
+    std::vector<std::u16string> actual_labels;
+    std::vector<gfx::Image> actual_icons;
+    for (size_t index = 0; index < submenu_model->GetItemCount(); ++index) {
+      actual_labels.emplace_back(submenu_model->GetLabelAt(index));
+      actual_icons.emplace_back(
+          submenu_model->GetIconAt(index).Rasterize(color_provider));
+    }
+    EXPECT_THAT(expected_submenu_items,
+                MenuItemsMatch(actual_labels, actual_icons));
   } else {
     // If the refresh feature is disabled, the clipboard history menu item is a
     // command item.

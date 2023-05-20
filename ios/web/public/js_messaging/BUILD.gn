@@ -32,8 +32,19 @@ source_set("content_world_header") {
   sources = [ "content_world.h" ]
 }
 
+compile_ts("frame_id") {
+  sources = [ "resources/frame_id.ts" ]
+
+  deps = [
+    ":gcrweb",
+    ":util_scripts",
+  ]
+}
+
 compile_ts("util_scripts") {
   sources = [ "resources/utils.ts" ]
+
+  deps = [ ":gcrweb" ]
 }
 
 # `compile_ts` and `optimize_js` targets are defined separately here instead of

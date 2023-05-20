@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::AutofillTriggerSource;
@@ -55,6 +56,7 @@ AutofillHandler::~AutofillHandler() = default;
 
 void AutofillHandler::Trigger(
     int field_id,
+    Maybe<String> frame_id,
     std::unique_ptr<protocol::Autofill::CreditCard> card,
     std::unique_ptr<TriggerCallback> callback) {
   auto host = content::DevToolsAgentHost::GetForId(target_id_);
@@ -63,12 +65,14 @@ void AutofillHandler::Trigger(
     return;
   }
   host->GetUniqueFormControlId(
-      field_id, base::BindOnce(&AutofillHandler::FinishTrigger,
-                               weak_ptr_factory_.GetWeakPtr(), std::move(card),
-                               std::move(callback)));
+      field_id,
+      base::BindOnce(&AutofillHandler::FinishTrigger,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(frame_id),
+                     std::move(card), std::move(callback)));
 }
 
 void AutofillHandler::FinishTrigger(
+    Maybe<String> frame_id,
     std::unique_ptr<protocol::Autofill::CreditCard> card,
     std::unique_ptr<TriggerCallback> callback,
     uint64_t field_id) {
@@ -81,6 +85,26 @@ void AutofillHandler::FinishTrigger(
   content::RenderFrameHost* outermost_primary_rfh =
       host->GetWebContents()->GetOutermostWebContents()->GetPrimaryMainFrame();
 
+  autofill::LocalFrameToken frame_token(
+      outermost_primary_rfh->GetFrameToken().value());
+  if (frame_id.isJust()) {
+    bool found = false;
+    outermost_primary_rfh->ForEachRenderFrameHost(
+        [&frame_token, &frame_id, &found](content::RenderFrameHost* rfh) {
+          if (rfh->GetDevToolsFrameToken().ToString() == frame_id.fromJust()) {
+            frame_token =
+                autofill::LocalFrameToken(rfh->GetFrameToken().value());
+            found = true;
+          }
+        });
+
+    if (!found) {
+      std::move(callback)->sendFailure(
+          Response::ServerError("Frame not found"));
+      return;
+    }
+  }
+
   autofill::ContentAutofillDriver* autofill_driver =
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
           outermost_primary_rfh);
@@ -90,8 +114,6 @@ void AutofillHandler::FinishTrigger(
     return;
   }
 
-  autofill::LocalFrameToken frame_token(
-      outermost_primary_rfh->GetFrameToken().value());
   autofill::FieldGlobalId global_field_id = {
       frame_token, autofill::FieldRendererId(field_id)};
 

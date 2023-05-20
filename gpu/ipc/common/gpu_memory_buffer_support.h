@@ -6,9 +6,11 @@
 #define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_SUPPORT_H_
 
 #include <memory>
+#include <unordered_set>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "build/build_config.h"
@@ -21,11 +23,26 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
 namespace gfx {
 class ClientNativePixmapFactory;
-}
+}  // namespace gfx
 #endif
 
 namespace gpu {
+using GpuMemoryBufferConfigurationKey = gfx::BufferUsageAndFormat;
+using GpuMemoryBufferConfigurationSet =
+    std::unordered_set<GpuMemoryBufferConfigurationKey>;
+}  // namespace gpu
 
+namespace std {
+template <>
+struct hash<gpu::GpuMemoryBufferConfigurationKey> {
+  size_t operator()(const gpu::GpuMemoryBufferConfigurationKey& key) const {
+    return base::HashInts(static_cast<int>(key.format),
+                          static_cast<int>(key.usage));
+  }
+};
+}  // namespace std
+
+namespace gpu {
 class GpuMemoryBufferManager;
 
 // Provides a common factory for GPU memory buffer implementations.
@@ -40,11 +57,16 @@ class GPU_EXPORT GpuMemoryBufferSupport {
 
   // Returns the native GPU memory buffer factory type. Returns EMPTY_BUFFER
   // type if native buffers are not supported.
-  gfx::GpuMemoryBufferType GetNativeGpuMemoryBufferType();
+  static gfx::GpuMemoryBufferType GetNativeGpuMemoryBufferType();
 
   // Returns whether the provided buffer format is supported.
-  bool IsNativeGpuMemoryBufferConfigurationSupported(gfx::BufferFormat format,
-                                                     gfx::BufferUsage usage);
+  static bool IsNativeGpuMemoryBufferConfigurationSupported(
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage);
+
+  // Returns the set of supported configurations.
+  static GpuMemoryBufferConfigurationSet
+  GetNativeGpuMemoryBufferConfigurations();
 
 #if BUILDFLAG(IS_OZONE)
   gfx::ClientNativePixmapFactory* client_native_pixmap_factory() {

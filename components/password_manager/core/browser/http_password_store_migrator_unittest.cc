@@ -21,6 +21,7 @@ namespace {
 using testing::_;
 using testing::ElementsAre;
 using testing::Invoke;
+using testing::IsEmpty;
 using testing::Pointee;
 using testing::Return;
 using testing::SaveArg;
@@ -80,15 +81,10 @@ PasswordForm CreateLocalFederatedCredential() {
 
 class MockConsumer : public HttpPasswordStoreMigrator::Consumer {
  public:
-  MOCK_METHOD1(ProcessForms, void(const std::vector<PasswordForm*>& forms));
-
-  void ProcessMigratedForms(
-      std::vector<std::unique_ptr<PasswordForm>> forms) override {
-    std::vector<PasswordForm*> raw_forms(forms.size());
-    base::ranges::transform(forms, raw_forms.begin(),
-                            &std::unique_ptr<PasswordForm>::get);
-    ProcessForms(raw_forms);
-  }
+  MOCK_METHOD(void,
+              ProcessMigratedForms,
+              (std::vector<std::unique_ptr<PasswordForm>>),
+              (override));
 };
 
 class MockNetworkContext : public network::TestNetworkContext {
@@ -156,7 +152,7 @@ void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {
                                      &store(), &mock_network_context(),
                                      &consumer());
 
-  EXPECT_CALL(consumer(), ProcessForms(std::vector<PasswordForm*>()));
+  EXPECT_CALL(consumer(), ProcessMigratedForms(IsEmpty()));
   migrator.OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>>());
 }
@@ -196,8 +192,8 @@ void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
   EXPECT_CALL(store(), RemoveLogin(form)).Times(is_hsts);
   EXPECT_CALL(store(), RemoveLogin(federated_form)).Times(is_hsts);
   EXPECT_CALL(consumer(),
-              ProcessForms(ElementsAre(Pointee(expected_form),
-                                       Pointee(expected_federated_form))));
+              ProcessMigratedForms(ElementsAre(
+                  Pointee(expected_form), Pointee(expected_federated_form))));
   std::vector<std::unique_ptr<PasswordForm>> results;
   results.push_back(std::make_unique<PasswordForm>(psl_form));
   results.push_back(std::make_unique<PasswordForm>(form));
@@ -229,9 +225,8 @@ void HttpPasswordStoreMigratorTest::TestMigratorDeletionByConsumer(
       url::Origin::Create(GURL(kTestHttpsURL)), &store(),
       &mock_network_context(), &consumer());
 
-  EXPECT_CALL(consumer(), ProcessForms(_)).WillOnce(Invoke([&migrator](Unused) {
-    migrator.reset();
-  }));
+  EXPECT_CALL(consumer(), ProcessMigratedForms(_))
+      .WillOnce(Invoke([&migrator](Unused) { migrator.reset(); }));
 
   migrator->OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>>());

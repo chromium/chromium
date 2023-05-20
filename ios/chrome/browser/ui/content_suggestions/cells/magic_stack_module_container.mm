@@ -52,8 +52,8 @@ const int kModuleWidthRegular = 382;
              : kModuleWidthCompact;
 }
 
-- (NSString*)titleString {
-  switch (self.type) {
++ (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type {
+  switch (type) {
     case ContentSuggestionsModuleType::kShortcuts:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE);
@@ -63,6 +63,11 @@ const int kModuleWidthRegular = 382;
             IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
       }
       return @"";
+    case ContentSuggestionsModuleType::kSetUpListSync:
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
     default:
       NOTREACHED();
       return @"";

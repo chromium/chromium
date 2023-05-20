@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.Popups.StrongBlockerActions"
-    enum="StrongPopupBlockerAction" expires_after="2023-09-10">
+    enum="StrongPopupBlockerAction" expires_after="2023-11-12">
   <owner>csharrison@chromium.org</owner>
   <summary>
     Counts of various events related to the strong popup blocker (aka abusive
@@ -817,7 +817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh"
-    units="ms" expires_after="2023-09-03">
+    units="ms" expires_after="2023-11-12">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -831,7 +831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentAgeOnLoad.NotRefreshed"
-    units="ms" expires_after="2023-09-03">
+    units="ms" expires_after="2023-11-12">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -970,7 +970,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.DisplayStatusOnOpen"
-    enum="ContentSuggestionsDisplayStatus" expires_after="2023-09-03">
+    enum="ContentSuggestionsDisplayStatus" expires_after="2023-11-12">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -979,6 +979,43 @@ chromium-metrics-reviews@google.com.
     Whether content suggestions are disabled by policy (e.g. enterprise or
     supervised users), enabled but collapsed, or enabled and expanded when a new
     NTP is created.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.DocumentViewSendCount100"
+    units="documents" expires_after="2023-10-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Number of docids sent when loading the Feed from the network. Reported when
+    the Feed is loaded from the network, when docview sending is allowed. This
+    histogram has a maximum count of 100.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.DocumentViewSendCount1000"
+    units="documents" expires_after="2023-10-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Number of docids sent when loading the Feed from the network. Reported when
+    the Feed is loaded from the network, when docview sending is allowed. This
+    histogram has a maximum count of 1000, see
+    ContentSuggestions.Feed.DocumentViewSendCount100 for a more accurate
+    representation of lower counts.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.DroppedDocumentViewCount"
+    units="documents" expires_after="2023-10-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    If too many document IDs are stored within a short time period, they are
+    dropped rather than recorded in
+    ContentSuggestions.Feed.DocumentViewSendCount. This histogram is recorded
+    when document IDs must be dropped in this way, and reports the number of IDs
+    dropped.
   </summary>
 </histogram>
 
@@ -1005,7 +1042,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ImageFetchStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-09-03">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-12">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1016,7 +1053,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="ContentSuggestions.Feed.LoadStepLatency"
-    units="ms" expires_after="2023-09-03">
+    units="ms" expires_after="2023-11-12">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1084,6 +1121,16 @@ chromium-metrics-reviews@google.com.
     <variant name=".MoreArticlesFetchSuccess"
         summary="MoreArticlesFetchSuccess"/>
   </token>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.Network.FeedQueryRequestSize"
+    units="bytes" expires_after="2023-10-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: the approximate size in bytes of the FeedQuery GET request.
+    Recorded when a FeedQuery is sent.
+  </summary>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.RequestSizeKB.Compressed"
@@ -1154,7 +1201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled2" enum="Boolean"
-    expires_after="2023-09-01">
+    expires_after="2023-11-12">
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1692,7 +1739,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.Engaged"
-    units="follows" expires_after="2023-10-22">
+    units="follows" expires_after="2023-11-12">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>

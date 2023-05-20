@@ -112,10 +112,11 @@ found in the LICENSE file.
       android:id="@+id/share_sheet_chrome_apps"
       android:clipToPadding="false"
       android:layout_width="wrap_content"
-      android:layout_height="113dp"
+      android:layout_height="wrap_content"
       android:minHeight="@dimen/min_touch_target_size"
       android:paddingStart="8dp"
       android:paddingEnd="8dp"
+      android:paddingBottom="15dp"
       android:visibility="gone" />
   </LinearLayout>
 </ScrollView>

@@ -14,12 +14,13 @@
 namespace network {
 
 SharedDictionaryWriterOnDisk::SharedDictionaryWriterOnDisk(
+    const base::UnguessableToken& token,
     FinishCallback callback,
     base::WeakPtr<SharedDictionaryDiskCache> disk_cahe)
-    : callback_(std::move(callback)),
+    : token_(token),
+      callback_(std::move(callback)),
       disk_cahe_(disk_cahe),
-      secure_hash_(crypto::SecureHash::Create(crypto::SecureHash::SHA256)),
-      token_(base::UnguessableToken::Create()) {}
+      secure_hash_(crypto::SecureHash::Create(crypto::SecureHash::SHA256)) {}
 
 SharedDictionaryWriterOnDisk::~SharedDictionaryWriterOnDisk() {
   if (callback_) {
@@ -158,8 +159,7 @@ void SharedDictionaryWriterOnDisk::OnFailed(Result result) {
     entry_->Doom();
     entry_.reset();
   }
-  std::move(callback_).Run(result, 0u, net::SHA256HashValue(),
-                           base::UnguessableToken::Null());
+  std::move(callback_).Run(result, 0u, net::SHA256HashValue());
 }
 
 void SharedDictionaryWriterOnDisk::MaybeFinish() {
@@ -177,7 +177,7 @@ void SharedDictionaryWriterOnDisk::MaybeFinish() {
   DCHECK_EQ(written_size_, total_size_);
   net::SHA256HashValue sha256;
   secure_hash_->Finish(sha256.data, sizeof(sha256.data));
-  std::move(callback_).Run(Result::kSuccess, total_size_, sha256, token_);
+  std::move(callback_).Run(Result::kSuccess, total_size_, sha256);
 }
 
 }  // namespace network

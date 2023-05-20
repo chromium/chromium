@@ -72,13 +72,12 @@ base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpFilesWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     const std::vector<DlpConfidentialFile>& confidential_files,
     const DlpFileDestination& destination,
-    DlpFilesController::FileAction action,
-    gfx::NativeWindow modal_parent) {
+    DlpFilesController::FileAction action) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       std::make_unique<FilesPolicyDialog>(std::move(callback),
                                           confidential_files, destination,
-                                          action, modal_parent),
-      /*context=*/nullptr, /*parent=*/modal_parent);
+                                          action, /*parent=*/nullptr),
+      /*context=*/nullptr, /*parent=*/nullptr);
   ShowWidget(widget);
   return widget->GetWeakPtr();
 }
@@ -89,8 +88,7 @@ int DlpWarnNotifier::ActiveWarningDialogsCountForTesting() const {
 
 base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
-    DlpWarnDialog::DlpWarnDialogOptions options,
-    gfx::NativeWindow modal_parent) {
+    DlpWarnDialog::DlpWarnDialogOptions options) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       std::make_unique<DlpWarnDialog>(std::move(callback), options),
       /*context=*/nullptr, /*parent=*/nullptr);

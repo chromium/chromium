@@ -17,6 +17,7 @@ struct AwDrawSWFunctionTable;
 
 namespace android_webview {
 
+// Lifetime: Temporary
 class SoftwareCanvasHolder {
  public:
   static std::unique_ptr<SoftwareCanvasHolder> Create(

@@ -10,7 +10,6 @@ import android.animation.AnimatorSet;
 import android.content.Context;
 import android.graphics.RectF;
 
-import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -38,9 +37,6 @@ import java.util.LinkedList;
  * This class handles animating the opening of new tabs.
  */
 public class SimpleAnimationLayout extends Layout {
-    /** Animation for discarding a tab. */
-    private CompositorAnimator mDiscardAnimator;
-
     /** The animation for a tab being created in the foreground. */
     private AnimatorSet mTabCreatedForegroundAnimation;
 
@@ -61,27 +57,6 @@ public class SimpleAnimationLayout extends Layout {
 
     /** The time duration of the animation */
     protected static final int FOREGROUND_ANIMATION_DURATION = 300;
-
-    /** The time duration of the animation */
-    protected static final int TAB_CLOSED_ANIMATION_DURATION = 250;
-
-    /** The percentage of the screen to cover for the discarded tab to be fully transparent. */
-    public static final float DISCARD_RANGE_SCREEN = 0.7f;
-
-    /** The minimum scale the tab can reach when being discarded by a click. */
-    private static final float DISCARD_END_SCALE_CLICK = 0.7f;
-
-    /** The minimum scale the tab can reach when being discarded by a swipe. */
-    private static final float DISCARD_END_SCALE_SWIPE = 0.5f;
-
-    /**
-     * A cached {@link LayoutTab} representation of the currently closing tab. If it's not
-     * null, it means tabClosing() has been called to start animation setup but
-     * tabClosed() has not yet been called to finish animation startup
-     */
-    private LayoutTab mClosedTab;
-
-    private LayoutTab mAnimatedTab;
     private final TabListSceneLayer mSceneLayer;
     private final BlackHoleEventFilter mBlackHoleEventFilter;
 
@@ -122,7 +97,7 @@ public class SimpleAnimationLayout extends Layout {
 
     @Override
     public boolean handlesTabClosing() {
-        return true;
+        return false;
     }
 
     @Override
@@ -343,129 +318,9 @@ public class SimpleAnimationLayout extends Layout {
         mTabModelSelector.selectModel(newIsIncognito);
     }
 
-    /**
-     * Set up for the tab closing animation
-     */
-    @Override
-    public void onTabClosing(long time, int id) {
-        reset();
-
-        // Make sure any currently running animations can't influence tab if we are reusing it.
-        forceAnimationToFinish();
-
-        // Create the {@link LayoutTab} for the tab before it is destroyed.
-        TabModel model = mTabModelSelector.getModelForTabId(id);
-        if (model != null) {
-            mClosedTab = createLayoutTab(id, model.isIncognito());
-            mClosedTab.setBorderAlpha(0.0f);
-            mLayoutTabs = new LayoutTab[] {mClosedTab};
-            updateCacheVisibleIds(new LinkedList<Integer>(Arrays.asList(id)));
-        } else {
-            mLayoutTabs = null;
-            mClosedTab = null;
-        }
-        // Only close the id at the end when we are done querying the model.
-        super.onTabClosing(time, id);
-    }
-
-    /**
-     * Animate the closing of a tab
-     */
-    @Override
-    public void onTabClosed(long time, int id, int nextId, boolean incognito) {
-        super.onTabClosed(time, id, nextId, incognito);
-
-        if (mClosedTab != null) {
-            TabModel nextModel = mTabModelSelector.getModelForTabId(nextId);
-            if (nextModel != null) {
-                LayoutTab nextLayoutTab = createLayoutTab(nextId, nextModel.isIncognito());
-                nextLayoutTab.setDrawDecoration(false);
-
-                mLayoutTabs = new LayoutTab[] {nextLayoutTab, mClosedTab};
-                updateCacheVisibleIds(
-                        new LinkedList<Integer>(Arrays.asList(nextId, mClosedTab.getId())));
-            } else {
-                mLayoutTabs = new LayoutTab[] {mClosedTab};
-            }
-
-            forceAnimationToFinish();
-            mAnimatedTab = mClosedTab;
-            mDiscardAnimator = CompositorAnimator.ofFloat(getAnimationHandler(), 0,
-                    getDiscardRange(), TAB_CLOSED_ANIMATION_DURATION,
-                    (CompositorAnimator a) -> setDiscardAmount(a.getAnimatedValue()));
-            mDiscardAnimator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
-            mDiscardAnimator.start();
-
-            mClosedTab = null;
-            if (nextModel != null) {
-                mTabModelSelector.selectModel(nextModel.isIncognito());
-            }
-        }
-        startHiding(nextId, false);
-    }
-
-    /**
-     * Updates the position, scale, rotation and alpha values of mAnimatedTab.
-     *
-     * @param discard The value that specify how far along are we in the discard animation. 0 is
-     *                filling the screen. Valid values are [-range .. range] where range is
-     *                computed by {@link SimpleAnimationLayout#getDiscardRange()}.
-     */
-    private void setDiscardAmount(float discard) {
-        if (mAnimatedTab != null) {
-            final float range = getDiscardRange();
-            final float scale = computeDiscardScale(discard, range, true);
-
-            final float deltaX = mAnimatedTab.getOriginalContentWidth();
-            final float deltaY = mAnimatedTab.getOriginalContentHeight() / 2.f;
-            mAnimatedTab.setX(deltaX * (1.f - scale));
-            mAnimatedTab.setY(deltaY * (1.f - scale));
-            mAnimatedTab.setScale(scale);
-            mAnimatedTab.setBorderScale(scale);
-            mAnimatedTab.setAlpha(computeDiscardAlpha(discard, range));
-        }
-    }
-
-    /**
-     * Computes the scale of the tab based on its discard status.
-     *
-     * @param amount    The discard amount.
-     * @param range     The range of the absolute value of discard amount.
-     * @param fromClick Whether or not the discard was from a click or a swipe.
-     * @return          The scale of the tab to use to draw the tab.
-     */
-    public static float computeDiscardScale(float amount, float range, boolean fromClick) {
-        if (Math.abs(amount) < 1.0f) return 1.0f;
-        float t = amount / range;
-        float endScale = fromClick ? DISCARD_END_SCALE_CLICK : DISCARD_END_SCALE_SWIPE;
-        return MathUtils.interpolate(1.0f, endScale, Math.abs(t));
-    }
-
-    /**
-     * Computes the alpha value of the tab based on its discard status.
-     *
-     * @param amount The discard amount.
-     * @param range  The range of the absolute value of discard amount.
-     * @return       The alpha value that need to be applied on the tab.
-     */
-    public static float computeDiscardAlpha(float amount, float range) {
-        if (Math.abs(amount) < 1.0f) return 1.0f;
-        float t = amount / range;
-        t = MathUtils.clamp(t, -1.0f, 1.0f);
-        return 1.f - Math.abs(t);
-    }
-
-    /**
-     * @return The range of the discard amount.
-     */
-    private float getDiscardRange() {
-        return Math.min(getWidth(), getHeight()) * DISCARD_RANGE_SCREEN;
-    }
-
     @Override
     protected void forceAnimationToFinish() {
         super.forceAnimationToFinish();
-        if (mDiscardAnimator != null) mDiscardAnimator.end();
         if (mTabCreatedForegroundAnimation != null) mTabCreatedForegroundAnimation.end();
         if (mTabCreatedBackgroundAnimation != null) mTabCreatedBackgroundAnimation.end();
     }
@@ -475,8 +330,6 @@ public class SimpleAnimationLayout extends Layout {
      */
     private void reset() {
         mLayoutTabs = null;
-        mAnimatedTab = null;
-        mClosedTab = null;
     }
 
     @Override

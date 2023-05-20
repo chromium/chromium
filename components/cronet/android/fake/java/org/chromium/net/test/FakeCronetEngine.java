@@ -18,6 +18,7 @@ import org.chromium.net.UrlRequest;
 import org.chromium.net.impl.CronetEngineBase;
 import org.chromium.net.impl.CronetEngineBuilderImpl;
 import org.chromium.net.impl.ImplVersion;
+import org.chromium.net.impl.RefCountDelegate;
 import org.chromium.net.impl.UrlRequestBase;
 import org.chromium.net.impl.VersionSafeCallbacks;
 
@@ -75,6 +76,21 @@ final class FakeCronetEngine extends CronetEngineBase {
     @GuardedBy("mLock")
     private boolean mIsShutdown;
 
+    /**
+     * The number of started requests where the terminal callback (i.e.
+     * onSucceeded/onCancelled/onFailed) has not yet been called.
+     */
+    @GuardedBy("mLock")
+    private int mRunningRequestCount;
+    /*
+     * The number of started requests where the terminal callbacks (i.e.
+     * onSucceeded/onCancelled/onFailed, request finished listeners) have not
+     * all returned yet.
+     *
+     * By definition this is always greater than or equal to
+     * mRunningRequestCount. The difference between the two is the number of
+     * terminal callbacks that are currently running.
+     */
     @GuardedBy("mLock")
     private int mActiveRequestCount;
     @GuardedBy("mLock")
@@ -146,8 +162,8 @@ final class FakeCronetEngine extends CronetEngineBase {
     @Override
     public void shutdown() {
         synchronized (mLock) {
-            if (mActiveRequestCount != 0) {
-                throw new IllegalStateException("Cannot shutdown with active requests.");
+            if (mRunningRequestCount != 0) {
+                throw new IllegalStateException("Cannot shutdown with running requests.");
             } else {
                 mIsShutdown = true;
             }
@@ -240,10 +256,18 @@ final class FakeCronetEngine extends CronetEngineBase {
         }
     }
 
-    void reportRequestFinished(RequestFinishedInfo requestInfo) {
+    void reportRequestFinished(
+            RequestFinishedInfo requestInfo, RefCountDelegate inflightDoneCallbackCount) {
         synchronized (mLock) {
             for (RequestFinishedInfo.Listener listener : mFinishedListenerMap.values()) {
-                listener.getExecutor().execute(() -> listener.onRequestFinished(requestInfo));
+                inflightDoneCallbackCount.increment();
+                listener.getExecutor().execute(() -> {
+                    try {
+                        listener.onRequestFinished(requestInfo);
+                    } finally {
+                        inflightDoneCallbackCount.decrement();
+                    }
+                });
             }
         }
     }
@@ -337,6 +361,7 @@ final class FakeCronetEngine extends CronetEngineBase {
         synchronized (mLock) {
             if (!mIsShutdown) {
                 mActiveRequestCount++;
+                mRunningRequestCount++;
                 return true;
             }
             return false;
@@ -344,8 +369,9 @@ final class FakeCronetEngine extends CronetEngineBase {
     }
 
     /**
-     * Mark request as finished to allow shutdown when there are no active
-     * requests.
+     * Mark request as destroyed to allow shutdown when there are no running
+     * requests. Should be called *before* the terminal callback is called, so
+     * that users can call shutdown() from the terminal callback.
      */
     void onRequestDestroyed() {
         synchronized (mLock) {
@@ -355,6 +381,16 @@ final class FakeCronetEngine extends CronetEngineBase {
                         "This instance of CronetEngine was shutdown. All requests must have been "
                         + "complete.");
             }
+            mRunningRequestCount--;
+        }
+    }
+
+    /**
+     * Mark request as finished for the purposes of getActiveRequestCount().
+     * Should be called *after* the terminal callback returns.
+     */
+    void onRequestFinished() {
+        synchronized (mLock) {
             mActiveRequestCount--;
         }
     }

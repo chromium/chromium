@@ -52,58 +52,51 @@ IsolatedWebAppValidator::ValidateMetadata(
     const web_package::SignedWebBundleId& web_bundle_id,
     const absl::optional<GURL>& primary_url,
     const std::vector<GURL>& entries) {
-  // Verify that the Signed Web Bundle does not have a primary URL set. Primary
-  // URLs make no sense for Isolated Web Apps - the "primary URL" should be
-  // retrieved from the web app manifest's `start_url` field.
-  if (primary_url.has_value()) {
-    std::string error_msg = "Primary URL must not be present, but was " +
-                            primary_url->possibly_invalid_spec();
-    return base::unexpected(UnusableSwbnFileError(
+  const auto validate = [&]() -> base::expected<void, std::string> {
+    // Verify that the Signed Web Bundle does not have a primary URL set.
+    // Primary URLs make no sense for Isolated Web Apps - the "primary URL"
+    // should be retrieved from the web app manifest's `start_url` field.
+    if (primary_url.has_value()) {
+      return base::unexpected("Primary URL must not be present, but was " +
+                              primary_url->possibly_invalid_spec());
+    }
+
+    // Verify that the bundle only contains isolated-app:// URLs using the
+    // Signed Web Bundle ID as their host.
+    for (const GURL& entry : entries) {
+      base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+          IsolatedWebAppUrlInfo::Create(entry);
+      if (!url_info.has_value()) {
+        return base::unexpected("The URL of an exchange is invalid: " +
+                                url_info.error());
+      }
+
+      const web_package::SignedWebBundleId& entry_web_bundle_id =
+          url_info->web_bundle_id();
+      if (entry_web_bundle_id != web_bundle_id) {
+        return base::unexpected(
+            "The URL of an exchange contains the wrong Signed Web Bundle ID: " +
+            entry_web_bundle_id.id());
+      }
+      if (entry.has_ref()) {
+        return base::unexpected(
+            "The URL of an exchange is invalid: URLs must not have a fragment "
+            "part.");
+      }
+      if (entry.has_query()) {
+        return base::unexpected(
+            "The URL of an exchange is invalid: URLs must not have a query "
+            "part.");
+      }
+    }
+
+    return base::ok();
+  };
+  return validate().transform_error([](std::string error) {
+    return UnusableSwbnFileError(
         UnusableSwbnFileError::Error::kMetadataValidationError,
-        std::move(error_msg)));
-  }
-
-  // Verify that the bundle only contains isolated-app:// URLs using the
-  // Signed Web Bundle ID as their host.
-  for (const GURL& entry : entries) {
-    base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-        IsolatedWebAppUrlInfo::Create(entry);
-    if (!url_info.has_value()) {
-      std::string error_msg =
-          "The URL of an exchange is invalid: " + url_info.error();
-      return base::unexpected(UnusableSwbnFileError(
-          UnusableSwbnFileError::Error::kMetadataValidationError,
-          std::move(error_msg)));
-    }
-
-    const web_package::SignedWebBundleId& entry_web_bundle_id =
-        url_info->web_bundle_id();
-    if (entry_web_bundle_id != web_bundle_id) {
-      std::string error_msg =
-          "The URL of an exchange contains the wrong Signed Web Bundle ID: " +
-          entry_web_bundle_id.id();
-      return base::unexpected(UnusableSwbnFileError(
-          UnusableSwbnFileError::Error::kMetadataValidationError,
-          std::move(error_msg)));
-    }
-    if (entry.has_ref()) {
-      std::string error_msg =
-          "The URL of an exchange is invalid: URLs must not have a fragment "
-          "part.";
-      return base::unexpected(UnusableSwbnFileError(
-          UnusableSwbnFileError::Error::kMetadataValidationError,
-          std::move(error_msg)));
-    }
-    if (entry.has_query()) {
-      std::string error_msg =
-          "The URL of an exchange is invalid: URLs must not have a query part.";
-      return base::unexpected(UnusableSwbnFileError(
-          UnusableSwbnFileError::Error::kMetadataValidationError,
-          std::move(error_msg)));
-    }
-  }
-
-  return base::ok();
+        std::move(error));
+  });
 }
 
 }  // namespace web_app

@@ -65,11 +65,6 @@ struct WebAppInstallParams {
   // URL to be used as start_url if manifest is unavailable.
   GURL fallback_start_url;
 
-  // Setting this field will force the webapp to have a manifest id, which
-  // will result in a different AppId than if it isn't set. Currently here
-  // to support forwards compatibility with future sync entities..
-  absl::optional<std::string> override_manifest_id;
-
   // App name to be used if manifest is unavailable.
   absl::optional<std::u16string> fallback_app_name;
 

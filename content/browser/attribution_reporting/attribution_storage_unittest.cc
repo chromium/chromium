@@ -1309,8 +1309,8 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest,
-       MaxDestinationsPerSource_ScopedToSourceSiteAndReportingOrigin) {
-  delegate()->set_max_destinations_per_source_site_reporting_origin(3);
+       MaxDestinationsPerSource_ScopedToSourceSiteAndReportingSite) {
+  delegate()->set_max_destinations_per_source_site_reporting_site(3);
 
   const auto store_source = [&](const char* source_origin,
                                 const char* reporting_origin,
@@ -1348,13 +1348,17 @@ TEST_F(AttributionStorageTest,
   store_source("https://s2.test", "https://a.r.test", "https://d5.test");
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(5));
 
-  // This should succeed because the reporting origin is different.
+  // This should fail because the reporting site is already present.
   store_source("https://s1.test", "https://b.r.test", "https://d5.test");
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(5));
+
+  // This should succeed because the reporting site is different.
+  store_source("https://s1.test", "https://a.r1.test", "https://d5.test");
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(6));
 }
 
 TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
-  delegate()->set_max_destinations_per_source_site_reporting_origin(1);
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
   delegate()->set_delete_expired_sources_frequency(base::Milliseconds(10));
 
   const base::TimeDelta expiry = base::Milliseconds(5);
@@ -1410,7 +1414,7 @@ TEST_F(AttributionStorageTest, DestinationLimit_ApplyLimit) {
 
 TEST_F(AttributionStorageTest,
        MaxAttributionDestinationsPerSource_AppliesToNavigationSources) {
-  delegate()->set_max_destinations_per_source_site_reporting_origin(1);
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
   storage()->StoreSource(
       SourceBuilder()
           .SetDestinationSites(
@@ -1427,7 +1431,7 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest,
        MaxAttributionDestinationsPerSource_CountsAllSourceTypes) {
-  delegate()->set_max_destinations_per_source_site_reporting_origin(1);
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
   storage()->StoreSource(
       SourceBuilder()
           .SetDestinationSites(
@@ -1442,14 +1446,14 @@ TEST_F(AttributionStorageTest,
           .Build());
   EXPECT_EQ(result.status,
             StorableSource::Result::kInsufficientUniqueDestinationCapacity);
-  EXPECT_EQ(result.max_destinations_per_source_site_reporting_origin, 1);
+  EXPECT_EQ(result.max_destinations_per_source_site_reporting_site, 1);
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 }
 
 TEST_F(AttributionStorageTest,
        MaxAttributionDestinationsPerSource_CountsUnexpiredSources) {
-  delegate()->set_max_destinations_per_source_site_reporting_origin(1);
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
   delegate()->set_delete_expired_rate_limits_frequency(base::Milliseconds(10));
 
   const base::TimeDelta expiry = base::Milliseconds(5);
@@ -1485,7 +1489,7 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest,
        MaxAttributionDestinationsPerSource_SourceWithTooManyDestinations) {
-  delegate()->set_max_destinations_per_source_site_reporting_origin(1);
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
 
   storage()->StoreSource(
       SourceBuilder()

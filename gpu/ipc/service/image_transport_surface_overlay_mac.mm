@@ -105,9 +105,11 @@ void ImageTransportSurfaceOverlayMacEGL::ApplyBackpressure() {
   // Create the fence for the current frame before waiting on the previous
   // frame's fence (to maximize CPU and GPU execution overlap).
   gl::GLContext* current_context = gl::GLContext::GetCurrent();
-  uint64_t this_frame_fence = current_context->BackpressureFenceCreate();
-  current_context->BackpressureFenceWait(previous_frame_fence_);
-  previous_frame_fence_ = this_frame_fence;
+  if (current_context) {
+    uint64_t this_frame_fence = current_context->BackpressureFenceCreate();
+    current_context->BackpressureFenceWait(previous_frame_fence_);
+    previous_frame_fence_ = this_frame_fence;
+  }
 }
 
 void ImageTransportSurfaceOverlayMacEGL::BufferPresented(

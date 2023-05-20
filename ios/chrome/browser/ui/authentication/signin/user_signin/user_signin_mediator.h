@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 @class AuthenticationFlow;

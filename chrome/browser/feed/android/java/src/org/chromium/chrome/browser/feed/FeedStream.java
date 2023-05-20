@@ -22,6 +22,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
+import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -46,14 +48,15 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenWebFeedEntryPoint;
-import org.chromium.chrome.browser.xsurface.SurfaceScope;
+import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
+import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -296,6 +299,7 @@ public class FeedStream implements Stream {
             if (disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB
                     && mReliabilityLogger != null) {
                 mReliabilityLogger.onOpenCard();
+                mClosedReason = ClosedReason.OPEN_CARD;
             }
 
             LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
@@ -389,8 +393,7 @@ public class FeedStream implements Stream {
     /**
      * Implementation of FeedActionsHandler methods.
      */
-    class FeedActionsHandlerImpl
-            implements org.chromium.chrome.browser.xsurface.FeedActionsHandler {
+    class FeedActionsHandlerImpl implements FeedActionsHandler {
         private static final int SNACKBAR_DURATION_MS_SHORT = 4000;
         private static final int SNACKBAR_DURATION_MS_LONG = 10000;
         // This is based on the menu animation time (218ms) from BottomSheet.java.
@@ -456,37 +459,13 @@ public class FeedStream implements Stream {
                     mNativeFeedStream, FeedStream.this, changeId);
         }
 
-        private @org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
-        int convertDuration(SnackbarDuration duration) {
-            switch (duration) {
-                case SHORT:
-                    return org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler
-                            .SnackbarDuration.SHORT;
-                case LONG:
-                    return org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler
-                            .SnackbarDuration.LONG;
-            }
-            return org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
-                    .SHORT;
-        }
-
-        @Override
-        public void showSnackbar(String text, String actionLabel, SnackbarDuration duration,
-                SnackbarController controller) {
-            showSnackbar(text, actionLabel, convertDuration(duration), controller);
-        }
-
         @Override
         public void showSnackbar(String text, String actionLabel,
-                @org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
-                int duration,
-                org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler
-                        .SnackbarController delegateController) {
+                @FeedActionsHandler.SnackbarDuration int duration,
+                FeedActionsHandler.SnackbarController delegateController) {
             assert ThreadUtils.runningOnUiThread();
             int durationMs = SNACKBAR_DURATION_MS_SHORT;
-            if (duration
-                    == org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
-                               .LONG) {
+            if (duration == FeedActionsHandler.SnackbarDuration.LONG) {
                 durationMs = SNACKBAR_DURATION_MS_LONG;
             }
             SnackbarManager.SnackbarController controller =
@@ -614,6 +593,7 @@ public class FeedStream implements Stream {
     private final ObserverList<ContentChangedListener> mContentChangedListeners =
             new ObserverList<>();
     private final int mStreamKind;
+    private @ClosedReason int mClosedReason = ClosedReason.LEAVE_FEED;
     // Various helpers/controllers.
     private ShareHelperWrapper mShareHelper;
     private SnackbarManager mSnackManager;
@@ -646,7 +626,7 @@ public class FeedStream implements Stream {
     // Things valid only when bound.
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable FeedListContentManager mContentManager;
-    private @Nullable SurfaceScope mSurfaceScope;
+    private @Nullable FeedSurfaceScope mSurfaceScope;
     private @Nullable HybridListRenderer mRenderer;
     private FeedScrollState mScrollStateToRestore;
     private int mHeaderCount;
@@ -786,7 +766,7 @@ public class FeedStream implements Stream {
 
     @Override
     public void bind(RecyclerView rootView, FeedListContentManager manager,
-            FeedScrollState savedInstanceState, SurfaceScope surfaceScope,
+            FeedScrollState savedInstanceState, FeedSurfaceScope surfaceScope,
             HybridListRenderer renderer, @Nullable FeedReliabilityLogger reliabilityLogger,
             int headerCount) {
         mReliabilityLogger = reliabilityLogger;
@@ -815,6 +795,7 @@ public class FeedStream implements Stream {
         if (mWindowAndroid.getDisplay() != null) {
             mWindowAndroid.getDisplay().addObserver(mRotationObserver);
         }
+        mClosedReason = ClosedReason.LEAVE_FEED;
 
         if (isPlaceholderShown()) {
             // Set recyclerView as transparent until first batch of articles are loaded. Before
@@ -841,11 +822,19 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public void unbind(boolean shouldPlaceSpacer) {
+    public void unbind(boolean shouldPlaceSpacer, boolean switchingStream) {
+        // Find out the specific reason for unbinding the stream.
+        if (switchingStream) {
+            mClosedReason = ClosedReason.SWITCH_STREAM;
+        } else if (ApplicationStatus.getStateForApplication()
+                == ApplicationState.HAS_STOPPED_ACTIVITIES) {
+            mClosedReason = ClosedReason.SUSPEND_APP;
+        }
+
         // This is the catch-all feed launch end event to ensure a complete flow is logged
         // even if we don't know a more specific reason for the stream unbinding.
         if (mReliabilityLogger != null) {
-            mReliabilityLogger.onUnbindStream();
+            mReliabilityLogger.onUnbindStream(mClosedReason);
         }
 
         dismissSnackbars();

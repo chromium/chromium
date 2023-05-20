@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
-#import "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -58,7 +58,10 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 - (NSColor*)touchBarSubtextColor;
 @end
 
-@implementation CreditCardAutofillTouchBarController
+@implementation CreditCardAutofillTouchBarController {
+  raw_ptr<autofill::AutofillPopupController> _controller;  // weak
+  bool _is_credit_card_popup;
+}
 
 - (instancetype)initWithController:
     (autofill::AutofillPopupController*)controller {
@@ -75,13 +78,13 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
     return nil;
   }
 
-  base::scoped_nsobject<NSTouchBar> touchBar([[NSTouchBar alloc] init]);
+  NSTouchBar* touchBar = [[NSTouchBar alloc] init];
   [touchBar setCustomizationIdentifier:ui::GetTouchBarId(
                                            kCreditCardAutofillTouchBarId)];
-  [touchBar setDelegate:self];
+  touchBar.delegate = self;
 
   [touchBar setDefaultItemIdentifiers:@[ kCreditCardItemsTouchId ]];
-  return touchBar.autorelease();
+  return touchBar;
 }
 
 - (NSTouchBarItem*)touchBar:(NSTouchBar*)touchBar
@@ -95,7 +98,7 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
        i++) {
     const autofill::Suggestion& suggestion = _controller->GetSuggestionAt(i);
     if (suggestion.frontend_id.as_int() <
-        base::to_underlying(autofill::POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)) {
+        base::to_underlying(autofill::PopupItemId::kAutocompleteEntry)) {
       continue;
     }
 
@@ -104,10 +107,10 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
                          ui::GetTouchBarItemId(kCreditCardAutofillTouchBarId,
                                                kCreditCardTouchId),
                          i];
-    base::scoped_nsobject<NSCustomTouchBarItem> item(
-        [[NSCustomTouchBarItem alloc] initWithIdentifier:cardIdentifier]);
+    NSCustomTouchBarItem* item =
+        [[NSCustomTouchBarItem alloc] initWithIdentifier:cardIdentifier];
     [item setView:[self createCreditCardButtonAtRow:i]];
-    [creditCardItems addObject:item.autorelease()];
+    [creditCardItems addObject:item];
   }
 
   return [NSGroupTouchBarItem groupItemWithIdentifier:identifier
@@ -159,17 +162,16 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 
   // Apply text attributes to the button so that the subtext will appear
   // smaller and lighter than the rest of the title.
-  base::scoped_nsobject<NSMutableAttributedString> attributedString(
-      [[NSMutableAttributedString alloc]
-          initWithAttributedString:button.attributedTitle]);
+  NSMutableAttributedString* attributedString =
+      [button.attributedTitle mutableCopy];
   NSFont* subtextFont =
-      [[NSFontManager sharedFontManager] convertFont:button.font
-                                              toSize:button.font.pointSize - 1];
+      [NSFontManager.sharedFontManager convertFont:button.font
+                                            toSize:button.font.pointSize - 1];
   NSRange labelRange = NSMakeRange(0, label.length);
   NSRange subtextRange =
       NSMakeRange(buttonTitle.length - subtext.length, subtext.length);
   [attributedString addAttribute:NSForegroundColorAttributeName
-                           value:[NSColor whiteColor]
+                           value:NSColor.whiteColor
                            range:labelRange];
   [attributedString addAttribute:NSForegroundColorAttributeName
                            value:[self touchBarSubtextColor]

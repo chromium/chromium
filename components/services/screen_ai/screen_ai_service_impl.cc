@@ -33,6 +33,8 @@ namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// TODO(crbug.com/1278249): Deprecate these enums and add a new set of booleans
+// for each outcome (library load, OCR init, Main Content init).
 enum class ScreenAILoadLibraryResult {
   kAllOk = 0,
   kDeprecatedVisualAnnotationFailed = 1,
@@ -43,75 +45,65 @@ enum class ScreenAILoadLibraryResult {
   kMaxValue = kFunctionsLoadFailed,
 };
 
-// Returns an empty result if load or initialization fail.
-std::unique_ptr<ScreenAILibraryWrapper> LoadAndInitializeLibraryInternal(
-    base::File model_config,
-    base::File model_tflite,
+// Returns an empty result if load fails.
+std::unique_ptr<ScreenAILibraryWrapper> LoadLibrary(
     const base::FilePath& library_path) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   std::unique_ptr<ScreenAILibraryWrapper> library =
       std::make_unique<ScreenAILibraryWrapper>();
 
-  bool init_ok = true;
-
-  if (!library->Init(library_path)) {
-    init_ok = false;
+  if (!library->Load(library_path)) {
     base::UmaHistogramEnumeration(
         "Accessibility.ScreenAI.LoadLibraryResult",
         ScreenAILoadLibraryResult::kFunctionsLoadFailed);
+    library.reset();
+    return library;
   }
 
-  if (init_ok) {
-    uint32_t version_major;
-    uint32_t version_minor;
-    library->GetLibraryVersion(version_major, version_minor);
-    VLOG(2) << "Screen AI library version: " << version_major << "."
-            << version_minor;
+  uint32_t version_major;
+  uint32_t version_minor;
+  library->GetLibraryVersion(version_major, version_minor);
+  VLOG(2) << "Screen AI library version: " << version_major << "."
+          << version_minor;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    library->SetLogger();
+  library->SetLogger();
 #endif
 
-    if (features::IsScreenAIDebugModeEnabled()) {
-      library->EnableDebugMode();
-    }
+  if (features::IsScreenAIDebugModeEnabled()) {
+    library->EnableDebugMode();
   }
 
-  if (init_ok && features::IsPdfOcrEnabled()) {
-    if (!library->InitOCR(library_path.DirName())) {
-      init_ok = false;
-      base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
-                                    ScreenAILoadLibraryResult::kOcrFailed);
-    }
-  }
-
-  if (init_ok && features::IsLayoutExtractionEnabled()) {
-    if (!library->InitLayoutExtraction()) {
-      init_ok = false;
-      base::UmaHistogramEnumeration(
-          "Accessibility.ScreenAI.LoadLibraryResult",
-          ScreenAILoadLibraryResult::kLayoutExtractionFailed);
-    }
-  }
-
-  if (init_ok && features::IsReadAnythingWithScreen2xEnabled()) {
-    if (!library->InitMainContentExtraction(model_config, model_tflite)) {
-      init_ok = false;
-      base::UmaHistogramEnumeration(
-          "Accessibility.ScreenAI.LoadLibraryResult",
-          ScreenAILoadLibraryResult::kMainContentExtractionFailed);
-    }
-  }
-
-  if (init_ok) {
-    base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
-                                  ScreenAILoadLibraryResult::kAllOk);
-  } else {
-    VLOG(0) << "Screen AI library initialization failed.";
-    library.reset();
-  }
-
+  base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
+                                ScreenAILoadLibraryResult::kAllOk);
   return library;
+}
+
+std::vector<char> LoadModelFile(base::File& model_file) {
+  std::vector<char> buffer;
+  int64_t length = model_file.GetLength();
+  if (length < 0) {
+    VLOG(0) << "Could not query Screen AI model file's length.";
+    return buffer;
+  }
+
+  buffer.resize(length);
+  if (model_file.Read(0, buffer.data(), length) != length) {
+    buffer.clear();
+    VLOG(0) << "Could not read Screen AI model file's content.";
+  }
+
+  return buffer;
+}
+
+std::unique_ptr<
+    screen_ai::ScreenAILibraryWrapper::MainContentExtractionModelData>
+LoadMainContentExtractionModelFiles(base::File& model_config_file,
+                                    base::File& model_tflite_file) {
+  auto model_data = std::make_unique<
+      screen_ai::ScreenAILibraryWrapper::MainContentExtractionModelData>(
+      LoadModelFile(model_config_file), LoadModelFile(model_tflite_file));
+  return model_data;
 }
 
 ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
@@ -128,49 +120,99 @@ ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
 }  // namespace
 
 ScreenAIService::ScreenAIService(
-    mojo::PendingReceiver<mojom::ScreenAIService> receiver)
-    : receiver_(this, std::move(receiver)) {}
+    mojo::PendingReceiver<mojom::ScreenAIServiceFactory> receiver)
+    : factory_receiver_(this, std::move(receiver)),
+      ocr_receiver_(this),
+      main_content_extraction_receiver_(this) {}
 
 ScreenAIService::~ScreenAIService() = default;
 
-void ScreenAIService::LoadAndInitializeLibrary(
+void ScreenAIService::InitializeMainContentExtraction(
     base::File model_config,
     base::File model_tflite,
     const base::FilePath& library_path,
-    LoadAndInitializeLibraryCallback callback) {
+    mojo::PendingReceiver<mojom::MainContentExtractionService>
+        main_content_extractor_service_receiver,
+    InitializeMainContentExtractionCallback callback) {
+  if (!library_) {
+    library_ = LoadLibrary(library_path);
+  }
+
+  if (!library_) {
+    std::move(callback).Run(false);
+    base::Process::TerminateCurrentProcessImmediately(-1);
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&LoadAndInitializeLibraryInternal, std::move(model_config),
-                     std::move(model_tflite), library_path),
-      base::BindOnce(&ScreenAIService::SetLibraryOrDie,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&LoadMainContentExtractionModelFiles,
+                     base::OwnedRef(std::move(model_config)),
+                     base::OwnedRef(std::move(model_tflite))),
+      base::BindOnce(&ScreenAIService::InitializeMainContentExtractionInternal,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(main_content_extractor_service_receiver),
+                     std::move(callback)));
 }
 
-void ScreenAIService::SetLibraryOrDie(
-    LoadAndInitializeLibraryCallback success_callback,
-    std::unique_ptr<ScreenAILibraryWrapper> library) {
-  if (library) {
-    library_ = std::move(library);
-    std::move(success_callback).Run(true);
+void ScreenAIService::InitializeMainContentExtractionInternal(
+    mojo::PendingReceiver<mojom::MainContentExtractionService>
+        main_content_extractor_service_receiver,
+    InitializeMainContentExtractionCallback callback,
+    std::unique_ptr<ScreenAILibraryWrapper::MainContentExtractionModelData>
+        model_data) {
+  if (!library_->InitMainContentExtraction(*model_data)) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.LoadLibraryResult",
+        ScreenAILoadLibraryResult::kMainContentExtractionFailed);
+    std::move(callback).Run(false);
     return;
   }
 
-  std::move(success_callback).Run(false);
-  base::Process::TerminateCurrentProcessImmediately(-1);
+  // This interface should be created only once.
+  CHECK(!main_content_extraction_receiver_.is_bound());
+
+  main_content_extraction_receiver_.Bind(
+      std::move(main_content_extractor_service_receiver));
+
+  std::move(callback).Run(true);
+}
+
+void ScreenAIService::InitializeOCR(
+    const base::FilePath& library_path,
+    mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
+    InitializeOCRCallback callback) {
+  if (!library_) {
+    library_ = LoadLibrary(library_path);
+  }
+
+  if (!library_) {
+    std::move(callback).Run(false);
+    base::Process::TerminateCurrentProcessImmediately(-1);
+  }
+
+  if (!library_->InitOCR(library_path.DirName())) {
+    base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
+                                  ScreenAILoadLibraryResult::kOcrFailed);
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // This interface should be created only once.
+  CHECK(!ocr_receiver_.is_bound());
+
+  ocr_receiver_.Bind(std::move(ocr_service_receiver));
+
+  std::move(callback).Run(true);
 }
 
 void ScreenAIService::BindAnnotator(
     mojo::PendingReceiver<mojom::ScreenAIAnnotator> annotator) {
-  // TODO(crbug.com/1278249): Add a factory interface that returns an instance
-  // of `ScreenAIService` when library is initialized and remove these CHECKs.
-  CHECK(library_);
   screen_ai_annotators_.Add(this, std::move(annotator));
 }
 
 void ScreenAIService::BindAnnotatorClient(
     mojo::PendingRemote<mojom::ScreenAIAnnotatorClient> annotator_client) {
-  CHECK(library_);
   DCHECK(!screen_ai_annotator_client_.is_bound());
   screen_ai_annotator_client_.Bind(std::move(annotator_client));
 }
@@ -178,7 +220,6 @@ void ScreenAIService::BindAnnotatorClient(
 void ScreenAIService::BindMainContentExtractor(
     mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
         main_content_extractor) {
-  CHECK(library_);
   screen_2x_main_content_extractors_.Add(this,
                                          std::move(main_content_extractor));
 }

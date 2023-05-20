@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/platform/p2p/socket_client_impl.h"
 
 #include "base/location.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/trace_event/common/trace_event_common.h"
 #include "crypto/random.h"
 #include "services/network/public/cpp/p2p_param_traits.h"
 #include "third_party/blink/renderer/platform/p2p/socket_client_delegate.h"
@@ -21,12 +23,19 @@ uint64_t GetUniqueId(uint32_t random_socket_id, uint32_t packet_id) {
   return uid;
 }
 
+void RecordNumberOfPacketsInBatch(int num_packets) {
+  DCHECK_GT(num_packets, 0);
+  UMA_HISTOGRAM_COUNTS("WebRTC.P2P.UDP.BatchingNumberOfSentPackets",
+                       num_packets);
+}
+
 }  // namespace
 
 namespace blink {
 
-P2PSocketClientImpl::P2PSocketClientImpl()
-    : socket_id_(0),
+P2PSocketClientImpl::P2PSocketClientImpl(bool batch_packets)
+    : batch_packets_(batch_packets),
+      socket_id_(0),
       delegate_(nullptr),
       state_(kStateUninitialized),
       random_socket_id_(0),
@@ -64,13 +73,52 @@ uint64_t P2PSocketClientImpl::Send(const net::IPEndPoint& address,
   return unique_id;
 }
 
+void P2PSocketClientImpl::FlushBatch() {
+  DoSendBatch();
+}
+
+void P2PSocketClientImpl::DoSendBatch() {
+  TRACE_EVENT1("p2p", __func__, "num_packets", batched_send_packets_.size());
+  awaiting_batch_complete_ = false;
+  if (!batched_send_packets_.empty()) {
+    WTF::Vector<network::mojom::blink::P2PSendPacketPtr> batched_send_packets;
+    batched_send_packets_.swap(batched_send_packets);
+    RecordNumberOfPacketsInBatch(batched_send_packets.size());
+    socket_->SendBatch(std::move(batched_send_packets));
+    batched_packets_storage_.clear();
+  }
+}
+
 void P2PSocketClientImpl::SendWithPacketId(const net::IPEndPoint& address,
                                            base::span<const uint8_t> data,
                                            const rtc::PacketOptions& options,
                                            uint64_t packet_id) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("p2p", "Send", packet_id);
 
-  socket_->Send(data, network::P2PPacketInfo(address, options, packet_id));
+  // Conditionally start or continue temporarily storing the packets of a batch.
+  // We can't allow sending individual packets mid batch since we would receive
+  // SendComplete with out-of-order packet IDs. Therefore, we include them in
+  // the batch.
+  // Additionally, logic below ensures we send single-packet batches to use the
+  // Send interface instead of SendBatch to reduce pointless overhead.
+  if (batch_packets_ &&
+      (awaiting_batch_complete_ ||
+       (options.batchable && !options.last_packet_in_batch))) {
+    awaiting_batch_complete_ = true;
+    batched_packets_storage_.emplace_back(data);
+    const auto& storage = batched_packets_storage_.back();
+    batched_send_packets_.emplace_back(
+        network::mojom::blink::P2PSendPacket::New(
+            base::span<const uint8_t>(storage.begin(), storage.end()),
+            network::P2PPacketInfo(address, options, packet_id)));
+    if (options.last_packet_in_batch) {
+      DoSendBatch();
+    }
+  } else {
+    RecordNumberOfPacketsInBatch(1);
+    awaiting_batch_complete_ = false;
+    socket_->Send(data, network::P2PPacketInfo(address, options, packet_id));
+  }
 }
 
 void P2PSocketClientImpl::SetOption(network::P2PSocketOption option,
@@ -113,6 +161,17 @@ void P2PSocketClientImpl::SendComplete(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (delegate_)
     delegate_->OnSendComplete(send_metrics);
+}
+
+void P2PSocketClientImpl::SendBatchComplete(
+    const WTF::Vector<::network::P2PSendPacketMetrics>& in_send_metrics_batch) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  TRACE_EVENT1("p2p", __func__, "num_packets", in_send_metrics_batch.size());
+  if (delegate_) {
+    for (const auto& send_metrics : in_send_metrics_batch) {
+      delegate_->OnSendComplete(send_metrics);
+    }
+  }
 }
 
 void P2PSocketClientImpl::DataReceived(

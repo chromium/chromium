@@ -16,8 +16,8 @@ found in the LICENSE file.
     <color name="switch_thumb_disabled_color_baseline">@color/switch_thumb_disabled_color_baseline_dark</color>
 
     <!-- Empty states colors -->
-    <color name="empty_state_icon_color">@color/material_primary_200</color>
-    <color name="empty_state_icon_bg_color">@color/material_primary_800</color>
-    <color name="empty_state_icon_bg_background_color">@color/material_primary_900</color>
-    <color name="empty_state_icon_bg_foreground_color">@color/material_primary_800</color>
+    <color name="empty_state_icon_color">@color/material_primary_80</color>
+    <color name="empty_state_icon_bg_color">@color/material_primary_20</color>
+    <color name="empty_state_icon_bg_background_color">@color/material_primary_10</color>
+    <color name="empty_state_icon_bg_foreground_color">@color/material_primary_20</color>
 </resources>

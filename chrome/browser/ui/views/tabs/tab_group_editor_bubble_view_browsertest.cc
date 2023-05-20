@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -56,6 +57,8 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        NewTabInGroup) {
+  base::HistogramTester histogram_tester;
+
   ShowUi("SetUp");
 
   TabGroupModel* group_model = browser()->tab_strip_model()->group_model();
@@ -79,9 +82,14 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
   views::test::ButtonTestApi(new_tab_button).NotifyClick(released_event);
 
   EXPECT_EQ(2u, group_model->GetTabGroup(group_list[0])->ListTabs().length());
+
+  histogram_tester.ExpectUniqueSample("TabGroups.TabGroupBubble.TabCount", 2,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
+  base::HistogramTester histogram_tester;
+
   ShowUi("SetUp");
 
   TabStripModel* tsm = browser()->tab_strip_model();
@@ -109,6 +117,9 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
   EXPECT_EQ(0u, group_model->ListTabGroups().size());
   EXPECT_FALSE(group_model->ContainsTabGroup(group_list[0]));
   EXPECT_EQ(1, tsm->count());
+
+  // Should not record for 0 tabs.
+  histogram_tester.ExpectTotalCount("TabGroups.TabGroupBubble.TabCount", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,

@@ -54,6 +54,8 @@ absl::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(WGPUFeatureName f) {
       return V8GPUFeatureName::Enum::kChromiumExperimentalDp4A;
     case WGPUFeatureName_ShaderF16:
       return V8GPUFeatureName::Enum::kShaderF16;
+    case WGPUFeatureName_Float32Filterable:
+      return V8GPUFeatureName::Enum::kFloat32Filterable;
     default:
       return absl::nullopt;
   }
@@ -95,6 +97,7 @@ GPUAdapter::GPUAdapter(
   GetProcs().adapterGetProperties(handle_, &properties);
   is_fallback_adapter_ = properties.adapterType == WGPUAdapterType_CPU;
   backend_type_ = properties.backendType;
+  is_compatibility_mode_ = properties.compatibilityMode;
 
   vendor_ = properties.vendorName;
   architecture_ = properties.architecture;
@@ -149,6 +152,10 @@ WGPUBackendType GPUAdapter::backendType() const {
 bool GPUAdapter::SupportsMultiPlanarFormats() const {
   return GetProcs().adapterHasFeature(handle_,
                                       WGPUFeatureName_DawnMultiPlanarFormats);
+}
+
+bool GPUAdapter::isCompatibilityMode() const {
+  return is_compatibility_mode_;
 }
 
 void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,

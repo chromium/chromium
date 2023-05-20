@@ -17,22 +17,36 @@ namespace content {
 
 const char kBrowsingTopicsRequestHeaderKey[] = "Sec-Browsing-Topics";
 
+net::structured_headers::ParameterizedMember CreateParameterizedTopic(
+    const blink::mojom::EpochTopicPtr& topic,
+    bool skip_version) {
+  if (skip_version) {
+    return net::structured_headers::ParameterizedMember(
+        net::structured_headers::Item(static_cast<int64_t>(topic->topic)), {});
+  }
+
+  return net::structured_headers::ParameterizedMember(
+      net::structured_headers::Item(static_cast<int64_t>(topic->topic)),
+      {{"v", net::structured_headers::Item(topic->version)}});
+}
+
 std::string DeriveTopicsHeaderValue(
     const std::vector<blink::mojom::EpochTopicPtr>& topics) {
   net::structured_headers::List header_list;
+
+  absl::optional<std::string> last_version;
   for (auto& topic : topics) {
-    header_list.push_back(net::structured_headers::ParameterizedMember(
-        net::structured_headers::Item(static_cast<int64_t>(topic->topic)),
-        {{"version", net::structured_headers::Item(topic->version)},
-         {"config_version",
-          net::structured_headers::Item(topic->config_version)},
-         {"model_version", net::structured_headers::Item(topic->model_version)},
-         {"taxonomy_version",
-          net::structured_headers::Item(topic->taxonomy_version)}}));
+    bool skip_version =
+        (last_version && last_version.value() == topic->version);
+    header_list.push_back(CreateParameterizedTopic(topic, skip_version));
+    last_version = topic->version;
   }
 
-  return net::structured_headers::SerializeList(std::move(header_list))
-      .value_or("");
+  absl::optional<std::string> serialized_header_list =
+      net::structured_headers::SerializeList(std::move(header_list));
+  CHECK(serialized_header_list);
+
+  return *serialized_header_list;
 }
 
 void HandleTopicsEligibleResponse(

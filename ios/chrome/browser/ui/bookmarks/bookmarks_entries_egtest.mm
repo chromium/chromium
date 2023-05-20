@@ -709,8 +709,8 @@ id<GREYMatcher> AddBookmarkButton() {
 
   // Choose to move into a new folder.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kBookmarkCreateNewFolderCellIdentifier)]
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkCreateNewProfileFolderCellIdentifier)]
       performAction:grey_tap()];
 
   // Enter custom new folder name.

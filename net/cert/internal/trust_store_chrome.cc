@@ -88,7 +88,7 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
     auto parsed = ParsedCertificate::Create(
         std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
     DCHECK(parsed);
-    trust_store_.AddTrustAnchor(parsed);
+    trust_store_.AddTrustAnchor(std::move(parsed));
   }
   version_ = version;
 }
@@ -140,7 +140,7 @@ ParsedCertificateList CompiledChromeRootStoreAnchors() {
     auto parsed = ParsedCertificate::Create(
         std::move(cert), x509_util::DefaultParseCertificateOptions(), &errors);
     DCHECK(parsed);
-    parsed_cert_list.push_back(parsed);
+    parsed_cert_list.push_back(std::move(parsed));
   }
 
   return parsed_cert_list;

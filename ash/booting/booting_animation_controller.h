@@ -12,7 +12,7 @@
 #include "base/scoped_observation.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/lottie/animation_observer.h"
-#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -51,7 +51,7 @@ class ASH_EXPORT BootingAnimationController
   void StartAnimation();
 
   std::string animation_data_;
-  views::UniqueWidgetPtr widget_;
+  std::unique_ptr<views::Widget> widget_;
   bool start_once_ready_ = false;
   bool was_shown_ = false;
   bool is_gpu_ready_ = false;

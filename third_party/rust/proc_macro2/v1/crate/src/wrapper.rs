@@ -1,4 +1,6 @@
 use crate::detection::inside_proc_macro;
+#[cfg(span_locations)]
+use crate::location::LineColumn;
 use crate::{fallback, Delimiter, Punct, Spacing, TokenTree};
 use core::fmt::{self, Debug, Display};
 use core::iter::FromIterator;
@@ -38,7 +40,7 @@ impl LexError {
 }
 
 fn mismatch() -> ! {
-    panic!("stable/nightly mismatch")
+    panic!("compiler/fallback mismatch")
 }
 
 impl DeferredTokenStream {
@@ -129,13 +131,13 @@ impl Display for TokenStream {
 }
 
 impl From<proc_macro::TokenStream> for TokenStream {
-    fn from(inner: proc_macro::TokenStream) -> TokenStream {
+    fn from(inner: proc_macro::TokenStream) -> Self {
         TokenStream::Compiler(DeferredTokenStream::new(inner))
     }
 }
 
 impl From<TokenStream> for proc_macro::TokenStream {
-    fn from(inner: TokenStream) -> proc_macro::TokenStream {
+    fn from(inner: TokenStream) -> Self {
         match inner {
             TokenStream::Compiler(inner) => inner.into_token_stream(),
             TokenStream::Fallback(inner) => inner.to_string().parse().unwrap(),
@@ -144,7 +146,7 @@ impl From<TokenStream> for proc_macro::TokenStream {
 }
 
 impl From<fallback::TokenStream> for TokenStream {
-    fn from(inner: fallback::TokenStream) -> TokenStream {
+    fn from(inner: fallback::TokenStream) -> Self {
         TokenStream::Fallback(inner)
     }
 }
@@ -168,7 +170,7 @@ fn into_compiler_token(token: TokenTree) -> proc_macro::TokenTree {
 }
 
 impl From<TokenTree> for TokenStream {
-    fn from(token: TokenTree) -> TokenStream {
+    fn from(token: TokenTree) -> Self {
         if inside_proc_macro() {
             TokenStream::Compiler(DeferredTokenStream::new(into_compiler_token(token).into()))
         } else {
@@ -261,13 +263,13 @@ impl LexError {
 }
 
 impl From<proc_macro::LexError> for LexError {
-    fn from(e: proc_macro::LexError) -> LexError {
+    fn from(e: proc_macro::LexError) -> Self {
         LexError::Compiler(e)
     }
 }
 
 impl From<fallback::LexError> for LexError {
-    fn from(e: fallback::LexError) -> LexError {
+    fn from(e: fallback::LexError) -> Self {
         LexError::Fallback(e)
     }
 }
@@ -389,12 +391,6 @@ impl Debug for SourceFile {
     }
 }
 
-#[cfg(any(super_unstable, feature = "span-locations"))]
-pub(crate) struct LineColumn {
-    pub line: usize,
-    pub column: usize,
-}
-
 #[derive(Copy, Clone)]
 pub(crate) enum Span {
     Compiler(proc_macro::Span),
@@ -471,7 +467,7 @@ impl Span {
         }
     }
 
-    #[cfg(any(super_unstable, feature = "span-locations"))]
+    #[cfg(span_locations)]
     pub fn start(&self) -> LineColumn {
         match self {
             #[cfg(proc_macro_span)]
@@ -481,14 +477,11 @@ impl Span {
             }
             #[cfg(not(proc_macro_span))]
             Span::Compiler(_) => LineColumn { line: 0, column: 0 },
-            Span::Fallback(s) => {
-                let fallback::LineColumn { line, column } = s.start();
-                LineColumn { line, column }
-            }
+            Span::Fallback(s) => s.start(),
         }
     }
 
-    #[cfg(any(super_unstable, feature = "span-locations"))]
+    #[cfg(span_locations)]
     pub fn end(&self) -> LineColumn {
         match self {
             #[cfg(proc_macro_span)]
@@ -498,10 +491,23 @@ impl Span {
             }
             #[cfg(not(proc_macro_span))]
             Span::Compiler(_) => LineColumn { line: 0, column: 0 },
-            Span::Fallback(s) => {
-                let fallback::LineColumn { line, column } = s.end();
-                LineColumn { line, column }
-            }
+            Span::Fallback(s) => s.end(),
+        }
+    }
+
+    #[cfg(super_unstable)]
+    pub fn before(&self) -> Span {
+        match self {
+            Span::Compiler(s) => Span::Compiler(s.before()),
+            Span::Fallback(s) => Span::Fallback(s.before()),
+        }
+    }
+
+    #[cfg(super_unstable)]
+    pub fn after(&self) -> Span {
+        match self {
+            Span::Compiler(s) => Span::Compiler(s.after()),
+            Span::Fallback(s) => Span::Fallback(s.after()),
         }
     }
 
@@ -524,6 +530,16 @@ impl Span {
         }
     }
 
+    pub fn source_text(&self) -> Option<String> {
+        match self {
+            #[cfg(not(no_source_text))]
+            Span::Compiler(s) => s.source_text(),
+            #[cfg(no_source_text)]
+            Span::Compiler(_) => None,
+            Span::Fallback(s) => s.source_text(),
+        }
+    }
+
     fn unwrap_nightly(self) -> proc_macro::Span {
         match self {
             Span::Compiler(s) => s,
@@ -533,13 +549,13 @@ impl Span {
 }
 
 impl From<proc_macro::Span> for crate::Span {
-    fn from(proc_span: proc_macro::Span) -> crate::Span {
+    fn from(proc_span: proc_macro::Span) -> Self {
         crate::Span::_new(Span::Compiler(proc_span))
     }
 }
 
 impl From<fallback::Span> for Span {
-    fn from(inner: fallback::Span) -> Span {
+    fn from(inner: fallback::Span) -> Self {
         Span::Fallback(inner)
     }
 }
@@ -923,7 +939,7 @@ impl Literal {
 }
 
 impl From<fallback::Literal> for Literal {
-    fn from(s: fallback::Literal) -> Literal {
+    fn from(s: fallback::Literal) -> Self {
         Literal::Fallback(s)
     }
 }

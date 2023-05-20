@@ -28,6 +28,7 @@
 #include "printing/pdf_render_settings.h"
 #include "printing/pwg_raster_settings.h"
 #include "printing/units.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -47,7 +48,8 @@ class PwgRasterConverterHelper
   PwgRasterConverterHelper(const PwgRasterConverterHelper&) = delete;
   PwgRasterConverterHelper& operator=(const PwgRasterConverterHelper&) = delete;
 
-  void Convert(const base::RefCountedMemory* data,
+  void Convert(const absl::optional<bool>& use_skia,
+               const base::RefCountedMemory* data,
                PwgRasterConverter::ResultCallback callback);
 
  private:
@@ -77,6 +79,7 @@ PwgRasterConverterHelper::~PwgRasterConverterHelper() {
 }
 
 void PwgRasterConverterHelper::Convert(
+    const absl::optional<bool>& use_skia,
     const base::RefCountedMemory* data,
     PwgRasterConverter::ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -94,6 +97,10 @@ void PwgRasterConverterHelper::Convert(
   if (!memory.IsValid()) {
     RunCallback(base::ReadOnlySharedMemoryRegion(), /*page_count=*/0);
     return;
+  }
+
+  if (use_skia) {
+    pdf_to_pwg_raster_converter_remote_->SetUseSkiaRendererPolicy(*use_skia);
   }
 
   // TODO(thestig): Write `data` into shared memory in the first place, to avoid
@@ -132,7 +139,8 @@ class PwgRasterConverterImpl : public PwgRasterConverter {
 
   ~PwgRasterConverterImpl() override;
 
-  void Start(const base::RefCountedMemory* data,
+  void Start(const absl::optional<bool>& use_skia,
+             const base::RefCountedMemory* data,
              const PdfRenderSettings& conversion_settings,
              const PwgRasterSettings& bitmap_settings,
              ResultCallback callback) override;
@@ -149,14 +157,15 @@ PwgRasterConverterImpl::PwgRasterConverterImpl() = default;
 
 PwgRasterConverterImpl::~PwgRasterConverterImpl() = default;
 
-void PwgRasterConverterImpl::Start(const base::RefCountedMemory* data,
+void PwgRasterConverterImpl::Start(const absl::optional<bool>& use_skia,
+                                   const base::RefCountedMemory* data,
                                    const PdfRenderSettings& conversion_settings,
                                    const PwgRasterSettings& bitmap_settings,
                                    ResultCallback callback) {
   cancelable_callback_.Reset(std::move(callback));
   utility_client_ = base::MakeRefCounted<PwgRasterConverterHelper>(
       conversion_settings, bitmap_settings);
-  utility_client_->Convert(data, cancelable_callback_.callback());
+  utility_client_->Convert(use_skia, data, cancelable_callback_.callback());
 }
 
 }  // namespace

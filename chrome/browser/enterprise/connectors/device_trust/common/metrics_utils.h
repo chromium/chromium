@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_COMMON_METRICS_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_COMMON_METRICS_UTILS_H_
 
+#include <set>
+
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 
@@ -33,6 +35,19 @@ enum class DTHandshakeResult {
   kMaxValue = kFailedToCreateResponse
 };
 
+// Policy levels that are enabled for the Device Trust connector which determine
+// the result of the challenge response in the attestation flow. These values
+// are persisted to logs and should not be renumbered. Please update the
+// DTAttestationPolicyLevel enum in enums.xml when adding a new step here.
+enum class DTAttestationPolicyLevel {
+  kNone = 0,
+  kUnknown = 1,
+  kBrowser = 2,
+  kUser = 3,
+  kUserAndBrowser = 4,
+  kMaxValue = kUserAndBrowser
+};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Possible origins of the Device Trust connector attestation flow on ChromeOS.
 // These values are persisted to logs and should not be renumbered. Please
@@ -45,6 +60,8 @@ enum class DTOrigin {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void LogAttestationFunnelStep(DTAttestationFunnelStep step);
+
+void LogAttestationPolicyLevel(const std::set<DTCPolicyLevel>& levels);
 
 void LogAttestationResult(DTAttestationResult result);
 

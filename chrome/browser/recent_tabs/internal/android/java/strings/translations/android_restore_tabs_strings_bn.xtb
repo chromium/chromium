@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব খুলুন}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব খুলুন}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব খুলুন}}</translation>
 <translation id="4811934403802581334">বর্তমানে বেছে নেওয়া ডিভাইস থেকে সব বেছে নেওয়া ট্যাব ফিরিয়ে আনা হবে।</translation>
 <translation id="5336031759968328813">সব ট্যাব পর্যালোচনা করুন</translation>
+<translation id="8019269305087157499">এখান থেকে খুলুন</translation>
 <translation id="8725404154479306799">পুরনো ডিভাইসে আপনার ব্যবহার করা ট্যাব পান</translation>
 </translationbundle>

@@ -53,8 +53,8 @@ class DestinationThrottler::SourceSiteData {
       : destinations_(policy.max_total) {}
   ~SourceSiteData() = default;
 
-  SourceSiteData(SourceSiteData&) = delete;
-  SourceSiteData& operator=(SourceSiteData&) = delete;
+  SourceSiteData(SourceSiteData&&) noexcept = default;
+  SourceSiteData& operator=(SourceSiteData&&) noexcept = default;
 
   Result UpdateAndGetResult(
       const attribution_reporting::DestinationSet& destinations,

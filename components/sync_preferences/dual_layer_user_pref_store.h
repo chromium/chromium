@@ -142,6 +142,9 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
                                                    base::Value value,
                                                    uint32_t flags) const;
 
+  // Get all prefs currently present in the account store.
+  std::vector<std::string> GetPrefNamesInAccountStore() const;
+
   // The two underlying pref stores, scoped to this device/profile and to the
   // user's signed-in account, respectively.
   const scoped_refptr<PersistentPrefStore> local_pref_store_;

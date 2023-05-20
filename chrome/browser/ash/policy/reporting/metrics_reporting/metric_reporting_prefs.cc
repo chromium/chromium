@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/reporting/metrics/reporting_settings.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -50,6 +52,21 @@ absl::optional<std::string> GetAppReportingCategoryForType(
     case ::apps::AppType::kUnknown:   // Invalid app type.
       return absl::nullopt;
   }
+}
+
+bool IsAppTypeAllowed(::apps::AppType app_type,
+                      const ::reporting::ReportingSettings* reporting_settings,
+                      const std::string& policy_setting) {
+  DCHECK(reporting_settings);
+  const base::Value::List* allowed_app_types;
+  if (!reporting_settings->GetList(policy_setting, &allowed_app_types)) {
+    // Policy likely unset. Disallow app usage reporting regardless of app type.
+    return false;
+  }
+  const absl::optional<std::string> app_category =
+      GetAppReportingCategoryForType(app_type);
+  return app_category.has_value() &&
+         base::Contains(*allowed_app_types, app_category.value());
 }
 
 }  // namespace ash::reporting

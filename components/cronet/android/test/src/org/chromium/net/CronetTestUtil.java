@@ -118,6 +118,12 @@ public class CronetTestUtil {
         return CronetTestUtilJni.get().getTaggedBytes(expectedTag);
     }
 
+    public static void nativeFlushWritePropertiesForTesting(CronetEngine engine) {
+        CronetUrlRequestContext context = (CronetUrlRequestContext) engine;
+        CronetTestUtilJni.get().flushWritePropertiesForTesting(
+                context.getUrlRequestContextAdapter());
+    }
+
     @NativeMethods("cronet_tests")
     interface Natives {
         boolean canGetTaggedBytes();
@@ -126,5 +132,6 @@ public class CronetTestUtil {
         void prepareNetworkThread(long contextAdapter);
         void cleanupNetworkThread(long contextAdapter);
         boolean uRLRequestContextExistsForTesting(long contextAdapter, long networkHandle);
+        void flushWritePropertiesForTesting(long contextAdapter);
     }
 }

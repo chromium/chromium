@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/graphics/IOGraphicsLib.h>
+#include <QuartzCore/CVDisplayLink.h>
 #include <stdint.h>
 
 #include <map>
@@ -27,7 +28,6 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/display/display.h"
 #include "ui/display/display_change_notifier.h"
-#include "ui/display/mac/display_link_mac.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/icc_profile.h"
@@ -270,8 +270,22 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   }
   display.set_is_monochrome(CGDisplayUsesForceToGray());
 
-  if (auto display_link = ui::DisplayLinkMac::GetForDisplay(display_id))
-    display.set_display_frequency(display_link->GetRefreshRate());
+  // Query the display's referesh rate.
+  {
+    CVDisplayLinkRef display_link = nullptr;
+    if (CVDisplayLinkCreateWithCGDisplay(display_id, &display_link) ==
+        kCVReturnSuccess) {
+      DCHECK(display_link);
+      CVTime cv_time =
+          CVDisplayLinkGetNominalOutputVideoRefreshPeriod(display_link);
+      if (!(cv_time.flags & kCVTimeIsIndefinite)) {
+        double refresh_rate = (static_cast<double>(cv_time.timeScale) /
+                               static_cast<double>(cv_time.timeValue));
+        display.set_display_frequency(refresh_rate);
+      }
+      CVDisplayLinkRelease(display_link);
+    }
+  }
 
   // CGDisplayRotation returns a double. Display::SetRotationAsDegree will
   // handle the unexpected situations were the angle is not a multiple of 90.

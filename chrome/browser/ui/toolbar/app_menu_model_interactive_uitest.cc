@@ -32,6 +32,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -106,8 +107,17 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoAccelerator) {
 class ExtensionsMenuModelInteractiveTest : public AppMenuModelInteractiveTest {
  public:
   explicit ExtensionsMenuModelInteractiveTest(bool enable_feature = true) {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kExtensionsMenuInAppMenu, enable_feature);
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (enable_feature) {
+      enabled_features = {features::kExtensionsMenuInAppMenu};
+      disabled_features = {features::kChromeRefresh2023};
+    } else {
+      enabled_features = {};
+      disabled_features = {features::kExtensionsMenuInAppMenu,
+                           features::kChromeRefresh2023};
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~ExtensionsMenuModelInteractiveTest() override = default;
   ExtensionsMenuModelInteractiveTest(

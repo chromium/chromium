@@ -1,4 +1,4 @@
 Tests that console properly displays information about ES6 Symbols.
 
-console-format-es6-symbols-error.js:16 Symbol()
+console-format-es6-symbols-error.js:19 Symbol()
 

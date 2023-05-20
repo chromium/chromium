@@ -21,8 +21,10 @@ namespace extensions {
 class SidePanelApiTest : public ExtensionApiTest {
  public:
   SidePanelApiTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionSidePanelIntegration);
+    feature_list_.InitWithFeatures(
+        {extensions_features::kExtensionSidePanelIntegration,
+         extensions_features::kApiSidePanelOpen},
+        {});
   }
 
  private:
@@ -139,6 +141,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelApiWithExtensionTest, ExtensionRegistry) {
     EXPECT_EQ("default_path.html", options.path.value());
     EXPECT_FALSE(service->HasExtensionPanelOptionsForTest(extension->id()));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelApiTest, OpenPanelErrors) {
+  ASSERT_TRUE(RunExtensionTest("side_panel/open_panel_errors"));
 }
 
 }  // namespace extensions

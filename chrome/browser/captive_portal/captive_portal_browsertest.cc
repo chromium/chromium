@@ -1226,7 +1226,7 @@ void CaptivePortalBrowserTest::SlowLoadNoCaptivePortal(
   CaptivePortalObserver portal_observer(browser->profile());
   ui_test_utils::NavigateToURLWithDisposition(
       browser, GURL(kMockHttpsUrl), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   portal_observer.WaitForResults(1);
 
@@ -1348,7 +1348,7 @@ void CaptivePortalBrowserTest::SlowLoadBehindCaptivePortal(
   CaptivePortalObserver portal_observer(browser->profile());
   ui_test_utils::NavigateToURLWithDisposition(
       browser, hanging_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   portal_observer.WaitForResults(expected_portal_checks);
 
   Browser* login_browser = nullptr;
@@ -1461,7 +1461,7 @@ void CaptivePortalBrowserTest::FastErrorBehindCaptivePortal(
   CaptivePortalObserver portal_observer(browser->profile());
   ui_test_utils::NavigateToURLWithDisposition(
       browser, error_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   portal_observer.WaitForResults(1);
 
@@ -1536,7 +1536,7 @@ void CaptivePortalBrowserTest::FastErrorWithInterstitialTimer(
   SSLInterstitialTimerObserver interstitial_timer_observer(broken_tab_contents);
   ui_test_utils::NavigateToURLWithDisposition(
       browser, cert_error_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   interstitial_timer_observer.WaitForTimerStarted();
 
   // The tab should be in loading state, waiting for the interstitial timer to

@@ -8,6 +8,7 @@
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/trigger.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,6 +41,12 @@ class MockSegmentationPlatformService : public SegmentationPlatformService {
                const PredictionOptions&,
                scoped_refptr<InputContext>,
                AnnotatedNumericResultCallback));
+  MOCK_METHOD(void,
+              CollectTrainingData,
+              (proto::SegmentId,
+               TrainingRequestId,
+               const TrainingLabels&,
+               SuccessCallback));
   MOCK_METHOD(void, EnableMetrics, (bool));
   MOCK_METHOD(void, GetServiceStatus, ());
   MOCK_METHOD(bool, IsPlatformInitialized, ());

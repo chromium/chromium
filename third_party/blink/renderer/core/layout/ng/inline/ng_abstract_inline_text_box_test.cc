@@ -6,7 +6,10 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_objects.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -169,6 +172,30 @@ TEST_F(NGAbstractInlineTextBoxTest, CharacterWidths) {
   // the width of the trailing space should be included.
   EXPECT_EQ(4u, widths.size());
   EXPECT_TRUE(inline_text_box->NeedsTrailingSpace());
+}
+
+TEST_F(NGAbstractInlineTextBoxTest, HeapCompactionNoCrash) {
+  using TestVector = HeapVector<Member<LinkedObject>>;
+  Persistent<TestVector> vector(MakeGarbageCollected<TestVector>(100));
+  SetBodyInnerHTML(R"HTML(<div id="div">012 345</div>)HTML");
+
+  const Element& div = *GetDocument().getElementById("div");
+  auto* inline_text_box = To<LayoutText>(div.firstChild()->GetLayoutObject())
+                              ->FirstAbstractInlineTextBox();
+  const auto* items = div.GetLayoutBox()->GetPhysicalFragment(0)->Items();
+
+  const auto* vector_buffer_before_gc = items->Items().data();
+  vector.Clear();
+  CompactionTestDriver compaction_driver(ThreadState::Current());
+  compaction_driver.ForceCompactionForNextGC();
+  TestSupportingGC::PreciselyCollectGarbage();
+  // We assume the above code caused heap compaction, and moved the buffer
+  // of HeapVector<NGFragmentItem>.
+  ASSERT_NE(vector_buffer_before_gc, items->Items().data());
+
+  // LocalBounds() calls GetCursor(), which crashed in this scenario.
+  inline_text_box->LocalBounds();
+  // Pass if no crashes.
 }
 
 }  // namespace blink

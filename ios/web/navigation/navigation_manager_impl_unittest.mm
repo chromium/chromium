@@ -73,14 +73,6 @@ bool AppendingUrlRewriter(GURL* url, BrowserState* browser_state) {
   return false;
 }
 
-// Class that exposes GetVisibleWebViewURL.
-class NavigationManagerImplWithVisibleURL : public NavigationManagerImpl {
- public:
-  const GURL& GetVisibleWebViewOriginURL() const {
-    return web_view_cache_.GetVisibleWebViewOriginURL();
-  }
-};
-
 // Mock class for NavigationManagerDelegate.
 class MockNavigationManagerDelegate : public NavigationManagerDelegate {
  public:
@@ -2894,22 +2886,24 @@ TEST_F(NavigationManagerDetachedModeTest, NotSerializable) {
 
 // Tests that GetVisibleWebViewURL() returns a cached GURL.
 TEST_F(NavigationManagerTest, TestGetVisibleWebViewOriginURLCache) {
-  NavigationManagerImplWithVisibleURL manager;
+  NavigationManagerImpl manager;
   manager.SetDelegate(&delegate_);
   manager.SetBrowserState(&browser_state_);
+
+  NavigationManagerImpl::WKWebViewCache& cache = manager.web_view_cache_;
 
   GURL gurl("http://www.existing.com");
   __block NSURL* nsurl = [NSURL URLWithString:@"http://www.existing.com"];
   OCMStub([mock_web_view_ URL]).andDo(^(NSInvocation* invocation) {
     [invocation setReturnValue:&nsurl];
   });
-  EXPECT_EQ(gurl, manager.GetVisibleWebViewOriginURL());
+  EXPECT_EQ(gurl, cache.GetVisibleWebViewOriginURL());
 
   // Change mock_web_view_'s URL.
   nsurl = [NSURL URLWithString:@"http://www.anotherexisting.com"];
-  EXPECT_NE(gurl, manager.GetVisibleWebViewOriginURL());
+  EXPECT_NE(gurl, cache.GetVisibleWebViewOriginURL());
   EXPECT_EQ(GURL("http://www.anotherexisting.com"),
-            manager.GetVisibleWebViewOriginURL());
+            cache.GetVisibleWebViewOriginURL());
 }
 
 }  // namespace web

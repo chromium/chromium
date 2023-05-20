@@ -11,19 +11,19 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/printing_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace enterprise_connectors {
+
 namespace {
 
-void ScanAndPrint(
-    scoped_refptr<base::RefCountedMemory> data,
-    content::WebContents* initiator,
-    enterprise_connectors::ContentAnalysisDelegate::Data scanning_data,
-    base::OnceCallback<void(bool)> on_verdict) {
+void ScanAndPrint(scoped_refptr<base::RefCountedMemory> data,
+                  content::WebContents* initiator,
+                  ContentAnalysisDelegate::Data scanning_data,
+                  base::OnceCallback<void(bool)> on_verdict) {
   // The preview document bytes are copied so that the content analysis code
   // can arbitrarily use them without having to handle ownership issues with
   // other printing code.
@@ -31,7 +31,7 @@ void ScanAndPrint(
       base::ReadOnlySharedMemoryRegion::Create(data->size());
   if (!region.IsValid()) {
     // Allow printing if the scan can't happen due to memory failure.
-    PRINTER_LOG(ERROR) << "Printed without scanning due to memory failure";
+    PRINTER_LOG(ERROR) << "Printed without analysis due to memory failure";
     std::move(on_verdict).Run(/*allowed=*/true);
     return;
   }
@@ -40,22 +40,21 @@ void ScanAndPrint(
 
   auto on_scan_result = base::BindOnce(
       [](base::OnceCallback<void(bool should_proceed)> callback,
-         const enterprise_connectors::ContentAnalysisDelegate::Data& data,
-         enterprise_connectors::ContentAnalysisDelegate::Result& result) {
+         const ContentAnalysisDelegate::Data& data,
+         ContentAnalysisDelegate::Result& result) {
         std::move(callback).Run(result.page_result);
       },
       std::move(on_verdict));
-  enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
+  ContentAnalysisDelegate::CreateForWebContents(
       initiator, std::move(scanning_data), std::move(on_scan_result),
       safe_browsing::DeepScanAccessPoint::PRINT);
 }
 
 }  // namespace
 
-namespace enterprise_connectors {
-
 void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
                             content::WebContents* initiator,
+                            const std::string& printer_name,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview) {
   ContentAnalysisDelegate::Data scanning_data;
@@ -63,10 +62,13 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
   if (ContentAnalysisDelegate::IsEnabled(
           Profile::FromBrowserContext(initiator->GetBrowserContext()),
           initiator->GetLastCommittedURL(), &scanning_data,
-          enterprise_connectors::AnalysisConnector::PRINT) &&
+          AnalysisConnector::PRINT) &&
       base::FeatureList::IsEnabled(
           printing::features::kEnablePrintScanAfterPreview) &&
       scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
+    // Populate print metadata.
+    scanning_data.printer_name = printer_name;
+
     // Hide the preview dialog so it doesn't cover the content analysis dialog
     // showing the status of the scanning.
     // TODO(b/281087582): May need to be handled differently when the scan
@@ -79,19 +81,24 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
   std::move(on_verdict).Run(/*allowed=*/true);
 }
 
-absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-ShouldAnalyzeBeforePrintPreview(content::WebContents* web_contents) {
-  enterprise_connectors::ContentAnalysisDelegate::Data scanning_data;
-  if (enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
+absl::optional<ContentAnalysisDelegate::Data> GetBeforePrintPreviewAnalysisData(
+    content::WebContents* web_contents) {
+  ContentAnalysisDelegate::Data scanning_data;
+
+  if (!ContentAnalysisDelegate::IsEnabled(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()),
           web_contents->GetOutermostWebContents()->GetLastCommittedURL(),
-          &scanning_data, enterprise_connectors::AnalysisConnector::PRINT) &&
-      !(base::FeatureList::IsEnabled(
-            printing::features::kEnablePrintScanAfterPreview) &&
-        scanning_data.settings.cloud_or_local_settings.is_local_analysis())) {
-    return scanning_data;
+          &scanning_data, AnalysisConnector::PRINT)) {
+    return absl::nullopt;
   }
-  return absl::nullopt;
+
+  if ((base::FeatureList::IsEnabled(
+           printing::features::kEnablePrintScanAfterPreview) &&
+       scanning_data.settings.cloud_or_local_settings.is_local_analysis())) {
+    return absl::nullopt;
+  }
+
+  return scanning_data;
 }
 
 }  // namespace enterprise_connectors

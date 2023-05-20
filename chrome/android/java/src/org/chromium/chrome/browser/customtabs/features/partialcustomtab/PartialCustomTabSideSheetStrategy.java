@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.browserservices.intents.BrowserService
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Handler;
@@ -27,9 +26,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
@@ -40,6 +39,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.base.LocalizationUtils;
 
 /**
@@ -100,6 +100,12 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     @PartialCustomTabType
     public int getStrategyType() {
         return PartialCustomTabType.SIDE_SHEET;
+    }
+
+    @Override
+    @StringRes
+    public int getTypeStringId() {
+        return R.string.accessibility_partial_custom_tab_side_sheet;
     }
 
     @Override
@@ -219,8 +225,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     private void maybeResetTalkbackFocus() {
-        var am = (AccessibilityManager) mActivity.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        if (am != null && am.isTouchExplorationEnabled()) {
+        if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) {
             // After resizing the view, notify the window state change to let the talkback
             // focus navigation work as before.
             mToolbarView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);

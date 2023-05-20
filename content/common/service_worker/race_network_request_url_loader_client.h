@@ -24,6 +24,7 @@ namespace content {
 class ServiceWorkerRaceNetworkRequestURLLoaderClient
     : public network::mojom::URLLoaderClient {
  public:
+  using FetchResponseFrom = ServiceWorkerResourceLoader::FetchResponseFrom;
   explicit ServiceWorkerRaceNetworkRequestURLLoaderClient(
       const network::ResourceRequest& request,
       base::WeakPtr<ServiceWorkerResourceLoader> owner);
@@ -53,6 +54,10 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClient
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
  private:
+  // Commit the head and body through |owner_|'s Commit methods.
+  // This method does not complete the commit process.
+  void CommitResponse(mojo::ScopedDataPipeConsumerHandle response_body,
+                      absl::optional<mojo_base::BigBuffer> cached_metadata);
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   const network::ResourceRequest request_;
   base::WeakPtr<ServiceWorkerResourceLoader> owner_;

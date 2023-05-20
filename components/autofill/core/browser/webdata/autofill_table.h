@@ -756,18 +756,11 @@ class AutofillTable : public WebDatabaseTable,
       std::vector<std::unique_ptr<AutofillProfile>>* profiles,
       std::vector<std::unique_ptr<CreditCard>>* credit_cards);
 
-  // Removes origin URLs from the autofill_profiles and credit_cards tables if
-  // they were written on or after `delete_begin` and strictly before
-  // `delete_end`. Returns the list of modified profiles in `profiles`. Return
-  // value is true if all rows were successfully updated. Returns false on
-  // database error. In that case, the output vector state is undefined, and
-  // may be partially filled.
-  // Profiles from the `contact_info` table are not considered, as they don't
-  // store an origin.
-  bool RemoveOriginURLsModifiedBetween(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
-      std::vector<std::unique_ptr<AutofillProfile>>* profiles);
+  // Removes origin URLs from the credit_cards tables if they were written on or
+  // after `delete_begin` and strictly before `delete_end`. Returns true if all
+  // rows were successfully updated and false on a database error.
+  bool RemoveOriginURLsModifiedBetween(const base::Time& delete_begin,
+                                       const base::Time& delete_end);
 
   // Clear all profiles.
   bool ClearAutofillProfiles();

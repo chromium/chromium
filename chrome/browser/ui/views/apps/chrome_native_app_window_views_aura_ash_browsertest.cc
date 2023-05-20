@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
   display::DisplayManager* display_manager =
       ash::ShellTestApi().display_manager();
   display::test::DisplayManagerTestApi(display_manager)
-      .UpdateDisplay("800x800");
+      .UpdateDisplay("800x700");
 
   const extensions::Extension* extension =
       LoadAndLaunchPlatformApp("launch", "Launched");
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
   // Create an app with content specifications on the secondary display. The
   // window is placed where the user specified.
   display::test::DisplayManagerTestApi(display_manager)
-      .UpdateDisplay("800x800,800+0-800x800");
+      .UpdateDisplay("800x700,800+0-800x700");
   {
     const gfx::Rect specified_bounds(810, 10, 600, 400);
     extensions::AppWindow::BoundsSpecification content_spec;

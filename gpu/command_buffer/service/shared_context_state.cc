@@ -750,10 +750,10 @@ void SharedContextState::StoreVkPipelineCacheIfNeeded() {
 }
 
 void SharedContextState::UseShaderCache(
-    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use)
-    const {
+    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use,
+    int32_t client_id) const {
   if (gr_shader_cache_) {
-    cache_use.emplace(gr_shader_cache_, gpu::kDisplayCompositorClientId);
+    cache_use.emplace(gr_shader_cache_, client_id);
   }
 }
 

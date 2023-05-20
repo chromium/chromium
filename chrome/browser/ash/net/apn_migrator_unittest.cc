@@ -8,11 +8,13 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/mock_managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/mock_network_metadata_store.h"
@@ -46,6 +48,7 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::Truly;
 using ::testing::WithArg;
+using ::testing::WithArgs;
 
 constexpr char kCellularName1[] = "cellular_device_1";
 constexpr char kTestCellularPath1[] = "/device/cellular_device_1";
@@ -162,6 +165,8 @@ class ApnMigratorTest : public testing::Test {
     return network_metadata_store_.get();
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper network_state_helper_{
@@ -175,6 +180,7 @@ class ApnMigratorTest : public testing::Test {
       managed_network_configuration_handler_;
   std::unique_ptr<MockNetworkMetadataStore> network_metadata_store_;
   std::unique_ptr<FakeCrosNetworkConfig> cros_network_config_;
+  base::HistogramTester histogram_tester_;
 
   // Class under test
   std::unique_ptr<ApnMigrator> apn_migrator_;
@@ -195,37 +201,63 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
   // the second one as not.
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
-      .Times(1)
-      .WillOnce(Return(true));
+      .Times(2)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
-      .Times(1)
-      .WillOnce(Return(false));
+      .Times(3)
+      .WillRepeatedly(Return(false));
 
   // For the migrated network, the routine should not check for the current
   // custom APN list, but rather just resets the CustomApnList.
   EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
       .Times(0);
-  base::Value::Dict expected_onc1 =
-      chromeos::network_config::CustomApnListToOnc(kTestCellularGuid1,
-                                                   /*custom_apn_list=*/nullptr);
+
+  base::OnceClosure success_cb;
+  network_handler::ErrorCallback failure_cb;
+  std::vector<std::string> expected_names;
+  expected_names.push_back(shill::kCellularCustomApnListProperty);
   EXPECT_CALL(
       *managed_network_configuration_handler(),
-      SetProperties(cellular_service_path_1,
-                    Truly([&expected_onc1](const base::Value::Dict& value) {
-                      return expected_onc1 == value;
-                    }),
-                    _, _))
-      .Times(1);
+      ClearShillProperties(
+          cellular_service_path_1,
+          Truly([&expected_names](const std::vector<std::string>& names) {
+            return expected_names == names;
+          }),
+          _, _))
+      .Times(2)
+      .WillRepeatedly(WithArgs<2, 3>(
+          Invoke([&success_cb, &failure_cb](
+                     base::OnceClosure callback,
+                     network_handler::ErrorCallback error_callback) {
+            success_cb = std::move(callback);
+            failure_cb = std::move(error_callback);
+          })));
 
   // Ensure that the function does not modify the non-migrated network.
   EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid2))
       .Times(0);
   EXPECT_CALL(*managed_network_configuration_handler(),
-              SetProperties(cellular_service_path_2, _, _, _))
+              ClearShillProperties(cellular_service_path_2, _, _, _))
       .Times(0);
 
   // Function under test
+  TriggerNetworkListChanged();
+
+  // Simulate the ClearShillProperties() call failing.
+  std::move(failure_cb).Run("error");
+  base::RunLoop().RunUntilIdle();
+
+  // Invoke the function again. |cellular_service_path_1|'s property should be
+  // attempted to be cleared again.
+  TriggerNetworkListChanged();
+
+  // Simulate the ClearShillProperties() call succeeding.
+  std::move(success_cb).Run();
+  base::RunLoop().RunUntilIdle();
+
+  // Invoke the function again. |cellular_service_path_1|'s property shouldn't
+  // be attempted to be cleared again.
   TriggerNetworkListChanged();
 }
 
@@ -363,12 +395,10 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
 
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
-      .Times(1)
-      .WillOnce(Return(true));
+      .Times(0);
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
-      .Times(1)
-      .WillOnce(Return(true));
+      .Times(0);
 
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
@@ -405,18 +435,8 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*managed_cellular_pref_handler(),
-              ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
-      .Times(1)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*managed_cellular_pref_handler(),
-              ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
-      .Times(1)
-      .WillOnce(Return(true));
-
-  EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
-      .Times(1)
-      .WillOnce(Return(true));
+      .Times(0);
 
   EXPECT_CALL(*managed_network_configuration_handler(),
               SetProperties(cellular_service_path_1, _, _, _))
@@ -860,6 +880,11 @@ TEST_F(ApnMigratorTest, MigrateManagedNetwork_NonMatchingSelectedApn) {
   get_managed_properties_callback.Reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetCustomApns().empty());
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsManagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::ManagedApnMigrationType::
+          kDoesNotMatchSelectedApn,
+      1);
 
   // Attempt to migrate |cellular_service_path_1| again.
   EXPECT_CALL(*network_metadata_store(),
@@ -905,6 +930,11 @@ TEST_F(ApnMigratorTest, MigrateManagedNetwork_NonMatchingSelectedApn) {
            /*error=*/absl::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetCustomApns().empty());
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsManagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::ManagedApnMigrationType::
+          kDoesNotMatchSelectedApn,
+      2);
 }
 
 TEST_F(ApnMigratorTest, MigrateManagedNetwork_MatchingSelectedApn) {
@@ -969,6 +999,11 @@ TEST_F(ApnMigratorTest, MigrateManagedNetwork_MatchingSelectedApn) {
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsManagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::ManagedApnMigrationType::
+          kMatchesSelectedApn,
+      1);
 }
 
 TEST_F(
@@ -1040,6 +1075,11 @@ TEST_F(
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+          kMatchesLastGoodApn,
+      1);
 }
 
 TEST_F(
@@ -1110,6 +1150,11 @@ TEST_F(
   EXPECT_EQ(access_point_name, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kDisabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+          kDoesNotMatchLastGoodApn,
+      1);
 }
 
 TEST_F(ApnMigratorTest,
@@ -1189,6 +1234,11 @@ TEST_F(ApnMigratorTest,
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+          kMatchesLastConnectedAttachAndDefault,
+      1);
 }
 
 TEST_F(
@@ -1264,6 +1314,11 @@ TEST_F(
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_FALSE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+          kMatchesLastConnectedDefaultNoLastConnectedAttach,
+      1);
 }
 
 TEST_F(
@@ -1344,6 +1399,11 @@ TEST_F(
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_FALSE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+          kMatchesLastConnectedDefaultNoLastConnectedAttach,
+      1);
 }
 
 TEST_F(
@@ -1441,6 +1501,11 @@ TEST_F(
   EXPECT_EQ(kDefaultAccessPointName, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kEnabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+          kMatchesLastConnectedAttachHasMatchingDatabaseApn,
+      1);
 }
 
 TEST_F(
@@ -1523,6 +1588,11 @@ TEST_F(
   EXPECT_EQ(kAttachAccessPointName, custom_apns[0]->access_point_name);
   EXPECT_EQ(ApnState::kDisabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kAttach));
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+          kMatchesLastConnectedAttachHasNoMatchingDatabaseApn,
+      1);
 }
 
 TEST_F(ApnMigratorTest, MigrateNonManagedNetwork_Default) {
@@ -1596,6 +1666,11 @@ TEST_F(ApnMigratorTest, MigrateNonManagedNetwork_Default) {
   EXPECT_EQ(ApnState::kDisabled, custom_apns[0]->state);
   EXPECT_TRUE(base::Contains(custom_apns[0]->apn_types, ApnType::kDefault));
   EXPECT_EQ(1u, custom_apns[0]->apn_types.size());
+  histogram_tester().ExpectBucketCount(
+      CellularNetworkMetricsLogger::kCustomApnsUnmanagedMigrationTypeHistogram,
+      CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+          kNoMatchingConnectedApn,
+      1);
 }
 
 }  // namespace ash

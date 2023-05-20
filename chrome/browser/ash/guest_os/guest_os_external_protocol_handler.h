@@ -5,20 +5,40 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
 
-#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "base/functional/callback.h"
+#include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 class Profile;
 
 namespace guest_os {
 
-// Returns handler for |url| if one exists.
-absl::optional<GuestOsRegistryService::Registration> GetHandler(
-    Profile* profile,
-    const GURL& url);
+// Callback for a custom URL protocol handler (typically an app).
+class GuestOsUrlHandler {
+ public:
+  using HandlerCallback = base::RepeatingCallback<void(Profile*, const GURL&)>;
 
-// Launches the app configured to handle |url| if one exists.
-void Launch(Profile* profile, const GURL& url);
+  // Returns handler for `url` if one exists.
+  static absl::optional<GuestOsUrlHandler> GetForUrl(Profile* profile,
+                                                     const GURL& url);
+
+  GuestOsUrlHandler(const base::StringPiece name,
+                    const HandlerCallback handler);
+  GuestOsUrlHandler(const GuestOsUrlHandler& other);
+  ~GuestOsUrlHandler();
+
+  // Localized name, shown to users when asking whether to use this handler.
+  const std::string& name() const { return name_; }
+
+  // Handle the given `url`, for example by launching an app.
+  void Handle(Profile* profile, const GURL& url);
+
+ private:
+  const std::string name_;
+  const HandlerCallback handler_;
+};
 
 }  // namespace guest_os
 

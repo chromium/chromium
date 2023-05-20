@@ -68,10 +68,7 @@ content::BrowserContext* ChromeMediaRouterFactory::GetBrowserContextToUse(
 
 KeyedService* ChromeMediaRouterFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {
-  if (!MediaRouterEnabled(context)) {
-    NOTREACHED();
-    return nullptr;
-  }
+  CHECK(MediaRouterEnabled(context));
   MediaRouterBase* media_router = nullptr;
 #if BUILDFLAG(IS_ANDROID)
   media_router = new MediaRouterAndroid();

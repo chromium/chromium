@@ -85,6 +85,35 @@ class NGLineBreakerTest : public RenderingTest {
     return lines;
   }
 
+  wtf_size_t BreakLinesAt(NGInlineNode node,
+                          LayoutUnit available_width,
+                          base::span<NGLineBreakPoint> break_points,
+                          base::span<NGLineInfo> line_info_list) {
+    DCHECK(node);
+    node.PrepareLayoutIfNeeded();
+    NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
+    const NGInlineBreakToken* break_token = nullptr;
+    NGExclusionSpace exclusion_space;
+    NGPositionedFloatVector leading_floats;
+    NGLineLayoutOpportunity line_opportunity(available_width);
+    wtf_size_t line_index = 0;
+    do {
+      NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
+                                 line_opportunity, leading_floats, 0u,
+                                 break_token, /* column_spanner_path */ nullptr,
+                                 &exclusion_space);
+      if (line_index < break_points.size()) {
+        line_breaker.SetBreakAt(break_points[line_index]);
+      }
+      CHECK_LT(line_index, line_info_list.size());
+      NGLineInfo& line_info = line_info_list[line_index];
+      line_breaker.NextLine(&line_info);
+      break_token = line_info.BreakToken();
+      ++line_index;
+    } while (break_token);
+    return line_index;
+  }
+
   MinMaxSizes ComputeMinMaxSizes(NGInlineNode node) {
     const auto space =
         NGConstraintSpaceBuilder(node.Style().GetWritingMode(),
@@ -1046,6 +1075,115 @@ body { margin: 0; padding: 0; font: 10px/10px Ahem; }
   // opportunities after the ideographic period, and any opportunities before it
   // should be the same.
   EXPECT_EQ(lines1[0].first, lines2[0].first);
+}
+
+TEST_F(NGLineBreakerTest, BreakAt) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-family: Ahem;
+      font-size: 10px;
+    }
+    inline-block {
+      display: inline-block;
+      width: 1em;
+    }
+    </style>
+    <div id="target">
+      0 23 5<inline-block></inline-block><inline-block></inline-block>89
+    </div>
+  )HTML");
+  NGInlineNode target = GetInlineNodeByElementId("target");
+  NGLineBreakPoint break_points[]{NGLineBreakPoint{{0, 2}},
+                                  NGLineBreakPoint{{1, 6}},
+                                  NGLineBreakPoint{{2, 7}}};
+  NGLineInfo line_info_list[4];
+  const wtf_size_t num_lines =
+      BreakLinesAt(target, LayoutUnit(800), break_points, line_info_list);
+  EXPECT_EQ(num_lines, 4u);
+  EXPECT_EQ(line_info_list[0].BreakToken()->Start(), break_points[0].offset);
+  EXPECT_EQ(line_info_list[1].BreakToken()->Start(), break_points[1].offset);
+  EXPECT_EQ(line_info_list[2].BreakToken()->Start(), break_points[2].offset);
+  EXPECT_EQ(line_info_list[3].BreakToken(), nullptr);
+  EXPECT_FALSE(line_info_list[0].IsLastLine());
+  EXPECT_FALSE(line_info_list[1].IsLastLine());
+  EXPECT_FALSE(line_info_list[2].IsLastLine());
+  EXPECT_TRUE(line_info_list[3].IsLastLine());
+  EXPECT_EQ(line_info_list[0].Width(), LayoutUnit(10));
+  EXPECT_EQ(line_info_list[1].Width(), LayoutUnit(40));
+  EXPECT_EQ(line_info_list[2].Width(), LayoutUnit(10));
+  EXPECT_EQ(line_info_list[3].Width(), LayoutUnit(30));
+}
+
+TEST_F(NGLineBreakerTest, BreakAtTrailingSpaces) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-family: Ahem;
+      font-size: 10px;
+    }
+    span { font-weight: bold; }
+    </style>
+    <div id="target">
+      <span>0</span>
+      23
+      <span> </span>
+      56
+    </div>
+  )HTML");
+  NGInlineNode target = GetInlineNodeByElementId("target");
+  NGLineBreakPoint break_points[]{NGLineBreakPoint{{7, 5}, {3, 4}}};
+  NGLineInfo line_info_list[2];
+  const wtf_size_t num_lines =
+      BreakLinesAt(target, LayoutUnit(800), break_points, line_info_list);
+  EXPECT_EQ(num_lines, 2u);
+  EXPECT_EQ(line_info_list[0].BreakToken()->Start(), break_points[0].offset);
+  EXPECT_EQ(line_info_list[1].BreakToken(), nullptr);
+  EXPECT_FALSE(line_info_list[0].IsLastLine());
+  EXPECT_TRUE(line_info_list[1].IsLastLine());
+  EXPECT_EQ(line_info_list[0].Width(), LayoutUnit(40));
+  EXPECT_EQ(line_info_list[1].Width(), LayoutUnit(20));
+  EXPECT_EQ(line_info_list[0].Results().size(), 7u);
+  EXPECT_EQ(line_info_list[1].Results().size(), 1u);
+}
+
+TEST_F(NGLineBreakerTest, BreakAtTrailingSpacesAfterAtomicInline) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-family: Ahem;
+      font-size: 10px;
+    }
+    inline-block {
+      display: inline-block;
+      width: 1em;
+    }
+    </style>
+    <div id="target">
+      <span><inline-block></inline-block></span>
+      <span>23</span>
+    </div>
+  )HTML");
+  NGInlineNode target = GetInlineNodeByElementId("target");
+  NGLineBreakPoint break_points[]{NGLineBreakPoint{{4, 2}, {2, 1}}};
+  NGLineInfo line_info_list[2];
+  const wtf_size_t num_lines =
+      BreakLinesAt(target, LayoutUnit(800), break_points, line_info_list);
+  EXPECT_EQ(num_lines, 2u);
+  EXPECT_EQ(line_info_list[0].BreakToken()->Start(), break_points[0].offset);
+  EXPECT_EQ(line_info_list[1].BreakToken(), nullptr);
+  EXPECT_FALSE(line_info_list[0].IsLastLine());
+  EXPECT_TRUE(line_info_list[1].IsLastLine());
+  EXPECT_EQ(line_info_list[0].Width(), LayoutUnit(10));
+  EXPECT_EQ(line_info_list[1].Width(), LayoutUnit(20));
+  EXPECT_EQ(line_info_list[0].Results().back().item_index, 3u);
+  EXPECT_EQ(line_info_list[1].Results().front().item_index, 4u);
 }
 
 }  // namespace

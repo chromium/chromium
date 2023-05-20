@@ -128,7 +128,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case ui::EndpointType::kCrostini: {
       level = dlp_rules_manager.IsRestrictedComponent(
-          src_url, DlpRulesManager::Component::kCrostini,
+          src_url, data_controls::Component::kCrostini,
           DlpRulesManager::Restriction::kClipboard, src_pattern,
           out_rule_metadata);
       break;
@@ -136,7 +136,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
 
     case ui::EndpointType::kPluginVm: {
       level = dlp_rules_manager.IsRestrictedComponent(
-          src_url, DlpRulesManager::Component::kPluginVm,
+          src_url, data_controls::Component::kPluginVm,
           DlpRulesManager::Restriction::kClipboard, src_pattern,
           out_rule_metadata);
       break;
@@ -144,7 +144,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
 
     case ui::EndpointType::kArc: {
       level = dlp_rules_manager.IsRestrictedComponent(
-          src_url, DlpRulesManager::Component::kArc,
+          src_url, data_controls::Component::kArc,
           DlpRulesManager::Restriction::kClipboard, src_pattern,
           out_rule_metadata);
       break;
@@ -539,21 +539,21 @@ void DataTransferDlpController::ReportEvent(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case ui::EndpointType::kCrostini:
       reporting_manager->ReportEvent(
-          src_pattern, DlpRulesManager::Component::kCrostini,
+          src_pattern, data_controls::Component::kCrostini,
           DlpRulesManager::Restriction::kClipboard, level, rule_metadata.name,
           rule_metadata.obfuscated_id);
       break;
 
     case ui::EndpointType::kPluginVm:
       reporting_manager->ReportEvent(
-          src_pattern, DlpRulesManager::Component::kPluginVm,
+          src_pattern, data_controls::Component::kPluginVm,
           DlpRulesManager::Restriction::kClipboard, level, rule_metadata.name,
           rule_metadata.obfuscated_id);
       break;
 
     case ui::EndpointType::kArc:
       reporting_manager->ReportEvent(
-          src_pattern, DlpRulesManager::Component::kArc,
+          src_pattern, data_controls::Component::kArc,
           DlpRulesManager::Restriction::kClipboard, level, rule_metadata.name,
           rule_metadata.obfuscated_id);
       break;

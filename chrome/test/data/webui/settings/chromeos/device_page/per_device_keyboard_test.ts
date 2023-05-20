@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DevicePageBrowserProxyImpl, fakeKeyboards, fakeKeyboards2, Router, routes, SettingsPerDeviceKeyboardElement, SettingsSliderElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {DevicePageBrowserProxyImpl, fakeKeyboards, fakeKeyboards2, Router, routes, SettingsPerDeviceKeyboardElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -81,10 +81,10 @@ suite('<settings-per-device-keyboard>', () => {
           const name =
               subsections[i]!.shadowRoot!.querySelector('h2')!.textContent;
           if (fakeKeyboards[i]!.isExternal) {
-            assertEquals(fakeKeyboards[i]!.name, name);
+            assertEquals(fakeKeyboards[i]!.name, name!.trim());
           } else {
             assertTrue(subsections[i]!.i18nExists('builtInKeyboardName'));
-            assertEquals('Built-in Keyboard', name);
+            assertEquals('Built-in Keyboard', name!.trim());
           }
         }
       });

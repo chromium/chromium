@@ -16,9 +16,11 @@
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
+#include "components/segmentation_platform/embedder/default_model/password_manager_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/resume_heavy_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/search_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
+#include "components/segmentation_platform/embedder/default_model/tab_resumption_ranker.h"
 #include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -154,6 +156,8 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(ResumeHeavyUserModel::GetConfig());
   configs.emplace_back(DeviceSwitcherModel::GetConfig());
   configs.emplace_back(GetConfigForWebAppInstallationPromo());
+  configs.emplace_back(TabResumptionRanker::GetConfig());
+  configs.emplace_back(PasswordManagerUserModel::GetConfig());
 
   base::EraseIf(configs, [](const auto& config) { return !config.get(); });
 

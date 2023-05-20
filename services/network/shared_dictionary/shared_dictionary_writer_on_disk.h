@@ -41,14 +41,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterOnDisk
     kErrorSizeZero,
     kErrorSizeExceedsLimit,
   };
-  using FinishCallback =
-      base::OnceCallback<void(Result result,
-                              size_t size,
-                              const net::SHA256HashValue& hash,
-                              const base::UnguessableToken& cache_key_token)>;
+  using FinishCallback = base::OnceCallback<
+      void(Result result, size_t size, const net::SHA256HashValue& hash)>;
   // `callback` is called when the entire dictionary binary has been stored to
   // the disk cache, or when an error occurs.
   SharedDictionaryWriterOnDisk(
+      const base::UnguessableToken& token,
       FinishCallback callback,
       base::WeakPtr<SharedDictionaryDiskCache> disk_cahe);
   void Initialize();
@@ -70,10 +68,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterOnDisk
 
   void MaybeFinish();
 
+  const base::UnguessableToken token_;
   FinishCallback callback_;
   base::WeakPtr<SharedDictionaryDiskCache> disk_cahe_;
   std::unique_ptr<crypto::SecureHash> secure_hash_;
-  const base::UnguessableToken token_;
 
   size_t total_size_ = 0;
   size_t written_size_ = 0;

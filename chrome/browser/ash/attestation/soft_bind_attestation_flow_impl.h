@@ -74,7 +74,7 @@ class SoftBindAttestationFlowImpl : public SoftBindAttestationFlow {
     void OnTimeout();
 
     Callback callback_;
-    base::RepeatingTimer timer_;
+    base::RetainingOneShotTimer timer_;
     const AccountId account_id_;
     std::string user_key_;
     int max_retries_ = 3;

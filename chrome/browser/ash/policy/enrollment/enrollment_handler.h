@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/policy/device_account_initializer.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
-#include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -143,8 +142,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
     STEP_LOCK_DEVICE = 10,       // Writing installation-time attributes.
     STEP_STORE_TOKEN = 11,       // Encrypting and storing DM token.
     STEP_STORE_ROBOT_AUTH = 12,  // Encrypting & writing robot refresh token.
-    STEP_STORE_POLICY = 13,      // Storing policy and API refresh token. For
-                                 // AD, includes policy fetch via authpolicyd.
+    STEP_STORE_POLICY = 13,      // Storing policy and API refresh token.
     STEP_FINISHED = 14,          // Enrollment process done, no further action.
   };
 
@@ -191,9 +189,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
 
   // Initiates storing of robot auth token.
   void StartStoreRobotAuth();
-
-  // Handles result from device policy refresh via authpolicyd.
-  void HandleActiveDirectoryPolicyRefreshed(authpolicy::ErrorType error);
 
   std::unique_ptr<DeviceCloudPolicyValidator> CreateValidator(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,

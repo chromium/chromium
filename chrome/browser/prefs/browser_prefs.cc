@@ -156,7 +156,7 @@
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/sync_prefs.h"
-#include "components/sync/driver/glue/sync_transport_data_prefs.h"
+#include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_sync_prefs.h"
@@ -816,6 +816,10 @@ const char kVideoTutorialsLastUpdatedTimeKey[] =
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Deprecated 05/2023
+const char kForceEnablePepperVideoDecoderDevAPI[] =
+    "policy.force_enable_pepper_video_decoder_dev_api";
+
+// Deprecated 05/2023
 const char kUseMojoVideoDecoderForPepperAllowed[] =
     "policy.use_mojo_video_decoder_for_pepper_allowed";
 
@@ -826,6 +830,16 @@ const char kPPAPISharedImagesSwapChainAllowed[] =
 // Deprecated 05/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kOfficeSetupComplete[] = "filebrowser.office.setup_complete";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_ANDROID)
+const char kTimesUPMAuthErrorShown[] = "times_upm_auth_error_shown";
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kSamlPasswordSyncToken[] = "saml.password_sync_token";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -917,6 +931,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastChromadMigrationAttemptTime,
                              /*default_value=*/base::Time());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 05/2023.
+  registry->RegisterBooleanPref(kForceEnablePepperVideoDecoderDevAPI, false);
 
   // Deprecated 05/2023.
   registry->RegisterBooleanPref(kUseMojoVideoDecoderForPepperAllowed, true);
@@ -1145,6 +1162,16 @@ void RegisterProfilePrefsForMigration(
 // Deprecated 05/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kOfficeSetupComplete, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(kTimesUPMAuthErrorShown, 0);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterStringPref(kSamlPasswordSyncToken, std::string());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -1509,6 +1536,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #if BUILDFLAG(ENABLE_PDF)
   registry->RegisterListPref(prefs::kPdfLocalFileAccessAllowedForDomains,
                              base::Value::List());
+  registry->RegisterBooleanPref(prefs::kPdfUseSkiaRendererEnabled, true);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -1816,7 +1844,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // to be migrated or cleared specifically for iOS as well. This could be by
   // doing the migration in feature code that's called by all platforms instead
   // of here, or by calling migration code in the appropriate place for iOS
-  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
+  // specifically, e.g. ios/chrome/browser/shared/model/prefs/browser_prefs.mm.
 
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
@@ -1910,6 +1938,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 05/2023.
+  local_state->ClearPref(kForceEnablePepperVideoDecoderDevAPI);
+
+  // Added 05/2023.
   local_state->ClearPref(kUseMojoVideoDecoderForPepperAllowed);
 
   // Added 05/2023
@@ -1923,7 +1954,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // to be migrated or cleared specifically for iOS as well. This could be by
   // doing the migration in feature code that's called by all platforms instead
   // of here, or by calling migration code in the appropriate place for iOS
-  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
+  // specifically, e.g. ios/chrome/browser/shared/model/prefs/browser_prefs.mm.
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1934,7 +1965,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // to be migrated or cleared specifically for iOS as well. This could be by
   // doing the migration in feature code that's called by all platforms instead
   // of here, or by calling migration code in the appropriate place for iOS
-  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
+  // specifically, e.g. ios/chrome/browser/shared/model/prefs/browser_prefs.mm.
 
   // BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
@@ -2199,6 +2230,16 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kOfficeSetupComplete);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Added 05/2023.
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kTimesUPMAuthErrorShown);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Added 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kSamlPasswordSyncToken);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 
@@ -2207,5 +2248,5 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // to be migrated or cleared specifically for iOS as well. This could be by
   // doing the migration in feature code that's called by all platforms instead
   // of here, or by calling migration code in the appropriate place for iOS
-  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
+  // specifically, e.g. ios/chrome/browser/shared/model/prefs/browser_prefs.mm.
 }

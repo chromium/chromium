@@ -26,6 +26,7 @@ class OSAccessibilityService : public mojom::AccessibilityService {
  private:
   friend class OSAccessibilityServiceTest;
   friend class AssistiveTechnologyControllerTest;
+  friend class AtpJSApiTest;
 
   // mojom::AccessibilityService:
   void BindAccessibilityServiceClient(

@@ -180,6 +180,6 @@ class KeyboardAccessoryModernViewBinder {
 
     private static boolean containsCreditCardInfo(AutofillSuggestion suggestion) {
         return (suggestion.getSuggestionId() & CREDIT_CARD_ID_BIT_MASK) != 0
-                || suggestion.getSuggestionId() == PopupItemId.ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+                || suggestion.getSuggestionId() == PopupItemId.VIRTUAL_CREDIT_CARD_ENTRY;
     }
 }

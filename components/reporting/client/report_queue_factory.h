@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
+#include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/statusor.h"
 #include "net/base/backoff_entry.h"
 
@@ -47,18 +48,22 @@ class ReportQueueFactory {
   // below `reserved_space`.
   // `success_callback` is the callback that will pass the ReportQueue back to
   // the model.
-  static void Create(EventType event_type,
-                     Destination destination,
-                     SuccessCallback done_cb,
-                     int64_t reserved_space = 0L);
+  static void Create(
+      EventType event_type,
+      Destination destination,
+      SuccessCallback done_cb,
+      std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
+      int64_t reserved_space = 0L);
 
   // Instantiates and returns SpeculativeReportQueue.
   // `event_type`, `destination` and `reserved_space` have the same meaining as
   // in `Create` factory method above.
   static std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
-  CreateSpeculativeReportQueue(EventType event_type,
-                               Destination destination,
-                               int64_t reserved_space = 0L);
+  CreateSpeculativeReportQueue(
+      EventType event_type,
+      Destination destination,
+      std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
+      int64_t reserved_space = 0L);
 
  private:
   static void TrySetReportQueue(

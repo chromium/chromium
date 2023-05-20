@@ -58,14 +58,11 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
           l10n_util::GetNSString(IDS_IOS_BOOKMARK_CREATE_GROUP);
       folderCell.folderImageView.image =
           [UIImage imageNamed:@"bookmark_blue_new_folder"];
-      folderCell.accessibilityIdentifier =
-          kBookmarkCreateNewFolderCellIdentifier;
       folderCell.accessibilityTraits |= UIAccessibilityTraitButton;
       break;
     }
     case BookmarksFolderStyleFolderEntry: {
       folderCell.folderTitleTextField.text = self.title;
-      folderCell.accessibilityIdentifier = self.title;
       folderCell.accessibilityTraits |= UIAccessibilityTraitButton;
       if (self.isCurrentFolder) {
         folderCell.bookmarksAccessoryType =
@@ -137,6 +134,9 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
         [[UIImageView alloc] initWithImage:cloudSlashedImage];
     self.cloudSlashedView.tintColor = CloudSlashTintColor();
     self.cloudSlashedView.hidden = YES;
+    [self.cloudSlashedView
+        setContentHuggingPriority:UILayoutPriorityRequired
+                          forAxis:UILayoutConstraintAxisHorizontal];
 
     // Container StackView.
     UIStackView* horizontalStack =

@@ -162,12 +162,6 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::MemoryPressureOnTrigger;
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
       return Preload::PrerenderFinalStatusEnum::MemoryPressureAfterTriggered;
-    case PrerenderFinalStatus::kSpeculationRuleRemoved:
-      return Preload::PrerenderFinalStatusEnum::SpeculationRuleRemoved;
-    case PrerenderFinalStatus::kTriggerPageNavigated:
-      return Preload::PrerenderFinalStatusEnum::TriggerPageNavigated;
-    case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
-      return Preload::PrerenderFinalStatusEnum::OtherPrerenderedPageActivated;
   }
 }
 
@@ -238,6 +232,11 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleBrowserContextOffTheRecord;
+    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
+      return Preload::PrefetchStatusEnum::PrefetchNotEligiblePreloadingDisabled;
+    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+      return Preload::PrefetchStatusEnum::
+          PrefetchNotEligibleBatterySaverEnabled;
     case PrefetchStatus::kPrefetchHeldback:
       return Preload::PrefetchStatusEnum::PrefetchHeldback;
     case PrefetchStatus::kPrefetchAllowed:
@@ -254,6 +253,8 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
         kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy;
+    case PrefetchStatus::kPrefetchEvicted:
+      return Preload::PrefetchStatusEnum::PrefetchEvicted;
   }
 }
 
@@ -320,8 +321,6 @@ void PreloadHandler::DidActivatePrerender(
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
   const GURL& prerendering_url = nav_request.common_params().url;
-  last_activated_prerender_initiator_devtools_navigation_token_ =
-      initiator_devtools_navigation_token;
   // TODO(crbug/1384419): Handle target_hint.
   auto preloading_attempt_key =
       protocol::Preload::PreloadingAttemptKey::Create()
@@ -340,7 +339,6 @@ void PreloadHandler::DidCancelPrerender(
     const std::string& initiating_frame_id,
     PrerenderFinalStatus status,
     const std::string& disallowed_api_method) {
-  last_activated_prerender_initiator_devtools_navigation_token_.reset();
   if (!enabled_) {
     return;
   }
@@ -387,9 +385,9 @@ void PreloadHandler::DidUpdatePrefetchStatus(
 
 void PreloadHandler::DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
-    const std::string& initiating_frame_id,
     const GURL& prerender_url,
-    PreloadingTriggeringOutcome status) {
+    PreloadingTriggeringOutcome status,
+    absl::optional<PrerenderFinalStatus> prerender_status) {
   if (!enabled_) {
     return;
   }
@@ -400,16 +398,20 @@ void PreloadHandler::DidUpdatePrerenderStatus(
           .SetAction(Preload::SpeculationActionEnum::Prerender)
           .SetUrl(prerender_url.spec())
           .Build();
+  Maybe<Preload::PrerenderFinalStatus> protocol_prerender_status =
+      prerender_status.has_value()
+          ? PrerenderFinalStatusToProtocol(prerender_status.value())
+          : Maybe<Preload::PrerenderFinalStatus>();
   if (PreloadingTriggeringOutcomeSupportedByPrerender(status)) {
     frontend_->PrerenderStatusUpdated(
-        std::move(preloading_attempt_key), initiating_frame_id,
-        prerender_url.spec(), PreloadingTriggeringOutcomeToProtocol(status));
+        std::move(preloading_attempt_key),
+        PreloadingTriggeringOutcomeToProtocol(status),
+        std::move(protocol_prerender_status));
   }
 }
 
 Response PreloadHandler::Enable() {
   enabled_ = true;
-  RetrievePrerenderActivationFromWebContents();
   SendInitialPreloadEnabledState();
   return Response::FallThrough();
 }
@@ -429,34 +431,6 @@ void PreloadHandler::SetRenderer(int process_host_id,
   host_ = frame_host;
 }
 
-void PreloadHandler::RetrievePrerenderActivationFromWebContents() {
-  if (!host_) {
-    return;
-  }
-  WebContentsImpl* web_contents =
-      WebContentsImpl::FromRenderFrameHostImpl(host_);
-  if (web_contents->last_navigation_was_prerender_activation_for_devtools() &&
-      last_activated_prerender_initiator_devtools_navigation_token_
-          .has_value()) {
-    std::string frame_token = host_->devtools_frame_token().ToString();
-    // TODO(crbug/1384419): Handle target_hint.
-    auto preloading_attempt_key =
-        protocol::Preload::PreloadingAttemptKey::Create()
-            .SetLoaderId(
-                last_activated_prerender_initiator_devtools_navigation_token_
-                    .value()
-                    .ToString())
-            .SetAction(Preload::SpeculationActionEnum::Prerender)
-            .SetUrl(host_->GetLastCommittedURL().spec())
-            .Build();
-    frontend_->PrerenderAttemptCompleted(
-        std::move(preloading_attempt_key), frame_token,
-        host_->GetLastCommittedURL().spec(),
-        Preload::PrerenderFinalStatusEnum::Activated);
-    last_activated_prerender_initiator_devtools_navigation_token_.reset();
-  }
-}
-
 void PreloadHandler::SendInitialPreloadEnabledState() {
   if (!host_) {
     return;
@@ -467,31 +441,18 @@ void PreloadHandler::SendInitialPreloadEnabledState() {
   PrefetchService* prefetch_service = PrefetchService::GetFromFrameTreeNodeId(
       web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId());
 
-  Preload::PreloadEnabledState state =
-      Preload::PreloadEnabledStateEnum::NotSupported;
   if (prefetch_service && prefetch_service->GetPrefetchServiceDelegate()) {
     // TODO(https://crbug.com/1384419): Add more grainularity to
     // PreloadingEligibility to distinguish PreloadHoldback and
     // DisabledByPreference for PreloadingEligibility::kPreloadingDisabled.
     // Use more general method to check status of Preloading instead of
     // relying on PrefetchService.
-    switch (prefetch_service->GetPrefetchServiceDelegate()
-                ->IsSomePreloadingEnabled()) {
-      case PreloadingEligibility::kDataSaverEnabled:
-        state = Preload::PreloadEnabledStateEnum::DisabledByDataSaver;
-        break;
-      case PreloadingEligibility::kBatterySaverEnabled:
-        state = Preload::PreloadEnabledStateEnum::DisabledByBatterySaver;
-        break;
-      case PreloadingEligibility::kPreloadingDisabled:
-        state = Preload::PreloadEnabledStateEnum::DisabledByPreference;
-        break;
-      default:
-        state = Preload::PreloadEnabledStateEnum::Enabled;
-        break;
-    }
-
-    frontend_->PreloadEnabledStateUpdated(state);
+    frontend_->PreloadEnabledStateUpdated(
+        !prefetch_service->GetPrefetchServiceDelegate()
+             ->IsPreloadingPrefEnabled(),
+        prefetch_service->GetPrefetchServiceDelegate()->IsDataSaverEnabled(),
+        prefetch_service->GetPrefetchServiceDelegate()
+            ->IsBatterySaverEnabled());
   }
 }
 

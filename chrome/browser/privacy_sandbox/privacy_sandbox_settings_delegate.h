@@ -23,6 +23,7 @@ class PrivacySandboxSettingsDelegate
   bool IsSubjectToM1NoticeRestricted() const override;
 
  private:
+  bool PrivacySandboxRestrictedNoticeRequired() const;
   raw_ptr<Profile> profile_;
 };
 

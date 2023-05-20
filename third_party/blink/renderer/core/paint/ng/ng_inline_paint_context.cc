@@ -134,12 +134,13 @@ wtf_size_t NGInlinePaintContext::SyncDecoratingBox(
             return 1;
           }
 
-          // A box without first-line style may inherit from ancestors with
-          // first-line styles, such as when the box is a pseudo element. If
-          // this happens, consider it stopped the propagation.
-          if (style_variant_ == NGStyleVariant::kFirstLine &&
-              &layout_object->StyleRef() == style &&
-              &parent->StyleRef() != &parent_style) {
+          // There are some edge cases where a style doesn't propagate
+          // decorations from its parent. One known such case is a pseudo
+          // element in a parent with a first-line style, but there can be more.
+          // If this happens, consider it stopped the propagation.
+          const Vector<AppliedTextDecoration, 1>* base_decorations =
+              style->BaseAppliedTextDecorations();
+          if (base_decorations != &parent_decorations) {
             inline_context_->ClearDecoratingBoxes(saved_decorating_boxes_);
             const wtf_size_t size =
                 std::min(saved_decorating_boxes_->size(), decorations->size());

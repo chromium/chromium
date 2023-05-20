@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -23,6 +24,7 @@ class View;
 namespace ash {
 
 enum class HelpBubbleId;
+enum class HelpBubbleStyle;
 enum class TutorialId;
 struct UserSession;
 
@@ -32,12 +34,23 @@ namespace user_education_util {
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
 CreateExtendedProperties(HelpBubbleId help_bubble_id);
 
+// Returns extended properties for a help bubble having set `help_bubble_style`.
+ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
+CreateExtendedProperties(HelpBubbleStyle help_bubble_style);
+
 // Returns the `AccountId` for the specified `user_session`. If the specified
 // `user_session` is `nullptr`, `EmptyAccountId()` is returned.
 ASH_EXPORT const AccountId& GetAccountId(const UserSession* user_session);
 
 // Returns help bubble ID from the specified `extended_properties`.
 ASH_EXPORT HelpBubbleId GetHelpBubbleId(
+    const user_education::HelpBubbleParams::ExtendedProperties&
+        extended_properties);
+
+// Returns help bubble style from the specified `extended_properties`. If the
+// specified `extended_properties` does not contain help bubble style, an
+// absent value is returned.
+ASH_EXPORT absl::optional<HelpBubbleStyle> GetHelpBubbleStyle(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties);
 

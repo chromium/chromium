@@ -257,6 +257,11 @@ class WebStateList {
   void CloseWebStateAtImpl(int index, int close_flags);
 
   // Closes and destroys all WebStates after `start_index`. The `close_flags`
+  // is a bitwise combination of ClosingFlags values. WebStateList is locked
+  // inside the method.
+  void CloseAllWebStatesAfterIndex(int start_index, int close_flags);
+
+  // Closes and destroys all WebStates after `start_index`. The `close_flags`
   // is a bitwise combination of ClosingFlags values.
   //
   // Assumes that the WebStateList is locked.

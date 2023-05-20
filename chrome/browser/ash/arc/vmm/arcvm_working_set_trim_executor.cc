@@ -17,6 +17,8 @@ namespace {
 constexpr char BROWSER_CONTEXT_ERROR_MSG[] = "BrowserContext unavailable";
 }
 
+bool ArcVmWorkingSetTrimExecutor::is_trimming_ = false;
+
 void ArcVmWorkingSetTrimExecutor::Trim(content::BrowserContext* context,
                                        ResultCallback callback,
                                        ArcVmReclaimType reclaim_type,
@@ -24,6 +26,17 @@ void ArcVmWorkingSetTrimExecutor::Trim(content::BrowserContext* context,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_NE(ArcVmReclaimType::kReclaimNone, reclaim_type);
   const char* error = nullptr;
+
+  if (ArcVmWorkingSetTrimExecutor::is_trimming_) {
+    std::move(callback).Run(false,
+                            "ArcVm is trimming, skip this trim request.");
+    return;
+  }
+  ArcVmWorkingSetTrimExecutor::is_trimming_ = true;
+  // Reset `is_trimming` after called the result callback.
+  callback = std::move(callback).Then(
+      base::BindOnce([](bool& is_trimming_state) { is_trimming_state = false; },
+                     std::ref(ArcVmWorkingSetTrimExecutor::is_trimming_)));
 
   // Before trimming, drop ARCVM's page caches.
   if (!context) {

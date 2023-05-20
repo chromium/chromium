@@ -14,8 +14,10 @@ static_library("report_queue_configuration") {
     "//base",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/util:rate_limiter_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
+    "//components/reporting/util:wrapped_rate_limiter",
   ]
 }
 
@@ -32,7 +34,9 @@ static_library("report_queue_factory") {
     "//base",
     "//components/reporting/proto:record_constants",
     "//components/reporting/util:backoff_settings",
+    "//components/reporting/util:rate_limiter_interface",
     "//components/reporting/util:status",
+    "//components/reporting/util:wrapped_rate_limiter",
     "//net:net",
   ]
 }
@@ -53,8 +57,10 @@ static_library("report_queue") {
     "//components/reporting/storage:storage_module",
     "//components/reporting/storage:storage_module_interface",
     "//components/reporting/storage:storage_uploader_interface",
+    "//components/reporting/util:rate_limiter_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
+    "//components/reporting/util:wrapped_rate_limiter",
   ]
 }
 
@@ -98,8 +104,10 @@ static_library("test_support") {
     "//components/reporting/proto:record_proto",
     "//components/reporting/proto:test_proto",
     "//components/reporting/storage:test_support",
+    "//components/reporting/util:rate_limiter_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
+    "//components/reporting/util:wrapped_rate_limiter",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -154,9 +162,11 @@ source_set("unit_tests") {
     "//components/reporting/proto:test_proto",
     "//components/reporting/storage:storage_module_interface",
     "//components/reporting/storage:test_support",
+    "//components/reporting/util:rate_limiter_interface",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:test_callbacks_support",
+    "//components/reporting/util:wrapped_rate_limiter",
     "//testing/gmock",
     "//testing/gtest",
   ]

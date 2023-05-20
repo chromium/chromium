@@ -139,7 +139,7 @@ build_webui_tests("build") {
     "test_reset_browser_proxy.ts",
     "test_search_engines_browser_proxy.ts",
     "test_security_keys_browser_proxy.ts",
-    "test_site_settings_permissions_browser_proxy.ts",
+    "test_safety_hub_browser_proxy.ts",
     "test_site_settings_prefs_browser_proxy.ts",
     "test_sync_browser_proxy.ts",
     "test_util.ts",

@@ -48,12 +48,8 @@ bool IsWebViewProcessForExtension(int process_id,
 
 // Item
 struct ProcessMap::Item {
-  Item(const std::string& extension_id,
-       int process_id,
-       content::SiteInstanceId site_instance_id)
-      : extension_id(extension_id),
-        process_id(process_id),
-        site_instance_id(site_instance_id) {}
+  Item(const std::string& extension_id, int process_id)
+      : extension_id(extension_id), process_id(process_id) {}
 
   Item(const Item&) = delete;
   Item& operator=(const Item&) = delete;
@@ -64,14 +60,12 @@ struct ProcessMap::Item {
   Item& operator=(ProcessMap::Item&&) = default;
 
   bool operator<(const ProcessMap::Item& other) const {
-    return std::tie(extension_id, process_id, site_instance_id) <
-           std::tie(other.extension_id, other.process_id,
-                    other.site_instance_id);
+    return std::tie(extension_id, process_id) <
+           std::tie(other.extension_id, other.process_id);
   }
 
   std::string extension_id;
   int process_id = 0;
-  content::SiteInstanceId site_instance_id;
 };
 
 
@@ -85,16 +79,8 @@ ProcessMap* ProcessMap::Get(content::BrowserContext* browser_context) {
   return ProcessMapFactory::GetForBrowserContext(browser_context);
 }
 
-bool ProcessMap::Insert(const std::string& extension_id,
-                        int process_id,
-                        content::SiteInstanceId site_instance_id) {
-  return items_.insert(Item(extension_id, process_id, site_instance_id)).second;
-}
-
-bool ProcessMap::Remove(const std::string& extension_id,
-                        int process_id,
-                        content::SiteInstanceId site_instance_id) {
-  return items_.erase(Item(extension_id, process_id, site_instance_id)) > 0;
+bool ProcessMap::Insert(const std::string& extension_id, int process_id) {
+  return items_.insert(Item(extension_id, process_id)).second;
 }
 
 int ProcessMap::RemoveAllFromProcess(int process_id) {

@@ -731,13 +731,15 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, Tablet) {
 // Tests that the ChromeVox hint can be spoken, even if the necessary voice
 // hasn't loaded when the idle detector has fired.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, VoicesChanged) {
-  test::WaitForWelcomeScreen();
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   const std::string set_no_english_voice = R"(
-    chrome.tts.getVoices = function(callback) {
-      callback([{'lang': 'fr-FR', 'voiceName': 'ChromeOS français'}]);
-    };)";
+  chrome.tts.getVoices = function(callback) {
+    callback([{'lang': 'fr-FR', 'voiceName': 'ChromeOS français'}]);
+  };)";
   test::ExecuteOobeJS(set_no_english_voice);
+
+  test::WaitForWelcomeScreen();
+
   test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
   GiveChromeVoxHintForTesting();

@@ -12,6 +12,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/preloading/prerender/devtools_prerender_attempt.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
@@ -84,7 +85,6 @@ bool AreHttpRequestHeadersCompatible(
   }
 
   // The headers mismatch. Analyze the headers asynchronously.
-  // conclusion.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&AnalyzePrerenderActivationHeader,
@@ -120,11 +120,14 @@ PrerenderHost* PrerenderHost::GetPrerenderHostFromFrameTreeNode(
   }
 }
 
-PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
-                             WebContentsImpl& web_contents,
-                             base::WeakPtr<PreloadingAttempt> attempt)
+PrerenderHost::PrerenderHost(
+    const PrerenderAttributes& attributes,
+    WebContentsImpl& web_contents,
+    base::WeakPtr<PreloadingAttempt> attempt,
+    std::unique_ptr<DevToolsPrerenderAttempt> devtools_attempt)
     : attributes_(attributes),
       attempt_(std::move(attempt)),
+      devtools_attempt_(std::move(devtools_attempt)),
       web_contents_(web_contents),
       frame_tree_(std::make_unique<FrameTree>(web_contents.GetBrowserContext(),
                                               this,
@@ -955,17 +958,13 @@ void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
 }
 
 void PrerenderHost::SetTriggeringOutcome(PreloadingTriggeringOutcome outcome) {
-  if (initiator_devtools_navigation_token().has_value()) {
-    devtools_instrumentation::DidUpdatePrerenderStatus(
-        initiator_frame_tree_node_id(),
-        initiator_devtools_navigation_token().value(), prerendering_url(),
-        outcome);
+  if (attempt_) {
+    attempt_->SetTriggeringOutcome(outcome);
   }
 
-  if (!attempt_)
-    return;
-
-  attempt_->SetTriggeringOutcome(outcome);
+  if (devtools_attempt_) {
+    devtools_attempt_->SetTriggeringOutcome(attributes_, outcome);
+  }
 }
 
 void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
@@ -981,9 +980,6 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kActivatedBeforeStarted:
     case PrerenderFinalStatus::kTabClosedByUserGesture:
     case PrerenderFinalStatus::kTabClosedWithoutUserGesture:
-    case PrerenderFinalStatus::kSpeculationRuleRemoved:
-    case PrerenderFinalStatus::kTriggerPageNavigated:
-    case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
       return;
     case PrerenderFinalStatus::kDestroyed:
     case PrerenderFinalStatus::kLowEndDevice:
@@ -1044,14 +1040,6 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
     case PrerenderFinalStatus::kMemoryPressureOnTrigger:
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
-      // SetFailureReason() will call SetTriggeringOutcome() with kFailure.
-      if (initiator_devtools_navigation_token().has_value()) {
-        devtools_instrumentation::DidUpdatePrerenderStatus(
-            initiator_frame_tree_node_id(),
-            initiator_devtools_navigation_token().value(), prerendering_url(),
-            PreloadingTriggeringOutcome::kFailure);
-      }
-
       if (attempt_) {
         attempt_->SetFailureReason(ToPreloadingFailureReason(status));
         // We reset the attempt to ensure we don't update once we have reported
@@ -1059,6 +1047,12 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
         // as PrerenderHost deletion is async.
         attempt_.reset();
       }
+
+      if (devtools_attempt_) {
+        devtools_attempt_->SetFailureReason(attributes_, status);
+        devtools_attempt_.reset();
+      }
+
       return;
     case PrerenderFinalStatus::kActivated:
       // The activation path does not call this method, so it should never reach

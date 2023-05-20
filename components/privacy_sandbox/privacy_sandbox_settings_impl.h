@@ -83,6 +83,9 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) override;
   void SetPrivacySandboxAttestationsMapForTesting(
       const PrivacySandboxAttestationsMap& attestations_map) override;
+  void AddPrivacySandboxAttestationOverride(const GURL& url) override;
+  const std::vector<net::SchemefulSite> GetAttestationOverridesForTesting()
+      const override;
 
  private:
   friend class PrivacySandboxSettingsTest;

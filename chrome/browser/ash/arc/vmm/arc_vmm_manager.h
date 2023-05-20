@@ -7,8 +7,13 @@
 
 #include <string>
 
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/session/connection_holder.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
@@ -17,6 +22,8 @@
 #include "content/public/browser/browser_context.h"
 
 namespace arc {
+
+const base::TimeDelta kEnabledStateHeartbeatInterval = base::Hours(1);
 
 class ArcBridgeService;
 
@@ -27,7 +34,8 @@ enum class SwapState {
 };
 
 // ARCVM vmm features manager.
-class ArcVmmManager : public KeyedService {
+class ArcVmmManager : public KeyedService,
+                      public arc::ConnectionObserver<arc::mojom::AppInstance> {
  public:
   // Returns singleton instance for the given BrowserContext, or nullptr if
   // the browser |context| is not allowed to use ARC.
@@ -52,6 +60,10 @@ class ArcVmmManager : public KeyedService {
   }
 
   static void EnsureFactoryBuilt();
+
+  // arc::ConnectionObserver:
+  void OnConnectionReady() override;
+  void OnConnectionClosed() override;
 
  private:
   friend class ArcVmmManagerTest;
@@ -82,6 +94,12 @@ class ArcVmmManager : public KeyedService {
   absl::optional<base::Time> last_shrink_timestamp_;
   absl::optional<bool> last_shrink_result_;
 
+  // Repeat timer for checking and trimming ARCVM memory regularly. According
+  // current design in concierge, if the vmm swap status is enabled, the vmm
+  // manager needs to go through the "enable" process (i.e. trim memory, set
+  // aggressive balloon, send enable vmm swap dbus request) once an hour.
+  base::OneShotTimer enabled_state_heartbeat_timer_;
+
   // The default delay from swap enabled and swap out. Basically it's used for
   // keyboard swap. In finch, it will be replaced by the flag parameter.
   base::TimeDelta swap_out_delay_ = base::Seconds(3);
@@ -93,6 +111,8 @@ class ArcVmmManager : public KeyedService {
   // flag and parameters.
   std::unique_ptr<ArcVmmSwapScheduler> scheduler_;
 
+  bool arc_connected_ = false;
+
   std::string user_id_hash_;
 
   base::RepeatingCallback<
@@ -100,6 +120,12 @@ class ArcVmmManager : public KeyedService {
       trim_call_;
 
   raw_ptr<content::BrowserContext> context_ = nullptr;
+  raw_ptr<ArcBridgeService> bridge_service_ = nullptr;
+
+  base::ScopedObservation<
+      ConnectionHolder<mojom::AppInstance, mojom::AppHost>,
+      ConnectionHolder<mojom::AppInstance, mojom::AppHost>::Observer>
+      app_instance_observation_{this};
 
   base::WeakPtrFactory<ArcVmmManager> weak_ptr_factory_{this};
 };

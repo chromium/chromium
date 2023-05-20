@@ -9,8 +9,8 @@
  */
 
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
-import '../../icons.html.js';
-import '../../settings_shared.css.js';
+import '../icons.html.js';
+import '../settings_shared.css.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
 import './input_device_settings_shared.css.js';
 import './keyboard_remap_modifier_key_row.js';
@@ -252,7 +252,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     assert(!!searchedKeyboard);
     this.keyboard = searchedKeyboard;
     this.updateDefaultRemapping();
-    this.defaultInitializePrefs();
+    this.initializePrefsToIdentity();
 
     // Assistant key and caps lock key are optional. Their values depend on
     // keyboard modifierKeys.
@@ -291,7 +291,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private defaultInitializePrefs(): void {
     this.set('fakeAltPref.value', this.defaultRemappings[ModifierKey.kAlt]);
     this.set(
-        'fakeAssitantPref.value',
+        'fakeAssistantPref.value',
         this.defaultRemappings[ModifierKey.kAssistant]);
     this.set(
         'fakeBackspacePref.value',
@@ -303,6 +303,20 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         this.defaultRemappings[ModifierKey.kCapsLock]);
     this.set('fakeEscPref.value', this.defaultRemappings[ModifierKey.kEscape]);
     this.set('fakeMetaPref.value', this.defaultRemappings[ModifierKey.kMeta]);
+  }
+
+  /**
+   * Sets all prefs to the "identity" value which so they can be updated by the
+   * values in the remappings map.
+   */
+  private initializePrefsToIdentity(): void {
+    this.set('fakeAltPref.value', ModifierKey.kAlt);
+    this.set('fakeAssitantPref.value', ModifierKey.kAssistant);
+    this.set('fakeBackspacePref.value', ModifierKey.kBackspace);
+    this.set('fakeCtrlPref.value', ModifierKey.kControl);
+    this.set('fakeCapsLockPref.value', ModifierKey.kCapsLock);
+    this.set('fakeEscPref.value', ModifierKey.kEscape);
+    this.set('fakeMetaPref.value', ModifierKey.kMeta);
   }
 
   restoreDefaults(): void {
@@ -372,30 +386,25 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private getUpdatedRemappings(): {[key: number]: ModifierKey} {
     const updatedRemappings: {[key: number]: ModifierKey} = {};
 
-    if (this.defaultRemappings[ModifierKey.kAlt] !== this.fakeAltPref.value) {
+    if (ModifierKey.kAlt !== this.fakeAltPref.value) {
       updatedRemappings[ModifierKey.kAlt] = this.fakeAltPref.value;
     }
-    if (this.defaultRemappings[ModifierKey.kAssistant] !==
-        this.fakeAssistantPref.value) {
+    if (ModifierKey.kAssistant !== this.fakeAssistantPref.value) {
       updatedRemappings[ModifierKey.kAssistant] = this.fakeAssistantPref.value;
     }
-    if (this.defaultRemappings[ModifierKey.kBackspace] !==
-        this.fakeBackspacePref.value) {
+    if (ModifierKey.kBackspace !== this.fakeBackspacePref.value) {
       updatedRemappings[ModifierKey.kBackspace] = this.fakeBackspacePref.value;
     }
-    if (this.defaultRemappings[ModifierKey.kCapsLock] !==
-        this.fakeCapsLockPref.value) {
+    if (ModifierKey.kCapsLock !== this.fakeCapsLockPref.value) {
       updatedRemappings[ModifierKey.kCapsLock] = this.fakeCapsLockPref.value;
     }
-    if (this.defaultRemappings[ModifierKey.kControl] !==
-        this.fakeCtrlPref.value) {
+    if (ModifierKey.kControl !== this.fakeCtrlPref.value) {
       updatedRemappings[ModifierKey.kControl] = this.fakeCtrlPref.value;
     }
-    if (this.defaultRemappings[ModifierKey.kEscape] !==
-        this.fakeEscPref.value) {
+    if (ModifierKey.kEscape !== this.fakeEscPref.value) {
       updatedRemappings[ModifierKey.kEscape] = this.fakeEscPref.value;
     }
-    if (this.defaultRemappings[ModifierKey.kMeta] !== this.fakeMetaPref.value) {
+    if (ModifierKey.kMeta !== this.fakeMetaPref.value) {
       updatedRemappings[ModifierKey.kMeta] = this.fakeMetaPref.value;
     }
 

@@ -22,6 +22,10 @@
 #include "media/base/media_switches.h"
 #include "ui/base/cocoa/permissions_utils.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace system_media_permissions {
 
 namespace {
@@ -106,8 +110,7 @@ SystemPermission CheckSystemMediaCapturePermission(AVMediaType media_type) {
       case AVAuthorizationStatusAuthorized:
         return SystemPermission::kAllowed;
       default:
-        NOTREACHED();
-        return SystemPermission::kAllowed;
+        NOTREACHED_NORETURN();
     }
   }
 

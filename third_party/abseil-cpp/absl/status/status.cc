@@ -616,5 +616,12 @@ std::string* MakeCheckFailString(const absl::Status* status,
 
 }  // namespace status_internal
 
+const char* StatusMessageAsCStr(const Status& status) {
+  // As an internal implementation detail, we guarantee that if status.message()
+  // is non-empty, then the resulting string_view is null terminated.
+  auto sv_message = status.message();
+  return sv_message.empty() ? "" : sv_message.data();
+}
+
 ABSL_NAMESPACE_END
 }  // namespace absl

@@ -13,6 +13,8 @@ static_library("unexportable_keys") {
     "ref_counted_unexportable_signing_key.h",
     "service_error.h",
     "unexportable_key_id.h",
+    "unexportable_key_loader.cc",
+    "unexportable_key_loader.h",
     "unexportable_key_service.h",
     "unexportable_key_service_impl.cc",
     "unexportable_key_service_impl.h",
@@ -46,6 +48,7 @@ source_set("unit_tests") {
 
   sources = [
     "background_long_task_scheduler_unittest.cc",
+    "unexportable_key_loader_unittest.cc",
     "unexportable_key_service_impl_unittest.cc",
     "unexportable_key_task_manager_unittest.cc",
   ]

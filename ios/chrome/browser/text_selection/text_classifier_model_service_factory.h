@@ -39,6 +39,7 @@ class TextClassifierModelServiceFactory
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsCreatedWithBrowserState() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_TEXT_SELECTION_TEXT_CLASSIFIER_MODEL_SERVICE_FACTORY_H_

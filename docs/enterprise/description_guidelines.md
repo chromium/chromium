@@ -29,5 +29,6 @@ tags must be opened and closed on the same line to avoid validation errors.
 * macOS: `<ph name="MAC_OS_NAME">macOS</ph>`
 * iOS: `<ph name="IOS_NAME">iOS</ph>`
 * Windows: `<ph name="MS_WIN_NAME">Microsoft® Windows®</ph>`
-* Microsoft ActiveDirectory: `<ph name="MS_AD_NAME">Microsoft® Active Directory®</ph>`
+* Microsoft Active Directory: `<ph name="MS_AD_NAME">Microsoft® Active Directory®</ph>`
+* Microsoft Azure Active Directory `<ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph>`
 * Fuchsia: `<ph name="FUCHSIA_OS_NAME">Fuchsia</ph>`

@@ -356,11 +356,11 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
   if (hdr_metadata) {
     video_config.have_hdr_metadata = true;
     video_config.hdr_metadata.max_content_light_level =
-        hdr_metadata->max_content_light_level;
+        hdr_metadata->cta_861_3.max_content_light_level;
     video_config.hdr_metadata.max_frame_average_light_level =
-        hdr_metadata->max_frame_average_light_level;
+        hdr_metadata->cta_861_3.max_frame_average_light_level;
 
-    const auto& mm1 = hdr_metadata->color_volume_metadata;
+    const auto& mm1 = hdr_metadata->smpte_st_2086;
     auto& mm2 = video_config.hdr_metadata.color_volume_metadata;
     mm2.primary_r_chromaticity_x = mm1.primaries.fRX;
     mm2.primary_r_chromaticity_y = mm1.primaries.fRY;

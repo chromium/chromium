@@ -2539,7 +2539,7 @@ f! {
             .offset(_CMSG_ALIGN(::mem::size_of::<::cmsghdr>()) as isize)
     }
 
-    pub fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
+    pub {const} fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
         _CMSG_ALIGN(::mem::size_of::<::cmsghdr>()) as ::c_uint + length
     }
 

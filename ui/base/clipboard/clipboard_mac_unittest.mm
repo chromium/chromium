@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,11 +25,15 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/skia_util.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface RedView : NSView
 @end
 @implementation RedView
 - (void)drawRect:(NSRect)dirtyRect {
-  [[NSColor redColor] setFill];
+  [NSColor.redColor setFill];
   NSRectFill(dirtyRect);
   [super drawRect:dirtyRect];
 }
@@ -61,9 +64,7 @@ class ClipboardMacTest : public PlatformTest,
     PlatformTest::SetUp();
   }
 
-  base::scoped_nsobject<NSImage> CreateImage(int32_t width,
-                                             int32_t height,
-                                             bool retina) {
+  NSImage* CreateImage(int32_t width, int32_t height, bool retina) {
     int32_t pixel_width = retina ? width * 2 : width;
     int32_t pixel_height = retina ? height * 2 : height;
 
@@ -83,9 +84,8 @@ class ClipboardMacTest : public PlatformTest,
         CGImageCreate(pixel_width, pixel_height, 8, 32, 4 * pixel_width,
                       color_space.get(), kCGBitmapByteOrderDefault,
                       provider.get(), nullptr, NO, kCGRenderingIntentDefault));
-    return base::scoped_nsobject<NSImage>([[NSImage alloc]
-        initWithCGImage:image_ref.get()
-                   size:NSMakeSize(width, height)]);
+    return [[NSImage alloc] initWithCGImage:image_ref.get()
+                                       size:NSMakeSize(width, height)];
   }
 
   bool ShouldWriteImageWithPng() const { return GetParam(); }
@@ -114,8 +114,7 @@ TEST_P(ClipboardMacTest, ReadImageRetina) {
   int32_t width = 99;
   int32_t height = 101;
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  base::scoped_nsobject<NSImage> image = CreateImage(width, height, true);
-  [pasteboard->get() writeObjects:@[ image.get() ]];
+  [pasteboard->get() writeObjects:@[ CreateImage(width, height, true) ]];
 
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
@@ -131,8 +130,7 @@ TEST_P(ClipboardMacTest, ReadImageNonRetina) {
   int32_t width = 99;
   int32_t height = 101;
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  base::scoped_nsobject<NSImage> image = CreateImage(width, height, false);
-  [pasteboard->get() writeObjects:@[ image.get() ]];
+  [pasteboard->get() writeObjects:@[ CreateImage(width, height, false) ]];
 
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
@@ -145,9 +143,9 @@ TEST_P(ClipboardMacTest, ReadImageNonRetina) {
 }
 
 TEST_P(ClipboardMacTest, EmptyImage) {
-  base::scoped_nsobject<NSImage> image([[NSImage alloc] init]);
+  NSImage* image = [[NSImage alloc] init];
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  [pasteboard->get() writeObjects:@[ image.get() ]];
+  [pasteboard->get() writeObjects:@[ image ]];
 
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
@@ -167,7 +165,7 @@ TEST_P(ClipboardMacTest, PDFImage) {
   // This seems like a round-about way of getting a NSPDFImageRep to shove into
   // an NSPasteboard. However, I haven't found any other way of generating a
   // "PDF" image that makes NSPasteboard happy.
-  base::scoped_nsobject<NSView> v([[RedView alloc] initWithFrame:frame]);
+  NSView* v = [[RedView alloc] initWithFrame:frame];
   NSData* data = [v dataWithPDFInsideRect:frame];
 
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;

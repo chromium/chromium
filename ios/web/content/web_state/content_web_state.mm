@@ -41,11 +41,10 @@ class DummySessionCertificatePolicyCache
   explicit DummySessionCertificatePolicyCache(BrowserState* browser_state)
       : SessionCertificatePolicyCache(browser_state) {}
 
-  void UpdateCertificatePolicyCache(
-      const scoped_refptr<web::CertificatePolicyCache>& cache) const override {}
+  void UpdateCertificatePolicyCache() const override {}
 
   void RegisterAllowedCertificate(
-      const scoped_refptr<net::X509Certificate> certificate,
+      const scoped_refptr<net::X509Certificate>& certificate,
       const std::string& host,
       net::CertStatus status) override {}
 };

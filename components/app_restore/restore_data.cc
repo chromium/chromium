@@ -112,26 +112,27 @@ std::unique_ptr<RestoreData> RestoreData::Clone() const {
 }
 
 base::Value RestoreData::ConvertToValue() const {
-  base::Value restore_data_dict(base::Value::Type::DICT);
-  for (const auto& it : app_id_to_launch_list_) {
-    if (it.second.empty())
+  base::Value::Dict restore_data_dict;
+  for (const auto& [app_id, launch_list] : app_id_to_launch_list_) {
+    if (launch_list.empty()) {
       continue;
-
-    base::Value info_dict(base::Value::Type::DICT);
-    for (const auto& data : it.second) {
-      info_dict.SetKey(base::NumberToString(data.first),
-                       data.second->ConvertToValue());
     }
 
-    restore_data_dict.SetKey(it.first, std::move(info_dict));
+    base::Value::Dict info_dict;
+    for (const auto& [window_id, app_restore_data] : launch_list) {
+      info_dict.Set(base::NumberToString(window_id),
+                    app_restore_data->ConvertToValue());
+    }
+
+    restore_data_dict.Set(app_id, std::move(info_dict));
   }
 
   if (removing_desk_guid_.is_valid()) {
-    restore_data_dict.GetDict().Set(kRemovingDeskGuidKey,
-                                    removing_desk_guid_.AsLowercaseString());
+    restore_data_dict.Set(kRemovingDeskGuidKey,
+                          removing_desk_guid_.AsLowercaseString());
   }
 
-  return restore_data_dict;
+  return base::Value(std::move(restore_data_dict));
 }
 
 bool RestoreData::HasAppTypeBrowser() const {
@@ -302,10 +303,10 @@ const AppRestoreData* RestoreData::GetAppRestoreData(const std::string& app_id,
   return data_it->second.get();
 }
 
-void RestoreData::SetDeskIndex(int desk_index) {
+void RestoreData::SetDeskUuid(const base::Uuid& desk_uuid) {
   for (auto& [app_id, launch_list] : app_id_to_launch_list_) {
     for (auto& [window_id, app_restore_data] : launch_list) {
-      app_restore_data->desk_id = desk_index;
+      app_restore_data->desk_guid = desk_uuid;
     }
   }
 }

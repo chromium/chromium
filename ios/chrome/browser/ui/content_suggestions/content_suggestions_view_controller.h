@@ -13,6 +13,7 @@
 @protocol ContentSuggestionsMenuProvider;
 @class ContentSuggestionsMetricsRecorder;
 @protocol ContentSuggestionsViewControllerAudience;
+@protocol SetUpListViewDelegate;
 class UrlLoadingBrowserAgent;
 
 // CollectionViewController to display the suggestions items.
@@ -32,8 +33,9 @@ class UrlLoadingBrowserAgent;
 // Handler for the commands sent by the ContentSuggestionsViewController.
 @property(nonatomic, weak) id<ContentSuggestionsCommands>
     suggestionCommandHandler;
-@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
-    audience;
+@property(nonatomic, weak)
+    id<ContentSuggestionsViewControllerAudience, SetUpListViewDelegate>
+        audience;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
@@ -41,6 +43,9 @@ class UrlLoadingBrowserAgent;
 // Recorder for content suggestions metrics.
 @property(nonatomic, assign)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
+
+// Delegate for SetUpListView events.
+@property(nonatomic, weak) id<SetUpListViewDelegate> setUpListViewDelegate;
 
 @end
 

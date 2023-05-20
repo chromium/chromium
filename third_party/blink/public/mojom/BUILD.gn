@@ -143,6 +143,7 @@ mojom("mojom_platform") {
     "navigation/navigation_policy.mojom",
     "navigation/prefetched_signed_exchange_info.mojom",
     "navigation/renderer_eviction_reason.mojom",
+    "navigation/system_entropy.mojom",
     "navigation/was_activated_option.mojom",
     "notifications/notification.mojom",
     "notifications/notification_service.mojom",
@@ -1212,6 +1213,7 @@ mojom("mojom_core") {
     "frame/user_activation_update_types.mojom",
     "frame/view_transition_state.mojom",
     "frame/viewport_intersection_state.mojom",
+    "page/browsing_context_group_info.mojom",
     "page/display_cutout.mojom",
     "page/page.mojom",
     "page/page_visibility_state.mojom",
@@ -1341,6 +1343,19 @@ mojom("mojom_core") {
       ]
       traits_private_headers = [ "//third_party/blink/public/common/messaging/accelerated_static_bitmap_image_mojom_traits.h" ]
       traits_deps = [ "//gpu/ipc/common" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.BrowsingContextGroupInfo"
+          cpp = "::blink::BrowsingContextGroupInfo"
+          default_constructible = false
+        },
+      ]
+      traits_headers = [
+        "//third_party/blink/public/common/page/browsing_context_group_info.h",
+      ]
+      traits_private_headers = [ "//third_party/blink/public/common/page/browsing_context_group_info_mojom_traits.h" ]
     },
   ]
 

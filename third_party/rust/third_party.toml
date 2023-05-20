@@ -74,9 +74,18 @@ build-script-outputs = [ "tables.rs" ]
 # This allows them built in a configuration that can be used from Chromium
 # tests, but not used from production.
 [dev-dependencies]
+anyhow = "1"
+hex = "0.4"
+hex-literal = "0.4"
 lazy_static = "1"
-rstest = "0.12"
+log = "0.4"
+rand = "0.8"
+rand_pcg = "0.3"
+regex = "1"
+rstest = {version = "0.17", default-features=false}
+rstest_reuse = "0.5"
 small_ctor = "0.1"
+wycheproof = "0.4"
 
 # Used in Rust tool for BUILD.gn generation.
 anyhow = "1"

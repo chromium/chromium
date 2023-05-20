@@ -184,8 +184,6 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
       !self.navigationHandler.pendingNavigationInfo.cancelled) {
     // A fast back-forward navigation does not call `didCommitNavigation:`, so
     // signal page change explicitly.
-    DCHECK_EQ(self.documentURL.DeprecatedGetOriginAsURL(),
-              webViewURL.DeprecatedGetOriginAsURL());
     BOOL isSameDocumentNavigation =
         [self isKVOChangePotentialSameDocumentNavigationToURL:webViewURL];
 

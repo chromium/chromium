@@ -1,4 +1,4 @@
-<style>
+<style include="shortcut-customization-shared">
   .flex-row {
     display: flex;
     flex-direction: row;
@@ -20,17 +20,28 @@
     padding-inline-end: 5px;
   }
 
-  #lockIconContainer {
+  iron-icon[icon='shortcut-customization:lock'] {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+  }
+
+  #editIconContainer {
     align-items: center;
     display: flex;
+    margin-inline-start: 8px;
+    opacity: 0;
+    transition: opacity 300ms, transform 100ms;
   }
 
-  #lockIconContainer[hidden] {
-    display: none;  /* Required for flexbox hidden. */
+  #editIconContainer[hidden] {
+    display: none; /* Required for flexbox hidden. */
   }
 
-  iron-icon {
-    --iron-icon-width: 16px;
+  #editButton {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-fill-color: var(--cros-text-color-secondary);
+    --cr-icon-button-icon-start-offset: 3px;
+    padding-top: 3px;
   }
 </style>
 
@@ -45,10 +56,15 @@
           key-state="alpha-numeric-selected">
       </input-key>
     </div>
-    <div 
-      id="lockIconContainer" 
-      hidden="[[!shouldShowLockIcon(acceleratorInfo.locked, sourceIsLocked)]]">
+    <div class="lock-icon-container"
+        hidden="[[!shouldShowLockIcon(acceleratorInfo.locked, sourceIsLocked)]]">
       <iron-icon icon="shortcut-customization:lock"></iron-icon>
+    </div>
+    <div id="editIconContainer" part="edit-icon" on-click="onEditIconClicked"
+        hidden="[[!shouldShowEditIcon(acceleratorInfo.locked, sourceIsLocked)]]">
+      <cr-icon-button id="editButton" class="clickable-button"
+          iron-icon="shortcut-customization:edit">
+      </cr-icon-button>
     </div>
   </template>
   <template is="dom-if" if="[[showEditView(viewState)]]">

@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_SYNC_CWV_TRUSTED_VAULT_OBSERVER_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_SYNC_CWV_TRUSTED_VAULT_OBSERVER_INTERNAL_H_
 
-#include "components/sync/driver/trusted_vault_client.h"
+#include "components/sync/service/trusted_vault_client.h"
 #import "ios/web_view/public/cwv_trusted_vault_observer.h"
 
 @interface CWVTrustedVaultObserver ()

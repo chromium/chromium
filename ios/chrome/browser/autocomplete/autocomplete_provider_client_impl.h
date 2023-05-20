@@ -45,6 +45,7 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   history::HistoryService* GetHistoryService() override;
   scoped_refptr<history::TopSites> GetTopSites() override;
   bookmarks::BookmarkModel* GetLocalOrSyncableBookmarkModel() override;
+  bookmarks::BookmarkModel* GetAccountBookmarkModel() override;
   history::URLDatabase* GetInMemoryDatabase() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   TemplateURLService* GetTemplateURLService() override;

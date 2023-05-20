@@ -13,13 +13,7 @@ namespace partition_alloc::internal {
 
 namespace {
 constexpr PartitionOptions kConfig{
-    PartitionOptions::AlignedAlloc::kDisallowed,
-    PartitionOptions::ThreadCache::kDisabled,
-    PartitionOptions::Quarantine::kDisallowed,
-    PartitionOptions::Cookie::kAllowed,
-    PartitionOptions::BackupRefPtr::kDisabled,
-    PartitionOptions::BackupRefPtrZapping::kDisabled,
-    PartitionOptions::UseConfigurablePool::kNo,
+    .cookie = PartitionOptions::Cookie::kAllowed,
 };
 }  // namespace
 

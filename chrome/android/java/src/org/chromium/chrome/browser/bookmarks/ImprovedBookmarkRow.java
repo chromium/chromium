@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -14,10 +15,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
@@ -64,12 +67,23 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
                         : org.chromium.chrome.R.layout.improved_bookmark_row_layout,
                 row);
         row.onFinishInflate();
+        row.setStartImageRoundedCornerOutlineProvider(isVisual);
         return row;
     }
 
     /** Constructor for inflating from XML. */
     public ImprovedBookmarkRow(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    void setStartImageRoundedCornerOutlineProvider(boolean isVisual) {
+        assert mStartImageView != null;
+
+        mStartImageView.setOutlineProvider(
+                new RoundedCornerOutlineProvider(getContext().getResources().getDimensionPixelSize(
+                        isVisual ? R.dimen.improved_bookmark_row_outer_corner_radius
+                                 : R.dimen.improved_bookmark_icon_radius)));
+        mStartImageView.setClipToOutline(true);
     }
 
     @Override
@@ -100,18 +114,31 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mDescriptionView.setText(description);
     }
 
-    void setBookmarkDrawable(Drawable drawable) {
-        mStartImageView.setImageDrawable(drawable);
-        mStartImageView.setVisibility(View.VISIBLE);
-
-        mFolderIconView.setVisibility(View.GONE);
+    void setStartImageVisible(boolean visible) {
+        mStartImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    void setFolderDrawables(@Nullable Drawable first, @Nullable Drawable second) {
-        mFolderIconView.setVisibility(View.VISIBLE);
-        mFolderIconView.setDrawables(first, second);
+    void setFolderViewVisible(boolean visible) {
+        mFolderIconView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
 
-        mStartImageView.setVisibility(View.GONE);
+    void setStartIconDrawable(Drawable drawable) {
+        mStartImageView.setImageDrawable(drawable);
+        mFolderIconView.setStartIconDrawable(drawable);
+    }
+
+    void setStartIconTint(ColorStateList tint) {
+        mFolderIconView.setStartIconTint(tint);
+        mStartImageView.setImageTintList(tint);
+    }
+
+    void setStartAreaBackgroundColor(@ColorInt int color) {
+        mFolderIconView.setStartAreaBackgroundColor(color);
+        mStartImageView.setBackgroundColor(color);
+    }
+
+    void setStartImageDrawables(@Nullable Drawable first, @Nullable Drawable second) {
+        mFolderIconView.setStartImageDrawables(first, second);
     }
 
     void setFolderChildCount(int count) {

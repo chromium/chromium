@@ -55,8 +55,7 @@ int AVC::FindSubsampleIndex(const std::vector<uint8_t>& buffer,
     if (p > ptr)
       return i;
   }
-  NOTREACHED();
-  return 0;
+  NOTREACHED_NORETURN();
 }
 
 // static

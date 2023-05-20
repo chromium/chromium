@@ -58,10 +58,7 @@ WebBlob WebBlob::CreateFromFile(const WebString& path, uint64_t size) {
 }
 
 WebBlob WebBlob::FromV8Value(v8::Local<v8::Value> value) {
-  if (V8Blob::HasInstance(value, v8::Isolate::GetCurrent())) {
-    v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(value);
-    Blob* blob = V8Blob::ToImpl(object);
-    DCHECK(blob);
+  if (Blob* blob = V8Blob::ToWrappable(v8::Isolate::GetCurrent(), value)) {
     return blob;
   }
   return WebBlob();

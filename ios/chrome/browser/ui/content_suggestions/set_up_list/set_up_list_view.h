@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SET_UP_LIST_SET_UP_LIST_VIEW_H_
 
 #import <UIKit/UIKit.h>
+#import "base/ios/block_types.h"
 
 enum class SetUpListItemType;
 @class SetUpListItemViewData;
@@ -18,7 +19,7 @@ enum class SetUpListItemType;
 - (void)didSelectSetUpListItem:(SetUpListItemType)type;
 
 // Called when the user selects the Set Up List menu.
-- (void)showSetUpListMenu;
+- (void)showSetUpListMenuWithButton:(UIButton*)button;
 
 @end
 
@@ -31,6 +32,16 @@ enum class SetUpListItemType;
 
 // The object that should handle delegate events.
 @property(nonatomic, weak) id<SetUpListViewDelegate> delegate;
+
+// Marks an item complete with an animation and updated appearance. Calls
+// `animation` block during the "All Set" animation only if all items are
+// complete.
+- (void)markItemComplete:(SetUpListItemType)type
+              completion:(ProceduralBlock)completion;
+
+// Animates to display the "All Set" screen, to indicate that all items are
+// complete.
+- (void)showDoneWithAnimations:(ProceduralBlock)animations;
 
 @end
 

@@ -116,12 +116,12 @@ int8_t HighlightLayer::ComparePaintOrder(
         kOverlayStackingPositionEquivalent;
   }
   const HighlightRegistryMap& map = registry.GetHighlights();
-  auto* this_entry = map.find(MakeGarbageCollected<HighlightRegistryMapEntry>(
-                                  PseudoArgument()))
-                         ->Get();
-  auto* other_entry = map.find(MakeGarbageCollected<HighlightRegistryMapEntry>(
-                                   other.PseudoArgument()))
-                          ->Get();
+  auto* this_entry =
+      map.Find<HighlightRegistryMapEntryNameTranslator>(PseudoArgument())
+          ->Get();
+  auto* other_entry =
+      map.Find<HighlightRegistryMapEntryNameTranslator>(other.PseudoArgument())
+          ->Get();
   return registry.CompareOverlayStackingPosition(
       PseudoArgument(), this_entry->highlight, other.PseudoArgument(),
       other_entry->highlight);

@@ -152,6 +152,7 @@ export class DisplayPanel extends HTMLElement {
       return;
     }
     let errors = 0;
+    let warnings = 0;
     let progressCount = 0;
     const connectedPanels = this.connectedPanelItems_();
     for (const panel of connectedPanels) {
@@ -163,41 +164,54 @@ export class DisplayPanel extends HTMLElement {
         progressCount++;
       } else if (panel.panelType === panel.panelTypeError) {
         errors++;
+      } else if (panel.panelType === panel.panelTypeInfo) {
+        warnings++;
       }
     }
     if (progressCount > 0) {
       total /= progressCount;
     }
     const summaryPanel = this.summary_.querySelector('xf-panel-item');
-    if (summaryPanel) {
-      // Show either a progress indicator or error count if no operations going.
-      if (progressCount > 0) {
-        // Make sure we have a progress indicator on the summary panel.
-        if (summaryPanel.indicator != 'largeprogress') {
-          summaryPanel.indicator = 'largeprogress';
-        }
-        summaryPanel.primaryText =
-            util.strf('PERCENT_COMPLETE', total.toFixed(0));
-        summaryPanel.progress = total;
-        summaryPanel.setAttribute('count', progressCount);
-        summaryPanel.errorMarkerVisibility =
-            (errors > 0) ? 'visible' : 'hidden';
-      } else if (errors == 0) {
-        if (summaryPanel.indicator != 'status') {
-          summaryPanel.indicator = 'status';
-          summaryPanel.status = 'success';
-          summaryPanel.primaryText = util.strf('PERCENT_COMPLETE', 100);
-        }
-      } else {
-        // Make sure we have a failure indicator on the summary panel.
-        if (summaryPanel.indicator != 'status') {
-          summaryPanel.indicator = 'status';
-          summaryPanel.status = 'failure';
-        }
-        summaryPanel.primaryText =
-            util.strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors);
-      }
+    if (!summaryPanel) {
+      return;
     }
+    // Show either a progress indicator or a status indicator (success, warning,
+    // error) if no operations are ongoing.
+    if (progressCount > 0) {
+      // Make sure we have a progress indicator on the summary panel.
+      if (summaryPanel.indicator != 'largeprogress') {
+        summaryPanel.indicator = 'largeprogress';
+      }
+      summaryPanel.primaryText =
+          util.strf('PERCENT_COMPLETE', total.toFixed(0));
+      summaryPanel.progress = total;
+      summaryPanel.setAttribute('count', progressCount);
+      summaryPanel.errorMarkerVisibility = (errors > 0) ? 'visible' : 'hidden';
+      return;
+    }
+
+    if (summaryPanel.indicator != 'status') {
+      // Make sure we have a status indicator on the summary panel.
+      summaryPanel.indicator = 'status';
+    }
+
+    if (errors > 0) {
+      summaryPanel.status = 'failure';
+      summaryPanel.primaryText =
+          util.strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors);
+      return;
+    }
+
+    if (warnings > 0) {
+      summaryPanel.status = 'warning';
+      // TODO(b/282718324): Update strings.
+      summaryPanel.primaryText = `${warnings} warnings.`;
+      return;
+    }
+
+    // No errors or warnings
+    summaryPanel.status = 'success';
+    summaryPanel.primaryText = util.strf('PERCENT_COMPLETE', 100);
   }
 
   /**

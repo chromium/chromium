@@ -97,11 +97,14 @@ class PasswordStoreSync {
  public:
   class MetadataStore : public syncer::SyncMetadataStore {
    public:
-    // Reads and returns all the stored sync metadata for passwords.
-    virtual std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata() = 0;
+    // Reads and returns all the stored sync metadata for |model_type|. This is
+    // currently used only for passwords.
+    virtual std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata(
+        syncer::ModelType model_type) = 0;
 
-    // Deletes all the stored sync metadata for passwords.
-    virtual void DeleteAllSyncMetadata() = 0;
+    // Deletes all the stored sync metadata for |model_type|. This is currently
+    // used only for passwords.
+    virtual void DeleteAllSyncMetadata(syncer::ModelType model_type) = 0;
 
     // Registers a callback that will be invoked whenever all pending (unsynced)
     // deletions are gone. If they were committed to the server (or, rarely, the
@@ -110,12 +113,12 @@ class PasswordStoreSync {
     // with "false" instead.
     // Note that there can be only one such callback; if one was already
     // registered, it'll be overridden by the new |callback|.
-    virtual void SetDeletionsHaveSyncedCallback(
+    virtual void SetPasswordDeletionsHaveSyncedCallback(
         base::RepeatingCallback<void(bool)> callback) = 0;
 
     // Returns whether there are any pending deletions that have not been sent
     // to the Sync server yet.
-    virtual bool HasUnsyncedDeletions() = 0;
+    virtual bool HasUnsyncedPasswordDeletions() = 0;
   };
 
   PasswordStoreSync();

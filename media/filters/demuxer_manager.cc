@@ -580,9 +580,11 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 std::unique_ptr<Demuxer> DemuxerManager::CreateHlsDemuxer() {
-  auto player_impl = std::make_unique<HlsManifestDemuxerEngine>();
-  return std::make_unique<ManifestDemuxer>(
-      media_task_runner_, std::move(player_impl), media_log_.get());
+  auto engine = std::make_unique<HlsManifestDemuxerEngine>(
+      client_->GetHlsDataSourceProvider(), media_task_runner_, loaded_url_,
+      media_log_.get());
+  return std::make_unique<ManifestDemuxer>(media_task_runner_,
+                                           std::move(engine), media_log_.get());
 }
 #endif
 

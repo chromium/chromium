@@ -20,7 +20,7 @@
 import './multidevice_feature_item.js';
 import './multidevice_task_continuation_disabled_link.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';

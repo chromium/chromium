@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
@@ -151,7 +152,8 @@ void CompositorDependenciesAndroid::ConnectVizFrameSinkManagerOnMainThread(
 }
 
 void CompositorDependenciesAndroid::EnqueueLowEndBackgroundCleanup() {
-  if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
+  if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled() &&
+      !base::features::kPartialLowEndModeExcludeLowEndBackgroundCleanup.Get()) {
     low_end_background_cleanup_task_.Reset(base::BindOnce(
         &CompositorDependenciesAndroid::DoLowEndBackgroundCleanup,
         base::Unretained(this)));

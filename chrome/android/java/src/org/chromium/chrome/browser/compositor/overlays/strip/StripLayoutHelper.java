@@ -244,6 +244,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private boolean mTabGroupMarginAnimRunning;
     private boolean mTabCreating;
 
+    // TabModel info available before the tab state is actually initialized. Determined from frozen
+    // tab metadata.
+    private int mTabCountOnStartup;
+    private int mActiveTabIndexOnStartup;
+
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
      * @param context         The current Android {@link Context}.
@@ -820,6 +825,33 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (onStartup) bringSelectedTabToVisibleArea(time, false);
 
         mUpdateHost.requestUpdate();
+    }
+
+    /**
+     * Set the relevant tab model metadata prior to the tab state initialization.
+     * @param activeTabIndexOnStartup What the active tab index should be after tabs finish
+     *                                restoring.
+     * @param tabCountOnStartup What the tab count should be after tabs finish restoring.
+     */
+    protected void setTabModelStartupInfo(int tabCountOnStartup, int activeTabIndexOnStartup) {
+        mTabCountOnStartup = tabCountOnStartup;
+        mActiveTabIndexOnStartup = activeTabIndexOnStartup;
+
+        // TODO(crbug.com/1444810): Create remaining placeholder tabs, if any.
+    }
+
+    /**
+     * @return The expected tab count after tabs finish restoring.
+     */
+    protected int getTabCountOnStartupForTesting() {
+        return mTabCountOnStartup;
+    }
+
+    /**
+     * @return The expected active tab index after tabs finish restoring.
+     */
+    protected int getActiveTabIndexOnStartupForTesting() {
+        return mActiveTabIndexOnStartup;
     }
 
     /**

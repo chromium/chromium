@@ -565,7 +565,7 @@ class WPTExpectationsUpdater:
             expectations_dict={
                 path: self.host.filesystem.read_text_file(path),
             })
-        system_remover = SystemConfigurationRemover(self.host.filesystem, test_expectations)
+        system_remover = SystemConfigurationRemover(test_expectations)
         for test, versions in configs_to_remove.items():
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()

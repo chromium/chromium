@@ -47,11 +47,11 @@ public class DeviceLockCoordinator {
     /**
      * Constructs a coordinator for the Device Lock page.
      *
-     * @param inSignInFlow - Whether the existing flow is related to account sign-in.
-     * @param delegate - The delegate invoked to interact with classes outside the module.
-     * @param windowAndroid - Used to launch Intents with callbacks.
-     * @param activity - The activity hosting this page.
-     * @param account - The account currently signed in or selected for sign-in.
+     * @param inSignInFlow Whether the existing flow is related to account sign-in.
+     * @param delegate The delegate invoked to interact with classes outside the module.
+     * @param windowAndroid Used to launch Intents with callbacks.
+     * @param activity The activity hosting this page.
+     * @param account The account currently signed in or selected for sign-in.
      */
     public DeviceLockCoordinator(boolean inSignInFlow, Delegate delegate,
             WindowAndroid windowAndroid, Activity activity, Account account) {

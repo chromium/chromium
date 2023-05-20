@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">हाल ही का कोई वीडियो नहीं मिला</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, आपका एडमिन प्रबंधित करता है, जानकारी</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> आइटम भेजे गए.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> फ़ाइलें चुनी गईं</translation>
 <translation id="3685122418104378273">मोबाइल डेटा का उपयोग करते समय, Google डिस्‍क समन्‍वयन डिफ़ॉल्‍ट रूप से अक्षम रहता है.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करें.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> का नेटवर्क <ph name="NETWORK_INDEX" />, चालू नहीं किया गया, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> इमेज</translation>
 <translation id="5534520101572674276">आकार की गणना कर रहा है</translation>
 <translation id="554153475311314364">ग्रीक ट्रांसलिट्रेशन</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> फ़ोल्डर चुने गए</translation>
 <translation id="5580591966435005537">वर्चुअल मशीन</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">विराम चिह्न की चौड़ाई 'सबसे ज़्यादा' पर सेट है</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">पैट्टाशोटे कीबोर्ड के साथ थाई</translation>
 <translation id="57383366388012121">पिछले महीने</translation>
 <translation id="5756666464756035725">हंगेरियाई QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> आइटम चुने गए</translation>
 <translation id="5763377084591234761">जर्मन (स्विट्ज़रलैंड)</translation>
 <translation id="5769519078756170258">अपवाद के लिए होस्ट या डोमेन</translation>
 <translation id="5775750595919327203">उर्दू</translation>
@@ -917,6 +920,7 @@
 <translation id="8264024885325823677">इस सेटिंग को आपका एडमिन मैनेज करता है.</translation>
 <translation id="8269755669432358899">फ़ाइल के लिए सुझाव पैनल को छोटा करें</translation>
 <translation id="8280151743281770066">आर्मेनियाई फ़ोनेटिक</translation>
+<translation id="8285791779547722821"><ph name="ORIGINAL_MIME_TYPE" /> को एन्क्रिप्ट (सुरक्षित) किया गया है</translation>
 <translation id="8294431847097064396">स्रोत</translation>
 <translation id="8297012244086013755">हंगुल 3 सेट ('Shift की' की ज़रूरत नहीं)</translation>
 <translation id="8299269255470343364">जापानी</translation>

@@ -32,7 +32,7 @@ struct CONTENT_EXPORT AttributionConfig {
     int64_t max_attribution_reporting_origins = 10;
 
     // Maximum number of attributions for a given <source site, destination
-    // site, reporting origin> in `time_window`.
+    // site, reporting site> in `time_window`.
     int64_t max_attributions = 100;
 
     // When adding new members, the corresponding `Validate()` definition and
@@ -98,8 +98,8 @@ struct CONTENT_EXPORT AttributionConfig {
 
     // Default constants for the report delivery time to be used when declaring
     // field trial params.
-    static constexpr base::TimeDelta kDefaultMinDelay = base::Minutes(10);
-    static constexpr base::TimeDelta kDefaultDelaySpan = base::Minutes(50);
+    static constexpr base::TimeDelta kDefaultMinDelay = base::TimeDelta();
+    static constexpr base::TimeDelta kDefaultDelaySpan = base::Minutes(10);
 
     // Controls the report delivery time.
     base::TimeDelta min_delay = kDefaultMinDelay;
@@ -123,8 +123,8 @@ struct CONTENT_EXPORT AttributionConfig {
 
   // Controls the maximum number of distinct attribution destinations that can
   // be in storage at any time for sources with the same <source site, reporting
-  // origin>.
-  int max_destinations_per_source_site_reporting_origin = 100;
+  // site>.
+  int max_destinations_per_source_site_reporting_site = 100;
 
   RateLimitConfig rate_limit;
   EventLevelLimit event_level_limit;

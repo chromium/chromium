@@ -692,6 +692,8 @@ WGPUFeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return WGPUFeatureName_BGRA8UnormStorage;
     case V8GPUFeatureName::Enum::kShaderF16:
       return WGPUFeatureName_ShaderF16;
+    case V8GPUFeatureName::Enum::kFloat32Filterable:
+      return WGPUFeatureName_Float32Filterable;
   }
 }
 

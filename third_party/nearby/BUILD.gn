@@ -6,6 +6,7 @@ import("//third_party/protobuf/proto_library.gni")
 if (is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
 }
+import("//build/config/rust.gni")
 
 # Nearby Config
 config("nearby_include_config") {
@@ -23,6 +24,10 @@ config("nearby_include_config") {
 
 config("nearby_defines") {
   defines = [ "NEARBY_CHROMIUM=1" ]
+}
+
+config("nearby_rust_defines") {
+  defines = [ "USE_RUST_LDT" ]
 }
 
 ###############################################################################
@@ -887,6 +892,10 @@ source_set("presence_internal") {
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl:boringssl",
   ]
+  if (enable_rust && enable_rust_boringssl) {
+    public_deps += [ "//third_party/beto-core:ldt_np_adv_ffi" ]
+    public_configs += [ ":nearby_rust_defines" ]
+  }
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }

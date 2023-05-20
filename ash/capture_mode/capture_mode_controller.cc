@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -50,6 +50,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -604,7 +605,18 @@ void CaptureModeController::SetRecordingType(RecordingType recording_type) {
   }
 }
 
-void CaptureModeController::Start(CaptureModeEntryType entry_type) {
+void CaptureModeController::Start(CaptureModeEntryType entry_type,
+                                  OnSessionStartAttemptCallback callback) {
+  // To be invoked at the exit of this function or
+  // `OnDlpRestrictionCheckedAtSessionInit()`.
+  base::ScopedClosureRunner deferred_runner(base::BindOnce(
+      [](base::WeakPtr<CaptureModeController> controller,
+         OnSessionStartAttemptCallback callback, bool was_active) {
+        std::move(callback).Run(!was_active && controller &&
+                                controller->IsActive());
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), IsActive()));
+
   if (capture_mode_session_ || pending_dlp_check_)
     return;
 
@@ -616,7 +628,14 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
   pending_dlp_check_ = true;
   delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
       &CaptureModeController::OnDlpRestrictionCheckedAtSessionInit,
-      weak_ptr_factory_.GetWeakPtr(), entry_type));
+      weak_ptr_factory_.GetWeakPtr(), entry_type, deferred_runner.Release()));
+}
+
+void CaptureModeController::StartForGameDashboard(aura::Window* game_window) {
+  CHECK(chromeos::wm::IsGameWindow(game_window));
+  CaptureModeBehavior* behavior = GetBehavior(BehaviorType::kGameDashboard);
+  behavior->SetPreSelectedWindow(game_window);
+  Start(CaptureModeEntryType::kGameDashboard);
 }
 
 void CaptureModeController::Stop() {
@@ -763,6 +782,7 @@ void CaptureModeController::PerformCapture() {
   DCHECK(!pending_dlp_check_);
   pending_dlp_check_ = true;
   capture_mode_session_->OnWaitingForDlpConfirmationStarted();
+  capture_mode_session_->MaybeDismissUserNudgeForever();
   delegate_->CheckCaptureOperationRestrictionByDlp(
       capture_params->window, capture_params->bounds,
       base::BindOnce(
@@ -1243,7 +1263,8 @@ void CaptureModeController::FinalizeRecording(bool success,
   delegate_->OnServiceRemoteReset();
   recording_service_client_receiver_.reset();
   drive_fs_quota_delegate_receiver_.reset();
-  CaptureModeBehavior* behavior = video_recording_watcher_->active_behavior();
+  const CaptureModeBehavior* behavior =
+      video_recording_watcher_->active_behavior();
   video_recording_watcher_.reset();
   capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
 
@@ -1264,9 +1285,9 @@ void CaptureModeController::TerminateRecordingUiElements() {
       IDS_ASH_SCREEN_CAPTURE_ALERT_RECORDING_STOPPED);
 
   // Reset the camera selection if it was auto-selected in the
-  // projector-initiated capture mode session after video recording is completed
+  // client-initiated capture mode session after video recording is completed
   // to avoid the camera selection settings of the normal capture mode session
-  // being overridden by the projector-initiated capture mode session.
+  // being overridden by the client-initiated capture mode session.
   camera_controller_->MaybeRevertAutoCameraSelection();
 
   video_recording_watcher_->ShutDown();
@@ -1391,7 +1412,7 @@ void CaptureModeController::OnVideoFileSaved(
     const base::FilePath& saved_video_file_path,
     const gfx::ImageSkia& video_thumbnail,
     bool success,
-    CaptureModeBehavior* behavior) {
+    const CaptureModeBehavior* behavior) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   if (!success) {
@@ -1410,8 +1431,8 @@ void CaptureModeController::OnVideoFileSaved(
                               saved_video_file_path);
       }
 
-      // We only record the file size histogram if it's not a projector-
-      // initiated recording.
+      // We only record the file size histogram if the recording is not saved on
+      // DriveFs.
       blocking_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE, base::BindOnce(&GetFileSizeInKB, saved_video_file_path),
           base::BindOnce(&RecordVideoFileSizeKB, is_gif));
@@ -1678,9 +1699,8 @@ void CaptureModeController::BeginVideoRecording(
   LaunchRecordingServiceAndStartRecording(
       capture_params, std::move(cursor_overlay_receiver), effective_audio_mode);
 
-  // Intentionally record the metrics before
-  // `MaybeRestoreCachedCaptureConfigurations` as `enable_demo_tools_` may be
-  // overwritten otherwise.
+  // Intentionally record the metrics before `DetachFromSession` as
+  // `enable_demo_tools_` may be overwritten otherwise.
   RecordRecordingStartsWithDemoTools(enable_demo_tools_, active_behavior);
 
   // Restore the cached capture mode configs when the capture mode session ends
@@ -1789,8 +1809,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
     return;
   }
 
-  // In Projector mode, the creation of the DriveFS folder that will host the
-  // video is asynchronous. We don't want the user to be able to bail out of the
+  // The creation of the required capture folder that will host the video is
+  // asynchronous. We don't want the user to be able to bail out of the
   // session at this point, since we don't want to create that folder in vain.
   capture_mode_session_->set_can_exit_on_escape(false);
 
@@ -1835,7 +1855,10 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
 
 void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
     CaptureModeEntryType entry_type,
+    base::OnceClosure at_exit_closure,
     bool proceed) {
+  base::ScopedClosureRunner deferred_runner(std::move(at_exit_closure));
+
   pending_dlp_check_ = false;
 
   if (!proceed) {
@@ -1896,14 +1919,13 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   capture_mode_session_ =
       std::make_unique<CaptureModeSession>(this, GetBehavior(behavior_type));
   capture_mode_session_->Initialize();
-
   camera_controller_->OnCaptureSessionStarted();
 }
 
 void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
     const gfx::ImageSkia& video_thumbnail,
     bool success,
-    CaptureModeBehavior* behavior,
+    const CaptureModeBehavior* behavior,
     bool proceed) {
   const bool should_delete_file = !proceed;
   const auto video_file_path = current_video_file_path_;

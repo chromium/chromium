@@ -109,6 +109,10 @@ class DownloadDatabase {
   // Returns true if able to add the finished column to downloads slices table.
   bool MigrateDownloadSliceFinished();
 
+  // Returns true if able to rename the by_ext_id column to by_ext_or_web_app_id
+  // and add the is_by_web_app column.
+  bool MigrateDownloadByWebApp();
+
   // Creates the downloads table if needed.
   bool InitDownloadTable();
 

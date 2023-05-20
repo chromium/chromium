@@ -24,6 +24,7 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
+  import("//build/config/features.gni")
   import("//components/safe_browsing/buildflags.gni")
 } else if (is_mac) {
   import("//build/apple/tweak_info_plist.gni")
@@ -57,6 +58,7 @@ if (is_android) {
       "enable_print_preview=$enable_print_preview",
       "enable_screen_ai_service=$enable_screen_ai_service",
       "enable_vr=$enable_vr",
+      "use_blink=$use_blink",
     ]
 
     # components_strings contains strings from all components. WebLayer
