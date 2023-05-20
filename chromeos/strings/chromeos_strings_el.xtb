@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Απενεργοποίηση σκούρου θέματος</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
 <translation id="1827738518074806965">Γκαλερί</translation>
+<translation id="1836553715834333258">Χρώμα συστήματος</translation>
 <translation id="1838374766361614909">Διαγραφή αναζητήσεων</translation>
+<translation id="1840474674287087346">Χρώμα επιφάνειας εργασίας</translation>
 <translation id="1851218745569890714">Συνεδρίαση με βίντεο</translation>
 <translation id="1852934301711881861">Εγκατάσταση ChromeOS</translation>
 <translation id="1856388568474281774">Κάτω βέλος</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Σάρωση σε</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Αποτυχία ping της μη προεπιλεγμένης πύλης δικτύου.</translation>
+<translation id="4500966230243561393">Χρώμα διεπαφής</translation>
 <translation id="4503223151711056411">Αριστερό βέλος</translation>
 <translation id="4507392511610824664">αύξηση φωτεινότητας</translation>
 <translation id="4511264077854731334">Πύλη</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Διακοπή δοκιμής</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Όταν η οθόνη είναι αδρανής, να εμφανίζονται φωτογραφίες, η ώρα καθώς και πληροφορίες καιρού και μέσων.</translation>
+<translation id="5035083460461104704">Χρώμα θέματος</translation>
 <translation id="5038292761217083259">πολύχρωμο πληκτρολόγιο</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
 <translation id="5049856988445523908">Κλειδωμένη SIM (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Ουδέτερο</translation>
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
 <translation id="763165478673169849">Ώρα τελευταίας ενημέρωσης</translation>
+<translation id="7633068090678117093">Εικόνα φόντου</translation>
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="765159867434478292">Διαχωρισμός</translation>
 <translation id="7656388927906093505">Η συσκευή είναι ποντίκι.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Ομότιμη</translation>
 <translation id="8930622219860340959">Ασύρματο</translation>
 <translation id="8936793075252196307">Διεύθυνση IP εφαρμογής-πελάτη</translation>
+<translation id="8944651180182756621">Χρώμα εφαρμογής εκκίνησης</translation>
 <translation id="894617464444543719">Η συσκευή είναι τηλέφωνο.</translation>
 <translation id="8957423540740801332">δεξιά</translation>
 <translation id="8968751544471797276">Ρυθμός φόρτισης</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Εκτέλεση δοκιμής μνήμης</translation>
 <translation id="9161276708550942948">πλήκτρο διαστήματος</translation>
 <translation id="9173638680043580060">Απομένει λιγότερο από ένα λεπτό</translation>
+<translation id="9174334653006917325">Χρώμα διεπαφής χρήστη</translation>
 <translation id="917720651393141712">Δοκιμή</translation>
 <translation id="9188992814426075118">Μπορεί να γίνει αυτόματη αντιστοίχιση του πληκτρολογίου με την ταπετσαρία σας</translation>
 <translation id="9189000703457422362">Δεν είναι δυνατή η σύνδεση σε αυτό το δίκτυο με χρήση APN που εντοπίζονται αυτόματα. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας για περισσότερες πληροφορίες.</translation>

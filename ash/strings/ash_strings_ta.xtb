@@ -184,6 +184,7 @@
 <translation id="1774796056689732716">கேலெண்டர், <ph name="CURRENT_MONTH_YEAR" />, தற்போது <ph name="DATE" /> என்ற தேதி தேர்ந்தெடுக்கப்பட்டுள்ளது.</translation>
 <translation id="1787955149152357925">முடக்கு</translation>
 <translation id="181103072419391116">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
+<translation id="1815245884418711390">ஹாட்ஸ்பாட்டை இயக்கும் அல்லது முடக்கும். ஹாட்ஸ்பாட் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="1816896987747843206">கேமராவைப் பயன்படுத்த அனுமதி கேட்கும் ஆப்ஸ் மற்றும் இணையதளங்கள் அனைத்திற்கும் கேமராவிற்கான அணுகலை இது வழங்கும்</translation>
 <translation id="1823280932251546115">நிலைத் தட்டு, நேரம் <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -242,6 +243,7 @@
 <translation id="2023558322300866873">எப்போது வேண்டுமானாலும் பேக்கெட் கேப்ச்சரை நிறுத்தலாம்</translation>
 <translation id="2034971124472263449">பரவாயில்லை, சேமி</translation>
 <translation id="2049240716062114887">டெஸ்க் பெயர் <ph name="DESK_NAME" /> என மாற்றப்பட்டது</translation>
+<translation id="206377500836174974">முழுவதும்</translation>
 <translation id="2064048859448024834">கேமரா மாதிரிக்காட்சி இயக்கத்தில் உள்ளது</translation>
 <translation id="2067602449040652523">கீபோர்டு ஒளிர்வு</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ஐ இயக்கும்/முடக்கும். <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
@@ -294,6 +296,7 @@
 <translation id="2339073806695260576">குறிப்பெடுக்க, ஸ்கிரீன்ஷாட்டை எடுக்க, லேசர் பாயிண்டர் அல்லது உருப்பெருக்கி ஆகியவற்றைப் பயன்படுத்த, ஷெல்ஃபில் உள்ள ஸ்டைலஸ் பட்டனைத் தட்டவும்.</translation>
 <translation id="2341729377289034582">செங்குத்து நிலையில் பூட்டப்பட்டது</translation>
 <translation id="2345226652884463045">திருத்தம் செய்யவேண்டிய உரையைத் தேர்ந்தெடுக்க enter அல்லது search + space விசைகளை அழுத்தவும்.</translation>
+<translation id="2349785431103945039">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். ஹாட்ஸ்பாட்டைப் பயன்படுத்த மொபைல் நெட்வொர்க் உடன் இணைக்கவும்.</translation>
 <translation id="2350794187831162545">சாதனம் ஆஃப்லைனில் இருந்தாலும் நீங்கள் <ph name="LANGUAGE" /> மொழியில் பேசியவை செயலாக்கப்படுவதுடன் அந்த மொழியிலேயே எழுதப்படும். சொல்வது எழுதப்படும் மொழியை ‘அமைப்புகள் &gt; அணுகல்தன்மை’ என்பதற்குச் சென்று மாற்றலாம்.</translation>
 <translation id="2352467521400612932">ஸ்டைலஸ் அமைப்புகள்</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ஐச் செயல்படுத்துகிறது</translation>
@@ -337,6 +340,7 @@
 <translation id="2531025035050312891">சாதனம் மெதுவாகச் செயல்படுகிறது</translation>
 <translation id="2542089167727451762">உங்கள் சுயவிவரப் படத்தைத் தட்டவும்</translation>
 <translation id="254900897760075745">தேர்ந்தெடுத்துள்ள உள்ளடக்கத்தைக் கிளிப்போர்டுக்கு நகலெடுக்கும்</translation>
+<translation id="2549711466868162843">லைட்டிங்கை மேம்படுத்து</translation>
 <translation id="2549985041256363841">பதிவுசெய்யத் தொடங்கு</translation>
 <translation id="255671100581129685">பொது அமர்வில் Google அசிஸ்டண்ட்டைப் பயன்படுத்த முடியாது.</translation>
 <translation id="256712445991462162">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
@@ -430,6 +434,7 @@
 <translation id="3009178788565917040">வெளியீடு</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="301282384882049174">உங்கள் நிர்வாகி பகிர்ந்துள்ளார்</translation>
+<translation id="301584155502740476">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். ஹாட்ஸ்பாட் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="3018135054368884502">மீடியாவை முன்னோக்கி நகர்த்து</translation>
 <translation id="3033545621352269033">இயக்கப்பட்டுள்ளது</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> உடன் ஒன்றிணைக்கும்</translation>
@@ -490,6 +495,7 @@
 <translation id="3291862315280588024">முந்தைய சொல்லின் தொடக்கத்திற்கு நகர்த்து</translation>
 <translation id="3294437725009624529">கெஸ்ட்</translation>
 <translation id="3298690094479023523">உங்கள் பின்னையோ (PIN) கடவுச்சொல்லையோ இப்போதும் சரிபார்க்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
+<translation id="3300193645498960160">ஒலியடக்கப்பட்டிருக்கும்போது நீங்கள் பேசினால் அது குறித்த அறிவிப்பு காட்டப்படும். உங்கள் குரல் யாருக்கும் கேட்காது.</translation>
 <translation id="3307642347673023554">லேப்டாப் பயன்முறைக்கு மாற்றப்பட்டது</translation>
 <translation id="3308453408813785101">அப்போதும் <ph name="USER_EMAIL_ADDRESS" /> பின்னர் உள்நுழையலாம்.</translation>
 <translation id="3321628682574733415">தவறான பெற்றோர் அணுகல் குறியீடு</translation>
@@ -574,6 +580,7 @@
 <translation id="3621202678540785336">உள்ளீடு</translation>
 <translation id="3621712662352432595">ஆடியோ அமைப்புகள்</translation>
 <translation id="3626281679859535460">ஒளிர்வு</translation>
+<translation id="3629640897379005903">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். ஹாட்ஸ்பாட் முடக்கப்படுகிறது.</translation>
 <translation id="3630697955794050612">முடக்கப்பட்டுள்ளது</translation>
 <translation id="3631369015426612114">பின்வருவனவற்றிலிருந்து வரும் அறிவிப்புகளை அனுமதி:</translation>
 <translation id="3633097874324966332">உங்கள் சாதனத்தை இணைக்க, புளூடூத் அமைப்புகளைத் திறக்கவும்</translation>
@@ -705,6 +712,7 @@
 <translation id="423685346499232137">தற்சமயம் உள்ளடக்கத்தை நகலெடுக்கவோ ஒட்டவோ முடியாது</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">மேலோட்டப் பயன்முறை</translation>
+<translation id="4240756737570479726">முடக்குகிறது...</translation>
 <translation id="4242533952199664413">அமைப்புகளைத் திற</translation>
 <translation id="4247123849143712100">புதுப்பித்து ஷட் டவுன் செய்</translation>
 <translation id="4250229828105606438">ஸ்கிரீன்ஷாட்</translation>
@@ -843,6 +851,7 @@
 <translation id="4864369630010738180">உள்நுழைகிறீர்கள்...</translation>
 <translation id="4864648187878336334">டெஸ்க் 15</translation>
 <translation id="4868492592575313542">செயல்படுத்தப்பட்டது</translation>
+<translation id="4871905435473761992">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். உங்கள் மொபைல் நெட்வொர்க்கில் ஹாட்ஸ்பாட் பயன்படுத்த முடியாது.</translation>
 <translation id="4872237917498892622">Alt+தேடல் அல்லது Shift</translation>
 <translation id="4872852897273142380">புக்மார்க் பட்டியை ஃபோகஸ் செய் அல்லது ஹைலைட் செய் (காட்டப்பட்டால்)</translation>
 <translation id="4881695831933465202">திற</translation>
@@ -902,6 +911,7 @@
 <translation id="5104236669533825617">ஸ்க்ரீன்காஸ்ட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5107522548814527560">இணையம்</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">பின்னணியை மங்கலாக்கு</translation>
 <translation id="5117590920725113268">அடுத்த மாதத்தைக் காட்டு</translation>
 <translation id="5121628974188116412">பக்கத்தின் கீழ்ப்பக்கத்திற்குச் செல்லும்</translation>
 <translation id="5136175204352732067">வேறொரு கீபோர்டு இணைக்கப்பட்டது</translation>
@@ -914,6 +924,7 @@
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>
 <translation id="5170568018924773124">ஃபோல்டரில் காண்பி</translation>
 <translation id="5176318573511391780">திரையைப் பகுதியளவு ரெக்கார்டு செய்யும்</translation>
+<translation id="5187627942836026988">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். உங்கள் நிர்வாகி ஹாட்ஸ்பாட்டைத் தடுத்துள்ளார்.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> நிகழ்வுகள்</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> மற்றும் <ph name="IN_PLACE_APP" /> ஆப்ஸை ஒருங்கிணைத்து புதிய ஃபோல்டர் உருவாக்கப்பட்டது.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1086,6 +1097,7 @@
 <translation id="595202126637698455">செயல்திறனைத் தடமறிதல் இயக்கப்பட்டுள்ளது</translation>
 <translation id="5955304353782037793">ஆப்ஸ்</translation>
 <translation id="5958529069007801266">மேற்பார்வையிடப்படும் பயனர்</translation>
+<translation id="5961960957587052807">லைட்</translation>
 <translation id="5965524703725988602">டார்க் தீமினை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">சாளரத்தை ரெக்கார்டு செய்ய Enter பட்டனை அழுத்தவும்</translation>
 <translation id="5978382165065462689">தொலைநிலை உதவி மூலம் உங்கள் திரையின் கட்டுப்பாட்டைப் பகிர்கிறது.</translation>
@@ -1258,6 +1270,7 @@
 <translation id="6752912906630585008">டெஸ்க் <ph name="REMOVED_DESK" /> அகற்றப்பட்டு டெஸ்க் <ph name="RECEIVE_DESK" /> உடன் சேர்க்கப்பட்டது</translation>
 <translation id="6753390234084146956">பக்கங்கள்</translation>
 <translation id="6757237461819837179">மீடியா எதுவும் பிளேயாகவில்லை</translation>
+<translation id="6759628406555734414">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். ஹாட்ஸ்பாட் இயக்கப்படுகிறது.</translation>
 <translation id="6768043681523654438">சேமிப்பகம்</translation>
 <translation id="6777216307882431711">இணைக்கப்பட்ட USB-C சாதனங்களுக்கு சார்ஜ் ஏற்றப்படுகிறது</translation>
 <translation id="6781002679438061620">டெஸ்க் 9</translation>
@@ -1282,6 +1295,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> வி</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{இன்னும் ஓர் இலக்கத்தை உள்ளிட வேண்டும்}other{இன்னும் # இலக்கங்களை உள்ளிட வேண்டும்}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவது இடைநிறுத்தப்பட்டது</translation>
+<translation id="6874854809828346832">ஹாட்ஸ்பாட் விவரங்களைக் காட்டும். ஹாட்ஸ்பாட் இயக்கப்பட்டுள்ளது.</translation>
 <translation id="6878400149835617132">ஷார்ட்கட் முடக்கப்பட்டுள்ளது</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ஆப்ஸ்}other{# ஆப்ஸ்}}</translation>
 <translation id="6884665277231944629">இன்றைய தேதிக்குச் செல்லும்</translation>
@@ -1291,6 +1305,7 @@
 <translation id="6896758677409633944">நகலெடு</translation>
 <translation id="6901883536534621389">அடுத்ததற்குச் செல்ல, சைகைகளைப் பயன்படுத்துங்கள்</translation>
 <translation id="6919251195245069855">உங்கள் ஸ்மார்ட் கார்டை அடையாளம் காண முடியவில்லை. மீண்டும் முயலவும்.</translation>
+<translation id="6920245099716267363">ஹாட்ஸ்பாட்டை இயக்கும் அல்லது முடக்கும். ஹாட்ஸ்பாட் இயக்கப்பட்டுள்ளது, ஒரு சாதனம் இணைக்கப்பட்டுள்ளது.</translation>
 <translation id="6931576957638141829">இதில் சேமி</translation>
 <translation id="6941333068993625698">கருத்தைச் சமர்ப்பி</translation>
 <translation id="6942518653766415536">ரெக்கார்டிங் வடிவமைப்பு மெனு</translation>
@@ -1380,6 +1395,7 @@
 <translation id="7378203170292176219">ரெக்கார்டு செய்வதற்கான பகுதியைத் தேர்ந்தெடுக்க இழுக்கவும்</translation>
 <translation id="7378594059915113390">மீடியா கட்டுப்பாடுகள்</translation>
 <translation id="7378889811480108604">பேட்டரி சேமிப்பான் பயன்முறை முடக்கத்தில் உள்ளது</translation>
+<translation id="7382640522316003298">ஹாட்ஸ்பாட்டை இயக்கும் அல்லது முடக்கும். ஹாட்ஸ்பாட் இயக்கப்பட்டுள்ளது, <ph name="DEVICECOUNT" /> சாதனங்கள் இணைக்கப்பட்டுள்ளன.</translation>
 <translation id="7382680553121047388">இயக்கு</translation>
 <translation id="7384028040782072252">உங்கள் ஆப்ஸை மறுவரிசைப்படுத்த, எங்கேயாவது வலது கிளிக் செய்யவும்</translation>
 <translation id="7386767620098596324">நெட்வொர்க் இணைப்பை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" />.</translation>
@@ -1430,6 +1446,7 @@
 <translation id="7579778809502851308">திரையைப் படமெடு</translation>
 <translation id="7593891976182323525">தேடல் அல்லது Shift</translation>
 <translation id="7600875258240007829">எல்லா அறிவிப்புகளையும் காட்டு</translation>
+<translation id="7601417191446344542">மைக்கை முடக்கத்திலேயே வைத்துப் பேசும்போது உங்களுக்குத் தெரிவிக்கவா?</translation>
 <translation id="7607002721634913082">இடைநிறுத்தப்பட்டது</translation>
 <translation id="7609951632080598826">Calendar காட்சி, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">கேமரா மீண்டும் இணைக்கப்பட்டது.</translation>
@@ -1554,6 +1571,7 @@
 <translation id="8131740175452115882">உறுதிப்படுத்து</translation>
 <translation id="8131994907636310308">வரிசைப்படுத்துவதற்கான டோஸ்ட்டை மூடும்</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> உடன் இணைக்கப்பட்டது</translation>
+<translation id="8135163608236671037">ஹாட்ஸ்பாட்டை இயக்கும் அல்லது முடக்கும். ஹாட்ஸ்பாட் இயக்கப்பட்டுள்ளது, எந்தச் சாதனமும் இணைக்கப்படவில்லை.</translation>
 <translation id="8138705869659070104">சாதன அமைவிற்குப் பிறகு இயக்கு</translation>
 <translation id="813913629614996137">துவக்குகிறது...</translation>
 <translation id="8142441511840089262">இரு கிளிக்</translation>
@@ -1734,6 +1752,7 @@
 <translation id="8990809378771970590"><ph name="IME_NAME" /> பயன்படுத்தப்படுகிறது</translation>
 <translation id="8991617137207906966">கலர் இன்வெர்ஷன் பயன்முறை இயக்கப்பட்டது. முடக்க Ctrl+Search+H பட்டன்களை மீண்டும் அழுத்தவும்.</translation>
 <translation id="899350903320462459">அறிவிப்பில் வந்த செயலைச் செய்வதற்கு, சாதனத்தை <ph name="LOGIN_ID" /> ஆக அன்லாக் செய்யவும்</translation>
+<translation id="8993733019280019776">பேசுகிறீர்களா? உங்கள் மைக் முடக்கப்பட்டுள்ளது. மைக்கை இயக்க அதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="9000771174482730261">சேமிப்பிடத்தை நிர்வகியுங்கள்</translation>
 <translation id="9005984960510803406">Crosh சாளரத்தைத் திறக்கும்</translation>
 <translation id="9017320285115481645">Family Link பெற்றோர் அணுகல் குறியீட்டை உள்ளிடவும்.</translation>

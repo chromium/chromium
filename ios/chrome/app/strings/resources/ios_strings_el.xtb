@@ -379,6 +379,7 @@
 <translation id="3464194322481586217">Δεν ήταν δυνατή η παρακολούθηση της τιμής.</translation>
 <translation id="3469166899695866866">Διακοπή λήψης;</translation>
 <translation id="3470502288861289375">Αντιγραφή…</translation>
+<translation id="3471148582064653480">Συγχρονίστε τους κωδικούς πρόσβασης, το ιστορικό και πολλά άλλα.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{για {COUNT} ιστότοπο ή εφαρμογή}other{για {COUNT} ιστοτόπους και εφαρμογές}}</translation>
 <translation id="3474624961160222204">Συνέχεια <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Μήνας λήξης</translation>
@@ -399,6 +400,7 @@
 <translation id="3551320343578183772">Κλείσιμο Καρτέλας</translation>
 <translation id="3565207542107370586">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="3575234738189584619">Αναζήτηση με το Lens</translation>
+<translation id="3577555362230509265">Χρησιμοποιήστε το Chrome σε άλλες εφαρμογές.</translation>
 <translation id="3581564640715911333">Προσφορά για μετάφραση σελίδων σε άλλες γλώσσες</translation>
 <translation id="3588820906588687999">Άνοιγμα εικόνας σε νέα καρτέλα</translation>
 <translation id="3595252146048399851">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />. Η Google μπορεί να εξατομικεύει την Αναζήτηση και άλλες υπηρεσίες με βάση το ιστορικό σας.</translation>

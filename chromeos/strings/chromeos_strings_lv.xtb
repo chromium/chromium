@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Atspējot tumšo motīvu</translation>
 <translation id="1807246157184219062">Gaišs</translation>
 <translation id="1827738518074806965">Mākslas galerija</translation>
+<translation id="1836553715834333258">Sistēmas krāsa</translation>
 <translation id="1838374766361614909">Notīrīt meklēšanas vaicājumu</translation>
+<translation id="1840474674287087346">Darbvirsmas krāsa</translation>
 <translation id="1851218745569890714">Videokonferences</translation>
 <translation id="1852934301711881861">Instalēt Chrome OS Flex</translation>
 <translation id="1856388568474281774">Lejupvērstais bulttaustiņš</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Skenēto attēlu saglabāšanas vieta</translation>
 <translation id="4479639480957787382">tīkls Ethernet</translation>
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
+<translation id="4500966230243561393">Saskarnes krāsa</translation>
 <translation id="4503223151711056411">Kreisais bulttaustiņš</translation>
 <translation id="4507392511610824664">palielināt spilgtumu</translation>
 <translation id="4511264077854731334">Portāls</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Apturēt pārbaudi</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kad ekrāns ir īslaicīgi neaktīvs, tiek rādīti fotoattēli, laiks, informācija par laikapstākļiem un multivides informācija.</translation>
+<translation id="5035083460461104704">Motīva krāsa</translation>
 <translation id="5038292761217083259">daudzkrāsaina tastatūra</translation>
 <translation id="5039804452771397117">Atļaut</translation>
 <translation id="5049856988445523908">SIM karte bloķēta (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Neitrāls</translation>
 <translation id="7620771111601174153">Uzzināt vairāk palīdzības centrā</translation>
 <translation id="763165478673169849">Pēdējās atiestatīšanas laiks</translation>
+<translation id="7633068090678117093">Fona attēls</translation>
 <translation id="7648838807254605802">Liels HTTPS latentums</translation>
 <translation id="765159867434478292">Sadalīt</translation>
 <translation id="7656388927906093505">Ierīce ir pele.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Vienādranga ierīce</translation>
 <translation id="8930622219860340959">Bezvadu</translation>
 <translation id="8936793075252196307">Klienta IP adrese</translation>
+<translation id="8944651180182756621">Palaidēja krāsa</translation>
 <translation id="894617464444543719">Ierīce ir tālrunis.</translation>
 <translation id="8957423540740801332">pa labi</translation>
 <translation id="8968751544471797276">Uzlādes ātrums</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Veikt atmiņas pārbaudi</translation>
 <translation id="9161276708550942948">atstarpes taustiņš</translation>
 <translation id="9173638680043580060">Atlicis mazāk par minūti</translation>
+<translation id="9174334653006917325">Lietotāja saskarnes krāsa</translation>
 <translation id="917720651393141712">Testēt</translation>
 <translation id="9188992814426075118">Tastatūra var automātiski pielāgot jūsu fona tapeti.</translation>
 <translation id="9189000703457422362">Nevar izveidot savienojumu ar šo tīklu, izmantojot automātiski noteiktos APN. Lai iegūtu plašāku informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>

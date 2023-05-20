@@ -17,6 +17,7 @@
 <translation id="1100066534610197918">గ్రూప్‌లో కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="1103142993930332957">Chromeను మెరుగుపరచుకోవడంలో సహాయపడతారా?</translation>
 <translation id="1105960400813249514">స్క్రీన్ క్యాప్చర్</translation>
+<translation id="1108214977745280468">పేజీ గణాంకాలను చూడండి</translation>
 <translation id="1108938384783527433">హిస్టరీ సింక్</translation>
 <translation id="1110914759170138831">హైలైట్ కుదించబడింది</translation>
 <translation id="1111673857033749125">మీ ఇతర పరికరాల్లో సేవ్ చేసిన బుక్‌మార్క్‌లు ఇక్కడ చూపబడతాయి.</translation>
@@ -66,6 +67,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - దీనిని పంపిన పరికరం <ph name="DEVICE_NAME" /></translation>
 <translation id="1311657260431405215">ఈ QR కోడ్ URL కాదు: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="131655401280401879">తర్వాత మీరు ప్రొఫైల్ లాక్‌ను తీసివేస్తే, సేవ్ చేసిన మీ సమాచారం తీసివేయబడుతుంది.</translation>
 <translation id="1320912611264252795">బుక్‌మార్క్‌ను సేవ్ చేయడానికి సంబంధించిన దశల ఫోల్డర్‌లు ఫుల్-స్క్రీన్‌లో తెరవబడ్డాయి</translation>
 <translation id="1327257854815634930">నావిగేషన్ హిస్టరీ తెరిచి ఉంది</translation>
 <translation id="1331212799747679585">Chromeని అప్‌డేట్ చేయడం సాధ్యపడదు. మరిన్ని ఆప్షన్‌లు</translation>
@@ -180,6 +182,7 @@
 <translation id="1995884366040846621">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీని<ph name="END_LINK1" /> చూడండి.</translation>
 <translation id="200114059308480249">Googleలో ఏదైనా సెర్చ్ చేసినప్పుడు, ఆ సెర్చ్ తాలూకు సందర్భోచిత టెక్స్ట్‌ను కూడా చేర్చాలనుకుంటున్నారా?</translation>
 <translation id="2009341475524975924">యాడ్ పనితీరును కొలవడానికి, సైట్‌ల మధ్య పరిమిత రకాల డేటా షేర్ చేయబడుతుంది, ఉదాహరణకు మీకు యాడ్ చూపబడిన రోజు సమయం మొదలైనవి.</translation>
+<translation id="201060170519281460">సింక్ చేసిన పాస్‌వర్డ్‌లు, పేమెంట్‌లు, మరిన్నింటితో సహా కారులో మీ సమాచారాన్ని ప్రొఫైల్ లాక్ సురక్షితంగా ఉంచుతుంది.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="2021896219286479412">ఫుల్-స్క్రీన్‌ సైట్ నియంత్రణలు</translation>
 <translation id="2038563949887743358">డెస్క్‌టాప్ సైట్ రిక్వెస్ట్‌ను ఆన్ చేయండి</translation>
@@ -257,6 +260,7 @@
 <translation id="250020030759455918">మీరు Chromeలో మీ <ph name="SITE_NAME" /> సైన్ ఇన్ స్టేటస్, బ్రౌజింగ్ డేటా ఇంకా సైట్ డేటాను చూస్తారు</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" />‌ను ఇన్‌స్టాల్ చేస్తోంది...</translation>
 <translation id="2513403576141822879">గోప్యతకు, సెక్యూరిటీకి, డేటా కలెక్షన్‌కు సంబంధించిన మరిన్ని సెట్టింగ్‌ల కోసం, <ph name="BEGIN_LINK" />సింక్‌ &amp; Google సర్వీసుల<ph name="END_LINK" />ను చూడండి</translation>
+<translation id="2517113738956581680">ఫుల్ సైజ్ షీట్</translation>
 <translation id="2517472476991765520">స్కాన్ చేయి</translation>
 <translation id="2523184218357549926">మీరు సందర్శించే పేజీల URLలను Googleకు పంపుతుంది</translation>
 <translation id="2527209463677295330">పేజీ తాలూకు ఎక్కువ టెక్స్ట్‌ను చేర్చడం ద్వారా, మీరు మెరుగైన ఫలితాలను చూడవచ్చు</translation>
@@ -281,6 +285,7 @@
 ప్రైవేట్ స్టేట్ టోకెన్‌లు వెబ్‌లో మెరుగైన గోప్యతను అందిస్తాయి, కానీ వీటిని ఉపయోగించి మీరు ఎవరు అనేది తెలుసుకోలేరు.</translation>
 <translation id="2581165646603367611">ఇది Chrome ముఖ్యమైనదిగా భావించని కుక్కీలు, కాష్, సైట్‌ల ఇతర డేటాను తీసివేస్తుంది.</translation>
 <translation id="2587052924345400782">సరికొత్త వెర్షన్ ఉంది</translation>
+<translation id="2589302627584222634">ప్రొఫైల్ లాక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="2593272815202181319">మోనోస్పేస్</translation>
 <translation id="2603212228005142861">మీ ప్రాధాన్యతలను మేనేజ్ చేయడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="260403163289591229">ఫాలో అవుతున్నారు</translation>
@@ -542,6 +547,7 @@
 <translation id="4035877632587724847">అనుమతించవద్దు</translation>
 <translation id="4036177530563778041">మీరు ఎక్కడ ఆపారో అక్కడి నుండి సులభంగా కొనసాగించండి</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను కొనసాగించండి</translation>
+<translation id="4044708993631234325">దిగువున ఉన్న షీట్</translation>
 <translation id="4045764304651014138">డేటా వినియోగం</translation>
 <translation id="405399507749852140">ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి</translation>
 <translation id="4056223980640387499">సెపియా</translation>
@@ -846,6 +852,7 @@
 <translation id="564667659802381754"><ph name="BEGIN_NEW" />కొత్త<ph name="END_NEW" /> గోప్యతా గైడ్</translation>
 <translation id="5648166631817621825">గత 7 రోజులు</translation>
 <translation id="5655963694829536461">మీ డౌన్‌లోడ్‌లను వెతకండి</translation>
+<translation id="5657871969392618475">మీ సమాచారాన్ని ప్రొఫైల్ లాక్ సురక్షితంగా ఉంచుతుంది</translation>
 <translation id="5659593005791499971">ఈమెయిల్‌</translation>
 <translation id="5665379678064389456"><ph name="APP_NAME" />లో ఈవెంట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="5683547024293500885">అప్‌డేట్‌లను Chrome చెక్ చేయలేదు</translation>
@@ -909,6 +916,7 @@
 <translation id="5964869237734432770">ఇమేజ్ వివరణలను ఆపివేయి</translation>
 <translation id="5966233851250124270">Chrome మీ ఎంపికను గుర్తుంచుకుంటుంది</translation>
 <translation id="5979084224081478209">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
+<translation id="5985186846584605773">మీ కారు కోసం ఒక ప్రొఫైల్ లాక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="5995726099713306770">పేజీని మళ్లీ డౌన్‌లోడ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="6000066717592683814">Googleని ఉంచు</translation>
 <translation id="6000203700195075278">మళ్లీ ఫాలో చేయి</translation>
@@ -1137,6 +1145,7 @@
 <translation id="7088681679121566888">Chrome అప్‌డేట్ చేసి ఉంది</translation>
 <translation id="7105047059074518658">పరికరాల్లో సులభంగా బ్రౌజ్ చేయడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="7106762743910369165">మీ బ్రౌజర్ మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
+<translation id="7116420572655804716">కారులో మీ సమాచారాన్ని సింక్ చేసి, మీ డేటాను సురక్షితంగా ఉంచడానికి, మీరు సెక్యూరిటీ సెట్టింగ్‌లలో తప్పనిసరిగా ప్రొఫైల్ లాక్‌ను క్రియేట్ చేయాలి. మీరు కారు ఎక్కిన ప్రతిసారి కోడ్ లేదా పాస్‌వర్డ్‌ను ఉపయోగిస్తారు.</translation>
 <translation id="7116588989735740310">మీరు ఇతర పరికరాలలో బ్రౌజ్ చేసిన సైట్‌లకు తిరిగి వెళ్లడానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి</translation>
 <translation id="7130504491556983216">మీరు వెబ్‌లో బ్రౌజ్ చేస్తున్నప్పుడు, ఇక్కడ ఆసక్తి ఉన్న అంశాల లిస్ట్ కనిపిస్తుంది</translation>
 <translation id="7138678301420049075">ఇతర</translation>
@@ -1358,6 +1367,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />మీ పరికరాలు<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="8209050860603202033">చిత్రాన్ని తెరువు</translation>
+<translation id="8215740705341534369">సైడ్ షీట్</translation>
 <translation id="8218622182176210845">మీ ఖాతాను నిర్వహించండి</translation>
 <translation id="8221401890884589479">మీకు అవసరం లేని సైట్‌లను మీరు బ్లాక్ చేయవచ్చు. అంతే కాక, 30 రోజుల కంటే పాతవైన సైట్‌లను Chrome ఆటోమేటిక్‌గా లిస్ట్ నుండి తొలగిస్తుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">ఫీడ్ కార్డ్ మెనూ</translation>
@@ -1560,6 +1570,7 @@
 <translation id="932327136139879170">హోమ్</translation>
 <translation id="938850635132480979">ఎర్రర్: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
+<translation id="950679278154734362">కారులో మీ సమాచారాన్ని సింక్ చేసి, మీ డేటాను సురక్షితంగా ఉంచడానికి, మీరు తప్పనిసరిగా ప్రొఫైల్ లాక్‌ను క్రియేట్ చేయాలి. మీరు కారు ఎక్కిన ప్రతిసారి కోడ్ లేదా పాస్‌వర్డ్‌ను ఉపయోగిస్తారు.</translation>
 <translation id="95817756606698420">చైనాలో వెతకడానికి <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />ను Chrome ఉపయోగించవచ్చు. మీరు దీనిని <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />లో మార్చవచ్చు.</translation>
 <translation id="962979164594783469">ఈ యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="96681097142096641">సరళంగా తయారయిన పేజీని చూపించాలా?</translation>
