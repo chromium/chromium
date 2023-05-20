@@ -94,6 +94,10 @@ Example:
   ```
     tools/mb/mb run -v --swarmed --internal --no-default-dimensions -d pool chrome.tests -d os Windows-10 out/WinDefault updater_tests
   ```
+* If `mb` command failed with error `isolate: original error: interactive login is required`, you need to login:
+  ```
+   tools/luci-go/isolate login
+  ```
 * If your test introduces dependency on a new app on macOS, you need to let
  `mb` tool know so it can correctly figure out the dependency. Example:
   https://crrev.com/c/3470143.
