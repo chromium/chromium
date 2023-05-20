@@ -9,8 +9,11 @@
 #include "base/big_endian.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "media/base/subsample_entry.h"
+#include "media/formats/mp4/bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
 #include "media/formats/mp4/writable_box_definitions.h"
@@ -41,6 +44,22 @@ constexpr uint32_t kTotalSizeLength = 4u;
 constexpr uint32_t kFlagsAndVersionLength = 4u;
 constexpr uint32_t kEntryCountLength = 4u;
 constexpr uint32_t kSampleSizeAndCount = 8u;
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+constexpr uint8_t kProfileIndicationNoChroma = 77;
+constexpr uint8_t kProfileIndication = 122;
+constexpr uint8_t kProfileCompatibility = 100;
+constexpr uint8_t kLevelIndication = 64;
+constexpr uint8_t kNALUUnitLength = 4;
+constexpr uint8_t kSPS[] = {0x67, 0x64, 0x00, 0x0C, 0xAC, 0xD9, 0x41,
+                            0x41, 0xFB, 0x01, 0x10, 0x00, 0x00, 0x03,
+                            0x00, 0x10, 0x00, 0x00, 0x00, 0x03, 0x01,
+                            0xE0, 0xF1, 0x42, 0x99, 0x60};
+constexpr uint8_t kPPS[] = {0x68, 0xEE, 0xE3, 0xCB, 0x22, 0xC0};
+constexpr uint8_t kChromaFormat = 0x3;
+constexpr uint8_t kLumaMinus8 = 0x4;
+constexpr uint8_t kChromaMinus8 = 0x4;
+#endif
 
 uint64_t ConvertTo1904TimeInSeconds(base::Time time) {
   base::Time time1904;
@@ -492,5 +511,116 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieMediaMultipleSampleBoxes) {
   EXPECT_TRUE(box_reader->Read4(&fourcc));
   EXPECT_EQ(mp4::FOURCC_STSD, static_cast<mp4::FourCC>(fourcc));
 }
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
+  // Tests `avc1` and its children box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::SampleDescription sample_description;
+
+  mp4::writable_boxes::VisualSampleEntry visual_sample_entry;
+  visual_sample_entry.coded_size = gfx::Size(kWidth, kHeight);
+  visual_sample_entry.compressor_name = "Chromium AVC Coding";
+
+  mp4::writable_boxes::AVCDecoderConfiguration avc = {};
+  avc.avc_config_record.version = 1;
+  avc.avc_config_record.profile_indication = kProfileIndicationNoChroma;
+  avc.avc_config_record.profile_compatibility = kProfileCompatibility;
+  avc.avc_config_record.avc_level = kLevelIndication;
+  avc.avc_config_record.length_size = kNALUUnitLength;
+
+  std::vector<uint8_t> sps(std::begin(kSPS), std::end(kSPS));
+  avc.avc_config_record.sps_list.emplace_back(sps);
+
+  std::vector<uint8_t> pps(std::begin(kPPS), std::end(kPPS));
+  avc.avc_config_record.pps_list.emplace_back(pps);
+
+  visual_sample_entry.avc_decoder_configuration = std::move(avc);
+
+  sample_description.visual_sample_entry = std::move(visual_sample_entry);
+
+  Mp4MovieSampleDescriptionBoxWriter box_writer(*context(), sample_description);
+  FlushAndWait(&box_writer);
+
+  // MediaInformation will have multiple sample boxes even though they
+  // not added exclusively.
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+
+  EXPECT_TRUE(box_reader->ScanChildren());
+
+  mp4::SampleDescription reader_sample_description;
+  reader_sample_description.type = mp4::kVideo;
+
+  EXPECT_TRUE(box_reader->ReadChild(&reader_sample_description));
+  EXPECT_EQ(1u, reader_sample_description.video_entries.size());
+
+  const auto& video_sample_entry = reader_sample_description.video_entries[0];
+  EXPECT_TRUE(video_sample_entry.IsFormatValid());
+  EXPECT_EQ(1, video_sample_entry.data_reference_index);
+  EXPECT_EQ(static_cast<uint16_t>(kWidth), video_sample_entry.width);
+  EXPECT_EQ(static_cast<uint16_t>(kHeight), video_sample_entry.height);
+  EXPECT_EQ(VideoCodecProfile::H264PROFILE_MAIN,
+            video_sample_entry.video_codec_profile);
+}
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAVCDecoderConfigurationRecord) {
+  // Tests `avc1` and its children box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::AVCDecoderConfiguration avc = {};
+  avc.avc_config_record.version = 1;
+  avc.avc_config_record.profile_indication = kProfileIndication;
+  avc.avc_config_record.profile_compatibility = kProfileCompatibility;
+  avc.avc_config_record.avc_level = kLevelIndication;
+  avc.avc_config_record.length_size = kNALUUnitLength;
+
+  std::vector<uint8_t> sps(std::begin(kSPS), std::end(kSPS));
+  avc.avc_config_record.sps_list.emplace_back(sps);
+
+  std::vector<uint8_t> pps(std::begin(kPPS), std::end(kPPS));
+  avc.avc_config_record.pps_list.emplace_back(pps);
+
+  avc.avc_config_record.chroma_format = kChromaFormat;
+  avc.avc_config_record.bit_depth_luma_minus8 = kLumaMinus8;
+  avc.avc_config_record.bit_depth_chroma_minus8 = kChromaMinus8;
+
+  Mp4MovieAVCDecoderConfigurationBoxWriter box_writer(*context(), avc);
+  FlushAndWait(&box_writer);
+
+  // MediaInformation will have multiple sample boxes even though they
+  // not added exclusively.
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+
+  EXPECT_TRUE(box_reader->ScanChildren());
+
+  mp4::AVCDecoderConfigurationRecord avc_config_reader;
+  EXPECT_TRUE(box_reader->ReadChild(&avc_config_reader));
+
+  EXPECT_EQ(kProfileIndication, avc_config_reader.profile_indication);
+  EXPECT_EQ(kProfileCompatibility, avc_config_reader.profile_compatibility);
+  EXPECT_EQ(kLevelIndication, avc_config_reader.avc_level);
+  EXPECT_EQ(kNALUUnitLength, avc_config_reader.length_size);
+
+  EXPECT_EQ(1u, avc_config_reader.sps_list.size());
+  EXPECT_EQ(1u, avc_config_reader.pps_list.size());
+  std::vector<uint8_t> sps1 = avc_config_reader.sps_list[0];
+  std::vector<uint8_t> pps1 = avc_config_reader.pps_list[0];
+  EXPECT_EQ(std::vector<uint8_t>(std::begin(kSPS), std::end(kSPS)), sps1);
+  EXPECT_EQ(std::vector<uint8_t>(std::begin(kPPS), std::end(kPPS)), pps1);
+
+  EXPECT_EQ((kChromaFormat & 0x3), avc_config_reader.chroma_format);
+  EXPECT_EQ((kLumaMinus8 & 0x7), avc_config_reader.bit_depth_luma_minus8);
+  EXPECT_EQ((kChromaMinus8 & 0x7), avc_config_reader.bit_depth_chroma_minus8);
+  EXPECT_EQ(0u, avc_config_reader.sps_ext_list.size());
+}
+
+#endif
 
 }  // namespace media

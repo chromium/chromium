@@ -5,11 +5,14 @@
 #ifndef MEDIA_FORMATS_MP4_WRITABLE_BOX_DEFINITIONS_H_
 #define MEDIA_FORMATS_MP4_WRITABLE_BOX_DEFINITIONS_H_
 
+#include <string>
 #include <vector>
 
 #include "base/time/time.h"
 #include "media/base/media_export.h"
+#include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/fourccs.h"
+#include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -31,10 +34,49 @@ struct MEDIA_EXPORT FullBox : Box {
   uint32_t flags : 24;
 };
 
+// Pixel Aspect Ratio Box (`pasp`) box.
+struct MEDIA_EXPORT PixelAspectRatioBox : Box {
+  // It has relative width and height of a pixel.
+  // We use default value of 1 for both of these values.
+};
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+// AVC DecoderConfiguration Record (`avcc`) box.
+struct MEDIA_EXPORT AVCDecoderConfiguration : Box {
+  // Refer AVCDecoderConfigurationRecord of box_definitions.h
+  // because it provides Serialize method and the format
+  // is hard to be correct.
+  AVCDecoderConfigurationRecord avc_config_record;
+};
+
+// VisualSampleEtnry (`avc1`) box.
+struct MEDIA_EXPORT VisualSampleEntry : Box {
+  gfx::Size coded_size;
+  // It is formatted in a fixed 32-byte field, with the first
+  // byte set to the number of bytes to be displayed, followed
+  // by that number of bytes of displayable data, and then padding
+  // to complete 32 bytes total (including the size byte).
+  // The field may be set to 0.
+
+  // It will have browser brand name.
+  std::string compressor_name;  // char compressor_name[32];
+  AVCDecoderConfiguration avc_decoder_configuration;
+  PixelAspectRatioBox pixel_aspect_ratio;
+};
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
 // Media sample table (`stsd`) box.
 struct MEDIA_EXPORT SampleDescription : FullBox {
+  SampleDescription();
+  ~SampleDescription();
+  SampleDescription(const SampleDescription&);
+  SampleDescription& operator=(const SampleDescription&);
+
   uint32_t entry_count;
-  // TODO: add optional `avc1` or `mp4a` box.
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  absl::optional<VisualSampleEntry> visual_sample_entry;
+#endif
 };
 
 // `stco`, `stsz`, `stts`, `stsc`' are mandatory boxes.

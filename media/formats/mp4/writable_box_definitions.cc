@@ -20,4 +20,10 @@ DataReference::~DataReference() = default;
 DataReference::DataReference(const DataReference&) = default;
 DataReference& DataReference::operator=(const DataReference&) = default;
 
+SampleDescription::SampleDescription() = default;
+SampleDescription::~SampleDescription() = default;
+SampleDescription::SampleDescription(const SampleDescription&) = default;
+SampleDescription& SampleDescription::operator=(const SampleDescription&) =
+    default;
+
 }  // namespace media::mp4::writable_boxes

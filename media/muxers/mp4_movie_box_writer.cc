@@ -586,6 +586,12 @@ Mp4MovieSampleDescriptionBoxWriter::Mp4MovieSampleDescriptionBoxWriter(
     const mp4::writable_boxes::SampleDescription& box)
     : Mp4BoxWriter(context), box_(box) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (box_.visual_sample_entry.has_value()) {
+    AddChildBox(std::make_unique<Mp4MovieVisualSampleEntryBoxWriter>(
+        context, box_.visual_sample_entry.value()));
+  }
+#endif
 }
 
 Mp4MovieSampleDescriptionBoxWriter::~Mp4MovieSampleDescriptionBoxWriter() =
@@ -598,7 +604,110 @@ void Mp4MovieSampleDescriptionBoxWriter::Write(BoxByteStream& writer) {
 
   writer.WriteU32(box_.entry_count);
 
+  WriteChildren(writer);
+
   writer.EndBox();
 }
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+// Mp4MovieVisualSampleEntryBoxWriter (`avc1`) class.
+Mp4MovieVisualSampleEntryBoxWriter::Mp4MovieVisualSampleEntryBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::VisualSampleEntry& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  AddChildBox(std::make_unique<Mp4MovieAVCDecoderConfigurationBoxWriter>(
+      context, box_.avc_decoder_configuration));
+  AddChildBox(std::make_unique<Mp4MoviePixelAspectRatioBoxBoxWriter>(context));
+}
+
+Mp4MovieVisualSampleEntryBoxWriter::~Mp4MovieVisualSampleEntryBoxWriter() =
+    default;
+
+void Mp4MovieVisualSampleEntryBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(mp4::FOURCC_AVC1);
+
+  writer.WriteU32(0);  // reserved.
+  writer.WriteU16(0);  // reserved.
+  writer.WriteU16(1);  // data_reference_index in `dref` box, 1 is start index.
+  writer.WriteU16(0);  // predefined1.
+  writer.WriteU16(1);  // reserved2.
+  writer.WriteU32(0);  // pre_defined2[0].
+  writer.WriteU32(0);  // pre_defined2[1].
+  writer.WriteU32(0);  // pre_defined2[2].
+  writer.WriteU16(box_.coded_size.width());
+  writer.WriteU16(box_.coded_size.height());
+  writer.WriteU32(0x00480000);  // horizontal resolution, 72 dpi.
+  writer.WriteU32(0x00480000);  // vertical resolution, 72 dpi.
+  writer.WriteU32(0);           // reserved3.
+  writer.WriteU16(1);           // frame_count.
+
+  // compressor_name.
+  constexpr size_t kMaxCompressorNameSize = 30;
+
+  std::string compressor_name = box_.compressor_name;
+  uint8_t compressor_name_size =
+      std::min(compressor_name.size(), kMaxCompressorNameSize);
+  writer.WriteU8(compressor_name_size);
+  compressor_name.resize(kMaxCompressorNameSize);
+  compressor_name.push_back(0);
+  writer.WriteString(compressor_name);  // It will write 31 chars.
+
+  writer.WriteU16(0x0018);  // depth.
+  writer.WriteU16(0xFFFF);  // pre_defined, -1.
+
+  WriteChildren(writer);
+
+  writer.EndBox();
+}
+
+// Mp4MovieAVCDecoderConfigurationBoxWriter (`avcC`) class.
+Mp4MovieAVCDecoderConfigurationBoxWriter::
+    Mp4MovieAVCDecoderConfigurationBoxWriter(
+        const Mp4MuxerContext& context,
+        const mp4::writable_boxes::AVCDecoderConfiguration& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieAVCDecoderConfigurationBoxWriter::
+    ~Mp4MovieAVCDecoderConfigurationBoxWriter() = default;
+
+void Mp4MovieAVCDecoderConfigurationBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(mp4::FOURCC_AVCC);
+
+  std::vector<uint8_t> write_data;
+  CHECK(box_.avc_config_record.Serialize(write_data));
+
+  writer.WriteBytes(write_data.data(), write_data.size());
+
+  writer.EndBox();
+}
+
+// Mp4MoviePixelAspectRatioBoxBoxWriter (`pasp`) class.
+Mp4MoviePixelAspectRatioBoxBoxWriter::Mp4MoviePixelAspectRatioBoxBoxWriter(
+    const Mp4MuxerContext& context)
+    : Mp4BoxWriter(context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MoviePixelAspectRatioBoxBoxWriter::~Mp4MoviePixelAspectRatioBoxBoxWriter() =
+    default;
+
+void Mp4MoviePixelAspectRatioBoxBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(mp4::FOURCC_PASP);
+
+  writer.WriteU32(1);  // Horizontal spacing.
+  writer.WriteU32(1);  // Vertical spacing.
+
+  writer.EndBox();
+}
+#endif
 
 }  // namespace media
