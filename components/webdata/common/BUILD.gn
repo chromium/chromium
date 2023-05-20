@@ -30,6 +30,7 @@ component("common") {
 
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//sql",
   ]
 }

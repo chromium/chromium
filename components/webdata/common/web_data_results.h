@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/webdata/common/webdata_export.h"
 
@@ -44,7 +45,7 @@ typedef enum {
   AUTOFILL_VIRTUAL_CARD_USAGE_DATA,  // WDResult<std::vector<std::unique_ptr<
                                      //     VirtualCardUsageData>>>
   AUTOFILL_UPI_RESULT,           // WDResult<std::string>
-#if !BUILDFLAG(IS_IOS)           //
+#if BUILDFLAG(USE_BLINK)         //
   PAYMENT_WEB_APP_MANIFEST,      // WDResult<std::vector<
                                  //     mojom::WebAppManifestSectionPtr>>
   PAYMENT_METHOD_MANIFEST,       // WDResult<std::vector<std::string>>
