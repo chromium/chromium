@@ -303,6 +303,11 @@ class CONTENT_EXPORT PrefetchContainer {
       const network::mojom::URLResponseHead* head);
 
  private:
+  // Update |prefetch_status_| and report prefetch status to
+  // DevTools without updating TriggeringOutcome.
+  void SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
+      PrefetchStatus prefetch_status);
+
   // Holds the state for the request for a single URL in the context of the
   // broader prefetch. A prefetch can request multiple URLs due to redirects.
   class SinglePrefetch {
