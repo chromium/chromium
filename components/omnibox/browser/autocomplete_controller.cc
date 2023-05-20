@@ -1630,14 +1630,12 @@ void AutocompleteController::OnUrlScoringModelDone(
        ++match_itr) {
     // `stripped_destination_url` is computed for all the matches before
     // executing the model and no new matches are added since the model is
-    // executed only when all the providers are done.
-    if (match_itr->stripped_destination_url.is_empty()) {
-      NOTREACHED()
-          << "ACMatch::stripped_destination_url expected but not computed for "
-          << AutocompleteMatchType::ToString(match_itr->type);
-      continue;
+    // executed only when all the providers are done. However not all matches
+    // have a stripped destination url. One known type is `SEARCH_OTHER_ENGINE`.
+    // TODO(crbug.com/1446688): Find a more unique way to identify the matches.
+    if (!match_itr->stripped_destination_url.is_empty()) {
+      url_to_match_map[match_itr->stripped_destination_url.spec()] = match_itr;
     }
-    url_to_match_map[match_itr->stripped_destination_url.spec()] = match_itr;
   }
 
   // The goal is to redistribute the existing relevance scores among the
