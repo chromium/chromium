@@ -4,6 +4,9 @@
 
 #include "wolvic/wolvic_main_parts.h"
 
+#include "content/public/common/result_codes.h"
+#include "net/android/network_change_notifier_factory_android.h"
+#include "net/base/network_change_notifier.h"
 #include "wolvic/wolvic_browser_context.h"
 
 namespace content {
@@ -11,6 +14,13 @@ namespace content {
 WolvicMainParts::WolvicMainParts() {}
 
 WolvicMainParts::~WolvicMainParts() {}
+
+int WolvicMainParts::PreEarlyInitialization() {
+  net::NetworkChangeNotifier::SetFactory(
+      new net::NetworkChangeNotifierFactoryAndroid());
+
+  return content::RESULT_CODE_NORMAL_EXIT;
+}
 
 int WolvicMainParts::PreMainMessageLoopRun() {
   browser_context_ = std::make_unique<WolvicBrowserContext>();
