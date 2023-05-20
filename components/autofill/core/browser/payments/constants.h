@@ -15,6 +15,7 @@ namespace autofill {
 constexpr char kAmexCardIssuerId[] = "amex";
 constexpr char kCapitalOneCardIssuerId[] = "capitalone";
 constexpr char kChaseCardIssuerId[] = "chase";
+constexpr char kDiscoverCardIssuerId[] = "discover";
 constexpr char kMarqetaCardIssuerId[] = "marqeta";
 
 // The urls to the static card art images used by Capital One cards.
