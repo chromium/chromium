@@ -65,6 +65,9 @@ void ArcSystemStateObservation::ThrottleInstance(bool should_throttle) {
 
 void ArcSystemStateObservation::OnConnectionReady() {
   arc_connected_ = true;
+  if (should_throttle()) {
+    last_peace_timestamp_ = base::Time::Now();
+  }
 }
 void ArcSystemStateObservation::OnConnectionClosed() {
   arc_connected_ = false;
