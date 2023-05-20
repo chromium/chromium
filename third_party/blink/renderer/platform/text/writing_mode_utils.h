@@ -159,14 +159,14 @@ class LogicalToLogical {
   STACK_ALLOCATED();
 
  public:
-  LogicalToLogical(WritingDirectionMode parent_writing_direction,
-                   WritingDirectionMode child_writing_direction,
+  LogicalToLogical(WritingDirectionMode from_writing_direction,
+                   WritingDirectionMode to_writing_direction,
                    Value inline_start,
                    Value inline_end,
                    Value block_start,
                    Value block_end)
-      : LogicalToLogical(child_writing_direction,
-                         LogicalToPhysical<Value>(parent_writing_direction,
+      : LogicalToLogical(to_writing_direction,
+                         LogicalToPhysical<Value>(from_writing_direction,
                                                   inline_start,
                                                   inline_end,
                                                   block_start,
@@ -177,9 +177,9 @@ class LogicalToLogical {
   Value BlockStart() const { return logical_.BlockStart(); }
 
  private:
-  LogicalToLogical(WritingDirectionMode child_writing_direction,
+  LogicalToLogical(WritingDirectionMode to_writing_direction,
                    LogicalToPhysical<Value> physical)
-      : logical_(child_writing_direction,
+      : logical_(to_writing_direction,
                  physical.Top(),
                  physical.Right(),
                  physical.Bottom(),

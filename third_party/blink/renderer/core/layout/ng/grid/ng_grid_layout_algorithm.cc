@@ -1584,7 +1584,9 @@ NGGridLayoutAlgorithm::CreateSubgridTrackCollection(
           GutterSize(track_direction, parent_track_collection.GutterSize()),
           ComputeMarginsForSelf(ConstraintSpace(), Style()),
           BorderScrollbarPadding(), track_direction,
-          subgrid_data->IsOppositeDirectionInRootGrid(track_direction)));
+          is_for_columns_in_parent
+              ? subgrid_data->is_opposite_direction_in_root_grid_columns
+              : subgrid_data->is_opposite_direction_in_root_grid_rows));
 }
 
 void NGGridLayoutAlgorithm::InitializeTrackCollection(
@@ -2594,6 +2596,7 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
 
       auto start_extra_margin = subgrid_track_collection.StartExtraMargin();
       auto end_extra_margin = subgrid_track_collection.EndExtraMargin();
+
       if (grid_item.IsOppositeDirectionInRootGrid(track_direction)) {
         std::swap(start_extra_margin, end_extra_margin);
       }

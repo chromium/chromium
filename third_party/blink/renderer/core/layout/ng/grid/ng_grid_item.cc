@@ -198,11 +198,10 @@ GridItemData::GridItemData(
   // The `false, true, false, true` parameters get the converter to calculate
   // whether the subgrids and its root grid are opposite direction in all cases.
   const LogicalToLogical<bool> direction_converter(
-      root_grid_style.GetWritingDirection(), style.GetWritingDirection(),
-      /* inline_start */ false,
-      /* inline_end */ true,
-      /* block_start */ false,
-      /* block_end */ true);
+      style.GetWritingDirection(), root_grid_style.GetWritingDirection(),
+      /* inline_start */ false, /* inline_end */ true,
+      /* block_start */ false, /* block_end */ true);
+
   is_opposite_direction_in_root_grid_columns =
       direction_converter.InlineStart();
   is_opposite_direction_in_root_grid_rows = direction_converter.BlockStart();

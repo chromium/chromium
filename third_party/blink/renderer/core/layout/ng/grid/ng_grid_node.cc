@@ -83,20 +83,16 @@ GridItems NGGridNode::ConstructGridItems(
       grid_items.SortByOrderProperty();
   }
 
-  const auto& grid_style = Style();
-  const bool grid_is_parallel_with_root_grid = IsParallelWritingMode(
-      root_grid_style.GetWritingMode(), grid_style.GetWritingMode());
-
 #if DCHECK_IS_ON()
   if (cached_placement_data) {
-    NGGridPlacement grid_placement(grid_style, placement_data);
+    NGGridPlacement grid_placement(Style(), placement_data);
     DCHECK(*cached_placement_data ==
            grid_placement.RunAutoPlacementAlgorithm(grid_items));
   }
 #endif
 
   if (!cached_placement_data) {
-    NGGridPlacement grid_placement(grid_style, placement_data);
+    NGGridPlacement grid_placement(Style(), placement_data);
     layout_grid->SetCachedPlacementData(
         grid_placement.RunAutoPlacementAlgorithm(grid_items));
     cached_placement_data = &layout_grid->CachedPlacementData();
@@ -106,11 +102,6 @@ GridItems NGGridNode::ConstructGridItems(
   auto* resolved_position = cached_placement_data->grid_item_positions.begin();
   for (auto& grid_item : grid_items) {
     grid_item.resolved_position = *(resolved_position++);
-
-    if (!grid_is_parallel_with_root_grid) {
-      std::swap(grid_item.resolved_position.columns,
-                grid_item.resolved_position.rows);
-    }
   }
   return grid_items;
 }
@@ -134,13 +125,37 @@ void NGGridNode::AppendSubgriddedItems(GridItems* grid_items) const {
         current_item.must_consider_grid_items_for_column_sizing,
         current_item.must_consider_grid_items_for_row_sizing);
 
-    const wtf_size_t column_start_line = current_item.StartLine(kForColumns);
-    const wtf_size_t row_start_line = current_item.StartLine(kForRows);
+    auto TranslateSubgriddedItem =
+        [&current_item](GridSpan& subgridded_item_span,
+                        GridTrackSizingDirection track_direction) {
+          if (current_item.MustConsiderGridItemsForSizing(track_direction)) {
+            // If a subgrid is in an opposite writing direction to the root
+            // grid, we should "reverse" the subgridded item's span.
+            if (current_item.IsOppositeDirectionInRootGrid(track_direction)) {
+              const wtf_size_t subgrid_span_size =
+                  current_item.SpanSize(track_direction);
+
+              DCHECK_LE(subgridded_item_span.EndLine(), subgrid_span_size);
+
+              subgridded_item_span = GridSpan::TranslatedDefiniteGridSpan(
+                  subgrid_span_size - subgridded_item_span.EndLine(),
+                  subgrid_span_size - subgridded_item_span.StartLine());
+            }
+            subgridded_item_span.Translate(
+                current_item.StartLine(track_direction));
+          }
+        };
 
     for (auto& subgridded_item : subgridded_items) {
-      subgridded_item.resolved_position.columns.Translate(column_start_line);
-      subgridded_item.resolved_position.rows.Translate(row_start_line);
       subgridded_item.is_subgridded_to_parent_grid = true;
+      auto& item_position = subgridded_item.resolved_position;
+
+      if (!current_item.is_parallel_with_root_grid) {
+        std::swap(item_position.columns, item_position.rows);
+      }
+
+      TranslateSubgriddedItem(item_position.columns, kForColumns);
+      TranslateSubgriddedItem(item_position.rows, kForRows);
     }
     grid_items->Append(&subgridded_items);
   }

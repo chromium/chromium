@@ -93,13 +93,6 @@ struct CORE_EXPORT GridItemData {
                : block_axis_alignment == AxisEdge::kLastBaseline;
   }
 
-  bool IsOppositeDirectionInRootGrid(
-      GridTrackSizingDirection root_track_direction) const {
-    return (root_track_direction == kForColumns)
-               ? is_opposite_direction_in_root_grid_columns
-               : is_opposite_direction_in_root_grid_rows;
-  }
-
   // For this item and track direction, computes the pair of indices |begin| and
   // |end| such that the item spans every set from the respective collection's
   // |sets_| with an index in the range [begin, end).
@@ -164,6 +157,13 @@ struct CORE_EXPORT GridItemData {
   bool IsConsideredForSizing(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? is_considered_for_column_sizing
                                             : is_considered_for_row_sizing;
+  }
+
+  bool IsOppositeDirectionInRootGrid(
+      GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns)
+               ? is_opposite_direction_in_root_grid_columns
+               : is_opposite_direction_in_root_grid_rows;
   }
 
   bool MustConsiderGridItemsForSizing(
