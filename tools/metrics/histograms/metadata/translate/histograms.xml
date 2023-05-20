@@ -685,16 +685,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.RevertTranslation" units="units"
-    expires_after="2023-10-08">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The number of times the show original button was clicked in the translate
-    infobar.
-  </summary>
-</histogram>
-
 <histogram name="Translate.ShowErrorUI" enum="TranslateError"
     expires_after="2023-10-01">
   <owner>megjablon@google.com</owner>

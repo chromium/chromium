@@ -21,7 +21,6 @@
 namespace {
 
 const char kDeclineTranslate[] = "Translate.DeclineTranslate";
-const char kRevertTranslation[] = "Translate.RevertTranslation";
 const char kPerformTranslate[] = "Translate.Translate";
 const char kPerformTranslateAmpCacheUrl[] = "Translate.Translate.AMPCacheURL";
 const char kNeverTranslateLang[] = "Translate.NeverTranslateLang";
@@ -208,7 +207,6 @@ void TranslateUIDelegate::RevertTranslation() {
   if (translate_manager_ &&
       translate_manager_->GetLanguageState()->IsPageTranslated()) {
     translate_manager_->RevertTranslation();
-    UMA_HISTOGRAM_BOOLEAN(kRevertTranslation, true);
   }
 }
 
