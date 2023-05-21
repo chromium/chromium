@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">গাঢ় ৰঙৰ থীম অক্ষম কৰক</translation>
 <translation id="1807246157184219062">পাতল</translation>
 <translation id="1827738518074806965">আর্ট গেলাৰী</translation>
+<translation id="1836553715834333258">ছিষ্টেমৰ ৰং</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
+<translation id="1840474674287087346">ডেস্কটপৰ ৰং</translation>
 <translation id="1851218745569890714">ভিডিঅ’ কনফাৰেন্সিং</translation>
 <translation id="1852934301711881861">ChromeOS Flex ইনষ্টল কৰক</translation>
 <translation id="1856388568474281774">ডাউন এৰ’</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">স্কেন কৰি ইয়াত ছেভ কৰক</translation>
 <translation id="4479639480957787382">ইথাৰনেট</translation>
 <translation id="4483049906298469269">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্কৰ গে’টৱে’টোক পিং কৰাত বিফল হ'ল</translation>
+<translation id="4500966230243561393">ইণ্টাৰফে’চৰ ৰং</translation>
 <translation id="4503223151711056411">লেফ্ট এৰ’</translation>
 <translation id="4507392511610824664">উজ্জ্বলতা বঢ়াওক</translation>
 <translation id="4511264077854731334">প’ৰ্টেল</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">পৰীক্ষা কৰা বন্ধ কৰক</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">আপোনাৰ স্ক্ৰীনখন নিষ্ক্ৰিয় হৈ থাকিলে ফট’, সময়, বতৰ আৰু মিডিয়াৰ তথ্য দেখুৱাওক।</translation>
+<translation id="5035083460461104704">থীমৰ ৰং</translation>
 <translation id="5038292761217083259">কীব’ৰ্ডৰ একাধিক ৰং</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
 <translation id="5049856988445523908">ছিম লক কৰা হ’ল (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">নিৰপেক্ষ</translation>
 <translation id="7620771111601174153">সহায় কেন্দ্ৰত অধিক জানক</translation>
 <translation id="763165478673169849">অন্তিমবাৰ ৰিছেট কৰাৰ সময়</translation>
+<translation id="7633068090678117093">নেপথ্যৰ প্ৰতিচ্ছবি</translation>
 <translation id="7648838807254605802">HTTPSৰ বেছি বিলম্বতা</translation>
 <translation id="765159867434478292">বিভক্ত কৰক</translation>
 <translation id="7656388927906093505">ডিভাইচটো এটা মাউচ।</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">পীয়েৰ</translation>
 <translation id="8930622219860340959">বেতাঁৰ</translation>
 <translation id="8936793075252196307">ক্লায়েণ্টৰ আইপি ঠিকনা</translation>
+<translation id="8944651180182756621">লঞ্চাৰৰ ৰং</translation>
 <translation id="894617464444543719">ডিভাইচটো এটা ফ’ন।</translation>
 <translation id="8957423540740801332">সোঁফালে</translation>
 <translation id="8968751544471797276">চাৰ্জিঙৰ হাৰ</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">মেম’ৰি পৰীক্ষা চলাওক</translation>
 <translation id="9161276708550942948">স্পেচ</translation>
 <translation id="9173638680043580060">এক মিনিটতকৈ কম সময় বাকী আছে</translation>
+<translation id="9174334653006917325">UIৰ ৰং</translation>
 <translation id="917720651393141712">পৰীক্ষা কৰক</translation>
 <translation id="9188992814426075118">আপোনাৰ কীব’ৰ্ডে স্বয়ংক্ৰিয়ভাৱে আপোনাৰ ৱালপেপাৰ মিলাব পাৰে</translation>
 <translation id="9189000703457422362">স্বয়ংক্ৰিয়ভাৱে চিনাক্ত কৰা এপিএন ব্যৱহাৰ কৰি এই নেটৱৰ্কৰ সৈতে সংযোগ কৰিব নোৱাৰি। অধিক তথ্যৰ বাবে আপোনাৰ ম’বাইলৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>

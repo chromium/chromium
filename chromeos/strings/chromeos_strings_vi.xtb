@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Tắt giao diện tối</translation>
 <translation id="1807246157184219062">Sáng</translation>
 <translation id="1827738518074806965">Phòng tranh</translation>
+<translation id="1836553715834333258">Màu hệ thống</translation>
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
+<translation id="1840474674287087346">Màu màn hình</translation>
 <translation id="1851218745569890714">Hội nghị truyền hình</translation>
 <translation id="1852934301711881861">Cài đặt ChromeOS Flex</translation>
 <translation id="1856388568474281774">Mũi tên xuống</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Lưu bản quét vào</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
+<translation id="4500966230243561393">Màu giao diện</translation>
 <translation id="4503223151711056411">Mũi tên trái</translation>
 <translation id="4507392511610824664">tăng độ sáng</translation>
 <translation id="4511264077854731334">Cổng</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Dừng kiểm tra</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Hiện ảnh, thời gian, thông tin thời tiết và nội dung phương tiện khi màn hình ở trạng thái rảnh</translation>
+<translation id="5035083460461104704">Màu giao diện</translation>
 <translation id="5038292761217083259">bàn phím nhiều màu</translation>
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="5049856988445523908">Đã khóa SIM (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Trung tính</translation>
 <translation id="7620771111601174153">Tìm hiểu thêm trong Trung tâm trợ giúp</translation>
 <translation id="763165478673169849">Lần đặt lại cuối</translation>
+<translation id="7633068090678117093">Hình nền</translation>
 <translation id="7648838807254605802">Yêu cầu HTTPS có độ trễ cao</translation>
 <translation id="765159867434478292">Phân tách</translation>
 <translation id="7656388927906093505">Thiết bị là chuột.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Ứng dụng ngang hàng</translation>
 <translation id="8930622219860340959">Không dây</translation>
 <translation id="8936793075252196307">Địa chỉ IP khách hàng</translation>
+<translation id="8944651180182756621">Màu trình chạy</translation>
 <translation id="894617464444543719">Thiết bị là điện thoại.</translation>
 <translation id="8957423540740801332">phải</translation>
 <translation id="8968751544471797276">Tốc độ sạc</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Chạy quá trình Kiểm tra bộ nhớ</translation>
 <translation id="9161276708550942948">dấu cách</translation>
 <translation id="9173638680043580060">Còn chưa đầy 1 phút</translation>
+<translation id="9174334653006917325">Màu giao diện người dùng</translation>
 <translation id="917720651393141712">Kiểm tra</translation>
 <translation id="9188992814426075118">Bàn phím có thể tự động khớp với hình nền của bạn</translation>
 <translation id="9189000703457422362">Không thể kết nối với mạng này bằng APN được phát hiện tự động. Hãy liên hệ với nhà mạng di động để biết thêm thông tin.</translation>
