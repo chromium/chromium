@@ -86,15 +86,28 @@ void RecordVisibleLoadTimeForImage(
   if (visible_load_delay.is_negative())
     visible_load_delay = base::TimeDelta();
 
+  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.VisibleLoadTime.LazyLoadImages",
+                             visible_load_delay);
+
+  if (visible_load_time_metrics.is_initially_intersecting) {
+    UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3",
+        visible_load_delay);
+  } else {
+    UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3",
+        visible_load_delay);
+  }
+
   switch (GetNetworkStateNotifier().EffectiveType()) {
     case WebEffectiveConnectionType::kTypeSlow2G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.Slow2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.Slow2G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.Slow2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.Slow2G",
             visible_load_delay);
       }
       break;
@@ -102,11 +115,11 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kType2G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.2G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.2G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.2G",
             visible_load_delay);
       }
       break;
@@ -114,11 +127,11 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kType3G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.3G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.3G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.3G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.3G",
             visible_load_delay);
       }
       break;
@@ -126,20 +139,41 @@ void RecordVisibleLoadTimeForImage(
     case WebEffectiveConnectionType::kType4G:
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold2.4G",
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G",
             visible_load_delay);
       } else {
         UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G",
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G",
+            visible_load_delay);
+      }
+      break;
+
+    case WebEffectiveConnectionType::kTypeOffline:
+      if (visible_load_time_metrics.is_initially_intersecting) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.Offline",
+            visible_load_delay);
+      } else {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.Offline",
             visible_load_delay);
       }
       break;
 
     case WebEffectiveConnectionType::kTypeUnknown:
-    case WebEffectiveConnectionType::kTypeOffline:
-      // No VisibleLoadTime histograms are recorded for these effective
-      // connection types.
+      if (visible_load_time_metrics.is_initially_intersecting) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.Unknown",
+            visible_load_delay);
+      } else {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.Unknown",
+            visible_load_delay);
+      }
       break;
+
+    default:
+      NOTREACHED();
   }
 }
 
