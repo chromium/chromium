@@ -40,6 +40,7 @@ class Process;
 }  // namespace base
 
 namespace content {
+class ServiceProcessHostPinUser32;
 class ServiceProcessHostPreloadLibraries;
 
 // Sandbox type for ServiceProcessHost::Launch<remote>() is found by
@@ -115,6 +116,10 @@ class CONTENT_EXPORT ServiceProcessHost {
     Options& WithPreloadedLibraries(
         std::vector<base::FilePath> preload_libraries,
         base::PassKey<ServiceProcessHostPreloadLibraries> passkey);
+
+    // Forces user32 to be loaded into the process before the sandbox is locked
+    // down.
+    Options& WithPinUser32(base::PassKey<ServiceProcessHostPinUser32> passkey);
 #endif  // BUILDFLAG(IS_WIN)
 
     // Passes the contents of this Options object to a newly returned Options
@@ -129,6 +134,7 @@ class CONTENT_EXPORT ServiceProcessHost {
     base::OnceCallback<void(const base::Process&)> process_callback;
 #if BUILDFLAG(IS_WIN)
     std::vector<base::FilePath> preload_libraries;
+    bool pin_user32;
 #endif  // BUILDFLAG(IS_WIN)
   };
 

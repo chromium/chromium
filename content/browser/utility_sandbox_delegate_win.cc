@@ -226,15 +226,22 @@ bool ScreenAIInitializeConfig(sandbox::TargetConfig* config,
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-// Adds preload-libraries to the delegate blob for utility_main() to access
-// before lockdown is initialized.
-void AddPreloadLibraryDelegateData(
-    sandbox::TargetPolicy* policy,
-    std::vector<base::FilePath>& preload_libraries) {
-  CHECK(!preload_libraries.empty());
+// If preload-libraries or pinuser32 is required, adds delegate blob for
+// utility_main() to access before lockdown is initialized.
+void AddDelegateData(sandbox::TargetPolicy* policy,
+                     bool pin_user32,
+                     std::vector<base::FilePath>& preload_libraries) {
+  if (!pin_user32 && preload_libraries.empty()) {
+    return;
+  }
   auto sandbox_config = content::mojom::sandbox::UtilityConfig::New();
-  for (const auto& library_path : preload_libraries) {
-    sandbox_config->preload_libraries.push_back(library_path);
+  if (pin_user32) {
+    sandbox_config->pin_user32 = true;
+  }
+  if (!preload_libraries.empty()) {
+    for (const auto& library_path : preload_libraries) {
+      sandbox_config->preload_libraries.push_back(library_path);
+    }
   }
   std::vector<uint8_t> blob =
       content::mojom::sandbox::UtilityConfig::Serialize(&sandbox_config);
@@ -405,9 +412,7 @@ bool UtilitySandboxedProcessLauncherDelegate::AllowWindowsFontsDir() {
 
 bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
-  if (!preload_libraries_.empty()) {
-    AddPreloadLibraryDelegateData(policy, preload_libraries_);
-  }
+  AddDelegateData(policy, pin_user32_, preload_libraries_);
   return SandboxedProcessLauncherDelegate::PreSpawnTarget(policy);
 }
 }  // namespace content

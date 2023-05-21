@@ -204,6 +204,9 @@ void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
   if (!options.preload_libraries.empty()) {
     host->SetPreloadLibraries(options.preload_libraries);
   }
+  if (options.pin_user32) {
+    host->SetPinUser32();
+  }
 #endif  // BUILDFLAG(IS_WIN)
   host->Start();
   host->GetChildProcess()->BindServiceInterface(std::move(receiver));

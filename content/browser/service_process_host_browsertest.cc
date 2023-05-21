@@ -319,6 +319,25 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, PreloadLibraryBadPath) {
   observer.WaitForLaunch();
   observer.WaitForCrash();
 }
+
+// This test calls a function that verifies that user32 is loaded.
+IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, PinUser32) {
+  EchoServiceProcessObserver observer;
+  auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>(
+      ServiceProcessHost::Options()
+          .WithPinUser32(ServiceProcessHostPinUser32::GetPassKey())
+          .Pass());
+  observer.WaitForLaunch();
+
+  base::RunLoop loop;
+  echo_service->CallUser32(
+      std::string("lowercase"),
+      base::BindLambdaForTesting([&](const std::string& upper) {
+        EXPECT_EQ(upper, std::string("LOWERCASE"));
+        loop.Quit();
+      }));
+  loop.Run();
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

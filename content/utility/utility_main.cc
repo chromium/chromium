@@ -163,6 +163,9 @@ bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
       }
     }
   }
+  if (sandbox_config->pin_user32) {
+    base::win::PinUser32();
+  }
   return true;
 }
 #endif  // BUILDFLAG(IS_WIN)

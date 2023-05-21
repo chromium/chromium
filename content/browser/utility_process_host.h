@@ -139,6 +139,8 @@ class CONTENT_EXPORT UtilityProcessHost
   // Specifies libraries to preload before the sandbox is locked down. Paths
   // should be absolute.
   void SetPreloadLibraries(const std::vector<base::FilePath>& preloads);
+  // Specifies that the child should pin user32 before sandbox lockdown.
+  void SetPinUser32();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
@@ -196,6 +198,8 @@ class CONTENT_EXPORT UtilityProcessHost
 #if BUILDFLAG(IS_WIN)
   // Libraries to load before sandbox lockdown. Only used on Windows.
   std::vector<base::FilePath> preload_libraries_;
+  // Should the child pin user32. Only used on Windows.
+  bool pin_user32_;
 #endif  // BUILDFLAG(IS_WIN)
 
   // Extra files and file descriptors to preload in the new process.

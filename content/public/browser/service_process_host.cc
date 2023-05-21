@@ -66,6 +66,12 @@ ServiceProcessHost::Options::WithPreloadedLibraries(
   preload_libraries = std::move(preloads);
   return *this;
 }
+
+ServiceProcessHost::Options& ServiceProcessHost::Options::WithPinUser32(
+    base::PassKey<ServiceProcessHostPinUser32> passkey) {
+  pin_user32 = true;
+  return *this;
+}
 #endif  // #if BUILDFLAG(IS_WIN)
 
 ServiceProcessHost::Options ServiceProcessHost::Options::Pass() {
