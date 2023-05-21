@@ -249,8 +249,8 @@ export class ScriptEvaluator {
         backendNodeId === undefined ||
         navigableId === undefined
       ) {
-        throw new Message.InvalidArgumentException(
-          `SharedId "${argumentValue.sharedId}" should have format "{navigableId}${SHARED_ID_DIVIDER}{backendNodeId}".`
+        throw new Message.NoSuchNodeException(
+          `SharedId "${argumentValue.sharedId}" was not found.`
         );
       }
 
