@@ -439,7 +439,7 @@ affect invariants or how features are designed.
     file chooser dialogs (e.g., for uploads). These URLs may be further isolated
     from each other in bug [780770](https://crbug.com/780770).
 * **Error Pages**: Chromium uses a special type of process for error pages
-    provided by the browser (as opposed to error pages provided by a web site,
+    provided by the browser (as opposed to error pages provided by a website,
     like a 404 page), using process-per-site mode to keep all such pages in the
     same process. Currently this only applies to error pages in a main frame.
 * **Spare Process**: Chromium often creates a spare RenderProcessHost with a
