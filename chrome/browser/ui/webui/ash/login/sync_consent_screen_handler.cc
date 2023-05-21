@@ -65,6 +65,10 @@ std::string Sanitize(const std::u16string& raw_string) {
   std::string sanitized_string = base::UTF16ToUTF8(raw_string);
   base::ReplaceSubstringsAfterOffset(&sanitized_string, 0, "\u00A0" /* NBSP */,
                                      "&nbsp;");
+  // When the strings are passed to the HTML, the symbol "&gt;"
+  // will be automatically replaced with ">". This change must
+  // be mirrored in the string-to-ids map.
+  base::ReplaceSubstringsAfterOffset(&sanitized_string, 0, ">", "&gt;");
   return sanitized_string;
 }
 

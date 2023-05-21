@@ -232,10 +232,10 @@ found in the LICENSE file.
 <oobe-adaptive-dialog id="syncConsentLacrosCustomizeDialog" role="dialog"
   for-step="lacros-customize">
   <iron-icon slot="icon" icon="oobe-32:sync-chrome"></iron-icon>
-  <h1 consent-description slot="title">
+  <h1 slot="title">
     [[i18nDynamic(locale, 'syncConsentScreenManageTitleLacros')]]
   </h1>
-  <div consent-description slot="subtitle">
+  <div slot="subtitle">
     [[i18nDynamic(locale, 'syncConsentScreenManageSubtitleLacros')]]
   </div>
   <div slot="back-navigation">
@@ -251,11 +251,11 @@ found in the LICENSE file.
         </div>
         <div aria-hidden="true"
             class="text-container flex layout vertical center-justified">
-          <div consent-description class="card-title">
+          <div class="card-title">
             [[i18nDynamic(locale,
                 'syncConsentScreenOsSyncItemOptionAppsTitle')]]
           </div>
-          <div consent-description class="card-subtitle">
+          <div class="card-subtitle">
             [[i18nDynamic(locale,
                 'syncConsentScreenOsSyncItemOptionAppsSubtitle')]]
           </div>
@@ -268,11 +268,11 @@ found in the LICENSE file.
               aria-hidden="true"
               for="tooltip-icon"
               animation-delay="0">
-            <p consent-description class="tooltip-text">
+            <p  class="tooltip-text">
               [[i18nDynamic(locale,
                 'syncConsentScreenOsSyncAppsTooltipText')]]
             </p>
-            <p consent-description class="tooltip-text">
+            <p  class="tooltip-text">
               [[i18nDynamic(locale,
                 'syncConsentScreenOsSyncAppsTooltipAdditionalText')]]
             </p>
@@ -290,11 +290,11 @@ found in the LICENSE file.
           <iron-icon icon="oobe-32:sync-settings"></iron-icon>
         </div>
         <div aria-hidden="true" class="text-container">
-          <div consent-description class="card-title">
+          <div class="card-title">
             [[i18nDynamic(locale,
               'syncConsentScreenOsSyncItemOptionSettingsTitle')]]
           </div>
-          <div consent-description class="card-subtitle">
+          <div class="card-subtitle">
             [[i18nDynamic(locale,
               'syncConsentScreenOsSyncItemOptionSettingsSubtitle')]]
           </div>
@@ -313,11 +313,11 @@ found in the LICENSE file.
           <iron-icon icon="oobe-32:sync-wifi"></iron-icon>
         </div>
         <div aria-hidden="true" class="text-container">
-          <div consent-description class="card-title">
+          <div class="card-title">
             [[i18nDynamic(locale,
               'syncConsentScreenOsSyncItemOptionWifiTitle')]]
           </div>
-          <div consent-description class="card-subtitle">
+          <div class="card-subtitle">
             [[i18nDynamic(locale,
               'syncConsentScreenOsSyncItemOptionWifiSubtitle')]]
           </div>
@@ -335,11 +335,11 @@ found in the LICENSE file.
           <iron-icon icon="oobe-32:sync-wallpaper"></iron-icon>
         </div>
         <div aria-hidden="true" class="text-container">
-          <div consent-description class="card-title">
+          <div class="card-title">
             [[i18nDynamic(locale,
               'syncConsentScreenOsSyncItemOptionWallpaperTitle')]]
           </div>
-          <div consent-description class="card-subtitle">
+          <div class="card-subtitle">
             [[i18nDynamic(locale,
               'syncConsentScreenOsSyncItemOptionWallpaperSubtitle')]]
           </div>
@@ -356,7 +356,7 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <oobe-next-button id="nextButton" class="focus-on-show"
-      on-click="onNextClicked_" consent-description consent-confirmation>
+      on-click="onNextClicked_">
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
