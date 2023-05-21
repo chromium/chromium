@@ -139,8 +139,7 @@ class CfMXuCameraServiceTest : public ::testing::Test {
     EXPECT_TRUE(adaptor_remote_.is_connected());
 
     adaptor_remote_->OnBindService(
-        xu_camera_remote_.BindNewPipeAndPassReceiver().PassPipe(),
-        absl::nullopt);
+        xu_camera_remote_.BindNewPipeAndPassReceiver().PassPipe());
     EXPECT_TRUE(xu_camera_remote_.is_connected());
 
     return xu_camera_remote_;

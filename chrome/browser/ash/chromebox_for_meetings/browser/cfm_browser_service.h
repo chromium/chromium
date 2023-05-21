@@ -35,8 +35,7 @@ class CfmBrowserService : public CfmObserver,
 
   // ServiceAdaptorDelegate:
   void OnAdaptorDisconnect() override;
-  void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe,
-                     const absl::optional<std::string>&) override;
+  void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
 
   // mojom::CfmBrowser:
   void GetVariationsData(GetVariationsDataCallback callback) override;

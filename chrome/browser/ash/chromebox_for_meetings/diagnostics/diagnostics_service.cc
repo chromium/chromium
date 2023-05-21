@@ -86,8 +86,7 @@ void DiagnosticsService::OnAdaptorDisconnect() {
 }
 
 void DiagnosticsService::OnBindService(
-    mojo::ScopedMessagePipeHandle receiver_pipe,
-    const absl::optional<std::string>&) {
+    mojo::ScopedMessagePipeHandle receiver_pipe) {
   receivers_.Add(this, mojo::PendingReceiver<mojom::MeetDevicesDiagnostics>(
                            std::move(receiver_pipe)));
 }

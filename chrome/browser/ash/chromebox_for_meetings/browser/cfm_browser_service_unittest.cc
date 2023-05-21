@@ -96,7 +96,7 @@ class CfmBrowserServiceTest : public testing::Test {
     EXPECT_TRUE(adaptor_remote_.is_connected());
 
     adaptor_remote_->OnBindService(
-        browser_remote_.BindNewPipeAndPassReceiver().PassPipe(), absl::nullopt);
+        browser_remote_.BindNewPipeAndPassReceiver().PassPipe());
     EXPECT_TRUE(browser_remote_.is_connected());
 
     return browser_remote_;

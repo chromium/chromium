@@ -21,11 +21,10 @@ class FakeCfmServiceContext : public chromeos::cfm::mojom::CfmServiceContext {
           adaptor_remote,
       ProvideAdaptorCallback callback)>;
 
-  using FakeRequestBindServiceCallback = base::OnceCallback<void(
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle receiver_pipe,
-      const absl::optional<std::string>& receiver_identifier,
-      RequestBindServiceCallback callback)>;
+  using FakeRequestBindServiceCallback =
+      base::OnceCallback<void(const std::string& interface_name,
+                              mojo::ScopedMessagePipeHandle receiver_pipe,
+                              RequestBindServiceCallback callback)>;
 
   FakeCfmServiceContext();
   FakeCfmServiceContext(const FakeCfmServiceContext&) = delete;
@@ -38,11 +37,9 @@ class FakeCfmServiceContext : public chromeos::cfm::mojom::CfmServiceContext {
           adaptor_remote,
       ProvideAdaptorCallback callback) override;
 
-  void RequestBindService(
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle receiver_pipe,
-      const absl::optional<std::string>& receiver_identifier,
-      RequestBindServiceCallback callback) override;
+  void RequestBindService(const std::string& interface_name,
+                          mojo::ScopedMessagePipeHandle receiver_pipe,
+                          RequestBindServiceCallback callback) override;
 
   void SetFakeProvideAdaptorCallback(FakeProvideAdaptorCallback callback);
 
