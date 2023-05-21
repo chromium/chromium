@@ -354,16 +354,14 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kService ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kFileUtil) {
+      sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit) {
     auto result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(config);
     if (result != sandbox::SBOX_ALL_OK) {
       return false;
     }
   }
 
-  if (sandbox_type_ == sandbox::mojom::Sandbox::kService ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kFileUtil) {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kService) {
     auto delayed_flags = config->GetDelayedProcessMitigations();
     delayed_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
     auto result = config->SetDelayedProcessMitigations(delayed_flags);

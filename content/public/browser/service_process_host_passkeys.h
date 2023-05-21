@@ -12,6 +12,10 @@ namespace screen_ai {
 class ScreenAIServiceRouter;
 }  // namespace screen_ai
 
+namespace chrome {
+class FileUtilServiceLauncher;
+}  // namespace chrome
+
 namespace content {
 class ServiceProcessHostPreloadLibraries {
  public:
@@ -44,6 +48,7 @@ class ServiceProcessHostPinUser32 {
 
   // Service launchers using `ServiceProcessHost::Options::WithPinUser32`
   // should be added here and must be reviewed by the security team.
+  friend class chrome::FileUtilServiceLauncher;
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ServiceProcessHostBrowserTest, PinUser32);

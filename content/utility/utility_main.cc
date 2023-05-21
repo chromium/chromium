@@ -371,13 +371,6 @@ int UtilityMain(MainFunctionParams parameters) {
     base::win::EnableHighDPISupport();
   }
 
-  // The FileUtilService supports archive inspection, which uses unrar for
-  // inspecting rar archives. Unrar depends on user32.dll for handling
-  // upper/lowercase.
-  if (sandbox_type == sandbox::mojom::Sandbox::kFileUtil) {
-    base::win::PinUser32();
-  }
-
   if (!sandbox::policy::IsUnsandboxedSandboxType(sandbox_type) &&
       sandbox_type != sandbox::mojom::Sandbox::kCdm &&
       sandbox_type != sandbox::mojom::Sandbox::kMediaFoundationCdm &&

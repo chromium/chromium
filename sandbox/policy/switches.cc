@@ -47,7 +47,6 @@ const char kXrCompositingSandbox[] = "xr_compositing";
 const char kIconReaderSandbox[] = "icon_reader";
 const char kMediaFoundationCdmSandbox[] = "mf_cdm";
 const char kWindowsSystemProxyResolverSandbox[] = "proxy_resolver_win";
-const char kFileUtilSandbox[] = "file_util";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
