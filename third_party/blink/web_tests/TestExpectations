@@ -6802,6 +6802,6 @@ crbug.com/1446038 [ Mac13 ] external/wpt/webaudio/the-audio-api/the-mediaelement
 crbug.com/1446039 [ Mac13 ] external/wpt/webtransport/streams-close.https.any.html [ Failure Pass ]
 crbug.com/1446040 [ Mac13 ] virtual/oopr-canvas2d/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
 
-crbug.com/1446742 virtual/gpu/fast/canvas/canvas-drawImage-svg.html [ Pass Failure ]
-crbug.com/1446742 virtual/oopr-canvas2d/fast/canvas/canvas-drawImage-svg.html [ Pass Failure ]
-crbug.com/1446742 virtual/no-alloc-direct-call/fast/canvas/canvas-drawImage-svg.html [ Pass Failure ]
+crbug.com/1446742 virtual/gpu/fast/canvas/canvas-drawImage-svg.html [ Failure Pass ]
+crbug.com/1446742 virtual/oopr-canvas2d/fast/canvas/canvas-drawImage-svg.html [ Failure Pass ]
+crbug.com/1446742 virtual/no-alloc-direct-call/fast/canvas/canvas-drawImage-svg.html [ Failure Pass ]
