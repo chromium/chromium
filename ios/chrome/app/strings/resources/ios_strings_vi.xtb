@@ -402,7 +402,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3851938967634752633">Mật khẩu của <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> và <ph name="NUMBER_OF_ACCOUNTS" /> tài khoản khác sẽ bị xoá. Các tài khoản của bạn sẽ không bị xoá.</translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3861486700625780712">Ngừng theo dõi</translation>
-<translation id="3863769054730344136">Gửi đến các thiết bị của bạn</translation>
+<translation id="3863769054730344136">Gửi đến thiết bị của bạn</translation>
 <translation id="387280738075653372">Tải Chrome xuống tại đây.</translation>
 <translation id="3888863481921783344">Thông tin này sẽ được dùng để cho bạn biết những người bạn có thể mời tham gia sự kiện.</translation>
 <translation id="3892144330757387737">Bạn sẽ thấy lịch sử hoạt động ở đây</translation>
@@ -1078,7 +1078,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8680787084697685621">Chi tiết đăng nhập tài khoản đã lỗi thời.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Đóng thẻ}other{Đóng các thẻ}}</translation>
 <translation id="8706588385081740091">Mật khẩu</translation>
-<translation id="8717864919010420084">Sao chép đường liên kết</translation>
+<translation id="8717864919010420084">Sao chép liên kết</translation>
 <translation id="8721297211384281569">Menu công cụ</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8730621377337864115">Xong</translation>

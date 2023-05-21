@@ -3154,7 +3154,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3772046291955677288">Tôi đã đọc và đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="3774166835015494435">Thông báo và ảnh mới đây</translation>
 <translation id="3775432569830822555">Chứng chỉ Máy chủ SSL</translation>
-<translation id="3775705724665058594">Gửi đến các thiết bị của bạn</translation>
+<translation id="3775705724665058594">Gửi đến thiết bị của bạn</translation>
 <translation id="3776508619697147021">Các trang web có thể yêu cầu tự động tải nhiều tệp xuống</translation>
 <translation id="3776796446459804932">Tiện ích này vi phạm chính sách của Cửa hàng Chrome trực tuyến.</translation>
 <translation id="3777483481409781352">Không kích hoạt được thiết bị di động</translation>
@@ -3421,7 +3421,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3985022125189960801">Thêm lại một trang web nếu bạn muốn thêm trang này vào nhóm những trang web có thể đoán sở thích của bạn</translation>
 <translation id="3987544746655539083">Tiếp tục chặn không cho trang web này truy cập thông tin vị trí của bạn</translation>
 <translation id="3987938432087324095">Rất tiếc, vẫn chưa hiểu được nội dung đó.</translation>
-<translation id="3987993985790029246">Sao chép đường liên kết</translation>
+<translation id="3987993985790029246">Sao chép liên kết</translation>
 <translation id="3988996860813292272">Chọn múi giờ</translation>
 <translation id="399179161741278232">Đã nhập</translation>
 <translation id="3992008114154328194">Đang tải <ph name="FILE_NAME" /> xuống, <ph name="STATUS" /></translation>
@@ -8057,7 +8057,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8248381369318572865">Truy cập micrô và phân tích lời nói</translation>
 <translation id="8248887045858762645">Mẹo khi dùng Chrome</translation>
 <translation id="8249048954461686687">Thư mục OEM</translation>
-<translation id="8249615410597138718">Gửi đến các thiết bị của bạn</translation>
+<translation id="8249615410597138718">Gửi đến thiết bị của bạn</translation>
 <translation id="8250210000648910632">Hết không gian lưu trữ</translation>
 <translation id="8251441930213048644">Làm mới ngay</translation>
 <translation id="8251509999076836464">Đang ghép nối với <ph name="DEVICE_NAME" /></translation>
@@ -8561,7 +8561,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="871515167518607670">Hãy chọn một thiết bị. Sau đó, hãy mở Chrome trên thiết bị đó để xem trang.</translation>
 <translation id="8715480913140015283">Thẻ nền đang sử dụng máy ảnh</translation>
 <translation id="8716931980467311658">Bạn muốn xóa tất cả ứng dụng Linux và dữ liệu trong thư mục tệp Linux khỏi <ph name="DEVICE_TYPE" /> này?</translation>
-<translation id="8717864919010420084">Sao chép đường liên kết</translation>
+<translation id="8717864919010420084">Sao chép liên kết</translation>
 <translation id="8718994464069323380">Đã phát hiện thấy màn hình cảm ứng</translation>
 <translation id="8719472795285728850">Đang nghe các hoạt động của tiện ích...</translation>
 <translation id="8720200012906404956">Đang tìm mạng di động. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
