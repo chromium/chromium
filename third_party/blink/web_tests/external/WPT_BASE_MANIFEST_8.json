@@ -256347,6 +256347,19 @@
          {}
         ]
        ],
+       "table-bordercolor-001.html": [
+        "014abe3567a7ab5dd15cf4024753abaeb4e32a62",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/tables/table-bordercolor-001-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "table-cell-nowrap-with-fixed-width.html": [
         "65962ac2734c5573f172b7303d95a20d33534905",
         [
@@ -272579,11 +272592,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "0a1b15cd4c4d8d2be652b2af1bfad08569aa2ef7",
+     "50e144d5fdf4e564b70ff96c5d5b070ce154bd62",
      []
     ],
     "mtime.json": [
-     "c7fb2961569bbc73f593f24f2d0a39a0c78136d7",
+     "06d690b4db5dd85e5412ec7dda4e9767068eb620",
      []
     ]
    },
@@ -283001,7 +283014,7 @@
        []
       ],
       "floats-wrap-bfc-001-right-overflow.xht.ini": [
-       "f57db9eb691ca49f7368e956ccb5c39a02383bb7",
+       "82cd314d9ffb11f98142f25b08db3a85d8e1777b",
        []
       ],
       "floats-wrap-bfc-001-right-table-ref.xht": [
@@ -289760,7 +289773,7 @@
       []
      ],
      "color-mix-currentcolor-outline-repaint-parent.html.ini": [
-      "1c0bd8a1e3a997a5ba8c741773128a76585583f8",
+      "c96757433623d2c54e5e2a7409f0444fc6fff32f",
       []
      ],
      "css-border-radius-001.html.ini": [
@@ -329858,6 +329871,10 @@
        "cde25330d709bf43e9ba41dfa22c5a9c6b3f8057",
        []
       ],
+      "kind-of-widget-fallback-input-button-border-image-repeat-001.html.ini": [
+       "752fc044b3c212d52b5881c5b15ad80ae88939ab",
+       []
+      ],
       "kind-of-widget-fallback-input-button-border-image-slice-001.html.ini": [
        "33ab63083b4362b433eacf5e7d422cd4ab6f9d2f",
        []
@@ -330264,6 +330281,10 @@
       ],
       "kind-of-widget-fallback-input-submit-border-bottom-right-radius-001.html.ini": [
        "1f62c4d2d0edc40f5732899f3a7fc88802de575c",
+       []
+      ],
+      "kind-of-widget-fallback-input-submit-border-bottom-style-001.html.ini": [
+       "a452b4e9ea41444ea25ab36aa4f4365a2c2cb210",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-end-end-radius-001.html.ini": [
@@ -337459,6 +337480,10 @@
       "82b907334fd71791cd2f6530e2e85169e29afa41",
       []
      ],
+     "clip-under-filter-003.html.ini": [
+      "03737e546479cf07969aaa18428c2ade48625426",
+      []
+     ],
      "css-backdrop-filters-animation-blur-ref.html": [
       "643d084cecde6353a993013eaba93455bd9bd899",
       []
@@ -337516,7 +337541,7 @@
       []
      ],
      "css-backdrop-filters-animation-invert.html.ini": [
-      "73347d4c6195d54d7ac8a42478eadf1cfe94439c",
+      "492c00de3346a4aef908b76632552234314f2ef7",
       []
      ],
      "css-backdrop-filters-animation-opacity-ref.html": [
@@ -351693,7 +351718,7 @@
          []
         ],
         "before-load-hash.html.ini": [
-         "29329b3ed688507315b125eb44112a922185c460",
+         "bcdb009d0b28c05b0dbe85fd4598f5928970cc0e",
          []
         ]
        },
@@ -363041,6 +363066,14 @@
        ],
        "table-border-presentational-hints-ascii-case-insensitive-ref.html": [
         "c8d6a20726fd84900f192b34206954eeec57f61d",
+        []
+       ],
+       "table-bordercolor-001-ref.html": [
+        "1b128e617151ec2e33e7b504249b3e3a9ef705bc",
+        []
+       ],
+       "table-bordercolor-001.html.ini": [
+        "c20ef1a28ea37c781396a7481246fdb301c39aae",
         []
        ],
        "table-cell-nowrap-with-fixed-width-ref.html": [
@@ -380317,7 +380350,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "fc448b057d6022dc81b29fb9119c38a53ad3bfa4",
+     "408d6be9e2186f2f0595057678d4693b4fa66534",
      []
     ],
     "modulepreload-expected.txt": [
@@ -383765,6 +383798,10 @@
      ],
      "scroll-timeline-inline-orientation-ref.html": [
       "7b87b1db390240a357a4392000f3155a878f6725",
+      []
+     ],
+     "scroll-timeline-inline-orientation.html.ini": [
+      "93b3d89a8a8db6ec0ee6baaf4f3b92c06cf23139",
       []
      ],
      "support": {
