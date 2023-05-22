@@ -1483,6 +1483,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardArtImageDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardArtImage)},
+    {"replace-sync-promos-with-sign-in-promos",
+     flag_descriptions::kReplaceSyncPromosWithSignInPromosName,
+     flag_descriptions::kReplaceSyncPromosWithSignInPromosDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kReplaceSyncPromosWithSignInPromos)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

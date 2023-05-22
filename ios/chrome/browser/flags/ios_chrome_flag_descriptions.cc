@@ -848,6 +848,11 @@ const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "
     "history will be removed.";
 
+const char kReplaceSyncPromosWithSignInPromosName[] =
+    "Replace all sync-related UI with sign-in ones";
+const char kReplaceSyncPromosWithSignInPromosDescription[] =
+    "When enabled, all sync-related promos will be replaced by sign-in ones.";
+
 const char kRestoreSessionFromCacheName[] =
     "Use native WKWebView sesion restoration (iOS15 only).";
 const char kRestoreSessionFromCacheDescription[] =

@@ -751,6 +751,11 @@ extern const char kRecordSnapshotSizeDescription[];
 extern const char kRemoveExcessNTPsExperimentName[];
 extern const char kRemoveExcessNTPsExperimentDescription[];
 
+// Title and description for the flag to replace all sync-related UI with
+// sign-in ones.
+extern const char kReplaceSyncPromosWithSignInPromosName[];
+extern const char kReplaceSyncPromosWithSignInPromosDescription[];
+
 // Title and description for the flag that makes Safe Browsing available.
 extern const char kSafeBrowsingAvailableName[];
 extern const char kSafeBrowsingAvailableDescription[];

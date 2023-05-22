@@ -6537,6 +6537,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "replace-sync-promos-with-sign-in-promos",
+    "owners": [ "treib", "mastiz", "jood@google.com", "bling-flags@google.com", "chrome-sync-dev@google.com", "chrome-signin-team"],
+    "expiry_milestone": 119
+  },
+  {
     "name": "request-desktop-site-additions",
     "owners": [ "shuyng@google.com", "skavuluru@google.com", "twellington", "clank-app-team@google.com" ],
     "expiry_milestone": 116
