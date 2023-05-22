@@ -30,6 +30,10 @@ class DataTypeManagerMock : public DataTypeManager {
               GetTypesWithPendingDownloadForInitialSync,
               (),
               (const override));
+  MOCK_METHOD(ModelTypeSet,
+              GetDataTypesWithPermanentErrors,
+              (),
+              (const override));
   MOCK_METHOD(State, state, (), (const override));
 
  private:

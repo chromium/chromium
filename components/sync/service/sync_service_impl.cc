@@ -696,6 +696,8 @@ SyncService::DisableReasonSet SyncServiceImpl::GetDisableReasons() const {
       result.Put(DISABLE_REASON_ENTERPRISE_POLICY);
     }
     if (!IsSignedIn()) {
+      // TODO(crbug.com/1447377): additionally, check for refresh tokens to be
+      // loaded.
       result.Put(DISABLE_REASON_NOT_SIGNED_IN);
     }
   }
@@ -1838,8 +1840,37 @@ void SyncServiceImpl::GetAllNodesForDebugging(
 
 SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusFor(
     ModelType type) const {
-  NOTREACHED() << "Download status API is not implemented.";
-  return ModelTypeDownloadStatus::kWaitingForUpdates;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
+    // Wait for refresh tokens to be loaded from the disk. GetDisableReasons()
+    // won't be empty until then.
+    return ModelTypeDownloadStatus::kWaitingForUpdates;
+  }
+
+  // TODO(crbug.com/1425026): check whether this works when local sync is
+  // enabled.
+  if (!GetDisableReasons().Empty() || !GetDataTypesToConfigure().Has(type)) {
+    // Sync is disabled hence updates won't be downloaded from the server.
+    return ModelTypeDownloadStatus::kError;
+  }
+
+  if (!data_type_manager_) {
+    // Wait for the sync engine to be fully initialized.
+    return ModelTypeDownloadStatus::kWaitingForUpdates;
+  }
+
+  if (data_type_manager_->GetDataTypesWithPermanentErrors().Has(type)) {
+    return ModelTypeDownloadStatus::kError;
+  }
+
+  if (!GetActiveDataTypes().Has(type)) {
+    return ModelTypeDownloadStatus::kWaitingForUpdates;
+  }
+
+  // TODO(crbug.com/1425026): check for incoming invalidations.
+  NOTREACHED() << "Download status API is not fully implemented yet.";
+  return ModelTypeDownloadStatus::kUpToDate;
 }
 
 CoreAccountInfo SyncServiceImpl::GetAccountInfo() const {

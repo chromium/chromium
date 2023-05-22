@@ -52,6 +52,8 @@ using testing::AnyNumber;
 using testing::AtLeast;
 using testing::ByMove;
 using testing::Eq;
+using testing::Invoke;
+using testing::IsNull;
 using testing::Not;
 using testing::Return;
 
@@ -64,6 +66,11 @@ MATCHER_P(ContainsDataType, type, "") {
 }
 
 constexpr char kTestUser[] = "test_user@gmail.com";
+
+class MockSyncServiceObserver : public SyncServiceObserver {
+ public:
+  MOCK_METHOD(void, OnStateChanged, (SyncService * sync), (override));
+};
 
 class TestSyncServiceObserver : public SyncServiceObserver {
  public:
@@ -1349,6 +1356,89 @@ TEST_F(SyncServiceImplTest, ShouldCallStopUponResetEngineIfAlreadyShutDown) {
   // Clearing metadata should work even if the engine is not running.
   service()->StopAndClear();
   EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+}
+
+TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatus) {
+  SignIn();
+  CreateService();
+  InitializeForNthSync();
+
+  data_type_manager()->OnSingleDataTypeWillStop(
+      syncer::BOOKMARKS,
+      SyncError(FROM_HERE, SyncError::ErrorType::DATATYPE_ERROR,
+                "Data type failure", syncer::BOOKMARKS));
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kError);
+}
+
+TEST_F(SyncServiceImplTest, ShouldReturnErrorDownloadStatusWhenSyncDisabled) {
+  prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
+  SignIn();
+  CreateService();
+  InitializeForNthSync();
+
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kError);
+}
+
+TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
+  SignIn();
+  CreateService();
+
+  ASSERT_THAT(data_type_manager(), IsNull());
+
+  bool met_configuring_data_type_manager = false;
+  testing::NiceMock<MockSyncServiceObserver> mock_sync_service_observer;
+  ON_CALL(mock_sync_service_observer, OnStateChanged)
+      .WillByDefault(Invoke([this, &met_configuring_data_type_manager](
+                                SyncService* service) {
+        // TODO(crbug.com/1425026): verify that there are no errors during
+        // backend initialization.
+        if (!data_type_manager()) {
+          return;
+        }
+        if (data_type_manager()->state() ==
+            DataTypeManager::State::CONFIGURING) {
+          met_configuring_data_type_manager = true;
+          EXPECT_EQ(service->GetDownloadStatusFor(syncer::BOOKMARKS),
+                    SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+        }
+      }));
+
+  // Observers must be added after initialization has been started.
+  InitializeForNthSync(false);
+
+  // GetDownloadStatusFor() must be called only after Initialize(), see
+  // SyncServiceImpl::Initialize().
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+
+  service()->AddObserver(&mock_sync_service_observer);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(met_configuring_data_type_manager);
+  // TODO(crbug.com/1425026): add check for up-to-date status.
+  service()->RemoveObserver(&mock_sync_service_observer);
+}
+
+TEST_F(SyncServiceImplTest, ShouldReturnErrorWhenDataTypeDisabled) {
+  SignIn();
+  CreateService();
+  InitializeForNthSync(/*run_until_idle=*/false);
+
+  UserSelectableTypeSet enabled_types =
+      service()->GetUserSettings()->GetSelectedTypes();
+  enabled_types.Remove(UserSelectableType::kBookmarks);
+  service()->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                 enabled_types);
+
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kError);
+
+  // Finish initialization and double check that the status hasn't changed.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kError);
 }
 
 }  // namespace
