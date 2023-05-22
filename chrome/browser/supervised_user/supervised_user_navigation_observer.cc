@@ -5,13 +5,16 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -318,12 +321,14 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
     const OnInterstitialResultCallback& callback) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  CHECK(profile);
   auto web_content_handler = CreateWebContentHandler(
       web_contents(), url, profile, frame_id, navigation_id);
   CHECK(web_content_handler);
   std::unique_ptr<supervised_user::SupervisedUserInterstitial> interstitial =
       supervised_user::SupervisedUserInterstitial::Create(
           std::move(web_content_handler), *supervised_user_service_, url,
+          base::UTF8ToUTF16(supervised_user::GetAccountGivenName(*profile)),
           reason);
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
 
