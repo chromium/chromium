@@ -507,7 +507,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
               GetApplicationContext()->GetLocalState()->GetInteger(
                   prefs::kInactiveTabsTimeThreshold)];
     [self recordNumActiveTabAtStartup:numActiveTabs];
-    [self recordInactiveTabsSettingsAtStartup:numInactiveTabs];
+    [self recordNumInactiveTabAtStartup:numInactiveTabs];
     [self recordNumAbsoluteInactiveTabAtStartup:numAbsoluteInactiveTabs];
     [self recordNumTabAtStartup:numTabs];
     [self recordNumNTPTabAtStartup:numNTPTabs];
