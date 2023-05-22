@@ -84,7 +84,11 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WMLC | install_or_shortcut_windowed(NotPromotable) | navigate_browser(NotPromotable) | check_launch_icon_shown |
 | WMLC | install_or_shortcut_with_shortcut | check_platform_shortcut_and_icon |
 | WMLC | install_or_shortcut_with_shortcut(NotPromotable) | check_platform_shortcut_and_icon(NotPromotable) |
-
+| WMLC | install_or_shortcut_by_user_tabbed(Standalone) | launch_from_platform_shortcut(Standalone) | check_tab_created(One) |
+| WMLC | install_or_shortcut_by_user_tabbed(Standalone) | launch_from_platform_shortcut(Standalone) | install_omnibox_icon(Standalone) | check_pwa_window_created_in_profile(Standalone, One, Default)
+| WMLC | create_shortcut(Standalone, Windowed) | check_window_created |
+| WMLC | create_shortcut(Standalone, Windowed) | close_pwa | check_app_in_list_windowed(Standalone) | check_platform_shortcut_and_icon(Standalone) |
+| WMLC | create_shortcut(Standalone, Windowed) | close_pwa | launch_from_platform_shortcut(Standalone) | check_pwa_window_created_in_profile(Standalone, One, Default) | check_launch_icon_not_shown |
 
 ## Uninstallation
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
