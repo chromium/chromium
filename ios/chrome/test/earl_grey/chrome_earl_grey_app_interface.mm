@@ -260,6 +260,10 @@ NSString* SerializedValue(const base::Value* value) {
   return chrome_test_util::GetMainTabCount();
 }
 
++ (NSUInteger)inactiveTabCount {
+  return chrome_test_util::GetInactiveTabCount();
+}
+
 + (NSUInteger)incognitoTabCount {
   return chrome_test_util::GetIncognitoTabCount();
 }

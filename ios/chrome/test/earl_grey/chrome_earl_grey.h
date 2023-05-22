@@ -339,6 +339,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the number of main (non-incognito) tabs.
 - (NSUInteger)mainTabCount [[nodiscard]];
 
+// Returns the number of inactive tabs.
+- (NSUInteger)inactiveTabCount [[nodiscard]];
+
 // Returns the number of incognito tabs.
 - (NSUInteger)incognitoTabCount [[nodiscard]];
 

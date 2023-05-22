@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/data_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -425,6 +427,98 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that tapping Close All close also inactive tabs. Ensure it is correctly
+// recovered when pressing undo and there is no selection mode when there are
+// inactive tabs but no regular tabs.
+- (void)testCloseAllAndUndoCloseAllWithInactiveTabs {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
+                           @"only supported on iPhone.");
+  }
+  [self loadTestURLsInNewTabs];
+  [self relaunchAppWithInactiveTabsEnabled];
+
+  [ChromeEarlGreyUI openTabGrid];
+  GREYAssertEqual(1, [ChromeEarlGrey mainTabCount],
+                  @"Expected only one tab (NTP), all other tabs should have "
+                  @"been in inactive tab grid.");
+  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+                  @"Expected 4 inactive tabs.");
+
+  // Ensure the edit button is visible.
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close all tabs.
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridEditMenuCloseAllButton()]
+      performAction:grey_tap()];
+
+  // Ensure regular and inactive tabs were closed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridRegularTabsEmptyStateView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+                  @"Expected all regular tab to be closed.");
+  GREYAssertEqual(0, [ChromeEarlGrey inactiveTabCount],
+                  @"Expected all inactive tab to be closed.");
+
+  // Tap Undo button.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
+      performAction:grey_tap()];
+  GREYAssertEqual(1, [ChromeEarlGrey mainTabCount],
+                  @"Expected only one tab (NTP), all other tabs should have "
+                  @"been in inactive tab grid.");
+  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+                  @"Expected 4 inactive tabs.");
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Closing the only tab in the regular tab grid and verify there is an empty
+  // grid.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridRegularTabsEmptyStateView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+                  @"Expected no tab in regular tab grid.");
+  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+                  @"Expected 4 inactive tabs.");
+
+  // Ensure there is no selection mode available when there is no tab in regular
+  // tab grid.
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
+      assertWithMatcher:grey_nil()];
+
+  // Close all.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridEditMenuCloseAllButton()]
+      performAction:grey_tap()];
+  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+                  @"Expected all regular tab to be closed.");
+  GREYAssertEqual(0, [ChromeEarlGrey inactiveTabCount],
+                  @"Expected all inactive tab to be closed.");
+
+  // Tap on Undo button.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridUndoCloseAllButton()]
+      performAction:grey_tap()];
+  GREYAssertEqual(0, [ChromeEarlGrey mainTabCount],
+                  @"Expected no tab in regular tab grid.");
+  GREYAssertEqual(4, [ChromeEarlGrey inactiveTabCount],
+                  @"Expected 4 inactive tabs.");
 }
 
 // Tests that the Undo button is no longer available after tapping Close All,
@@ -2695,6 +2789,17 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 - (void)clearAllRecentlyClosedItems {
   [ChromeEarlGrey clearBrowsingHistory];
   [RecentTabsAppInterface clearCollapsedListViewSectionStates];
+}
+
+// Relaunches the app with Inactive Tabs enabled.
+- (void)relaunchAppWithInactiveTabsEnabled {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(
+      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
+      kTabInactivityThresholdParameterName + "/" +
+      kTabInactivityThresholdImmediateDemoParam);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 @end

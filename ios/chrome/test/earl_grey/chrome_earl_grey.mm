@@ -255,6 +255,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface mainTabCount];
 }
 
+- (NSUInteger)inactiveTabCount {
+  return [ChromeEarlGreyAppInterface inactiveTabCount];
+}
+
 - (NSUInteger)incognitoTabCount {
   return [ChromeEarlGreyAppInterface incognitoTabCount];
 }

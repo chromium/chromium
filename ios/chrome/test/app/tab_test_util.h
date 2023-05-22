@@ -70,6 +70,9 @@ void SelectTabAtIndexInCurrentMode(NSUInteger index);
 // Returns the number of main tabs.
 NSUInteger GetMainTabCount();
 
+// Returns the number of inactive tabs.
+NSUInteger GetInactiveTabCount();
+
 // Returns the number of incognito tabs.
 NSUInteger GetIncognitoTabCount();
 

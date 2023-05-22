@@ -212,6 +212,13 @@ NSUInteger GetMainTabCount() {
       ->count();
 }
 
+NSUInteger GetInactiveTabCount() {
+  return GetMainController()
+      .browserProviderInterface.mainBrowserProvider.inactiveBrowser
+      ->GetWebStateList()
+      ->count();
+}
+
 NSUInteger GetIncognitoTabCount() {
   return GetMainController()
       .browserProviderInterface.incognitoBrowserProvider.browser
