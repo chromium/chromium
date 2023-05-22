@@ -62,10 +62,12 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
                            int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
                                    autofill::Suggestion::FrontendId frontend_id,
+                                   autofill::Suggestion::BackendId backend_id,
                                    std::u16string* title,
                                    std::u16string* body) override;
   bool RemoveSuggestion(const std::u16string& value,
-                        autofill::Suggestion::FrontendId frontend_id) override;
+                        autofill::Suggestion::FrontendId frontend_id,
+                        autofill::Suggestion::BackendId backend_id) override;
   void ClearPreviewedForm() override;
   autofill::PopupType GetPopupType() const override;
   absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()

@@ -54,10 +54,12 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   void DidAcceptSuggestion(const Suggestion& suggestion, int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
                                    Suggestion::FrontendId frontend_id,
+                                   Suggestion::BackendId backend_id,
                                    std::u16string* title,
                                    std::u16string* body) override;
   bool RemoveSuggestion(const std::u16string& value,
-                        Suggestion::FrontendId frontend_id) override;
+                        Suggestion::FrontendId frontend_id,
+                        Suggestion::BackendId backend_id) override;
   void ClearPreviewedForm() override;
 
   // Returns PopupType::kUnspecified for all popups prior to |onQuery|, or the
@@ -125,11 +127,12 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   void OnCreditCardScanned(const AutofillTriggerSource trigger_source,
                            const CreditCard& card);
 
-  // Fills the form with the Autofill data corresponding to |unique_id|.
-  // If |is_preview| is true then this is just a preview to show the user what
-  // would be selected and if |is_preview| is false then the user has selected
+  // Fills the form with the Autofill data corresponding to `backend_id`.
+  // If `is_preview` is true then this is just a preview to show the user what
+  // would be selected and if `is_preview` is false then the user has selected
   // this data.
-  void FillAutofillFormData(Suggestion::FrontendId unique_id,
+  void FillAutofillFormData(Suggestion::FrontendId frontend_id,
+                            Suggestion::BackendId backend_id,
                             bool is_preview,
                             const AutofillTriggerSource trigger_source);
 

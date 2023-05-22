@@ -200,7 +200,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
   // Only preview the data if it is a profile or a virtual card.
   if (frontend_id.as_int() > 0) {
-    FillAutofillFormData(frontend_id, true,
+    FillAutofillFormData(frontend_id, backend_id, true,
                          AutofillTriggerSource::kKeyboardAccessory);
   } else if (frontend_id == PopupItemId::kAutocompleteEntry ||
              frontend_id == PopupItemId::kIbanEntry ||
@@ -298,8 +298,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
             position, popup_type_, manager_->client()->IsOffTheRecord());
       }
-      FillAutofillFormData(suggestion.frontend_id, false,
-                           AutofillTriggerSource::kPopup);
+      FillAutofillFormData(suggestion.frontend_id,
+                           suggestion.GetPayload<Suggestion::BackendId>(),
+                           false, AutofillTriggerSource::kPopup);
       break;
   }
 
@@ -321,16 +322,19 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
 bool AutofillExternalDelegate::GetDeletionConfirmationText(
     const std::u16string& value,
     Suggestion::FrontendId frontend_id,
+    Suggestion::BackendId backend_id,
     std::u16string* title,
     std::u16string* body) {
-  return manager_->GetDeletionConfirmationText(value, frontend_id, title, body);
+  return manager_->GetDeletionConfirmationText(value, frontend_id, backend_id,
+                                               title, body);
 }
 
 bool AutofillExternalDelegate::RemoveSuggestion(
     const std::u16string& value,
-    Suggestion::FrontendId frontend_id) {
+    Suggestion::FrontendId frontend_id,
+    Suggestion::BackendId backend_id) {
   if (frontend_id.as_int() > 0) {
-    return manager_->RemoveAutofillProfileOrCreditCard(frontend_id);
+    return manager_->RemoveAutofillProfileOrCreditCard(backend_id);
   }
 
   if (frontend_id == PopupItemId::kAutocompleteEntry) {
@@ -386,12 +390,14 @@ void AutofillExternalDelegate::OnCreditCardScanned(
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(
-    Suggestion::FrontendId unique_id,
+    Suggestion::FrontendId frontend_id,
+    Suggestion::BackendId backend_id,
     bool is_preview,
     const AutofillTriggerSource trigger_source) {
   // If the selected element is a warning we don't want to do anything.
-  if (IsAutofillWarningEntry(unique_id))
+  if (IsAutofillWarningEntry(frontend_id)) {
     return;
+  }
 
   mojom::RendererFormDataAction renderer_action =
       is_preview ? mojom::RendererFormDataAction::kPreview
@@ -400,7 +406,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
   DCHECK(driver_->RendererIsAvailable());
   // Fill the values for the whole form.
   manager_->FillOrPreviewForm(renderer_action, query_form_, query_field_,
-                              unique_id, trigger_source);
+                              backend_id, trigger_source);
 }
 
 void AutofillExternalDelegate::PossiblyRemoveAutofillWarnings(

@@ -164,8 +164,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
                                         form(), form().fields.back());
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
-      MakeFrontendId({.credit_card_id = kCardGuid}),
-      AutofillTriggerSource::kPopup);
+      Suggestion::BackendId(kCardGuid), AutofillTriggerSource::kPopup);
 
   const bool should_log_for_metadata =
       card_issuer_available() && card_metadata_available();
@@ -204,8 +203,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   // Select the suggestion again.
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
-      MakeFrontendId({.credit_card_id = kCardGuid}),
-      AutofillTriggerSource::kPopup);
+      Suggestion::BackendId(kCardGuid), AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -234,8 +232,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   // Simulate filling the card.
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
-      MakeFrontendId({.credit_card_id = kCardGuid}),
-      AutofillTriggerSource::kPopup);
+      Suggestion::BackendId(kCardGuid), AutofillTriggerSource::kPopup);
   autofill_manager().OnCreditCardFetchedForTest(CreditCardFetchResult::kSuccess,
                                                 &card(), u"123");
 
@@ -267,8 +264,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
-      MakeFrontendId({.credit_card_id = kCardGuid}),
-      AutofillTriggerSource::kPopup);
+      Suggestion::BackendId(kCardGuid), AutofillTriggerSource::kPopup);
   autofill_manager().OnCreditCardFetchedForTest(CreditCardFetchResult::kSuccess,
                                                 &card(), u"123");
   SubmitForm(form());
@@ -384,8 +380,7 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   test_clock.SetNowTicks(now + base::Seconds(2));
   autofill_manager().FillOrPreviewForm(
       mojom::RendererFormDataAction::kFill, form(), form().fields.front(),
-      MakeFrontendId({.credit_card_id = kTestMaskedCardId}),
-      AutofillTriggerSource::kPopup);
+      Suggestion::BackendId(kTestMaskedCardId), AutofillTriggerSource::kPopup);
 
   std::string latency_histogram_prefix =
       "Autofill.CreditCard.SelectionLatencySinceShown.";

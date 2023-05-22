@@ -154,7 +154,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               (mojom::RendererFormDataAction action,
                const FormData& form,
                const FormFieldData& field,
-               Suggestion::FrontendId unique_id,
+               Suggestion::BackendId backend_id,
                const AutofillTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void,
@@ -684,9 +684,9 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(autofill_client_,
               HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
   std::u16string dummy_string(u"John Legend");
-  EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _,
-                                kAutofillProfileId, _));
+  EXPECT_CALL(
+      *browser_autofill_manager_,
+      FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _, _));
 
   external_delegate_->DidAcceptSuggestion(
       test::CreateAutofillSuggestion(kAutofillProfileId, dummy_string),

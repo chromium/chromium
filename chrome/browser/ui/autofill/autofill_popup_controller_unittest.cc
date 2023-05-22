@@ -110,7 +110,8 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
                            Suggestion::FrontendId frontend_id,
                            const Suggestion::BackendId& backend_id) override {}
   bool RemoveSuggestion(const std::u16string& value,
-                        Suggestion::FrontendId frontend_id) override {
+                        Suggestion::FrontendId frontend_id,
+                        Suggestion::BackendId backend_id) override {
     return true;
   }
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr() {
