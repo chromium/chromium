@@ -112,15 +112,9 @@ class ContentSettingGeolocationImageModel : public ContentSettingImageModel {
   bool IsGeolocationAllowedOnASystemLevel();
   bool IsGeolocationPermissionDetermined();
 
-  void AppCeasesToUseGeolocation();
-  void AppAttemptsToUseGeolocation();
-
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
       WebContents* web_contents) override;
-
- private:
-  bool active_ = false;
 };
 
 class ContentSettingRPHImageModel : public ContentSettingSimpleImageModel {
@@ -522,9 +516,7 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
 ContentSettingGeolocationImageModel::ContentSettingGeolocationImageModel()
     : ContentSettingImageModel(ImageType::GEOLOCATION, kNotifyAccessibility) {}
 
-ContentSettingGeolocationImageModel::~ContentSettingGeolocationImageModel() {
-  AppCeasesToUseGeolocation();
-}
+ContentSettingGeolocationImageModel::~ContentSettingGeolocationImageModel() {}
 
 bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
@@ -533,7 +525,6 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
           web_contents->GetPrimaryMainFrame());
   set_should_auto_open_bubble(false);
   if (!content_settings) {
-    AppCeasesToUseGeolocation();
     return false;
   }
 
@@ -543,7 +534,6 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
       content_settings->IsContentBlocked(ContentSettingsType::GEOLOCATION);
 
   if (!is_allowed && !is_blocked) {
-    AppCeasesToUseGeolocation();
     return false;
   }
 
@@ -595,7 +585,6 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
         set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
 #endif  // BUILDFLAG(IS_MAC)
       }
-      AppAttemptsToUseGeolocation();
       return true;
     }
   }
@@ -607,7 +596,6 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
   set_tooltip(l10n_util::GetStringUTF16(message_id));
   set_accessibility_string_id(message_id);
 
-  AppAttemptsToUseGeolocation();
   return true;
 }
 
@@ -638,30 +626,6 @@ bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
 
   return permission != device::LocationSystemPermissionStatus::kNotDetermined;
 #endif
-}
-
-void ContentSettingGeolocationImageModel::AppAttemptsToUseGeolocation() {
-  if (!active_) {
-    active_ = true;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-    device::GeolocationManager* geolocation_manager =
-        g_browser_process->geolocation_manager();
-    CHECK(geolocation_manager);
-    geolocation_manager->AppAttemptsToUseGeolocation();
-#endif
-  }
-}
-
-void ContentSettingGeolocationImageModel::AppCeasesToUseGeolocation() {
-  if (active_) {
-    active_ = false;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-    device::GeolocationManager* geolocation_manager =
-        g_browser_process->geolocation_manager();
-    CHECK(geolocation_manager);
-    geolocation_manager->AppCeasesToUseGeolocation();
-#endif
-  }
 }
 
 std::unique_ptr<ContentSettingBubbleModel>

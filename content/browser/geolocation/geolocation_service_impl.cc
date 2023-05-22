@@ -12,6 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
@@ -58,12 +59,24 @@ GeolocationServiceImpl::GeolocationServiceImpl(
   DCHECK(render_frame_host);
 }
 
-GeolocationServiceImpl::~GeolocationServiceImpl() {}
+GeolocationServiceImpl::~GeolocationServiceImpl() {
+  if (device::GeolocationManager* geolocation_manager =
+          device::GeolocationManager::GetInstance();
+      geolocation_manager) {
+    // One call here is enough as the calls are grouped by app name
+    geolocation_manager->AppCeasesToUseGeolocation();
+  }
+}
 
 void GeolocationServiceImpl::Bind(
     mojo::PendingReceiver<blink::mojom::GeolocationService> receiver) {
   receiver_set_.Add(this, std::move(receiver),
                     std::make_unique<GeolocationServiceImplContext>());
+  if (device::GeolocationManager* geolocation_manager =
+          device::GeolocationManager::GetInstance();
+      geolocation_manager) {
+    geolocation_manager->AppAttemptsToUseGeolocation();
+  }
 }
 
 void GeolocationServiceImpl::CreateGeolocation(

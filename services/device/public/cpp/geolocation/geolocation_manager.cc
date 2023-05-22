@@ -47,6 +47,14 @@ void GeolocationManager::SetInstance(
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
 
+void GeolocationManager::AppAttemptsToUseGeolocation() {
+  system_geolocation_source_->AppAttemptsToUseGeolocation();
+}
+
+void GeolocationManager::AppCeasesToUseGeolocation() {
+  system_geolocation_source_->AppCeasesToUseGeolocation();
+}
+
 GeolocationManager::GeolocationManager(
     std::unique_ptr<SystemGeolocationSource> system_geolocation_source)
     : system_geolocation_source_(std::move(system_geolocation_source)),
@@ -97,17 +105,15 @@ GeolocationManager::GetObserverList() const {
   return observers_;
 }
 
-void GeolocationManager::AppAttemptsToUseGeolocation() {
-  system_geolocation_source_->AppAttemptsToUseGeolocation();
-}
-
-void GeolocationManager::AppCeasesToUseGeolocation() {
-  system_geolocation_source_->AppCeasesToUseGeolocation();
-}
-
 SystemGeolocationSource& GeolocationManager::SystemGeolocationSourceForTest() {
   return *system_geolocation_source_;
 }
+
+#else
+
+void GeolocationManager::AppAttemptsToUseGeolocation() {}
+
+void GeolocationManager::AppCeasesToUseGeolocation() {}
 
 #endif
 
