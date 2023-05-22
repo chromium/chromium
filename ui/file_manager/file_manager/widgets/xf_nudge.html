@@ -1,7 +1,14 @@
 <style>
 #container > * {
-  background-color: var(--cros-nudge-background-color);
   z-index: 999;
+}
+
+:host-context([theme='legacy']) #container > * {
+  background-color: var(--cros-nudge-background-color);
+}
+
+:host-context([theme='refresh23']) #container > * {
+  background-color: var(--cros-sys-primary);
 }
 
 #dot {
@@ -23,6 +30,14 @@
   width: fit-content;
 }
 
+:host-context([theme='legacy']) #bubble {
+  color: var(--cros-button-icon-color-primary);
+}
+
+:host-context([theme='refresh23']) #bubble {
+  color: var(--cros-sys-on_primary);
+}
+
 #bubble.single-line {
   border-radius: 18px;
 }
@@ -31,22 +46,25 @@
   -webkit-mask-image: url(/foreground/images/files/ui/nudge_star_icon.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-button-icon-color-primary);
+  background-color: currentColor;
   height: 20px;
   margin-inline-end: 12px;
   width: 20px;
 }
 
-#bubble > span {
-  color: var(--cros-button-label-color-primary);
+:host-context([theme='legacy']) #bubble > span {
   font: var(--cros-body-2-font);
+}
+
+:host-context([theme='refresh23']) #bubble > span {
+  font: var(--cros-body-1-font);
 }
 
 #dismiss {
   --focus-shadow-color: var(--cros-sys-inverse_primary);
   align-self: center;
   border-radius: 8px;
-  color: var(--cros-button-label-color-primary);
+  color: var(--cros-sys-on_primary);
 }
 </style>
 <div aria-hidden="true" id="container">
