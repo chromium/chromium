@@ -57,9 +57,9 @@ void RunUnblocker(base::ScopedClosureRunner unblocker) {
   unblocker.RunAndReset();
 }
 
-// Returns a vector containing bytes from `value` or an empty vector if `value`
-// is nullptr.
-std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& value) {
+// Returns a vector containing bytes from `value` or an empty vector if
+// `value` is nullptr.
+std::vector<uint8_t> SECItemToBytes(crypto::ScopedSECItem value) {
   return value ? std::vector<uint8_t>(value->data, value->data + value->len)
                : std::vector<uint8_t>();
 }
@@ -72,21 +72,6 @@ void CleanUpAndDestroyKeys(crypto::ScopedSECKEYPublicKey public_key,
   PK11_DeleteTokenPrivateKey(/*privKey=*/private_key.release(),
                              /*force=*/false);
   PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release());
-}
-
-base::expected<crypto::ScopedSECKEYPrivateKey, Error>
-GetSECKEYPrivateKeyByPkcs11Id(const crypto::ScopedPK11Slot& slot,
-                              const std::vector<uint8_t>& pkcs11_id) {
-  SECItem sec_key_id;
-  sec_key_id.data = const_cast<uint8_t*>(pkcs11_id.data());
-  sec_key_id.len = pkcs11_id.size();
-
-  crypto::ScopedSECKEYPrivateKey private_key(
-      PK11_FindKeyByKeyID(slot.get(), &sec_key_id, /*wincx=*/nullptr));
-  if (!private_key) {
-    return base::unexpected(Error::kKeyNotFound);
-  }
-  return private_key;
 }
 
 // Returns ScopedSECKEYPrivateKey if the key was found.
@@ -105,7 +90,31 @@ base::expected<crypto::ScopedSECKEYPrivateKey, Error> GetSECKEYPrivateKey(
     return base::unexpected(Error::kFailedToGetKeyId);
   }
 
-  return GetSECKEYPrivateKeyByPkcs11Id(slot, pkcs11_id);
+  SECItem sec_key_id;
+  sec_key_id.data = pkcs11_id.data();
+  sec_key_id.len = pkcs11_id.size();
+
+  crypto::ScopedSECKEYPrivateKey private_key(
+      PK11_FindKeyByKeyID(slot.get(), &sec_key_id, /*wincx=*/nullptr));
+  if (!private_key) {
+    return base::unexpected(Error::kKeyNotFound);
+  }
+  return private_key;
+}
+
+void DoesPrivateKeyExistOnWorkerThread(crypto::ScopedPK11Slot slot,
+                                       PrivateKeyHandle key,
+                                       Kcer::DoesKeyExistCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (private_key.has_value()) {
+    return std::move(callback).Run(true);
+  }
+  if ((private_key.error() == Error::kKeyNotFound) ||
+      (private_key.error() == Error::kTokenIsNotAvailable)) {
+    return std::move(callback).Run(false);
+  }
+  return std::move(callback).Run(base::unexpected(private_key.error()));
 }
 
 void GenerateRsaKeyOnWorkerThread(Token token,
@@ -232,11 +241,9 @@ void ImportKeyOnWorkerThread(Token token,
                 PublicKeySpki(SECItemToBytes(std::move(public_key_der)))));
 }
 
-void ImportCertOnWorkerThread(
-    crypto::ScopedPK11Slot slot,
-    CertDer cert_der,
-    base::OnceCallback<void(bool /*did_modify*/,
-                            base::expected<void, Error> /*result*/)> callback) {
+void ImportCertOnWorkerThread(crypto::ScopedPK11Slot slot,
+                              CertDer cert_der,
+                              Kcer::Kcer::StatusCallback callback) {
   net::ScopedCERTCertificateList certs =
       net::x509_util::CreateCERTCertificateListFromBytes(
           reinterpret_cast<char*>(cert_der->data()), cert_der->size(),
@@ -244,18 +251,17 @@ void ImportCertOnWorkerThread(
 
   if (certs.empty() || (certs.size() != 1)) {
     return std::move(callback).Run(
-        /*did_modify=*/false, base::unexpected(Error::kInvalidCertificate));
+        base::unexpected(Error::kInvalidCertificate));
   }
 
   if (int res = net::x509_util::ImportUserCert(certs[0].get());
       res != net::OK) {
     LOG(ERROR) << "Failed to import certificate, error: " << res;
     return std::move(callback).Run(
-        /*did_modify=*/false,
         base::unexpected(Error::kFailedToImportCertificate));
   }
 
-  return std::move(callback).Run(/*did_modify=*/true, {});
+  return std::move(callback).Run({});
 }
 
 // Returns true if |public_key| is relevant as a "platform key" that should be
@@ -290,6 +296,10 @@ void ListKeysOnWorkerThread(Token token,
                             KcerToken::TokenListKeysCallback callback) {
   std::vector<PublicKey> result;
 
+  // This assumes that all public keys on the slots are actually key pairs with
+  // private + public keys, so it's sufficient to get the public keys (and also
+  // not necessary to check that a private key for that public key really
+  // exists).
   crypto::ScopedSECKEYPublicKeyList public_keys(
       PK11_ListPublicKeysInSlot(slot.get(), /*nickname=*/nullptr));
   if (!public_keys) {
@@ -304,14 +314,6 @@ void ListKeysOnWorkerThread(Token token,
 
     Pkcs11Id pkcs11_id(
         SECItemToBytes(crypto::MakeNssIdFromPublicKey(node->key)));
-
-    base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
-        GetSECKEYPrivateKeyByPkcs11Id(slot, pkcs11_id.value());
-    if (!private_key.has_value()) {
-      // Do not list key pairs without private keys, they might be left behind
-      // when NSS fails to delete a public key.
-      continue;
-    }
 
     crypto::ScopedSECItem public_key_der(
         SECKEY_EncodeDERSubjectPublicKeyInfo(node->key));
@@ -343,101 +345,26 @@ void ListCertsOnWorkerThread(
   std::move(callback).Run(std::move(result));
 }
 
-void RemoveKeyAndCertsOnWorkerThread(
-    crypto::ScopedPK11Slot slot,
-    PrivateKeyHandle key,
-    base::OnceCallback<void(bool /*did_modify*/,
-                            base::expected<void, Error> /*result*/)> callback) {
-  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
-      GetSECKEYPrivateKey(slot, key);
-  if (!private_key.has_value()) {
-    return std::move(callback).Run(/*did_modify=*/false,
-                                   base::unexpected(private_key.error()));
-  }
-  crypto::ScopedSECKEYPrivateKey& sec_private_key = private_key.value();
-
-  // There can be multiple certs that need to be deleted. The loop continues
-  // until no more certs are found or too many errors received.
-  int errors_allowed = 5;
-  int certs_removed = 0;
-  while (errors_allowed > 0) {
-    net::ScopedCERTCertificate cert(
-        PK11_GetCertFromPrivateKey(sec_private_key.get()));
-    if (!cert) {
-      break;
-    }
-
-    if (SEC_DeletePermCertificate(cert.get()) != SECSuccess) {
-      --errors_allowed;
-      continue;
-    }
-    ++certs_removed;
-  }
-  if (errors_allowed == 0) {
-    return std::move(callback).Run(
-        /*did_modify=*/(certs_removed > 0),
-        base::unexpected(Error::kFailedToRemoveCertificate));
-  }
-
-  crypto::ScopedSECKEYPublicKey public_key(
-      SECKEY_ConvertToPublicKey(sec_private_key.get()));
-
-  if (PK11_DeleteTokenPrivateKey(/*privKey=*/sec_private_key.release(),
-                                 /*force=*/false) != SECSuccess) {
-    return std::move(callback).Run(
-        /*did_modify=*/(certs_removed > 0),
-        base::unexpected(Error::kFailedToRemovePrivateKey));
-  }
-
-  // TODO(crbug.com/1096051): NSS tends to fail the deletion of the public key,
-  // ignore the result for now and make sure it works properly in the non-NSS
-  // version of Kcer.
-  PK11_DeleteTokenPublicKey(/*privKey=*/public_key.release());
-
-  // Success.
-  return std::move(callback).Run(
-      /*did_modify=*/(certs_removed > 0), {});
-}
-
-void RemoveCertOnWorkerThread(
-    crypto::ScopedPK11Slot slot,
-    scoped_refptr<const Cert> cert,
-    base::OnceCallback<void(bool /*did_modify*/,
-                            base::expected<void, Error> /*result*/)> callback) {
+void RemoveCertOnWorkerThread(crypto::ScopedPK11Slot slot,
+                              scoped_refptr<const Cert> cert,
+                              Kcer::StatusCallback callback) {
   net::ScopedCERTCertificate nss_cert =
       net::x509_util::CreateCERTCertificateFromX509Certificate(
           cert->GetX509Cert().get());
   if (!nss_cert) {
     return std::move(callback).Run(
-        /*did_modify=*/false, base::unexpected(Error::kInvalidCertificate));
+        base::unexpected(Error::kInvalidCertificate));
   }
 
   if (SEC_DeletePermCertificate(nss_cert.get()) != SECSuccess) {
     return std::move(callback).Run(
-        /*did_modify=*/false,
         base::unexpected(Error::kFailedToRemoveCertificate));
   }
-
-  // TODO(miersh): Currently RemoveCertOnWorkerThread() returns "success" even
-  // when SEC_DeletePermCertificate doesn't find the certificate. This is
+  // TODO(miersh): Currently the method returns "success" even when
+  // SEC_DeletePermCertificate doesn't find the certificate. This is
   // acceptable for a "remove" method, but it might be useful to change it
   // after NSS is not used for Kcer.
-  std::move(callback).Run(/*did_modify=*/true, {});
-}
-
-void DoesPrivateKeyExistOnWorkerThread(crypto::ScopedPK11Slot slot,
-                                       PrivateKeyHandle key,
-                                       Kcer::DoesKeyExistCallback callback) {
-  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
-      GetSECKEYPrivateKey(slot, key);
-  if (private_key.has_value()) {
-    return std::move(callback).Run(true);
-  }
-  if ((private_key.error() == Error::kKeyNotFound) ||
-      (private_key.error() == Error::kTokenIsNotAvailable)) {
-    return std::move(callback).Run(false);
-  }
-  return std::move(callback).Run(base::unexpected(private_key.error()));
+  std::move(callback).Run({});
 }
 
 bool DoesKeySupportSigningScheme(
@@ -1093,30 +1020,7 @@ void KcerTokenImplNss::ExportPkcs12Cert(scoped_refptr<const Cert> cert,
 void KcerTokenImplNss::RemoveKeyAndCerts(PrivateKeyHandle key,
                                          Kcer::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  if (UNLIKELY(state_ == State::kInitializationFailed)) {
-    return HandleInitializationFailed(std::move(callback));
-  }
-  if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
-        &KcerTokenImplNss::RemoveKeyAndCerts, weak_factory_.GetWeakPtr(),
-        std::move(key), std::move(callback)));
-  }
-
-  // Block task queue, attach queue unblocking and notification sending to the
-  // callback.
-  auto wrapped_callback = base::BindPostTask(
-      content::GetIOThreadTaskRunner({}),
-      base::BindOnce(&KcerTokenImplNss::OnCertsModified,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(callback).Then(BlockQueueGetUnblocker())));
-
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&RemoveKeyAndCertsOnWorkerThread,
-                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
-                     std::move(key), std::move(wrapped_callback)));
+  // TODO(244408716): Implement.
 }
 
 void KcerTokenImplNss::RemoveCert(scoped_refptr<const Cert> cert,
@@ -1388,14 +1292,11 @@ void KcerTokenImplNss::SetCertProvisioningProfileId(
                      std::move(unblocking_callback)));
 }
 
-// `did_modify` indicates whether a modification was actually made (which should
-// trigger a notification).
 void KcerTokenImplNss::OnCertsModified(Kcer::StatusCallback callback,
-                                       bool did_modify,
                                        base::expected<void, Error> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (did_modify) {
+  if (result.has_value()) {
     net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
   }
   // The Notify... above will post a task to invalidate the cache. Calling the

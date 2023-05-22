@@ -133,34 +133,7 @@ void KcerImpl::ExportPkcs12Cert(scoped_refptr<const Cert> cert,
 
 void KcerImpl::RemoveKeyAndCerts(PrivateKeyHandle key,
                                  StatusCallback callback) {
-  if (key.GetTokenInternal().has_value()) {
-    return RemoveKeyAndCertsWithToken(std::move(callback), std::move(key));
-  }
-
-  auto on_find_key_done =
-      base::BindOnce(&KcerImpl::RemoveKeyAndCertsWithToken,
-                     weak_factory_.GetWeakPtr(), std::move(callback));
-  return PopulateTokenForKey(std::move(key), std::move(on_find_key_done));
-}
-
-void KcerImpl::RemoveKeyAndCertsWithToken(
-    StatusCallback callback,
-    base::expected<PrivateKeyHandle, Error> key_or_error) {
-  if (!key_or_error.has_value()) {
-    return std::move(callback).Run(base::unexpected(key_or_error.error()));
-  }
-  PrivateKeyHandle key = std::move(key_or_error).value();
-
-  const base::WeakPtr<KcerToken>& kcer_token =
-      GetToken(key.GetTokenInternal().value());
-  if (!kcer_token.MaybeValid()) {
-    return std::move(callback).Run(
-        base::unexpected(Error::kTokenIsNotAvailable));
-  }
-  token_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&KcerToken::RemoveKeyAndCerts, kcer_token, std::move(key),
-                     base::BindPostTaskToCurrentDefault(std::move(callback))));
+  // TODO(244408716): Implement.
 }
 
 void KcerImpl::RemoveCert(scoped_refptr<const Cert> cert,
