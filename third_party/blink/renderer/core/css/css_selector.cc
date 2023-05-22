@@ -96,14 +96,8 @@ void CSSSelector::CreateRareData() {
 }
 
 unsigned CSSSelector::Specificity() const {
-  // make sure the result doesn't overflow
-  static const unsigned kMaxValueMask = 0xffffff;
-  static const unsigned kIdMask = 0xff0000;
-  static const unsigned kClassMask = 0x00ff00;
-  static const unsigned kElementMask = 0x0000ff;
-
   if (IsForPage()) {
-    return SpecificityForPage() & kMaxValueMask;
+    return SpecificityForPage() & CSSSelector::kMaxValueMask;
   }
 
   unsigned total = 0;
@@ -124,6 +118,16 @@ unsigned CSSSelector::Specificity() const {
     }
   }
   return total;
+}
+
+std::array<uint8_t, 3> CSSSelector::SpecificityTuple() const {
+  unsigned specificity = Specificity();
+
+  uint8_t a = (specificity & kIdMask) >> 16;
+  uint8_t b = (specificity & kClassMask) >> 8;
+  uint8_t c = (specificity & kElementMask);
+
+  return {a, b, c};
 }
 
 inline unsigned CSSSelector::SpecificityForOneSelector() const {

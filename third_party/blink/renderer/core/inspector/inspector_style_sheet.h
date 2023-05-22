@@ -242,9 +242,9 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
   bool InspectorStyleSheetText(String* result);
   String CollectStyleSheetRules();
   bool CSSOMStyleSheetText(String* result);
-  std::unique_ptr<protocol::Array<protocol::CSS::Value>> SelectorsFromSource(
-      CSSRuleSourceData*,
-      const String&);
+  std::unique_ptr<protocol::Array<protocol::CSS::Value>>
+  SelectorsFromSource(CSSRuleSourceData*, const String&, CSSStyleRule*);
+  Vector<const CSSSelector*> SelectorsFromRule(CSSStyleRule* rule);
   String Url();
   bool HasSourceURL();
   bool StartsAtZero();
