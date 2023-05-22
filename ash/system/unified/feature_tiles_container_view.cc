@@ -182,6 +182,15 @@ void FeatureTilesContainerView::SetRowsFromHeight(int max_height) {
   }
 }
 
+void FeatureTilesContainerView::AdjustRowsForMediaViewVisibility(
+    bool visible,
+    int max_height) {
+  if (is_media_view_shown_ != visible) {
+    is_media_view_shown_ = visible;
+    SetRowsFromHeight(max_height);
+  }
+}
+
 void FeatureTilesContainerView::SelectedPageChanged(int old_selected,
                                                     int new_selected) {
   const int origin = kRevampedTrayMenuWidth * -old_selected;
@@ -276,7 +285,8 @@ int FeatureTilesContainerView::CalculateRowsFromHeight(int height) {
   int row_height = kRowContainerSize.height();
 
   // Uses the max number of rows with the space available.
-  int rows = kFeatureTileMaxRows;
+  int rows = is_media_view_shown_ ? kFeatureTileMaxRowsWhenMediaViewIsShowing
+                                  : kFeatureTileMaxRows;
   while (height < (rows * row_height) && rows > kFeatureTileMinRows) {
     rows--;
   }

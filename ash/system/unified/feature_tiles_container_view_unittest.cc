@@ -127,6 +127,10 @@ class FeatureTilesContainerViewTest : public AshTestBase,
     return container()->CalculateRowsFromHeight(height);
   }
 
+  void AdjustRowsForMediaViewVisibility(int height) {
+    container()->AdjustRowsForMediaViewVisibility(true, height);
+  }
+
   int GetRowCount() { return container()->row_count(); }
 
   int GetPageCount() { return container()->page_count(); }
@@ -175,6 +179,23 @@ TEST_F(FeatureTilesContainerViewTest, DisplayableRows) {
 
   // Expect min number of rows even with zero height.
   EXPECT_EQ(kFeatureTileMinRows, CalculateRowsFromHeight(0));
+}
+
+TEST_F(FeatureTilesContainerViewTest,
+       DisplayableRowsIsLessWhenMediaViewIsShowing) {
+  int row_height = kFeatureTileHeight;
+  // Set height to equivalent of max+1 rows.
+  const int max_height = (kFeatureTileMaxRows + 1) * row_height;
+
+  // Expect default to cap at `kFeatureTileMaxRows`.
+  EXPECT_EQ(kFeatureTileMaxRows, CalculateRowsFromHeight(max_height));
+
+  AdjustRowsForMediaViewVisibility(max_height);
+
+  // Expect height to be capped at `kFeatureTileMaxRowsWhenMediaViewIsShowing`
+  // when media view is showing.
+  EXPECT_EQ(kFeatureTileMaxRowsWhenMediaViewIsShowing,
+            CalculateRowsFromHeight(max_height));
 }
 
 // Tests that rows are dynamically added by adding `FeatureTile` elements to the
