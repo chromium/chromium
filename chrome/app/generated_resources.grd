@@ -1186,6 +1186,12 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_FIND_AND_EDIT_MENU" desc="The text label of the Find and edit sub menu item">
             &amp;Find and edit
           </message>
+          <message name="IDS_PARENT_BLOCKED_SITE_BANNER_TITLE" desc="The banner title for the first time a user is blocked from a website because of parental controls">
+            New: Family Link choices for Chrome apply here
+          </message>
+          <message name="IDS_PARENT_BLOCKED_SITE_BANNER_MESSAGE" desc="The banner message for the first time a user is blocked from a website because of parental controls">
+            The settings your parent chose are now keeping you safer online
+          </message>
           <message name="IDS_PASSWORD_MANAGER_SUBMENU_OPTION" desc="The text label of the password manager for the passwords and autofill submenu">
             &amp;Google Password Manager
           </message>
