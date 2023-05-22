@@ -826,6 +826,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point {
+  // Don't allow long-press previews when the incognito reauth view is blocking
+  // the content.
+  if (self.contentNeedsAuthentication) {
+    return nil;
+  }
+
   // Context menu shouldn't appear in the selection mode.
   if (_mode == TabGridModeSelection) {
     return nil;
