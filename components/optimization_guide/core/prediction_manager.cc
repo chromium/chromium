@@ -223,7 +223,6 @@ void PredictionManager::Initialize(
     BackgroundDownloadServiceProvider background_download_service_provider) {
   if (features::IsInstallWideModelStoreEnabled()) {
     store_is_ready_ = true;
-    init_time_ = base::TimeTicks::Now();
     LoadPredictionModels(GetRegisteredOptimizationTargets());
     LOCAL_HISTOGRAM_BOOLEAN(
         "OptimizationGuide.PredictionManager.StoreInitialized", true);
@@ -765,6 +764,10 @@ void PredictionManager::MaybeInitializeModelDownloads(
     download::BackgroundDownloadService* background_download_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (features::IsInstallWideModelStoreEnabled()) {
+    init_time_ = base::TimeTicks::Now();
+  }
+
   // Create the download manager here if we are allowed to.
   if (features::IsModelDownloadingEnabled() && !off_the_record_ &&
       !prediction_model_download_manager_) {
@@ -790,6 +793,7 @@ void PredictionManager::MaybeInitializeModelDownloads(
 void PredictionManager::OnStoreInitialized(
     BackgroundDownloadServiceProvider background_download_service_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!features::IsInstallWideModelStoreEnabled());
 
   store_is_ready_ = true;
   init_time_ = base::TimeTicks::Now();
