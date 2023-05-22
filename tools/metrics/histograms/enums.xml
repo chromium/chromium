@@ -55900,7 +55900,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 <enum name="KidsExternalFetcherStatus">
   <int value="0" label="NoError"/>
   <int value="1" label="AuthError"/>
-  <int value="2" label="HttpError"/>
+  <int value="2" label="HttpStatusOrNetError"/>
   <int value="3" label="ParseError"/>
   <int value="4" label="DataError"/>
 </enum>

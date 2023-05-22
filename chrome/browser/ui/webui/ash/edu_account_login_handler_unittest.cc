@@ -275,9 +275,9 @@ TEST_F(EduAccountLoginHandlerTest, HandleGetParentsFailure) {
 
   // Simulate failed fetching of family members.
   handler()->OnListFamilyMembersFailure(
-      KidsExternalFetcherStatus::NetOrHttpError(net::ERR_IO_PENDING));
+      KidsExternalFetcherStatus::HttpStatusOrNetError(net::ERR_IO_PENDING));
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-  VerifyJavascriptCallbackResolved(data, callback_id, false /*success*/);
+  VerifyJavascriptCallbackResolved(data, callback_id, /*success=*/false);
 
   ASSERT_EQ(base::Value::List(), *data.arg3());
 }

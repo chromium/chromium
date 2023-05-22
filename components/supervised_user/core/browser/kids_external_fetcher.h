@@ -44,17 +44,18 @@
 // numeric values should never be reused.
 class KidsExternalFetcherStatus {
  public:
-  using NetOrHttpErrorType = base::StrongAlias<class NetOrHttpErrorTag, int>;
+  using HttpStatusOrNetErrorType =
+      base::StrongAlias<class HttpStatusOrNetErrorTag, int>;
 
   enum State {
     OK = 0,
     GOOGLE_SERVICE_AUTH_ERROR = 1,  // Error occurred during the access token
                                     // fetching phase. See
                                     // GetGoogleServiceAuthError for details.
-    NET_OR_HTTP_ERROR = 2,  // The request was performed, but network or http
-                            // returned errors. This is default chromium
-                            // approach to combine those two error domains.
-    INVALID_RESPONSE = 3,   // The request was performed without error, but http
+    HTTP_STATUS_OR_NET_ERROR =
+        2,  // The request was performed, but network or http returned errors.
+            // This is default chromium approach to combine those two domains.
+    INVALID_RESPONSE = 3,  // The request was performed without error, but http
                            // response could not be processed or was unexpected.
     DATA_ERROR = 4,  // The request was parsed, but did not contain all required
                      // data. Not signalled by this fetcher itself, but might be
@@ -77,9 +78,9 @@ class KidsExternalFetcherStatus {
       GoogleServiceAuthError
           error);  // The copy follows the interface of
                    // https://source.chromium.org/chromium/chromium/src/+/main:components/signin/public/identity_manager/primary_account_access_token_fetcher.h;l=241;drc=8ba1bad80dc22235693a0dd41fe55c0fd2dbdabd
-  static KidsExternalFetcherStatus NetOrHttpError(
-      int error_code = 0);  // Either net::Error (negative numbers, 0 denotes
-                            // success) or HTTP error (standard error codes).
+  static KidsExternalFetcherStatus HttpStatusOrNetError(
+      int value = 0);  // Either net::Error (negative numbers, 0 denotes
+                       // success) or HTTP status.
   static KidsExternalFetcherStatus InvalidResponse();
   static KidsExternalFetcherStatus DataError();
 
@@ -100,13 +101,14 @@ class KidsExternalFetcherStatus {
   std::string ToMetricEnumLabel() const;
 
   State state() const;
-  NetOrHttpErrorType net_or_http_error_code() const;
+  HttpStatusOrNetErrorType http_status_or_net_error() const;
   const class GoogleServiceAuthError& google_service_auth_error() const;
 
  private:
   // Disallows impossible states.
   explicit KidsExternalFetcherStatus(State state);
-  explicit KidsExternalFetcherStatus(NetOrHttpErrorType error_code);
+  explicit KidsExternalFetcherStatus(
+      HttpStatusOrNetErrorType http_status_or_net_error);
   explicit KidsExternalFetcherStatus(
       class GoogleServiceAuthError
           google_service_auth_error);  // Implies State ==
@@ -116,8 +118,8 @@ class KidsExternalFetcherStatus {
       class GoogleServiceAuthError google_service_auth_error);
 
   State state_;
-  NetOrHttpErrorType net_or_http_error_code_{
-      0};  // Meaningful iff state_ == NET_OR_HTTP_ERROR
+  HttpStatusOrNetErrorType http_status_or_net_error_{
+      0};  // Meaningful iff state_ == HTTP_STATUS_OR_NET_ERROR
   class GoogleServiceAuthError google_service_auth_error_;
 };
 

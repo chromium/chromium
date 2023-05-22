@@ -832,14 +832,7 @@ the browser and content area. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.ListFamilyMembersRequest.Latency" units="ms"
-    expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>Tracks the latency of calls to the Kids Management API.</summary>
-</histogram>
-
-<histogram name="Signin.ListFamilyMembersRequest.NetOrHttpStatus"
+<histogram name="Signin.ListFamilyMembersRequest.HttpStatusOrNetError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-01">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -848,6 +841,13 @@ the browser and content area. -->
     is recorded for each request to the Kids Management API (ListFamilyMembers
     rpc).
   </summary>
+</histogram>
+
+<histogram name="Signin.ListFamilyMembersRequest.Latency" units="ms"
+    expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>Tracks the latency of calls to the Kids Management API.</summary>
 </histogram>
 
 <histogram name="Signin.ListFamilyMembersRequest.Status"
@@ -870,7 +870,8 @@ the browser and content area. -->
     <variant name="DataError"
         summary="contract error (data in the response missing despite
                  succesful parsing)"/>
-    <variant name="HttpError" summary="transport error"/>
+    <variant name="HttpStatusOrNetError"
+        summary="transport error or HTTP status"/>
     <variant name="NoError" summary="no error recorded"/>
     <variant name="ParseError" summary="parsing error"/>
   </token>
