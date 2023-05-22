@@ -156,7 +156,26 @@ void KcerImpl::RemoveCert(scoped_refptr<const Cert> cert,
 
 void KcerImpl::ListKeys(base::flat_set<Token> tokens,
                         ListKeysCallback callback) {
-  // TODO(244408716): Implement.
+  if (tokens.empty()) {
+    return std::move(callback).Run(/*certs=*/{}, /*errors=*/{});
+  }
+
+  scoped_refptr<TokenResultsMerger<PublicKey>> merger =
+      internal::TokenResultsMerger<PublicKey>::Create(
+          /*results_to_receive=*/tokens.size(), std::move(callback));
+  for (Token token : tokens) {
+    auto callback_for_token = merger->GetCallback(token);
+    const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
+    if (!kcer_token.MaybeValid()) {
+      std::move(callback_for_token)
+          .Run(base::unexpected(Error::kTokenIsNotAvailable));
+    } else {
+      token_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&KcerToken::ListKeys, kcer_token,
+                                    base::BindPostTaskToCurrentDefault(
+                                        std::move(callback_for_token))));
+    }
+  }
 }
 
 void KcerImpl::ListCerts(base::flat_set<Token> tokens,

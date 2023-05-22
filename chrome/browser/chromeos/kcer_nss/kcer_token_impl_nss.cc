@@ -264,6 +264,72 @@ void ImportCertOnWorkerThread(crypto::ScopedPK11Slot slot,
   return std::move(callback).Run({});
 }
 
+// Returns true if |public_key| is relevant as a "platform key" that should be
+// visible to chrome extensions / subsystems.
+bool ShouldIncludePublicKey(SECKEYPublicKey* public_key) {
+  crypto::ScopedSECItem cka_id(SECITEM_AllocItem(/*arena=*/nullptr,
+                                                 /*item=*/nullptr,
+                                                 /*len=*/0));
+  if (PK11_ReadRawAttribute(
+          /*objType=*/PK11_TypePubKey, public_key, CKA_ID, cka_id.get()) !=
+      SECSuccess) {
+    return false;
+  }
+
+  base::StringPiece cka_id_str(reinterpret_cast<char*>(cka_id->data),
+                               cka_id->len);
+
+  // Only keys generated/stored by extensions/Chrome should be visible to
+  // extensions. Oemcrypto stores its key in the TPM, but that should not
+  // be exposed. Look at exposing additional attributes or changing the slot
+  // that Oemcrypto stores keys, so that it can be done based on properties
+  // of the key. See https://crbug/com/1136396
+  if (cka_id_str == "arc-oemcrypto") {
+    VLOG(0) << "Filtered out arc-oemcrypto public key.";
+    return false;
+  }
+  return true;
+}
+
+void ListKeysOnWorkerThread(Token token,
+                            crypto::ScopedPK11Slot slot,
+                            KcerToken::TokenListKeysCallback callback) {
+  std::vector<PublicKey> result;
+
+  // This assumes that all public keys on the slots are actually key pairs with
+  // private + public keys, so it's sufficient to get the public keys (and also
+  // not necessary to check that a private key for that public key really
+  // exists).
+  crypto::ScopedSECKEYPublicKeyList public_keys(
+      PK11_ListPublicKeysInSlot(slot.get(), /*nickname=*/nullptr));
+  if (!public_keys) {
+    return std::move(callback).Run(std::move(result));
+  }
+
+  for (SECKEYPublicKeyListNode* node = PUBKEY_LIST_HEAD(public_keys);
+       !PUBKEY_LIST_END(node, public_keys); node = PUBKEY_LIST_NEXT(node)) {
+    if (!ShouldIncludePublicKey(node->key)) {
+      continue;
+    }
+
+    Pkcs11Id pkcs11_id(
+        SECItemToBytes(crypto::MakeNssIdFromPublicKey(node->key)));
+
+    crypto::ScopedSECItem public_key_der(
+        SECKEY_EncodeDERSubjectPublicKeyInfo(node->key));
+    if (!public_key_der || (public_key_der->len == 0)) {
+      LOG(WARNING) << "Could not encode subject public key info.";
+      continue;
+    }
+
+    result.emplace_back(
+        token, std::move(pkcs11_id),
+        PublicKeySpki(SECItemToBytes(std::move(public_key_der))));
+  }
+
+  std::move(callback).Run(std::move(result));
+}
+
 void ListCertsOnWorkerThread(
     crypto::ScopedPK11Slot slot,
     base::OnceCallback<void(net::ScopedCERTCertificateList)> callback) {
@@ -987,7 +1053,24 @@ void KcerTokenImplNss::RemoveCert(scoped_refptr<const Cert> cert,
 
 void KcerTokenImplNss::ListKeys(TokenListKeysCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(&KcerTokenImplNss::ListKeys,
+                                           weak_factory_.GetWeakPtr(),
+                                           std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&ListKeysOnWorkerThread, token_,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::ListCerts(TokenListCertsCallback callback) {

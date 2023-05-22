@@ -46,6 +46,15 @@ std::ostream& operator<<(std::ostream& stream, Token val) {
   stream << static_cast<int>(val);
   return stream;
 }
+std::ostream& operator<<(std::ostream& stream, PublicKey val) {
+  stream << "{\n";
+  stream << "  token: " << val.GetToken() << "\n";
+  stream << "  pkcs11_id: " << base::Base64Encode(val.GetPkcs11Id().value())
+         << "\n";
+  stream << "  spki: " << base::Base64Encode(val.GetSpki().value()) << "\n";
+  stream << "}\n";
+  return stream;
+}
 
 namespace {
 
@@ -375,6 +384,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
                        import_x509_cert_waiter.GetCallback());
   base::test::TestFuture<base::expected<void, Error>> remove_cert_waiter;
   kcer->RemoveCert(fake_cert, remove_cert_waiter.GetCallback());
+  base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
+      list_keys_waiter;
+  kcer->ListKeys({Token::kUser}, list_keys_waiter.GetCallback());
   base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
                          base::flat_map<Token, Error>>
       list_certs_waiter;
@@ -434,6 +446,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   ASSERT_FALSE(remove_cert_waiter.Get().has_value());
   EXPECT_EQ(remove_cert_waiter.Get().error(),
             Error::kTokenInitializationFailed);
+  ASSERT_FALSE(list_keys_waiter.Get<1>().empty());
+  EXPECT_EQ(list_keys_waiter.Get<1>().at(Token::kUser),
+            Error::kTokenInitializationFailed);
   ASSERT_FALSE(list_certs_waiter.Get<1>().empty());
   EXPECT_EQ(list_certs_waiter.Get<1>().at(Token::kUser),
             Error::kTokenInitializationFailed);
@@ -463,6 +478,133 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   ASSERT_FALSE(generate_rsa_waiter_2.Get().has_value());
   EXPECT_EQ(generate_rsa_waiter_2.Get().error(),
             Error::kTokenInitializationFailed);
+}
+
+TEST_F(KcerNssTest, ListKeys) {
+  TokenHolder user_token(Token::kUser);
+  user_token.Initialize();
+  TokenHolder device_token(Token::kDevice);
+  device_token.Initialize();
+
+  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
+      IOTaskRunner(), user_token.GetWeakPtr(), device_token.GetWeakPtr());
+
+  std::vector<PublicKey> all_expected_keys;
+  std::vector<PublicKey> user_expected_keys;
+  std::vector<PublicKey> device_expected_keys;
+
+  // Initially there should be no keys.
+  {
+    base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
+        list_keys_waiter;
+    kcer->ListKeys({Token::kUser, Token::kDevice},
+                   list_keys_waiter.GetCallback());
+
+    ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
+    EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
+                testing::UnorderedElementsAreArray(all_expected_keys));
+  }
+
+  // Generate a key.
+  {
+    base::test::TestFuture<base::expected<PublicKey, Error>>
+        generate_key_waiter;
+    kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                         /*hardware_backed=*/true,
+                         generate_key_waiter.GetCallback());
+    ASSERT_TRUE(generate_key_waiter.Get().has_value());
+    user_expected_keys.push_back(generate_key_waiter.Get().value());
+    all_expected_keys.push_back(generate_key_waiter.Take().value());
+  }
+
+  // The new key should be found.
+  {
+    base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
+        list_keys_waiter;
+    kcer->ListKeys({Token::kUser, Token::kDevice},
+                   list_keys_waiter.GetCallback());
+    ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
+    EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
+                testing::UnorderedElementsAreArray(all_expected_keys));
+  }
+
+  // Generate a key on a different token.
+  {
+    base::test::TestFuture<base::expected<PublicKey, Error>>
+        generate_key_waiter;
+    kcer->GenerateRsaKey(Token::kDevice, /*modulus_length_bits=*/2048,
+                         /*hardware_backed=*/true,
+                         generate_key_waiter.GetCallback());
+    ASSERT_TRUE(generate_key_waiter.Get().has_value());
+    device_expected_keys.push_back(generate_key_waiter.Get().value());
+    all_expected_keys.push_back(generate_key_waiter.Take().value());
+  }
+
+  // Keys from both tokens should be found.
+  {
+    base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
+        list_keys_waiter;
+    kcer->ListKeys({Token::kUser, Token::kDevice},
+                   list_keys_waiter.GetCallback());
+    ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
+    EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
+                testing::UnorderedElementsAreArray(all_expected_keys));
+  }
+
+  // Generate a key of a different type on user token.
+  {
+    base::test::TestFuture<base::expected<PublicKey, Error>>
+        generate_key_waiter;
+    kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                        /*hardware_backed=*/true,
+                        generate_key_waiter.GetCallback());
+    ASSERT_TRUE(generate_key_waiter.Get().has_value());
+    user_expected_keys.push_back(generate_key_waiter.Get().value());
+    all_expected_keys.push_back(generate_key_waiter.Take().value());
+  }
+
+  // Generate a key of a different type on device token.
+  {
+    base::test::TestFuture<base::expected<PublicKey, Error>>
+        generate_key_waiter;
+    kcer->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
+                        /*hardware_backed=*/true,
+                        generate_key_waiter.GetCallback());
+    ASSERT_TRUE(generate_key_waiter.Get().has_value());
+    device_expected_keys.push_back(generate_key_waiter.Get().value());
+    all_expected_keys.push_back(generate_key_waiter.Take().value());
+  }
+
+  // Keys of both types from both tokens should be found.
+  {
+    base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
+        list_keys_waiter;
+    kcer->ListKeys({Token::kUser, Token::kDevice},
+                   list_keys_waiter.GetCallback());
+    ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
+    EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
+                testing::UnorderedElementsAreArray(all_expected_keys));
+  }
+
+  // Keys of both types only from the user token should be found.
+  {
+    base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
+        list_keys_waiter;
+    kcer->ListKeys({Token::kUser}, list_keys_waiter.GetCallback());
+    ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
+    EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
+                testing::UnorderedElementsAreArray(user_expected_keys));
+  }
+
+  // Keys of both types only from the device token should be found.
+  {
+    base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
+        list_keys_waiter;
+    kcer->ListKeys({Token::kDevice}, list_keys_waiter.GetCallback());
+    ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
+    EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
+                testing::UnorderedElementsAreArray(device_expected_keys));
+  }
 }
 
 // Test that Kcer::Sign() works correctly for RSA keys with different signing
