@@ -7,9 +7,11 @@
 #include <string>
 
 #include "ash/public/cpp/image_util.h"
+#include "base/i18n/rtl.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/animated_image_view.h"
@@ -61,6 +63,10 @@ BootingAnimationView::BootingAnimationView(const std::string& animation_data) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto skottie = cc::SkottieWrapper::CreateSerializable(
       std::vector<uint8_t>(animation_data.begin(), animation_data.end()));
+  if (!skottie->is_valid()) {
+    LOG(ERROR) << "Invalid animation data.";
+    return;
+  }
   AddChildView(
       views::Builder<views::AnimatedImageView>()
           .CopyAddressTo(&animation_)
@@ -78,7 +84,7 @@ void BootingAnimationView::Play() {
 }
 
 lottie::Animation* BootingAnimationView::GetAnimatedImage() {
-  return animation_->animated_image();
+  return animation_ ? animation_->animated_image() : nullptr;
 }
 
 void BootingAnimationView::OnViewBoundsChanged(View* observed_view) {
@@ -93,6 +99,14 @@ void BootingAnimationView::OnViewBoundsChanged(View* observed_view) {
   // so that its proper bounds become available (they are 0x0 initially) before
   // starting the animation playback.
   gfx::Rect previous_animation_bounds = animation_->GetImageBounds();
+
+  if (base::i18n::IsRTL()) {
+    gfx::Transform transform;
+    transform.RotateAboutYAxis(180.0);
+    transform.Translate(-content_bounds.width(), 0);
+    animation_->SetTransform(transform);
+  }
+
   Resize(*animation_);
   VLOG(1) << "View bounds available. Resized animation with native size "
           << animation_->animated_image()->GetOriginalSize().ToString()

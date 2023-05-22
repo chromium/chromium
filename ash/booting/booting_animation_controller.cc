@@ -180,8 +180,15 @@ void BootingAnimationController::StartAnimation() {
   start_once_ready_ = false;
   BootingAnimationView* view = widget_->SetContentsView(
       std::make_unique<BootingAnimationView>(animation_data_));
+  auto* animated_image = view->GetAnimatedImage();
+  // If there is no animated image set at this point it means that data file
+  // is invalid and we need to finish the animation immediately.
+  if (!animated_image) {
+    std::move(animation_played_callback_).Run();
+    return;
+  }
   // Observe animation to know when it finishes playing.
-  scoped_animation_observer_.Observe(view->GetAnimatedImage());
+  scoped_animation_observer_.Observe(animated_image);
   widget_->Show();
   view->Play();
 }
