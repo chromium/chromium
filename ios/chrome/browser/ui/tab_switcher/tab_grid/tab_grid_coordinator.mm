@@ -202,8 +202,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong) InactiveTabsCoordinator* inactiveTabsCoordinator;
 // The timestamp of the user entering the tab grid.
 @property(nonatomic, assign) base::TimeTicks tabGridEnterTime;
-// The timestamp of the user exiting the tab grid.
-@property(nonatomic, assign) base::TimeTicks tabGridExitTime;
 
 // The page configuration used when create the tab grid view controller;
 @property(nonatomic, assign) TabGridPageConfiguration pageConfiguration;
@@ -509,13 +507,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.priceCardMediator logMetrics:TAB_SWITCHER];
 }
 
-- (void)reportTabGridUsageTime {
-  base::TimeDelta duration = self.tabGridExitTime - self.tabGridEnterTime;
-  base::UmaHistogramLongTimes("IOS.TabSwitcher.TimeSpent", duration);
-  self.tabGridEnterTime = base::TimeTicks();
-  self.tabGridExitTime = base::TimeTicks();
-}
-
 - (void)showTabViewController:(UIViewController*)viewController
                     incognito:(BOOL)incognito
            shouldCloseTabGrid:(BOOL)shouldCloseTabGrid
@@ -524,11 +515,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   DCHECK(viewController || (thumbStripEnabled && self.bvcContainer));
 
   if (shouldCloseTabGrid) {
-    self.tabGridExitTime = base::TimeTicks::Now();
-
     // Record when the tab switcher is dismissed.
     base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
-    [self reportTabGridUsageTime];
+
+    // Record how long the tab switcher was presented.
+    base::TimeDelta duration = base::TimeTicks::Now() - self.tabGridEnterTime;
+    base::UmaHistogramLongTimes("IOS.TabSwitcher.TimeSpent", duration);
+    self.tabGridEnterTime = base::TimeTicks();
   }
 
   if (thumbStripEnabled) {
