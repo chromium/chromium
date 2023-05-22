@@ -9,10 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::converters {
@@ -22,6 +25,170 @@ namespace ash::converters {
 // with any valid type.
 TEST(TelemetryEventServiceConvertersTest, ConvertStructPtrTakesNullPtr) {
   EXPECT_TRUE(ConvertStructPtr(cros_healthd::mojom::EventInfoPtr()).is_null());
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardConnectionType) {
+  EXPECT_EQ(
+      Convert(diagnostics::mojom::ConnectionType::kUnmappedEnumField),
+      crosapi::mojom::TelemetryKeyboardConnectionType::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::ConnectionType::kInternal),
+            crosapi::mojom::TelemetryKeyboardConnectionType::kInternal);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::ConnectionType::kUsb),
+            crosapi::mojom::TelemetryKeyboardConnectionType::kUsb);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::ConnectionType::kBluetooth),
+            crosapi::mojom::TelemetryKeyboardConnectionType::kBluetooth);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::ConnectionType::kUnknown),
+            crosapi::mojom::TelemetryKeyboardConnectionType::kUnknown);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardPhysicalLayout) {
+  EXPECT_EQ(
+      Convert(diagnostics::mojom::PhysicalLayout::kUnmappedEnumField),
+      crosapi::mojom::TelemetryKeyboardPhysicalLayout::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::PhysicalLayout::kUnknown),
+            crosapi::mojom::TelemetryKeyboardPhysicalLayout::kUnknown);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::PhysicalLayout::kChromeOS),
+            crosapi::mojom::TelemetryKeyboardPhysicalLayout::kChromeOS);
+
+  EXPECT_EQ(
+      Convert(diagnostics::mojom::PhysicalLayout::kChromeOSDellEnterpriseWilco),
+      crosapi::mojom::TelemetryKeyboardPhysicalLayout::kUnknown);
+
+  EXPECT_EQ(
+      Convert(
+          diagnostics::mojom::PhysicalLayout::kChromeOSDellEnterpriseDrallion),
+      crosapi::mojom::TelemetryKeyboardPhysicalLayout::kUnknown);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardMechanicalLayout) {
+  EXPECT_EQ(
+      Convert(diagnostics::mojom::MechanicalLayout::kUnmappedEnumField),
+      crosapi::mojom::TelemetryKeyboardMechanicalLayout::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::MechanicalLayout::kUnknown),
+            crosapi::mojom::TelemetryKeyboardMechanicalLayout::kUnknown);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::MechanicalLayout::kAnsi),
+            crosapi::mojom::TelemetryKeyboardMechanicalLayout::kAnsi);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::MechanicalLayout::kIso),
+            crosapi::mojom::TelemetryKeyboardMechanicalLayout::kIso);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::MechanicalLayout::kJis),
+            crosapi::mojom::TelemetryKeyboardMechanicalLayout::kJis);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardNumberPadPresence) {
+  EXPECT_EQ(
+      Convert(diagnostics::mojom::NumberPadPresence::kUnmappedEnumField),
+      crosapi::mojom::TelemetryKeyboardNumberPadPresence::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::NumberPadPresence::kUnknown),
+            crosapi::mojom::TelemetryKeyboardNumberPadPresence::kUnknown);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::NumberPadPresence::kPresent),
+            crosapi::mojom::TelemetryKeyboardNumberPadPresence::kPresent);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::NumberPadPresence::kNotPresent),
+            crosapi::mojom::TelemetryKeyboardNumberPadPresence::kNotPresent);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRowKey) {
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kUnmappedEnumField),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kNone),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kNone);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kUnknown),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kUnknown);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kBack),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kBack);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kForward),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kForward);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kRefresh),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kRefresh);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kFullscreen),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kFullscreen);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kOverview),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kOverview);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kScreenshot),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kScreenshot);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kScreenBrightnessDown),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kScreenBrightnessDown);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kScreenBrightnessUp),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kScreenBrightnessUp);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kPrivacyScreenToggle),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kPrivacyScreenToggle);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kMicrophoneMute),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kMicrophoneMute);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kVolumeMute),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kVolumeMute);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kVolumeDown),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kVolumeDown);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kVolumeUp),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kVolumeUp);
+
+  EXPECT_EQ(
+      Convert(diagnostics::mojom::TopRowKey::kKeyboardBacklightToggle),
+      crosapi::mojom::TelemetryKeyboardTopRowKey::kKeyboardBacklightToggle);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kKeyboardBacklightDown),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kKeyboardBacklightDown);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kKeyboardBacklightUp),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kKeyboardBacklightUp);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kNextTrack),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kNextTrack);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kPreviousTrack),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kPreviousTrack);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kPlayPause),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kPlayPause);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kScreenMirror),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kScreenMirror);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRowKey::kDelete),
+            crosapi::mojom::TelemetryKeyboardTopRowKey::kDelete);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRightKey) {
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRightKey::kUnmappedEnumField),
+            crosapi::mojom::TelemetryKeyboardTopRightKey::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRightKey::kUnknown),
+            crosapi::mojom::TelemetryKeyboardTopRightKey::kUnknown);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRightKey::kPower),
+            crosapi::mojom::TelemetryKeyboardTopRightKey::kPower);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRightKey::kLock),
+            crosapi::mojom::TelemetryKeyboardTopRightKey::kLock);
+
+  EXPECT_EQ(Convert(diagnostics::mojom::TopRightKey::kControlPanel),
+            crosapi::mojom::TelemetryKeyboardTopRightKey::kControlPanel);
 }
 
 TEST(TelemetryEventServiceConvertersTest,
@@ -148,6 +315,140 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
 
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kPower),
             cros_healthd::mojom::EventCategoryEnum::kPower);
+
+  EXPECT_EQ(
+      Convert(crosapi::mojom::TelemetryEventCategoryEnum::kKeyboardDiagnostic),
+      cros_healthd::mojom::EventCategoryEnum::kKeyboardDiagnostic);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardInfo) {
+  constexpr uint32_t kId = 1;
+  constexpr char kName[] = "TESTNAME";
+  constexpr char kRegionCode[] = "de";
+
+  auto input = diagnostics::mojom::KeyboardInfo::New();
+  input->id = kId;
+  input->connection_type = diagnostics::mojom::ConnectionType::kBluetooth;
+  input->name = kName;
+  input->physical_layout = diagnostics::mojom::PhysicalLayout::kChromeOS;
+  input->mechanical_layout = diagnostics::mojom::MechanicalLayout::kAnsi;
+  input->region_code = kRegionCode;
+  input->number_pad_present = diagnostics::mojom::NumberPadPresence::kPresent;
+  input->top_row_keys = {diagnostics::mojom::TopRowKey::kBack,
+                         diagnostics::mojom::TopRowKey::kForward};
+  input->top_right_key = diagnostics::mojom::TopRightKey::kPower;
+  input->has_assistant_key = true;
+
+  auto result = ConvertStructPtr(std::move(input));
+
+  ASSERT_TRUE(result);
+
+  ASSERT_FALSE(result->id.is_null());
+  EXPECT_EQ(result->id->value, kId);
+
+  EXPECT_EQ(result->connection_type,
+            crosapi::mojom::TelemetryKeyboardConnectionType::kBluetooth);
+
+  ASSERT_TRUE(result->name);
+  EXPECT_EQ(*result->name, kName);
+
+  EXPECT_EQ(result->physical_layout,
+            crosapi::mojom::TelemetryKeyboardPhysicalLayout::kChromeOS);
+  EXPECT_EQ(result->mechanical_layout,
+            crosapi::mojom::TelemetryKeyboardMechanicalLayout::kAnsi);
+
+  ASSERT_TRUE(result->region_code);
+  EXPECT_EQ(*result->region_code, kRegionCode);
+
+  EXPECT_EQ(result->number_pad_present,
+            crosapi::mojom::TelemetryKeyboardNumberPadPresence::kPresent);
+
+  ASSERT_TRUE(result->top_row_keys);
+  ASSERT_EQ(result->top_row_keys->size(), 2UL);
+  EXPECT_THAT(*result->top_row_keys,
+              testing::ElementsAre(
+                  crosapi::mojom::TelemetryKeyboardTopRowKey::kBack,
+                  crosapi::mojom::TelemetryKeyboardTopRowKey::kForward));
+
+  EXPECT_EQ(result->top_right_key,
+            crosapi::mojom::TelemetryKeyboardTopRightKey::kPower);
+
+  ASSERT_FALSE(result->has_assistant_key.is_null());
+  EXPECT_TRUE(result->has_assistant_key->value);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardDiagnosticEventInfo) {
+  constexpr uint32_t kId = 1;
+  constexpr char kName[] = "TESTNAME";
+  constexpr char kRegionCode[] = "de";
+
+  std::vector<uint32_t> kTestedKeys = {1, 2, 3, 4, 5, 6};
+  std::vector<uint32_t> kTestedTopRowKeys = {7, 8, 9, 10, 11, 12};
+
+  auto keyboard = diagnostics::mojom::KeyboardInfo::New();
+  keyboard->id = kId;
+  keyboard->connection_type = diagnostics::mojom::ConnectionType::kBluetooth;
+  keyboard->name = kName;
+  keyboard->physical_layout = diagnostics::mojom::PhysicalLayout::kChromeOS;
+  keyboard->mechanical_layout = diagnostics::mojom::MechanicalLayout::kAnsi;
+  keyboard->region_code = kRegionCode;
+  keyboard->number_pad_present =
+      diagnostics::mojom::NumberPadPresence::kPresent;
+  keyboard->top_row_keys = {diagnostics::mojom::TopRowKey::kBack,
+                            diagnostics::mojom::TopRowKey::kForward};
+  keyboard->top_right_key = diagnostics::mojom::TopRightKey::kPower;
+  keyboard->has_assistant_key = true;
+
+  auto input = diagnostics::mojom::KeyboardDiagnosticEventInfo::New();
+  input->keyboard_info = std::move(keyboard);
+  input->tested_keys = kTestedKeys;
+  input->tested_top_row_keys = kTestedTopRowKeys;
+
+  auto result = ConvertStructPtr(std::move(input));
+
+  ASSERT_TRUE(result);
+
+  auto keyboard_info_result = std::move(result->keyboard_info);
+  ASSERT_TRUE(keyboard_info_result);
+
+  ASSERT_FALSE(keyboard_info_result->id.is_null());
+  EXPECT_EQ(keyboard_info_result->id->value, kId);
+
+  EXPECT_EQ(keyboard_info_result->connection_type,
+            crosapi::mojom::TelemetryKeyboardConnectionType::kBluetooth);
+
+  ASSERT_TRUE(keyboard_info_result->name);
+  EXPECT_EQ(*keyboard_info_result->name, kName);
+
+  EXPECT_EQ(keyboard_info_result->physical_layout,
+            crosapi::mojom::TelemetryKeyboardPhysicalLayout::kChromeOS);
+  EXPECT_EQ(keyboard_info_result->mechanical_layout,
+            crosapi::mojom::TelemetryKeyboardMechanicalLayout::kAnsi);
+
+  ASSERT_TRUE(keyboard_info_result->region_code);
+  EXPECT_EQ(*keyboard_info_result->region_code, kRegionCode);
+
+  EXPECT_EQ(keyboard_info_result->number_pad_present,
+            crosapi::mojom::TelemetryKeyboardNumberPadPresence::kPresent);
+
+  ASSERT_TRUE(keyboard_info_result->top_row_keys);
+  ASSERT_EQ(keyboard_info_result->top_row_keys->size(), 2UL);
+  EXPECT_THAT(*keyboard_info_result->top_row_keys,
+              testing::ElementsAre(
+                  crosapi::mojom::TelemetryKeyboardTopRowKey::kBack,
+                  crosapi::mojom::TelemetryKeyboardTopRowKey::kForward));
+
+  EXPECT_EQ(keyboard_info_result->top_right_key,
+            crosapi::mojom::TelemetryKeyboardTopRightKey::kPower);
+
+  ASSERT_FALSE(keyboard_info_result->has_assistant_key.is_null());
+  EXPECT_TRUE(keyboard_info_result->has_assistant_key->value);
+
+  ASSERT_TRUE(result->tested_keys);
+  EXPECT_EQ(*result->tested_keys, kTestedKeys);
+
+  ASSERT_TRUE(result->tested_top_row_keys);
+  EXPECT_EQ(*result->tested_top_row_keys, kTestedTopRowKeys);
 }
 
 TEST(TelemetryEventServiceConvertersTest,

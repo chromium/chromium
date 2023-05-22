@@ -17,6 +17,7 @@ source_set("events") {
   ]
 
   deps = [
+    "//ash/system/diagnostics/mojom",
     "//base",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
@@ -33,12 +34,14 @@ source_set("unit_tests") {
   ]
   deps = [
     ":events",
+    "//ash/system/diagnostics/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

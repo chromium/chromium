@@ -97,6 +97,7 @@ mojom("mojom") {
     "task_manager.mojom",
     "telemetry_event_service.mojom",
     "telemetry_extension_exception.mojom",
+    "telemetry_keyboard_event.mojom",
     "test_controller.mojom",
     "timezone.mojom",
     "tts.mojom",

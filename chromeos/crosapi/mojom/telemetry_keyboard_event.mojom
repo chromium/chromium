@@ -1,0 +1,141 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Note: this is a subset of the first party input interface which is
+// located in
+// //ash/system/diagnostics/mojom/input.mojom.
+// This interface serves as PII filtering and data post-processing service
+// between the source (first party diag tool) and the clients
+// (third-party telemetry extensions).
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/nullable_primitives.mojom";
+
+[Stable, Extensible]
+enum TelemetryKeyboardConnectionType {
+  // This is required for backwards compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  // Includes devices connected over USB that are on fully internal busses, as
+  // well as the keyboards/touchpads for detachables.
+  kInternal = 1,
+  kUsb = 2,
+  kBluetooth = 3,
+  kUnknown = 4,
+};
+
+[Stable, Extensible]
+enum TelemetryKeyboardPhysicalLayout {
+  // This is required for backwards compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  kUnknown = 1,
+  // A typical Chrome OS keyboard with action keys on the top row, reduced
+  // navigation keys, etc.
+  kChromeOS = 2,
+};
+
+// The international standard that the layout follows.
+[Stable, Extensible]
+enum TelemetryKeyboardMechanicalLayout {
+  // This is required for backwards compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  kUnknown = 1,
+  kAnsi = 2,
+  kIso = 3,
+  kJis = 4,
+};
+
+[Stable, Extensible]
+enum TelemetryKeyboardNumberPadPresence {
+  // This is required for backwards compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  // Unknown indicates there is no reliable evidence whether a numberpad is
+  // present. This is common for external keyboards.
+  kUnknown = 1,
+  kPresent = 2,
+  kNotPresent = 3,
+};
+
+// Note that this enumeration will need to be extended if new keys are added.
+[Stable, Extensible]
+enum TelemetryKeyboardTopRowKey {
+  // This is required for backwards compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  // Either no key at all, or no special action key at this position.
+  kNone = 1,
+  // Marker for keys which cannot be decoded, but have some action.
+  kUnknown = 2,
+  kBack = 3,
+  kForward = 4,
+  kRefresh = 5,
+  kFullscreen = 6,
+  kOverview = 7,
+  kScreenshot = 8,
+  kScreenBrightnessDown = 9,
+  kScreenBrightnessUp = 10,
+  kPrivacyScreenToggle = 11,
+  kMicrophoneMute = 12,
+  kVolumeMute = 13,
+  kVolumeDown = 14,
+  kVolumeUp = 15,
+  kKeyboardBacklightToggle = 16,
+  kKeyboardBacklightDown = 17,
+  kKeyboardBacklightUp = 18,
+  kNextTrack = 19,
+  kPreviousTrack = 20,
+  kPlayPause = 21,
+  kScreenMirror = 22,
+  kDelete = 23,
+};
+
+[Stable, Extensible]
+enum TelemetryKeyboardTopRightKey {
+  // This is required for backwards compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  kUnknown = 1,
+  kPower = 2,
+  kLock = 3,
+  kControlPanel = 4,
+};
+
+// Describes a connected keyboard.
+[Stable]
+struct TelemetryKeyboardInfo {
+  // The number of the keyboard's /dev/input/event* node.
+  UInt32Value? id@0;
+  TelemetryKeyboardConnectionType connection_type@1;
+  string? name@2;
+  TelemetryKeyboardPhysicalLayout physical_layout@3;
+  TelemetryKeyboardMechanicalLayout mechanical_layout@4;
+  // For internal keyboards, the region code of the device (from which the
+  // visual layout can be determined).
+  string? region_code@5;
+  TelemetryKeyboardNumberPadPresence number_pad_present@6;
+  // List of ChromeOS specific action keys in the top row. This list excludes
+  // the left-most Escape key, and right-most key (usually Power/Lock).
+  // If a keyboard has F11-F15 keys beyond the rightmost action key, they may
+  // not be included in this list (even as kNone).
+  array<TelemetryKeyboardTopRowKey>? top_row_keys@7;
+  // For CrOS keyboards, the glyph shown on the key at the far right end of the
+  // top row.
+  TelemetryKeyboardTopRightKey top_right_key@8;
+  // Only applicable to CrOS keyboards.
+  BoolValue? has_assistant_key@9;
+};
+
+// Keyboard diagnostics event info. It is fired when users completed a keyboard
+// diagnostic in the Diagnostics App.
+[Stable]
+struct TelemetryKeyboardDiagnosticEventInfo {
+  // The keyboard which has been tested.
+  TelemetryKeyboardInfo keyboard_info@0;
+  // Keys which have been tested. It is an array of the evdev key code.
+  array<uint32>? tested_keys@1;
+  // Top row keys which have been tested. They are positions of the key on the
+  // top row after escape (0 is leftmost, 1 is next to the right, etc.).
+  // Generally, 0 is F1, in some fashion.
+  // NOTE: This position may exceed the length of keyboard_info->top_row_keys,
+  // for external keyboards with keys in the F11-F15 range.
+  array<uint32>? tested_top_row_keys@2;
+};

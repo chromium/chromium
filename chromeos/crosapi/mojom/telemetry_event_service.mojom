@@ -15,6 +15,7 @@
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
+import "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom";
 
 // Audio jack event info. This is emitted when the
 // audio jack is plugged in or out.
@@ -140,7 +141,7 @@ struct TelemetryPowerEventInfo {
 
 // Union of event info.
 //
-// NextMinVersion: 5, NextIndex: 6
+// NextMinVersion: 6, NextIndex: 7
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -156,11 +157,14 @@ union TelemetryEventInfo {
   [MinVersion=3] TelemetrySdCardEventInfo sd_card_event_info@4;
   // Power event info.
   [MinVersion=4] TelemetryPowerEventInfo power_event_info@5;
+  // Keyboard diagnostic event info.
+  [MinVersion=5] TelemetryKeyboardDiagnosticEventInfo
+      keyboard_diagnostic_event_info@6;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 5, NextIndex: 6
+// NextMinVersion: 6, NextIndex: 7
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -170,6 +174,7 @@ enum TelemetryEventCategoryEnum {
   [MinVersion=2] kUsb = 3,
   [MinVersion=3] kSdCard = 4,
   [MinVersion=4] kPower = 5,
+  [MinVersion=5] kKeyboardDiagnostic = 6,
 };
 
 // Implemented by clients who desire events.
