@@ -20,7 +20,6 @@
 
 namespace {
 
-const char kDeclineTranslate[] = "Translate.DeclineTranslate";
 const char kPerformTranslateAmpCacheUrl[] = "Translate.Translate.AMPCacheURL";
 const char kNeverTranslateLang[] = "Translate.NeverTranslateLang";
 const char kNeverTranslateSite[] = "Translate.NeverTranslateSite";
@@ -228,10 +227,6 @@ void TranslateUIDelegate::TranslationDeclined(bool explicitly_closed) {
                           : metrics::TranslateEventProto::USER_IGNORE);
     if (explicitly_closed)
       translate_manager_->GetLanguageState()->set_translation_declined(true);
-  }
-
-  if (explicitly_closed) {
-    UMA_HISTOGRAM_BOOLEAN(kDeclineTranslate, true);
   }
 }
 
