@@ -749,7 +749,7 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2On) {
         .WillByDefault(Return(test_case.danger_type));
     DownloadUIModel::BubbleUIInfo bubble_ui_info =
         model().GetBubbleUIInfo(/*is_download_bubble_v2=*/true);
-    EXPECT_EQ(bubble_ui_info.has_checkbox, test_case.has_checkbox);
+    EXPECT_EQ(bubble_ui_info.HasCheckbox(), test_case.has_checkbox);
     EXPECT_EQ(bubble_ui_info.primary_button_command,
               test_case.primary_button_command);
     std::vector<DownloadCommands::Command> subpage_commands;
@@ -817,7 +817,7 @@ TEST_F(DownloadItemModelTest, DangerousWarningBubbleUIInfo_V2Off) {
         .WillByDefault(Return(test_case.danger_type));
     DownloadUIModel::BubbleUIInfo bubble_ui_info =
         model().GetBubbleUIInfo(/*is_download_bubble_v2=*/false);
-    EXPECT_EQ(bubble_ui_info.has_checkbox, test_case.has_checkbox);
+    EXPECT_EQ(bubble_ui_info.HasCheckbox(), test_case.has_checkbox);
     EXPECT_EQ(bubble_ui_info.primary_button_command,
               test_case.primary_button_command);
     std::vector<DownloadCommands::Command> subpage_commands;

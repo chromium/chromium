@@ -157,8 +157,8 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
       GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
   styled_label_->SizeToFit(min_label_width);
 
-  checkbox_->SetVisible(ui_info.has_checkbox);
-  if (ui_info.has_checkbox) {
+  checkbox_->SetVisible(ui_info.HasCheckbox());
+  if (ui_info.HasCheckbox()) {
     base::UmaHistogramEnumeration(kSubpageActionHistogram,
                                   DownloadBubbleSubpageAction::kShownCheckbox);
     checkbox_->SetChecked(false);
@@ -316,14 +316,14 @@ void DownloadBubbleSecurityView::UpdateButtons() {
   if (ui_info.subpage_buttons.size() > 0) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK);
     UpdateButton(ui_info.subpage_buttons[0], /*is_secondary_button=*/false,
-                 ui_info.has_checkbox);
+                 ui_info.HasCheckbox());
   }
 
   if (ui_info.subpage_buttons.size() > 1) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK |
                                  ui::DIALOG_BUTTON_CANCEL);
     UpdateButton(ui_info.subpage_buttons[1], /*is_secondary_button=*/true,
-                 ui_info.has_checkbox);
+                 ui_info.HasCheckbox());
   }
 }
 

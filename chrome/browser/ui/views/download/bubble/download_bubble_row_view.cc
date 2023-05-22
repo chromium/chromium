@@ -659,7 +659,7 @@ void DownloadBubbleRowView::OnMainButtonPressed() {
     return;
   }
   bubble_controller_->RecordDownloadBubbleInteraction();
-  if (ui_info_.has_subpage) {
+  if (ui_info_.HasSubpage()) {
     DownloadItemWarningData::AddWarningActionEvent(
         model_->GetDownloadItem(),
         DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
@@ -708,7 +708,7 @@ void DownloadBubbleRowView::UpdateButtons() {
     main_button->SetVisible(true);
   }
 
-  subpage_icon_->SetVisible(ui_info_.has_subpage);
+  subpage_icon_->SetVisible(ui_info_.HasSubpage());
 }
 
 void DownloadBubbleRowView::UpdateProgressBar() {
@@ -738,7 +738,7 @@ void DownloadBubbleRowView::UpdateLabels() {
   primary_label_->SetText(model_->GetFileNameToReportUser().LossyDisplayName());
   UpdateStatusText();
 
-  if (ui_info_.has_subpage) {
+  if (ui_info_.HasSubpage()) {
     transparent_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_DOWNLOAD_BUBBLE_MAIN_BUTTON_SUBPAGE, primary_label_->GetText(),
         secondary_label_->GetText()));

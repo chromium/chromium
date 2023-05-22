@@ -739,7 +739,7 @@ DownloadUIModel::BubbleUIInfo::~BubbleUIInfo() = default;
 DownloadUIModel::BubbleUIInfo::BubbleUIInfo(const BubbleUIInfo& rhs) = default;
 DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddSubpageSummary(
     const std::u16string& summary) {
-  has_subpage = true;
+  CHECK(!summary.empty());  // An empty summary is interpreted as no subpage
   warning_summary = summary;
   return *this;
 }
@@ -766,7 +766,7 @@ DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddPrimaryButton(
 }
 DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddCheckbox(
     const std::u16string& label) {
-  has_checkbox = true;
+  CHECK(!label.empty());  // An empty summary is interpreted as no checkbox
   checkbox_label = label;
   return *this;
 }
@@ -808,6 +808,13 @@ DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddQuickAction(
 
 ui::ColorId DownloadUIModel::BubbleUIInfo::GetColorForSecondaryText() const {
   return secondary_text_color.value_or(secondary_color);
+}
+
+bool DownloadUIModel::BubbleUIInfo::HasSubpage() const {
+  return !warning_summary.empty();
+}
+bool DownloadUIModel::BubbleUIInfo::HasCheckbox() const {
+  return !checkbox_label.empty();
 }
 
 DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForInterrupted(
