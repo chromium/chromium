@@ -103,6 +103,17 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
   [self createSubviews];
 }
 
+#pragma mark - UITraitEnvironment
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    _itemsStack.layer.borderColor =
+        [UIColor colorNamed:kSeparatorColor].CGColor;
+  }
+}
+
 #pragma mark - Public
 
 - (void)markItemComplete:(SetUpListItemType)type
@@ -275,7 +286,7 @@ constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
   stack.layer.masksToBounds = YES;
   stack.layer.cornerRadius = kBorderRadius;
   stack.layer.borderWidth = kBorderWidth;
-  stack.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
+  stack.layer.borderColor = [UIColor colorNamed:kSeparatorColor].CGColor;
   stack.layoutMarginsRelativeArrangement = YES;
   stack.layoutMargins =
       UIEdgeInsetsMake(kPadding, kPadding, kPadding, kPadding);
