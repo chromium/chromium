@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> はこのデバイスを管理しており、アクティビティを監視できる可能性があります。</translation>
 <translation id="1478594628797167447">スキャナ</translation>
 <translation id="1483493594462132177">送信</translation>
+<translation id="1488850966314959671">有効なカスタム APN を使用してこのネットワークとの接続を試みましたが接続できません。詳しくは、ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="1491076385728777984">「<ph name="DEVICE_NAME" />」のファームウェアを更新中</translation>
 <translation id="1499041187027566160">音量を上げる</translation>
 <translation id="1499900233129743732">このユーザーは <ph name="MANAGER" /> によって管理されています。設定の管理とユーザー アクティビティの監視がリモートで行われることがあります。</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">再スキャン</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">この APN を無効化または削除できません。有効になっている接続済みの APN を無効化または削除しようとしていることを確認してください。</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> キーをテストしました</translation>
 <translation id="5620281292257375798">内部専用</translation>
 <translation id="5649768706273821470">聴く</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">残り 1 分未満</translation>
 <translation id="917720651393141712">テスト</translation>
 <translation id="9188992814426075118">キーボードのバックライトの色を壁紙に合わせて自動調整できます</translation>
+<translation id="9189000703457422362">自動検出された APN を使用してこのネットワークとの接続を試みましたが接続できません。詳しくは、ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android アプリからゲートウェイにアクセスできません</translation>
 <translation id="9211490828691860325">すべてのデスク</translation>

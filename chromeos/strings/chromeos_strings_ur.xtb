@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">گہری تھیم غیر فعال کریں</translation>
 <translation id="1807246157184219062">روشنی</translation>
 <translation id="1827738518074806965">آرٹ گیلری</translation>
+<translation id="1836553715834333258">سسٹم کا رنگ</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
+<translation id="1840474674287087346">ڈیسک ٹاپ کا رنگ</translation>
 <translation id="1851218745569890714">ویڈیو کانفرنسنگ</translation>
 <translation id="1852934301711881861">‏ChromeOS Flex انسٹال کریں</translation>
 <translation id="1856388568474281774">نیچے تیر کا نشان</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">اس میں اسکین کریں</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
+<translation id="4500966230243561393">انٹرفیس کا رنگ</translation>
 <translation id="4503223151711056411">بائیں تیر کا نشان</translation>
 <translation id="4507392511610824664">چمک بڑھائیں</translation>
 <translation id="4511264077854731334">پورٹل</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5017508259293544172">لیپ</translation>
 <translation id="5019310272469539976">آپ کی اسکرین کے معطل ہونے پر، تصاویر، وقت، موسم اور میڈیا کی معلومات دکھائیں۔</translation>
+<translation id="5035083460461104704">تھیم کا رنگ</translation>
 <translation id="5038292761217083259">متعدد رنگوں والا کی بورڈ</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
 <translation id="5049856988445523908">‏SIM مقفل ہو گیا (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">نیوٹرل</translation>
 <translation id="7620771111601174153">مرکز امداد میں مزید جانیں</translation>
 <translation id="763165478673169849">آخری ری سیٹ کرنے کا وقت</translation>
+<translation id="7633068090678117093">پس منظر کی تصویر</translation>
 <translation id="7648838807254605802">‏زیادہ HTTPS تاخیر</translation>
 <translation id="765159867434478292">تقسیم کریں</translation>
 <translation id="7656388927906093505">آلہ ایک ماؤس ہے۔</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">پیئر</translation>
 <translation id="8930622219860340959">وائرلیس</translation>
 <translation id="8936793075252196307">‏کلائنٹ IP پتہ</translation>
+<translation id="8944651180182756621">لانچر کا رنگ</translation>
 <translation id="894617464444543719">آلہ ایک فون ہے۔</translation>
 <translation id="8957423540740801332">دایاں</translation>
 <translation id="8968751544471797276">چارج ہونے کی شرح</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">میموری ٹیسٹ چلائیں</translation>
 <translation id="9161276708550942948">اسپیس</translation>
 <translation id="9173638680043580060">ایک منٹ سے کم باقی ہے</translation>
+<translation id="9174334653006917325">‏UI کا رنگ</translation>
 <translation id="917720651393141712">ٹیسٹ</translation>
 <translation id="9188992814426075118">آپ کا کی بورڈ خودکار طور پر آپ کے وال پیپر سے مماثل ہو سکتا ہے</translation>
 <translation id="9189000703457422362">‏خودکار طور پر پتہ چلنے والے APNs کا استعمال کر کے اس نیٹ ورک سے منسلک نہیں کر سکتے۔ مزید معلومات کے لیے اپنے موبائل کیریئر سے رابطہ کریں۔</translation>

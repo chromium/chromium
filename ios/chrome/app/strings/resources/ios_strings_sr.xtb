@@ -379,6 +379,7 @@
 <translation id="3464194322481586217">Праћење цене није успело.</translation>
 <translation id="3469166899695866866">Заустављате преузимање?</translation>
 <translation id="3470502288861289375">Копирање...</translation>
+<translation id="3471148582064653480">Синхронизујте лозинке, историју и друго.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{за {COUNT} сајт или апликацију}one{за {COUNT} сајт и апликацију}few{за {COUNT} сајта и апликације}other{за {COUNT} сајтова и апликација}}</translation>
 <translation id="3474624961160222204">Настави као <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Месец истека</translation>
@@ -399,6 +400,7 @@
 <translation id="3551320343578183772">Затвори картицу</translation>
 <translation id="3565207542107370586">Обриши податке прегледања…</translation>
 <translation id="3575234738189584619">Претражујте помоћу Објектива</translation>
+<translation id="3577555362230509265">Користите Chrome у другим апликацијама.</translation>
 <translation id="3581564640715911333">Понуди превод страница на другим језицима</translation>
 <translation id="3588820906588687999">Отвори слику на новој картици</translation>
 <translation id="3595252146048399851">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>

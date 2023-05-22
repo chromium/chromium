@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Onemogućite tamnu temu</translation>
 <translation id="1807246157184219062">Svetla</translation>
 <translation id="1827738518074806965">Likovna galerija</translation>
+<translation id="1836553715834333258">Boja sistema</translation>
 <translation id="1838374766361614909">Obrišite pretragu</translation>
+<translation id="1840474674287087346">Boja radne površine</translation>
 <translation id="1851218745569890714">Video konferencije</translation>
 <translation id="1852934301711881861">Instaliraj Chrome OS Flex</translation>
 <translation id="1856388568474281774">Strelica nadole</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Skeniraj u:</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Pingovanje mrežnog prolaza koji nije podrazumevan nije uspelo</translation>
+<translation id="4500966230243561393">Boja interfejsa</translation>
 <translation id="4503223151711056411">Strelica nalevo</translation>
 <translation id="4507392511610824664">povećajte osvetljenost</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kada je ekran neaktivan, prikazuju se slike, vreme, vremenska prognoza i informacije o medijskom sadržaju.</translation>
+<translation id="5035083460461104704">Boja teme</translation>
 <translation id="5038292761217083259">višebojna tastatura</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="763165478673169849">Vreme poslednjeg resetovanja</translation>
+<translation id="7633068090678117093">Slika u pozadini</translation>
 <translation id="7648838807254605802">Veliko HTTPS kašnjenje</translation>
 <translation id="765159867434478292">Podeli</translation>
 <translation id="7656388927906093505">Uređaj je miš.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Relevantna aplikacija</translation>
 <translation id="8930622219860340959">Bežično</translation>
 <translation id="8936793075252196307">IP adresa klijenta</translation>
+<translation id="8944651180182756621">Boja pokretača</translation>
 <translation id="894617464444543719">Uređaj je telefon.</translation>
 <translation id="8957423540740801332">desno</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Pokreni test memorije</translation>
 <translation id="9161276708550942948">razmak</translation>
 <translation id="9173638680043580060">Preostalo je manje od minuta</translation>
+<translation id="9174334653006917325">Boja korisničkog interfejsa</translation>
 <translation id="917720651393141712">Testiraj</translation>
 <translation id="9188992814426075118">Tastatura može automatski da se podudara sa pozadinom</translation>
 <translation id="9189000703457422362">Povezivanje sa ovom mrežom nije uspelo pomoću automatski otkrivenih naziva pristupne tačke. Zatražite više informacija od mobilnog operatera.</translation>

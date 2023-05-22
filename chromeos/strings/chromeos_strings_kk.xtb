@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Қараңғы режимді өшіру</translation>
 <translation id="1807246157184219062">Ашық</translation>
 <translation id="1827738518074806965">Өнер галереясы</translation>
+<translation id="1836553715834333258">Жүйе түсі</translation>
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
+<translation id="1840474674287087346">Жұмыс үстелінің түсі</translation>
 <translation id="1851218745569890714">Бейнеконференция жасау</translation>
 <translation id="1852934301711881861">ChromeOS Flex-ті орнату</translation>
 <translation id="1856388568474281774">Төмен бағыт пернесі</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Сақтау орны</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Әдепкі емес желі шлюзінің байланысы тексерілмеді.</translation>
+<translation id="4500966230243561393">Интерфейс түсі</translation>
 <translation id="4503223151711056411">Сол бағыт пернесі</translation>
 <translation id="4507392511610824664">жарықтық деңгейін арттыру</translation>
 <translation id="4511264077854731334">Портал</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Тексеруді тоқтату</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Экран пайдаланылмай тұрғанда, фотосуреттерді, уақытты, ауа райын және медиа ақпаратын көрсетеді.</translation>
+<translation id="5035083460461104704">Тақырып түсі</translation>
 <translation id="5038292761217083259">пернетақтаны көп түсті ету</translation>
 <translation id="5039804452771397117">Рұқсат беру</translation>
 <translation id="5049856988445523908">SIM құлыпталған (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Бейтарап</translation>
 <translation id="7620771111601174153">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
 <translation id="763165478673169849">Соңғы рет нөлденген уақыт</translation>
+<translation id="7633068090678117093">Фондық сурет</translation>
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
 <translation id="765159867434478292">Бөлу</translation>
 <translation id="7656388927906093505">Бұл — тінтуір.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">құрылғы</translation>
 <translation id="8930622219860340959">Сымсыз</translation>
 <translation id="8936793075252196307">Клиенттің IP мекенжайы</translation>
+<translation id="8944651180182756621">Іске қосу тақтасының түсі</translation>
 <translation id="894617464444543719">Бұл — телефон.</translation>
 <translation id="8957423540740801332">оң</translation>
 <translation id="8968751544471797276">Зарядталу жылдамдығы</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Жад тексерісін іске қосу</translation>
 <translation id="9161276708550942948">бос орын</translation>
 <translation id="9173638680043580060">Бір минутқа жетпейтін уақыт қалды.</translation>
+<translation id="9174334653006917325">Пайдаланушы интерфейсінің түсі</translation>
 <translation id="917720651393141712">Тексеру</translation>
 <translation id="9188992814426075118">Пернетақта тұсқағазды автоматты түрде сәйкестендіре алады.</translation>
 <translation id="9189000703457422362">Автоматты түрде анықталған APN аттары арқылы бұл желіге қосылу мүмкін емес. Қосымша ақпарат алу үшін мобильдік операторыңызға хабарласыңыз.</translation>

@@ -379,6 +379,7 @@
 <translation id="3464194322481586217">ဈေးနှုန်းစောင့်ကြည့်၍ မရပါ။</translation>
 <translation id="3469166899695866866">ဒေါင်းလုဒ်ကို ရပ်လိုသလား။</translation>
 <translation id="3470502288861289375">ကူးယူနေ...</translation>
+<translation id="3471148582064653480">သင့်စကားဝှက်၊ မှတ်တမ်း စသည်တို့ကို စင့်ခ်လုပ်ပါ။</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{ဝဘ်ဆိုက် (သို့) အက်ပ် {COUNT} ခု အတွက်}other{ဝဘ်ဆိုက်နှင့် အက်ပ် {COUNT} ခု အတွက်}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> အဖြစ်​ ရှေ့ဆက်ရန်</translation>
 <translation id="3478058380795961209">သက်တမ်း ကုန်ဆုံးသည့် လ</translation>
@@ -399,6 +400,7 @@
 <translation id="3551320343578183772">တဘ် ပိတ်ရန်</translation>
 <translation id="3565207542107370586">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို ရှင်းထုတ်ရန်…</translation>
 <translation id="3575234738189584619">Lens ဖြင့် ရှာဖွေရန်</translation>
+<translation id="3577555362230509265">အခြားအက်ပ်များတွင် Chrome အသုံးပြုပါ။</translation>
 <translation id="3581564640715911333">စာမျက်နှာများကို အခြားဘာသာစကားများဖြင့် ပြန်ဆိုရန် ကမ်းလှမ်းသည်</translation>
 <translation id="3588820906588687999">ရုပ်ပုံကို တက်ဘ်အသစ်တွင်ဖွင့်ရန်</translation>
 <translation id="3595252146048399851">စင့်ခ်လုပ်မည့်အရာကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> တွင် အချိန်မရွေး ရွေးနိုင်သည်။ Google က Search နှင့် အခြားဝန်ဆောင်မှုများကို သင့်မှတ်တမ်းပေါ်မူတည်၍ ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်နိုင်သည်။</translation>

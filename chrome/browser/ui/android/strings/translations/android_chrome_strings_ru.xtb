@@ -17,6 +17,7 @@
 <translation id="1100066534610197918">Открыть в новой вкладке группы</translation>
 <translation id="1103142993930332957">Помогите улучшить Chrome</translation>
 <translation id="1105960400813249514">Демонстрация экрана</translation>
+<translation id="1108214977745280468">Открыть статистику страницы</translation>
 <translation id="1108938384783527433">Синхронизация истории</translation>
 <translation id="1110914759170138831">Выделенный текст сокращен.</translation>
 <translation id="1111673857033749125">Здесь появятся закладки, сохраненные на других устройствах.</translation>
@@ -66,6 +67,7 @@
 <translation id="1303507811548703290">Домен: <ph name="DOMAIN" />. Отправлено с устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="1311657260431405215">В этом QR-коде нет URL: <ph name="QRCODEVALUE" />.</translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="131655401280401879">Если вы отключите блокировку профиля, все сохраненные данные будут удалены.</translation>
 <translation id="1320912611264252795">Страница сохранения закладки, открытая на весь экран</translation>
 <translation id="1327257854815634930">История переходов открыта</translation>
 <translation id="1331212799747679585">Не удалось обновить Chrome. Другие настройки</translation>
@@ -180,6 +182,7 @@
 <translation id="1995884366040846621">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" />.</translation>
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
 <translation id="2009341475524975924">Для оценки эффективности рекламы сайты могут обмениваться некоторыми типами данных, например информацией о времени суток, когда вам было показано объявление.</translation>
+<translation id="201060170519281460">Блокировка профиля защищает ваши данные в автомобиле, включая пароли, транзакции и другие сведения.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
@@ -257,6 +260,7 @@
 <translation id="250020030759455918">Вы увидите статус входа на сайт <ph name="SITE_NAME" />, а также данные о работе в браузере и данные сайтов в Chrome.</translation>
 <translation id="2510106555128151389">Установка приложения "<ph name="WEBAPK_NAME" />"…</translation>
 <translation id="2513403576141822879">Остальные настройки конфиденциальности, безопасности и сбора данных вы можете найти в разделе <ph name="BEGIN_LINK" />Синхронизация сервисов Google<ph name="END_LINK" />.</translation>
+<translation id="2517113738956581680">Полноразмерный экран</translation>
 <translation id="2517472476991765520">Сканировать</translation>
 <translation id="2523184218357549926">Отправлять URL посещенных страниц в Google</translation>
 <translation id="2527209463677295330">Благодаря этой функции результаты могут стать точнее</translation>
@@ -281,6 +285,7 @@
 Токены доверия помогают обеспечивать конфиденциальность в интернете и не позволяют определять личность пользователей.</translation>
 <translation id="2581165646603367611">Будет очищен кеш, а также удалены файлы cookie и другие данные, которые система сочтет маловажными.</translation>
 <translation id="2587052924345400782">Доступна новая версия</translation>
+<translation id="2589302627584222634">Настроить блокировку профиля</translation>
 <translation id="2593272815202181319">Моноширинный</translation>
 <translation id="2603212228005142861">Войдите в аккаунт, чтобы задать настройки</translation>
 <translation id="260403163289591229">Вы подписаны</translation>
@@ -542,6 +547,7 @@
 <translation id="4035877632587724847">Запретить</translation>
 <translation id="4036177530563778041">Легко продолжайте с того места, где остановились.</translation>
 <translation id="4042941173059740150">Продолжите на <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="4044708993631234325">Нижний экран</translation>
 <translation id="4045764304651014138">Данные об использовании</translation>
 <translation id="405399507749852140">Если на одном из сайтов цена снизится, вы получите уведомление.</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -846,6 +852,7 @@
 <translation id="564667659802381754">Руководство по конфиденциальности <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
 <translation id="5655963694829536461">Поиск в загрузках</translation>
+<translation id="5657871969392618475">Ваши данные защищены с помощью блокировки профиля</translation>
 <translation id="5659593005791499971">Эл. почта</translation>
 <translation id="5665379678064389456">Создать мероприятие в приложении "<ph name="APP_NAME" />"</translation>
 <translation id="5683547024293500885">Не удалось проверить наличие обновлений в Chrome.</translation>
@@ -909,6 +916,7 @@
 <translation id="5964869237734432770">Не генерировать описания</translation>
 <translation id="5966233851250124270">Chrome запомнит ваш выбор</translation>
 <translation id="5979084224081478209">Проверить пароли</translation>
+<translation id="5985186846584605773">Настройте блокировку профиля для автомобиля</translation>
 <translation id="5995726099713306770">Снова скачать страницу?</translation>
 <translation id="6000066717592683814">Использовать Google</translation>
 <translation id="6000203700195075278">Снова подписаться</translation>
@@ -1137,6 +1145,7 @@
 <translation id="7088681679121566888">У вас установлена последняя версия Chrome.</translation>
 <translation id="7105047059074518658">Чтобы работать с Chrome на разных устройствах было проще, войдите в аккаунт</translation>
 <translation id="7106762743910369165">Этим браузером управляет ваша организация.</translation>
+<translation id="7116420572655804716">Чтобы синхронизировать данные и обеспечить их защиту в автомобиле, необходимо включить блокировку профиля в настройках безопасности. Вам потребуется вводить PIN-код или пароль каждый раз, когда вы садитесь в автомобиль.</translation>
 <translation id="7116588989735740310">Чтобы легко возвращаться к сайтам, просмотренным на других устройствах, включите синхронизацию вкладок и истории.</translation>
 <translation id="7130504491556983216">Когда вы начнете посещать сайты, здесь появится список ваших интересов.</translation>
 <translation id="7138678301420049075">Другое</translation>
@@ -1358,6 +1367,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="8209050860603202033">Открыть изображение</translation>
+<translation id="8215740705341534369">Боковая панель</translation>
 <translation id="8218622182176210845">Управление аккаунтом</translation>
 <translation id="8221401890884589479">Вы можете заблокировать ненужные сайты. Chrome также автоматически удаляет из списка сайты, добавленные более 30 дней назад. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Меню карточки из ленты</translation>
@@ -1560,6 +1570,7 @@
 <translation id="932327136139879170">Главная страница</translation>
 <translation id="938850635132480979">Ошибка <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Введите кодовую фразу</translation>
+<translation id="950679278154734362">Чтобы синхронизировать данные и обеспечить их защиту в автомобиле, необходимо настроить блокировку профиля. Вам потребуется вводить PIN-код или пароль каждый раз, когда вы садитесь в автомобиль.</translation>
 <translation id="95817756606698420">В Китае Chrome может использовать для поиска <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Это можно изменить в <ph name="BEGIN_LINK" />Настройках<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Установить приложение</translation>
 <translation id="96681097142096641">Посмотреть страницу в упрощенном виде?</translation>

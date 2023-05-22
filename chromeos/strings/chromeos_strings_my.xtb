@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">အမှောင်နောက်ခံ ပိတ်ရန်</translation>
 <translation id="1807246157184219062">အလင်း</translation>
 <translation id="1827738518074806965">ပန်းချီပြခန်း</translation>
+<translation id="1836553715834333258">စနစ် အရောင်</translation>
 <translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
+<translation id="1840474674287087346">ဒက်စ်တော့ အရောင်</translation>
 <translation id="1851218745569890714">ဗီဒီယိုအစည်းအဝေး</translation>
 <translation id="1852934301711881861">ChromeOS Flex ထည့်သွင်းရန်</translation>
 <translation id="1856388568474281774">အောက်ညွှန်မြား</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">စကင်သိမ်းရန် နေရာ</translation>
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4483049906298469269">မူရင်းမဟုတ်သည့် ကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
+<translation id="4500966230243561393">အင်တာဖေ့စ် အရောင်</translation>
 <translation id="4503223151711056411">ဘယ်ညွှန်မြား</translation>
 <translation id="4507392511610824664">တောက်ပမှု တိုးရန်</translation>
 <translation id="4511264077854731334">ပေါ်တယ်</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">စစ်ဆေးမှု ရပ်ရန်</translation>
 <translation id="5017508259293544172">နှစ်ထက်နှစ်</translation>
 <translation id="5019310272469539976">သင့်ဖန်သားပြင်ကို အသုံးမပြုသောအခါ ဓာတ်ပုံများ၊ အချိန်၊ ရာသီဥတုနှင့် မီဒီယာအချက်အလက်များ ပြသည်။</translation>
+<translation id="5035083460461104704">အပြင်အဆင် အရောင်</translation>
 <translation id="5038292761217083259">ကီးဘုတ် ရောင်စုံ</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5049856988445523908">ဆင်းမ်ကတ် လော့ခ်ချထားသည် (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">ပုံမှန်</translation>
 <translation id="7620771111601174153">'ကူညီရေးဌာန' တွင် ပိုမိုလေ့လာရန်</translation>
 <translation id="763165478673169849">နောက်ဆုံး ပြင်ဆင်သတ်မှတ်ထားချိန်</translation>
+<translation id="7633068090678117093">နောက်ခံပုံရိပ်</translation>
 <translation id="7648838807254605802">HTTPS တုံ့ပြန်ချိန် မြင့်သည်</translation>
 <translation id="765159867434478292">ခွဲရန်</translation>
 <translation id="7656388927906093505">ကိရိယာသည် မောက်စ်ဖြစ်သည်။</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">အမျိုးအစားတူ</translation>
 <translation id="8930622219860340959">ကြိုးမဲ့</translation>
 <translation id="8936793075252196307">ကလိုင်းယင့် အိုင်ပီ (IP) လိပ်စာ</translation>
+<translation id="8944651180182756621">Launcher အရောင်</translation>
 <translation id="894617464444543719">ကိရိယာသည် ဖုန်းဖြစ်သည်။</translation>
 <translation id="8957423540740801332">ညာ</translation>
 <translation id="8968751544471797276">အားသွင်းနှုန်း</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">မှတ်ဉာဏ်စစ်ဆေးရန်</translation>
 <translation id="9161276708550942948">space ကီး</translation>
 <translation id="9173638680043580060">တစ်မိနစ်ပင် မကျန်တော့ပါ</translation>
+<translation id="9174334653006917325">UI အရောင်</translation>
 <translation id="917720651393141712">စမ်းသပ်မှု</translation>
 <translation id="9188992814426075118">ကီးဘုတ်က သင့်နောက်ခံကို အလိုအလျောက် တူညီအောင်လုပ်နိုင်သည်</translation>
 <translation id="9189000703457422362">အလိုအလျောက် တွေ့ရှိသော APN များ သုံးပြီး ဤကွန်ရက်သို့ ချိတ်ဆက်၍မရပါ။ နောက်ထပ်အချက်အလက်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>

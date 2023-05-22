@@ -379,6 +379,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3464194322481586217">No s'ha pogut fer el seguiment del preu.</translation>
 <translation id="3469166899695866866">Vols aturar la baixada?</translation>
 <translation id="3470502288861289375">S'està copiant...</translation>
+<translation id="3471148582064653480">Sincronitza les contrasenyes, l'historial i altres elements.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{per a {COUNT} lloc web o aplicació}other{per a {COUNT} llocs web i aplicacions}}</translation>
 <translation id="3474624961160222204">Continua com a <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mes de caducitat</translation>
@@ -399,6 +400,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3551320343578183772">Tanca la pestanya</translation>
 <translation id="3565207542107370586">Esborra les dades de navegació…</translation>
 <translation id="3575234738189584619">Cerca amb Lens</translation>
+<translation id="3577555362230509265">Utilitza Chrome en altres aplicacions.</translation>
 <translation id="3581564640715911333">Proposa traduir les pàgines en altres idiomes</translation>
 <translation id="3588820906588687999">Obre la imatge en una pestanya nova</translation>
 <translation id="3595252146048399851">Pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment per decidir què vols sincronitzar. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>

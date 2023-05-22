@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">ઘેરી થીમ બંધ કરો</translation>
 <translation id="1807246157184219062">આછું</translation>
 <translation id="1827738518074806965">આર્ટ ગૅલરી</translation>
+<translation id="1836553715834333258">સિસ્ટમનો રંગ</translation>
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
+<translation id="1840474674287087346">ડેસ્કટૉપનો રંગ</translation>
 <translation id="1851218745569890714">વીડિયો કૉન્ફરન્સિંગ</translation>
 <translation id="1852934301711881861">ChromeOS Flex ઇન્સ્ટૉલ કરો</translation>
 <translation id="1856388568474281774">નીચેની ઍરો કી</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">સ્કૅન કરીને અહીં સાચવો</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4483049906298469269">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
+<translation id="4500966230243561393">ઇન્ટરફેસ રંગ</translation>
 <translation id="4503223151711056411">ડાબી ઍરો કી</translation>
 <translation id="4507392511610824664">બ્રાઇટનેસ વધારો</translation>
 <translation id="4511264077854731334">પોર્ટલ</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">પરીક્ષણ રોકો</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">જ્યારે તમારી સ્ક્રીન નિષ્ક્રિય હોય, ત્યારે ફોટા, સમય, હવામાન અને મીડિયાની માહિતી બતાવો.</translation>
+<translation id="5035083460461104704">થીમનો રંગ</translation>
 <translation id="5038292761217083259">મલ્ટિકલર કીબોર્ડ</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5049856988445523908">સિમ કાર્ડ લૉક છે (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">ન્યૂટ્રલ</translation>
 <translation id="7620771111601174153">સહાયતા કેન્દ્રમાં વધુ જાણો</translation>
 <translation id="763165478673169849">છેલ્લે રીસેટ કર્યાનો સમય</translation>
+<translation id="7633068090678117093">બૅકગ્રાઉન્ડની છબી</translation>
 <translation id="7648838807254605802">HTTPSની ઉચ્ચ વિલંબતા</translation>
 <translation id="765159867434478292">સ્પ્લિટ</translation>
 <translation id="7656388927906093505">ડિવાઇસ એક માઉસ છે.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">પીઅર</translation>
 <translation id="8930622219860340959">વાયરલેસ</translation>
 <translation id="8936793075252196307">ક્લાયન્ટનું IP ઍડ્રેસ</translation>
+<translation id="8944651180182756621">લૉન્ચરનો રંગ</translation>
 <translation id="894617464444543719">ડિવાઇસ એક ફોન છે.</translation>
 <translation id="8957423540740801332">જમણી</translation>
 <translation id="8968751544471797276">ચાર્જ થવાની ટકાવારી</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">મેમરીનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">એક મિનિટ કરતાં ઓછો સમય બાકી છે</translation>
+<translation id="9174334653006917325">UI રંગ</translation>
 <translation id="917720651393141712">પરીક્ષણ કરો</translation>
 <translation id="9188992814426075118">તમારું કીબોર્ડ ઑટોમૅટિક રીતે તમારા વૉલપેપર સાથે મેળ કરી શકે છે</translation>
 <translation id="9189000703457422362">જેની ઑટોમૅટિક રીતે ભાળ મળી હોય તેવા APNsનો ઉપયોગ કરીને આ નેટવર્ક સાથે કનેક્ટ કરી શકતાં નથી. વધુ માહિતી માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>

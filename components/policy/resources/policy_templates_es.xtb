@@ -1378,6 +1378,7 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 <translation id="2269319728625047531">Habilitar Sync Consent durante el inicio de sesión</translation>
 <translation id="2270747976331889601">Habilita una función de seguridad de TLS 1.3 para los anclajes de veracidad locales.</translation>
 <translation id="22754818344448444">Permitir que los usuarios seleccionen un diseño de plantilla de escritorio para cargarlo</translation>
+<translation id="2279381650184876122">Inhabilitar la compatibilidad de URLs de datos en SVGUseElement</translation>
 <translation id="2281496157391382819"> Controla las advertencias de privacidad de las sesiones de invitado administradas en <ph name="PRODUCT_OS_NAME" />.
 
       Si se asigna el valor "False" a esta política, se desactivarán las advertencias de privacidad en la pantalla de inicio de sesión y las notificaciones de inicio automático en las sesiones de invitado administradas.
@@ -2059,6 +2060,7 @@ La política <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> podría anular el c
       Si no se asigna ningún valor a esta política o se le asigna una URL no válida, <ph name="PRODUCT_NAME" /> no usará la política como fuente de reglas para cambiar de navegador.
 
       Nota: Esta política dirige a un archivo XML con el mismo formato que la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" />. Se cargarán las reglas de un archivo XML, sin compartirlas con <ph name="IE_PRODUCT_NAME" />. Puedes consultar más información sobre la política <ph name="IEEM_SITELIST_POLICY" /> de <ph name="IE_PRODUCT_NAME" /> en https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
+<translation id="2940284205859074236">Usar el renderizador de Skia para renderizar PDFs</translation>
 <translation id="2940653651012844682">Lista con los ajustes de los servicios de Chrome Enterprise Connectors que se van a aplicar al conector <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> de Enterprise, que se activa cuando se produce una actividad relacionada con la seguridad en Chrome. Esto incluye resultados negativos del análisis de Enterprise Connectors, reutilización de contraseñas, acceso a páginas no seguras y otras acciones del usuario relacionadas con la seguridad.
 
       El campo <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> identifica a qué proveedor de servicios de informes corresponde la configuración y el campo <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> identifica qué eventos están habilitados para este proveedor.
@@ -2349,6 +2351,7 @@ Si esta política se inhabilita, la promoción de valoraciones del App Store no 
 <translation id="3169872426103732947">Mostrar la URL predeterminada y permitir que los usuarios cambien a la URL completa</translation>
 <translation id="3171369832001535378">Plantilla de nombre de host de red de dispositivo</translation>
 <translation id="3173844121395372156">Esta política está obsoleta y no se admite. Usa la política <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
+<translation id="3177537290334203187">Usar el comportamiento predeterminado para definir si los sitios web pueden enviar solicitudes a los endpoints de red</translation>
 <translation id="3177802893484440532">Requiere comprobaciones de OCSP/CRL online para los anclajes de veracidad locales</translation>
 <translation id="3179533009079100620">Mostrar selector de perfil</translation>
 <translation id="3180671894201217988">Si se habilita la política o no se le asigna ningún valor, se impide que software de terceros pueda insertar código ejecutable en los procesos de <ph name="PRODUCT_NAME" />.
@@ -2379,6 +2382,7 @@ Si esta política se inhabilita, la promoción de valoraciones del App Store no 
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" />, no se mostrará ninguna página Nueva pestaña.</translation>
 <translation id="3195103497550111266">Si se le asigna el valor "<ph name="DEVICE_LTS_TAG_VALUE" />" a esta política, el dispositivo podrá recibir actualizaciones de LTS (asistencia a largo plazo).</translation>
+<translation id="319608028525745507">Habilitar la compatibilidad de URLs de datos en SVGUseElement</translation>
 <translation id="3196585866522778760">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 
           Permite especificar el tiempo que debe transcurrir sin que el usuario realice ninguna acción antes de que se habilite el modo de inactividad (con batería).
@@ -3176,6 +3180,7 @@ Esta política es una solución temporal y se eliminará gradualmente (está pre
 
       Si esta política no se configura, el protocolo SPDY estará disponible.</translation>
 <translation id="3887529334667818189">Los recorridos serán visibles en chrome://history/journeys de forma predeterminada y los usuarios podrán cambiar la visibilidad de los recorridos.</translation>
+<translation id="3889458462150559611">Permitir que los sitios web envíen solicitudes a cualquier endpoint de red de forma no segura</translation>
 <translation id="388999630001435491">Permitir que <ph name="PRODUCT_NAME" /> solo se conecte a dispositivos a través de direcciones IP privadas</translation>
 <translation id="3891175633496805812">Inhabilitar el controlador de diagnóstico y telemetría wilco</translation>
 <translation id="3891357445869647828">Habilitar JavaScript</translation>
@@ -3585,6 +3590,7 @@ Nota: Bloquear las URLs internas chrome://* y chrome-untrusted://* podría provo
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="4275048399551500192">No mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos</translation>
+<translation id="4282183301963493864">Inhabilitar <ph name="PRODUCT_NAME" /> en todas las páginas web</translation>
 <translation id="4282243913059705499">Mostrar siempre el icono de <ph name="PRODUCT_NAME" /> en la barra de herramientas</translation>
 <translation id="4285674129118156176">Permitir que los usuarios no afiliados utilicen ARC</translation>
 <translation id="428948795004445932">Intervalo en el que se muestrean y recogen los datos de red. El valor mínimo permitido es 1 minuto.
@@ -3815,6 +3821,7 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política está relacionada co
 Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="449561952193478261">Color azul para la retroiluminación del teclado</translation>
 <translation id="449784980858429908">Permite conceder permiso automáticamente a sitios para conectarse a todos los puertos serie.</translation>
+<translation id="4498626728750662965">El visor de PDFs usa el renderizador de Skia</translation>
 <translation id="4499376951770369935">Las actualizaciones de ChromeOS se configuran a la versión definida en el manifiesto de la aplicación de kiosco</translation>
 <translation id="450080746522343150">Bloquear todas las descargas.</translation>
 <translation id="4501388411278568771">Los cambios a HTTPS pueden aplicarse en función del estado del lanzamiento de la función.</translation>
@@ -4238,6 +4245,7 @@ Esta política es temporal y se eliminará en cuanto se lance la cancelación de
       Si no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> solo se conectará con dispositivos de emisión en direcciones de RFC 1918 o RFC 4193, a no ser que la función CastAllowAllIPs esté activada.</translation>
 <translation id="489803897780524242">Parámetro que controla el emplazamiento de los términos de búsqueda para el proveedor de búsquedas predeterminado</translation>
 <translation id="4899708173828500852">Habilitar Navegación segura</translation>
+<translation id="4904462841601272815">Habilitar <ph name="PRODUCT_NAME" /> en todas las páginas web</translation>
 <translation id="4906194810004762807">Frecuencia de actualización de Device Policy</translation>
 <translation id="49093841899738146">Si se habilita esta política, <ph name="PRODUCT_NAME" /> podrá recoger registros de eventos WebRTC procedentes de servicios de Google como Hangouts Meet y enviarlos a Google. Esos registros tienen información de diagnóstico para depurar errores de llamadas de audio o videollamadas en <ph name="PRODUCT_NAME" />, como la hora y el tamaño de los paquetes RTP, datos sobre la congestión de la red y metadatos del tiempo y la calidad de los frames de audio y vídeo. Estos registros no tienen contenido de audio ni de vídeo de la reunión. Para facilitar la depuración, Google podría asociar estos registros, mediante un ID de sesión, a otros registros recogidos por el propio servicio de Google.
 
@@ -6164,6 +6172,7 @@ El tiempo de espera de inactividad para que se inicie el salvapantallas y el int
       - Si se inhabilita esta política, las funciones del navegador estarán limitadas.
 
       - Si se inhabilita esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
+<translation id="6607983779935460461">Compatibilidad de URLs de datos con SVGUseElement</translation>
 <translation id="6609867253856597039">Establecer la experiencia de usuario de funciones inhabilitadas</translation>
 <translation id="6614557704487944013">Permitir que los usuarios utilicen el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="661610294649586421">No permitir solicitudes de la API WebAuthn en sitios con certificados TLS dañados.</translation>
@@ -6758,6 +6767,7 @@ Si se define, la lista de valores predeterminados se amplía con los valores con
           Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, el botón izquierdo del ratón será el principal inicialmente, pero el usuario podrá cambiarlo en cualquier momento.</translation>
+<translation id="7136237405361383549">Usar el renderizador predeterminado según la configuración de la prueba de campo</translation>
 <translation id="7137460825181247519">Esta política está obsoleta en <ph name="PRODUCT_NAME" /> 83. Usa la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> en su lugar.
 
       Si se habilita la política, la función Navegación segura de Chrome permanecerá activada. Si la política se inhabilita, Navegación segura seguirá desactivada.
@@ -7359,6 +7369,13 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
 <translation id="7703041979684393741">No permitir que se recojan registros de eventos WebRTC de los servicios de Google</translation>
 <translation id="770339941914297201">Comportamiento nuevo: las aplicaciones de kiosco de Chrome solo se actualizarán con la URL de actualización de la política</translation>
 <translation id="7703737669292992839">Evitar los cuadros de diálogo de selección de archivos</translation>
+<translation id="7703819160640109959">Controla si el visor de PDFs de <ph name="PRODUCT_NAME" /> usa el renderizador de Skia.
+
+Si se habilita esta política, el visor de PDFs usará el renderizador de Skia.
+
+Si se inhabilita esta política, el visor de PDFs usará el renderizador de AGG actual.
+
+Si no se establece esta política, el navegador seleccionará el renderizador de PDFs.</translation>
 <translation id="7708934468069982537">Esta política se retiró en la versión M58 después de que DHE se retirase de <ph name="PRODUCT_NAME" />.
 
       Si esta política no se define o se le asigna el valor false, no se habilitarán los paquetes de cifrado DHE en TLS. De lo contrario, se le podrá asignar el valor true para habilitar los paquetes de cifrado DHE y mantener la compatibilidad con un servidor obsoleto. Se trata de una solución provisional y se debería volver a configurar el servidor.
@@ -7774,6 +7791,7 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
 <translation id="8091982561085048989">Indicador booleano que especifica si se debe usar IPP Everywhere para configurar la impresora. Este indicador es compatible con <ph name="PRODUCT_OS_NAME" /> 76 y versiones posteriores.</translation>
 <translation id="8099880303030573137">Retraso de inactividad cuando el dispositivo funciona con la batería</translation>
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>
+<translation id="8102854005031553638">El visor de PDFs usa el renderizador de AGG</translation>
 <translation id="8102913158860568230">Opción predeterminada de MediaStream</translation>
 <translation id="8104962233214241919">Seleccionar automáticamente certificados de cliente de estos sitios</translation>
 <translation id="8109762054721090517">Plantilla del <ph name="IPP_ATTRIBUTE" /> de <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
@@ -8548,6 +8566,9 @@ Si esta política se inhabilita o no se establece, los datos del usuario de esta
 <translation id="8777369558049831576">Permite mostrar la casilla Siempre abierto en el cuadro de diálogo de un protocolo externo.</translation>
 <translation id="8778320022586618010">Habilitar los informes sobre el estado de los gráficos del dispositivo</translation>
 <translation id="8780039702448388726">Inhabilitar los informes sobre la versión del dispositivo</translation>
+<translation id="8782203407766130175">Esta política habilita la compatibilidad de las URLs de datos con SVGUseElement, que se inhabilitará de forma predeterminada a partir de la versión M119.
+      Si se habilita esta política, las URLs de datos seguirán funcionando en SVGUseElement.
+      Si se inhabilita esta política o no se establece, las URLs de datos no funcionarán en SVGUseElement.</translation>
 <translation id="8786409859071107656">Si se habilita esta política, se activa la política de gestión de energía compartida por USB.
 
       Algunos dispositivos tienen un puerto USB específico marcado con un icono de rayo o de batería para cargar dispositivos usando la batería del sistema. Esta política afecta al comportamiento de carga de este puerto cuando el sistema está en modo de suspensión o apagado, pero no afecta a los otros puertos USB ni al comportamiento de carga mientras el sistema está activo. En este caso, el puerto USB siempre suministra energía.
@@ -8616,6 +8637,9 @@ Si esta política se inhabilita o no se establece, los datos del usuario de esta
 <translation id="8858642179038618439">Forzar el modo de seguridad de YouTube</translation>
 <translation id="8860342862142842017">Inhabilitar los requisitos de la transparencia en los certificados en una lista de hashes subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Los usuarios pueden configurar el canal de lanzamiento de <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8862436312516745856">Si se habilita o no se establece, <ph name="PRODUCT_NAME" /> se permitirá en todas las páginas web.
+
+Si se inhabilita, <ph name="PRODUCT_NAME" /> no estará disponible en ninguna página web.</translation>
 <translation id="8864975621965365890">Elimina el mensaje de desactivación que aparece cuando <ph name="PRODUCT_FRAME_NAME" /> muestra un sitio.</translation>
 <translation id="8866430022832109569">Informes de inventario de aplicaciones</translation>
 <translation id="886645881209114007">Permite a los usuarios usar <ph name="PLUGIN_VM_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>

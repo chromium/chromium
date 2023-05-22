@@ -379,6 +379,7 @@
 <translation id="3464194322481586217">Не удалось отследить цену.</translation>
 <translation id="3469166899695866866">Остановить скачивание?</translation>
 <translation id="3470502288861289375">Копирование…</translation>
+<translation id="3471148582064653480">Синхронизируйте пароли, историю и другие данные.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{Для {COUNT} сайта или приложения}one{Для {COUNT} сайта и приложения}few{Для {COUNT} сайтов и приложений}many{Для {COUNT} сайтов и приложений}other{Для {COUNT} сайта и приложения}}</translation>
 <translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Месяц</translation>
@@ -399,6 +400,7 @@
 <translation id="3551320343578183772">Закрыть вкладку</translation>
 <translation id="3565207542107370586">Удалить данные о работе в браузере</translation>
 <translation id="3575234738189584619">Искать с помощью Объектива</translation>
+<translation id="3577555362230509265">Используйте Chrome в других приложениях.</translation>
 <translation id="3581564640715911333">Предлагать перевести страницы на других языках.</translation>
 <translation id="3588820906588687999">Открыть изображение в новой вкладке</translation>
 <translation id="3595252146048399851">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />. Google может персонально настраивать Поиск и другие сервисы на основе вашей истории.</translation>

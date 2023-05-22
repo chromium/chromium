@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Onemogočanje temne teme</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1827738518074806965">Umetnostna galerija</translation>
+<translation id="1836553715834333258">Barva sistema</translation>
 <translation id="1838374766361614909">Čiščenje iskanja</translation>
+<translation id="1840474674287087346">Barva namizja</translation>
 <translation id="1851218745569890714">Videokonference</translation>
 <translation id="1852934301711881861">Namesti ChromeOS Flex</translation>
 <translation id="1856388568474281774">Puščica dol</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Skeniraj v</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ni bilo mogoče preveriti prehoda omrežja, ki ni privzet</translation>
+<translation id="4500966230243561393">Barva vmesnika</translation>
 <translation id="4503223151711056411">Puščica levo</translation>
 <translation id="4507392511610824664">povečanje svetlosti</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Ustavi preizkus</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Ko je zaslon nedejaven, prikaži fotografije, uro, vreme in podatke o predstavnosti.</translation>
+<translation id="5035083460461104704">Barva teme</translation>
 <translation id="5038292761217083259">večbarvna osvetlitev tipkovnice</translation>
 <translation id="5039804452771397117">Dovoli</translation>
 <translation id="5049856988445523908">Kartica SIM je zaklenjena (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Nevtralna</translation>
 <translation id="7620771111601174153">Preberite več v centru za pomoč</translation>
 <translation id="763165478673169849">Čas zadnje ponastavitve</translation>
+<translation id="7633068090678117093">Slika ozadja</translation>
 <translation id="7648838807254605802">Velika zakasnitev HTTPS</translation>
 <translation id="765159867434478292">Delitev</translation>
 <translation id="7656388927906093505">Naprava je miška.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Primerljiva aplikacija</translation>
 <translation id="8930622219860340959">Brezžično</translation>
 <translation id="8936793075252196307">Naslov IP odjemalca</translation>
+<translation id="8944651180182756621">Barva zaganjalnika</translation>
 <translation id="894617464444543719">Naprava je telefon.</translation>
 <translation id="8957423540740801332">desno</translation>
 <translation id="8968751544471797276">Hitrost polnjenja</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Zaženi preizkus pomnilnika</translation>
 <translation id="9161276708550942948">preslednica</translation>
 <translation id="9173638680043580060">Še manj kot minuta</translation>
+<translation id="9174334653006917325">Barva uporabniškega vmesnika</translation>
 <translation id="917720651393141712">Preizkus</translation>
 <translation id="9188992814426075118">Tipkovnica se lahko samodejno ujema z zaslonskim ozadjem.</translation>
 <translation id="9189000703457422362">S tem omrežjem se ni mogoče povezati prek samodejno zaznanih APN-jev. Če želite več informacij, se obrnite na mobilnega operaterja.</translation>

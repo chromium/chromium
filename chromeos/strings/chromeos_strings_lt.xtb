@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Išjungti tamsiąją temą</translation>
 <translation id="1807246157184219062">Šviesi</translation>
 <translation id="1827738518074806965">Meno galerija</translation>
+<translation id="1836553715834333258">Sistemos spalva</translation>
 <translation id="1838374766361614909">Išvalyti paiešką</translation>
+<translation id="1840474674287087346">Darbalaukio spalva</translation>
 <translation id="1851218745569890714">Vaizdo konferencijos</translation>
 <translation id="1852934301711881861">Įdiegti „ChromeOS Flex“</translation>
 <translation id="1856388568474281774">Rodyklė žemyn</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Nuskaityti į</translation>
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
+<translation id="4500966230243561393">Sąsajos spalva</translation>
 <translation id="4503223151711056411">Rodyklė kairėn</translation>
 <translation id="4507392511610824664">padidinti šviesumą</translation>
 <translation id="4511264077854731334">Portalas</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kai ekranas neaktyvus, rodomos nuotraukos, laikas, orų ir medijos informacija.</translation>
+<translation id="5035083460461104704">Temos spalva</translation>
 <translation id="5038292761217083259">įvairiaspalvė klaviatūra</translation>
 <translation id="5039804452771397117">Leisti</translation>
 <translation id="5049856988445523908">SIM kortelė užrakinta (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Neutrali</translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>
 <translation id="763165478673169849">Paskutinio nustatymo iš naujo laikas</translation>
+<translation id="7633068090678117093">Fono vaizdas</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
 <translation id="765159867434478292">Padalyti</translation>
 <translation id="7656388927906093505">Įrenginys yra pelė.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Lygiavertis tinklo mazgas</translation>
 <translation id="8930622219860340959">Belaidis</translation>
 <translation id="8936793075252196307">Kliento IP adresas</translation>
+<translation id="8944651180182756621">Paleidimo priemonės spalva</translation>
 <translation id="894617464444543719">Įrenginys yra telefonas.</translation>
 <translation id="8957423540740801332">dešinėn</translation>
 <translation id="8968751544471797276">Įkrovimo rodiklis</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Vykdyti atminties bandymą</translation>
 <translation id="9161276708550942948">tarpo klavišas</translation>
 <translation id="9173638680043580060">Liko mažiau nei minutė</translation>
+<translation id="9174334653006917325">NS spalva</translation>
 <translation id="917720651393141712">Bandyti</translation>
 <translation id="9188992814426075118">Klaviatūra gali automatiškai atitikti ekrano foną</translation>
 <translation id="9189000703457422362">Nepavyksta prisijungti prie šio tinklo naudojant automatiškai aptiktus APN. Susisiekite su mobiliojo ryšio operatoriumi, kad gautumėte daugiau informacijos.</translation>

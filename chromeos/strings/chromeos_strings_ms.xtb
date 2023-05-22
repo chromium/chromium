@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Lumpuhkan tema gelap</translation>
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1827738518074806965">Galeri seni</translation>
+<translation id="1836553715834333258">Warna sistem</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
+<translation id="1840474674287087346">Warna desktop</translation>
 <translation id="1851218745569890714">Persidangan Video</translation>
 <translation id="1852934301711881861">Pasang Chrome OS Flex</translation>
 <translation id="1856388568474281774">Anak panah ke bawah</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Imbas dan simpan pada</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal untuk ping get laluan rangkaian bukan lalai</translation>
+<translation id="4500966230243561393">Warna antara muka</translation>
 <translation id="4503223151711056411">Anak panah ke kiri</translation>
 <translation id="4507392511610824664">tambahkan kecerahan</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Hentikan ujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Apabila skrin anda melahu, tunjukkan foto, masa, cuaca dan maklumat media.</translation>
+<translation id="5035083460461104704">Warna tema</translation>
 <translation id="5038292761217083259">berbilang warna papan kekunci</translation>
 <translation id="5039804452771397117">Benarkan</translation>
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Ketahui lebih lanjut dalam Pusat Bantuan</translation>
 <translation id="763165478673169849">Masa Terakhir Ditetapkan Semula</translation>
+<translation id="7633068090678117093">Imej latar belakang</translation>
 <translation id="7648838807254605802">Kependaman HTTPS tinggi</translation>
 <translation id="765159867434478292">Pisah</translation>
 <translation id="7656388927906093505">Peranti ialah tetikus.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Setara</translation>
 <translation id="8930622219860340959">Wayarles</translation>
 <translation id="8936793075252196307">Alamat IP klien</translation>
+<translation id="8944651180182756621">Warna pelancar</translation>
 <translation id="894617464444543719">Peranti ialah telefon.</translation>
 <translation id="8957423540740801332">kanan</translation>
 <translation id="8968751544471797276">Kadar pengecasan</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Jalankan Ujian memori</translation>
 <translation id="9161276708550942948">ruang</translation>
 <translation id="9173638680043580060">Kurang seminit lagi</translation>
+<translation id="9174334653006917325">Warna UI</translation>
 <translation id="917720651393141712">Ujian</translation>
 <translation id="9188992814426075118">Papan kekunci anda dapat memadankan kertas dinding anda secara automatik</translation>
 <translation id="9189000703457422362">Tidak dapat menyambung kepada rangkaian ini menggunakan APN yang dikesan secara automatik. Hubungi pembawa mudah alih anda untuk mendapatkan maklumat lanjut.</translation>
