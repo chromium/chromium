@@ -74,6 +74,8 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kFailedToDerEncode = 25,
   kInputTooLong = 26,
   kFailedToListKeys = 27,
+  kFailedToRemovePrivateKey = 28,
+  kFailedToRemovePublicKey = 29,
 };
 
 // Handles for tokens on ChromeOS.

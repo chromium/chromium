@@ -382,6 +382,10 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   kcer->ImportX509Cert(Token::kUser,
                        /*cert=*/cert_builder->GetX509Certificate(),
                        import_x509_cert_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>>
+      remove_key_and_certs_waiter;
+  kcer->RemoveKeyAndCerts(PrivateKeyHandle(PublicKeySpki()),
+                          remove_key_and_certs_waiter.GetCallback());
   base::test::TestFuture<base::expected<void, Error>> remove_cert_waiter;
   kcer->RemoveCert(fake_cert, remove_cert_waiter.GetCallback());
   base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
@@ -442,6 +446,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(import_x509_cert_waiter.Get().has_value());
   EXPECT_EQ(import_x509_cert_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
+  ASSERT_FALSE(remove_key_and_certs_waiter.Get().has_value());
+  EXPECT_EQ(remove_key_and_certs_waiter.Get().error(),
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(remove_cert_waiter.Get().has_value());
   EXPECT_EQ(remove_cert_waiter.Get().error(),
@@ -1117,6 +1124,93 @@ TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
         << does_exist_waiter.Get().error();
     EXPECT_EQ(does_exist_waiter.Get().value(), false);
   }
+}
+
+TEST_P(KcerNssAllKeyTypesTest, RemoveKeyAndCertsWithManyCerts) {
+  TokenHolder user_token(Token::kUser);
+  user_token.Initialize();
+
+  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
+      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
+
+  // Generate new key.
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
+  switch (GetParam()) {
+    case KeyType::kRsa:
+      kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                           /*hardware_backed=*/true,
+                           generate_waiter.GetCallback());
+      break;
+    case KeyType::kEcc:
+      kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                          /*hardware_backed=*/true,
+                          generate_waiter.GetCallback());
+      break;
+  }
+  ASSERT_TRUE(generate_waiter.Get().has_value());
+  const PublicKey& public_key = generate_waiter.Get().value();
+
+  // Import three certs, ids should be random, so they will be different.
+  {
+    std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
+    std::unique_ptr<net::CertBuilder> cert_builder =
+        MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
+    // Import a cert.
+    base::test::TestFuture<base::expected<void, Error>> import_waiter;
+    kcer->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
+                         import_waiter.GetCallback());
+    EXPECT_TRUE(import_waiter.Get().has_value());
+  }
+  {
+    std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
+    std::unique_ptr<net::CertBuilder> cert_builder =
+        MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
+    // Import a cert.
+    base::test::TestFuture<base::expected<void, Error>> import_waiter;
+    kcer->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
+                         import_waiter.GetCallback());
+    EXPECT_TRUE(import_waiter.Get().has_value());
+  }
+  {
+    std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
+    std::unique_ptr<net::CertBuilder> cert_builder =
+        MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
+    // Import a cert.
+    base::test::TestFuture<base::expected<void, Error>> import_waiter;
+    kcer->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
+                         import_waiter.GetCallback());
+    EXPECT_TRUE(import_waiter.Get().has_value());
+  }
+
+  // Check that the imported cert can be found.
+  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                         base::flat_map<Token, Error>>
+      certs_waiter;
+  kcer->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+  EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
+  EXPECT_EQ(certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>().size(),
+            3u);
+
+  base::test::TestFuture<base::expected<void, Error>> remove_waiter;
+  kcer->RemoveKeyAndCerts(PrivateKeyHandle(public_key),
+                          remove_waiter.GetCallback());
+  EXPECT_TRUE(remove_waiter.Get().has_value());
+
+  // Check that the imported cert cannot be found anymore.
+  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                         base::flat_map<Token, Error>>
+      certs_waiter_2;
+  kcer->ListCerts({Token::kUser}, certs_waiter_2.GetCallback());
+  EXPECT_TRUE(certs_waiter_2.Get<1>().empty());  // Error map is empty.
+  EXPECT_TRUE(
+      certs_waiter_2.Get<std::vector<scoped_refptr<const Cert>>>().empty());
+
+  // Check that the generated key cannot be found anymore.
+  base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
+      list_keys_waiter;
+  kcer->ListKeys({Token::kUser}, list_keys_waiter.GetCallback());
+  ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
+  EXPECT_TRUE(list_keys_waiter.Get<std::vector<PublicKey>>().empty());
 }
 
 // Test that all methods work together as expected. Simulate a potential
