@@ -515,10 +515,14 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
     return nullptr;
   }
 
+  const BulkPinStage old_stage = bulk_pin_stage_;
+  bulk_pin_stage_ = progress.stage;
+
   // Check the bulk-pinning stage.
-  using Stage = file_manager_private::BulkPinStage;
-  if (progress.stage != Stage::BULK_PIN_STAGE_NOT_ENOUGH_SPACE) {
-    VLOG(1) << "Ignored BulkPinProgress with stage " << progress.stage;
+  if (bulk_pin_stage_ != BulkPinStage::BULK_PIN_STAGE_NOT_ENOUGH_SPACE ||
+      old_stage != BulkPinStage::BULK_PIN_STAGE_SYNCING) {
+    VLOG(1) << "Ignored BulkPinProgress event with stage '"
+            << ToString(bulk_pin_stage_) << "'";
     return nullptr;
   }
 

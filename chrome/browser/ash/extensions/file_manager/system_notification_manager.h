@@ -194,6 +194,7 @@ class SystemNotificationManager {
       file_manager::io_task::IOTaskController* io_task_controller);
 
  private:
+  // Make notification for DriveFS bulk-pinning error.
   NotificationPtr MakeBulkPinningErrorNotification(const Event& event);
 
   // Make notifications for DriveFS sync errors.
@@ -284,6 +285,10 @@ class SystemNotificationManager {
   // IOTaskController is owned by VolumeManager.
   raw_ptr<file_manager::io_task::IOTaskController, ExperimentalAsh>
       io_task_controller_ = nullptr;
+
+  // Keep track of the bulk-pinning stage.
+  using BulkPinStage = file_manager_private::BulkPinStage;
+  BulkPinStage bulk_pin_stage_ = BulkPinStage::BULK_PIN_STAGE_NONE;
 
   // base::WeakPtr{this} factory.
   base::WeakPtrFactory<SystemNotificationManager> weak_ptr_factory_{this};
