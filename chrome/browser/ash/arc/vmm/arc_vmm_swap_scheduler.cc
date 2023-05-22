@@ -55,10 +55,6 @@ ArcVmmSwapScheduler::ArcVmmSwapScheduler(
 ArcVmmSwapScheduler::~ArcVmmSwapScheduler() = default;
 
 void ArcVmmSwapScheduler::SetSwappable(bool swappable) {
-  if (swappable == swappable_) {
-    return;
-  }
-  swappable_ = swappable;
   if (swappable) {
     swap_callback_.Run(true);
   } else {

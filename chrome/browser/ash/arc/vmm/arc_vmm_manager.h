@@ -90,6 +90,8 @@ class ArcVmmManager : public KeyedService,
   // called by other caller. Update shrink result.
   void SetShrinkResult(bool success);
 
+  SwapState last_swap_state_ = SwapState::DISABLE;
+
   // Log the time stamp and result of last shrink memory request.
   absl::optional<base::Time> last_shrink_timestamp_;
   absl::optional<bool> last_shrink_result_;

@@ -118,10 +118,21 @@ void ArcVmmManager::SetSwapState(SwapState state) {
   }
 
   if (state == SwapState::DISABLE) {
+    if (last_swap_state_ == state) {
+      return;
+    }
     SendSwapRequest(op, base::DoNothing());
     enabled_state_heartbeat_timer_.Reset();
     return;
   }
+
+  if (last_swap_state_ == state && enabled_state_heartbeat_timer_.IsRunning()) {
+    // The state is not update, do not send request now but leave it to heart
+    // beat timer.
+    return;
+  }
+
+  last_swap_state_ = state;
 
   // Reset the timer anyway since the enable state and force enable state may
   // overwrite each other.
