@@ -35,6 +35,7 @@
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -95,7 +96,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
 
   const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   gfx::Insets dialog_insets = provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kControl);
+      views::DialogContentType::kText, views::DialogContentType::kText);
   dialog_insets.set_top(kTitleTopMargin);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, dialog_insets,
@@ -219,6 +220,9 @@ bool ShareThisTabDialogView::ShouldShowCloseButton() const {
 
 void ShareThisTabDialogView::SetupSourceView() {
   View* source_container = AddChildView(std::make_unique<views::View>());
+  source_container->SetProperty(views::kMarginsKey,
+                                gfx::Insets::TLBR(16, 0, 0, 0));
+
   views::BoxLayout* source_layout =
       source_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
@@ -232,6 +236,8 @@ void ShareThisTabDialogView::SetupSourceView() {
 
 void ShareThisTabDialogView::SetupAudioToggle() {
   View* audio_toggle_container = AddChildView(std::make_unique<views::View>());
+  audio_toggle_container->SetProperty(views::kMarginsKey,
+                                      gfx::Insets::TLBR(8, 0, 0, 0));
   audio_toggle_container->SetBackground(
       views::CreateThemedRoundedRectBackground(
           kColorShareThisTabAudioToggleBackground, 4));
