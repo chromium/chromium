@@ -42,8 +42,8 @@ class ExecutableMetadataServiceTest : public testing::Test {
         ExecutableMetadataService::Create(std::move(mock_platform_delegate));
   }
 
-  raw_ptr<MockPlatformDelegate> mock_platform_delegate_;
   std::unique_ptr<ExecutableMetadataService> executable_metadata_service_;
+  raw_ptr<MockPlatformDelegate> mock_platform_delegate_;
 };
 
 TEST_F(ExecutableMetadataServiceTest, GetAllExecutableMetadata_Empty) {
