@@ -44660,6 +44660,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="17" label="Native Network SMB"/>
 </enum>
 
+<enum name="FileSystemProviderOperationCompletion">
+  <int value="0" label="CompletedNormally"/>
+  <int value="1" label="CompletedAfterWarning"/>
+  <int value="2" label="AbortedManually"/>
+  <int value="3" label="AbortedOnTimeout"/>
+</enum>
+
 <enum name="FileType">
   <int value="0" label="other"/>
   <int value="1" label=".doc"/>
@@ -76041,6 +76048,62 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Move"/>
   <int value="3" label="Zip"/>
   <int value="4" label="Open from files app"/>
+</enum>
+
+<enum name="OfficeGraphAPIResult">
+  <summary>
+    Result of Microsoft Graph API calls. HTTP response codes copied from enum
+    &quot;HttpResponseCode&quot;.
+  </summary>
+  <int value="-2" label="Request Timed Out"/>
+  <int value="-1" label="Network Error"/>
+  <int value="100" label="100: Continue"/>
+  <int value="101" label="101: Switching Protocols"/>
+  <int value="103" label="103: Early Hints"/>
+  <int value="200" label="200: OK"/>
+  <int value="201" label="201: Created"/>
+  <int value="202" label="202: Accepted"/>
+  <int value="203" label="203: Non-Authoritative Information"/>
+  <int value="204" label="204: No Content"/>
+  <int value="205" label="205: Reset Content"/>
+  <int value="206" label="206: Partial Content"/>
+  <int value="300" label="300: Multiple Choices"/>
+  <int value="301" label="301: Moved Permanently"/>
+  <int value="302" label="302: Found"/>
+  <int value="303" label="303: See Other"/>
+  <int value="304" label="304: Not Modified"/>
+  <int value="305" label="305: Use Proxy"/>
+  <int value="306" label="306: (Unused)"/>
+  <int value="307" label="307: Temporary Redirect"/>
+  <int value="308" label="308: Permanent Redirect"/>
+  <int value="400" label="400: Bad Request"/>
+  <int value="401" label="401: Unauthorized"/>
+  <int value="402" label="402: Payment Required"/>
+  <int value="403" label="403: Forbidden"/>
+  <int value="404" label="404: Not Found"/>
+  <int value="405" label="405: Method Not Allowed"/>
+  <int value="406" label="406: Not Acceptable"/>
+  <int value="407" label="407: Proxy Authentication Required"/>
+  <int value="408" label="408: Request Timeout"/>
+  <int value="409" label="409: Conflict"/>
+  <int value="410" label="410: Gone"/>
+  <int value="411" label="411: Length Required"/>
+  <int value="412" label="412: Precondition Failed"/>
+  <int value="413" label="413: Request Entity Too Large"/>
+  <int value="414" label="414: Request-URI Too Long"/>
+  <int value="415" label="415: Unsupported Media Type"/>
+  <int value="416" label="416: Requested Range Not Satisfiable"/>
+  <int value="417" label="417: Expectation Failed"/>
+  <int value="418" label="418: I'm a teapot"/>
+  <int value="422" label="422: Unprocessable Content"/>
+  <int value="425" label="425: Too Early Experimental"/>
+  <int value="429" label="429: Too Many Requests"/>
+  <int value="500" label="500: Internal Server Error"/>
+  <int value="501" label="501: Not Implemented"/>
+  <int value="502" label="502: Bad Gateway"/>
+  <int value="503" label="503: Service Unavailable"/>
+  <int value="504" label="504: Gateway Timeout"/>
+  <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
 <enum name="OfficeTaskResult">
