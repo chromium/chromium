@@ -225,7 +225,9 @@ void MaybeInstallUpdater(UpdaterScope scope) {
   install_command.AppendSwitch(kEnableLoggingSwitch);
   install_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                     kLoggingModuleSwitchValue);
-  // TODO(crbug.com/1281971): suppress the installer's UI.
+  if (IsSystemInstall(scope)) {
+    install_command.AppendSwitch(kSystemSwitch);
+  }
   int exit_code = -1;
   if (base::LaunchProcess(install_command, {}).WaitForExit(&exit_code)) {
     VLOG(0) << "Installer returned " << exit_code << ".";
