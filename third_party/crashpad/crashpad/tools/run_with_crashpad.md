@@ -27,7 +27,7 @@ run_with_crashpad—Run a program with a Crashpad exception handler
 ## Description
 
 Starts a Crashpad exception handler server such as
-[crashpad_handler(8)](../../handler/crashpad_handler.md) and becomes its client,
+[crashpad_handler(8)](../handler/crashpad_handler.md) and becomes its client,
 setting an exception port referencing the handler. Then, executes _COMMAND_
 along with any arguments specified (_ARG…_) with the new exception port in
 effect.
@@ -88,7 +88,7 @@ Illegal instruction: 4
 ```
 
 Starts a Crashpad exception handler server at a nonstandard path, and runs
-[exception_port_tool(1)](exception_port_tool.md) to show the task-level
+[exception_port_tool(1)](mac/exception_port_tool.md) to show the task-level
 exception ports.
 
 ```
@@ -118,8 +118,8 @@ task exception port 0, mask 0x1c00 (CRASH|RESOURCE|GUARD), port 0x30b, behavior 
 
 ## See Also
 
-[crashpad_handler(8)](../../handler/crashpad_handler.md),
-[exception_port_tool(1)](exception_port_tool.md)
+[crashpad_handler(8)](../handler/crashpad_handler.md),
+[exception_port_tool(1)](mac/exception_port_tool.md)
 
 ## Resources
 

@@ -63,7 +63,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		"/man/generate_dump.html":          mainBaseURL + "tools/generate_dump.md",
 		"/man/index.html":                  mainBaseURL + "doc/man.md",
 		"/man/on_demand_service_tool.html": mainBaseURL + "tools/mac/on_demand_service_tool.md",
-		"/man/run_with_crashpad.html":      mainBaseURL + "tools/mac/run_with_crashpad.md",
+		"/man/run_with_crashpad.html":      mainBaseURL + "tools/run_with_crashpad.md",
 	}
 
 	ctx := appengine.NewContext(r)

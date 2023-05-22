@@ -151,10 +151,46 @@ boolean_t handler_forbidden_claimed_address(struct _malloc_zone_t* zone,
         "handler_forbidden_claimed_address allocator used in handler.");
     exit(EXIT_FAILURE);
   }
-  return g_old_zone.claimed_address(zone, ptr);
+
+  if (g_old_zone.claimed_address) {
+    return g_old_zone.claimed_address(zone, ptr);
+  }
+
+  // If the fast API 'claimed_address' is not implemented in the specified zone,
+  // fall back to 'size' function, which also tells whether the given address
+  // belongs to the zone or not although it'd be slow.
+  return g_old_zone.size(zone, ptr);
 }
 
 #if defined(__IPHONE_16_1) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_1
+// The fallback function to be called when try_free_default_function receives a
+// pointer which doesn't belong to the allocator.
+void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr) {
+  unsigned int zone_count = 0;
+  vm_address_t* zones = nullptr;
+  kern_return_t result =
+      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
+  MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
+
+  // "find_zone_and_free" expected by try_free_default.
+  //
+  // libmalloc's zones call find_registered_zone() in case the default one
+  // doesn't handle the allocation. We can't, so we try to emulate it. See the
+  // implementation in libmalloc/src/malloc.c for details.
+  // https://github.com/apple-oss-distributions/libmalloc/blob/main/src/malloc.c
+  for (unsigned int i = 0; i < zone_count; ++i) {
+    malloc_zone_t* zone = reinterpret_cast<malloc_zone_t*>(zones[i]);
+    if (size_t size = zone->size(zone, ptr)) {
+      if (zone->version >= 6 && zone->free_definite_size) {
+        zone->free_definite_size(zone, ptr, size);
+      } else {
+        zone->free(zone, ptr);
+      }
+      return;
+    }
+  }
+}
+
 void handler_forbidden_try_free_default(struct _malloc_zone_t* zone,
                                         void* ptr) {
   if (is_handler_thread()) {
@@ -162,7 +198,11 @@ void handler_forbidden_try_free_default(struct _malloc_zone_t* zone,
         "handler_forbidden_try_free_default allocator used in handler.");
     exit(EXIT_FAILURE);
   }
-  g_old_zone.try_free_default(zone, ptr);
+
+  if (g_old_zone.try_free_default) {
+    return g_old_zone.try_free_default(zone, ptr);
+  }
+  TryFreeDefaultFallbackToFindZoneAndFree(ptr);
 }
 #endif
 

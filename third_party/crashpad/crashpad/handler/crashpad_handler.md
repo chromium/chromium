@@ -83,7 +83,7 @@ closed.
 It is not normally appropriate to invoke this program directly. Usually, it will
 be invoked by a Crashpad client using the Crashpad client library, or started by
 another system service. On macOS, arbitrary programs may be run with a Crashpad
-handler by using [run_with_crashpad(1)](../tools/mac/run_with_crashpad.md) to
+handler by using [run_with_crashpad(1)](../tools/run_with_crashpad.md) to
 establish the Crashpad client environment before running a program.
 
 ## Options
@@ -321,7 +321,7 @@ establish the Crashpad client environment before running a program.
 [catch_exception_tool(1)](../tools/mac/catch_exception_tool.md),
 [crashpad_database_util(1)](../tools/crashpad_database_util.md),
 [generate_dump(1)](../tools/generate_dump.md),
-[run_with_crashpad(1)](../tools/mac/run_with_crashpad.md)
+[run_with_crashpad(1)](../tools/run_with_crashpad.md)
 
 ## Resources
 
