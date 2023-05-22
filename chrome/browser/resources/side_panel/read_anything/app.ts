@@ -164,6 +164,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       chrome.readAnything.onSelectionChange(
           anchorNodeId, anchorOffset, focusNodeId, focusOffset);
     };
+
+    // Pass copy commands to main page. Copy commands will not work if they are
+    // disabled on the main page.
+    document.oncopy = () => {
+      chrome.readAnything.onCopy();
+      return false;
+    };
   }
 
   private buildSubtree_(nodeId: number): Node {

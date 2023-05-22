@@ -44,6 +44,7 @@ class MockReadAnythingPageHandler
                ui::AXNodeID focus_node_id,
                int focus_offset),
               (override));
+  MOCK_METHOD(void, OnCopy, (), (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {

@@ -69,6 +69,15 @@ enum LineSpacing {
 
 // Browser-side handler for requests from untrusted WebUI page.
 interface UntrustedPageHandler {
+  // Informs the browser controller that a user tried to copy text from the
+  // WebUI. If the main page allows copy commands, then the current selection
+  // on the main page will be copied to the user's clipboard. Note that even
+  // though selections on the main page and WebUI are in sync, the resulting
+  // content in the user's clipboard may not exactly match what is selected in
+  // the WebUI. This is because the main page selection may contain images,
+  // captions, etc that are not shown in reading mode's simplified view.
+  OnCopy();
+
   // Informs the browser controller that a link was clicked in the WebUI. The
   // browser controller responds by performing a click action on the link in
   // the target tree, which is in the main frame of the currently active web

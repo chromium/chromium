@@ -88,6 +88,10 @@ void ReadAnythingPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
 // read_anything::mojom::UntrustedPageHandler:
 ///////////////////////////////////////////////////////////////////////////////
 
+void ReadAnythingPageHandler::OnCopy() {
+  web_contents()->Copy();
+}
+
 void ReadAnythingPageHandler::OnLinkClicked(const ui::AXTreeID& target_tree_id,
                                             ui::AXNodeID target_node_id) {
   ui::AXActionData action_data;
