@@ -91,6 +91,7 @@
 #include "components/metrics/structured/neutrino_logging_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -277,7 +278,13 @@ void ShowLoginWizardFinish(
   // display host to be created.
   DCHECK(session_manager::SessionManager::Get());
   DCHECK(LoginDisplayHost::default_host());
-  WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
+  // Postpone loading wallpaper if the booting animation might be played.
+  if (!features::IsOobeSimonEnabled() ||
+      session_manager::SessionManager::Get()->session_state() !=
+          session_manager::SessionState::OOBE) {
+    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
+  }
+
   // TODO(crbug.com/1105387): Part of initial screen logic.
   MaybeShowDeviceDisabledScreen();
 }
@@ -561,6 +568,9 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
     const bool should_show =
         wizard_controller_->current_screen() == welcome_screen;
     if (!should_show) {
+      // When the booting animation might be played we postpone the wallpaper
+      // call. So we need to make it here if the animation won't be played.
+      WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
       return;
     }
     ash::Shell::Get()
@@ -705,6 +715,11 @@ void LoginDisplayHostWebUI::OnShowWebUITimeout() {
 }
 
 void LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed() {
+  // When the booting animation might be played we postpone the wallpaper
+  // call. Make sure initial wallpaper is shown before removing the animation
+  // layer.
+  WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
+
   booting_animation_finished_playing_ = true;
   if (webui_ready_to_take_over_) {
     // This function is called by the AnimationObserver which can't destroy the
@@ -838,9 +853,7 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
   // Subscribe to crash events.
   content::WebContentsObserver::Observe(login_view_->GetWebContents());
   login_view_->LoadURL(url);
-  if (!features::IsOobeSimonEnabled()) {
-    login_window_->Show();
-  }
+  login_window_->Show();
   CHECK(GetOobeUI());
   GetOobeUI()->AddObserver(this);
 }
@@ -1150,11 +1163,15 @@ void ShowLoginWizard(OobeScreenId first_screen) {
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().
     auto* display_host = new LoginDisplayHostWebUI();
-    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
     // Shows networks screen instead of enrollment screen to resume the
     // interrupted auto start enrollment flow because enrollment screen does
     // not handle flaky network. See http://crbug.com/332572
     display_host->StartWizard(WelcomeView::kScreenId);
+    // Make sure we load an initial wallpaper here. If the booting animation
+    // might be played it will be covered by the StartWizard call.
+    if (!ash::features::IsOobeSimonEnabled()) {
+      WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
+    }
     return;
   }
 

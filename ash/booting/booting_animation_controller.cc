@@ -80,18 +80,18 @@ void BootingAnimationController::Show() {
   // background.
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   widget_->Init(std::move(params));
-
-  if (!data_fetch_failed_.has_value()) {
-    LOG(ERROR) << "Booting animation isn't ready yet.";
-    start_once_ready_ = true;
-    return;
-  }
-  StartAnimation();
+  widget_->SetContentsView(std::make_unique<BootingAnimationView>());
+  // Show widget even if the animation isn't ready yet. This prevents other UI
+  // to be shown.
+  widget_->Show();
 }
 
 void BootingAnimationController::ShowAnimationWithEndCallback(
     base::OnceClosure callback) {
   animation_played_callback_ = std::move(callback);
+  // Show the widget early to prevent UI blinks. The animation will start once
+  // its data is fetched and device is ready.
+  Show();
 
   // Don't wait for GPU to be ready in non-ChromeOS environment.
   if (!base::SysInfo::IsRunningOnChromeOS()) {
@@ -101,7 +101,7 @@ void BootingAnimationController::ShowAnimationWithEndCallback(
 
   // If we are still waiting for the signal from DisplayConfigurator wait for
   // not more than a second and play the animation anyway.
-  if (scoped_display_configurator_observer_.IsObserving()) {
+  if (!IsDeviceReady()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BootingAnimationController::IgnoreGpuReadiness,
@@ -109,7 +109,7 @@ void BootingAnimationController::ShowAnimationWithEndCallback(
         base::TimeDelta(base::Seconds(1)));
     return;
   }
-  Show();
+  StartAnimation();
 }
 
 void BootingAnimationController::Finish() {
@@ -129,8 +129,9 @@ void BootingAnimationController::OnDisplayModeChanged(
   }
 
   scoped_display_configurator_observer_.Reset();
+  CHECK(IsDeviceReady());
   if (!animation_played_callback_.is_null()) {
-    Show();
+    StartAnimation();
   }
 }
 
@@ -165,37 +166,44 @@ void BootingAnimationController::OnAnimationDataFetched(std::string data) {
   data_fetch_failed_ = false;
   animation_data_ = std::move(data);
 
-  if (start_once_ready_) {
+  // Only start if we haven't exited earlier already and the device is ready to
+  // show.
+  if (!animation_played_callback_.is_null() && IsDeviceReady()) {
     StartAnimation();
   }
 }
 
 void BootingAnimationController::StartAnimation() {
-  CHECK(!animation_played_callback_.is_null() && is_gpu_ready_);
-  if (was_shown_) {
+  if (!data_fetch_failed_.has_value()) {
+    LOG(ERROR) << "Booting animation isn't ready yet.";
     return;
   }
 
+  CHECK(!animation_played_callback_.is_null() && IsDeviceReady());
+  if (was_shown_) {
+    return;
+  }
   was_shown_ = true;
-  start_once_ready_ = false;
-  BootingAnimationView* view = widget_->SetContentsView(
-      std::make_unique<BootingAnimationView>(animation_data_));
-  auto* animated_image = view->GetAnimatedImage();
+
+  BootingAnimationView* view =
+      static_cast<BootingAnimationView*>(widget_->GetContentsView());
+  view->SetAnimatedImage(animation_data_);
   // If there is no animated image set at this point it means that data file
   // is invalid and we need to finish the animation immediately.
+  auto* animated_image = view->GetAnimatedImage();
   if (!animated_image) {
     std::move(animation_played_callback_).Run();
     return;
   }
+
   // Observe animation to know when it finishes playing.
   scoped_animation_observer_.Observe(animated_image);
-  widget_->Show();
   view->Play();
 }
 
 void BootingAnimationController::IgnoreGpuReadiness() {
-  // Don't do anything if we already stopped observing DisplayConfigurator.
-  if (!scoped_display_configurator_observer_.IsObserving()) {
+  // Don't do anything if the device is ready.
+  if (IsDeviceReady()) {
     return;
   }
   LOG(ERROR) << "Ignore the readinees of the GPU and play the animation.";
@@ -203,8 +211,12 @@ void BootingAnimationController::IgnoreGpuReadiness() {
   is_gpu_ready_ = true;
   scoped_display_configurator_observer_.Reset();
   if (!animation_played_callback_.is_null()) {
-    Show();
+    StartAnimation();
   }
+}
+
+bool BootingAnimationController::IsDeviceReady() const {
+  return is_gpu_ready_ && !scoped_display_configurator_observer_.IsObserving();
 }
 
 }  // namespace ash

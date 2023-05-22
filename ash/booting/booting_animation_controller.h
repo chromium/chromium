@@ -50,11 +50,11 @@ class ASH_EXPORT BootingAnimationController
   void OnAnimationDataFetched(std::string data);
   void StartAnimation();
   void IgnoreGpuReadiness();
+  bool IsDeviceReady() const;
 
   std::string animation_data_;
   std::unique_ptr<views::Widget> widget_;
   absl::optional<bool> data_fetch_failed_;
-  bool start_once_ready_ = false;
   bool was_shown_ = false;
   bool is_gpu_ready_ = false;
   base::OnceClosure animation_played_callback_;
