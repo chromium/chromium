@@ -3118,6 +3118,9 @@ extern const char kBruschettaDescription[];
 extern const char kBruschettaAlphaMigrateName[];
 extern const char kBruschettaAlphaMigrateDescription[];
 
+extern const char kBruschettaInstallerDownloadStrategyName[];
+extern const char kBruschettaInstallerDownloadStrategyDescription[];
+
 extern const char kCameraAppTimeLapseName[];
 extern const char kCameraAppTimeLapseDescription[];
 

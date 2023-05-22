@@ -256,6 +256,7 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "chrome/browser/ash/android_sms/android_sms_switches.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -2904,6 +2905,14 @@ const FeatureEntry::Choice kCrostiniContainerChoices[] = {
     {"Default", "", ""},
     {"Buster", crostini::kCrostiniContainerFlag, "buster"},
     {"Bullseye", crostini::kCrostiniContainerFlag, "bullseye"},
+};
+
+const FeatureEntry::Choice kBruschettaInstallerDownloadStrategy[] = {
+    {"Default", "", ""},
+    {"DownloadService", bruschetta::kBruschettaInstallerDownloadStrategyFlag,
+     bruschetta::kBruschettaInstallerDownloadStrategyDownloadService},
+    {"SimpleURLLoader", bruschetta::kBruschettaInstallerDownloadStrategyFlag,
+     bruschetta::kBruschettaInstallerDownloadStrategySimpleURLLoader},
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -7767,6 +7776,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCrostiniContainerInstallName,
      flag_descriptions::kCrostiniContainerInstallDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kCrostiniContainerChoices)},
+    {"bruschetta-installer-download-strategy",
+     flag_descriptions::kBruschettaInstallerDownloadStrategyName,
+     flag_descriptions::kBruschettaInstallerDownloadStrategyDescription,
+     kOsCrOS, MULTI_VALUE_TYPE(kBruschettaInstallerDownloadStrategy)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

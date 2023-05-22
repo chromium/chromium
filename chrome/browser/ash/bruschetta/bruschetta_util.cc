@@ -41,6 +41,13 @@ const char kBruschettaDisplayName[] = "Bruschetta";
 
 const char kBruschettaPolicyId[] = "glinux-latest";
 
+const char kBruschettaInstallerDownloadStrategyFlag[] =
+    "bruschetta-installer-download-strategy";
+const char kBruschettaInstallerDownloadStrategySimpleURLLoader[] =
+    "SimpleURLLoader";
+const char kBruschettaInstallerDownloadStrategyDownloadService[] =
+    "DownloadService";
+
 const char* BruschettaResultString(const BruschettaResult res) {
 #define ENTRY(name)            \
   case BruschettaResult::name: \
