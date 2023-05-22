@@ -48,9 +48,9 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
     return;
   }
 
-  absl::optional<std::vector<float>> input_signals =
+  absl::optional<std::vector<float>> model_input =
       url_scoring_model_handler_->GetModelInput(scoring_signals);
-  if (!input_signals) {
+  if (!model_input) {
     std::move(result_callback)
         .Run(std::make_tuple(absl::nullopt, stripped_destination_url));
     return;
@@ -61,12 +61,7 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
       base::BindOnce(&AutocompleteScoringModelService::ProcessModelOutput,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result_callback),
                      stripped_destination_url),
-      *input_signals);
-}
-
-bool AutocompleteScoringModelService::UrlScoringModelAvailable() {
-  return url_scoring_model_handler_ &&
-         url_scoring_model_handler_->ModelAvailable();
+      *model_input);
 }
 
 void AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches(
@@ -78,24 +73,15 @@ void AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches(
       "omnibox",
       "AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches");
 
-  // Function for creating a result vector with null scores.
-  auto create_null_results = [&]() {
-    std::vector<Result> results;
-    for (size_t i = 0; i < batch_scoring_signals.size(); i++) {
-      results.emplace_back(absl::nullopt, stripped_destination_urls.at(i));
-    }
-    return results;
-  };
-
   if (!UrlScoringModelAvailable()) {
-    std::move(batch_result_callback).Run(create_null_results());
+    std::move(batch_result_callback).Run({});
     return;
   }
 
-  absl::optional<std::vector<std::vector<float>>> batch_input =
+  absl::optional<std::vector<std::vector<float>>> batch_model_input =
       url_scoring_model_handler_->GetBatchModelInput(batch_scoring_signals);
-  if (!batch_input) {
-    std::move(batch_result_callback).Run(create_null_results());
+  if (!batch_model_input) {
+    std::move(batch_result_callback).Run({});
     return;
   }
 
@@ -105,27 +91,26 @@ void AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches(
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(batch_result_callback),
                      stripped_destination_urls),
-      *batch_input);
+      *batch_model_input);
+}
+
+bool AutocompleteScoringModelService::UrlScoringModelAvailable() {
+  return url_scoring_model_handler_ &&
+         url_scoring_model_handler_->ModelAvailable();
 }
 
 void AutocompleteScoringModelService::ProcessModelOutput(
     ResultCallback result_callback,
     const std::string& stripped_destination_url,
-    const absl::optional<AutocompleteScoringModelExecutor::ModelOutput>&
-        model_output) {
+    const absl::optional<ModelOutput>& model_output) {
   TRACE_EVENT0("omnibox",
                "AutocompleteScoringModelService::ProcessModelOutput");
-  if (model_output.has_value()) {
-    if (!model_output.value().empty()) {
-      std::move(result_callback)
-          .Run(std::make_tuple(model_output.value()[0],
-                               stripped_destination_url));
-      return;
-    }
-    NOTREACHED() << "The model generated an empty output vector.";
-  }
+
   std::move(result_callback)
-      .Run(std::make_tuple(absl::nullopt, stripped_destination_url));
+      .Run(std::make_tuple(model_output
+                               ? absl::make_optional(model_output->at(0))
+                               : absl::nullopt,
+                           stripped_destination_url));
 }
 
 void AutocompleteScoringModelService::ProcessBatchModelOutput(
@@ -136,10 +121,11 @@ void AutocompleteScoringModelService::ProcessBatchModelOutput(
                "AutocompleteScoringModelService::ProcessBatchModelOutput");
 
   std::vector<Result> batch_results;
+  batch_results.reserve(stripped_destination_urls.size());
   for (size_t i = 0; i < stripped_destination_urls.size(); i++) {
-    const auto& output = batch_model_output.at(i);
+    const auto& model_output = batch_model_output.at(i);
     batch_results.emplace_back(
-        output ? absl::optional<float>(output->at(0)) : absl::nullopt,
+        model_output ? absl::make_optional(model_output->at(0)) : absl::nullopt,
         stripped_destination_urls.at(i));
   }
 

@@ -1522,8 +1522,8 @@ const FeatureEntry::FeatureParam kOmniboxMlUrlScoringPreserveDefault[] = {
     {"MlUrlScoringRerankFinalMatchesOnly", "true"},
     {"MlUrlScoringPreserveDefault", "true"},
 };
-const FeatureEntry::FeatureParam kOmniboxMlBatchUrlScoring[] = {
-    {"MlBatchUrlScoring", "true"},
+const FeatureEntry::FeatureParam kOmniboxMlIndividualUrlScoring[] = {
+    {"MlBatchUrlScoring", "false"},
 };
 
 const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
@@ -1538,8 +1538,8 @@ const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
      "match",
      kOmniboxMlUrlScoringPreserveDefault,
      std::size(kOmniboxMlUrlScoringPreserveDefault), nullptr},
-    {"Run the model on a batch of matches", kOmniboxMlBatchUrlScoring,
-     std::size(kOmniboxMlBatchUrlScoring), nullptr},
+    {"Run the model on individual matches", kOmniboxMlIndividualUrlScoring,
+     std::size(kOmniboxMlIndividualUrlScoring), nullptr},
 };
 const FeatureEntry::FeatureParam kRealboxTwoPreviousSearchRelatedSuggestions[] =
     {

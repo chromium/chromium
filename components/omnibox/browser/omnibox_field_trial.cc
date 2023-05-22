@@ -1056,7 +1056,7 @@ const base::FeatureParam<bool> kMlUrlScoringPreserveDefault(
 // If true, the ML model scores a batch of urls.
 const base::FeatureParam<bool> kMlBatchUrlScoring(&omnibox::kMlUrlScoring,
                                                   "MlBatchUrlScoring",
-                                                  false);
+                                                  true);
 
 MLConfig::MLConfig() {
   log_url_scoring_signals =
