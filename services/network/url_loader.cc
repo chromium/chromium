@@ -273,6 +273,13 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
   // for purposes of cookie UI --- as well those carrying warnings pertaining to
   // SameSite features and cookies with non-ASCII domain attributes, in order to
   // issue a deprecation warning for them.
+
+  // Filter out tentative secure source scheme warnings. They're used for netlog
+  // debugging and not something we want to inform cookie observers about.
+  status.RemoveWarningReason(
+      net::CookieInclusionStatus::
+          WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME);
+
   return status.IsInclude() || status.ShouldWarn() ||
          status.HasExclusionReason(
              net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES) ||

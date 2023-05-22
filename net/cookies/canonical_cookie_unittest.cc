@@ -2554,11 +2554,14 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_SchemeBoundStatus) {
                 CookieInclusionStatus::EXCLUDE_SCHEME_MISMATCH));
 
     // If a url is treated as trustworthy, then it's allowed to access cookies
-    // with a secure source scheme.
-    EXPECT_TRUE(
-        secure_cookie
-            ->IncludeForRequestURL(insecure_url, options, trusted_params)
-            .status.IsInclude());
+    // with a secure source scheme. But we should have a warning indicating
+    // this.
+    status = secure_cookie
+                 ->IncludeForRequestURL(insecure_url, options, trusted_params)
+                 .status;
+    EXPECT_TRUE(status.IsInclude());
+    EXPECT_TRUE(status.HasWarningReason(
+        CookieInclusionStatus::WARN_SECURE_ACCESS_GRANTED_NON_CRYPTOGRAPHIC));
 
     // Cookies with an unset source scheme should match any url scheme.
     EXPECT_TRUE(unset_cookie->IncludeForRequestURL(secure_url, options, params)
@@ -4575,6 +4578,92 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
 
 // Make sure that the source scheme and port are set correctly for cookies that
 // are marked as "Secure".
+TEST(CanonicalCookieTest, Create_SourceSchemePort) {
+  GURL secure_url("https://example.com");
+  GURL insecure_url("http://example.com");
+  GURL insecure_url_custom_port("http://example.com:123");
+
+  CookieInclusionStatus status;
+
+  std::unique_ptr<CanonicalCookie> cc;
+
+  // A secure url doesn't need "Secure" to have a source scheme of secure
+  cc = CanonicalCookie::Create(secure_url, "a=b; SameSite=Lax",
+                               base::Time::Now(), absl::nullopt, absl::nullopt,
+                               &status);
+  EXPECT_TRUE(cc);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_FALSE(status.ShouldWarn());
+  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
+  EXPECT_EQ(cc->SourcePort(), 443);
+
+  // But having "Secure" shouldn't change anything
+  cc = CanonicalCookie::Create(secure_url, "a=b; SameSite=Lax; Secure",
+                               base::Time::Now(), absl::nullopt, absl::nullopt,
+                               &status);
+  EXPECT_TRUE(cc);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_FALSE(status.ShouldWarn());
+  EXPECT_TRUE(cc->IsSecure());
+  EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
+  EXPECT_EQ(cc->SourcePort(), 443);
+
+  // An insecure url without "Secure" should get a non-secure source scheme and
+  // a default port.
+  cc = CanonicalCookie::Create(insecure_url, "a=b; SameSite=Lax",
+                               base::Time::Now(), absl::nullopt, absl::nullopt,
+                               &status);
+  EXPECT_TRUE(cc);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_FALSE(status.ShouldWarn());
+  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kNonSecure);
+  EXPECT_EQ(cc->SourcePort(), 80);
+
+  // An insecure url with "Secure" should get a secure source scheme and
+  // modified port. It should also get a warning that a secure source scheme was
+  // tentatively allowed.
+  cc = CanonicalCookie::Create(insecure_url, "a=b; SameSite=Lax; Secure",
+                               base::Time::Now(), absl::nullopt, absl::nullopt,
+                               &status);
+  EXPECT_TRUE(cc);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
+      {CookieInclusionStatus::WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
+  EXPECT_TRUE(cc->IsSecure());
+  EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
+  EXPECT_EQ(cc->SourcePort(), 443);
+
+  // An insecure url with a non-default port without "Secure" should get a
+  // non-secure source scheme and keep its port.
+  cc = CanonicalCookie::Create(insecure_url_custom_port, "a=b; SameSite=Lax",
+                               base::Time::Now(), absl::nullopt, absl::nullopt,
+                               &status);
+  EXPECT_TRUE(cc);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_FALSE(status.ShouldWarn());
+  EXPECT_FALSE(cc->IsSecure());
+  EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kNonSecure);
+  EXPECT_EQ(cc->SourcePort(), 123);
+
+  // An insecure url with a non-default port with "Secure" should get a secure
+  // source scheme and keep its port. It should also get a warning that a secure
+  // source scheme was tentatively allowed.
+  cc = CanonicalCookie::Create(insecure_url_custom_port,
+                               "a=b; SameSite=Lax; Secure", base::Time::Now(),
+                               absl::nullopt, absl::nullopt, &status);
+  EXPECT_TRUE(cc);
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
+      {CookieInclusionStatus::WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
+  EXPECT_TRUE(cc->IsSecure());
+  EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
+  EXPECT_EQ(cc->SourcePort(), 123);
+}
+
+// Make sure that the source scheme and port are set correctly for cookies that
+// are marked as "Secure".
 TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
   GURL secure_url("https://example.com");
   GURL insecure_url("http://example.com");
@@ -4592,6 +4681,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
       /*partition_key=*/absl::nullopt, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
+  EXPECT_FALSE(status.ShouldWarn());
   EXPECT_FALSE(cc->IsSecure());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 443);
@@ -4604,6 +4694,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
       /*partition_key=*/absl::nullopt, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
+  EXPECT_FALSE(status.ShouldWarn());
   EXPECT_TRUE(cc->IsSecure());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 443);
@@ -4617,12 +4708,14 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
       /*partition_key=*/absl::nullopt, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
+  EXPECT_FALSE(status.ShouldWarn());
   EXPECT_FALSE(cc->IsSecure());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kNonSecure);
   EXPECT_EQ(cc->SourcePort(), 80);
 
   // An insecure url with "Secure" should get a secure source scheme and
-  // modified port
+  // modified port. It should also get a warning that a secure source scheme was
+  // tentatively allowed.
   cc = CanonicalCookie::CreateSanitizedCookie(
       insecure_url, "a", "b", "example.com", "", base::Time(), base::Time(),
       base::Time(), /*secure=*/true, /*http_only=*/false,
@@ -4630,12 +4723,14 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
       /*partition_key=*/absl::nullopt, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
+      {CookieInclusionStatus::WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
   EXPECT_TRUE(cc->IsSecure());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 443);
 
-  // An insecure url with a non-default without "Secure" should get a non-secure
-  // source scheme and keep its port.
+  // An insecure url with a non-default port without "Secure" should get a
+  // non-secure source scheme and keep its port.
   cc = CanonicalCookie::CreateSanitizedCookie(
       insecure_url_custom_port, "a", "b", "example.com", "", base::Time(),
       base::Time(), base::Time(), /*secure=*/false, /*http_only=*/false,
@@ -4643,12 +4738,14 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
       /*partition_key=*/absl::nullopt, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
+  EXPECT_FALSE(status.ShouldWarn());
   EXPECT_FALSE(cc->IsSecure());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kNonSecure);
   EXPECT_EQ(cc->SourcePort(), 123);
 
-  // An insecure url with a non-default with "Secure" should get a secure source
-  // scheme and keep its port.
+  // An insecure url with a non-default port with "Secure" should get a secure
+  // source scheme and keep its port. It should also get a warning that a secure
+  // source scheme was tentatively allowed.
   cc = CanonicalCookie::CreateSanitizedCookie(
       insecure_url_custom_port, "a", "b", "example.com", "", base::Time(),
       base::Time(), base::Time(), /*secure=*/true, /*http_only=*/false,
@@ -4656,6 +4753,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
       /*partition_key=*/absl::nullopt, &status);
   EXPECT_TRUE(cc);
   EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(status.HasExactlyWarningReasonsForTesting(
+      {CookieInclusionStatus::WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
   EXPECT_TRUE(cc->IsSecure());
   EXPECT_EQ(cc->SourceScheme(), CookieSourceScheme::kSecure);
   EXPECT_EQ(cc->SourcePort(), 123);

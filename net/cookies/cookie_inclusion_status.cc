@@ -269,6 +269,8 @@ std::string CookieInclusionStatus::GetDebugString() const {
            {WARN_DOMAIN_NON_ASCII, "WARN_DOMAIN_NON_ASCII"},
            {WARN_PORT_MISMATCH, "WARN_PORT_MISMATCH"},
            {WARN_SCHEME_MISMATCH, "WARN_SCHEME_MISMATCH"},
+           {WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME,
+            "WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME"},
        }) {
     if (HasWarningReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});

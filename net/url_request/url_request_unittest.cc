@@ -7807,8 +7807,10 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
                         {CookieInclusionStatus::EXCLUDE_SECURE_ONLY,
                          CookieInclusionStatus::
                              EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
-    EXPECT_FALSE(
-        req->maybe_stored_cookies()[2].access_result.status.ShouldWarn());
+    EXPECT_TRUE(req->maybe_stored_cookies()[2]
+                    .access_result.status.HasExactlyWarningReasonsForTesting(
+                        {CookieInclusionStatus::
+                             WARN_TENTATIVELY_ALLOWING_SECURE_SOURCE_SCHEME}));
   }
 
   // Get cookies (blocked by user preference)
