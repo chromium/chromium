@@ -287,12 +287,6 @@ bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
   curtain_local_user_session_ =
       (crd_session_type == CrdSessionType::REMOTE_ACCESS_SESSION);
 
-  if (base::FeatureList::IsEnabled(
-          remoting::features::kForceCrdAdminRemoteAccess)) {
-    CRD_LOG(WARNING) << "Forcing remote access";
-    curtain_local_user_session_ = true;
-  }
-
   if (curtain_local_user_session_ &&
       !base::FeatureList::IsEnabled(
           remoting::features::kEnableCrdAdminRemoteAccess)) {
