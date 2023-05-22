@@ -93,7 +93,7 @@ class WebSocket {
 // WebSocket.
 class WebSocketListener {
  public:
-  virtual ~WebSocketListener() {}
+  virtual ~WebSocketListener() = default;
 
   // Called when a WebSocket message is received.
   virtual void OnMessageReceived(const std::string& message) = 0;

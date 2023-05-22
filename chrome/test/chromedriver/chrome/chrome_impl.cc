@@ -212,78 +212,9 @@ Status ChromeImpl::CreateClient(const std::string& id,
   }
 
   *client = std::make_unique<DevToolsClientImpl>(id, session_id);
-  (*client)->SetFrontendCloserFunc(base::BindRepeating(
-      &ChromeImpl::CloseFrontends, base::Unretained(this), id));
   (*client)->SetMainPage(true);
 
   return status;
-}
-
-Status ChromeImpl::CloseFrontends(const std::string& for_client_id) {
-  WebViewsInfo views_info;
-  Status status = GetWebViewsInfo(&views_info);
-  if (status.IsError())
-    return status;
-
-  // Close frontends. Usually frontends are docked in the same page, although
-  // some may be in tabs (undocked, chrome://inspect, the DevTools
-  // discovery page, etc.). Tabs can be closed via the DevTools HTTP close
-  // URL, but docked frontends can only be closed, by design, by connecting
-  // to them and clicking the close button. Close the tab frontends first
-  // in case one of them is debugging a docked frontend, which would prevent
-  // the code from being able to connect to the docked one.
-  std::list<std::string> tab_frontend_ids;
-  std::list<std::string> docked_frontend_ids;
-  for (size_t i = 0; i < views_info.GetSize(); ++i) {
-    const WebViewInfo& view_info = views_info.Get(i);
-    if (view_info.IsFrontend()) {
-      if (view_info.type == WebViewInfo::kPage)
-        tab_frontend_ids.push_back(view_info.id);
-      else if (view_info.type == WebViewInfo::kOther)
-        docked_frontend_ids.push_back(view_info.id);
-      else
-        return Status(kUnknownError, "unknown type of DevTools frontend");
-    }
-  }
-
-  for (std::list<std::string>::const_iterator it = tab_frontend_ids.begin();
-       it != tab_frontend_ids.end(); ++it) {
-    status = CloseWebView(*it);
-    if (status.IsError())
-      return status;
-  }
-
-  for (std::list<std::string>::const_iterator it = docked_frontend_ids.begin();
-       it != docked_frontend_ids.end(); ++it) {
-    std::unique_ptr<DevToolsClientImpl> client;
-    status = CreateClient(*it, &client);
-    if (status.IsError())
-      return status;
-    std::unique_ptr<WebViewImpl> web_view(new WebViewImpl(
-        *it, false, nullptr, devtools_http_client_->browser_info(),
-        std::move(client), absl::nullopt, page_load_strategy_));
-
-    DevToolsClientImpl* parent =
-        static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
-    status = web_view->AttachTo(parent);
-    if (status.IsError()) {
-      return status;
-    }
-
-    status = CloseWebView(*it);
-    // Ignore disconnected error, because it may be closed already.
-    if (status.IsError() && status.code() != kDisconnected)
-      return status;
-  }
-
-  status = GetWebViewsInfo(&views_info);
-  if (status.IsError())
-    return status;
-
-  const WebViewInfo* view_info = views_info.GetForId(for_client_id);
-  if (!view_info)
-    return Status(kNoSuchWindow, "window was already closed");
-  return Status(kOk);
 }
 
 Status ChromeImpl::GetWindow(const std::string& target_id, Window* window) {

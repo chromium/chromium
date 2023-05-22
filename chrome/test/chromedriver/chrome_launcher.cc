@@ -52,6 +52,8 @@
 #include "chrome/test/chromedriver/log_replay/chrome_replay_impl.h"
 #include "chrome/test/chromedriver/log_replay/replay_http_client.h"
 #include "chrome/test/chromedriver/net/net_util.h"
+#include "chrome/test/chromedriver/net/sync_websocket.h"
+#include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/embedder_support/switches.h"
 #include "crypto/rsa_private_key.h"
@@ -343,9 +345,10 @@ Status CreateBrowserwideDevToolsClientAndConnect(
   if (url.length() == 0) {
     url = endpoint.GetBrowserDebuggerUrl();
   }
-  std::unique_ptr<DevToolsClient> client(
-      new DevToolsClientImpl(DevToolsClientImpl::kBrowserwideDevToolsClientId,
-                             "", url, socket_factory));
+  std::unique_ptr<SyncWebSocket> socket = socket_factory.Run();
+  SyncWebSocket* socket_ptr = socket.get();
+  std::unique_ptr<DevToolsClientImpl> client(new DevToolsClientImpl(
+      DevToolsClientImpl::kBrowserwideDevToolsClientId, ""));
   for (const auto& listener : devtools_event_listeners) {
     // Only add listeners that subscribe to the browser-wide |DevToolsClient|.
     // Otherwise, listeners will think this client is associated with a webview,
@@ -354,8 +357,12 @@ Status CreateBrowserwideDevToolsClientAndConnect(
       client->AddListener(listener.get());
   }
 
+  DevToolsClientImpl* client_impl = client.get();
   *browser_client = std::move(client);
-  return (*browser_client)->Connect();
+  if (!socket_ptr->Connect(GURL(url))) {
+    return Status(kDisconnected, "unable to connect to renderer");
+  }
+  return client_impl->SetSocket(std::move(socket));
 }
 
 Status LaunchRemoteChromeSession(

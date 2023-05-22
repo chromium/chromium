@@ -72,7 +72,6 @@ class ChromeImpl : public Chrome {
 
   Status CreateClient(const std::string& id,
                       std::unique_ptr<DevToolsClientImpl>* client);
-  Status CloseFrontends(const std::string& for_client_id);
   Status CloseTarget(const std::string& id);
 
   struct Window {

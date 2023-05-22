@@ -70,10 +70,6 @@ Status ConditionIsMet(bool* is_condition_met) {
   return Status(kOk);
 }
 
-Status FakeCloseFrontends() {
-  return Status(kOk);
-}
-
 struct SessionId {
   explicit SessionId(const std::string session_id) : session_id_(session_id) {}
   std::string session_id_;
@@ -187,13 +183,13 @@ Status WrapBidiCommandInMapperCdpCommand(int cdp_cmd_id,
 
 namespace internal {
 
-InspectorEvent::InspectorEvent() {}
+InspectorEvent::InspectorEvent() = default;
 
-InspectorEvent::~InspectorEvent() {}
+InspectorEvent::~InspectorEvent() = default;
 
-InspectorCommandResponse::InspectorCommandResponse() {}
+InspectorCommandResponse::InspectorCommandResponse() = default;
 
-InspectorCommandResponse::~InspectorCommandResponse() {}
+InspectorCommandResponse::~InspectorCommandResponse() = default;
 
 }  // namespace internal
 
@@ -202,30 +198,9 @@ const char DevToolsClientImpl::kCdpTunnelChannel[] = "/cdp";
 const char DevToolsClientImpl::kBidiChannelSuffix[] = "/bidi";
 
 DevToolsClientImpl::DevToolsClientImpl(const std::string& id,
-                                       const std::string& session_id,
-                                       const std::string& url,
-                                       const SyncWebSocketFactory& factory)
-    : socket_(factory.Run()),
-      url_(url),
-      session_id_(session_id),
-      id_(id),
-      frontend_closer_func_(base::BindRepeating(&FakeCloseFrontends)),
-      parser_func_(base::BindRepeating(&internal::ParseInspectorMessage)) {
-  socket_->SetId(id_);
-  // If error happens during proactive event consumption we ignore it
-  // as there is no active user request where the error might be returned.
-  // Unretained 'this' won't cause any problems as we reset the callback in the
-  // .dtor.
-  socket_->SetNotificationCallback(base::BindRepeating(
-      base::IgnoreResult(&DevToolsClientImpl::HandleReceivedEvents),
-      base::Unretained(this)));
-}
-
-DevToolsClientImpl::DevToolsClientImpl(const std::string& id,
                                        const std::string& session_id)
     : session_id_(session_id),
       id_(id),
-      frontend_closer_func_(base::BindRepeating(&FakeCloseFrontends)),
       parser_func_(base::BindRepeating(&internal::ParseInspectorMessage)) {}
 
 DevToolsClientImpl::~DevToolsClientImpl() {
@@ -245,11 +220,6 @@ DevToolsClientImpl::~DevToolsClientImpl() {
 void DevToolsClientImpl::SetParserFuncForTesting(
     const ParserFunc& parser_func) {
   parser_func_ = parser_func;
-}
-
-void DevToolsClientImpl::SetFrontendCloserFunc(
-    const FrontendCloserFunc& frontend_closer_func) {
-  frontend_closer_func_ = frontend_closer_func;
 }
 
 const std::string& DevToolsClientImpl::GetId() {
@@ -422,13 +392,8 @@ Status DevToolsClientImpl::AttachTo(DevToolsClientImpl* parent) {
     return Status{kUnknownError,
                   "DevToolsClientImpl can be attached only to a root client"};
   }
-  if (parent->IsNull()) {
-    // parent.IsNull <=> (parent.parent == null) && (parent.socket == null)
-    // As, basing on the checks above, we know that parent.parent == null is
-    // true The expression above can be simplified to parent.IsNull <=>
-    // parent.socket == null
-    return Status{kUnknownError,
-                  "cannot attach to a parent that has no socket"};
+  if (!parent->IsConnected()) {
+    return Status{kUnknownError, "cannot attach to a disconnected parent"};
   }
 
   Status status{kOk};
@@ -445,25 +410,23 @@ Status DevToolsClientImpl::AttachTo(DevToolsClientImpl* parent) {
   return status;
 }
 
-Status DevToolsClientImpl::Connect() {
-  if (stack_count_)
-    return Status(kUnknownError, "cannot connect when nested");
-  if (!socket_) {
-    return Status(kUnknownError, "cannot connect without a socket");
+Status DevToolsClientImpl::SetSocket(std::unique_ptr<SyncWebSocket> socket) {
+  if (!socket) {
+    return Status{kUnknownError, "socket cannot be nullptr"};
   }
-  if (socket_->IsConnected())
-    return Status(kOk);
-
+  if (!socket->IsConnected()) {
+    return Status{kUnknownError, "socket must be connected"};
+  }
   ResetListeners();
-
-  if (!socket_->Connect(url_)) {
-    // Try to close devtools frontend and then reconnect.
-    Status status = frontend_closer_func_.Run();
-    if (status.IsError())
-      return status;
-    if (!socket_->Connect(url_))
-      return Status(kDisconnected, "unable to connect to renderer");
-  }
+  socket_ = std::move(socket);
+  socket_->SetId(id_);
+  // If error happens during proactive event consumption we ignore it
+  // as there is no active user request where the error might be returned.
+  // Unretained 'this' won't cause any problems as we reset the callback in the
+  // .dtor.
+  socket_->SetNotificationCallback(base::BindRepeating(
+      base::IgnoreResult(&DevToolsClientImpl::HandleReceivedEvents),
+      base::Unretained(this)));
 
   return OnConnected();
 }
@@ -723,7 +686,7 @@ WebViewImpl* DevToolsClientImpl::GetOwner() const {
 DevToolsClientImpl::ResponseInfo::ResponseInfo(const std::string& method)
     : state(kWaiting), method(method) {}
 
-DevToolsClientImpl::ResponseInfo::~ResponseInfo() {}
+DevToolsClientImpl::ResponseInfo::~ResponseInfo() = default;
 
 DevToolsClient* DevToolsClientImpl::GetRootClient() {
   return parent_ ? parent_->GetRootClient() : this;
@@ -901,7 +864,6 @@ Status DevToolsClientImpl::ProcessNextMessage(int expected_id,
                                               bool log_timeout,
                                               const Timeout& timeout,
                                               DevToolsClientImpl* caller) {
-  ScopedIncrementer increment_stack_count(&stack_count_);
   if (!IsConnected()) {
     LOG(WARNING) << "Processing messages while being disconnected";
   }
