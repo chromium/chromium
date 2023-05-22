@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/file_system_provider/notification_manager.h"
+#include "chrome/browser/ash/file_system_provider/odfs_metrics.h"
 #include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/operations/abort.h"
 #include "chrome/browser/ash/file_system_provider/operations/add_watcher.h"
@@ -170,6 +171,11 @@ ProvidedFileSystem::ProvidedFileSystem(
       base::BindRepeating(&ProvidedFileSystem::OnLacrosOperationForwarded,
                           weak_ptr_factory_.GetWeakPtr()),
       GetServiceWorkerLifetimeManager(profile_));
+  const ProviderId& provider_id = file_system_info_.provider_id();
+  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
+      provider_id.GetExtensionId() == extension_misc::kODFSExtensionId) {
+    odfs_metrics_ = std::make_unique<ODFSMetrics>();
+  }
   ConstructRequestManager();
 }
 
@@ -903,6 +909,11 @@ void ProvidedFileSystem::ConstructRequestManager() {
 
   request_manager_ = std::make_unique<OperationRequestManager>(
       profile_, extension_id, notification_manager_.get(), operation_timeout);
+
+  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
+      extension_id == extension_misc::kODFSExtensionId) {
+    request_manager_->AddObserver(odfs_metrics_.get());
+  }
 }
 
 }  // namespace file_system_provider

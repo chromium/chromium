@@ -1196,6 +1196,8 @@ source_set("ash") {
     "file_system_provider/notification_manager.h",
     "file_system_provider/notification_manager_interface.h",
     "file_system_provider/observer.h",
+    "file_system_provider/odfs_metrics.cc",
+    "file_system_provider/odfs_metrics.h",
     "file_system_provider/operation_request_manager.cc",
     "file_system_provider/operation_request_manager.h",
     "file_system_provider/operations/abort.cc",
