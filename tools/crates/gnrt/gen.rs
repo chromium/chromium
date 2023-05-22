@@ -36,24 +36,16 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
 
     let manifest_contents =
         String::from_utf8(fs::read(paths.third_party.join("third_party.toml")).unwrap()).unwrap();
-    let mut third_party_manifest: ThirdPartyManifest =
+    let third_party_manifest: ThirdPartyManifest =
         toml::de::from_str(&manifest_contents).context("Could not parse third_party.toml")?;
 
     let mut crates_metadata = HashMap::<VendoredCrate, gn::PerCrateMetadata>::new();
 
-    ensure!(
-        third_party_manifest.dependency_spec.build_dependencies.is_empty(),
-        "[build-dependencies] are not supported in third_party.toml"
-    );
-
     // Collect the Chromium-specific fields from third_party.toml and store them
     // in `crates_metadata`.
     for (dep_name, dep_spec, dep_vis) in [
-        (
-            &third_party_manifest.dependency_spec.dev_dependencies,
-            crates::Visibility::TestOnlyAndThirdParty,
-        ),
-        (&third_party_manifest.dependency_spec.dependencies, crates::Visibility::Public),
+        (&third_party_manifest.testonly_dependencies, crates::Visibility::TestOnlyAndThirdParty),
+        (&third_party_manifest.dependencies, crates::Visibility::Public),
     ]
     .into_iter()
     .flat_map(|(list, vis)| list.iter().map(move |(name, spec)| (name, spec, vis)))
@@ -86,15 +78,6 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
             },
         );
     }
-
-    // For crates used in first-party tests, we do not build a separate library from
-    // production (unlike standard Rust tests, and those found in third-party
-    // crates.) So we merge the dev_dependencies from third_party.toml into the
-    // regular dependencies.
-    third_party_manifest
-        .dependency_spec
-        .dependencies
-        .extend(std::mem::take(&mut third_party_manifest.dependency_spec.dev_dependencies));
 
     // Rebind as immutable.
     let (third_party_manifest, crates_metadata) = (third_party_manifest, crates_metadata);

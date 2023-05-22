@@ -69,11 +69,14 @@ version = "0.1"
 allow-first-party-usage = false
 build-script-outputs = [ "tables.rs" ]
 
-# Crates listed in dev-dependencies will have a :test_support GN target
-# built for them in their BUILD.gn file, which is marked testonly=true.
-# This allows them built in a configuration that can be used from Chromium
-# tests, but not used from production.
-[dev-dependencies]
+# Crates listed in testonly-dependencies will have a :test_support GN target
+# built for them in their BUILD.gn file, which is marked testonly=true. This
+# allows them built in a configuration that can be used from Chromium tests, but
+# not used from production.
+#
+# Note this is not the same as dev-dependencies: any features requested here
+# also affect regular dependencies. They just have restricted visibility in GN.
+[testonly-dependencies]
 anyhow = "1"
 hex = "0.4"
 hex-literal = "0.4"
@@ -101,7 +104,7 @@ toml = {version = "0.5", features = ["preserve_order"]}
 
 # Disable default features for now; while auto color output is great, it's not
 # strictly necessary and adds a few extra dependencies. Same with humantime.
-[dev-dependencies.env_logger]
+[testonly-dependencies.env_logger]
 version = "0.10"
 default-features = false
 features = ["color", "regex"]

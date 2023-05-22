@@ -91,22 +91,22 @@ fn test() {
         "version = \"0.1\"\n",
         "gn-variables-lib = \"hello = \\\"world\\\"\"\n",
         "\n",
-        "[dev-dependencies]\n",
+        "[testonly-dependencies]\n",
         "syn = {version = \"1\", features = [\"full\"]}\n",
     ))
     .unwrap();
 
     expect_eq!(
-        manifest.dependency_spec.dependencies.get("cxx"),
+        manifest.dependencies.get("cxx"),
         Some(&Dependency::Short(VersionConstraint("1".to_string())))
     );
     expect_eq!(
-        manifest.dependency_spec.dependencies.get("serde"),
+        manifest.dependencies.get("serde"),
         Some(&Dependency::Short(VersionConstraint("1".to_string())))
     );
 
     expect_eq!(
-        manifest.dependency_spec.dependencies.get("rustversion"),
+        manifest.dependencies.get("rustversion"),
         Some(&Dependency::Full(FullDependency {
             default_features: true,
             version: Some(VersionConstraint("1".to_string())),
@@ -118,7 +118,7 @@ fn test() {
     );
 
     expect_eq!(
-        manifest.dependency_spec.dependencies.get("unicode-linebreak"),
+        manifest.dependencies.get("unicode-linebreak"),
         Some(&Dependency::Full(FullDependency {
             default_features: true,
             version: Some(VersionConstraint("0.1".to_string())),
@@ -130,7 +130,7 @@ fn test() {
     );
 
     expect_eq!(
-        manifest.dependency_spec.dependencies.get("special-stuff"),
+        manifest.dependencies.get("special-stuff"),
         Some(&Dependency::Full(FullDependency {
             default_features: true,
             version: Some(VersionConstraint("0.1".to_string())),
@@ -142,7 +142,7 @@ fn test() {
     );
 
     expect_eq!(
-        manifest.dependency_spec.dev_dependencies.get("syn"),
+        manifest.testonly_dependencies.get("syn"),
         Some(&Dependency::Full(FullDependency {
             default_features: true,
             version: Some(VersionConstraint("1".to_string())),
@@ -166,11 +166,7 @@ fn test() {
             license: "funtimes".to_string(),
         },
         workspace: None,
-        dependency_spec: DependencySpec {
-            dependencies: DependencySet::new(),
-            dev_dependencies: DependencySet::new(),
-            build_dependencies: DependencySet::new(),
-        },
+        dependencies: DependencySet::new(),
         patches: vec![(
             "crates-io".to_string(),
             vec![(

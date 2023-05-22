@@ -23,8 +23,6 @@ pub use cargo_metadata::PackageId;
 /// for generating build files later.
 #[derive(Clone, Debug)]
 pub struct Package {
-    /// Package ID in a particular set of dependencies.
-    pub id: PackageId,
     /// The package name as used by cargo.
     pub package_name: String,
     /// The package version as used by cargo.
@@ -248,7 +246,6 @@ pub fn collect_dependencies(
         let node: &cargo_metadata::Node = traversal_state.dep_graph.nodes.get(id).unwrap();
         let package: &cargo_metadata::Package = traversal_state.dep_graph.packages.get(id).unwrap();
 
-        dep.id = package.id.clone();
         dep.package_name = package.name.clone();
         dep.description = package.description.clone();
         dep.authors = package.authors.clone();
@@ -373,7 +370,6 @@ fn explore_node<'a>(state: &mut TraversalState<'a>, node: &'a cargo_metadata::No
     // Helper to insert a placeholder `Dependency` into a map. We fill in the
     // fields later.
     let init_dep = |path| Package {
-        id: PackageId { repr: String::new() },
         package_name: String::new(),
         version: Version::new(0, 0, 0),
         description: None,
