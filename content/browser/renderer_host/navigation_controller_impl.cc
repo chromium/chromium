@@ -268,11 +268,12 @@ absl::optional<url::Origin> GetCommittedOriginForFrameEntry(
   return absl::make_optional(params.origin);
 }
 
-bool IsValidURLForNavigation(bool is_main_frame,
+bool IsValidURLForNavigation(FrameTreeNode* node,
                              const GURL& virtual_url,
                              const GURL& dest_url) {
   // Don't attempt to navigate if the virtual URL is non-empty and invalid.
-  if (is_main_frame && !virtual_url.is_valid() && !virtual_url.is_empty()) {
+  if (node->IsOutermostMainFrame() && !virtual_url.is_valid() &&
+      !virtual_url.is_empty()) {
     LOG(WARNING) << "Refusing to load for invalid virtual URL: "
                  << virtual_url.possibly_invalid_spec();
     return false;
@@ -303,6 +304,22 @@ bool IsValidURLForNavigation(bool is_main_frame,
     LOG(WARNING) << "Refusing to load renderer debug URL: "
                  << dest_url.possibly_invalid_spec();
     return false;
+  }
+
+  // Guests only support navigations to known-safe schemes. This check already
+  // exists in the extensions layer, where it also dispatches proper events to
+  // the guest's embedder (see WebViewGuest::LoadURLWithParams).  This check is
+  // for defense-in-depth to ensure that no other places in the codebase
+  // accidentally navigate guests to schemes such as WebUI, which is not
+  // supported.  See https://crbug.com/1444221.
+  if (node->current_frame_host()->GetSiteInstance()->IsGuest()) {
+    auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
+    if (!cpsp->IsWebSafeScheme(dest_url.scheme()) &&
+        !dest_url.SchemeIs(url::kAboutScheme)) {
+      LOG(WARNING) << "Refusing to load unsafe URL in a guest: "
+                   << dest_url.possibly_invalid_spec();
+      return false;
+    }
   }
 
   return true;
@@ -3875,9 +3892,9 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     return nullptr;
   }
 
-  if (!IsValidURLForNavigation(node->IsOutermostMainFrame(), virtual_url,
-                               url_to_load))
+  if (!IsValidURLForNavigation(node, virtual_url, url_to_load)) {
     return nullptr;
+  }
 
   // Look for a pending commit that is to another document in this
   // FrameTreeNode. If one exists, then the last committed URL will not be the
@@ -4044,8 +4061,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     return nullptr;
   }
 
-  if (!IsValidURLForNavigation(frame_tree_node->IsOutermostMainFrame(),
-                               entry->GetVirtualURL(), dest_url)) {
+  if (!IsValidURLForNavigation(frame_tree_node, entry->GetVirtualURL(),
+                               dest_url)) {
     return nullptr;
   }
 

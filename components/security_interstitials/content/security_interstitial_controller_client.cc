@@ -54,9 +54,16 @@ void SecurityInterstitialControllerClient::GoBackAfterNavigationCommitted() {
   if (web_contents_->GetController().CanGoBack()) {
     web_contents_->GetController().GoBack();
   } else {
-    web_contents_->GetController().LoadURL(
-        default_safe_page_, content::Referrer(),
-        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+    // For <webview> tags (also known as guests), use about:blank as the
+    // default safe page. This is because unlike a normal WebContents, guests
+    // cannot load pages like WebUI, including the NTP, which is often used as
+    // the default safe page here.
+    GURL url_to_load = web_contents_->GetSiteInstance()->IsGuest()
+                           ? GURL(url::kAboutBlankURL)
+                           : default_safe_page_;
+    web_contents_->GetController().LoadURL(url_to_load, content::Referrer(),
+                                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                           std::string());
   }
 }
 

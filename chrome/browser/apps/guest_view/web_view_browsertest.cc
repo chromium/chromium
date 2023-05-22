@@ -2227,6 +2227,59 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ShowErrorDocForSSLError) {
   SSLTestHelper();
 }
 
+// Ensure that when a guest is created and navigated to a URL that triggers an
+// SSL interstitial, and then the "Back to safety" button is activated on the
+// interstitial, the guest doesn't crash trying to load the NTP (the usual
+// known-safe page used to navigate back from such interstitials when there's
+// no other page in history to go to).  See https://crbug.com/1444221.
+IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, NavigateBackFromSSLError) {
+  if (!UseInterstitials()) {
+    GTEST_SKIP();
+  }
+
+  // Starts a HTTPS server so we can load a page with a SSL error inside a
+  // guest.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server.Start());
+
+  LoadAndLaunchPlatformApp("web_view/ssl", "EmbedderLoaded");
+
+  const auto failure_url = https_server.GetURL(
+      "/extensions/platform_apps/web_view/ssl/https_page.html");
+  EXPECT_TRUE(content::ExecJs(
+      GetFirstAppWindowWebContents(),
+      content::JsReplace("var w = document.createElement('webview');"
+                         "w.src = $1;"
+                         "document.body.appendChild(w);",
+                         failure_url)));
+  GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+
+  // The navigation should fail and show an interstitial in the guest.
+  auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  EXPECT_FALSE(WaitForLoadStop(guest->web_contents()));
+  ASSERT_TRUE(guest->GetGuestMainFrame()->IsErrorDocument());
+  ASSERT_TRUE(IsShowingInterstitial(guest->web_contents()));
+
+  // Simulate invoking the "Back to safety" button.  This should dismiss the
+  // interstitial and navigate the guest to a known safe URL that can always
+  // load in a guest (in this case, about:blank).
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          guest->web_contents());
+  ASSERT_TRUE(helper);
+  auto* interstitial =
+      helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
+  ASSERT_TRUE(interstitial);
+  interstitial->CommandReceived(base::NumberToString(
+      security_interstitials::SecurityInterstitialCommand::CMD_DONT_PROCEED));
+
+  EXPECT_TRUE(WaitForLoadStop(guest->web_contents()));
+  ASSERT_FALSE(guest->GetGuestMainFrame()->IsErrorDocument());
+  ASSERT_FALSE(IsShowingInterstitial(guest->web_contents()));
+}
+
 // Test makes sure that the error document is registered in the
 // `RenderWidgetHostInputEventRouter` when inside a `<webview>`.
 // Flaky on Win dbg: crbug.com/779973
@@ -2416,6 +2469,37 @@ IN_PROC_BROWSER_TEST_P(WebViewHttpsFirstModeTest, GuestLoadsHttpWithoutError) {
   ASSERT_FALSE(guest_main_frame->IsErrorDocument());
   ASSERT_FALSE(embedder_main_frame->IsErrorDocument());
   ASSERT_FALSE(IsShowingInterstitial(GetFirstAppWindowWebContents()));
+}
+
+// Verify that guests cannot be navigated to disallowed URLs, such as
+// chrome:// URLs, directly via the content/public API.  The enforcement for
+// this typically happens in the embedder layer, catching cases where the
+// embedder navigates a guest, but Chrome features could bypass that
+// enforcement by directly navigating guests.  This test verifies that if that
+// were to happen, //content would still gracefully disallow attempts to load
+// disallowed URLs in guests without crashing.
+IN_PROC_BROWSER_TEST_F(WebViewTest, CannotNavigateGuestToChromeURL) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an app with a <webview> guest that starts at a data: URL.
+  LoadAppWithGuest("web_view/simple");
+
+  auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  auto* guest_main_frame = guest->GetGuestMainFrame();
+  GURL original_url = guest_main_frame->GetLastCommittedURL();
+
+  // Try to navigate <webview> to a chrome: URL directly.
+  GURL chrome_url(chrome::kChromeUINewTabURL);
+  content::TestFrameNavigationObserver observer(guest_main_frame);
+  guest->GetController().LoadURL(chrome_url, content::Referrer(),
+                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                 std::string());
+
+  // The navigation should be aborted, and the last committed URL should
+  // remain unchanged.
+  EXPECT_FALSE(observer.navigation_started());
+  EXPECT_EQ(original_url, guest_main_frame->GetLastCommittedURL());
+  EXPECT_NE(chrome_url, guest_main_frame->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, ShimSrcAttribute) {
