@@ -88,8 +88,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
-@EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
-@DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+@EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.EMPTY_STATES})
+@DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
 @Restriction(
         {Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE, UiRestriction.RESTRICTION_TYPE_TABLET})
 @Batch(Batch.PER_CLASS)
