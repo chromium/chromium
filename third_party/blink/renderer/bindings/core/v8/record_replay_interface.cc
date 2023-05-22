@@ -2682,7 +2682,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
 
   let sources;
   if (!recordingDirectoryFileExists(name) || !recordingDirectoryFileExists(lookupName)) {
-    writeToRecordingDirectory(name, scriptSource);    
+    writeToRecordingDirectory(name, sourceMap);    
 
     sources = collectUnresolvedSourceMapResources(sourceMap, sourceMapURL, sourceURL);
     writeToRecordingDirectory(lookupName, JSON.stringify(sources));
@@ -2711,7 +2711,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
       continue;
     }
     const hash = sha256DigestHex(sourceContent);
-    const name = `source-${hash}.js`;
+    const name = `source-${hash}`;
 
     if (!recordingDirectoryFileExists(name)) {
       writeToRecordingDirectory(name, sourceContent);
