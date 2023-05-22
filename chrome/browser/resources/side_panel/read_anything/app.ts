@@ -320,7 +320,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (!startElement) {
       return;
     }
-    startElement.scrollIntoView();
+    startElement.scrollIntoViewIfNeeded();
   }
 
   private validatedFontName_(): string {
