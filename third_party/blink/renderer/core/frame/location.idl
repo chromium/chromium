@@ -29,7 +29,6 @@
 // https://html.spec.whatwg.org/C/#the-location-interface
 
 [
-    CheckSecurity=Receiver,
     Exposed=Window
 ] interface Location {
     [CallWith=Isolate, RaisesException, LegacyUnforgeable] void assign(USVString url);

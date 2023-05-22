@@ -28,7 +28,6 @@
 
 // FIXME: explain all uses of [CrossOrigin]
 [
-    CheckSecurity=Receiver,
     ImplementedAs=DOMWindow,
     Global=Window,
     Exposed=Window

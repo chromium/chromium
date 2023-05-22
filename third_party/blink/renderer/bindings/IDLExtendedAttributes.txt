@@ -38,7 +38,7 @@ CEReactions
 CachedAccessor=*
 CachedAttribute=*
 CallWith=ExecutionContext|Isolate|ScriptState|ThisValue
-CheckSecurity=Receiver|ReturnValue
+CheckSecurity=ReturnValue
 Clamp
 Constructor
 ContextEnabled=*

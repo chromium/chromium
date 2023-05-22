@@ -21,7 +21,6 @@
 // https://dom.spec.whatwg.org/#interface-eventtarget
 
 [
-    CheckSecurity=Receiver,
     Exposed=(Window,Worker,AudioWorklet),
     ImmutablePrototype
 ] interface EventTarget {
