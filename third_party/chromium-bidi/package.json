@@ -164,7 +164,6 @@
     "@types/mocha": "10.0.1",
     "@types/node": "18.16.0",
     "@types/sinon": "10.0.14",
-    "@types/uuid": "^9.0.1",
     "@types/websocket": "1.0.5",
     "@types/ws": "8.5.4",
     "@typescript-eslint/eslint-plugin": "5.59.2",

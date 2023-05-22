@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {v4 as uuidv4} from 'uuid';
-
+import {uuidv4} from '../../../utils/uuid.js';
 import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 
 import {CdpTarget} from './cdpTarget.js';
