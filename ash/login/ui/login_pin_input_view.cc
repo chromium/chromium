@@ -5,11 +5,14 @@
 #include "ash/login/ui/login_pin_input_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/access_code_input.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -243,6 +246,13 @@ void LoginPinInputView::InsertDigit(int digit) {
 }
 
 void LoginPinInputView::SetReadOnly(bool read_only) {
+  if (!read_only &&
+      Shell::Get()->login_screen_controller()->IsAuthenticating()) {
+    // TODO(b/276246832): We shouldn't enable the LoginPinInputView during
+    // Authentication.
+    LOG(WARNING) << "LoginPinInputView::SetReadOnly called with false during "
+                    "Authentication.";
+  }
   is_read_only_ = read_only;
   code_input_->SetReadOnly(read_only);
 }

@@ -40,6 +40,7 @@
 #include "ash/system/time/time_of_day.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
@@ -794,6 +795,11 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
   DCHECK(callbacks.on_easy_unlock_icon_hovered);
   DCHECK(callbacks.on_auth_factor_is_hiding_password_changed);
   DCHECK_NE(user.basic_user_info.type, user_manager::USER_TYPE_PUBLIC_ACCOUNT);
+  if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
+    // TODO(b/276246832): We should avoid re-layouting during Authentication.
+    LOG(WARNING)
+        << "LoginAuthUserView::LoginAuthUserView called during Authentication.";
+  }
 
   // Build child views.
   auto user_view = std::make_unique<LoginUserView>(
