@@ -2314,6 +2314,12 @@ BASE_FEATURE(kVcSegmentationModel,
              "VCSegmentationModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables alternative light intensity for ChromeOS video
+// conferencing relighting.
+BASE_FEATURE(kVcLightIntensity,
+             "VCLightIntensity",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable multitouch for virtual keyboard on ChromeOS.
 BASE_FEATURE(kVirtualKeyboardMultitouch,
              "VirtualKeyboardMultitouch",

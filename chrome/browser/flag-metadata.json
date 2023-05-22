@@ -7563,6 +7563,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "vc-light-intensity",
+    "owners": [ "ardoerlemans", "jmpollock", "nbowe" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "vc-segmentation-model",
     "owners": [ "ardoerlemans", "jmpollock", "nbowe" ],
     "expiry_milestone": 116

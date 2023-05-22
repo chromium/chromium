@@ -1889,6 +1889,9 @@ extern const char kVcBackgroundReplaceDescription[];
 extern const char kVcSegmentationModelName[];
 extern const char kVcSegmentationModelDescription[];
 
+extern const char kVcLightIntensityName[];
+extern const char kVcLightIntensityDescription[];
+
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 

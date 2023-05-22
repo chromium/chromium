@@ -61185,6 +61185,7 @@ from previous Chrome versions.
   <int value="-801349708" label="PassthroughYuvRgbConversion:disabled"/>
   <int value="-800565336" label="ArcInstantResponseWindowOpen:disabled"/>
   <int value="-800464360" label="ContextualPageActions:enabled"/>
+  <int value="-800301139" label="VCLightIntensity:enabled"/>
   <int value="-800127303" label="OmniboxPedalsTranslationConsole:disabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
   <int value="-799395788" label="SearchPrefetchServicePrefetching:disabled"/>
@@ -61910,6 +61911,7 @@ from previous Chrome versions.
   <int value="-404496301" label="DownloadRange:disabled"/>
   <int value="-403701720" label="DirectActions:enabled"/>
   <int value="-403649153" label="WebViewBrotliSupport:disabled"/>
+  <int value="-403473326" label="VCLightIntensity:disabled"/>
   <int value="-402038055"
       label="OmniboxUIExperimentBlueTitlesAndGrayUrlsOnPageSuggestions:enabled"/>
   <int value="-401170566"

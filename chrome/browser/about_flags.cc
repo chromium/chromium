@@ -3585,6 +3585,40 @@ const FeatureEntry::FeatureVariation kVcSegmentationModelVariations[] = {
     {"Lower resolution model", kVcSegmentationModelLowerResolution,
      std::size(kVcSegmentationModelLowerResolution), nullptr},
 };
+
+const FeatureEntry::FeatureParam kVcLightIntensity10[] = {
+    {"light_intensity", "1.0"},
+};
+
+const FeatureEntry::FeatureParam kVcLightIntensity13[] = {
+    {"light_intensity", "1.3"},
+};
+
+const FeatureEntry::FeatureParam kVcLightIntensity15[] = {
+    {"light_intensity", "1.5"},
+};
+
+const FeatureEntry::FeatureParam kVcLightIntensity17[] = {
+    {"light_intensity", "1.7"},
+};
+
+const FeatureEntry::FeatureParam kVcLightIntensity18[] = {
+    {"light_intensity", "1.8"},
+};
+
+const FeatureEntry::FeatureParam kVcLightIntensity20[] = {
+    {"light_intensity", "2.0"},
+};
+
+const FeatureEntry::FeatureVariation kVcLightIntensityVariations[] = {
+    {"1.0", kVcLightIntensity10, std::size(kVcLightIntensity10), nullptr},
+    {"1.3", kVcLightIntensity13, std::size(kVcLightIntensity13), nullptr},
+    {"1.5", kVcLightIntensity15, std::size(kVcLightIntensity15), nullptr},
+    {"1.7", kVcLightIntensity17, std::size(kVcLightIntensity17), nullptr},
+    {"1.8", kVcLightIntensity18, std::size(kVcLightIntensity18), nullptr},
+    {"2.0", kVcLightIntensity20, std::size(kVcLightIntensity20), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_CHROME_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -9186,6 +9220,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kVcSegmentationModel,
                                     kVcSegmentationModelVariations,
                                     "VCSegmentationModel")},
+    {"vc-light-intensity", flag_descriptions::kVcLightIntensityName,
+     flag_descriptions::kVcLightIntensityDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kVcLightIntensity,
+                                    kVcLightIntensityVariations,
+                                    "VCLightIntensity")},
+
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

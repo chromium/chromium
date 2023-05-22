@@ -4,6 +4,7 @@
 
 #include "ash/system/camera/camera_effects_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -17,6 +18,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -367,6 +369,8 @@ void CameraEffectsController::SetCameraEffects(
 
   // Update effects config with settings from feature flags.
   config->segmentation_model = GetSegmentationModelType();
+  config->light_intensity = GetFieldTrialParamByFeatureAsDouble(
+      ash::features::kVcLightIntensity, "light_intensity", 1.0);
 
   // Directly calls the callback for testing case.
   if (in_testing_mode_) {
