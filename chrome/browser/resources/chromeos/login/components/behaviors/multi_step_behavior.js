@@ -141,6 +141,7 @@ export var MultiStepBehavior = {
       this.hideUIStep_(this.uiStep);
     }
     this.uiStep = step;
+    this.shadowRoot.host.setAttribute('multistep', step);
     this.showUIStep_(this.uiStep);
   },
 

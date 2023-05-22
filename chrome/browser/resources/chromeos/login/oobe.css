@@ -231,10 +231,10 @@ Styles related to the `md-screen-container`
 :root.simon-enabled[dir=rtl] #oobe.connect #welcome-backdrop {
   transform: scaleX(-100%);
 }
-:root.simon-enabled #oobe.connect #welcome-backdrop {
+:root.simon-enabled #oobe.connect #welcome-backdrop:has(~[multistep=greeting]) {
   display: block;
 }
-:root.simon-enabled #oobe.connect #inner-container {
+:root.simon-enabled #oobe.connect #inner-container:has([multistep=greeting]) {
   background-color: transparent;
 }
 
