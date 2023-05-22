@@ -2905,7 +2905,6 @@ crbug.com/626703 [ Mac13-arm64 ] virtual/threaded-prefer-compositing/external/wp
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/tables/table-bordercolor-001.html [ Failure ]
 crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/626703 [ Mac13-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
@@ -5018,6 +5017,7 @@ crbug.com/1210687 external/wpt/html/user-activation/propagation-crossorigin.sub.
 # Sheriff 2021-06-02
 crbug.com/1215584 [ Mac11 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
 
+crbug.com/1446014 external/wpt/html/rendering/non-replaced-elements/tables/table-bordercolor-001.html [ Failure ]
 
 # Sheriff 2021-06-03
 crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Failure Pass ]
