@@ -221,7 +221,7 @@ LogicalOffset LogicalFromBfcOffsets(const NGBfcOffset& child_bfc_offset,
 }
 
 // Whether the `node` reuqires `NGLineInfoList` or not.
-inline bool NeedsLineInfoList(const NGInlineNode& node) {
+inline bool NeedsOptimalInlineChildLayoutContext(const NGInlineNode& node) {
   const TextWrap wrap = node.Style().GetTextWrap();
   if (UNLIKELY(wrap == TextWrap::kPretty)) {
     DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
@@ -468,10 +468,10 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::Layout() {
   // only on demand, as it's quite big.
   NGInlineNode inline_child(nullptr);
   if (Node().IsInlineFormattingContextRoot(&inline_child)) {
-    if (UNLIKELY(NeedsLineInfoList(inline_child))) {
-      result = LayoutWithLineInfoList(inline_child);
+    if (UNLIKELY(NeedsOptimalInlineChildLayoutContext(inline_child))) {
+      result = LayoutWithOptimalInlineChildLayoutContext(inline_child);
     } else {
-      result = LayoutWithInlineChildLayoutContext(inline_child);
+      result = LayoutWithSimpleInlineChildLayoutContext(inline_child);
     }
   } else {
     result = Layout(nullptr);
@@ -515,14 +515,15 @@ NGBlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 }
 
 NOINLINE const NGLayoutResult*
-NGBlockLayoutAlgorithm::LayoutWithInlineChildLayoutContext(
+NGBlockLayoutAlgorithm::LayoutWithSimpleInlineChildLayoutContext(
     const NGInlineNode& child) {
   NGSimpleInlineChildLayoutContext context(child, &container_builder_);
   const NGLayoutResult* result = Layout(&context);
   return result;
 }
 
-NOINLINE const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutWithLineInfoList(
+NOINLINE const NGLayoutResult*
+NGBlockLayoutAlgorithm::LayoutWithOptimalInlineChildLayoutContext(
     const NGInlineNode& child) {
   NGOptimalInlineChildLayoutContext context(child, &container_builder_);
   const NGLayoutResult* result = Layout(&context);
