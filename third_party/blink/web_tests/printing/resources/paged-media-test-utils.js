@@ -60,17 +60,11 @@ function runPrintingTest(testFunction)
     output.appendChild(resultElement);
 }
 
-function ratioToPageHeightToPixels(heightInRatioToPageHeight)
-{
-  var pageHeightInPixels = 600 * 1.333;
-  return Math.floor(pageHeightInPixels * heightInRatioToPageHeight);
-}
-
 function createBlockWithRatioToPageHeight(id, heightInRatioToPageHeight)
 {
     var element = document.createElement("div");
     element.id = id;
-    element.style.height = ratioToPageHeightToPixels(heightInRatioToPageHeight) + "px";
+    element.style.height = (heightInRatioToPageHeight * 100) + "vh";
     document.getElementById("sandbox").appendChild(element);
     return element;
 }
@@ -84,7 +78,7 @@ function createBlockWithNumberOfLines(id, childLines)
         element.appendChild(document.createElement("br"));
     }
     // Make sure that one page has about 20 lines.
-    element.style.lineHeight = ratioToPageHeightToPixels(0.05) + "px";
+    element.style.lineHeight = "5vh";
     document.getElementById("sandbox").appendChild(element);
     return element;
 }
