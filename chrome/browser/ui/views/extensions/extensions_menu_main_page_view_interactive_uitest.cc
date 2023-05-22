@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
 // Test that running an extension's action, when site permission were withheld,
 // sets the extension's site access toggle on. It also tests that the menu's
-// request access section and the toolbar's request access button are properly
+// message section and the toolbar's request access button are properly
 // updated with the extension requesting access.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
                        SiteAccessToggle_RunAction) {
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   // When extension has withheld site access:
   //   - site access toggle is visible and off.
-  //   - request access section includes extension.
+  //   - message section includes extension.
   //   - request access button, in the toolbar, includes extension.
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   // When extension has granted site access, after toggling ON site access:
   //   - site access toggle is visible and on
-  //   - request access section does not include extension.
+  //   - message section does not include extension.
   //   - request access button, in the toolbar, does not include extension.
   ClickButton(menu_item->primary_action_button_for_testing());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   // When navigating back to the original site:
   //   - site access toggle is visible and off.
-  //   - request access section includes extension.
+  //   - message section includes extension.
   //   - request access button, in the toolbar, includes extension.
   // Note that we don't revoke permissions when navigation is to the same origin
   // (e.g refreshing the page). Thus, we navigate to other site and then back to
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   // When extension has withheld site access but cannot show requests in
   // toolbar:
   //   - site access toggle is visible and off.
-  //   - request access section includes extension.
+  //   - message section includes extension.
   //   - request access button, in the toolbar, does not include extension.
   SitePermissionsHelper(profile()).SetShowAccessRequestsInToolbar(extension_id,
                                                                   false);

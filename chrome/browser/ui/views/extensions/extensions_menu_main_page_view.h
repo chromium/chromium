@@ -30,7 +30,7 @@ class ExtensionsMenuHandler;
 class ToolbarActionsModel;
 class ExtensionMenuItemView;
 class ExtensionActionViewController;
-class RequestsAccessSection;
+class MessageSection;
 
 // The main view of the extensions menu.
 class ExtensionsMenuMainPageView : public views::View {
@@ -105,8 +105,8 @@ class ExtensionsMenuMainPageView : public views::View {
   raw_ptr<views::Label> subheader_subtitle_;
   raw_ptr<views::ToggleButton> site_settings_toggle_;
 
-  // Requests access section.
-  raw_ptr<RequestsAccessSection> requests_access_section_;
+  // Message section.
+  raw_ptr<MessageSection> message_section_;
 
   // Menu items section.
   // The view containing the menu items. This is separated for easy insertion

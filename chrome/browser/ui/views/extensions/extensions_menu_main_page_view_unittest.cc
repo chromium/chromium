@@ -965,10 +965,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
       menu_items()[1]->site_permissions_button_for_testing()->GetVisible());
 }
 
-// Test that request access section is populated with extensions that have
+// Test that the message section is populated with extensions that have
 // withheld permission to the current site and the user can change their site
 // access.
-TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsAccessSection) {
+TEST_F(ExtensionsMenuMainPageViewUnitTest, MessageSection) {
   // Install extensions that cannot request site access in the menu because they
   // don't request host permissions, or because they are granted host
   // permissions by enterprise.
@@ -988,7 +988,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsAccessSection) {
 
   ShowMenu();
 
-  // Requests access section is empty because:
+  // Message section is empty because:
   //   - extension with no host permissions cannot be granted site access
   //   - enterprise extensions are always granted access (if requested)
   //   - extensions with host permissions have granted access by default because
@@ -998,14 +998,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsAccessSection) {
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
 
-  // Request access section includes extension A when its site access
+  // Message section includes extension A when its site access
   // is withheld.
   WithholdHostPermissions(extension_A.get());
   LayoutMenuIfNecessary();
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extension_A->id()));
 
-  // Requests access section includes extension A if its site access is still
+  // Message section includes extension A if its site access is still
   // withheld when there any of the installed extensions is updated. Extension B
   // is not included because it has granted site access.
   UpdateUserSiteAccess(*extension_B.get(),
@@ -1015,15 +1015,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsAccessSection) {
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extension_A->id()));
 
-  // Requests access section is hidden when user has blocked all extension on
+  // Message section is hidden when user has blocked all extension on
   // the site.
   UpdateUserSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
 }
 
-TEST_F(ExtensionsMenuMainPageViewUnitTest,
-       RequestsAccessSection_AllowExtension) {
+TEST_F(ExtensionsMenuMainPageViewUnitTest, MessageSection_AllowExtension) {
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
@@ -1039,7 +1038,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   auto* permissions = PermissionsManager::Get(profile());
 
   // When extension is requesting site access:
-  //   - request access section (menu) includes extension.
+  //   - message section (menu) includes extension.
   //   - request access button (toolbar) includes extension.
   //   - action has not been run.
   //   - site access is "on click".
@@ -1064,7 +1063,7 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   LayoutMenuIfNecessary();
 
   // When extension is granted site access via 'allow' button:
-  //   - request access section (menu) does not include extension
+  //   - message section (menu) does not include extension
   //   - request access button (toolbar) does not include extension
   //   - action has been run
   //   - site access is still "on click" since clicking the button grants one

@@ -429,7 +429,7 @@ void ExtensionsMenuViewController::UpdateMainPage(
   main_page->UpdateSubheader(current_site, is_site_settings_toggle_visible,
                              is_site_settings_toggle_on);
 
-  // Update request access section.
+  // Update messsage section.
   auto site_setting =
       PermissionsManager::Get(browser_->profile())
           ->GetUserSiteSetting(
@@ -450,7 +450,7 @@ void ExtensionsMenuViewController::UpdateMainPage(
                                   web_contents);
       if (site_interaction ==
           SitePermissionsHelper::SiteInteraction::kWithheld) {
-        // Add or update the extension entry in the request access section when
+        // Add or update the extension entry in the message section when
         // the extension is requesting access.
         ToolbarActionViewController* action_controller =
             extensions_container_->GetActionForId(extension_id);
@@ -549,7 +549,7 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
   int index = FindIndex(*toolbar_model_, action_id);
   InsertMenuItemMainPage(main_page, action_id, index);
 
-  // TODO(crbug.com/1390952): Update requests access section once
+  // TODO(crbug.com/1390952): Update message section once
   // such section is implemented (if the extension added requests
   // site access, it needs to be added to such section).
   bubble_delegate_->SizeToContents();
@@ -574,7 +574,7 @@ void ExtensionsMenuViewController::OnToolbarActionRemoved(
   DCHECK(main_page);
   main_page->RemoveMenuItem(action_id);
 
-  // TODO(crbug.com/1390952): Update requests access section (if the extension
+  // TODO(crbug.com/1390952): Update message section (if the extension
   // removed was in the section, it needs to be removed).
   bubble_delegate_->SizeToContents();
 }

@@ -89,14 +89,16 @@ ExtensionMenuItemView* GetMenuItem(
 
 }  // namespace
 
-class RequestsAccessSection : public views::BoxLayoutView {
+// View that contains a special message inside the extensions menu main page
+// depending on its state.
+class MessageSection : public views::BoxLayoutView {
  public:
-  explicit RequestsAccessSection(
+  explicit MessageSection(
       base::RepeatingCallback<void(const extensions::ExtensionId&)>
           allow_callback);
-  RequestsAccessSection(const RequestsAccessSection&) = delete;
-  const RequestsAccessSection& operator=(const RequestsAccessSection&) = delete;
-  ~RequestsAccessSection() override = default;
+  MessageSection(const MessageSection&) = delete;
+  const MessageSection& operator=(const MessageSection&) = delete;
+  ~MessageSection() override = default;
 
   // Adds an entry in `extensions_container_` for the extension with `id`,
   // `name` and `icon` at `index`. If the extension is already present, it
@@ -129,16 +131,16 @@ class RequestsAccessSection : public views::BoxLayoutView {
   base::RepeatingCallback<void(const extensions::ExtensionId&)> allow_callback_;
 };
 
-BEGIN_VIEW_BUILDER(/* No Export */, RequestsAccessSection, views::BoxLayoutView)
+BEGIN_VIEW_BUILDER(/* No Export */, MessageSection, views::BoxLayoutView)
 END_VIEW_BUILDER
 
-DEFINE_VIEW_BUILDER(/* No Export */, RequestsAccessSection)
+DEFINE_VIEW_BUILDER(/* No Export */, MessageSection)
 
-RequestsAccessSection::RequestsAccessSection(
+MessageSection::MessageSection(
     base::RepeatingCallback<void(const extensions::ExtensionId&)>
         allow_callback)
     : allow_callback_(std::move(allow_callback)) {
-  views::Builder<RequestsAccessSection>(this)
+  views::Builder<MessageSection>(this)
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetVisible(false)
       // TODO(crbug.com/1390952): After adding margins, compute radius from a
@@ -161,11 +163,10 @@ RequestsAccessSection::RequestsAccessSection(
       .BuildChildren();
 }
 
-void RequestsAccessSection::AddOrUpdateExtension(
-    const extensions::ExtensionId& id,
-    const std::u16string& name,
-    const ui::ImageModel& icon,
-    int index) {
+void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
+                                          const std::u16string& name,
+                                          const ui::ImageModel& icon,
+                                          int index) {
   auto extension_iter = extension_entries_.find(id);
 
   if (extension_iter == extension_entries_.end()) {
@@ -194,7 +195,7 @@ void RequestsAccessSection::AddOrUpdateExtension(
   }
 }
 
-void RequestsAccessSection::RemoveExtension(const extensions::ExtensionId& id) {
+void MessageSection::RemoveExtension(const extensions::ExtensionId& id) {
   auto extension_iter = extension_entries_.find(id);
   if (extension_iter == extension_entries_.end()) {
     return;
@@ -206,14 +207,13 @@ void RequestsAccessSection::RemoveExtension(const extensions::ExtensionId& id) {
   SetVisible(!extension_entries_.empty());
 }
 
-void RequestsAccessSection::ClearExtensions() {
+void MessageSection::ClearExtensions() {
   SetVisible(false);
   extensions_container_->RemoveAllChildViews();
   extension_entries_.clear();
 }
 
-std::vector<extensions::ExtensionId>
-RequestsAccessSection::GetExtensionsForTesting() {
+std::vector<extensions::ExtensionId> MessageSection::GetExtensionsForTesting() {
   std::vector<extensions::ExtensionId> extensions;
   extensions.reserve(extension_entries_.size());
   for (auto entry : extension_entries_) {
@@ -222,7 +222,7 @@ RequestsAccessSection::GetExtensionsForTesting() {
   return extensions;
 }
 
-views::View* RequestsAccessSection::GetExtensionEntryForTesting(
+views::View* MessageSection::GetExtensionEntryForTesting(
     const extensions::ExtensionId& extension_id) {
   auto iter = extension_entries_.find(extension_id);
   return iter == extension_entries_.end() ? nullptr : iter->second;
@@ -334,14 +334,14 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                   views::Builder<views::BoxLayoutView>()
                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
                       .AddChildren(
-                          // Request access section.
-                          views::Builder<RequestsAccessSection>(
-                              std::make_unique<RequestsAccessSection>(
+                          // Message section.
+                          views::Builder<MessageSection>(
+                              std::make_unique<MessageSection>(
                                   base::BindRepeating(
                                       &ExtensionsMenuHandler::
                                           OnAllowExtensionClicked,
                                       base::Unretained(menu_handler_))))
-                              .CopyAddressTo(&requests_access_section_),
+                              .CopyAddressTo(&message_section_),
                           // Menu items section.
                           views::Builder<views::BoxLayoutView>()
                               .CopyAddressTo(&menu_items_)
@@ -414,16 +414,16 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
     const std::u16string& name,
     const ui::ImageModel& icon,
     int index) {
-  requests_access_section_->AddOrUpdateExtension(id, name, icon, index);
+  message_section_->AddOrUpdateExtension(id, name, icon, index);
 }
 
 void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
     const extensions::ExtensionId& id) {
-  requests_access_section_->RemoveExtension(id);
+  message_section_->RemoveExtension(id);
 }
 
 void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {
-  requests_access_section_->ClearExtensions();
+  message_section_->ClearExtensions();
 }
 
 std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
@@ -437,13 +437,13 @@ std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
 
 std::vector<extensions::ExtensionId>
 ExtensionsMenuMainPageView::GetExtensionsRequestingAccessForTesting() {
-  return requests_access_section_->GetExtensionsForTesting();  // IN-TEST
+  return message_section_->GetExtensionsForTesting();  // IN-TEST
 }
 
 views::View*
 ExtensionsMenuMainPageView::GetExtensionRequestingAccessEntryForTesting(
     const extensions::ExtensionId& extension_id) {
-  return requests_access_section_->GetExtensionEntryForTesting(
+  return message_section_->GetExtensionEntryForTesting(
       extension_id);  // IN-TEST
 }
 
