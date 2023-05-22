@@ -478,7 +478,8 @@ void TypedURLSyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
   }
 }
 
-void TypedURLSyncBridge::OnVisitUpdated(const VisitRow& visit) {}
+void TypedURLSyncBridge::OnVisitUpdated(const VisitRow& visit,
+                                        VisitUpdateReason reason) {}
 
 void TypedURLSyncBridge::OnVisitDeleted(const VisitRow& visit) {}
 

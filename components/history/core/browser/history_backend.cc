@@ -714,7 +714,7 @@ void HistoryBackend::SetPageLanguageForVisitByVisitID(
       annotations.page_language = page_language;
       db_->AddContentAnnotationsForVisit(visit_id, annotations);
     }
-    NotifyVisitUpdated(visit_row);
+    NotifyVisitUpdated(visit_row, VisitUpdateReason::kSetPageLanguage);
     ScheduleCommit();
   }
 }
@@ -751,7 +751,7 @@ void HistoryBackend::SetPasswordStateForVisitByVisitID(
       annotations.password_state = password_state;
       db_->AddContentAnnotationsForVisit(visit_id, annotations);
     }
-    NotifyVisitUpdated(visit_row);
+    NotifyVisitUpdated(visit_row, VisitUpdateReason::kSetPasswordState);
     ScheduleCommit();
   }
 }
@@ -890,7 +890,7 @@ void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
                                    ? end_ts - visit_row.visit_time
                                    : base::Microseconds(0);
     db_->UpdateVisitRow(visit_row);
-    NotifyVisitUpdated(visit_row);
+    NotifyVisitUpdated(visit_row, VisitUpdateReason::kUpdateVisitDuration);
   }
 }
 
@@ -1078,7 +1078,7 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
             visit_row.transition = ui::PageTransitionFromInt(
                 visit_row.transition & ~ui::PAGE_TRANSITION_CHAIN_END);
             db_->UpdateVisitRow(visit_row);
-            NotifyVisitUpdated(visit_row);
+            NotifyVisitUpdated(visit_row, VisitUpdateReason::kUpdateTransition);
           }
 
           extended_redirect_chain = GetCachedRecentRedirects(request.referrer);
@@ -1807,7 +1807,7 @@ VisitID HistoryBackend::UpdateSyncedVisit(
                                       content_annotations->password_state);
   }
 
-  NotifyVisitUpdated(updated_row);
+  NotifyVisitUpdated(updated_row, VisitUpdateReason::kUpdateSyncedVisit);
   ScheduleCommit();
   return updated_row.visit_id;
 }
@@ -2147,7 +2147,7 @@ void HistoryBackend::AddContextAnnotationsForVisit(
   if (!db_ || !db_->GetRowForVisit(visit_id, &visit_row))
     return;
   db_->AddContextAnnotationsForVisit(visit_id, visit_context_annotations);
-  NotifyVisitUpdated(visit_row);
+  NotifyVisitUpdated(visit_row, VisitUpdateReason::kAddContextAnnotations);
   ScheduleCommit();
 }
 
@@ -2169,7 +2169,8 @@ void HistoryBackend::SetOnCloseContextAnnotationsForVisit(
   } else {
     db_->AddContextAnnotationsForVisit(visit_id, visit_context_annotations);
   }
-  NotifyVisitUpdated(visit_row);
+  NotifyVisitUpdated(visit_row,
+                     VisitUpdateReason::kSetOnCloseContextAnnotations);
   ScheduleCommit();
 }
 
@@ -3532,9 +3533,10 @@ void HistoryBackend::NotifyURLsDeleted(DeletionInfo deletion_info) {
   delegate_->NotifyURLsDeleted(std::move(deletion_info));
 }
 
-void HistoryBackend::NotifyVisitUpdated(const VisitRow& visit) {
+void HistoryBackend::NotifyVisitUpdated(const VisitRow& visit,
+                                        VisitUpdateReason reason) {
   for (HistoryBackendObserver& observer : observers_) {
-    observer.OnVisitUpdated(visit);
+    observer.OnVisitUpdated(visit, reason);
   }
 }
 

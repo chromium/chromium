@@ -74,7 +74,8 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
                      bool expired,
                      const URLRows& deleted_rows,
                      const std::set<GURL>& favicon_urls) override;
-  void OnVisitUpdated(const VisitRow& visit_row) override;
+  void OnVisitUpdated(const VisitRow& visit_row,
+                      VisitUpdateReason reason) override;
   void OnVisitDeleted(const VisitRow& visit_row) override;
 
   void SetSyncTransportState(syncer::SyncService::TransportState state);
