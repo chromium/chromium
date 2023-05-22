@@ -165,7 +165,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_SIDE_PANEL_HEADER_BUTTON_MINIMUM_SIZE:
       return 20;
     case DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL:
-      return 8;
+      return 4;
   }
   NOTREACHED_NORETURN();
 }
