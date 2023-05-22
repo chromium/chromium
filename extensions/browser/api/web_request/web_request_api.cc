@@ -2807,8 +2807,9 @@ bool ExtensionWebRequestEventRouter::ProcessDeclarativeRules(
     rules_registry->ready().Post(
         FROM_HERE,
         base::BindOnce(&ExtensionWebRequestEventRouter::OnRulesRegistryReady,
-                       base::Unretained(this), browser_context, event_name,
-                       request->id, request_stage));
+                       base::Unretained(this),
+                       base::UnsafeDanglingUntriaged(browser_context),
+                       event_name, request->id, request_stage));
     BlockedRequest& blocked_request = blocked_requests_[request->id];
     blocked_request.num_handlers_blocking++;
     blocked_request.request = request;
