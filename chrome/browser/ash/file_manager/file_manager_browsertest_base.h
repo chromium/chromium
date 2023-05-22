@@ -156,7 +156,10 @@ class FileManagerBrowserTestBase
     bool enable_mirrorsync = false;
 
     // Whether test should run with the FilesInlineSyncStatus flag.
-    bool enable_inline_status_sync = false;
+    bool enable_inline_sync_status = false;
+
+    // Whether test should run with the FilesInlineSyncStatusProgressEvents flag.
+    bool enable_inline_sync_status_progress_events = false;
 
     // Whether test should enable the file transfer connector.
     bool enable_file_transfer_connector = false;

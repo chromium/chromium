@@ -178,8 +178,14 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableInlineStatusSync() {
-    options.enable_inline_status_sync = true;
+  TestCase& EnableInlineSyncStatus() {
+    options.enable_inline_sync_status = true;
+    return *this;
+  }
+
+  TestCase& EnableInlineSyncStatusProgressEvents() {
+    options.enable_inline_sync_status = true;
+    options.enable_inline_sync_status_progress_events = true;
     return *this;
   }
 
@@ -275,8 +281,8 @@ struct TestCase {
       full_name += "_MirrorSync";
     }
 
-    if (options.enable_inline_status_sync) {
-      full_name += "_InlineStatusSync";
+    if (options.enable_inline_sync_status) {
+      full_name += "_InlineSyncStatus";
     }
 
     if (options.file_transfer_connector_report_only) {
@@ -1545,8 +1551,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveOfflineInfoBanner"),
         TestCase("driveEncryptionBadge"),
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
-        TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
-        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync(),
+        TestCase("driveInlineSyncStatusSingleFile").EnableInlineSyncStatus(),
+        TestCase("driveInlineSyncStatusParentFolder").EnableInlineSyncStatus(),
         TestCase("driveFolderShouldShowOfflineTickWhenBulkPinningEnabled")
             .EnableBulkPinning(),
         TestCase("driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled")

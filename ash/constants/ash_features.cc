@@ -2720,7 +2720,13 @@ bool IsInlineSyncStatusEnabled() {
 }
 
 bool IsInlineSyncStatusProgressEventsEnabled() {
-  return base::FeatureList::IsEnabled(kFilesInlineSyncStatusProgressEvents);
+  return base::FeatureList::IsEnabled(kFilesInlineSyncStatus) &&
+         base::FeatureList::IsEnabled(kFilesInlineSyncStatusProgressEvents);
+}
+
+bool IsInlineSyncStatusOldEventsEnabled() {
+  return base::FeatureList::IsEnabled(kFilesInlineSyncStatus) &&
+         !base::FeatureList::IsEnabled(kFilesInlineSyncStatusProgressEvents);
 }
 
 bool IsEapGtcWifiAuthenticationEnabled() {

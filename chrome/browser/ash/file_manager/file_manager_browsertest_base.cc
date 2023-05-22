@@ -2083,10 +2083,18 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kDriveFsMirroring);
   }
 
-  if (options.enable_inline_status_sync) {
+  if (options.enable_inline_sync_status) {
     enabled_features.push_back(ash::features::kFilesInlineSyncStatus);
   } else {
     disabled_features.push_back(ash::features::kFilesInlineSyncStatus);
+  }
+
+  if (options.enable_inline_sync_status_progress_events) {
+    enabled_features.push_back(
+        ash::features::kFilesInlineSyncStatusProgressEvents);
+  } else {
+    disabled_features.push_back(
+        ash::features::kFilesInlineSyncStatusProgressEvents);
   }
 
   if (options.enable_upload_office_to_cloud) {
@@ -3324,8 +3332,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "isInlineStatusSyncEnabled") {
-    *output = options.enable_inline_status_sync ? "true" : "false";
+  if (name == "isInlineSyncStatusEnabled") {
+    *output = options.enable_inline_sync_status ? "true" : "false";
+    return;
+  }
+
+  if (name == "isInlineSyncStatusProgressEventsEnabled") {
+    *output = options.enable_inline_sync_status_progress_events ? "true" : "false";
     return;
   }
 
