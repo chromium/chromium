@@ -90,20 +90,22 @@ class SavedTabGroup {
 
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
-  // to the end. If the tab already exists, CHECK. If `update_tab_positions` is
-  // true, update the positions of all tabs in the group.
-  SavedTabGroup& AddTab(SavedTabGroupTab tab,
-                        bool update_tab_positions = false);
+  // to the end. If the tab already exists, CHECK. If the tab was added locally
+  // update the positions of all the tabs in the group. Otherwise, leave the
+  // order of the group as is.
+  SavedTabGroup& AddTabLocally(SavedTabGroupTab tab);
+  SavedTabGroup& AddTabFromSync(SavedTabGroupTab tab);
 
   // Updates the tab with with `tab_id` tab.guid() with a value of `tab`. If
   // there is no tab, this function will CHECK.
   SavedTabGroup& UpdateTab(SavedTabGroupTab tab);
 
   // Removes a tab from `saved_tabs_` denoted by `saved_tab_guid` even if that
-  // was the last tab in the group: crbug/1371959. If `update_tab_positions` is
-  // true, update the positions of all tabs in the group.
-  SavedTabGroup& RemoveTab(const base::Uuid& saved_tab_guid,
-                           bool update_tab_positions = false);
+  // was the last tab in the group: crbug/1371959. If the tab was removed
+  // locally update the positions of all tabs in the group. Otherwise, leave the
+  // order of the group as is.
+  SavedTabGroup& RemoveTabLocally(const base::Uuid& saved_tab_guid);
+  SavedTabGroup& RemoveTabFromSync(const base::Uuid& saved_tab_guid);
 
   // Replaces that tab denoted by `tab_id` with value of `tab` unless the
   // replacement tab already exists. In this case we CHECK.
@@ -124,17 +126,6 @@ class SavedTabGroup {
   bool ShouldMergeGroup(
       const sync_pb::SavedTabGroupSpecifics& sync_specific) const;
 
-  // Insert `tab` into sorted order based on its position compared to already
-  // stored tabs in its group. It should be noted that the list of tabs in each
-  // group must already be in sorted order for this function to work as
-  // intended. To do this, UpdateTabPositionsImpl() can be called before calling
-  // this method.
-  void InsertTabImpl(const SavedTabGroupTab& tab);
-
-  // Updates all tab positions to match the index they are currently stored at
-  // in the group at `group_index`. Does not call observers.
-  void UpdateTabPositionsImpl();
-
   // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
   // `SavedTabGroupTab`.
   static SavedTabGroup FromSpecifics(
@@ -153,6 +144,20 @@ class SavedTabGroup {
       const sync_pb::SavedTabGroup::SavedTabGroupColor color);
 
  private:
+  // Insert `tab` into sorted order based on its position compared to already
+  // stored tabs in its group. It should be noted that the list of tabs in each
+  // group must already be in sorted order for this function to work as
+  // intended. To do this, UpdateTabPositionsImpl() can be called before calling
+  // this method.
+  void InsertTabImpl(SavedTabGroupTab tab);
+
+  // Updates all tab positions to match the index they are currently stored at
+  // in the group at `group_index`. Does not call observers.
+  void UpdateTabPositionsImpl();
+
+  // Removes `saved_tab_guid` from this group.
+  void RemoveTabImpl(const base::Uuid& saved_tab_guid);
+
   // The ID used to represent the group in sync.
   base::Uuid saved_guid_;
 

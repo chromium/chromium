@@ -220,8 +220,7 @@ void SavedTabGroupKeyedService::SaveGroup(
     local_and_saved_tab_mapping.emplace_back(
         web_contents, saved_tab_group_tab.saved_tab_guid());
 
-    saved_tab_group.AddTab(std::move(saved_tab_group_tab),
-                           /*update_tab_positions=*/true);
+    saved_tab_group.AddTabLocally(std::move(saved_tab_group_tab));
   }
 
   const base::Uuid saved_group_guid = saved_tab_group.saved_guid();

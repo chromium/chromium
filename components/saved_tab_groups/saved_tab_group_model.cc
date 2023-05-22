@@ -234,27 +234,36 @@ SavedTabGroup* SavedTabGroupModel::GetGroupContainingTab(
   return nullptr;
 }
 
-void SavedTabGroupModel::AddTabToGroup(const base::Uuid& group_id,
-                                       SavedTabGroupTab tab,
-                                       bool update_tab_positions) {
-  if (!Contains(group_id))
+void SavedTabGroupModel::AddTabToGroupLocally(const base::Uuid& group_id,
+                                              SavedTabGroupTab tab) {
+  if (!Contains(group_id)) {
     return;
+  }
 
   const base::Uuid tab_id = tab.saved_tab_guid();
   absl::optional<int> group_index = GetIndexOf(group_id);
-  saved_tab_groups_[group_index.value()].AddTab(tab, update_tab_positions);
+  saved_tab_groups_[group_index.value()].AddTabLocally(tab);
 
-  if (!update_tab_positions) {
-    for (auto& observer : observers_) {
-      observer.SavedTabGroupUpdatedFromSync(group_id);
-    }
-  } else {
-    for (auto& observer : observers_) {
-      observer.SavedTabGroupUpdatedLocally(group_id, tab_id);
-    }
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedLocally(group_id, tab_id);
+  }
 
-    base::RecordAction(
-        base::UserMetricsAction("TabGroups_SavedTabGroups_TabAdded"));
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_SavedTabGroups_TabAdded"));
+}
+
+void SavedTabGroupModel::AddTabToGroupFromSync(const base::Uuid& group_id,
+                                               SavedTabGroupTab tab) {
+  if (!Contains(group_id)) {
+    return;
+  }
+
+  const base::Uuid tab_id = tab.saved_tab_guid();
+  absl::optional<int> group_index = GetIndexOf(group_id);
+  saved_tab_groups_[group_index.value()].AddTabFromSync(tab);
+
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedFromSync(group_id, tab_id);
   }
 }
 
@@ -288,11 +297,11 @@ void SavedTabGroupModel::UpdateLocalTabId(
   saved_tab_groups_[group_index.value()].UpdateTab(tab);
 }
 
-void SavedTabGroupModel::RemoveTabFromGroup(const base::Uuid& group_id,
-                                            const base::Uuid& tab_id,
-                                            bool update_tab_positions) {
-  if (!Contains(group_id))
+void SavedTabGroupModel::RemoveTabFromGroupLocally(const base::Uuid& group_id,
+                                                   const base::Uuid& tab_id) {
+  if (!Contains(group_id)) {
     return;
+  }
 
   absl::optional<int> index = GetIndexOf(group_id);
   SavedTabGroup group = saved_tab_groups_[index.value()];
@@ -303,31 +312,52 @@ void SavedTabGroupModel::RemoveTabFromGroup(const base::Uuid& group_id,
 
   // Remove the group from the model if the last tab will be removed from it.
   if (group.saved_tabs().size() == 1) {
-    if (update_tab_positions) {
-      Remove(group_id);
-    } else {
-      RemovedFromSync(group_id);
-    }
+    Remove(group_id);
+    return;
+  }
+
+  // TODO(crbug/1401965): Convert all methods to pass ids by value to prevent
+  // UAFs. Also removes the need for a separate copy variable.
+  const base::Uuid copy_tab_id = tab_id;
+  saved_tab_groups_[index.value()].RemoveTabLocally(tab_id);
+
+  // TODO(dljames): Update to use SavedTabGroupRemoveLocally and update the API
+  // to pass a group_id and an optional tab_id.
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedLocally(group_id, copy_tab_id);
+  }
+
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_SavedTabGroups_TabRemoved"));
+}
+
+void SavedTabGroupModel::RemoveTabFromGroupFromSync(const base::Uuid& group_id,
+                                                    const base::Uuid& tab_id) {
+  if (!Contains(group_id)) {
+    return;
+  }
+
+  absl::optional<int> index = GetIndexOf(group_id);
+  SavedTabGroup group = saved_tab_groups_[index.value()];
+
+  if (!group.ContainsTab(tab_id)) {
+    return;
+  }
+
+  // Remove the group from the model if the last tab will be removed from it.
+  if (group.saved_tabs().size() == 1) {
+    RemovedFromSync(group_id);
     return;
   }
 
   // Copy `tab_id` to prevent uaf when ungrouping a saved tab: crbug/1401965.
   const base::Uuid copy_tab_id = tab_id;
-  saved_tab_groups_[index.value()].RemoveTab(tab_id, update_tab_positions);
+  saved_tab_groups_[index.value()].RemoveTabFromSync(tab_id);
 
-  // TODO(dljames): Update to use SavedTabGroupRemoveLocally and update the API
+  // TODO(dljames): Update to use SavedTabGroupRemoveFromSync and update the API
   // to pass a group_id and an optional tab_id.
-  if (!update_tab_positions) {
-    for (auto& observer : observers_) {
-      observer.SavedTabGroupUpdatedFromSync(group_id, copy_tab_id);
-    }
-  } else {
-    for (auto& observer : observers_) {
-      observer.SavedTabGroupUpdatedLocally(group_id, copy_tab_id);
-    }
-
-    base::RecordAction(
-        base::UserMetricsAction("TabGroups_SavedTabGroups_TabRemoved"));
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedFromSync(group_id, copy_tab_id);
   }
 }
 
@@ -482,7 +512,7 @@ SavedTabGroupModel::LoadStoredEntries(
       tabs_missing_groups.emplace_back(std::move(*tab.ToSpecifics()));
     } else {
       base::Uuid group_id = tab.saved_group_guid();
-      AddTabToGroup(group_id, std::move(tab), /*update_tab_positions=*/false);
+      AddTabToGroupFromSync(group_id, std::move(tab));
     }
   }
 

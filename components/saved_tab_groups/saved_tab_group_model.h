@@ -89,11 +89,10 @@ class SavedTabGroupModel {
   SavedTabGroup* GetGroupContainingTab(const base::Token& local_tab_id);
 
   // Adds a saved tab to `index` in the specified group denoted by `group_id` if
-  // it exists. If `update_tab_positions` is true, update the positions of all
-  // tabs in the group.
-  void AddTabToGroup(const base::Uuid& group_id,
-                     SavedTabGroupTab tab,
-                     bool update_tab_positions = false);
+  // it exists. Notify local observers if the tab was added locally, and sync
+  // observers if it was added from sync.
+  void AddTabToGroupLocally(const base::Uuid& group_id, SavedTabGroupTab tab);
+  void AddTabToGroupFromSync(const base::Uuid& group_id, SavedTabGroupTab tab);
 
   // Calls the UpdateTab method on a group found by group id in the model.
   // Calls the observer function SavedTabGroupUpdatedLocally.
@@ -107,11 +106,12 @@ class SavedTabGroupModel {
 
   // Removes saved tab `tab_id` in the specified group denoted by
   // `group_id` if it exists. We delete the group instead if the last tab is
-  // removed from it. If `update_tab_positions` is true, update the positions of
-  // all tabs in the group and notify sync of the changes.
-  void RemoveTabFromGroup(const base::Uuid& group_id,
-                          const base::Uuid& tab_id,
-                          bool update_tab_positions = false);
+  // removed from it. Notify local observers if the tab was removed locally, and
+  // sync observers if it was removed from sync.
+  void RemoveTabFromGroupLocally(const base::Uuid& group_id,
+                                 const base::Uuid& tab_id);
+  void RemoveTabFromGroupFromSync(const base::Uuid& group_id,
+                                  const base::Uuid& tab_id);
 
   // Moves a saved tab from its current position to `index` in the specified
   // group denoted by `group_id` if it exists.

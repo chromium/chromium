@@ -139,36 +139,30 @@ SavedTabGroup& SavedTabGroup::SetPosition(int position) {
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::AddTab(SavedTabGroupTab tab,
-                                     bool update_tab_positions) {
-  CHECK(!ContainsTab(tab.saved_tab_guid()));
-
-  if (tab.position() == SavedTabGroupTab::kUnsetPosition) {
-    tab.SetPosition(saved_tabs_.size());
-  }
-
+SavedTabGroup& SavedTabGroup::AddTabLocally(SavedTabGroupTab tab) {
   InsertTabImpl(tab);
-
-  if (update_tab_positions) {
-    UpdateTabPositionsImpl();
-  }
-
+  UpdateTabPositionsImpl();
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::RemoveTab(const base::Uuid& saved_tab_guid,
-                                        bool update_tab_positions) {
-  absl::optional<size_t> index = GetIndexOfTab(saved_tab_guid);
-  CHECK(index.has_value());
-  CHECK_GE(index.value(), 0u);
-  CHECK_LT(index.value(), saved_tabs_.size());
-  saved_tabs_.erase(saved_tabs_.begin() + index.value());
+SavedTabGroup& SavedTabGroup::AddTabFromSync(SavedTabGroupTab tab) {
+  InsertTabImpl(tab);
+  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  return *this;
+}
 
-  if (update_tab_positions) {
-    UpdateTabPositionsImpl();
-  }
+SavedTabGroup& SavedTabGroup::RemoveTabLocally(
+    const base::Uuid& saved_tab_guid) {
+  RemoveTabImpl(saved_tab_guid);
+  UpdateTabPositionsImpl();
+  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  return *this;
+}
 
+SavedTabGroup& SavedTabGroup::RemoveTabFromSync(
+    const base::Uuid& saved_tab_guid) {
+  RemoveTabImpl(saved_tab_guid);
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
@@ -228,7 +222,13 @@ void SavedTabGroup::UpdateTabPositionsImpl() {
   }
 }
 
-void SavedTabGroup::InsertTabImpl(const SavedTabGroupTab& tab) {
+void SavedTabGroup::InsertTabImpl(SavedTabGroupTab tab) {
+  CHECK(!ContainsTab(tab.saved_tab_guid()));
+
+  if (tab.position() == SavedTabGroupTab::kUnsetPosition) {
+    tab.SetPosition(saved_tabs_.size());
+  }
+
   // We can always safely insert the first tab at the end. We can also safely
   // insert `tab` if its position is larger than the position at the end of
   // `saved_tabs_`.
@@ -382,4 +382,12 @@ SavedTabGroup::TabGroupColorToSyncColor(
   }
 
   NOTREACHED() << "No known conversion for the supplied color.";
+}
+
+void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid) {
+  absl::optional<size_t> index = GetIndexOfTab(saved_tab_guid);
+  CHECK(index.has_value());
+  CHECK_GE(index.value(), 0u);
+  CHECK_LT(index.value(), saved_tabs_.size());
+  saved_tabs_.erase(saved_tabs_.begin() + index.value());
 }

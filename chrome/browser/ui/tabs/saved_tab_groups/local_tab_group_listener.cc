@@ -97,8 +97,7 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
                                                                 saved_guid_);
   tab.SetLocalTabID(token);
   tab.SetPosition(relative_index_of_tab_in_group);
-  model_->AddTabToGroup(saved_guid_, std::move(tab),
-                        /*update_tab_positions=*/true);
+  model_->AddTabToGroupLocally(saved_guid_, std::move(tab));
 
   // Link `web_contents` to `token`.
   web_contents_to_tab_id_map_.try_emplace(web_contents, web_contents, token,
@@ -157,8 +156,7 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
   const base::Uuid tab_guid = saved_group()->GetTab(tab_id)->saved_tab_guid();
 
   web_contents_to_tab_id_map_.erase(web_contents);
-  model_->RemoveTabFromGroup(saved_guid_, tab_guid,
-                             /*update_tab_positions=*/true);
+  model_->RemoveTabFromGroupLocally(saved_guid_, tab_guid);
 
   return model_->Contains(saved_guid_) ? Liveness::kGroupExists
                                        : Liveness::kGroupDeleted;

@@ -37,7 +37,7 @@ void AddTabToEndOfGroup(
     SavedTabGroup& group,
     absl::optional<base::Uuid> saved_guid = absl::nullopt,
     absl::optional<base::Token> local_tab_id = absl::nullopt) {
-  group.AddTab(SavedTabGroupTab(
+  group.AddTabLocally(SavedTabGroupTab(
       GURL(url::kAboutBlankURL), std::u16string(u"default_title"),
       group.saved_guid(), &group, saved_guid, local_tab_id));
 }
@@ -91,8 +91,8 @@ TEST(SavedTabGroupTest, AddTabLocallyDisrespectsPositions) {
   tab_2.SetPosition(0);
 
   // Add both tabs to the group.
-  group.AddTab(std::move(tab_1), /*update_tab_positions=*/true);
-  group.AddTab(std::move(tab_2), /*update_tab_positions=*/true);
+  group.AddTabLocally(std::move(tab_1));
+  group.AddTabLocally(std::move(tab_2));
   ASSERT_EQ(2u, group.saved_tabs().size());
 
   // Locally added groups will be added into their preferred positions if
@@ -118,8 +118,8 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
   base::Uuid tab_2_saved_guid = tab_2.saved_tab_guid();
 
   // Add both tabs to the group.
-  group.AddTab(std::move(tab_1));
-  group.AddTab(std::move(tab_2));
+  group.AddTabLocally(std::move(tab_1));
+  group.AddTabLocally(std::move(tab_2));
   ASSERT_EQ(2u, group.saved_tabs().size());
 
   // Verify tab_2 has a position of 1.
@@ -130,7 +130,7 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
   }
 
   // Remove tab_1 from the group.
-  group.RemoveTab(tab_1_saved_guid, /*update_tab_positions=*/true);
+  group.RemoveTabLocally(tab_1_saved_guid);
 
   // Verify only tab_2 is in the group.
   EXPECT_EQ(group.saved_tabs().size(), 1u);
@@ -159,8 +159,8 @@ TEST(SavedTabGroupTest, AddTabFromSyncRespectsPositions) {
   tab_1.SetPosition(1);
   tab_2.SetPosition(0);
 
-  group.AddTab(std::move(tab_1), /*update_tab_positions=*/false);
-  group.AddTab(std::move(tab_2), /*update_tab_positions=*/false);
+  group.AddTabFromSync(std::move(tab_1));
+  group.AddTabFromSync(std::move(tab_2));
   ASSERT_EQ(2u, group.saved_tabs().size());
 
   // Expect tab one to be at the end of the group.
@@ -184,8 +184,8 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
   base::Uuid tab_2_saved_guid = tab_2.saved_tab_guid();
 
   // Add both tabs to the group.
-  group.AddTab(std::move(tab_1));
-  group.AddTab(std::move(tab_2));
+  group.AddTabLocally(std::move(tab_1));
+  group.AddTabLocally(std::move(tab_2));
   ASSERT_EQ(2u, group.saved_tabs().size());
 
   // Verify tab_2 has a position of 1.
@@ -196,7 +196,7 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
   }
 
   // Remove tab_1 from the group.
-  group.RemoveTab(tab_1_saved_guid, /*update_tab_positions=*/false);
+  group.RemoveTabFromSync(tab_1_saved_guid);
 
   // Verify only tab_2 is in the group.
   EXPECT_EQ(group.saved_tabs().size(), 1u);

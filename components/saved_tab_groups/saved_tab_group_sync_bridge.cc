@@ -353,9 +353,8 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
 
     if (existing_group) {
       // We do not have this tab. Add the tab from sync into local storage.
-      model_->AddTabToGroup(existing_group->saved_guid(),
-                            SavedTabGroupTab::FromSpecifics(specifics),
-                            /*update_tab_positions=*/false);
+      model_->AddTabToGroupFromSync(existing_group->saved_guid(),
+                                    SavedTabGroupTab::FromSpecifics(specifics));
     } else {
       // We reach this case if we were unable to find a group for this tab. This
       // can happen when sync sends the tab data before the group data. In this
@@ -382,8 +381,7 @@ void SavedTabGroupSyncBridge::DeleteDataFromLocalStorage(
     if (!group.ContainsTab(guid))
       continue;
 
-    model_->RemoveTabFromGroup(group.saved_guid(), guid,
-                               /*update_tab_positions=*/false);
+    model_->RemoveTabFromGroupFromSync(group.saved_guid(), guid);
     return;
   }
 }
@@ -410,9 +408,8 @@ void SavedTabGroupSyncBridge::ResolveTabsMissingGroups(
     } else {
       write_batch->WriteData(tab_iterator->guid(),
                              tab_iterator->SerializeAsString());
-      model_->AddTabToGroup(group->saved_guid(),
-                            SavedTabGroupTab::FromSpecifics(*tab_iterator),
-                            /*update_tab_positions=*/false);
+      model_->AddTabToGroupFromSync(
+          group->saved_guid(), SavedTabGroupTab::FromSpecifics(*tab_iterator));
       tab_iterator = tabs_missing_groups_.erase(tab_iterator);
     }
   }

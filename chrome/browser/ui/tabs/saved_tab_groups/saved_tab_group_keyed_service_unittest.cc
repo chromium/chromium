@@ -459,7 +459,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, NewTabFromSyncOpensInLocalGroup) {
   // Add a tab to the saved group.
   const SavedTabGroupTab added_tab(GURL("chrome://newtab"), u"New Tab",
                                    saved_group_id);
-  service()->model()->AddTabToGroup(saved_group_id, added_tab, false);
+  service()->model()->AddTabToGroupFromSync(saved_group_id, added_tab);
 
   // Tab should have opened in local group too.
   EXPECT_EQ(2, tabstrip->count());
@@ -507,9 +507,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, RemoveTabFromSyncRemovesLocalTab) {
   const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
 
   // Remove one tab from the saved group.
-  service()->model()->RemoveTabFromGroup(
+  service()->model()->RemoveTabFromGroupFromSync(
       saved_group->saved_guid(),
-      saved_group->saved_tabs().at(0).saved_tab_guid(), false);
+      saved_group->saved_tabs().at(0).saved_tab_guid());
 
   // It should have been removed from the local group too.
   EXPECT_EQ(1, tabstrip->count());
@@ -531,9 +531,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   AddTabToBrowser(browser, 1);
 
   // Remove the only tab from the saved group.
-  service()->model()->RemoveTabFromGroup(
+  service()->model()->RemoveTabFromGroupFromSync(
       saved_group->saved_guid(),
-      saved_group->saved_tabs().at(0).saved_tab_guid(), false);
+      saved_group->saved_tabs().at(0).saved_tab_guid());
 
   // It should have been removed from the local group too.
   EXPECT_EQ(1, tabstrip->count());

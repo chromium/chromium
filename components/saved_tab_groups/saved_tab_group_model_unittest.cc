@@ -367,16 +367,14 @@ TEST_F(SavedTabGroupModelTest, AddTabToGroup) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
   ASSERT_EQ(group->saved_tabs().size(), size_t(1));
 
-  saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab1,
-                                        /*update_tab_positions=*/true);
+  saved_tab_group_model_->AddTabToGroupLocally(group->saved_guid(), tab1);
   EXPECT_EQ(group->saved_tabs().size(), size_t(2));
   EXPECT_EQ(0, group->GetIndexOfTab(tab1.saved_tab_guid()));
   EXPECT_TRUE(group->ContainsTab(tab1.saved_tab_guid()));
   ASSERT_TRUE(group->GetTab(tab1.saved_tab_guid()));
   CompareSavedTabGroupTabs({*group->GetTab(tab1.saved_tab_guid())}, {tab1});
 
-  saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab2,
-                                        /*update_tab_positions=*/true);
+  saved_tab_group_model_->AddTabToGroupLocally(group->saved_guid(), tab2);
   EXPECT_EQ(group->saved_tabs().size(), size_t(3));
   EXPECT_EQ(2, group->GetIndexOfTab(tab2.saved_tab_guid()));
   EXPECT_TRUE(group->ContainsTab(tab2.saved_tab_guid()));
@@ -396,21 +394,17 @@ TEST_F(SavedTabGroupModelTest, RemoveTabFromGroup) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
   ASSERT_EQ(group->saved_tabs().size(), size_t(1));
 
-  saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab1,
-                                        /*update_tab_positions=*/true);
-  saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab2,
-                                        /*update_tab_positions=*/true);
+  saved_tab_group_model_->AddTabToGroupLocally(group->saved_guid(), tab1);
+  saved_tab_group_model_->AddTabToGroupLocally(group->saved_guid(), tab2);
   EXPECT_EQ(group->saved_tabs().size(), size_t(3));
 
-  saved_tab_group_model_->RemoveTabFromGroup(group->saved_guid(),
-                                             tab1.saved_tab_guid(),
-                                             /*update_tab_positions=*/true);
+  saved_tab_group_model_->RemoveTabFromGroupLocally(group->saved_guid(),
+                                                    tab1.saved_tab_guid());
   EXPECT_EQ(group->saved_tabs().size(), size_t(2));
   CompareSavedTabGroupTabs(group->saved_tabs(), {group->saved_tabs()[0], tab2});
 
-  saved_tab_group_model_->RemoveTabFromGroup(group->saved_guid(),
-                                             tab2.saved_tab_guid(),
-                                             /*update_tab_positions=*/true);
+  saved_tab_group_model_->RemoveTabFromGroupLocally(group->saved_guid(),
+                                                    tab2.saved_tab_guid());
   EXPECT_EQ(group->saved_tabs().size(), size_t(1));
   CompareSavedTabGroupTabs(group->saved_tabs(), {group->saved_tabs()[0]});
 }
@@ -421,9 +415,8 @@ TEST_F(SavedTabGroupModelTest, RemoveLastTabFromGroup) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
   ASSERT_EQ(group->saved_tabs().size(), size_t(1));
 
-  saved_tab_group_model_->RemoveTabFromGroup(
-      group->saved_guid(), group->saved_tabs()[0].saved_tab_guid(),
-      /*update_tab_positions=*/true);
+  saved_tab_group_model_->RemoveTabFromGroupLocally(
+      group->saved_guid(), group->saved_tabs()[0].saved_tab_guid());
 
   EXPECT_FALSE(saved_tab_group_model_->Contains(id_1_));
 }
@@ -452,10 +445,8 @@ TEST_F(SavedTabGroupModelTest, MoveTabInGroup) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
   ASSERT_EQ(group->saved_tabs().size(), size_t(1));
 
-  saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab1,
-                                        /*update_tab_positions=*/true);
-  saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab2,
-                                        /*update_tab_positions=*/true);
+  saved_tab_group_model_->AddTabToGroupLocally(group->saved_guid(), tab1);
+  saved_tab_group_model_->AddTabToGroupLocally(group->saved_guid(), tab2);
   EXPECT_EQ(group->saved_tabs().size(), size_t(3));
 
   saved_tab_group_model_->MoveTabInGroupTo(group->saved_guid(),
@@ -976,7 +967,7 @@ TEST_F(SavedTabGroupModelObserverTest, GetGroupContainingTab) {
   SavedTabGroupTab tab(GURL(url::kAboutBlankURL), std::u16string(u"title"),
                        matching_group.saved_guid(), &matching_group,
                        matching_tab_guid, matching_local_tab_id);
-  matching_group.AddTab(std::move(tab));
+  matching_group.AddTabLocally(std::move(tab));
   saved_tab_group_model_->Add(std::move(matching_group));
 
   // Add another non matching SavedTabGroup.
