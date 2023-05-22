@@ -21,6 +21,8 @@ static_library("test_support") {
   sources = [
     "test/structured_metrics_mixin.cc",
     "test/structured_metrics_mixin.h",
+    "test/test_structured_metrics_recorder.cc",
+    "test/test_structured_metrics_recorder.h",
   ]
   deps = [
     "//chrome/test:test_support",

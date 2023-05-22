@@ -127,6 +127,12 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/metrics/structured/event_logging_features.h"
+#include "chrome/browser/metrics/structured/test/test_structured_metrics_recorder.h"
+#include "components/metrics/structured/structured_events.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/shell_integration.h"
 #include "net/base/filename_util.h"
@@ -149,6 +155,10 @@ enum class InstallResultCode;
 }
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+namespace cros_events = metrics::structured::events::v2::cr_os_events;
+#endif
 
 constexpr const char kExampleURL[] = "http://example.org/";
 constexpr const char16_t kExampleURL16[] = u"http://example.org/";
@@ -1092,6 +1102,62 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InstallInstallableSite) {
   EXPECT_FALSE(ChromeShelfController::instance()->IsAppPinned(app_id));
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class WebAppBrowserCrOSEventsTest : public WebAppBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      metrics::structured::kAppDiscoveryLogging};
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppBrowserCrOSEventsTest,
+                       CorrectEventsOnBrowserTabPwaInstall) {
+  auto test_recorder =
+      std::make_unique<metrics::structured::TestStructuredMetricsRecorder>();
+  test_recorder->Initialize();
+
+  base::Time before_install_time = base::Time::Now();
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+
+  const AppId app_id = test::InstallPwaForCurrentUrl(browser());
+  auto* provider = WebAppProvider::GetForTest(profile());
+  EXPECT_EQ(provider->registrar_unsafe().GetAppShortName(app_id),
+            GetInstallableAppName());
+
+  // Installed PWAs should launch in their own window.
+  EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id),
+            web_app::mojom::UserDisplayMode::kStandalone);
+
+  // Installed PWAs should have install time set.
+  EXPECT_TRUE(provider->registrar_unsafe().GetAppInstallTime(app_id) >=
+              before_install_time);
+
+  const std::vector<metrics::structured::Event>& events =
+      test_recorder->GetEvents();
+  ASSERT_EQ(events.size(), 3U);
+
+  // Events that should be recorded will be ClickInstallAppFromMenu ->
+  // AppInstallDialogShown -> AppInstallDialogResult (Accepted).
+  cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu event1;
+  event1.SetAppId(app_id);
+
+  EXPECT_EQ(events[0].event_name(), event1.event_name());
+  EXPECT_EQ(events[0].metric_values(), event1.metric_values());
+
+  cros_events::AppDiscovery_Browser_AppInstallDialogShown event2;
+  event2.SetAppId(app_id);
+
+  EXPECT_EQ(events[1].event_name(), event2.event_name());
+  EXPECT_EQ(events[1].metric_values(), event2.metric_values());
+
+  cros_events::AppDiscovery_Browser_AppInstallDialogResult event3;
+  event3.SetAppId(app_id).SetWebAppInstallStatus(
+      static_cast<int64_t>(web_app::WebAppInstallStatus::kAccepted));
+
+  EXPECT_EQ(events[2].event_name(), event3.event_name());
+  EXPECT_EQ(events[2].metric_values(), event3.metric_values());
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallOverBrowserTabPwa) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
@@ -2548,5 +2614,4 @@ INSTANTIATE_TEST_SUITE_P(
         test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
         test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
     test::GetExternalPrefMigrationTestName);
-
 }  // namespace web_app

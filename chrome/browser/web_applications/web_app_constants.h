@@ -276,6 +276,17 @@ enum class Result {
   kError
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Represents the exit states of the PWABubbleView. To be used for CrOS events
+// logging.
+//
+// Do not re-use values.
+enum class WebAppInstallStatus : int64_t {
+  kCancelled = 0,
+  kAccepted = 1,
+};
+#endif
+
 using ResultCallback = base::OnceCallback<void(Result)>;
 
 // Convert the uninstall source to string for easy printing.

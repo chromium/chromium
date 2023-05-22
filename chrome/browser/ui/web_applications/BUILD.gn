@@ -92,7 +92,12 @@ source_set("browser_tests") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
+    deps += [
+      "//chrome/browser/metrics/structured:features",
+      "//chrome/browser/metrics/structured:test_support",
+      "//chromeos/constants",
+      "//components/metrics/structured:structured_events",
+    ]
   }
 }
 

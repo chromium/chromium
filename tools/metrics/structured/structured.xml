@@ -679,6 +679,70 @@
     </metric>
   </event>
 
+  <event name="AppDiscovery.Browser.OmniboxInstallIconClicked">
+    <summary>
+      Event recorded when the PWA Install Icon is clicked.
+    </summary>
+    <metric name="IPHShown" type="int">
+      <summary>
+        Boolean if the IPH (In-product help) was shown when the icon was clicked.
+        1 if the IPH was shown 0 otherwise.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.Browser.AppInstallDialogShown">
+    <summary>
+      Event recorded when the PWA confirmation dialog is shown.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Identifier of the app for which the bubble view is shown.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.Browser.AppInstallDialogResult">
+    <summary>
+      Event capturing the result of the app install dialog shown in the browser.
+      This event will be captured if the install is accepted or cancelled. If a
+      user switches to a different tab, this will result in a "cancel".
+    </summary>
+    <metric name="WebAppInstallStatus" type="int">
+      <summary>
+        1 if accepted. 0 if cancelled. The status is considered cancelled if the
+        bubble dialog is closed before an "Accept" status has been detected.
+      </summary>
+    </metric>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Identifier of the app for which the bubble view is shown.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.Browser.ClickInstallAppFromMenu">
+    <summary>
+      Event recorded when a PWA is installed from the browser menu.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Identifier of the app that is being installed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.Browser.CreateShortcut">
+    <summary>
+      Event recorded when a web app or PWA is installed by creating a shortcut.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Identifier of the app that is being installed.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.
