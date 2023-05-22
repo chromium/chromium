@@ -48,8 +48,9 @@ class SmartCardConnection final : public ScriptWrappable {
                         device::mojom::blink::SmartCardResultPtr result);
   void OnDataResult(ScriptPromiseResolver* resolver,
                     device::mojom::blink::SmartCardDataResultPtr result);
+  void CloseMojoConnection();
 
-  bool operation_in_progress_ = false;
+  Member<ScriptPromiseResolver> ongoing_request_;
   HeapMojoRemote<device::mojom::blink::SmartCardConnection> connection_;
   device::mojom::blink::SmartCardProtocol active_protocol_;
 };
