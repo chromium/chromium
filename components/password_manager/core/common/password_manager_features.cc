@@ -308,10 +308,6 @@ BASE_FEATURE(kPasswordGenerationPreviewOnHover,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// Current migration version to Google Mobile Services. If version saved in pref
-// is lower than 'kMigrationVersion' passwords will be re-uploaded.
-extern const base::FeatureParam<int> kMigrationVersion = {
-    &kUnifiedPasswordManagerAndroid, "migration_version", 1};
 
 // The string version to use for the save/update password prompts when the user
 // is syncing passwords. Version 1 is outdated, so the only supported versions
@@ -380,23 +376,6 @@ bool RequiresMigrationForUnifiedPasswordManager() {
   return false;
 }
 
-bool ManagesLocalPasswordsInUnifiedPasswordManager() {
-  if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid)) {
-    return false;
-  }
-  UpmExperimentVariation variation = kUpmExperimentVariationParam.Get();
-  switch (variation) {
-    case UpmExperimentVariation::kEnableForSyncingUsers:
-    case UpmExperimentVariation::kShadowSyncingUsers:
-    case UpmExperimentVariation::kEnableOnlyBackendForSyncingUsers:
-      return false;
-    case UpmExperimentVariation::kEnableForAllUsers:
-      return true;
-  }
-  NOTREACHED()
-      << "Define explicitly whether local password management is supported!";
-  return false;
-}
 #endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_IOS)

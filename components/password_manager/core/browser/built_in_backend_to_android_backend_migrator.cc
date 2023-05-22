@@ -29,13 +29,19 @@ using sync_util::IsPasswordSyncEnabled;
 // clients from spamming GMS Core API.
 constexpr base::TimeDelta kMigrationThreshold = base::Days(1);
 
+// The required migration version. If the version saved in
+// `prefs::kCurrentMigrationVersionToGoogleMobileServices` is lower than
+// 'kRequiredMigrationVersion', passwords will be re-uploaded. Currently set to
+// the initial migration version.
+constexpr int kRequiredMigrationVersion = 1;
+
 // Returns true if the initial migration to the android backend has happened.
 // The pref is updated after any type of migration, but the initial migration
 // happens first.
 bool HasMigratedToTheAndroidBackend(PrefService* prefs) {
-  return features::kMigrationVersion.Get() <=
-         prefs->GetInteger(
-             prefs::kCurrentMigrationVersionToGoogleMobileServices);
+  return prefs->GetInteger(
+             prefs::kCurrentMigrationVersionToGoogleMobileServices) >=
+         kRequiredMigrationVersion;
 }
 
 bool IsBlacklistedFormWithValues(const PasswordForm& form) {
@@ -183,7 +189,7 @@ void BuiltInBackendToAndroidBackendMigrator::UpdateMigrationVersionInPref() {
     // pref.
   }
   prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
-                     features::kMigrationVersion.Get());
+                     kRequiredMigrationVersion);
 }
 
 BuiltInBackendToAndroidBackendMigrator::MigrationType
@@ -199,13 +205,17 @@ BuiltInBackendToAndroidBackendMigrator::GetMigrationType(
     return MigrationType::kInitialForSyncUsers;
   }
 
+  // TODO(crbug.com/1445497): Re-evaluate migration code for local passwords.
+  bool upm_for_local_active = base::FeatureList::IsEnabled(
+      password_manager::features::kUnifiedPasswordManagerLocalPasswordsAndroid);
+
   // If the user enables or disables password sync, the new active backend needs
   // non-syncable data from the previously active backend, as logins are
   // already transmitted through sync.
   // Once the local storage is supported, android backend becomes the only
   // active backend and there is no need to do this migration.
   if (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange) &&
-      !features::ManagesLocalPasswordsInUnifiedPasswordManager()) {
+      !upm_for_local_active) {
     return IsPasswordSyncEnabled(sync_service_)
                ? MigrationType::kNonSyncableToAndroidBackend
                : MigrationType::kNonSyncableToBuiltInBackend;
@@ -213,8 +223,9 @@ BuiltInBackendToAndroidBackendMigrator::GetMigrationType(
 
   // Once the local storage is supported, the migration to ensure the
   // consistency of the two backends is needed.
-  if (features::ManagesLocalPasswordsInUnifiedPasswordManager())
+  if (upm_for_local_active) {
     return MigrationType::kForLocalUsers;
+  }
 
   // No other migration should be executed.
   return MigrationType::kNone;

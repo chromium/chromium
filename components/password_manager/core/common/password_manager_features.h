@@ -136,7 +136,6 @@ inline constexpr base::FeatureParam<bool>
         &kPasswordStrengthIndicator, "strength_indicator_minimized", false};
 
 #if BUILDFLAG(IS_ANDROID)
-extern const base::FeatureParam<int> kMigrationVersion;
 
 // Current list of the GMS Core API error codes that should be ignored and not
 // result in user eviction.
@@ -200,10 +199,6 @@ bool UsesUnifiedPasswordManagerBranding();
 // that requires migrating existing credentials. Independent of
 // whether only non-syncable data needs to be migrated or full credentials.
 bool RequiresMigrationForUnifiedPasswordManager();
-
-// Returns true if the unified password manager feature is active and in a stage
-// that uses the unified storage for passwords that remain local on the device.
-bool ManagesLocalPasswordsInUnifiedPasswordManager();
 #endif  // IS_ANDROID
 
 #if BUILDFLAG(IS_IOS)
