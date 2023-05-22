@@ -5074,7 +5074,7 @@ TEST_F(ShelfLayoutManagerWithEcheTest, AutoHideShelfWithEcheHidden) {
       GURL("http://google.com"), gfx::Image(image_skia), u"app 1",
       u"your phone",
       eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
-      eche_app::mojom::AppStreamLaunchEntryPoint::UNKNOWN);
+      eche_app::mojom::AppStreamLaunchEntryPoint::RECENT_APPS);
   status_area->eche_tray()->ShowBubble();
   UpdateAutoHideStateNow();
 

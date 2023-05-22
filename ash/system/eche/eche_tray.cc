@@ -43,6 +43,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -621,6 +622,26 @@ void EcheTray::InitBubble(
     base::UmaHistogramEnumeration(
         "Eche.StreamEvent",
         eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+    switch (entry_point) {
+      case eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST:
+        base::UmaHistogramEnumeration(
+            "Eche.StreamEvent.FromLauncher",
+            eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+        break;
+      case eche_app::mojom::AppStreamLaunchEntryPoint::NOTIFICATION:
+        base::UmaHistogramEnumeration(
+            "Eche.StreamEvent.FromNotification",
+            eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+        break;
+      case eche_app::mojom::AppStreamLaunchEntryPoint::RECENT_APPS:
+        base::UmaHistogramEnumeration(
+            "Eche.StreamEvent.FromRecentApps",
+            eche_app::mojom::StreamStatus::kStreamStatusInitializing);
+        break;
+      case eche_app::mojom::AppStreamLaunchEntryPoint::UNKNOWN:
+        NOTREACHED();
+        break;
+    }
   }
   init_stream_timestamp_ = base::TimeTicks::Now();
   TrayBubbleView::InitParams init_params;

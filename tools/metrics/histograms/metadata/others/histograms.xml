@@ -5454,6 +5454,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Eche.StreamEvent.FromLauncher" enum="StreamState"
+    expires_after="2024-01-31">
+  <owner>pushi@google.com</owner>
+  <owner>jonmann@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Events logged in the Eche stream state. Records when a stream is initialized
+    and started after the user clicks on an app from full app list (Launcher) to
+    launch the app streaming window.
+  </summary>
+</histogram>
+
+<histogram name="Eche.StreamEvent.FromNotification" enum="StreamState"
+    expires_after="2024-01-31">
+  <owner>pushi@google.com</owner>
+  <owner>jonmann@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Events logged in the Eche stream state. Records when a stream is initialized
+    and started after the user clicks on a PhoneHub notification to launch the
+    app streaming window.
+  </summary>
+</histogram>
+
 <histogram
     name="Eche.StreamEvent.FromNotification.PreviousNetworkCheckFailed.ConnectionFail"
     enum="ConnectionFailReason" expires_after="2024-01-31">
@@ -5479,6 +5503,18 @@ chromium-metrics-reviews@google.com.
     and failed in last network connection check. Recorded when the stream is
     initialized in EcheTray or when it starts in EcheStreamStatusChangeHandler.
     Separate from Eche.StreamEvent.
+  </summary>
+</histogram>
+
+<histogram name="Eche.StreamEvent.FromRecentApps" enum="StreamState"
+    expires_after="2024-01-31">
+  <owner>pushi@google.com</owner>
+  <owner>jonmann@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Events logged in the Eche stream state. Records when a stream is initialized
+    and started after the user clicks on an app from recent app list to launch
+    the app streaming window.
   </summary>
 </histogram>
 

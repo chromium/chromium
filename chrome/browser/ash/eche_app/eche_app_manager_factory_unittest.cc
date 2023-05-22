@@ -52,6 +52,8 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
     connection_handler_ = std::make_unique<EcheConnectionStatusHandler>();
     apps_launch_info_provider_ =
         std::make_unique<AppsLaunchInfoProvider>(connection_handler_.get());
+    apps_launch_info_provider_->SetAppLaunchInfo(
+        mojom::AppStreamLaunchEntryPoint::APPS_LIST);
     eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
     phone_hub_tray_ =
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->phone_hub_tray();
@@ -152,6 +154,8 @@ class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
     connection_handler_ = std::make_unique<EcheConnectionStatusHandler>();
     apps_launch_info_provider_ =
         std::make_unique<AppsLaunchInfoProvider>(connection_handler_.get());
+    apps_launch_info_provider_->SetAppLaunchInfo(
+        mojom::AppStreamLaunchEntryPoint::APPS_LIST);
     eche_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
   }
 
