@@ -58,8 +58,7 @@ class ReadAnythingAppControllerTest;
 //
 class ReadAnythingAppController
     : public gin::Wrappable<ReadAnythingAppController>,
-      public read_anything::mojom::UntrustedPage,
-      public ui::AXTreeObserver {
+      public read_anything::mojom::UntrustedPage {
  public:
   static gin::WrapperInfo kWrapperInfo;
 
