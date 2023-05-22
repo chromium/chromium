@@ -27,6 +27,7 @@ source_set("in_session_auth") {
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//ash/strings",
+    "//ash/style",
     "//base",
     "//chromeos/ash/components/cryptohome/",
     "//chromeos/ash/components/dbus/userdataauth",

@@ -17,6 +17,7 @@
 #include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -25,9 +26,9 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -68,14 +69,6 @@ constexpr base::TimeDelta kResetToDefaultMessageDelay =
 constexpr base::TimeDelta kFingerprintFailedAnimationDuration =
     base::Milliseconds(700);
 
-// 38% opacity.
-constexpr SkColor kDisabledFingerprintIconColor =
-    SkColorSetA(gfx::kGoogleGrey900, 97);
-constexpr SkColor kBackgroundColor = SK_ColorWHITE;
-constexpr SkColor kTextColorSecondary = gfx::kGoogleGrey700;
-constexpr SkColor kTextColorPrimary = gfx::kGoogleGrey900;
-constexpr SkColor kErrorColor = gfx::kGoogleRed600;
-
 constexpr int kSpacingBeforeButtons = 32;
 
 }  // namespace
@@ -108,7 +101,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     label_ = AddChildView(std::make_unique<FingerprintLabel>());
     label_->SetSubpixelRenderingEnabled(false);
     label_->SetAutoColorReadabilityEnabled(false);
-    label_->SetEnabledColor(kTextColorPrimary);
+    label_->SetEnabledColorId(kColorAshTextColorPrimary);
     label_->SetMultiLine(true);
     label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
@@ -117,6 +110,13 @@ class AuthDialogContentsView::FingerprintView : public views::View {
   FingerprintView(const FingerprintView&) = delete;
   FingerprintView& operator=(const FingerprintView&) = delete;
   ~FingerprintView() override = default;
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    if (state_ != FingerprintState::DISABLED_FROM_ATTEMPTS) {
+      SetIcon(state_);
+    }
+  }
 
   void SetState(FingerprintState state) {
     if (state_ == state)
@@ -207,18 +207,20 @@ class AuthDialogContentsView::FingerprintView : public views::View {
   }
 
   void SetIcon(FingerprintState state) {
-    const SkColor color =
+    const ui::ColorId color_id =
         (state == FingerprintState::AVAILABLE_DEFAULT ||
                  state == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING
-             ? kTextColorPrimary
-             : kDisabledFingerprintIconColor);
+             ? kColorAshTextColorPrimary
+             : kColorAshButtonIconDisabledColor);
     switch (state) {
       case FingerprintState::UNAVAILABLE:
       case FingerprintState::AVAILABLE_DEFAULT:
       case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
       case FingerprintState::DISABLED_FROM_TIMEOUT:
-        icon_->SetImage(gfx::CreateVectorIcon(kLockScreenFingerprintIcon,
-                                              kFingerprintIconSizeDp, color));
+        icon_->SetImage(
+            ui::ImageModel::FromVectorIcon(kLockScreenFingerprintIcon, color_id,
+                                           kFingerprintIconSizeDp)
+                .Rasterize(GetColorProvider()));
         break;
       case FingerprintState::DISABLED_FROM_ATTEMPTS:
         icon_->SetAnimationDecoder(
@@ -283,14 +285,14 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
     std::u16string title =
         l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
     SetText(title);
-    SetEnabledColor(kTextColorPrimary);
+    SetEnabledColorId(kColorAshTextColorPrimary);
     is_showing_error_ = false;
     SetAccessibleName(title);
   }
 
   void ShowError(const std::u16string& error_text) {
     SetText(error_text);
-    SetEnabledColor(kErrorColor);
+    SetEnabledColorId(kColorAshTextColorAlert);
     is_showing_error_ = true;
     SetAccessibleName(error_text);
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
@@ -317,8 +319,8 @@ AuthDialogContentsView::AuthDialogContentsView(
       auth_metadata_(auth_metadata) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW);
-  border->SetColor(kBackgroundColor);
+      views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW,
+      ui::kColorPrimaryBackground);
   border->SetCornerRadius(kCornerRadius);
   SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
   SetBorder(std::move(border));
@@ -421,7 +423,7 @@ void AuthDialogContentsView::AddTitleView() {
 void AuthDialogContentsView::AddOriginNameView() {
   origin_name_view_ =
       container_->AddChildView(std::make_unique<views::Label>());
-  origin_name_view_->SetEnabledColor(kTextColorSecondary);
+  origin_name_view_->SetEnabledColorId(kColorAshTextColorSecondary);
   origin_name_view_->SetSubpixelRenderingEnabled(false);
   origin_name_view_->SetAutoColorReadabilityEnabled(false);
   origin_name_view_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -537,7 +539,7 @@ void AuthDialogContentsView::AddActionButtonsView() {
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_HELP),
           views::style::CONTEXT_BUTTON));
-  help_button_->SetEnabledTextColors(kTextColorPrimary);
+  help_button_->SetEnabledTextColorIds(kColorAshTextColorPrimary);
 
   auto* spacing = action_view_container_->AddChildView(
       std::make_unique<NonAccessibleView>());
