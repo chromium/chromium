@@ -115,7 +115,7 @@
 
 - (BOOL)shouldDisplayCloudSlashSymbolForParentFolder {
   bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
-      self.bookmark, _profileBookmarkModel.get(), _accountBookmarkModel.get());
+      self.folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   switch (type) {
     case bookmarks::StorageType::kLocalOrSyncable:
       return bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
