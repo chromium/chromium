@@ -169,10 +169,9 @@ int main(int argc, char** argv) {
   VLOG(0) << "Process priority: " << base::Process::Current().GetPriority();
   VLOG(0) << updater::GetUACState();
 
-  // TODO(crbug.com/1245429): remove when the bug is fixed.
-  // Typically, the test suite runner expects the swarming task to run with
-  // normal priority but for some reason, on the updater bots with UAC on, the
-  // swarming task runs with a priority below normal.
+  // The test suite runner expects the swarming task to run with normal priority
+  // but for some reason, on the updater bots with UAC on, the swarming task
+  // runs with a priority below normal (see crbug.com/1245429).
   FixExecutionPriorities();
 
   auto scoped_com_initializer =
