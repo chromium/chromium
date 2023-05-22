@@ -14392,6 +14392,28 @@
             ]
         }
     ],
+    "VSyncDecoding": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VSyncDecoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "VaapiVp8TemporalLayerEncoding": [
         {
             "platforms": [
@@ -15319,6 +15341,28 @@
                     "name": "EnabledV1",
                     "enable_features": [
                         "WebRtcLegacyGetStatsThrows"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebRtcSendPacketBatch": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebRtcSendPacketBatch"
                     ]
                 }
             ]

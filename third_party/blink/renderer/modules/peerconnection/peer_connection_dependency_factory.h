@@ -57,9 +57,6 @@ class RTCPeerConnectionHandler;
 class WebLocalFrame;
 class WebRtcAudioDeviceImpl;
 
-// Feature flag for batching send packets.
-BASE_DECLARE_FEATURE(kWebRtcSendPacketBatch);
-
 // Object factory for RTC PeerConnections.
 class MODULES_EXPORT PeerConnectionDependencyFactory
     : public GarbageCollected<PeerConnectionDependencyFactory>,

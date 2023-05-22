@@ -894,6 +894,19 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Combine WebRTC Network and Worker threads. More info at crbug.com/1373439.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcCombinedNetworkAndWorkerThread);
 
+// Combine WebRTC Network and Worker threads. More info at crbug.com/1373439.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcSendPacketBatch);
+
+// Feature flag for driving the Metronome by VSyncs instead of by timer.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncDecoding);
+// Feature parameter controlling WebRTC VSyncDecoding tick durations during
+// occluded tabs.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kVSyncDecodingHiddenOccludedTickDuration;
+
+// Feature flag for batching sending of WebRTC RTP UDP packets.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcSendPacketBatch);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIsolateSandboxedIframes);
 enum class IsolateSandboxedIframesGrouping {
   // In this grouping, all isolated sandboxed iframes whose URLs share the same

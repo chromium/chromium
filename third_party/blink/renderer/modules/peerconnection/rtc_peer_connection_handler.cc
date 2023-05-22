@@ -29,6 +29,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/media_switches.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -1094,7 +1095,7 @@ bool RTCPeerConnectionHandler::Initialize(
                                       &configuration_);
 
   configuration_.media_config.video.enable_send_packet_batching =
-      base::FeatureList::IsEnabled(kWebRtcSendPacketBatch);
+      base::FeatureList::IsEnabled(features::kWebRtcSendPacketBatch);
 
   peer_connection_observer_ =
       MakeGarbageCollected<Observer>(weak_factory_.GetWeakPtr(), task_runner_);
