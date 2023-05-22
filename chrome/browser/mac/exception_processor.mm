@@ -19,10 +19,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace chrome {
 
 // Maximum number of known named exceptions we'll support.  There is

@@ -125,11 +125,11 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertTabAtPosition) {
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertAndDeleteTabs) {
   WindowAppleScript* window =
       [[WindowAppleScript alloc] initWithBrowser:browser()];
-  TabAppleScript* aTab;
+  base::scoped_nsobject<TabAppleScript> aTab;
   NSUInteger count;
   for (NSUInteger i = 0; i < 5; ++i) {
     for (NSUInteger j = 0; j < 3; ++j) {
-      aTab = [[TabAppleScript alloc] init];
+      aTab.reset([[TabAppleScript alloc] init]);
       [window insertInTabs:aTab];
     }
     count = 3 * i + 4;

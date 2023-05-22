@@ -24,10 +24,6 @@
 #include "content/public/browser/native_event_processor_observer_mac.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace chrome_browser_application_mac {
 
 void RegisterBrowserCrApp() {
@@ -42,7 +38,7 @@ void RegisterBrowserCrApp() {
 void InitializeHeadlessMode() {
   // In headless mode the browser window exists but is always hidden, so there
   // is no point in showing dock icon and menu bar.
-  NSApp.activationPolicy = NSApplicationActivationPolicyAccessory;
+  [NSApp setActivationPolicy:NSApplicationActivationPolicyAccessory];
 }
 
 void Terminate() {
@@ -121,14 +117,13 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 
 }  // namespace
 
-@interface BrowserCrApplication () <NativeEventProcessor>
-@end
-
-@implementation BrowserCrApplication {
+@interface BrowserCrApplication ()<NativeEventProcessor> {
   base::ObserverList<content::NativeEventProcessorObserver>::Unchecked
       _observers;
-  BOOL _handlingSendEvent;
 }
+@end
+
+@implementation BrowserCrApplication
 
 + (void)initialize {
   // Turn all deallocated Objective-C objects into zombies, keeping
@@ -345,13 +340,13 @@ std::string DescriptionForNSEvent(NSEvent* event) {
     }
     base::mac::ScopedSendingEvent sendingEventScoper;
     content::ScopedNotifyNativeEventProcessorObserver scopedObserverNotifier(
-        &self->_observers, event);
+        &_observers, event);
     // Mac Eisu and Kana keydown events are by default swallowed by sendEvent
     // and sent directly to IME, which prevents ui keydown events from firing.
     // These events need to be sent to [NSApp keyWindow] for handling.
-    if (event.type == NSEventTypeKeyDown &&
-        (event.keyCode == kVK_JIS_Eisu || event.keyCode == kVK_JIS_Kana)) {
-      [NSApp.keyWindow sendEvent:event];
+    if ([event type] == NSEventTypeKeyDown &&
+        ([event keyCode] == kVK_JIS_Eisu || [event keyCode] == kVK_JIS_Kana)) {
+      [[NSApp keyWindow] sendEvent:event];
     } else {
       [super sendEvent:event];
     }
@@ -359,8 +354,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 }
 
 - (void)accessibilitySetValue:(id)value forAttribute:(NSString*)attribute {
-  // This is an undocumented attribute that's set when VoiceOver is turned
-  // on/off.
+  // This is an undocument attribute that's set when VoiceOver is turned on/off.
   if ([attribute isEqualToString:@"AXEnhancedUserInterface"]) {
     content::BrowserAccessibilityState* accessibility_state =
         content::BrowserAccessibilityState::GetInstance();

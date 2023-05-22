@@ -18,10 +18,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 
 NSString* UserAuthenticationRightName() {
@@ -74,14 +70,14 @@ bool AuthenticateUser(std::u16string prompt_string) {
   AuthorizationItem right_items[] = {{rightName.UTF8String, 0, nullptr, 0}};
   AuthorizationRights rights = {std::size(right_items), right_items};
 
-  base::ScopedCFTypeRef<CFStringRef> prompt =
-      base::SysUTF16ToCFStringRef(prompt_string);
+  NSString* prompt = base::SysUTF16ToNSString(prompt_string);
 
   // Pass kAuthorizationFlagDestroyRights to prevent the OS from saving the
   // authorization and not prompting the user when future requests are made.
   base::mac::ScopedAuthorizationRef authorization =
       base::mac::GetAuthorizationRightsWithPrompt(
-          &rights, prompt, kAuthorizationFlagDestroyRights);
+          &rights, base::mac::NSToCFCast(prompt),
+          kAuthorizationFlagDestroyRights);
   return static_cast<bool>(authorization);
 }
 

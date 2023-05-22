@@ -7,18 +7,15 @@
 #import <LocalAuthentication/LAContext.h>
 
 #include "base/functional/callback.h"
+#include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 AuthenticatorMac::AuthenticatorMac() = default;
 
 AuthenticatorMac::~AuthenticatorMac() = default;
 
 bool AuthenticatorMac::CheckIfBiometricsAvailable() {
-  LAContext* context = [[LAContext alloc] init];
+  base::scoped_nsobject<LAContext> context([[LAContext alloc] init]);
   return
       [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:nil];

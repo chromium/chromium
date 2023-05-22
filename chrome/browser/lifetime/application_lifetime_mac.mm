@@ -13,10 +13,6 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "ui/views/widget/widget.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace chrome {
 
 // At this point, the user is trying to quit (or the system is forcing the

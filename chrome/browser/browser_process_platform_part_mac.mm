@@ -15,13 +15,11 @@
 #include "chrome/browser/chrome_browser_application_mac.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+BrowserProcessPlatformPart::BrowserProcessPlatformPart() {
+}
 
-BrowserProcessPlatformPart::BrowserProcessPlatformPart() = default;
-
-BrowserProcessPlatformPart::~BrowserProcessPlatformPart() = default;
+BrowserProcessPlatformPart::~BrowserProcessPlatformPart() {
+}
 
 void BrowserProcessPlatformPart::BeginStartTearDown() {
   if (app_shim_manager_)
@@ -57,7 +55,7 @@ void BrowserProcessPlatformPart::AttemptExit(bool try_to_quit_application) {
 
 void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   // Create two AppShimManager::Delegates -- one for extensions-based apps
-  // (which will be deprecated in 2020), and one for web apps (PWAs and
+  // (which will be deprecatedin 2020), and one for web apps (PWAs and
   // bookmark apps). The WebAppShimManagerDelegate will defer to the
   // ExtensionAppShimManagerDelegate passed to it for extension-based apps.
   // When extension-based apps are deprecated, the

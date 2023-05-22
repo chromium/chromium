@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
@@ -18,14 +19,10 @@
 #include "net/base/sockaddr_storage.h"
 #include "testing/gtest_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 @interface TestNSNetService : NSNetService {
  @private
-  NSData* __strong _data;
-  NSArray* __strong _addresses;
+  base::scoped_nsobject<NSData> _data;
+  base::scoped_nsobject<NSArray> _addresses;
 }
 - (instancetype)initWithData:(NSData*)data;
 - (void)setAddresses:(NSArray*)addresses;
@@ -35,13 +32,13 @@
 
 - (instancetype)initWithData:(NSData*)data {
   if ((self = [super initWithDomain:@"" type:@"_tcp." name:@"Test.123"])) {
-    _data = data;
+    _data.reset([data retain]);
   }
   return self;
 }
 
 - (void)setAddresses:(NSArray*)addresses {
-  _addresses = [addresses copy];
+  _addresses.reset([addresses copy]);
 }
 
 - (NSArray*)addresses {
@@ -147,9 +144,9 @@ TEST_F(ServiceDiscoveryClientMacTest, DeleteResolverAfterStart) {
 
 TEST_F(ServiceDiscoveryClientMacTest, ParseServiceRecord) {
   const uint8_t record_bytes[] = {2, 'a', 'b', 3, 'd', '=', 'e'};
-  TestNSNetService* test_service = [[TestNSNetService alloc]
+  base::scoped_nsobject<TestNSNetService> test_service([[TestNSNetService alloc]
       initWithData:[NSData dataWithBytes:record_bytes
-                                  length:std::size(record_bytes)]];
+                                  length:std::size(record_bytes)]]);
 
   const std::string kIp = "2001:4860:4860::8844";
   const uint16_t kPort = 4321;
@@ -164,7 +161,7 @@ TEST_F(ServiceDiscoveryClientMacTest, ParseServiceRecord) {
   [test_service setAddresses:addresses];
 
   ServiceDescription description;
-  ParseNetService(test_service, description);
+  ParseNetService(test_service.get(), description);
 
   const std::vector<std::string>& metadata = description.metadata;
   EXPECT_EQ(2u, metadata.size());
