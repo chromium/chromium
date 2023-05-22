@@ -35,6 +35,10 @@ void FakeSyncEngine::TriggerInitializationCompletion(bool success) {
   host_->OnEngineInitialized(success, is_first_time_sync_configure_);
 }
 
+void FakeSyncEngine::SetDetailedStatus(const SyncStatus& status) {
+  sync_status_ = status;
+}
+
 void FakeSyncEngine::Initialize(InitParams params) {
   DCHECK(params.host);
 
@@ -112,7 +116,7 @@ void FakeSyncEngine::DisconnectDataType(ModelType type) {}
 void FakeSyncEngine::SetProxyTabsDatatypeEnabled(bool enabled) {}
 
 const SyncStatus& FakeSyncEngine::GetDetailedStatus() const {
-  return default_sync_status_;
+  return sync_status_;
 }
 
 void FakeSyncEngine::HasUnsyncedItemsForTest(

@@ -546,12 +546,22 @@ void SyncEngineImpl::HandleSyncStatusChanged(const SyncStatus& status) {
       (status.backed_off_types != cached_status_.backed_off_types);
   const bool invalidation_status_changed =
       (status.notifications_enabled != cached_status_.notifications_enabled);
+  const bool has_new_invalidated_data_types =
+      !cached_status_.invalidated_data_types.HasAll(
+          status.invalidated_data_types);
   cached_status_ = status;
   if (backed_off_types_changed) {
     host_->OnBackedOffTypesChanged();
   }
   if (invalidation_status_changed) {
     host_->OnInvalidationStatusChanged();
+  }
+  if (has_new_invalidated_data_types) {
+    // Notify about any new data types having pending invalidations. When there
+    // are less such data types, this basically means that sync cycle has been
+    // finished, and |host_| will be notified via OnSyncCycleCompleted(), so
+    // there is no point in duplicating it.
+    host_->OnNewInvalidatedDataTypes();
   }
 }
 

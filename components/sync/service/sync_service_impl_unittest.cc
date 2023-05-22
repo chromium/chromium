@@ -1441,5 +1441,21 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorWhenDataTypeDisabled) {
             SyncService::ModelTypeDownloadStatus::kError);
 }
 
+TEST_F(SyncServiceImplTest, ShouldWaitUntilNoInvalidations) {
+  SignIn();
+  CreateService();
+  InitializeForNthSync();
+
+  SyncStatus status;
+  status.invalidated_data_types.Put(BOOKMARKS);
+  engine()->SetDetailedStatus(status);
+
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+  // TODO(crbug.com/1425026): uncomment once up-to-date status is supported.
+  // EXPECT_EQ(service()->GetDownloadStatusFor(syncer::PASSWORDS),
+  //           SyncService::ModelTypeDownloadStatus::kUpToDate);
+}
+
 }  // namespace
 }  // namespace syncer

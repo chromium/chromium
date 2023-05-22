@@ -1042,6 +1042,10 @@ void SyncServiceImpl::OnInvalidationStatusChanged() {
   NotifyObservers();
 }
 
+void SyncServiceImpl::OnNewInvalidatedDataTypes() {
+  NotifyObservers();
+}
+
 void SyncServiceImpl::OnConfigureDone(
     const DataTypeManager::ConfigureResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1859,16 +1863,22 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusFor(
     // Wait for the sync engine to be fully initialized.
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
+  CHECK(engine_);
 
   if (data_type_manager_->GetDataTypesWithPermanentErrors().Has(type)) {
     return ModelTypeDownloadStatus::kError;
   }
 
-  if (!GetActiveDataTypes().Has(type)) {
+  if (!GetActiveDataTypes().Has(type) ||
+      !engine_->GetDetailedStatus().notifications_enabled) {
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
-  // TODO(crbug.com/1425026): check for incoming invalidations.
+  if (engine_->GetDetailedStatus().invalidated_data_types.Has(type)) {
+    return ModelTypeDownloadStatus::kWaitingForUpdates;
+  }
+
+  // TODO(crbug.com/1425026): check for upcoming polling request.
   NOTREACHED() << "Download status API is not fully implemented yet.";
   return ModelTypeDownloadStatus::kUpToDate;
 }

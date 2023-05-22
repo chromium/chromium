@@ -47,6 +47,8 @@ class FakeSyncEngine : public SyncEngine,
   // in the constructor.
   void TriggerInitializationCompletion(bool success);
 
+  void SetDetailedStatus(const SyncStatus& status);
+
   // Immediately calls params.host->OnEngineInitialized.
   void Initialize(InitParams params) override;
 
@@ -114,7 +116,7 @@ class FakeSyncEngine : public SyncEngine,
   // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
   raw_ptr<SyncEngineHost, DanglingUntriaged> host_ = nullptr;
   bool initialized_ = false;
-  const SyncStatus default_sync_status_;
+  SyncStatus sync_status_;
   CoreAccountId authenticated_account_id_;
   bool started_handling_invalidations_ = false;
 };

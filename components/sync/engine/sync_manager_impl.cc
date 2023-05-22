@@ -372,6 +372,8 @@ void SyncManagerImpl::SetHasPendingInvalidations(
     bool has_pending_invalidations) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   scheduler_->SetHasPendingInvalidations(type, has_pending_invalidations);
+  sync_status_tracker_->SetHasPendingInvalidations(type,
+                                                   has_pending_invalidations);
 }
 
 void SyncManagerImpl::NotifySyncStatusChanged(const SyncStatus& status) {

@@ -50,6 +50,7 @@ using testing::_;
 using testing::ByMove;
 using testing::NiceMock;
 using testing::Return;
+using testing::Sequence;
 
 namespace syncer {
 
@@ -84,6 +85,7 @@ class MockSyncEngineHost : public SyncEngineHost {
               (override));
   MOCK_METHOD(void, OnBackedOffTypesChanged, (), (override));
   MOCK_METHOD(void, OnInvalidationStatusChanged, (), (override));
+  MOCK_METHOD(void, OnNewInvalidatedDataTypes, (), (override));
 };
 
 class FakeSyncManagerFactory : public SyncManagerFactory {
@@ -883,6 +885,34 @@ TEST_F(SyncEngineImplTest,
   EXPECT_EQ(kTestGaiaId, transport_data_prefs.GetGaiaId());
   EXPECT_NE(kTestCacheGuid, transport_data_prefs.GetCacheGuid());
   EXPECT_NE(kTestBirthday, transport_data_prefs.GetBirthday());
+}
+
+TEST_F(SyncEngineImplTest, ShouldNotifyOnNewInvalidatedDataTypes) {
+  InitializeBackend();
+  ConfigureDataTypes();
+
+  // Use OnInvalidationStatusChanged() to verify that
+  // OnNewInvalidatedDataTypes() is caled only once in the beginning, and all
+  // the next invalidated data types updates should not notify.
+  Sequence seq;
+  EXPECT_CALL(mock_host_, OnNewInvalidatedDataTypes).InSequence(seq);
+  EXPECT_CALL(mock_host_, OnInvalidationStatusChanged).InSequence(seq);
+
+  SyncStatus sync_status;
+  sync_status.invalidated_data_types.Put(BOOKMARKS);
+  fake_manager_->NotifySyncStatusChanged(sync_status);
+  fake_manager_->WaitForSyncThread();
+
+  // Turn on notifications to trigger OnInvalidationStatusChanged().
+  sync_status.notifications_enabled = true;
+  fake_manager_->NotifySyncStatusChanged(sync_status);
+  fake_manager_->WaitForSyncThread();
+
+  // Removing an invalidated data type shouldn't invoke
+  // OnNewInvalidatedDataTypes().
+  sync_status.invalidated_data_types.Remove(BOOKMARKS);
+  fake_manager_->NotifySyncStatusChanged(sync_status);
+  fake_manager_->WaitForSyncThread();
 }
 
 }  // namespace

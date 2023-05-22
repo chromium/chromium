@@ -161,6 +161,7 @@ class SyncServiceImpl : public SyncService,
   void OnActionableProtocolError(const SyncProtocolError& error) override;
   void OnBackedOffTypesChanged() override;
   void OnInvalidationStatusChanged() override;
+  void OnNewInvalidatedDataTypes() override;
 
   // DataTypeManagerObserver implementation.
   void OnConfigureDone(const DataTypeManager::ConfigureResult& result) override;

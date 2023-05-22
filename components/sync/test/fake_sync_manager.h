@@ -68,6 +68,9 @@ class FakeSyncManager : public SyncManager {
 
   bool IsInvalidatorEnabled() const { return invalidator_enabled_; }
 
+  // Notifies all observers about the changed |status|.
+  void NotifySyncStatusChanged(const SyncStatus& status);
+
   // SyncManager implementation.
   // Note: we treat whatever message loop this is called from as the sync
   // loop for purposes of callbacks.
@@ -105,6 +108,8 @@ class FakeSyncManager : public SyncManager {
       ActiveDevicesInvalidationInfo active_devices_invalidation_info) override;
 
  private:
+  void DoNotifySyncStatusChanged(const SyncStatus& status);
+
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
 
   base::ObserverList<SyncManager::Observer>::Unchecked observers_;
