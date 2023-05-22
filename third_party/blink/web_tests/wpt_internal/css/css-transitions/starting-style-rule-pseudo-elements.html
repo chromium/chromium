@@ -13,7 +13,7 @@
     background-color: white;
     content: "";
   }
-  @initial {
+  @starting-style {
     #target::before {
       background-color: black;
     }
@@ -28,7 +28,7 @@
     assert_equals(getComputedStyle(target, "::before").color, "rgb(0, 128, 0)",
                   "No transition of color");
     assert_equals(getComputedStyle(target, "::before").backgroundColor, "rgb(128, 128, 128)",
-                  "Background transition from @initial value black to white");
+                  "Background transition from @starting-style value black to white");
   }, "Triggered transition from first style update");
 
   promise_test(async t => {
@@ -43,7 +43,7 @@
     target.style.display = "block";
     await waitForAnimationFrames(2);
     assert_equals(getComputedStyle(target, "::before").backgroundColor, "rgb(128, 128, 128)",
-                  "Background transition from @initial value black to white");
+                  "Background transition from @starting-style value black to white");
   }, "Triggered transition from display:none to display:block");
 
   promise_test(async t => {
@@ -53,6 +53,6 @@
     document.body.appendChild(removed);
     await waitForAnimationFrames(2);
     assert_equals(getComputedStyle(target, "::before").backgroundColor, "rgb(128, 128, 128)",
-                  "Background transition from @initial value black to white");
+                  "Background transition from @starting-style value black to white");
   }, "Triggered transition on DOM insertion");
 </script>

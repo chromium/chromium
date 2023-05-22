@@ -1174,7 +1174,7 @@
       default_value: "false",
     },
     {
-      name: "IsPseudoInitialStyle",
+      name: "IsStartingStyle",
       field_template: "monotonic_flag",
       type_name: "bool",
       field_group: "*",

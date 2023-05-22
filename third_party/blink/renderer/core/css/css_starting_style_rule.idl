@@ -4,5 +4,5 @@
 
 [
   Exposes=Window, RuntimeEnabled = CSSInitialPseudo
-] interface CSSInitialRule : CSSConditionRule {
+] interface CSSStartingStyleRule : CSSConditionRule {
 };

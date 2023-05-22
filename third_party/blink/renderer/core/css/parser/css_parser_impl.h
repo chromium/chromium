@@ -206,9 +206,10 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleSupports* ConsumeSupportsRule(CSSParserTokenStream& stream,
                                          CSSNestingType,
                                          StyleRule* parent_rule_for_nesting);
-  StyleRuleInitial* ConsumeInitialRule(CSSParserTokenStream& stream,
-                                       CSSNestingType,
-                                       StyleRule* parent_rule_for_nesting);
+  StyleRuleStartingStyle* ConsumeStartingStyleRule(
+      CSSParserTokenStream& stream,
+      CSSNestingType,
+      StyleRule* parent_rule_for_nesting);
   StyleRuleFontFace* ConsumeFontFaceRule(CSSParserTokenStream&);
   StyleRuleFontPaletteValues* ConsumeFontPaletteValuesRule(
       CSSParserTokenStream&);

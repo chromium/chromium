@@ -472,7 +472,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       selector_statistics_collector.EndCollectionForCurrentRule();
       selector_statistics_collector.BeginCollectionForRule(&rule_data);
     }
-    if (!is_initial && rule_data.IsInitial()) {
+    if (!is_initial && rule_data.IsStartingStyle()) {
       continue;
     }
     if (can_use_fast_reject_ &&
@@ -985,8 +985,9 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
   for (unsigned i = 0; i < matched_rules_.size(); i++) {
     const MatchedRule& matched_rule = matched_rules_[i];
     const RuleData* rule_data = matched_rule.GetRuleData();
-    if (rule_data->IsInitial()) {
-      result_.AddFlags(static_cast<MatchFlags>(MatchFlag::kAffectedByInitial));
+    if (rule_data->IsStartingStyle()) {
+      result_.AddFlags(
+          static_cast<MatchFlags>(MatchFlag::kAffectedByStartingStyle));
     }
     result_.AddMatchedProperties(
         &rule_data->Rule()->Properties(),

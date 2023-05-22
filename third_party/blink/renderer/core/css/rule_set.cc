@@ -123,7 +123,7 @@ RuleData::RuleData(StyleRule* rule,
       is_entirely_covered_by_bucketing_(
           false),  // Will be computed in ComputeEntirelyCoveredByBucketing().
       is_easy_(false),  // Ditto.
-      is_initial_((add_rule_flags & kRuleIsInitial) != 0),
+      is_starting_style_((add_rule_flags & kRuleIsStartingStyle) != 0),
       descendant_selector_identifier_hashes_() {}
 
 void RuleData::ComputeEntirelyCoveredByBucketing() {
@@ -697,9 +697,9 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       }
       AddChildRules(scope_rule->ChildRules(), medium, add_rule_flags,
                     container_query, cascade_layer, inner_style_scope);
-    } else if (auto* initial_rule = DynamicTo<StyleRuleInitial>(rule)) {
+    } else if (auto* initial_rule = DynamicTo<StyleRuleStartingStyle>(rule)) {
       AddChildRules(initial_rule->ChildRules(), medium,
-                    add_rule_flags | kRuleIsInitial, container_query,
+                    add_rule_flags | kRuleIsStartingStyle, container_query,
                     cascade_layer, style_scope);
     }
   }

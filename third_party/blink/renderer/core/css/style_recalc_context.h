@@ -65,7 +65,8 @@ class CORE_EXPORT StyleRecalcContext {
   StyleScopeFrame* style_scope_frame = nullptr;
 
   // The style for the element at the start of the lifecycle update, or the
-  // :initial styles for the second pass when transitioning from display:none.
+  // @starting-style styles for the second pass when transitioning from
+  // display:none.
   const ComputedStyle* old_style = nullptr;
 
   // If true, something about the parent's style (e.g., that it has

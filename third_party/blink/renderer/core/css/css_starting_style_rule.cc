@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/css_initial_rule.h"
+#include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
 
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -11,14 +11,15 @@
 
 namespace blink {
 
-CSSInitialRule::CSSInitialRule(StyleRuleInitial* initial_rule,
-                               CSSStyleSheet* parent)
-    : CSSConditionRule(initial_rule, parent) {}
+CSSStartingStyleRule::CSSStartingStyleRule(
+    StyleRuleStartingStyle* starting_style_rule,
+    CSSStyleSheet* parent)
+    : CSSConditionRule(starting_style_rule, parent) {}
 
-String CSSInitialRule::cssText() const {
+String CSSStartingStyleRule::cssText() const {
   StringBuilder result;
 
-  result.Append("@initial ");
+  result.Append("@starting-style ");
   AppendCSSTextForItems(result);
 
   return result.ReleaseString();

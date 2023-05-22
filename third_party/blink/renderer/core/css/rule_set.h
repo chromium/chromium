@@ -50,7 +50,7 @@ using AddRuleFlags = unsigned;
 enum AddRuleFlag {
   kRuleHasNoSpecialState = 0,
   kRuleIsVisitedDependent = 1 << 0,
-  kRuleIsInitial = 1 << 1,
+  kRuleIsStartingStyle = 1 << 1,
 };
 
 // Some CSS properties do not apply to certain pseudo-elements, and need to be
@@ -127,7 +127,7 @@ class CORE_EXPORT RuleData {
   void ComputeEntirelyCoveredByBucketing();
   void ResetEntirelyCoveredByBucketing();
   bool SelectorIsEasy() const { return is_easy_; }
-  bool IsInitial() const { return is_initial_; }
+  bool IsStartingStyle() const { return is_starting_style_; }
 
   bool ContainsUncommonAttributeSelector() const {
     return contains_uncommon_attribute_selector_;
@@ -197,8 +197,8 @@ class CORE_EXPORT RuleData {
   unsigned link_match_type_ : 2;
   unsigned valid_property_filter_ : 3;
   unsigned is_entirely_covered_by_bucketing_ : 1;
-  unsigned is_easy_ : 1;     // See EasySelectorChecker.
-  unsigned is_initial_ : 1;  // Inside @initial {}.
+  unsigned is_easy_ : 1;            // See EasySelectorChecker.
+  unsigned is_starting_style_ : 1;  // Inside @starting-style {}.
   // 32 bits above
   union {
     // Used by RuleMap before compaction, to hold what bucket this RuleData

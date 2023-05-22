@@ -3823,7 +3823,7 @@ enum WebFeature {
   kExecutedEmptyJavaScriptURLFromFrame = 4483,
   kExecutedJavaScriptURLFromFrame = 4484,
   kServiceWorkerBypassFetchHandlerForSubResource = 4485,
-  kCSSAtRuleInitial = 4486,
+  kCSSAtRuleStartingStyle = 4486,
   kPrivateAggregationApiFledgeExtensions = 4487,
   kDeprecatedInterestGroupDailyUpdateUrl = 4488,
   kCSSColorGradientColorSpace = 4489,
