@@ -85,6 +85,12 @@ swift_source_set("util_swift") {
   frameworks = [ "UIKit.framework" ]
 }
 
+swift_source_set("util_swiftui") {
+  sources = [ "ConditionalViewModifier.swift" ]
+  deps = []
+  frameworks = [ "SwiftUI.framework" ]
+}
+
 source_set("terms_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

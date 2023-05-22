@@ -277,13 +277,20 @@ enum class IOSOverflowMenuActionType {
 
       self.contentBlockerMediator.consumer = self.overflowMenuMediator;
 
+      NSInteger highlightDestination =
+          [self.popupMenuHelpCoordinator highlightDestination] == nil
+              ? -1
+              : [[self.popupMenuHelpCoordinator highlightDestination]
+                    integerValue];
       OverflowMenuUIConfiguration* uiConfiguration =
           [[OverflowMenuUIConfiguration alloc]
               initWithPresentingViewControllerHorizontalSizeClass:
                   self.baseViewController.traitCollection.horizontalSizeClass
                         presentingViewControllerVerticalSizeClass:
                             self.baseViewController.traitCollection
-                                .verticalSizeClass];
+                                .verticalSizeClass
+                                             highlightDestination:
+                                                 highlightDestination];
 
       self.popupMenuHelpCoordinator.uiConfiguration = uiConfiguration;
 
@@ -343,7 +350,7 @@ enum class IOSOverflowMenuActionType {
                        animated:YES
                      completion:^{
                        [weakSelf.popupMenuHelpCoordinator
-                           showOverflowMenuIPHInViewController:menu];
+                           showHistoryOnOverflowMenuIPHInViewController:menu];
                      }];
       return;
     }

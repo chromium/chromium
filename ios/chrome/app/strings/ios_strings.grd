@@ -4476,11 +4476,8 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_KEYBOARD_ACCESSORY_VIEW_PASTE_SEARCH" desc="Accessibility label for a button that starts a Paste and Search [iOS only]">
         Paste and Search
       </message>
-      <message name="IDS_IOS_OVERFLOW_MENU_CAROUSEL_TIP" desc="The text of the tip explaining to the user they can use the carousel in the overflow menu.">
-        Your saved bookmarks, passwords, settings, and more are now here
-      </message>
-      <message name="IDS_IOS_OVERFLOW_MENU_CAROUSEL_TIP_VOICEOVER" desc="The VoiceOver announcement for the tip explaining to the user they can use the carousel in the overflow menu.">
-        Your saved bookmarks, passwords, settings, and more are available from this screen.
+      <message name="IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP" desc="The text of the tip explaining to the user they can use the history item in the overflow menu.">
+        View browsing history.
       </message>
       <message name="IDS_IOS_AUTOFILL_ADDRESS_SUGGESTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="The accessibility announcement to indicate the number of address suggestions available to the user above the keyboard. This announcement is triggered when the user enters edit mode in a form field that has address suggestions available for autofill purposes. According to the number of available addresses, the string goes from singular to plural. [iOS only]">
         {count, plural,
@@ -4589,9 +4586,6 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL" desc="The label of the verify your account action button in the identity error info bar. [iOS only]">
         Verify
-      </message>
-      <message name="IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP" desc="The text of the tip explaining that browsing history can be viewed from the Overflow Menu.">
-        View browsing history
       </message>
     </messages>
   </release>
