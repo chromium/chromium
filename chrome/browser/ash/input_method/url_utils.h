@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_IME_RULES_CONFIG_H_
-#define CHROME_BROWSER_ASH_INPUT_METHOD_IME_RULES_CONFIG_H_
+#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_URL_UTILS_H_
+#define CHROME_BROWSER_ASH_INPUT_METHOD_URL_UTILS_H_
+
+#include "url/gurl.h"
 
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -11,9 +13,6 @@
 
 namespace ash {
 namespace input_method {
-
-// Runs the rule check against contextual info.
-bool IsAssistiveInputDisabled(const absl::optional<GURL>& current_url);
 
 // Checks if domain is a sub-domain of url
 bool IsSubDomain(const GURL& url, const base::StringPiece domain);
@@ -26,4 +25,4 @@ bool IsSubDomainWithPathPrefix(const GURL& url,
 }  // namespace input_method
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_IME_RULES_CONFIG_H_
+#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_URL_UTILS_H_

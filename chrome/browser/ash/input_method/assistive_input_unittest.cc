@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/ime_rules_config.h"
+#include "chrome/browser/ash/input_method/assistive_input.h"
 
 #include "ash/constants/app_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -10,16 +10,16 @@
 namespace ash {
 namespace input_method {
 
-class ImeRulesConfigAutoCorrectDisabledTest
+class AssistiveInputAutoCorrectDisabledTest
     : public testing::TestWithParam<std::string> {
  public:
-  ImeRulesConfigAutoCorrectDisabledTest() = default;
-  ~ImeRulesConfigAutoCorrectDisabledTest() override = default;
+  AssistiveInputAutoCorrectDisabledTest() = default;
+  ~AssistiveInputAutoCorrectDisabledTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    ImeRulesConfigAutoCorrectDisabledTest,
+    AssistiveInputAutoCorrectDisabledTest,
     testing::Values(
         "https://amazon.com",
         "https://b.corp.google.com",
@@ -37,7 +37,6 @@ INSTANTIATE_TEST_SUITE_P(
         "https://teams.microsoft.com",
         "https://twitter.com",
         "https://whatsapp.com",
-
         "https://www.youtube.com",
         "https://b.corp.google.com/134",
         "https://docs.google.com/document/d/documentId/edit",
@@ -46,20 +45,20 @@ INSTANTIATE_TEST_SUITE_P(
         "http://smile.amazon.com",
         "http://www.abc.smile.amazon.com.au/abc+com+au/some/other/text"));
 
-TEST_P(ImeRulesConfigAutoCorrectDisabledTest, IsAutoCorrectDisabled) {
+TEST_P(AssistiveInputAutoCorrectDisabledTest, IsAutoCorrectDisabled) {
   EXPECT_TRUE(IsAssistiveInputDisabled(GURL(GetParam())));
 }
 
-class ImeRulesConfigAutoCorrectEnabledTest
+class AssistiveInputAutoCorrectEnabledTest
     : public testing::TestWithParam<std::string> {
  public:
-  ImeRulesConfigAutoCorrectEnabledTest() = default;
-  ~ImeRulesConfigAutoCorrectEnabledTest() override = default;
+  AssistiveInputAutoCorrectEnabledTest() = default;
+  ~AssistiveInputAutoCorrectEnabledTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    ImeRulesConfigAutoCorrectEnabledTest,
+    AssistiveInputAutoCorrectEnabledTest,
     testing::Values("",
                     "http://",
                     "http://abc.com",
@@ -74,8 +73,9 @@ INSTANTIATE_TEST_SUITE_P(
                     "http://not-amazon.com/test",
                     "http://.com/test"));
 
-TEST_P(ImeRulesConfigAutoCorrectEnabledTest, IsAutoCorrectEnabled) {
+TEST_P(AssistiveInputAutoCorrectEnabledTest, IsAutoCorrectEnabled) {
   EXPECT_FALSE(IsAssistiveInputDisabled(GURL(GetParam())));
 }
+
 }  // namespace input_method
 }  // namespace ash
