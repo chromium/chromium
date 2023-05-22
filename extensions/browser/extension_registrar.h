@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -180,28 +180,16 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // ProcessManagerObserver overrides
   void OnServiceWorkerRegistered(const WorkerId& worker_id) override;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Delegate provided in the constructor. Should outlive this object.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Keyed services we depend on. Cached here for repeated access.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION ExtensionSystem* const extension_system_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION ExtensionPrefs* const extension_prefs_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION ExtensionRegistry* const registry_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION RendererStartupHelper* const renderer_helper_;
+  const raw_ptr<ExtensionSystem, DanglingUntriaged> extension_system_;
+  const raw_ptr<ExtensionPrefs> extension_prefs_;
+  const raw_ptr<ExtensionRegistry> registry_;
+  const raw_ptr<RendererStartupHelper> renderer_helper_;
 
   // Map of DevToolsAgentHost instances that are detached,
   // waiting for an extension to be reloaded.
