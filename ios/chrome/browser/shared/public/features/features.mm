@@ -171,6 +171,10 @@ BASE_FEATURE(kTabGridRecencySort,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGridSortedByRecency() {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kTabGridRecencySort);
 }
 
