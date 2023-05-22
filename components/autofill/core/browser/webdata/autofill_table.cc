@@ -1033,45 +1033,6 @@ bool AddAutofillProfileToTable(sql::Database* db,
   return true;
 }
 
-// Reads the profile with `guid` from the `source`-tables.
-// TODO(crbug.com/1443393): Inline into `GetAutofillProfile()`.
-std::unique_ptr<AutofillProfile> GetAutofillProfileFromTable(
-    sql::Database* db,
-    const std::string& guid,
-    AutofillProfile::Source source) {
-  sql::Statement s;
-  if (!SelectByGuid(db, s, GetProfileMetadataTable(source),
-                    {kUseCount, kUseDate, kDateModified, kLanguageCode, kLabel,
-                     kInitialCreatorId, kLastModifierId},
-                    guid)) {
-    return nullptr;
-  }
-  auto profile = std::make_unique<AutofillProfile>(guid, source);
-  int index = 0;
-  profile->set_use_count(s.ColumnInt64(index++));
-  profile->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
-  profile->set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
-  profile->set_language_code(s.ColumnString(index++));
-  profile->set_profile_label(s.ColumnString(index++));
-  profile->set_initial_creator_id(s.ColumnInt(index++));
-  profile->set_last_modifier_id(s.ColumnInt(index++));
-
-  if (!SelectByGuid(db, s, GetProfileTypeTokensTable(source),
-                    {kType, kValue, kVerificationStatus}, guid)) {
-    return nullptr;
-  }
-  // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
-  do {
-    ServerFieldType type = ToSafeServerFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
-    DCHECK(type != UNKNOWN_TYPE);
-    profile->SetRawInfoWithVerificationStatusInt(type, s.ColumnString16(1),
-                                                 s.ColumnInt(2));
-  } while (s.Step());
-
-  profile->FinalizeAfterImport();
-  return profile;
-}
-
 }  // namespace
 
 // static
@@ -1602,7 +1563,37 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
     const std::string& guid,
     AutofillProfile::Source profile_source) const {
   DCHECK(base::Uuid::ParseCaseInsensitive(guid).is_valid());
-  return GetAutofillProfileFromTable(db_, guid, profile_source);
+  sql::Statement s;
+  if (!SelectByGuid(db_, s, GetProfileMetadataTable(profile_source),
+                    {kUseCount, kUseDate, kDateModified, kLanguageCode, kLabel,
+                     kInitialCreatorId, kLastModifierId},
+                    guid)) {
+    return nullptr;
+  }
+  auto profile = std::make_unique<AutofillProfile>(guid, profile_source);
+  int index = 0;
+  profile->set_use_count(s.ColumnInt64(index++));
+  profile->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+  profile->set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+  profile->set_language_code(s.ColumnString(index++));
+  profile->set_profile_label(s.ColumnString(index++));
+  profile->set_initial_creator_id(s.ColumnInt(index++));
+  profile->set_last_modifier_id(s.ColumnInt(index++));
+
+  if (!SelectByGuid(db_, s, GetProfileTypeTokensTable(profile_source),
+                    {kType, kValue, kVerificationStatus}, guid)) {
+    return nullptr;
+  }
+  // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
+  do {
+    ServerFieldType type = ToSafeServerFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
+    DCHECK(type != UNKNOWN_TYPE);
+    profile->SetRawInfoWithVerificationStatusInt(type, s.ColumnString16(1),
+                                                 s.ColumnInt(2));
+  } while (s.Step());
+
+  profile->FinalizeAfterImport();
+  return profile;
 }
 
 bool AutofillTable::GetAutofillProfiles(
