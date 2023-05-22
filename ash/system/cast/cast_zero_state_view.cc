@@ -57,6 +57,7 @@ CastZeroStateView::CastZeroStateView() {
   bubble_utils::ApplyStyle(title, TypographyToken::kCrosTitle1);
   title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   title->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(32, 0, 0, 0));
+  title->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   Label* subtitle = container->AddChildView(std::make_unique<Label>(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_ZERO_STATE_SUBTITLE)));
@@ -64,6 +65,7 @@ CastZeroStateView::CastZeroStateView() {
   bubble_utils::ApplyStyle(subtitle, TypographyToken::kCrosBody1);
   subtitle->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   subtitle->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 0, 0, 0));
+  subtitle->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 }  // namespace ash
