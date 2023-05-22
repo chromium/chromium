@@ -5,10 +5,18 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_DIRECT_RECEIVER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_DIRECT_RECEIVER_H_
 
+#include <cstdint>
+#include <map>
+#include <memory>
 #include <utility>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -23,34 +31,58 @@ namespace mojo {
 
 namespace internal {
 
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) DirectReceiverBase {
+// Encapsulates a thread-local ipcz node which is brought up lazily by any
+// DirectReceiver when binding a pipe on a specific thread. The underlying node
+// is ref-counted such that a thread's node is automatically torn down when its
+// last DirectReceiver goes away.
+class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadLocalNode
+    : public base::RefCounted<ThreadLocalNode> {
  public:
-  DirectReceiverBase();
-  ~DirectReceiverBase();
+  // Construction requires a PassKey private to this class. In practice,
+  // constructed only within the static `Get()` method as needed.`
+  explicit ThreadLocalNode(base::PassKey<ThreadLocalNode>);
 
- protected:
-  template <typename T>
-  PendingReceiver<T> MoveReceiverToLocalNode(PendingReceiver<T> receiver) {
-    return PendingReceiver<T>{MovePipeToLocalNode(receiver.PassPipe())};
-  }
+  // Gets the current thread's ThreadLocalNode instance, initializing a new one
+  // if one doesn't already exist.
+  static scoped_refptr<ThreadLocalNode> Get();
+
+  // Indicates whether a ThreadLocalNode instance exists for the current thread.
+  static bool CurrentThreadHasInstance();
+
+  IpczHandle node() const { return node_->value(); }
+
+  // Transfers `pipe` from the process's global node to the thread-local ipcz
+  // node owned by this object and returns a new pipe handle for it.
+  ScopedMessagePipeHandle AdoptPipe(ScopedMessagePipeHandle pipe);
 
  private:
-  ScopedMessagePipeHandle MovePipeToLocalNode(ScopedMessagePipeHandle pipe);
-  void OnPipeMovedToLocalNode(ScopedHandle portal_to_merge);
+  friend class base::RefCounted<ThreadLocalNode>;
 
+  ~ThreadLocalNode();
+
+  void WatchForIncomingTransfers();
   static void OnTrapEvent(const IpczTrapEvent* event);
+  void OnTransferredPortalAvailable();
 
-  // The dedicated node created for this receiver.
-  ScopedHandle local_node_;
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  // A portal on the local node which is connected to `global_portal_`.
+  // A dedicated node created for this object.
+  ScopedHandle node_;
+
+  // A portal on the local node which is connected to `global_portal_`. Used to
+  // receive pipes from the global node.
   ScopedHandle local_portal_;
 
   // A portal on the global node which is connected to `local_portal_`. Used to
-  // transfer a pipe from the global node to the local one.
+  // transfer pipes from the global node to the local one.
   ScopedHandle global_portal_;
 
-  base::WeakPtrFactory<DirectReceiverBase> weak_ptr_factory_{this};
+  // Tracks pending portal merges. See AdoptPortal() implementation for gritty
+  // details.
+  uint64_t next_merge_id_ = 0;
+  std::map<uint64_t, ScopedHandle> pending_merges_;
+
+  base::WeakPtrFactory<ThreadLocalNode> weak_ptr_factory_{this};
 };
 
 }  // namespace internal
@@ -79,11 +111,12 @@ class DirectReceiverKey {
 //   - It's always bound on the current default task runner
 //   - It must be bound on a thread which uses an IO MessagePump
 //
-// DirectReceiver works by creating and maintaining a separate ipcz node which
-// is dedicated to the receiving endpoint and which receives I/O on its bound
-// thread. This node is connected to the process's global ipcz node upon
-// construction, and ipcz can then negotiate new direct connections between it
-// and other nodes as needed.
+// As long as any DirectReceiver exists on a thread, there is a thread-local
+// ThreadLocalNode instance which lives on that thread to receive IPC directly
+// from out-of-process peers. When a DirectReceiver is bound, it transfers its
+// pipe to that node so that its IPCs are routed to the thread-local node
+// instead if the global node, thus ensuring that the receiver's messages are
+// received directly on its bound thread.
 //
 // SUBTLE: DirectReceiver internally allocates a LIMITED SYSTEM RESOURCE on many
 // systems (including Android and Chrome OS) and must therefore be used
@@ -98,7 +131,7 @@ class DirectReceiverKey {
 // thread. Unless you're going to bind them all to the same thread as the
 // DirectReceiver, passing pipes to your DirectReceiver is likely a BAD IDEA.
 template <typename T>
-class DirectReceiver : public internal::DirectReceiverBase {
+class DirectReceiver {
  public:
   DirectReceiver(DirectReceiverKey, T* impl) : receiver_(impl) {}
   ~DirectReceiver() = default;
@@ -107,14 +140,18 @@ class DirectReceiver : public internal::DirectReceiverBase {
     receiver_.set_disconnect_handler(std::move(handler));
   }
 
-  // Binds this object to `receiver`.
+  // Binds this object to `receiver` to receive IPC directly on the calling
+  // thread.
   void Bind(PendingReceiver<T> receiver) {
-    receiver_.Bind(MoveReceiverToLocalNode(std::move(receiver)));
+    receiver_.Bind(PendingReceiver<T>{node_->AdoptPipe(receiver.PassPipe())});
   }
 
+  internal::ThreadLocalNode& node_for_testing() { return *node_; }
   Receiver<T>& receiver_for_testing() { return receiver_; }
 
  private:
+  const scoped_refptr<internal::ThreadLocalNode> node_{
+      internal::ThreadLocalNode::Get()};
   Receiver<T> receiver_;
 };
 

@@ -25,6 +25,21 @@
 
 namespace mojo::test::direct_receiver_unittest {
 
+namespace {
+
+// Helper to run a closure on `thread`, blocking until it completes.
+template <typename Fn>
+void RunOn(base::Thread& thread, Fn closure) {
+  base::WaitableEvent wait;
+  thread.task_runner()->PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                                   closure();
+                                   wait.Signal();
+                                 }));
+  wait.Wait();
+}
+
+}  // namespace
+
 // We use an ipcz-internal test fixture as a base because it provides useful
 // introspection into internal portal state. We also use MojoTestBase because it
 // provides multiprocess test facilities.
@@ -74,6 +89,8 @@ class ServiceImpl : public mojom::Service {
   explicit ServiceImpl(scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(std::move(task_runner)) {}
   ~ServiceImpl() override = default;
+
+  DirectReceiver<mojom::Service>& receiver() { return receiver_; }
 
   // Binds our DirectReceiver to `receiver` and then uses a test-only API to
   // pause it internally, preventing Mojo bindings from processing incoming
@@ -280,6 +297,102 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(NoIOThreadHopInNonBroker_Child,
   }
 
   WriteMessage(test_pipe->value(), "done");
+}
+
+TEST_F(DirectReceiverTest, ThreadLocalInstanceShared) {
+  // Creates two DirectReceivers on the same thread and validates that they
+  // share the same underlying ipcz node.
+
+  base::Thread io_thread{"Test IO thread"};
+  io_thread.StartWithOptions(
+      base::Thread::Options{base::MessagePumpType::IO, 0});
+
+  std::unique_ptr<ServiceImpl> impl1;
+  std::unique_ptr<ServiceImpl> impl2;
+  Remote<mojom::Service> remote1;
+  Remote<mojom::Service> remote2;
+  auto receiver1 = remote1.BindNewPipeAndPassReceiver();
+  auto receiver2 = remote2.BindNewPipeAndPassReceiver();
+  RunOn(io_thread, [&] {
+    impl1 = std::make_unique<ServiceImpl>(io_thread.task_runner());
+    impl1->receiver().Bind(std::move(receiver1));
+
+    impl2 = std::make_unique<ServiceImpl>(io_thread.task_runner());
+    impl2->receiver().Bind(std::move(receiver2));
+  });
+
+  // Both receivers should be using the same node to receive I/O.
+  EXPECT_EQ(impl1->receiver().node_for_testing().node(),
+            impl2->receiver().node_for_testing().node());
+
+  // For good measure, verify that the receivers actually work too.
+  base::RunLoop loop1;
+  remote1->Ping(loop1.QuitClosure());
+  loop1.Run();
+  base::RunLoop loop2;
+  remote1->Ping(loop2.QuitClosure());
+  loop2.Run();
+
+  RunOn(io_thread, [&] {
+    // Also verify that when the last receiver goes away on this thread, the
+    // thread's node also goes away.
+    EXPECT_TRUE(internal::ThreadLocalNode::CurrentThreadHasInstance());
+    impl1.reset();
+    EXPECT_TRUE(internal::ThreadLocalNode::CurrentThreadHasInstance());
+    impl2.reset();
+    EXPECT_FALSE(internal::ThreadLocalNode::CurrentThreadHasInstance());
+  });
+}
+
+TEST_F(DirectReceiverTest, UniqueNodePerThread) {
+  // Creates a DirectReceiver on each of two distinct threads and validates that
+  // they each have their own distinct ipcz node.
+
+  base::Thread io_thread1{"Test IO thread 1"};
+  base::Thread io_thread2{"Test IO thread 2"};
+  io_thread1.StartWithOptions(
+      base::Thread::Options{base::MessagePumpType::IO, 0});
+  io_thread2.StartWithOptions(
+      base::Thread::Options{base::MessagePumpType::IO, 0});
+
+  std::unique_ptr<ServiceImpl> impl1;
+  std::unique_ptr<ServiceImpl> impl2;
+  Remote<mojom::Service> remote1;
+  Remote<mojom::Service> remote2;
+  auto receiver1 = remote1.BindNewPipeAndPassReceiver();
+  auto receiver2 = remote2.BindNewPipeAndPassReceiver();
+  RunOn(io_thread1, [&] {
+    impl1 = std::make_unique<ServiceImpl>(io_thread1.task_runner());
+    impl1->receiver().Bind(std::move(receiver1));
+  });
+  RunOn(io_thread2, [&] {
+    impl2 = std::make_unique<ServiceImpl>(io_thread2.task_runner());
+    impl2->receiver().Bind(std::move(receiver2));
+  });
+
+  // Both receivers should be using different nodes to receive I/O.
+  EXPECT_NE(impl1->receiver().node_for_testing().node(),
+            impl2->receiver().node_for_testing().node());
+
+  // For good measure, verify that the receivers actually work too.
+  base::RunLoop loop1;
+  remote1->Ping(loop1.QuitClosure());
+  loop1.Run();
+  base::RunLoop loop2;
+  remote1->Ping(loop2.QuitClosure());
+  loop2.Run();
+
+  RunOn(io_thread1, [&] {
+    EXPECT_TRUE(internal::ThreadLocalNode::CurrentThreadHasInstance());
+    impl1.reset();
+    EXPECT_FALSE(internal::ThreadLocalNode::CurrentThreadHasInstance());
+  });
+
+  RunOn(io_thread2, [&] {
+    EXPECT_TRUE(internal::ThreadLocalNode::CurrentThreadHasInstance());
+    impl2.reset();
+    EXPECT_FALSE(internal::ThreadLocalNode::CurrentThreadHasInstance());
+  });
 }
 
 }  // namespace mojo::test::direct_receiver_unittest
