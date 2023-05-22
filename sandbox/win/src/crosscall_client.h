@@ -115,8 +115,7 @@ class CopyHelper<void*> {
   ArgType GetType() { return VOIDPTR_TYPE; }
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
+  // Not a raw_ptr<> as this might be a Win32 type such as LPVOID or HANDLE.
   RAW_PTR_EXCLUSION const void* t_;
 };
 
