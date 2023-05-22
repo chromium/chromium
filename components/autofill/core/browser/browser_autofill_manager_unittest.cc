@@ -682,6 +682,11 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    // Drop unowned references before destroying BrowserAutofillManager
+    // which owns them.
+    single_field_form_fill_router_ = nullptr;
+    external_delegate_ = nullptr;
+
     // Order of destruction is important as BrowserAutofillManager relies on
     // PersonalDataManager to be around when it gets destroyed.
     browser_autofill_manager_.reset();
