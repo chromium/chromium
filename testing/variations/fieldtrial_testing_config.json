@@ -1490,6 +1490,8 @@
     "AutofillSurveys": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
                 "mac",
                 "windows",
                 "linux"
