@@ -121,11 +121,12 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void TearDown() override {
-    cache_manager_.reset();
     if (content_setting_map_) {
       content_setting_map_->ShutdownOnUIThread();
     }
+    raw_token_fetcher_ = nullptr;
     rt_service_->Shutdown();
+    cache_manager_.reset();
   }
 
   bool CanCheckUrl(const GURL& url) {
