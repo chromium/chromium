@@ -11,8 +11,6 @@ namespace net {
 
 CertPrincipal::CertPrincipal() = default;
 
-CertPrincipal::CertPrincipal(const std::string& name) : common_name(name) {}
-
 CertPrincipal::CertPrincipal(const CertPrincipal&) = default;
 
 CertPrincipal::CertPrincipal(CertPrincipal&&) = default;

@@ -16,7 +16,6 @@ namespace net {
 // CertPrincipal represents the issuer or subject field of an X.509 certificate.
 struct NET_EXPORT CertPrincipal {
   CertPrincipal();
-  explicit CertPrincipal(const std::string& name);
   CertPrincipal(const CertPrincipal&);
   CertPrincipal(CertPrincipal&&);
   ~CertPrincipal();
