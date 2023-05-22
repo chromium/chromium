@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
@@ -169,6 +170,18 @@ public class BookmarkImageFetcherTest {
         Pair<Drawable, Drawable> drawables = mFolderDrawablesCaptor.getValue();
         assertNotNull(drawables.first);
         assertNotNull(drawables.second);
+    }
+
+    @Test
+    public void testFetchFirstTwoImagesForFolder_nullChild() {
+        doReturn(null).when(mBookmarkModel).getBookmarkById(mBookmarkId2);
+
+        mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(mFolderItem, mFolderDrawablesCallback);
+        verify(mFolderDrawablesCallback).onResult(mFolderDrawablesCaptor.capture());
+
+        Pair<Drawable, Drawable> drawables = mFolderDrawablesCaptor.getValue();
+        assertNotNull(drawables.first);
+        assertNull(drawables.second);
     }
 
     @Test

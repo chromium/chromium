@@ -143,6 +143,15 @@ public class BookmarkImageFetcher {
 
         BookmarkId id = childIdIterator.next();
         BookmarkItem item = mBookmarkModel.getBookmarkById(id);
+
+        // It's possible that a child was removed during fetching. In that case, just continue on
+        // to the next child.
+        if (item == null) {
+            fetchFirstTwoImagesForFolderImpl(
+                    childIdIterator, firstDrawable, secondDrawable, callback);
+            return;
+        }
+
         fetchImageForBookmark(item, drawable -> {
             Drawable newFirstDrawable = firstDrawable;
             Drawable newSecondDrawable = secondDrawable;
