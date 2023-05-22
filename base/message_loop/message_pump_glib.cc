@@ -252,7 +252,7 @@ bool RunningOnMainThread() {
 //        this case.
 
 struct WorkSource : public GSource {
-  raw_ptr<MessagePumpGlib, DanglingUntriaged> pump;
+  raw_ptr<MessagePumpGlib> pump;
 };
 
 gboolean WorkSourcePrepare(GSource* source, gint* timeout_ms) {
@@ -276,12 +276,20 @@ gboolean WorkSourceDispatch(GSource* source,
   return TRUE;
 }
 
+void WorkSourceFinalize(GSource* source) {
+  // Since the WorkSource object memory is managed by glib, WorkSource implicit
+  // destructor is never called, and thus WorkSource's raw_ptr never release
+  // its internal reference on the pump pointer. This leads to adding pressure
+  // to the BRP quarantine.
+  static_cast<WorkSource*>(source)->pump = nullptr;
+}
+
 // I wish these could be const, but g_source_new wants non-const.
 GSourceFuncs g_work_source_funcs = {WorkSourcePrepare, WorkSourceCheck,
-                                    WorkSourceDispatch, nullptr};
+                                    WorkSourceDispatch, WorkSourceFinalize};
 
 struct ObserverSource : public GSource {
-  raw_ptr<MessagePumpGlib, DanglingUntriaged> pump;
+  raw_ptr<MessagePumpGlib> pump;
 };
 
 gboolean ObserverPrepare(GSource* gsource, gint* timeout_ms) {
@@ -297,8 +305,13 @@ gboolean ObserverCheck(GSource* gsource) {
   return source->pump->HandleObserverCheck();
 }
 
+void ObserverFinalize(GSource* source) {
+  // Read the comment in `WorkSourceFinalize`, the issue is exactly the same.
+  static_cast<ObserverSource*>(source)->pump = nullptr;
+}
+
 GSourceFuncs g_observer_funcs = {ObserverPrepare, ObserverCheck, nullptr,
-                                 nullptr};
+                                 ObserverFinalize};
 
 struct FdWatchSource : public GSource {
   raw_ptr<MessagePumpGlib> pump;
@@ -323,8 +336,16 @@ gboolean FdWatchSourceDispatch(GSource* gsource,
   return TRUE;
 }
 
+void FdWatchSourcFinalize(GSource* gsource) {
+  // Read the comment in `WorkSourceFinalize`, the issue is exactly the same.
+  auto* source = static_cast<FdWatchSource*>(gsource);
+  source->pump = nullptr;
+  source->controller = nullptr;
+}
+
 GSourceFuncs g_fd_watch_source_funcs = {
-    FdWatchSourcePrepare, FdWatchSourceCheck, FdWatchSourceDispatch, nullptr};
+    FdWatchSourcePrepare, FdWatchSourceCheck, FdWatchSourceDispatch,
+    FdWatchSourcFinalize};
 
 }  // namespace
 
