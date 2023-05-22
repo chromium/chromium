@@ -182,7 +182,6 @@ constexpr char kLogo24PX2XSvgPath[] = "logo_24px-2x.svg";
 constexpr char kSyncConsentIcons[] = "sync-consent-icons.html";
 constexpr char kSyncConsentIconsJs[] = "sync-consent-icons.m.js";
 // Project Simon TODO(b/269117729) - Rename with final names.
-constexpr char kFirstAnimation[] = "internal_assets/first_animation.json";
 constexpr char kWelcomeBackdrop[] = "internal_assets/welcome_backdrop.svg";
 #endif
 
@@ -199,7 +198,6 @@ void AddProductLogoResources(content::WebUIDataSource* source) {
 
 void AddProjectSimonResources(content::WebUIDataSource* source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  source->AddResourcePath(kFirstAnimation, IDR_CROS_OOBE_FIRST_ANIMATION);
   source->AddResourcePath(kWelcomeBackdrop, IDR_CROS_OOBE_WELCOME_BACKDROP);
 #endif
 }
