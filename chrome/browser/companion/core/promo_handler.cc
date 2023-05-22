@@ -34,25 +34,30 @@ void PromoHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void PromoHandler::OnPromoAction(PromoType promo_type,
                                  PromoAction promo_action) {
-  if (promo_type == PromoType::kSignin) {
-    OnSigninPromo(promo_action);
-  } else if (promo_type == PromoType::kMsbb) {
-    OnMsbbPromo(promo_action);
-  } else if (promo_type == PromoType::kExps) {
-    OnExpsPromo(promo_action);
+  switch (promo_type) {
+    case PromoType::kSignin:
+      OnSigninPromo(promo_action);
+      return;
+    case PromoType::kMsbb:
+      OnMsbbPromo(promo_action);
+      return;
+    case PromoType::kExps:
+      OnExpsPromo(promo_action);
+      return;
   }
 }
 
 void PromoHandler::OnSigninPromo(PromoAction promo_action) {
-  if (promo_action == PromoAction::kRejected) {
-    IncrementPref(kSigninPromoDeclinedCountPref);
+  switch (promo_action) {
+    case PromoAction::kRejected:
+      IncrementPref(kSigninPromoDeclinedCountPref);
+      return;
+    case PromoAction::kShown:
+      return;
+    case PromoAction::kAccepted:
+      signin_delegate_->StartSigninFlow();
+      return;
   }
-
-  if (promo_action != PromoAction::kAccepted) {
-    return;
-  }
-
-  signin_delegate_->StartSigninFlow();
 }
 
 void PromoHandler::OnMsbbPromo(PromoAction promo_action) {

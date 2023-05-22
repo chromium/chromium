@@ -201,6 +201,7 @@ void CompanionPageHandler::OnRegionSearchClicked() {
 }
 
 void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
+  metrics_logger_->OnExpsOptInStatusAvailable(is_exps_opted_in);
   auto* pref_service = GetProfile()->GetPrefs();
   pref_service->SetBoolean(kExpsOptInStatusGrantedPref, is_exps_opted_in);
   // Update default value for pref indicating whether companion should be

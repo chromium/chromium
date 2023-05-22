@@ -115,6 +115,9 @@ class CompanionMetricsLogger {
   // Logging method corresponding to `OnPhFeedback` in companion.mojom.
   void OnPhFeedback(PhFeedback ph_feedback);
 
+  // Logging method recording the status of whether user is opted-in to exps.
+  void OnExpsOptInStatusAvailable(bool is_exps_opted_in) const;
+
  private:
   // Meant to be called at destruction. Flushes the UKM metrics.
   void FlushStats();

@@ -175,6 +175,11 @@ void CompanionMetricsLogger::OnPhFeedback(PhFeedback ph_feedback) {
   last_ph_feedback_ = ph_feedback;
 }
 
+void CompanionMetricsLogger::OnExpsOptInStatusAvailable(
+    bool is_exps_opted_in) const {
+  base::UmaHistogramBoolean("Companion.IsUserOptedInToExps", is_exps_opted_in);
+}
+
 void CompanionMetricsLogger::FlushStats() {
   ukm::builders::Companion_PageView ukm_builder(ukm_source_id_);
 
