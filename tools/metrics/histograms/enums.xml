@@ -24307,6 +24307,20 @@ metrics consent we also won't be able to send UMA metrics. -->
       label="kLocLECredManPinWeaverFailedInCheckSecret - TPM_RC_INSUFFICIENT"/>
 </enum>
 
+<enum name="CryptohomeFingerprintScanResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Retry"/>
+  <int value="2" label="Lockout"/>
+  <int value="3" label="Fatal error"/>
+  <int value="4" label="Partial"/>
+  <int value="5" label="Insufficient"/>
+  <int value="6" label="Sensor dirty"/>
+  <int value="7" label="Too slow"/>
+  <int value="8" label="Too fast"/>
+  <int value="9" label="Immobile"/>
+  <int value="10" label="Enroll other"/>
+</enum>
+
 <enum name="CryptohomeLECredError">
   <summary>
     The result when a Low Entropy CheckCredential operation was performed.
