@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
+
 #include <string>
 
 #include "ash/components/arc/arc_prefs.h"
@@ -12,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -40,9 +42,32 @@
 
 namespace {
 
-void CancelCopyOnIOThread(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    storage::FileSystemOperationRunner::OperationID operation_id) {
+using base::BindRepeating;
+using base::MakeRefCounted;
+using base::RepeatingClosure;
+using base::UTF8ToUTF16;
+using extensions::Event;
+using extensions::events::HistogramValue;
+using file_manager::io_task::OperationType;
+using file_manager::io_task::ProgressStatus;
+using file_manager::util::GetDisplayablePath;
+using l10n_util::GetStringFUTF16;
+using l10n_util::GetStringUTF16;
+using message_center::ButtonInfo;
+using message_center::HandleNotificationClickDelegate;
+using message_center::Notification;
+using message_center::NotificationDelegate;
+using message_center::NotificationType;
+using message_center::NotifierId;
+using message_center::RichNotificationData;
+using message_center::SystemNotificationWarningLevel;
+using NotificationPtr = std::unique_ptr<Notification>;
+using DelegatePtr = scoped_refptr<NotificationDelegate>;
+using OperationID = storage::FileSystemOperationRunner::OperationID;
+using FileSystemContextPtr = scoped_refptr<storage::FileSystemContext>;
+
+void CancelCopyOnIOThread(FileSystemContextPtr file_system_context,
+                          OperationID operation_id) {
   file_system_context->operation_runner()->Cancel(
       operation_id, base::BindOnce([](base::File::Error error) {
         DLOG_IF(WARNING, error != base::File::FILE_OK)
@@ -52,9 +77,8 @@ void CancelCopyOnIOThread(
 
 constexpr char kSwaFileOperationPrefix[] = "swa-file-operation-";
 
-bool NotificationIdToOperationId(
-    const std::string& notification_id,
-    storage::FileSystemOperationRunner::OperationID* operation_id) {
+bool NotificationIdToOperationId(const std::string& notification_id,
+                                 OperationID* operation_id) {
   *operation_id = 0;
   std::string id_string;
   if (base::RemoveChars(notification_id, kSwaFileOperationPrefix, &id_string)) {
@@ -76,11 +100,6 @@ void RecordDeviceNotificationUserActionMetric(
   UMA_HISTOGRAM_ENUMERATION(file_manager::kNotificationUserActionHistogramName,
                             type);
 }
-
-using file_manager::io_task::OperationType;
-using file_manager::io_task::ProgressStatus;
-using file_manager::util::GetDisplayablePath;
-using l10n_util::GetStringFUTF16;
 
 std::u16string GetIOTaskMessage(Profile* profile,
                                 const ProgressStatus& status) {
@@ -106,6 +125,7 @@ std::u16string GetIOTaskMessage(Profile* profile,
         multiple_file_message_id = IDS_FILE_BROWSER_COPY_ITEMS_REMAINING;
       }
       break;
+
     case OperationType::kMove:
       if (is_destination_drive) {
         single_file_message_id = IDS_FILE_BROWSER_PREPARING_FILE_NAME_MY_DRIVE;
@@ -115,41 +135,49 @@ std::u16string GetIOTaskMessage(Profile* profile,
         multiple_file_message_id = IDS_FILE_BROWSER_MOVE_ITEMS_REMAINING;
       }
       break;
+
     case OperationType::kDelete:
       single_file_message_id = IDS_FILE_BROWSER_DELETE_FILE_NAME;
       multiple_file_message_id = IDS_FILE_BROWSER_DELETE_ITEMS_REMAINING;
       break;
+
     case OperationType::kExtract:
       single_file_message_id = IDS_FILE_BROWSER_EXTRACT_FILE_NAME;
       multiple_file_message_id = IDS_FILE_BROWSER_EXTRACT_ITEMS_REMAINING;
       break;
+
     case OperationType::kZip:
       single_file_message_id = IDS_FILE_BROWSER_ZIP_FILE_NAME;
       multiple_file_message_id = IDS_FILE_BROWSER_ZIP_ITEMS_REMAINING;
       break;
+
     case OperationType::kRestoreToDestination:
       single_file_message_id = IDS_FILE_BROWSER_RESTORING_FROM_TRASH_FILE_NAME;
       multiple_file_message_id =
           IDS_FILE_BROWSER_RESTORING_FROM_TRASH_ITEMS_REMAINING;
       break;
+
     case OperationType::kTrash:
       single_file_message_id = IDS_FILE_BROWSER_MOVE_TO_TRASH_FILE_NAME;
       multiple_file_message_id = IDS_FILE_BROWSER_MOVE_TO_TRASH_ITEMS_REMAINING;
       break;
+
     default:
       NOTREACHED();
       return u"Unknown operation type";
   }
+
   if (status.sources.size() > 1) {
     return GetStringFUTF16(multiple_file_message_id,
                            base::NumberToString16(status.sources.size()));
   }
+
   return GetStringFUTF16(
       single_file_message_id,
-      base::UTF8ToUTF16(GetDisplayablePath(profile, status.sources.back().url)
-                            .value_or(base::FilePath())
-                            .BaseName()
-                            .value()));
+      UTF8ToUTF16(GetDisplayablePath(profile, status.sources.back().url)
+                      .value_or(base::FilePath())
+                      .BaseName()
+                      .value()));
 }
 
 // TODO(b/279435843): Replace with translation strings.
@@ -175,7 +203,7 @@ std::u16string GetPolicyNotificationMessage(const ProgressStatus& status) {
 // TODO(b/279435843): Replace with translation strings.
 std::u16string GetPolicyNotificationCancelButton(const ProgressStatus& status) {
   if (status.HasWarning()) {
-    return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL);
+    return GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL);
   } else {
     return u"Dismiss";
   }
@@ -191,17 +219,17 @@ std::u16string GetPolicyNotificationProceedButton(
   DCHECK(status.HasWarning());
 
   switch (status.type) {
-    case file_manager::io_task::OperationType::kCopy:
+    case OperationType::kCopy:
       return u"Copy anyway";
-    case file_manager::io_task::OperationType::kMove:
+    case OperationType::kMove:
       return u"Move anyway";
-    case file_manager::io_task::OperationType::kDelete:
-    case file_manager::io_task::OperationType::kEmptyTrash:
-    case file_manager::io_task::OperationType::kExtract:
-    case file_manager::io_task::OperationType::kRestore:
-    case file_manager::io_task::OperationType::kRestoreToDestination:
-    case file_manager::io_task::OperationType::kTrash:
-    case file_manager::io_task::OperationType::kZip:
+    case OperationType::kDelete:
+    case OperationType::kEmptyTrash:
+    case OperationType::kExtract:
+    case OperationType::kRestore:
+    case OperationType::kRestoreToDestination:
+    case OperationType::kTrash:
+    case OperationType::kZip:
       NOTREACHED();
       return u"";
   }
@@ -210,43 +238,38 @@ std::u16string GetPolicyNotificationProceedButton(
 
 namespace file_manager {
 
-std::unique_ptr<message_center::Notification> CreateSystemNotification(
-    const std::string& notification_id,
-    const std::u16string& title,
-    const std::u16string& message,
-    const scoped_refptr<message_center::NotificationDelegate>& delegate) {
+NotificationPtr CreateSystemNotification(const std::string& notification_id,
+                                         const std::u16string& title,
+                                         const std::u16string& message,
+                                         DelegatePtr delegate) {
   return ash::CreateSystemNotificationPtr(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
-      l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), GURL(),
-      message_center::NotifierId(), message_center::RichNotificationData(),
-      delegate, ash::kFolderIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
+      NotificationType::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
+      message, GetStringUTF16(IDS_FILEMANAGER_APP_NAME), GURL(), NotifierId(),
+      RichNotificationData(), std::move(delegate), ash::kFolderIcon,
+      SystemNotificationWarningLevel::NORMAL);
 }
 
-std::unique_ptr<message_center::Notification> CreateSystemNotification(
-    const std::string& notification_id,
-    int title_id,
-    int message_id,
-    const scoped_refptr<message_center::NotificationDelegate>& delegate) {
-  return CreateSystemNotification(
-      notification_id, l10n_util::GetStringUTF16(title_id),
-      l10n_util::GetStringUTF16(message_id), delegate);
+NotificationPtr CreateSystemNotification(const std::string& notification_id,
+                                         int title_id,
+                                         int message_id,
+                                         DelegatePtr delegate) {
+  return CreateSystemNotification(notification_id, GetStringUTF16(title_id),
+                                  GetStringUTF16(message_id),
+                                  std::move(delegate));
 }
 
-std::unique_ptr<message_center::Notification> CreateSystemNotification(
+NotificationPtr CreateSystemNotification(
     const std::string& notification_id,
     const std::u16string& title,
     const std::u16string& message,
-    const base::RepeatingClosure& click_callback) {
+    const RepeatingClosure& click_callback) {
   return CreateSystemNotification(
       notification_id, title, message,
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          click_callback));
+      MakeRefCounted<HandleNotificationClickDelegate>(click_callback));
 }
 
 SystemNotificationManager::SystemNotificationManager(Profile* profile)
-    : profile_(profile),
-      app_name_(l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME)) {}
+    : profile_(profile), app_name_(GetStringUTF16(IDS_FILEMANAGER_APP_NAME)) {}
 
 SystemNotificationManager::~SystemNotificationManager() = default;
 
@@ -254,24 +277,22 @@ bool SystemNotificationManager::DoFilesSwaWindowsExist() {
   return ash::file_manager::FileManagerUI::GetNumInstances() != 0;
 }
 
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::CreateNotification(
+NotificationPtr SystemNotificationManager::CreateNotification(
     const std::string& notification_id,
     const std::u16string& title,
     const std::u16string& message) {
   return CreateSystemNotification(
       notification_id, title, message,
-      base::BindRepeating(&SystemNotificationManager::Dismiss,
-                          weak_ptr_factory_.GetWeakPtr(), notification_id));
+      BindRepeating(&SystemNotificationManager::Dismiss,
+                    weak_ptr_factory_.GetWeakPtr(), notification_id));
 }
 
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::CreateNotification(
+NotificationPtr SystemNotificationManager::CreateNotification(
     const std::string& notification_id,
     int title_id,
     int message_id) {
-  std::u16string title = l10n_util::GetStringUTF16(title_id);
-  std::u16string message = l10n_util::GetStringUTF16(message_id);
+  std::u16string title = GetStringUTF16(title_id);
+  std::u16string message = GetStringUTF16(message_id);
   return CreateNotification(notification_id, title, message);
 }
 
@@ -280,9 +301,9 @@ void SystemNotificationManager::HandleProgressClick(
     absl::optional<int> button_index) {
   if (button_index) {
     // Cancel the copy operation.
-    scoped_refptr<storage::FileSystemContext> file_system_context =
+    FileSystemContextPtr file_system_context =
         util::GetFileManagerFileSystemContext(profile_);
-    storage::FileSystemOperationRunner::OperationID operation_id;
+    OperationID operation_id;
     if (NotificationIdToOperationId(notification_id, &operation_id)) {
       content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&CancelCopyOnIOThread, file_system_context,
@@ -291,34 +312,32 @@ void SystemNotificationManager::HandleProgressClick(
   }
 }
 
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::CreateProgressNotification(
+NotificationPtr SystemNotificationManager::CreateProgressNotification(
     const std::string& notification_id,
     const std::u16string& title,
     const std::u16string& message,
     int progress) {
-  message_center::RichNotificationData rich_data;
+  RichNotificationData rich_data;
   rich_data.progress = progress;
   rich_data.progress_status = message;
 
   return ash::CreateSystemNotificationPtr(
-      message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
-      message, app_name_, GURL(), message_center::NotifierId(), rich_data,
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&SystemNotificationManager::HandleProgressClick,
-                              weak_ptr_factory_.GetWeakPtr(), notification_id)),
-      ash::kFolderIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+      NotificationType::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
+      message, app_name_, GURL(), NotifierId(), rich_data,
+      MakeRefCounted<HandleNotificationClickDelegate>(
+          BindRepeating(&SystemNotificationManager::HandleProgressClick,
+                        weak_ptr_factory_.GetWeakPtr(), notification_id)),
+      ash::kFolderIcon, SystemNotificationWarningLevel::NORMAL);
 }
 
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::CreateIOTaskProgressNotification(
+NotificationPtr SystemNotificationManager::CreateIOTaskProgressNotification(
     file_manager::io_task::IOTaskId task_id,
     const std::string& notification_id,
     const std::u16string& title,
     const std::u16string& message,
     const bool paused,
     int progress) {
-  message_center::RichNotificationData rich_data;
+  RichNotificationData rich_data;
   rich_data.progress = progress;
   rich_data.progress_status = message;
 
@@ -327,16 +346,15 @@ SystemNotificationManager::CreateIOTaskProgressNotification(
   // In that case, default behavior is to auto-click button 1.
   // TODO(b/255264604): ask UX here, which button should be the default?
   class IOTaskProgressNotificationClickDelegate
-      : public message_center::HandleNotificationClickDelegate {
+      : public HandleNotificationClickDelegate {
    public:
     IOTaskProgressNotificationClickDelegate(const ButtonClickCallback& callback,
                                             bool paused)
-        : message_center::HandleNotificationClickDelegate(callback),
-          paused_(paused) {}
+        : HandleNotificationClickDelegate(callback), paused_(paused) {}
 
     void Close(bool by_user) override {
       if (paused_ && by_user) {  // Click button at index 1.
-        message_center::HandleNotificationClickDelegate::Click(1, {});
+        HandleNotificationClickDelegate::Click(1, {});
       }
     }
 
@@ -347,26 +365,26 @@ SystemNotificationManager::CreateIOTaskProgressNotification(
     bool paused_;  // True if the IOTask is in state::PAUSED.
   };
 
-  auto notification_click_handler = base::BindRepeating(
+  auto notification_click_handler = BindRepeating(
       &SystemNotificationManager::HandleIOTaskProgressNotificationClick,
       weak_ptr_factory_.GetWeakPtr(), task_id, notification_id, paused);
 
   auto notification = ash::CreateSystemNotificationPtr(
-      message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
-      message, app_name_, GURL(), message_center::NotifierId(), rich_data,
-      base::MakeRefCounted<IOTaskProgressNotificationClickDelegate>(
+      NotificationType::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
+      message, app_name_, GURL(), NotifierId(), rich_data,
+      MakeRefCounted<IOTaskProgressNotificationClickDelegate>(
           std::move(notification_click_handler), paused),
-      ash::kFolderIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+      ash::kFolderIcon, SystemNotificationWarningLevel::NORMAL);
 
-  std::vector<message_center::ButtonInfo> notification_buttons;
+  std::vector<ButtonInfo> notification_buttons;
 
   // Add "Cancel" button.
   notification_buttons.emplace_back(
-      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL));
+      GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL));
 
   if (paused) {  // For paused tasks, add "Open Files app" button.
-    notification_buttons.emplace_back(l10n_util::GetStringUTF16(
-        IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL));
+    notification_buttons.emplace_back(
+        GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL));
   }
 
   notification->set_buttons(notification_buttons);
@@ -402,7 +420,7 @@ constexpr char kDeviceFailNotificationId[] = "swa-device-fail-id";
 
 void SystemNotificationManager::HandleDeviceEvent(
     const file_manager_private::DeviceEvent& event) {
-  std::unique_ptr<message_center::Notification> notification;
+  NotificationPtr notification;
 
   std::u16string title;
   std::u16string message;
@@ -433,11 +451,10 @@ void SystemNotificationManager::HandleDeviceEvent(
           DeviceNotificationUmaType::DEVICE_HARD_UNPLUGGED);
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_START:
-      title = l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
-                                         base::UTF8ToUTF16(event.device_label));
-      message =
-          l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_PROGRESS_MESSAGE,
-                                     base::UTF8ToUTF16(event.device_label));
+      title = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
+                              UTF8ToUTF16(event.device_label));
+      message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_PROGRESS_MESSAGE,
+                                UTF8ToUTF16(event.device_label));
       notification = CreateNotification(id, title, message);
       RecordDeviceNotificationMetric(DeviceNotificationUmaType::FORMAT_START);
       break;
@@ -449,19 +466,17 @@ void SystemNotificationManager::HandleDeviceEvent(
           NotificationHandler::Type::TRANSIENT,
           file_manager_private::ToString(
               file_manager_private::DEVICE_EVENT_TYPE_FORMAT_START));
-      title = l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
-                                         base::UTF8ToUTF16(event.device_label));
+      title = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
+                              UTF8ToUTF16(event.device_label));
       if (event.type ==
           file_manager_private::DEVICE_EVENT_TYPE_FORMAT_SUCCESS) {
-        message =
-            l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_SUCCESS_MESSAGE,
-                                       base::UTF8ToUTF16(event.device_label));
+        message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_SUCCESS_MESSAGE,
+                                  UTF8ToUTF16(event.device_label));
         RecordDeviceNotificationMetric(
             DeviceNotificationUmaType::FORMAT_SUCCESS);
       } else {
-        message =
-            l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_FAILURE_MESSAGE,
-                                       base::UTF8ToUTF16(event.device_label));
+        message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_FAILURE_MESSAGE,
+                                  UTF8ToUTF16(event.device_label));
         RecordDeviceNotificationMetric(
             event.type == file_manager_private::DEVICE_EVENT_TYPE_FORMAT_FAIL
                 ? DeviceNotificationUmaType::FORMAT_FAIL
@@ -493,24 +508,22 @@ void SystemNotificationManager::HandleDeviceEvent(
 
 namespace file_manager_private = extensions::api::file_manager_private;
 
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::MakeDriveSyncErrorNotification(
-    const extensions::Event& event,
-    const base::Value::List& event_arguments) {
-  std::unique_ptr<message_center::Notification> notification;
+NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
+    const Event& event,
+    const base::Value::List& args) {
+  NotificationPtr notification;
   file_manager_private::DriveSyncErrorEvent sync_error;
   const char* id;
-  std::u16string title =
-      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
+  std::u16string title = GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
   std::u16string message;
-  if (file_manager_private::DriveSyncErrorEvent::Populate(event_arguments[0],
+  if (file_manager_private::DriveSyncErrorEvent::Populate(args[0],
                                                           sync_error)) {
     id = file_manager_private::ToString(sync_error.type);
     GURL file_url(sync_error.file_url);
     switch (sync_error.type) {
       case file_manager_private::
           DRIVE_SYNC_ERROR_TYPE_DELETE_WITHOUT_PERMISSION:
-        message = l10n_util::GetStringFUTF16(
+        message = GetStringFUTF16(
             IDS_FILE_BROWSER_SYNC_DELETE_WITHOUT_PERMISSION_ERROR,
             util::GetDisplayableFileName16(file_url));
         notification = CreateNotification(id, title, message);
@@ -521,14 +534,13 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
                                IDS_FILE_BROWSER_SYNC_SERVICE_UNAVAILABLE_ERROR);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE:
-        message =
-            l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE);
+        message = GetStringUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE);
         notification = CreateNotification(id, title, message);
         break;
       case file_manager_private::
           DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE_ORGANIZATION:
-        message = l10n_util::GetStringUTF16(
-            IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION);
+        message =
+            GetStringUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION);
         notification = CreateNotification(id, title, message);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE:
@@ -537,9 +549,8 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
                                IDS_FILE_BROWSER_DRIVE_OUT_OF_SPACE_HEADER);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_MISC:
-        message = l10n_util::GetStringFUTF16(
-            IDS_FILE_BROWSER_SYNC_MISC_ERROR,
-            util::GetDisplayableFileName16(file_url));
+        message = GetStringFUTF16(IDS_FILE_BROWSER_SYNC_MISC_ERROR,
+                                  util::GetDisplayableFileName16(file_url));
         notification = CreateNotification(id, title, message);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SHARED_DRIVE_SPACE:
@@ -547,9 +558,9 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
           DLOG(WARNING) << "No shared drive provided for error notification";
           break;
         }
-        message = l10n_util::GetStringFUTF16(
+        message = GetStringFUTF16(
             IDS_FILE_BROWSER_SYNC_ERROR_SHARED_DRIVE_OUT_OF_SPACE,
-            base::UTF8ToUTF16(sync_error.shared_drive.value()));
+            UTF8ToUTF16(sync_error.shared_drive.value()));
         notification = CreateNotification(id, title, message);
         break;
       default:
@@ -581,46 +592,38 @@ void SystemNotificationManager::HandleDriveDialogClick(
                                          kDriveDialogId);
 }
 
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::MakeDriveConfirmDialogNotification(
-    const extensions::Event& event,
-    const base::Value::List& event_arguments) {
-  std::unique_ptr<message_center::Notification> notification;
+NotificationPtr SystemNotificationManager::MakeDriveConfirmDialogNotification(
+    const Event& event,
+    const base::Value::List& args) {
+  NotificationPtr notification;
   file_manager_private::DriveConfirmDialogEvent dialog_event;
-  std::u16string title =
-      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
+  std::u16string title = GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
   std::u16string message;
-  if (file_manager_private::DriveConfirmDialogEvent::Populate(
-          event_arguments[0], dialog_event)) {
-    std::vector<message_center::ButtonInfo> notification_buttons;
-    scoped_refptr<message_center::NotificationDelegate> delegate =
-        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-            base::BindRepeating(
-                &SystemNotificationManager::HandleDriveDialogClick,
-                weak_ptr_factory_.GetWeakPtr()));
+  if (file_manager_private::DriveConfirmDialogEvent::Populate(args[0],
+                                                              dialog_event)) {
+    std::vector<ButtonInfo> notification_buttons;
     notification = CreateSystemNotification(
         kDriveDialogId, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
-        IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE, delegate);
+        IDS_FILE_BROWSER_OFFLINE_ENABLE_MESSAGE,
+        MakeRefCounted<HandleNotificationClickDelegate>(
+            BindRepeating(&SystemNotificationManager::HandleDriveDialogClick,
+                          weak_ptr_factory_.GetWeakPtr())));
 
-    notification_buttons.push_back(message_center::ButtonInfo(
-        l10n_util::GetStringUTF16(IDS_FILE_BROWSER_OFFLINE_ENABLE_REJECT)));
-    notification_buttons.push_back(message_center::ButtonInfo(
-        l10n_util::GetStringUTF16(IDS_FILE_BROWSER_OFFLINE_ENABLE_ACCEPT)));
+    notification_buttons.emplace_back(
+        GetStringUTF16(IDS_FILE_BROWSER_OFFLINE_ENABLE_REJECT));
+    notification_buttons.emplace_back(
+        GetStringUTF16(IDS_FILE_BROWSER_OFFLINE_ENABLE_ACCEPT));
     notification->set_buttons(notification_buttons);
   }
   return notification;
 }
 
-constexpr char kDriveSyncId[] = "swa-drive-sync";
-constexpr char kDrivePinId[] = "swa-drive-pin";
-
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::UpdateDriveSyncNotification(
-    const extensions::Event& event,
-    const base::Value::List& event_arguments) {
-  std::unique_ptr<message_center::Notification> notification;
+NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
+    const Event& event,
+    const base::Value::List& args) {
+  NotificationPtr notification;
   file_manager_private::FileTransferStatus transfer_status;
-  if (!file_manager_private::FileTransferStatus::Populate(event_arguments[0],
+  if (!file_manager_private::FileTransferStatus::Populate(args[0],
                                                           transfer_status)) {
     LOG(ERROR) << "Invalid event argument or transfer status...";
     return notification;
@@ -629,7 +632,10 @@ SystemNotificationManager::UpdateDriveSyncNotification(
   // Work out if this is a sync or pin update.
   bool is_sync_operation =
       (event.histogram_value ==
-       extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED);
+       HistogramValue::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED);
+
+  constexpr char kDriveSyncId[] = "swa-drive-sync";
+  constexpr char kDrivePinId[] = "swa-drive-pin";
 
   // Close if notifications are disabled for this transfer.
   if (!transfer_status.show_notification) {
@@ -652,24 +658,23 @@ SystemNotificationManager::UpdateDriveSyncNotification(
     }
     return notification;
   }
-  std::u16string title =
-      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE);
+  std::u16string title = GetStringUTF16(IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE);
   std::u16string message;
   int message_template;
   if (transfer_status.num_total_jobs == 1) {
     message_template = is_sync_operation
                            ? IDS_FILE_BROWSER_SYNC_FILE_NAME
                            : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE;
-    message = l10n_util::GetStringFUTF16(
+    message = GetStringFUTF16(
         message_template,
         util::GetDisplayableFileName16(GURL(transfer_status.file_url)));
   } else {
     message_template = is_sync_operation
                            ? IDS_FILE_BROWSER_SYNC_FILE_NUMBER
                            : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL;
-    message = l10n_util::GetStringFUTF16(
-        message_template,
-        base::NumberToString16(transfer_status.num_total_jobs));
+    message =
+        GetStringFUTF16(message_template,
+                        base::NumberToString16(transfer_status.num_total_jobs));
   }
   notification = CreateProgressNotification(
       is_sync_operation ? kDriveSyncId : kDrivePinId, title, message,
@@ -678,33 +683,42 @@ SystemNotificationManager::UpdateDriveSyncNotification(
   return notification;
 }
 
-void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
-  const base::Value::List& event_arguments = event.event_args;
-  if (event_arguments.size() < 1) {
+void SystemNotificationManager::HandleEvent(const Event& event) {
+  const base::Value::List& args = event.event_args;
+  if (args.empty()) {
+    DLOG(WARNING) << "Ignored extension::Event {name: " << event.event_name
+                  << ", args: " << args
+                  << ", histogram_value: " << event.histogram_value << "}";
     return;
   }
+
   // For some events we always display a system notification regardless of if
   // there are any SWA windows open.
   bool force_as_system_notification = false;
-  std::unique_ptr<message_center::Notification> notification;
+  NotificationPtr notification;
   switch (event.histogram_value) {
-    case extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR:
-      notification = MakeDriveSyncErrorNotification(event, event_arguments);
+    case HistogramValue::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR:
+      notification = MakeDriveSyncErrorNotification(event, args);
       break;
-    case extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG:
-      notification = MakeDriveConfirmDialogNotification(event, event_arguments);
+
+    case HistogramValue::FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG:
+      notification = MakeDriveConfirmDialogNotification(event, args);
       force_as_system_notification = true;
       break;
-    case extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED:
-    case extensions::events::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED:
-      notification = UpdateDriveSyncNotification(event, event_arguments);
+
+    case HistogramValue::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED:
+    case HistogramValue::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED:
+      notification = UpdateDriveSyncNotification(event, args);
       break;
-    case extensions::events::FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS:
+
+    case HistogramValue::FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS:
       // The bulk pin progress should not get a status outside the Files app,
       // ignore this event.
-      return;
+
     default:
-      DLOG(WARNING) << "Unhandled event: " << event.event_name;
+      DLOG(WARNING) << "Ignored extension::Event {name: " << event.event_name
+                    << ", args: " << args
+                    << ", histogram_value: " << event.histogram_value << "}";
       break;
   }
 
@@ -723,7 +737,7 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
 }
 
 void SystemNotificationManager::HandleIOTaskProgress(
-    const file_manager::io_task::ProgressStatus& status) {
+    const ProgressStatus& status) {
   std::string id = base::StrCat(
       {kSwaFileOperationPrefix, base::NumberToString(status.task_id)});
 
@@ -738,7 +752,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
   // notification.
   if (status.HasWarning() || status.HasPolicyError()) {
     Dismiss(id);
-    std::unique_ptr<message_center::Notification> notification =
+    NotificationPtr notification =
         MakeDataProtectionPolicyNotification(id, status);
     GetNotificationDisplayService()->Display(
         NotificationHandler::Type::TRANSIENT, *notification,
@@ -750,7 +764,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
   // progress notification.
   if (status.IsScanning()) {
     Dismiss(id);
-    std::unique_ptr<message_center::Notification> notification =
+    NotificationPtr notification =
         MakeDataProtectionPolicyProgressNotification(id, status);
     GetNotificationDisplayService()->Display(
         NotificationHandler::Type::TRANSIENT, *notification,
@@ -781,7 +795,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
       message_id = IDS_FILE_BROWSER_CONFLICT_DIALOG_FOLDER_MESSAGE;
     }
     auto& item_name = status.pause_params.conflict_params->conflict_name;
-    message = GetStringFUTF16(message_id, base::UTF8ToUTF16(item_name));
+    message = GetStringFUTF16(message_id, UTF8ToUTF16(item_name));
   }
 
   int progress = 0;
@@ -789,9 +803,8 @@ void SystemNotificationManager::HandleIOTaskProgress(
     progress = status.bytes_transferred * 100.0 / status.total_bytes;
   }
 
-  std::unique_ptr<message_center::Notification> notification =
-      CreateIOTaskProgressNotification(status.task_id, id, title, message,
-                                       paused, progress);
+  NotificationPtr notification = CreateIOTaskProgressNotification(
+      status.task_id, id, title, message, paused, progress);
 
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
@@ -825,8 +838,8 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
 }
 
 void SystemNotificationManager::HandleDataProtectionPolicyNotificationClick(
-    base::RepeatingClosure proceed_callback,
-    base::RepeatingClosure cancel_callback,
+    RepeatingClosure proceed_callback,
+    RepeatingClosure cancel_callback,
     absl::optional<int> button_index) {
   if (!button_index.has_value()) {
     return;
@@ -841,18 +854,16 @@ void SystemNotificationManager::HandleDataProtectionPolicyNotificationClick(
   }
 }
 
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::MakeMountErrorNotification(
+NotificationPtr SystemNotificationManager::MakeMountErrorNotification(
     file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
-  std::unique_ptr<message_center::Notification> notification;
-  std::vector<message_center::ButtonInfo> notification_buttons;
+  NotificationPtr notification;
+  std::vector<ButtonInfo> notification_buttons;
   std::vector<DeviceNotificationUserActionUmaType> uma_types_for_buttons;
   auto device_mount_status =
       mount_status_.find(volume.storage_device_path().value());
   if (device_mount_status != mount_status_.end()) {
-    std::u16string title =
-        l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
+    std::u16string title = GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
     std::u16string message;
     switch (device_mount_status->second) {
       // We have either an unsupported or unknown filesystem on the mount.
@@ -861,28 +872,24 @@ SystemNotificationManager::MakeMountErrorNotification(
         if (event.status ==
             file_manager_private::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM) {
           if (volume.drive_label().empty()) {
-            message = l10n_util::GetStringUTF16(
-                IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
+            message = GetStringUTF16(IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
           } else {
-            message = l10n_util::GetStringFUTF16(
-                IDS_DEVICE_UNSUPPORTED_MESSAGE,
-                base::UTF8ToUTF16(volume.drive_label()));
+            message = GetStringFUTF16(IDS_DEVICE_UNSUPPORTED_MESSAGE,
+                                      UTF8ToUTF16(volume.drive_label()));
           }
           RecordDeviceNotificationMetric(
               DeviceNotificationUmaType::DEVICE_FAIL);
         } else {
           if (volume.drive_label().empty()) {
-            message =
-                l10n_util::GetStringUTF16(IDS_DEVICE_UNKNOWN_DEFAULT_MESSAGE);
+            message = GetStringUTF16(IDS_DEVICE_UNKNOWN_DEFAULT_MESSAGE);
           } else {
-            message = l10n_util::GetStringFUTF16(
-                IDS_DEVICE_UNKNOWN_MESSAGE,
-                base::UTF8ToUTF16(volume.drive_label()));
+            message = GetStringFUTF16(IDS_DEVICE_UNKNOWN_MESSAGE,
+                                      UTF8ToUTF16(volume.drive_label()));
           }
           if (!volume.is_read_only()) {
             // Give a format device button on the notification.
-            notification_buttons.push_back(message_center::ButtonInfo(
-                l10n_util::GetStringUTF16(IDS_DEVICE_UNKNOWN_BUTTON_LABEL)));
+            notification_buttons.emplace_back(
+                GetStringUTF16(IDS_DEVICE_UNKNOWN_BUTTON_LABEL));
             uma_types_for_buttons.push_back(
                 DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_FAIL);
             RecordDeviceNotificationMetric(
@@ -897,12 +904,11 @@ SystemNotificationManager::MakeMountErrorNotification(
       // failed.
       case MOUNT_STATUS_MULTIPART_ERROR:
         if (volume.drive_label().empty()) {
-          message = l10n_util::GetStringUTF16(
-              IDS_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
+          message =
+              GetStringUTF16(IDS_MULTIPART_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
         } else {
-          message = l10n_util::GetStringFUTF16(
-              IDS_MULTIPART_DEVICE_UNSUPPORTED_MESSAGE,
-              base::UTF8ToUTF16(volume.drive_label()));
+          message = GetStringFUTF16(IDS_MULTIPART_DEVICE_UNSUPPORTED_MESSAGE,
+                                    UTF8ToUTF16(volume.drive_label()));
         }
         RecordDeviceNotificationMetric(DeviceNotificationUmaType::DEVICE_FAIL);
         break;
@@ -911,14 +917,14 @@ SystemNotificationManager::MakeMountErrorNotification(
                       << device_mount_status->second;
         return notification;
     }
-    scoped_refptr<message_center::NotificationDelegate> delegate =
-        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-            base::BindRepeating(
-                &SystemNotificationManager::HandleRemovableNotificationClick,
-                weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
-                uma_types_for_buttons));
-    notification = CreateSystemNotification(kDeviceFailNotificationId, title,
-                                            message, delegate);
+
+    notification = CreateSystemNotification(
+        kDeviceFailNotificationId, title, message,
+        MakeRefCounted<HandleNotificationClickDelegate>(BindRepeating(
+            &SystemNotificationManager::HandleRemovableNotificationClick,
+            weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
+            uma_types_for_buttons)));
+
     DCHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size());
     notification->set_buttons(notification_buttons);
   }
@@ -973,19 +979,17 @@ SystemNotificationManager::UpdateDeviceMountStatus(
   return status;
 }
 
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::MakeRemovableNotification(
+NotificationPtr SystemNotificationManager::MakeRemovableNotification(
     file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
-  std::unique_ptr<message_center::Notification> notification;
+  NotificationPtr notification;
   if (event.status == file_manager_private::MOUNT_ERROR_SUCCESS) {
     bool show_settings_button = false;
-    std::u16string title =
-        l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
+    std::u16string title = GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
     std::u16string message;
     std::vector<DeviceNotificationUserActionUmaType> uma_types_for_buttons;
     if (volume.is_read_only() && !volume.is_read_only_removable_device()) {
-      message = l10n_util::GetStringUTF16(
+      message = GetStringUTF16(
           IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE_READONLY_POLICY);
       RecordDeviceNotificationMetric(
           DeviceNotificationUmaType::DEVICE_NAVIGATION_READONLY_POLICY);
@@ -998,17 +1002,15 @@ SystemNotificationManager::MakeRemovableNotification(
       bool arc_removable_media_access_enabled =
           service->GetBoolean(arc::prefs::kArcHasAccessToRemovableMedia);
       if (!arc_enabled) {
-        message =
-            l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE);
+        message = GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE);
         RecordDeviceNotificationMetric(
             DeviceNotificationUmaType::DEVICE_NAVIGATION);
         uma_types_for_buttons.push_back(
             DeviceNotificationUserActionUmaType::OPEN_MEDIA_DEVICE_NAVIGATION);
       } else if (arc_removable_media_access_enabled) {
         message = base::StrCat(
-            {l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE),
-             u" ",
-             l10n_util::GetStringUTF16(
+            {GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE), u" ",
+             GetStringUTF16(
                  IDS_REMOVABLE_DEVICE_PLAY_STORE_APPS_HAVE_ACCESS_MESSAGE)});
         show_settings_button = true;
         RecordDeviceNotificationMetric(
@@ -1020,9 +1022,8 @@ SystemNotificationManager::MakeRemovableNotification(
                                           OPEN_SETTINGS_FOR_ARC_STORAGE});
       } else {
         message = base::StrCat(
-            {l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE),
-             u" ",
-             l10n_util::GetStringUTF16(
+            {GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE), u" ",
+             GetStringUTF16(
                  IDS_REMOVABLE_DEVICE_ALLOW_PLAY_STORE_ACCESS_MESSAGE)});
         show_settings_button = true;
         RecordDeviceNotificationMetric(
@@ -1034,20 +1035,19 @@ SystemNotificationManager::MakeRemovableNotification(
                                           OPEN_SETTINGS_FOR_ARC_STORAGE});
       }
     }
-    scoped_refptr<message_center::NotificationDelegate> delegate =
-        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-            base::BindRepeating(
-                &SystemNotificationManager::HandleRemovableNotificationClick,
-                weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
-                uma_types_for_buttons));
-    notification = CreateSystemNotification(kRemovableNotificationId, title,
-                                            message, delegate);
-    std::vector<message_center::ButtonInfo> notification_buttons;
-    notification_buttons.emplace_back(l10n_util::GetStringUTF16(
-        IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL));
+
+    notification = CreateSystemNotification(
+        kRemovableNotificationId, title, message,
+        MakeRefCounted<HandleNotificationClickDelegate>(BindRepeating(
+            &SystemNotificationManager::HandleRemovableNotificationClick,
+            weak_ptr_factory_.GetWeakPtr(), volume.mount_path().value(),
+            uma_types_for_buttons)));
+    std::vector<ButtonInfo> notification_buttons;
+    notification_buttons.emplace_back(
+        GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL));
     if (show_settings_button) {
-      notification_buttons.emplace_back(l10n_util::GetStringUTF16(
-          IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL));
+      notification_buttons.emplace_back(
+          GetStringUTF16(IDS_REMOVABLE_DEVICE_OPEN_SETTTINGS_BUTTON_LABEL));
     }
     DCHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size());
     notification->set_buttons(notification_buttons);
@@ -1062,19 +1062,18 @@ SystemNotificationManager::MakeRemovableNotification(
   return notification;
 }
 
-std::unique_ptr<message_center::Notification>
-SystemNotificationManager::MakeDataProtectionPolicyNotification(
+NotificationPtr SystemNotificationManager::MakeDataProtectionPolicyNotification(
     const std::string& notification_id,
-    const file_manager::io_task::ProgressStatus& status) {
+    const ProgressStatus& status) {
   std::u16string title = GetPolicyNotificationTitle(status);
   std::u16string message = GetPolicyNotificationMessage(status);
   std::u16string cancel_button = GetPolicyNotificationCancelButton(status);
 
-  std::vector<message_center::ButtonInfo> notification_buttons;
+  std::vector<ButtonInfo> notification_buttons;
   notification_buttons.emplace_back(cancel_button);
 
-  base::RepeatingClosure proceed_callback;
-  base::RepeatingClosure cancel_callback;
+  RepeatingClosure proceed_callback;
+  RepeatingClosure cancel_callback;
   if (status.HasWarning()) {
     notification_buttons.emplace_back(
         GetPolicyNotificationProceedButton(status));
@@ -1082,19 +1081,19 @@ SystemNotificationManager::MakeDataProtectionPolicyNotification(
       // Single file: the user can continue the action directly from the
       // notification.
       proceed_callback =
-          base::BindRepeating(&SystemNotificationManager::ResumeTask,
-                              weak_ptr_factory_.GetWeakPtr(), status.task_id);
+          BindRepeating(&SystemNotificationManager::ResumeTask,
+                        weak_ptr_factory_.GetWeakPtr(), status.task_id);
     } else {
       // Multiple files: add the "Review" button. The user can continue the
       // action from the dialog.
-      proceed_callback = base::BindRepeating(
+      proceed_callback = BindRepeating(
           &SystemNotificationManager::ShowDataProtectionPolicyDialog,
           weak_ptr_factory_.GetWeakPtr(), status.task_id,
           policy::FilesDialogType::kWarning);
     }
     cancel_callback =
-        base::BindRepeating(&SystemNotificationManager::CancelTask,
-                            weak_ptr_factory_.GetWeakPtr(), status.task_id);
+        BindRepeating(&SystemNotificationManager::CancelTask,
+                      weak_ptr_factory_.GetWeakPtr(), status.task_id);
   } else {  // Error - some files couldn't be transferred.
     DCHECK(status.HasPolicyError());
     if (status.policy_error !=
@@ -1103,34 +1102,32 @@ SystemNotificationManager::MakeDataProtectionPolicyNotification(
       // If more than one file was blocked, add the "Review" button.
       notification_buttons.emplace_back(
           GetPolicyNotificationProceedButton(status));
-      proceed_callback = base::BindRepeating(
+      proceed_callback = BindRepeating(
           &SystemNotificationManager::ShowDataProtectionPolicyDialog,
           weak_ptr_factory_.GetWeakPtr(), status.task_id,
           policy::FilesDialogType::kError);
     }
     cancel_callback =
-        base::BindRepeating(&SystemNotificationManager::Dismiss,
-                            weak_ptr_factory_.GetWeakPtr(), notification_id);
+        BindRepeating(&SystemNotificationManager::Dismiss,
+                      weak_ptr_factory_.GetWeakPtr(), notification_id);
   }
 
-  scoped_refptr<message_center::NotificationDelegate> delegate =
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&SystemNotificationManager::
-                                  HandleDataProtectionPolicyNotificationClick,
-                              weak_ptr_factory_.GetWeakPtr(), proceed_callback,
-                              cancel_callback));
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(notification_id, title, message, delegate);
+  NotificationPtr notification = CreateSystemNotification(
+      notification_id, title, message,
+      MakeRefCounted<HandleNotificationClickDelegate>(BindRepeating(
+          &SystemNotificationManager::
+              HandleDataProtectionPolicyNotificationClick,
+          weak_ptr_factory_.GetWeakPtr(), proceed_callback, cancel_callback)));
 
   notification->set_buttons(notification_buttons);
 
   return notification;
 }
 
-std::unique_ptr<message_center::Notification>
+NotificationPtr
 SystemNotificationManager::MakeDataProtectionPolicyProgressNotification(
     const std::string& notification_id,
-    const file_manager::io_task::ProgressStatus& status) {
+    const ProgressStatus& status) {
   // TODO(b/279435843): Replace with translation strings.
   std::u16string message =
       u"Checking files with your organization's security policies.";
@@ -1177,7 +1174,7 @@ void SystemNotificationManager::ResumeTask(
 void SystemNotificationManager::HandleMountCompletedEvent(
     file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
-  std::unique_ptr<message_center::Notification> notification;
+  NotificationPtr notification;
 
   switch (event.event_type) {
     case file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT:
