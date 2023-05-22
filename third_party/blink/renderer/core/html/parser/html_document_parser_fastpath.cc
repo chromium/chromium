@@ -69,6 +69,19 @@ constexpr bool OnlyContainsLowercaseASCIILetters(const char (&s)[n]) {
   return true;
 }
 
+template <class Char, size_t n>
+bool SpanMatchesLowercase(base::span<const Char> span, const char (&s)[n]) {
+  DCHECK_EQ(span.size(), n - 1);
+  for (size_t i = 0; i < n - 1; ++i) {
+    Char lower =
+        (span[i] >= 'A' && span[i] <= 'Z') ? span[i] - 'A' + 'a' : span[i];
+    if (lower != s[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // A hash function that is just good enough to distinguish the supported
 // tagnames. It needs to be adapted as soon as we have colliding tagnames.
 // The implementation was chosen to map to a dense integer range to allow for
@@ -1082,8 +1095,19 @@ class HTMLFastPathParser {
     // and fails if the the current char is not '/'.
     DCHECK_EQ(*pos_, '/');
     ++pos_;
-    Span endtag = ScanTagname();
-    if (endtag == Tag::tagname) {
+    // -1 as the name includes \0.
+    const size_t tag_length = std::size(Tag::tagname) - 1;
+    DCHECK_LE(pos_, end_);
+    // <= as there needs to be a '>'.
+    if (static_cast<size_t>(end_ - pos_) <= tag_length) {
+      return Fail(HtmlFastPathResult::kFailedUnexpectedTagNameCloseState,
+                  element);
+    }
+    Span tag_name_span(pos_, tag_length);
+    pos_ += tag_length;
+    if (tag_name_span == Tag::tagname ||
+        SpanMatchesLowercase(tag_name_span, Tag::tagname)) {
+      SkipWhitespace();
       if (ConsumeNext() != '>') {
         return Fail(HtmlFastPathResult::kFailedUnexpectedTagNameCloseState,
                     element);
