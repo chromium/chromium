@@ -164,6 +164,7 @@ bookmarks::StorageType GetBookmarkModelType(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model) {
+  DCHECK(bookmark_node);
   DCHECK(profile_model);
   if (bookmark_node->HasAncestor(profile_model->root_node())) {
     return bookmarks::StorageType::kLocalOrSyncable;
