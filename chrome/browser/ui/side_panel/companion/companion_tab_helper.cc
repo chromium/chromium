@@ -66,7 +66,6 @@ void CompanionTabHelper::ShowCompanionSidePanelForImage(
   auto image_query = side_panel::mojom::ImageQuery(
       upload_url, src_url, content_type, thumbnail_data, original_size.height(),
       original_size.width(), downscaled_size.height(), downscaled_size.width());
-
   if (companion_page_handler_) {
     // Send request immediately if page handler already exists.
     companion_page_handler_->OnImageQuery(image_query);

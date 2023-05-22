@@ -19,6 +19,7 @@
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
@@ -35,6 +36,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_test.h"
@@ -269,6 +272,10 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         net::GetValueForKeyInQuery(url, "companion_query", &query_proto));
     last_proto_from_url_load_ = DeserializeCompanionRequest(query_proto);
 
+    if (request.method == net::test_server::HttpMethod::METHOD_POST) {
+      net::GetValueForKeyInQuery(url, "sourcelang", &last_sourcelang_);
+      net::GetValueForKeyInQuery(url, "targetlang", &last_targetlang_);
+    }
     return nullptr;
   }
 
@@ -278,6 +285,10 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     last_proto_from_url_load_ = absl::nullopt;
     return proto_copy;
   }
+
+  std::string GetLastSourceLang() { return last_sourcelang_; }
+
+  std::string GetLastTargetLang() { return last_targetlang_; }
 
   companion::proto::CompanionUrlParams DeserializeCompanionRequest(
       const std::string& companion_url_param) {
@@ -328,6 +339,8 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     base::FieldTrialParams params;
     params["companion-homepage-url"] =
         companion_server_.GetURL("/companion_iframe.html").spec();
+    params["companion-image-upload-url"] =
+        companion_server_.GetURL("/upload").spec();
     feature_list_.InitAndEnableFeatureWithParameters(
         companion::features::kSidePanelCompanion, params);
   }
@@ -375,6 +388,8 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   absl::optional<companion::proto::CompanionUrlParams>
       last_proto_from_url_load_;
   size_t requests_received_on_server_ = 0;
+  std::string last_sourcelang_;
+  std::string last_targetlang_;
 };
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, InitialNavigationWithoutMsbb) {
@@ -814,6 +829,16 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   std::vector<uint8_t> thumbnail_data(64, 0);
   std::string content_type("image/jpeg");
 
+  std::string source_lang = "";
+  std::string target_lang = "en";
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents());
+  chrome_translate_client->GetTranslateManager()
+      ->GetLanguageState()
+      ->SetSourceLanguage(source_lang);
+  chrome_translate_client->GetTranslateManager()
+      ->GetLanguageState()
+      ->SetCurrentLanguage(target_lang);
   auto* companion_helper =
       companion::CompanionTabHelper::FromWebContents(web_contents());
   companion_helper->ShowCompanionSidePanelForImage(
@@ -833,6 +858,56 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   ExpectUkmEntry(&ukm_recorder,
                  ukm::builders::Companion_PageView::kOpenTriggerName,
                  static_cast<int>(SidePanelOpenTrigger::kLensContextMenu));
+  // The language params should be unset when is_image_translate=false.
+  EXPECT_EQ(GetLastSourceLang(), "");
+  EXPECT_EQ(GetLastTargetLang(), "");
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       OpenedFromContextMenuImageSearchWithTranslate) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+
+  // Start a image query via context menu. It should open companion side panel.
+  GURL src_url = CreateUrl(kHost, kRelativeUrl2);
+  gfx::Size original_size(8, 8);
+  gfx::Size downscaled_size(8, 8);
+  std::vector<uint8_t> thumbnail_data(64, 0);
+  std::string content_type("image/jpeg");
+
+  std::string source_lang = "";
+  std::string target_lang = "en";
+  ChromeTranslateClient* chrome_translate_client =
+      ChromeTranslateClient::FromWebContents(web_contents());
+  chrome_translate_client->GetTranslateManager()
+      ->GetLanguageState()
+      ->SetSourceLanguage(source_lang);
+  chrome_translate_client->GetTranslateManager()
+      ->GetLanguageState()
+      ->SetCurrentLanguage(target_lang);
+  auto* companion_helper =
+      companion::CompanionTabHelper::FromWebContents(web_contents());
+  companion_helper->ShowCompanionSidePanelForImage(
+      src_url,
+      /*is_image_translate=*/true,
+      /*additional_query_params_modified=*/"", thumbnail_data, original_size,
+      downscaled_size,
+      /*image_extension=*/"", content_type);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Close side panel and verify UKM.
+  side_panel_coordinator()->Close();
+  ExpectUkmEntry(&ukm_recorder,
+                 ukm::builders::Companion_PageView::kOpenTriggerName,
+                 static_cast<int>(SidePanelOpenTrigger::kLensContextMenu));
+  EXPECT_EQ(GetLastSourceLang(), source_lang);
+  EXPECT_EQ(GetLastTargetLang(), target_lang);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
