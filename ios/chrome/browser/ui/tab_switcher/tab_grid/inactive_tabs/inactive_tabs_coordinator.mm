@@ -95,6 +95,10 @@ const CGFloat kMinForwardVelocityToDismiss = 100;
 // dismissal of the view controller, when the swiped position is already more
 // than half of the screen's width.
 const CGFloat kMinBackwardVelocityToCancelDismiss = 10;
+// When closing all inactive tabs via the confirmation dialog, the Inactive Tabs
+// grid is popped, but to avoid having it emptied immediately (producing a
+// glitch), delay the closing of the tabs in the mediator.
+const base::TimeDelta kCloseAllInactiveTabsDelay = base::Seconds(0.3);
 
 // NSUserDefaults key to check whether the user education screen has ever been
 // shown. The associated value in user defaults is a BOOL.
@@ -636,7 +640,14 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 // Called when the user confirmed wanting to close all inactive tabs.
 - (void)closeAllInactiveTabs {
   [_delegate inactiveTabsCoordinatorDidFinish:self];
-  [self.mediator closeAllItems];
+  // To prevent the Inactive Tabs grid from being immediately emptied, defer the
+  // closing to after the view is popped.
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf.mediator closeAllItems];
+      }),
+      kCloseAllInactiveTabsDelay);
 }
 
 // Presents the Inactive Tabs settings modally in their own navigation

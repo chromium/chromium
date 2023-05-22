@@ -8,6 +8,7 @@
 #import <memory>
 
 #import "base/check_op.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
@@ -78,6 +79,8 @@ constexpr CGFloat kSpringAnimationDamping = 0.6;
 constexpr CGFloat kSpringAnimationInitialVelocity = 1.0;
 constexpr int kOpenTabsSectionIndex = 0;
 constexpr int kSuggestedActionsSectionIndex = 1;
+constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
+    base::Seconds(0.3);
 
 NSString* const kCellIdentifier = @"GridCellIdentifier";
 NSString* const kPlusSignCellIdentifier = @"PlusSignCellIdentifier";
@@ -187,6 +190,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, assign) NSInteger inactiveTabsDaysThreshold;
 // Tracks if a drop action initiated in this grid is in progress.
 @property(nonatomic) BOOL localDragActionInProgress;
+// Tracks if the Inactive Tabs button is being animated out.
+@property(nonatomic) BOOL inactiveTabsHeaderHideAnimationInProgress;
 @end
 
 @implementation GridViewController {
@@ -579,7 +584,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     case TabGridModeNormal: {
       // The Regular Tabs grid has a button to inform about the hidden inactive
       // tabs.
-      CHECK(IsInactiveTabsAvailable() && self.inactiveTabsCount > 0);
+      CHECK(IsInactiveTabsAvailable());
+      if (self.inactiveTabsCount == 0 &&
+          !self.inactiveTabsHeaderHideAnimationInProgress) {
+        base::debug::DumpWithoutCrashing();
+      }
       InactiveTabsButtonHeader* header = [collectionView
           dequeueReusableSupplementaryViewOfKind:kind
                              withReuseIdentifier:
@@ -732,7 +741,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     referenceSizeForHeaderInSection:(NSInteger)section {
   switch (_mode) {
     case TabGridModeNormal:
-      if (!IsInactiveTabsAvailable() || self.inactiveTabsCount == 0) {
+      if (!IsInactiveTabsAvailable()) {
+        return CGSizeZero;
+      }
+      if (self.inactiveTabsHeaderHideAnimationInProgress) {
+        // The header is animated out to a height of 0.1.
+        return CGSizeMake(collectionView.bounds.size.width, 0.1);
+      }
+      if (self.inactiveTabsCount == 0) {
         return CGSizeZero;
       }
       // The Regular Tabs grid has a button to inform about the hidden inactive
@@ -1483,12 +1499,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.inactiveTabsCount = count;
 
   // Update the header.
-  if (oldCount == 0 || count == 0) {
-    // The header should appear or disappear. Reload the section.
-    [self reloadInactiveTabsButtonHeader];
+  if (oldCount == 0) {
+    [self showInactiveTabsButtonHeader];
+  } else if (count == 0) {
+    [self hideInactiveTabsButtonHeader];
   } else {
     // The header just needs to be updated with the new count.
-    [self updateInactiveTabsButtonHeaderIfNeeded];
+    [self updateInactiveTabsButtonHeader];
   }
 }
 
@@ -1506,11 +1523,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [self reloadInactiveTabsButtonHeader];
   } else {
     // The header just needs to be updated with the new days threshold.
-    [self updateInactiveTabsButtonHeaderIfNeeded];
+    [self updateInactiveTabsButtonHeader];
   }
 
   // Update the preamble.
-  [self updateInactiveTabsPreambleHeaderIfNeeded];
+  [self updateInactiveTabsPreambleHeader];
 }
 
 #pragma mark - LayoutSwitcher
@@ -2068,6 +2085,44 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return CGSizeMake(width, size.height);
 }
 
+- (void)showInactiveTabsButtonHeader {
+  // Contrary to `hideInactiveTabsButtonHeader`, this doesn't need to be
+  // animated.
+  [self reloadInactiveTabsButtonHeader];
+}
+
+- (void)hideInactiveTabsButtonHeader {
+  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
+                                               inSection:kOpenTabsSectionIndex];
+  InactiveTabsButtonHeader* header =
+      base::mac::ObjCCast<InactiveTabsButtonHeader>([self.collectionView
+          supplementaryViewForElementKind:UICollectionElementKindSectionHeader
+                              atIndexPath:indexPath]);
+  if (!header) {
+    return;
+  }
+
+  self.inactiveTabsHeaderHideAnimationInProgress = YES;
+  [UIView animateWithDuration:kInactiveTabsHeaderAnimationDuration.InSecondsF()
+      animations:^{
+        header.alpha = 0;
+        [self.collectionView.collectionViewLayout invalidateLayout];
+      }
+      completion:^(BOOL finished) {
+        header.hidden = YES;
+        self.inactiveTabsHeaderHideAnimationInProgress = NO;
+        // Update the header to make it entirely disappear once the animation is
+        // done. This is done after a delay because the completion can be called
+        // before the animation ended, causing a visual glitch.
+        __weak __typeof(self) weakSelf = self;
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, base::BindOnce(^{
+              [weakSelf reloadInactiveTabsButtonHeader];
+            }),
+            kInactiveTabsHeaderAnimationDuration);
+      }];
+}
+
 // Reloads the section containing the Inactive Tabs button header.
 - (void)reloadInactiveTabsButtonHeader {
   NSIndexSet* openTabsSection =
@@ -2088,7 +2143,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 // Reconfigures the Inactive Tabs button header.
-- (void)updateInactiveTabsButtonHeaderIfNeeded {
+- (void)updateInactiveTabsButtonHeader {
   NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
                                                inSection:kOpenTabsSectionIndex];
   InactiveTabsButtonHeader* header =
@@ -2104,7 +2159,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 // Reconfigures the Inactive Tabs preamble header.
-- (void)updateInactiveTabsPreambleHeaderIfNeeded {
+- (void)updateInactiveTabsPreambleHeader {
   NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
                                                inSection:kOpenTabsSectionIndex];
   InactiveTabsPreambleHeader* header =
