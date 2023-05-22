@@ -148,22 +148,10 @@ class SuggestionLayout extends ViewGroup {
 
         mActionButtonWidthPx = getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_action_button_width);
-
-        if (OmniboxFeatures.shouldShowSmallestMargins()) {
-            int marginPx = getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_vertical_margin);
-            mCompactContentHeightPx = getResources().getDimensionPixelSize(
-                                              R.dimen.omnibox_suggestion_compact_content_height)
-                    - marginPx;
-            mContentHeightPx =
-                    getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height)
-                    - marginPx;
-        } else {
-            mCompactContentHeightPx = getResources().getDimensionPixelSize(
-                    R.dimen.omnibox_suggestion_compact_content_height);
-            mContentHeightPx =
-                    getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
-        }
+        mCompactContentHeightPx = getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_compact_content_height);
+        mContentHeightPx =
+                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_height);
 
         mContentPaddingPx =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding);
