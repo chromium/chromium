@@ -21,11 +21,19 @@ void NGScoreLineBreaker::OptimalBreakPoints(
   DCHECK(!node_.IsScoreLineBreakDisabled());
   DCHECK(context.IsActive());
   NGLineInfoList& line_info_list = context.LineInfoList();
-  // `line_info_list` should be either empty, or in the middle of finding the
-  // end or a forced break, and it should have at least one unused slot.
-  DCHECK(line_info_list.IsEmpty() || (line_info_list.Back().BreakToken() &&
-                                      !line_info_list.Back().HasForcedBreak()));
   DCHECK_LT(line_info_list.Size(), NGLineInfoList::kCapacity);
+  if (!line_info_list.IsEmpty()) {
+    // The incoming `break_token` should match the first cached line.
+    DCHECK_EQ((break_token ? break_token->Start() : NGInlineItemTextIndex()),
+              line_info_list.Front().Start());
+    // To compute the next line after the last cached line, update `break_token`
+    // to the last cached break token.
+    const NGLineInfo& last_line = line_info_list.Back();
+    break_token = last_line.BreakToken();
+    // The last line should not be the end of paragraph.
+    // `SuspendUntilConsumed()` should have prevented this from happening.
+    DCHECK(break_token && !last_line.HasForcedBreak());
+  }
 
   // Compute line breaks and cache the results (`NGLineInfo`) up to
   // `NGLineInfoList::kCapacity` lines.
