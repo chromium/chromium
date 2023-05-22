@@ -252,22 +252,7 @@ TEST_F(CastDialogViewTest, StopCasting) {
   InitializeDialogWithModel(model);
   EXPECT_CALL(controller_,
               StopCasting(model.media_sinks()[1].route->media_route_id()));
-  SinkPressedAtIndex(1);
-}
-
-TEST_F(CastDialogViewTest, FreezeUiStopCasting) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
-  profile_.GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
-
-  CastDialogModel model = CreateModelWithSinks({CreateConnectedSink()});
-  InitializeDialogWithModel(model);
-
-  EXPECT_CALL(controller_,
-              StopCasting(model.media_sinks()[0].route->media_route_id()))
-      .Times(1);
-  StopPressedAtIndex(0);
+  StopPressedAtIndex(1);
 }
 
 TEST_F(CastDialogViewTest, FreezeRoute) {
