@@ -56,7 +56,41 @@ For the purposes of Client-Hints, this means that an "ACCEPT_CH" HTTP2/3 frame c
 
 The full explanation is outside of the scope of this document and can be found in the reliability explainer linked above.
 
+### Header Names
+
+All client hint headers should be [forbidden request-headers](https://fetch.spec.whatwg.org/#forbidden-request-header), by virtue of the prefix `Sec-`. Historically, some were not forbidden and most of these have been replaced with new headers using this prefix. Within Chromium, these are distinguished with a `_DEPRECATED` suffix, e.g., `WebClientHintsType::kDeviceMemory_DEPRECATED`. The exception to this rule is the `Save-Data` header, which [will
+not be replaced with `Sec-CH-Save-Data`](https://groups.google.com/a/chromium.org/g/blink-dev/c/HR7tWmewbSA/m/R0QYg-ZAAAAJ).
+
+The "new" naming adds `CH` to distinguish client hints from other forbidden request-headers, giving the combined prefix `Sec-CH`.
+
+### Client-Hint Types
+
+There are several types of client hints, which are handled differently:
+
+ * *UA* client hints contain information about the user agent which might once have been found expected in the User-Agent header.
+ * *Device* client hints contain dynamic information about the configuration of the device on which the browser is running.
+ * *Network* client hints contain dynamic information about the browser's network connection.
+ * *User Preference Media Features* client hints contain information about the user agent's preferences as represented in CSS media features.
+
+All UA client hints are distinguished by a `Sec-CH-UA` header prefix. UA hints are available via the JS `navigator.userAgentData` API, while other types are not.
+
+Some device client hints are specific to the type of resource being requested. For example, `Sec-CH-Resource-Width` is sent only for image fetches.
+
+Except for `Save-Data`, network client hints are currently being deprecated.
+
+Some device and user-preference client hints are not sent for fetches in detached frames.
+
 ## Implementation
+
+### Client-Hint Data Sources
+
+In terms of the implementation, the web sees client hints in three ways: in headers on navigation-related fetches, in headers for subresource fetches, and via the [`navigator.userAgentData` property](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData).
+
+The first of these occurs in the browser process. Hint data for client-hint types other than UA are fetched from appropriate APIs, such as `NetworkQualityTracker` or `display::Screen`. Data for UA client hints are gathered in a `UserAgentMetadata` type, which is acquired from the embedder via the `ClientHintControllerDelegate`.
+
+Subresource fetches and JS access occur in the renderer. The renderer gets UA client hint data from the browser via `RenderThreadImpl::InitializeRenderer` and stores it for the lifetime of the renderer thread. The browser gets this data from the embedder via the `ContentBrowserClient` delegate. *Note that this is entirely independent of the `ClientHintControllerDelegate`!*
+
+Programmatic access only exposes UA client hints. All other client hints are only revealed in client-hint headers, based on locally-observed information such as that from `NetworkStateNotifier` or the frame's device pixel ratio.
 
 ### Accept-CH cache
 
@@ -135,9 +169,14 @@ The header should also be added to the cors `safe_names` list in [/services/netw
 
 TODO(crbug.com/1176808): There should be UseCounters measuring usage, but there are not currently.
 
-### Populating the client hint
+### Populating the Client Hint
 
-Client Hints are populated in [BaseFetchContext::AddClientHintsIfNecessary](/third_party/blink/renderer/core/loader/base_fetch_context.cc). If you need frame-based information, this should be added to [ClientHintsImageInfo](/third_party/blink/renderer/core/loader/base_fetch_context.cc), which is populated in [FrameFetchContext::AddClientHintsIfNecessary](/third_party/blink/renderer/core/loader/frame_fetch_context.cc)
+As described in "Client-Hint Data Sources" above, client hints are populated in
+several places:
+
+ * _UA Hints:_ Included in [`blink::UserAgentMetadata`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/common/user_agent/user_agent_metadata.h?q=blink::UserAgentMetadata) and determined in [`ClientHintsControllerDelegate`](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/client_hints_controller_delegate.h;l=55?q=clienthintscontrollerdelegate) for navigation fetches and [`ContentBrowserClient`](https://source.chromium.org/chromium/chromium/src/+/main:content/public/browser/content_browser_client.h;l=2100?q=contentbrowserclient) for programmatic access and subresource fetches.
+ * _navigation fetches:_ [`content::AddNavigationRequestClientHintsHeaders`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/client_hints/client_hints.cc;l=1040?q=AddNavigationRequestClientHintsHeader) and `content::AddRequestClientHintsHeaders`.
+ * _subresource fetches:_ [BaseFetchContext::AddClientHintsIfNecessary](/third_party/blink/renderer/core/loader/base_fetch_context.cc). If you need frame-based information, this should be added to [ClientHintsImageInfo](/third_party/blink/renderer/core/loader/base_fetch_context.cc), which is populated in [FrameFetchContext::AddClientHintsIfNecessary](/third_party/blink/renderer/core/loader/frame_fetch_context.cc)
 
 ### Web platform tests
 * Add the new client hint to [/third_party/blink/web_tests/external/wpt/client-hints/resources/export.js], [/third_party/blink/web_tests/external/wpt/client-hints/resources/clienthintslist.py], [/third_party/blink/web_tests/external/wpt/client-hints/accept-ch/feature-policy-navigation/\_\_dir\_\_.headers], [/third_party/blink/web_tests/external/wpt/client-hints/sandbox/\_\_dir\_\_.headers], and [/third_party/blink/web_tests/external/wpt/client-hints/accept-ch/\_\_dir\_\_.headers]
