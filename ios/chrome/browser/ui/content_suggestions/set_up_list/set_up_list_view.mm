@@ -59,6 +59,7 @@ constexpr NSString* const kSetUpListAccessibilityID =
 constexpr NSString* const kSetUpListExpandButtonID =
     @"kSetUpListExpandButtonID";
 constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
+constexpr NSString* const kSetUpListAllSetID = @"kSetUpListAllSetID";
 
 }  //  namespace
 
@@ -356,6 +357,7 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
 
   UIStackView* stack =
       [[UIStackView alloc] initWithArrangedSubviews:@[ title, description ]];
+  stack.accessibilityIdentifier = kSetUpListAllSetID;
   stack.axis = UILayoutConstraintAxisVertical;
   stack.alignment = UIStackViewAlignmentCenter;
   stack.translatesAutoresizingMaskIntoConstraints = NO;

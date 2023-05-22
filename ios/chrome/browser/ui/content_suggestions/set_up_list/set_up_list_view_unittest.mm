@@ -189,7 +189,7 @@ TEST_F(SetUpListViewTest, SetUpListItemViewMarkComplete) {
   EXPECT_TRUE(item_view != nil);
   EXPECT_FALSE(item_view.complete);
 
-  [item_view markCompleteWithCompletion:nil];
+  [view markItemComplete:SetUpListItemType::kSignInSync completion:nil];
   // Give time for run loop to execute events.
   _task_environment.RunUntilIdle();
 
@@ -206,4 +206,19 @@ TEST_F(SetUpListViewTest, NoExpandButton) {
   SetUpListItemView* expand_button =
       (SetUpListItemView*)FindSubview(@"kSetUpListExpandButtonID");
   EXPECT_TRUE(expand_button == nil);
+}
+
+// Tests that the "All Set" can be shown.
+TEST_F(SetUpListViewTest, AllSetView) {
+  SetUpListView* view = [[SetUpListView alloc] initWithItems:_itemsData];
+  [_superview addSubview:view];
+
+  ExpectSubview(@"kSetUpListAllSetID", false);
+
+  [view showDoneWithAnimations:nil];
+  // Give time for run loop to execute events.
+  _task_environment.RunUntilIdle();
+
+  //  ExpectSubview(@"kSetUpListItemSignInID", false);
+  ExpectSubview(@"kSetUpListAllSetID", true);
 }
