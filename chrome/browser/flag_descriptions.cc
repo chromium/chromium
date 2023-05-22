@@ -44,13 +44,6 @@ const char kPdfUseSkiaRendererName[] =
 const char kPdfUseSkiaRendererDescription[] = "Use Skia as the PDF renderer.";
 #endif
 
-extern const char kAddEduAccountFromAccountSettingsForSupervisedUsersName[] =
-    "Add Edu Account From Account Settings For Supervised Users";
-extern const char
-    kAddEduAccountFromAccountSettingsForSupervisedUsersDescription[] =
-        "Enables supervised users to add additional Edu accounts and "
-        "simplifies settings UI";
-
 const char kAppDeduplicationServiceFondueName[] =
     "Identify duplicate app groups.";
 const char kAppDeduplicationServiceFondueDescription[] =

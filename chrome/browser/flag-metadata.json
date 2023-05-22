@@ -69,14 +69,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "add-edu-account-for-supervised-users",
-    "owners": [
-      "mlbipin",
-      "chrome-kids-eng@google.com"
-    ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "add-identity-in-can-make-payment",
     "owners": [ "rouslan", "chrome-payments-team@google.com" ],
     "expiry_milestone": 115
