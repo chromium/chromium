@@ -317,6 +317,41 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [ChromeEarlGrey closeCurrentTab];
 }
 
+// Tests that visit history pedal is present and it opens the browser history
+// page.
+- (void)testVisitHistoryPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"history"];
+
+  NSString* visitHistoryPedalString = l10n_util::GetNSString(
+      IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_VIEW_CHROME_HISTORY);
+
+  // Matcher for visit history pedal suggestion.
+  id<GREYMatcher> visitHistoryPedal =
+      popupRowWithString(visitHistoryPedalString);
+
+  // Visit history pedal should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:visitHistoryPedal];
+
+  // Tap on visit history pedal.
+  [[EarlGrey selectElementWithMatcher:visitHistoryPedal]
+      performAction:grey_tap()];
+
+  // Visit history page should be displayed.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::HistoryTableView()];
+
+  // Close the Visit history page.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::HistoryTableView()];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
 // Tests that the dino pedal does not appear when the search suggestion is below
 // the top 3.
 - (void)testNoPedal {
