@@ -626,8 +626,6 @@ android_library("browser_java") {
     ":common_platform_services_java",
     ":common_variations_java",
     ":resources",
-    "//android_webview:common_platform_services_java",
-    "//android_webview/proto:aw_variations_seed_proto_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
     "//base:jni_java",
