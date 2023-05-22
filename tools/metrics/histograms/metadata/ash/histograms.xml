@@ -964,6 +964,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.ExtraDiskSpaceOccupied"
+    units="MB" expires_after="M121">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of disk space occupied by files/dirs created during the migration.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.BrowserDataMigrator.MoveMigrator.ExtraDiskSpaceOccupied.DiffWithEstimate"
+    units="MB" expires_after="M121">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The difference between the estimate and the actual size of disk space
+    occupied by files/dirs created during the migration.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserDataMigrator.MoveMigrator.ExtraSpaceRequiredMB"
     units="MB" expires_after="M121">
   <owner>ythjkt@chromium.org</owner>
@@ -1086,6 +1106,24 @@ chromium-metrics-reviews@google.com.
     The final status of profile move migration. Recorded once at the end of the
     migration process. Profile move migration is a feature to migrate profile
     data from Ash to Lacros once after Lacros is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.TmpProfileDirSize"
+    units="MB" expires_after="M121">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of temporary profile directory created during the migration.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.MoveMigrator.TmpSplitDirSize"
+    units="MB" expires_after="M121">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of temporary split directory created during the migration.
   </summary>
 </histogram>
 

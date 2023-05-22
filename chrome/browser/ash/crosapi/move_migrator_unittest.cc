@@ -551,7 +551,7 @@ TEST(MoveMigratorTest, SetupAshSplitDir) {
   ASSERT_TRUE(base::CreateDirectory(tmp_user_dir));
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir));
 
-  EXPECT_EQ(MoveMigrator::SetupAshSplitDir(original_profile_dir).status,
+  EXPECT_EQ(MoveMigrator::SetupAshSplitDir(original_profile_dir, 0).status,
             MoveMigrator::TaskStatus::kSucceeded);
 
   const base::FilePath tmp_split_dir =

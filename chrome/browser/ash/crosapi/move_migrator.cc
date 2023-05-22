@@ -266,14 +266,14 @@ MoveMigrator::TaskResult MoveMigrator::PreMigrationCleanUp(
     }
   }
 
-  const int64_t extra_bytes_created =
+  const int64_t estimated_extra_bytes_created =
       browser_data_migrator_util::EstimatedExtraBytesCreated(
           original_profile_dir);
   // Now check if there is enough disk space for the migration to be carried
   // out.
   const int64_t extra_bytes_required_to_be_freed =
       browser_data_migrator_util::ExtraBytesRequiredToBeFreed(
-          extra_bytes_created, original_profile_dir);
+          estimated_extra_bytes_created, original_profile_dir);
 
   UMA_HISTOGRAM_MEDIUM_TIMES(kMoveMigratorPreMigrationCleanUpTimeUMA,
                              timer.Elapsed());
@@ -289,7 +289,8 @@ MoveMigrator::TaskResult MoveMigrator::PreMigrationCleanUp(
             extra_bytes_required_to_be_freed};
   }
 
-  return {TaskStatus::kSucceeded};
+  return {TaskStatus::kSucceeded, absl::nullopt, absl::nullopt,
+          estimated_extra_bytes_created};
 }
 
 void MoveMigrator::OnPreMigrationCleanUp(MoveMigrator::TaskResult result) {
@@ -298,6 +299,8 @@ void MoveMigrator::OnPreMigrationCleanUp(MoveMigrator::TaskResult result) {
     InvokeCallback(result);
     return;
   }
+
+  estimated_extra_bytes_created_ = *result.estimated_extra_bytes_created;
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -374,18 +377,22 @@ void MoveMigrator::OnSetupLacrosDir(TaskResult result) {
     return;
   }
 
+  DCHECK(estimated_extra_bytes_created_.has_value());
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&MoveMigrator::SetupAshSplitDir, original_profile_dir_),
+      base::BindOnce(&MoveMigrator::SetupAshSplitDir, original_profile_dir_,
+                     *estimated_extra_bytes_created_),
       base::BindOnce(&MoveMigrator::OnSetupAshSplitDir,
                      weak_factory_.GetWeakPtr()));
 }
 
 // static
 MoveMigrator::TaskResult MoveMigrator::SetupAshSplitDir(
-    const base::FilePath& original_profile_dir) {
+    const base::FilePath& original_profile_dir,
+    const int64_t estimated_extra_bytes_created) {
   LOG(WARNING) << "Running SetupAshSplitDir()";
 
   const base::FilePath tmp_user_dir =
@@ -498,6 +505,26 @@ MoveMigrator::TaskResult MoveMigrator::SetupAshSplitDir(
       return {TaskStatus::kSetupAshDirMigrateSyncDataLevelDBFailed};
     }
   }
+
+  // Collect UMAs on sizes of artifacts created by migration.
+  const int64_t tmp_profile_dir_size =
+      base::ComputeDirectorySize(tmp_profile_dir);
+  const int64_t tmp_split_dir_size = base::ComputeDirectorySize(tmp_split_dir);
+  const int64_t extra_bytes_created = tmp_profile_dir_size + tmp_split_dir_size;
+  const int64_t extra_bytes_over_estimate =
+      extra_bytes_created - estimated_extra_bytes_created;
+  base::UmaHistogramCustomCounts(kMoveMigratorTmpProfileDirSize,
+                                 tmp_profile_dir_size / 1024 / 1024, 1, 10000,
+                                 100);
+  base::UmaHistogramCustomCounts(kMoveMigratorTmpSplitDirSize,
+                                 tmp_split_dir_size / 1024 / 1024, 1, 10000,
+                                 100);
+  base::UmaHistogramCustomCounts(kMoveMigratorExtraDiskSpaceOccupied,
+                                 extra_bytes_created / 1024 / 1024, 1, 10000,
+                                 100);
+  base::UmaHistogramCustomCounts(kMoveMigratorExtraDiskSpaceOccupiedDiffWithEst,
+                                 extra_bytes_over_estimate / 1024 / 1024,
+                                 -10000, 10000, 100);
 
   return {TaskStatus::kSucceeded};
 }
