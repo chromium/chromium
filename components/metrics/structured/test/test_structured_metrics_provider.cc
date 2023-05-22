@@ -14,16 +14,15 @@ namespace metrics::structured {
 TestStructuredMetricsProvider::TestStructuredMetricsProvider() {
   if (temp_dir_.CreateUniqueTempDir()) {
     system_profile_provider_ = std::make_unique<MetricsProvider>();
-    auto structured_metrics_recorder =
-        std::unique_ptr<StructuredMetricsRecorder>(
-            new StructuredMetricsRecorder(
-                temp_dir_.GetPath()
-                    .Append(FILE_PATH_LITERAL("structured_metrics"))
-                    .Append(FILE_PATH_LITERAL("device_keys")),
-                base::Seconds(0), system_profile_provider_.get()));
+    structured_metrics_recorder_ = std::unique_ptr<StructuredMetricsRecorder>(
+        new StructuredMetricsRecorder(
+            temp_dir_.GetPath()
+                .Append(FILE_PATH_LITERAL("structured_metrics"))
+                .Append(FILE_PATH_LITERAL("device_keys")),
+            base::Seconds(0), system_profile_provider_.get()));
     structured_metrics_provider_ = std::unique_ptr<StructuredMetricsProvider>(
         new StructuredMetricsProvider(base::Seconds(0),
-                                      std::move(structured_metrics_recorder)));
+                                      structured_metrics_recorder_.get()));
     Recorder::GetInstance()->AddObserver(this);
   }
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/structured_metrics_prefs.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
@@ -57,8 +58,40 @@ base::StringPiece StructuredMetricsReportingService::upload_mime_type() const {
 
 MetricsLogUploader::MetricServiceType
 StructuredMetricsReportingService::service_type() const {
-  // TODO(andrewbregger): change to a structured_metrics service type.
-  return MetricsLogUploader::UMA;
+  return MetricsLogUploader::STRUCTURED_METRICS;
+}
+
+// Methods for recording data to histograms.
+void StructuredMetricsReportingService::LogActualUploadInterval(
+    base::TimeDelta interval) {
+  base::UmaHistogramCustomCounts(
+      "StructuredMetrics.Reporting.ActualUploadInterval", interval.InMinutes(),
+      1, base::Hours(12).InMinutes(), 50);
+}
+
+void StructuredMetricsReportingService::LogResponseOrErrorCode(
+    int response_code,
+    int error_code,
+    bool /*was_http*/) {
+  // TODO(crbug.com/1445155) Do we assume |was_https| is always true? UMA
+  // doesn't but UKM does.
+  if (response_code >= 0) {
+    base::UmaHistogramSparse("StructuredMetrics.Reporting.HTTPResponseCode",
+                             response_code);
+  } else {
+    base::UmaHistogramSparse("StructuredMetrics.Reporting.HTTPErrorCode",
+                             error_code);
+  }
+}
+
+void StructuredMetricsReportingService::LogSuccessLogSize(size_t log_size) {
+  base::UmaHistogramMemoryKB("StructuredMetrics.Reporting.LogSize.OnSuccess",
+                             log_size);
+}
+
+void StructuredMetricsReportingService::LogLargeRejection(size_t log_size) {
+  base::UmaHistogramMemoryKB("StructuredMetrics.Reporting.LogSize.RejectedSize",
+                             log_size);
 }
 
 // static:

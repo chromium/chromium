@@ -16,6 +16,14 @@ FORWARD_DECLARE_TEST(StructuredMetricsServiceTest, RotateLogs);
 
 class PrefRegistrySimple;
 
+namespace metrics {
+class StructuredMetricsServiceTestBase;
+class TestStructuredMetricsServiceDisabled;
+
+FORWARD_DECLARE_TEST(TestStructuredMetricsServiceDisabled,
+                     ValidStateWhenDisabled);
+}  // namespace metrics
+
 namespace metrics::structured {
 
 // The Structured Metrics Service is responsible for collecting and uploading
@@ -48,11 +56,19 @@ class StructuredMetricsService final {
     return reporting_service_->reporting_active();
   }
 
+  bool recording_enabled() const { return recorder_->recording_enabled(); }
+
+  StructuredMetricsRecorder* recorder() { return recorder_.get(); }
+
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
   friend class StructuredMetricsServiceTest;
+  friend class metrics::StructuredMetricsServiceTestBase;
+
   FRIEND_TEST_ALL_PREFIXES(StructuredMetricsServiceTest, RotateLogs);
+  FRIEND_TEST_ALL_PREFIXES(metrics::TestStructuredMetricsServiceDisabled,
+                           ValidStateWhenDisabled);
 
   StructuredMetricsService(MetricsServiceClient* client,
                            PrefService* local_state,

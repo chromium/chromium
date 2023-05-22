@@ -36,6 +36,10 @@ namespace metrics {
 class MetricsLogUploader;
 class MetricsService;
 
+namespace structured {
+class StructuredMetricsService;
+}
+
 // The maximum capacity (bytes) of the queue for logs to be persisted. This
 // will be applied to both log queues (initial/ongoing). This ensures that a
 // reasonable amount of history will be stored even if there is a long series of
@@ -79,6 +83,10 @@ class MetricsServiceClient {
 
   // Returns the UkmService instance that this client is associated with.
   virtual ukm::UkmService* GetUkmService();
+
+  // Returns the StructuredMetricsService instance that this client is
+  // associated with.
+  virtual structured::StructuredMetricsService* GetStructuredMetricsService();
 
   // Returns true if metrics should be uploaded for the given |user_id|, which
   // corresponds to the |user_id| field in ChromeUserMetricsExtension.

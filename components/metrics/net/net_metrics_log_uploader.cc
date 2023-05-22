@@ -48,7 +48,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     const metrics::MetricsLogUploader::MetricServiceType& service_type) {
   // The code in this function should remain so that we won't need a default
   // case that does not have meaningful annotation.
-  if (service_type == metrics::MetricsLogUploader::UMA) {
+  // Structured Metrics is an UMA consented metric service.
+  if (service_type == metrics::MetricsLogUploader::UMA ||
+      service_type == metrics::MetricsLogUploader::STRUCTURED_METRICS) {
     return net::DefineNetworkTrafficAnnotation("metrics_report_uma", R"(
         semantics {
           sender: "Metrics UMA Log Uploader"
@@ -156,8 +158,9 @@ bool EncryptString(const std::string& plaintext, std::string* encrypted) {
 bool EncryptAndBase64EncodeString(const std::string& plaintext,
                                   std::string* encoded) {
   std::string encrypted_text;
-  if (!EncryptString(plaintext, &encrypted_text))
+  if (!EncryptString(plaintext, &encrypted_text)) {
     return false;
+  }
 
   base::Base64Encode(encrypted_text, encoded);
   return true;
@@ -165,8 +168,9 @@ bool EncryptAndBase64EncodeString(const std::string& plaintext,
 
 #ifndef NDEBUG
 void LogUploadingHistograms(const std::string& compressed_log_data) {
-  if (!VLOG_IS_ON(2))
+  if (!VLOG_IS_ON(2)) {
     return;
+  }
 
   std::string uncompressed;
   if (!compression::GzipUncompress(compressed_log_data, &uncompressed)) {
@@ -184,8 +188,9 @@ void LogUploadingHistograms(const std::string& compressed_log_data) {
       base::StatisticsRecorder::GetHistograms();
   auto get_histogram_name = [&](uint64_t name_hash) -> std::string {
     for (base::HistogramBase* histogram : histograms) {
-      if (histogram->name_hash() == name_hash)
+      if (histogram->name_hash() == name_hash) {
         return histogram->histogram_name();
+      }
     }
     return base::StrCat({"unnamed ", base::NumberToString(name_hash)});
   };
@@ -370,8 +375,9 @@ void NetMetricsLogUploader::HTTPFallbackAborted() {
 void NetMetricsLogUploader::OnURLLoadComplete(
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
+  }
 
   int error_code = url_loader_->NetError();
 

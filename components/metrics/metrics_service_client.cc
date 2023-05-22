@@ -15,6 +15,7 @@
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/url_constants.h"
+#include "metrics_service_client.h"
 
 namespace metrics {
 
@@ -54,6 +55,11 @@ MetricsServiceClient::MetricsServiceClient() {}
 MetricsServiceClient::~MetricsServiceClient() {}
 
 ukm::UkmService* MetricsServiceClient::GetUkmService() {
+  return nullptr;
+}
+
+structured::StructuredMetricsService*
+MetricsServiceClient::GetStructuredMetricsService() {
   return nullptr;
 }
 

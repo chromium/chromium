@@ -32,9 +32,12 @@ class MetricsLogUploader {
 
   // Possible service types. This should correspond to a type from
   // DataUseUserData.
+  // TODO(crbug.com/1445151) Investigate cleaning up this enum if it isn't
+  // needed anymore.
   enum MetricServiceType {
     UMA,
     UKM,
+    STRUCTURED_METRICS,
   };
 
   virtual ~MetricsLogUploader() = default;

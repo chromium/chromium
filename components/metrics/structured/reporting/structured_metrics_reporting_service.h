@@ -48,6 +48,14 @@ class StructuredMetricsReportingService : public metrics::ReportingService {
   base::StringPiece upload_mime_type() const override;
   MetricsLogUploader::MetricServiceType service_type() const override;
 
+  // Methods for submitting UMA histograms.
+  void LogActualUploadInterval(base::TimeDelta interval) override;
+  void LogResponseOrErrorCode(int response_code,
+                              int error_code,
+                              bool was_https) override;
+  void LogSuccessLogSize(size_t log_size) override;
+  void LogLargeRejection(size_t log_size) override;
+
   metrics::UnsentLogStore log_store_;
 };
 }  // namespace metrics::structured::reporting

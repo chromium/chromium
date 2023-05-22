@@ -23,18 +23,17 @@ using ::metrics::SystemProfileProto;
 }  // namespace
 
 StructuredMetricsProvider::StructuredMetricsProvider(
-    base::raw_ptr<metrics::MetricsProvider> system_profile_provider)
+    base::raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
     : StructuredMetricsProvider(base::Minutes(GetUploadCadenceMinutes()),
-                                std::make_unique<StructuredMetricsRecorder>(
-                                    system_profile_provider)) {
-  DCHECK(system_profile_provider);
-}
+                                structured_metrics_recorder) {}
 
 StructuredMetricsProvider::StructuredMetricsProvider(
     base::TimeDelta min_independent_metrics_interval,
-    std::unique_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
+    base::raw_ptr<StructuredMetricsRecorder> structured_metrics_recorder)
     : min_independent_metrics_interval_(min_independent_metrics_interval),
-      structured_metrics_recorder_(std::move(structured_metrics_recorder)) {}
+      structured_metrics_recorder_(structured_metrics_recorder) {
+  DCHECK(structured_metrics_recorder_);
+}
 
 StructuredMetricsProvider::~StructuredMetricsProvider() = default;
 
@@ -55,10 +54,22 @@ void StructuredMetricsProvider::OnRecordingDisabled() {
 void StructuredMetricsProvider::ProvideCurrentSessionData(
     ChromeUserMetricsExtension* uma_proto) {
   DCHECK(base::CurrentUIThread::IsSet());
+  // When StructuredMetricsService is enabled then the StructuredMetricsProvider
+  // will not upload metrics.
+  if (base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    return;
+  }
   recorder().ProvideUmaEventMetrics(*uma_proto);
 }
 
 bool StructuredMetricsProvider::HasIndependentMetrics() {
+  // If the StructuredMetricsService is enabled then we should not upload using
+  // |this|. When enabled this function will always return false, resulting in
+  // ProviderIndependentMetrics never being called.
+  if (base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    return false;
+  }
+
   if (!IsIndependentMetricsUploadEnabled()) {
     return false;
   }
@@ -80,6 +91,12 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
     ChromeUserMetricsExtension* uma_proto,
     base::HistogramSnapshotManager*) {
   DCHECK(base::CurrentUIThread::IsSet());
+
+  // When StructuredMetricsService is enabled then the StructuredMetricsProvider
+  // will not upload metrics.
+  if (base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    return;
+  }
 
   if (!recording_enabled_) {
     return;

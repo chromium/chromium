@@ -1,0 +1,88 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="StructuredMetrics.InitSequence" enum="UmaInitSequence"
+    expires_after="2023-07-31">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Logged during StructuredMetricsService initialization whether the init task
+    or the initial log timer completed first. The expectation is the vast
+    majority of the time, the init task should complete first. If metrics show
+    otherwise, then it may indicate there's a bug in the
+    StructuredMetricsService init sequence and that it should be investigated.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.Reporting.ActualUploadInterval"
+    units="minutes" expires_after="2023-07-31">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    The actual interval between log upload start and previous log upload
+    finished within the same process. A value of 0 indicates there was no
+    previous upload.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.Reporting.HTTPErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-31">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    HTTP and network errors encountered by Structured Metrics when attempting to
+    upload logs to the server through an HTTPS connection.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.Reporting.HTTPResponseCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-07-31">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    HTTP response codes encountered by Structured Metrics when attempting to
+    upload logs to the server through an HTTPS connection.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.Reporting.LogSize.OnSuccess" units="KB"
+    expires_after="2023-07-31">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Size in kilobytes (after compression) of an uploaded Structured Metrics log.
+    Recorded after a successful Structured Metrics upload.
+  </summary>
+</histogram>
+
+<histogram name="StructuredMetrics.Reporting.LogSize.RejectedSize" units="KB"
+    expires_after="2023-07-31">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Size in kilobytes (after compression) of a log rejected for being to large.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

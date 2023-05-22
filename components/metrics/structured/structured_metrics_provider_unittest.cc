@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/metrics/structured/structured_metrics_provider.h"
+
 #include <cstdint>
+#include <memory>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -93,16 +95,15 @@ class StructuredMetricsProviderTest : public testing::Test {
   void Init() {
     system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create a system profile, normally done by ChromeMetricsServiceClient.
-    auto structured_metrics_recorder =
-        std::unique_ptr<StructuredMetricsRecorder>(
-            new StructuredMetricsRecorder(DeviceKeyFilePath(),
-                                          /*write_delay=*/base::Seconds(0),
-                                          system_profile_provider_.get()));
+    structured_metrics_recorder_ = std::unique_ptr<StructuredMetricsRecorder>(
+        new StructuredMetricsRecorder(DeviceKeyFilePath(),
+                                      /*write_delay=*/base::Seconds(0),
+                                      system_profile_provider_.get()));
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     provider_ = std::unique_ptr<StructuredMetricsProvider>(
         new StructuredMetricsProvider(
             /*min_independent_metrics_interval=*/base::Seconds(0),
-            std::move(structured_metrics_recorder)));
+            structured_metrics_recorder_.get()));
     // Enable recording, normally done after the metrics service has checked
     // consent allows recording.
     provider_->OnRecordingEnabled();
@@ -147,6 +148,7 @@ class StructuredMetricsProviderTest : public testing::Test {
 
  protected:
   std::unique_ptr<TestSystemProfileProvider> system_profile_provider_;
+  std::unique_ptr<StructuredMetricsRecorder> structured_metrics_recorder_;
   std::unique_ptr<StructuredMetricsProvider> provider_;
   // Feature list should be constructed before task environment.
   base::test::ScopedFeatureList scoped_feature_list_;

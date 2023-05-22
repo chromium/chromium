@@ -23,6 +23,9 @@ StructuredMetricsService::~StructuredMetricsService() = default;
 
 void StructuredMetricsService::EnableRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    return;
+  }
   if (!initialize_complete_) {
     Initialize();
   }
@@ -31,11 +34,17 @@ void StructuredMetricsService::EnableRecording() {
 
 void StructuredMetricsService::DisableRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    return;
+  }
   recorder_->DisableRecording();
 }
 
 void StructuredMetricsService::EnableReporting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    return;
+  }
   if (!reporting_active()) {
     scheduler_->Start();
   }
@@ -44,6 +53,9 @@ void StructuredMetricsService::EnableReporting() {
 
 void StructuredMetricsService::DisableReporting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    return;
+  }
   reporting_service_->DisableReporting();
   scheduler_->Stop();
 }
@@ -62,6 +74,9 @@ void StructuredMetricsService::Flush(
 
 void StructuredMetricsService::Purge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    return;
+  }
   recorder_->Purge();
   reporting_service_->Purge();
 }
@@ -73,6 +88,13 @@ StructuredMetricsService::StructuredMetricsService(
     : recorder_(std::move(recorder)), client_(client) {
   DCHECK(client);
   DCHECK(local_state);
+
+  // If the StructuredMetricsService is not enabled then return early. The
+  // recorder needs to be initialized, but not the reporting service or
+  // scheduler.
+  if (!base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)) {
+    return;
+  }
 
   // Setup the reporting service.
   const reporting::StorageLimits storage_limits = GetLogStoreLimits();

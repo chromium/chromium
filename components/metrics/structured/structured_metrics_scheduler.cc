@@ -4,6 +4,8 @@
 
 #include "components/metrics/structured/structured_metrics_scheduler.h"
 
+#include "base/metrics/histogram_functions.h"
+
 namespace metrics::structured {
 StructuredMetricsScheduler::StructuredMetricsScheduler(
     const base::RepeatingClosure& rotation_callback,
@@ -14,5 +16,10 @@ StructuredMetricsScheduler::StructuredMetricsScheduler(
                                         fast_startup_for_testing) {}
 
 StructuredMetricsScheduler::~StructuredMetricsScheduler() = default;
+
+void StructuredMetricsScheduler::LogMetricsInitSequence(InitSequence sequence) {
+  base::UmaHistogramEnumeration("StructuredMetrics.InitSequence", sequence,
+                                INIT_SEQUENCE_ENUM_SIZE);
+}
 
 }  // namespace metrics::structured

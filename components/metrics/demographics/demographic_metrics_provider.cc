@@ -123,6 +123,9 @@ void DemographicMetricsProvider::LogUserDemographicsStatusInHistogram(
     case MetricsLogUploader::MetricServiceType::UKM:
       base::UmaHistogramEnumeration("UKM.UserDemographics.Status", status);
       return;
+    case MetricsLogUploader::MetricServiceType::STRUCTURED_METRICS:
+      // Structured Metrics doesn't have demographic metrics.
+      return;
   }
   NOTREACHED();
 }
