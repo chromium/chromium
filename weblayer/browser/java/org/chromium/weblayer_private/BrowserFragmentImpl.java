@@ -20,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -31,7 +33,10 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 /**
  * Implementation of RemoteFragmentImpl which provides the Fragment implementation for BrowserImpl.
  */
+@JNINamespace("weblayer")
 public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
+    private long mNativeBrowserFragmentImpl;
+
     private static int sResumedCount;
     private static long sSessionStartTimeMs;
 
@@ -72,6 +77,8 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
 
         mBrowser = browser;
         mWindowAndroid = new FragmentWindowAndroid(getWebLayerContext(), this);
+
+        mNativeBrowserFragmentImpl = BrowserFragmentImplJni.get().createBrowserFragment();
     }
 
     private void createAttachmentState(Context embedderContext) {
@@ -107,7 +114,6 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
     protected void onStart() {
         StrictModeWorkaround.apply();
         super.onStart();
-        mBrowser.notifyFragmentInit();
         mBrowser.updateAllTabs();
     }
 
@@ -119,7 +125,7 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
             long deltaMs = SystemClock.uptimeMillis() - sSessionStartTimeMs;
             RecordHistogram.recordLongTimesHistogram("Session.TotalDuration", deltaMs);
         }
-        mBrowser.notifyFragmentPause();
+        BrowserFragmentImplJni.get().onFragmentPause(mNativeBrowserFragmentImpl);
     }
 
     @Override
@@ -127,7 +133,8 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
         super.onResume();
         sResumedCount++;
         if (sResumedCount == 1) sSessionStartTimeMs = SystemClock.uptimeMillis();
-        mBrowser.notifyFragmentResume();
+        WebLayerAccessibilityUtil.get().onBrowserResumed(mBrowser.getProfile());
+        BrowserFragmentImplJni.get().onFragmentResume(mNativeBrowserFragmentImpl);
     }
 
     @Override
@@ -280,6 +287,7 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
         }
+        BrowserFragmentImplJni.get().deleteBrowserFragment(mNativeBrowserFragmentImpl);
     }
 
     @Override
@@ -289,5 +297,13 @@ public class BrowserFragmentImpl extends FragmentHostingRemoteFragmentImpl {
         Context themedContext =
                 new ContextThemeWrapper(wrappedContext, R.style.Theme_WebLayer_Settings);
         return new FragmentHostingRemoteFragmentImpl.RemoteFragmentContext(themedContext);
+    }
+
+    @NativeMethods
+    interface Natives {
+        long createBrowserFragment();
+        void onFragmentResume(long nativeBrowserFragmentImpl);
+        void onFragmentPause(long nativeBrowserFragmentImpl);
+        void deleteBrowserFragment(long nativeBrowserFragmentImpl);
     }
 }

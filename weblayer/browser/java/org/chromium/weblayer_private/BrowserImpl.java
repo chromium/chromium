@@ -126,8 +126,6 @@ public class BrowserImpl extends IBrowser.Stub {
         mNativeBrowser = BrowserImplJni.get().createBrowser(
                 mProfile.getNativeProfile(), serviceContext.getPackageName(), this);
         mPasswordEchoEnabled = null;
-
-        notifyFragmentInit(); // TODO(swestphal): Perhaps move to createBrowserFragmentImpl()?
     }
 
     @Override
@@ -298,20 +296,6 @@ public class BrowserImpl extends IBrowser.Stub {
         return ids;
     }
 
-    void notifyFragmentInit() {
-        // TODO(crbug.com/1378606): rename this.
-        BrowserImplJni.get().onFragmentStart(mNativeBrowser);
-    }
-
-    void notifyFragmentResume() {
-        WebLayerAccessibilityUtil.get().onBrowserResumed(mProfile);
-        BrowserImplJni.get().onFragmentResume(mNativeBrowser);
-    }
-
-    void notifyFragmentPause() {
-        BrowserImplJni.get().onFragmentPause(mNativeBrowser);
-    }
-
     boolean isExternalIntentsEnabled() {
         return mIsExternalIntentsEnabled;
     }
@@ -449,9 +433,6 @@ public class BrowserImpl extends IBrowser.Stub {
         void prepareForShutdown(long nativeBrowserImpl);
         void restoreStateIfNecessary(long nativeBrowserImpl, String persistenceId);
         void webPreferencesChanged(long nativeBrowserImpl);
-        void onFragmentStart(long nativeBrowserImpl);
-        void onFragmentResume(long nativeBrowserImpl);
-        void onFragmentPause(long nativeBrowserImpl);
         boolean isRestoringPreviousState(long nativeBrowserImpl);
     }
 }

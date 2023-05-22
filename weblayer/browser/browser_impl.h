@@ -15,9 +15,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "weblayer/public/browser.h"
 
-#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
-#endif
 
 namespace base {
 class FilePath;
@@ -64,7 +62,6 @@ class BrowserImpl : public Browser {
 
   const std::string& GetPackageName() { return package_name_; }
 
-#if BUILDFLAG(IS_ANDROID)
   bool CompositorHasSurface();
 
   base::android::ScopedJavaGlobalRef<jobject> java_browser() {
@@ -85,15 +82,10 @@ class BrowserImpl : public Browser {
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& j_persistence_id);
   void WebPreferencesChanged(JNIEnv* env);
-  void OnFragmentStart(JNIEnv* env);
-  void OnFragmentResume(JNIEnv* env);
-  void OnFragmentPause(JNIEnv* env);
+
   bool IsRestoringPreviousState(JNIEnv* env) {
     return IsRestoringPreviousState();
   }
-
-  bool fragment_resumed() { return fragment_resumed_; }
-#endif
 
   // Used in tests to specify a non-default max (0 means use the default).
   std::vector<uint8_t> GetMinimalPersistenceState(int max_navigations_per_tab,
@@ -109,13 +101,11 @@ class BrowserImpl : public Browser {
   bool GetPasswordEchoEnabled();
   void SetWebPreferences(blink::web_pref::WebPreferences* prefs);
 
-#if BUILDFLAG(IS_ANDROID)
   // On Android the Java Tab class owns the C++ Tab. DestroyTab() calls to the
   // Java Tab class to initiate deletion. This function is called from the Java
   // side to remove the tab from the browser and shortly followed by deleting
   // the tab.
   void RemoveTabBeforeDestroyingFromJava(Tab* tab);
-#endif
 
   // Browser:
   void AddTab(Tab* tab) override;
@@ -137,12 +127,10 @@ class BrowserImpl : public Browser {
   // For creation.
   friend class Browser;
 
-#if BUILDFLAG(IS_ANDROID)
   friend BrowserImpl* CreateBrowserForAndroid(
       ProfileImpl*,
       const std::string&,
       const base::android::JavaParamRef<jobject>&);
-#endif
 
   explicit BrowserImpl(ProfileImpl* profile);
 
@@ -156,12 +144,7 @@ class BrowserImpl : public Browser {
 
   void OnWebPreferenceChanged(const std::string& pref_name);
 
-#if BUILDFLAG(IS_ANDROID)
-  void UpdateFragmentResumedState(bool state);
-
-  bool fragment_resumed_ = false;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
-#endif
   base::ObserverList<BrowserObserver> browser_observers_;
   base::ObserverList<BrowserRestoreObserver> browser_restore_observers_;
   const raw_ptr<ProfileImpl> profile_;

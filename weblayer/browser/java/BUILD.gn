@@ -442,6 +442,7 @@ generate_jni("jni") {
   sources = [
     "org/chromium/weblayer_private/ApplicationInfoHelper.java",
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
+    "org/chromium/weblayer_private/BrowserFragmentImpl.java",
     "org/chromium/weblayer_private/BrowserImpl.java",
     "org/chromium/weblayer_private/BrowserList.java",
     "org/chromium/weblayer_private/ContentViewRenderView.java",
