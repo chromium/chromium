@@ -51,7 +51,7 @@ export class XfPieProgress extends XfBase {
 
   interpolate = () => {
     // Interpolate faster if close to 100% progress.
-    const boost = this.progress > 0.99 ? 10 : 1;
+    const boost = this.progress > 0.99 ? 20 : 1;
     const deltaTime = Date.now() - this.timeLastFrame;
     this.progressSmooth +=
         (this.progress - this.progressSmooth) * DAMPENING * deltaTime * boost;
