@@ -96,13 +96,6 @@ __handlers = {
 
 def __step_config(ctx, step_config):
     step_config["input_deps"].update({
-        # clang++ is a symlink to clang
-        # but siso doesn't add symlink target automatically.
-        # TODO(b/282608727): remove this once precomputed tree is ready.
-        "third_party/llvm-build/Release+Asserts/bin/clang++": [
-            "third_party/llvm-build/Release+Asserts/bin/clang",
-        ],
-
         # sysroot headers for precomputed subtrees
         "build/linux/debian_bullseye_amd64-sysroot:headers": [
             "build/linux/debian_bullseye_amd64-sysroot/usr/include:include",
