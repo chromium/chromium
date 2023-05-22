@@ -649,7 +649,7 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForQuickSettingsBubble() {
     }
 
     return l10n_util::GetStringUTF16(
-        IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION);
+        IDS_ASH_REVAMPED_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION);
   }
 
   if (bubble_->unified_view()->IsDetailedViewShown()) {
