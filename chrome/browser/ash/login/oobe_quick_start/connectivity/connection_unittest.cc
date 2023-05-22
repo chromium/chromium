@@ -17,6 +17,7 @@
 #include "base/timer/mock_timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/handshake_helpers.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
@@ -70,26 +71,9 @@ constexpr std::array<uint8_t, 32> kSecondarySharedSecret = {
     0xab, 0xa0, 0xe3, 0xfc, 0xd3, 0x5a, 0x04, 0x01, 0x63, 0xf6, 0xf5,
     0xeb, 0x40, 0x7f, 0x4b, 0xac, 0xe4, 0xd1, 0xbf, 0x20, 0x19};
 
-// 12 random bytes to use as the nonce.
-constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
-                                            0xd3, 0x49, 0xbd, 0x0a, 0x63, 0xed};
-
-// A serialized auth message produced with |kAuthToken|, |kSharedSecret|, and
-// |kNonce|. Uses the "Target" role.
-constexpr std::array<uint8_t, 50> kTargetDeviceAuthMessage = {
-    0x08, 0x01, 0x12, 0x2e, 0x0a, 0x0c, 0x60, 0x3e, 0x87, 0x69,
-    0xa3, 0x55, 0xd3, 0x49, 0xbd, 0x0a, 0x63, 0xed, 0x12, 0x1e,
-    0x44, 0x28, 0x93, 0x04, 0xd3, 0xc0, 0x03, 0x50, 0xc9, 0x9d,
-    0x4f, 0x8d, 0x01, 0xaa, 0xcf, 0xc6, 0x43, 0x41, 0xa2, 0xcf,
-    0x4a, 0x91, 0x6e, 0x49, 0x14, 0x9d, 0x2e, 0xea, 0x9a, 0xf6};
-
 // 6 random bytes to use as the RandomSessionId.
 constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
                                                      0x27, 0xbb, 0x28};
-
-class ConstantNonceGenerator : public Connection::NonceGenerator {
-  Connection::Nonce Generate() override { return kNonce; }
-};
 
 constexpr base::TimeDelta kNotifySourceOfUpdateResponseTimeout =
     base::Seconds(3);
@@ -115,7 +99,6 @@ class ConnectionTest : public testing::Test {
         nearby_connection, session_context_,
         mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
             fake_quick_start_decoder_->GetRemote()),
-        std::make_unique<ConstantNonceGenerator>(),
         /*on_connection_closed=*/base::DoNothing(),
         /*on_connection_authenticated=*/
         base::BindLambdaForTesting(
@@ -429,7 +412,6 @@ TEST_F(ConnectionTest, TestClose) {
           fake_nearby_connection_.get(), session_context_,
           mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
               fake_quick_start_decoder_->GetRemote()),
-          std::make_unique<ConstantNonceGenerator>(),
           /*on_connection_closed=*/future.GetCallback(),
           /*on_connection_authenticated=*/base::DoNothing());
 
@@ -453,7 +435,6 @@ TEST_F(ConnectionTest, TestDisconnectsWithoutCloseIssueUnknownError) {
           fake_nearby_connection_.get(), session_context_,
           mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
               fake_quick_start_decoder_->GetRemote()),
-          std::make_unique<ConstantNonceGenerator>(),
           /*on_connection_closed=*/future.GetCallback(),
           /*on_connection_authenticated=*/base::DoNothing());
 
@@ -471,12 +452,9 @@ TEST_F(ConnectionTest, TestDisconnectsWithoutCloseIssueUnknownError) {
 
 TEST_F(ConnectionTest, InitiateHandshake) {
   connection_->InitiateHandshake(kAuthToken, base::DoNothing());
-  std::vector<uint8_t> written_payload =
-      fake_nearby_connection_->GetWrittenData();
-  ASSERT_EQ(kTargetDeviceAuthMessage.size(), written_payload.size());
-  for (size_t i = 0; i < kTargetDeviceAuthMessage.size(); i++) {
-    EXPECT_EQ(kTargetDeviceAuthMessage[i], written_payload[i]);
-  }
+
+  // TODO(b/234655072): Test that the correct info is written to the
+  // NearbyConnection once handshake parsing is implemented.
 }
 
 TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsResult) {

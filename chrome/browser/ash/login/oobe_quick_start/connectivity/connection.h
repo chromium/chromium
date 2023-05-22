@@ -35,7 +35,6 @@ class Connection
     : public TargetDeviceConnectionBroker::AuthenticatedConnection {
  public:
   using SharedSecret = TargetDeviceConnectionBroker::SharedSecret;
-  using Nonce = std::array<uint8_t, 12>;
   using HandshakeSuccessCallback = base::OnceCallback<void(bool)>;
   using ConnectionAuthenticatedCallback = base::OnceCallback<void(
       base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>)>;
@@ -71,20 +70,9 @@ class Connection
         ConnectionAuthenticatedCallback on_connection_authenticated);
   };
 
-  class NonceGenerator {
-   public:
-    NonceGenerator() = default;
-    NonceGenerator(const NonceGenerator&) = delete;
-    NonceGenerator& operator=(const NonceGenerator&) = delete;
-    virtual ~NonceGenerator() = default;
-
-    virtual Nonce Generate();
-  };
-
   Connection(NearbyConnection* nearby_connection,
              SessionContext session_context,
              mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
-             std::unique_ptr<NonceGenerator> nonce_generator,
              ConnectionClosedCallback on_connection_closed,
              ConnectionAuthenticatedCallback on_connection_authenticated);
 
@@ -197,7 +185,6 @@ class Connection
   SharedSecret shared_secret_;
   SharedSecret secondary_shared_secret_;
   State connection_state_ = State::kOpen;
-  std::unique_ptr<NonceGenerator> nonce_generator_;
   ConnectionClosedCallback on_connection_closed_;
   bool authenticated_ = false;
   ConnectionAuthenticatedCallback on_connection_authenticated_;
