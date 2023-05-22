@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_truncator.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_paragraph_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_ruby_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_score_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/ng_unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
@@ -48,16 +49,11 @@ namespace blink {
 
 namespace {
 
-inline bool ShouldInitiateBalancing(
-    const NGInlineBreakToken* break_token,
+inline bool HasExclusionsOrBlockFragmentations(
     const LayoutOpportunityVector& opportunities) {
-  // Block-fragmented boxes are not supported.
-  if (break_token) {
-    return false;
-  }
   // All lines should have the same available widths. No floats etc.
   if (opportunities.size() != 1) {
-    return false;
+    return true;
   }
   const NGLayoutOpportunity& opportunity = opportunities.front();
   // Bisection needs a positive available width.
@@ -66,9 +62,9 @@ inline bool ShouldInitiateBalancing(
       opportunity.rect.BlockEndOffset() != LayoutUnit::Max() ||
       // Shape exclusions are not supported.
       opportunity.HasShapeExclusions()) {
-    return false;
+    return true;
   }
-  return true;
+  return false;
 }
 
 }  // namespace
@@ -1272,10 +1268,34 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   NGLogicalLineItems* const line_box = items_builder->AcquireLogicalLineItems();
   DCHECK(line_box);
 
-  const bool initiate_balancing =
-      Style().GetTextWrap() == TextWrap::kBalance &&
-      ShouldInitiateBalancing(break_token, opportunities) &&
-      !column_spanner_path_;
+  // Determine which line breaker to use.
+  bool initiate_balancing = false;
+  bool use_score_line_break = false;
+  NGScoreLineBreakContext* score_line_break_context = nullptr;
+  if (!column_spanner_path_) {
+    const TextWrap text_wrap = Style().GetTextWrap();
+    initiate_balancing = text_wrap == TextWrap::kBalance && !break_token;
+    if (UNLIKELY(text_wrap == TextWrap::kPretty)) {
+      score_line_break_context = context_->ScoreLineBreakContext();
+      use_score_line_break =
+          score_line_break_context && score_line_break_context->IsActive();
+    }
+    if (UNLIKELY(initiate_balancing || use_score_line_break)) {
+      if (HasExclusionsOrBlockFragmentations(opportunities)) {
+        initiate_balancing = use_score_line_break = false;
+      }
+    }
+  }
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // `ScoreLineBreakContext()` must be null if `IsScoreLineBreakDisabled()`, see
+  // `NeedsOptimalInlineChildLayoutContext()`, but the opposite may not be true
+  // because some callsites such as MathML don't setup the context for the score
+  // line breaker.
+  DCHECK(!context_->ScoreLineBreakContext() ||
+         !Node().IsScoreLineBreakDisabled());
+  DCHECK(!use_score_line_break || !Node().IsScoreLineBreakDisabled());
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+
   bool is_line_created = false;
   LayoutUnit line_block_size;
   LayoutUnit block_delta;
@@ -1311,7 +1331,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
                                                  line_block_size, block_delta);
 
     if (initiate_balancing) {
-      // `ShouldInitiateBalancing` should have checked these conditions.
+      // `initiate_balancing` should have checked these conditions.
       DCHECK(!context_->BalancedAvailableWidth());
       DCHECK_GT(line_opportunity.AvailableInlineSize(), LayoutUnit());
       DCHECK_EQ(opportunity.rect.BlockEndOffset(), LayoutUnit::Max());
@@ -1319,6 +1339,11 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       context_->SetBalancedAvailableWidth(
           NGParagraphLineBreaker::AttemptParagraphBalancing(
               Node(), ConstraintSpace(), line_opportunity));
+    } else if (use_score_line_break) {
+      DCHECK(score_line_break_context->LineBreakPoints().empty());
+      DCHECK_EQ(score_line_break_context->LineBreakPointsIndex(), 0u);
+      NGScoreLineBreaker optimizer(Node(), ConstraintSpace(), line_opportunity);
+      optimizer.OptimalBreakPoints(break_token, *score_line_break_context);
     }
 
     bool is_line_info_cached = false;
@@ -1334,8 +1359,16 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
           line_opportunity, leading_floats, handled_leading_floats_index,
           break_token, column_spanner_path_, &ExclusionSpace());
       if (const absl::optional<LayoutUnit>& balanced_available_width =
-              context_->BalancedAvailableWidth()) {
+              context_->BalancedAvailableWidth();
+          UNLIKELY(balanced_available_width)) {
+        DCHECK(!score_line_break_context ||
+               !score_line_break_context->CurrentLineBreakPoint());
         line_breaker.OverrideAvailableWidth(*balanced_available_width);
+      } else if (UNLIKELY(score_line_break_context)) {
+        if (const NGLineBreakPoint* break_point =
+                score_line_break_context->CurrentLineBreakPoint()) {
+          line_breaker.SetBreakAt(*break_point);
+        }
       }
       line_breaker.NextLine(&line_info);
     }
@@ -1553,6 +1586,9 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   const NGLayoutResult* layout_result = container_builder_.ToLineBoxFragment();
   items_builder->AssociateLogicalLineItems(line_box,
                                            layout_result->PhysicalFragment());
+  if (score_line_break_context) {
+    score_line_break_context->DidCreateLine();
+  }
   return layout_result;
 }
 
