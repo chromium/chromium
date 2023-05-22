@@ -219,6 +219,7 @@ class InterestGroupAuctionReporterTest
             std::move(auction_config_), kTopFrameOrigin, kFrameOrigin,
             frame_client_security_state_.Clone(),
             dummy_report_shared_url_loader_factory_,
+            auction_worklet::mojom::KAnonymityBidMode::kNone,
             std::move(winning_bid_info_), std::move(seller_winning_bid_info_),
             std::move(component_seller_winning_bid_info_),
             /*interest_groups_that_bid=*/

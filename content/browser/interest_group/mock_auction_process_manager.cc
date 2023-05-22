@@ -121,6 +121,7 @@ void MockBidderWorklet::ReportWin(
     const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
     const absl::optional<GURL>& direct_from_seller_auction_signals,
     const std::string& seller_signals_json,
+    auction_worklet::mojom::KAnonymityBidMode kanon_mode,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,

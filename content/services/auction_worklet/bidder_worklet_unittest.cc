@@ -526,7 +526,7 @@ class BidderWorkletTest : public testing::Test {
     bidder_worklet->ReportWin(
         reporting_id_field_, reporting_id_, auction_signals_,
         per_buyer_signals_, direct_from_seller_per_buyer_signals_,
-        direct_from_seller_auction_signals_, seller_signals_,
+        direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
@@ -3532,7 +3532,7 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
   bidder_worklet->ReportWin(
       reporting_id_field_, reporting_id_, /*auction_signals_json=*/"0",
       per_buyer_signals_, direct_from_seller_per_buyer_signals_,
-      direct_from_seller_auction_signals_, seller_signals_,
+      direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
       browser_signal_render_url_, browser_signal_bid_,
       browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
@@ -4796,7 +4796,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
   bidder_worklet->ReportWin(
       reporting_id_field_, reporting_id_, auction_signals_, per_buyer_signals_,
       direct_from_seller_per_buyer_signals_,
-      direct_from_seller_auction_signals_, seller_signals_,
+      direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
       browser_signal_render_url_, browser_signal_bid_,
       browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
@@ -4844,7 +4844,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           reporting_id_field_, reporting_id_,
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
           direct_from_seller_per_buyer_signals_,
-          direct_from_seller_auction_signals_, seller_signals_,
+          direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
           browser_signal_render_url_, browser_signal_bid_,
           browser_signal_bid_currency_,
           browser_signal_highest_scoring_other_bid_,
@@ -4896,7 +4896,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
         reporting_id_field_, reporting_id_,
         /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
         direct_from_seller_per_buyer_signals_,
-        direct_from_seller_auction_signals_, seller_signals_,
+        direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
@@ -5209,6 +5209,24 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalRecency) {
       GURL("https://jumboshrimp.test"));
 }
 
+TEST_F(BidderWorkletTest, ReportWinBrowserSignalKAnon) {
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (!browserSignals.enforcedKAnon)
+        sendReportTo("https://noKAnon.test"))",
+      GURL("https://noKAnon.test"));
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kSimulate;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (!browserSignals.enforcedKAnon)
+        sendReportTo("https://simulateKAnon.test"))",
+      GURL("https://simulateKAnon.test"));
+  kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(if (browserSignals.enforcedKAnon)
+        sendReportTo("https://enforceKAnon.test"))",
+      GURL("https://enforceKAnon.test"));
+}
+
 // Subsequent runs of the same script should not affect each other. Same is true
 // for different scripts, but it follows from the single script case.
 //
@@ -5253,7 +5271,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
     bidder_worklet->ReportWin(
         reporting_id_field_, reporting_id_, auction_signals_,
         per_buyer_signals_, direct_from_seller_per_buyer_signals_,
-        direct_from_seller_auction_signals_, seller_signals_,
+        direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
         browser_signal_render_url_, browser_signal_bid_,
         browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
         browser_signal_highest_scoring_other_bid_currency_,
@@ -6013,7 +6031,7 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
   bidder_worklet->ReportWin(
       reporting_id_field_, reporting_id_, auction_signals_, per_buyer_signals_,
       direct_from_seller_per_buyer_signals_,
-      direct_from_seller_auction_signals_, seller_signals_,
+      direct_from_seller_auction_signals_, seller_signals_, kanon_mode_,
       browser_signal_render_url_, browser_signal_bid_,
       browser_signal_bid_currency_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,

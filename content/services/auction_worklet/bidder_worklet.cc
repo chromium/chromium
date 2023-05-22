@@ -398,6 +398,7 @@ void BidderWorklet::ReportWin(
     const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
     const absl::optional<GURL>& direct_from_seller_auction_signals,
     const std::string& seller_signals_json,
+    mojom::KAnonymityBidMode kanon_mode,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -424,6 +425,7 @@ void BidderWorklet::ReportWin(
   report_win_task->auction_signals_json = auction_signals_json;
   report_win_task->per_buyer_signals_json = per_buyer_signals_json;
   report_win_task->seller_signals_json = seller_signals_json;
+  report_win_task->kanon_mode = kanon_mode;
   report_win_task->browser_signal_render_url = browser_signal_render_url;
   report_win_task->browser_signal_bid = browser_signal_bid;
   report_win_task->browser_signal_bid_currency = browser_signal_bid_currency;
@@ -608,6 +610,7 @@ void BidderWorklet::V8State::ReportWin(
     DirectFromSellerSignalsRequester::Result
         direct_from_seller_result_auction_signals,
     const std::string& seller_signals_json,
+    mojom::KAnonymityBidMode kanon_mode,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -708,7 +711,9 @@ void BidderWorklet::V8State::ReportWin(
            browser_signal_top_level_seller_origin->Serialize())) ||
       (bidding_signals_data_version.has_value() &&
        !browser_signals_dict.Set("dataVersion",
-                                 bidding_signals_data_version.value()))) {
+                                 bidding_signals_data_version.value())) ||
+      !browser_signals_dict.Set(
+          "enforcedKAnon", kanon_mode == mojom::KAnonymityBidMode::kEnforce)) {
     PostReportWinCallbackToUserThread(std::move(callback),
                                       /*report_url=*/absl::nullopt,
                                       /*ad_beacon_map=*/{}, /*pa_requests=*/{},
@@ -1807,7 +1812,7 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
           std::move(task->per_buyer_signals_json),
           std::move(task->direct_from_seller_result_per_buyer_signals),
           std::move(task->direct_from_seller_result_auction_signals),
-          std::move(task->seller_signals_json),
+          std::move(task->seller_signals_json), std::move(task->kanon_mode),
           std::move(task->browser_signal_render_url),
           std::move(task->browser_signal_bid),
           std::move(task->browser_signal_bid_currency),
