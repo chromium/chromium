@@ -35,6 +35,7 @@
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -207,8 +208,6 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_ART_GALLERY_DESCRIPTION},
       {"ambientModeTopicSourceVideo",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_VIDEO},
-      {"ambientModeTopicSourceVideoDescription",
-       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_VIDEO_DESCRIPTION},
       {"ambientModeTopicSourceSelectedRow",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_SELECTED_ROW},
       {"ambientModeTopicSourceUnselectedRow",
@@ -330,8 +329,6 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON},
       {"timeOfDayWallpaperDialogConfirmButton",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON},
-      {"timeOfDayBannerTitle",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_TITLE},
       {"timeOfDayBannerDescription",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION},
       {"timeOfDayBannerDescriptionNoScreensaver",
@@ -346,6 +343,26 @@ void AddStrings(content::WebUIDataSource* source) {
 
   source->AddString("timeOfDayBannerImageUrl",
                     GetAmbientBackendController()->GetPromoBannerUrl());
+
+  // Product name does not need to be translated.
+  auto product_name =
+      l10n_util::GetStringUTF16(ui::GetChromeOSDeviceTypeResourceId());
+  // TODO(b/270597524): Switch to `IsTimeOfDayScreenSaverEnabled` once
+  // `kFeatureManagementTimeOfDayScreenSaver` is used.
+  if (base::FeatureList::IsEnabled(
+          features::kFeatureManagementTimeOfDayScreenSaver)) {
+    product_name = base::UTF8ToUTF16(
+        GetAmbientBackendController()->GetTimeOfDayProductName());
+  }
+  source->AddString(
+      "ambientModeTopicSourceVideoDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_VIDEO_DESCRIPTION,
+          product_name));
+  source->AddString(
+      "timeOfDayBannerTitle",
+      l10n_util::GetStringFUTF16(
+          IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_TITLE, product_name));
 
   source->AddString(
       "ambientModeAlbumsSubpageGooglePhotosTitle",

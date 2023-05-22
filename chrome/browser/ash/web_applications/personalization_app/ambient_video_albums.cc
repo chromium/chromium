@@ -6,9 +6,13 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "url/gurl.h"
 
 namespace ash::personalization_app {
@@ -38,8 +42,19 @@ void AppendAmbientVideoAlbums(AmbientVideo currently_selected_video,
     album->id = video_album_info.id.data();
     album->checked = currently_selected_video == video_album_info.video;
     album->title = l10n_util::GetStringUTF8(video_album_info.title_resource_id);
-    album->description = l10n_util::GetStringUTF8(
-        IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_ALBUM_DESCRIPTION);
+    // Product name does not need to be translated.
+    auto product_name =
+        l10n_util::GetStringUTF16(ui::GetChromeOSDeviceTypeResourceId());
+    // TODO(b/270597524): Switch to `IsTimeOfDayScreenSaverEnabled` once
+    // `kFeatureManagementTimeOfDayScreenSaver` is used.
+    if (base::FeatureList::IsEnabled(
+            features::kFeatureManagementTimeOfDayScreenSaver)) {
+      product_name = base::UTF8ToUTF16(
+          AmbientBackendController::Get()->GetTimeOfDayProductName());
+    }
+    album->description = l10n_util::GetStringFUTF8(
+        IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_ALBUM_DESCRIPTION,
+        product_name);
     album->url = GURL(video_album_info.url);
     album->topic_source = AmbientModeTopicSource::kVideo;
     output.emplace_back(std::move(album));

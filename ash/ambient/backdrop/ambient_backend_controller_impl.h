@@ -47,6 +47,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
   std::array<const char*, 2> GetTimeOfDayVideoPreviewImageUrls(
       AmbientVideo video) const override;
   const char* GetPromoBannerUrl() const override;
+  const char* GetTimeOfDayProductName() const override;
 
  private:
   using BackdropClientConfig = chromeos::ambient::BackdropClientConfig;
