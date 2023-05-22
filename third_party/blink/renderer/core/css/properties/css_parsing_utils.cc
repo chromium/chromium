@@ -6415,7 +6415,8 @@ cssvalue::CSSPathValue* ConsumeBasicShapePath(CSSParserTokenRange& args) {
                                                       wind_rule);
 }
 
-CSSValue* ConsumePathFunction(CSSParserTokenRange& range) {
+CSSValue* ConsumePathFunction(CSSParserTokenRange& range,
+                              EmptyPathStringHandling empty_handling) {
   // FIXME: Add support for <url>, <basic-shape>, <geometry-box>.
   if (range.Peek().FunctionId() != CSSValueID::kPath) {
     return nullptr;
@@ -6429,10 +6430,19 @@ CSSValue* ConsumePathFunction(CSSParserTokenRange& range) {
     return nullptr;
   }
 
-  range = function_range;
+  // https://drafts.csswg.org/css-shapes-1/#funcdef-basic-shape-path
+  // A path data string that does not conform to the to the grammar
+  // and parsing rules of SVG 1.1, or that does conform but defines
+  // an empty path, is invalid and causes the entire path() to be invalid.
   if (byte_stream->IsEmpty()) {
-    return CSSIdentifierValue::Create(CSSValueID::kNone);
+    if (empty_handling == EmptyPathStringHandling::kTreatAsNone) {
+      range = function_range;
+      return CSSIdentifierValue::Create(CSSValueID::kNone);
+    }
+    return nullptr;
   }
+  range = function_range;
+
   return MakeGarbageCollected<cssvalue::CSSPathValue>(std::move(byte_stream));
 }
 
@@ -6592,7 +6602,7 @@ CSSValue* ConsumeOffsetPath(CSSParserTokenRange& range,
     offset_path = ConsumeUrl(range, context);
   }
   if (!offset_path) {
-    offset_path = ConsumePathFunction(range);
+    offset_path = ConsumePathFunction(range, EmptyPathStringHandling::kFailure);
   }
 
   if (!coord_box && RuntimeEnabledFeatures::CSSOffsetPathCoordBoxEnabled()) {
@@ -6623,7 +6633,7 @@ CSSValue* ConsumePathOrNone(CSSParserTokenRange& range) {
     return ConsumeIdent(range);
   }
 
-  return ConsumePathFunction(range);
+  return ConsumePathFunction(range, EmptyPathStringHandling::kTreatAsNone);
 }
 
 CSSValue* ConsumeOffsetRotate(CSSParserTokenRange& range,
