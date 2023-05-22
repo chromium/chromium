@@ -191,9 +191,10 @@ void ContentAutofillRouter::SetShouldSuppressKeyboard(
 // Calls TriggerReparse() on all ContentAutofillDrivers in |form_forest_| as
 // well as their ancestor ContentAutofillDrivers.
 //
-// An ancestor might not be contained in the form tree itself: if the ancestor
-// contained only invisible iframe(s) and no interesting fields, it would not be
-// sent to the browser. In the meantime, these frames may have become visible.
+// An ancestor might not be contained in the form tree known to FormForest: if
+// the ancestor contained only invisible iframe(s) and no interesting fields, it
+// would not be sent to the browser. In the meantime, these frames may have
+// become visible. Therefore, we also call TriggerReparse() in all ancestors.
 //
 // The typical use case is that some frame triggers reparses on its own
 // initiative and triggers an event. Then ContentAutofillRouter's event handler
@@ -201,16 +202,18 @@ void ContentAutofillRouter::SetShouldSuppressKeyboard(
 void ContentAutofillRouter::TriggerReparseExcept(
     ContentAutofillDriver* exception) {
   DCHECK(base::FeatureList::IsEnabled(features::kAutofillAcrossIframes));
-
   base::flat_set<AutofillDriver*> already_triggered;
   ForEachFrame(form_forest_, [&](AutofillDriver* driver) mutable {
     do {
-      // Trigger reparse for |driver| and all its ancestors (as some ancestors
-      // may not be in the forest).
-      if (driver != exception && !base::Contains(already_triggered, driver)) {
-        driver->TriggerReparse();
-        already_triggered.insert(driver);
+      if (!already_triggered.insert(driver).second) {
+        // An earlier invocation of this lambda has executed the rest of this
+        // loop's body for `driver` and hence also for all its ancestors.
+        break;
       }
+      if (driver == exception) {
+        continue;
+      }
+      driver->TriggerReparse();
     } while ((driver = driver->GetParent()) != nullptr);
   });
 }
