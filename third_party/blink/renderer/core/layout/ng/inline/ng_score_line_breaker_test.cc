@@ -138,4 +138,118 @@ TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
   EXPECT_NE(line_info_list.Size(), 3u);
 }
 
+struct DisabledByLineBreakerData {
+  bool disabled;
+  const char* html;
+} disabled_by_line_breaker_data[] = {
+    // Normal, should not be disabled.
+    {false, R"HTML(
+      <div id="target">
+        0123 5678
+        1234 6789
+        234 67890
+        45
+      </div>
+    )HTML"},
+    // Overflowing lines should disable.
+    {true, R"HTML(
+      <div id="target">
+        0123 5678
+        123456789012
+        23 567 90
+        45
+      </div>
+    )HTML"},
+    // `overflow-wrap` should be ok, except...
+    {false, R"HTML(
+      <div id="target" style="overflow-wrap: anywhere">
+        0123 5678
+        1234 6789
+        23 567 90
+        45
+      </div>
+    )HTML"},
+    {false, R"HTML(
+      <div id="target" style="overflow-wrap: break-word">
+        0123 5678
+        1234 6789
+        23 567 90
+        45
+      </div>
+    )HTML"},
+    // ...when there're overflows.
+    {true, R"HTML(
+      <div id="target" style="overflow-wrap: anywhere">
+        0123 5678
+        123456789012
+        23 567 90
+        45
+      </div>
+    )HTML"},
+    {true, R"HTML(
+      <div id="target" style="overflow-wrap: break-word">
+        0123 5678
+        123456789012
+        23 567 90
+        45
+      </div>
+    )HTML"},
+    // `break-sapces` is not supported.
+    {true, R"HTML(
+      <div id="target" style="white-space: break-spaces">
+        0123 5678
+        1234 6789
+        23 567 90
+        45
+      </div>
+    )HTML"},
+    // `box-decoration-break: clone` is not supported.
+    {true, R"HTML(
+      <div id="target">
+        0123 5678
+        1234 6789
+        23 <span style="-webkit-box-decoration-break: clone">567</span> 90
+        45
+      </div>
+    )HTML"}};
+
+class DisabledByLineBreakerTest
+    : public NGScoreLineBreakerTest,
+      public testing::WithParamInterface<DisabledByLineBreakerData> {};
+
+INSTANTIATE_TEST_SUITE_P(NGScoreLineBreakerTest,
+                         DisabledByLineBreakerTest,
+                         testing::ValuesIn(disabled_by_line_breaker_data));
+
+TEST_P(DisabledByLineBreakerTest, Data) {
+  const auto& data = GetParam();
+  LoadAhem();
+  SetBodyInnerHTML(String(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-family: Ahem;
+      font-size: 10px;
+      width: 10ch;
+    }
+    </style>
+  )HTML") + data.html);
+  const NGInlineNode node = GetInlineNodeByElementId("target");
+  const NGPhysicalBoxFragment* fragment =
+      node.GetLayoutBox()->GetPhysicalFragment(0);
+  const LayoutUnit width = fragment->Size().width;
+  NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+  NGLineLayoutOpportunity line_opportunity(width);
+  NGScoreLineBreakContext context;
+  NGScoreLineBreaker optimizer(node, space, line_opportunity);
+  const NGInlineBreakToken* break_token = nullptr;
+  optimizer.OptimalBreakPoints(break_token, context);
+  EXPECT_FALSE(context.IsActive());
+  if (data.disabled) {
+    EXPECT_EQ(context.LineBreakPoints().size(), 0u);
+  } else {
+    EXPECT_NE(context.LineBreakPoints().size(), 0u);
+  }
+}
+
 }  // namespace blink

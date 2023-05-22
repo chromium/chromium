@@ -547,6 +547,7 @@ void NGLineBreaker::RecalcClonedBoxDecorations() {
   for (const NGInlineItem* item : open_items) {
     if (item->Style()->BoxDecorationBreak() == EBoxDecorationBreak::kClone) {
       has_cloned_box_decorations_ = true;
+      disable_score_line_break_ = true;
       ++cloned_box_decorations_count_;
       NGInlineItemResult item_result;
       ComputeOpenTagResult(*item, constraint_space_, is_svg_text_,
@@ -690,6 +691,8 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
   // Use 'text-indent' as the initial position. This lets tab positions to align
   // regardless of 'text-indent'.
   position_ = line_info->TextIndent();
+
+  disable_score_line_break_ = false;
 
   has_cloned_box_decorations_ = false;
   if (UNLIKELY((break_token_ && break_token_->HasClonedBoxDecorations()) ||
@@ -2875,6 +2878,7 @@ void NGLineBreaker::HandleOpenTag(const NGInlineItem& item,
   if (UNLIKELY(style.BoxDecorationBreak() == EBoxDecorationBreak::kClone)) {
     // Compute even when no margins/borders/padding to ensure correct counting.
     has_cloned_box_decorations_ = true;
+    disable_score_line_break_ = true;
     ++cloned_box_decorations_count_;
     cloned_box_decorations_end_size_ += item_result->margins.inline_end +
                                         item_result->borders.inline_end +
@@ -3080,8 +3084,12 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
   // Reaching here means that the rewind point was not found.
 
   if (!override_break_anywhere_ && has_break_anywhere_if_overflow) {
+    // Overflow occurred but `overflow-wrap` is set. Change the break type and
+    // retry the line breaking.
     override_break_anywhere_ = true;
     break_iterator_.SetBreakType(LineBreakType::kBreakCharacter);
+    // `NGScoreLineBreaker` doesn't support multi-pass line breaking.
+    disable_score_line_break_ = true;
     state_ = LineBreakState::kContinue;
     // TODO(kojii): Not all items need to rewind, but such case is rare and
     // rewinding all items simplifes the code.
@@ -3093,6 +3101,12 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
 
   // Let this line overflow.
   line_info->SetHasOverflow();
+
+  // TODO(kojii): `NGScoreLineBreaker::ComputeScores` gets confused if there're
+  // overflowing lines. Disable the score line break for now. E.g.:
+  //   css2.1/t1601-c547-indent-01-d.html
+  //   virtual/text-antialias/international/bdi-neutral-wrapped.html
+  disable_score_line_break_ = true;
 
   // Restore the hyphenation states to before the loop if needed.
   DCHECK(!HasHyphen());
@@ -3408,6 +3422,7 @@ void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
 
     if (style.ShouldBreakSpaces()) {
       break_iterator_.SetBreakSpace(BreakSpaceType::kAfterEverySpace);
+      disable_score_line_break_ = true;
     }
 
     break_iterator_.SetLocale(style.LocaleForLineBreakIterator());

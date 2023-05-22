@@ -47,6 +47,10 @@ void NGScoreLineBreaker::OptimalBreakPoints(
   for (;;) {
     NGLineInfo& line_info = line_info_list.Append();
     line_breaker.NextLine(&line_info);
+    if (UNLIKELY(line_breaker.ShouldDisableScoreLineBreak())) {
+      context.SuspendUntilConsumed();
+      return;
+    }
     if (!line_info.BreakToken() || line_info.HasForcedBreak()) {
       context.SuspendUntilConsumed();
       break;
