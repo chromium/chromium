@@ -163,6 +163,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"smbShareAddedInvalidSSOURLMessage",
        IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_SSO_URL_MESSAGE},
       {"officeLabel", IDS_SETTINGS_OFFICE_LABEL},
+      {"officeSublabel", IDS_SETTINGS_OFFICE_SUBLABEL},
       {"officeSubpageTitle", IDS_SETTINGS_OFFICE_SUBPAGE_TITLE},
       {"alwaysMoveToDrivePreferenceLabel",
        IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL},

@@ -63,7 +63,7 @@ export class MoveConfirmationPageElement extends HTMLElement {
     const operationTypeText =
         operationType === OperationType.kCopy ? 'Copy' : 'Move';
     const filesText = numFiles > 1 ? 'files' : 'file';
-    const {name, shortName} = this.getProviderText(this.cloudProvider);
+    const name = this.getProviderName(this.cloudProvider);
 
     // Animation.
     this.updateAnimation(
@@ -78,19 +78,20 @@ export class MoveConfirmationPageElement extends HTMLElement {
     titleElement.innerText = `${operationTypeText} ${numFiles.toString()} ${
         filesText} to ${name} to open?`;
 
-    // Body.
+    // Checkbox and Body.
     const bodyText = this.$('#body-text');
     const checkbox = this.$<CrCheckboxElement>('#always-copy-or-move-checkbox');
+    checkbox.innerText = 'Don\'t ask again';
     if (this.cloudProvider === CloudProvider.ONE_DRIVE) {
       bodyText.innerText =
           'Microsoft 365 requires files to be stored in OneDrive. ' +
-          'You can move files to OneDrive at any time.';
+          'Local files will move and files from other locations will copy. ' +
+          'Your files can be found in the Microsoft OneDrive folder in the ' +
+          'Files app.';
 
       // Only show checkbox if the confirmation has been shown before for
       // OneDrive.
       if (officeMoveConfirmationShownForOneDrive) {
-        checkbox.innerText =
-            `${operationTypeText} to ${shortName} without asking each time`;
         checkbox.checked = alwaysMoveToOneDrive;
       } else {
         checkbox!.remove();
@@ -98,13 +99,13 @@ export class MoveConfirmationPageElement extends HTMLElement {
     } else {
       bodyText.innerText =
           'Google Docs, Sheets, and Slides require files to be stored in ' +
-          'Google Drive. You can move files to Google Drive at any time.';
+          'Google Drive. Local files will move and files from other ' +
+          'locations will copy. Your files can be found in the Google Drive ' +
+          'folder in the Files app.';
 
       // Only show checkbox if the confirmation has been shown before for
       // Drive.
       if (officeMoveConfirmationShownForDrive) {
-        checkbox.innerText =
-            `${operationTypeText} to ${name} without asking each time`;
         checkbox.checked = alwaysMoveToDrive;
       } else {
         checkbox!.remove();
@@ -116,16 +117,11 @@ export class MoveConfirmationPageElement extends HTMLElement {
     actionButton.innerText = `${operationTypeText} and open`;
   }
 
-  private getProviderText(cloudProvider: CloudProvider) {
+  private getProviderName(cloudProvider: CloudProvider) {
     if (cloudProvider === CloudProvider.ONE_DRIVE) {
-      return {
-        name: 'Microsoft OneDrive',
-        shortName: 'OneDrive',
-      };
+      return 'Microsoft OneDrive';
     }
-    // TODO(b/260141250): Display Slides or Sheets when appropriate instead or
-    // remove shortName?
-    return {name: 'Google Drive', shortName: 'Drive'};
+    return 'Google Drive';
   }
 
   private updateAnimation(isDarkMode: boolean) {

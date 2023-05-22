@@ -1009,11 +1009,14 @@
     Share mounted successfully.
   </message>
   <!-- TODO(b/254586358): Finalise Office files strings -->
-  <message name="IDS_SETTINGS_OFFICE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the Office files settings.">
-    Office
+  <message name="IDS_SETTINGS_OFFICE_LABEL" translateable="false" desc="Label for the Settings link that takes the user to the Microsoft 365 files settings.">
+    Microsoft 365
   </message>
-  <message name="IDS_SETTINGS_OFFICE_SUBPAGE_TITLE" translateable="false" desc="Title of the Office subpage.">
-    Office files
+  <message name="IDS_SETTINGS_OFFICE_SUBLABEL" translateable="false" desc="Sub-label that describes that users can open Microsoft 365 files.">
+    Open Word, Excel, and PowerPoint files
+  </message>
+  <message name="IDS_SETTINGS_OFFICE_SUBPAGE_TITLE" translateable="false" desc="Title of the Microsoft 365 subpage.">
+    Microsoft 365 files
   </message>
   <message name="IDS_SETTINGS_ALWAYS_MOVE_OFFICE_TO_DRIVE_PREFERENCE_LABEL" translateable="false" desc="Label for the preference that allows users to always move files to Drive without asking for confirmation.">
     Ask before moving Microsoft files to Google Drive

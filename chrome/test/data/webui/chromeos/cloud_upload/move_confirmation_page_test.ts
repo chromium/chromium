@@ -476,7 +476,7 @@ suite('<move-confirmation-page>', () => {
     const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
         '#always-copy-or-move-checkbox');
     assertTrue(!!checkbox);
-    assertTrue(checkbox.innerText.includes('Google Drive'));
+    assertTrue(checkbox.innerText.includes('Don\'t ask again'));
   });
 
   /**
@@ -504,7 +504,7 @@ suite('<move-confirmation-page>', () => {
     const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
         '#always-copy-or-move-checkbox');
     assertTrue(!!checkbox);
-    assertTrue(checkbox.innerText.includes('OneDrive'));
+    assertTrue(checkbox.innerText.includes('Don\'t ask again'));
   });
 
   /**
@@ -523,12 +523,6 @@ suite('<move-confirmation-page>', () => {
     // Title.
     const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
     assertTrue(titleElement.innerText.includes('Move'));
-
-    // Checkbox.
-    const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-        '#always-copy-or-move-checkbox');
-    assertTrue(!!checkbox);
-    assertTrue(checkbox.innerText.includes('Move'));
 
     // Button.
     const actionButton =
@@ -552,12 +546,6 @@ suite('<move-confirmation-page>', () => {
     // Title.
     const titleElement = moveConfirmationPageApp.$<HTMLElement>('#title')!;
     assertTrue(titleElement.innerText.includes('Copy'));
-
-    // Checkbox.
-    const checkbox = moveConfirmationPageApp.$<CrCheckboxElement>(
-        '#always-copy-or-move-checkbox');
-    assertTrue(!!checkbox);
-    assertTrue(checkbox.innerText.includes('Copy'));
 
     // Button.
     const actionButton =
