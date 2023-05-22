@@ -75,8 +75,8 @@ TEST(BorealisTokenHardwareCheckerTest, Nissa) {
 
   // With FeatureManagement's flag, they are allowed
   base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(
-      ash::features::kFeatureManagementSteamOnChromebook, /*enabled=*/true);
+  features.InitWithFeatureState(ash::features::kFeatureManagementBorealis,
+                                /*enabled=*/true);
   EXPECT_EQ(check("nissa", "",
                   "42nd Gen Intel(R) Core(TM) i5-42700kf @ 2.60THz", 8, ""),
             AllowStatus::kAllowed);
