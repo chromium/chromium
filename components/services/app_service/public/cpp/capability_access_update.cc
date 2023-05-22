@@ -4,6 +4,8 @@
 
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 
+#include <ostream>
+
 #include "base/check.h"
 #include "base/logging.h"
 #include "components/services/app_service/public/cpp/macros.h"
@@ -67,6 +69,15 @@ bool CapabilityAccessUpdate::MicrophoneChanged() const {
 
 const ::AccountId& CapabilityAccessUpdate::AccountId() const {
   return *account_id_;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const CapabilityAccessUpdate& update) {
+  out << "AppId: " << update.AppId() << std::endl;
+  out << "Camera: " << PRINT_OPTIONAL_BOOL(update.Camera()) << std::endl;
+  out << "Microphone: " << PRINT_OPTIONAL_BOOL(update.Microphone())
+      << std::endl;
+  return out;
 }
 
 }  // namespace apps

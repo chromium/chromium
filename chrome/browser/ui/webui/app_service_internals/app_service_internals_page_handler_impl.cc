@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
@@ -104,6 +105,29 @@ std::vector<mojom::app_service_internals::PromiseAppInfoPtr> GetPromiseApps(
   return promise_apps;
 }
 
+std::vector<mojom::app_service_internals::AppCapabilityInfoPtr>
+GetAppCapabilities(apps::AppServiceProxy* proxy) {
+  std::vector<mojom::app_service_internals::AppCapabilityInfoPtr>
+      app_capabilities;
+
+  proxy->AppCapabilityAccessCache().ForEachApp(
+      [proxy,
+       &app_capabilities](const apps::CapabilityAccessUpdate& app_capability) {
+        std::stringstream debug_info;
+        debug_info << app_capability;
+
+        std::string name;
+        proxy->AppRegistryCache().ForOneApp(
+            app_capability.AppId(), [&name](const apps::AppUpdate& app_update) {
+              name = app_update.Name();
+            });
+
+        app_capabilities.emplace_back(absl::in_place, name, debug_info.str());
+      });
+
+  return app_capabilities;
+}
+
 }  // namespace
 
 AppServiceInternalsPageHandlerImpl::AppServiceInternalsPageHandlerImpl(
@@ -133,6 +157,7 @@ void AppServiceInternalsPageHandlerImpl::GetDebugInfo(
   result->app_list = GetApps(proxy);
   result->preferred_app_list = GetPreferredApps(proxy);
   result->promise_app_list = GetPromiseApps(proxy);
+  result->app_capability_list = GetAppCapabilities(proxy);
 
   std::move(callback).Run(std::move(result));
 }

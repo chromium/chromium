@@ -40,6 +40,16 @@ struct PromiseAppInfo {
   string debug_info;
 };
 
+// Contains debugging information for capability access by a single app.
+struct AppCapabilityInfo {
+  // The app's human-readable name.
+  string name;
+
+  // Preformatted plain-text containing information about system capabilities
+  // being accessed by the app.
+  string debug_info;
+};
+
 // Container struct for App Service debugging information.
 struct DebugInfo {
   // Debug information about every installed app.
@@ -51,6 +61,9 @@ struct DebugInfo {
   // Debug information about every promise app. Will always be empty on non-Ash
   // platforms.
   array<PromiseAppInfo> promise_app_list;
+
+  // Debug information about system capabilities being accessed by apps.
+  array<AppCapabilityInfo> app_capability_list;
 };
 
 // Handler providing access to App Service information from the

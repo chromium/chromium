@@ -72,6 +72,11 @@ class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
   const raw_ref<const ::AccountId> account_id_;
 };
 
+// For logging and debug purposes.
+COMPONENT_EXPORT(APP_UPDATE)
+std::ostream& operator<<(std::ostream& out,
+                         const CapabilityAccessUpdate& update);
+
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_CAPABILITY_ACCESS_UPDATE_H_

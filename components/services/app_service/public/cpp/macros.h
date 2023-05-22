@@ -71,8 +71,8 @@ namespace apps {
   return delta_ && delta_->VALUE.has_value() && \
          (!state_ || (delta_->VALUE != state_->VALUE));
 
-#define PRINT_OPTIONAL_VALUE(VALUE) \
-  (app.VALUE().has_value() ? (app.VALUE().value() ? "true" : "false") : "null")
+#define PRINT_OPTIONAL_BOOL(VALUE) \
+  (VALUE.has_value() ? (VALUE.value() ? "true" : "false") : "null")
 
 // Macros for enum
 
