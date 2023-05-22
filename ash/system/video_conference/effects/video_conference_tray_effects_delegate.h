@@ -53,6 +53,9 @@ class ASH_EXPORT VcEffectsDelegate {
   // Retrieves a std::vector<> of hosted effects of the passed-in `type`.
   std::vector<VcHostedEffect*> GetEffects(VcEffectType type);
 
+  // Records the state of all effects.
+  void RecordInitialStates();
+
   // Invoked when the UI controls are being constructed, to get the actual
   // effect state. `effect_id` specifies the effect whose state is requested,
   // and can be ignored if only one effect is being hosted. If no state can be
@@ -73,8 +76,13 @@ class ASH_EXPORT VcEffectsDelegate {
   // to record metrics. Note that for togglable effects, we are already
   // recording metrics in `ToggleEffectsView`, so no need further metrics
   // collection needed for them.
-  virtual void RecordMetricsForSetValueEffect(VcEffectId effect_id,
-                                              int state_value) const {}
+  virtual void RecordMetricsForSetValueEffectOnClick(VcEffectId effect_id,
+                                                     int state_value) const {}
+
+  // This function will only be used for set-value effects, not for togglable
+  // effects. Invoked when the tray becomes visible.
+  virtual void RecordMetricsForSetValueEffectOnStartup(VcEffectId effect_id,
+                                                       int state_value) const {}
 
  private:
   // Stores the collection of effects that are hosted by this delegate. The keys

@@ -274,7 +274,7 @@ void CameraEffectsController::OnEffectControlActivated(
   SetCameraEffects(std::move(new_effects));
 }
 
-void CameraEffectsController::RecordMetricsForSetValueEffect(
+void CameraEffectsController::RecordMetricsForSetValueEffectOnClick(
     VcEffectId effect_id,
     int state_value) const {
   // `CameraEffectsController` currently only has background blur as a set-value
@@ -282,7 +282,19 @@ void CameraEffectsController::RecordMetricsForSetValueEffect(
   DCHECK_EQ(VcEffectId::kBackgroundBlur, effect_id);
 
   base::UmaHistogramEnumeration(
-      video_conference_utils::GetEffectHistogramName(effect_id),
+      video_conference_utils::GetEffectHistogramNameForClick(effect_id),
+      MapBackgroundBlurPrefValueToState(state_value));
+}
+
+void CameraEffectsController::RecordMetricsForSetValueEffectOnStartup(
+    VcEffectId effect_id,
+    int state_value) const {
+  // `CameraEffectsController` currently only has background blur as a set-value
+  // effect, so it shouldn't be any other effects here.
+  DCHECK_EQ(VcEffectId::kBackgroundBlur, effect_id);
+
+  base::UmaHistogramEnumeration(
+      video_conference_utils::GetEffectHistogramNameForInitialState(effect_id),
       MapBackgroundBlurPrefValueToState(state_value));
 }
 

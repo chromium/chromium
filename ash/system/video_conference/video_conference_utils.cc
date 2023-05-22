@@ -10,21 +10,33 @@
 
 namespace ash::video_conference_utils {
 
-std::string GetEffectHistogramName(VcEffectId effect_id) {
+namespace {
+
+std::string GetEffectHistogramNameBase(VcEffectId effect_id) {
   switch (effect_id) {
     case VcEffectId::kTestEffect:
-      return "Ash.VideoConferenceTray.TestEffect.Click";
+      return "Ash.VideoConferenceTray.TestEffect";
     case VcEffectId::kBackgroundBlur:
-      return "Ash.VideoConferenceTray.BackgroundBlur.Click";
+      return "Ash.VideoConferenceTray.BackgroundBlur";
     case VcEffectId::kPortraitRelighting:
-      return "Ash.VideoConferenceTray.PortraitRelighting.Click";
+      return "Ash.VideoConferenceTray.PortraitRelighting";
     case VcEffectId::kNoiseCancellation:
-      return "Ash.VideoConferenceTray.NoiseCancellation.Click";
+      return "Ash.VideoConferenceTray.NoiseCancellation";
     case VcEffectId::kLiveCaption:
-      return "Ash.VideoConferenceTray.LiveCaption.Click";
+      return "Ash.VideoConferenceTray.LiveCaption";
     case VcEffectId::kCameraFraming:
-      return "Ash.VideoConferenceTray.CameraFraming.Click";
+      return "Ash.VideoConferenceTray.CameraFraming";
   }
+}
+
+}  // namespace
+
+std::string GetEffectHistogramNameForClick(VcEffectId effect_id) {
+  return GetEffectHistogramNameBase(effect_id) + ".Click";
+}
+
+std::string GetEffectHistogramNameForInitialState(VcEffectId effect_id) {
+  return GetEffectHistogramNameBase(effect_id) + ".InitialState";
 }
 
 }  // namespace ash::video_conference_utils

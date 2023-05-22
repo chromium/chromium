@@ -130,7 +130,8 @@ class ButtonContainer : public views::Button {
     toggled_ = !toggled_;
 
     base::UmaHistogramBoolean(
-        video_conference_utils::GetEffectHistogramName(effect_id_), toggled_);
+        video_conference_utils::GetEffectHistogramNameForClick(effect_id_),
+        toggled_);
 
     haptics_util::PlayHapticToggleEffect(
         !toggled_, ui::HapticTouchpadEffectStrength::kMedium);

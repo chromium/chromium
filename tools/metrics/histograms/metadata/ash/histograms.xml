@@ -6455,6 +6455,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.VideoConferenceTray.BackgroundBlur.InitialState"
+    enum="BackgroundBlurState" expires_after="2024-03-16">
+  <owner>newcomer@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the initial state of background blur when the Video Conference Panel
+    is shown.
+  </summary>
+</histogram>
+
 <histogram name="Ash.VideoConferenceTray.StopScreenSharingButton.Click"
     enum="BooleanClicked" expires_after="2024-03-16">
   <owner>leandre@google.com</owner>
@@ -6498,6 +6508,23 @@ chromium-metrics-reviews@google.com.
     Recorded when the toggle button of {EffectName} in the video conference
     bubble is clicked. We will record if the user clicks the button to enable or
     disable the effect.
+  </summary>
+  <token key="EffectName">
+    <variant name="CameraFraming" summary="Camera Framing"/>
+    <variant name="LiveCaption" summary="Live Caption"/>
+    <variant name="NoiseCancellation" summary="Noise cancellation"/>
+    <variant name="PortraitRelighting" summary="Portrait Relighting"/>
+    <variant name="TestEffect" summary="Test Effect"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.VideoConferenceTray.{EffectName}.Toggle.InitialState"
+    enum="BooleanEnabled" expires_after="2024-03-16">
+  <owner>newcomer@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the initial state of {EffectName} when the Video Conference Panel is
+    shown.
   </summary>
   <token key="EffectName">
     <variant name="CameraFraming" summary="Camera Framing"/>

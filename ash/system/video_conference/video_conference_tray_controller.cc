@@ -304,7 +304,13 @@ VideoConferenceTrayController::GetShelfAutoHideTimerForTest() {
 void VideoConferenceTrayController::UpdateWithMediaState(
     VideoConferenceMediaState state) {
   auto old_state = state_;
+  const bool old_tray_target_visibility = ShouldShowTray();
   state_ = state;
+  const bool new_tray_target_visibility = ShouldShowTray();
+
+  if (new_tray_target_visibility && !old_tray_target_visibility) {
+    effects_manager_.RecordInitialStates();
+  }
 
   if (state_.has_media_app != old_state.has_media_app) {
     for (auto& observer : observer_list_) {
