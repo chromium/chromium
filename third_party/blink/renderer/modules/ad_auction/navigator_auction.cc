@@ -606,12 +606,13 @@ bool CopyWasmHelperUrlFromIdlToMojo(const ExecutionContext& context,
                                     ExceptionState& exception_state,
                                     const AuctionAdInterestGroup& input,
                                     mojom::blink::InterestGroup& output) {
-  if (!input.hasBiddingWasmHelperUrl())
+  if (!input.hasBiddingWasmHelperURL()) {
     return true;
-  KURL wasm_url = context.CompleteURL(input.biddingWasmHelperUrl());
+  }
+  KURL wasm_url = context.CompleteURL(input.biddingWasmHelperURL());
   if (!wasm_url.IsValid()) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
-        input, "biddingWasmHelperUrl", input.biddingWasmHelperUrl(),
+        input, "biddingWasmHelperURL", input.biddingWasmHelperURL(),
         "cannot be resolved to a valid URL."));
     return false;
   }
@@ -2128,6 +2129,22 @@ bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
       }
     } else {
       group->setBiddingLogicURL(group->biddingLogicUrlDeprecated());
+    }
+  }
+
+  if (group->hasBiddingWasmHelperUrlDeprecated()) {
+    if (group->hasBiddingWasmHelperURL()) {
+      if (group->biddingWasmHelperUrlDeprecated() !=
+          group->biddingWasmHelperURL()) {
+        exception_state.ThrowTypeError(ErrorRenameMismatch(
+            /*old_field_name=*/"interest group biddingWasmHelperUrl",
+            /*old_field_value=*/group->biddingWasmHelperUrlDeprecated(),
+            /*new_field_name=*/"interest group biddingWasmHelperURL",
+            /*new_field_value=*/group->biddingWasmHelperURL()));
+        return false;
+      }
+    } else {
+      group->setBiddingWasmHelperURL(group->biddingWasmHelperUrlDeprecated());
     }
   }
 

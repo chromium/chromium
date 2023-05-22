@@ -4788,6 +4788,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
   updated_interest_group_bidding_logic_url.bidding_url =
       GURL(base::StringPrintf("%s/bidding.js", kOriginStringA));
 
+  blink::InterestGroup updated_interest_group_bidding_wasm_helper_url =
+      CreateInterestGroup();
+  updated_interest_group_bidding_wasm_helper_url.update_url = kUpdateUrlA;
+  updated_interest_group_bidding_wasm_helper_url.priority = 1.0;
+  updated_interest_group_bidding_wasm_helper_url.bidding_wasm_helper_url =
+      GURL(base::StringPrintf("%s/bidding.wasm", kOriginStringA));
+
   struct TestCase {
     const std::string update_contents;
     const blink::InterestGroup& expected_group;
@@ -4831,6 +4838,23 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
        updated_interest_group_bidding_logic_url},
       {base::StringPrintf(R"("biddingLogicUrl": "%s/bidding.js",)"
                           R"("biddingLogicURL": "%s/bidding2.js")",
+                          kOriginStringA, kOriginStringA),
+       initial_interest_group},
+      // ***
+      // biddingWasmHelperURL
+      // ***
+      {base::StringPrintf(R"("biddingWasmHelperUrl": "%s/bidding.wasm")",
+                          kOriginStringA),
+       updated_interest_group_bidding_wasm_helper_url},
+      {base::StringPrintf(R"("biddingWasmHelperURL": "%s/bidding.wasm")",
+                          kOriginStringA),
+       updated_interest_group_bidding_wasm_helper_url},
+      {base::StringPrintf(R"("biddingWasmHelperUrl": "%s/bidding.wasm",)"
+                          R"("biddingWasmHelperURL": "%s/bidding.wasm")",
+                          kOriginStringA, kOriginStringA),
+       updated_interest_group_bidding_wasm_helper_url},
+      {base::StringPrintf(R"("biddingWasmHelperUrl": "%s/bidding.wasm",)"
+                          R"("biddingWasmHelperURL": "%s/bidding2.wasm")",
                           kOriginStringA, kOriginStringA),
        initial_interest_group},
   };

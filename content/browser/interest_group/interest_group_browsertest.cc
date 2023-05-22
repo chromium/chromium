@@ -1741,10 +1741,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(
       base::StringPrintf(
           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-          "biddingUrl 'https://bid.a.test/' for AuctionAdInterestGroup with "
-          "owner '%s' and name 'bicycles' biddingUrl must have the same origin "
-          "as the InterestGroup owner and have no fragment identifier or "
-          "embedded credentials.",
+          "biddingLogicURL 'https://bid.a.test/' for AuctionAdInterestGroup "
+          "with owner '%s' and name 'bicycles' biddingLogicURL must have the "
+          "same origin as the InterestGroup owner and have no fragment "
+          "identifier or embedded credentials.",
           test_origin_a.Serialize().c_str()),
       JoinInterestGroupAndVerify(blink::TestInterestGroupBuilder(
                                      /*owner=*/test_origin_a,
@@ -2969,7 +2969,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(
       base::StringPrintf(
           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-          "biddingWasmHelperUrl 'https://invalid^&' for AuctionAdInterestGroup "
+          "biddingWasmHelperURL 'https://invalid^&' for AuctionAdInterestGroup "
           "with owner '%s' and name 'cars' cannot be resolved to a valid URL.",
           origin_string.c_str()),
       EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
@@ -3692,6 +3692,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               GURL(base::StringPrintf("%s/bidding.js", origin_string.c_str())))
           .Build();
 
+  const blink::InterestGroup kExpectedGroupBiddingWasmHelperUrl =
+      blink::TestInterestGroupBuilder(/*owner=*/origin, /*name=*/"cars")
+          .SetBiddingWasmHelperUrl(GURL(
+              base::StringPrintf("%s/bidding.wasm", origin_string.c_str())))
+          .Build();
+
   struct TestCases {
     const std::string join_dict_contents;
     const std::string result;
@@ -3755,6 +3761,29 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
            "interest group biddingLogicUrl doesn't have the same value as "
            "interest group biddingLogicURL ('%s/bidding.js' vs "
            "'%s/bidding2.js')",
+           origin_string.c_str(), origin_string.c_str()),
+       absl::nullopt},
+      // ***
+      // biddingWasmHelperURL
+      // ***
+      {base::StringPrintf(R"(biddingWasmHelperUrl: '%s/bidding.wasm')",
+                          origin_string.c_str()),
+       "done", kExpectedGroupBiddingWasmHelperUrl},
+      {base::StringPrintf(R"(biddingWasmHelperURL: '%s/bidding.wasm')",
+                          origin_string.c_str()),
+       "done", kExpectedGroupBiddingWasmHelperUrl},
+      {base::StringPrintf(R"(biddingWasmHelperUrl: '%s/bidding.wasm',)"
+                          R"(biddingWasmHelperURL: '%s/bidding.wasm')",
+                          origin_string.c_str(), origin_string.c_str()),
+       "done", kExpectedGroupBiddingWasmHelperUrl},
+      {base::StringPrintf(R"(biddingWasmHelperUrl: '%s/bidding.wasm',)"
+                          R"(biddingWasmHelperURL: '%s/bidding2.wasm')",
+                          origin_string.c_str(), origin_string.c_str()),
+       base::StringPrintf(
+           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+           "interest group biddingWasmHelperUrl doesn't have the same value as "
+           "interest group biddingWasmHelperURL ('%s/bidding.wasm' vs "
+           "'%s/bidding2.wasm')",
            origin_string.c_str(), origin_string.c_str()),
        absl::nullopt},
   };

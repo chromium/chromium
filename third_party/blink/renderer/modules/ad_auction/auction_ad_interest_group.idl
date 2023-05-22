@@ -40,6 +40,9 @@ dictionary AuctionAdInterestGroup {
 
   [ImplementedAs=biddingLogicUrlDeprecated]
   USVString biddingLogicUrl;
+  USVString biddingWasmHelperURL;
+
+  [ImplementedAs=biddingWasmHelperUrlDeprecated]
   USVString biddingWasmHelperUrl;
   USVString updateUrl;
   // TODO(https://crbug.com/1420080): Remove this deprecated field, in favor of
