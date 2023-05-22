@@ -837,6 +837,7 @@
                 {
                     "name": "EnabledWithGboard_20220216",
                     "params": {
+                        "block": "[]",
                         "group": "gboard"
                     },
                     "enable_features": [
@@ -846,6 +847,7 @@
                 {
                     "name": "EnabledWithGboardRelaxedA_20220216",
                     "params": {
+                        "block": "[]",
                         "group": "gboard_relaxed_a"
                     },
                     "enable_features": [
@@ -855,6 +857,7 @@
                 {
                     "name": "EnabledWithGboardRelaxedB_20220216",
                     "params": {
+                        "block": "[]",
                         "group": "gboard_relaxed_b"
                     },
                     "enable_features": [
@@ -864,6 +867,7 @@
                 {
                     "name": "EnabledWithGboard_20221213",
                     "params": {
+                        "block": "[]",
                         "group": "gboard"
                     },
                     "enable_features": [
@@ -873,6 +877,7 @@
                 {
                     "name": "EnabledWithGboardD_20221213",
                     "params": {
+                        "block": "[]",
                         "group": "gboard_d"
                     },
                     "enable_features": [
@@ -882,6 +887,7 @@
                 {
                     "name": "EnabledWithGboardE_20221213",
                     "params": {
+                        "block": "[]",
                         "group": "gboard_e"
                     },
                     "enable_features": [
