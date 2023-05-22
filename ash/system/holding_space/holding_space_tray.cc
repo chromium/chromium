@@ -30,6 +30,8 @@
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
+#include "ash/user_education/user_education_class_properties.h"
+#include "ash/user_education/user_education_constants.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
@@ -54,6 +56,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -186,6 +189,13 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf)
   controller_observer_.Observe(HoldingSpaceController::Get());
   session_observer_.Observe(Shell::Get()->session_controller());
   SetVisible(false);
+
+  if (features::IsUserEducationEnabled()) {
+    // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
+    // in case registration causes a help bubble to be created synchronously.
+    SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
+    SetProperty(views::kElementIdentifierKey, kHoldingSpaceTrayElementId);
+  }
 
   // Default icon.
   default_tray_icon_ = tray_container()->AddChildView(CreateDefaultTrayIcon());

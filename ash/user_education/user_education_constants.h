@@ -17,6 +17,10 @@ namespace ash {
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kExploreAppListItemViewElementId);
 
+// Uniquely identifies the `HoldingSpaceTray` for user education.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kHoldingSpaceTrayElementId);
+
 // Uniquely identifies the `HomeButton` for user education.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kHomeButtonElementId);
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
 #include "ash/login/ui/lock_screen.h"
@@ -28,6 +29,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_event_filter.h"
+#include "ash/user_education/user_education_class_properties.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -631,6 +633,12 @@ void TrayBackgroundView::UpdateBackground() {
   const views::Widget* widget = GetWidget();
   if (widget)
     layer()->SetColor(ShelfConfig::Get()->GetShelfControlButtonColor(widget));
+
+  // Update ping insets when background insets change so that ping animations
+  // emanate from user perceived bounds instead of actual bounds.
+  if (features::IsUserEducationEnabled()) {
+    SetProperty(kPingInsetsKey, GetBackgroundInsets());
+  }
 }
 
 void TrayBackgroundView::OnAnimationAborted() {
