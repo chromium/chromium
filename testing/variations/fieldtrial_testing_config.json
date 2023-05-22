@@ -10653,7 +10653,7 @@
                 {
                     "name": "DriftEnabled",
                     "params": {
-                        "ClockDriftSampleDistance": "2s",
+                        "ClockDriftSampleDistance": "3600s",
                         "ClockDriftSamples": "2",
                         "FetchBehavior": "background-and-on-demand",
                         "RandomQueryProbability": "0.0394"
