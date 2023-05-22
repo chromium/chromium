@@ -13,6 +13,7 @@ import android.view.WindowInsets;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
 
 /**
@@ -21,6 +22,7 @@ import org.chromium.base.Log;
  * This object should be constructed in WebView's constructor to support set listener logic for
  * Android P and above.
  */
+@Lifetime.WebView
 @RequiresApi(Build.VERSION_CODES.P)
 public class AwDisplayCutoutController {
     private static final boolean DEBUG = false;
