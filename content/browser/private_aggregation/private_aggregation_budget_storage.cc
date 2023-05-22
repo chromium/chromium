@@ -57,6 +57,10 @@ base::OnceClosure PrivateAggregationBudgetStorage::CreateAsync(
     base::OnceCallback<void(std::unique_ptr<PrivateAggregationBudgetStorage>)>
         on_done_initializing) {
   DCHECK(on_done_initializing);
+  base::UmaHistogramBoolean(
+      "PrivacySandbox.PrivateAggregation.BudgetStorage."
+      "BeginInitializationCount",
+      /*sample=*/true);
   auto storage =
       base::WrapUnique(new PrivateAggregationBudgetStorage(db_task_runner));
   auto* raw_storage = storage.get();

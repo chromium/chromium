@@ -82,6 +82,13 @@ class PrivateAggregationBudgetStorageTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  void VerifyInitializationCountHistogram(size_t expected_count) {
+    histogram_tester_.ExpectTotalCount(
+        "PrivacySandbox.PrivateAggregation.BudgetStorage."
+        "BeginInitializationCount",
+        expected_count);
+  }
+
   // Helper for the unique sample case.
   void VerifyHistograms(PrivateAggregationBudgetStorage::InitStatus init_status,
                         bool shutdown_before_finishing_initialization,
@@ -93,6 +100,8 @@ class PrivateAggregationBudgetStorageTest : public testing::Test {
         "PrivacySandbox.PrivateAggregation.BudgetStorage."
         "ShutdownBeforeFinishingInitialization",
         shutdown_before_finishing_initialization, expected_bucket_count);
+    VerifyInitializationCountHistogram(
+        /*expected_count=*/expected_bucket_count);
   }
 
   base::FilePath storage_directory() const { return temp_directory_.GetPath(); }
@@ -124,9 +133,12 @@ TEST_F(PrivateAggregationBudgetStorageTest, DatabaseInitialization) {
   EXPECT_FALSE(base::PathExists(db_path()));
 
   base::RunLoop run_loop;
+  VerifyInitializationCountHistogram(/*expected_count=*/0);
   OpenDatabase(/*run_in_memory=*/false,
                /*on_done_initializing=*/base::BindLambdaForTesting(
                    [&run_loop]() { run_loop.Quit(); }));
+  // The count should be increased when the initialization begins.
+  VerifyInitializationCountHistogram(/*expected_count=*/1);
   EXPECT_FALSE(storage());
   run_loop.Run();
   EXPECT_TRUE(storage());

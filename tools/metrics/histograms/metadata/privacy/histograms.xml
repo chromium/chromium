@@ -713,6 +713,25 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.PrivateAggregation.BudgetStorage.BeginInitializationCount"
+    units="units" expires_after="2023-11-12">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <summary>
+    Count the number of times the budget storage begins initialization. This
+    metric is intended to be used in conjunction with the
+    &quot;PrivacySandbox.PrivateAggregation.BudgetStorage.ShutdownBeforeFinishingInitialization&quot;
+    metric, which does not measure cases where the browser is shut down
+    abruptly.
+
+    To get the actual number of times the browser is shut down before finishing
+    initialization, including cases where shut down abruptly, subtract the
+    number of true events for &quot;ShutdownBeforeFinishingInitialization&quot;;
+    from this metric's total count.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.InitStatus"
     enum="PrivacySandboxPrivateAggregationBudgetStorageInitStatus"
     expires_after="2023-10-08">
