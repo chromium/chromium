@@ -717,6 +717,10 @@ id<GREYMatcher> DefaultBrowserSettingsTableViewMatcher() {
   return [ChromeMatchersAppInterface defaultBrowserSettingsTableViewMatcher];
 }
 
+id<GREYMatcher> SafetyCheckTableViewMatcher() {
+  return [ChromeMatchersAppInterface safetyCheckTableViewMatcher];
+}
+
 #pragma mark - Overflow Menu Destinations
 
 id<GREYMatcher> BookmarksDestinationButton() {

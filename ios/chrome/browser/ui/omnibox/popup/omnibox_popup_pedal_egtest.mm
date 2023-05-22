@@ -284,6 +284,39 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [ChromeEarlGrey closeCurrentTab];
 }
 
+// Tests that safety check pedal is present and it opens the safety check page.
+- (void)testSafetyCheckPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalsafetycheck"];
+
+  NSString* safetyCheckPedalString = l10n_util::GetNSString(
+      IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_RUN_CHROME_SAFETY_CHECK);
+
+  // Matcher for safety check pedal suggestion.
+  id<GREYMatcher> safetyCheckPedal = popupRowWithString(safetyCheckPedalString);
+
+  // Safety check pedal should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:safetyCheckPedal];
+
+  // Tap on safety check pedal.
+  [[EarlGrey selectElementWithMatcher:safetyCheckPedal]
+      performAction:grey_tap()];
+
+  // Safety check page should be displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::SafetyCheckTableViewMatcher()];
+
+  // Close the safety check page.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::SafetyCheckTableViewMatcher()];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
 // Tests that the dino pedal does not appear when the search suggestion is below
 // the top 3.
 - (void)testNoPedal {

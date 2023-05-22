@@ -578,6 +578,9 @@ id<GREYMatcher> PasswordsTableViewMatcher();
 // Returns a mather for default browser settings table view.
 id<GREYMatcher> DefaultBrowserSettingsTableViewMatcher();
 
+// Returns a matcher for safety check table view.
+id<GREYMatcher> SafetyCheckTableViewMatcher();
+
 #pragma mark - Promo style view controller
 
 // Returns matcher for the primary action button.
