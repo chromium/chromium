@@ -1014,6 +1014,9 @@
             "experiments": [
                 {
                     "name": "Enabled_20230323",
+                    "params": {
+                        "block": "[]"
+                    },
                     "enable_features": [
                         "AutocorrectByDefault"
                     ]
