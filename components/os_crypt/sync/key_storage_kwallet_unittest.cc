@@ -179,8 +179,8 @@ class KeyStorageKWalletTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<StrictMock<MockKWalletDBus>> kwallet_dbus_mock_;
   KeyStorageKWallet key_storage_kwallet_;
+  raw_ptr<StrictMock<MockKWalletDBus>> kwallet_dbus_mock_;
   const std::string wallet_name_ = "mollet";
 };
 
