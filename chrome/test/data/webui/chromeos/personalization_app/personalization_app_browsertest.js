@@ -229,6 +229,7 @@ TEST_F(
           assertTrue(!!ambientSubpageLink);
         });
       });
+
       mocha.run();
     });
 
@@ -584,93 +585,110 @@ TEST_F(
           assertTrue(!!getColorSchemeSelector());
           assertTrue(!!getStaticColorSelector());
         });
-      });
 
-      test('shows color scheme options', () => {
-        setDynamicColorToggle(true);
+        test('clicks toggle', async () => {
+          const toggleDescription =
+              getDynamicColorElement().shadowRoot.getElementById(
+                  'dynamicColorToggleDescription');
+          const toggle = getDynamicColorToggle();
+          const checkedState = toggle.checked;
+          const originalColor = getComputedStyle(toggleDescription).color;
 
-        assertTrue(getDynamicColorToggle().checked);
-        assertTrue(getStaticColorSelector().hidden);
-        assertFalse(getColorSchemeSelector().hidden);
-      });
+          setDynamicColorToggle(!checkedState);
 
-      test('selects color scheme options', async () => {
-        const toggleDescription =
-            getDynamicColorElement().shadowRoot.getElementById(
-                'dynamicColorToggleDescription');
-        setDynamicColorToggle(true);
+          await waitUntil(
+              () => originalColor !== getComputedStyle(toggleDescription).color,
+              'failed to update colors');
+        });
 
-        // Click all of the color scheme buttons and save the text color of the
-        // toggle description to a set.
-        const crosSysSecondarySet = new Set();
-        const colorSchemeButtons =
-            Array.from(getColorSchemeSelector().querySelectorAll('cr-button'));
-        for (const button of colorSchemeButtons) {
-          if (button.ariaChecked === 'false') {
-            const originalColor = getComputedStyle(toggleDescription).color;
-            button.click();
-            await waitUntil(
-                () =>
-                    originalColor !== getComputedStyle(toggleDescription).color,
-                'failed to update colors', /* intervalMs= */ 200,
-                /* timeoutMs= */ 3000);
+        test('shows color scheme options', () => {
+          setDynamicColorToggle(true);
+
+          assertTrue(getDynamicColorToggle().checked);
+          assertTrue(getStaticColorSelector().hidden);
+          assertFalse(getColorSchemeSelector().hidden);
+        });
+
+        test('selects color scheme options', async () => {
+          const toggleDescription =
+              getDynamicColorElement().shadowRoot.getElementById(
+                  'dynamicColorToggleDescription');
+          setDynamicColorToggle(true);
+
+          // Click all of the color scheme buttons and save the text color of
+          // the toggle description to a set.
+          const crosSysSecondarySet = new Set();
+          const colorSchemeButtons = Array.from(
+              getColorSchemeSelector().querySelectorAll('cr-button'));
+          for (const button of colorSchemeButtons) {
+            if (button.ariaChecked === 'false') {
+              const originalColor = getComputedStyle(toggleDescription).color;
+              button.click();
+              await waitUntil(
+                  () => originalColor !==
+                      getComputedStyle(toggleDescription).color,
+                  'failed to update colors', /* intervalMs= */ 200,
+                  /* timeoutMs= */ 3000);
+            }
+
+            const newColor = getComputedStyle(toggleDescription).color;
+            crosSysSecondarySet.add(newColor);
           }
 
-          const newColor = getComputedStyle(toggleDescription).color;
-          crosSysSecondarySet.add(newColor);
-        }
+          assertEquals(
+              colorSchemeButtons.length, crosSysSecondarySet.size,
+              'Each color should be unique');
+        });
 
-        assertEquals(
-            colorSchemeButtons.length, crosSysSecondarySet.size,
-            'Each color should be unique');
-      });
+        test('shows static color options', () => {
+          const toggleButton = getDynamicColorToggle();
 
-      test('shows static color options', () => {
-        const toggleButton = getDynamicColorToggle();
+          setDynamicColorToggle(false);
 
-        setDynamicColorToggle(false);
+          assertFalse(toggleButton.checked);
+          assertFalse(getStaticColorSelector().hidden);
+          assertTrue(getColorSchemeSelector().hidden);
+        });
 
-        assertFalse(toggleButton.checked);
-        assertFalse(getStaticColorSelector().hidden);
-        assertTrue(getColorSchemeSelector().hidden);
-      });
+        test('selects static color options', async () => {
+          const theme = getRouter()
+                            .shadowRoot.querySelector('personalization-main')
+                            .shadowRoot.querySelector('personalization-theme');
+          const lightButton = theme.shadowRoot.getElementById('lightMode');
+          lightButton.click();
+          await waitUntil(
+              () => getBodyColorChannels().every(channel => channel > 200),
+              'failed to switch to light mode', /* intervalMs= */ 200,
+              /* timeoutMs= */ 3000);
+          assertEquals('true', lightButton.getAttribute('aria-checked'));
+          setDynamicColorToggle(false);
 
-      test('selects static color options', async () => {
-        const theme = getRouter()
-                          .shadowRoot.querySelector('personalization-main')
-                          .shadowRoot.querySelector('personalization-theme');
-        const lightButton = theme.shadowRoot.getElementById('lightMode');
-        lightButton.click();
-        await waitUntil(
-            () => getBodyColorChannels().every(channel => channel > 200),
-            'failed to switch to light mode', /* intervalMs= */ 200,
-            /* timeoutMs= */ 3000);
-        assertEquals('true', lightButton.getAttribute('aria-checked'));
-        setDynamicColorToggle(false);
+          // Click all of the static color buttons and save the background color
+          // of the light mode button to a set.
+          const crosButtonBackgroundColorPrimarySet = new Set();
+          const staticColorButtons = Array.from(
+              getStaticColorSelector().querySelectorAll('cr-button'));
+          for (const button of staticColorButtons) {
+            if (button.ariaChecked === 'false') {
+              const originalColor =
+                  getComputedStyle(lightButton).backgroundColor;
+              button.click();
+              await waitUntil(
+                  () => originalColor !==
+                      getComputedStyle(lightButton).backgroundColor,
+                  'failed to update colors', /* intervalMs= */ 200,
+                  /* timeoutMs= */ 3000);
+            }
 
-        // Click all of the static color buttons and save the background color
-        // of the light mode button to a set.
-        const crosButtonBackgroundColorPrimarySet = new Set();
-        const staticColorButtons =
-            Array.from(getStaticColorSelector().querySelectorAll('cr-button'));
-        for (const button of staticColorButtons) {
-          if (button.ariaChecked === 'false') {
-            const originalColor = getComputedStyle(lightButton).backgroundColor;
-            button.click();
-            await waitUntil(
-                () => originalColor !==
-                    getComputedStyle(lightButton).backgroundColor,
-                'failed to update colors', /* intervalMs= */ 200,
-                /* timeoutMs= */ 3000);
+            const newColor = getComputedStyle(lightButton).backgroundColor;
+            crosButtonBackgroundColorPrimarySet.add(newColor);
           }
 
-          const newColor = getComputedStyle(lightButton).backgroundColor;
-          crosButtonBackgroundColorPrimarySet.add(newColor);
-        }
-
-        assertEquals(
-            staticColorButtons.length, crosButtonBackgroundColorPrimarySet.size,
-            'Each color should be unique');
+          assertEquals(
+              staticColorButtons.length,
+              crosButtonBackgroundColorPrimarySet.size,
+              'Each color should be unique');
+        });
       });
 
       mocha.run();
