@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div id=target>foo</div>
+
+<script>
+test(() => {
+  const target = document.getElementById('target');
+
+  // From web_feature.mojom
+  const kDOMSubtreeModifiedEvent = 143;
+  const kDOMNodeInsertedEvent = 144;
+  const kDOMNodeRemovedEvent = 145;
+  const kDOMNodeRemovedFromDocumentEvent = 146;
+  const kDOMNodeInsertedIntoDocumentEvent = 147;
+  const kDOMCharacterDataModifiedEvent = 148;
+
+  const events = [
+    {counter: kDOMSubtreeModifiedEvent, event: 'DOMSubtreeModified'},
+    {counter: kDOMNodeInsertedEvent, event: 'DOMNodeInserted'},
+    {counter: kDOMNodeRemovedEvent, event: 'DOMNodeRemoved'},
+    {counter: kDOMNodeRemovedFromDocumentEvent, event: 'DOMNodeRemovedFromDocument'},
+    {counter: kDOMNodeInsertedIntoDocumentEvent, event: 'DOMNodeInsertedIntoDocument'},
+    {counter: kDOMCharacterDataModifiedEvent, event: 'DOMCharacterDataModified'},
+  ];
+
+  const expectedCounters = new Set();
+  function assertUseCounted(msg) {
+    events.forEach(evt => {
+      assert_equals(internals.isUseCounted(document, evt.counter), expectedCounters.has(evt.counter), evt.event + ', ' + msg);
+    });
+  }
+  function triggerThemAll() {
+    target.remove();
+    document.body.appendChild(target);
+    target.setAttribute('foo','bar');
+    target.removeAttribute('foo');
+    target.firstChild.textContent = "bar";
+  }
+
+  assertUseCounted('initial');
+  triggerThemAll();
+  assertUseCounted('before event listeners attached');
+  events.forEach(evt => {
+    target.addEventListener(evt.event,() => {});
+    expectedCounters.add(evt.counter);
+    assertUseCounted('after adding ' + evt.event + ' listener, before firing');
+    triggerThemAll();
+    assertUseCounted('after adding ' + evt.event + ' listener, after firing (no difference)');
+  });
+}, 'Use of Mutation Events is use counted.');
+</script>

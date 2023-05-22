@@ -27,6 +27,7 @@ CORE_EXPORT bool IsPointerEventType(const AtomicString& event_type);
 bool IsDOMMutationEventType(const AtomicString& event_type,
                             WebFeature& web_feature,
                             Document::ListenerType& listener_type);
+bool IsDOMMutationEventType(const AtomicString& event_type);
 
 }  // namespace event_util
 

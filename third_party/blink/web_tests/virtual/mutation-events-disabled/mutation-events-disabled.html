@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src='../../resources/testharness.js'></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div id=target>foo</div>
+
+<script>
+const events = [
+  'DOMSubtreeModified',
+  'DOMNodeInserted',
+  'DOMNodeRemoved',
+  'DOMNodeRemovedFromDocument',
+  'DOMNodeInsertedIntoDocument',
+  'DOMCharacterDataModified',
+];
+const target = document.getElementById('target');
+
+test((t) => {
+  function listener(event) {
+    assert_unreached(`Received ${event.type} event`);
+  }
+  events.forEach(evt => {
+    target.addEventListener(evt,listener);
+    document.body.addEventListener(evt,listener);
+    t.add_cleanup(() => {
+      target.removeEventListener(evt,listener);
+      document.body.removeEventListener(evt,listener);
+    })
+  })
+
+  // Trigger them all
+  target.remove();
+  document.body.appendChild(target);
+  target.setAttribute('test','foo');
+  target.firstChild.textContent = "bar";
+}, 'When Mutation Events are disabled, none of them get fired.');
+
+test((t) => {
+  let eventCount = 0;
+  function listener(event) {
+    assert_false(event.isTrusted);
+    ++eventCount;
+  }
+  events.forEach(evt => {
+    target.addEventListener(evt,listener);
+    t.add_cleanup(() => {
+      target.removeEventListener(evt,listener);
+    })
+  })
+
+  // Manually fire them all
+  events.forEach(evt => {
+    eventCount = 0;
+    target.dispatchEvent(new Event(evt,{bubbles:true}));
+    assert_equals(eventCount,1);
+  });
+}, 'When Mutation Events are disabled, it is still possible to manually fire them.');
+</script>

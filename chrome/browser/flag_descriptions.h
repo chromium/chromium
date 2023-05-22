@@ -877,6 +877,9 @@ extern const char kFillingAcrossAffiliatedWebsitesDescription[];
 extern const char kFillingAcrossGroupedSitesName[];
 extern const char kFillingAcrossGroupedSitesDescription[];
 
+extern const char kMutationEventsName[];
+extern const char kMutationEventsDescription[];
+
 extern const char kFillOnAccountSelectName[];
 extern const char kFillOnAccountSelectDescription[];
 

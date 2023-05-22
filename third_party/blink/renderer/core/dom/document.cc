@@ -5728,8 +5728,13 @@ Event* Document::createEvent(ScriptState* script_state,
 
 void Document::AddMutationEventListenerTypeIfEnabled(
     ListenerType listener_type) {
-  if (ContextFeatures::MutationEventsEnabled(this))
-    AddListenerType(listener_type);
+  // Mutation events can be disabled by the embedder via a ContextFeatures
+  // switch, or via the runtime enabled feature.
+  if (!ContextFeatures::MutationEventsEnabled(this) ||
+      !RuntimeEnabledFeatures::MutationEventsEnabled()) {
+    return;
+  }
+  AddListenerType(listener_type);
 }
 
 void Document::AddListenerTypeIfNeeded(const AtomicString& event_type,
@@ -5738,7 +5743,6 @@ void Document::AddListenerTypeIfNeeded(const AtomicString& event_type,
   ListenerType listener_type;
   if (event_util::IsDOMMutationEventType(event_type, mutation_event_feature,
                                          listener_type)) {
-    UseCounter::Count(*this, mutation_event_feature);
     AddMutationEventListenerTypeIfEnabled(listener_type);
   } else if (event_type == event_type_names::kWebkitAnimationStart ||
              event_type == event_type_names::kAnimationstart) {

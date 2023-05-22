@@ -1125,9 +1125,16 @@ class CORE_EXPORT Document : public ContainerNode,
     kScrollListener = 1 << 14,
     kLoadListenerAtCapturePhaseOrAtStyleElement = 1 << 15,
     // 0 bits remaining
+    kDOMMutationEventListener =
+        kDOMSubtreeModifiedListener | kDOMNodeInsertedListener |
+        kDOMNodeRemovedListener | kDOMNodeRemovedFromDocumentListener |
+        kDOMNodeInsertedIntoDocumentListener |
+        kDOMCharacterDataModifiedListener,
   };
 
   bool HasListenerType(ListenerType listener_type) const {
+    DCHECK(RuntimeEnabledFeatures::MutationEventsEnabled() ||
+           !(listener_types_ & kDOMMutationEventListener));
     return (listener_types_ & listener_type);
   }
   void AddListenerTypeIfNeeded(const AtomicString& event_type, EventTarget&);

@@ -2321,7 +2321,6 @@
       base_feature: "none",
     },
     {
-
       name: "MobileLayoutTheme",
       base_feature: "none",
     },
@@ -2336,6 +2335,12 @@
       name: "MojoJSTest",
       status: "test",
       base_feature: "none",
+    },
+    // crbug.com/1446498: This feature is being used for the deprecation of
+    // Mutation Events.
+    {
+      name: "MutationEvents",
+      status: "stable",
     },
     {
       name: "NavigateEventCancelableTraversals",

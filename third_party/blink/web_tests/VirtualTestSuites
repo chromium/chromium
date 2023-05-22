@@ -1301,6 +1301,13 @@
     "expires": "Feb 1, 2024"
   },
   {
+    "prefix": "mutation-events-disabled",
+    "platforms": ["Linux"],
+    "bases": [],
+    "args": ["--disable-blink-features=MutationEvents"],
+    "expires": "Sep 1, 2024"
+  },
+  {
     "prefix": "popover-hint-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

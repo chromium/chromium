@@ -60785,6 +60785,7 @@ from previous Chrome versions.
   <int value="-1041643783" label="SingleTouchSelect:enabled"/>
   <int value="-1041150041" label="ContextualSearchLiteralSearchTap:disabled"/>
   <int value="-1040641773" label="ArcOnDemand:enabled"/>
+  <int value="-1040547868" label="MutationEvents:disabled"/>
   <int value="-1040000888" label="ContextMenuSearchWithGoogleLens:disabled"/>
   <int value="-1039889738" label="NativeNotifications:enabled"/>
   <int value="-1039555838" label="GamepadExtensions:enabled"/>
@@ -60841,6 +60842,7 @@ from previous Chrome versions.
   <int value="-1013986101" label="FirstScrollLatencyMeasurement:disabled"/>
   <int value="-1012657256" label="WebAuthenticationConditionalUI:enabled"/>
   <int value="-1011390415" label="AutofillRejectCompanyBirthyear:enabled"/>
+  <int value="-1010590882" label="MutationEvents:enabled"/>
   <int value="-1010588306" label="SlideTopChromeWithPageScrolls:disabled"/>
   <int value="-1009111883" label="NearbyShareVisibilityReminder:enabled"/>
   <int value="-1008511612" label="EnableCustomMacPaperSizes:disabled"/>
