@@ -739,9 +739,6 @@
   <message name="IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION" desc="File Manager status message shown when the drive sync is failed because the user's organization runs out the space in Google Drive server.">
     Your organization requires more storage to complete the upload.
   </message>
-  <message name="IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING" desc="Don't translate yet; this message is not final. System notification displayed when the Google Drive cache file were removed while the user was logged out.">
-    Your Google Drive cache was cleared.
-  </message>
   <message name="IDS_FILE_BROWSER_DRIVE_ORGANIZATION_STORAGE_FULL" desc="File Manager menu storage meter message indicating the user's organization has run out of quota.">
     Org storage full
   </message>
@@ -1765,7 +1762,7 @@
   <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_ALL_FILES_SYNCED_LABEL" translateable="false" desc="The text used when all the Drive items have successfully finished downloading and are synced.">
     Your files are synced
   </message>
-  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_BULK_PINNING_OFFLINE_LABEL" translateable="false" desc="The text used when the device is in an offline mode and has paused syncing.">
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_OFFLINE_LABEL" translateable="false" desc="The text used when the device is in an offline mode and has paused syncing.">
     You are currently offline. Sync will resume when the connection is back on.
   </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_TITLE" translateable="false" desc="The title of the dialog offering the Google Drive bulk pinning feature">
@@ -1801,7 +1798,16 @@
   <message name="IDS_FILE_BROWSER_BULK_PINNING_GET_STARTED" translateable="false" desc="Text in the Get started button of the banner offering the Google Drive bulk pinning feature">
     Get started
   </message>
-  <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_BULK_PINNING_NOT_ENOUGH_SPACE_LABEL" translateable="false" desc="The text used when the bulk pinning of Google Drive items has failed due to insufficient space.">
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_LABEL" translateable="false" desc="The text used when the bulk pinning of Google Drive items has failed due to insufficient space.">
     You don't have enough local storage to keep all your files available offline.
+  </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION" translateable="false" desc="The text displayed by the system notification when the bulk pinning of Google Drive items stopped due to insufficient space">
+    We couldn't sync all of your My Drive files because you don't have enough storage available. Files that were already synced will stay available offline, but automatic syncing has been turned off.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_DATA_DIR_MISSING" translateable="false" desc="System notification displayed when the Google Drive cache file were removed while the user was logged out">
+    Your offline files had to be cleared from your Chromebook to keep things running. Automatic syncing has also been turned off. Your files are still available in your My Drive online.
+  </message>
+  <message name="IDS_FILE_BROWSER_DRIVE_SYNC_ERROR_TITLE" translateable="false" desc="Title of system notification displayed when an error occurred while syncing Google Drive files">
+    Sync error
   </message>
 </grit-part>
