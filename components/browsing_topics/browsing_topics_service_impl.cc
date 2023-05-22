@@ -449,7 +449,18 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
     topics.emplace_back(std::move(result_topic));
   }
 
-  std::sort(topics.begin(), topics.end());
+  // Sort result based on the version first, and then based on the topic ID.
+  // This groups the topics with the same version together, so that when
+  // transforming into the header format, all duplicate versions can be omitted.
+  std::sort(topics.begin(), topics.end(),
+            [](const blink::mojom::EpochTopicPtr& left,
+               const blink::mojom::EpochTopicPtr& right) {
+              if (left->version != right->version) {
+                return left->version < right->version;
+              }
+
+              return left->topic < right->topic;
+            });
 
   // Remove duplicate entries.
   topics.erase(std::unique(topics.begin(), topics.end()), topics.end());
