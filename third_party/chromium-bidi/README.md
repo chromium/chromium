@@ -6,7 +6,6 @@
 ![Unit Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/unit.yml/badge.svg)
 ![WPT Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/wpt.yml/badge.svg)
 
-
 ![Pre-commit](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/pre-commit.yml/badge.svg)
 
 This is an implementation of the
