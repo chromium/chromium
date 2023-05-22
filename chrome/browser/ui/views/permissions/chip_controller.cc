@@ -584,6 +584,11 @@ void ChipController::OnPromptBubbleDismissed() {
 void ChipController::OnPromptExpired() {
   AnnouncePermissionRequestForAccessibility(l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_EXPIRED_SCREENREADER_ANNOUNCEMENT));
+  if (active_chip_permission_request_manager_.has_value()) {
+    active_chip_permission_request_manager_.value()->RemoveObserver(this);
+    active_chip_permission_request_manager_.reset();
+  }
+
   if (permission_prompt_model_ &&
       permission_prompt_model_->GetDelegate().has_value()) {
     if (permission_prompt_model_->ShouldDismiss()) {
@@ -592,6 +597,8 @@ void ChipController::OnPromptExpired() {
       permission_prompt_model_->GetDelegate().value()->Ignore();
     }
   }
+
+  ResetPermissionPromptChip();
 }
 
 void ChipController::OnRequestChipButtonPressed() {
