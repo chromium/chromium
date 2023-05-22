@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_profile.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/network_ui_data.h"
@@ -150,6 +152,20 @@ void ApplyGlobalAutoconnectPolicy(NetworkProfile::Type profile_type,
 }
 
 }  // namespace
+
+SmdxActivationCode::SmdxActivationCode(Type type, std::string value)
+    : type(type), value(value) {}
+
+SmdxActivationCode::SmdxActivationCode(SmdxActivationCode&& other) {
+  type = other.type;
+  value = std::move(other.value);
+}
+
+SmdxActivationCode& SmdxActivationCode::operator=(SmdxActivationCode&& other) {
+  type = other.type;
+  value = std::move(other.value);
+  return *this;
+}
 
 base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,
                                    const base::Value::Dict* network_policy,
@@ -451,6 +467,43 @@ const std::string* GetSMDPAddressFromONC(const base::Value::Dict& onc_config) {
   }
 
   return smdp_address;
+}
+
+absl::optional<SmdxActivationCode> GetSmdxActivationCodeFromONC(
+    const base::Value::Dict& onc_config) {
+  const std::string* type = onc_config.FindString(::onc::network_config::kType);
+  const base::Value::Dict* cellular_dict =
+      onc_config.FindDict(::onc::network_config::kCellular);
+
+  if (!type || (*type != ::onc::network_type::kCellular) || !cellular_dict) {
+    return absl::nullopt;
+  }
+
+  const std::string* const smdp_activation_code =
+      cellular_dict->FindString(::onc::cellular::kSMDPAddress);
+  const std::string* const smds_activation_code =
+      cellular_dict->FindString(::onc::cellular::kSMDSAddress);
+
+  if (smdp_activation_code && smds_activation_code) {
+    NET_LOG(ERROR) << "Failed to get SM-DX activation code from ONC "
+                   << "configuration. Expected either an SM-DP+ activation "
+                   << "code or an SM-DS activation code but got both.";
+    return absl::nullopt;
+  }
+
+  if (smdp_activation_code) {
+    return SmdxActivationCode(SmdxActivationCode::Type::SMDP,
+                              *smdp_activation_code);
+  }
+  if (smds_activation_code) {
+    return SmdxActivationCode(SmdxActivationCode::Type::SMDS,
+                              *smds_activation_code);
+  }
+
+  NET_LOG(ERROR) << "Failed to get SM-DX activation code from ONC "
+                 << "configuration. Expected either an SM-DP+ activation code "
+                 << "or an SM-DS activation code but got neither.";
+  return absl::nullopt;
 }
 
 }  // namespace ash::policy_util

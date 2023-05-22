@@ -333,6 +333,7 @@ source_set("unit_tests") {
     "network_type_pattern_unittest.cc",
     "network_ui_data_unittest.cc",
     "network_util_unittest.cc",
+    "policy_util_unittest.cc",
     "profile_policies_unittest.cc",
     "prohibited_technologies_handler_unittest.cc",
     "shill_property_handler_unittest.cc",
