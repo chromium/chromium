@@ -111,6 +111,11 @@ class CoreOobe : public VersionInfoUpdater::Delegate,
   // the |CoreOobeHandler| notifies us with |UiState::kFullyInitialized|
   void ExecutePendingCalls();
 
+  // If there is a pending ShowScreen call for a supported priority screen, we
+  // will show it as soon as the state |UiState::kPriorityScreensLoaded| is
+  // reached.
+  void MaybeShowPriorityScreen();
+
   class PendingFrontendCalls {
    public:
     PendingFrontendCalls();
