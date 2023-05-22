@@ -259,15 +259,6 @@ targets.compile_target(
 #     executable = "browser_tests",
 # )
 
-targets.generated_script(
-    name = "devtools_web_tests",
-    label = "//:devtools_web_tests",
-    args = [
-        "--results-directory",
-        "${ISOLATED_OUTDIR}",
-    ],
-)
-
 targets.console_test_launcher(
     name = "boringssl_crypto_tests",
     label = "//third_party/boringssl:boringssl_crypto_tests",

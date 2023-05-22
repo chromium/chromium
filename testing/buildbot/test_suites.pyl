@@ -2036,31 +2036,6 @@
           'shards': 7,
         }
       },
-      'webkit_layout_from_devtools': {
-        # TODO(crbug.com/816629) - Move these args into //BUILD.gn .
-        # layout test failures are retried 3 times when '--test-list' is not
-        # passed, but 0 times when '--test-list' is passed. We want to always
-        # retry 3 times, so we explicitly specify it.
-        'args': [
-          '--num-retries=3',
-          '--layout-tests-directory=../../third_party/devtools-frontend/src/test/webtests/',
-          'http/tests/devtools',
-        ],
-        'isolate_name': 'devtools_web_tests',
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'resultdb': {
-          'enable': True,
-        },
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 4,
-        }
-      },
     },
 
     'devtools_webkit_isolated_scripts': {
@@ -2116,31 +2091,6 @@
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 7,
-        }
-      },
-      'webkit_layout_from_devtools': {
-        # TODO(crbug.com/816629) - Move these args into //BUILD.gn .
-        # layout test failures are retried 3 times when '--test-list' is not
-        # passed, but 0 times when '--test-list' is passed. We want to always
-        # retry 3 times, so we explicitly specify it.
-        'args': [
-          '--num-retries=3',
-          '--layout-tests-directory=../../third_party/devtools-frontend/src/test/webtests/',
-          'http/tests/devtools',
-        ],
-        'isolate_name': 'devtools_web_tests',
-        'merge': {
-          'args': [
-            '--verbose',
-          ],
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-        },
-        'resultdb': {
-          'enable': True,
-        },
-        'results_handler': 'layout tests',
-        'swarming': {
-          'shards': 4,
         }
       },
     },
