@@ -44,6 +44,10 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   // Called when settings is toggled on or off.
   void SetSettingsMenuShown(bool shown);
 
+  // views::View:
+  void AddedToWidget() override;
+  void Layout() override;
+
  protected:
   CaptureModeBarView();
 
