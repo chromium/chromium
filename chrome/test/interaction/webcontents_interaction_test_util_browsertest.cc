@@ -10,6 +10,7 @@
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -2007,8 +2008,16 @@ class WebContentsInteractionTestUtilInteractiveTest
   }
 };
 
+// TODO(crbug.com/1447298): flaky on Mac - see comments below for the likely
+// culprit line.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TrackWebContentsAcrossReplace \
+  DISABLED_TrackWebContentsAcrossReplace
+#else
+#define MAYBE_TrackWebContentsAcrossReplace TrackWebContentsAcrossReplace
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveTest,
-                       TrackWebContentsAcrossReplace) {
+                       MAYBE_TrackWebContentsAcrossReplace) {
   const GURL url1 = embedded_test_server()->GetURL(kDocumentWithLinksURL);
   const GURL url2 = embedded_test_server()->GetURL(kEmptyDocumentURL);
   RunTestSequence(InstrumentTab(kWebContentsElementId),
@@ -2026,6 +2035,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveTest,
                   })),
                   WaitForHide(kWebContentsElementId), FlushEvents(),
                   // This has to be done on a fresh message loop.
+                  // For some reason, this does not reliably trigger page
+                  // reload on Mac (see crbug.com/1447298).
                   SelectTab(kTabStripElementId, 0),
                   WaitForShow(kWebContentsElementId));
 }
