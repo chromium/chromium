@@ -95,8 +95,8 @@ void ComponentInstaller::Register(RegisterCallback register_callback,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   if (!installer_policy_) {
-    LOG(ERROR) << "A ComponentInstaller has been created but "
-               << "has no installer policy.";
+    VLOG(0) << "A ComponentInstaller has been created but "
+            << "has no installer policy.";
     return;
   }
 
@@ -111,7 +111,7 @@ void ComponentInstaller::Register(RegisterCallback register_callback,
 }
 
 void ComponentInstaller::OnUpdateError(int error) {
-  LOG(ERROR) << "Component update error: " << error;
+  VLOG(0) << "Component update error: " << error;
 }
 
 Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
@@ -150,7 +150,7 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
           << " install_path=" << local_install_path.AsUTF8Unsafe();
 
   if (!base::Move(unpack_path, local_install_path)) {
-    PLOG(ERROR) << "Move failed.";
+    VPLOG(0) << "Move failed.";
     base::DeletePathRecursively(local_install_path);
     return Result(InstallError::MOVE_FILES_ERROR);
   }
@@ -161,8 +161,8 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::SetPosixFilePermissions(local_install_path, 0755)) {
-    PLOG(ERROR) << "SetPosixFilePermissions failed: "
-                << local_install_path.value();
+    VPLOG(0) << "SetPosixFilePermissions failed: "
+             << local_install_path.value();
     return Result(InstallError::SET_PERMISSIONS_FAILED);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -288,16 +288,15 @@ ComponentInstaller::GetValidInstallationManifest(const base::FilePath& path) {
   absl::optional<base::Value::Dict> manifest =
       update_client::ReadManifest(path);
   if (!manifest) {
-    PLOG(ERROR) << "Failed to read manifest for "
-                << installer_policy_->GetName() << " (" << path.MaybeAsASCII()
-                << ").";
+    VPLOG(0) << "Failed to read manifest for " << installer_policy_->GetName()
+             << " (" << path.MaybeAsASCII() << ").";
     return absl::nullopt;
   }
 
   if (!installer_policy_->VerifyInstallation(*manifest, path)) {
-    PLOG(ERROR) << "Failed to verify installation for "
-                << installer_policy_->GetName() << " (" << path.MaybeAsASCII()
-                << ").";
+    VPLOG(0) << "Failed to verify installation for "
+             << installer_policy_->GetName() << " (" << path.MaybeAsASCII()
+             << ").";
     return absl::nullopt;
   }
 
@@ -402,9 +401,9 @@ absl::optional<base::FilePath> ComponentInstaller::GetComponentDirectory() {
   base::FilePath base_dir =
       base_component_dir.Append(installer_policy_->GetRelativeInstallDir());
   if (!base::CreateDirectory(base_dir)) {
-    PLOG(ERROR) << "Could not create the base directory for "
-                << installer_policy_->GetName() << " ("
-                << base_dir.MaybeAsASCII() << ").";
+    VPLOG(0) << "Could not create the base directory for "
+             << installer_policy_->GetName() << " (" << base_dir.MaybeAsASCII()
+             << ").";
     return absl::nullopt;
   }
 
@@ -414,7 +413,7 @@ absl::optional<base::FilePath> ComponentInstaller::GetComponentDirectory() {
        installer_policy_->GetRelativeInstallDir().GetComponents()) {
     base_dir_ = base_dir_.Append(component);
     if (!base::SetPosixFilePermissions(base_dir_, 0755)) {
-      PLOG(ERROR) << "SetPosixFilePermissions failed: " << base_dir.value();
+      VPLOG(0) << "SetPosixFilePermissions failed: " << base_dir.value();
       return absl::nullopt;
     }
   }
@@ -480,13 +479,13 @@ void ComponentInstaller::UninstallOnTaskRunner() {
       continue;
 
     if (!base::DeletePathRecursively(path))
-      DLOG(ERROR) << "Couldn't delete " << path.value();
+      DVLOG(0) << "Couldn't delete " << path.value();
   }
 
   // Delete the base directory if it's empty now.
   if (base::IsDirectoryEmpty(base_dir)) {
     if (!base::DeleteFile(base_dir))
-      DLOG(ERROR) << "Couldn't delete " << base_dir.value();
+      DVLOG(0) << "Couldn't delete " << base_dir.value();
   }
 
   // Customized operations for individual component.
@@ -516,8 +515,8 @@ void ComponentInstaller::FinishRegistration(
                this, installer_policy_->RequiresNetworkEncryption(),
                installer_policy_
                    ->SupportsGroupPolicyEnabledComponentUpdates()))) {
-    LOG(ERROR) << "Component registration failed for "
-               << installer_policy_->GetName();
+    VLOG(0) << "Component registration failed for "
+            << installer_policy_->GetName();
     if (!callback.is_null())
       std::move(callback).Run();
     return;
