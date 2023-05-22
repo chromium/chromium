@@ -317,6 +317,10 @@ export class XfBulkPinningDialog extends XfBase {
         color: var(--cros-sys-primary);
       }
 
+      .error-footer > a {
+        color: inherit;
+      }
+
       files-spinner {
         transform: scale(0.666);
         margin: 0;
