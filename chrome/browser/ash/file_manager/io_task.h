@@ -92,6 +92,8 @@ struct ConflictPauseParams {
 
   // The conflict copy or move target URL.
   std::string conflict_target_url;
+
+  bool operator==(const ConflictPauseParams& other) const;
 };
 
 // I/O task state::PAUSED parameters when paused to show a policy warning.
@@ -99,6 +101,8 @@ struct ConflictPauseParams {
 struct PolicyPauseParams {
   // One of kDlp, kEnterpriseConnectors.
   PolicyErrorType type;
+
+  bool operator==(const PolicyPauseParams& other) const;
 };
 
 // I/O task state::PAUSED parameters. Only one of conflict or policy params
@@ -111,6 +115,8 @@ struct PauseParams {
 
   PauseParams(PauseParams&& other);
   PauseParams& operator=(PauseParams&& other);
+
+  bool operator==(const PauseParams& other) const;
 
   ~PauseParams();
 
@@ -323,10 +329,13 @@ class DummyIOTask : public IOTask {
               bool show_notification = true);
   ~DummyIOTask() override;
 
+  // IOTask overrides:
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
-
+  void Pause(PauseParams pause_params) override;
+  void Resume(ResumeParams resume_params) override;
   void Cancel() override;
+  void CompleteWithError(PolicyErrorType policy_error) override;
 
  private:
   void DoProgress();

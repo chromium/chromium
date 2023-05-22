@@ -88,6 +88,19 @@ IOTaskId IOTaskController::Add(std::unique_ptr<IOTask> task) {
   return task_id;
 }
 
+void IOTaskController::Pause(IOTaskId task_id, PauseParams params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = tasks_.find(task_id);
+  if (it != tasks_.end()) {
+    IOTask* task = it->second.get();
+    task->Pause(std::move(params));
+    NotifyIOTaskObservers(task->progress());
+  } else {
+    LOG(WARNING) << "Failed to pause task: " << task_id << " not found";
+  }
+}
+
 void IOTaskController::Resume(IOTaskId task_id, ResumeParams params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -95,6 +108,7 @@ void IOTaskController::Resume(IOTaskId task_id, ResumeParams params) {
   if (it != tasks_.end()) {
     IOTask* task = it->second.get();
     task->Resume(std::move(params));
+    NotifyIOTaskObservers(task->progress());
   } else {
     LOG(WARNING) << "Failed to resume task: " << task_id << " not found";
   }
@@ -126,6 +140,21 @@ void IOTaskController::ProgressPausedTasks() {
       NotifyIOTaskObservers(task->progress());
       break;
     }
+  }
+}
+
+void IOTaskController::CompleteWithError(IOTaskId task_id,
+                                         PolicyErrorType policy_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = tasks_.find(task_id);
+  if (it != tasks_.end()) {
+    IOTask* task = it->second.get();
+    task->CompleteWithError(std::move(policy_error));
+    NotifyIOTaskObservers(task->progress());
+    RemoveIOTask(task_id);
+  } else {
+    LOG(WARNING) << "Failed to abort task: " << task_id << " not found";
   }
 }
 
