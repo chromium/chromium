@@ -400,6 +400,7 @@ template("rust_target") {
         }
         sources = _cxx_bindings
         deps = _cxx_deps + _public_deps
+        configs = _configs
 
         if (is_component_build) {
           # In a component_build the cxx bindings may be linked into a shared

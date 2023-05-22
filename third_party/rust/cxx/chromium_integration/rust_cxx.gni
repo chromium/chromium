@@ -161,5 +161,9 @@ template("rust_cxx") {
       ":${target_name}_gen",
       "//build/rust:cxx_cppdeps",
     ]
+    if (defined(invoker.configs)) {
+      configs = []
+      configs = invoker.configs
+    }
   }
 }
