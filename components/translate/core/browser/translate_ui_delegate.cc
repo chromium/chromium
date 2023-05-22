@@ -21,7 +21,6 @@
 namespace {
 
 const char kDeclineTranslate[] = "Translate.DeclineTranslate";
-const char kPerformTranslate[] = "Translate.Translate";
 const char kPerformTranslateAmpCacheUrl[] = "Translate.Translate.AMPCacheURL";
 const char kNeverTranslateLang[] = "Translate.NeverTranslateLang";
 const char kNeverTranslateSite[] = "Translate.NeverTranslateSite";
@@ -194,7 +193,6 @@ void TranslateUIDelegate::Translate() {
         translate_manager_->GetActiveTranslateMetricsLogger()
             ->GetNextManualTranslationType(
                 /*is_context_menu_initiated_translation=*/false));
-    UMA_HISTOGRAM_BOOLEAN(kPerformTranslate, true);
     if (IsLikelyAmpCacheUrl(translate_driver_->GetLastCommittedURL()))
       UMA_HISTOGRAM_BOOLEAN(kPerformTranslateAmpCacheUrl, true);
   }
