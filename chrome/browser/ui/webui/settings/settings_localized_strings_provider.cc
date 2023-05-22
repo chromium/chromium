@@ -238,6 +238,12 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #endif
 
   html_source->AddBoolean("isChildAccount", profile->IsChild());
+#if BUILDFLAG(IS_LINUX)
+  bool allow_qt_theme = base::FeatureList::IsEnabled(ui::kAllowQt);
+#else
+  bool allow_qt_theme = false;
+#endif
+  html_source->AddBoolean("allowQtTheme", allow_qt_theme);
 }
 
 void AddA11yStrings(content::WebUIDataSource* html_source) {
