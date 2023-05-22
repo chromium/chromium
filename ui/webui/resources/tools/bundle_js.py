@@ -81,7 +81,6 @@ def _update_dep_file(in_folder, args, out_file_path, manifest):
 # Arguments:
 # out_dir: The root directory for the output (i.e. corresponding to
 #          host_url at runtime).
-# path_to_plugin: Path to the rollup plugin.
 # in_path: Root directory for the input files.
 # bundle_path: Path to the output files from the root output directory.
 #              E.g. if bundle is chrome://foo/bundle.js, this is |foo|.
@@ -90,9 +89,11 @@ def _update_dep_file(in_folder, args, out_file_path, manifest):
 # external_paths: Path mappings for import paths that are outside of
 #                 |in_path|. For example:
 #                 chrome://resources/|gen/ui/webui/resources/tsc
-def _generate_rollup_config(out_dir, path_to_plugin, in_path, bundle_path,
-                            host_url, excludes, external_paths):
-  rollup_config_file = os.path.join(out_dir, bundle_path, 'rollup.config.mjs')
+def _generate_rollup_config(out_dir, in_path, bundle_path, host_url, excludes,
+                            external_paths):
+  rollup_config_file = os.path.join(out_dir, 'rollup.config.mjs')
+  path_to_plugin = os.path.join(
+      os.path.relpath(_HERE_PATH, out_dir), 'rollup_plugin.mjs')
   config_content = r'''
     import plugin from '{plugin_path}';
     export default ({{
@@ -155,11 +156,7 @@ def _bundle(out_folder, in_path, manifest_out_path, args, excludes,
   if not os.path.exists(out_dir):
     os.makedirs(out_dir)
 
-  path_to_plugin = os.path.join(
-      os.path.relpath(_HERE_PATH, os.path.join(out_folder, bundle_path)),
-      'rollup_plugin.mjs')
-  rollup_config_file = _generate_rollup_config(out_folder, path_to_plugin,
-                                               in_path, bundle_path,
+  rollup_config_file = _generate_rollup_config(out_folder, in_path, bundle_path,
                                                args.host_url, excludes,
                                                external_paths)
   rollup_args = [os.path.join(in_path, f) for f in args.js_module_in_files]

@@ -283,6 +283,8 @@ external_paths: Mappings between absolute URLs and paths where files imported
                 Note: all absolute URLs must either be listed in |excludes| or
                 be mapped in |external_paths|, otherwise a build time error is
                 raised.
+out_folder: The location where bundled files will be placed in. Defaults to
+            |target_gen_dir|.
 ```
 
 #### **Example**
