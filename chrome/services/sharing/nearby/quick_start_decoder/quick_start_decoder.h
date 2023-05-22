@@ -57,8 +57,9 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
 
  private:
   friend class QuickStartDecoderTest;
-  mojom::BootstrapConfigurationsPtr DoDecodeBootstrapConfigurations(
-      const std::vector<uint8_t>& data);
+  void DoDecodeBootstrapConfigurations(
+      const std::vector<uint8_t>& data,
+      DecodeBootstrapConfigurationsCallback callback);
   mojom::GetAssertionResponsePtr DoDecodeGetAssertionResponse(
       const std::vector<uint8_t>& data);
   void DoDecodeWifiCredentialsResponse(

@@ -208,9 +208,9 @@ mojom::GetAssertionResponsePtr QuickStartDecoder::DoDecodeGetAssertionResponse(
   return ParseGetAssertionResponse(std::move(decoded_values.second.value()));
 }
 
-mojom::BootstrapConfigurationsPtr
-QuickStartDecoder::DoDecodeBootstrapConfigurations(
-    const std::vector<uint8_t>& data) {
+void QuickStartDecoder::DoDecodeBootstrapConfigurations(
+    const std::vector<uint8_t>& data,
+    DecodeBootstrapConfigurationsCallback callback) {
   std::unique_ptr<QuickStartMessage> message = QuickStartMessage::ReadMessage(
       data, QuickStartMessageType::kBootstrapConfigurations);
 
@@ -219,22 +219,29 @@ QuickStartDecoder::DoDecodeBootstrapConfigurations(
   if (!device_details) {
     LOG(ERROR)
         << "DeviceDetails cannot be found within BootstrapConfigurations.";
-    return nullptr;
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
   std::string* cryptauth_device_id_ptr =
       device_details->FindString(kCryptauthDeviceIdKey);
   if (!cryptauth_device_id_ptr) {
     LOG(WARNING)
         << "CryptauthDeviceId for the Android Device could not be found.";
-    return mojom::BootstrapConfigurations::New(/*cryptauth_device_id=*/"");
+    std::move(callback).Run(
+        mojom::BootstrapConfigurations::New(/*cryptauth_device_id=*/""),
+        absl::nullopt);
+    return;
   }
-  return mojom::BootstrapConfigurations::New(*cryptauth_device_id_ptr);
+  std::move(callback).Run(
+      mojom::BootstrapConfigurations::New(*cryptauth_device_id_ptr),
+      absl::nullopt);
 }
 
 void QuickStartDecoder::DecodeBootstrapConfigurations(
     const std::vector<uint8_t>& data,
     DecodeBootstrapConfigurationsCallback callback) {
-  std::move(callback).Run(DoDecodeBootstrapConfigurations(data));
+  DoDecodeBootstrapConfigurations(data, std::move(callback));
 }
 
 void QuickStartDecoder::DecodeWifiCredentialsResponse(

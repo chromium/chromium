@@ -66,6 +66,10 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
 
   void SetNotifySourceOfUpdateResponse(absl::optional<bool> ack_received);
 
+  void SetBootstrapConfigurationsResponse(
+      const std::string& cryptauth_device_id,
+      absl::optional<mojom::QuickStartDecoderError> error);
+
  private:
   std::vector<uint8_t> expected_data_;
   mojom::GetAssertionResponse::GetAssertionStatus response_status_;
@@ -81,6 +85,7 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   mojom::UserVerificationRequestedPtr user_verification_request_;
   mojom::UserVerificationResponsePtr user_verification_response_;
   absl::optional<mojom::QuickStartDecoderError> error_;
+  std::string response_cryptauth_device_id_;
 };
 
 }  // namespace ash::quick_start

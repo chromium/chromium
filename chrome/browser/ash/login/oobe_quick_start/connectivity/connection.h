@@ -120,6 +120,8 @@ class Connection
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
   using PayloadResponseCallback =
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
+  using BootstrapConfigurationsCallback =
+      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
 
   // TargetDeviceConnectionBroker::AuthenticatedConnection:
   void RequestWifiCredentials(int32_t session_id,
@@ -150,6 +152,10 @@ class Connection
   void GenerateFidoAssertionInfo(
       RequestAccountTransferAssertionCallback callback,
       ::ash::quick_start::mojom::GetAssertionResponsePtr response);
+
+  void OnBootstrapConfigurationsResponse(
+      BootstrapConfigurationsCallback callback,
+      absl::optional<std::vector<uint8_t>> response_bytes);
 
   void SendMessage(std::unique_ptr<QuickStartMessage> message,
                    ConnectionResponseCallback callback);

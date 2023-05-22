@@ -19,7 +19,8 @@ interface QuickStartDecoder {
   // appropriate BootstrapConfigurations to ensure that BootstrapOptions
   // was set correctly on the phone.
   DecodeBootstrapConfigurations(array<uint8> data) => (
-    BootstrapConfigurations? bootstrap_configurations);
+    BootstrapConfigurations? bootstrap_configurations,
+    QuickStartDecoderError? error);
 
   // Decode a D2D response to a request for Wifi Credentials
   // This response is JSON, with a Base64 encoded JSON payload

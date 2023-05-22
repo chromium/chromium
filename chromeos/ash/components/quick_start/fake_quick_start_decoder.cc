@@ -24,7 +24,9 @@ FakeQuickStartDecoder::GetRemote() {
 void FakeQuickStartDecoder::DecodeBootstrapConfigurations(
     const std::vector<uint8_t>& data,
     DecodeBootstrapConfigurationsCallback callback) {
-  EXPECT_EQ(expected_data_, data);
+  std::move(callback).Run(
+      mojom::BootstrapConfigurations::New(response_cryptauth_device_id_),
+      error_);
 }
 
 void FakeQuickStartDecoder::DecodeWifiCredentialsResponse(
@@ -121,6 +123,13 @@ void FakeQuickStartDecoder::SetWifiCredentialsResponse(
 void FakeQuickStartDecoder::SetNotifySourceOfUpdateResponse(
     absl::optional<bool> ack_received) {
   notify_source_of_update_response_ = ack_received;
+}
+
+void FakeQuickStartDecoder::SetBootstrapConfigurationsResponse(
+    const std::string& cryptauth_device_id,
+    absl::optional<mojom::QuickStartDecoderError> error) {
+  response_cryptauth_device_id_ = cryptauth_device_id;
+  error_ = error;
 }
 
 }  // namespace ash::quick_start

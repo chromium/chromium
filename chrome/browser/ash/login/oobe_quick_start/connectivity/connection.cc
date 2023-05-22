@@ -162,8 +162,13 @@ void Connection::RequestAccountTransferAssertion(
                      requests::BuildGetInfoRequestMessage(),
                      std::move(request_assertion)));
 
+  auto bootstrap_configurations_response =
+      base::BindOnce(&Connection::OnBootstrapConfigurationsResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(get_info));
+
   // Call into SetBootstrapOptions, starting the chain of callbacks.
-  SendMessage(requests::BuildBootstrapOptionsRequest(), std::move(get_info));
+  SendMessage(requests::BuildBootstrapOptionsRequest(),
+              std::move(bootstrap_configurations_response));
 }
 
 void Connection::OnNotifySourceOfUpdateResponse(
@@ -240,6 +245,21 @@ void Connection::GenerateFidoAssertionInfo(
   assertion_info.signature = response->signature;
 
   std::move(callback).Run(assertion_info);
+}
+
+void Connection::OnBootstrapConfigurationsResponse(
+    BootstrapConfigurationsCallback callback,
+    absl::optional<std::vector<uint8_t>> response_bytes) {
+  if (!response_bytes.has_value()) {
+    return;
+  }
+
+  // TODO(b/280306851): Finish parsing response and save cryptauth_device_id.
+  DecodeData<mojom::BootstrapConfigurations>(
+      &mojom::QuickStartDecoder::DecodeBootstrapConfigurations,
+      base::DoNothing(), std::move(response_bytes));
+
+  std::move(callback).Run(absl::nullopt);
 }
 
 void Connection::SendMessage(std::unique_ptr<QuickStartMessage> message,

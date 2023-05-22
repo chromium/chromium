@@ -264,6 +264,11 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   EXPECT_EQ(*bootstrap_options.FindInt(kDeviceTypeKey), kDeviceTypeChrome);
 
   // Emulate a BootstrapConfigurations response.
+  std::vector<uint8_t> cryptauth_device_id = {0x01, 0x02, 0x03};
+  std::string expected_cryptauth_device_id(cryptauth_device_id.begin(),
+                                           cryptauth_device_id.end());
+  fake_quick_start_decoder_->SetBootstrapConfigurationsResponse(
+      expected_cryptauth_device_id, absl::nullopt);
   fake_nearby_connection_->AppendReadableData(kTestBytes);
 
   // OnBootstrapOptionsResponse should trigger a write of FIDO GetInfo
