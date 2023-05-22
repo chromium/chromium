@@ -277,11 +277,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "arc-ghost-window-new-style",
-    "owners": [ "sstan" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "arc-idle-manager",
     "owners": [ "raging" ],
     "expiry_milestone": 125
