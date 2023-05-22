@@ -125,7 +125,7 @@ void PlatformSensor::UpdateSharedBufferAndNotifyClients(
   bool updated;
   {
     base::AutoLock auto_lock(lock_);
-    updated = UpdateSharedBuffer(reading, /*do_significance_check=*/true);
+    updated = UpdateSharedBuffer(reading);
   }
   if (updated) {
     main_task_runner()->PostTask(
@@ -134,8 +134,7 @@ void PlatformSensor::UpdateSharedBufferAndNotifyClients(
   }
 }
 
-bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading,
-                                        bool do_significance_check) {
+bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading) {
   if (!reading_buffer_)
     return false;
 
@@ -143,7 +142,7 @@ bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading,
   // our current one, when the sensor is not reporting data continuously.
   // Empty readings (i.e. with a zero timestamp) are always processed.
   if (GetReportingMode() == mojom::ReportingMode::ON_CHANGE &&
-      do_significance_check && last_raw_reading_.has_value() &&
+      last_raw_reading_.has_value() &&
       !IsSignificantlyDifferent(*last_raw_reading_, reading, type_)) {
     return false;
   }
@@ -157,7 +156,7 @@ bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading,
   // Report new values only if rounded value is different compared to
   // previous value.
   if (GetReportingMode() == mojom::ReportingMode::ON_CHANGE &&
-      do_significance_check && last_rounded_reading_.has_value() &&
+      last_rounded_reading_.has_value() &&
       base::ranges::equal(rounded_reading.raw.values,
                           last_rounded_reading_->raw.values)) {
     return false;
@@ -166,12 +165,25 @@ bool PlatformSensor::UpdateSharedBuffer(const SensorReading& reading,
   last_rounded_reading_ = rounded_reading;
 
   if (is_active_) {
-    reading_buffer_->seqlock.value().WriteBegin();
-    device::OneWriterSeqLock::AtomicWriterMemcpy(
-        &reading_buffer_->reading, &rounded_reading, sizeof(SensorReading));
-    reading_buffer_->seqlock.value().WriteEnd();
+    WriteToSharedBuffer(rounded_reading);
   }
   return is_active_;
+}
+
+void PlatformSensor::ResetSharedBuffer() {
+  last_raw_reading_.reset();
+  last_rounded_reading_.reset();
+  if (is_active_) {
+    WriteToSharedBuffer(SensorReading());
+  }
+}
+
+void PlatformSensor::WriteToSharedBuffer(const SensorReading& reading) {
+  CHECK(is_active_);
+  reading_buffer_->seqlock.value().WriteBegin();
+  device::OneWriterSeqLock::AtomicWriterMemcpy(&reading_buffer_->reading,
+                                               &reading, sizeof(reading));
+  reading_buffer_->seqlock.value().WriteEnd();
 }
 
 void PlatformSensor::NotifySensorReadingChanged() {
@@ -209,9 +221,8 @@ bool PlatformSensor::UpdateSensorInternal(const ConfigMap& configurations) {
       base::AutoLock auto_lock(lock_);
       // If we reached this condition, we want to set the current reading to
       // zero regardless of the previous reading's value per
-      // https://w3c.github.io/sensors/#set-sensor-settings. That is the reason
-      // to skip significance check.
-      UpdateSharedBuffer(SensorReading(), /*do_significance_check=*/false);
+      // https://w3c.github.io/sensors/#set-sensor-settings.
+      ResetSharedBuffer();
       is_active_ = false;
     }
     return true;
