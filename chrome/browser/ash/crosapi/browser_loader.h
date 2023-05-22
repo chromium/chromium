@@ -99,10 +99,7 @@ class BrowserLoader {
       OnLoadSelectionPolicyIsUserChoiceAndCommandLineIsStateful);
   FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest, OnLoadLacrosSpecifiedBySwitch);
 
-  // `load_stateful_lacros` specifies whether we should start the installation
-  // of stateful lacros in the background.
-  void SelectRootfsLacros(LoadCompletionCallback callback,
-                          bool load_stateful_lacros);
+  void SelectRootfsLacros(LoadCompletionCallback callback);
   void SelectStatefulLacros(LoadCompletionCallback callback);
 
   // Called on GetVersion for each rootfs and stateful lacros loader.
