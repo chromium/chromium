@@ -33,6 +33,7 @@ class TestAshWebView : public AshWebView {
   void RequestFocus() override;
   bool HasFocus() const override;
   const GURL& GetVisibleURL() override;
+  bool IsErrorDocument() override;
 
   const AshWebView::InitParams& init_params_for_testing() const {
     return init_params_;
@@ -42,11 +43,16 @@ class TestAshWebView : public AshWebView {
   // Navigate() has not been called.
   const GURL& current_url() const { return current_url_; }
 
+  void set_is_error_document(bool is_error_document) {
+    is_error_document_ = is_error_document;
+  }
+
  private:
   base::ObserverList<Observer> observers_;
   bool focused_ = false;
   AshWebView::InitParams init_params_;
   GURL current_url_;
+  bool is_error_document_ = false;
 
   base::WeakPtrFactory<TestAshWebView> weak_factory_{this};
 };

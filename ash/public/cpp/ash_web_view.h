@@ -101,6 +101,9 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
   // See `WebContents::GetVisibleURL()`.
   virtual const GURL& GetVisibleURL() = 0;
 
+  // See `RenderFrameHost::IsErrorDocument()`.
+  virtual bool IsErrorDocument() = 0;
+
  protected:
   AshWebView();
 };
