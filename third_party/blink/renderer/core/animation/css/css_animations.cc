@@ -1413,12 +1413,12 @@ ScrollSnapshotTimeline* CSSAnimations::FindTimelineForNode(
   if (!element)
     return nullptr;
   const TimelineData* timeline_data = GetTimelineData(*element);
-  if (ViewTimeline* timeline =
-          FindTimelineForElement<ViewTimeline>(name, timeline_data, update)) {
-    return timeline;
-  }
   if (ScrollTimeline* timeline =
           FindTimelineForElement<ScrollTimeline>(name, timeline_data, update)) {
+    return timeline;
+  }
+  if (ViewTimeline* timeline =
+          FindTimelineForElement<ViewTimeline>(name, timeline_data, update)) {
     return timeline;
   }
   return FindTimelineForElement<DeferredTimeline>(name, timeline_data, update);
