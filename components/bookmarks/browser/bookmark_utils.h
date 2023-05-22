@@ -100,7 +100,9 @@ void GetMostRecentlyAddedEntries(BookmarkModel* model,
 bool MoreRecentlyAdded(const BookmarkNode* n1, const BookmarkNode* n2);
 
 // Returns the most recently used bookmarks. This does not return folders,
-// only nodes of type url.
+// only nodes of type url. Note: If the bookmarks have the same used time, this
+// will return the more recent added bookmarks. Normally, this happens when the
+// bookmarks are never used.
 void GetMostRecentlyUsedEntries(BookmarkModel* model,
                                 size_t count,
                                 std::vector<const BookmarkNode*>* nodes);

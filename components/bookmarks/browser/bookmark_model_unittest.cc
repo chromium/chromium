@@ -1369,7 +1369,9 @@ TEST_F(BookmarkModelTest, GetMostRecentlyUsedEntries) {
   n1->set_date_last_used(base_time + base::Days(4));
   n2->set_date_last_used(base_time + base::Days(3));
   n3->set_date_last_used(base_time + base::Days(2));
-  n4->set_date_last_used(base_time + base::Days(1));
+  n3->set_date_added(base_time + base::Days(2));
+  n4->set_date_last_used(base_time + base::Days(2));
+  n4->set_date_added(base_time + base::Days(1));
 
   // Make sure order is honored.
   std::vector<const BookmarkNode*> recently_used;
