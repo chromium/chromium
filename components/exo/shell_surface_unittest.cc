@@ -35,6 +35,7 @@
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/mock_security_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/test/test_security_delegate.h"
 #include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2209,9 +2210,14 @@ TEST_F(ShellSurfaceTest, ServerStartResizeComponent) {
 // Make sure that dragging to another display will update the origin to
 // correct value.
 TEST_F(ShellSurfaceTest, UpdateBoundsWhenDraggedToAnotherDisplay) {
+  exo::test::TestSecurityDelegate securityDelegate;
+  securityDelegate.SetCanSetBounds(
+      SecurityDelegate::SetBoundsPolicy::DCHECK_IF_DECORATED);
   UpdateDisplay("800x600, 800x600");
   std::unique_ptr<ShellSurface> shell_surface =
-      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+      test::ShellSurfaceBuilder({64, 64})
+          .SetSecurityDelegate(&securityDelegate)
+          .BuildShellSurface();
   ui::test::EventGenerator* event_generator = GetEventGenerator();
   shell_surface->SetWindowBounds({0, 0, 64, 64});
 
@@ -2801,7 +2807,12 @@ TEST_F(ShellSurfaceTest, DragWithHTCLIENT) {
 }
 
 TEST_F(ShellSurfaceTest, ScreenCoordinates) {
-  auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  exo::test::TestSecurityDelegate securityDelegate;
+  securityDelegate.SetCanSetBounds(
+      SecurityDelegate::SetBoundsPolicy::DCHECK_IF_DECORATED);
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20})
+                           .SetSecurityDelegate(&securityDelegate)
+                           .BuildShellSurface();
   ShellSurfaceCallbacks callbacks;
 
   shell_surface->set_configure_callback(base::BindRepeating(
@@ -2943,9 +2954,14 @@ TEST_F(ShellSurfaceTest, SetRestoreInfoWithWindowIdSource) {
 
 // Surfaces without non-client view should not crash.
 TEST_F(ShellSurfaceTest, NoNonClientViewWithConfigure) {
+  exo::test::TestSecurityDelegate securityDelegate;
+  securityDelegate.SetCanSetBounds(
+      SecurityDelegate::SetBoundsPolicy::DCHECK_IF_DECORATED);
   // Popup windows don't have a non-client view.
-  auto shell_surface =
-      test::ShellSurfaceBuilder({20, 20}).SetAsPopup().BuildShellSurface();
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20})
+                           .SetAsPopup()
+                           .SetSecurityDelegate(&securityDelegate)
+                           .BuildShellSurface();
   ShellSurfaceCallbacks callbacks;
 
   // Having a configure callback leads to a call to GetClientBoundsInScreen().

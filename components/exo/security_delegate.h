@@ -26,6 +26,20 @@ namespace exo {
 // See go/secure-exo-ids and go/securer-exo-ids for more details.
 class SecurityDelegate {
  public:
+  // See |CanSetBounds()|.
+  enum SetBoundsPolicy {
+    // By default, clients may not set window bounds. Requests are ignored.
+    IGNORE,
+
+    // Clients may set bounds, but Exo may DCHECK on requests for windows with
+    // server-side decoration.
+    DCHECK_IF_DECORATED,
+
+    // Clients may set bounds for any window. Exo will expand the requested
+    // bounds to account for server-side decorations, if any.
+    ADJUST_IF_DECORATED,
+  };
+
   // Get a SecurityDelegate instance with all of the defaults.
   static std::unique_ptr<SecurityDelegate> GetDefaultSecurityDelegate();
 
@@ -43,12 +57,13 @@ class SecurityDelegate {
   // to reject the pointer lock request.
   virtual bool CanLockPointer(aura::Window* window) const;
 
+  // Whether clients may set their own windows' bounds is a security-relevant
+  // policy decision.
+  //
   // If server-side decoration is used, clients normally should not set their
   // own window bounds, as they may not be able to compute them correctly
   // (accounting for the size of the window decorations).
-  //
-  // Return true if this client is allowed to set its own window bounds anyway.
-  virtual bool CanSetBoundsWithServerSideDecoration(aura::Window* window) const;
+  virtual SetBoundsPolicy CanSetBounds(aura::Window* window) const;
 };
 
 }  // namespace exo

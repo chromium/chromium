@@ -51,9 +51,9 @@ bool BorealisSecurityDelegate::CanLockPointer(aura::Window* window) const {
   return window->GetProperty(chromeos::kUseOverviewToExitPointerLock);
 }
 
-bool BorealisSecurityDelegate::CanSetBoundsWithServerSideDecoration(
+exo::SecurityDelegate::SetBoundsPolicy BorealisSecurityDelegate::CanSetBounds(
     aura::Window* window) const {
-  return true;
+  return exo::SecurityDelegate::SetBoundsPolicy::ADJUST_IF_DECORATED;
 }
 
 // static
