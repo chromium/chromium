@@ -51,6 +51,7 @@ class SiteSettingsHandler
    public:
     static GroupingKey Create(const url::Origin& origin);
     static GroupingKey CreateFromEtldPlus1(const std::string& etld_plus1);
+    static GroupingKey Deserialize(const std::string& serialized);
 
     GroupingKey(const GroupingKey& other);
     GroupingKey& operator=(const GroupingKey& other);
@@ -172,7 +173,7 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, SessionOnlyException);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ZoomLevels);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleClearEtldPlus1DataAndCookies);
+                           HandleClearSiteGroupDataAndCookies);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            HandleClearUnpartitionedUsage);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, ClearClientHints);
@@ -382,8 +383,8 @@ class SiteSettingsHandler
   // Updates the block autoplay enabled pref when the UI is toggled.
   void HandleSetBlockAutoplayEnabled(const base::Value::List& args);
 
-  // Clear web storage data and cookies from cookies tree model for an ETLD+1.
-  void HandleClearEtldPlus1DataAndCookies(const base::Value::List& args);
+  // Clear web storage data and cookies from CookiesTreeModel for a site group.
+  void HandleClearSiteGroupDataAndCookies(const base::Value::List& args);
 
   // Record metrics for actions on All Sites Page.
   void HandleRecordAction(const base::Value::List& args);
@@ -429,9 +430,6 @@ class SiteSettingsHandler
 
   // The origin for which to fetch usage.
   std::string usage_origin_;
-
-  // The origin for which to clear usage.
-  std::string clearing_origin_;
 
   // Change observer for content settings.
   base::ScopedMultiSourceObservation<HostContentSettingsMap,

@@ -62,7 +62,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'setProtocolDefault',
       'setProtocolHandlerDefault',
       'updateIncognitoStatus',
-      'clearEtldPlus1DataAndCookies',
+      'clearSiteGroupDataAndCookies',
       'clearUnpartitionedOriginDataAndCookies',
       'clearPartitionedOriginDataAndCookies',
       'recordAction',
@@ -297,7 +297,8 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
         const originInfo = createOriginInfo(origin, {usage: mockUsage});
         existing.origins.push(originInfo);
       } else {
-        const entry = createSiteGroup(etldPlus1Name, [origin], mockUsage);
+        const entry =
+            createSiteGroup(etldPlus1Name, etldPlus1Name, [origin], mockUsage);
         result.push(entry);
       }
     });
@@ -560,8 +561,8 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   }
 
   /** @override */
-  clearEtldPlus1DataAndCookies() {
-    this.methodCalled('clearEtldPlus1DataAndCookies');
+  clearSiteGroupDataAndCookies() {
+    this.methodCalled('clearSiteGroupDataAndCookies');
   }
 
   /** @override */
@@ -570,9 +571,9 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   }
 
   /** @override */
-  clearPartitionedOriginDataAndCookies(origin: string, etldPlus1: string) {
+  clearPartitionedOriginDataAndCookies(origin: string, groupingKey: string) {
     this.methodCalled(
-        'clearPartitionedOriginDataAndCookies', [origin, etldPlus1]);
+        'clearPartitionedOriginDataAndCookies', [origin, groupingKey]);
   }
 
   /** @override */

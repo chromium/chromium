@@ -286,8 +286,9 @@ export class SiteEntryElement extends SiteEntryElementBase {
     // origin. Otherwise find the origin with largest storage, and use the
     // number of cookies as a tie breaker.
     for (const originInfo of origins) {
-      if (this.toUrl(originInfo.origin)!.host ===
-          'www.' + siteGroup.etldPlus1) {
+      if (siteGroup.etldPlus1 &&
+          this.toUrl(originInfo.origin)!.host ===
+              'www.' + siteGroup.etldPlus1) {
         return originInfo.origin;
       }
     }
