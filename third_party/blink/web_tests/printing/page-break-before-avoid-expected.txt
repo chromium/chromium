@@ -4,16 +4,19 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 
 PASS: page number of "page1" is 1
-FAIL: expected page number of "page2-1" is 2. Was 1
-FAIL: expected page number of "page2-2" is 2. Was 1
+PASS: page number of "page2-1" is 2
+PASS: page number of "page2-2" is 2
 PASS: page number of "page3-1" is 3
 PASS: page number of "page3-2" is 3
 PASS: page number of "page3-3" is 3
 PASS: page number of "page5" is 5
-FAIL: expected page number of "page6-1" is 6. Was 5
+PASS: page number of "page6-1" is 6
 PASS: page number of "page6-7" is 6
 PASS: page number of "page7" is 7
-PASS: page number of "page10" is 10
+PASS: page number of "page8" is 8
+PASS: page number of "page8-1" is 8
+PASS: page number of "page11" is 11
+All tests passed
 
 PASS successfullyParsed is true
 

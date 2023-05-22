@@ -9,9 +9,9 @@ function test()
     createBlockWithRatioToPageHeight("page2-2", 0.3);
 
     createBlockWithRatioToPageHeight("page3-1", 0.5).style.pageBreakBefore = "always";
-    // A page break can occur inside of 'page3-3' block because it has child elements.
     createBlockWithRatioToPageHeight("page3-2", 0.3).style.pageBreakAfter = "avoid";
-    createBlockWithNumberOfLines("page3-3", 10);
+    // A page break can occur between lines inside of 'page3-3'.
+    createBlockWithNumberOfLines("page3-3", 10).style.breakInside = "auto";
 
     createBlockWithRatioToPageHeight("page5", 0.5).style.pageBreakBefore = "always";
     // It seems unrealistic, but block 'page6-1' must move to the next page.

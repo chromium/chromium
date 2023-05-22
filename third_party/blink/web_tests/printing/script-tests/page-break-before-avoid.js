@@ -10,9 +10,11 @@ function test()
     createBlockWithRatioToPageHeight("page2-2", 0.3).style.pageBreakBefore = "avoid";
 
     createBlockWithRatioToPageHeight("page3-1", 0.5).style.pageBreakBefore = "always";
-    // A page break can occur inside of 'page3-3' block because it has child elements.
     createBlockWithRatioToPageHeight("page3-2", 0.3);
-    createBlockWithNumberOfLines("page3-3", 10).style.pageBreakBefore = "avoid";
+    // A page break can occur between lines inside of 'page3-3'.
+    var page3_3 = createBlockWithNumberOfLines("page3-3", 10);
+    page3_3.style.pageBreakBefore = "avoid";
+    page3_3.style.breakInside = "auto";
 
     createBlockWithRatioToPageHeight("page5", 0.5).style.pageBreakBefore = "always";
     // It seems unrealistic, but block 'page6-1' must move to the next page.
@@ -24,11 +26,10 @@ function test()
     createBlockWithRatioToPageHeight("page6-6", 0.1).style.pageBreakBefore = "avoid";
     createBlockWithRatioToPageHeight("page6-7", 0.1).style.pageBreakBefore = "avoid";
 
-    // We don't define where block 'page7or8-1' is placed.
     createBlockWithRatioToPageHeight("page7", 0.5).style.pageBreakBefore = "always";
-    createBlockWithRatioToPageHeight("page7or8-1", 0.1);
-    createBlockWithRatioToPageHeight("page7or8-2", 3).style.pageBreakBefore = "avoid";
-    createBlockWithRatioToPageHeight("page10", 0.1);
+    createBlockWithRatioToPageHeight("page8", 0.1);
+    createBlockWithRatioToPageHeight("page8-1", 3).style.pageBreakBefore = "avoid";
+    createBlockWithRatioToPageHeight("page11", 0.1);
 
     pageNumberForElementShouldBe("page1", 1);
     pageNumberForElementShouldBe("page2-1", 2);
@@ -44,7 +45,9 @@ function test()
     pageNumberForElementShouldBe("page6-7", 6);
 
     pageNumberForElementShouldBe("page7", 7);
-    pageNumberForElementShouldBe("page10", 10);
+    pageNumberForElementShouldBe("page8", 8);
+    pageNumberForElementShouldBe("page8-1", 8);
+    pageNumberForElementShouldBe("page11", 11);
 
     document.body.removeChild(document.getElementById("sandbox"));
 }
