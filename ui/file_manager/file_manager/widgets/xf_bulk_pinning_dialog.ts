@@ -217,7 +217,7 @@ export class XfBulkPinningDialog extends XfBase {
           </cr-button>
           <cr-button id="continue-button" class="continue-button action-button"
             @click="${this.onContinue}">
-            ${str('BULK_PINNING_CONTINUE')}
+            ${str('BULK_PINNING_TURN_ON')}
           </cr-button>
         </div>
       </cr-dialog>
