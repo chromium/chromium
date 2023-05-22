@@ -1222,14 +1222,10 @@ const FeatureEntry::FeatureVariation
          std::size(kPageEntitiesPageContentAnnotationsAllLocalesParams),
          nullptr},
 };
-const FeatureEntry::FeatureParam kJourneysHiddenVisitsParams[] = {
-    {"JourneysLocaleOrLanguageAllowlist", "*"},
-};
 const FeatureEntry::FeatureParam kJourneysShowAllVisitsParams[] = {
     {"JourneysLocaleOrLanguageAllowlist", "*"},
     // To show all visits, set the number of visits above the fold to a very
-    // high number. We drop the rest above this very high number because we
-    // definitely don't want to surface a Show More UI after that number.
+    // high number.
     {"JourneysNumVisitsToAlwaysShowAboveTheFold", "200"},
 };
 const FeatureEntry::FeatureParam kJourneysAllLocalesParams[] = {
@@ -1238,8 +1234,6 @@ const FeatureEntry::FeatureParam kJourneysAllLocalesParams[] = {
 const FeatureEntry::FeatureVariation kJourneysVariations[] = {
     {"No 'Show More' - Show all visits", kJourneysShowAllVisitsParams,
      std::size(kJourneysShowAllVisitsParams), nullptr},
-    {"'Show More' - Hide hidden visits", kJourneysHiddenVisitsParams,
-     std::size(kJourneysHiddenVisitsParams), nullptr},
     {"All Supported Locales", kJourneysAllLocalesParams,
      std::size(kJourneysAllLocalesParams), nullptr},
 };
