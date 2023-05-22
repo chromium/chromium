@@ -5,6 +5,7 @@
 #include "services/network/cookie_settings.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/base/features.h"
@@ -1286,6 +1287,15 @@ TEST_P(CookieSettingsTest,
                   net::MatchesCookieWithName("__Host-partitioned"),
                   MatchesCookieAccessResult(net::IsInclude(), _, _, _))));
   EXPECT_THAT(excluded_cookies, IsEmpty());
+}
+
+TEST_P(CookieSettingsTest, ForceThirdPartyCookieBlocking) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kForceThirdPartyCookieBlocking);
+
+  CookieSettings settings;
+  EXPECT_TRUE(settings.are_third_party_cookies_blocked());
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -17,6 +17,7 @@
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -247,7 +248,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
                                              const GURL& first_party_url) const;
 
   ContentSettingsForOneType content_settings_;
-  bool block_third_party_cookies_ = false;
+  bool block_third_party_cookies_ =
+      net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
   std::set<std::string> secure_origin_cookies_allowed_schemes_;
   std::set<std::string> matching_scheme_cookies_allowed_schemes_;
   std::set<std::string> third_party_cookies_allowed_schemes_;

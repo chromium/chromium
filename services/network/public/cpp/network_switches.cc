@@ -6,6 +6,8 @@
 
 namespace network::switches {
 
+const char kBlockThirdPartyCookies[] = "block-third-party-cookies";
+
 // Forces Network Quality Estimator (NQE) to return a specific effective
 // connection type.
 const char kForceEffectiveConnectionType[] = "force-effective-connection-type";

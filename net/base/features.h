@@ -383,6 +383,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnablePortBoundCookies);
 // Enables binding of cookies to the scheme that originally set them.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
 
+// Enables enabling third-party cookie blocking from the command line.
+NET_EXPORT BASE_DECLARE_FEATURE(kForceThirdPartyCookieBlocking);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

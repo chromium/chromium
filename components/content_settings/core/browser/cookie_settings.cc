@@ -42,7 +42,8 @@ CookieSettings::CookieSettings(
     : host_content_settings_map_(host_content_settings_map),
       is_incognito_(is_incognito),
       extension_scheme_(extension_scheme),
-      block_third_party_cookies_(false) {
+      block_third_party_cookies_(
+          net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
   content_settings_observation_.Observe(host_content_settings_map_.get());
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
@@ -303,6 +304,10 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
     return false;
   }
 #endif
+
+  if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
+    return true;
+  }
 
   CookieControlsMode mode = static_cast<CookieControlsMode>(
       pref_change_registrar_.prefs()->GetInteger(prefs::kCookieControlsMode));

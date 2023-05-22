@@ -1002,4 +1002,8 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
       base::ranges::is_sorted(included_cookies, CookieWithAccessResultSorter));
 }
 
+NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled() {
+  return base::FeatureList::IsEnabled(features::kForceThirdPartyCookieBlocking);
+}
+
 }  // namespace net::cookie_util

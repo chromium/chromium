@@ -365,4 +365,9 @@ BASE_FEATURE(kEnableSchemeBoundCookies,
              "EnableSchemeBoundCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable third-party cookie blocking from the command line.
+BASE_FEATURE(kForceThirdPartyCookieBlocking,
+             "ForceThirdPartyCookieBlockingEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features
