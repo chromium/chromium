@@ -67,6 +67,7 @@ from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 from devil import devil_env
 from devil.android import apk_helper
 from devil.android import device_temp_file
+from devil.android import device_utils
 from devil.android import flag_changer
 from devil.android import logcat_monitor
 from devil.android.tools import script_common
@@ -80,7 +81,6 @@ from scripts import common
 from skia_gold_common.skia_gold_properties import SkiaGoldProperties
 from skia_gold_common import skia_gold_session_manager
 from skia_gold_infra import finch_skia_gold_utils
-from run_wpt_tests import get_device
 
 ANDROID_WEBLAYER = 'android_weblayer'
 LOGCAT_TAG = 'finch_test_runner_py'
@@ -1178,6 +1178,27 @@ class WebLayerFinchTestCase(FinchTestCase):
       webview_app.UseWebViewProvider(self._device,
                                      self.options.webview_provider_apk):
       yield
+
+
+@contextlib.contextmanager
+def get_device(args):
+    try:
+        instance = None
+        if args.avd_config:
+            avd_config = avd.AvdConfig(args.avd_config)
+            logger.info('Installing emulator from %s', args.avd_config)
+            avd_config.Install()
+
+            instance = avd_config.CreateInstance()
+            instance.Start(writable_system=True,
+                           window=args.emulator_window,
+                           require_fast_start=True)
+
+        devices = device_utils.DeviceUtils.HealthyDevices()
+        yield devices[0] if len(devices) > 0 else None
+    finally:
+        if instance:
+            instance.Stop()
 
 
 def main(args):

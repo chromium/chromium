@@ -1163,12 +1163,6 @@ class ChromeAndroid(ChromeAndroidBase):
 
 
 @contextlib.contextmanager
-def get_device(args):
-    with get_devices(args) as devices:
-        yield None if not devices else devices[0]
-
-
-@contextlib.contextmanager
 def get_devices(args):
     if not _ANDROID_ENABLED:
         raise Exception('Android is not available')
