@@ -5221,6 +5221,9 @@
             "experiments": [
                 {
                     "name": "Enabled_20230517",
+                    "params": {
+                        "enable_price_notification": "true"
+                    },
                     "enable_features": [
                         "CommercePriceTracking",
                         "IPH_PriceNotificationsWhileBrowsing",
