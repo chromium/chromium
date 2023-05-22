@@ -264,15 +264,6 @@ suite('ReadingListAppTest', () => {
         assertEquals(firstItem, readingListApp.shadowRoot!.activeElement);
       });
 
-  test('Favicons present in the dom', async () => {
-    const readingListItems =
-        readingListApp.shadowRoot!.querySelectorAll('reading-list-item');
-
-    readingListItems.forEach((readingListItem) => {
-      assertTrue(!!readingListItem.shadowRoot!.querySelector('.favicon'));
-    });
-  });
-
   test('Verify visibilitychange triggers data fetch', async () => {
     assertEquals(1, testProxy.getCallCount('getReadLaterEntries'));
 

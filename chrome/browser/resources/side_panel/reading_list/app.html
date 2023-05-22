@@ -110,8 +110,8 @@
       </sp-heading>
       <template id="unreadItemsList" is="dom-repeat" items="[[unreadItems_]]">
         <reading-list-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-            aria-label="[[ariaLabel_(item)]]" class="mwb-list-item unread-item"
-            data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
+            aria-label="[[ariaLabel_(item)]]" class="unread-item"
+            data="[[item]]" button-ripples="[[buttonRipples]]">
         </reading-list-item>
       </template>
       <div class="hr" hidden$="[[!shouldShowHr_(unreadItems_, readItems_)]]">
@@ -121,8 +121,8 @@
       </sp-heading>
       <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
         <reading-list-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
-            aria-label="[[ariaLabel_(item)]]" class="mwb-list-item"
-            data="[[item]]" button-ripples="[[buttonRipples]]" tabindex="0">
+            aria-label="[[ariaLabel_(item)]]"
+            data="[[item]]" button-ripples="[[buttonRipples]]">
         </reading-list-item>
       </template>
     </iron-selector>

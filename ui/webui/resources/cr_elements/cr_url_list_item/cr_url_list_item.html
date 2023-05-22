@@ -277,6 +277,10 @@
     flex-direction: row;
   }
 
+  :host([size=medium]) .metadata {
+    gap: 3px;
+  }
+
   :host-context([chrome-refresh-2023]):host([size=compact]) .metadata,
   :host-context([chrome-refresh-2023]):host([size=medium]) .metadata {
     gap: 4px;
@@ -296,6 +300,7 @@
     border: 0;
     color: var(--cr-primary-text-color);
     display: inline;
+    font-family: inherit;
     font-size: 13px;
     font-weight: 400;
     padding: 0;
@@ -385,6 +390,7 @@
     align-items: center;
     display: flex;
     flex-shrink: 0;
+    margin-inline-end: -4px;
     margin-inline-start: auto;
   }
 
