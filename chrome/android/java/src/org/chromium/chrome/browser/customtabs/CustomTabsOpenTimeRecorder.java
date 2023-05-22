@@ -10,7 +10,9 @@ import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
@@ -41,6 +43,8 @@ import java.util.function.BooleanSupplier;
  */
 class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     private static final String TAG = "CustomTabsOTR";
+    @VisibleForTesting
+    static final String PACKAGE_NAME_EMPTY_1P = "1p";
     private final CustomTabActivityNavigationController mNavigationController;
     private final BooleanSupplier mIsCctFinishing;
     private final BrowserServicesIntentDataProvider mIntent;
@@ -103,9 +107,8 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
             // For the real implementation, there'll be a native method on this class or a new
             // class entirely. Just for the proof-of-concept I tacked the native method onto another
             // class that already have natives.
-            CustomTabsOpenTimeRecorderJni.get().recordCustomTabSession(time,
-                    (mCachedPackageName != null ? mCachedPackageName : ""), recordDuration,
-                    wasUserClose, isPartial);
+            CustomTabsOpenTimeRecorderJni.get().recordCustomTabSession(
+                    time, getPackageName(isPartial), recordDuration, wasUserClose, isPartial);
 
             // TODO(crbug.com/1442388): Remove this after the investigation is over.
             if (isPartial && TextUtils.isEmpty(mCachedPackageName)) {
@@ -119,6 +122,19 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
         }
 
         mOnStartTimestampMs = 0;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    String getPackageName(boolean isPartial) {
+        boolean isEmpty = TextUtils.isEmpty(mCachedPackageName);
+        if (isPartial && isEmpty) {
+            // Return a non-empty name for trusted intents.
+            if (mIntent.isOpenedByChrome()) {
+                return ContextUtils.getApplicationContext().getPackageName();
+            }
+            if (mIntent.isTrustedIntent()) return PACKAGE_NAME_EMPTY_1P;
+        }
+        return isEmpty ? "" : mCachedPackageName;
     }
 
     void updateCloseCause() {
