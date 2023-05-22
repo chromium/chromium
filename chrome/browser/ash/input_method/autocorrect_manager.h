@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/input_method/assistive_input_denylist.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/diacritics_insensitive_string_comparator.h"
@@ -247,6 +248,9 @@ class AutocorrectManager {
 
   // Holds the suggestion provider enabled for the current input method.
   absl::optional<ime::AutocorrectSuggestionProvider> suggestion_provider_;
+
+  // Used to determine if autocorrect should be enabled for a particular input.
+  AssistiveInputDenylist denylist_;
 
   // Holds the identifier of the currently focused input field.
   int context_id_ = 0;
