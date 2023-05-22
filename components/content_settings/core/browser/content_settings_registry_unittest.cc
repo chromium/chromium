@@ -100,7 +100,7 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
             website_settings_info);
 
   // Check that PRIVATE_NETWORK_GUARD is registered correctly.
-#if !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   info = registry()->Get(ContentSettingsType::PRIVATE_NETWORK_GUARD);
   ASSERT_TRUE(info);
 
@@ -177,9 +177,6 @@ TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
 
   info = registry()->Get(ContentSettingsType::MEDIASTREAM_CAMERA);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
-
-  info = registry()->Get(ContentSettingsType::PRIVATE_NETWORK_GUARD);
-  EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -189,6 +186,9 @@ TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   info = registry()->Get(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
+  EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
+
+  info = registry()->Get(ContentSettingsType::PRIVATE_NETWORK_GUARD);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
 }

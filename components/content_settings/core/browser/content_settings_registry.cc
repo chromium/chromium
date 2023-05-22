@@ -519,8 +519,7 @@ void ContentSettingsRegistry::Init() {
            /*allowlisted_schemes=*/{},
            /*valid_settings=*/{CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP |
-               WebsiteSettingsRegistry::PLATFORM_ANDROID,
+           WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
