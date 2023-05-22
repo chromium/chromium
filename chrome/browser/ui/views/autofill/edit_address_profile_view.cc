@@ -17,6 +17,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
@@ -45,6 +46,7 @@ EditAddressProfileView::EditAddressProfileView(
   set_margins(ChromeLayoutProvider::Get()->GetInsetsMetric(
       views::InsetsMetric::INSETS_DIALOG));
 
+  SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
@@ -116,5 +118,7 @@ void EditAddressProfileView::OnUserDecision(
 void EditAddressProfileView::UpdateActionButtonState(bool is_valid) {
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, is_valid);
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EditAddressProfileView, kTopViewId);
 
 }  // namespace autofill

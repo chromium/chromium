@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/metadata/view_factory.h"
@@ -40,6 +41,9 @@ class Widget;
 class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
  public:
   METADATA_HEADER(DialogClientView);
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOkButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
 
   DialogClientView(Widget* widget, View* contents_view);
 

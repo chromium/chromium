@@ -63,4 +63,7 @@ specific_include_rules = {
   "signin_intercept_first_run_experience_dialog_browsertest.cc": [
     "+chrome/browser/ui/views/profiles/avatar_toolbar_button.h",
   ],
+  "save_update_address_profile_bubble_controller_impl_interactive_uitest.cc": [
+    "+chrome/browser/ui/views/autofill"
+  ]
 }

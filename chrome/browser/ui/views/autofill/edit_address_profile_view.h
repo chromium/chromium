@@ -25,6 +25,8 @@ class AddressEditorView;
 class EditAddressProfileView : public AutofillBubbleBase,
                                public views::DialogDelegateView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopViewId);
+
   explicit EditAddressProfileView(
       EditAddressProfileDialogController* controller);
 

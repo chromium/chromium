@@ -12,8 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -27,6 +29,7 @@
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
@@ -53,6 +56,19 @@ gfx::Size GetBoundingSizeForVerticalStack(const gfx::Size& size1,
                                           const gfx::Size& size2) {
   return gfx::Size(std::max(size1.width(), size2.width()),
                    size1.height() + size2.height());
+}
+
+constexpr ui::ElementIdentifier kNoElementId;
+
+ui::ElementIdentifier GetButtonId(ui::DialogButton type) {
+  switch (type) {
+    case ui::DialogButton::DIALOG_BUTTON_OK:
+      return DialogClientView::kOkButtonElementId;
+    case ui::DialogButton::DIALOG_BUTTON_CANCEL:
+      return DialogClientView::kCancelButtonElementId;
+    default:
+      return kNoElementId;
+  }
 }
 
 }  // namespace
@@ -292,6 +308,7 @@ void DialogClientView::UpdateDialogButton(MdTextButton** member,
               .SetCallback(base::BindRepeating(&DialogClientView::ButtonPressed,
                                                base::Unretained(this), type))
               .SetText(title)
+              .SetProperty(views::kElementIdentifierKey, GetButtonId(type))
               .SetStyle(style)
               .SetProminent(is_default)
               .SetIsDefault(is_default)
@@ -477,5 +494,8 @@ void DialogClientView::RemoveFillerView(size_t view_index) {
 
 BEGIN_METADATA(DialogClientView, ClientView)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DialogClientView, kOkButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DialogClientView, kCancelButtonElementId);
 
 }  // namespace views

@@ -2317,7 +2317,6 @@ if (!is_android) {
       "../browser/ui/autofill/payments/card_unmask_prompt_view_browsertest.cc",
       "../browser/ui/autofill/payments/save_card_bubble_controller_impl_browsertest.cc",
       "../browser/ui/autofill/payments/save_upi_bubble_controller_impl_browsertest.cc",
-      "../browser/ui/autofill/save_update_address_profile_bubble_controller_impl_browsertest.cc",
       "../browser/ui/blocked_content/popup_opener_tab_helper_browsertest.cc",
       "../browser/ui/blocked_content/popup_tracker_browsertest.cc",
       "../browser/ui/blocked_content/safe_browsing_triggered_popup_blocker_browsertest.cc",
@@ -10144,6 +10143,7 @@ if (!is_android) {
     if (toolkit_views) {
       sources += [
         "../browser/media/webrtc/conditional_focus_browsertest.cc",
+        "../browser/ui/autofill/save_update_address_profile_bubble_controller_impl_interactive_uitest.cc",
         "../browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.cc",
         "../browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h",
         "../browser/ui/toolbar/app_menu_fullscreen_interactive_uitest.cc",

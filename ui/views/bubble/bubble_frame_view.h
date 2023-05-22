@@ -59,6 +59,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
  public:
   METADATA_HEADER(BubbleFrameView);
 
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMinimizeButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementId);
+
   enum class PreferredArrowAdjustment { kMirror, kOffset };
 
   BubbleFrameView(const gfx::Insets& title_margins,

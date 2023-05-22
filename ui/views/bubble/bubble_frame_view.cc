@@ -111,6 +111,7 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
             Widget::ClosedReason::kCloseButtonClicked);
       },
       this));
+  close->SetProperty(views::kElementIdentifierKey, kCloseButtonElementId);
   close->SetVisible(false);
   close_ = AddChildView(std::move(close));
 
@@ -121,6 +122,7 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
         view->GetWidget()->Minimize();
       },
       this));
+  minimize->SetProperty(views::kElementIdentifierKey, kMinimizeButtonElementId);
   minimize->SetVisible(false);
   minimize_ = AddChildView(std::move(minimize));
 
@@ -1126,5 +1128,9 @@ ADD_PROPERTY_METADATA(BubbleBorder::Arrow, Arrow)
 ADD_PROPERTY_METADATA(bool, DisplayVisibleArrow)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleFrameView,
+                                      kMinimizeButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleFrameView, kCloseButtonElementId);
 
 }  // namespace views

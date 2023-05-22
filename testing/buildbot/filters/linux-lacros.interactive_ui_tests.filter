@@ -130,3 +130,6 @@
 # TODO(b/256212431): Re-enable when linux-lacros-rel support
 # signin::MakePrimaryAccountAvailable().
 -AccessCodeCastHandlerBrowserTest.ExpectProfileSynErrorWhenNoSync
+
+# TODO(1447067): Autofill account migration popup, investigate the flakiness
+-MigrateToProfileAddressProfileTest.SaveWithEdit
