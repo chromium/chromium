@@ -3047,6 +3047,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.ConnectionCloseErrorCodeClientECH"
+    enum="QuicErrorCodes" expires_after="2024-04-03">
+  <owner>davidben@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The QUIC error code which resulted in the QUIC connection being closed by
+    the client to an ECH-capable server.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.ConnectionCloseErrorCodeClientGoogle"
     enum="QuicErrorCodes" expires_after="2023-10-08">
   <owner>dschinazi@chromium.org</owner>
@@ -3067,6 +3078,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.QuicSession.ConnectionCloseErrorCodeServerECH"
+    enum="QuicErrorCodes" expires_after="2024-04-03">
+  <owner>davidben@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The QUIC error code which resulted in the QUIC connection being closed by
+    the an ECH-capable server.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicSession.ConnectionCloseErrorCodeServerGoogle"
     enum="QuicErrorCodes" expires_after="2023-10-08">
   <owner>dschinazi@chromium.org</owner>
@@ -3084,6 +3106,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     The QUIC application transport error code in a CONNECTION_CLOSE frame
     received from the server.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationECH"
+    enum="QuicHttp3ErrorCodes" expires_after="2024-04-03">
+  <owner>davidben@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The QUIC application transport error code in a CONNECTION_CLOSE frame
+    received from an ECH-capable server.
   </summary>
 </histogram>
 
@@ -3110,6 +3144,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationGQuicErrorMissingECH"
+    enum="QuicHttp3ErrorCodes" expires_after="2024-04-03">
+  <owner>davidben@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The QUIC application transport error code in a CONNECTION_CLOSE frame
+    received from an ECH-capable server, when the GQUIC error was missing.
+  </summary>
+</histogram>
+
+<histogram
     name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationGQuicErrorMissingGoogle"
     enum="QuicHttp3ErrorCodes" expires_after="2023-08-08">
   <owner>dschinazi@chromium.org</owner>
@@ -3127,6 +3173,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     The QUIC transport error code in a CONNECTION_CLOSE frame received from the
     server.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportECH"
+    enum="QuicTransportErrorCodes" expires_after="2024-03-22">
+  <owner>davidben@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The QUIC application transport error code in a CONNECTION_CLOSE frame
+    received from an ECH-capable server.
   </summary>
 </histogram>
 
@@ -3152,6 +3210,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     The QUIC transport error code in a CONNECTION_CLOSE frame received from the
     server, when the GQUIC error was missing.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportGQuicErrorMissingECH"
+    enum="QuicTransportErrorCodes" expires_after="2024-04-03">
+  <owner>davidben@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The QUIC application transport error code in a CONNECTION_CLOSE frame
+    received from an ECH-capable server, when the GQUIC error was missing.
   </summary>
 </histogram>
 
@@ -3360,6 +3430,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     The elapsed time between starting the crypto handshake, and receiving
     confirmation from the server.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.HandshakeConfirmedTime.ECH"
+    units="Milliseconds" expires_after="2024-04-03">
+  <owner>davidben@chromium.org</owner>
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The elapsed time between starting the crypto handshake, and receiving
+    confirmation from the server, measured only for ECH-capable servers.
   </summary>
 </histogram>
 
