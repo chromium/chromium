@@ -137,9 +137,13 @@ source_set("feature_flags") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "overflow_menu_mediator_unittest.mm" ]
+  sources = [
+    "overflow_menu_mediator_unittest.mm",
+    "overflow_menu_orderer_unittest.mm",
+  ]
   deps = [
     ":overflow_menu",
+    ":overflow_menu_constants",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
@@ -166,6 +170,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",

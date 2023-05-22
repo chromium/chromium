@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/popup_menu//overflow_menu/overflow_menu_orderer.h"
 
+#import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -13,6 +16,9 @@
 #endif
 
 namespace {
+// The dictionary key used for storing rankings.
+const char kRankingKey[] = "ranking";
+
 // Sorts badged destinations using a local heuristic when the usage history
 // isn't available (e.g. when on an incognito tab). Destionations that need
 // highlight and that are at a position of kNewDestinationsInsertionIndex
@@ -65,6 +71,25 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 
   return sortedDestinations;
 }
+
+// Ingests base::Value::List of destination names (strings) (`from` list),
+// converts each string to an overflow_menu::Destination, then appends each
+// destination to a vector (`to` vector). Skips over invalid or malformed list
+// items.
+void AppendDestinationsToVector(const base::Value::List* from,
+                                std::vector<overflow_menu::Destination>& to) {
+  if (!from) {
+    return;
+  }
+  const base::Value::List& fromRef = *from;
+  for (const auto& value : fromRef) {
+    if (!value.is_string()) {
+      continue;
+    }
+
+    to.push_back(overflow_menu::DestinationForStringName(value.GetString()));
+  }
+}
 }  // namespace
 
 @interface OverflowMenuOrderer ()
@@ -76,7 +101,11 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 @end
 
 @implementation OverflowMenuOrderer {
+  // Whether the current menu is for an incognito page.
   BOOL _isIncognito;
+
+  // The current ranking of the destinations.
+  DestinationRanking _ranking;
 }
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
@@ -102,6 +131,7 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
     self.destinationUsageHistory.visibleDestinationsCount =
         self.visibleDestinationsCount;
     [self.destinationUsageHistory start];
+    [self loadDataFromPrefs];
   }
 }
 
@@ -121,11 +151,69 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
     sortedDestinationsFromCarouselDestinations:
         (NSArray<OverflowMenuDestination*>*)carouselDestinations {
   if (self.destinationUsageHistory) {
-    return [self.destinationUsageHistory
-        sortedDestinationsFromCarouselDestinations:carouselDestinations];
+    return [self destinationHistorySortedDestinationsFromCarouselDestinations:
+                     carouselDestinations];
   } else {
     return SortBadgedDestinations(carouselDestinations);
   }
+}
+
+#pragma mark - Private
+
+- (void)loadDataFromPrefs {
+  const base::Value::Dict& storedUsageHistory =
+      _localStatePrefs->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
+
+  AppendDestinationsToVector(storedUsageHistory.FindList(kRankingKey),
+                             _ranking);
+}
+
+- (void)flushToPrefs {
+  if (!_localStatePrefs) {
+    return;
+  }
+
+  ScopedDictPrefUpdate historyUpdate(
+      _localStatePrefs, prefs::kOverflowMenuDestinationUsageHistory);
+  // Flush the new ranking to Prefs.
+  base::Value::List ranking;
+
+  for (overflow_menu::Destination destination : _ranking) {
+    ranking.Append(overflow_menu::StringNameForDestination(destination));
+  }
+
+  historyUpdate->Set(kRankingKey, std::move(ranking));
+}
+
+- (NSArray<OverflowMenuDestination*>*)
+    destinationHistorySortedDestinationsFromCarouselDestinations:
+        (NSArray<OverflowMenuDestination*>*)carouselDestinations {
+  _ranking = [self.destinationUsageHistory
+      sortedDestinationsFromCurrentRanking:_ranking
+                      carouselDestinations:carouselDestinations];
+
+  [self flushToPrefs];
+
+  // Maintain a map from overflow_menu::Destination : OverflowMenuDestination*
+  // for fast retrieval of a given overflow_menu::Destination's corresponding
+  // Objective-C class.
+  std::map<overflow_menu::Destination, OverflowMenuDestination*> destinations;
+  for (OverflowMenuDestination* carouselDestination in carouselDestinations) {
+    overflow_menu::Destination destination =
+        static_cast<overflow_menu::Destination>(
+            carouselDestination.destination);
+    destinations[destination] = carouselDestination;
+  }
+
+  // Reconstruct the correct array to return from `_ranking`.
+  NSMutableArray<OverflowMenuDestination*>* sortedDestinations =
+      [[NSMutableArray alloc] init];
+  for (overflow_menu::Destination destination : _ranking) {
+    [sortedDestinations addObject:destinations.at(destination)];
+    destinations.erase(destination);
+  }
+
+  return sortedDestinations;
 }
 
 @end
