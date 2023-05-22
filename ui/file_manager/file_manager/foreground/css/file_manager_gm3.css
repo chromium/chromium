@@ -1060,11 +1060,12 @@ body.check-select #read-only-indicator {
 }
 
 #file-list .drag-selection-border {
-  background-color: rgba(var(--cros-bg-color-rgb), 30%);
-  border: 2px solid rgba(var(--cros-bg-color-rgb), 60%);
+  background-color: var(--cros-sys-highlight_shape);
+  border: 2px solid var(--cros-sys-primary);
+  border-radius: 4px;
   box-sizing: border-box;
   display: flex;
-  outline: 1px solid var(--cros-selection-outline);
+  outline: 1px solid var(--cros-sys-separator);
   position: absolute;
   z-index: 2;
 }
