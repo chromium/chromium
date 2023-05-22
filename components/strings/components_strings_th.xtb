@@ -1962,7 +1962,7 @@
 <translation id="5764725887548570807">รูปแบบต้นทางไม่ถูกต้อง</translation>
 <translation id="5764920692828389743">ส่งไปยัง <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">หากต้องการดูวิธีการนำส่งสินค้าและข้อกำหนด โปรดเลือกที่อยู่</translation>
-<translation id="57689295674415555">ไม่กรอกหมายเลขบัตรเสมือนใช่ไหม</translation>
+<translation id="57689295674415555">หมายเลขบัตรเสมือนไม่ได้รับการกรอกใช่ไหม</translation>
 <translation id="5772086939108830423">ใช้พาสคีย์ในอุปกรณ์อื่น</translation>
 <translation id="5776313857861697733">ลำดับความสำคัญ</translation>
 <translation id="5776574724412881956">ระบบไม่ได้กรอกบัตรเสมือนใช่ไหม คลิกรายละเอียดบัตรเสมือนเพื่อคัดลอกไปยังคลิปบอร์ด <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
