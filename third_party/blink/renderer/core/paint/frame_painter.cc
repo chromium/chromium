@@ -88,7 +88,11 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
 
   PaintLayerPainter layer_painter(*root_layer);
 
+  recordreplay::Assert("[RUN-1975-2008] FramePainter::Paint A %d",
+                       root_layer->EnclosingNode()->RecordReplayId());
   layer_painter.Paint(context, paint_flags);
+  recordreplay::Assert("[RUN-1975-2008] FramePainter::Paint B %d",
+                       root_layer->EnclosingNode()->RecordReplayId());
 
   // Regions may have changed as a result of the visibility/z-index of element
   // changing.

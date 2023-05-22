@@ -212,6 +212,8 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
                                  const PhysicalRect& dest_rect,
                                  const PhysicalRect& content_rect) {
   const LayoutImageResource& image_resource = *layout_image_.ImageResource();
+  recordreplay::Assert("[RUN-658-2008] ImagePainter::PaintIntoRect %s",
+                       layout_image_.CachedImage() ? layout_image_.CachedImage()->Url().GetString().Utf8().c_str() : "");
   if (!image_resource.HasImage() || image_resource.ErrorOccurred())
     return;  // FIXME: should we just ASSERT these conditions? (audit all
              // callers).
