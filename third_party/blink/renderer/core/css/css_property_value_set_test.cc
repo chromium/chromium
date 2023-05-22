@@ -84,8 +84,8 @@ TEST_F(CSSPropertyValueSetTest, ConflictingLonghandAndShorthand) {
   StyleRule* rule = RuleAt(style_sheet, 0);
 
   EXPECT_EQ(
-      "offset-position: initial; offset-distance: initial; "
-      "offset-rotate: reverse 2turn; offset-anchor: initial; "
+      "offset-position: auto; offset-distance: 0px; "
+      "offset-rotate: reverse 2turn; offset-anchor: auto; "
       "offset-path: initial;",
       rule->Properties().AsText());
 }
