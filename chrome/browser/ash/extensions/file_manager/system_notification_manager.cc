@@ -291,9 +291,8 @@ NotificationPtr SystemNotificationManager::CreateNotification(
     const std::string& notification_id,
     int title_id,
     int message_id) {
-  std::u16string title = GetStringUTF16(title_id);
-  std::u16string message = GetStringUTF16(message_id);
-  return CreateNotification(notification_id, title, message);
+  return CreateNotification(notification_id, GetStringUTF16(title_id),
+                            GetStringUTF16(message_id));
 }
 
 void SystemNotificationManager::HandleProgressClick(
@@ -506,17 +505,14 @@ void SystemNotificationManager::HandleDeviceEvent(
   }
 }
 
-namespace file_manager_private = extensions::api::file_manager_private;
-
 NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
-    const Event& event,
-    const base::Value::List& args) {
+    const Event& event) {
   NotificationPtr notification;
   file_manager_private::DriveSyncErrorEvent sync_error;
   const char* id;
   std::u16string title = GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
   std::u16string message;
-  if (file_manager_private::DriveSyncErrorEvent::Populate(args[0],
+  if (file_manager_private::DriveSyncErrorEvent::Populate(event.event_args[0],
                                                           sync_error)) {
     id = file_manager_private::ToString(sync_error.type);
     GURL file_url(sync_error.file_url);
@@ -593,14 +589,13 @@ void SystemNotificationManager::HandleDriveDialogClick(
 }
 
 NotificationPtr SystemNotificationManager::MakeDriveConfirmDialogNotification(
-    const Event& event,
-    const base::Value::List& args) {
+    const Event& event) {
   NotificationPtr notification;
   file_manager_private::DriveConfirmDialogEvent dialog_event;
   std::u16string title = GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
   std::u16string message;
-  if (file_manager_private::DriveConfirmDialogEvent::Populate(args[0],
-                                                              dialog_event)) {
+  if (file_manager_private::DriveConfirmDialogEvent::Populate(
+          event.event_args[0], dialog_event)) {
     std::vector<ButtonInfo> notification_buttons;
     notification = CreateSystemNotification(
         kDriveDialogId, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
@@ -619,11 +614,10 @@ NotificationPtr SystemNotificationManager::MakeDriveConfirmDialogNotification(
 }
 
 NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
-    const Event& event,
-    const base::Value::List& args) {
+    const Event& event) {
   NotificationPtr notification;
   file_manager_private::FileTransferStatus transfer_status;
-  if (!file_manager_private::FileTransferStatus::Populate(args[0],
+  if (!file_manager_private::FileTransferStatus::Populate(event.event_args[0],
                                                           transfer_status)) {
     LOG(ERROR) << "Invalid event argument or transfer status...";
     return notification;
@@ -684,10 +678,8 @@ NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
 }
 
 void SystemNotificationManager::HandleEvent(const Event& event) {
-  const base::Value::List& args = event.event_args;
-  if (args.empty()) {
-    DLOG(WARNING) << "Ignored extension::Event {name: " << event.event_name
-                  << ", args: " << args
+  if (event.event_args.empty()) {
+    DLOG(WARNING) << "Ignored empty Event {name: " << event.event_name
                   << ", histogram_value: " << event.histogram_value << "}";
     return;
   }
@@ -698,17 +690,17 @@ void SystemNotificationManager::HandleEvent(const Event& event) {
   NotificationPtr notification;
   switch (event.histogram_value) {
     case HistogramValue::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR:
-      notification = MakeDriveSyncErrorNotification(event, args);
+      notification = MakeDriveSyncErrorNotification(event);
       break;
 
     case HistogramValue::FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG:
-      notification = MakeDriveConfirmDialogNotification(event, args);
+      notification = MakeDriveConfirmDialogNotification(event);
       force_as_system_notification = true;
       break;
 
     case HistogramValue::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED:
     case HistogramValue::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED:
-      notification = UpdateDriveSyncNotification(event, args);
+      notification = UpdateDriveSyncNotification(event);
       break;
 
     case HistogramValue::FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS:
@@ -716,8 +708,8 @@ void SystemNotificationManager::HandleEvent(const Event& event) {
       // ignore this event.
 
     default:
-      DLOG(WARNING) << "Ignored extension::Event {name: " << event.event_name
-                    << ", args: " << args
+      DLOG(WARNING) << "Ignored Event {name: " << event.event_name
+                    << ", arg: " << event.event_args[0]
                     << ", histogram_value: " << event.histogram_value << "}";
       break;
   }
@@ -931,11 +923,11 @@ NotificationPtr SystemNotificationManager::MakeMountErrorNotification(
   return notification;
 }
 
-enum SystemNotificationManagerMountStatus
+SystemNotificationManagerMountStatus
 SystemNotificationManager::UpdateDeviceMountStatus(
     file_manager_private::MountCompletedEvent& event,
     const Volume& volume) {
-  enum SystemNotificationManagerMountStatus status = MOUNT_STATUS_NO_RESULT;
+  SystemNotificationManagerMountStatus status = MOUNT_STATUS_NO_RESULT;
   const std::string& device_path = volume.storage_device_path().value();
   auto device_mount_status = mount_status_.find(device_path);
   if (device_mount_status == mount_status_.end()) {
