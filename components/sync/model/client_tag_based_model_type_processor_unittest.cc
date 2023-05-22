@@ -200,13 +200,10 @@ class TestModelTypeSyncBridge : public FakeModelTypeSyncBridge {
 
   base::OnceClosure GetDataCallback() { return std::move(data_callback_); }
 
-  void SetInitialSyncDone(bool is_done) {
+  void SetInitialSyncState(
+      sync_pb::ModelTypeState::InitialSyncState initial_sync_state) {
     ModelTypeState model_type_state(db().model_type_state());
-    model_type_state.set_initial_sync_state(
-        is_done
-            ? sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE
-            : sync_pb::
-                  ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+    model_type_state.set_initial_sync_state(initial_sync_state);
     model_type_state.set_cache_guid(kCacheGuid);
     model_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromModelType(type()));
@@ -344,9 +341,12 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  void InitializeToMetadataLoaded(bool set_initial_sync_done = true) {
-    if (set_initial_sync_done) {
-      bridge()->SetInitialSyncDone(true);
+  void InitializeToMetadataLoaded(
+      sync_pb::ModelTypeState::InitialSyncState initial_sync_state =
+          sync_pb::ModelTypeState::INITIAL_SYNC_DONE) {
+    if (initial_sync_state !=
+        sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED) {
+      bridge()->SetInitialSyncState(initial_sync_state);
     }
     ModelReadyToSync();
   }
@@ -756,7 +756,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldFilterOutInitialRootNodes) {
 
 // Test that subsequent starts don't call MergeFullSyncData.
 TEST_F(ClientTagBasedModelTypeProcessorTest, ShouldApplyIncrementalUpdates) {
-  // This sets initial_sync_done to true.
+  // This sets initial_sync_state to "done".
   InitializeToMetadataLoaded();
 
   // Write an item before sync connects.
@@ -2072,7 +2072,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 // storage" for historical reasons) result in reporting setup duration.
 TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldReportEphemeralConfigurationTime) {
-  InitializeToMetadataLoaded(/*set_initial_sync_done=*/false);
+  InitializeToMetadataLoaded(
+      sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   OnSyncStarting(kDefaultAuthenticatedAccountId, kCacheGuid,
                  SyncMode::kTransportOnly);
 
@@ -2097,7 +2098,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 // for historical reasons) do not result in reporting setup duration.
 TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldReportPersistentConfigurationTime) {
-  InitializeToMetadataLoaded(/*set_initial_sync_done=*/false);
+  InitializeToMetadataLoaded(
+      sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   OnSyncStarting();
 
   base::HistogramTester histogram_tester;
@@ -2166,7 +2168,8 @@ TEST_F(FullUpdateClientTagBasedModelTypeProcessorTest,
 // for historical reasons) result in reporting setup duration.
 TEST_F(FullUpdateClientTagBasedModelTypeProcessorTest,
        ShouldReportEphemeralConfigurationTimeOnlyForFirstFullUpdate) {
-  InitializeToMetadataLoaded(/*set_initial_sync_done=*/false);
+  InitializeToMetadataLoaded(
+      sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   OnSyncStarting(kDefaultAuthenticatedAccountId, kCacheGuid,
                  SyncMode::kTransportOnly);
 
@@ -2489,7 +2492,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   ResetState(/*keep_db=*/true);
 
   // A new processor loads the metadata after changing the cache GUID.
-  bridge()->SetInitialSyncDone(true);
+  bridge()->SetInitialSyncState(sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
 
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::ModelTypeState model_type_state(metadata_batch->GetModelTypeState());
@@ -2523,7 +2526,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   ResetState(/*keep_db=*/true);
 
   // A new processor loads the metadata after changing the data type id.
-  bridge()->SetInitialSyncDone(true);
+  bridge()->SetInitialSyncState(sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
 
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::ModelTypeState model_type_state(metadata_batch->GetModelTypeState());
@@ -2974,26 +2977,23 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldResetForEntityMetadataWithoutInitialSyncDone) {
   base::HistogramTester histogram_tester;
 
-  const syncer::ClientTagHash kClientTagHash =
-      ClientTagHash::FromUnhashed(AUTOFILL, "tag");
   sync_pb::EntityMetadata entity_metadata1;
-  entity_metadata1.set_client_tag_hash(kClientTagHash.value());
+  entity_metadata1.set_client_tag_hash(
+      ClientTagHash::FromUnhashed(GetModelType(), "tag1").value());
   entity_metadata1.set_creation_time(0);
   sync_pb::EntityMetadata entity_metadata2;
-  entity_metadata2.set_client_tag_hash(kClientTagHash.value());
+  entity_metadata2.set_client_tag_hash(
+      ClientTagHash::FromUnhashed(GetModelType(), "tag2").value());
   entity_metadata2.set_creation_time(0);
-  sync_pb::EntityMetadata entity_metadata3;
-  entity_metadata3.set_client_tag_hash(kClientTagHash.value());
-  entity_metadata3.set_creation_time(0);
 
   db()->PutMetadata(kKey1, std::move(entity_metadata1));
   db()->PutMetadata(kKey2, std::move(entity_metadata2));
-  db()->PutMetadata(kKey3, std::move(entity_metadata3));
 
-  InitializeToMetadataLoaded(/*set_initial_sync_done=*/false);
+  InitializeToMetadataLoaded(
+      sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   OnSyncStarting();
 
-  // Since initial_sync_done was false, metadata should have been cleared.
+  // Since initial_sync_state was not set, metadata should have been cleared.
   EXPECT_EQ(0U, db()->metadata_count());
   EXPECT_EQ(0U, ProcessorEntityCount());
   EXPECT_FALSE(type_processor()->IsTrackingMetadata());
@@ -3001,12 +3001,42 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   worker()->UpdateFromServer();
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
 
-  // There were three entities with the same client-tag-hash which indicates
-  // that two of them were metadata oprhans.
   histogram_tester.ExpectBucketCount(
       "Sync.ModelTypeEntityMetadataWithoutInitialSync",
       /*sample=*/ModelTypeHistogramValue(GetModelType()),
       /*expected_count=*/1);
+}
+
+// Regression test for crbug.com/1427000.
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotResetWhenInitialSyncPartiallyDone) {
+  base::HistogramTester histogram_tester;
+
+  sync_pb::EntityMetadata entity_metadata1;
+  entity_metadata1.set_client_tag_hash(
+      ClientTagHash::FromUnhashed(GetModelType(), "tag1").value());
+  entity_metadata1.set_creation_time(0);
+  sync_pb::EntityMetadata entity_metadata2;
+  entity_metadata2.set_client_tag_hash(
+      ClientTagHash::FromUnhashed(GetModelType(), "tag2").value());
+  entity_metadata2.set_creation_time(0);
+
+  db()->PutMetadata(kKey1, std::move(entity_metadata1));
+  db()->PutMetadata(kKey2, std::move(entity_metadata2));
+
+  InitializeToMetadataLoaded(
+      sync_pb::ModelTypeState::INITIAL_SYNC_PARTIALLY_DONE);
+  OnSyncStarting();
+
+  // The initial_sync_state was *partially* done, which is enough to keep the
+  // (meta)data and carry on.
+  EXPECT_EQ(2U, db()->metadata_count());
+  EXPECT_EQ(2U, ProcessorEntityCount());
+  EXPECT_TRUE(type_processor()->IsTrackingMetadata());
+
+  histogram_tester.ExpectTotalCount(
+      "Sync.ModelTypeEntityMetadataWithoutInitialSync",
+      /*expected_count=*/0);
 }
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
@@ -3014,7 +3044,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   base::HistogramTester histogram_tester;
 
   const syncer::ClientTagHash kClientTagHash =
-      ClientTagHash::FromUnhashed(AUTOFILL, "tag");
+      ClientTagHash::FromUnhashed(GetModelType(), "tag");
   sync_pb::EntityMetadata entity_metadata1;
   entity_metadata1.set_client_tag_hash(kClientTagHash.value());
   entity_metadata1.set_creation_time(0);
@@ -3069,7 +3099,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldNotProcessInvalidRemoteFullUpdate) {
-  InitializeToMetadataLoaded(/*set_initial_sync_done=*/false);
+  InitializeToMetadataLoaded(
+      sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   OnSyncStarting();
 
   UpdateResponseDataList updates;
@@ -3240,7 +3271,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldNotClearMetadataWhileStoppedWithoutMetadataInitially) {
-  InitializeToMetadataLoaded(/*set_initial_sync_done=*/false);
+  InitializeToMetadataLoaded(
+      sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   ASSERT_FALSE(type_processor()->IsTrackingMetadata());
 
   base::HistogramTester histogram_tester;
@@ -3260,7 +3292,8 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
   // Called before ModelReadyToSync().
   type_processor()->ClearMetadataWhileStopped();
 
-  InitializeToMetadataLoaded(/*set_initial_sync_done=*/false);
+  InitializeToMetadataLoaded(
+      sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
   ASSERT_FALSE(type_processor()->IsTrackingMetadata());
   // Nothing recorded to the histograms.
   histogram_tester.ExpectTotalCount(
