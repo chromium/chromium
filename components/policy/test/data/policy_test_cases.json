@@ -11592,7 +11592,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11618,7 +11619,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11644,7 +11646,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11674,7 +11677,8 @@
                   "enabled": true,
                   "policy_update_action": 0
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11704,7 +11708,8 @@
                   "enabled": true,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11734,7 +11739,8 @@
                   "enabled": true,
                   "policy_update_action": 2
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11767,7 +11773,8 @@
                 "oem_strings": [
                   "oem string 1",
                   "oem string 2"
-                ]
+                ],
+                "display_order": 0
               }
             }
           }
@@ -11816,7 +11823,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11850,7 +11858,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11906,7 +11915,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11962,7 +11972,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -11996,7 +12007,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               }
             }
           }
@@ -12019,7 +12031,8 @@
               },
               "vtpm": {
                 "enabled": true
-              }
+              },
+              "display_order": 0
             },
             "another-vm-type": {
               "name": "Weird Virtual Machine",
@@ -12038,7 +12051,8 @@
               },
               "oem_strings": [
                 "some weird config"
-              ]
+              ],
+              "display_order": 2
             },
             "old-vm-type": {
               "name": "Legacy VM",
@@ -12058,7 +12072,8 @@
             },
             "vulnerable-vm-type": {
               "name": "Forbidden VM",
-              "enabled_state": "BLOCKED"
+              "enabled_state": "BLOCKED",
+              "display_order": 1
             }
           }
         },
@@ -12080,7 +12095,8 @@
                   "enabled": true,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               },
               "another-vm-type": {
                 "name": "Weird Virtual Machine",
@@ -12099,7 +12115,8 @@
                 },
                 "oem_strings": [
                   "some weird config"
-                ]
+                ],
+                "display_order": 2
               },
               "old-vm-type": {
                 "name": "Legacy VM",
@@ -12108,7 +12125,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               },
               "old-vm-type-2": {
                 "name": "Legacy VM",
@@ -12117,7 +12135,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 0
               },
               "vulnerable-vm-type": {
                 "name": "Forbidden VM",
@@ -12126,7 +12145,8 @@
                   "enabled": false,
                   "policy_update_action": 1
                 },
-                "oem_strings": []
+                "oem_strings": [],
+                "display_order": 1
               }
             }
           }
