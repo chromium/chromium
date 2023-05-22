@@ -136,6 +136,12 @@ struct ViewConfig {
     return;
   }
   _complete = YES;
+
+  // If this is called before the view is moved to superview, then we don't
+  // need to update / animate here.
+  if (self.subviews.count == 0) {
+    return;
+  }
   self.accessibilityTraits += UIAccessibilityTraitNotEnabled;
 
   // Set up the label crossfades.
