@@ -4,8 +4,8 @@ Profiler was enabled.
 Detailed heap profiles were enabled.
 
 Running: testProfiling
-found pageFunction heap-profiler-profiling.js:14
-found (anonymous) heap-profiler-profiling.js:15
+found pageFunction heap-profiler-profiling.js:16
+found (anonymous) heap-profiler-profiling.js:17
 
 Profiler was disabled.
 

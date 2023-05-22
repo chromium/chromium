@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that weak references are ignored when dominators are calculated and that weak references won't affect object's retained size.\n`);
-  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   HeapProfilerTestRunner.runHeapSnapshotTestSuite([function testWeakReferencesDoNotAffectRetainedSize(next) {

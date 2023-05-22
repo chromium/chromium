@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {HeapProfilerTestRunner} from 'heap_profiler_test_runner';
+
 (async function() {
   TestRunner.addResult('Tests that sampling heap profiling works.\n');
-  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   HeapProfilerTestRunner.runHeapSnapshotTestSuite([async function testProfiling(next) {
