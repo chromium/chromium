@@ -51,7 +51,8 @@ namespace partition_alloc::internal {
 // to judge whether a given address is in a pool that supports BackupRefPtr or
 // in a pool that doesn't. All PartitionAlloc allocations must be in either of
 // the pools.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+    PA_THREAD_ISOLATED_ALIGN AddressPoolManager {
  public:
   static AddressPoolManager& GetInstance();
 
@@ -118,7 +119,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
 
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
 
-  struct AlignedPools;
   class Pool {
    public:
     constexpr Pool() = default;
@@ -147,7 +147,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
     // lock can be used without acquiring write-permission first (via
     // DumpStats()). So instead of protecting the whole variable, we only
     // protect the memory after the lock.
-    // See the alignment of `aligned_pools_` below.
+    // See the alignment of ` below.
     Lock lock_;
 
     // The bitset stores the allocation state of the address pool. 1 bit per
@@ -167,14 +167,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
 #endif
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
-    friend void AddressPoolManager::AssertThreadIsolatedLayout();
-    friend struct AlignedPools;
+    friend class AddressPoolManager;
 #endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
   };
 
   PA_ALWAYS_INLINE Pool* GetPool(pool_handle handle) {
     PA_DCHECK(kNullPoolHandle < handle && handle <= kNumPools);
-    return &aligned_pools_.pools_[handle - 1];
+    return &pools_[handle - 1];
   }
 
   // Gets the stats for the pool identified by `handle`, if
@@ -186,15 +185,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   // front of the pools so that the isolated one starts on a page boundary.
   // We also skip the Lock at the beginning of the pool since it needs to be
   // used in contexts where we didn't enable write access to the pool memory.
-  struct AlignedPools {
-    char pad_[PA_THREAD_ISOLATED_ARRAY_PAD_SZ_WITH_OFFSET(
-        Pool,
-        kNumPools,
-        offsetof(Pool, alloc_bitset_))] = {};
-    Pool pools_[kNumPools];
-    char pad_after_[PA_THREAD_ISOLATED_FILL_PAGE_SZ(
-        sizeof(Pool) - offsetof(Pool, alloc_bitset_))] = {};
-  } aligned_pools_ PA_THREAD_ISOLATED_ALIGN;
+  char pad_[PA_THREAD_ISOLATED_ARRAY_PAD_SZ_WITH_OFFSET(
+      Pool,
+      kNumPools,
+      offsetof(Pool, alloc_bitset_))] = {};
+  Pool pools_[kNumPools];
 
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
 

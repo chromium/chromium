@@ -51,7 +51,7 @@ void DecommitPages(uintptr_t address, size_t size) {
 void AddressPoolManager::Add(pool_handle handle, uintptr_t ptr, size_t length) {
   PA_DCHECK(!(ptr & kSuperPageOffsetMask));
   PA_DCHECK(!((ptr + length) & kSuperPageOffsetMask));
-  PA_CHECK(handle > 0 && handle <= std::size(aligned_pools_.pools_));
+  PA_CHECK(handle > 0 && handle <= std::size(pools_));
 
   Pool* pool = GetPool(handle);
   PA_CHECK(!pool->IsInitialized());
@@ -79,8 +79,8 @@ uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
 }
 
 void AddressPoolManager::ResetForTesting() {
-  for (size_t i = 0; i < std::size(aligned_pools_.pools_); ++i) {
-    aligned_pools_.pools_[i].Reset();
+  for (size_t i = 0; i < std::size(pools_); ++i) {
+    pools_[i].Reset();
   }
 }
 
@@ -554,11 +554,11 @@ void AddressPoolManager::DumpStats(AddressSpaceStatsDumper* dumper) {
 // in Pool.
 void AddressPoolManager::AssertThreadIsolatedLayout() {
   constexpr size_t last_pool_offset =
-      offsetof(AlignedPools, pools_) + sizeof(Pool) * (kNumPools - 1);
+      offsetof(AddressPoolManager, pools_) + sizeof(Pool) * (kNumPools - 1);
   constexpr size_t alloc_bitset_offset =
       last_pool_offset + offsetof(Pool, alloc_bitset_);
   static_assert(alloc_bitset_offset % PA_THREAD_ISOLATED_ALIGN_SZ == 0);
-  static_assert(sizeof(AlignedPools) % PA_THREAD_ISOLATED_ALIGN_SZ == 0);
+  static_assert(sizeof(AddressPoolManager) % PA_THREAD_ISOLATED_ALIGN_SZ == 0);
 }
 #endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 

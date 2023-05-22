@@ -9,9 +9,7 @@
 namespace partition_alloc::internal {
 
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
-ReservationOffsetTable::_PaddedReservationOffsetTables
-    ReservationOffsetTable::padded_reservation_offset_tables_
-        PA_THREAD_ISOLATED_ALIGN;
+ReservationOffsetTable ReservationOffsetTable::singleton_;
 #else
 ReservationOffsetTable::_ReservationOffsetTable
     ReservationOffsetTable::reservation_offset_table_;

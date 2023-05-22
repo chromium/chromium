@@ -30,14 +30,13 @@ constexpr uint32_t kPKRUAllowAccessNoWrite = 0b10101010101010101010101010101000;
 
 namespace partition_alloc::internal {
 
-struct IsolatedGlobals {
+struct PA_THREAD_ISOLATED_ALIGN IsolatedGlobals {
   int pkey = kInvalidPkey;
-  void* isolatedStack;
+  void* stack;
   partition_alloc::internal::base::NoDestructor<
       partition_alloc::PartitionAllocator>
       allocator{};
-  partition_alloc::ThreadSafePartitionRoot* allocatorRoot;
-} isolatedGlobals PA_THREAD_ISOLATED_ALIGN;
+} isolated_globals;
 
 int ProtFromSegmentFlags(ElfW(Word) flags) {
   int prot = 0;
@@ -67,12 +66,12 @@ int ProtectROSegments(struct dl_phdr_info* info, size_t info_size, void* data) {
     }
     uintptr_t start = info->dlpi_addr + phdr->p_vaddr;
     uintptr_t end = start + phdr->p_memsz;
-    uintptr_t startPage = RoundDownToSystemPage(start);
-    uintptr_t endPage = RoundUpToSystemPage(end);
-    uintptr_t size = endPage - startPage;
-    PA_PCHECK(PkeyMprotect(reinterpret_cast<void*>(startPage), size,
+    uintptr_t start_page = RoundDownToSystemPage(start);
+    uintptr_t end_page = RoundUpToSystemPage(end);
+    uintptr_t size = end_page - start_page;
+    PA_PCHECK(PkeyMprotect(reinterpret_cast<void*>(start_page), size,
                            ProtFromSegmentFlags(phdr->p_flags),
-                           isolatedGlobals.pkey) == 0);
+                           isolated_globals.pkey) == 0);
   }
   return 0;
 }
@@ -82,19 +81,18 @@ class PkeyTest : public testing::Test {
   static void PkeyProtectMemory() {
     PA_PCHECK(dl_iterate_phdr(ProtectROSegments, nullptr) == 0);
 
-    PA_PCHECK(PkeyMprotect(&isolatedGlobals, sizeof(isolatedGlobals),
-                           PROT_READ | PROT_WRITE, isolatedGlobals.pkey) == 0);
+    PA_PCHECK(PkeyMprotect(&isolated_globals, sizeof(isolated_globals),
+                           PROT_READ | PROT_WRITE, isolated_globals.pkey) == 0);
 
-    PA_PCHECK(PkeyMprotect(isolatedGlobals.isolatedStack,
-                           kIsolatedThreadStackSize, PROT_READ | PROT_WRITE,
-                           isolatedGlobals.pkey) == 0);
+    PA_PCHECK(PkeyMprotect(isolated_globals.stack, kIsolatedThreadStackSize,
+                           PROT_READ | PROT_WRITE, isolated_globals.pkey) == 0);
   }
 
   static void InitializeIsolatedThread() {
-    isolatedGlobals.isolatedStack =
+    isolated_globals.stack =
         mmap(nullptr, kIsolatedThreadStackSize, PROT_READ | PROT_WRITE,
              MAP_ANONYMOUS | MAP_PRIVATE | MAP_STACK, -1, 0);
-    PA_PCHECK(isolatedGlobals.isolatedStack != MAP_FAILED);
+    PA_PCHECK(isolated_globals.stack != MAP_FAILED);
 
     PkeyProtectMemory();
   }
@@ -102,7 +100,7 @@ class PkeyTest : public testing::Test {
   void SetUp() override {
     // SetUp only once, but we can't do it in SetUpTestSuite since that runs
     // before other PartitionAlloc initialization happened.
-    if (isolatedGlobals.pkey != kInvalidPkey) {
+    if (isolated_globals.pkey != kInvalidPkey) {
       return;
     }
 
@@ -110,14 +108,13 @@ class PkeyTest : public testing::Test {
     if (pkey == -1) {
       return;
     }
-    isolatedGlobals.pkey = pkey;
+    isolated_globals.pkey = pkey;
 
-    isolatedGlobals.allocator->init(PartitionOptions{
+    isolated_globals.allocator->init(PartitionOptions{
         .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
         .cookie = PartitionOptions::Cookie::kAllowed,
-        .thread_isolation = ThreadIsolationOption(isolatedGlobals.pkey),
+        .thread_isolation = ThreadIsolationOption(isolated_globals.pkey),
     });
-    isolatedGlobals.allocatorRoot = isolatedGlobals.allocator->root();
 
     InitializeIsolatedThread();
 
@@ -125,14 +122,14 @@ class PkeyTest : public testing::Test {
   }
 
   static void TearDownTestSuite() {
-    if (isolatedGlobals.pkey == kInvalidPkey) {
+    if (isolated_globals.pkey == kInvalidPkey) {
       return;
     }
-    PA_PCHECK(PkeyMprotect(&isolatedGlobals, sizeof(isolatedGlobals),
+    PA_PCHECK(PkeyMprotect(&isolated_globals, sizeof(isolated_globals),
                            PROT_READ | PROT_WRITE, kDefaultPkey) == 0);
-    isolatedGlobals.pkey = kDefaultPkey;
+    isolated_globals.pkey = kDefaultPkey;
     InitializeIsolatedThread();
-    PkeyFree(isolatedGlobals.pkey);
+    PkeyFree(isolated_globals.pkey);
   }
 };
 
@@ -141,12 +138,12 @@ class PkeyTest : public testing::Test {
 // In the final use, we'll likely allow at least read access to the default
 // pkey.
 ISOLATED_FUNCTION uint64_t IsolatedAllocFree(void* arg) {
-  char* buf = (char*)isolatedGlobals.allocatorRoot->AllocWithFlagsNoHooks(
+  char* buf = (char*)isolated_globals.allocator->root()->AllocWithFlagsNoHooks(
       0, 1024, partition_alloc::PartitionPageSize());
   if (!buf) {
     return 0xffffffffffffffffllu;
   }
-  isolatedGlobals.allocatorRoot->FreeNoHooks(buf);
+  isolated_globals.allocator->root()->FreeNoHooks(buf);
 
   return kTestReturnValue;
 }
@@ -159,14 +156,14 @@ ISOLATED_FUNCTION uint64_t IsolatedAllocFree(void* arg) {
 // order to do this, we need to tag all global read-only memory with our pkey as
 // well as switch to a pkey-tagged stack.
 TEST_F(PkeyTest, AllocWithoutDefaultPkey) {
-  if (isolatedGlobals.pkey == kInvalidPkey) {
+  if (isolated_globals.pkey == kInvalidPkey) {
     return;
   }
 
   uint64_t ret;
   uint32_t pkru_value = 0;
   for (int pkey = 0; pkey < kNumPkey; pkey++) {
-    if (pkey != isolatedGlobals.pkey) {
+    if (pkey != isolated_globals.pkey) {
       pkru_value |= (PKEY_DISABLE_ACCESS | PKEY_DISABLE_WRITE) << (2 * pkey);
     }
   }
@@ -245,7 +242,7 @@ TEST_F(PkeyTest, AllocWithoutDefaultPkey) {
 
       : "=r"(ret)
       : "a"(pkru_value), "c"(0), "d"(0),
-        "r"(reinterpret_cast<uintptr_t>(isolatedGlobals.isolatedStack) +
+        "r"(reinterpret_cast<uintptr_t>(isolated_globals.stack) +
             kIsolatedThreadStackSize - 8)
       : "memory", "cc", "r8", "r9", "r10", "r11", "xmm0", "xmm1", "xmm2",
         "xmm3", "xmm4", "xmm5", "xmm6", "xmm7", "xmm8", "xmm9", "xmm10",
@@ -262,7 +259,7 @@ class MockAddressSpaceStatsDumper : public AddressSpaceStatsDumper {
 };
 
 TEST_F(PkeyTest, DumpPkeyPoolStats) {
-  if (isolatedGlobals.pkey == kInvalidPkey) {
+  if (isolated_globals.pkey == kInvalidPkey) {
     return;
   }
 

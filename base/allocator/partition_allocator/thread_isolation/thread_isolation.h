@@ -54,10 +54,9 @@ namespace partition_alloc::internal {
 
 #if BUILDFLAG(PA_DCHECK_IS_ON)
 
-struct ThreadIsolationSettings {
+struct PA_THREAD_ISOLATED_ALIGN ThreadIsolationSettings {
   bool enabled = false;
-  char pad_[PA_THREAD_ISOLATED_FILL_PAGE_SZ(sizeof(enabled))] = {};
-  static ThreadIsolationSettings settings PA_THREAD_ISOLATED_ALIGN PA_CONSTINIT;
+  static ThreadIsolationSettings settings PA_CONSTINIT;
 };
 
 #if BUILDFLAG(ENABLE_PKEYS)
