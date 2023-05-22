@@ -104,6 +104,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -1684,6 +1685,45 @@ public class BookmarkTest {
 
         BookmarkRow itemView = getBookmarkRow(0);
         assertNotEquals(PowerBookmarkShoppingItemRow.class, itemView.getClass());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    public void testModelUpdateDuringEmptySearchAndSelection()
+            throws InterruptedException, ExecutionException {
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
+        BookmarkId folderId = addFolder(TEST_FOLDER_TITLE);
+        BookmarkId itemId = addBookmark(TEST_PAGE_TITLE_FOO, mTestPageFoo, folderId);
+        openBookmarkManager();
+        openFolder(folderId);
+        assertEquals(1, mAdapter.getItemCount());
+
+        // Inspired by https://crbug.com/1445826. Start a search but don't type anything, to get
+        // into the empty query state. Then select an item. This combinations of states is tricky
+        // for our logic to deal with correctly.
+        clickToolbarMenuItem(R.id.search_menu_id);
+        toggleSelectionThroughLongPress(0);
+
+        // Users would tap the R.id.edit_menu_id and edit the bookmark title, but we're going to
+        // fake it to avoid a dependency on the UI shown to edit bookmark.
+        runOnUiThreadBlocking(
+                () -> mBookmarkModel.setBookmarkTitle(itemId, TEST_PAGE_TITLE_GOOGLE));
+
+        // The item title change comes back async from the model, so we need to poll for it.
+        CriteriaHelper.pollUiThread(() -> {
+            return TEST_PAGE_TITLE_GOOGLE.equals(getBookmarkRow(0).getTitle());
+        }, "Title never updated to " + TEST_PAGE_TITLE_GOOGLE);
+
+        // We should be kicked out of the empty query state at this point, but still selecting the
+        // item. If events are not fired in the right order, the title/nav buttons will be broken.
+        assertTrue(getBookmarkRow(0).isItemSelected());
+        assertFalse(mToolbar.isSearching());
+        assertTrue(TextUtils.isEmpty(mToolbar.getTitle()));
+        // Don't try to validate the current number of selected items, just visibility.
+        NumberRollView numberRollView = mToolbar.findViewById(R.id.selection_mode_number);
+        assertEquals(View.VISIBLE, numberRollView.getVisibility());
+        assertEquals(NavigationButton.BACK, mToolbar.getNavigationButtonForTests());
     }
 
     /**
