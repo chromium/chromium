@@ -114,12 +114,7 @@
                        tracker:feature_engagement::TrackerFactory::
                                    GetForBrowserState(
                                        self.browser->GetBrowserState())];
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  self.mediator.dispatcher =
-      static_cast<id<BrowserCommands>>(self.browser->GetCommandDispatcher());
 
-  self.mediator.webStateList = self.browser->GetWebStateList();
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
