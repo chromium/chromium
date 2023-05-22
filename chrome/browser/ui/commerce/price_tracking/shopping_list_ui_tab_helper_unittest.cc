@@ -104,6 +104,7 @@ class ShoppingListUiTabHelperTest : public testing::Test {
         content::WebContentsTester::For(web_contents_.get());
     web_content_tester->SetLastCommittedURL(url);
     web_content_tester->NavigateAndCommit(url);
+    web_content_tester->TestDidFinishLoad(url);
 
     base::RunLoop().RunUntilIdle();
   }
