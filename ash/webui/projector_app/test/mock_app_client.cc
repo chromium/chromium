@@ -55,4 +55,10 @@ void MockAppClient::AddSecondaryAccount(const std::string& account_email) {
   identity_test_environment_.SetRefreshTokenForAccount(account_info.account_id);
 }
 
+void MockAppClient::MakeFetchTokenFailWithError(
+    const GoogleServiceAuthError& error) {
+  identity_test_environment_
+      .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(error);
+}
+
 }  // namespace ash

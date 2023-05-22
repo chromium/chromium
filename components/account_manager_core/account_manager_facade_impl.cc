@@ -113,6 +113,8 @@ bool GetIsAvailableInArcBySource(
     case AccountManagerFacade::AccountAdditionSource::kChromeExtensionReauth:
     case AccountManagerFacade::AccountAdditionSource::kChromeSyncPromoReauth:
     case AccountManagerFacade::AccountAdditionSource::
+        kChromeOSProjectorAppReauth:
+    case AccountManagerFacade::AccountAdditionSource::
         kChromeSettingsReauthAccountButton:
       NOTREACHED();
       return false;

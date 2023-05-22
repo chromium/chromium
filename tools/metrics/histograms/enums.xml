@@ -1279,6 +1279,8 @@ Unknown properties are collapsed to zero. -->
       label="Account addition flow triggered from a Chrome extension"/>
   <int value="15" label="Account addition flow triggered from a Sync promo"/>
   <int value="16" label="Turn sync on button in Chrome Settings"/>
+  <int value="17"
+      label="Launched from ChromeOS Projector App for re-authentication"/>
 </enum>
 
 <enum name="AccountManagerAccountUpsertionResultStatus">

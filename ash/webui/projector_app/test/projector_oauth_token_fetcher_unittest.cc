@@ -7,10 +7,11 @@
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -18,6 +19,11 @@ const char kTestUserEmail[] = "testuser1@gmail.com";
 const char kTestUser2Email[] = "testuser2@gmail.com";
 
 const base::TimeDelta kExpiryTimeFromNow = base::Minutes(10);
+
+using OnOAuthTokenFetchFuture =
+    base::test::TestFuture<const std::string&,
+                           GoogleServiceAuthError,
+                           const signin::AccessTokenInfo&>;
 }  // namespace
 
 namespace ash {
@@ -35,14 +41,12 @@ class ProjectorOAuthTokenFetcherTest : public testing::Test {
 
   ProjectorOAuthTokenFetcher& fetcher() { return access_token_fetcher_; }
 
-  void OnOAuthTokenFetchCallback(base::RepeatingClosure quit_closure,
-                                 const std::string& expected_email,
-                                 const std::string& email,
-                                 GoogleServiceAuthError error,
-                                 const signin::AccessTokenInfo& info) {
-    EXPECT_EQ(expected_email, email);
-    EXPECT_EQ(error.state(), GoogleServiceAuthError::State::NONE);
-    quit_closure.Run();
+  void VerifyOAuthTokenFetchResult(
+      OnOAuthTokenFetchFuture& future,
+      const absl::optional<std::string>& email = absl::nullopt) {
+    const auto& expected_email = email ? email : kTestUserEmail;
+    EXPECT_EQ(expected_email, future.Get<0>());
+    EXPECT_EQ(GoogleServiceAuthError::State::NONE, future.Get<1>().state());
   }
 
  private:
@@ -52,38 +56,25 @@ class ProjectorOAuthTokenFetcherTest : public testing::Test {
 };
 
 TEST_F(ProjectorOAuthTokenFetcherTest, GetAccessTokenFirstRequest) {
-  base::RunLoop run_loop;
-
-  fetcher().GetAccessTokenFor(
-      kTestUserEmail,
-      base::BindOnce(&ProjectorOAuthTokenFetcherTest::OnOAuthTokenFetchCallback,
-                     base::Unretained(this), run_loop.QuitClosure(),
-                     kTestUserEmail));
+  OnOAuthTokenFetchFuture future;
+  fetcher().GetAccessTokenFor(kTestUserEmail, future.GetCallback());
 
   EXPECT_TRUE(fetcher().HasPendingRequestForTest(kTestUserEmail));
 
   mock_app_client().GrantOAuthTokenFor(
       kTestUserEmail,
       /* expiry_time = */ base::Time::Now() + kExpiryTimeFromNow);
-  run_loop.Run();
+  VerifyOAuthTokenFetchResult(future);
 
   EXPECT_TRUE(fetcher().HasCachedTokenForTest(kTestUserEmail));
 }
 
 TEST_F(ProjectorOAuthTokenFetcherTest, GetAccessTokenRepeatedRequest) {
-  base::RunLoop run_loop1;
-  fetcher().GetAccessTokenFor(
-      kTestUserEmail,
-      base::BindOnce(&ProjectorOAuthTokenFetcherTest::OnOAuthTokenFetchCallback,
-                     base::Unretained(this), run_loop1.QuitClosure(),
-                     kTestUserEmail));
+  OnOAuthTokenFetchFuture future1;
+  fetcher().GetAccessTokenFor(kTestUserEmail, future1.GetCallback());
 
-  base::RunLoop run_loop2;
-  fetcher().GetAccessTokenFor(
-      kTestUserEmail,
-      base::BindOnce(&ProjectorOAuthTokenFetcherTest::OnOAuthTokenFetchCallback,
-                     base::Unretained(this), run_loop2.QuitClosure(),
-                     kTestUserEmail));
+  OnOAuthTokenFetchFuture future2;
+  fetcher().GetAccessTokenFor(kTestUserEmail, future2.GetCallback());
 
   EXPECT_TRUE(fetcher().HasPendingRequestForTest(kTestUserEmail));
 
@@ -91,41 +82,31 @@ TEST_F(ProjectorOAuthTokenFetcherTest, GetAccessTokenRepeatedRequest) {
       kTestUserEmail,
       /* expiry_time = */ base::Time::Now() + kExpiryTimeFromNow);
 
-  // Both requests should be granted and their corresponding RunLoop's quit
-  // closure should be run. Otherwise the run loops will keep running and
-  // the test will time out.
-  run_loop1.Run();
-  run_loop2.Run();
+  // Both requests should be granted.
+  VerifyOAuthTokenFetchResult(future1);
+  VerifyOAuthTokenFetchResult(future2);
 
   EXPECT_TRUE(fetcher().HasCachedTokenForTest(kTestUserEmail));
 }
 
 TEST_F(ProjectorOAuthTokenFetcherTest, AlmostExpiredToken) {
-  base::RunLoop run_loop1;
-  fetcher().GetAccessTokenFor(
-      kTestUserEmail,
-      base::BindOnce(&ProjectorOAuthTokenFetcherTest::OnOAuthTokenFetchCallback,
-                     base::Unretained(this), run_loop1.QuitClosure(),
-                     kTestUserEmail));
+  OnOAuthTokenFetchFuture future1;
+  fetcher().GetAccessTokenFor(kTestUserEmail, future1.GetCallback());
 
   mock_app_client().GrantOAuthTokenFor(kTestUserEmail,
                                        /* expiry_time = */
                                        base::Time::Now());
-  run_loop1.Run();
+  VerifyOAuthTokenFetchResult(future1);
 
-  base::RunLoop run_loop2;
-  fetcher().GetAccessTokenFor(
-      kTestUserEmail,
-      base::BindOnce(&ProjectorOAuthTokenFetcherTest::OnOAuthTokenFetchCallback,
-                     base::Unretained(this), run_loop2.QuitClosure(),
-                     kTestUserEmail));
+  OnOAuthTokenFetchFuture future2;
+  fetcher().GetAccessTokenFor(kTestUserEmail, future2.GetCallback());
 
   EXPECT_FALSE(fetcher().HasCachedTokenForTest(kTestUserEmail));
 
   mock_app_client().GrantOAuthTokenFor(kTestUserEmail,
                                        /* expiry_time = */
                                        base::Time::Now() + kExpiryTimeFromNow);
-  run_loop2.Run();
+  VerifyOAuthTokenFetchResult(future2);
 
   EXPECT_TRUE(fetcher().HasCachedTokenForTest(kTestUserEmail));
 }
@@ -133,19 +114,11 @@ TEST_F(ProjectorOAuthTokenFetcherTest, AlmostExpiredToken) {
 TEST_F(ProjectorOAuthTokenFetcherTest, MultipleAccountsRequesting) {
   mock_app_client().AddSecondaryAccount(kTestUser2Email);
 
-  base::RunLoop run_loop1;
-  fetcher().GetAccessTokenFor(
-      kTestUserEmail,
-      base::BindOnce(&ProjectorOAuthTokenFetcherTest::OnOAuthTokenFetchCallback,
-                     base::Unretained(this), run_loop1.QuitClosure(),
-                     kTestUserEmail));
+  OnOAuthTokenFetchFuture future1;
+  fetcher().GetAccessTokenFor(kTestUserEmail, future1.GetCallback());
 
-  base::RunLoop run_loop2;
-  fetcher().GetAccessTokenFor(
-      kTestUser2Email,
-      base::BindOnce(&ProjectorOAuthTokenFetcherTest::OnOAuthTokenFetchCallback,
-                     base::Unretained(this), run_loop2.QuitClosure(),
-                     kTestUser2Email));
+  OnOAuthTokenFetchFuture future2;
+  fetcher().GetAccessTokenFor(kTestUser2Email, future2.GetCallback());
 
   EXPECT_TRUE(fetcher().HasPendingRequestForTest(kTestUserEmail));
   EXPECT_TRUE(fetcher().HasPendingRequestForTest(kTestUser2Email));
@@ -156,8 +129,9 @@ TEST_F(ProjectorOAuthTokenFetcherTest, MultipleAccountsRequesting) {
   mock_app_client().GrantOAuthTokenFor(kTestUser2Email,
                                        /* expiry_time = */
                                        base::Time::Now() + kExpiryTimeFromNow);
-  run_loop1.Run();
-  run_loop2.Run();
+
+  VerifyOAuthTokenFetchResult(future1);
+  VerifyOAuthTokenFetchResult(future2, kTestUser2Email);
 
   // Now let's check that the tokens are present for both accounts.
   EXPECT_TRUE(fetcher().HasCachedTokenForTest(kTestUserEmail));
@@ -165,34 +139,40 @@ TEST_F(ProjectorOAuthTokenFetcherTest, MultipleAccountsRequesting) {
 }
 
 TEST_F(ProjectorOAuthTokenFetcherTest, ValidCachedToken) {
-  base::RunLoop run_loop1;
-  fetcher().GetAccessTokenFor(
-      kTestUserEmail,
-      base::BindOnce(&ProjectorOAuthTokenFetcherTest::OnOAuthTokenFetchCallback,
-                     base::Unretained(this), run_loop1.QuitClosure(),
-                     kTestUserEmail));
+  OnOAuthTokenFetchFuture future1;
+  fetcher().GetAccessTokenFor(kTestUserEmail, future1.GetCallback());
 
   mock_app_client().GrantOAuthTokenFor(kTestUserEmail,
                                        /* expiry_time = */
                                        base::Time::Now() + kExpiryTimeFromNow);
-  run_loop1.Run();
+  VerifyOAuthTokenFetchResult(future1);
 
   EXPECT_TRUE(fetcher().HasCachedTokenForTest(kTestUserEmail));
 
-  base::RunLoop run_loop2;
-  fetcher().GetAccessTokenFor(
-      kTestUserEmail,
-      base::BindOnce(&ProjectorOAuthTokenFetcherTest::OnOAuthTokenFetchCallback,
-                     base::Unretained(this), run_loop2.QuitClosure(),
-                     kTestUserEmail));
+  OnOAuthTokenFetchFuture future2;
+  fetcher().GetAccessTokenFor(kTestUserEmail, future2.GetCallback());
 
   // A valid token for `kTestUserEmail` is cached in ProjectorOAuthTokenFetcher.
   // Therefore, the request should be granted immediately and the callback
   // executed with the results without the need to go through
   // signin::IdentityManager.
-  run_loop2.Run();
+  VerifyOAuthTokenFetchResult(future2);
 
   EXPECT_TRUE(fetcher().HasCachedTokenForTest(kTestUserEmail));
+}
+
+TEST_F(ProjectorOAuthTokenFetcherTest, InvalidateToken) {
+  OnOAuthTokenFetchFuture future;
+  fetcher().GetAccessTokenFor(kTestUserEmail, future.GetCallback());
+  mock_app_client().GrantOAuthTokenFor(
+      kTestUserEmail,
+      /* expiry_time = */ base::Time::Now() + kExpiryTimeFromNow);
+  VerifyOAuthTokenFetchResult(future);
+
+  EXPECT_TRUE(fetcher().HasCachedTokenForTest(kTestUserEmail));
+
+  fetcher().InvalidateToken(future.Get<2>().token);
+  EXPECT_FALSE(fetcher().HasCachedTokenForTest(kTestUserEmail));
 }
 
 }  // namespace ash

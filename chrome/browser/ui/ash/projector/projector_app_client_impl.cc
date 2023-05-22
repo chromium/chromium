@@ -12,6 +12,7 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/soda/constants.h"
@@ -189,4 +192,13 @@ void ProjectorAppClientImpl::ToggleFileSyncingNotificationForPaths(
     bool suppress) {
   pending_screencast_manager_.ToggleFileSyncingNotificationForPaths(
       screencast_paths, suppress);
+}
+
+void ProjectorAppClientImpl::HandleAccountReauth(const std::string& email) {
+  ::GetAccountManagerFacade(
+      ProfileManager::GetActiveUserProfile()->GetPath().value())
+      ->ShowReauthAccountDialog(
+          account_manager::AccountManagerFacade::AccountAdditionSource::
+              kChromeOSProjectorAppReauth,
+          email, base::DoNothing());
 }

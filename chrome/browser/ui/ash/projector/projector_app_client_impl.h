@@ -64,6 +64,7 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void ToggleFileSyncingNotificationForPaths(
       const std::vector<base::FilePath>& screencast_paths,
       bool suppress) override;
+  void HandleAccountReauth(const std::string& email) override;
 
   ash::UntrustedAnnotatorPageHandlerImpl* get_annotator_handler_for_test() {
     return annotator_handler_;

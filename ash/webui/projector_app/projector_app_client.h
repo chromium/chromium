@@ -140,6 +140,9 @@ class ProjectorAppClient {
       const std::vector<base::FilePath>& screencast_paths,
       bool suppress) = 0;
 
+  // Triggers reauth dialog for the given `email`.
+  virtual void HandleAccountReauth(const std::string& email) = 0;
+
  protected:
   ProjectorAppClient();
   virtual ~ProjectorAppClient();
