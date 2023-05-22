@@ -127,6 +127,7 @@ BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);
 BASE_DECLARE_FEATURE(kOmniboxWarmRecycledViewPool);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);
 BASE_DECLARE_FEATURE(kPageAnnotationsService);
+BASE_DECLARE_FEATURE(kPreconnectOnTabCreation);
 BASE_DECLARE_FEATURE(kBookmarksImprovedSaveFlow);
 BASE_DECLARE_FEATURE(kBookmarksRefresh);
 BASE_DECLARE_FEATURE(kOpaqueOriginForIncomingIntents);

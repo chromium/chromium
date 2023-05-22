@@ -260,6 +260,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
     &kPageAnnotationsService,
+    &kPreconnectOnTabCreation,
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
     &kOmahaMinSdkVersionAndroid,
@@ -824,6 +825,10 @@ BASE_FEATURE(kInstanceSwitcher,
 
 BASE_FEATURE(kPageAnnotationsService,
              "PageAnnotationsService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPreconnectOnTabCreation,
+             "PreconnectOnTabCreation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBookmarksImprovedSaveFlow,
