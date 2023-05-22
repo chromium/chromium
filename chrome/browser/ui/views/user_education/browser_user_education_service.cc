@@ -181,7 +181,6 @@ const char kTabGroupWithExistingGroupTutorialId[] =
     "Tab Group With Existing Group Tutorial";
 const char kSidePanelReadingListTutorialId[] =
     "Side Panel Reading List Tutorial";
-
 const char kSideSearchTutorialId[] = "Side Search Tutorial";
 
 user_education::HelpBubbleDelegate* GetHelpBubbleDelegate() {
@@ -391,6 +390,11 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHReadingListInSidePanelFeature,
       kSidePanelButtonElementId, IDS_READING_LIST_IN_SIDE_PANEL_PROMO));
+
+  // kIPHReadingModeSidePanelFeature:
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
+      feature_engagement::kIPHReadingModeSidePanelFeature,
+      kSidePanelButtonElementId, IDS_READING_MODE_SIDE_PANEL_PROMO));
 
   // kIPHSideSearchFeature:
   registry.RegisterFeature(std::move(

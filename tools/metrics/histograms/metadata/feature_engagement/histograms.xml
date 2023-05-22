@@ -263,6 +263,9 @@ chromium-metrics-reviews@google.com.
                list"/>
   <variant name="IPH_ReadingListMessages"
       summary="the Reading List entry point in iOS tools menu"/>
+  <variant name="IPH_ReadingMode"
+      summary="educating users to click the side panel icon to open reading
+               mode"/>
   <variant name="IPH_ReadLaterAppMenuBookmarks" summary="read later app menu"/>
   <variant name="IPH_ReadLaterAppMenuBookmarkThisPage"
       summary="read later app menu"/>

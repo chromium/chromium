@@ -37827,6 +37827,8 @@ should be able to be added at any place in this file.
   <suffix name="ReadingListInSidePanel"
       label="For ReadingListInSidePanel feature."/>
   <suffix name="ReadingListMessages" label="For ReadingListMessages feature."/>
+  <suffix name="ReadingModeSidePanel"
+      label="For reading mode side panel feature."/>
   <suffix name="ReadLaterAppMenuBookmarks"
       label="For ReadLaterAppMenuBookmarks feature."/>
   <suffix name="ReadLaterAppMenuBookmarkThisPage"
