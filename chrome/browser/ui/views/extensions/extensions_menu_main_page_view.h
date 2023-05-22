@@ -37,6 +37,15 @@ class ExtensionsMenuMainPageView : public views::View {
  public:
   METADATA_HEADER(ExtensionsMenuMainPageView);
 
+  enum class MessageSectionState {
+    // Site is restricted to all extensions.
+    kRestrictedAccess,
+    // User can customize each extension's access to the site.
+    kUserCustomizedAccess,
+    // User blocked all extensions access to the site.
+    kUserBlockedAcces,
+  };
+
   explicit ExtensionsMenuMainPageView(Browser* browser,
                                       ExtensionsMenuHandler* menu_handler);
   ~ExtensionsMenuMainPageView() override = default;
@@ -69,6 +78,9 @@ class ExtensionsMenuMainPageView : public views::View {
                        bool is_site_settings_toggle_visible,
                        bool is_site_settings_toggle_on);
 
+  // Updates the message section given `state`.
+  void UpdateMessageSection(MessageSectionState state);
+
   // Adds or updates the extension entry in the `requests_access_section_` with
   // the given information.
   void AddOrUpdateExtensionRequestingAccess(const extensions::ExtensionId& id,
@@ -80,9 +92,6 @@ class ExtensionsMenuMainPageView : public views::View {
   // if existent.
   void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id);
 
-  // Clears all the entries in the `requests_access_section_`.
-  void ClearExtensionsRequestingAccess();
-
   void OnToggleButtonPressed();
 
   // Accessors used by tests:
@@ -90,6 +99,8 @@ class ExtensionsMenuMainPageView : public views::View {
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }
+  views::Label* GetTextContainerForTesting();
+  views::View* GetRequestsAccessContainerForTesting();
   std::vector<extensions::ExtensionId>
   GetExtensionsRequestingAccessForTesting();
   views::View* GetExtensionRequestingAccessEntryForTesting(

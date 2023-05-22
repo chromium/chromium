@@ -100,34 +100,53 @@ class MessageSection : public views::BoxLayoutView {
   const MessageSection& operator=(const MessageSection&) = delete;
   ~MessageSection() override = default;
 
+  // Updates the views contents and visibility given `state`. At most only one
+  // of the "containers" will be visible per `state`.
+  void Update(ExtensionsMenuMainPageView::MessageSectionState state);
+
   // Adds an entry in `extensions_container_` for the extension with `id`,
   // `name` and `icon` at `index`. If the extension is already present, it
   // updates the entry. Shows the sections if it's the first extension entry.
+  // Note that `state_` must be `kUserCustomizedAccess`.
   void AddOrUpdateExtension(const extensions::ExtensionId& id,
                             const std::u16string& name,
                             const ui::ImageModel& icon,
                             int index);
 
   // Removes the entry corresponding to `id`, if existent. Hides the section if
-  // no extension entries are remaining.
+  // no extension entries are remaining. Note that `state_` must be
+  // `kUserCustomizedAccess`.
   void RemoveExtension(const extensions::ExtensionId& id);
 
-  // Removes all extension entries.
-  void ClearExtensions();
-
   // Accessors used by tests:
+  views::Label* GetTextContainerForTesting() { return text_container_; }
+  views::View* GetRequestsAccessContainerForTesting() {
+    return requests_access_container_;
+  }
   std::vector<extensions::ExtensionId> GetExtensionsForTesting();
   views::View* GetExtensionEntryForTesting(
       const extensions::ExtensionId& extension_id);
 
  private:
-  // Container for the entries for all the extensions requesting access..
-  raw_ptr<views::View> extensions_container_;
+  static constexpr int kExtensionItemsContainerIndex = 1;
+  static constexpr int kExtensionItemIconIndex = 0;
+  static constexpr int kExtensionItemLabelIndex = 1;
 
-  // A collection of all the extension entries
+  // Removes all extension entries.
+  void ClearExtensions();
+
+  // The current state of the section.
+  ExtensionsMenuMainPageView::MessageSectionState state_;
+
+  // Text container.
+  raw_ptr<views::Label> text_container_;
+
+  // Request access container
+  raw_ptr<views::View> requests_access_container_;
+  // A collection of all the extension entries in the request access container.
   std::map<extensions::ExtensionId, views::View*> extension_entries_;
 
-  // Callback for the allow button.
+  // Callback for the allow button for the extension entries.
   base::RepeatingCallback<void(const extensions::ExtensionId&)> allow_callback_;
 };
 
@@ -142,31 +161,68 @@ MessageSection::MessageSection(
     : allow_callback_(std::move(allow_callback)) {
   views::Builder<MessageSection>(this)
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      .SetVisible(false)
       // TODO(crbug.com/1390952): After adding margins, compute radius from a
       // variable or create a const variable.
       .SetBackground(views::CreateThemedRoundedRectBackground(
           kColorExtensionsMenuHighlightedBackground, 4))
       .AddChildren(
-          // Header explaining the section.
+          // Text container.
           views::Builder<views::Label>()
-              .SetText(l10n_util::GetStringUTF16(
-                  IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE))
+              .CopyAddressTo(&text_container_)
+              .SetVisible(false)
               .SetTextContext(ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-              .SetTextStyle(views::style::STYLE_EMPHASIZED)
-              .SetHorizontalAlignment(gfx::ALIGN_LEFT),
-          // Empty container for the extensions requesting access. Items will be
-          // populated later.
+              .SetHorizontalAlignment(gfx::ALIGN_CENTER),
+          // Requests access container.
           views::Builder<views::BoxLayoutView>()
+              .CopyAddressTo(&requests_access_container_)
+              .SetVisible(false)
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
-              .CopyAddressTo(&extensions_container_))
+              .AddChildren(
+                  // Header.
+                  views::Builder<views::Label>()
+                      .SetText(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_TITLE))
+                      .SetTextContext(
+                          ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                      .SetTextStyle(views::style::STYLE_EMPHASIZED)
+                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
+                  // Empty container for the extensions requesting access.
+                  views::Builder<views::BoxLayoutView>().SetOrientation(
+                      views::BoxLayout::Orientation::kVertical)))
       .BuildChildren();
+}
+
+void MessageSection::Update(
+    ExtensionsMenuMainPageView::MessageSectionState state) {
+  state_ = state;
+  switch (state_) {
+    case ExtensionsMenuMainPageView::MessageSectionState::kRestrictedAccess:
+      text_container_->SetText(l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT));
+      text_container_->SetVisible(true);
+      requests_access_container_->SetVisible(false);
+      ClearExtensions();
+      break;
+    case ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess:
+      text_container_->SetVisible(false);
+      requests_access_container_->SetVisible(!extension_entries_.empty());
+      break;
+    case ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAcces:
+      text_container_->SetText(l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
+      text_container_->SetVisible(true);
+      requests_access_container_->SetVisible(false);
+      ClearExtensions();
+  }
 }
 
 void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
                                           const std::u16string& name,
                                           const ui::ImageModel& icon,
                                           int index) {
+  CHECK_EQ(
+      state_,
+      ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess);
   auto extension_iter = extension_entries_.find(id);
 
   if (extension_iter == extension_entries_.end()) {
@@ -183,33 +239,42 @@ void MessageSection::AddOrUpdateExtension(const extensions::ExtensionId& id,
                         IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT)))
             .Build();
     extension_entries_.insert({id, item.get()});
-    extensions_container_->AddChildViewAt(std::move(item), index);
+    requests_access_container_->children()[1]->AddChildViewAt(std::move(item),
+                                                              index);
 
-    SetVisible(!extension_entries_.empty());
+    requests_access_container_->SetVisible(!extension_entries_.empty());
   } else {
     // Update extension entry.
     std::vector<View*> extension_items = extension_iter->second->children();
-    views::AsViewClass<views::ImageView>(extension_items[0])->SetImage(icon);
-    views::AsViewClass<views::Label>(extension_items[1])->SetText(name);
-    extensions_container_->ReorderChildView(extension_iter->second, index);
+    views::AsViewClass<views::ImageView>(
+        extension_items[kExtensionItemIconIndex])
+        ->SetImage(icon);
+    views::AsViewClass<views::Label>(extension_items[kExtensionItemLabelIndex])
+        ->SetText(name);
+    requests_access_container_->children()[kExtensionItemsContainerIndex]
+        ->ReorderChildView(extension_iter->second, index);
   }
 }
 
 void MessageSection::RemoveExtension(const extensions::ExtensionId& id) {
+  CHECK_EQ(
+      state_,
+      ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess);
   auto extension_iter = extension_entries_.find(id);
   if (extension_iter == extension_entries_.end()) {
     return;
   }
 
-  extensions_container_->RemoveChildViewT(extension_iter->second);
+  requests_access_container_->children()[kExtensionItemsContainerIndex]
+      ->RemoveChildViewT(extension_iter->second);
   extension_entries_.erase(extension_iter);
 
-  SetVisible(!extension_entries_.empty());
+  requests_access_container_->SetVisible(!extension_entries_.empty());
 }
 
 void MessageSection::ClearExtensions() {
-  SetVisible(false);
-  extensions_container_->RemoveAllChildViews();
+  requests_access_container_->children()[kExtensionItemsContainerIndex]
+      ->RemoveAllChildViews();
   extension_entries_.clear();
 }
 
@@ -409,6 +474,11 @@ void ExtensionsMenuMainPageView::UpdateSubheader(
       GetSiteSettingToggleText(is_site_settings_toggle_on));
 }
 
+void ExtensionsMenuMainPageView::UpdateMessageSection(
+    MessageSectionState state) {
+  message_section_->Update(state);
+}
+
 void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
     const extensions::ExtensionId& id,
     const std::u16string& name,
@@ -422,10 +492,6 @@ void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
   message_section_->RemoveExtension(id);
 }
 
-void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {
-  message_section_->ClearExtensions();
-}
-
 std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
     const {
   std::vector<ExtensionMenuItemView*> menu_item_views;
@@ -433,6 +499,14 @@ std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
     menu_item_views.push_back(GetAsMenuItem(view));
   }
   return menu_item_views;
+}
+
+views::Label* ExtensionsMenuMainPageView::GetTextContainerForTesting() {
+  return message_section_->GetTextContainerForTesting();
+}
+views::View*
+ExtensionsMenuMainPageView::GetRequestsAccessContainerForTesting() {
+  return message_section_->GetRequestsAccessContainerForTesting();
 }
 
 std::vector<extensions::ExtensionId>

@@ -247,6 +247,26 @@ ExtensionMenuItemView::SiteAccessToggleState GetSiteAccessToggleState(
              : ExtensionMenuItemView::SiteAccessToggleState::kOff;
 }
 
+// Returns the state for the message section in the menu.
+ExtensionsMenuMainPageView::MessageSectionState GetMessageSectionState(
+    Profile& profile,
+    const ToolbarActionsModel& toolbar_model,
+    content::WebContents& web_contents) {
+  if (toolbar_model.IsRestrictedUrl(web_contents.GetLastCommittedURL())) {
+    return ExtensionsMenuMainPageView::MessageSectionState::kRestrictedAccess;
+  }
+
+  PermissionsManager::UserSiteSetting site_setting =
+      PermissionsManager::Get(&profile)->GetUserSiteSetting(
+          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  if (site_setting ==
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
+    return ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAcces;
+  }
+
+  return ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess;
+}
+
 }  // namespace
 
 ExtensionsMenuViewController::ExtensionsMenuViewController(
@@ -429,17 +449,14 @@ void ExtensionsMenuViewController::UpdateMainPage(
   main_page->UpdateSubheader(current_site, is_site_settings_toggle_visible,
                              is_site_settings_toggle_on);
 
-  // Update messsage section.
-  auto site_setting =
-      PermissionsManager::Get(browser_->profile())
-          ->GetUserSiteSetting(
-              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  if (site_setting ==
-      PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
-    // Extensions cannot request access if user blocked all extensions on this
-    // site.
-    main_page->ClearExtensionsRequestingAccess();
-  } else {
+  // Update message section.
+  ExtensionsMenuMainPageView::MessageSectionState message_section_state =
+      GetMessageSectionState(*browser_->profile(), *toolbar_model_,
+                             *web_contents);
+  main_page->UpdateMessageSection(message_section_state);
+
+  if (message_section_state ==
+      ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess) {
     int index = 0;
     std::vector<std::string> extension_ids =
         SortExtensionsByName(*toolbar_model_);

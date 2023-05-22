@@ -14,11 +14,13 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/toggle_button.h"
 
 namespace {
@@ -44,12 +46,20 @@ class ExtensionsMenuMainPageViewInteractiveUITest
   // Asserts there is exactly one menu item and then returns it.
   ExtensionMenuItemView* GetOnlyMenuItem();
 
-  // Returns the extension ids in the request access section. If it's empty,
-  // the section is not visible.
+  // Returns the extension ids in the message section. If it's empty,
+  // the section displaying the extensions requesting site access is not
+  // visible.
   std::vector<extensions::ExtensionId> GetExtensionsInRequestAccessSection();
 
   // Returns the extension ids in the request access button in the toolbar.
   std::vector<extensions::ExtensionId> GetExtensionsInRequestAccessButton();
+
+  // Returns whether the text container in the message section is visible.
+  bool IsTextContainerInMessageSectionVisible();
+
+  // Returns whether the requests access container in the message section is
+  // visible.
+  bool IsRequestsAccessContainerInMessageSectionVisible();
 
   void ClickSiteSettingToggle();
 
@@ -89,8 +99,12 @@ std::vector<extensions::ExtensionId>
 ExtensionsMenuMainPageViewInteractiveUITest::
     GetExtensionsInRequestAccessSection() {
   ExtensionsMenuMainPageView* page = main_page();
-  return page ? page->GetExtensionsRequestingAccessForTesting()
-              : std::vector<std::string>();
+  // No extensions are shown in the main page is not visible or if requests
+  // access container is hidden.
+  if (!page || !page->GetRequestsAccessContainerForTesting()->GetVisible()) {
+    return std::vector<std::string>();
+  }
+  return page->GetExtensionsRequestingAccessForTesting();
 }
 
 std::vector<extensions::ExtensionId>
@@ -100,6 +114,22 @@ ExtensionsMenuMainPageViewInteractiveUITest::
       ->GetExtensionsToolbarControls()
       ->request_access_button_for_testing()
       ->GetExtensionIdsForTesting();
+}
+
+// Returns whether the text container in the message section is visible.
+bool ExtensionsMenuMainPageViewInteractiveUITest::
+    IsTextContainerInMessageSectionVisible() {
+  ExtensionsMenuMainPageView* page = main_page();
+  return page ? page->GetTextContainerForTesting()->GetVisible() : false;
+}
+
+// Returns whether the requests access container in the message section is
+// visible.
+bool ExtensionsMenuMainPageViewInteractiveUITest::
+    IsRequestsAccessContainerInMessageSectionVisible() {
+  ExtensionsMenuMainPageView* page = main_page();
+  return page ? page->GetRequestsAccessContainerForTesting()->GetVisible()
+              : false;
 }
 
 void ExtensionsMenuMainPageViewInteractiveUITest::ClickSiteSettingToggle() {
@@ -167,25 +197,38 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   ShowUi("");
 
-  // By default, extension should have injected since site has "customize by
-  // extension" site setting (toggle button on).
+  // When user can customize site access by extension and the extension has
+  // granted access (by default):
+  //   - extension is injected.
+  //   - message section is hidden, meaning text container and requests access
+  //     section are both hidden.
   auto* permissions_manager = PermissionsManager::Get(browser()->profile());
   EXPECT_EQ(permissions_manager->GetUserSiteSetting(origin),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_TRUE(DidInjectScript(web_contents));
+  EXPECT_FALSE(IsTextContainerInMessageSectionVisible());
+  EXPECT_FALSE(IsRequestsAccessContainerInMessageSectionVisible());
 
-  // Toggling the button OFF changes site setting to "block all
-  // extensions". However, since extension was already injected in the site, it
-  // remains injected.
+  // Toggling the button OFF changes to user blocked all extensions:
+  //   - since extension was already injected in the site, it remains injected.
+  //   - text container is visible with user blocked access message.
+  // TODO(crbug.com/1390952): We sbould show a message that user needs to reload
+  // the page to see the changes.
   ClickSiteSettingToggle();
   EXPECT_EQ(permissions_manager->GetUserSiteSetting(origin),
             PermissionsManager::UserSiteSetting::kBlockAllExtensions);
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_TRUE(DidInjectScript(web_contents));
+  EXPECT_TRUE(IsTextContainerInMessageSectionVisible());
+  EXPECT_EQ(main_page()->GetTextContainerForTesting()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
+  EXPECT_FALSE(IsRequestsAccessContainerInMessageSectionVisible());
 
-  // Refreshing the page causes the site setting to take effect and the
-  // extension is not injected.
+  // Refreshing the page causes the site setting to take effect:
+  //   - extension is not injected.
+  //   - text container is visible with user blocked access message.
   {
     content::TestNavigationObserver observer(web_contents);
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -197,18 +240,29 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_FALSE(
       DidInjectScript(browser()->tab_strip_model()->GetActiveWebContents()));
+  EXPECT_TRUE(IsTextContainerInMessageSectionVisible());
+  EXPECT_EQ(main_page()->GetTextContainerForTesting()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT));
+  EXPECT_FALSE(IsRequestsAccessContainerInMessageSectionVisible());
 
   // Toggling the button ON changes site setting to "customize by
-  // extension". Extension is still not injected because there was no page
-  // refresh.
+  // extension":
+  //   - extension is still not injected because there was no page
+  //     refresh.
+  //   -
   ClickSiteSettingToggle();
   EXPECT_EQ(permissions_manager->GetUserSiteSetting(origin),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_FALSE(DidInjectScript(web_contents));
+  EXPECT_FALSE(IsTextContainerInMessageSectionVisible());
+  EXPECT_FALSE(IsRequestsAccessContainerInMessageSectionVisible());
 
-  // Refreshing the page causes the site setting to take effect and the
-  // extension is injected.
+  // Refreshing the page causes the site setting to take effect
+  //   - extension is injected.
+  //   - message section is hidden, meaning text container and requests access
+  //     section are both hidden.
   {
     content::TestNavigationObserver observer(web_contents);
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -220,6 +274,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   EXPECT_TRUE(main_page()->GetSiteSettingsToggleForTesting()->GetIsOn());
   EXPECT_TRUE(
       DidInjectScript(browser()->tab_strip_model()->GetActiveWebContents()));
+  EXPECT_FALSE(IsTextContainerInMessageSectionVisible());
+  EXPECT_FALSE(IsRequestsAccessContainerInMessageSectionVisible());
 }
 
 // Test that running an extension's action, when site permission were withheld,
@@ -252,10 +308,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   // When extension has withheld site access:
   //   - site access toggle is visible and off.
-  //   - message section includes extension.
+  //   - message section only shows request access container and includes
+  //   extension.
   //   - request access button, in the toolbar, includes extension.
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
+  EXPECT_FALSE(IsTextContainerInMessageSectionVisible());
+  EXPECT_TRUE(IsRequestsAccessContainerInMessageSectionVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extension_id));
   EXPECT_THAT(GetExtensionsInRequestAccessButton(),
@@ -263,12 +322,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   // When extension has granted site access, after toggling ON site access:
   //   - site access toggle is visible and on
-  //   - message section does not include extension.
+  //   - message section does not include extension and is hidden
   //   - request access button, in the toolbar, does not include extension.
   ClickButton(menu_item->primary_action_button_for_testing());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetIsOn());
-
+  EXPECT_FALSE(IsTextContainerInMessageSectionVisible());
+  EXPECT_FALSE(IsRequestsAccessContainerInMessageSectionVisible());
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
   EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
 
@@ -286,7 +346,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   menu_item = GetOnlyMenuItem();
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
-
+  EXPECT_FALSE(IsTextContainerInMessageSectionVisible());
+  EXPECT_TRUE(IsRequestsAccessContainerInMessageSectionVisible());
   EXPECT_THAT(GetExtensionsInRequestAccessSection(),
               testing::ElementsAre(extension_id));
   EXPECT_THAT(GetExtensionsInRequestAccessButton(),
