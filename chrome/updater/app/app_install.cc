@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -131,8 +130,7 @@ void AppInstall::FirstTaskRun() {
   const tagging::TagArgs tag_args =
       tag_parsing_result.tag_args.value_or(tagging::TagArgs());
   if (!tag_args.apps.empty()) {
-    // TODO(crbug.com/1128631): support bundles. For now, assume one app.
-    CHECK_EQ(tag_args.apps.size(), size_t{1});
+    // Assume only one app is present since bundles are not supported.
     const tagging::AppArgs& app_args = tag_args.apps.front();
     app_id_ = app_args.app_id;
     app_name_ = app_args.app_name;
