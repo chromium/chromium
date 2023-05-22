@@ -88,6 +88,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.BackupKeysetCleanupResult"
+    enum="CryptohomeBackupKeysetCleanupResult" expires_after="2024-05-18">
+  <owner>betuls@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Records the result of the backup VaultKeyset cleanup for users with mixed
+    USS-VaultKeyset configurations. Backup VaultKeysets are keysets marked as
+    backup during the migration to USS and kept as a rollback protection. Since
+    M114 backup keysets are removed on AuthSession start if the USS migration of
+    the particular user is completed. Starting with M115 backup keyset for the
+    migrated credential is removed after the successful authentication with the
+    given credential with USS, even if the USS migration is not completed. This
+    metric tracks the result of the removal of backup keysets after successful
+    authetnication for users whose USS migration isn't completed yet.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.ChecksumStatus" enum="CryptohomeChecksumStatus"
     expires_after="2021-08-09">
   <owner>apronin@chromium.org</owner>

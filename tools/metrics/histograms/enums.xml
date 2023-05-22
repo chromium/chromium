@@ -23643,6 +23643,17 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="Mixed Backing Stores"/>
 </enum>
 
+<enum name="CryptohomeBackupKeysetCleanupResult">
+  <int value="0" label="Removed backup password"/>
+  <int value="1" label="Removed backup PIN"/>
+  <int value="2" label="Removed backup of other type"/>
+  <int value="3" label="AddResetSecret failed"/>
+  <int value="4" label="GetValidKeyset failed"/>
+  <int value="5" label="Remove file failed for PIN"/>
+  <int value="6" label="Remove file failed for password"/>
+  <int value="7" label="Remove file failed for other type"/>
+</enum>
+
 <enum name="CryptohomeChecksumStatus">
   <int value="0" label="Checksum OK"/>
   <int value="1" label="Checksum does not exist"/>
