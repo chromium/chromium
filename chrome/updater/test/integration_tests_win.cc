@@ -671,7 +671,6 @@ void Uninstall(UpdaterScope scope) {
 }
 
 void SetActive(UpdaterScope /*scope*/, const std::string& id) {
-  // TODO(crbug.com/1159498): Standardize registry access.
   base::win::RegKey key;
   ASSERT_EQ(key.Create(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                        Wow6432(KEY_WRITE)),
@@ -680,7 +679,6 @@ void SetActive(UpdaterScope /*scope*/, const std::string& id) {
 }
 
 void ExpectActive(UpdaterScope /*scope*/, const std::string& id) {
-  // TODO(crbug.com/1159498): Standardize registry access.
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                      Wow6432(KEY_READ)),
@@ -691,7 +689,6 @@ void ExpectActive(UpdaterScope /*scope*/, const std::string& id) {
 }
 
 void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
-  // TODO(crbug.com/1159498): Standardize registry access.
   base::win::RegKey key;
   if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                Wow6432(KEY_READ)) == ERROR_SUCCESS) {
