@@ -217,21 +217,27 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
     return;
   }
 
-  // Prefetch is disjoint with browsing_topics and keepalive.
-  // TODO(https://crbug.com/1441113): browsing_topics and keepalive are disjoint
-  // in our implementation, but the fetch API does not enforce this, so
-  // browsing_topics wins and keepalive is ignored. Either allow them
-  // simultaneously or make them mutually exclusive in the fetch API.
+  // Prefetch is disjoint with browsing_topics, ad_auction_headers, and
+  // keepalive.
+  // TODO(https://crbug.com/1441113): keepalive is disjoint with browsing_topics
+  // and ad_auction_headers in our implementation, but the fetch API does not
+  // enforce this, so `subresource_proxying_loader_factory_` (that handles
+  // browsing_topics and ad_auction_headers) wins and keepalive is ignored.
+  // Either allow them simultaneously or make them mutually exclusive in the
+  // fetch API.
   const bool request_is_prefetch = request.load_flags & net::LOAD_PREFETCH;
   CHECK(!(request_is_prefetch && request.browsing_topics));
+  CHECK(!(request_is_prefetch && request.ad_auction_headers));
   CHECK(!(request_is_prefetch && request.keepalive));
 
-  // Use |subresource_proxying_loader_factory_| for prefetch and topics requests
-  // to send the requests to the SubresourceProxyingURLLoaderService in the
-  // browser process and trigger the special handling.
+  // Use |subresource_proxying_loader_factory_| for prefetch, browsing_topics,
+  // and ad_auction_headers requests to send the requests to
+  // `SubresourceProxyingURLLoaderService` in the browser process and trigger
+  // the special handling.
   // TODO(horo): Move this routing logic to network service, when we will have
   // the special prefetch handling in network service.
-  if ((request_is_prefetch || request.browsing_topics) &&
+  if ((request_is_prefetch || request.browsing_topics ||
+       request.ad_auction_headers) &&
       subresource_proxying_loader_factory_) {
     // For prefetch, this is no-state prefetch (see
     // WebURLRequest::GetLoadFlagsForWebUrlRequest).

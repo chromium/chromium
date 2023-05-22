@@ -15,9 +15,11 @@
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
 
 namespace content {
@@ -118,16 +120,10 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
               browser_context());
     }
 
-    mojo::Remote<network::mojom::URLLoaderFactory> factory;
-    proxied_url_loader_factory.Clone(factory.BindNewPipeAndPassReceiver());
-    auto pending_factory =
-        std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-            factory.Unbind());
-
     return subresource_proxying_url_loader_service_->GetFactory(
         remote_url_loader_factory.BindNewPipeAndPassReceiver(),
         /*frame_tree_node_id=*/0,
-        network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
+        proxied_url_loader_factory.GetSafeWeakWrapper(),
         /*render_frame_host=*/nullptr,
         /*prefetched_signed_exchange_cache=*/nullptr);
   }
@@ -920,12 +916,11 @@ TEST_F(BrowsingTopicsURLLoaderTest, ReportBadMessageOnInvalidRequest) {
 
   EXPECT_FALSE(remote_url_loader_factory.is_connected());
   EXPECT_EQ(0, proxied_url_loader_factory.NumPending());
-  EXPECT_EQ(
-      "Unexpected `resource_request_in` in "
-      "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): it's not a "
-      "prefetch or browsing_topics request.",
-      received_error);
-
+  EXPECT_THAT(
+      received_error,
+      testing::HasSubstr(
+          "Unexpected `resource_request_in` in "
+          "SubresourceProxyingURLLoaderService::CreateLoaderAndStart()"));
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 

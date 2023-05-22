@@ -34,6 +34,7 @@
 #include "components/web_package/web_bundle_builder.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/test_interest_group_observer.h"
@@ -67,6 +68,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/features.h"
@@ -96,6 +98,9 @@ namespace {
 using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::Optional;
+
+constexpr char kLegitimateAdAuctionResponse[] =
+    "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
 
 // Returned by test Javascript code when join or leave promises complete without
 // throwing an exception.
@@ -526,6 +531,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     feature_list_.InitWithFeatures(
         /*`enabled_features`=*/
         {blink::features::kInterestGroupStorage,
+         blink::features::kFledgeBiddingAndAuctionServer,
+         features::kPrivacySandboxAdsAPIsOverride,
          blink::features::kAdInterestGroupAPI, blink::features::kParakeet,
          blink::features::kFledge, blink::features::kAllowURNsInIframes,
          blink::features::kBiddingAndScoringDebugReportingAPI,
@@ -1125,11 +1132,40 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   void OnHttpsTestServerRequestMonitor(
       const net::test_server::HttpRequest& request) {
     base::AutoLock auto_lock(requests_lock_);
+
+    auto ad_auction_header = request.headers.find("Sec-Ad-Auction-Fetch");
+    if (ad_auction_header != request.headers.end()) {
+      request_path_ad_auction_header_map_[request.GetURL().path()] =
+          ad_auction_header->second;
+    }
+
     received_https_test_server_requests_.insert(request.GetURL());
     if (wait_for_url_ == request.GetURL()) {
       wait_for_url_ = GURL();
       request_run_loop_->Quit();
     }
+  }
+
+  absl::optional<std::string> GetAdAuctionHeaderForRequestPath(
+      const std::string& request_path) {
+    base::AutoLock auto_lock(requests_lock_);
+    auto it = request_path_ad_auction_header_map_.find(request_path);
+    if (it == request_path_ad_auction_header_map_.end()) {
+      return absl::nullopt;
+    }
+
+    return it->second;
+  }
+
+  bool WitnessedAuctionResponseForOrigin(const url::Origin& origin,
+                                         const std::string& response) {
+    Page& page = web_contents()->GetPrimaryPage();
+
+    AdAuctionPageData* ad_auction_page_data =
+        PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
+
+    return ad_auction_page_data->WitnessedAuctionResponseForOrigin(origin,
+                                                                   response);
   }
 
   void ClearReceivedRequests() {
@@ -1305,6 +1341,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   raw_ptr<InterestGroupManagerImpl, DanglingUntriaged> manager_;
   base::Lock requests_lock_;
   std::set<GURL> received_https_test_server_requests_
+      GUARDED_BY(requests_lock_);
+  std::map<std::string, std::string> request_path_ad_auction_header_map_
       GUARDED_BY(requests_lock_);
   std::unique_ptr<base::RunLoop> request_run_loop_;
   GURL wait_for_url_ GUARDED_BY(requests_lock_);
@@ -12682,6 +12720,177 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ExecutionModeGroupByOrigin) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    Fetch_AdAuctionHeadersEligible_HasAdAuctionResultResponseHeader) {
+  GURL main_frame_url =
+      https_server_->GetURL("a.test", "/interest_group/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair(
+      "{{AD_AUCTION_RESULT_HEADER}}",
+      base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse})));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL fetch_url = https_server_->GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/interest_group/"
+                    "page_with_custom_ad_auction_result_header.html",
+                    replacement));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
+
+  absl::optional<std::string> ad_auction_header_value =
+      GetAdAuctionHeaderForRequestPath(
+          "/interest_group/page_with_custom_ad_auction_result_header.html");
+
+  EXPECT_TRUE(ad_auction_header_value);
+  EXPECT_EQ(*ad_auction_header_value, "?1");
+
+  EXPECT_TRUE(WitnessedAuctionResponseForOrigin(url::Origin::Create(fetch_url),
+                                                kLegitimateAdAuctionResponse));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    Fetch_AdAuctionHeadersNotEligible_HasAdAuctionResultResponseHeader) {
+  GURL main_frame_url =
+      https_server_->GetURL("a.test", "/interest_group/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair(
+      "{{AD_AUCTION_RESULT_HEADER}}",
+      base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse})));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  // "d.test" is not allowlisted for the API. Thus the request isn't eligible
+  // for ad auction headers.
+  GURL fetch_url = https_server_->GetURL(
+      "d.test", net::test_server::GetFilePathWithReplacements(
+                    "/interest_group/"
+                    "page_with_custom_ad_auction_result_header.html",
+                    replacement));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
+
+  absl::optional<std::string> ad_auction_header_value =
+      GetAdAuctionHeaderForRequestPath(
+          "/interest_group/page_with_custom_ad_auction_result_header.html");
+
+  EXPECT_FALSE(ad_auction_header_value);
+
+  EXPECT_FALSE(WitnessedAuctionResponseForOrigin(url::Origin::Create(fetch_url),
+                                                 kLegitimateAdAuctionResponse));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    Fetch_AdAuctionHeadersEligible_HasNoAdAuctionResultResponseHeader) {
+  GURL main_frame_url =
+      https_server_->GetURL("a.test", "/interest_group/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair("{{AD_AUCTION_RESULT_HEADER}}", ""));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  // "d.test" is not allowlisted for the API. Thus the request isn't eligible
+  // for ad auction headers.
+  GURL fetch_url = https_server_->GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/interest_group/"
+                    "page_with_custom_ad_auction_result_header.html",
+                    replacement));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
+
+  absl::optional<std::string> ad_auction_header_value =
+      GetAdAuctionHeaderForRequestPath(
+          "/interest_group/page_with_custom_ad_auction_result_header.html");
+
+  EXPECT_TRUE(ad_auction_header_value);
+  EXPECT_EQ(*ad_auction_header_value, "?1");
+
+  EXPECT_FALSE(WitnessedAuctionResponseForOrigin(url::Origin::Create(fetch_url),
+                                                 kLegitimateAdAuctionResponse));
+}
+
+// On site a.test, test fetch request to b.test that gets redirected to c.test.
+// Only the initial ad auction request header "?1" is expected -- its response
+// will be ignored and the redirect request is also ineligible for ad auction
+// headers handling.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       Fetch_HasRedirect_AdAuctionHeadersNotEligible) {
+  GURL main_frame_url =
+      https_server_->GetURL("a.test", "/interest_group/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  base::StringPairs redirect_replacement;
+  redirect_replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  redirect_replacement.emplace_back(std::make_pair(
+      "{{AD_AUCTION_RESULT_HEADER}}",
+      base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse})));
+  redirect_replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL redirect_url = https_server_->GetURL(
+      "c.test", net::test_server::GetFilePathWithReplacements(
+                    "/interest_group/"
+                    "page_with_custom_ad_auction_result_header2.html",
+                    redirect_replacement));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(
+      std::make_pair("{{STATUS}}", "301 Moved Permanently"));
+  replacement.emplace_back(std::make_pair(
+      "{{AD_AUCTION_RESULT_HEADER}}",
+      base::StrCat({"Ad-Auction-Result: ", kLegitimateAdAuctionResponse})));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}",
+                                          "Location: " + redirect_url.spec()));
+
+  GURL fetch_url = https_server_->GetURL(
+      "b.test", net::test_server::GetFilePathWithReplacements(
+                    "/interest_group/"
+                    "page_with_custom_ad_auction_result_header.html",
+                    replacement));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {adAuctionHeaders: true})", fetch_url)));
+
+  {
+    absl::optional<std::string> ad_auction_header_value =
+        GetAdAuctionHeaderForRequestPath(
+            "/interest_group/page_with_custom_ad_auction_result_header.html");
+
+    EXPECT_TRUE(ad_auction_header_value);
+    EXPECT_EQ(*ad_auction_header_value, "?1");
+
+    EXPECT_FALSE(WitnessedAuctionResponseForOrigin(
+        url::Origin::Create(fetch_url), kLegitimateAdAuctionResponse));
+  }
+  {
+    absl::optional<std::string> ad_auction_header_value =
+        GetAdAuctionHeaderForRequestPath(
+            "/interest_group/page_with_custom_ad_auction_result_header2.html");
+
+    EXPECT_FALSE(ad_auction_header_value);
+
+    EXPECT_FALSE(WitnessedAuctionResponseForOrigin(
+        url::Origin::Create(fetch_url), kLegitimateAdAuctionResponse));
+  }
+}
+
 // Runs auction like Just like
 // InterestGroupFencedFrameBrowserTest.RunAdAuctionWithWinner but also registers
 // an ad beacon that is sent by the render URL.
@@ -13475,9 +13684,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(network_responder_->HasReceivedRequest());
 }
 
-class BiddingAndAuctionServerBrowserTestBase : public ContentBrowserTest {
+class BiddingAndAuctionServerOriginTrialBrowserTestBase
+    : public ContentBrowserTest {
  public:
-  BiddingAndAuctionServerBrowserTestBase() = default;
+  BiddingAndAuctionServerOriginTrialBrowserTestBase() = default;
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -13522,10 +13732,10 @@ class BiddingAndAuctionServerBrowserTestBase : public ContentBrowserTest {
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
 };
 
-class BiddingAndAuctionServerAllFeaturesEnabledBrowserTest
-    : public BiddingAndAuctionServerBrowserTestBase {
+class BiddingAndAuctionServerAllFeaturesEnabledOriginTrialBrowserTest
+    : public BiddingAndAuctionServerOriginTrialBrowserTestBase {
  public:
-  BiddingAndAuctionServerAllFeaturesEnabledBrowserTest() {
+  BiddingAndAuctionServerAllFeaturesEnabledOriginTrialBrowserTest() {
     feature_list_.InitWithFeatures(
         {blink::features::kPrivacySandboxAdsAPIs,
          blink::features::kInterestGroupStorage,
@@ -13537,8 +13747,9 @@ class BiddingAndAuctionServerAllFeaturesEnabledBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(BiddingAndAuctionServerAllFeaturesEnabledBrowserTest,
-                       AdsAPIsOriginTrial_AdAuctionHeadersNotAllowedForFetch) {
+IN_PROC_BROWSER_TEST_F(
+    BiddingAndAuctionServerAllFeaturesEnabledOriginTrialBrowserTest,
+    AdsAPIsOriginTrial_AdAuctionHeadersNotAllowedForFetch) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
 
@@ -13551,7 +13762,7 @@ IN_PROC_BROWSER_TEST_F(BiddingAndAuctionServerAllFeaturesEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BiddingAndAuctionServerAllFeaturesEnabledBrowserTest,
+    BiddingAndAuctionServerAllFeaturesEnabledOriginTrialBrowserTest,
     BiddingAndAuctionServerOriginTrial_AdAuctionHeadersAllowedForFetch) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/page_with_ba_server_ot.html")));
@@ -13565,7 +13776,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BiddingAndAuctionServerAllFeaturesEnabledBrowserTest,
+    BiddingAndAuctionServerAllFeaturesEnabledOriginTrialBrowserTest,
     BiddingAndAuctionServerOriginTrial_NoFetchParam_AdAuctionHeadersNotAllowedForFetch) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/page_with_ba_server_ot.html")));
@@ -13578,10 +13789,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(last_request_is_ad_auction_header_request());
 }
 
-class BiddingAndAuctionServerDisabledBrowserTest
-    : public BiddingAndAuctionServerBrowserTestBase {
+class BiddingAndAuctionServerDisabledOriginTrialBrowserTest
+    : public BiddingAndAuctionServerOriginTrialBrowserTestBase {
  public:
-  BiddingAndAuctionServerDisabledBrowserTest() {
+  BiddingAndAuctionServerDisabledOriginTrialBrowserTest() {
     feature_list_.InitWithFeatures(
         {blink::features::kPrivacySandboxAdsAPIs,
          blink::features::kInterestGroupStorage},
@@ -13594,7 +13805,7 @@ class BiddingAndAuctionServerDisabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    BiddingAndAuctionServerDisabledBrowserTest,
+    BiddingAndAuctionServerDisabledOriginTrialBrowserTest,
     BiddingAndAuctionServerOriginTrial_AdAuctionHeadersNotAllowedForFetch) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/page_with_ba_server_ot.html")));
@@ -13607,10 +13818,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(last_request_is_ad_auction_header_request());
 }
 
-class BiddingAndAuctionServerMainFledgeFeatureDisabledBrowserTest
-    : public BiddingAndAuctionServerBrowserTestBase {
+class BiddingAndAuctionServerMainFledgeFeatureDisabledOriginTrialBrowserTest
+    : public BiddingAndAuctionServerOriginTrialBrowserTestBase {
  public:
-  BiddingAndAuctionServerMainFledgeFeatureDisabledBrowserTest() {
+  BiddingAndAuctionServerMainFledgeFeatureDisabledOriginTrialBrowserTest() {
     feature_list_.InitWithFeatures(
         {blink::features::kPrivacySandboxAdsAPIs,
          blink::features::kFledgeBiddingAndAuctionServer},
@@ -13622,7 +13833,7 @@ class BiddingAndAuctionServerMainFledgeFeatureDisabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    BiddingAndAuctionServerMainFledgeFeatureDisabledBrowserTest,
+    BiddingAndAuctionServerMainFledgeFeatureDisabledOriginTrialBrowserTest,
     BiddingAndAuctionServerOriginTrial_AdAuctionHeadersNotAllowedForFetch) {
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL("https://example.test/page_with_ba_server_ot.html")));

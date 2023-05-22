@@ -6095,6 +6095,7 @@ data/interest_group/decision_no_direct_from_seller_signals_validator.js.mock-htt
 data/interest_group/decision_simple_direct_from_seller_signals_validator.js
 data/interest_group/decision_simple_direct_from_seller_signals_validator.js.mock-http-headers
 data/interest_group/empty.html
+data/interest_group/empty.html.mock-http-headers
 data/interest_group/generate-test-wbns.sh
 data/interest_group/multiply.wasm
 data/interest_group/multiply.wasm.mock-http-headers
@@ -6104,6 +6105,10 @@ data/interest_group/page-with-fledge-permissions-policy-disabled.html
 data/interest_group/page-with-fledge-permissions-policy-disabled.html.mock-http-headers
 data/interest_group/page_with_ads_apis_ot.html
 data/interest_group/page_with_ba_server_ot.html
+data/interest_group/page_with_custom_ad_auction_result_header.html
+data/interest_group/page_with_custom_ad_auction_result_header.html.mock-http-headers
+data/interest_group/page_with_custom_ad_auction_result_header2.html
+data/interest_group/page_with_custom_ad_auction_result_header2.html.mock-http-headers
 data/interest_group/schemaV6.sql
 data/interest_group/trusted_bidding_signals.json
 data/interest_group/trusted_bidding_signals.json.mock-http-headers

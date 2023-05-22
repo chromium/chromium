@@ -185,6 +185,15 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
     opt_in_features.insert(mojom::PermissionsPolicyFeature::kSharedStorage);
   }
 
+  if (request.ad_auction_headers) {
+    DCHECK(
+        base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage) &&
+        base::FeatureList::IsEnabled(
+            blink::features::kFledgeBiddingAndAuctionServer));
+
+    opt_in_features.insert(mojom::PermissionsPolicyFeature::kRunAdAuction);
+  }
+
   return IsFeatureEnabledForOriginImpl(feature, origin, opt_in_features);
 }
 
@@ -343,7 +352,8 @@ const mojom::PermissionsPolicyFeature
     PermissionsPolicy::defined_opt_in_features_[] = {
         mojom::PermissionsPolicyFeature::kBrowsingTopics,
         mojom::PermissionsPolicyFeature::kBrowsingTopicsBackwardCompatible,
-        mojom::PermissionsPolicyFeature::kSharedStorage};
+        mojom::PermissionsPolicyFeature::kSharedStorage,
+        mojom::PermissionsPolicyFeature::kRunAdAuction};
 
 PermissionsPolicy::PermissionsPolicy(
     url::Origin origin,
