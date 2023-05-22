@@ -72,7 +72,7 @@ static std::pair<std::u16string, absl::optional<GURL>> GetMessageForStatus(
               absl::nullopt};
     case AllowStatus::kBlockedOnStable:
       return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_CHANNEL),
-              GURL("https://support.google.com/chromebook/answer/1086915")};
+              GURL("https://support.google.com/chromebook/answer/177889")};
     case AllowStatus::kBlockedByFlag:
       return {l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FLAG),
               absl::nullopt};
