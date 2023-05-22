@@ -14345,7 +14345,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       You&#x2019;re getting standard protection
     </message>
     <message name="IDS_TAILORED_SECURITY_CONSENTED_DISABLE_MESSAGE_DESCRIPTION_UPDATED" desc="Description shown in the Android message when the account tailored security setting changes for a consented primary account">
-      You&#x2019;re getting standard security protection for this Chrome profile
+      You&#x2019;re getting standard security protection on this device
     </message>
     <message name="IDS_TAILORED_SECURITY_CONSENTED_MESSAGE_OK_BUTTON" desc="The text on the ok button in the Android message when the account tailored security setting changes for a consented primary account">
       OK
