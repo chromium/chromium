@@ -219,12 +219,6 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
 
     @Override
     public void onFolderStateSet(BookmarkId folder) {
-        // If we're in the middle of a selection, do not override things.
-        // TODO(https://crbug.com/1435024): Rework logic to not be more robust.
-        if (mSelectionDelegate.isSelectionEnabled()) {
-            return;
-        }
-
         mCurrentFolder = folder;
         mModel.set(BookmarkToolbarProperties.CURRENT_FOLDER, mCurrentFolder);
 
@@ -253,8 +247,17 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
             title = folderItem.getTitle();
             navigationButton = NavigationButton.BACK;
         }
-
+        // This doesn't handle selection state correctly, must be before we fake a selection change.
         mModel.set(BookmarkToolbarProperties.TITLE, title);
+
+        // Selection state isn't routed through MVC, but instead the View directly subscribes to
+        // events. The view then changes/ignores/overrides properties that were set above, based on
+        // selection. This is problematic because it means the View is sensitive to the order of
+        // inputs. To mitigate this, always make it re-apply selection the above properties.
+        mModel.set(BookmarkToolbarProperties.FAKE_SELECTION_STATE_CHANGE, true);
+
+        // Should typically be the last thing done, because lots of other properties will trigger
+        // an incorrect button state, and we need to override that.
         mModel.set(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE, navigationButton);
     }
 

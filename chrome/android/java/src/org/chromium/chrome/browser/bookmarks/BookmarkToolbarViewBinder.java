@@ -59,6 +59,8 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION) {
             bookmarkToolbar.setMenuIdClickedFunction(
                     model.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION));
+        } else if (key == BookmarkToolbarProperties.FAKE_SELECTION_STATE_CHANGE) {
+            bookmarkToolbar.fakeSelectionStateChange();
         }
     }
 }

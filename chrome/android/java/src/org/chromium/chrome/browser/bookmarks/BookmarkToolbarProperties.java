@@ -46,6 +46,9 @@ class BookmarkToolbarProperties {
     static final WritableIntPropertyKey CHECKED_SORT_MENU_ID = new WritableIntPropertyKey();
     static final WritableIntPropertyKey CHECKED_VIEW_MENU_ID = new WritableIntPropertyKey();
 
+    static final WritableObjectPropertyKey<Boolean> FAKE_SELECTION_STATE_CHANGE =
+            new WritableObjectPropertyKey<>(/*skipEquality=*/true);
+
     /** Bookmark state properties. */
     static final WritableObjectPropertyKey<BookmarkId> CURRENT_FOLDER =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
@@ -62,5 +65,5 @@ class BookmarkToolbarProperties {
             TITLE, BOOKMARK_UI_MODE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED,
             SEARCH_BUTTON_VISIBLE, EDIT_BUTTON_VISIBLE, NAVIGATION_BUTTON_STATE, CURRENT_FOLDER,
             CHECKED_SORT_MENU_ID, CHECKED_VIEW_MENU_ID, OPEN_SEARCH_UI_RUNNABLE,
-            MENU_ID_CLICKED_FUNCTION, OPEN_FOLDER_CALLBACK};
+            MENU_ID_CLICKED_FUNCTION, OPEN_FOLDER_CALLBACK, FAKE_SELECTION_STATE_CHANGE};
 }

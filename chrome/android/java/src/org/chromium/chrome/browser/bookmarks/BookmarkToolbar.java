@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.util.ToolbarUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 /**
@@ -36,7 +37,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     // TODO(crbug.com/1425201): Remove BookmarkModel reference.
     private BookmarkModel mBookmarkModel;
     private BookmarkOpener mBookmarkOpener;
-    private SelectionDelegate mSelectionDelegate;
+    private SelectionDelegate<BookmarkId> mSelectionDelegate;
 
     // The current folder can be null before being set by the mediator.
     private @Nullable BookmarkItem mCurrentFolder;
@@ -151,6 +152,10 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
     void setMenuIdClickedFunction(Function<Integer, Boolean> menuIdClickedFunction) {
         mMenuIdClickedFunction = menuIdClickedFunction;
+    }
+
+    void fakeSelectionStateChange() {
+        onSelectionStateChange(new ArrayList<>(mSelectionDelegate.getSelectedItems()));
     }
 
     // OnMenuItemClickListener implementation.
