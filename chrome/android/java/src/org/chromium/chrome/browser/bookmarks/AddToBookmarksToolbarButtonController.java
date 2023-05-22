@@ -26,6 +26,8 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
+import java.util.Objects;
+
 /**
  *  Defines a toolbar button to add the current web page to bookmarks.
  */
@@ -110,7 +112,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
                 mBookmarkModelSupplier.get().hasBookmarkIdForTab(mActiveTabSupplier.get());
         ButtonSpec buttonSpecForCurrentTab =
                 isCurrentTabBookmarked ? mFilledButtonSpec : mEmptyButtonSpec;
-        if (mButtonData.getButtonSpec() != buttonSpecForCurrentTab) {
+        if (!Objects.equals(mButtonData.getButtonSpec(), buttonSpecForCurrentTab)) {
             mButtonData.setButtonSpec(buttonSpecForCurrentTab);
             notifyObservers(mButtonData.canShow());
         }

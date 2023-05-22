@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -79,12 +80,41 @@ public class PhoneCaptureStateTokenTest {
 
     @Test
     public void testDifferentOptionalButtonData() {
+        ButtonDataImpl otherButtonData = (ButtonDataImpl) makeButtonDate();
+        otherButtonData.setCanShow(!otherButtonData.canShow());
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder()
-                        .setOptionalButtonData(makeButtonDate())
+                        .setOptionalButtonData(otherButtonData)
                         .build();
         Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
+    }
+
+    @Test
+    public void testNullOptionalButtonData() {
+        PhoneCaptureStateToken otherPhoneCaptureStateToken =
+                new PhoneCustomTabCaptureStateTokenBuilder().setOptionalButtonData(null).build();
+        Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON,
+                otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
+    }
+
+    @Test
+    public void testSameOptionalButtonData_DifferentDrawable() {
+        ButtonDataImpl buttonData = (ButtonDataImpl) makeButtonDate();
+        // Create a capture state with the original ButtonData.
+        PhoneCaptureStateToken initialPhoneCaptureStateToken =
+                new PhoneCustomTabCaptureStateTokenBuilder()
+                        .setOptionalButtonData(buttonData)
+                        .build();
+        buttonData.updateDrawable(new ColorDrawable());
+        // Then create another capture when the button's drawable gets updated.
+        PhoneCaptureStateToken otherPhoneCaptureStateToken =
+                new PhoneCustomTabCaptureStateTokenBuilder()
+                        .setOptionalButtonData(buttonData)
+                        .build();
+
+        Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON,
+                initialPhoneCaptureStateToken.getAnyDifference(otherPhoneCaptureStateToken));
     }
 
     @Test
