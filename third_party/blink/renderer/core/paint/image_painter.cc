@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -48,15 +47,15 @@ bool CheckForOversizedImagesPolicy(const LayoutImage& layout_image,
           layout_image.GetDocument().GetExecutionContext()))
     return false;
 
-  LayoutSize layout_size = layout_image.ContentSize();
-  gfx::Size image_size = image->Size();
+  const PhysicalSize layout_size = layout_image.PhysicalContentBoxSize();
+  const gfx::Size image_size = image->Size();
   if (layout_size.IsEmpty() || image_size.IsEmpty())
     return false;
 
   const double downscale_ratio_width =
-      image_size.width() / layout_size.Width().ToDouble();
+      image_size.width() / layout_size.width.ToDouble();
   const double downscale_ratio_height =
-      image_size.height() / layout_size.Height().ToDouble();
+      image_size.height() / layout_size.height.ToDouble();
 
   const LayoutImageResource* image_resource = layout_image.ImageResource();
   const ImageResourceContent* cached_image =
@@ -149,7 +148,7 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
 
 void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
                                  const PhysicalOffset& paint_offset) {
-  LayoutSize content_size = layout_image_.ContentSize();
+  const PhysicalSize content_size = layout_image_.PhysicalContentBoxSize();
   bool has_image = layout_image_.ImageResource()->HasImage();
 
   if (has_image) {
@@ -158,13 +157,13 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
   } else {
     if (paint_info.phase == PaintPhase::kSelectionDragImage)
       return;
-    if (content_size.Width() <= 2 || content_size.Height() <= 2)
+    if (content_size.width <= 2 || content_size.height <= 2) {
       return;
+    }
   }
 
   PhysicalRect content_rect(
-      paint_offset + layout_image_.PhysicalContentBoxOffset(),
-      PhysicalSizeToBeNoop(content_size));
+      paint_offset + layout_image_.PhysicalContentBoxOffset(), content_size);
 
   PhysicalRect paint_rect = layout_image_.ReplacedContentRect();
   paint_rect.offset += paint_offset;
