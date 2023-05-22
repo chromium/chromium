@@ -2159,6 +2159,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
         ash::features::kFeatureManagementDriveFsBulkPinning);
   }
 
+  if (options.enable_drive_shortcuts) {
+    enabled_features.push_back(ash::features::kFilesDriveShortcuts);
+  } else {
+    disabled_features.push_back(ash::features::kFilesDriveShortcuts);
+  }
+
   if (options.feature_ids.size() > 0) {
     for (const std::string& feature_id : options.feature_ids) {
       base::AddTagToTestResult("feature_id", feature_id);
@@ -3351,6 +3357,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isInlineSyncStatusProgressEventsEnabled") {
     *output = options.enable_inline_sync_status_progress_events ? "true" : "false";
+    return;
+  }
+
+  if (name == "isDriveShortcutsEnabled") {
+    *output = options.enable_drive_shortcuts ? "true" : "false";
     return;
   }
 

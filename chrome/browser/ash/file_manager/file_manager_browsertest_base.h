@@ -179,6 +179,9 @@ class FileManagerBrowserTestBase
     // Whether tests should enable the Google Drive bulk pinning feature.
     bool enable_drive_bulk_pinning = false;
 
+    // Whether to enable Drive shortcuts showing a badge or not.
+    bool enable_drive_shortcuts = false;
+
     // Feature IDs associated for mapping test cases and features.
     std::vector<std::string> feature_ids;
   };

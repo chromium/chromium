@@ -224,6 +224,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableDriveShortcuts() {
+    options.enable_drive_shortcuts = true;
+    return *this;
+  }
+
   TestCase& SetDeviceMode(DeviceMode device_mode) {
     options.device_mode = device_mode;
     return *this;
@@ -303,6 +308,10 @@ struct TestCase {
 
     if (options.enable_drive_bulk_pinning) {
       full_name += "_DriveBulkPinning";
+    }
+
+    if (options.enable_drive_shortcuts) {
+      full_name += "_DriveShortcuts";
     }
 
     switch (options.device_mode) {
@@ -1545,6 +1554,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveAvailableOfflineDirectoryGearMenu"),
         TestCase("driveAvailableOfflineActionBar"),
         TestCase("driveLinkToDirectory"),
+        TestCase("driveLinkToDirectory").EnableDriveShortcuts(),
         TestCase("driveLinkOpenFileThroughLinkedDirectory"),
         TestCase("driveLinkOpenFileThroughTransitiveLink"),
         TestCase("driveWelcomeBanner"),
