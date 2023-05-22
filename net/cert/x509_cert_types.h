@@ -48,10 +48,8 @@ struct NET_EXPORT CertPrincipal {
   std::string state_or_province_name;
   std::string country_name;
 
-  std::vector<std::string> street_addresses;
   std::vector<std::string> organization_names;
   std::vector<std::string> organization_unit_names;
-  std::vector<std::string> domain_components;
 
  private:
   // Comparison operator is private and only defined for use by

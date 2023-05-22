@@ -62,11 +62,6 @@ bool CertPrincipal::ParseDistinguishedName(
                                                            &country_name)) {
           return false;
         }
-      } else if (name_attribute.type == der::Input(kTypeStreetAddressOid)) {
-        std::string s;
-        if (!name_attribute.ValueAsStringWithUnsafeOptions(string_handling, &s))
-          return false;
-        street_addresses.push_back(s);
       } else if (name_attribute.type == der::Input(kTypeOrganizationNameOid)) {
         std::string s;
         if (!name_attribute.ValueAsStringWithUnsafeOptions(string_handling, &s))
@@ -78,11 +73,6 @@ bool CertPrincipal::ParseDistinguishedName(
         if (!name_attribute.ValueAsStringWithUnsafeOptions(string_handling, &s))
           return false;
         organization_unit_names.push_back(s);
-      } else if (name_attribute.type == der::Input(kTypeDomainComponentOid)) {
-        std::string s;
-        if (!name_attribute.ValueAsStringWithUnsafeOptions(string_handling, &s))
-          return false;
-        domain_components.push_back(s);
       }
     }
   }

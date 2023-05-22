@@ -83,22 +83,18 @@ void CheckGoogleCert(const scoped_refptr<X509Certificate>& google_cert,
   EXPECT_EQ("Mountain View", subject.locality_name);
   EXPECT_EQ("California", subject.state_or_province_name);
   EXPECT_EQ("US", subject.country_name);
-  EXPECT_EQ(0U, subject.street_addresses.size());
   ASSERT_EQ(1U, subject.organization_names.size());
   EXPECT_EQ("Google Inc", subject.organization_names[0]);
   EXPECT_EQ(0U, subject.organization_unit_names.size());
-  EXPECT_EQ(0U, subject.domain_components.size());
 
   const CertPrincipal& issuer = google_cert->issuer();
   EXPECT_EQ("Thawte SGC CA", issuer.common_name);
   EXPECT_EQ("", issuer.locality_name);
   EXPECT_EQ("", issuer.state_or_province_name);
   EXPECT_EQ("ZA", issuer.country_name);
-  EXPECT_EQ(0U, issuer.street_addresses.size());
   ASSERT_EQ(1U, issuer.organization_names.size());
   EXPECT_EQ("Thawte Consulting (Pty) Ltd.", issuer.organization_names[0]);
   EXPECT_EQ(0U, issuer.organization_unit_names.size());
-  EXPECT_EQ(0U, issuer.domain_components.size());
 
   // Use DoubleT because its epoch is the same on all platforms
   const Time& valid_start = google_cert->valid_start();
@@ -143,25 +139,21 @@ TEST(X509CertificateTest, WebkitCertParsing) {
   EXPECT_EQ("Cupertino", subject.locality_name);
   EXPECT_EQ("California", subject.state_or_province_name);
   EXPECT_EQ("US", subject.country_name);
-  EXPECT_EQ(0U, subject.street_addresses.size());
   ASSERT_EQ(1U, subject.organization_names.size());
   EXPECT_EQ("Apple Inc.", subject.organization_names[0]);
   ASSERT_EQ(1U, subject.organization_unit_names.size());
   EXPECT_EQ("Mac OS Forge", subject.organization_unit_names[0]);
-  EXPECT_EQ(0U, subject.domain_components.size());
 
   const CertPrincipal& issuer = webkit_cert->issuer();
   EXPECT_EQ("Go Daddy Secure Certification Authority", issuer.common_name);
   EXPECT_EQ("Scottsdale", issuer.locality_name);
   EXPECT_EQ("Arizona", issuer.state_or_province_name);
   EXPECT_EQ("US", issuer.country_name);
-  EXPECT_EQ(0U, issuer.street_addresses.size());
   ASSERT_EQ(1U, issuer.organization_names.size());
   EXPECT_EQ("GoDaddy.com, Inc.", issuer.organization_names[0]);
   ASSERT_EQ(1U, issuer.organization_unit_names.size());
   EXPECT_EQ("http://certificates.godaddy.com/repository",
-      issuer.organization_unit_names[0]);
-  EXPECT_EQ(0U, issuer.domain_components.size());
+            issuer.organization_unit_names[0]);
 
   // Use DoubleT because its epoch is the same on all platforms
   const Time& valid_start = webkit_cert->valid_start();
@@ -195,24 +187,20 @@ TEST(X509CertificateTest, ThawteCertParsing) {
   EXPECT_EQ("Mountain View", subject.locality_name);
   EXPECT_EQ("California", subject.state_or_province_name);
   EXPECT_EQ("US", subject.country_name);
-  EXPECT_EQ(0U, subject.street_addresses.size());
   ASSERT_EQ(1U, subject.organization_names.size());
   EXPECT_EQ("Thawte Inc", subject.organization_names[0]);
   EXPECT_EQ(0U, subject.organization_unit_names.size());
-  EXPECT_EQ(0U, subject.domain_components.size());
 
   const CertPrincipal& issuer = thawte_cert->issuer();
   EXPECT_EQ("thawte Extended Validation SSL CA", issuer.common_name);
   EXPECT_EQ("", issuer.locality_name);
   EXPECT_EQ("", issuer.state_or_province_name);
   EXPECT_EQ("US", issuer.country_name);
-  EXPECT_EQ(0U, issuer.street_addresses.size());
   ASSERT_EQ(1U, issuer.organization_names.size());
   EXPECT_EQ("thawte, Inc.", issuer.organization_names[0]);
   ASSERT_EQ(1U, issuer.organization_unit_names.size());
   EXPECT_EQ("Terms of use at https://www.thawte.com/cps (c)06",
             issuer.organization_unit_names[0]);
-  EXPECT_EQ(0U, issuer.domain_components.size());
 
   // Use DoubleT because its epoch is the same on all platforms
   const Time& valid_start = thawte_cert->valid_start();
@@ -238,13 +226,10 @@ TEST(X509CertificateTest, MultivalueRDN) {
   EXPECT_EQ("", subject.locality_name);
   EXPECT_EQ("", subject.state_or_province_name);
   EXPECT_EQ("US", subject.country_name);
-  EXPECT_EQ(0U, subject.street_addresses.size());
   ASSERT_EQ(1U, subject.organization_names.size());
   EXPECT_EQ("Chromium", subject.organization_names[0]);
   ASSERT_EQ(1U, subject.organization_unit_names.size());
   EXPECT_EQ("Chromium net_unittests", subject.organization_unit_names[0]);
-  ASSERT_EQ(1U, subject.domain_components.size());
-  EXPECT_EQ("Chromium", subject.domain_components[0]);
 }
 
 // Test that characters which would normally be escaped in the string form,
@@ -262,14 +247,11 @@ TEST(X509CertificateTest, UnescapedSpecialCharacters) {
   EXPECT_EQ("Mountain View", subject.locality_name);
   EXPECT_EQ("California", subject.state_or_province_name);
   EXPECT_EQ("US", subject.country_name);
-  ASSERT_EQ(1U, subject.street_addresses.size());
-  EXPECT_EQ("1600 Amphitheatre Parkway", subject.street_addresses[0]);
   ASSERT_EQ(1U, subject.organization_names.size());
   EXPECT_EQ("Chromium = \"net_unittests\"", subject.organization_names[0]);
   ASSERT_EQ(2U, subject.organization_unit_names.size());
   EXPECT_EQ("net_unittests", subject.organization_unit_names[0]);
   EXPECT_EQ("Chromium", subject.organization_unit_names[1]);
-  EXPECT_EQ(0U, subject.domain_components.size());
 }
 
 TEST(X509CertificateTest, InvalidPrintableStringIsUtf8) {
