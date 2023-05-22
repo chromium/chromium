@@ -22,6 +22,7 @@ constexpr char kArc[] = "ARC";
 constexpr char kCrostini[] = "CROSTINI";
 constexpr char kPluginVm[] = "PLUGIN_VM";
 constexpr char kDrive[] = "DRIVE";
+constexpr char kOneDrive[] = "ONEDRIVE";
 constexpr char kUsb[] = "USB";
 
 constexpr char kAllowLevel[] = "ALLOW";

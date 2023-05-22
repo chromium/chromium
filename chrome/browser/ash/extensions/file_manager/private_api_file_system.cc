@@ -270,6 +270,8 @@ DlpRulesManagerComponentToApiEnum(data_controls::Component component) {
       return VolumeType::VOLUME_TYPE_REMOVABLE;
     case Component::kDrive:
       return VolumeType::VOLUME_TYPE_DRIVE;
+    case Component::kOneDrive:
+      return VolumeType::VOLUME_TYPE_PROVIDED;
     case Component::kUnknownComponent:
       NOTREACHED() << "DLP component not set.";
       return {};

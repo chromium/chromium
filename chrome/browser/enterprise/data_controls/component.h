@@ -18,7 +18,8 @@ enum class Component {
   kPluginVm,  // Plugin VM (Parallels/Windows) as a Guest OS.
   kUsb,       // Removable disk.
   kDrive,     // Google drive for file storage.
-  kMaxValue = kDrive
+  kOneDrive,  // Microsoft OneDrive for file storage.
+  kMaxValue = kOneDrive
 };
 
 }  // namespace data_controls

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
@@ -56,6 +57,9 @@ const std::u16string GetDestinationComponent(DlpFileDestination destination) {
           IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE);
     case data_controls::Component::kDrive:
       return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
+    case data_controls::Component::kOneDrive:
+      return l10n_util::GetStringUTF16(
+          IDS_FILE_BROWSER_DLP_COMPONENT_MICROSOFT_ONEDRIVE);
     case data_controls::Component::kUnknownComponent:
       NOTREACHED();
       return u"";

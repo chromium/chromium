@@ -51,6 +51,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
@@ -176,6 +177,20 @@ absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
     return data_controls::Component::kDrive;
   }
 
+  if (ash::cloud_upload::CloudUploadDialog::IsODFSMounted(profile)) {
+    auto* service = ash::file_system_provider::Service::Get(profile);
+    auto provider_id =
+        ash::file_system_provider::ProviderId::CreateFromExtensionId(
+            file_manager::file_tasks::GetODFSExtensionId(profile));
+    auto one_drive_file_systems =
+        service->GetProvidedFileSystemInfoList(provider_id);
+    CHECK(one_drive_file_systems.size() == 1);
+
+    if (one_drive_file_systems[0].mount_path().IsParent(file_path)) {
+      return data_controls::Component::kOneDrive;
+    }
+  }
+
   base::FilePath linux_files =
       file_manager::util::GetCrostiniMountDirectory(profile);
   if (linux_files == file_path || linux_files.IsParent(file_path)) {
@@ -213,6 +228,8 @@ absl::optional<data_controls::Component> MaybeGetComponent(
       return ::dlp::DlpComponent::USB;
     case data_controls::Component::kDrive:
       return ::dlp::DlpComponent::GOOGLE_DRIVE;
+    case data_controls::Component::kOneDrive:
+      return ::dlp::DlpComponent::MICROSOFT_ONEDRIVE;
   }
 }
 
@@ -440,6 +457,8 @@ void GotFilesSourcesOfCopy(
       return ::dlp::DlpComponent::USB;
     case data_controls::Component::kDrive:
       return ::dlp::DlpComponent::GOOGLE_DRIVE;
+    case data_controls::Component::kOneDrive:
+      return ::dlp::DlpComponent::MICROSOFT_ONEDRIVE;
   }
 }
 

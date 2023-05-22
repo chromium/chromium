@@ -1740,6 +1740,9 @@
   <message name="IDS_FILE_BROWSER_DLP_COMPONENT_VM" desc="PluginVM component label.">
     virtual machine
   </message>
+  <message name="IDS_FILE_BROWSER_DLP_COMPONENT_MICROSOFT_ONEDRIVE" desc="Microsoft OneDrive component label.">
+    Microsoft OneDrive
+  </message>
   <message name="IDS_FILE_BROWSER_ONE_DRIVE_MOVED_FILE_NUDGE" desc="Educational text that appears in the navigation tree when a file is automatically moved to OneDrive by the Office Cloud Upload feature/dialog.">
     Recently opened Microsoft files have moved to OneDrive
   </message>

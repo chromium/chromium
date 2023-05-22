@@ -62,6 +62,7 @@ struct MatchedRuleInfo {
 constexpr char kWildCardMatching[] = "*";
 
 constexpr char kDrivePattern[] = "drive.google.com";
+constexpr char kOneDrivePattern[] = "onedrive.live.com";
 
 DlpRulesManager::Restriction GetClassMapping(const std::string& restriction) {
   static constexpr auto kRestrictionsMap =
@@ -102,6 +103,7 @@ data_controls::Component GetComponentMapping(const std::string& component) {
            {dlp::kCrostini, data_controls::Component::kCrostini},
            {dlp::kPluginVm, data_controls::Component::kPluginVm},
            {dlp::kDrive, data_controls::Component::kDrive},
+           {dlp::kOneDrive, data_controls::Component::kOneDrive},
            {dlp::kUsb, data_controls::Component::kUsb}});
 
   auto* it = kComponentsMap.find(component);
@@ -179,7 +181,13 @@ std::vector<std::string> GetAssociatedUrlsConditions(
   switch (component) {
     case data_controls::Component::kDrive:
       return {kDrivePattern};
-    default:
+    case data_controls::Component::kOneDrive:
+      return {kOneDrivePattern};
+    case data_controls::Component::kUnknownComponent:
+    case data_controls::Component::kArc:
+    case data_controls::Component::kCrostini:
+    case data_controls::Component::kPluginVm:
+    case data_controls::Component::kUsb:
       return {};
   }
 }

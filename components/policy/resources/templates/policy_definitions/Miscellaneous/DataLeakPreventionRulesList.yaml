@@ -99,6 +99,7 @@ schema:
               - PLUGIN_VM
               - DRIVE
               - USB
+              - ONEDRIVE
               type: string
             type: array
           urls:

@@ -997,6 +997,8 @@ TEST_F(DlpFilesControllerAshTest, GetDlpRestrictionDetails_Mixed) {
       data_controls::Component::kUsb);
   components[DlpRulesManager::Level::kWarn].insert(
       data_controls::Component::kDrive);
+  components[DlpRulesManager::Level::kReport].insert(
+      data_controls::Component::kOneDrive);
 
   EXPECT_CALL(*rules_manager_, GetAggregatedDestinations)
       .WillOnce(testing::Return(destinations));
@@ -1006,7 +1008,7 @@ TEST_F(DlpFilesControllerAshTest, GetDlpRestrictionDetails_Mixed) {
   ASSERT_TRUE(files_controller_);
   auto result = files_controller_->GetDlpRestrictionDetails(kExampleUrl1);
 
-  ASSERT_EQ(result.size(), 3u);
+  ASSERT_EQ(result.size(), 4u);
   std::vector<std::string> expected_urls;
   std::vector<data_controls::Component> expected_components;
   // Block:
@@ -1022,13 +1024,20 @@ TEST_F(DlpFilesControllerAshTest, GetDlpRestrictionDetails_Mixed) {
   EXPECT_EQ(result[1].level, DlpRulesManager::Level::kAllow);
   EXPECT_EQ(result[1].urls, expected_urls);
   EXPECT_EQ(result[1].components, expected_components);
+  // Report:
+  expected_urls.clear();
+  expected_components.clear();
+  expected_components.push_back(data_controls::Component::kOneDrive);
+  EXPECT_EQ(result[2].level, DlpRulesManager::Level::kReport);
+  EXPECT_EQ(result[2].urls, expected_urls);
+  EXPECT_EQ(result[2].components, expected_components);
   // Warn:
   expected_urls.clear();
   expected_components.clear();
   expected_components.push_back(data_controls::Component::kDrive);
-  EXPECT_EQ(result[2].level, DlpRulesManager::Level::kWarn);
-  EXPECT_EQ(result[2].urls, expected_urls);
-  EXPECT_EQ(result[2].components, expected_components);
+  EXPECT_EQ(result[3].level, DlpRulesManager::Level::kWarn);
+  EXPECT_EQ(result[3].urls, expected_urls);
+  EXPECT_EQ(result[3].components, expected_components);
 }
 
 TEST_F(DlpFilesControllerAshTest, GetDlpRestrictionDetails_Components) {

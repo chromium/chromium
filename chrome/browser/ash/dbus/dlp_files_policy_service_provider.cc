@@ -57,8 +57,8 @@ data_controls::Component MapProtoToPolicyComponent(
       return data_controls::Component::kUsb;
     case ::dlp::DlpComponent::GOOGLE_DRIVE:
       return data_controls::Component::kDrive;
-    case ::dlp::DlpComponent::MICROSOFT_ONEDRIVE:  // TODO(b/280575394): Handle
-                                                   // OneDrive properly.
+    case ::dlp::DlpComponent::MICROSOFT_ONEDRIVE:
+      return data_controls::Component::kOneDrive;
     case ::dlp::DlpComponent::UNKNOWN_COMPONENT:
     case ::dlp::DlpComponent::SYSTEM:
       return data_controls::Component::kUnknownComponent;
