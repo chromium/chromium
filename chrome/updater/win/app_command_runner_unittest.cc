@@ -136,7 +136,7 @@ TEST_F(AppCommandRunnerTest, FormatParameter) {
   const struct {
     const wchar_t* format_string;
     const wchar_t* expected_output;
-    const std::vector<std::wstring>& substitutions;
+    const std::vector<std::wstring> substitutions;
   } test_cases[] = {
       // Format string does not have any placeholders.
       {L"abc=1 xyz=2 q", L"abc=1 xyz=2 q", no_substitutions},
@@ -187,7 +187,7 @@ TEST_F(AppCommandRunnerTest,
   const struct {
     std::vector<std::wstring> input;
     const wchar_t* output;
-    const std::vector<std::wstring>& substitutions;
+    const std::vector<std::wstring> substitutions;
   } test_cases[] = {
       // Unformatted parameters.
       {{L"abc=1"}, L"abc=1", nosubstitutions},
