@@ -287,7 +287,7 @@ void DialogClientView::UpdateDialogButton(MdTextButton** member,
 
   const bool is_default = delegate->GetIsDefault(type);
   const std::u16string title = delegate->GetDialogButtonLabel(type);
-  const MdTextButton::Style style = delegate->GetDialogButtonStyle(type);
+  const ui::ButtonStyle style = delegate->GetDialogButtonStyle(type);
 
   if (*member) {
     MdTextButton* button = *member;

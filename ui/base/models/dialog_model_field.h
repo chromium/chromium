@@ -13,10 +13,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_types.h"
 
 namespace ui {
 
@@ -221,6 +223,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
 
     Params& SetId(ElementIdentifier id);
     Params& SetLabel(std::u16string label);
+    Params& SetStyle(absl::optional<ButtonStyle> style);
 
     Params& AddAccelerator(Accelerator accelerator);
 
@@ -230,6 +233,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
 
     ElementIdentifier id_;
     std::u16string label_;
+    absl::optional<ButtonStyle> style_;
     base::flat_set<Accelerator> accelerators_;
   };
 
@@ -248,12 +252,17 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
   const std::u16string& label(base::PassKey<DialogModelHost>) const {
     return label_;
   }
+  const absl::optional<ButtonStyle> style(
+      base::PassKey<DialogModelHost>) const {
+    return style_;
+  }
   void OnPressed(base::PassKey<DialogModelHost>, const Event& event);
 
  private:
   friend class DialogModel;
 
   const std::u16string label_;
+  const absl::optional<ButtonStyle> style_;
   // The button callback gets called when the button is activated. Whether
   // that happens on key-press, release, etc. is implementation (and platform)
   // dependent.

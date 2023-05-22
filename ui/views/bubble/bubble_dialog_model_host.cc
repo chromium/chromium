@@ -385,16 +385,25 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   auto* ok_button = model_->ok_button(GetPassKey());
   if (ok_button) {
     button_mask |= ui::DIALOG_BUTTON_OK;
-    if (!ok_button->label(GetPassKey()).empty())
+    if (!ok_button->label(GetPassKey()).empty()) {
       SetButtonLabel(ui::DIALOG_BUTTON_OK, ok_button->label(GetPassKey()));
+    }
+    if (ok_button->style(GetPassKey())) {
+      SetButtonStyle(ui::DIALOG_BUTTON_OK, ok_button->style(GetPassKey()));
+    }
   }
 
   auto* cancel_button = model_->cancel_button(GetPassKey());
   if (cancel_button) {
     button_mask |= ui::DIALOG_BUTTON_CANCEL;
-    if (!cancel_button->label(GetPassKey()).empty())
+    if (!cancel_button->label(GetPassKey()).empty()) {
       SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                      cancel_button->label(GetPassKey()));
+    }
+    if (cancel_button->style(GetPassKey())) {
+      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
+                     cancel_button->style(GetPassKey()));
+    }
   }
 
   // TODO(pbos): Consider refactoring ::SetExtraView() so it can be called after
@@ -403,10 +412,15 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   if (ui::DialogModelButton* extra_button =
           model_->extra_button(GetPassKey())) {
     DCHECK(!model_->extra_link(GetPassKey()));
-    SetExtraView(std::make_unique<MdTextButton>(
-        base::BindRepeating(&ui::DialogModelButton::OnPressed,
-                            base::Unretained(extra_button), GetPassKey()),
-        extra_button->label(GetPassKey())));
+    auto builder = views::Builder<MdTextButton>()
+                       .SetCallback(base::BindRepeating(
+                           &ui::DialogModelButton::OnPressed,
+                           base::Unretained(extra_button), GetPassKey()))
+                       .SetText(extra_button->label(GetPassKey()));
+    if (extra_button->style(GetPassKey())) {
+      builder.SetStyle(extra_button->style(GetPassKey()).value());
+    }
+    SetExtraView(std::move(builder).Build());
   } else if (ui::DialogModelLabel::TextReplacement* extra_link =
                  model_->extra_link(GetPassKey())) {
     DCHECK(extra_link->callback().has_value());

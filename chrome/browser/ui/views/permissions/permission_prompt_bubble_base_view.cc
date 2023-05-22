@@ -39,6 +39,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -144,9 +145,9 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
         l10n_util::GetStringUTF16(block_message_id));
 
     if (features::IsChromeRefresh2023()) {
-      allow_once_button->SetStyle(views::MdTextButton::Style::kTonal);
-      allow_always_button->SetStyle(views::MdTextButton::Style::kTonal);
-      block_button->SetStyle(views::MdTextButton::Style::kTonal);
+      allow_once_button->SetStyle(ui::ButtonStyle::kTonal);
+      allow_always_button->SetStyle(ui::ButtonStyle::kTonal);
+      block_button->SetStyle(ui::ButtonStyle::kTonal);
     }
 
     buttons_container->AddChildView(std::move(allow_once_button));
@@ -167,9 +168,8 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
                        base::Unretained(this)));
 
     if (features::IsChromeRefresh2023()) {
-      SetButtonStyle(ui::DIALOG_BUTTON_OK, views::MdTextButton::Style::kTonal);
-      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL,
-                     views::MdTextButton::Style::kTonal);
+      SetButtonStyle(ui::DIALOG_BUTTON_OK, ui::ButtonStyle::kTonal);
+      SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
     }
   }
 

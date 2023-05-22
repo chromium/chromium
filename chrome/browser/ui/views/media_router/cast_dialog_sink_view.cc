@@ -15,6 +15,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -173,7 +174,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
         l10n_util::GetStringUTF16(sink_.freeze_info.is_frozen
                                       ? IDS_MEDIA_ROUTER_SINK_VIEW_RESUME
                                       : IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE));
-    freeze_button->SetStyle(views::MdTextButton::Style::kText);
+    freeze_button->SetStyle(ui::ButtonStyle::kText);
     freeze_button_ = button_container->AddChildView(std::move(freeze_button));
   }
 
@@ -182,7 +183,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
   auto stop_button = std::make_unique<views::MdTextButton>(
       stop_pressed_callback,
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_VIEW_STOP));
-  stop_button->SetStyle(views::MdTextButton::Style::kText);
+  stop_button->SetStyle(ui::ButtonStyle::kText);
   stop_button_ = button_container->AddChildView(std::move(stop_button));
 
   return button_container;

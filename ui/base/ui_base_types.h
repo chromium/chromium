@@ -64,6 +64,22 @@ enum DialogButton {
   DIALOG_BUTTON_LAST = DIALOG_BUTTON_CANCEL,
 };
 
+// MdTextButtons have various button styles that can change the button's
+// relative prominence/priority. The relative priority (least to greatest) is
+// as follows:
+// kText -> kDefault -> kTonal -> kProminent
+// The default styles are described as below.
+// kDefault: White background with blue text and a solid outline.
+// kProminent: Blue background with white text.
+// kTonal: Cyan background with black text.
+// kText: White background with blue text but no outline.
+enum class ButtonStyle {
+  kText,
+  kDefault,
+  kTonal,
+  kProminent,
+};
+
 // Specifies the type of modality applied to a window. Different modal
 // treatments may be handled differently by the window manager.
 enum ModalType {
