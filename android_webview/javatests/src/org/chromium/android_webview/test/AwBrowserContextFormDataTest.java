@@ -12,11 +12,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.android_webview.AwFormDatabase;
-
-/** AwFormDatabaseTest. */
+/**
+ * Tests the methods on AwBrowserContext that expose the Chromium form database for the WebView API.
+ */
 @RunWith(AwJUnit4ClassRunner.class)
-public class AwFormDatabaseTest {
+public class AwBrowserContextFormDataTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
@@ -24,8 +24,8 @@ public class AwFormDatabaseTest {
     @SmallTest
     public void testSmoke() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            AwFormDatabase.clearFormData();
-            Assert.assertFalse(AwFormDatabase.hasFormData());
+            mActivityTestRule.getAwBrowserContext().clearFormData();
+            Assert.assertFalse(mActivityTestRule.getAwBrowserContext().hasFormData());
         });
     }
 }

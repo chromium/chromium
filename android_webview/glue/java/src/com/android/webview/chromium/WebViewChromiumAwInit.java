@@ -500,8 +500,9 @@ public class WebViewChromiumAwInit {
         synchronized (mLock) {
             ensureChromiumStartedLocked(true);
             if (mWebViewDatabase == null) {
-                mWebViewDatabase = new WebViewDatabaseAdapter(
-                        mFactory, HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE));
+                mWebViewDatabase = new WebViewDatabaseAdapter(mFactory,
+                        HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE),
+                        mBrowserContext);
             }
         }
         return mWebViewDatabase;
