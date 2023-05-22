@@ -200,6 +200,7 @@ void TestSurfaceBase::StreamUpdate(const feedui::StreamUpdate& stream_update) {
     initial_state = stream_update;
   }
   update = stream_update;
+  all_updates.push_back(stream_update);
 
   described_updates_.push_back(CurrentState());
 }
@@ -454,10 +455,6 @@ void TestReliabilityLoggingBridge::LogLaunchFinishedAfterStreamUpdate(
 
 void TestReliabilityLoggingBridge::LogLoadMoreStarted() {
   events_.push_back("LogLoadMoreStarted");
-}
-
-void TestReliabilityLoggingBridge::LogLoadMoreIndicatorShown() {
-  events_.push_back("LogLoadMoreIndicatorShown");
 }
 
 void TestReliabilityLoggingBridge::LogLoadMoreActionUploadRequestStarted() {

@@ -134,6 +134,8 @@ class SurfaceUpdater : public StreamModel::Observer,
 
   LaunchReliabilityLogger launch_reliability_logger_;
   bool load_stream_started_ = false;
+
+  int current_load_more_indicator_id_ = 0;
 };
 }  // namespace feed
 

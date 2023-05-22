@@ -152,13 +152,6 @@ public class FeedReliabilityLoggingBridge {
     }
 
     @CalledByNative
-    public void logLoadMoreIndicatorShown() {
-        if (mUserInteractionLogger != null) {
-            mUserInteractionLogger.onPaginationIndicatorShown();
-        }
-    }
-
-    @CalledByNative
     public void logLoadMoreActionUploadRequestStarted() {
         if (mUserInteractionLogger != null) {
             mUserInteractionLogger.onPaginationActionUploadRequestStarted();

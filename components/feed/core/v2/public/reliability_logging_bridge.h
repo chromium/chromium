@@ -56,7 +56,6 @@ class ReliabilityLoggingBridge {
       feedwire::DiscoverLaunchResult result) = 0;
 
   virtual void LogLoadMoreStarted() = 0;
-  virtual void LogLoadMoreIndicatorShown() = 0;
   virtual void LogLoadMoreActionUploadRequestStarted() = 0;
   virtual void LogLoadMoreRequestSent() = 0;
   virtual void LogLoadMoreResponseReceived(

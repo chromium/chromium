@@ -98,7 +98,7 @@ public class FeedSliceViewTrackerTest {
         doReturn(mWindow).when(mActivity).getWindow();
         doReturn(mDecorView).when(mWindow).getDecorView();
         mTracker = Mockito.spy(new FeedSliceViewTracker(mParentView, mActivity, mContentManager,
-                mLayoutHelper, /* watchForBarelyVisibleChange= */ true, mObserver));
+                mLayoutHelper, /* mWatchForUserInteractionReliabilityReport= */ true, mObserver));
     }
 
     @After
@@ -536,6 +536,46 @@ public class FeedSliceViewTrackerTest {
         verify(mObserver, times(1)).reportViewFirstBarelyVisible(any());
         shadowOf(Looper.getMainLooper()).idle();
         verify(mObserver, times(1)).reportViewFirstRendered(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testReportLoadMoreIndicatorVisible() {
+        mContentManager.addContents(0,
+                Arrays.asList(new FeedListContentManager.FeedContent[] {
+                        new FeedListContentManager.NativeViewContent(
+                                0, "load-more-spinner1", mChildA),
+                        new FeedListContentManager.NativeViewContent(
+                                1, "load-more-spinner2", mChildB),
+                }));
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(1).when(mLayoutHelper).findLastVisibleItemPosition();
+        doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
+        doReturn(mChildB).when(mLayoutManager).findViewByPosition(eq(1));
+
+        mockViewportRect(0, 0, 500, 500);
+        mockViewDimensions(mChildA, 100, 100);
+        mockViewDimensions(mChildB, 100, 100);
+
+        // No report when less than 5% visible.
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 4);
+        mTracker.onPreDraw();
+        verify(mObserver, times(0)).reportLoadMoreIndicatorVisible();
+
+        // Report when 5% visible.
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 5);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportLoadMoreIndicatorVisible();
+
+        // No more report when more visible.
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 10);
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportLoadMoreIndicatorVisible();
+
+        // Report for another indicator.
+        mockGetChildVisibleRect(mChildB, 0, 0, 100, 5);
+        mTracker.onPreDraw();
+        verify(mObserver, times(2)).reportLoadMoreIndicatorVisible();
     }
 
     void mockViewDimensions(View view, int width, int height) {
