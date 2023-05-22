@@ -7260,4 +7260,32 @@ IN_PROC_BROWSER_TEST_F(
       expected_histogram_value, 1);
 }
 
+// This is a regression test against https://crbug.com/1145717 - navigating to
+// invalid/weird URLs (e.g. `about:mumble` or `about://mumble`) shouldn't crash.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AboutMumble) {
+  // First navigate to an arbitrary http site to lock the renderer process.
+  GURL http_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), http_url));
+
+  // Verify that browser-initiated navigation to `about:mumble` doesn't crash.
+  //
+  // The Commit IPC will carry the original "about:mumble" URL, which will still
+  // show up via `window.location.href`, but the URL passed back in DidCommit
+  // will be rewritten to `about:blank#blocked` in
+  // `RenderProcessHostImpl::FilterURL` and therefore this is what we expect in
+  // `GetLastCommittedURL`.
+  ASSERT_FALSE(NavigateToURL(shell(), GURL("about:mumble")));
+  EXPECT_EQ(EvalJs(shell(), "window.location.href"), "about:mumble");
+  EXPECT_EQ(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      GURL("about:blank#blocked"));
+
+  // Verify that browser-initiated navigation to `about://mumble` doesn't crash.
+  ASSERT_FALSE(NavigateToURL(shell(), GURL("about://mumble")));
+  EXPECT_EQ(EvalJs(shell(), "window.location.href"), "about://mumble");
+  EXPECT_EQ(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+      GURL("about:blank#blocked"));
+}
+
 }  // namespace content
