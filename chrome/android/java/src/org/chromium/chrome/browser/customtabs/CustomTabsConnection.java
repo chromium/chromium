@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreManager;
 import org.chromium.chrome.browser.customtabs.features.sessionrestore.SessionRestoreManagerImpl;
@@ -1895,6 +1896,15 @@ public class CustomTabsConnection {
         return supplier != null
                 ? supplier.get()
                 : PrivacyPreferencesManagerImpl.getInstance().isUsageAndCrashReportingPermitted();
+    }
+
+    /**
+     * Whether PageInsight Hub is enabled by the launching Intent. False by default.
+     * @param intentData {@link BrowserServicesIntentDataProvider} built from the Intent that
+     *     launched this CCT.
+     */
+    public boolean shouldEnablePageInsightsForIntent(BrowserServicesIntentDataProvider intentData) {
+        return false;
     }
 
     /**

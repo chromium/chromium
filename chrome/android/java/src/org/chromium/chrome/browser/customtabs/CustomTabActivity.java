@@ -159,8 +159,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     protected boolean isPageInsightsHubEnabled() {
-        // TODO(b/282739536): Add more conditions.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB);
+        // TODO(b/282739536): Add supplemental Web and App activity(sWAA) user setting.
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB)
+                && CustomTabsConnection.getInstance().shouldEnablePageInsightsForIntent(
+                        mIntentDataProvider);
     }
 
     @Override
