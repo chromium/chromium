@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller+private.h"
 
 #import <memory>
 
@@ -110,10 +111,6 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 
 // Browser passed on the initializer.
 @property(nonatomic, assign) Browser* browser;
-// Whether to allow navigating from the leading edge.
-@property(nonatomic, assign) BOOL leadingEdgeNavigationEnabled;
-// Whether to allow navigating from the trailing edge.
-@property(nonatomic, assign) BOOL trailingEdgeNavigationEnabled;
 // The current active WebState.
 @property(nonatomic, readonly) web::WebState* activeWebState;
 // The browser state owning the current browser.

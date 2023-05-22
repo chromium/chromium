@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+#import "ios/chrome/browser/ui/side_swipe/side_swipe_controller+private.h"
 
 #import <WebKit/WebKit.h>
 
@@ -29,12 +30,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-@interface SideSwipeController (ExposedForTesting)
-@property(nonatomic, assign) BOOL leadingEdgeNavigationEnabled;
-@property(nonatomic, assign) BOOL trailingEdgeNavigationEnabled;
-- (void)updateNavigationEdgeSwipeForWebState:(web::WebState*)webState;
-@end
 
 namespace {
 
