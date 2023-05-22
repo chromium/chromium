@@ -4561,7 +4561,7 @@
       type_name: "Vector<TimelineAttachment>",
       converter: "ConvertViewTimelineAttachment",
       separator: ",",
-      runtime_flag: "ScrollTimeline",
+      runtime_flag: "ScrollTimelineAttachment",
     },
     {
       name: "scroll-timeline-axis",
@@ -5345,7 +5345,7 @@
       type_name: "Vector<TimelineAttachment>",
       converter: "ConvertViewTimelineAttachment",
       separator: ",",
-      runtime_flag: "ScrollTimeline",
+      runtime_flag: "ScrollTimelineAttachment",
     },
     {
       name: "view-timeline-axis",

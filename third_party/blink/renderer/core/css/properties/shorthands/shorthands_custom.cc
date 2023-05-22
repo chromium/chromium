@@ -3220,8 +3220,11 @@ bool ConsumeTimelineItemInto(CSSParserTokenRange& range,
     if (!axis && (axis = ConsumeSingleTimelineAxis(range))) {
       continue;
     }
-    if (!attachment && (attachment = ConsumeSingleTimelineAttachment(range))) {
-      continue;
+    if (RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()) {
+      if (!attachment &&
+          (attachment = ConsumeSingleTimelineAttachment(range))) {
+        continue;
+      }
     }
     break;
   }
@@ -3251,8 +3254,6 @@ bool ParseTimelineShorthand(CSSPropertyID shorthand_id,
   using css_parsing_utils::ConsumeCommaIncludingWhitespace;
   using css_parsing_utils::IsImplicitProperty;
 
-  DCHECK_EQ(3u, shorthand.length());
-
   CSSValueList* name_list = CSSValueList::CreateCommaSeparated();
   CSSValueList* axis_list = CSSValueList::CreateCommaSeparated();
   CSSValueList* attachment_list = CSSValueList::CreateCommaSeparated();
@@ -3270,13 +3271,17 @@ bool ParseTimelineShorthand(CSSPropertyID shorthand_id,
   DCHECK_EQ(name_list->length(), axis_list->length());
   DCHECK_EQ(name_list->length(), attachment_list->length());
 
+  DCHECK_GE(shorthand.length(), 2u);
   AddProperty(shorthand.properties()[0]->PropertyID(), shorthand_id, *name_list,
               important, IsImplicitProperty::kNotImplicit, properties);
   AddProperty(shorthand.properties()[1]->PropertyID(), shorthand_id, *axis_list,
               important, IsImplicitProperty::kNotImplicit, properties);
-  AddProperty(shorthand.properties()[2]->PropertyID(), shorthand_id,
-              *attachment_list, important, IsImplicitProperty::kNotImplicit,
-              properties);
+  if (RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()) {
+    DCHECK_EQ(shorthand.length(), 3u);
+    AddProperty(shorthand.properties()[2]->PropertyID(), shorthand_id,
+                *attachment_list, important, IsImplicitProperty::kNotImplicit,
+                properties);
+  }
 
   return range.AtEnd();
 }
@@ -3409,7 +3414,10 @@ const CSSValue* ScrollTimeline::CSSValueFromComputedStyleInternal(
                                  : HeapVector<Member<const ScopedCSSName>>{};
   const Vector<TimelineAxis>& axis_vector = style.ScrollTimelineAxis();
   const Vector<TimelineAttachment>& attachment_vector =
-      style.ScrollTimelineAttachment();
+      RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()
+          ? style.ScrollTimelineAttachment()
+          : Vector<TimelineAttachment>(name_vector.size(),
+                                       TimelineAttachment::kLocal);
   return CSSValueForTimelineShorthand(name_vector, axis_vector,
                                       attachment_vector);
 }
@@ -3577,7 +3585,10 @@ const CSSValue* ViewTimeline::CSSValueFromComputedStyleInternal(
                                : HeapVector<Member<const ScopedCSSName>>{};
   const Vector<TimelineAxis>& axis_vector = style.ViewTimelineAxis();
   const Vector<TimelineAttachment>& attachment_vector =
-      style.ViewTimelineAttachment();
+      RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()
+          ? style.ViewTimelineAttachment()
+          : Vector<TimelineAttachment>(name_vector.size(),
+                                       TimelineAttachment::kLocal);
   return CSSValueForTimelineShorthand(name_vector, axis_vector,
                                       attachment_vector);
 }

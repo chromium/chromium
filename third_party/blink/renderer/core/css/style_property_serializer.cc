@@ -870,18 +870,31 @@ CSSValue* TimelineValueItem(wtf_size_t index,
   return list;
 }
 
+// TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
+CSSValueList* DefaultAttachments(wtf_size_t size) {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (wtf_size_t i = 0; i < size; ++i) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kLocal));
+  }
+  return list;
+}
+
 }  // namespace
 
 String StylePropertySerializer::TimelineValue(
     const StylePropertyShorthand& shorthand) const {
-  CHECK_EQ(shorthand.length(), 3u);
+  CHECK_EQ(shorthand.length(),
+           RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled() ? 3u : 2u);
 
   const CSSValueList& name_list = To<CSSValueList>(
       *property_set_.GetPropertyCSSValue(*shorthand.properties()[0]));
   const CSSValueList& axis_list = To<CSSValueList>(
       *property_set_.GetPropertyCSSValue(*shorthand.properties()[1]));
-  const CSSValueList& attachment_list = To<CSSValueList>(
-      *property_set_.GetPropertyCSSValue(*shorthand.properties()[2]));
+  const CSSValueList& attachment_list =
+      RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()
+          ? *To<CSSValueList>(
+                property_set_.GetPropertyCSSValue(*shorthand.properties()[2]))
+          : *DefaultAttachments(name_list.length());
 
   // The scroll/view-timeline shorthand can not expand to longhands of two
   // different lengths, so we can also not contract two different-longhands
@@ -903,24 +916,30 @@ String StylePropertySerializer::TimelineValue(
 }
 
 String StylePropertySerializer::ScrollTimelineValue() const {
-  CHECK_EQ(scrollTimelineShorthand().length(), 3u);
+  CHECK_GE(scrollTimelineShorthand().length(), 2u);
   CHECK_EQ(scrollTimelineShorthand().properties()[0],
            &GetCSSPropertyScrollTimelineName());
   CHECK_EQ(scrollTimelineShorthand().properties()[1],
            &GetCSSPropertyScrollTimelineAxis());
-  CHECK_EQ(scrollTimelineShorthand().properties()[2],
-           &GetCSSPropertyScrollTimelineAttachment());
+  if (RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()) {
+    CHECK_EQ(scrollTimelineShorthand().length(), 3u);
+    CHECK_EQ(scrollTimelineShorthand().properties()[2],
+             &GetCSSPropertyScrollTimelineAttachment());
+  }
   return TimelineValue(scrollTimelineShorthand());
 }
 
 String StylePropertySerializer::ViewTimelineValue() const {
-  CHECK_EQ(viewTimelineShorthand().length(), 3u);
+  CHECK_GE(viewTimelineShorthand().length(), 2u);
   CHECK_EQ(viewTimelineShorthand().properties()[0],
            &GetCSSPropertyViewTimelineName());
   CHECK_EQ(viewTimelineShorthand().properties()[1],
            &GetCSSPropertyViewTimelineAxis());
-  CHECK_EQ(viewTimelineShorthand().properties()[2],
-           &GetCSSPropertyViewTimelineAttachment());
+  if (RuntimeEnabledFeatures::ScrollTimelineAttachmentEnabled()) {
+    CHECK_EQ(viewTimelineShorthand().length(), 3u);
+    CHECK_EQ(viewTimelineShorthand().properties()[2],
+             &GetCSSPropertyViewTimelineAttachment());
+  }
   return TimelineValue(viewTimelineShorthand());
 }
 

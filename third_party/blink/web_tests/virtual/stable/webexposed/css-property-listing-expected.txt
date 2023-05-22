@@ -329,7 +329,6 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-snap-align
     scroll-snap-stop
     scroll-snap-type
-    scroll-timeline-attachment
     scroll-timeline-axis
     scroll-timeline-name
     scrollbar-gutter
@@ -388,7 +387,6 @@ All changes to this list should go through Blink's feature review process: http:
     user-select
     vector-effect
     vertical-align
-    view-timeline-attachment
     view-timeline-axis
     view-timeline-inset
     view-timeline-name
@@ -751,7 +749,6 @@ All changes to this list should go through Blink's feature review process: http:
         scroll-padding-inline-end
         scroll-padding-inline-start
     scroll-timeline
-        scroll-timeline-attachment
         scroll-timeline-axis
         scroll-timeline-name
     text-decoration
@@ -768,7 +765,6 @@ All changes to this list should go through Blink's feature review process: http:
         transition-property
         transition-timing-function
     view-timeline
-        view-timeline-attachment
         view-timeline-axis
         view-timeline-name
     white-space

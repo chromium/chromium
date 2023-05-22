@@ -3100,6 +3100,20 @@
       implied_by: ["AnimationWorklet", "ScrollTimelineCurrentTime"]
     },
     {
+      // Support for scroll/view-timeline-attachment.
+      //
+      // This feature was intially specified in scroll-animations-1,
+      // but was since removed by a resolution in Issue 7759.
+      //
+      // The properties will remain available behind this flag until
+      // all WPTs are adjusted to the new API (see feature TimelineScope).
+      //
+      // https://github.com/w3c/csswg-drafts/issues/7759
+      // https://crbug.com/1446702
+      name: "ScrollTimelineAttachment",
+      status: "test"
+    },
+    {
       // Separate flag for crbug.com/1426506 (getCurrentTime API change) which
       // is expected to land after the initial launch of ScrollTimeline.
       name: "ScrollTimelineCurrentTime",
