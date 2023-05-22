@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include "base/android/build_info.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -62,7 +63,8 @@ void WebAuthnCredManDelegate::SetRequestCompletionCallback(
 
 // static
 bool WebAuthnCredManDelegate::IsCredManEnabled() {
-  return base::FeatureList::IsEnabled(device::kWebAuthnAndroidCredMan);
+  return base::android::BuildInfo::GetInstance()->is_at_least_u() &&
+         base::FeatureList::IsEnabled(device::kWebAuthnAndroidCredMan);
 }
 
 // static

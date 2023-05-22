@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/android/build_info.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -1013,6 +1014,9 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
+  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
+    return;
+  }
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
   cred_man_delegate()->OnCredManConditionalRequestPending(
@@ -1028,6 +1032,9 @@ TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, HideCredManReentryWithoutResult) {
+  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
+    return;
+  }
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
   cred_man_delegate()->OnCredManConditionalRequestPending(
