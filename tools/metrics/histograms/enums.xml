@@ -76057,6 +76057,23 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Copy"/>
 </enum>
 
+<enum name="OfficeFilesUploadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Other error"/>
+  <int value="2" label="Filesystem not found"/>
+  <int value="3" label="Move operation cancelled"/>
+  <int value="4" label="Move operation error"/>
+  <int value="5" label="Move operation needs password"/>
+  <int value="6" label="Copy operation cancelled"/>
+  <int value="7" label="Copy operation error"/>
+  <int value="8" label="Copy operation needs password"/>
+  <int value="9" label="Pinning failed due to low disk space"/>
+  <int value="10" label="Cloud authentication error"/>
+  <int value="11" label="Bad metadata received from cloud"/>
+  <int value="12" label="Cloud quota full"/>
+  <int value="13" label="Cloud error"/>
+</enum>
+
 <enum name="OfficeFilesUseOutsideDriveHook">
   <summary>
     Hooks for file system operations that use MS Office files outside of Drive.

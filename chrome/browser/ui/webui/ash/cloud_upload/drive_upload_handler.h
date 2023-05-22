@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/extensions/file_manager/scoped_suppress_drive_notifications_for_path.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_notification_manager.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -58,7 +59,9 @@ class DriveUploadHandler
   void UpdateProgressNotification();
 
   // Ends upload and runs Upload callback.
-  void OnEndUpload(GURL hosted_url, std::string error_message = "");
+  void OnEndUpload(GURL hosted_url,
+                   OfficeFilesUploadResult result,
+                   std::string error_message = "");
 
   // Callback for when ImmediatelyUpload() is called on DriveFS.
   void ImmediatelyUploadDone(drive::FileError error);

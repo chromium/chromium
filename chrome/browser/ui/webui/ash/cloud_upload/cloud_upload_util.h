@@ -25,6 +25,28 @@ enum class SourceType {
   kMaxValue = CLOUD,
 };
 
+// The result of the "Upload to cloud" workflow for Office files.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OfficeFilesUploadResult {
+  kSuccess = 0,
+  kOtherError = 1,
+  kFileSystemNotFound = 2,
+  kMoveOperationCancelled = 3,
+  kMoveOperationError = 4,
+  kMoveOperationNeedPassword = 5,
+  kCopyOperationCancelled = 6,
+  kCopyOperationError = 7,
+  kCopyOperationNeedPassword = 8,
+  kPinningFailedDiskFull = 9,
+  kCloudAuthError = 10,
+  kCloudMetadataError = 11,
+  kCloudQuotaFull = 12,
+  kCloudError = 13,
+  kMaxValue = kCloudError,
+};
+
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,

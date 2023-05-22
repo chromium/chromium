@@ -942,6 +942,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.Open.UploadResult.{ProviderName}"
+    enum="OfficeFilesUploadResult" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Records the result of the upload-to-cloud workflow
+    for office files.
+  </summary>
+  <token key="ProviderName">
+    <variant name="GoogleDrive"
+        summary="The file must be transferred to Google Drive"/>
+    <variant name="OneDrive"
+        summary="The file must be transferred to Microsoft OneDrive"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.Setup.FileHandlerSelection"
     enum="OfficeSetupFileHandler" expires_after="M124">
   <owner>austinct@chromium.org</owner>
