@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.nonembedded;
+package org.chromium.android_webview.robolectric.nonembedded;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.android_webview.common.SafeModeController;
+import org.chromium.android_webview.nonembedded.AwComponentUpdateService;
 import org.chromium.android_webview.services.ComponentUpdaterResetSafeModeAction;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;

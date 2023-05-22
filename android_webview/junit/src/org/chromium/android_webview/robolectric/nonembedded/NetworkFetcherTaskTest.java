@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Same package as NetworkFetcherTask to access NetworkFetcherTask.Natives.
-package org.chromium.android_webview.nonembedded;
+package org.chromium.android_webview.robolectric.nonembedded;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -23,6 +22,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.android_webview.nonembedded.NetworkFetcherTask;
+import org.chromium.android_webview.nonembedded.NetworkFetcherTaskJni;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
