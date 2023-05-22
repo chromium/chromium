@@ -182,7 +182,8 @@ class CONTENT_EXPORT FedCmMetrics {
       bool auto_reauthn_success,
       bool is_auto_reauthn_setting_blocked,
       bool is_auto_reauthn_embargoed,
-      absl::optional<base::TimeDelta> time_from_embargo);
+      absl::optional<base::TimeDelta> time_from_embargo,
+      bool requires_user_mediation);
 
  private:
   // The page's SourceId. Used to log the UKM event Blink.FedCm.

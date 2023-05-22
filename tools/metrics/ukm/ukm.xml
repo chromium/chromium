@@ -3786,6 +3786,14 @@ be describing additional metrics about the same event.
       before this metric is recorded.
     </summary>
   </metric>
+  <metric name="AutoReauthn.BlockedByPreventSilentAccess" enum="Boolean">
+    <summary>
+      Records whether the FedCM auto re-authn call is blocked because
+      preventSilentAccess() has been called on this site. Records at most one
+      sample per FedCM API with auto re-authn enabled: some failures could occur
+      before this metric is recorded.
+    </summary>
+  </metric>
   <metric name="AutoReauthn.ReturningAccounts" enum="FedCmReturningAccounts">
     <summary>
       Records whether there was zero, one, or multiple returning accounts when a

@@ -1134,6 +1134,10 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   bool is_auto_reauthn_setting_enabled = false;
   bool is_auto_reauthn_embargoed = false;
   absl::optional<base::TimeDelta> time_from_embargo;
+  bool requires_user_mediation = false;
+  const IdentityProviderData* auto_reauthn_idp = nullptr;
+  const IdentityRequestAccount* auto_reauthn_account = nullptr;
+  bool has_single_returning_account = false;
   if (auto_reauthn_enabled) {
     is_auto_reauthn_setting_enabled =
         auto_reauthn_permission_delegate_->IsAutoReauthnSettingEnabled();
@@ -1154,13 +1158,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
           "Only one auto re-authn request can be made every 10 minutes.");
     }
     auto_reauthn &= !is_auto_reauthn_embargoed;
-    auto_reauthn &= !RequiresUserMediation();
-  }
-
-  const IdentityProviderData* auto_reauthn_idp = nullptr;
-  const IdentityRequestAccount* auto_reauthn_account = nullptr;
-  bool has_single_returning_account = false;
-  if (auto_reauthn_enabled) {
+    requires_user_mediation = RequiresUserMediation();
+    auto_reauthn &= !requires_user_mediation;
     // Auto signs in returning users if they have a single returning account and
     // are signing in.
     has_single_returning_account =
@@ -1171,7 +1170,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       fedcm_metrics_->RecordAutoReauthnMetrics(
           has_single_returning_account, auto_reauthn_account, auto_reauthn,
           !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-          time_from_embargo);
+          time_from_embargo, requires_user_mediation);
 
       // By this moment we know that the user has granted permission in the past
       // for the RP/IdP. Because otherwise we have returned already in
@@ -1244,7 +1243,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     fedcm_metrics_->RecordAutoReauthnMetrics(
         has_single_returning_account, auto_reauthn_account, auto_reauthn,
         !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-        time_from_embargo);
+        time_from_embargo, requires_user_mediation);
   }
 }
 
@@ -2129,7 +2128,7 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
         /*has_single_returning_account=*/absl::nullopt,
         /*auto_signin_account=*/nullptr,
         /*auto_reauthn_success=*/false, !is_auto_reauthn_setting_enabled,
-        is_auto_reauthn_embargoed, time_from_embargo);
+        is_auto_reauthn_embargoed, time_from_embargo, requires_user_mediation);
     return true;
   }
   return false;

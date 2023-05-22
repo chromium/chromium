@@ -1085,7 +1085,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
           expected_returning_accounts,
       bool expected_succeeded,
       bool expected_auto_reauthn_setting_blocked,
-      bool expected_auto_reauthn_embargoed) {
+      bool expected_auto_reauthn_embargoed,
+      bool expected_prevent_silent_access) {
     // UMA checks
     histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
                                          expected_succeeded, 1);
@@ -1106,6 +1107,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     histogram_tester_.ExpectTotalCount(
         "Blink.FedCm.AutoReauthn.TimeFromEmbargoWhenBlocked",
         expected_auto_reauthn_embargoed ? 1 : 0);
+    histogram_tester_.ExpectUniqueSample(
+        "Blink.FedCm.AutoReauthn.BlockedByPreventSilentAccess",
+        expected_prevent_silent_access, 1);
 
     // UKM checks
     auto entries = ukm_recorder()->GetEntriesByName(FedCmEntry::kEntryName);
@@ -1124,6 +1128,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
             entry, "AutoReauthn.BlockedByEmbargo"));
         EXPECT_FALSE(ukm_recorder()->GetEntryMetric(
             entry, "AutoReauthn.TimeFromEmbargoWhenBlocked"));
+        EXPECT_FALSE(ukm_recorder()->GetEntryMetric(
+            entry, "AutoReauthn.BlockedByPreventSilentAccess"));
         continue;
       }
       EXPECT_FALSE(metric_found) << "Found more than one AutoReauthn entry";
@@ -1154,6 +1160,12 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       metric = ukm_recorder()->GetEntryMetric(
           entry, "AutoReauthn.TimeFromEmbargoWhenBlocked");
       EXPECT_EQ(expected_auto_reauthn_embargoed, !!metric);
+
+      metric = ukm_recorder()->GetEntryMetric(
+          entry, "AutoReauthn.BlockedByPreventSilentAccess");
+      ASSERT_TRUE(metric)
+          << "AutoReauthn.BlockedByPreventSilentAccess was not found";
+      EXPECT_EQ(expected_prevent_silent_access, *metric);
     }
     EXPECT_TRUE(metric_found) << "Did not find AutoReauthn metrics";
     CheckAllFedCmSessionIDs();
@@ -1567,7 +1579,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnEmbargo) {
   ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
                            /*expected_succeeded=*/true,
                            /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/false);
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 // Test that auto re-authn with a single account where the account is a
@@ -1607,7 +1620,8 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
                            /*expected_succeeded=*/true,
                            /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/false);
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -1662,7 +1676,8 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
                            /*expected_succeeded=*/true,
                            /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/false);
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 // Test that auto re-authn with multiple accounts and multiple returning users
@@ -1719,7 +1734,8 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kMultiple,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/false);
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 // Test that auto re-authn with single non-returning account sets the sign-in
@@ -1757,7 +1773,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForZeroReturningUsers) {
   ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kZero,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/false);
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -1822,6 +1839,12 @@ TEST_F(FederatedAuthRequestImplTest,
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/true);
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -1951,7 +1974,8 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/true,
-                           /*expected_auto_reauthn_embargoed=*/false);
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 // Test that auto re-authn where the auto re-authn cooldown is on sets
@@ -1988,7 +2012,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnWithCooldown) {
   ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kOne,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/true);
+                           /*expected_auto_reauthn_embargoed=*/true,
+                           /*expected_prevent_silent_access=*/false);
 
   std::vector<std::string> messages =
       RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
@@ -2041,7 +2066,8 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectAutoReauthnMetrics(/*expected_returning_accounts=*/absl::nullopt,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/false);
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and auto
@@ -2088,7 +2114,8 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectAutoReauthnMetrics(/*expected_returning_accounts=*/absl::nullopt,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/true);
+                           /*expected_auto_reauthn_embargoed=*/true,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and user
@@ -2133,7 +2160,8 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectAutoReauthnMetrics(/*expected_returning_accounts=*/absl::nullopt,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/false);
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/true);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and user
@@ -2177,7 +2205,8 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectAutoReauthnMetrics(/*expected_returning_accounts=*/absl::nullopt,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/true,
-                           /*expected_auto_reauthn_embargoed=*/false);
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 // Test `mediation: silent` could fail silently after fetching accounts
@@ -2253,7 +2282,8 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kMultiple,
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/false);
+                           /*expected_auto_reauthn_embargoed=*/false,
+                           /*expected_prevent_silent_access=*/false);
 }
 
 // Test that `mediation: required` sets the sign-in mode to explicit even though
