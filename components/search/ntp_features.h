@@ -49,6 +49,7 @@ BASE_DECLARE_FEATURE(kNtpMiddleSlotPromoDismissal);
 BASE_DECLARE_FEATURE(kNtpModulesLoadTimeoutMilliseconds);
 BASE_DECLARE_FEATURE(kNtpWideModules);
 BASE_DECLARE_FEATURE(kNtpModulesOrder);
+BASE_DECLARE_FEATURE(kNtpModulesOverflowScrollbar);
 BASE_DECLARE_FEATURE(kNtpModulesDragAndDrop);
 BASE_DECLARE_FEATURE(kNtpModulesFirstRunExperience);
 BASE_DECLARE_FEATURE(kNtpModulesLoad);

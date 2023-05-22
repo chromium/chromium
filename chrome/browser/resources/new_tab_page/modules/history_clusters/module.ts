@@ -83,6 +83,12 @@ export class HistoryClustersModuleElement extends I18nMixin
       },
 
       searchResultPage: Object,
+
+      overflowScroll_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesOverflowScrollbarEnabled'),
+        reflectToAttribute: true,
+      },
     };
   }
 

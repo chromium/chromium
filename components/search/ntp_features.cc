@@ -148,6 +148,11 @@ BASE_FEATURE(kNtpModulesOrder,
              "NtpModulesOrder",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If true, displays a horizontal scrollbar on overflowing modules.
+BASE_FEATURE(kNtpModulesOverflowScrollbar,
+             "NtpModulesOverflowScrollbar",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, modules will be able to be reordered via dragging and dropping
 BASE_FEATURE(kNtpModulesDragAndDrop,
              "NtpModulesDragAndDrop",
