@@ -219,8 +219,14 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // Returns the device's preferred minimum power input in watts (W).
   double GetPreferredMinimumPower() const;
 
+  // Returns true if battery saver is active.
+  bool IsBatterySaverActive() const;
+
   // Updates |proto_|. Does not notify observers.
   void SetProtoForTesting(const power_manager::PowerSupplyProperties& proto);
+
+  // Updates |battery_saver_active_|. Does not notify observers.
+  void SetBatterySaverStateForTesting(bool active);
 
  protected:
   PowerStatus();
@@ -229,11 +235,27 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
  private:
   // Overriden from PowerManagerClient::Observer.
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
+  void BatterySaverModeStateChanged(
+      const power_manager::BatterySaverModeState& state) override;
+
+  // Callback used to query battery saver state from PowerManagerClient on
+  // startup.
+  void OnGotBatterySaverState(
+      absl::optional<power_manager::BatterySaverModeState> state);
 
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Current state.
   power_manager::PowerSupplyProperties proto_;
+
+  // Has proto_ been set with a value from Power Manager yet?
+  bool proto_initialized_{false};
+
+  // Current state of battery saver, queried on startup and updated in
+  // BatterySaverModeStateChanged.
+  bool battery_saver_active_{false};
+
+  base::WeakPtrFactory<PowerStatus> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

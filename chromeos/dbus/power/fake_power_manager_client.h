@@ -165,6 +165,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // activity was fullscreen or not. There must be at least one report.
   bool PopVideoActivityReport();
 
+  // Emulates the power manager announcing that battery saver mode has changed.
+  void SendBatterySaverModeStateChanged(
+      const power_manager::BatterySaverModeState& proto);
+
   // Emulates the power manager announcing that the system is starting or
   // completing a suspend attempt.
   void SendSuspendImminent(power_manager::SuspendImminent::Reason reason);
