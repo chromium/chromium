@@ -3772,6 +3772,12 @@ extern const char kLauncherKeywordExtractionScoringDescription[];
 extern const char kLauncherLocalImageSearchName[];
 extern const char kLauncherLocalImageSearchDescription[];
 
+extern const char kLauncherLocalImageSearchOcrName[];
+extern const char kLauncherLocalImageSearchOcrDescription[];
+
+extern const char kLauncherLocalImageSearchIcaName[];
+extern const char kLauncherLocalImageSearchIcaDescription[];
+
 extern const char kLauncherFuzzyMatchForOmniboxName[];
 extern const char kLauncherFuzzyMatchForOmniboxDescription[];
 

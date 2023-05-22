@@ -29,9 +29,8 @@ class ImageAnnotationWorkerTest : public testing::Test {
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
     test_directory_ = temp_dir.GetPath();
-    annotation_worker_ =
-        std::make_unique<ImageAnnotationWorker>(test_directory_);
-    annotation_worker_->UseFakeAnnotatorForTests();
+    annotation_worker_ = std::make_unique<ImageAnnotationWorker>(
+        test_directory_, /*use_ocr=*/false, /*use_ica=*/false);
     bar_image_path_ = test_directory_.AppendASCII("bar.jpg");
     const base::FilePath test_db = test_directory_.AppendASCII("test.db");
     storage_ = std::make_unique<AnnotationStorage>(

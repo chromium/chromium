@@ -60041,6 +60041,7 @@ from previous Chrome versions.
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
   <int value="-1404469375" label="RemoteCopyProgressNotification:enabled"/>
   <int value="-1400745093" label="SystemEmojiPickerSearchExtension:enabled"/>
+  <int value="-1400693146" label="LauncherImageSearchIca:enabled"/>
   <int value="-1399753480" label="disable-harfbuzz-rendertext"/>
   <int value="-1399525696"
       label="AutofillShowManualFallbackInContextMenu:enabled"/>
@@ -63796,6 +63797,7 @@ from previous Chrome versions.
   <int value="603326800" label="UsePasswordSeparatedSigninFlow:enabled"/>
   <int value="603897763" label="AutofillPageLanguageDetection:disabled"/>
   <int value="603988014" label="NetworkService:enabled"/>
+  <int value="603999562" label="LauncherImageSearchOcr:disabled"/>
   <int value="604334859" label="Prerender2:enabled"/>
   <int value="604671392" label="MuteCompromisedPasswords:disabled"/>
   <int value="605150752" label="WebUSB:disabled"/>
@@ -63883,6 +63885,7 @@ from previous Chrome versions.
   <int value="646269021" label="UnifiedSidePanel:disabled"/>
   <int value="646738320" label="disable-gesture-editing"/>
   <int value="647662142" label="use-angle"/>
+  <int value="647724971" label="LauncherImageSearchIca:disabled"/>
   <int value="648697679" label="VirtualKeyboardNewHeader:disabled"/>
   <int value="649111851" label="MidiManagerCros:enabled"/>
   <int value="649384106" label="FailFastQuietChip:disabled"/>
@@ -66062,6 +66065,7 @@ from previous Chrome versions.
   <int value="1810311887" label="WebAssemblyThreads:enabled"/>
   <int value="1810693550" label="OnlyShowNewShortcutsApp:enabled"/>
   <int value="1811266774" label="WebUITabStripNewTabButtonInTabStrip:disabled"/>
+  <int value="1811661413" label="LauncherImageSearchOcr:enabled"/>
   <int value="1811744551" label="InterestFeedV2Hearts:enabled"/>
   <int value="1812368073" label="enable-new-app-list-mixer"/>
   <int value="1812954470" label="EnableTouchpadsInDiagnosticsApp:disabled"/>

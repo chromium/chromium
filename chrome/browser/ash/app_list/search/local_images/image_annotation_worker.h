@@ -38,11 +38,15 @@ struct ImageInfo;
 // It can be created on any sequence but must be initialized on the same
 // sequence as AnnotationStorage. It runs IO heavy tasks on a background
 // task runner.
+// The worker supports on-device Optical Character Recognition (OCR) and
+// Image Content-based Annotation (ICA) via DLCs.
 // TODO(b/260646344): Revisit the use of a FilePathWatcher for My Files
 //  if needed. (It may hit the folder limit.)
 class ImageAnnotationWorker {
  public:
-  explicit ImageAnnotationWorker(const base::FilePath& root_path);
+  explicit ImageAnnotationWorker(const base::FilePath& root_path,
+                                 bool use_ocr,
+                                 bool use_ica);
   ~ImageAnnotationWorker();
   ImageAnnotationWorker(const ImageAnnotationWorker&) = delete;
   ImageAnnotationWorker& operator=(const ImageAnnotationWorker&) = delete;
@@ -51,9 +55,6 @@ class ImageAnnotationWorker {
   // scan for new images. It must be called on the same sequence as
   // AnnotationStorage is bound to.
   void Initialize(AnnotationStorage* annotation_storage);
-
-  // Disables mojo bindings and file watchers.
-  void UseFakeAnnotatorForTests();
 
   // Deterministically triggers the event instead of using file watchers, which
   // cannot be awaited by `RunUntilIdle()` and introduce unwanted flakiness.
@@ -108,7 +109,9 @@ class ImageAnnotationWorker {
   // Controls the OCR library.
   screen_ai::ScreenAIServiceRouter screen_ai_service_router_;
 
-  bool use_fake_annotator_for_tests_ = false;
+  const bool use_ica_;
+  const bool use_ocr_;
+  bool ica_dlc_initialized_ = false;
 
   // Owned by this class.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

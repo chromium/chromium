@@ -6578,6 +6578,18 @@ const char kLauncherLocalImageSearchName[] =
 const char kLauncherLocalImageSearchDescription[] =
     "Enables on-device local image search in the launcher.";
 
+const char kLauncherLocalImageSearchOcrName[] =
+    "Enable OCR for local image search";
+const char kLauncherLocalImageSearchOcrDescription[] =
+    "Enables on-device Optical Character Recognition for local image search in "
+    "the launcher.";
+
+const char kLauncherLocalImageSearchIcaName[] =
+    "Enable ICA for local image search";
+const char kLauncherLocalImageSearchIcaDescription[] =
+    "Enables on-device Image Content-based Annotation for local image search "
+    "in the launcher.";
+
 const char kLauncherFuzzyMatchForOmniboxName[] =
     "Omnibox Results Fuzzy match experiment";
 const char kLauncherFuzzyMatchForOmniboxDescription[] =

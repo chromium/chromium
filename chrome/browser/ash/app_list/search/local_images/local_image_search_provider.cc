@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 #include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_images/image_annotation_worker.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -39,7 +40,10 @@ LocalImageSearchProvider::LocalImageSearchProvider(Profile* profile)
           ConstructPathToAnnotationDb(profile_),
           /* histogram_tag = */ kHistogramTag,
           /* current_version_number= */ 2,
-          std::make_unique<ImageAnnotationWorker>(root_path_)) {
+          std::make_unique<ImageAnnotationWorker>(
+              root_path_,
+              search_features::IsLauncherImageSearchOcrEnabled(),
+              search_features::IsLauncherImageSearchIcaEnabled())) {
   DCHECK(profile_);
   DCHECK(!root_path_.empty());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
