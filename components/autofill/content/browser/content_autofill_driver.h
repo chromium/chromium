@@ -131,7 +131,10 @@ class ContentAutofillDriver : public AutofillDriver,
   }
   AutofillManager* autofill_manager() { return autofill_manager_.get(); }
 
-  content::RenderFrameHost* render_frame_host() { return render_frame_host_; }
+  content::RenderFrameHost* render_frame_host() { return &*render_frame_host_; }
+  const content::RenderFrameHost* render_frame_host() const {
+    return &*render_frame_host_;
+  }
 
   // Expose the events that originate from the browser and renderer processes,
   // respectively.
@@ -312,9 +315,11 @@ class ContentAutofillDriver : public AutofillDriver,
   // not be using the router if we're prerendering).
   ContentAutofillRouter& autofill_router();
 
-  // Weak ref to the RenderFrameHost the driver is associated with. Should
-  // always be non-NULL and valid for lifetime of |this|.
-  const raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
+  // The frame/document to which this driver is associated. Outlives `this`.
+  // RFH is corresponds to neither a frame nor a document: it may survive
+  // navigations that documents don't, but it may not survive cross-origin
+  // navigations.
+  const raw_ref<content::RenderFrameHost> render_frame_host_;
 
   // The factory that created this driver. Outlives `this`.
   const raw_ref<ContentAutofillDriverFactory> owner_;
@@ -328,8 +333,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // to avoid duplicates fired by AutofillAgent.
   std::set<FormGlobalId> submitted_forms_;
 
-  // AutofillManager instance via which this object drives the shared Autofill
-  // code.
   std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
 
   content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;

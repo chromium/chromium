@@ -64,7 +64,7 @@ const std::vector<FormData>& WithNewVersion(
 ContentAutofillDriver::ContentAutofillDriver(
     content::RenderFrameHost* render_frame_host,
     ContentAutofillDriverFactory* owner)
-    : render_frame_host_(render_frame_host),
+    : render_frame_host_(*render_frame_host),
       owner_(*owner),
       suppress_showing_ime_callback_(base::BindRepeating(
           [](const ContentAutofillDriver* driver) {
@@ -168,7 +168,7 @@ bool ContentAutofillDriver::IsInActiveFrame() const {
 }
 
 bool ContentAutofillDriver::IsInAnyMainFrame() const {
-  return render_frame_host_->GetMainFrame() == render_frame_host_;
+  return render_frame_host_->GetMainFrame() == render_frame_host();
 }
 
 bool ContentAutofillDriver::IsInFencedFrameRoot() const {
@@ -353,8 +353,9 @@ void ContentAutofillDriver::ProbablyFormSubmitted(
 
 void ContentAutofillDriver::SetFormToBeProbablySubmitted(
     const absl::optional<FormData>& form) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   autofill_router().SetFormToBeProbablySubmitted(
       this,
       form ? absl::make_optional<FormData>(
@@ -369,8 +370,9 @@ void ContentAutofillDriver::SetFormToBeProbablySubmitted(
 void ContentAutofillDriver::FormsSeen(
     const std::vector<FormData>& raw_updated_forms,
     const std::vector<FormRendererId>& raw_removed_forms) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   std::vector<FormData> updated_forms = raw_updated_forms;
   for (FormData& form : updated_forms)
     SetFrameAndFormMetaData(form, nullptr);
@@ -394,8 +396,9 @@ void ContentAutofillDriver::FormSubmitted(
     const FormData& raw_form,
     bool known_success,
     mojom::SubmissionSource submission_source) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   autofill_router().FormSubmitted(
       this, GetFormWithFrameAndFormMetaData(raw_form), known_success,
       submission_source,
@@ -420,8 +423,9 @@ void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
                                                const FormFieldData& raw_field,
                                                const gfx::RectF& bounding_box,
                                                base::TimeTicks timestamp) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   FormData form = raw_form;
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, &field);
@@ -439,8 +443,9 @@ void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
 void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
                                                const FormFieldData& raw_field,
                                                const gfx::RectF& bounding_box) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   FormData form = raw_form;
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, &field);
@@ -458,8 +463,9 @@ void ContentAutofillDriver::SelectControlDidChange(
     const FormData& raw_form,
     const FormFieldData& raw_field,
     const gfx::RectF& bounding_box) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   FormData form = raw_form;
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, &field);
@@ -479,8 +485,9 @@ void ContentAutofillDriver::AskForValuesToFill(
     const gfx::RectF& bounding_box,
     AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   FormData form = raw_form;
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, &field);
@@ -499,8 +506,9 @@ void ContentAutofillDriver::AskForValuesToFill(
 }
 
 void ContentAutofillDriver::HidePopup() {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   autofill_router().HidePopup(this, [](ContentAutofillDriver* target) {
     DCHECK(!target->IsPrerendering())
         << "We should never affect UI while prerendering";
@@ -514,8 +522,9 @@ void ContentAutofillDriver::FocusNoLongerOnFormCallback(
 }
 
 void ContentAutofillDriver::FocusNoLongerOnForm(bool had_interacted_form) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   autofill_router().FocusNoLongerOnForm(
       this, had_interacted_form,
       [](ContentAutofillDriver* target, bool had_interacted_form) {
@@ -526,8 +535,9 @@ void ContentAutofillDriver::FocusNoLongerOnForm(bool had_interacted_form) {
 void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
                                              const FormFieldData& raw_field,
                                              const gfx::RectF& bounding_box) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   FormData form = raw_form;
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, &field);
@@ -543,8 +553,9 @@ void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
 
 void ContentAutofillDriver::DidFillAutofillFormData(const FormData& raw_form,
                                                     base::TimeTicks timestamp) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   autofill_router().DidFillAutofillFormData(
       this, GetFormWithFrameAndFormMetaData(raw_form), timestamp,
       [](ContentAutofillDriver* target, const FormData& form,
@@ -555,8 +566,9 @@ void ContentAutofillDriver::DidFillAutofillFormData(const FormData& raw_form,
 }
 
 void ContentAutofillDriver::DidPreviewAutofillFormData() {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   autofill_router().DidPreviewAutofillFormData(
       this, [](ContentAutofillDriver* target) {
         target->autofill_manager_->OnDidPreviewAutofillFormData();
@@ -564,8 +576,9 @@ void ContentAutofillDriver::DidPreviewAutofillFormData() {
 }
 
 void ContentAutofillDriver::DidEndTextFieldEditing() {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   autofill_router().DidEndTextFieldEditing(
       this, [](ContentAutofillDriver* target) {
         target->autofill_manager_->OnDidEndTextFieldEditing();
@@ -574,8 +587,9 @@ void ContentAutofillDriver::DidEndTextFieldEditing() {
 
 void ContentAutofillDriver::SelectFieldOptionsDidChange(
     const FormData& raw_form) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   autofill_router().SelectFieldOptionsDidChange(
       this, GetFormWithFrameAndFormMetaData(raw_form),
       [](ContentAutofillDriver* target, const FormData& form) {
@@ -588,8 +602,9 @@ void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
     const FormData& raw_form,
     const FormFieldData& raw_field,
     const std::u16string& old_value) {
-  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
+  }
   FormData form = raw_form;
   FormFieldData field = raw_field;
   SetFrameAndFormMetaData(form, &field);
