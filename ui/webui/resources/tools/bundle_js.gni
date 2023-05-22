@@ -43,7 +43,10 @@ template("bundle_js") {
       }
     }
 
-    outputs += [ "$out_folder/rollup.config.mjs" ]
+    outputs += [
+      "$out_folder/rollup.config.mjs",
+      "$out_folder/${target_name}_requestlist.txt",
+    ]
 
     # Note that we have to manually pass the sources to our script if the
     # script needs them as inputs.
