@@ -883,7 +883,6 @@ crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-si
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
 
 # Passes with the WPT runner but not the internal one. (???)
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1c.html [ Failure Pass ]
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-4.html [ Failure Pass ]
 
 # Off-by-one in some components.
@@ -1824,7 +1823,7 @@ crbug.com/567837 [ Win ] virtual/scalefactor150/fast/hidpi/static/popup-menu-wit
 
 # Popover test timeout/flakiness
 crbug.com/1416284 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
-crbug.com/1443372 external/wpt/html/semantics/popovers/popover-hover-hide.tentative.html [ Failure Pass ]
+crbug.com/1443372 [ Mac ] external/wpt/html/semantics/popovers/popover-hover-hide.tentative.html [ Failure Pass ]
 
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
@@ -2061,7 +2060,6 @@ crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/spa
 crbug.com/1218716 external/wpt/trust-tokens/trust-token-parameter-validation.tentative.https.html [ Failure ]
 crbug.com/1218716 external/wpt/feature-policy/experimental-features/trust-token-redemption-default-feature-policy.tentative.https.sub.html [ Failure ]
 crbug.com/1218716 external/wpt/feature-policy/experimental-features/trust-token-redemption-supported-by-feature-policy.tentative.html [ Failure ]
-crbug.com/1218716 external/wpt/permissions-policy/experimental-features/trust-token-redemption-default-permissions-policy.tentative.https.sub.html [ Failure ]
 
 # Sheriff 2020-02-06
 
@@ -5382,7 +5380,9 @@ crbug.com/1228803 [ Linux ] fast/peerconnection/RTCPeerConnection-garbagecollect
 
 # Sheriff 2021-11-29
 crbug.com/1274458 external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html [ Failure Pass ]
-crbug.com/1239485 [ Mac ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
+crbug.com/1239485 [ Debug Mac12 ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
+crbug.com/1239485 [ Debug Mac13-arm64 ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
+crbug.com/1239485 [ Mac Release ] fast/frames/iframe-plugin-load-remove-document-crash.html [ Failure Pass ]
 
 # Sheriff 2021-12-01
 crbug.com/1275658 http/tests/misc/script-after-slow-stylesheet-removed.html [ Failure Pass ]
@@ -5999,7 +5999,7 @@ crbug.com/1372556 [ Linux ] external/wpt/css/css-text/text-transform/text-transf
 
 crbug.com/1370050 http/tests/devtools/sources/debugger-ui/debugger-save-to-temp-var.js [ Crash Failure Pass Timeout ]
 
-crbug.com/1279220 [ Win ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass Timeout ]
+crbug.com/1279220 [ Win10.20h2 ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass Timeout ]
 crbug.com/1279220 [ Linux ] fast/scrolling/non-composited-scroller-in-position-fixed-scroller.html [ Failure Pass ]
 
 # Sheriff 2022-10-12
