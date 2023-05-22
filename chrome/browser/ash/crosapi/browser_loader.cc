@@ -112,8 +112,6 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           ash::switches::kLacrosChromePath);
   if (!lacros_chrome_path.empty()) {
-    // TODO(cbug.com/1429137): LacrosSelection::kStateful is not appropriate
-    // here. We should introduce unknown state and set it here.
     OnLoadComplete(std::move(callback), LacrosSelection::kDeployedLocally,
                    base::Version(), lacros_chrome_path);
     return;
