@@ -318,12 +318,11 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at step: kNotStarted.
   void StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
 
-  // Hides the modal Chrome UI dialog and shows the native Windows WebAuthn
-  // UI instead.
-  void HideDialogAndDispatchToNativeWindowsApi();
-
-  // Proceeds straight to the platform authenticator prompt.
-  void HideDialogAndDispatchToPlatformAuthenticator();
+  // Proceeds straight to the platform authenticator prompt. If `type` is
+  // `nullopt` then it actives the default platform authenticator. Otherwise it
+  // actives the platform authenticator of the given type.
+  void HideDialogAndDispatchToPlatformAuthenticator(
+      absl::optional<device::AuthenticatorType> type = absl::nullopt);
 
   // Called when an attempt to contact a phone failed.
   void OnPhoneContactFailed(const std::string& name);
@@ -481,6 +480,9 @@ class AuthenticatorRequestDialogModel {
   // disallows an attestation permission request.
   void OnAttestationPermissionResponse(bool attestation_permission_granted);
 
+  // Adds or removes an authenticator to the list of known authenticators. The
+  // first authenticator added with transport `kInternal` (or without a
+  // transport) is considered to be the default platform authenticator.
   void AddAuthenticator(const device::FidoAuthenticator& authenticator);
   void RemoveAuthenticator(base::StringPiece authenticator_id);
 
@@ -676,7 +678,6 @@ class AuthenticatorRequestDialogModel {
   void StartConditionalMediationRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
-  void DispatchRequestAsyncInternal(const std::string& authenticator_id);
 
   void ContactNextPhoneByName(const std::string& name);
 

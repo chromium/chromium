@@ -6,9 +6,9 @@
 
 AuthenticatorReference::AuthenticatorReference(
     base::StringPiece authenticator_id,
-    device::FidoTransportProtocol transport)
-    : authenticator_id(authenticator_id),
-      transport(transport) {}
+    device::FidoTransportProtocol transport,
+    device::AuthenticatorType type)
+    : authenticator_id(authenticator_id), transport(transport), type(type) {}
 
 AuthenticatorReference::AuthenticatorReference(AuthenticatorReference&& data) =
     default;

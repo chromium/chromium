@@ -604,7 +604,6 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
             test.params,
             TransportAvailabilityParam::kHasWinNativeAuthenticator)) {
       transports_info.has_win_native_api_authenticator = true;
-      transports_info.win_native_api_authenticator_id = "some_authenticator_id";
       transports_info.win_native_ui_shows_resident_credential_notice = true;
     }
     transports_info.resident_key_requirement =
@@ -694,7 +693,6 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
     AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
     tai.request_type = device::FidoRequestType::kMakeCredential;
     tai.has_win_native_api_authenticator = true;
-    tai.win_native_api_authenticator_id = "ID";
     tai.available_transports.insert(device::FidoTransportProtocol::kHybrid);
     tai.resident_key_requirement =
         is_passkey_request ? device::ResidentKeyRequirement::kRequired
@@ -702,6 +700,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
     tai.is_ble_powered = true;
 
     AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
+    model.saved_authenticators().AddAuthenticator(
+        AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
+                               device::AuthenticatorType::kWinNative));
     model.set_cable_transport_info(absl::nullopt, {}, base::DoNothing(),
                                    "fido:/1234");
 
@@ -1018,7 +1019,6 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   transports_info.request_type = RequestType::kMakeCredential;
   transports_info.available_transports = {};
   transports_info.has_win_native_api_authenticator = true;
-  transports_info.win_native_api_authenticator_id = kWinAuthenticatorId;
 
   std::vector<std::string> dispatched_authenticator_ids;
   AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
@@ -1028,6 +1028,9 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       },
       &dispatched_authenticator_ids));
 
+  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+      kWinAuthenticatorId, AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kWinNative));
   model.StartFlow(std::move(transports_info),
                   /*is_conditional_mediation=*/false);
 
@@ -1053,9 +1056,11 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       &request_num_called));
   model.saved_authenticators().AddAuthenticator(
       AuthenticatorReference(/*device_id=*/"authenticator",
-                             AuthenticatorTransport::kUsbHumanInterfaceDevice));
+                             AuthenticatorTransport::kUsbHumanInterfaceDevice,
+                             device::AuthenticatorType::kOther));
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-      /*device_id=*/"authenticator", AuthenticatorTransport::kInternal));
+      /*device_id=*/"authenticator", AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kOther));
 
   TransportAvailabilityInfo transports_info;
   transports_info.available_transports = kAllTransports;
@@ -1087,9 +1092,11 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
       },
       &request_num_called));
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-      /*device_id=*/"usb", AuthenticatorTransport::kUsbHumanInterfaceDevice));
+      /*device_id=*/"usb", AuthenticatorTransport::kUsbHumanInterfaceDevice,
+      device::AuthenticatorType::kOther));
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-      /*device_id=*/"internal", AuthenticatorTransport::kInternal));
+      /*device_id=*/"internal", AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kOther));
 
   TransportAvailabilityInfo transports_info;
   transports_info.available_transports = kAllTransports;
@@ -1118,7 +1125,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUICancelRequest) {
   AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
   model.AddObserver(&mock_observer);
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-      /*device_id=*/"internal", AuthenticatorTransport::kInternal));
+      /*device_id=*/"internal", AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kOther));
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   model.StartFlow(std::move(TransportAvailabilityInfo()),
@@ -1145,7 +1153,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIWindowsCancel) {
   AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
   model.AddObserver(&mock_observer);
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-      /*device_id=*/"internal", AuthenticatorTransport::kInternal));
+      /*device_id=*/"internal", AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kOther));
 
   EXPECT_CALL(mock_observer, OnStepTransition());
   model.StartFlow(std::move(TransportAvailabilityInfo()),
@@ -1180,10 +1189,11 @@ TEST_F(AuthenticatorRequestDialogModelTest, PreSelectWithEmptyAllowList) {
 
   model.saved_authenticators().AddAuthenticator(
       AuthenticatorReference(/*device_id=*/"usb-authenticator",
-                             AuthenticatorTransport::kUsbHumanInterfaceDevice));
+                             AuthenticatorTransport::kUsbHumanInterfaceDevice,
+                             device::AuthenticatorType::kOther));
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-      /*device_id=*/"internal-authenticator",
-      AuthenticatorTransport::kInternal));
+      /*device_id=*/"internal-authenticator", AuthenticatorTransport::kInternal,
+      device::AuthenticatorType::kOther));
 
   TransportAvailabilityInfo transports_info;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;

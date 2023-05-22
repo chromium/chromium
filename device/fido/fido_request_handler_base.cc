@@ -385,8 +385,6 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
 #if BUILDFLAG(IS_WIN)
   if (authenticator->GetType() == AuthenticatorType::kWinNative) {
     DCHECK(transport_availability_info_.has_win_native_api_authenticator);
-    transport_availability_info_.win_native_api_authenticator_id =
-        authenticator->GetId();
     transport_availability_info_
         .win_native_ui_shows_resident_credential_notice =
         static_cast<WinWebAuthnApiAuthenticator*>(authenticator)

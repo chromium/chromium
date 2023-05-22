@@ -76,6 +76,10 @@ BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNoNullInJSON);
 
+// Enable support for iCloud Keychain
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnICloudKeychain);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

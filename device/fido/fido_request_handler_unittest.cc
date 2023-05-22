@@ -661,8 +661,6 @@ TEST_F(FidoRequestHandlerTest, TransportAvailabilityOfWindowsAuthenticator) {
               test_case.api_available);
     EXPECT_EQ(transport_availability_info.has_win_native_api_authenticator,
               test_case.api_available);
-    EXPECT_EQ(transport_availability_info.win_native_api_authenticator_id,
-              test_case.api_available ? "WinWebAuthnApiAuthenticator" : "");
     EXPECT_EQ(transport_availability_info.win_is_uvpaa, test_case.is_uvpaa);
   }
 }

@@ -15,7 +15,8 @@
 // from the user via the UI.
 struct AuthenticatorReference {
   AuthenticatorReference(base::StringPiece device_id,
-                         device::FidoTransportProtocol transport);
+                         device::FidoTransportProtocol transport,
+                         device::AuthenticatorType type);
 
   AuthenticatorReference(const AuthenticatorReference&) = delete;
   AuthenticatorReference& operator=(const AuthenticatorReference&) = delete;
@@ -26,7 +27,12 @@ struct AuthenticatorReference {
   ~AuthenticatorReference();
 
   std::string authenticator_id;
+  // transport does not always match the transport returned by the original
+  // `FidoAuthenticator`. Specifically, for authenticators that don't have a
+  // transport, like the webauthn.dll authenticator, a transport of `kInternal`
+  // may be synthesized to make other logic easier.
   device::FidoTransportProtocol transport;
+  device::AuthenticatorType type;
   bool dispatched = false;
 };
 

@@ -289,27 +289,6 @@ void AuthenticatorRequestDialogModel::
   }
 }
 
-void AuthenticatorRequestDialogModel::
-    HideDialogAndDispatchToNativeWindowsApi() {
-  if (!transport_availability()->has_win_native_api_authenticator ||
-      transport_availability()->win_native_api_authenticator_id.empty()) {
-    NOTREACHED();
-    SetCurrentStep(Step::kClosed);
-    return;
-  }
-
-  // The Windows-native UI already handles retrying so we do not offer a second
-  // level of retry in that case.
-  offer_try_again_in_ui_ = false;
-
-  // There is no AuthenticatorReference for the Windows authenticator, hence
-  // directly call DispatchRequestAsyncInternal here.
-  DispatchRequestAsyncInternal(
-      transport_availability()->win_native_api_authenticator_id);
-
-  HideDialog();
-}
-
 void AuthenticatorRequestDialogModel::OnPhoneContactFailed(
     const std::string& name) {
   ContactNextPhoneByName(name);
@@ -452,7 +431,7 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
       after_off_the_record_interstitial_ =
           base::BindOnce(&AuthenticatorRequestDialogModel::
                              HideDialogAndDispatchToPlatformAuthenticator,
-                         weak_factory_.GetWeakPtr());
+                         weak_factory_.GetWeakPtr(), absl::nullopt);
       SetCurrentStep(Step::kOffTheRecordInterstitial);
       return;
     }
@@ -671,7 +650,7 @@ void AuthenticatorRequestDialogModel::OnRetryUserVerification(int attempts) {
 
 void AuthenticatorRequestDialogModel::OnResidentCredentialConfirmed() {
   DCHECK_EQ(current_step(), Step::kResidentCredentialConfirmation);
-  HideDialogAndDispatchToNativeWindowsApi();
+  HideDialogAndDispatchToPlatformAuthenticator();
 }
 
 void AuthenticatorRequestDialogModel::OnAttestationPermissionResponse(
@@ -684,15 +663,17 @@ void AuthenticatorRequestDialogModel::OnAttestationPermissionResponse(
 
 void AuthenticatorRequestDialogModel::AddAuthenticator(
     const device::FidoAuthenticator& authenticator) {
-  if (!authenticator.AuthenticatorTransport()) {
-#if BUILDFLAG(IS_WIN)
-    DCHECK_EQ(authenticator.GetType(), device::AuthenticatorType::kWinNative);
-#endif  // BUILDFLAG(IS_WIN)
-    return;
-  }
+  // Only the webauthn.dll authenticator omits a transport completely. This
+  // makes sense given how it works, but here it is treated as a platform
+  // authenticator and so given a `kInternal` transport.
+  DCHECK(authenticator.AuthenticatorTransport() ||
+         authenticator.GetType() == device::AuthenticatorType::kWinNative);
+  const AuthenticatorTransport transport =
+      authenticator.AuthenticatorTransport().value_or(
+          AuthenticatorTransport::kInternal);
 
   AuthenticatorReference authenticator_reference(
-      authenticator.GetId(), *authenticator.AuthenticatorTransport());
+      authenticator.GetId(), transport, authenticator.GetType());
 
   ephemeral_state_.saved_authenticators_.AddAuthenticator(
       std::move(authenticator_reference));
@@ -753,14 +734,11 @@ void AuthenticatorRequestDialogModel::OnAccountPreselectedIndex(size_t index) {
   // Run `account_preselected_callback_` to narrow the request to the selected
   // credential and dispatch to the platform authenticator.
   const device::DiscoverableCredentialMetadata& cred = creds().at(index);
+  const device::AuthenticatorType source = cred.source;
   DCHECK(account_preselected_callback_);
   account_preselected_callback_.Run(cred.cred_id);
   ephemeral_state_.creds_.clear();
-  if (transport_availability()->has_win_native_api_authenticator) {
-    HideDialogAndDispatchToNativeWindowsApi();
-  } else {
-    HideDialogAndDispatchToPlatformAuthenticator();
-  }
+  HideDialogAndDispatchToPlatformAuthenticator(source);
 }
 
 void AuthenticatorRequestDialogModel::SetSelectedAuthenticatorForTesting(
@@ -1003,7 +981,7 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi(
       !transport_availability_.win_native_ui_shows_resident_credential_notice) {
     SetCurrentStep(Step::kResidentCredentialConfirmation);
   } else {
-    HideDialogAndDispatchToNativeWindowsApi();
+    HideDialogAndDispatchToPlatformAuthenticator();
   }
 }
 
@@ -1085,22 +1063,14 @@ void AuthenticatorRequestDialogModel::DispatchRequestAsync(
     AuthenticatorReference* authenticator) {
   // Dispatching to the same authenticator twice may result in unexpected
   // behavior.
-  if (authenticator->dispatched) {
+  if (authenticator->dispatched || !request_callback_) {
     return;
   }
 
-  DispatchRequestAsyncInternal(authenticator->authenticator_id);
   authenticator->dispatched = true;
-}
-
-void AuthenticatorRequestDialogModel::DispatchRequestAsyncInternal(
-    const std::string& authenticator_id) {
-  if (!request_callback_) {
-    return;
-  }
-
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(request_callback_, authenticator_id));
+      FROM_HERE,
+      base::BindOnce(request_callback_, authenticator->authenticator_id));
 }
 
 void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
@@ -1427,14 +1397,24 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
 }
 
 void AuthenticatorRequestDialogModel::
-    HideDialogAndDispatchToPlatformAuthenticator() {
+    HideDialogAndDispatchToPlatformAuthenticator(
+        absl::optional<device::AuthenticatorType> type) {
   HideDialog();
+
+#if BUILDFLAG(IS_WIN)
+  // The Windows-native UI already handles retrying so we do not offer a second
+  // level of retry in that case.
+  offer_try_again_in_ui_ = false;
+#endif
 
   auto& authenticators =
       ephemeral_state_.saved_authenticators_.authenticator_list();
-  auto platform_authenticator_it = base::ranges::find(
-      authenticators, device::FidoTransportProtocol::kInternal,
-      &AuthenticatorReference::transport);
+  auto platform_authenticator_it = base::ranges::find_if(
+      authenticators, [type](const AuthenticatorReference& ref) -> bool {
+        return ref.transport == device::FidoTransportProtocol::kInternal &&
+               (!type || ref.type == *type ||
+                !base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain));
+      });
 
   if (platform_authenticator_it == authenticators.end()) {
     return;

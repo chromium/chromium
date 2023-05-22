@@ -113,12 +113,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // authenticator is available.
     bool win_is_uvpaa = false;
 
-    // Contains the authenticator ID of the native Windows
-    // authenticator if |has_win_native_api_authenticator| is true.
-    // This allows the observer to distinguish it from other
-    // authenticators.
-    std::string win_native_api_authenticator_id;
-
     // Indicates whether the request is occurring in an off-the-record
     // BrowserContext (e.g. Chrome Incognito mode).
     bool is_off_the_record_context = false;

@@ -80,4 +80,9 @@ BASE_FEATURE(kWebAuthnNoNullInJSON,
              "WebAuthenticationNoNullInJSON",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Added in M115. Not yet enabled by default.
+BASE_FEATURE(kWebAuthnICloudKeychain,
+             "WebAuthenticationICloudKeychain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device
