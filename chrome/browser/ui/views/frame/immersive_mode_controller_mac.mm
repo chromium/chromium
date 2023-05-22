@@ -431,6 +431,9 @@ class ImmersiveModeTabbedControllerMac : public ImmersiveModeControllerMac {
 };
 
 void ImmersiveModeTabbedControllerMac::SetEnabled(bool enabled) {
+  if (enabled == IsEnabled()) {
+    return;
+  }
   BrowserView* browser_view = ImmersiveModeControllerMac::browser_view();
   if (enabled) {
     tab_container_observation_.Observe(browser_view->tab_overlay_view());
