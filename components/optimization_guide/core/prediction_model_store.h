@@ -102,6 +102,10 @@ class PredictionModelStore {
       const proto::ModelCacheKey& client_model_cache_key,
       const proto::ModelCacheKey& server_model_cache_key);
 
+  // Allows tests to reset the store for subsequent tests since the store is a
+  // singleton.
+  void ResetForTesting();
+
  private:
   friend base::NoDestructor<PredictionModelStore>;
 

@@ -441,4 +441,13 @@ void PredictionModelStore::OnFilePathDeleted(const std::string& path_to_delete,
   pref_update->Remove(path_to_delete);
 }
 
+void PredictionModelStore::ResetForTesting() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  local_state_ = nullptr;
+  base_store_dir_ = base::FilePath();
+  background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+}
+
 }  // namespace optimization_guide

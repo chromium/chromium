@@ -153,6 +153,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       registry);
   segmentation_platform::SegmentationPlatformService::RegisterLocalStatePrefs(
       registry);
+  optimization_guide::prefs::RegisterLocalStatePrefs(registry);
 
   // Preferences related to the browser state manager.
   registry->RegisterStringPref(prefs::kBrowserStateLastUsed, std::string());

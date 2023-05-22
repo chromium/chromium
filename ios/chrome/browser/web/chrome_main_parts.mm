@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/metrics/ios_expired_histograms_array.h"
 #import "ios/chrome/browser/open_from_clipboard/create_clipboard_recent_content.h"
+#import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/paths/paths.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
@@ -294,6 +295,9 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   // Ensure ClipboadRecentContentIOS is created.
   ClipboardRecentContent::SetInstance(CreateClipboardRecentContentIOS());
+
+  // Initialize opt guide.
+  OptimizationGuideServiceFactory::InitializePredictionModelStore();
 
   // Ensure that the browser state is initialized.
   EnsureBrowserStateKeyedServiceFactoriesBuilt();

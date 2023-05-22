@@ -695,6 +695,11 @@ extern const char kOnlyAccessClipboardAsyncDescription[];
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];
 
+// Title and description for the flag to enable Optimization Guide new
+// install-wide model store.
+extern const char kOptimizationGuideInstallWideModelStoreName[];
+extern const char kOptimizationGuideInstallWideModelStoreDescription[];
+
 // Title and description for the flag enable download service to download in
 // foreground.
 extern const char kDownloadServiceForegroundSessionName[];
