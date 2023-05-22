@@ -294,3 +294,15 @@ iron-list {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.disabled {
+  opacity: var(--cros-disabled-opacity);
+}
+
+img.disabled {
+  /**
+   * Use 50% for image instead of default cros-disabled-opacity.
+   * TODO(b/236415314) get this into design system as a semantic value.
+   */
+  opacity: 50%;
+}

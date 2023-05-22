@@ -68,10 +68,6 @@
     margin: 12px 0;
   }
 
-  #ambientLabel.enterprise {
-    opacity: var(--cros-disabled-opacity);
-  }
-
   #messageContainer {
     align-items: center;
     display: flex;
@@ -146,18 +142,6 @@
   #imageContainer,
   #imagePlaceholder {
     grid-area: image;
-  }
-
-  #imageContainer[ambient-mode-managed] img.disabled {
-    opacity: var(--cros-disabled-opacity);
-  }
-
-  #imageContainer img.disabled {
-    /**
-     * Use 50% for image instead of default cros-disabled-opacity.
-     * TODO(b/236415314) get this into design system as a semantic value.
-     */
-    opacity: 50%;
   }
 
   #albumTitle {
@@ -317,7 +301,7 @@
   </svg>
   <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
     <template is="dom-if" if="[[!isAmbientModeAllowed_]]">
-      <div id="ambientLabel" class="enterprise">
+      <div id="ambientLabel" class="disabled">
         <h2>$i18n{screensaverLabel}</h2>
         <cr-icon-button disabled
             iron-icon="cr:chevron-right">

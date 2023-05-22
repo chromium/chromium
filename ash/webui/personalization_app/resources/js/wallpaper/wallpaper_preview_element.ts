@@ -17,6 +17,7 @@ import '../../css/cros_button_style.css.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {CurrentWallpaper, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import {isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
@@ -49,6 +50,12 @@ export class WallpaperPreview extends WithPersonalizationStore {
         type: Boolean,
         computed: 'isPolicyControlled_(image_)',
       },
+      isPersonalizationJellyEnabled_: {
+        type: Boolean,
+        value() {
+          return isPersonalizationJellyEnabled();
+        },
+      },
     };
   }
 
@@ -56,6 +63,7 @@ export class WallpaperPreview extends WithPersonalizationStore {
   private imageLoading_: boolean;
   private loading_: boolean;
   private policyControlled_: boolean;
+  private isPersonalizationJellyEnabled_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
