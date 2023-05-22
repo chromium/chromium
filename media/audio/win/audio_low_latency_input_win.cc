@@ -979,6 +979,11 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
       return;
     }
 
+    TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("audio"),
+                 "AudioInputCallback::OnData", "capture_time",
+                 capture_time - base::TimeTicks(), "time_ticks_now",
+                 base::TimeTicks::Now() - base::TimeTicks());
+
     // Get a cached AGC volume level which is updated once every second on the
     // audio manager thread. Note that, |volume| is also updated each time
     // SetVolume() is called through IPC by the render-side AGC.
