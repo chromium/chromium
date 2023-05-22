@@ -107,6 +107,8 @@ HistoryClustersService::KeywordMap DictToKeywordsCache(
   return keyword_map;
 }
 
+constexpr base::TimeDelta kAllKeywordsCacheRefreshAge = base::Hours(2);
+
 }  // namespace
 
 HistoryClustersService::HistoryClustersService(
@@ -446,7 +448,8 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
   }
 
   // 2 hour threshold chosen arbitrarily for cache refresh time.
-  if ((base::Time::Now() - all_keywords_cache_timestamp_) > base::Hours(2)) {
+  if ((base::Time::Now() - all_keywords_cache_timestamp_) >
+      kAllKeywordsCacheRefreshAge) {
     // Update the timestamp right away, to prevent this from running again.
     // (The cache_query_task_tracker_ should also do this.)
     all_keywords_cache_timestamp_ = base::Time::Now();
@@ -605,9 +608,14 @@ void HistoryClustersService::LoadCachesFromPrefs() {
   const base::Value::Dict* all_keywords_dict =
       all_cache_dict.FindDict("all_keywords");
   all_keywords_cache_ = DictToKeywordsCache(all_keywords_dict);
-  all_keywords_cache_timestamp_ =
+  // When loading `all_keywords_cache_` from the prefs, make sure it will be
+  // refreshed after 15 seconds, regardless of the persisted timestamp. This is
+  // to account for new synced visits, and to flush away stale data on restart.
+  // Extra 15 seconds is to avoid impacting startup. https://crbug.com/1444256.
+  all_keywords_cache_timestamp_ = std::min(
       base::ValueToTime(all_cache_dict.Find("all_timestamp"))
-          .value_or(all_keywords_cache_timestamp_);
+          .value_or(all_keywords_cache_timestamp_),
+      base::Time::Now() - kAllKeywordsCacheRefreshAge + base::Seconds(15));
 
   base::UmaHistogramCustomTimes(
       "History.Clusters.KeywordCache.LoadCachesFromPrefs.Latency",
