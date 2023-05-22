@@ -107,7 +107,11 @@ using bookmarks::BookmarkNode;
   const BookmarkNode* defaultFolder = GetDefaultBookmarkFolder(
       _prefs, bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService),
       _profileBookmarkModel.get(), _accountBookmarkModel.get());
-  _profileBookmarkModel->AddNewURL(defaultFolder,
+  BookmarkModel* modelForDefaultFolder =
+      bookmark_utils_ios::GetBookmarkModelForNode(defaultFolder,
+                                                  _profileBookmarkModel.get(),
+                                                  _accountBookmarkModel.get());
+  modelForDefaultFolder->AddNewURL(defaultFolder,
                                    defaultFolder->children().size(),
                                    base::SysNSStringToUTF16(title), URL);
 
@@ -136,11 +140,13 @@ using bookmarks::BookmarkNode;
                            toFolder:(const BookmarkNode*)folder {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 
+  BookmarkModel* modelForFolder = bookmark_utils_ios::GetBookmarkModelForNode(
+      folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   for (URLWithTitle* urlWithTitle in URLs) {
     base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
-    _profileBookmarkModel->AddNewURL(
-        folder, folder->children().size(),
-        base::SysNSStringToUTF16(urlWithTitle.title), urlWithTitle.URL);
+    modelForFolder->AddNewURL(folder, folder->children().size(),
+                              base::SysNSStringToUTF16(urlWithTitle.title),
+                              urlWithTitle.URL);
   }
 
   NSString* folderTitle = bookmark_utils_ios::TitleForBookmarkNode(folder);
