@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -26,7 +27,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_util.h"
@@ -321,18 +321,6 @@ bool ParentPermissionDialogView::GetRepromptAfterIncorrectCredential() const {
   return reprompt_after_incorrect_credential_;
 }
 
-std::u16string ParentPermissionDialogView::GetActiveUserFirstName() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_manager::UserManager* manager = user_manager::UserManager::Get();
-  const user_manager::User* user = manager->GetActiveUser();
-  return user->GetGivenName();
-#else
-  // TODO(https://crbug.com/1218633): Implement support for parent approved
-  // extensions in LaCrOS.
-  return std::u16string();
-#endif
-}
-
 void ParentPermissionDialogView::AddedToWidget() {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   constexpr int icon_size = extension_misc::EXTENSION_ICON_SMALL;
@@ -459,7 +447,9 @@ void ParentPermissionDialogView::CreateContents() {
     }
     std::u16string permission_header_label = l10n_util::GetStringFUTF16(
         IDS_PARENT_PERMISSION_PROMPT_CHILD_WANTS_TO_INSTALL_LABEL,
-        GetActiveUserFirstName(), extension_type);
+        base::UTF8ToUTF16(
+            supervised_user::GetAccountGivenName(*params_->profile)),
+        extension_type);
 
     views::Label* permissions_header = new views::Label(
         permission_header_label, views::style::CONTEXT_DIALOG_BODY_TEXT);
@@ -772,7 +762,6 @@ ADD_PROPERTY_METADATA(std::u16string, SelectedParentPermissionEmail)
 ADD_PROPERTY_METADATA(std::u16string, ParentPermissionCredential)
 ADD_READONLY_PROPERTY_METADATA(bool, InvalidCredentialReceived)
 ADD_PROPERTY_METADATA(bool, RepromptAfterIncorrectCredential)
-ADD_READONLY_PROPERTY_METADATA(std::u16string, ActiveUserFirstName)
 END_METADATA
 
 class ParentPermissionDialogImpl : public ParentPermissionDialog,

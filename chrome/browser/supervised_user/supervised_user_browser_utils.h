@@ -6,10 +6,13 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_BROWSER_UTILS_H_
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_BROWSER_UTILS_H_
 
+#include <string>
+
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 class ProfileSelections;
+class Profile;
 
 namespace supervised_user {
 
@@ -27,6 +30,9 @@ ProfileSelections BuildProfileSelectionsForRegularAndGuest();
 // Returns how several supervised_user factories are created before the
 // `supervised_user::kUpdateSupervisedUserFactoryCreation` feature is enabled.
 ProfileSelections BuildProfileSelectionsLegacy();
+
+// Returns given name of the primary account associated with the profile.
+std::string GetAccountGivenName(Profile& profile);
 
 }  // namespace supervised_user
 
