@@ -256,6 +256,7 @@ void ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck(
                 kDefault
           : ServiceWorkerSingleScriptUpdateChecker::ScriptChecksumUpdateOption::
                 kForceUpdate,
+      version_to_update_->key(),
       base::BindOnce(&ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished,
                      weak_factory_.GetWeakPtr(), resource_id));
 }

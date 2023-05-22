@@ -97,7 +97,7 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
   }
   network::ResourceRequest request =
       service_worker_loader_helpers::CreateRequestForServiceWorkerScript(
-          version_->script_url(), version_->key().origin(),
+          version_->script_url(), version_->key(),
           /*is_main_script=*/true, version_->script_type(),
           *fetch_client_settings_object_, *browser_context);
   // Request SSLInfo. It will be persisted in service worker storage and may be

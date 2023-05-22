@@ -22,10 +22,6 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-namespace url {
-class Origin;
-}  // namespace url
-
 namespace blink {
 namespace mojom {
 enum class ServiceWorkerUpdateViaCache;
@@ -68,7 +64,7 @@ void CheckVersionStatusBeforeWorkerScriptLoad(
 
 network::ResourceRequest CreateRequestForServiceWorkerScript(
     const GURL& script_url,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     bool is_main_script,
     blink::mojom::ScriptType worker_script_type,
     const blink::mojom::FetchClientSettingsObject& fetch_client_settings_object,

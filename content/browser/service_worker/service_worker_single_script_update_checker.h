@@ -159,6 +159,7 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
       mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
       int64_t write_resource_id,
       ScriptChecksumUpdateOption script_checksum_update_option,
+      const blink::StorageKey& storage_key,
       ResultCallback callback);
 
   ServiceWorkerSingleScriptUpdateChecker(
