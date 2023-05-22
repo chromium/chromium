@@ -193,7 +193,7 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
   if (animation) {
     // A cancelled CSS animation does not become active again due to an
     // animation update.
-    if (!animation->UnlimitedCurrentTime() && !animation->StartTimeInternal()) {
+    if (animation->CalculateAnimationPlayState() == Animation::kIdle) {
       return absl::nullopt;
     }
 
@@ -204,8 +204,9 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
   }
 
   bool range_changed =
-      !animation || (range_start != animation->GetRangeStartInternal() ||
-                     range_end != animation->GetRangeEndInternal());
+      !animation || ((range_start != animation->GetRangeStartInternal() ||
+                      range_end != animation->GetRangeEndInternal()) &&
+                     !animation->StartTimeInternal());
 
   if (timeline && timeline->IsProgressBased()) {
     if (is_paused_ || ((timeline == previous_timeline) &&
@@ -1888,7 +1889,6 @@ void CSSAnimations::CalculateAnimationUpdate(
         CSSAnimationProxy animation_proxy(timeline, /* animation */ nullptr,
                                           is_paused, range_start, range_end,
                                           timing);
-
         update.StartAnimation(
             name, name_index, i,
             *MakeGarbageCollected<InertEffect>(

@@ -111,7 +111,7 @@ static inline AnimationTimeDelta MultiplyZeroAlwaysGivesZero(
 // https://w3.org/TR/web-animations-1/#animation-effect-phases-and-states
 static inline Timing::Phase CalculatePhase(
     const Timing::NormalizedTiming& normalized,
-    absl::optional<AnimationTimeDelta> local_time,
+    absl::optional<AnimationTimeDelta>& local_time,
     bool at_progress_timeline_boundary,
     Timing::AnimationDirection direction) {
   DCHECK(GreaterThanOrEqualToWithinTimeTolerance(normalized.active_duration,
@@ -122,6 +122,10 @@ static inline Timing::Phase CalculatePhase(
   AnimationTimeDelta before_active_boundary_time =
       std::max(std::min(normalized.start_delay, normalized.end_time),
                AnimationTimeDelta());
+  if (IsWithinAnimationTimeTolerance(local_time.value(),
+                                     before_active_boundary_time)) {
+    local_time = before_active_boundary_time;
+  }
   if (local_time.value() < before_active_boundary_time ||
       (direction == Timing::AnimationDirection::kBackwards &&
        local_time.value() == before_active_boundary_time &&
@@ -133,10 +137,13 @@ static inline Timing::Phase CalculatePhase(
       std::max(std::min(normalized.start_delay + normalized.active_duration,
                         normalized.end_time),
                AnimationTimeDelta());
+  if (IsWithinAnimationTimeTolerance(local_time.value(),
+                                     active_after_boundary_time)) {
+    local_time = active_after_boundary_time;
+  }
   if (local_time.value() > active_after_boundary_time ||
       (direction == Timing::AnimationDirection::kForwards &&
-       IsWithinAnimationTimeTolerance(local_time.value(),
-                                      active_after_boundary_time) &&
+       local_time.value() == active_after_boundary_time &&
        !at_progress_timeline_boundary)) {
     return Timing::kPhaseAfter;
   }

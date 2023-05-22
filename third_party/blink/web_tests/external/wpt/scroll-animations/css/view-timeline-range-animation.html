@@ -45,7 +45,7 @@
   }
   async function waitForAnimationReady(target) {
     await waitForNextFrame();
-    await Promise.all(target.getAnimations().map(x => x.promise));
+    await Promise.all(target.getAnimations().map(x => x.ready));
   }
   async function assertValueAt(scroller, target, args) {
     await waitForAnimationReady(target);

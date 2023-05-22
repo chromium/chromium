@@ -48,6 +48,8 @@
 
   function runTests() {
     promise_test(async t => {
+      await waitForNextFrame();
+
       // scrollTop=200 to 400 is the entry range
       container.scrollTop = 200;
       await waitForNextFrame();

@@ -291,6 +291,7 @@ TEST_F(ScrollTimelineTest, AnimationPersistsWhenFinished) {
                                                GetElementById("scroller"));
   Animation* animation = CreateTestAnimation(scroll_timeline);
   animation->play();
+  animation->SetDeferredStartTimeForTesting();
   SimulateFrame();
 
   // Scroll to finished:
@@ -336,6 +337,7 @@ TEST_F(ScrollTimelineTest, AnimationPersistsWhenSourceBecomesNonScrollable) {
                                                GetElementById("scroller"));
   Animation* animation = CreateTestAnimation(scroll_timeline);
   animation->play();
+  animation->SetDeferredStartTimeForTesting();
   SimulateFrame();
 
   // Scroll to 50%:

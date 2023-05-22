@@ -213,7 +213,9 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   virtual void setTimeline(AnimationTimeline* timeline);
 
-  // Animation options for ViewTimelines.
+  // Animation options for ScrollTimelines.
+  // Setting a range boundary via rangeStart or rangeEnd overrides the
+  // corresponding CSS properties and resets a "sticky" start time.
   using RangeBoundary = V8UnionStringOrTimelineRangeOffset;
   const RangeBoundary* rangeStart();
   const RangeBoundary* rangeEnd();
@@ -230,18 +232,23 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   }
   void SetRangeStartInternal(
       const absl::optional<TimelineOffset>& range_start) {
-    const TimelineOffset default_timeline_offset;
+    auto_align_start_time_ = true;
     if (range_start_ != range_start) {
       range_start_ = range_start;
       OnRangeUpdate();
     }
   }
   void SetRangeEndInternal(const absl::optional<TimelineOffset>& range_end) {
+    auto_align_start_time_ = true;
     if (range_end_ != range_end) {
       range_end_ = range_end;
       OnRangeUpdate();
     }
   }
+
+  // This method is only called during style update of a CSS animation.
+  // Preventing an endpoint from stomping a value set via the rangeStart or
+  // rangeEnd API is performed by the caller in CSSAnimations.
   virtual void SetRange(const absl::optional<TimelineOffset>& range_start,
                         const absl::optional<TimelineOffset>& range_end) {
     if (range_start_ != range_start || range_end_ != range_end) {
@@ -250,6 +257,13 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
       OnRangeUpdate();
     }
   }
+
+  // Called during validation of a scroll timeline to determine if a second
+  // style and layout pass is required. During this validation step, we have an
+  // up to date snapshot of the timeline and can initialize the start time if
+  // required. If the start time or intrinsic iteration duration changes, we
+  // need a second style+layout pass even if the timeline snapshot is valid.
+  bool OnValidateSnapshot(bool snapshot_changed);
 
   void OnRangeUpdate();
 
@@ -363,6 +377,18 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   bool AnimationHasNoEffect() const { return animation_has_no_effect_; }
   bool AtScrollTimelineBoundary();
 
+  bool WaitingOnDeferredStartTime() {
+    return !start_time_ && (pending_play_ || pending_pause_);
+  }
+
+  // Scroll linked animations do not initialize the start time
+  // during play or pause as the start time is deferred until timeline
+  // validation.
+  void SetDeferredStartTimeForTesting(
+      AnimationTimeDelta start_time = AnimationTimeDelta()) {
+    start_time_ = start_time;
+  }
+
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
   void AddedEventListener(const AtomicString& event_type,
@@ -459,13 +485,15 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // non-native paint worklets.
   void UpdateCompositedPaintStatus();
 
-  // Updates the start time for a running animation that is linked to a view
-  //  timeline. As the animation is linked to a timeline range (cover by
-  // default), we don't necessarily know the start time when calling play
-  // internal. Instead, we calculate the start time and iteration duration once
-  // notified that the animation is ready. The start time must also be updated
-  // if changing the animation range on a running or finished animation.
-  void UpdateStartTimeForViewTimeline();
+  // Updates the start time for a running animation that is linked to a scroll
+  // timeline. As the animation is linked to a timeline range, we don't
+  // necessarily know the start time when calling play or pause. Instead, we
+  // calculate the start time and iteration duration once the timeline has been
+  // validated or the animation is ready (if no validation required). The start
+  // time must also be updated if changing the animation range on a running or
+  // finished animation. If a start time was explicitly set, it is treated as
+  // sticky and not updated.
+  void UpdateAutoAlignedStartTime();
 
   // Conversion between V8 representation of an animation range boundary and the
   // internal representation.
@@ -490,6 +518,13 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   absl::optional<AnimationTimeDelta> hold_time_;
   absl::optional<AnimationTimeDelta> previous_current_time_;
   bool reset_current_time_on_resume_ = false;
+
+  // Indicates if the animation should auto-align it's start time to the
+  // animation range if attached to a ScrollTimeline.  Explicit calls to
+  // set the current or start time override auto-alignment, effectively making
+  // the start time "sticky", until play or pause are called to un-stick the
+  // start time.
+  bool auto_align_start_time_ = true;
 
   unsigned sequence_number_;
 

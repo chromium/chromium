@@ -179,39 +179,23 @@ void ScrollSnapshotTimeline::InvalidateEffectTargetStyle() const {
 
 bool ScrollSnapshotTimeline::ValidateSnapshot() {
   TimelineState new_state = ComputeTimelineState();
-
-  if (timeline_state_snapshotted_.HasConsistentLayout(new_state)) {
-    return true;
-  }
+  bool is_valid = timeline_state_snapshotted_ == new_state;
+  bool state_changed =
+      !timeline_state_snapshotted_.HasConsistentLayout(new_state);
 
   // Note that `timeline_state_snapshotted_` must be updated before
   // ResolveTimelineOffsets is called.
   timeline_state_snapshotted_ = new_state;
-  ResolveTimelineOffsets();
-
-  // Mark an attached animation's target as dirty if the play state is running
-  // or finished. Idle animations are not in effect and the effect of a paused
-  // animation is not impacted by timeline staleness.
-  for (Animation* animation : GetAnimations()) {
-    Animation::AnimationPlayState play_state =
-        animation->CalculateAnimationPlayState();
-    if (play_state != Animation::kRunning &&
-        play_state != Animation::kFinished) {
-      continue;
-    }
-
-    // The animation's effect target requires a style update to ensure that we
-    // pickup the new effect value.
-    animation->InvalidateEffectTargetStyle();
-    // Normalized timing needs to be reevaluated since the intrinsic iteration
-    // duration may be affected.
-    animation->InvalidateNormalizedTiming();
-    // The animation range may be affected, which in turn can affect animation
-    // start time as well as intrinsic iteration duration.
-    animation->OnRangeUpdate();
+  if (state_changed) {
+    ResolveTimelineOffsets();
   }
 
-  return false;
+  for (Animation* animation : GetAnimations()) {
+    // Compute deferred start times and update animation timing if required.
+    is_valid &= animation->OnValidateSnapshot(state_changed);
+  }
+
+  return is_valid;
 }
 
 }  // namespace blink

@@ -7,10 +7,11 @@
 
 <main id=main></main>
 <script>
-  function inflate(t, template) {
+  async function inflate(t, template) {
     t.add_cleanup(() => main.replaceChildren());
-    main.append(template.content.cloneNode(true));
-    main.offsetTop;
+    return runAndWaitForFrameUpdate(() => {
+      main.append(template.content.cloneNode(true));
+    });
   }
 
   async function scrollTop(e, value) {
@@ -68,7 +69,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_defer);
+    await inflate(t, view_timeline_defer);
     let scroller = main.querySelector('.scroller');
     let target = main.querySelector('.target');
     await scrollTop(scroller, 350); // 50%
@@ -86,7 +87,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_defer_no_attach);
+    await inflate(t, view_timeline_defer_no_attach);
     let scroller = main.querySelector('.scroller');
     let target = main.querySelector('.target');
     await scrollTop(scroller, 350); // 50%
@@ -107,7 +108,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_defer_two_attachments);
+    await inflate(t, view_timeline_defer_two_attachments);
     let scroller = main.querySelector('.scroller');
     let target = main.querySelector('.target');
     await scrollTop(scroller, 350); // 50%
@@ -128,7 +129,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_defer_axis);
+    await inflate(t, view_timeline_defer_axis);
     let target = main.querySelector('.target');
     assert_equals(target.getAnimations().length, 1);
     let anim = target.getAnimations()[0];
@@ -149,7 +150,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_defer_axis_multiple);
+    await inflate(t, view_timeline_defer_axis_multiple);
     let target = main.querySelector('.target');
     assert_equals(target.getAnimations().length, 1);
     let anim = target.getAnimations()[0];
@@ -170,7 +171,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_inset);
+    await inflate(t, view_timeline_inset);
     let scroller = main.querySelector('.scroller');
     let target = main.querySelector('.target');
 
@@ -195,7 +196,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_reattach);
+    await inflate(t, view_timeline_reattach);
     let scrollers = main.querySelectorAll('.scroller');
     let contents = main.querySelectorAll('.content');
     assert_equals(scrollers.length, 2);
@@ -230,7 +231,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_dynamic_attach_second);
+    await inflate(t, view_timeline_dynamic_attach_second);
     let scrollers = main.querySelectorAll('.scroller');
     let contents = main.querySelectorAll('.content');
     assert_equals(scrollers.length, 2);
@@ -271,7 +272,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_dynamic_detach_second);
+    await inflate(t, view_timeline_dynamic_detach_second);
     let scrollers = main.querySelectorAll('.scroller');
     let contents = main.querySelectorAll('.content');
     assert_equals(scrollers.length, 2);
@@ -309,7 +310,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_ancestor_attached_removed);
+    await inflate(t, view_timeline_ancestor_attached_removed);
     let scroller = main.querySelector('.scroller');
     let target = main.querySelector('.target');
     let content = main.querySelector('.content');
@@ -337,7 +338,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_ancestor_attached_display_none);
+    await inflate(t, view_timeline_ancestor_attached_display_none);
     let scroller = main.querySelector('.scroller');
     let target = main.querySelector('.target');
     let content = main.querySelector('.content');
@@ -374,7 +375,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_timeline_dynamic_defer);
+    await inflate(t, view_timeline_dynamic_defer);
     let target = main.querySelector('.target');
     let scroller = main.querySelector('.scroller');
     let outer = main.querySelector('.content');
@@ -415,7 +416,7 @@
 </template>
 <script>
   promise_test(async (t) => {
-    inflate(t, view_scroll_timeline_defer);
+    await inflate(t, view_scroll_timeline_defer);
     let scroller = main.querySelector('.scroller');
     let targets = main.querySelectorAll('.target');
     await scrollTop(scroller, 350);
