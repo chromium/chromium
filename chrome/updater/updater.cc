@@ -117,8 +117,6 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
       base::win::ScopedCOMInitializer::kMTA);
   if (!com_initializer.Succeeded()) {
     PLOG(ERROR) << "Failed to initialize COM";
-
-    // TODO(crbug.com/1294543) - is there a more specific error needed?
     return kErrorComInitializationFailed;
   }
 
