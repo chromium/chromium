@@ -3106,6 +3106,9 @@ extern const char kCrostiniMultiContainerDescription[];
 extern const char kCrostiniImeSupportName[];
 extern const char kCrostiniImeSupportDescription[];
 
+extern const char kCrostiniQtImeSupportName[];
+extern const char kCrostiniQtImeSupportDescription[];
+
 extern const char kCrostiniVirtualKeyboardSupportName[];
 extern const char kCrostiniVirtualKeyboardSupportDescription[];
 

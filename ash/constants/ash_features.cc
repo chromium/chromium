@@ -411,6 +411,11 @@ BASE_FEATURE(kCrostiniImeSupport,
              "CrostiniImeSupport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables Crostini Qt application IME support.
+BASE_FEATURE(kCrostiniQtImeSupport,
+             "CrostiniQtImeSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables Crostini Virtual Keyboard support.
 BASE_FEATURE(kCrostiniVirtualKeyboardSupport,
              "CrostiniVirtualKeyboardSupport",

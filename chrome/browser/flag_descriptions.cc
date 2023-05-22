@@ -5415,7 +5415,14 @@ const char kCrostiniMultiContainerDescription[] =
 
 const char kCrostiniImeSupportName[] = "Crostini IME support";
 const char kCrostiniImeSupportDescription[] =
-    "Experimental support for IMEs (excluding VK) on Crostini.";
+    "Support for IMEs (excluding VK) in Crostini for applications built with "
+    "GTK3 or Electron.";
+
+const char kCrostiniQtImeSupportName[] =
+    "Crostini IME support for Qt applications";
+const char kCrostiniQtImeSupportDescription[] =
+    "Experimental support for IMEs (excluding VK) in Crostini for applications "
+    "built with Qt. Requires #crostini-ime-support to be enabled.";
 
 const char kCrostiniVirtualKeyboardSupportName[] =
     "Crostini Virtual Keyboard Support";

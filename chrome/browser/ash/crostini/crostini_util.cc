@@ -351,6 +351,10 @@ std::vector<vm_tools::cicerone::ContainerFeature> GetContainerFeatures() {
   if (base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport)) {
     result.push_back(
         vm_tools::cicerone::ContainerFeature::ENABLE_GTK3_IME_SUPPORT);
+    if (base::FeatureList::IsEnabled(ash::features::kCrostiniQtImeSupport)) {
+      result.push_back(
+          vm_tools::cicerone::ContainerFeature::ENABLE_QT_IME_SUPPORT);
+    }
     if (base::FeatureList::IsEnabled(
             ash::features::kCrostiniVirtualKeyboardSupport)) {
       result.push_back(vm_tools::cicerone::ContainerFeature::
