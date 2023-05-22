@@ -5,6 +5,7 @@
 #include "puffin/src/puff_writer.h"
 
 #include <algorithm>
+#include <cstring>
 #include <memory>
 #include <string>
 #include <vector>

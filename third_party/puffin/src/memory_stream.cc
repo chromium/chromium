@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <algorithm>
+#include <cstring>
 #include <utility>
 
 #include "base/files/file.h"

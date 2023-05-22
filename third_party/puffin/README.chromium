@@ -59,3 +59,4 @@ subblocks.
 - Removing complete_static_lib = true from libpuffpatch to fix duplicate symbol
 issue in nonembedded android component_updater.
 - Removing logs to reduce chromium binary size.
+- Fixed missing cstring includes for memcpy calls.

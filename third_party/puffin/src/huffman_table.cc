@@ -5,6 +5,7 @@
 #include "puffin/src/huffman_table.h"
 
 #include <algorithm>
+#include <cstring>
 #include <vector>
 
 #include "puffin/src/logging.h"
