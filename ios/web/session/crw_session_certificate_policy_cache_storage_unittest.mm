@@ -4,6 +4,7 @@
 
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 
+#import "ios/web/public/session/proto/session.pb.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
 #import "net/test/cert_test_util.h"
@@ -17,6 +18,7 @@
 #endif
 
 namespace {
+
 // Checks for equality between `cert_storage1` and `cert_storage2`.
 bool CertStoragesAreEqual(CRWSessionCertificateStorage* cert_storage1,
                           CRWSessionCertificateStorage* cert_storage2) {
@@ -26,6 +28,7 @@ bool CertStoragesAreEqual(CRWSessionCertificateStorage* cert_storage1,
          cert_storage1.host == cert_storage2.host &&
          cert_storage1.status == cert_storage2.status;
 }
+
 // Checks for equality between `cache_storage1` and `cache_storage2`.
 bool CacheStoragesAreEqual(
     CRWSessionCertificatePolicyCacheStorage* cache_storage1,
@@ -40,6 +43,7 @@ bool CacheStoragesAreEqual(
   }
   return true;
 }
+
 }  // namespace
 
 class CRWSessionCertificatePolicyCacheStorageTest : public PlatformTest {
@@ -74,6 +78,18 @@ TEST_F(CRWSessionCertificatePolicyCacheStorageTest, EncodeDecode) {
   EXPECT_TRUE(CacheStoragesAreEqual(cache_storage_, decoded));
 }
 
+// Tests that converting CRWSessionCertificatePolicyCacheStorage to proto and
+// back results in an equivalent storage.
+TEST_F(CRWSessionCertificatePolicyCacheStorageTest, EncodeDecodeToProto) {
+  web::proto::CertificatesCacheStorage storage;
+  [cache_storage_ serializeToProto:storage];
+
+  CRWSessionCertificatePolicyCacheStorage* decoded =
+      [[CRWSessionCertificatePolicyCacheStorage alloc] initWithProto:storage];
+
+  EXPECT_TRUE(CacheStoragesAreEqual(cache_storage_, decoded));
+}
+
 using CRWSessionCertificateStorageTest = PlatformTest;
 
 // Tests that unarchiving a CRWSessionCertificateStorage returns nil if the
@@ -93,5 +109,18 @@ TEST_F(CRWSessionCertificateStorageTest, InvalidCertData) {
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
   unarchiver.requiresSecureCoding = NO;
   id decoded = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+  EXPECT_FALSE(decoded);
+}
+
+// Tests that unarchiving a CRWSessionCertificateStorage from proto returns nil
+// if the certificate data does not correctly decode to a certificate.
+TEST_F(CRWSessionCertificateStorageTest, InvalidCertDataFromProto) {
+  web::proto::CertificateStorage storage;
+  storage.set_certificate("not a  cert");
+  storage.set_host("host");
+  storage.set_status(net::CERT_STATUS_INVALID);
+
+  CRWSessionCertificateStorage* decoded =
+      [[CRWSessionCertificateStorage alloc] initWithProto:storage];
   EXPECT_FALSE(decoded);
 }

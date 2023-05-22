@@ -5,6 +5,7 @@
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/public/session/proto/session.pb.h"
 #import "net/base/hash_value.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
@@ -45,6 +46,7 @@ scoped_refptr<net::X509Certificate> NSDataToCertificate(NSData* data) {
 }  // namespace
 
 namespace web {
+
 // CRWSessionCertificateStorage serialization keys.
 NSString* const kCertificateSerializationKey = @"CertificateSerializationKey";
 NSString* const kHostSerializationKey = @"HostSerializationKey";
@@ -97,6 +99,32 @@ size_t GetCertPolicyBytesEncoded() {
     _status = status;
   }
   return self;
+}
+
+- (instancetype)initWithProto:(const web::proto::CertificateStorage&)storage {
+  const std::string& certString = storage.certificate();
+  scoped_refptr<net::X509Certificate> cert =
+      net::X509Certificate::CreateFromBytes(
+          base::make_span(reinterpret_cast<const uint8_t*>(certString.data()),
+                          certString.size()));
+
+  // Return nil if the cert cannot be decoded or the host is empty.
+  if (!cert || storage.host().empty()) {
+    return nil;
+  }
+
+  return [self initWithCertificate:cert
+                              host:storage.host()
+                            status:storage.status()];
+}
+
+- (void)serializeToProto:(web::proto::CertificateStorage&)storage {
+  const base::StringPiece certString =
+      net::x509_util::CryptoBufferAsStringPiece(_certificate->cert_buffer());
+
+  storage.set_certificate(certString.data(), certString.size());
+  storage.set_host(_host);
+  storage.set_status(_status);
 }
 
 #pragma mark Accessors
@@ -156,6 +184,30 @@ size_t GetCertPolicyBytesEncoded() {
 @implementation CRWSessionCertificatePolicyCacheStorage
 
 @synthesize certificateStorages = _certificateStorages;
+
+- (instancetype)initWithProto:
+    (const web::proto::CertificatesCacheStorage&)storage {
+  if ((self = [super init])) {
+    NSMutableSet<CRWSessionCertificateStorage*>* certificates =
+        [[NSMutableSet alloc] initWithCapacity:storage.certs_size()];
+    for (const web::proto::CertificateStorage& certStorage : storage.certs()) {
+      CRWSessionCertificateStorage* cert =
+          [[CRWSessionCertificateStorage alloc] initWithProto:certStorage];
+
+      if (cert) {
+        [certificates addObject:cert];
+      }
+    }
+    _certificateStorages = [certificates copy];
+  }
+  return self;
+}
+
+- (void)serializeToProto:(web::proto::CertificatesCacheStorage&)storage {
+  for (CRWSessionCertificateStorage* cert in _certificateStorages) {
+    [cert serializeToProto:*storage.add_certs()];
+  }
+}
 
 #pragma mark NSCoding
 
