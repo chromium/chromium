@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/counter_node.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -2338,7 +2339,7 @@ CSSValue* ConsumeCounterContent(CSSParserTokenRange args,
       list_style = css_parsing_utils::ConsumeCounterStyleName(args, context);
     }
   } else {
-    list_style = MakeGarbageCollected<CSSCustomIdentValue>("decimal");
+    list_style = MakeGarbageCollected<CSSCustomIdentValue>(keywords::kDecimal);
   }
 
   if (!list_style || !args.AtEnd()) {

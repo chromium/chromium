@@ -821,7 +821,8 @@ bool LayoutObject::IsListMarkerForSummary() const {
       return false;
     const AtomicString& name =
         StyleRef().ListStyleType()->GetCounterStyleName();
-    return name == "disclosure-open" || name == "disclosure-closed";
+    return name == keywords::kDisclosureOpen ||
+           name == keywords::kDisclosureClosed;
   }
   return false;
 }

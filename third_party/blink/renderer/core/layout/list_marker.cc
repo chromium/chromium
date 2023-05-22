@@ -322,7 +322,8 @@ LayoutUnit ListMarker::WidthOfSymbol(const ComputedStyle& style,
     // See http://crbug.com/1228157
     return LayoutUnit();
   }
-  if (list_style == "disclosure-open" || list_style == "disclosure-closed") {
+  if (list_style == keywords::kDisclosureOpen ||
+      list_style == keywords::kDisclosureClosed) {
     return DisclosureSymbolSize(style);
   }
   return LayoutUnit((font_data->GetFontMetrics().Ascent() * 2 / 3 + 1) / 2 + 2);
@@ -341,7 +342,8 @@ std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForInside(
     case ListStyleCategory::kSymbol: {
       const AtomicString& name =
           list_item_style.ListStyleType()->GetCounterStyleName();
-      if (name == "disclosure-open" || name == "disclosure-closed") {
+      if (name == keywords::kDisclosureOpen ||
+          name == keywords::kDisclosureClosed) {
         return {LayoutUnit(),
                 LayoutUnit(
                     kClosureMarkerMarginEm *
@@ -382,10 +384,10 @@ std::pair<LayoutUnit, LayoutUnit> ListMarker::InlineMarginsForOutside(
         const FontMetrics& font_metrics = font_data->GetFontMetrics();
         const AtomicString& name =
             list_item_style.ListStyleType()->GetCounterStyleName();
-        LayoutUnit offset =
-            (name == "disclosure-open" || name == "disclosure-closed")
-                ? DisclosureSymbolSize(marker_style)
-                : LayoutUnit(font_metrics.Ascent() * 2 / 3);
+        LayoutUnit offset = (name == keywords::kDisclosureOpen ||
+                             name == keywords::kDisclosureClosed)
+                                ? DisclosureSymbolSize(marker_style)
+                                : LayoutUnit(font_metrics.Ascent() * 2 / 3);
         margin_start = -offset - kCMarkerPaddingPx - 1;
         margin_end = offset + kCMarkerPaddingPx + 1 - marker_inline_size;
         break;
@@ -411,7 +413,8 @@ LayoutRect ListMarker::RelativeSymbolMarkerRect(const ComputedStyle& style,
   // http://crbug.com/543193
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
   const int ascent = font_metrics.Ascent();
-  if (list_style == "disclosure-open" || list_style == "disclosure-closed") {
+  if (list_style == keywords::kDisclosureOpen ||
+      list_style == keywords::kDisclosureClosed) {
     LayoutUnit marker_size = DisclosureSymbolSize(style);
     relative_rect = LayoutRect(LayoutUnit(), ascent - marker_size, marker_size,
                                marker_size);

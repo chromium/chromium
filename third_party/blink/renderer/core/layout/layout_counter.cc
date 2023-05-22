@@ -878,7 +878,8 @@ bool LayoutCounter::IsDirectionalSymbolMarker() const {
     return false;
   }
   const AtomicString& list_style = counter_->ListStyle();
-  return list_style == "disclosure-open" || list_style == "disclosure-closed";
+  return list_style == keywords::kDisclosureOpen ||
+         list_style == keywords::kDisclosureClosed;
 }
 
 const AtomicString& LayoutCounter::Separator() const {
