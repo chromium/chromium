@@ -242,11 +242,11 @@ public class OmniboxActionsTest {
                                        .expectIntRecord("Omnibox.ActionInSuggest.Shown",
                                                ActionInSuggestUmaType.DIRECTIONS)
                                        .expectIntRecord("Omnibox.ActionInSuggest.Used",
-                                               ActionInSuggestUmaType.DIRECTIONS)
+                                               ActionInSuggestUmaType.REVIEWS)
                                        .expectIntRecord("Omnibox.ActionInSuggest.Shown",
                                                ActionInSuggestUmaType.REVIEWS)
                                        .build();
-        clickOnAction(1);
+        clickOnAction(2);
         histogramWatcher.assertExpected();
     }
 }
