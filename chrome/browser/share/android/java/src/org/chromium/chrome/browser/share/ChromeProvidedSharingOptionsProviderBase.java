@@ -239,6 +239,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         return availableOptions;
     }
 
+    protected boolean usePolishedActionOrderedList() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH);
+    }
+
     /**
      * Creates all enabled {@link FirstPartyOption}s and adds them to {@code
      * mOrderedFirstPartyOptions} in the order they should appear.
@@ -251,7 +255,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             maybeAddQrCodeFirstPartyOption();
             return;
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH)) {
+        if (usePolishedActionOrderedList()) {
             mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
             maybeAddCopyFirstPartyOption();
             maybeAddLongScreenshotFirstPartyOption();
@@ -331,7 +335,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     private FirstPartyOption createCopyLinkFirstPartyOption() {
         FirstPartyOptionBuilder builder = new FirstPartyOptionBuilder(
                 ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH)) {
+        if (usePolishedActionOrderedList()) {
             builder.setContentTypesToDisableFor(
                     ContentType.LINK_AND_TEXT, ContentType.IMAGE_AND_LINK);
         } else {

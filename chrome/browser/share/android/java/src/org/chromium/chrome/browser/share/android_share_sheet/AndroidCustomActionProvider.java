@@ -135,6 +135,12 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
     //  extends ChromeProvidedSharingOptionsProviderBase:
 
+    @Override
+    protected boolean usePolishedActionOrderedList() {
+        // Always use the polished list of actions for Android share sheet.
+        return true;
+    }
+
     @Nullable
     @Override
     protected FirstPartyOption createScreenshotFirstPartyOption() {
@@ -144,8 +150,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
     @Nullable
     @Override
     protected FirstPartyOption createLongScreenshotsFirstPartyOption() {
-        return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE, ContentType.TEXT,
-                ContentType.HIGHLIGHTED_TEXT, ContentType.IMAGE)
+        return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
                 .setDetailedContentTypesToDisableFor(DetailedContentType.WEB_NOTES)
                 .setIcon(R.drawable.long_screenshot, R.string.sharing_long_screenshot)
                 .setFeatureNameForMetrics(USER_ACTION_LONG_SCREENSHOT_NO_EDITOR_SELECTED)

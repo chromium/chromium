@@ -94,7 +94,6 @@ import org.chromium.url.ShadowGURL;
  * Test for {@link AndroidShareSheetController} and {@link AndroidCustomActionProvider}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH})
 @Features.DisableFeatures(
         {ChromeFeatureList.WEBNOTES_STYLIZE, ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
 @Config(shadows = {ShadowShareImageFileUtils.class, ShadowGURL.class})
@@ -323,8 +322,8 @@ public class AndroidShareSheetControllerUnitTest {
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_long_screenshot,
-                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
+        assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_send_tab_to_self,
+                R.string.qr_code_share_icon_label);
     }
 
     @Test
@@ -403,8 +402,8 @@ public class AndroidShareSheetControllerUnitTest {
                 "\"highlight\"\n " + JUnitTestGURLs.TEXT_FRAGMENT_URL,
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
 
-        assertCustomActions(chooserIntent, R.string.sharing_copy, R.string.sharing_long_screenshot,
-                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
+        assertCustomActions(chooserIntent, R.string.sharing_copy, R.string.sharing_send_tab_to_self,
+                R.string.qr_code_share_icon_label);
 
         // Toggle the modify action again, link is removed from text.
         runModifyActionFromChooserIntent(chooserIntent);
@@ -413,8 +412,7 @@ public class AndroidShareSheetControllerUnitTest {
         Assert.assertEquals("Text being shared is different.", "highlight",
                 shareIntent2.getStringExtra(Intent.EXTRA_TEXT));
 
-        assertCustomActions(
-                chooserIntent2, R.string.sharing_copy_text, R.string.sharing_long_screenshot);
+        assertCustomActions(chooserIntent2, R.string.sharing_copy_text);
 
         // Toggle the modify action again, link is reattached with the text.
         runModifyActionFromChooserIntent(chooserIntent2);
@@ -453,8 +451,7 @@ public class AndroidShareSheetControllerUnitTest {
         Assert.assertNull("Modify action should be null when generating link to text failed.",
                 chooserIntent.getParcelableExtra(INTENT_EXTRA_CHOOSER_MODIFY_SHARE_ACTION));
 
-        assertCustomActions(
-                chooserIntent, R.string.sharing_copy_text, R.string.sharing_long_screenshot);
+        assertCustomActions(chooserIntent, R.string.sharing_copy_text);
     }
 
     @Test
@@ -478,8 +475,8 @@ public class AndroidShareSheetControllerUnitTest {
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_long_screenshot,
-                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
+        assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_send_tab_to_self,
+                R.string.qr_code_share_icon_label);
         chooseCustomAction(intent, R.string.qr_code_share_icon_label);
 
         Assert.assertEquals("Image source URL should be used for QR Code.",
@@ -507,8 +504,8 @@ public class AndroidShareSheetControllerUnitTest {
 
         // No download option here.
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(intent, R.string.sharing_long_screenshot, R.string.sharing_copy_image,
-                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
+        assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_send_tab_to_self,
+                R.string.qr_code_share_icon_label);
     }
 
     private void setFaviconToFetchForTest(Bitmap favicon) {
