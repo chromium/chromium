@@ -7,18 +7,37 @@
 
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/values.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 
 namespace ash {
 
+enum class DraggableAppType { kAppGridItem = 0, kFolderAppGridItem = 1, kMax };
+
+struct DraggableAppItemInfo {
+  DraggableAppItemInfo(const std::string& app_id, const DraggableAppType type);
+  ~DraggableAppItemInfo();
+  DraggableAppItemInfo(const DraggableAppItemInfo& other);
+  DraggableAppItemInfo(DraggableAppItemInfo&& other);
+  DraggableAppItemInfo& operator=(const DraggableAppItemInfo& other);
+
+  // Returns true if the application id is empty.
+  // This is often used to determine if the id is invalid.
+  bool IsValid() const;
+
+  // The application id associated with a set of windows.
+  std::string app_id;
+  // The type of draggable app.
+  DraggableAppType type = DraggableAppType::kAppGridItem;
+};
+
 const ui::ClipboardFormatType& GetAppItemFormatType();
 
-// Retrieve and app id carried in a OSExchangeData object during app list drag
-// and drop actions.
-absl::optional<std::string> GetAppIdFromDropData(
+// Retrieve app information carried in a OSExchangeData object during app list
+// drag and drop action.
+absl::optional<DraggableAppItemInfo> GetAppInfoFromDropDataForAppType(
     const ui::OSExchangeData& data);
 
 }  // namespace ash

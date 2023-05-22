@@ -1112,12 +1112,14 @@ bool AppsGridView::WillAcceptDropEvent(const OSExchangeData& data) {
     return false;
   }
 
-  auto app_id = GetAppIdFromDropData(data);
-  if (app_id->empty()) {
+  auto app_id = GetAppInfoFromDropDataForAppType(data);
+  if (!app_id.has_value() || app_id->IsValid()) {
     return false;
   }
+  std::set<ui::ClipboardFormatType> format_types;
+  GetDropFormats(nullptr, &format_types);
 
-  return data.HasCustomFormat(GetAppItemFormatType());
+  return data.HasAnyFormat(0, format_types);
 }
 
 void AppsGridView::OnDragExited() {
@@ -1169,12 +1171,12 @@ void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
     return;
   }
 
-  auto app_id = GetAppIdFromDropData(event.data());
-  if (app_id->empty()) {
+  auto app_info = GetAppInfoFromDropDataForAppType(event.data());
+  if (!app_info || app_info->IsValid()) {
     return;
   }
 
-  drag_item_ = AppListModelProvider::Get()->model()->FindItem(app_id.value());
+  drag_item_ = AppListModelProvider::Get()->model()->FindItem(app_info->app_id);
   if (!drag_item_) {
     return;
   }

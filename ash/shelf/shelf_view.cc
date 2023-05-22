@@ -2921,8 +2921,8 @@ bool ShelfView::CanDrop(const OSExchangeData& data) {
     return true;
   }
 
-  auto app_id = GetAppIdFromDropData(data);
-  if (app_id->empty()) {
+  auto app_info = GetAppInfoFromDropDataForAppType(data);
+  if (!app_info || app_info->IsValid()) {
     return false;
   }
 
@@ -2945,15 +2945,20 @@ void ShelfView::OnDragEntered(const ui::DropTargetEvent& event) {
     return;
   }
 
-  auto app_id = GetAppIdFromDropData(event.data());
-  if (app_id->empty()) {
+  auto app_info = GetAppInfoFromDropDataForAppType(event.data());
+  if (!app_info || app_info->IsValid()) {
+    return;
+  }
+
+  std::string app_id = app_info->app_id;
+  if (app_id.empty() || app_info->type != DraggableAppType::kAppGridItem) {
     views::View::OnDragEntered(event);
     return;
   }
 
   gfx::Point drag_point_in_screen = event.location();
   views::View::ConvertPointToScreen(this, &drag_point_in_screen);
-  StartDrag(app_id.value(), drag_point_in_screen, gfx::Rect());
+  StartDrag(app_id, drag_point_in_screen, gfx::Rect());
 }
 
 int ShelfView::OnDragUpdated(const ui::DropTargetEvent& event) {

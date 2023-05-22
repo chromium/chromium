@@ -5,11 +5,34 @@
 #include "ash/app_list/app_list_item_util.h"
 
 #include <string>
+#include <vector>
 
+#include "base/json/values_util.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 
 namespace ash {
+
+DraggableAppItemInfo::DraggableAppItemInfo(const std::string& app_id,
+                                           const DraggableAppType type)
+    : app_id(app_id), type(type) {}
+
+DraggableAppItemInfo::~DraggableAppItemInfo() = default;
+
+DraggableAppItemInfo::DraggableAppItemInfo(const DraggableAppItemInfo& other) =
+    default;
+
+DraggableAppItemInfo::DraggableAppItemInfo(DraggableAppItemInfo&& other) =
+    default;
+
+DraggableAppItemInfo& DraggableAppItemInfo::operator=(
+    const DraggableAppItemInfo& other) = default;
+
+bool DraggableAppItemInfo::IsValid() const {
+  return app_id.empty();
+}
 
 const ui::ClipboardFormatType& GetAppItemFormatType() {
   static const base::NoDestructor<ui::ClipboardFormatType> format(
@@ -18,7 +41,7 @@ const ui::ClipboardFormatType& GetAppItemFormatType() {
   return *format;
 }
 
-absl::optional<std::string> GetAppIdFromDropData(
+absl::optional<DraggableAppItemInfo> GetAppInfoFromDropDataForAppType(
     const ui::OSExchangeData& data) {
   base::Pickle data_pickle;
   if (!data.GetPickledData(GetAppItemFormatType(), &data_pickle)) {
@@ -26,12 +49,14 @@ absl::optional<std::string> GetAppIdFromDropData(
   }
 
   std::string app_id;
+  int type_value = -1;
   base::PickleIterator iter(data_pickle);
-  if (!iter.ReadString(&app_id)) {
+  if (!iter.ReadString(&app_id) || !iter.ReadInt(&type_value) ||
+      type_value < 0 || type_value > static_cast<int>(DraggableAppType::kMax)) {
     return absl::nullopt;
   }
-
-  return app_id;
+  return DraggableAppItemInfo(app_id,
+                              static_cast<DraggableAppType>(type_value));
 }
 
 }  // namespace ash

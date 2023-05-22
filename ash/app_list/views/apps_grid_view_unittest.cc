@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -50,6 +51,7 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -784,6 +786,7 @@ class AppsGridViewDragTestBase : public AppsGridViewTest {
     AppsGridViewTest::SetUp();
     ShelfModel::Get()->SetShelfItemFactory(&shelf_item_factory_);
     // Disable nested loops to avoid blocking during drag and drop sequences.
+    // TODO(anasalazar): Use loop closure for testing on this test suite.
     if (use_drag_drop_refactor_) {
       auto* drag_drop_controller = static_cast<DragDropController*>(
           aura::client::GetDragDropClient(apps_grid_view_->GetWidget()
@@ -4299,6 +4302,49 @@ TEST_P(AppsGridViewDragTest, DragAndPinItemToShelf) {
   EndDrag();
   EXPECT_TRUE(ShelfModel::Get()->IsAppPinned("Item 1"));
   EXPECT_EQ("Item 1", ShelfModel::Get()->items()[0].id.app_id);
+  MaybeCheckHaptickEventsCount(1);
+}
+
+TEST_P(AppsGridViewDragTest, DragAndPinFolderItemToShelf) {
+  GetTestModel()->PopulateApps(2);
+  AppListFolderItem* folder_item =
+      GetTestModel()->CreateAndPopulateFolderWithApps(2);
+  UpdateLayout();
+
+  auto drag_sequence = base::BindLambdaForTesting([&]() {
+    // Verify that item drag has started.
+    ASSERT_TRUE(apps_grid_view_->drag_item());
+    ASSERT_TRUE(apps_grid_view_->IsDragging());
+    ASSERT_EQ(folder_item, apps_grid_view_->drag_item());
+
+    // Shelf should start handling the drag if it moves within its bounds.
+    auto* shelf_view = GetPrimaryShelf()->GetShelfViewForTesting();
+    UpdateDragInScreen(
+        AppsGridView::MOUSE,
+        shelf_view->GetBoundsInScreen().left_center() + gfx::Vector2d(5, 5),
+        /*steps=*/1);
+    ASSERT_FALSE(apps_grid_view_->FireDragToShelfTimerForTest());
+
+    EXPECT_TRUE(shelf_view->drag_and_drop_shelf_id().IsNull());
+
+    // Releasing drag over shelf should not pin the dragged folder.
+    EndDrag();
+  });
+
+  if (use_drag_drop_refactor()) {
+    ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
+        drag_sequence, base::DoNothing());
+  }
+
+  AppListItemView* const item_view = InitiateDragForItemAtCurrentPageAt(
+      AppsGridView::MOUSE, 0, 2, apps_grid_view_);
+  ASSERT_TRUE(item_view->is_folder());
+
+  if (!use_drag_drop_refactor()) {
+    drag_sequence.Run();
+  }
+
+  EXPECT_FALSE(ShelfModel::Get()->IsAppPinned(folder_item->id()));
   MaybeCheckHaptickEventsCount(1);
 }
 

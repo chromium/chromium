@@ -1340,8 +1340,12 @@ void AppListItemView::WriteDragData(const gfx::Point& press_pt,
 
   if (item_weak_) {
     data->provider().SetDragImage(GetIconImage(), press_pt.OffsetFromOrigin());
+    const DraggableAppType app_type = is_folder_
+                                          ? DraggableAppType::kFolderAppGridItem
+                                          : DraggableAppType::kAppGridItem;
     base::Pickle data_pickle;
     data_pickle.WriteString(item_weak_->id());
+    data_pickle.WriteInt(static_cast<int>(app_type));
     data->SetPickledData(GetAppItemFormatType(), data_pickle);
   }
 }
