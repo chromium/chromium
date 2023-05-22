@@ -10,6 +10,7 @@
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/throb_animation.h"
@@ -42,7 +43,8 @@ class DownloadBubbleNavigationHandler {
 // displays the number of ongoing downloads.
 class DownloadToolbarButtonView : public ToolbarButton,
                                   public DownloadDisplay,
-                                  public DownloadBubbleNavigationHandler {
+                                  public DownloadBubbleNavigationHandler,
+                                  public BrowserListObserver {
  public:
   METADATA_HEADER(DownloadToolbarButtonView);
   explicit DownloadToolbarButtonView(BrowserView* browser_view);
@@ -74,6 +76,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) override;
   void CloseDialog(views::Widget::ClosedReason reason) override;
   void ResizeDialog() override;
+
+  // BrowserListObserver
+  void OnBrowserSetLastActive(Browser* browser) override;
 
   // Deactivates the automatic closing of the partial bubble.
   void DeactivateAutoClose();
