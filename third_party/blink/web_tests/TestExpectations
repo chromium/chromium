@@ -5438,8 +5438,7 @@ crbug.com/346473 external/wpt/uievents/mouse/mousemove_prevent_default_action.te
 
 # Sheriff 2022-01-17
 crbug.com/1233938 http/tests/notifications/click-shared-worker.html [ Pass Timeout ]
-# Temporarily disable test to allow fixing of devtools path escaping
-crbug.com/1094436 http/tests/devtools/overrides/project-added-with-existing-files-bind.js [ Failure Timeout ]
+crbug.com/1094436 [ Win ] http/tests/devtools/overrides/project-added-with-existing-files-bind.js [ Failure Timeout ]
 crbug.com/1256763 virtual/gpu-rasterization/images/color-profile-background-image-cover.html [ Failure Pass ]
 
 # Sheriff 2022-01-18
