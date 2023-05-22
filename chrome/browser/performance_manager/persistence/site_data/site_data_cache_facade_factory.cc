@@ -48,7 +48,6 @@ SiteDataCacheFacadeFactory::SiteDataCacheFacadeFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOwnInstance)
-              .WithSystem(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
 }
