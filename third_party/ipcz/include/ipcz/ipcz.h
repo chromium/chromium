@@ -1300,16 +1300,15 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // BeginPut()
   // ==========
   //
-  // Begins a two-phase put operation on `portal`. While a two-phase put
-  // operation is in progress on a portal, any other BeginPut() call on the same
-  // portal will fail with IPCZ_RESULT_ALREADY_EXISTS.
-  //
-  // Unlike a plain Put() call, two-phase put operations allow the application
-  // to write directly into portal memory, potentially reducing memory access
-  // costs by eliminating redundant copying and caching.
+  // Begins a two-phase put operation on `portal`, returning a pointer in
+  // `*data` which points to writable portal memory. The application can write
+  // parcel data directly into this location and complete the transaction by
+  // calling EndPut().
   //
   // The input value of `*num_bytes` tells ipcz how much data the caller would
-  // like to place into the portal.
+  // like to place into the portal. If the call is successful, the output value
+  // of `*num_bytes` conveys the actual capacity available for writing at
+  // `data`.
   //
   // Limits provided to BeginPut() elicit similar behavior to Put(), with the
   // exception that `flags` may specify IPCZ_BEGIN_PUT_ALLOW_PARTIAL to allow
@@ -1319,22 +1318,21 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // to reflect the remaining capacity of the portal, allowing the caller to
   // commit at least some portion of their data with EndPut().
   //
-  // Handles for two-phase puts are only provided when finalizing the operation
-  // with EndPut().
+  // Handles to transmit within a two-phase put are provided when committing the
+  // operation with EndPut().
   //
   // Returns:
   //
   //    IPCZ_RESULT_OK if the two-phase put operation has been successfully
-  //        initiated. This operation must be completed with EndPut() before any
-  //        further Put() or BeginPut() calls are allowed on `portal`. `*data`
-  //        is set to the address of a portal buffer into which the application
-  //        may copy its data, and `*num_bytes` is updated to reflect the
-  //        capacity of that buffer, which may be greater than (or less than, if
-  //        and only if IPCZ_BEGIN_PUT_ALLOW_PARTIAL was set in `flags`) the
-  //        capacity requested by the input value of `*num_bytes`.
+  //        initiated. `*data` is set to the address of a portal buffer into
+  //        which the application may write its data, and `*num_bytes` is
+  //        updated to reflect the capacity of that buffer, which may be greater
+  //        than (or less than, if and only if IPCZ_BEGIN_PUT_ALLOW_PARTIAL was
+  //        set in `flags`) the capacity requested by the input value of
+  //        `*num_bytes`.
   //
-  //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` is invalid, `*num_bytes` is
-  //        non-zero but `data` is null, or options is non-null and invalid.
+  //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` is invalid, `data` is null, or
+  //        options is non-null but invalid.
   //
   //    IPCZ_RESULT_RESOURCE_EXHAUSTED if completing the put with the number of
   //        bytes specified by `*num_bytes` would cause the portal to exceed the
@@ -1342,26 +1340,25 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        specified in `flags`) data byte limit specified by
   //        `options->limits`.
   //
-  //    IPCZ_RESULT_ALREADY_EXISTS if there is already a two-phase put operation
-  //        in progress on `portal`.
-  //
   //    IPCZ_RESULT_NOT_FOUND if it is known that the opposite portal has
   //        already been closed and anything put into this portal would be lost.
   IpczResult(IPCZ_API* BeginPut)(
       IpczHandle portal,                          // in
       IpczBeginPutFlags flags,                    // in
       const struct IpczBeginPutOptions* options,  // in
-      size_t* num_bytes,                          // out
+      size_t* num_bytes,                          // in/out
       void** data);                               // out
 
   // EndPut()
   // ========
   //
-  // Ends the two-phase put operation started by the most recent successful call
-  // to BeginPut() on `portal`.
+  // Ends the two-phase put transaction identified by `data` on `portal`.
   //
-  // `num_bytes_produced` specifies the number of bytes actually written into
-  // the buffer that was returned from the original BeginPut() call.
+  // `data` is the address of the transaction's data, as previously returned by
+  // a call to BeginPut() on the same `portal`.
+  //
+  // `num_bytes_produced` specifies the number of bytes actually written at
+  // `data` by the application prior to calling EndPut().
   //
   // Usage of `handles` and `num_handles` is identical to Put().
   //
@@ -1369,15 +1366,9 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // provided handles remain property of the caller. If it succeeds, their
   // ownership is assumed by ipcz.
   //
-  // If IPCZ_END_PUT_ABORT is given in `flags` and there is a two-phase put
-  // operation in progress on `portal`, all other arguments are ignored and the
-  // pending two-phase put operation is cancelled without committing a new
-  // parcel to the portal.
-  //
-  // If EndPut() fails for any reason other than
-  // IPCZ_RESULT_FAILED_PRECONDITION, the two-phase put operation remains in
-  // progress, and EndPut() must be called again to abort the operation or
-  // attempt completion with different arguments.
+  // If IPCZ_END_PUT_ABORT is given in `flags` and `data` is valid for `portal`,
+  // all other arguments are ignored and the corresponding transaction is
+  // aborted with its parcel data discarded.
   //
   // `options` is unused and must be null.
   //
@@ -1387,17 +1378,20 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        aborted. If not aborted all data and handles were committed to a new
   //        parcel enqueued for retrieval by the opposite portal.
   //
-  //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` is invalid, `num_handles` is
+  //    IPCZ_RESULT_INVALID_ARGUMENT if `portal` is invalid, `data` does not
+  //        identify a valid put transaction on `portal`, `num_handles` is
   //        non-zero but `handles` is null, `num_bytes_produced` is larger than
   //        the capacity of the buffer originally returned by BeginPut(), or any
-  //        handle in `handles` is invalid or not serializable.
-  //
-  //    IPCZ_RESULT_FAILED_PRECONDITION if there was no two-phase put operation
-  //        in progress on `portal`.
+  //        handle in `handles` is invalid or not serializable. If `portal` and
+  //        `data` referenced a valid transaction, the transaction is still
+  //        in progress if EndPut() returns this error.
   //
   //    IPCZ_RESULT_NOT_FOUND if it is known that the opposite portal has
   //        already been closed and anything put into this portal would be lost.
+  //        The transaction referenced by the caller is implicitly aborted and
+  //        ownership of all passed handles is retained by the caller.
   IpczResult(IPCZ_API* EndPut)(IpczHandle portal,          // in
+                               const void* data,           // in
                                size_t num_bytes_produced,  // in
                                const IpczHandle* handles,  // in
                                size_t num_handles,         // in

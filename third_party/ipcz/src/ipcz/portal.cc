@@ -15,6 +15,7 @@
 #include "ipcz/trap_event_dispatcher.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/log.h"
+#include "util/overloaded.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
@@ -119,7 +120,7 @@ IpczResult Portal::Put(absl::Span<const uint8_t> data,
 IpczResult Portal::BeginPut(IpczBeginPutFlags flags,
                             const IpczPutLimits* limits,
                             size_t& num_data_bytes,
-                            void** data) {
+                            void*& data) {
   const bool allow_partial = (flags & IPCZ_BEGIN_PUT_ALLOW_PARTIAL) != 0;
   if (limits) {
     size_t max_num_data_bytes = router_->GetOutboundCapacityInBytes(*limits);
@@ -135,28 +136,40 @@ IpczResult Portal::BeginPut(IpczBeginPutFlags flags,
     return IPCZ_RESULT_NOT_FOUND;
   }
 
+  // Always request a non-zero size for two-phase puts so that we always have
+  // a non-null data address upon which to key the operation in EndPut().
+  const size_t num_bytes_to_request = num_data_bytes ? num_data_bytes : 1;
   Parcel parcel;
-  const IpczResult allocation_result =
-      router_->AllocateOutboundParcel(num_data_bytes, allow_partial, parcel);
+  const IpczResult allocation_result = router_->AllocateOutboundParcel(
+      num_bytes_to_request, allow_partial, parcel);
   absl::MutexLock lock(&mutex_);
-  if (in_two_phase_put_) {
-    return IPCZ_RESULT_ALREADY_EXISTS;
-  }
   if (allocation_result != IPCZ_RESULT_OK) {
     return allocation_result;
   }
 
-  in_two_phase_put_ = true;
-  pending_parcel_ = std::move(parcel);
-
-  num_data_bytes = pending_parcel_->data_view().size();
-  if (data) {
-    *data = num_data_bytes ? pending_parcel_->data_view().data() : nullptr;
-  }
+  num_data_bytes = parcel.data_view().size();
+  data = parcel.data_view().data();
+  absl::visit(Overloaded{[&](absl::monostate) {
+                           pending_parcels_.emplace<Parcel>(std::move(parcel));
+                         },
+                         [&](Parcel& first_parcel) {
+                           const void* first_key =
+                               first_parcel.data_view().data();
+                           PendingParcelMap parcels;
+                           parcels[first_key] = std::move(first_parcel);
+                           parcels[data] = std::move(parcel);
+                           pending_parcels_.emplace<PendingParcelMap>(
+                               std::move(parcels));
+                         },
+                         [&](PendingParcelMap& parcels) {
+                           parcels[data] = std::move(parcel);
+                         }},
+              pending_parcels_);
   return IPCZ_RESULT_OK;
 }
 
-IpczResult Portal::CommitPut(size_t num_data_bytes_produced,
+IpczResult Portal::CommitPut(const void* data,
+                             size_t num_data_bytes_produced,
                              absl::Span<const IpczHandle> handles) {
   std::vector<Ref<APIObject>> objects;
   if (!ValidateAndAcquireObjectsForTransitFrom(*this, handles, objects)) {
@@ -166,15 +179,34 @@ IpczResult Portal::CommitPut(size_t num_data_bytes_produced,
   Parcel parcel;
   {
     absl::MutexLock lock(&mutex_);
-    if (!in_two_phase_put_ || !pending_parcel_) {
-      return IPCZ_RESULT_FAILED_PRECONDITION;
-    }
+    const bool is_request_valid = absl::visit(
+        Overloaded{
+            [&](absl::monostate) { return false; },
+            [&](Parcel& first_parcel) {
+              if (first_parcel.data_view().data() != data ||
+                  num_data_bytes_produced > first_parcel.data_view().size()) {
+                return false;
+              }
 
-    if (num_data_bytes_produced > pending_parcel_->data_view().size()) {
+              parcel = std::move(first_parcel);
+              pending_parcels_ = absl::monostate{};
+              return true;
+            },
+            [&](PendingParcelMap& parcels) {
+              auto it = parcels.find(data);
+              if (it == parcels.end() ||
+                  num_data_bytes_produced > it->second.data_view().size()) {
+                return false;
+              }
+
+              parcel = std::move(it->second);
+              parcels.erase(it);
+              return true;
+            }},
+        pending_parcels_);
+    if (!is_request_valid) {
       return IPCZ_RESULT_INVALID_ARGUMENT;
     }
-
-    parcel = *std::exchange(pending_parcel_, absl::nullopt);
   }
 
   parcel.CommitData(num_data_bytes_produced);
@@ -186,25 +218,37 @@ IpczResult Portal::CommitPut(size_t num_data_bytes_produced,
     for (IpczHandle handle : handles) {
       APIObject::TakeFromHandle(handle);
     }
-
-    absl::MutexLock lock(&mutex_);
-    in_two_phase_put_ = false;
-  } else {
-    absl::MutexLock lock(&mutex_);
-    pending_parcel_ = std::move(parcel);
   }
 
   return result;
 }
 
-IpczResult Portal::AbortPut() {
+IpczResult Portal::AbortPut(const void* data) {
   absl::MutexLock lock(&mutex_);
-  if (!in_two_phase_put_) {
-    return IPCZ_RESULT_FAILED_PRECONDITION;
+  const bool is_request_valid =
+      absl::visit(Overloaded{[&](absl::monostate) { return false; },
+                             [&](Parcel& first_parcel) {
+                               if (first_parcel.data_view().data() != data) {
+                                 return false;
+                               }
+
+                               pending_parcels_ = absl::monostate{};
+                               return true;
+                             },
+                             [&](PendingParcelMap& parcels) {
+                               auto it = parcels.find(data);
+                               if (it == parcels.end()) {
+                                 return false;
+                               }
+
+                               parcels.erase(it);
+                               return true;
+                             }},
+                  pending_parcels_);
+  if (!is_request_valid) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  in_two_phase_put_ = false;
-  pending_parcel_.reset();
   return IPCZ_RESULT_OK;
 }
 

@@ -157,8 +157,8 @@ MULTINODE_TEST(QueueingTest, DISABLED_TwoPhaseQueueing) {
   // There should not be enough space for all 4 bytes.
   EXPECT_EQ(3u, num_bytes);
   memcpy(data, "ipc", 3);
-  EXPECT_EQ(IPCZ_RESULT_OK,
-            ipcz().EndPut(c, num_bytes, nullptr, 0, IPCZ_NO_FLAGS, nullptr));
+  EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(c, data, num_bytes, nullptr, 0,
+                                          IPCZ_NO_FLAGS, nullptr));
 
   EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(c, IPCZ_TRAP_PEER_CLOSED));
   Close(c);
@@ -255,7 +255,7 @@ MULTINODE_TEST(QueueingTest, DISABLED_RemoteQueueFeedbackStressTest) {
       size_t num_bytes = std::min(bytes_remaining, capacity);
       bytes_remaining -= num_bytes;
       memset(data, '!', num_bytes);
-      EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(c, num_bytes, nullptr, 0,
+      EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(c, data, num_bytes, nullptr, 0,
                                               IPCZ_NO_FLAGS, nullptr));
       continue;
     }
