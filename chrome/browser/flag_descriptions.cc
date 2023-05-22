@@ -4559,10 +4559,6 @@ const char kNtpComprehensiveThemeRealboxName[] =
 const char kNtpComprehensiveThemeRealboxDescription[] =
     "Applies theme based colors to the NTP Realbox element";
 
-const char kNtpComprehensiveThemingName[] = "NTP Comprehensive Theming";
-const char kNtpComprehensiveThemingDescription[] =
-    "Applies theme based colors across various NTP elements";
-
 const char kNtpDesktopLensName[] = "NTP Desktop Lens Entrypoint";
 const char kNtpDesktopLensDescription[] =
     "Shows a Lens entrypoint and upload dialog in desktop NTP when enabled.";

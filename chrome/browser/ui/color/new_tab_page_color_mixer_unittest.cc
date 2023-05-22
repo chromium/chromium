@@ -44,9 +44,6 @@ TEST(NewTabPageColorMixer, LightAndDarkThemeColors) {
 }
 
 TEST(NewTabPageColorMixer, CustomColorComprehensiveThemeColors) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({{ntp_features::kNtpComprehensiveTheming}}, {});
-
   ui::ColorProvider provider;
   ui::ColorMixer& mixer = provider.AddMixer();
   mixer[kColorToolbar] = {gfx::kGoogleGreen300};
@@ -62,9 +59,7 @@ TEST(NewTabPageColorMixer, CustomColorComprehensiveThemeColors) {
   EXPECT_EQ(provider.GetColor(kColorToolbar), gfx::kGoogleGreen300);
   EXPECT_EQ(provider.GetColor(kColorNewTabPageBackground),
             gfx::kGoogleGreen300);
-  SkColor contrasting_color = GetContrastingColor(
-      gfx::kGoogleGreen300,
-      ntp_features::kNtpElementLuminosityChangeForLightBackgroundParam.Get());
+  SkColor contrasting_color = GetContrastingColor(gfx::kGoogleGreen300, 0.1f);
   EXPECT_EQ(provider.GetColor(kColorNewTabPageButtonBackground),
             contrasting_color);
   EXPECT_EQ(provider.GetColor(kColorNewTabPageMostVisitedTileBackground),
@@ -73,8 +68,7 @@ TEST(NewTabPageColorMixer, CustomColorComprehensiveThemeColors) {
 
 TEST(NewTabPageColorMixer, CustomColorComprehensiveThemeRealboxColors) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({{ntp_features::kNtpComprehensiveTheming},
-                             {ntp_features::kNtpComprehensiveThemeRealbox}},
+  features.InitWithFeatures({{ntp_features::kNtpComprehensiveThemeRealbox}},
                             {});
 
   ui::ColorProvider provider;
@@ -92,18 +86,13 @@ TEST(NewTabPageColorMixer, CustomColorComprehensiveThemeRealboxColors) {
   EXPECT_EQ(provider.GetColor(kColorToolbar), gfx::kGoogleGreen600);
   EXPECT_EQ(provider.GetColor(kColorNewTabPageBackground),
             gfx::kGoogleGreen600);
-  SkColor contrasting_color = GetContrastingColor(
-      gfx::kGoogleGreen600,
-      ntp_features::kNtpElementLuminosityChangeForDarkBackgroundParam.Get());
+  SkColor contrasting_color = GetContrastingColor(gfx::kGoogleGreen600, 0.2f);
   EXPECT_EQ(provider.GetColor(kColorNewTabPageButtonBackground),
             contrasting_color);
   EXPECT_EQ(provider.GetColor(kColorRealboxBackground), contrasting_color);
 }
 
 TEST(NewTabPageColorMixer, DefaultColorComprehensiveThemeColor) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({{ntp_features::kNtpComprehensiveTheming}}, {});
-
   constexpr SkColor kSampleToolbarColor = SK_ColorWHITE;
   ui::ColorProvider provider;
   ui::ColorMixer& mixer = provider.AddMixer();

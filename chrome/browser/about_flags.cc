@@ -6434,11 +6434,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpComprehensiveThemeRealboxDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpComprehensiveThemeRealbox)},
 
-    {"ntp-comprehensive-theming",
-     flag_descriptions::kNtpComprehensiveThemingName,
-     flag_descriptions::kNtpComprehensiveThemingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpComprehensiveTheming)},
-
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
      flag_descriptions::kNtpDriveModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpDriveModule,
