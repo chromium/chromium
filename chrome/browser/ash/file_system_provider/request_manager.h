@@ -105,8 +105,8 @@ class RequestManager {
                                    const RequestValue& result,
                                    base::File::Error error) = 0;
 
-    // Called when the request is timeouted.
-    virtual void OnRequestTimeouted(int request_id) = 0;
+    // Called when the request is timed out.
+    virtual void OnRequestTimedOut(int request_id) = 0;
   };
 
   RequestManager(Profile* profile,

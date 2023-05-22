@@ -145,7 +145,7 @@ RequestManager::Request::~Request() {}
 
 void RequestManager::OnRequestTimeout(int request_id) {
   for (auto& observer : observers_)
-    observer.OnRequestTimeouted(request_id);
+    observer.OnRequestTimedOut(request_id);
 
   if (!notification_manager_) {
     RejectRequest(request_id, RequestValue(), base::File::FILE_ERROR_ABORT);

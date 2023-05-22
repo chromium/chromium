@@ -331,8 +331,8 @@ class RequestObserver : public RequestManager::Observer {
   }
 
   // RequestManager::Observer overrides.
-  void OnRequestTimeouted(int request_id) override {
-    timeouted_.push_back(Event(request_id));
+  void OnRequestTimedOut(int request_id) override {
+    timed_out_.push_back(Event(request_id));
   }
 
   const std::vector<CreatedEvent>& created() const { return created_; }
@@ -340,7 +340,7 @@ class RequestObserver : public RequestManager::Observer {
   const std::vector<Event>& executed() const { return executed_; }
   const std::vector<FulfilledEvent>& fulfilled() const { return fulfilled_; }
   const std::vector<RejectedEvent>& rejected() const { return rejected_; }
-  const std::vector<Event>& timeouted() const { return timeouted_; }
+  const std::vector<Event>& timed_out() const { return timed_out_; }
 
  private:
   std::vector<CreatedEvent> created_;
@@ -348,7 +348,7 @@ class RequestObserver : public RequestManager::Observer {
   std::vector<Event> executed_;
   std::vector<FulfilledEvent> fulfilled_;
   std::vector<RejectedEvent> rejected_;
-  std::vector<Event> timeouted_;
+  std::vector<Event> timed_out_;
 };
 
 }  // namespace
@@ -464,7 +464,7 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill) {
 
   ASSERT_EQ(1u, observer.destroyed().size());
   EXPECT_EQ(request_id, observer.destroyed()[0].request_id());
-  EXPECT_EQ(0u, observer.timeouted().size());
+  EXPECT_EQ(0u, observer.timed_out().size());
 
   request_manager_->RemoveObserver(&observer);
 }
@@ -541,7 +541,7 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill_WithHasNext) {
 
   ASSERT_EQ(1u, observer.destroyed().size());
   EXPECT_EQ(request_id, observer.destroyed()[0].request_id());
-  EXPECT_EQ(0u, observer.timeouted().size());
+  EXPECT_EQ(0u, observer.timed_out().size());
 
   request_manager_->RemoveObserver(&observer);
 }
@@ -602,7 +602,7 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndReject) {
 
   ASSERT_EQ(1u, observer.destroyed().size());
   EXPECT_EQ(request_id, observer.destroyed()[0].request_id());
-  EXPECT_EQ(0u, observer.timeouted().size());
+  EXPECT_EQ(0u, observer.timed_out().size());
 
   request_manager_->RemoveObserver(&observer);
 }
@@ -745,7 +745,7 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnDestroy) {
     EXPECT_EQ(0u, observer.fulfilled().size());
     EXPECT_EQ(0u, observer.rejected().size());
     EXPECT_EQ(0u, observer.destroyed().size());
-    EXPECT_EQ(0u, observer.timeouted().size());
+    EXPECT_EQ(0u, observer.timed_out().size());
 
     // Do not remove the observer, to catch events while destructing.
   }
@@ -760,7 +760,7 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnDestroy) {
   EXPECT_EQ(0u, logger.success_events().size());
 
   EXPECT_EQ(0u, observer.fulfilled().size());
-  EXPECT_EQ(0u, observer.timeouted().size());
+  EXPECT_EQ(0u, observer.timed_out().size());
   ASSERT_EQ(1u, observer.rejected().size());
   EXPECT_EQ(request_id, observer.rejected()[0].request_id());
   EXPECT_EQ(base::File::FILE_ERROR_ABORT, observer.rejected()[0].error());
@@ -789,7 +789,7 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnTimeout) {
   ASSERT_EQ(1u, observer.executed().size());
   EXPECT_EQ(request_id, observer.executed()[0].request_id());
 
-  // Wait until the request is timeouted.
+  // Wait until the request is timed out.
   base::RunLoop().RunUntilIdle();
 
   // Abort the request.
@@ -806,8 +806,8 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnTimeout) {
   ASSERT_EQ(1u, observer.rejected().size());
   EXPECT_EQ(request_id, observer.rejected()[0].request_id());
   EXPECT_EQ(base::File::FILE_ERROR_ABORT, observer.rejected()[0].error());
-  ASSERT_EQ(1u, observer.timeouted().size());
-  EXPECT_EQ(request_id, observer.timeouted()[0].request_id());
+  ASSERT_EQ(1u, observer.timed_out().size());
+  EXPECT_EQ(request_id, observer.timed_out()[0].request_id());
   ASSERT_EQ(1u, observer.destroyed().size());
   EXPECT_EQ(request_id, observer.destroyed()[0].request_id());
 
@@ -837,7 +837,7 @@ TEST_F(FileSystemProviderRequestManagerTest, ContinueOnTimeout) {
   ASSERT_EQ(1u, observer.executed().size());
   EXPECT_EQ(request_id, observer.executed()[0].request_id());
 
-  // Wait until the request is timeouted.
+  // Wait until the request is timed out.
   base::RunLoop().RunUntilIdle();
 
   // Let the provider have more time by closing the notification.
@@ -850,7 +850,7 @@ TEST_F(FileSystemProviderRequestManagerTest, ContinueOnTimeout) {
   EXPECT_EQ(0u, logger.error_events().size());
   EXPECT_EQ(0u, logger.abort_events().size());
 
-  // Wait until the request is timeouted again.
+  // Wait until the request is timed out again.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, notification_manager_->size());
 
