@@ -148,6 +148,10 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
                                   false);
   }
 
+  if (features::IsOobeDisplaySizeEnabled()) {
+    registry->RegisterDoublePref(prefs::kOobeDisplaySizeFactorDeferred, 1.0);
+  }
+
   OnboardingUserActivityCounter::RegisterProfilePrefs(registry);
 }
 

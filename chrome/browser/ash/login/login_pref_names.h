@@ -37,6 +37,7 @@ extern const char kUrlParameterToAutofillSAMLUsername[];
 extern const char kChoobeSelectedScreens[];
 extern const char kChoobeCompletedScreens[];
 extern const char kOobeDrivePinningEnabledDeferred[];
+extern const char kOobeDisplaySizeFactorDeferred[];
 
 }  // namespace prefs
 }  // namespace ash

@@ -109,6 +109,9 @@ const char kChoobeCompletedScreens[] = "oobe.choobe_completed_screens";
 //  A boolean pref of the drive pinning screen
 const char kOobeDrivePinningEnabledDeferred[] = "oobe.drive_pinning_defer";
 
+//  A double pref of the display size factor set in the display size screen.
+const char kOobeDisplaySizeFactorDeferred[] = "oobe.display_size_factor_defer";
+
 // *************** OOBE LOCAL STATE PREFS ***************
 
 // A boolean pref of the OOBE complete flag (first OOBE part before login).

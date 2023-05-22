@@ -6,8 +6,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -103,6 +106,12 @@ void DisplaySizeScreen::HideImpl() {}
 void DisplaySizeScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionNext) {
+    CHECK_EQ(args.size(), 2u);
+    double selected_factor = args[1].GetDouble();
+
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    profile->GetPrefs()->SetDouble(prefs::kOobeDisplaySizeFactorDeferred,
+                                   selected_factor);
     exit_callback_.Run(Result::kNext);
     return;
   }
