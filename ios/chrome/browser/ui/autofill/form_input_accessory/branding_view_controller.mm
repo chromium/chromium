@@ -62,21 +62,14 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
       break;
   }
 
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  UIButton* button = nil;
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets =
-          NSDirectionalEdgeInsetsMake(0, kLeadingInset, 0, 0);
-      button = [UIButton buttonWithConfiguration:buttonConfiguration
-                                   primaryAction:nil];
-    }
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets =
+        NSDirectionalEdgeInsetsMake(0, kLeadingInset, 0, 0);
+    button.configuration = buttonConfiguration;
   } else {
-    button = [UIButton buttonWithType:UIButtonTypeCustom];
     UIEdgeInsets imageEdgeInsets = UIEdgeInsetsMake(0, kLeadingInset, 0, 0);
     SetImageEdgeInsets(button, imageEdgeInsets);
   }
