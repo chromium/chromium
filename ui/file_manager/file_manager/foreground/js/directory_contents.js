@@ -266,7 +266,7 @@ export class SearchV2ContentScanner extends ContentScanner {
       ],
       [
         VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
-        chrome.fileManagerPrivate.SearchType.SHARED_WITH_ME,
+        chrome.fileManagerPrivate.SearchType.EXCLUDE_DIRECTORIES,
       ],
       [
         VolumeManagerCommon.RootType.DRIVE_RECENT,
