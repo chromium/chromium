@@ -121,6 +121,7 @@ export class App {
     windowController.addListener(() => nav.layoutShownViews());
 
     util.setupI18nElements(document.body);
+    this.setupTooltip();
     this.setupToggles();
     localStorage.cleanup();
     this.setupEffect();
@@ -134,6 +135,47 @@ export class App {
     ]);
 
     nav.open(ViewName.SPLASH);
+  }
+
+  /**
+   * Sets up tooltips for elements having `i18n-label` attribute. This method
+   * also setup tooltips for the elements:
+   * * Added to the DOM and have a `i18n-label` attribute.
+   * * Newly set with a `i18n-label` attribute.
+   *
+   * Note `i18n-label` attribute should not be removed from elements.
+   */
+  private setupTooltip() {
+    const tooltipAttribute = 'i18n-label';
+    const elements =
+        Array.from(dom.getAll(`[${tooltipAttribute}]`, HTMLElement));
+    tooltip.setup(elements);
+    const observer = new MutationObserver((mutations) => {
+      const elements: HTMLElement[] = [];
+      for (const mutation of mutations) {
+        if (mutation.type === 'childList') {
+          for (const node of mutation.addedNodes) {
+            if (node instanceof HTMLElement &&
+                node.hasAttribute(tooltipAttribute)) {
+              elements.push(node);
+            }
+          }
+        } else if (mutation.type === 'attributes') {
+          const {target: node, attributeName, oldValue} = mutation;
+          if (node instanceof HTMLElement &&
+              attributeName === tooltipAttribute && oldValue === null) {
+            elements.push(node);
+          }
+        }
+      }
+      tooltip.setup(elements);
+    });
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeOldValue: true,
+    });
   }
 
   /**
