@@ -192385,6 +192385,58 @@
         {}
        ]
       ],
+      "white-space-pre-wrap-justify-001.html": [
+       "2ceb8d7293690086675e55741485df4e6c921e3e",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-justify-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "white-space-pre-wrap-justify-002.html": [
+       "785ebef2272fcc7caa5ce612cedec6fe3469c59b",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-justify-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "white-space-pre-wrap-justify-003.html": [
+       "a00f9c381860a09e4a1ebcac90e38b3340a03e03",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-justify-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "white-space-pre-wrap-justify-004.html": [
+       "e1611a3143f3596c89776a61909e19aae6556c12",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/white-space-pre-wrap-justify-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "white-space-pre-wrap-trailing-spaces-001.html": [
        "82fbfbc976cd02629d1180e4470170a533aa27e9",
        [
@@ -272592,11 +272644,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "50e144d5fdf4e564b70ff96c5d5b070ce154bd62",
+     "42968047be3e44ee65274686cc2e3a1bb5fa8606",
      []
     ],
     "mtime.json": [
-     "06d690b4db5dd85e5412ec7dda4e9767068eb620",
+     "d6f12464231664ed4dc4e35783d2404b911d0c25",
      []
     ]
    },
@@ -324534,6 +324586,22 @@
         "b920bdb111274bac29825e53b68005e1bf7ad6e9",
         []
        ],
+       "white-space-pre-wrap-justify-001-ref.html": [
+        "82b10ac6a4a372a155364f1aabd8e5c3fdc60e5f",
+        []
+       ],
+       "white-space-pre-wrap-justify-002-ref.html": [
+        "cd228e234cdfbef4a565f97f93a84c1145be3f52",
+        []
+       ],
+       "white-space-pre-wrap-justify-003-ref.html": [
+        "d72988230e65abe430552c45461d6a71613372ce",
+        []
+       ],
+       "white-space-pre-wrap-justify-004-ref.html": [
+        "be487e6f3c63edc66be5f0332670b2041a14b174",
+        []
+       ],
        "white-space-pre-wrap-trailing-spaces-001-ref.html": [
         "8db147766bc3fa769df5601b8b32964fb59bcbc1",
         []
@@ -324763,6 +324831,10 @@
       ],
       "white-space-intrinsic-size-019.html.ini": [
        "442e5e3ed264564e99ead9096903a47536c14006",
+       []
+      ],
+      "white-space-pre-wrap-justify-004.html.ini": [
+       "0dea76206497f47af3707c6250ecf1839d21d68f",
        []
       ],
       "white-space-vs-joiners-002.html.ini": [
@@ -380350,7 +380422,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "408d6be9e2186f2f0595057678d4693b4fa66534",
+     "344d5e663f13d94b5326ee18fcd7f2ac344a97c6",
      []
     ],
     "modulepreload-expected.txt": [
