@@ -1986,10 +1986,6 @@ static bool ConsumeColorInterpolationSpace(
     CSSParserTokenRange& args,
     Color::ColorSpace& color_space,
     Color::HueInterpolationMethod& hue_interpolation) {
-  if (!RuntimeEnabledFeatures::CSSColor4Enabled()) {
-    return false;
-  }
-
   if (!ConsumeIdent<CSSValueID::kIn>(args)) {
     return false;
   }
@@ -2056,10 +2052,6 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
                                          const CSSParserContext& context) {
   DCHECK(range.Peek().FunctionId() == CSSValueID::kColorMix);
   context.Count(WebFeature::kCSSColorMixFunction);
-
-  if (!RuntimeEnabledFeatures::CSSColor4Enabled()) {
-    return nullptr;
-  }
 
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
@@ -2277,21 +2269,18 @@ static bool ParseFunctionalSyntaxColor(CSSParserTokenRange& range,
       break;
     case CSSValueID::kLab:
     case CSSValueID::kOklab:
-      if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
-          !ParseLABOrOKLABParameters(color_range, context, result)) {
+      if (!ParseLABOrOKLABParameters(color_range, context, result)) {
         return false;
       }
       break;
     case CSSValueID::kLch:
     case CSSValueID::kOklch:
-      if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
-          !ParseLCHOrOKLCHParameters(color_range, context, result)) {
+      if (!ParseLCHOrOKLCHParameters(color_range, context, result)) {
         return false;
       }
       break;
     case CSSValueID::kColor:
-      if (!RuntimeEnabledFeatures::CSSColor4Enabled() ||
-          !ParseColorFunctionParameters(color_range, context, result)) {
+      if (!ParseColorFunctionParameters(color_range, context, result)) {
         return false;
       }
       break;
@@ -2431,8 +2420,7 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
     return ConsumeColorContrast(range, context, accept_quirky_colors);
   }
 
-  if (RuntimeEnabledFeatures::CSSColor4Enabled() &&
-      range.Peek().FunctionId() == CSSValueID::kColorMix) {
+  if (range.Peek().FunctionId() == CSSValueID::kColorMix) {
     CSSValue* color = ConsumeColorMixFunction(range, context);
     return color;
   }

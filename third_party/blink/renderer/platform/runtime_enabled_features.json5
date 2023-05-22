@@ -800,12 +800,6 @@
       base_feature: "none",
     },
     {
-      // Support for CSS Color Module Level 4
-      // https://www.w3.org/TR/css-color-4/
-      name: "CSSColor4",
-      status:  "stable",
-    },
-    {
       name: "CSSColorContrast",
       status: "experimental",
       base_feature: "none",
