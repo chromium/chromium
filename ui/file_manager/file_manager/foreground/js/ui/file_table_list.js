@@ -559,13 +559,7 @@ filelist.updateListItemExternalProps =
       if (!iconDiv) {
         return;
       }
-
-      if (externalProps.customIconUrl) {
-        iconDiv.style.backgroundImage =
-            'url(' + externalProps.customIconUrl + ')';
-      } else {
-        iconDiv.style.backgroundImage = '';  // Back to the default image.
-      }
+      iconDiv.style.backgroundImage = '';
 
       if (li.classList.contains('directory')) {
         iconDiv.classList.toggle('shared', !!externalProps.shared);
