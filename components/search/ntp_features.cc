@@ -76,6 +76,12 @@ BASE_FEATURE(kNtpAlphaBackgroundCollections,
              "NtpAlphaBackgroundCollections",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, NTP background image links will be checked for HTTP status
+// errors."
+BASE_FEATURE(kNtpBackgroundImageErrorDetection,
+             "NtpBackgroundImageErrorDetection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, chrome cart module will be shown.
 BASE_FEATURE(kNtpChromeCartModule,
              "NtpChromeCartModule",

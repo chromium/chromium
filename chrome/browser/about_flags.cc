@@ -6399,6 +6399,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpAlphaBackgroundCollectionsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpAlphaBackgroundCollections)},
 
+    {"ntp-background-image-error-detection",
+     flag_descriptions::kNtpBackgroundImageErrorDetectionName,
+     flag_descriptions::kNtpBackgroundImageErrorDetectionDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpBackgroundImageErrorDetection)},
+
     {"ntp-cache-one-google-bar", flag_descriptions::kNtpCacheOneGoogleBarName,
      flag_descriptions::kNtpCacheOneGoogleBarDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kCacheOneGoogleBar)},

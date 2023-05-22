@@ -4545,6 +4545,11 @@ const char kNtpAlphaBackgroundCollectionsName[] =
 const char kNtpAlphaBackgroundCollectionsDescription[] =
     "Shows alpha NTP background collections in Customize Chrome.";
 
+const char kNtpBackgroundImageErrorDetectionName[] =
+    "NTP Background Image Error Detection";
+const char kNtpBackgroundImageErrorDetectionDescription[] =
+    "Checks NTP background image links for HTTP status errors.";
+
 const char kNtpCacheOneGoogleBarName[] = "Cache OneGoogleBar";
 const char kNtpCacheOneGoogleBarDescription[] =
     "Enables using the OneGoogleBar cached response in chrome://new-tab-page, "

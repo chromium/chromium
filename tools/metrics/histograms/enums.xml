@@ -63625,6 +63625,7 @@ from previous Chrome versions.
   <int value="471519375" label="NewOsSettingsSearch:disabled"/>
   <int value="471560693" label="webview-verbose-logging"/>
   <int value="471969274" label="MediaControlsExpandGesture:enabled"/>
+  <int value="473296799" label="NtpBackgroundImageErrorDetection:disabled"/>
   <int value="473958125" label="OmniboxWrapPopupPosition:enabled"/>
   <int value="474743272" label="material-design-ink-drop"/>
   <int value="475858648"
@@ -65598,6 +65599,7 @@ from previous Chrome versions.
   <int value="1540487070" label="ContextualSearchDebug:enabled"/>
   <int value="1541446160" label="DisallowManagedProfileSignout:disabled"/>
   <int value="1541723759" label="ServiceWorkerNavigationPreload:disabled"/>
+  <int value="1541729827" label="NtpBackgroundImageErrorDetection:enabled"/>
   <int value="1543027970" label="EnableDisplayZoomSetting:disabled"/>
   <int value="1543349770" label="CastUseBlocklistForRemotingQuery:disabled"/>
   <int value="1544413751" label="PasswordStrengthIndicator:enabled"/>

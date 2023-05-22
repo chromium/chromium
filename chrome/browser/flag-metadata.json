@@ -5251,7 +5251,12 @@
   {
     "name": "ntp-alpha-background-collections",
     "owners": [ "pauladedeji", "tiborg" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 117
+  },
+  {
+    "name": "ntp-background-image-error-detection",
+    "owners": [ "pauladedeji", "tiborg" ],
+    "expiry_milestone": 117
   },
   {
     "name": "ntp-cache-one-google-bar",
