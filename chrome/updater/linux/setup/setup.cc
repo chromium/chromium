@@ -19,8 +19,6 @@
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// TODO(1382547): There is a overlap between the Mac and Linux setup functions.
-// We should find a way to merge these.
 namespace updater {
 
 int Setup(UpdaterScope scope) {

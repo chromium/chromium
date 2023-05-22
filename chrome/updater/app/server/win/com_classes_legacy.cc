@@ -565,7 +565,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           // compatibility.
           error_code = GOOPDATEINSTALL_E_INSTALLER_FAILED;
 
-          // TODO(1095133): this string needs localization.
+          // TODO(crbug.com/1447293): this string needs localization.
           completion_message = L"Installer failed.";
           installer_result_code = state_update_->extra_code1;
         }

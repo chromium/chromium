@@ -356,7 +356,6 @@ void PrintLog(UpdaterScope scope) {
 // each failed test. It is useful to capture a few logs from previous failures
 // instead of the log of the last run only.
 void CopyLog(const base::FilePath& src_dir) {
-  // TODO(crbug.com/1159189): copy other test artifacts.
   base::FilePath dest_dir = GetLogDestinationDir();
   const base::FilePath log_path = src_dir.AppendASCII("updater.log");
   if (!dest_dir.empty() && base::PathExists(dest_dir) &&

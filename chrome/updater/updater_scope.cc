@@ -62,9 +62,6 @@ UpdaterScope GetUpdaterScopeForCommandLine(
                    : UpdaterScope::kSystem;
     }
   }
-
-  // crbug.com(1214058): consider handling the elevation case by
-  // calling IsUserAdmin().
   return UpdaterScope::kUser;
 #else
   return IsSystemProcessForCommandLine(command_line) ? UpdaterScope::kSystem

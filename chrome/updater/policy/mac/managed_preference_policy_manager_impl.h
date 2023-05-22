@@ -9,9 +9,6 @@
 
 #include "chrome/updater/policy/manager.h"
 
-// TODO: crbug/1073980
-//     Add a doc link for the managed preferences dictionary format.
-//
 // An example of the managed preferences policy dictionary in plist format:
 //  <dict>
 //    <key>updatePolicies</key>

@@ -135,9 +135,6 @@ class IntegrationTest : public ::testing::Test {
     ExpectNoCrashes();
 
     PrintLog();
-
-    // TODO(crbug.com/1159189): Use a specific test output directory
-    // because Uninstall() deletes the files under GetInstallDirectory().
     CopyLog();
 
     DMCleanup();
@@ -897,7 +894,6 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   ASSERT_NO_FATAL_FAILURE(InstallApp("test1"));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
-  // TODO(crbug.com/1287235): The test is flaky without the following line.
   ASSERT_NO_FATAL_FAILURE(SetServerStarts(24));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());

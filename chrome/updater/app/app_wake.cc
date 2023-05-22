@@ -29,12 +29,6 @@ class AppWake : public App {
 };
 
 void AppWake::FirstTaskRun() {
-  // The service creation might need task runners and the update service
-  // internal needs to be instantiated after the base class has initialized
-  // the thread pool.
-  //
-  // TODO(crbug.com/1113448) - consider initializing the thread pool in the
-  // constructor of the base class or earlier, in the updater main.
   update_service_internal_ = CreateUpdateServiceInternalProxy(updater_scope());
   update_service_internal_->Run(
       base::BindOnce(&AppWake::Shutdown, this, kErrorOk));
