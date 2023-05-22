@@ -845,8 +845,8 @@ CHAR_LIMIT guidelines:
       <message name="IDS_CONTEXTUAL_SEARCH_SEE_BETTER_RESULTS_SUMMARY" desc="Summary for the see better results switch in Contextual Search preference.">
         By including more of a page’s text, you might see better results
       </message>
-      <message name="IDS_DO_NOT_TRACK_TITLE" desc="Title for 'Do Not Track' preference">
-        “Do Not Track”
+      <message name="IDS_DO_NOT_TRACK_TITLE" desc="Title for the 'Do Not Track' preference. Please leave the 'Do Not Track' part in English according to the glossary.">
+        Send a “Do Not Track” request
       </message>
       <message name="IDS_DO_NOT_TRACK_DESCRIPTION" desc="Description for 'Do Not Track' preference">
         Enabling “Do Not Track” means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request, and how the request is interpreted.
