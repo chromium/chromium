@@ -23,9 +23,9 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcVmDataMigratorClient
   void HasDataToMigrate(
       const arc::data_migrator::HasDataToMigrateRequest& request,
       chromeos::DBusMethodCallback<bool> callback) override;
-  void GetAndroidDataSize(
-      const arc::data_migrator::GetAndroidDataSizeRequest& request,
-      chromeos::DBusMethodCallback<int64_t> callback) override;
+  void GetAndroidDataInfo(
+      const arc::data_migrator::GetAndroidDataInfoRequest& request,
+      GetAndroidDataInfoCallback callback) override;
   void StartMigration(const arc::data_migrator::StartMigrationRequest& request,
                       chromeos::VoidDBusMethodCallback callback) override;
   void AddObserver(Observer* observer) override;
@@ -42,8 +42,10 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcVmDataMigratorClient
     has_data_to_migrate_ = has_data_to_migrate;
   }
 
-  void set_android_data_size(absl::optional<int64_t> android_data_size) {
-    android_data_size_ = android_data_size;
+  void set_get_android_data_info_response(
+      const absl::optional<arc::data_migrator::GetAndroidDataInfoResponse>&
+          get_android_data_info_response) {
+    get_android_data_info_response_ = get_android_data_info_response;
   }
 
  protected:
@@ -56,7 +58,8 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcVmDataMigratorClient
   base::ObserverList<Observer> observers_;
 
   absl::optional<bool> has_data_to_migrate_ = true;
-  absl::optional<int64_t> android_data_size_ = 0;
+  absl::optional<arc::data_migrator::GetAndroidDataInfoResponse>
+      get_android_data_info_response_;
 };
 
 }  // namespace ash

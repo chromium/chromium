@@ -5021,7 +5021,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="StopVm request failed"/>
   <int value="2" label="Upstart jobs could not be stopped"/>
   <int value="3" label="GetFreeDiskSpace request failed"/>
-  <int value="4" label="GetAndroidDataSize request failed"/>
+  <int value="4" label="GetAndroidDataInfo request failed"/>
   <int value="5" label="CreateDiskImage request failed due to D-Bus error"/>
   <int value="6" label="CreateDiskImage request failed due to general error"/>
   <int value="7" label="ArcVmDataMigrator could not be started"/>

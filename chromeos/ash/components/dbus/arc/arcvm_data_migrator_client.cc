@@ -66,18 +66,19 @@ class ArcVmDataMigratorClientImpl : public ArcVmDataMigratorClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetAndroidDataSize(
-      const arc::data_migrator::GetAndroidDataSizeRequest& request,
-      chromeos::DBusMethodCallback<int64_t> callback) override {
+  void GetAndroidDataInfo(
+      const arc::data_migrator::GetAndroidDataInfoRequest& request,
+      GetAndroidDataInfoCallback callback) override {
     dbus::MethodCall method_call(
         arc::data_migrator::kArcVmDataMigratorInterface,
-        arc::data_migrator::kGetAndroidDataSizeMethod);
+        arc::data_migrator::kGetAndroidDataInfoMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendProtoAsArrayOfBytes(request);
     proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&ArcVmDataMigratorClientImpl::OnInt64Method,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+        base::BindOnce(
+            &ArcVmDataMigratorClientImpl::OnGetAndroidDataInfoResponse,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void StartMigration(const arc::data_migrator::StartMigrationRequest& request,
@@ -136,20 +137,20 @@ class ArcVmDataMigratorClientImpl : public ArcVmDataMigratorClient {
     std::move(callback).Run(result);
   }
 
-  void OnInt64Method(chromeos::DBusMethodCallback<int64_t> callback,
-                     dbus::Response* response) {
+  void OnGetAndroidDataInfoResponse(GetAndroidDataInfoCallback callback,
+                                    dbus::Response* response) {
     if (!response) {
       std::move(callback).Run(absl::nullopt);
       return;
     }
     dbus::MessageReader reader(response);
-    int64_t result = 0;
-    if (!reader.PopInt64(&result)) {
+    arc::data_migrator::GetAndroidDataInfoResponse proto;
+    if (!reader.PopArrayOfBytesAsProto(&proto)) {
       LOG(ERROR) << "Invalid response: " << response->ToString();
       std::move(callback).Run(absl::nullopt);
       return;
     }
-    std::move(callback).Run(result);
+    std::move(callback).Run(std::move(proto));
   }
 
   base::ObserverList<Observer> observers_;
