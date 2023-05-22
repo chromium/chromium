@@ -1773,9 +1773,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // origin as the trusted_bidding_signals_url, signals.a.test.
   EXPECT_EQ(base::StringPrintf(
                 "TypeError: Failed to execute 'joinAdInterestGroup' on "
-                "'Navigator': trustedBiddingSignalsUrl "
+                "'Navigator': trustedBiddingSignalsURL "
                 "'https://signals.a.test/' for AuctionAdInterestGroup with "
-                "owner '%s' and name 'four-wheelers' trustedBiddingSignalsUrl "
+                "owner '%s' and name 'four-wheelers' trustedBiddingSignalsURL "
                 "must have the same origin as the InterestGroup owner and have "
                 "no query string, fragment identifier or embedded credentials.",
                 test_origin_a.Serialize().c_str()),
@@ -3085,7 +3085,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   EXPECT_EQ(base::StringPrintf(
                 "TypeError: Failed to execute 'joinAdInterestGroup' on "
-                "'Navigator': trustedBiddingSignalsUrl 'https://invalid^&' for "
+                "'Navigator': trustedBiddingSignalsURL 'https://invalid^&' for "
                 "AuctionAdInterestGroup with owner '%s' and name 'cars' cannot "
                 "be resolved to a valid URL.",
                 origin_string.c_str()),
@@ -3704,6 +3704,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               GURL(base::StringPrintf("%s/update.json", origin_string.c_str())))
           .Build();
 
+  const blink::InterestGroup kExpectedGroupTrustedBiddingSignalsUrl =
+      blink::TestInterestGroupBuilder(/*owner=*/origin, /*name=*/"cars")
+          .SetTrustedBiddingSignalsUrl(GURL(
+              base::StringPrintf("%s/signals.json", origin_string.c_str())))
+          .Build();
+
   struct TestCases {
     const std::string join_dict_contents;
     const std::string result;
@@ -3813,6 +3819,30 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
            "interest group updateUrl doesn't have the same value as "
            "interest group updateURL ('%s/update.json' vs "
            "'%s/update2.json')",
+           origin_string.c_str(), origin_string.c_str()),
+       absl::nullopt},
+      // ***
+      // trustedBiddingSignalsURL
+      // ***
+      {base::StringPrintf(R"(trustedBiddingSignalsUrl: '%s/signals.json')",
+                          origin_string.c_str()),
+       "done", kExpectedGroupTrustedBiddingSignalsUrl},
+      {base::StringPrintf(R"(trustedBiddingSignalsURL: '%s/signals.json')",
+                          origin_string.c_str()),
+       "done", kExpectedGroupTrustedBiddingSignalsUrl},
+      {base::StringPrintf(R"(trustedBiddingSignalsUrl: '%s/signals.json',)"
+                          R"(trustedBiddingSignalsURL: '%s/signals.json')",
+                          origin_string.c_str(), origin_string.c_str()),
+       "done", kExpectedGroupTrustedBiddingSignalsUrl},
+      {base::StringPrintf(R"(trustedBiddingSignalsUrl: '%s/signals.json',)"
+                          R"(trustedBiddingSignalsURL: '%s/signals2.json')",
+                          origin_string.c_str(), origin_string.c_str()),
+       base::StringPrintf(
+           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+           "interest group trustedBiddingSignalsUrl doesn't have the same "
+           "value as interest group trustedBiddingSignalsURL "
+           "('%s/signals.json' "
+           "vs '%s/signals2.json')",
            origin_string.c_str(), origin_string.c_str()),
        absl::nullopt},
   };

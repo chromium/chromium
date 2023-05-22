@@ -4795,6 +4795,14 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
   updated_interest_group_bidding_wasm_helper_url.bidding_wasm_helper_url =
       GURL(base::StringPrintf("%s/bidding.wasm", kOriginStringA));
 
+  blink::InterestGroup updated_interest_group_trusted_bidding_signals_url =
+      CreateInterestGroup();
+  updated_interest_group_trusted_bidding_signals_url.update_url = kUpdateUrlA;
+  updated_interest_group_trusted_bidding_signals_url.priority = 1.0;
+  updated_interest_group_trusted_bidding_signals_url
+      .trusted_bidding_signals_url =
+      GURL(base::StringPrintf("%s/signals.json", kOriginStringA));
+
   struct TestCase {
     const std::string update_contents;
     const blink::InterestGroup& expected_group;
@@ -4855,6 +4863,23 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
        updated_interest_group_bidding_wasm_helper_url},
       {base::StringPrintf(R"("biddingWasmHelperUrl": "%s/bidding.wasm",)"
                           R"("biddingWasmHelperURL": "%s/bidding2.wasm")",
+                          kOriginStringA, kOriginStringA),
+       initial_interest_group},
+      // ***
+      // trustedBiddingSignalsURL
+      // ***
+      {base::StringPrintf(R"("trustedBiddingSignalsUrl": "%s/signals.json")",
+                          kOriginStringA),
+       updated_interest_group_trusted_bidding_signals_url},
+      {base::StringPrintf(R"("trustedBiddingSignalsURL": "%s/signals.json")",
+                          kOriginStringA),
+       updated_interest_group_trusted_bidding_signals_url},
+      {base::StringPrintf(R"("trustedBiddingSignalsUrl": "%s/signals.json",)"
+                          R"("trustedBiddingSignalsURL": "%s/signals.json")",
+                          kOriginStringA, kOriginStringA),
+       updated_interest_group_trusted_bidding_signals_url},
+      {base::StringPrintf(R"("trustedBiddingSignalsUrl": "%s/signals.json",)"
+                          R"("trustedBiddingSignalsURL": "%s/signals2.json")",
                           kOriginStringA, kOriginStringA),
        initial_interest_group},
   };

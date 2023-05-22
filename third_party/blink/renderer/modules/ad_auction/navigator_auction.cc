@@ -661,13 +661,14 @@ bool CopyTrustedBiddingSignalsUrlFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdInterestGroup& input,
     mojom::blink::InterestGroup& output) {
-  if (!input.hasTrustedBiddingSignalsUrl())
+  if (!input.hasTrustedBiddingSignalsURL()) {
     return true;
+  }
   KURL trusted_bidding_signals_url =
-      context.CompleteURL(input.trustedBiddingSignalsUrl());
+      context.CompleteURL(input.trustedBiddingSignalsURL());
   if (!trusted_bidding_signals_url.IsValid()) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
-        input, "trustedBiddingSignalsUrl", input.trustedBiddingSignalsUrl(),
+        input, "trustedBiddingSignalsURL", input.trustedBiddingSignalsURL(),
         "cannot be resolved to a valid URL."));
     return false;
   }
@@ -2161,6 +2162,23 @@ bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
       }
     } else {
       group->setUpdateURL(std::move(group->updateUrlDeprecated()));
+    }
+  }
+
+  if (group->hasTrustedBiddingSignalsUrlDeprecated()) {
+    if (group->hasTrustedBiddingSignalsURL()) {
+      if (group->trustedBiddingSignalsUrlDeprecated() !=
+          group->trustedBiddingSignalsURL()) {
+        exception_state.ThrowTypeError(ErrorRenameMismatch(
+            /*old_field_name=*/"interest group trustedBiddingSignalsUrl",
+            /*old_field_value=*/group->trustedBiddingSignalsUrlDeprecated(),
+            /*new_field_name=*/"interest group trustedBiddingSignalsURL",
+            /*new_field_value=*/group->trustedBiddingSignalsURL()));
+        return false;
+      }
+    } else {
+      group->setTrustedBiddingSignalsURL(
+          std::move(group->trustedBiddingSignalsUrlDeprecated()));
     }
   }
 

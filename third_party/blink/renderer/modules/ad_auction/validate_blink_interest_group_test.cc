@@ -268,7 +268,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
       "updateURL must have the same origin as the InterestGroup owner "
       "and have no fragment identifier or embedded credentials.";
   const char kBadTrustedBiddingSignalsUrlError[] =
-      "trustedBiddingSignalsUrl must have the same origin as the "
+      "trustedBiddingSignalsURL must have the same origin as the "
       "InterestGroup owner and have no query string, fragment identifier "
       "or embedded credentials.";
 
@@ -343,7 +343,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
     blink_interest_group->trusted_bidding_signals_url = rejected_url;
     ExpectInterestGroupIsNotValid(
         blink_interest_group,
-        /*expected_error_field_name=*/"trustedBiddingSignalsUrl",
+        /*expected_error_field_name=*/"trustedBiddingSignalsURL",
         /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
         /*expected_error=*/kBadTrustedBiddingSignalsUrlError);
   }
@@ -355,7 +355,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
   blink_interest_group->trusted_bidding_signals_url = rejected_url;
   ExpectInterestGroupIsNotValid(
       blink_interest_group,
-      /*expected_error_field_name=*/"trustedBiddingSignalsUrl",
+      /*expected_error_field_name=*/"trustedBiddingSignalsURL",
       /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
       /*expected_error=*/kBadTrustedBiddingSignalsUrlError);
 }

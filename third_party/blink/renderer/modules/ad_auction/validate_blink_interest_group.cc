@@ -217,10 +217,10 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     // query parameter needs to be set as part of running an auction.
     if (!IsUrlAllowed(*group.trusted_bidding_signals_url, group) ||
         !group.trusted_bidding_signals_url->Query().empty()) {
-      error_field_name = "trustedBiddingSignalsUrl";
+      error_field_name = "trustedBiddingSignalsURL";
       error_field_value = group.trusted_bidding_signals_url->GetString();
       error =
-          "trustedBiddingSignalsUrl must have the same origin as the "
+          "trustedBiddingSignalsURL must have the same origin as the "
           "InterestGroup owner and have no query string, fragment identifier "
           "or embedded credentials.";
       return false;

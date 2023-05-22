@@ -40,7 +40,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 14) {
+  if (Object.keys(interestGroup).length !== 15) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -87,6 +87,13 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup.dailyUpdateUrl.startsWith('https://a.test') ||
       !interestGroup.dailyUpdateUrl.endsWith('/not_found_update_url.json')) {
     throw 'Incorrect dailyUpdateUrl ' + interestGroup.dailyUpdateUrl;
+  }
+
+  if (!interestGroup.trustedBiddingSignalsURL.startsWith('https://a.test') ||
+      !interestGroup.trustedBiddingSignalsURL.includes(
+          'trusted_bidding_signals.json')) {
+    throw 'Incorrect trustedBiddingSignalsURL ' +
+        interestGroup.trustedBiddingSignalsURL;
   }
 
   if (!interestGroup.trustedBiddingSignalsUrl.startsWith('https://a.test') ||
