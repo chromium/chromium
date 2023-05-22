@@ -192,6 +192,11 @@ void StructuredMetricsRecorder::OnExternalMetricsCollected(
 }
 
 void StructuredMetricsRecorder::Purge() {
+  // Only purge if the recorder has been initialized.
+  if (!is_init_state(InitState::kInitialized)) {
+    return;
+  }
+
   DCHECK(events_ && profile_key_data_ && device_key_data_);
   events_->Purge();
   profile_key_data_->Purge();
