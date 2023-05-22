@@ -488,13 +488,16 @@ bool V4LocalDatabaseManager::CheckResourceUrl(const GURL& url, Client* client) {
   return HandleCheck(std::move(check));
 }
 
-bool V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+void V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    const std::string& metric_variation) {
+    const std::string& metric_variation,
+    base::OnceCallback<void(bool)> callback) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kSkipHighConfidenceAllowlist)) {
-    return false;
+    sb_task_runner()->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(callback), false));
+    return;
   }
 
   StoresToCheck stores_to_check({GetUrlHighConfidenceAllowlistId()});
@@ -516,7 +519,9 @@ bool V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     // is too small, return that there is a match. The full URL check won't be
     // performed, but hash-based check will still be done. If any artificial
     // matches are present, consider the allowlist as ready.
-    return true;
+    sb_task_runner()->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(callback), true));
+    return;
   }
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
@@ -527,7 +532,9 @@ bool V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
   AsyncMatch result =
       HandleAllowlistCheck(std::move(check), /*allow_async_check=*/false);
   DCHECK_NE(AsyncMatch::ASYNC, result);
-  return result == AsyncMatch::MATCH;
+  sb_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), result == AsyncMatch::MATCH));
 }
 
 bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,

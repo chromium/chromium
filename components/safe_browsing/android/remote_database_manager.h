@@ -71,9 +71,10 @@ class RemoteSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   void LogCheckUrlForHighConfidenceAllowlistResults(
       absl::optional<bool> sb_api_result,
       bool component_updater_result);
-  bool CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
-      const std::string& metric_variation) override;
+      const std::string& metric_variation,
+      base::OnceCallback<void(bool)> callback) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   void MatchDownloadAllowlistUrl(
       const GURL& url,
