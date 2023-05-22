@@ -1,0 +1,13 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Interface that renderers can use to connect to the browser's Environment
+// Integrity implementation, which acts as the receiver for this interface.
+interface EnvironmentIntegrityService {
+  // TODO(crbug.com/1439945) Take in a content_binding string and return an
+  // Environment Integrity token as a byte array.
+  GetEnvironmentIntegrity() => ();
+};

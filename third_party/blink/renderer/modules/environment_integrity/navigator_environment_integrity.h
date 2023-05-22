@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ENVIRONMENT_INTEGRITY_NAVIGATOR_ENVIRONMENT_INTEGRITY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENVIRONMENT_INTEGRITY_NAVIGATOR_ENVIRONMENT_INTEGRITY_H_
 
+#include "third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -15,6 +17,7 @@ namespace blink {
 
 class ExceptionState;
 class ScriptPromise;
+class ScriptPromiseResolver;
 class ScriptState;
 
 class MODULES_EXPORT NavigatorEnvironmentIntegrity final
@@ -39,6 +42,14 @@ class MODULES_EXPORT NavigatorEnvironmentIntegrity final
                                                ExceptionState&);
 
   void Trace(Visitor* visitor) const override;
+
+#if BUILDFLAG(IS_ANDROID)
+ private:
+  void ResolveEnvironmentIntegrity(ScriptPromiseResolver* resolver);
+
+  HeapMojoRemote<mojom::blink::EnvironmentIntegrityService>
+      remote_environment_integrity_service_;
+#endif
 };
 
 }  // namespace blink

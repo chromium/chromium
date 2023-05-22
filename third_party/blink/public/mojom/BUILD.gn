@@ -66,6 +66,7 @@ mojom("mojom_platform") {
     "dom_storage/session_storage_namespace.mojom",
     "dom_storage/storage_area.mojom",
     "drag/drag.mojom",
+    "environment_integrity/environment_integrity_service.mojom",
     "favicon/favicon_url.mojom",
     "feature_observer/feature_observer.mojom",
     "fenced_frame/fenced_frame_config.mojom",

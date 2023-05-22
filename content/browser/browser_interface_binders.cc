@@ -123,6 +123,7 @@
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
+#include "third_party/blink/public/mojom/environment_integrity/environment_integrity_service.mojom.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
@@ -177,6 +178,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/date_time_chooser_android.h"
 #include "content/browser/android/text_suggestion_host_android.h"
+#include "content/browser/environment_integrity/environment_integrity_service_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
@@ -1186,9 +1188,17 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&BindDateTimeChooserForFrame));
   map->Add<blink::mojom::TextSuggestionHost>(
       base::BindRepeating(&BindTextSuggestionHostForFrame));
+  if (base::FeatureList::IsEnabled(features::kWebEnvironmentIntegrity)) {
+    map->Add<blink::mojom::EnvironmentIntegrityService>(
+        base::BindRepeating(&EnvironmentIntegrityServiceImpl::Create));
+  }
 #else
   map->Add<blink::mojom::TextSuggestionHost>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::TextSuggestionHost>));
+  if (base::FeatureList::IsEnabled(features::kWebEnvironmentIntegrity)) {
+    map->Add<blink::mojom::EnvironmentIntegrityService>(base::BindRepeating(
+        &EmptyBinderForFrame<blink::mojom::EnvironmentIntegrityService>));
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   map->Add<blink::mojom::ClipboardHost>(
