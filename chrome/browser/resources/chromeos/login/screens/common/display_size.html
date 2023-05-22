@@ -3,31 +3,31 @@ Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<style include="oobe-dialog-host-styles">
+<style include="oobe-dialog-host-styles cros-color-overrides">
 </style>
 
 <oobe-adaptive-dialog id="displaySizeDialog">
   <iron-icon slot="icon" icon="oobe-32:display"></iron-icon>
   <h1 slot="title" id="display-size-title">
-    [[i18nDynamic(locale, 'DisplaySizeTitle')]]
+    [[i18nDynamic(locale, 'displaySizeTitle')]]
   </h1>
   <div slot="subtitle" id="display-size-subtitle">
     <p>
-      [[i18nDynamic(locale, 'DisplaySizeDescription')]]
-    </p>
-    <p>
-      [[i18nDynamic(locale,'DisplaySizeAdditionalDescription')]]
+      [[i18nDynamic(locale, 'displaySizeDescription')]]
     </p>
   </div>
 
-  <div slot="content" class="layout vertical center-justified">
-    <p>
-      [[i18nDynamic(locale,'DisplaySizeSliderTitle')]]
-    </p>
-    <p>
-      [[i18nDynamic(locale,'DisplaySizeSliderDescription')]]
-    </p>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <oobe-display-size-selector id="sizeSelector">
+      <p slot="slider-title">
+        [[i18nDynamic(locale,'displaySizeSliderTitle')]]
+      </p>
+      <p slot="slider-description">
+        [[i18nDynamic(locale,'displaySizeSliderDescription')]]
+      </p>
+    </oobe-screens-list>
   </div>
+
   <div slot="bottom-buttons">
     <oobe-next-button id="nextButton" class="focus-on-show"
       on-click="onNextClicked_">

@@ -5,13 +5,16 @@
  * @fileoverview Polymer element for touchpad scroll screen.
  */
 
+import '//resources/cr_elements/cr_slider/cr_slider.js';
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
+import '../../components/oobe_display_size_selector.js';
 import '../../components/oobe_icons.html.js';
 
+import {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
@@ -63,13 +66,16 @@ class DisplaySizeScreen extends DisplaySizeScreenElementBase {
     this.initializeLoginScreen('DisplaySizeScreen');
   }
 
+  onBeforeShow(data) {
+    this.$.sizeSelector.init(data['availableSizes'], data['currentSize']);
+  }
 
   getOobeUIInitialState() {
     return OOBE_UI_STATE.ONBOARDING;
   }
 
   onNextClicked_() {
-    this.userActed(UserAction.NEXT);
+    this.userActed([UserAction.NEXT, this.$.sizeSelector.getSelectedSize()]);
   }
 }
 

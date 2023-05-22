@@ -6632,21 +6632,41 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <!-- Display Size -->
-  <!-- TODO(b/258503542): Remove translateable tags when strings are finalized. -->
-  <message name="IDS_OOBE_DISPLAY_SIZE_TITLE" desc="Title of the display size screen." translateable="false">
-    Change text size
+  <message name="IDS_OOBE_DISPLAY_SIZE_TITLE" desc="Title of the display size screen.">
+    Change display and text size
   </message>
-  <message name="IDS_OOBE_DISPLAY_SIZE_DESCRIPTION" desc="Description of the display size screen." translateable="false">
-    Adjust the display size to make items on your screen, including text, larger or smaller.
+  <message name="IDS_OOBE_DISPLAY_SIZE_DESCRIPTION" desc="Description of the display size screen.">
+    Make items on your screen, including text, larger or smaller. You can also find this later in Settings &gt; Device &gt; Displays.
   </message>
-   <message name="IDS_OOBE_DISPLAY_SIZE_DESCRIPTION_ADDITIONAL" desc="Additional description of the display size screen." translateable="false">
-    You can also find this later in Settings &gt; Device &gt; Displays.
+  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_TITLE" desc="Title of the zoom levels slider in the display size screen.">
+    Display and text size
   </message>
-  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_TITLE" desc="Title of the zoom levels slider in the display size screen." translateable="false">
-    Display Size
+  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_DESCRIPTION" desc="Description of the zoom levels slider in the display size screen.">
+    Changes will be applied after setup
   </message>
-  <message name="IDS_OOBE_DISPLAY_SIZE_SLIDER_DESCRIPTION" desc="Description of the zoom levels slider in the display size screen." translateable="false">
-    Make everything bigger or smaller
+  <message name="IDS_OOBE_DISPLAY_SIZE_PREVIEW" desc="Title of the preview section of the display size screen.">
+    Preview
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_A4_APP_NAME" desc="A4 app name in the preview section of the display size screen.">
+    A4
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_CALCULATOR_APP_NAME" desc="Calculator app name in the preview section of the display size screen.">
+    Calculator
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_CAMERA_APP_NAME" desc="Camera app name in the preview section of the display size screen.">
+    Camera
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_FILES_APP_NAME" desc="Files app name in the preview section of the display size screen.">
+    Files
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_PHOTOS_APP_NAME" desc="Photos app name in the preview section of the display size screen.">
+    Photos
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_SETTINGS_APP_NAME" desc="Settings app name in the preview section of the display size screen.">
+    Settings
+  </message>
+  <message name="IDS_OOBE_DISPLAY_SIZE_VALUE" desc="The currently selected display size percentage.">
+    <ph name="DISPLAY_ZOOM">$1<ex>120</ex></ph>%
   </message>
 
   <!-- Drive Offline-->

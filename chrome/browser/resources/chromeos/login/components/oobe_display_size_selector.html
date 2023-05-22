@@ -1,0 +1,156 @@
+<!-- Copyright 2023 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+
+<!--
+  OOBE polymer element which includes a slider to select the
+  display size fator and a preview  containing 3x2 app icons
+  of the selected display size factor.
+-->
+
+<style include="oobe-dialog-host-styles">
+  #displaySizeSelector {
+    height: 100%;
+  }
+
+  #preview {
+    align-items: center;
+    background-color: var(--cros-sys-base_elevated);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 140px);
+    justify-content: center;
+    margin-bottom: 24px;
+    max-height: 324px;
+    text-align: center;
+  }
+
+  #previewTitle {
+    margin-bottom: 0;
+    margin-top: 16px;
+  }
+
+  #grid-container {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+  }
+
+  #grid {
+    display: grid;
+    grid-gap: 16px 56px;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  #sliderContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin-top: 24px;
+  }
+
+  #sizeSlider {
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+
+  #sliderTitleContainer ::slotted(*) {
+    font-weight: 500;
+    margin: 0;
+  }
+
+  #sliderDescriptionContainer ::slotted(*) {
+    margin: 0;
+  }
+
+  .sign {
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-inline-end: 13px;
+    margin-inline-start: 13px;
+    width: 16px;
+  }
+
+  .app-name {
+    margin-bottom: 0;
+    margin-top: 8px;
+  }
+
+  .app-icon {
+    width: 48px;
+  }
+
+  /* Decrease the vertical gaps on low resolution screens */
+  @media screen and (orientation:portrait) and (max-height: 1120px) {
+    :host-context([screen=oobe]) #previewTitle {
+      display: none;
+    }
+    :host-context([screen=oobe]) #grid {
+      grid-row-gap: 10px;
+    }
+    :host-context([screen=oobe]) .app-name {
+      margin-top: 3px;
+    }
+  }
+
+  @media screen and (orientation:portrait) and (max-height: 900px) {
+    :host-context([screen=gaia-signin]) #previewTitle {
+      display: none;
+    }
+    :host-context([screen=gaia-signin]) #grid {
+      grid-row-gap: 10px;
+    }
+    :host-context([screen=gaia-signin]) .app-name {
+      margin-top: 3px;
+    }
+  }
+
+  /* Decrease the horizontal gaps on low resolution screens */
+  @media screen and (orientation:landscape) and (max-width: 900px) {
+    :host-context([screen=oobe]) #grid {
+      grid-column-gap: 28px;
+    }
+  }
+
+  @media screen and (orientation:landscape) and (max-width: 800px) {
+    :host-context([screen=gaia-signin]) #grid {
+      grid-column-gap: 28px;
+    }
+  }
+</style>
+
+<div id="displaySizeSelector">
+  <!-- Preview Section -->
+  <div id="preview">
+    <p id="previewTitle">[[i18nDynamic(locale, 'displaySizePreview')]]</p>
+    <div id="grid-container" clsas="layout horizontal center flex">
+      <div id="grid">
+        <template is="dom-repeat" items="[[apps_]]" as="app">
+          <div>
+            <img class="app-icon" srcset="[[app.icon]]">
+            <p class="app-name">[[i18nDynamic(locale, app.name)]]</p>
+          </div>
+       </template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slider Section -->
+  <div id="sliderTitleContainer">
+    <slot name="slider-title"></slot>
+  </div>
+  <div id="sliderDescriptionContainer">
+    <slot name="slider-description"></slot>
+  </div>
+  <div id="sliderContainer">
+    <iron-icon id="negative" class="sign" icon="oobe-16:negative"></iron-icon>
+    <cr-slider id="sizeSlider" value="[[tickedSizeIndex_]]"
+        on-cr-slider-value-changed="onTickedSizeChanged_"
+        marker-count="[[markerCounts_]]" ticks="[[availableSizesTicks_]]">
+    </cr-slider>
+    <iron-icon id="positive" class="sign" icon="oobe-16:positive"></iron-icon>
+  </div>
+</div>

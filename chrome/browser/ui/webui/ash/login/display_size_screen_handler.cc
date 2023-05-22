@@ -21,19 +21,31 @@ DisplaySizeScreenHandler::~DisplaySizeScreenHandler() = default;
 
 void DisplaySizeScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("DisplaySizeTitle", IDS_OOBE_DISPLAY_SIZE_TITLE);
-  builder->Add("DisplaySizeDescription", IDS_OOBE_DISPLAY_SIZE_DESCRIPTION);
-  builder->Add("DisplaySizeAdditionalDescription",
-               IDS_OOBE_DISPLAY_SIZE_DESCRIPTION_ADDITIONAL);
-  builder->Add("DisplaySizeSliderTitle", IDS_OOBE_DISPLAY_SIZE_SLIDER_TITLE);
-  builder->Add("DisplaySizeSliderDescription",
+  builder->Add("displaySizeTitle", IDS_OOBE_DISPLAY_SIZE_TITLE);
+  builder->Add("displaySizeDescription", IDS_OOBE_DISPLAY_SIZE_DESCRIPTION);
+  builder->Add("displaySizeSliderTitle", IDS_OOBE_DISPLAY_SIZE_SLIDER_TITLE);
+  builder->Add("displaySizeSliderDescription",
                IDS_OOBE_DISPLAY_SIZE_SLIDER_DESCRIPTION);
+
+  // oobe_display_size_selector component resources.
+  builder->Add("displaySizePreview", IDS_OOBE_DISPLAY_SIZE_PREVIEW);
+  builder->Add("displaySizeA4App", IDS_OOBE_DISPLAY_SIZE_A4_APP_NAME);
+  builder->Add("displaySizeCalculatorApp",
+               IDS_OOBE_DISPLAY_SIZE_CALCULATOR_APP_NAME);
+  builder->Add("displaySizeCameraApp", IDS_OOBE_DISPLAY_SIZE_CAMERA_APP_NAME);
+  builder->Add("displaySizeFilesApp", IDS_OOBE_DISPLAY_SIZE_FILES_APP_NAME);
+  builder->Add("displaySizePhotosApp", IDS_OOBE_DISPLAY_SIZE_PHOTOS_APP_NAME);
+  builder->Add("displaySizeSettingsApp",
+               IDS_OOBE_DISPLAY_SIZE_SETTINGS_APP_NAME);
+  builder->Add("displaySizeValue", IDS_OOBE_DISPLAY_SIZE_VALUE);
+
+  // CHOOBE resources
   builder->Add("choobeDisplaySizeTitle",
                IDS_OOBE_CHOOBE_DISPLAY_SIZE_TILE_TITLE);
 }
 
-void DisplaySizeScreenHandler::Show() {
-  ShowInWebUI();
+void DisplaySizeScreenHandler::Show(base::Value::Dict data) {
+  ShowInWebUI(std::move(data));
 }
 
 }  // namespace ash
