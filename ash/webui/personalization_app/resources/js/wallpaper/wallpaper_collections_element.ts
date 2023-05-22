@@ -21,7 +21,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../../personalization_app.mojom-webui.js';
-import {isGooglePhotosIntegrationEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
+import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCountText, isImageDataUrl, isNonEmptyArray, isSelectionEvent} from '../utils.js';
@@ -321,6 +321,13 @@ export class WallpaperCollections extends WithPersonalizationStore {
       },
 
       hasError_: Boolean,
+
+      isPersonalizationJellyEnabled_: {
+        type: Boolean,
+        value() {
+          return isPersonalizationJellyEnabled();
+        },
+      },
     };
   }
 
@@ -336,6 +343,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
   private localImageData_: Record<string|DefaultImageSymbol, Url>;
   private tiles_: Tile[];
   private hasError_: boolean;
+  private isPersonalizationJellyEnabled_: boolean;
 
   static get observers() {
     return [

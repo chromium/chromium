@@ -35,7 +35,7 @@
     justify-content: center;
   }
 
-  wallpaper-grid-item[data-google-photos] iron-icon[icon='personalization:managed'] {
+  wallpaper-grid-item[data-google-photos] iron-icon[icon^='personalization:managed'] {
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
@@ -44,7 +44,7 @@
     margin-inline-end: 8px;
   }
 
-  wallpaper-grid-item[data-google-photos][aria-disabled='true'] iron-icon[icon='personalization:managed'] {
+  wallpaper-grid-item[data-google-photos][aria-disabled='true'] iron-icon[icon^='personalization:managed'] {
     /* Icon color should stay light even in dark mode.
      * All of the google photos tile is always light.
      */
@@ -144,9 +144,16 @@
               tabindex$="[[tabIndex]]">
             <template is="dom-if" if="[[!isSelectableTile_(item)]]" restamp>
               <div slot="text" class="primary-text">
-                <iron-icon icon="personalization:managed"
-                    title$="$i18n{managedSetting}">
-                </iron-icon>
+                <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
+                  <iron-icon icon="personalization:managed"
+                      title$="$i18n{managedSetting}">
+                  </iron-icon>
+                </template>
+                <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
+                  <iron-icon icon="personalization:managed2"
+                      title$="$i18n{managedSetting}">
+                  </iron-icon>
+                </template>
                 <p title$="[[item.name]]">[[item.name]]</p>
               </div>
             </template>
