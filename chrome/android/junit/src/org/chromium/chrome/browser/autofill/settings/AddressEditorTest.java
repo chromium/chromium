@@ -157,7 +157,6 @@ public class AddressEditorTest {
 
         mActivity = Robolectric.setupActivity(TestActivity.class);
 
-        Profile.setLastUsedProfileForTesting(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
@@ -172,6 +171,7 @@ public class AddressEditorTest {
         setUpSupportedCountries(mSupportedCountries);
 
         when(mEditorDialog.getContext()).thenReturn(mActivity);
+        when(mEditorDialog.getProfile()).thenReturn(mProfile);
         doNothing().when(mEditorDialog).show(mEditorModelCapture.capture());
     }
 

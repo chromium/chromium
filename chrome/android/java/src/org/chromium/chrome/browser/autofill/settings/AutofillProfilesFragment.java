@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -43,9 +44,9 @@ import org.chromium.components.sync.UserSelectableType;
 /**
  * Autofill profiles fragment, which allows the user to edit autofill profiles.
  */
-public class AutofillProfilesFragment
-        extends PreferenceFragmentCompat implements PersonalDataManager.PersonalDataManagerObserver,
-                                                    FragmentHelpAndFeedbackLauncher {
+public class AutofillProfilesFragment extends PreferenceFragmentCompat
+        implements PersonalDataManager.PersonalDataManagerObserver, FragmentHelpAndFeedbackLauncher,
+                   ProfileDependentSetting {
     private static AddressEditor.Delegate sAddressEditorDelegate = new AddressEditor.Delegate() {
         // User has either created a new address, or edited an existing address.
         // We should save changes in any case.
@@ -70,6 +71,7 @@ public class AutofillProfilesFragment
     static final String PREF_NEW_PROFILE = "new_profile";
     private @Nullable EditorDialog mEditorDialog;
 
+    private Profile mProfile;
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     @Override
@@ -244,8 +246,7 @@ public class AutofillProfilesFragment
             }
         };
 
-        return new EditorDialog(
-                getActivity(), runnable, Profile.getLastUsedRegularProfile(), false);
+        return new EditorDialog(getActivity(), runnable, mProfile, false);
     }
 
     @Nullable
@@ -274,6 +275,11 @@ public class AutofillProfilesFragment
     @VisibleForTesting
     EditorDialog getEditorDialogForTest() {
         return mEditorDialog;
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 
     @Override
