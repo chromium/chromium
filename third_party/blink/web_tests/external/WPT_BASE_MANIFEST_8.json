@@ -272644,11 +272644,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "42968047be3e44ee65274686cc2e3a1bb5fa8606",
+     "d4c040145f13b144ecaf45886be5b591f643219f",
      []
     ],
     "mtime.json": [
-     "d6f12464231664ed4dc4e35783d2404b911d0c25",
+     "e78affcda8cd07af74fcd2f203c9dd53682c577b",
      []
     ]
    },
@@ -287812,7 +287812,7 @@
        []
       ],
       "mix-blend-mode-blended-element-overflow-scroll.html.ini": [
-       "053f4729ef2a7f1d42253a93d30aea86716f659e",
+       "568f0e7abc4646cd0566dce948867e0bc0dc9273",
        []
       ],
       "mix-blend-mode-blended-with-3D-transform.html.ini": [
@@ -293056,6 +293056,10 @@
      ],
      "at-supports-001-ref.html": [
       "a8157aa752192e39da0911705d61fb863dba20df",
+      []
+     ],
+     "at-supports-005.html.ini": [
+      "66b03e7c3776b2a7f3e188e78c27ba437b9e6d1f",
       []
      ],
      "at-supports-020.html.ini": [
@@ -329884,7 +329888,7 @@
        []
       ],
       "kind-of-widget-fallback-color-input-border-left-width-001.html.ini": [
-       "790ec0a2515cffe6f8324353c2a9273a6a1ebb11",
+       "08861083c05fd6e1fb2d809a3e5e8dddb53b63a6",
        []
       ],
       "kind-of-widget-fallback-color-input-border-right-width-001.html.ini": [
@@ -330036,7 +330040,7 @@
        []
       ],
       "kind-of-widget-fallback-input-reset-border-inline-end-color-001.html.ini": [
-       "57c6eb8f88bb60ce4dac4ee4d4727c8597a0c812",
+       "66c7da025d0886badcf669df11d4f89fe7ea4e98",
        []
       ],
       "kind-of-widget-fallback-input-reset-border-inline-end-style-001.html.ini": [
@@ -330360,7 +330364,7 @@
        []
       ],
       "kind-of-widget-fallback-input-submit-border-end-end-radius-001.html.ini": [
-       "1b2c05ec9c382ccf8393e5320fc0a5827c88ab81",
+       "9fb5aa8b0650b8c93494d521c3bb94d17e6b018e",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-end-start-radius-001.html.ini": [
@@ -337613,7 +337617,7 @@
       []
      ],
      "css-backdrop-filters-animation-invert.html.ini": [
-      "492c00de3346a4aef908b76632552234314f2ef7",
+      "ec644098dbfc8d1054429c056933ed78e5ff623e",
       []
      ],
      "css-backdrop-filters-animation-opacity-ref.html": [
@@ -368814,6 +368818,14 @@
         "9354d4270305882f80a7110aa1fd6adb2ffc7295",
         []
        ],
+       "script-type-whitespace-expected.txt": [
+        "9fbeb3c045a2c82913225ff58e231d9a1860e0f8",
+        []
+       ],
+       "script-type-whitespace.html.ini": [
+        "d929799f1482dce79f4a9a5eee916ba7d1829003",
+        []
+       ],
        "serve-json-then-js.py": [
         "9610734d4449794d1eb10032a1bac75cd4523b40",
         []
@@ -380422,7 +380434,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "344d5e663f13d94b5326ee18fcd7f2ac344a97c6",
+     "acb7550601585efe5b4d6502a95624d4556562c7",
      []
     ],
     "modulepreload-expected.txt": [
@@ -561247,6 +561259,13 @@
        ],
        "script-type-and-language-with-params.html": [
         "977ee7d0a482e402c328bc803aef31fd85471718",
+        [
+         null,
+         {}
+        ]
+       ],
+       "script-type-whitespace.html": [
+        "5e8acb1a17bace7ad5f55ac9a3545bbb1220ae10",
         [
          null,
          {}
