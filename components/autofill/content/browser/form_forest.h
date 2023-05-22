@@ -260,9 +260,8 @@ class FormForest {
   // The |field_type_map| should contain the field types of the fields in
   // |browser_form|.
   //
-  // There are two modes that determine whether a field is *safe to fill*.
-  // By default, a field is safe to fill iff at least one of the conditions
-  // (1–3) and additionally condition (4) hold:
+  // A field is *safe to fill* iff at least one of the conditions (1–3) and
+  // additionally condition (4) hold:
   //
   // (1) The field's origin is the |triggered_origin|.
   // (2) The field's origin is the main origin, the field's type in
@@ -271,16 +270,8 @@ class FormForest {
   //     frame.
   // (3) The |triggered_origin| is the main origin and the policy-controlled
   //     feature shared-autofill is enabled in the field's frame.
-  // (4) No frame on the shortest path from the field on which Autofill was
-  //     triggered to the field in question, except perhaps the shallowest
-  //     frame, is a fenced frame.
-  //
-  // If the Finch parameter relax_shared_autofill is true, the restriction to
-  // the main origin in condition 3 is lifted. Thus, conditions (2) and (3)
-  // reduce to the following:
-  //
-  // (2+3) The policy-controlled feature shared-autofill is enabled in the
-  //       field's document.
+  // (4) The field is in the same frame tree as the field on which Autofill was
+  //     triggered.
   //
   // The *origin of a field* is the origin of the frame that contains the
   // corresponding form-control element.

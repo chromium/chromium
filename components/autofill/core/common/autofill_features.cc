@@ -465,10 +465,6 @@ const base::FeatureParam<int> kAutofillServerBehaviorsParam{
 BASE_FEATURE(kAutofillSharedAutofill,
              "AutofillSharedAutofill",
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Relaxes the conditions under which a field is safe to fill.
-// See FormForest::GetRendererFormsOfBrowserForm() for details.
-const base::FeatureParam<bool> kAutofillSharedAutofillRelaxedParam{
-    &kAutofillSharedAutofill, "relax_shared_autofill", false};
 
 // Controls whether to offer a delete button for Autocomplete entries in the
 // Autofill popup.

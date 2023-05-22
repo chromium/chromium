@@ -619,19 +619,12 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
       auto it = field_type_map.find(field.global_id());
       ServerFieldType field_type =
           it != field_type_map.end() ? it->second : UNKNOWN_TYPE;
-      if (features::kAutofillSharedAutofillRelaxedParam.Get()) {
-        return field.origin == triggered_origin ||
-               (HasSharedAutofillPermission(renderer_form->host_frame) &&
-                (field.origin != main_origin ||
-                 field_type != CREDIT_CARD_NUMBER));
-      } else {
-        return field.origin == triggered_origin ||
-               (field.origin == main_origin &&
-                HasSharedAutofillPermission(renderer_form->host_frame) &&
-                !IsSensitiveFieldType(field_type)) ||
-               (triggered_origin == main_origin &&
-                HasSharedAutofillPermission(renderer_form->host_frame));
-      }
+      return field.origin == triggered_origin ||
+             (field.origin == main_origin &&
+              !IsSensitiveFieldType(field_type) &&
+              HasSharedAutofillPermission(renderer_form->host_frame)) ||
+             (triggered_origin == main_origin &&
+              HasSharedAutofillPermission(renderer_form->host_frame));
     };
 
     renderer_form->fields.push_back(browser_field);

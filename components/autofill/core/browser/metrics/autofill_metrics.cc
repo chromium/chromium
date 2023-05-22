@@ -2046,8 +2046,7 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     return field.origin != triggered_origin &&
            (field.origin != main_origin ||
             IsSensitiveFieldType(field.Type().GetStorableType())) &&
-           (triggered_origin == main_origin ||
-            features::kAutofillSharedAutofillRelaxedParam.Get());
+           triggered_origin == main_origin;
   };
 
   bool some_field_needs_shared_autofill = false;
