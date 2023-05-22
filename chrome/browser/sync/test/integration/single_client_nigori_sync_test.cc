@@ -1261,9 +1261,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form1, password_form2}).Wait());
 }
 
+// Flakily failing on Mac: https://crbug.com/1447428
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown \
+  DISABLED_ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown
+#else
+#define MAYBE_ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown \
+  ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown
+#endif
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiTest,
-    ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown) {
+    MAYBE_ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown) {
   // 4 days is an arbitrary value between 3 days and 7 days to allow testing
   // histogram suffixes.
   const base::Time migration_time = base::Time::Now() - base::Days(4);
