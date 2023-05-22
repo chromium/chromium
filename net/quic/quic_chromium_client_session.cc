@@ -1859,6 +1859,9 @@ void QuicChromiumClientSession::OnConnectionClosed(
 
   UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumDefaultPathDegrading",
                             connection()->GetStats().num_path_degrading);
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Net.QuicSession.NumForwardProgressMadeAfterPathDegrading",
+      connection()->GetStats().num_forward_progress_after_path_degrading);
   if (const quic::QuicConnection::MultiPortStats* multi_port_stats =
           connection()->multi_port_stats()) {
     UMA_HISTOGRAM_COUNTS_1000(

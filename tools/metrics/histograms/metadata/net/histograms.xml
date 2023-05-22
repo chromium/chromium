@@ -3720,8 +3720,18 @@ chromium-metrics-reviews@google.com.
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    The number of time that a session which has multi-port enabled enters
-    path-degrading state on the default path.
+    The number of times that a session enters path-degrading state on the
+    default path.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.NumForwardProgressMadeAfterPathDegrading"
+    units="times" expires_after="2023-10-22">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of times that a session makes forward progress after the original
+    default path is degrading.
   </summary>
 </histogram>
 
