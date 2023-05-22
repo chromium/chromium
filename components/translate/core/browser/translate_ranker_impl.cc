@@ -261,8 +261,6 @@ bool TranslateRankerImpl::ShouldOfferTranslation(
   bool result = GetModelDecision(*translate_event);
   translate_metrics_logger->LogRankerFinish();
 
-  UMA_HISTOGRAM_BOOLEAN("Translate.Ranker.QueryResult", result);
-
   translate_event->set_ranker_response(result ? TranslateEventProto::SHOW
                                               : TranslateEventProto::DONT_SHOW);
 

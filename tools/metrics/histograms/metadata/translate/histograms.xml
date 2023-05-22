@@ -665,16 +665,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.Ranker.QueryResult" enum="BooleanAccepted"
-    expires_after="2023-08-31">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Whether the TranslateRanker accepts or denies to show the translation
-    prompt.
-  </summary>
-</histogram>
-
 <histogram name="Translate.ShowErrorUI" enum="TranslateError"
     expires_after="2023-10-01">
   <owner>megjablon@google.com</owner>
