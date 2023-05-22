@@ -154,7 +154,9 @@ class CORE_EXPORT CSSAnimations final {
           style_rule_version(new_animation.style_rule_version),
           play_state_list(new_animation.play_state_list) {}
 
-    AnimationTimeline* Timeline() const { return animation->timeline(); }
+    AnimationTimeline* Timeline() const {
+      return animation->TimelineInternal();
+    }
     const absl::optional<TimelineOffset>& RangeStart() const {
       return animation->GetRangeStartInternal();
     }

@@ -302,7 +302,7 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     ScriptState* script_state) {
   if (Animation* animation = GetAnimation()) {
     animation->FlushPendingUpdates();
-    if (AnimationTimeline* timeline = animation->timeline()) {
+    if (AnimationTimeline* timeline = animation->TimelineInternal()) {
       animation->ResolveTimelineOffsets(timeline->GetTimelineRange());
     }
   }
@@ -775,8 +775,8 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
 }
 
 absl::optional<AnimationTimeDelta> KeyframeEffect::TimelineDuration() const {
-  if (GetAnimation() && GetAnimation()->timeline()) {
-    return GetAnimation()->timeline()->GetDuration();
+  if (GetAnimation() && GetAnimation()->TimelineInternal()) {
+    return GetAnimation()->TimelineInternal()->GetDuration();
   }
   return absl::nullopt;
 }

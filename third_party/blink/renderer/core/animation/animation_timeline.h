@@ -58,6 +58,10 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   virtual bool IsScrollTimeline() const { return false; }
   virtual bool IsViewTimeline() const { return false; }
 
+  // Determines which AnimationTimeline instance we should return
+  // from Animation.timeline.
+  virtual AnimationTimeline* ExposedTimeline() { return this; }
+
   virtual bool IsActive() const = 0;
   virtual bool IsResolved() const { return true; }
   virtual AnimationTimeDelta ZeroTime() = 0;

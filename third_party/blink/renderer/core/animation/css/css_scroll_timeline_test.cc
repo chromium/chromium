@@ -96,16 +96,22 @@ TEST_F(CSSScrollTimelineTest, SharedTimelines) {
 
   // The animations associated with anim1 and anim2 should share the same
   // timeline instance, also across elements.
-  EXPECT_EQ(animations1[0]->timeline(), animations1[1]->timeline());
-  EXPECT_EQ(animations1[1]->timeline(), animations2[0]->timeline());
-  EXPECT_EQ(animations2[0]->timeline(), animations2[1]->timeline());
+  EXPECT_EQ(animations1[0]->TimelineInternal(),
+            animations1[1]->TimelineInternal());
+  EXPECT_EQ(animations1[1]->TimelineInternal(),
+            animations2[0]->TimelineInternal());
+  EXPECT_EQ(animations2[0]->TimelineInternal(),
+            animations2[1]->TimelineInternal());
 
   // The animation associated with anim3 uses a different timeline
   // from anim1/2.
-  EXPECT_EQ(animations1[2]->timeline(), animations2[2]->timeline());
+  EXPECT_EQ(animations1[2]->TimelineInternal(),
+            animations2[2]->TimelineInternal());
 
-  EXPECT_NE(animations2[2]->timeline(), animations1[0]->timeline());
-  EXPECT_NE(animations2[2]->timeline(), animations1[1]->timeline());
+  EXPECT_NE(animations2[2]->TimelineInternal(),
+            animations1[0]->TimelineInternal());
+  EXPECT_NE(animations2[2]->TimelineInternal(),
+            animations1[1]->TimelineInternal());
 }
 
 TEST_F(CSSScrollTimelineTest, MultipleLifecyclePasses) {
@@ -228,7 +234,8 @@ namespace {
 
 absl::optional<ScrollTimeline::ScrollAxis> GetTimelineAxis(
     const Animation& animation) {
-  if (auto* scroll_timeline = DynamicTo<ScrollTimeline>(animation.timeline())) {
+  if (auto* scroll_timeline =
+          DynamicTo<ScrollTimeline>(animation.TimelineInternal())) {
     return scroll_timeline->GetAxis();
   }
   return absl::nullopt;

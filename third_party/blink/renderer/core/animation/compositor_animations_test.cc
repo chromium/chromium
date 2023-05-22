@@ -2372,7 +2372,7 @@ TEST_P(AnimationCompositorAnimationsTest, DetachCompositorTimelinesTest) {
   EXPECT_TRUE(animation.GetCompositorAnimation());
 
   cc::AnimationTimeline* compositor_timeline =
-      animation.timeline()->CompositorTimeline();
+      animation.TimelineInternal()->CompositorTimeline();
   ASSERT_TRUE(compositor_timeline);
   int id = compositor_timeline->id();
   ASSERT_TRUE(host->GetTimelineById(id));

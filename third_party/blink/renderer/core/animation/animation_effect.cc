@@ -67,7 +67,7 @@ AnimationEffect::AnimationEffect(const Timing& timing,
 
 AnimationTimeDelta AnimationEffect::IntrinsicIterationDuration() const {
   if (auto* animation = GetAnimation()) {
-    auto* timeline = animation->timeline();
+    auto* timeline = animation->TimelineInternal();
     if (timeline) {
       return timeline->CalculateIntrinsicIterationDuration(animation, timing_);
     }
@@ -259,8 +259,8 @@ ComputedEffectTiming* AnimationEffect::getComputedTiming() {
 
 void AnimationEffect::updateTiming(OptionalEffectTiming* optional_timing,
                                    ExceptionState& exception_state) {
-  if (GetAnimation() && GetAnimation()->timeline() &&
-      GetAnimation()->timeline()->IsProgressBased()) {
+  if (GetAnimation() && GetAnimation()->TimelineInternal() &&
+      GetAnimation()->TimelineInternal()->IsProgressBased()) {
     if (optional_timing->hasDuration()) {
       if (optional_timing->duration()->IsUnrestrictedDouble()) {
         double duration =

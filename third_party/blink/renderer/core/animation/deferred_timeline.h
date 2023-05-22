@@ -17,6 +17,10 @@ class CORE_EXPORT DeferredTimeline : public ScrollSnapshotTimeline {
  public:
   explicit DeferredTimeline(Document*);
 
+  AnimationTimeline* ExposedTimeline() override {
+    return SingleAttachedTimeline();
+  }
+
   void AttachTimeline(ScrollSnapshotTimeline*);
   void DetachTimeline(ScrollSnapshotTimeline*);
 

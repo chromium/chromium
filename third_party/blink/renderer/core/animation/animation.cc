@@ -892,6 +892,13 @@ bool Animation::Affects(const Element& element,
          effect->Affects(PropertyHandle(property));
 }
 
+AnimationTimeline* Animation::timeline() {
+  if (AnimationTimeline* timeline = TimelineInternal()) {
+    return timeline->ExposedTimeline();
+  }
+  return nullptr;
+}
+
 void Animation::setTimeline(AnimationTimeline* timeline) {
   // https://www.w3.org/TR/web-animations-1/#setting-the-timeline
 
@@ -1158,8 +1165,8 @@ void Animation::setEffect(AnimationEffect* new_effect) {
     new_effect->Attach(this);
 
   // Resolve timeline offsets for new effect.
-  ResolveTimelineOffsets(timeline() ? timeline()->GetTimelineRange()
-                                    : TimelineRange());
+  ResolveTimelineOffsets(timeline_ ? timeline_->GetTimelineRange()
+                                   : TimelineRange());
 
   SetOutdated();
 
@@ -1960,7 +1967,7 @@ void Animation::setPlaybackRate(double playback_rate,
   //    Set animation's start time to the result of evaluating:
   //        associated effect end - start time
   bool preserve_current_time =
-      timeline() && timeline()->IsMonotonicallyIncreasing();
+      timeline_ && timeline_->IsMonotonicallyIncreasing();
 
   bool reversal = (EffectivePlaybackRate() < 0) != (playback_rate < 0);
   pending_playback_rate_ = absl::nullopt;
@@ -1970,7 +1977,7 @@ void Animation::setPlaybackRate(double playback_rate,
     setCurrentTime(previous_current_time, exception_state);
   }
 
-  if (timeline() && !timeline()->IsMonotonicallyIncreasing() && reversal &&
+  if (timeline_ && !timeline_->IsMonotonicallyIncreasing() && reversal &&
       start_time_) {
     start_time_ = EffectEnd() - start_time_.value();
   }

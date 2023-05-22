@@ -201,9 +201,16 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   double playbackRate() const;
   void setPlaybackRate(double, ExceptionState& = ASSERT_NO_EXCEPTION);
-  // TODO(crbug.com/1425939): Do not expose DeferredTimelines here.
-  AnimationTimeline* timeline() { return timeline_; }
-  AnimationTimeline* timeline() const { return timeline_; }
+
+  AnimationTimeline* TimelineInternal() { return timeline_; }
+  AnimationTimeline* TimelineInternal() const { return timeline_; }
+
+  // Note that this function returns the *exposed* timeline, which may be
+  // different from the the timeline the Animation is actually attached to.
+  //
+  // See AnimationTimeline::ExposedTimeline.
+  AnimationTimeline* timeline();
+
   virtual void setTimeline(AnimationTimeline* timeline);
 
   // Animation options for ViewTimelines.

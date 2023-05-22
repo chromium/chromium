@@ -81,19 +81,22 @@ bool PendingAnimations::Update(
         started_synchronized_on_compositor = true;
       }
 
-      if (!animation->timeline() || !animation->timeline()->IsActive())
+      if (!animation->TimelineInternal() ||
+          !animation->TimelineInternal()->IsActive()) {
         continue;
+      }
 
       if (animation->Playing() && !animation->StartTimeInternal()) {
         waiting_for_start_time.push_back(animation.Get());
       } else if (animation->PendingInternal()) {
-        DCHECK(animation->timeline()->IsActive() &&
-               animation->timeline()->CurrentTime());
+        DCHECK(animation->TimelineInternal()->IsActive() &&
+               animation->TimelineInternal()->CurrentTime());
         // A pending animation that is not waiting on a start time does not need
         // to be synchronized with animations that are starting up. Nonetheless,
         // it needs to notify the animation to resolve the ready promise and
         // commit the pending state.
-        animation->NotifyReady(animation->timeline()->CurrentTime().value());
+        animation->NotifyReady(
+            animation->TimelineInternal()->CurrentTime().value());
       }
     } else {
       deferred.push_back(animation);
@@ -110,9 +113,10 @@ bool PendingAnimations::Update(
   } else {
     for (auto& animation : waiting_for_start_time) {
       DCHECK(!animation->StartTimeInternal());
-      DCHECK(animation->timeline()->IsActive() &&
-             animation->timeline()->CurrentTime());
-      animation->NotifyReady(animation->timeline()->CurrentTime().value());
+      DCHECK(animation->TimelineInternal()->IsActive() &&
+             animation->TimelineInternal()->CurrentTime());
+      animation->NotifyReady(
+          animation->TimelineInternal()->CurrentTime().value());
     }
   }
 
@@ -156,7 +160,8 @@ void PendingAnimations::NotifyCompositorAnimationStarted(
 
   for (auto animation : animations) {
     if (animation->StartTimeInternal() || !animation->PendingInternal() ||
-        !animation->timeline() || !animation->timeline()->IsActive()) {
+        !animation->TimelineInternal() ||
+        !animation->TimelineInternal()->IsActive()) {
       // Already started or no longer relevant.
       continue;
     }
@@ -165,13 +170,14 @@ void PendingAnimations::NotifyCompositorAnimationStarted(
       waiting_for_compositor_animation_start_.push_back(animation);
       continue;
     }
-    if (!animation->timeline()->IsMonotonicallyIncreasing()) {
+    if (!animation->TimelineInternal()->IsMonotonicallyIncreasing()) {
       animation->NotifyReady(
-          animation->timeline()->CurrentTime().value_or(AnimationTimeDelta()));
+          animation->TimelineInternal()->CurrentTime().value_or(
+              AnimationTimeDelta()));
     } else {
       animation->NotifyReady(
           ANIMATION_TIME_DELTA_FROM_SECONDS(monotonic_animation_start_time) -
-          animation->timeline()->ZeroTime());
+          animation->TimelineInternal()->ZeroTime());
     }
   }
 }
@@ -200,9 +206,11 @@ void PendingAnimations::FlushWaitingNonCompositedAnimations() {
   for (auto& animation : animations) {
     if (animation->HasActiveAnimationsOnCompositor()) {
       waiting_for_compositor_animation_start_.push_back(animation);
-    } else if (animation->timeline() && animation->timeline()->IsActive() &&
-               animation->timeline()->CurrentTime().has_value()) {
-      animation->NotifyReady(animation->timeline()->CurrentTime().value());
+    } else if (animation->TimelineInternal() &&
+               animation->TimelineInternal()->IsActive() &&
+               animation->TimelineInternal()->CurrentTime().has_value()) {
+      animation->NotifyReady(
+          animation->TimelineInternal()->CurrentTime().value());
     }
   }
 }

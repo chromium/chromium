@@ -199,7 +199,7 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
 
     // In most cases, current time is preserved on an animation update.
     inherited_time = animation->UnlimitedCurrentTime();
-    previous_timeline = animation->timeline();
+    previous_timeline = animation->TimelineInternal();
     resets_current_time_on_resume = animation->ResetsCurrentTimeOnResume();
   }
 
@@ -2209,7 +2209,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
       effect->UpdateSpecifiedTiming(entry.effect->SpecifiedTiming());
     }
     CSSAnimation& css_animation = To<CSSAnimation>(*entry.animation);
-    if (css_animation.timeline() != entry.timeline) {
+    if (css_animation.TimelineInternal() != entry.timeline) {
       css_animation.setTimeline(entry.timeline);
       css_animation.ResetIgnoreCSSTimeline();
     }
