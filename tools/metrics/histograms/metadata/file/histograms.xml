@@ -942,6 +942,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.Setup.FileHandlerSelection"
+    enum="OfficeSetupFileHandler" expires_after="M124">
+  <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The file handler the user selects to open an Office
+    file with on the first page of setup.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.TaskResult.{ProviderName}"
     enum="OfficeTaskResult" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>

@@ -43,6 +43,7 @@
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
+#include "extensions/common/constants.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -69,6 +70,9 @@ constexpr char kDriveTransferRequiredMetric[] =
 constexpr char kOneDriveTransferRequiredMetric[] =
     "FileBrowser.OfficeFiles.Open.TransferRequired.OneDrive";
 
+constexpr char kFileHandlerSelectionMetricName[] =
+    "FileBrowser.OfficeFiles.Setup.FileHandlerSelection";
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class OfficeFilesTransferRequired {
@@ -76,6 +80,20 @@ enum class OfficeFilesTransferRequired {
   kMove = 1,
   kCopy = 2,
   kMaxValue = kCopy,
+};
+
+// Records the file handler selected on the first page of Office setup.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OfficeSetupFileHandler {
+  kGoogleDocs = 0,
+  kGoogleSheets = 1,
+  kGoogleSlides = 2,
+  kMicrosoft365 = 3,
+  kOtherLocalHandler = 4,
+  kQuickOffice = 5,
+  kMaxValue = kQuickOffice,
 };
 
 std::vector<ProvidedFileSystemInfo> GetODFSFileSystems(Profile* profile) {
@@ -878,14 +896,20 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     // We don't currently check MIME types, which could mean we get into edge
     // cases if the MIME type doesn't match the file extension.
     if (HasWordFile(file_urls_)) {
+      UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                                OfficeSetupFileHandler::kGoogleDocs);
       SetWordFileHandlerToFilesSWA(
           profile_, file_manager::file_tasks::kActionIdWebDriveOfficeWord);
     }
     if (HasExcelFile(file_urls_)) {
+      UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                                OfficeSetupFileHandler::kGoogleSheets);
       SetExcelFileHandlerToFilesSWA(
           profile_, file_manager::file_tasks::kActionIdWebDriveOfficeExcel);
     }
     if (HasPowerPointFile(file_urls_)) {
+      UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                                OfficeSetupFileHandler::kGoogleSlides);
       SetPowerPointFileHandlerToFilesSWA(
           profile_,
           file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint);
@@ -927,6 +951,8 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     }
     StartUpload();
   } else if (user_response == kUserActionSetUpOneDrive) {
+    UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                              OfficeSetupFileHandler::kMicrosoft365);
     cloud_provider_ = CloudProvider::kOneDrive;
     InitAndShowDialog(mojom::DialogPage::kOneDriveSetup);
   } else if (user_response == kUserActionCancel) {
@@ -956,6 +982,10 @@ void CloudOpenTask::LaunchLocalFileTask(
   }
   // Launch the task.
   file_manager::file_tasks::TaskDescriptor& task = local_tasks_[task_position];
+  UMA_HISTOGRAM_ENUMERATION(kFileHandlerSelectionMetricName,
+                            extension_misc::IsQuickOfficeExtension(task.app_id)
+                                ? OfficeSetupFileHandler::kQuickOffice
+                                : OfficeSetupFileHandler::kOtherLocalHandler);
   file_manager::file_tasks::ExecuteFileTask(
       profile_, task, file_urls_, nullptr,
       base::BindOnce(&CloudOpenTask::LocalTaskExecuted, this, task));
