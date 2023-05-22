@@ -272,7 +272,7 @@ function getCSS() {
     }
 
     .status-description {
-      color: var(--cros-text-color-secondary);
+      color: var(--cros-sys-on_surface_variant);
       font: var(--cros-annotation-1-font);
       line-height: 20px;
       padding: 0px 16px 20px;
@@ -280,7 +280,7 @@ function getCSS() {
     }
 
     .progress {
-      color: var(--cros-text-color-primary);
+      color: var(--cros-sys-on_surface);
       font: var(--cros-button-2-font);
       line-height: 20px;
       margin-inline: 16px;
@@ -288,7 +288,7 @@ function getCSS() {
     }
 
     .progress-description {
-      color: var(--cros-text-color-secondary);
+      color: var(--cros-sys-on_surface_variant);
       font: var(--cros-annotation-1-font);
       padding-bottom: 20px;
       padding-inline: 16px;
