@@ -2664,8 +2664,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     }
     *output = content::EvalJs(
                   web_contents,
-                  base::StrCat({"test.swaTestMessageListener(", *data, ")"}),
-                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  base::StrCat({"test.swaTestMessageListener(", *data, ")"}))
                   .ExtractString();
     return;
   }
@@ -3705,17 +3704,14 @@ void FileManagerBrowserTestBase::LoadSwaTestUtils(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  ASSERT_EQ(true, content::EvalJs(web_contents, "test.swaLoadTestUtils()",
-                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  ASSERT_EQ(true, content::EvalJs(web_contents, "test.swaLoadTestUtils()"));
 }
 
 std::string FileManagerBrowserTestBase::GetSwaAppId(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
-  return content::EvalJs(web_contents, "test.getSwaAppId()",
-                         content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-      .ExtractString();
+  return content::EvalJs(web_contents, "test.getSwaAppId()").ExtractString();
 }
 
 std::vector<content::WebContents*>
