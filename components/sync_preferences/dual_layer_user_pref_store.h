@@ -86,6 +86,9 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   void SchedulePendingLossyWrites() override;
   void OnStoreDeletionFromDisk() override;
 
+  // Return the set of active pref types.
+  base::flat_set<syncer::ModelType> GetActiveTypesForTest() const;
+
  protected:
   ~DualLayerUserPrefStore() override;
 

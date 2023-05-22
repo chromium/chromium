@@ -128,10 +128,10 @@ bool DualLayerUserPrefStore::IsInitializationComplete() const {
 
 bool DualLayerUserPrefStore::GetValue(base::StringPiece key,
                                       const base::Value** result) const {
-  const std::string pref_name(key);
-  if (!IsPrefKeySyncable(pref_name)) {
-    return local_pref_store_->GetValue(key, result);
-  }
+  // Use any existing value from the account store, independent of
+  // IsPrefKeySyncable(). This is because IsPrefKeySyncable() only becomes
+  // true after the Sync machinery is initialized, but account-store values
+  // should apply even before that.
 
   const base::Value* account_value = nullptr;
   const base::Value* local_value = nullptr;
@@ -147,7 +147,7 @@ bool DualLayerUserPrefStore::GetValue(base::StringPiece key,
   if (result) {
     // Merge pref if `key` exists in both the stores.
     if (account_value && local_value) {
-      *result = MaybeMerge(pref_name, *local_value, *account_value);
+      *result = MaybeMerge(std::string(key), *local_value, *account_value);
       CHECK(*result);
     } else if (account_value) {
       *result = account_value;
@@ -194,6 +194,9 @@ void DualLayerUserPrefStore::SetValue(const std::string& key,
       }
     } else {
       local_pref_store_->SetValue(key, std::move(value), flags);
+      // Try removing it from account store for the case where sync machinery
+      // has not loaded yet and the type has not been enabled.
+      account_pref_store_->RemoveValue(key, flags);
     }
   }
 
@@ -214,9 +217,7 @@ void DualLayerUserPrefStore::RemoveValue(const std::string& key,
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
     local_pref_store_->RemoveValue(key, flags);
-    if (IsPrefKeySyncable(key)) {
-      account_pref_store_->RemoveValue(key, flags);
-    }
+    account_pref_store_->RemoveValue(key, flags);
   }
 
   // Remove from the list of merge prefs if exists.
@@ -229,9 +230,10 @@ void DualLayerUserPrefStore::RemoveValue(const std::string& key,
 
 bool DualLayerUserPrefStore::GetMutableValue(const std::string& key,
                                              base::Value** result) {
-  if (!IsPrefKeySyncable(key)) {
-    return local_pref_store_->GetMutableValue(key, result);
-  }
+  // Use any existing value from the account store, independent of
+  // IsPrefKeySyncable(). This is because IsPrefKeySyncable() only becomes
+  // true after the Sync machinery is initialized, but account-store values
+  // should apply even before that.
 
   base::Value* local_value = nullptr;
   local_pref_store_->GetMutableValue(key, &local_value);
@@ -283,6 +285,10 @@ void DualLayerUserPrefStore::ReportValueChanged(const std::string& key,
         account_pref_store_->SetValueSilently(key, new_value->Clone(), flags);
       }
       // It is possible that the pref just doesn't exist (anymore).
+    } else {
+      // Try removing it from account store for the case where sync machinery
+      // has not loaded yet and the type has not been enabled.
+      account_pref_store_->RemoveValue(key, flags);
     }
     // Forward the ReportValueChanged() call to the underlying stores, so they
     // can notify their own observers.
@@ -314,6 +320,12 @@ void DualLayerUserPrefStore::SetValueSilently(const std::string& key,
     }
   } else {
     local_pref_store_->SetValueSilently(key, std::move(value), flags);
+    {
+      base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
+      // Try removing it from account store for the case where sync machinery
+      // has not loaded yet and the type has not been enabled.
+      account_pref_store_->RemoveValue(key, flags);
+    }
   }
 }
 
@@ -600,6 +612,11 @@ std::vector<std::string> DualLayerUserPrefStore::GetPrefNamesInAccountStore()
   }
 
   return keys;
+}
+
+base::flat_set<syncer::ModelType>
+DualLayerUserPrefStore::GetActiveTypesForTest() const {
+  return active_types_;
 }
 
 }  // namespace sync_preferences

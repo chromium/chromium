@@ -549,10 +549,10 @@ IN_PROC_BROWSER_TEST_F(
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-// TODO(crbug.com/1416480): Disabled until after the getters in
-// DualLayerUserPrefStore have been fixed to handle pre-existing values.
-IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
-                       DISABLED_PRE_ShouldLoadAccountPreferencesFromFile) {
+// Adds pref values to persistent storage.
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithPersistentAccountStorageSyncTest,
+    PRE_ShouldReadAccountPreferencesFromFileBeforeSyncStart) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))
@@ -576,18 +576,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
             "account value");
 }
 
-// TODO(crbug.com/1416480): Disabled until after the getters in
-// DualLayerUserPrefStore have been fixed to handle pre-existing values.
-IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
-                       DISABLED_ShouldLoadAccountPreferencesFromFile) {
+IN_PROC_BROWSER_TEST_F(
+    SingleClientPreferencesWithPersistentAccountStorageSyncTest,
+    ShouldReadAccountPreferencesFromFileBeforeSyncStart) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))
       ->RegisterStringPref(sync_preferences::kSyncablePrefForTesting, "",
                            user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
+  // Sync has not started up yet, and thus PREFERENCES is not active yet.
   ASSERT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+  // However, the account value should still apply.
   EXPECT_EQ(GetPrefs(0)->GetString(sync_preferences::kSyncablePrefForTesting),
             "account value");
 }
