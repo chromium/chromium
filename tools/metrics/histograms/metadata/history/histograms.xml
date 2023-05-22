@@ -1849,7 +1849,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseAdvancedMetricsTime" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2023-11-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -1862,7 +1862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseBasicMetricsTime" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2023-11-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -1887,7 +1887,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseForeignVisitMetricsTime" units="ms"
-    expires_after="2023-07-01">
+    expires_after="2023-11-05">
   <owner>sophiechang@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <owner>treib@chromium.org</owner>
