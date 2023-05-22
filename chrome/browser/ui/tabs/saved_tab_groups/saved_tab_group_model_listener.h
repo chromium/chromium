@@ -89,9 +89,6 @@ class SavedTabGroupModelListener : public BrowserListObserver,
       local_tab_group_listeners_;
   raw_ptr<SavedTabGroupModel> model_ = nullptr;
   raw_ptr<Profile> profile_;
-
-  // Use to prevent double-observation. See https://crbug.com/1426389.
-  std::unordered_set<Browser*> observed_browsers_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_LISTENER_H_
