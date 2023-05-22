@@ -169,6 +169,9 @@ export class XfCloudPanel extends XfBase {
   override render() {
     return html`<cr-action-menu>
       <div class="body">
+        <div class="static progress" id="progress-preparing">
+          ${str('DRIVE_PREPARING_TO_SYNC')}
+        </div>
         <div id="progress-state">
           <div class="progress">${
         this.items && this.items > 1 ?
@@ -224,12 +227,18 @@ function getCSS() {
 
     :host(:not([items][percentage])) #progress-state,
     :host([percentage="100"]) #progress-state,
+    :host([percentage="0"]) #progress-state,
     :host([type]) #progress-state {
       display: none;
     }
 
     :host(:not([items][percentage="100"])) #progress-finished,
     :host([type]) #progress-finished {
+      display: none;
+    }
+
+    :host(:not([items][percentage="0"])) #progress-preparing,
+    :host([type]) #progress-preparing {
       display: none;
     }
 
@@ -300,6 +309,11 @@ function getCSS() {
       margin: 8px 0 8px;
       margin-inline: 16px;
       width: calc(100% - 32px);
+    }
+
+    #progress-preparing {
+      align-self: start;
+      padding-bottom: 20px;
     }
 
     progress::-webkit-progress-bar {

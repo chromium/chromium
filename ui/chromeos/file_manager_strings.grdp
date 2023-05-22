@@ -1779,6 +1779,9 @@
   <message name="IDS_FILE_BROWSER_BULK_PINNING_TURN_ON" desc="Text in the Continue button of the dialog offering the Google Drive bulk pinning feature">
     Turn on
   </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_PREPARING_TO_SYNC" desc="Text in the progress panel indicating the bulk pinning operations is preparing files to sync">
+    Preparing to sync Drive files...
+  </message>
   <!-- TODO(b/276126188): Remove the translateable="false" when the copy has been landed on. -->
   <message name="IDS_FILE_BROWSER_BULK_PINNING_OFFLINE_LABEL" translateable="false" desc="The text used when the device is in an offline mode and has paused syncing.">
     You are currently offline. Sync will resume when the connection is back on.
