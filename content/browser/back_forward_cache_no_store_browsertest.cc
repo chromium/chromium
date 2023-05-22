@@ -102,8 +102,9 @@ class BackForwardCacheBrowserTestAllowCacheControlNoStore
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(features::kBackForwardCache, "", "");
-    EnableFeatureAndSetParams(kCacheControlNoStoreEnterBackForwardCache,
-                              "level", "store-and-evict");
+    EnableFeatureAndSetParams(
+        features::kCacheControlNoStoreEnterBackForwardCache, "level",
+        "store-and-evict");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };
@@ -937,8 +938,9 @@ class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(features::kBackForwardCache, "", "");
-    EnableFeatureAndSetParams(kCacheControlNoStoreEnterBackForwardCache,
-                              "level", "restore-unless-cookie-change");
+    EnableFeatureAndSetParams(
+        features::kCacheControlNoStoreEnterBackForwardCache, "level",
+        "restore-unless-cookie-change");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };
@@ -1426,9 +1428,9 @@ class BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(features::kBackForwardCache, "", "");
-    EnableFeatureAndSetParams(kCacheControlNoStoreEnterBackForwardCache,
-                              "level",
-                              "restore-unless-http-only-cookie-change");
+    EnableFeatureAndSetParams(
+        features::kCacheControlNoStoreEnterBackForwardCache, "level",
+        "restore-unless-http-only-cookie-change");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };

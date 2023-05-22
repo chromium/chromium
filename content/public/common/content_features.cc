@@ -225,6 +225,14 @@ BASE_FEATURE(kBrowserVerifiedUserActivationMouse,
              "BrowserVerifiedUserActivationMouse",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows pages with cache-control:no-store to enter the back/forward cache.
+// Feature params can specify whether pages with cache-control:no-store can be
+// restored if cookies change / if HTTPOnly cookies change.
+// TODO(crbug.com/1228611): Enable this feature.
+BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
+             "CacheControlNoStoreEnterBackForwardCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If Canvas2D Image Chromium is allowed, this feature controls whether it is
 // enabled.
 BASE_FEATURE(kCanvas2DImageChromium,
