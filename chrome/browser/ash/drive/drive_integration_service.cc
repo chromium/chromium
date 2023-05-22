@@ -1033,6 +1033,7 @@ void DriveIntegrationService::MaybeMountDrive(const base::FilePath& data_dir,
                  << "' was missing and got created again";
 
     if (util::IsDriveFsBulkPinningEnabled()) {
+      VLOG(1) << "Displaying system notification";
       // Show system notification.
       file_manager::SystemNotificationManager snm(profile_);
       const std::unique_ptr<const message_center::Notification> notification =
