@@ -5,8 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_SESSION_SESSION_CERTIFICATE_POLICY_CACHE_H_
 #define IOS_WEB_PUBLIC_SESSION_SESSION_CERTIFICATE_POLICY_CACHE_H_
 
-#import <Foundation/Foundation.h>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/cert/cert_status_flags.h"
@@ -34,10 +32,8 @@ class SessionCertificatePolicyCache {
   SessionCertificatePolicyCache& operator=(
       const SessionCertificatePolicyCache&) = delete;
 
-  // Transfers the allowed certificate information from this session to `cache`.
-  //
-  // TODO(crbug.com/1040566): Delete this method since
-  // RegisterAllowedCertificate already updates the CertificatePolicyCache.
+  // Transfers the allowed certificate information from this session to the
+  // web::CertificatePolicyCache. Used as part of session restoration.
   virtual void UpdateCertificatePolicyCache() const = 0;
 
   // Stores certificate information that a user has indicated should be allowed
