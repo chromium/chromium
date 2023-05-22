@@ -80,15 +80,6 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:layout_gravity="center|end" >
 
-        <!-- TODO(crbug.com/912358): Enable touch highlight on this button. -->
-        <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
-            android:id="@+id/tab_switcher_mode_tab_switcher_button"
-            style="@style/ToolbarButton"
-            android:background="@android:color/transparent"
-            android:paddingStart="8dp"
-            android:layout_gravity="top"
-            android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default" />
-
         <Switch
             android:id="@+id/incognito_switch"
             android:layout_gravity="center"

@@ -21,8 +21,8 @@ public class TabSwitcherController extends PageController {
     private static final Pattern PATTERN_NUMBER_OF_OPEN_TABS = Pattern.compile("^(\\d+) .*");
     private static final IUi2Locator LOCATOR_NEW_TAB =
             Ui2Locators.withAnyResEntry(R.id.new_tab_button);
-    private static final IUi2Locator LOCATOR_TAB_SWITCHER_BUTTON = Ui2Locators.withAnyResEntry(
-            R.id.tab_switcher_button, R.id.tab_switcher_mode_tab_switcher_button);
+    private static final IUi2Locator LOCATOR_TAB_SWITCHER_BUTTON =
+            Ui2Locators.withAnyResEntry(R.id.tab_switcher_button, R.id.incognito_toggle_tabs);
     private static final IUi2Locator LOCATOR_MENU = Ui2Locators.withAnyResEntry(R.id.menu_button);
 
     private static final TabSwitcherController sInstance = new TabSwitcherController();
