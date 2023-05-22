@@ -17,12 +17,10 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
-import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.version_info.VersionInfo;
 
 /**
  * This class is responsible for rendering the bottom sheet that shows the passwords
@@ -31,10 +29,9 @@ import org.chromium.components.version_info.VersionInfo;
 class PasswordMigrationWarningView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private Callback<Integer> mDismissHandler;
-    private PasswordMigrationWarningOnClickHandler mOnClickHandler;
     private FragmentManager mFragmentManager;
+    private PasswordMigrationWarningIntroFragment mIntroFragment;
     private final RelativeLayout mContentView;
-    private Context mContext;
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
         @Override
@@ -56,7 +53,6 @@ class PasswordMigrationWarningView implements BottomSheetContent {
     };
 
     PasswordMigrationWarningView(Context context, BottomSheetController bottomSheetController) {
-        mContext = context;
         mBottomSheetController = bottomSheetController;
         mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
                 R.layout.pwd_migration_warning, null);
@@ -64,15 +60,13 @@ class PasswordMigrationWarningView implements BottomSheetContent {
                 mContentView.findViewById(R.id.touch_to_fill_sheet_header_image);
         sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
                 context, PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
+
         mFragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+        mIntroFragment = new PasswordMigrationWarningIntroFragment(context);
     }
 
     void setDismissHandler(Callback<Integer> dismissHandler) {
         mDismissHandler = dismissHandler;
-    }
-
-    void setOnClickHandler(PasswordMigrationWarningOnClickHandler onClickHandler) {
-        mOnClickHandler = onClickHandler;
     }
 
     boolean setVisible(boolean isVisible) {
@@ -85,45 +79,12 @@ class PasswordMigrationWarningView implements BottomSheetContent {
             mBottomSheetController.removeObserver(mBottomSheetObserver);
             return false;
         }
+        mFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.fragment_container_view, mIntroFragment,
+                        "PasswordMigrationWarningFragment")
+                .commit();
         return true;
-    }
-
-    void setScreen(int screenType) {
-        if (screenType == ScreenType.INTRO_SCREEN) {
-            PasswordMigrationWarningIntroFragment introFragment =
-                    new PasswordMigrationWarningIntroFragment(mContext,
-                            ()
-                                    -> mOnClickHandler.onAcknowledge(mBottomSheetController),
-                            () -> mOnClickHandler.onMoreOptions(), getChannelString());
-            mFragmentManager.beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.fragment_container_view, introFragment)
-                    .commit();
-        } else if (screenType == ScreenType.OPTIONS_SCREEN) {
-            PasswordMigrationWarningOptionsFragment optionsFragment =
-                    new PasswordMigrationWarningOptionsFragment(mContext, mOnClickHandler::onNext,
-                            ()
-                                    -> mOnClickHandler.onCancel(mBottomSheetController),
-                            getChannelString());
-            mFragmentManager.beginTransaction()
-                    .setReorderingAllowed(true)
-                    .replace(R.id.fragment_container_view, optionsFragment)
-                    .commit();
-        }
-    }
-
-    private String getChannelString() {
-        if (VersionInfo.isCanaryBuild()) {
-            return "Canary";
-        }
-        if (VersionInfo.isDevBuild()) {
-            return "Dev";
-        }
-        if (VersionInfo.isBetaBuild()) {
-            return "Beta";
-        }
-        assert !VersionInfo.isStableBuild();
-        return "";
     }
 
     @Nullable

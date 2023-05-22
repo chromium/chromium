@@ -4,13 +4,10 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 
@@ -27,7 +24,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -46,7 +42,6 @@ public class PasswordMigrationWarningMediatorTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     private PasswordMigrationWarningMediator mMediator = new PasswordMigrationWarningMediator();
-    private PropertyModel mModel;
 
     @Mock
     private BottomSheetController mBottomSheetController;
@@ -54,50 +49,35 @@ public class PasswordMigrationWarningMediatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mModel = PasswordMigrationWarningProperties.createDefaultModel(
-                mMediator::onDismissed, mMediator);
-        mMediator.initialize(mModel);
+        mMediator.initialize(
+                PasswordMigrationWarningProperties.createDefaultModel(mMediator::onDismissed));
     }
 
     @Test
     public void testShowWarningChangesVisibility() {
-        mModel.set(VISIBLE, false);
-        mMediator.showWarning(ScreenType.INTRO_SCREEN);
-        assertTrue(mModel.get(VISIBLE));
+        PropertyModel model = mMediator.getModel();
+        assertFalse(model.get(VISIBLE));
+        mMediator.showWarning();
+        assertTrue(model.get(VISIBLE));
     }
 
     @Test
-    public void testOnDismissedHidesTheSheet() {
-        mMediator.showWarning(ScreenType.INTRO_SCREEN);
+    public void testOnDismissedChangesVisibility() {
+        PropertyModel model = mMediator.getModel();
+        mMediator.showWarning();
+        assertTrue(model.get(VISIBLE));
         mMediator.onDismissed(StateChangeReason.NONE);
-        assertFalse(mModel.get(VISIBLE));
+        assertFalse(model.get(VISIBLE));
     }
 
     @Test
-    public void testDismissHandlerHidesTheSheet() {
-        assertNotNull(mModel.get(DISMISS_HANDLER));
-        mMediator.showWarning(ScreenType.INTRO_SCREEN);
-        mModel.get(DISMISS_HANDLER).onResult(StateChangeReason.NONE);
-        assertFalse(mModel.get(VISIBLE));
-    }
-
-    @Test
-    public void testOnMoreOptionsChangesTheModel() {
-        mMediator.showWarning(ScreenType.INTRO_SCREEN);
-        assertEquals(mModel.get(CURRENT_SCREEN), ScreenType.INTRO_SCREEN);
-        mMediator.onMoreOptions();
-        assertEquals(mModel.get(CURRENT_SCREEN), ScreenType.OPTIONS_SCREEN);
-    }
-
-    @Test
-    public void testOnAcknowledgeCollapsesTheSheet() {
-        mMediator.onAcknowledge(mBottomSheetController);
-        verify(mBottomSheetController).collapseSheet(true);
-    }
-
-    @Test
-    public void testOnCancelCollapsesTheSheet() {
-        mMediator.onCancel(mBottomSheetController);
-        verify(mBottomSheetController).collapseSheet(true);
+    public void testDismissHandlerChangesVisibility() {
+        PropertyModel model = mMediator.getModel();
+        assertNotNull(model.get(DISMISS_HANDLER));
+        assertFalse(model.get(VISIBLE));
+        mMediator.showWarning();
+        assertTrue(model.get(VISIBLE));
+        model.get(DISMISS_HANDLER).onResult(StateChangeReason.NONE);
+        assertFalse(model.get(VISIBLE));
     }
 }
