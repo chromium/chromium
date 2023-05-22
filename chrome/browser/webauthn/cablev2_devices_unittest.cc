@@ -191,6 +191,7 @@ std::unique_ptr<Pairing> PairingWithAllFields() {
   ret->secret = {11, 12, 13, 14, 15};
   ret->peer_public_key_x962 = {16, 17, 18, 19, 20};
   ret->name = "Pairing";
+  ret->from_new_implementation = true;
   return ret;
 }
 
@@ -212,6 +213,7 @@ TEST_F(CableV2DevicesProfileTest, StoreAndFetch) {
   EXPECT_EQ(found->peer_public_key_x962, expected->peer_public_key_x962);
   EXPECT_EQ(found->name, expected->name);
   EXPECT_EQ(found->from_sync_deviceinfo, expected->from_sync_deviceinfo);
+  EXPECT_EQ(found->from_new_implementation, expected->from_new_implementation);
 }
 
 TEST_F(CableV2DevicesProfileTest, Delete) {
@@ -261,6 +263,41 @@ TEST_F(CableV2DevicesProfileTest, NameCollision) {
             known_devices->linked_devices.end(),
             [](auto&& a, auto&& b) -> bool { return a->name < b->name; });
   EXPECT_EQ(known_devices->linked_devices[3]->name, "collision (3)");
+}
+
+TEST_F(CableV2DevicesProfileTest, NameOverride) {
+  // A pairing from the old implementation can be overridden, by name, by the
+  // new implementation.
+  for (const bool old_impl_first : {true, false}) {
+    TestingProfile profile;
+    std::unique_ptr<Pairing> old_pairing = LinkedDevice("name", kPubKey1);
+    std::unique_ptr<Pairing> new_pairing = LinkedDevice("name", kPubKey2);
+    old_pairing->from_new_implementation = false;
+    new_pairing->from_new_implementation = true;
+
+    if (old_impl_first) {
+      cablev2::AddPairing(&profile, std::move(old_pairing));
+    }
+    cablev2::AddPairing(&profile, std::move(new_pairing));
+    if (!old_impl_first) {
+      cablev2::AddPairing(&profile, std::move(old_pairing));
+    }
+
+    std::unique_ptr<KnownDevices> known_devices =
+        KnownDevices::FromProfile(&profile);
+
+    EXPECT_EQ(known_devices->synced_devices.size(), 0u);
+
+    if (old_impl_first) {
+      ASSERT_EQ(known_devices->linked_devices.size(), 1u);
+      EXPECT_EQ(known_devices->linked_devices[0]->peer_public_key_x962[0],
+                kPubKey2);
+    } else {
+      ASSERT_EQ(known_devices->linked_devices.size(), 2u);
+      EXPECT_NE(known_devices->linked_devices[0]->name,
+                known_devices->linked_devices[1]->name);
+    }
+  }
 }
 
 TEST_F(CableV2DevicesProfileTest, Rename) {

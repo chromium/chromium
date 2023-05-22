@@ -86,6 +86,7 @@ const char kPairingPrefId[] = "id";
 const char kPairingPrefSecret[] = "secret";
 const char kPairingPrefPublicKey[] = "pub_key";
 const char kPairingPrefTime[] = "time";
+const char kPairingPrefNewImpl[] = "new_impl";
 
 // NameForDisplay removes line-breaking characters from `raw_name` to ensure
 // that the transport-selection UI isn't too badly broken by nonsense names.
@@ -170,6 +171,8 @@ std::vector<std::unique_ptr<Pairing>> GetLinkedDevices(Profile* const profile) {
       continue;
     }
 
+    const absl::optional<bool> is_new_impl = dict.FindBool(kPairingPrefNewImpl);
+    out_pairing->from_new_implementation = is_new_impl && *is_new_impl;
     out_pairing->name = NameForDisplay(out_pairing->name);
     ret.emplace_back(std::move(out_pairing));
   }
@@ -359,6 +362,30 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
       base::Base64Encode(pairing->peer_public_key_x962);
   DeletePairingByPublicKey(*update, public_key_base64);
 
+  // As an exception to the above rule, we allow a new pairing to replace a
+  // previous one with the same name if the new pairing is from the new
+  // implementation and the old one isn't. When we transition the implementation
+  // on Android to the new implementation, it's not feasible to port the
+  // identity key across. Rather than have duplicate pairings, we allow this
+  // replacement once.
+  //
+  // TODO(crbug.com/1442040): remove once the transition is firmly complete.
+  // Probably by May 2024.
+  const std::string& claimed_name = pairing->name;
+  if (pairing->from_new_implementation) {
+    update->EraseIf([&claimed_name](const auto& value) {
+      if (!value.is_dict()) {
+        return false;
+      }
+      const absl::optional<bool> pref_new_impl =
+          value.GetDict().FindBool(kPairingPrefNewImpl);
+      const std::string* const pref_name =
+          value.GetDict().FindString(kPairingPrefName);
+      return pref_name && *pref_name == claimed_name &&
+             (!pref_new_impl || !*pref_new_impl);
+    });
+  }
+
   base::Value::Dict dict;
   dict.Set(kPairingPrefPublicKey, std::move(public_key_base64));
   dict.Set(kPairingPrefTunnelServer, pairing->tunnel_server_domain);
@@ -371,6 +398,9 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
   dict.Set(kPairingPrefContactId, base::Base64Encode(pairing->contact_id));
   dict.Set(kPairingPrefId, base::Base64Encode(pairing->id));
   dict.Set(kPairingPrefSecret, base::Base64Encode(pairing->secret));
+  if (pairing->from_new_implementation) {
+    dict.Set(kPairingPrefNewImpl, true);
+  }
 
   base::Time::Exploded now;
   base::Time::Now().UTCExplode(&now);
