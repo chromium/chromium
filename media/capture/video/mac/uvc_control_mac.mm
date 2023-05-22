@@ -292,12 +292,12 @@ static ScopedIOUSBInterfaceInterface OpenVideoClassSpecificControlInterface(
   IOReturn ret = (*control_interface)->USBInterfaceOpen(control_interface);
   if (ret != kIOReturnSuccess) {
     VLOG(1) << "Unable to open control interface";
-    // On macOS 12+, VDCAssistant takes ownership of USB devices. So, we should
-    // not bail out if kIOReturnExclusiveAccess is returned from
-    // USBInterfaceOpen().
-    if (!(base::mac::IsAtLeastOS12() && ret == kIOReturnExclusiveAccess)) {
-      return ScopedIOUSBInterfaceInterface();
-    }
+
+    // Temporary additional debug logging for crbug.com/1270335
+    VLOG_IF(1, base::mac::IsAtLeastOS12() && ret == kIOReturnExclusiveAccess)
+        << "Camera USBInterfaceOpen failed with "
+        << "kIOReturnExclusiveAccess";
+    return ScopedIOUSBInterfaceInterface();
   }
   return control_interface;
 }
