@@ -147,7 +147,7 @@ public class AutofillProfilesFragment
         });
         getPreferenceScreen().addPreference(autofillSwitch);
 
-        final boolean addressSyncEnabled = isAddressSyncEnabled();
+        final boolean addressesNotSyncedWithSyncOn = addressesNotSyncedWithSyncOn();
         for (AutofillProfile profile : PersonalDataManager.getInstance().getProfilesForSettings()) {
             assert profile.getIsLocal();
             // Add a preference for the profile.
@@ -155,7 +155,7 @@ public class AutofillProfilesFragment
             pref.setTitle(profile.getFullName());
             pref.setSummary(profile.getLabel());
             pref.setKey(pref.getTitle().toString()); // For testing.
-            if (!addressSyncEnabled && profile.getSource() != Source.ACCOUNT) {
+            if (addressesNotSyncedWithSyncOn && profile.getSource() != Source.ACCOUNT) {
                 // Conditionally set local profile icon for address profiles that are neither
                 // synced, nor saved in the account.
                 pref.setWidgetLayoutResource(R.layout.autofill_local_profile_icon);
@@ -261,10 +261,10 @@ public class AutofillProfilesFragment
         return new AutofillAddress(getActivity(), profile);
     }
 
-    private boolean isAddressSyncEnabled() {
+    private boolean addressesNotSyncedWithSyncOn() {
         SyncService syncService = SyncService.get();
         return syncService != null && syncService.isSyncFeatureEnabled()
-                && syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
+                && !syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
     }
 
     private Context getStyledContext() {

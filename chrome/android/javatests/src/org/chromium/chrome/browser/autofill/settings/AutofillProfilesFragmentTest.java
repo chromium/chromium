@@ -569,7 +569,7 @@ public class AutofillProfilesFragmentTest {
         Assert.assertEquals(0,
                 autofillProfileFragment.findPreference(sAccountProfile.getFullName())
                         .getWidgetLayoutResource());
-        Assert.assertEquals(R.layout.autofill_local_profile_icon,
+        Assert.assertEquals(0,
                 autofillProfileFragment.findPreference(sLocalOrSyncProfile.getFullName())
                         .getWidgetLayoutResource());
     }
