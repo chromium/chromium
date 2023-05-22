@@ -1068,13 +1068,6 @@
       status: "experimental",
       base_feature: "none",
     },
-    // Scrollbar styling.
-    // https://drafts.csswg.org/css-scrollbars/
-    {
-      name: "CSSScrollbars",
-      status: "test",
-      base_feature: "none",
-    },
     {
       // https://drafts.csswg.org/css-scroll-snap-2
       name: "CSSScrollSnap2",
