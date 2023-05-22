@@ -23,12 +23,18 @@ namespace ash {
 DeskBarController::DeskBarController() {
   Shell::Get()->overview_controller()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  DesksController::Get()->AddObserver(this);
 }
 
 DeskBarController::~DeskBarController() {
   DestroyAllDeskBars();
+  DesksController::Get()->RemoveObserver(this);
   Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   Shell::Get()->overview_controller()->RemoveObserver(this);
+}
+
+void DeskBarController::OnDeskSwitchAnimationLaunching() {
+  DestroyAllDeskBars();
 }
 
 void DeskBarController::OnOverviewModeWillStart() {

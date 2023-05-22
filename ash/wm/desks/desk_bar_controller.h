@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/observer_list.h"
 #include "ui/gfx/geometry/rect.h"
@@ -26,7 +27,8 @@ namespace ash {
 // and managing all desk bars. At this point, it supports only desk button desk
 // bar, but eventually, it will support all bars. Please note this controller is
 // owned by `DesksController`.
-class ASH_EXPORT DeskBarController : public OverviewObserver,
+class ASH_EXPORT DeskBarController : public DesksController::Observer,
+                                     public OverviewObserver,
                                      public TabletModeObserver {
  public:
   DeskBarController();
@@ -35,6 +37,9 @@ class ASH_EXPORT DeskBarController : public OverviewObserver,
   DeskBarController& operator=(const DeskBarController&) = delete;
 
   ~DeskBarController() override;
+
+  // DesksController::Observer:
+  void OnDeskSwitchAnimationLaunching() override;
 
   // OverviewObserver:
   void OnOverviewModeWillStart() override;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -89,8 +90,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -459,7 +463,7 @@ class DesksTest : public AshTestBase,
   }
 
   const views::LabelButton* GetExpandedStateInnerNewDeskButton(
-      const LegacyDeskBarView* bar_view) {
+      const DeskBarViewBase* bar_view) {
     if (GetParam().enable_jellyroll) {
       return bar_view->new_desk_button();
     }
@@ -527,16 +531,88 @@ class DesksTest : public AshTestBase,
     loop.Run();
   }
 
-  void OpenDeskButtonDeskBar() {
-    auto* root = Shell::Get()->GetPrimaryRootWindow();
-    auto* desk_bar_controller = DesksController::Get()->desk_bar_controller();
-    desk_bar_controller->CreateDeskBar(root);
-    desk_bar_controller->ShowDeskBar(root);
+  void ClickOrPressOnPoint(gfx::Point p) {
+    auto* event_generator = GetEventGenerator();
+    if (GetParam().use_touch_gestures) {
+      event_generator->set_current_screen_location(p);
+      event_generator->PressTouch();
+      event_generator->ReleaseTouch();
+    } else {
+      event_generator->MoveMouseTo(p);
+      event_generator->ClickLeftButton();
+    }
   }
 
-  void CloseDeskButtonDeskBar() {
-    auto* desk_bar_controller = DesksController::Get()->desk_bar_controller();
-    desk_bar_controller->DestroyAllDeskBars();
+  void ClickOrPressOnView(const views::View* view) {
+    const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
+    ClickOrPressOnPoint(view_center);
+  }
+
+  void OpenDeskBar(DeskBarViewBase::Type type) {
+    switch (type) {
+      case DeskBarViewBase::Type::kOverview:
+        EnterOverview();
+        break;
+      case DeskBarViewBase::Type::kDeskButton: {
+        auto* root = Shell::Get()->GetPrimaryRootWindow();
+        auto* desk_bar_controller =
+            DesksController::Get()->desk_bar_controller();
+        desk_bar_controller->CreateDeskBar(root);
+        desk_bar_controller->ShowDeskBar(root);
+        break;
+      }
+    }
+  }
+
+  void CloseDeskBar(DeskBarViewBase::Type type) {
+    switch (type) {
+      case DeskBarViewBase::Type::kOverview:
+        ExitOverview();
+        break;
+      case DeskBarViewBase::Type::kDeskButton:
+        DesksController::Get()->desk_bar_controller()->DestroyAllDeskBars();
+        break;
+    }
+  }
+
+  DeskBarViewBase* GetDeskBarView(DeskBarViewBase::Type type) {
+    auto* root = Shell::Get()->GetPrimaryRootWindow();
+    DeskBarViewBase* desk_bar_view = nullptr;
+    switch (type) {
+      case DeskBarViewBase::Type::kOverview:
+        desk_bar_view = GetOverviewGridForRoot(root)->desks_bar_view();
+        break;
+      case DeskBarViewBase::Type::kDeskButton:
+        desk_bar_view =
+            DesksController::Get()->desk_bar_controller()->GetDeskBarView(root);
+        break;
+    }
+    return desk_bar_view;
+  }
+
+  void EnterLibrary(DeskBarViewBase::Type type) {
+    auto* desk_bar_view = GetDeskBarView(type);
+    ASSERT_TRUE(desk_bar_view);
+
+    // Clicking the library button on the desk button desk bar.
+    if (GetParam().enable_jellyroll) {
+      auto* library_button = desk_bar_view->library_button();
+      ClickOrPressOnView(library_button);
+    } else {
+      auto* library_button = desk_bar_view->expanded_state_library_button();
+      ClickOrPressOnView(library_button);
+    }
+
+    // It should enter overview mode and the saved desk library should be
+    // visible. Desk button desk bar should be gone, and the overview desk bar
+    // should show up.
+    auto* overview_controller = Shell::Get()->overview_controller();
+    ASSERT_TRUE(overview_controller->InOverviewSession());
+    auto* overview_session = overview_controller->overview_session();
+    EXPECT_TRUE(overview_session &&
+                overview_session->IsShowingSavedDeskLibrary());
+    EXPECT_FALSE(GetDeskBarView(DeskBarViewBase::Type::kDeskButton));
+    EXPECT_TRUE(GetDeskBarView(DeskBarViewBase::Type::kOverview));
   }
 
  private:
@@ -8790,7 +8866,6 @@ TEST_P(DeskButtonTest, DeskBarBasic) {
        .bar_view_bounds_expected = {0, 0, 800, 98}},
   };
 
-  auto* root = Shell::Get()->GetPrimaryRootWindow();
   auto* desks_controller = DesksController::Get();
   Shelf* shelf = GetPrimaryShelf();
 
@@ -8817,9 +8892,8 @@ TEST_P(DeskButtonTest, DeskBarBasic) {
 
     // Create the desk bar then verify the bar and its child UI have expected
     // appearance.
-    OpenDeskButtonDeskBar();
-    auto* desk_bar_view =
-        desks_controller->desk_bar_controller()->GetDeskBarView(root);
+    OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
+    auto* desk_bar_view = GetDeskBarView(DeskBarViewBase::Type::kDeskButton);
     auto* desk_bar_widget = desk_bar_view->GetWidget();
     EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
                 test.bar_widget_bounds_expected);
@@ -8839,7 +8913,7 @@ TEST_P(DeskButtonTest, DeskBarBasic) {
       EXPECT_THAT(library_button->GetVisible(), test.has_saved_desks);
       EXPECT_TRUE(library_button->GetEnabled());
 
-      CloseDeskButtonDeskBar();
+      CloseDeskBar(DeskBarViewBase::Type::kDeskButton);
     }
 
     // Reset to clean state, i.e. only 1 desk and no saved desks.
@@ -8860,7 +8934,7 @@ TEST_P(DeskButtonTest, DeskBarScrollLayout) {
     NewDesk();
   }
 
-  OpenDeskButtonDeskBar();
+  OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
 
   auto* left_scroll_button = DesksTestApi::GetDeskBarLeftScrollButton(
       DeskBarViewBase::Type::kDeskButton);
@@ -8869,18 +8943,17 @@ TEST_P(DeskButtonTest, DeskBarScrollLayout) {
   EXPECT_FALSE(left_scroll_button->GetVisible());
   EXPECT_TRUE(right_scroll_button->GetVisible());
 
-  auto* event_generator = GetEventGenerator();
   while (right_scroll_button->GetVisible()) {
-    ClickOnView(right_scroll_button, event_generator);
+    ClickOrPressOnView(right_scroll_button);
     EXPECT_TRUE(left_scroll_button->GetVisible());
   }
 
   while (left_scroll_button->GetVisible()) {
-    ClickOnView(left_scroll_button, event_generator);
+    ClickOrPressOnView(left_scroll_button);
     EXPECT_TRUE(right_scroll_button->GetVisible());
   }
 
-  CloseDeskButtonDeskBar();
+  CloseDeskBar(DeskBarViewBase::Type::kDeskButton);
 }
 
 TEST_P(DeskButtonTest, DeskBarHoverBasic) {
@@ -8893,7 +8966,7 @@ TEST_P(DeskButtonTest, DeskBarHoverBasic) {
   desks_controller->SendToDeskAtIndex(window_1.get(), 0);
   desks_controller->SendToDeskAtIndex(window_2.get(), 1);
 
-  OpenDeskButtonDeskBar();
+  OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
 
   for (int i = 0; i < desks_controller->GetNumberOfDesks(); i++) {
     auto* event_generator = GetEventGenerator();
@@ -8908,7 +8981,191 @@ TEST_P(DeskButtonTest, DeskBarHoverBasic) {
         mini_view->desk_action_view()->close_all_button()->GetVisible());
   }
 
-  CloseDeskButtonDeskBar();
+  CloseDeskBar(DeskBarViewBase::Type::kDeskButton);
+}
+
+// Tests that clicking on new desk button does the expected thing.
+TEST_P(DeskButtonTest, DeskBarNewDeskButton) {
+  OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
+
+  auto* desks_controller = DesksController::Get();
+  auto* desk_bar_view = GetDeskBarView(DeskBarViewBase::Type::kDeskButton);
+  auto* new_desk_button = GetExpandedStateInnerNewDeskButton(desk_bar_view);
+
+  auto verify_disabled_new_desk_button = [&]() {
+    EXPECT_THAT(desks_controller->GetNumberOfDesks(),
+                desks_util::GetMaxNumberOfDesks());
+    EXPECT_FALSE(desks_controller->CanCreateDesks());
+    EXPECT_FALSE(new_desk_button->GetEnabled());
+    EXPECT_THAT(new_desk_button->GetState(), views::Button::STATE_DISABLED);
+    EXPECT_EQ(desks_controller->desks().size(),
+              desk_bar_view->mini_views().size());
+  };
+  auto verify_enabled_new_desk_button = [&]() {
+    EXPECT_LE(desks_controller->GetNumberOfDesks(),
+              (int)desks_util::GetMaxNumberOfDesks());
+    EXPECT_TRUE(desks_controller->CanCreateDesks());
+    EXPECT_TRUE(new_desk_button->GetEnabled());
+    EXPECT_NE(new_desk_button->GetState(), views::Button::STATE_DISABLED);
+    EXPECT_EQ(desks_controller->desks().size(),
+              desk_bar_view->mini_views().size());
+  };
+
+  // Create max number of desks.
+  for (int i = 2; i <= (int)desks_util::GetMaxNumberOfDesks(); i++) {
+    verify_enabled_new_desk_button();
+    ClickOrPressOnView(new_desk_button);
+    EXPECT_TRUE(desks_controller->CanRemoveDesks());
+    EXPECT_THAT(desks_controller->GetNumberOfDesks(), i);
+  }
+
+  // The new desk button should be disabled.
+  verify_disabled_new_desk_button();
+
+  // Clicking on the new desk button again does nothing now.
+  ClickOrPressOnView(new_desk_button);
+  verify_disabled_new_desk_button();
+
+  CloseDeskBar(DeskBarViewBase::Type::kDeskButton);
+}
+
+// Tests that we can go to saved desk library directly via desk button desk bar.
+TEST_P(DeskButtonTest, DeskBarLibraryButton) {
+  // Add a saved desk, so that the library button can show up.
+  AddSavedDeskEntry(desk_model(), base::Uuid::GenerateRandomV4(),
+                    "saved_desk_1", base::Time::Now(),
+                    DeskTemplateType::kSaveAndRecall);
+
+  auto test_library_button = [&](const std::string& trace_message) {
+    SCOPED_TRACE(trace_message);
+    OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
+    EnterLibrary(DeskBarViewBase::Type::kDeskButton);
+    CloseDeskBar(DeskBarViewBase::Type::kDeskButton);
+  };
+
+  test_library_button("no app window");
+
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  test_library_button("one app window");
+}
+
+// Tests that the desk button desk bar support dragging to reorder desks.
+TEST_P(DeskButtonTest, DeskBarReorderDesk) {
+  OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
+
+  auto* desks_controller = DesksController::Get();
+  auto* desk_bar_view = GetDeskBarView(DeskBarViewBase::Type::kDeskButton);
+  auto* event_generator = GetEventGenerator();
+
+  // Create two more desks.
+  std::vector<std::string> desk_names = {"1", "2", "3"};
+  for (auto i = 0; auto desk_name : desk_names) {
+    if (desks_controller->GetNumberOfDesks() - 1 < i) {
+      NewDesk();
+    }
+    desks_controller->desks()[i]->SetName(base::UTF8ToUTF16(desk_name),
+                                          /*set_by_user=*/true);
+    EXPECT_EQ(desks_controller->desks().size(),
+              desk_bar_view->mini_views().size());
+    i++;
+  }
+  desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+
+  auto verify_desks = [&]() {
+    for (int i = 0; i < desks_controller->GetNumberOfDesks(); i++) {
+      EXPECT_THAT(desks_controller->desks()[i]->name(),
+                  base::UTF8ToUTF16(desk_names[i]));
+    }
+    auto* prefs =
+        Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+    VerifyDesksRestoreData(prefs, desk_names);
+  };
+
+  auto drag_desk = [&](int from, int to) {
+    SCOPED_TRACE("Swap desk " + base::NumberToString(from) + " with desk " +
+                 base::NumberToString(to));
+
+    // Drag the desk from `from` to `to`.
+    StartDragDeskPreview(desk_bar_view->mini_views()[from], event_generator);
+    EXPECT_TRUE(desk_bar_view->IsDraggingDesk());
+    event_generator->MoveMouseTo(desk_bar_view->mini_views()[to]
+                                     ->GetPreviewBoundsInScreen()
+                                     .CenterPoint());
+    event_generator->ReleaseLeftButton();
+    EXPECT_FALSE(desk_bar_view->IsDraggingDesk());
+
+    // Update `desk_names` with the expected order.
+    std::string dragged_desk = desk_names[from];
+    if (from <= to) {
+      for (int i = from + 1; i <= to; i++) {
+        desk_names[i - 1] = desk_names[i];
+      }
+    } else {
+      for (int i = from - 1; i >= to; i--) {
+        desk_names[i + 1] = desk_names[i];
+      }
+    }
+    desk_names[to] = dragged_desk;
+
+    // Verify desks are with expected order.
+    verify_desks();
+  };
+
+  verify_desks();
+  drag_desk(/*from=*/0, /*to=*/1);
+  drag_desk(/*from=*/1, /*to=*/2);
+  drag_desk(/*from=*/0, /*to=*/1);
+  drag_desk(/*from=*/2, /*to=*/0);
+
+  CloseDeskBar(DeskBarViewBase::Type::kDeskButton);
+}
+
+TEST_P(DeskButtonTest, DeskBarActivateDesk) {
+  auto* desks_controller = DesksController::Get();
+
+  NewDesk();
+  EXPECT_THAT(desks_controller->GetActiveDeskIndex(), 0);
+
+  OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
+
+  // Clicking on active desk would *not* switch desk but just hide the bar.
+  ClickOrPressOnView(
+      GetDeskBarView(DeskBarViewBase::Type::kDeskButton)->mini_views()[0]);
+  EXPECT_THAT(desks_controller->GetActiveDeskIndex(), 0);
+  EXPECT_FALSE(GetDeskBarView(DeskBarViewBase::Type::kDeskButton));
+
+  // Clicking on non-active desk would switch desk and hide the bar.
+  OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
+  DeskSwitchAnimationWaiter waiter;
+  ClickOrPressOnView(
+      GetDeskBarView(DeskBarViewBase::Type::kDeskButton)->mini_views()[1]);
+  waiter.Wait();
+  EXPECT_THAT(desks_controller->GetActiveDeskIndex(), 1);
+  EXPECT_FALSE(GetDeskBarView(DeskBarViewBase::Type::kDeskButton));
+}
+
+TEST_P(DeskButtonTest, DeskBarCombineOrCloseDesk) {
+  // Setup 3 desks, e.g. "Desk 1", "Desk 2", and "Desk 3". Only "Desk 3" has a
+  // window.
+  NewDesk();
+  NewDesk();
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100));
+  auto* desks_controller = DesksController::Get();
+  desks_controller->SendToDeskAtIndex(window.get(), 2);
+
+  OpenDeskBar(DeskBarViewBase::Type::kDeskButton);
+
+  for (int desk_index = desks_controller->GetNumberOfDesks() - 1;
+       desk_index > 0; desk_index--) {
+    CloseDeskFromMiniView(GetDeskBarView(DeskBarViewBase::Type::kDeskButton)
+                              ->mini_views()[desk_index],
+                          GetEventGenerator());
+    EXPECT_THAT(
+        GetDeskBarView(DeskBarViewBase::Type::kDeskButton)->mini_views().size(),
+        desk_index);
+  }
+
+  CloseDeskBar(DeskBarViewBase::Type::kDeskButton);
 }
 
 // TODO(afakhry): Add more tests:

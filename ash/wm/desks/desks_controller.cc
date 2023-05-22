@@ -747,6 +747,11 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
           is_user_switch ? OverviewEnterExitType::kImmediateExit
                          : OverviewEnterExitType::kNormal);
     }
+    // Selecting the active desk in desk button desk bar is allowed, and
+    // should just close all desk bars.
+    if (desk_bar_controller_) {
+      desk_bar_controller_->DestroyAllDeskBars();
+    }
     return;
   }
 
