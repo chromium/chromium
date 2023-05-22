@@ -1367,19 +1367,31 @@ class DriveFsTestVolume : public TestVolume {
             << "Failed to create a computer: " << target_path.value();
         break;
     }
-    fake_drivefs_helper_->fake_drivefs().SetMetadata(
-        relative_path, entry.mime_type, original_name.value(), entry.pinned,
-        entry.available_offline,
-        entry.shared_option == AddEntriesMessage::SharedOption::SHARED ||
-            entry.shared_option ==
-                AddEntriesMessage::SharedOption::SHARED_WITH_ME,
-        {entry.capabilities.can_share, entry.capabilities.can_copy,
-         entry.capabilities.can_delete, entry.capabilities.can_rename,
-         entry.capabilities.can_add_children},
-        {entry.folder_feature.is_machine_root,
-         entry.folder_feature.is_arbitrary_sync_folder,
-         entry.folder_feature.is_external_media},
-        "", entry.alternate_url, (entry.entry_type == AddEntriesMessage::LINK));
+    drivefs::FakeMetadata metadata;
+    metadata.path = relative_path;
+    metadata.mime_type = entry.mime_type;
+    metadata.original_name = original_name.value();
+    metadata.pinned = entry.pinned;
+    metadata.available_offline = entry.available_offline;
+    metadata.shared =
+        (entry.shared_option == AddEntriesMessage::SharedOption::SHARED ||
+         entry.shared_option ==
+             AddEntriesMessage::SharedOption::SHARED_WITH_ME);
+    metadata.capabilities.can_share = entry.capabilities.can_share;
+    metadata.capabilities.can_copy = entry.capabilities.can_copy;
+    metadata.capabilities.can_delete = entry.capabilities.can_delete;
+    metadata.capabilities.can_rename = entry.capabilities.can_rename,
+    metadata.capabilities.can_add_children =
+        entry.capabilities.can_add_children;
+    metadata.folder_feature.is_machine_root =
+        entry.folder_feature.is_machine_root;
+    metadata.folder_feature.is_arbitrary_sync_folder =
+        entry.folder_feature.is_arbitrary_sync_folder;
+    metadata.folder_feature.is_external_media =
+        entry.folder_feature.is_external_media;
+    metadata.alternate_url = entry.alternate_url;
+    metadata.shortcut = (entry.entry_type == AddEntriesMessage::LINK);
+    fake_drivefs_helper_->fake_drivefs().SetMetadata(std::move(metadata));
 
     ASSERT_TRUE(UpdateModifiedTime(entry));
   }

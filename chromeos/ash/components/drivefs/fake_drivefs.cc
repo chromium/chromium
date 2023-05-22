@@ -34,6 +34,13 @@
 #include "url/gurl.h"
 
 namespace drivefs {
+
+FakeMetadata::FakeMetadata() = default;
+FakeMetadata::~FakeMetadata() = default;
+
+FakeMetadata::FakeMetadata(FakeMetadata&& other) = default;
+FakeMetadata& FakeMetadata::operator=(FakeMetadata&& other) = default;
+
 namespace {
 
 std::vector<std::pair<base::RepeatingCallback<std::string()>,
@@ -339,37 +346,20 @@ FakeDriveFs::CreateMojoListener() {
       bootstrap_receiver_.BindNewPipeAndPassRemote());
 }
 
-void FakeDriveFs::SetMetadata(const base::FilePath& path,
-                              const std::string& mime_type,
-                              const std::string& original_name,
-                              bool pinned,
-                              bool available_offline,
-                              bool shared,
-                              const mojom::Capabilities& capabilities,
-                              const mojom::FolderFeature& folder_feature,
-                              const std::string& doc_id,
-                              const std::string& alternate_url,
-                              bool shortcut) {
-  auto& stored_metadata = metadata_[path];
-  stored_metadata.mime_type = mime_type;
-  stored_metadata.original_name = original_name;
-  stored_metadata.hosted = (original_name != path.BaseName().value());
-  stored_metadata.capabilities = capabilities;
-  stored_metadata.folder_feature = folder_feature;
-  stored_metadata.doc_id = doc_id;
-  if (pinned) {
-    stored_metadata.pinned = true;
-  }
-  if (available_offline) {
-    stored_metadata.available_offline = true;
-  }
-  if (shared) {
-    stored_metadata.shared = true;
-  }
-  if (shortcut) {
-    stored_metadata.shortcut = true;
-  }
-  stored_metadata.alternate_url = alternate_url;
+void FakeDriveFs::SetMetadata(const FakeMetadata& metadata) {
+  auto& stored_metadata = metadata_[metadata.path];
+  stored_metadata.mime_type = metadata.mime_type;
+  stored_metadata.original_name = metadata.original_name;
+  stored_metadata.hosted =
+      (metadata.original_name != metadata.path.BaseName().value());
+  stored_metadata.capabilities = metadata.capabilities;
+  stored_metadata.folder_feature = metadata.folder_feature;
+  stored_metadata.doc_id = metadata.doc_id;
+  stored_metadata.pinned = metadata.pinned;
+  stored_metadata.available_offline = metadata.available_offline;
+  stored_metadata.shared = metadata.shared;
+  stored_metadata.shortcut = metadata.shortcut;
+  stored_metadata.alternate_url = metadata.alternate_url;
 }
 
 void FakeDriveFs::DisplayConfirmDialog(
