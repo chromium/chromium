@@ -15,7 +15,10 @@ namespace {
 
 class FormSubmissionObserverMock : public FormSubmissionObserver {
  public:
-  MOCK_METHOD1(DidNavigateMainFrame, void(bool form_may_be_submitted));
+  MOCK_METHOD(void,
+              DidNavigateMainFrame,
+              (bool form_may_be_submitted),
+              (override));
 };
 
 class FormSubmissionTrackerUtilTest
@@ -35,34 +38,32 @@ class FormSubmissionTrackerUtilTest
 
 TEST_F(FormSubmissionTrackerUtilTest, NotRendererInitiated) {
   EXPECT_CALL(observer(),
-              DidNavigateMainFrame(false /* form_may_be_submitted */));
+              DidNavigateMainFrame(/*form_may_be_submitted=*/false));
   NotifyDidNavigateMainFrame(
-      false /* is_renderer_initiated */, ui::PAGE_TRANSITION_RELOAD,
-      true /* was_initiated_by_link_click */, &observer());
+      /*is_renderer_initiated=*/false, ui::PAGE_TRANSITION_RELOAD,
+      /*was_initiated_by_link_click=*/true, &observer());
 }
 
 TEST_F(FormSubmissionTrackerUtilTest, LinkTransition) {
   EXPECT_CALL(observer(),
-              DidNavigateMainFrame(false /* form_may_be_submitted */));
+              DidNavigateMainFrame(/*form_may_be_submitted=*/false));
   NotifyDidNavigateMainFrame(
-      true /* is_renderer_initiated */, ui::PAGE_TRANSITION_LINK,
-      true /* was_initiated_by_link_click */, &observer());
+      /*is_renderer_initiated=*/true, ui::PAGE_TRANSITION_LINK,
+      /*was_initiated_by_link_click=*/true, &observer());
 }
 
 TEST_F(FormSubmissionTrackerUtilTest, FormSubmission) {
-  EXPECT_CALL(observer(),
-              DidNavigateMainFrame(true /* form_may_be_submitted */));
+  EXPECT_CALL(observer(), DidNavigateMainFrame(/*form_may_be_submitted=*/true));
   NotifyDidNavigateMainFrame(
-      true /* is_renderer_initiated */, ui::PAGE_TRANSITION_FORM_SUBMIT,
-      true /* was_initiated_by_link_click */, &observer());
+      /*is_renderer_initiated=*/true, ui::PAGE_TRANSITION_FORM_SUBMIT,
+      /*was_initiated_by_link_click=*/true, &observer());
 }
 
 TEST_F(FormSubmissionTrackerUtilTest, PageRedirectAfterJavaScriptSubmission) {
-  EXPECT_CALL(observer(),
-              DidNavigateMainFrame(true /* form_may_be_submitted */));
+  EXPECT_CALL(observer(), DidNavigateMainFrame(/*form_may_be_submitted=*/true));
   NotifyDidNavigateMainFrame(
-      true /* is_renderer_initiated */, ui::PAGE_TRANSITION_CLIENT_REDIRECT,
-      false /* was_initiated_by_link_click */, &observer());
+      /*is_renderer_initiated=*/true, ui::PAGE_TRANSITION_CLIENT_REDIRECT,
+      /*was_initiated_by_link_click=*/false, &observer());
 }
 
 }  // namespace
