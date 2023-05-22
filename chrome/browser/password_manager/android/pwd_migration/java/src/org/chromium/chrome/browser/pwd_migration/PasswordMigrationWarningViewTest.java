@@ -49,6 +49,8 @@ public class PasswordMigrationWarningViewTest {
 
     @Mock
     private Callback<Integer> mDismissCallback;
+    @Mock
+    private PasswordMigrationWarningOnClickHandler mOnClickHandler;
 
     private BottomSheetController mBottomSheetController;
     private PasswordMigrationWarningView mView;
@@ -62,7 +64,8 @@ public class PasswordMigrationWarningViewTest {
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
         runOnUiThreadBlocking(() -> {
-            mModel = PasswordMigrationWarningProperties.createDefaultModel(mDismissCallback);
+            mModel = PasswordMigrationWarningProperties.createDefaultModel(
+                    mDismissCallback, mOnClickHandler);
             mView = new PasswordMigrationWarningView(
                     mActivityTestRule.getActivity(), mBottomSheetController);
             PropertyModelChangeProcessor.create(mModel, mView,

@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
 
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -13,14 +16,15 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Contains the logic for the local passwords migration warning. It sets the state of the model and
  * reacts to events.
  */
-class PasswordMigrationWarningMediator {
+class PasswordMigrationWarningMediator implements PasswordMigrationWarningOnClickHandler {
     private PropertyModel mModel;
 
     void initialize(PropertyModel model) {
         mModel = model;
     }
 
-    void showWarning() {
+    void showWarning(int screenType) {
+        mModel.set(CURRENT_SCREEN, screenType);
         mModel.set(VISIBLE, true);
     }
 
@@ -29,7 +33,23 @@ class PasswordMigrationWarningMediator {
         mModel.set(VISIBLE, false);
     }
 
-    PropertyModel getModel() {
-        return mModel;
+    @Override
+    public void onAcknowledge(BottomSheetController bottomSheetController) {
+        bottomSheetController.collapseSheet(true);
+    }
+
+    @Override
+    public void onMoreOptions() {
+        mModel.set(CURRENT_SCREEN, ScreenType.OPTIONS_SCREEN);
+    }
+
+    @Override
+    public void onNext() {
+        // TODO(crbug.com/1445065): Launch the password Export flow.
+    }
+
+    @Override
+    public void onCancel(BottomSheetController bottomSheetController) {
+        bottomSheetController.collapseSheet(true);
     }
 }
