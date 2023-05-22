@@ -3900,6 +3900,7 @@ if (!is_android) {
         "../browser/ash/arc/user_session/arc_user_session_service_browsertest.cc",
         "../browser/ash/base/locale_util_browsertest.cc",
         "../browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl_browsertest.cc",
+        "../browser/ash/bruschetta/bruschetta_download_browsertest.cc",
         "../browser/ash/child_accounts/family_user_device_metrics_browsertest.cc",
         "../browser/ash/child_accounts/parent_access_code/parent_access_service_browsertest.cc",
         "../browser/ash/child_accounts/screen_time_controller_browsertest.cc",
