@@ -25,28 +25,27 @@ namespace ash {
 namespace file_system_provider {
 
 // Request type, passed to RequestManager::CreateRequest. For logging purposes.
-enum RequestType {
-  REQUEST_MOUNT,
-  REQUEST_UNMOUNT,
-  GET_METADATA,
-  GET_ACTIONS,
-  EXECUTE_ACTION,
-  READ_DIRECTORY,
-  OPEN_FILE,
-  CLOSE_FILE,
-  READ_FILE,
-  CREATE_DIRECTORY,
-  DELETE_ENTRY,
-  CREATE_FILE,
-  COPY_ENTRY,
-  MOVE_ENTRY,
-  TRUNCATE,
-  WRITE_FILE,
-  ABORT,
-  ADD_WATCHER,
-  REMOVE_WATCHER,
-  CONFIGURE,
-  TESTING
+enum class RequestType {
+  kAbort,
+  kAddWatcher,
+  kCloseFile,
+  kConfigure,
+  kCopyEntry,
+  kCreateDirectory,
+  kCreateFile,
+  kDeleteEntry,
+  kExecuteAction,
+  kGetActions,
+  kGetMetadata,
+  kMount,
+  kMoveEntry,
+  kOpenFile,
+  kReadDirectory,
+  kReadFile,
+  kRemoveWatcher,
+  kTruncate,
+  kUnmount,
+  kWriteFile,
 };
 
 // Manages requests between the service, async utils and the providing

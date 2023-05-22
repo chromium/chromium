@@ -127,7 +127,7 @@ bool ExtensionProvider::RequestMount(Profile* profile,
   // signals an error (by returning request_id == 0).
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      REQUEST_MOUNT,
+      RequestType::kMount,
       std::make_unique<MountRequestHandler>(request_dispatcher_.get(),
                                             std::move(split_callback.first)));
   if (!request_id) {
