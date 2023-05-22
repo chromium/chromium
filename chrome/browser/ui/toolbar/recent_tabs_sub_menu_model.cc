@@ -295,8 +295,6 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     NOTREACHED();
   }
 
-  browser_->window()->OnTabRestored(command_id);
-
   UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenRecentTab",
                              menu_opened_timer_.Elapsed());
   UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_RECENT_TAB,

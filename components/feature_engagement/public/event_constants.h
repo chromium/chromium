@@ -32,13 +32,6 @@ extern const char kBookmarkStarMenuOpened[];
 // Customize chrome was opened.
 extern const char kCustomizeChromeOpened[];
 
-// All conditions for reopen closed tab IPH were met. Since this IPH needs to
-// track user events (opening/closing tabs, focusing the omnibox, etc) on the
-// second level, it must be done manually.
-extern const char kReopenTabConditionsMet[];
-// The user reopened a previously closed tab.
-extern const char kTabReopened[];
-
 // A tab with playing media was sent to the background.
 extern const char kMediaBackgrounded[];
 

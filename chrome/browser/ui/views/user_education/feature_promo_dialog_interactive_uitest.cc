@@ -243,11 +243,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ProfileSwitch) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ReopenTab) {
-  set_baseline("2936082");
-  ShowAndVerifyUi();
-}
-
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_TabSearch) {
   set_baseline("2991858");
   ShowAndVerifyUi();

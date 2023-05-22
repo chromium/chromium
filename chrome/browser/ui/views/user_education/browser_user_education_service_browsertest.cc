@@ -250,8 +250,6 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
        IPHFailureReason::kWrongSessionRate, "crbug.com/1443075"},
 
       // Deprecated; should probably be removed.
-      {&feature_engagement::kIPHReopenTabFeature,
-       IPHFailureReason::kNotConfigured, "crbug.com/1442978"},
       {&feature_engagement::kIPHReadingListDiscoveryFeature,
        IPHFailureReason::kNotConfigured, "crbug.com/1443020"},
       {&feature_engagement::kIPHReadingListEntryPointFeature,

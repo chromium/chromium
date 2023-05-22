@@ -21,9 +21,6 @@ const char kReadingListMenuOpened[] = "reading_list_menu_opened";
 const char kBookmarkStarMenuOpened[] = "bookmark_star_menu_opened";
 const char kCustomizeChromeOpened[] = "customize_chrome_opened";
 
-const char kReopenTabConditionsMet[] = "reopen_tab_conditions_met";
-const char kTabReopened[] = "tab_reopened";
-
 const char kMediaBackgrounded[] = "media_backgrounded";
 const char kGlobalMediaControlsOpened[] = "global_media_controls_opened";
 

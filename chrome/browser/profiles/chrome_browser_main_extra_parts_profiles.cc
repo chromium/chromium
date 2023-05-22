@@ -421,7 +421,6 @@
 #include "chrome/browser/speech/speech_recognition_service_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
 #include "chrome/browser/user_notes/user_note_service_factory.h"
 #endif
 
@@ -820,9 +819,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   PrefMetricsService::Factory::GetInstance();
   PrefsTabHelper::GetServiceInstance();
-#if !BUILDFLAG(IS_ANDROID)
-  ReopenTabInProductHelpFactory::GetInstance();
-#endif
   SafeSearchFactory::GetInstance();
   SearchPrefetchServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)

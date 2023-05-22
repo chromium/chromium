@@ -93,8 +93,6 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -857,11 +855,6 @@ void NewTab(Browser* browser) {
   // user-initiated commands.
   UMA_HISTOGRAM_ENUMERATION("Tab.NewTab", NewTabTypes::NEW_TAB_COMMAND,
                             NewTabTypes::NEW_TAB_ENUM_COUNT);
-
-  // Notify IPH that new tab was opened.
-  auto* reopen_tab_iph =
-      ReopenTabInProductHelpFactory::GetForProfile(browser->profile());
-  reopen_tab_iph->NewTabOpened();
 
   if (browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP)) {
     AddTabAt(browser, GURL(), -1, true);

@@ -86,8 +86,6 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_feature_promo_snooze_service.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
-#include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
 #include "chrome/browser/ui/user_education/user_education_service.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -1654,14 +1652,6 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
   infobar_container_->ChangeInfoBarManager(nullptr);
   app_banner_manager_observation_.Reset();
   UpdateDevToolsForContents(nullptr, true);
-}
-
-void BrowserView::OnTabRestored(int command_id) {
-  // Ignore if a tab other than the last closed tab was restored.
-  if (command_id != AppMenuModel::kMinRecentTabsCommandId &&
-      command_id != IDC_RESTORE_TAB)
-    return;
-  CloseFeaturePromo(feature_engagement::kIPHReopenTabFeature);
 }
 
 void BrowserView::ZoomChangedForActiveTab(bool can_show_bubble) {

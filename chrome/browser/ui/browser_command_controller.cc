@@ -515,7 +515,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_RESTORE_TAB:
       RestoreTab(browser_);
-      browser_->window()->OnTabRestored(IDC_RESTORE_TAB);
       break;
     case IDC_SHOW_AS_TAB:
       ConvertPopupToTabbedBrowser(browser_);

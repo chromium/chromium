@@ -392,12 +392,6 @@ void MaybeRegisterChromeFeaturePromos(
       &feature_engagement::kIPHReadingListInSidePanelFeature,
       kSidePanelButtonElementId, IDS_READING_LIST_IN_SIDE_PANEL_PROMO));
 
-  // kIPHReopenTabFeature:
-  registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
-      feature_engagement::kIPHReopenTabFeature, kAppMenuButtonElementId,
-      IDS_REOPEN_TAB_PROMO, IDS_REOPEN_TAB_PROMO_SCREENREADER,
-      FeaturePromoSpecification::AcceleratorInfo(IDC_RESTORE_TAB)));
-
   // kIPHSideSearchFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForTutorialPromo(
