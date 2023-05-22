@@ -269,7 +269,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
 // TODO(crbug.com/1446612): Re-enable this test
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
     "chrome://credits",
 #endif
     "chrome://customize-chrome-side-panel.top-chrome",
