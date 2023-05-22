@@ -66,6 +66,11 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
                               content::WebContents* contents,
                               int index) override;
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
 
   // Testing Accessors.

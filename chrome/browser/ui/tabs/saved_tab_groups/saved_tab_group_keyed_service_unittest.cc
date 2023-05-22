@@ -564,6 +564,50 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   EXPECT_EQ(1, tabstrip->count());
 }
 
+TEST_F(SavedTabGroupKeyedServiceUnitTest,
+       ReorderTabLocallyUpdatesSavedTabGroupTabOrder) {
+  Browser* const browser = AddBrowser();
+  TabStripModel* const tabstrip = browser->tab_strip_model();
+
+  // Create a saved tab group with two tabs.
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 1);
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0, 1});
+  service()->SaveGroup(group_id);
+
+  std::unordered_map<content::WebContents*, SavedTabGroupWebContentsListener>&
+      web_contents_listener_map = service()
+                                      ->listener()
+                                      ->GetLocalTabGroupListenerMapForTesting()
+                                      .at(group_id)
+                                      .GetWebContentsTokenMapForTesting();
+
+  const SavedTabGroup* group = service()->model()->Get(group_id);
+  base::Token first_tab_token =
+      web_contents_listener_map.at(tabstrip->GetWebContentsAt(0)).token();
+  base::Token second_tab_token =
+      web_contents_listener_map.at(tabstrip->GetWebContentsAt(1)).token();
+
+  ASSERT_EQ(2u, group->saved_tabs().size());
+  EXPECT_EQ(first_tab_token, group->saved_tabs()[0].local_tab_id().value());
+  EXPECT_EQ(second_tab_token, group->saved_tabs()[1].local_tab_id().value());
+
+  // Expect after moving the first tab to the right of the second, that the
+  // group updated the positions of the tabs accordingly.
+  browser->tab_strip_model()->MoveWebContentsAt(0, 1, false);
+
+  EXPECT_EQ(second_tab_token, group->saved_tabs()[0].local_tab_id().value());
+  EXPECT_EQ(first_tab_token, group->saved_tabs()[1].local_tab_id().value());
+
+  // Expect moving an entire group to the right, still keeps the saved tabs in
+  // the correct order.
+  AddTabToBrowser(browser, 2);
+  browser->tab_strip_model()->MoveGroupTo(group_id, 2);
+
+  EXPECT_EQ(second_tab_token, group->saved_tabs()[0].local_tab_id().value());
+  EXPECT_EQ(first_tab_token, group->saved_tabs()[1].local_tab_id().value());
+}
+
 TEST_F(SavedTabGroupKeyedServiceUnitTest, ReorderTabFromSyncReordersLocalTab) {
   Browser* const browser = AddBrowser();
   TabStripModel* const tabstrip = browser->tab_strip_model();

@@ -44,6 +44,12 @@ class LocalTabGroupListener {
                                TabStripModel* tab_strip_model,
                                int index);
 
+  // Moves the SavedTab associated with `web_contents` in the TabStripModel to
+  // its new relative position in the SavedTabGroup.
+  void MoveWebContentsFromLocal(TabStripModel* tab_strip_model,
+                                content::WebContents* web_contents,
+                                int tabstrip_index_of_moved_tab);
+
   // Whether the local and saved groups this listener is connecting still exist.
   enum class Liveness {
     kGroupExists,
