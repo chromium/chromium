@@ -39,7 +39,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
             /*get_user_population_callback=*/base::BindRepeating([]() {
               return ChromeUserPopulation();
             }),
-            /*referrer_chain_provider=*/nullptr) {}
+            /*referrer_chain_provider=*/nullptr,
+            /*pref_service=*/nullptr) {}
   // Returns the threat type previously set by |SetThreatTypeForUrl|. It crashes
   // if the threat type for the |gurl| is not set in advance.
   void StartLookup(

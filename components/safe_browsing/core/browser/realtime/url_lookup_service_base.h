@@ -34,6 +34,8 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
+class PrefService;
+
 namespace safe_browsing {
 
 // Suffix for metrics when there is no URL lookup service.
@@ -60,7 +62,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       VerdictCacheManager* cache_manager,
       base::RepeatingCallback<ChromeUserPopulation()>
           get_user_population_callback,
-      ReferrerChainProvider* referrer_chain_provider);
+      ReferrerChainProvider* referrer_chain_provider,
+      PrefService* pref_service);
 
   RealTimeUrlLookupServiceBase(const RealTimeUrlLookupServiceBase&) = delete;
   RealTimeUrlLookupServiceBase& operator=(const RealTimeUrlLookupServiceBase&) =
@@ -257,6 +260,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // All requests that are sent but haven't received a response yet.
   PendingRTLookupRequests pending_requests_;
+
+  // Unowned object used for getting preference settings.
+  raw_ptr<PrefService> pref_service_;
 
   // Used to populate the ChromeUserPopulation field in requests.
   base::RepeatingCallback<ChromeUserPopulation()> get_user_population_callback_;

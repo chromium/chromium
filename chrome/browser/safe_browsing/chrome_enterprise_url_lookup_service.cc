@@ -42,7 +42,8 @@ ChromeEnterpriseRealTimeUrlLookupService::
     : RealTimeUrlLookupServiceBase(url_loader_factory,
                                    cache_manager,
                                    get_user_population_callback,
-                                   referrer_chain_provider),
+                                   referrer_chain_provider,
+                                   /* pref_service= */ nullptr),
       profile_(profile),
       connectors_service_(connectors_service),
       token_fetcher_(std::move(token_fetcher)) {}
