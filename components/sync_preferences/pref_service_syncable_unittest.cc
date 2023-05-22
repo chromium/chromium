@@ -1356,11 +1356,14 @@ class PrefServiceSyncableFactoryTest : public PrefServiceSyncableTest {
  public:
   PrefServiceSyncableFactoryTest() {
     pref_service_syncable_factory_.set_user_prefs(user_prefs_);
+    pref_service_syncable_factory_.SetAccountPrefStore(account_prefs_);
   }
 
  protected:
   PrefServiceSyncableFactory pref_service_syncable_factory_;
   scoped_refptr<TestingPrefStore> user_prefs_ =
+      base::MakeRefCounted<TestingPrefStore>();
+  scoped_refptr<TestingPrefStore> account_prefs_ =
       base::MakeRefCounted<TestingPrefStore>();
 };
 

@@ -20,6 +20,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/pref_value_store.h"
 #import "components/proxy_config/proxy_config_pref_names.h"
+#import "components/sync/base/features.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/pref_service_syncable_factory.h"
 #import "ios/chrome/browser/prefs/ios_chrome_pref_model_associator_client.h"
@@ -32,6 +33,7 @@
 namespace {
 
 const char kPreferencesFilename[] = "Preferences";
+const char kAccountPreferencesFilename[] = "AccountPreferences";
 
 // Record PersistentPrefStore's reading errors distribution.
 void HandleReadError(PersistentPrefStore::PrefReadError error) {
@@ -88,6 +90,13 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
   sync_preferences::PrefServiceSyncableFactory factory;
   PrepareFactory(&factory, browser_state_path.Append(kPreferencesFilename),
                  pref_io_task_runner, policy_service, policy_connector);
+  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
+      base::FeatureList::IsEnabled(
+          syncer::kSyncEnablePersistentStorageForAccountPreferences)) {
+    factory.SetAccountPrefStore(base::MakeRefCounted<JsonPrefStore>(
+        browser_state_path.Append(kAccountPreferencesFilename), nullptr,
+        pref_io_task_runner));
+  }
   std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service =
       factory.CreateSyncable(pref_registry.get());
   return pref_service;

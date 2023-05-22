@@ -165,4 +165,8 @@ BASE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay,
              "SyncIgnoreGetUpdatesRetryDelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences,
+             "SyncEnablePersistentStorageForAccountPreferences",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer

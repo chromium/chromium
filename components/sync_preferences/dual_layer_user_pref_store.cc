@@ -440,12 +440,14 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
   // Clear all synced preferences from the account store.
   for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
     if (!IsPrefKeySyncable(pref_name)) {
-      // The write flags only affect persistence, and the account store is in
-      // memory only.
+      // The write flags only affect persistence, and the default flag is the
+      // safer choice.
       account_pref_store_->RemoveValue(
           pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     }
   }
+
+  CHECK(!active_types_.empty() || account_pref_store_->GetValues().empty());
 }
 
 bool DualLayerUserPrefStore::IsPrefKeyMergeable(const std::string& key) const {

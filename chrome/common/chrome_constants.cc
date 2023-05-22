@@ -108,6 +108,8 @@ const char kWebAppProfilePrefix[] = "web-app-profile-";
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // filenames
+const base::FilePath::CharType kAccountPreferencesFilename[] =
+    FPL("AccountPreferences");
 const base::FilePath::CharType kCacheDirname[] = FPL("Cache");
 const base::FilePath::CharType kCookieFilename[] = FPL("Cookies");
 const base::FilePath::CharType kCRLSetFilename[] =

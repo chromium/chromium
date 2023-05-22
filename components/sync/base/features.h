@@ -206,6 +206,9 @@ BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);
 // If enabled, ignore GetUpdates retry delay command from the server.
 BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
 
+// If enabled, uses a JsonPrefStore for account preferences.
+BASE_DECLARE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
