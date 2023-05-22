@@ -301,7 +301,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   void ScheduleFullHashCheck(std::unique_ptr<PendingCheck> check);
 
   // Checks |stores_to_check| in database synchronously for hash prefixes
-  // matching the full hashes for |url|.
+  // matching the full hashes for |url|. This function is meant for stores that
+  // have full hash information locally.
   void HandleUrl(const GURL& url,
                  const StoresToCheck& stores_to_check,
                  base::OnceCallback<void(bool)> callback);
