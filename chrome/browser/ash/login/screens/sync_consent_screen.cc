@@ -546,6 +546,9 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     syncer::SyncService* sync_service = GetSyncService(profile_);
     syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
 
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", true);
+
     syncer::UserSelectableOsTypeSet os_empty_set;
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/true, os_empty_set);
 
@@ -573,6 +576,9 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     syncer::SyncService* sync_service = GetSyncService(profile_);
     syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
 
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", false);
+
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false, os_sync_set);
 
     bool wallpaper_synced = osSyncItemsStatus.FindBool(kOsWallpaper).value();
@@ -580,6 +586,19 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     if (wallpaper_synced) {
       DCHECK(osSyncItemsStatus.FindBool(kOsPreferences).value());
     }
+
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncWallpaper",
+        wallpaper_synced);
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncApps",
+        osSyncItemsStatus.FindBool(kOsApps).value());
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncSettings",
+        osSyncItemsStatus.FindBool(kOsPreferences).value());
+    base::UmaHistogramBoolean(
+        "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncWifi",
+        osSyncItemsStatus.FindBool(kOsWifiConfigurations).value());
     profile_->GetPrefs()->SetBoolean(settings::prefs::kSyncOsWallpaper,
                                      wallpaper_synced);
 

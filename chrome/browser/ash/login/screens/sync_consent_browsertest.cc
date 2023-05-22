@@ -866,6 +866,9 @@ IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, TurnOnSync) {
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   syncer::SyncUserSettings* settings = GetSyncUserSettings();
 
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", true, 1);
+
   EXPECT_TRUE(settings->IsSyncAllOsTypesEnabled());
 }
 
@@ -911,6 +914,9 @@ IN_PROC_BROWSER_TEST_F(SyncConsentLacrosRevampTest, OnManage) {
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
+
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.LacrosSyncOptIns.SyncEverything", false, 1);
 
   // Expect all data types are disabled for minor users when initialized.
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -1002,6 +1008,19 @@ IN_PROC_BROWSER_TEST_P(SyncConsentTestLacrosRevampWithParams, ManageSync) {
 
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
+
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncWallpaper",
+      is_wallpaper_synced && is_settings_synced, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncApps",
+      is_app_synced, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncSettings",
+      is_settings_synced, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.LacrosSyncOptIns.DataType.SyncWifi",
+      is_wifi_synced, 1);
 
   // Expect all data types are disabled for minor users when initialized.
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
