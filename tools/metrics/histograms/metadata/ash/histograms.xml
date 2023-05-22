@@ -248,6 +248,9 @@ chromium-metrics-reviews@google.com.
     <variant name="ToggleSpokenFeedback"/>
     <variant name="ToggleSystemTrayBubble"/>
     <variant name="ToggleWifi"/>
+    <variant name="TouchFingerprintSensor1"/>
+    <variant name="TouchFingerprintSensor2"/>
+    <variant name="TouchFingerprintSensor3"/>
     <variant name="TouchHudClear"/>
     <variant name="TouchHudModeChange"/>
     <variant name="Unpin"/>

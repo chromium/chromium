@@ -40,6 +40,7 @@
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 #include "ui/aura/env.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
@@ -867,6 +868,10 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kVolumeUp:
     case AcceleratorAction::kWindowMinimize:
       return true;
+    case AcceleratorAction::kTouchFingerprintSensor1:
+    case AcceleratorAction::kTouchFingerprintSensor2:
+    case AcceleratorAction::kTouchFingerprintSensor3:
+      return FakeBiodClient::Get() != nullptr;
   }
 }
 
@@ -1416,6 +1421,15 @@ void AcceleratorControllerImpl::PerformAction(
       base::RecordAction(
           base::UserMetricsAction("Accel_Minimize_Top_Window_On_Back"));
       accelerators::TopWindowMinimizeOnBack();
+      break;
+    case kTouchFingerprintSensor1:
+      accelerators::TouchFingerprintSensor(1);
+      break;
+    case kTouchFingerprintSensor2:
+      accelerators::TouchFingerprintSensor(2);
+      break;
+    case kTouchFingerprintSensor3:
+      accelerators::TouchFingerprintSensor(3);
       break;
   }
 

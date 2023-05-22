@@ -143,6 +143,9 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(ToggleWifi)                                  \
   ACCELERATOR_ACTION_ENTRY(TouchHudClear)                               \
   ACCELERATOR_ACTION_ENTRY(TouchHudModeChange)                          \
+  ACCELERATOR_ACTION_ENTRY(TouchFingerprintSensor1)                     \
+  ACCELERATOR_ACTION_ENTRY(TouchFingerprintSensor2)                     \
+  ACCELERATOR_ACTION_ENTRY(TouchFingerprintSensor3)                     \
   ACCELERATOR_ACTION_ENTRY(Unpin)                                       \
   ACCELERATOR_ACTION_ENTRY(VolumeDown)                                  \
   ACCELERATOR_ACTION_ENTRY(VolumeMute)                                  \
