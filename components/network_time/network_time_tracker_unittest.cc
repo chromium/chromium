@@ -185,10 +185,10 @@ class NetworkTimeTrackerTest : public ::testing::Test {
   base::TimeDelta resolution_;
   base::TimeDelta latency_;
   base::TimeDelta adjustment_;
-  raw_ptr<base::SimpleTestClock> clock_;
-  raw_ptr<base::SimpleTestTickClock> tick_clock_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<NetworkTimeTracker> tracker_;
+  raw_ptr<base::SimpleTestClock> clock_;
+  raw_ptr<base::SimpleTestTickClock> tick_clock_;
   network::TestURLLoaderFactory url_loader_factory_;
   base::RepeatingCallback<MockedResponse()> response_handler_;
 
