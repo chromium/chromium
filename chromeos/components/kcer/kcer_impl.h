@@ -123,6 +123,11 @@ class KcerImpl : public Kcer {
                      SignCallback callback,
                      base::expected<PrivateKeyHandle, Error> key_or_error);
 
+  void SignRsaPkcs1RawWithToken(
+      DigestWithPrefix digest_with_prefix,
+      SignCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
   void GetKeyInfoWithToken(
       GetKeyInfoCallback callback,
       base::expected<PrivateKeyHandle, Error> key_or_error);

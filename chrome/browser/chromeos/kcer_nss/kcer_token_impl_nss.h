@@ -94,7 +94,6 @@ class KcerTokenImplNss : public KcerToken, public net::CertDatabase::Observer {
             DataToSign data,
             Kcer::SignCallback callback) override;
   void SignRsaPkcs1Raw(PrivateKeyHandle key,
-                       SigningScheme signing_scheme,
                        DigestWithPrefix digest_with_prefix,
                        Kcer::SignCallback callback) override;
   void GetTokenInfo(Kcer::GetTokenInfoCallback callback) override;

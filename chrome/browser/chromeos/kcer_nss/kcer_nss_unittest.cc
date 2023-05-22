@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "crypto/secure_hash.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/pem.h"
 #include "net/test/cert_builder.h"
@@ -157,6 +158,27 @@ absl::optional<std::vector<uint8_t>> ReadPemFileReturnDer(
     return absl::nullopt;
   }
   return StrToBytes(tokenizer.data());
+}
+
+// Returns |hash| prefixed with DER-encoded PKCS#1 DigestInfo with
+// AlgorithmIdentifier=id-sha256.
+// This is useful for testing Kcer::SignRsaPkcs1Raw which only
+// appends PKCS#1 v1.5 padding before signing.
+std::vector<uint8_t> PrependSHA256DigestInfo(base::span<const uint8_t> hash) {
+  // DER-encoded PKCS#1 DigestInfo "prefix" with
+  // AlgorithmIdentifier=id-sha256.
+  // The encoding is taken from https://tools.ietf.org/html/rfc3447#page-43
+  const std::vector<uint8_t> kDigestInfoSha256DerData = {
+      0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
+      0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20};
+
+  std::vector<uint8_t> result;
+  result.reserve(kDigestInfoSha256DerData.size() + hash.size());
+
+  result.insert(result.end(), kDigestInfoSha256DerData.begin(),
+                kDigestInfoSha256DerData.end());
+  result.insert(result.end(), hash.begin(), hash.end());
+  return result;
 }
 
 // A helper class to work with tokens (that exist on the IO thread) from the UI
@@ -363,6 +385,10 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
   kcer->Sign(PrivateKeyHandle(PublicKeySpki()), SigningScheme::kRsaPkcs1Sha512,
              DataToSign({1, 2, 3}), sign_waiter.GetCallback());
+  base::test::TestFuture<base::expected<Signature, Error>> sign_digest_waiter;
+  kcer->SignRsaPkcs1Raw(PrivateKeyHandle(PublicKeySpki()),
+                        DigestWithPrefix({1, 2, 3}),
+                        sign_digest_waiter.GetCallback());
   base::test::TestFuture<base::expected<TokenInfo, Error>>
       get_token_info_waiter;
   kcer->GetTokenInfo(Token::kUser, get_token_info_waiter.GetCallback());
@@ -416,6 +442,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(sign_waiter.Get().has_value());
   EXPECT_EQ(sign_waiter.Get().error(), Error::kTokenInitializationFailed);
+  ASSERT_FALSE(sign_digest_waiter.Get().has_value());
+  EXPECT_EQ(sign_digest_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
   ASSERT_FALSE(get_token_info_waiter.Get().has_value());
   EXPECT_EQ(get_token_info_waiter.Get().error(),
             Error::kTokenInitializationFailed);
@@ -542,6 +571,56 @@ TEST_F(KcerNssTest, SignEcc) {
   }
 }
 
+// Test that `Kcer::SignRsaPkcs1Raw()` produces a correct signature.
+TEST_F(KcerNssTest, SignRsaPkcs1Raw) {
+  TokenHolder user_token(Token::kUser);
+  user_token.Initialize();
+
+  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
+      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_key_waiter;
+  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                       /*hardware_backed=*/true,
+                       generate_key_waiter.GetCallback());
+  ASSERT_TRUE(generate_key_waiter.Get().has_value());
+  const PublicKey& public_key = generate_key_waiter.Get().value();
+
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  // A caller would need to hash the data themself before calling
+  // `SignRsaPkcs1Raw`, do that here.
+  auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  hasher->Update(data_to_sign->data(), data_to_sign->size());
+  std::vector<uint8_t> hash(hasher->GetHashLength());
+  hasher->Finish(hash.data(), hash.size());
+  DigestWithPrefix digest_with_prefix(PrependSHA256DigestInfo(hash));
+
+  // Generate the signature.
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  kcer->SignRsaPkcs1Raw(PrivateKeyHandle(public_key),
+                        std::move(digest_with_prefix),
+                        sign_waiter.GetCallback());
+  ASSERT_TRUE(sign_waiter.Get().has_value());
+  const Signature& signature = sign_waiter.Get().value();
+
+  // Verify the signature.
+  crypto::SignatureVerifier signature_verifier;
+  ASSERT_TRUE(signature_verifier.VerifyInit(
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+      signature.value(), public_key.GetSpki().value()));
+  signature_verifier.VerifyUpdate(data_to_sign.value());
+  EXPECT_TRUE(signature_verifier.VerifyFinal());
+
+  // Verify that manual hashing + `SignRsaPkcs1Raw` produces the same
+  // signature as just `Sign`.
+  base::test::TestFuture<base::expected<Signature, Error>> normal_sign_waiter;
+  kcer->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha256,
+             data_to_sign, normal_sign_waiter.GetCallback());
+  ASSERT_TRUE(normal_sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().value(), normal_sign_waiter.Get().value());
+}
+
 // Test that Kcer::GetTokenInfo() method returns meaningful values.
 TEST_F(KcerNssTest, GetTokenInfo) {
   TokenHolder user_token(Token::kUser);
@@ -640,8 +719,8 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
   // Hardware- vs software-backed indicators on real devices are provided by
   // Chaps and are wrong in unit tests.
   expected_key_info.is_hardware_backed = true;
-  // NSS sets an empty nickname by default, this doesn't have to be like this in
-  // general.
+  // NSS sets an empty nickname by default, this doesn't have to be like this
+  // in general.
   expected_key_info.nickname = "";
   // Custom attributes are stored differently in tests and have empty values by
   // default.
@@ -655,8 +734,8 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
     ASSERT_TRUE(key_info_waiter.Get().has_value());
     const KeyInfo& key_info = key_info_waiter.Get().value();
 
-    // Copy some fields, their values are covered by dedicated tests, this test
-    // only checks that they don't change when they shouldn't.
+    // Copy some fields, their values are covered by dedicated tests, this
+    // test only checks that they don't change when they shouldn't.
     expected_key_info.key_type = key_info.key_type;
     expected_key_info.supported_signing_schemes =
         key_info.supported_signing_schemes;

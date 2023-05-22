@@ -66,7 +66,6 @@ class COMPONENT_EXPORT(KCER) KcerToken {
                     DataToSign data,
                     Kcer::SignCallback callback) = 0;
   virtual void SignRsaPkcs1Raw(PrivateKeyHandle key,
-                               SigningScheme signing_scheme,
                                DigestWithPrefix digest_with_prefix,
                                Kcer::SignCallback callback) = 0;
   virtual void GetTokenInfo(Kcer::GetTokenInfoCallback callback) = 0;

@@ -72,6 +72,7 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kFailedToSign = 23,
   kFailedToSignBadSignatureLength = 24,
   kFailedToDerEncode = 25,
+  kInputTooLong = 26,
 };
 
 // Handles for tokens on ChromeOS.

@@ -464,6 +464,83 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
   return std::move(callback).Run(Signature(std::move(signature)));
 }
 
+// Checks whether |input_length| is lower or equal to the maximum input length
+// for a RSA PKCS#1 v1.5 signature generated using |private_key| with PK11_Sign.
+// Returns false if |input_length| is too large.
+// If the maximum input length can not be determined (which is possible because
+// it queries the PKCS#11 module), returns true and logs a warning.
+bool CheckRsaPkcs1SignDigestInputLength(SECKEYPrivateKey* private_key,
+                                        size_t input_length) {
+  // For RSA keys, PK11_Sign will perform PKCS#1 v1.5 padding, which needs at
+  // least 11 bytes. RSA Sign can process an input of max. modulus length.
+  // Thus the maximum input length for the sign operation is
+  // |modulus_length - 11|.
+  int modulus_length_bytes = PK11_GetPrivateModulusLen(private_key);
+  if (modulus_length_bytes <= 0) {
+    LOG(WARNING) << "Could not determine modulus length";
+    return true;
+  }
+  size_t max_input_length_after_padding =
+      static_cast<size_t>(modulus_length_bytes);
+  // PKCS#1 v1.5 Padding needs at least this many bytes.
+  size_t kMinPaddingLength = 11u;
+  return input_length + kMinPaddingLength <= max_input_length_after_padding;
+}
+
+// Performs "raw" PKCS1 v1.5 padding + signing by calling PK11_Sign on |key|.
+// TODO(b/244408117): This method is mostly a copy of
+// `PlatformKeysService::SignRSAPKCS1Raw` from platform_keys_service_nss.cc .
+// The original method should be replaced during the upcoming refactoring to
+// remove direct usages of NSS.
+void SignRsaPkcs1RawOnWorkerThread(crypto::ScopedPK11Slot slot,
+                                   PrivateKeyHandle key,
+                                   DigestWithPrefix digest_with_prefix,
+                                   Kcer::SignCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+  const crypto::ScopedSECKEYPrivateKey& sec_private_key = private_key.value();
+  if (sec_private_key->keyType != ::KeyType::rsaKey) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kKeyDoesNotSupportSigningScheme));
+  }
+
+  static_assert(
+      sizeof(*digest_with_prefix->data()) == sizeof(char),
+      "Can't reinterpret data if its characters are not 8 bit large.");
+  SECItem input = {siBuffer,
+                   const_cast<unsigned char*>(digest_with_prefix->data()),
+                   static_cast<unsigned int>(digest_with_prefix->size())};
+
+  // Compute signature of hash.
+  int signature_len = PK11_SignatureLen(sec_private_key.get());
+  if (signature_len <= 0) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToSignBadSignatureLength));
+  }
+
+  std::vector<unsigned char> signature(signature_len);
+  SECItem signature_output = {siBuffer, signature.data(),
+                              static_cast<unsigned int>(signature.size())};
+  if (PK11_Sign(sec_private_key.get(), &signature_output, &input) !=
+      SECSuccess) {
+    // Input size is checked after a failure - obtaining max input size
+    // involves extracting key modulus length which is not a free operation, so
+    // don't bother if signing succeeded.
+    // Note: It would be better if this could be determined from some library
+    // return code (e.g. PORT_GetError), but this was not possible with
+    // NSS+chaps at this point.
+    if (!CheckRsaPkcs1SignDigestInputLength(sec_private_key.get(),
+                                            digest_with_prefix->size())) {
+      return std::move(callback).Run(base::unexpected(Error::kInputTooLong));
+    }
+    return std::move(callback).Run(base::unexpected(Error::kFailedToSign));
+  }
+  return std::move(callback).Run(Signature(std::move(signature)));
+}
+
 std::vector<SigningScheme> GetSigningSchemes(bool supports_pss,
                                              KeyType key_type) {
   std::vector<SigningScheme> result;
@@ -981,10 +1058,29 @@ void KcerTokenImplNss::Sign(PrivateKeyHandle key,
 }
 
 void KcerTokenImplNss::SignRsaPkcs1Raw(PrivateKeyHandle key,
-                                       SigningScheme signing_scheme,
                                        DigestWithPrefix digest_with_prefix,
                                        Kcer::SignCallback callback) {
-  // TODO(244408716): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  }
+  if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(
+        &KcerTokenImplNss::SignRsaPkcs1Raw, weak_factory_.GetWeakPtr(),
+        std::move(key), std::move(digest_with_prefix), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SignRsaPkcs1RawOnWorkerThread,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(digest_with_prefix),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::GetTokenInfo(Kcer::GetTokenInfoCallback callback) {
