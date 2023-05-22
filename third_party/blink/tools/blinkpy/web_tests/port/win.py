@@ -49,11 +49,12 @@ _log = logging.getLogger(__name__)
 class WinPort(base.Port):
     port_name = 'win'
 
-    SUPPORTED_VERSIONS = ('win10.20h2', 'win11')
+    SUPPORTED_VERSIONS = ('win10.20h2', 'win11-arm64', 'win11')
 
     FALLBACK_PATHS = {}
     FALLBACK_PATHS['win11'] = ['win']
     FALLBACK_PATHS['win10.20h2'] = ['win10'] + FALLBACK_PATHS['win11']
+    FALLBACK_PATHS['win11-arm64'] = ['win11-arm64'] + FALLBACK_PATHS['win11']
 
     BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/windows_build_instructions.md'
 
@@ -70,7 +71,11 @@ class WinPort(base.Port):
                 version = 'win11'
             else:
                 version = host.platform.os_version
+
             port_name = port_name + '-' + version
+            if host.platform.get_machine() == 'arm64':
+                port_name = port_name + '-arm64'
+
         return port_name
 
     def __init__(self, host, port_name, **kwargs):
@@ -82,6 +87,9 @@ class WinPort(base.Port):
             self._dump_reader = None
         else:
             self._dump_reader = DumpReaderWin(host, self._build_path())
+
+        if port_name.endswith('arm64'):
+            self._architecture = 'arm64'
 
     def additional_driver_flags(self):
         flags = super(WinPort, self).additional_driver_flags()
@@ -214,6 +222,10 @@ class WinPort(base.Port):
         return val
 
     def path_to_apache(self):
+        if self._architecture == 'arm64':
+            return self._path_from_chromium_base('third_party',
+                                                 'apache-windows-arm64', 'bin',
+                                                 'httpd.exe')
         return self._path_from_chromium_base('third_party', 'apache-win32',
                                              'bin', 'httpd.exe')
 
