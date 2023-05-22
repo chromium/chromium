@@ -1234,6 +1234,11 @@ void CanvasRenderingContext2D::DisableAcceleration() {
   canvas()->DisableAcceleration();
 }
 
+bool CanvasRenderingContext2D::ShouldDisableAccelerationBecauseOfReadback()
+    const {
+  return canvas()->ShouldDisableAccelerationBecauseOfReadback();
+}
+
 bool CanvasRenderingContext2D::IsCanvas2DBufferValid() const {
   if (IsPaintable()) {
     return canvas()->GetCanvas2DLayerBridge()->IsValid();
