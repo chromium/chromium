@@ -225,6 +225,9 @@ sql::InitStatus WebDatabase::MigrateOldVersionsAsNeeded() {
         return FailedMigrationTo(next_version);
       }
     }
+    base::UmaHistogramExactLinear("WebDatabase.SucceededMigrationToVersion",
+                                  next_version,
+                                  WebDatabase::kCurrentVersionNumber + 1);
   }
   return sql::INIT_OK;
 }
