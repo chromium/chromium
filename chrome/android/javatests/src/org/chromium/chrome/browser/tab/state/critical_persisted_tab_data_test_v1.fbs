@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 namespace org.chromium.chrome.browser.tab.flatbuffer;
 
-enum LaunchTypeAtCreation:int {
+enum LaunchTypeAtCreationTest:int {
     // SIZE is typically not used for anything other than bound
     // checking but is included for completeness. It is added
     // at the start rather than the end to enable other TabLaunchTypes
@@ -43,7 +43,7 @@ enum LaunchTypeAtCreation:int {
     // values will lead to backwards compatibility issues crbug.com/1286984.
 }
 
-enum UserAgentType:int {
+enum UserAgentTypeTest:int {
     DEFAULT = 0,
     MOBILE = 1,
     DESKTOP = 2,
@@ -52,8 +52,7 @@ enum UserAgentType:int {
     USER_AGENT_UNKNOWN = 5,
 }
 
-// Before making any modification here, make a copy of this file and save it to |critical_persisted_tab_tab_test_vi| where vi is the newer version and write a test to verify backwards compatability of that table with the new change.
-table CriticalPersistedTabDataFlatBuffer {
+table CriticalPersistedTabDataFlatBufferTest {
     // Parent Tab identifier.
     parent_id:int;
 
@@ -76,11 +75,8 @@ table CriticalPersistedTabDataFlatBuffer {
     theme_color:int;
 
     // Launch type at creation.
-    launch_type_at_creation:LaunchTypeAtCreation;
+    launch_type_at_creation:LaunchTypeAtCreationTest;
 
     // User Agent.
-    user_agent:UserAgentType=DEFAULT;
-
-    // Timestamp of the last committed navigation done in the Tab.
-    last_navigation_committed_timestamp_millis:long;
+    user_agent:UserAgentTypeTest=DEFAULT;
 }

@@ -1414,6 +1414,12 @@ if (current_toolchain == default_toolchain) {
     data = [ "//chrome/test/data/android/" ]
   }
 
+  flatbuffer_java_library(
+      "critical_persisted_tab_data_flatbuffer_test_v1_java") {
+    root_dir = "javatests/src/org/chromium/chrome/browser/tab/state/"
+    sources = [ "$root_dir/critical_persisted_tab_data_test_v1.fbs" ]
+  }
+
   android_library("chrome_test_java") {
     testonly = true
     resources_package = "org.chromium.chrome.test"
@@ -1429,6 +1435,7 @@ if (current_toolchain == default_toolchain) {
       ":browser_java_test_support",
       ":chrome_app_java_resources",
       ":chrome_test_util_java",
+      ":critical_persisted_tab_data_flatbuffer_test_v1_java",
       ":delegate_public_impl_java",
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
