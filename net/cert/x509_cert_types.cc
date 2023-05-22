@@ -13,9 +13,17 @@ CertPrincipal::CertPrincipal() = default;
 
 CertPrincipal::CertPrincipal(const std::string& name) : common_name(name) {}
 
+CertPrincipal::CertPrincipal(const CertPrincipal&) = default;
+
 CertPrincipal::CertPrincipal(CertPrincipal&&) = default;
 
 CertPrincipal::~CertPrincipal() = default;
+
+bool CertPrincipal::operator==(const CertPrincipal& other) const = default;
+
+bool CertPrincipal::EqualsForTesting(const CertPrincipal& other) const {
+  return *this == other;
+}
 
 bool CertPrincipal::ParseDistinguishedName(
     der::Input ber_name_data,

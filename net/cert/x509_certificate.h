@@ -141,6 +141,13 @@ class NET_EXPORT X509Certificate
       base::span<const uint8_t> data,
       int format);
 
+  // Return a X509Certificate object representing the same certificate but
+  // with a different set of intermediates. If |intermediates| are the same as
+  // |intermediate_ca_certs_|, it will return a reference to the same
+  // X509Certificate object rather than cloning.
+  scoped_refptr<X509Certificate> CloneWithDifferentIntermediates(
+      std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates);
+
   X509Certificate(const X509Certificate&) = delete;
   X509Certificate& operator=(const X509Certificate&) = delete;
 
@@ -270,6 +277,7 @@ class NET_EXPORT X509Certificate
   class ParsedFields {
    public:
     ParsedFields();
+    ParsedFields(const ParsedFields&);
     ParsedFields(ParsedFields&&);
     ~ParsedFields();
 
@@ -296,6 +304,10 @@ class NET_EXPORT X509Certificate
   // DER-encoded representation.
   X509Certificate(ParsedFields parsed,
                   bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer,
+                  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates);
+
+  // Copy |other|, except with a different set of intermediates.
+  X509Certificate(const X509Certificate& other,
                   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates);
 
   ~X509Certificate();

@@ -33,6 +33,8 @@ using base::Time;
 
 namespace net {
 
+namespace {
+
 // Certificates for test data. They're obtained with:
 //
 // $ openssl s_client -connect [host]:443 -showcerts > /tmp/host.pem < /dev/null
@@ -109,6 +111,18 @@ void CheckGoogleCert(const scoped_refptr<X509Certificate>& google_cert,
                                       google_cert->cert_buffer()));
 
 }
+
+void ExpectX509CertificateMembersEqual(
+    const scoped_refptr<X509Certificate>& a,
+    const scoped_refptr<X509Certificate>& b) {
+  EXPECT_TRUE(a->subject().EqualsForTesting(b->subject()));
+  EXPECT_TRUE(a->issuer().EqualsForTesting(b->issuer()));
+  EXPECT_EQ(a->valid_start(), b->valid_start());
+  EXPECT_EQ(a->valid_expiry(), b->valid_expiry());
+  EXPECT_EQ(a->serial_number(), b->serial_number());
+}
+
+}  // namespace
 
 TEST(X509CertificateTest, GoogleCertParsing) {
   scoped_refptr<X509Certificate> google_cert(
@@ -693,6 +707,79 @@ TEST(X509CertificateTest, Cache) {
   // Though they use the same OS handle, the intermediates should be different.
   EXPECT_NE(cert1->intermediate_buffers().size(),
             cert3->intermediate_buffers().size());
+}
+
+TEST(X509CertificateTest, CloneWithDifferentIntermediates) {
+  CertificateList certs = CreateCertificateListFromFile(
+      GetTestCertsDirectory(), "multi-root-chain1.pem",
+      X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
+  ASSERT_EQ(4u, certs.size());
+
+  auto leaf_with_no_intermediates = certs[0];
+
+  {
+    auto cloned =
+        leaf_with_no_intermediates->CloneWithDifferentIntermediates({});
+    // Intermediates are equal, so should return a reference to the same object.
+    EXPECT_EQ(leaf_with_no_intermediates.get(), cloned.get());
+  }
+  {
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+    intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+    intermediates.push_back(bssl::UpRef(certs[2]->cert_buffer()));
+    auto cloned = leaf_with_no_intermediates->CloneWithDifferentIntermediates(
+        std::move(intermediates));
+    ASSERT_TRUE(cloned);
+    EXPECT_NE(leaf_with_no_intermediates.get(), cloned.get());
+    EXPECT_EQ(leaf_with_no_intermediates->cert_buffer(), cloned->cert_buffer());
+    ExpectX509CertificateMembersEqual(leaf_with_no_intermediates, cloned);
+    ASSERT_EQ(2u, cloned->intermediate_buffers().size());
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        certs[1]->cert_buffer(), cloned->intermediate_buffers()[0].get()));
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        certs[2]->cert_buffer(), cloned->intermediate_buffers()[1].get()));
+  }
+
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> leaf_intermediates;
+  leaf_intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+  leaf_intermediates.push_back(bssl::UpRef(certs[2]->cert_buffer()));
+  auto leaf_with_intermediates = X509Certificate::CreateFromBuffer(
+      bssl::UpRef(certs[0]->cert_buffer()), std::move(leaf_intermediates));
+  ASSERT_TRUE(leaf_with_intermediates);
+
+  {
+    auto cloned = leaf_with_intermediates->CloneWithDifferentIntermediates({});
+    EXPECT_NE(leaf_with_intermediates.get(), cloned.get());
+    EXPECT_EQ(leaf_with_intermediates->cert_buffer(), cloned->cert_buffer());
+    ExpectX509CertificateMembersEqual(leaf_with_intermediates, cloned);
+    ASSERT_EQ(0u, cloned->intermediate_buffers().size());
+  }
+  {
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+    intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+    intermediates.push_back(bssl::UpRef(certs[2]->cert_buffer()));
+    auto cloned = leaf_with_intermediates->CloneWithDifferentIntermediates(
+        std::move(intermediates));
+    // Intermediates are equal, so should return a reference to the same object.
+    EXPECT_EQ(leaf_with_intermediates.get(), cloned.get());
+  }
+  {
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+    intermediates.push_back(bssl::UpRef(certs[2]->cert_buffer()));
+    intermediates.push_back(bssl::UpRef(certs[1]->cert_buffer()));
+    auto cloned = leaf_with_intermediates->CloneWithDifferentIntermediates(
+        std::move(intermediates));
+    // Intermediates are different (same buffers but in different order).
+    ASSERT_TRUE(cloned);
+    EXPECT_NE(leaf_with_intermediates.get(), cloned.get());
+    EXPECT_EQ(leaf_with_intermediates->cert_buffer(), cloned->cert_buffer());
+    ExpectX509CertificateMembersEqual(leaf_with_intermediates, cloned);
+    ASSERT_EQ(2u, cloned->intermediate_buffers().size());
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        certs[2]->cert_buffer(), cloned->intermediate_buffers()[0].get()));
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        certs[1]->cert_buffer(), cloned->intermediate_buffers()[1].get()));
+  }
 }
 
 TEST(X509CertificateTest, Pickle) {

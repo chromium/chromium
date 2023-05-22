@@ -548,9 +548,8 @@ scoped_refptr<X509Certificate> CreateVerifiedCertChain(
     intermediates.push_back(bssl::UpRef(path.certs[i]->cert_buffer()));
   }
 
-  scoped_refptr<X509Certificate> result = X509Certificate::CreateFromBuffer(
-      bssl::UpRef(target_cert->cert_buffer()), std::move(intermediates));
-  // |target_cert| was already successfully parsed, so this should never fail.
+  scoped_refptr<X509Certificate> result =
+      target_cert->CloneWithDifferentIntermediates(std::move(intermediates));
   DCHECK(result);
 
   return result;

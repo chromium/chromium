@@ -41,18 +41,7 @@ void ClientCertIdentity::SelfOwningAcquirePrivateKey(
 
 void ClientCertIdentity::SetIntermediates(
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates) {
-  // Allow UTF-8 inside PrintableStrings in client certificates. See
-  // crbug.com/770323.
-  // TODO(mattm): Perhaps X509Certificate should have a method to clone the
-  // X509Certificate but with different intermediates, to avoid reparsing here
-  // (and avoid needing to match the parsing options here with where the
-  // X509Certificate was initially created.)
-  X509Certificate::UnsafeCreateOptions options;
-  options.printable_string_is_utf8 = true;
-  cert_ = X509Certificate::CreateFromBufferUnsafeOptions(
-      bssl::UpRef(cert_->cert_buffer()), std::move(intermediates), options);
-  // |cert_->cert_buffer()| was already successfully parsed, so this should
-  // never fail.
+  cert_ = cert_->CloneWithDifferentIntermediates(std::move(intermediates));
   DCHECK(cert_);
 }
 

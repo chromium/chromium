@@ -17,6 +17,7 @@ namespace net {
 struct NET_EXPORT CertPrincipal {
   CertPrincipal();
   explicit CertPrincipal(const std::string& name);
+  CertPrincipal(const CertPrincipal&);
   CertPrincipal(CertPrincipal&&);
   ~CertPrincipal();
 
@@ -35,6 +36,11 @@ struct NET_EXPORT CertPrincipal {
   // order: CN, O and OU and returns the first non-empty one found.
   std::string GetDisplayName() const;
 
+  // True if this object is equal to `other`. This is only exposed for testing,
+  // as a CertPrincipal object does not fully represent the X.509 Name it was
+  // parsed from, and comparing them likely does not mean what you want.
+  bool EqualsForTesting(const CertPrincipal& other) const;
+
   // The different attributes for a principal, stored in UTF-8.  They may be "".
   // Note that some of them can have several values.
 
@@ -47,6 +53,11 @@ struct NET_EXPORT CertPrincipal {
   std::vector<std::string> organization_names;
   std::vector<std::string> organization_unit_names;
   std::vector<std::string> domain_components;
+
+ private:
+  // Comparison operator is private and only defined for use by
+  // EqualsForTesting, see comment there for more details.
+  bool operator==(const CertPrincipal& other) const;
 };
 
 }  // namespace net

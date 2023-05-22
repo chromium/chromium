@@ -1619,7 +1619,6 @@ TEST_P(CertVerifyProcInternalTest, VerifyReturnChainBasic) {
   ASSERT_NE(static_cast<X509Certificate*>(nullptr),
             verify_result.verified_cert.get());
 
-  EXPECT_NE(google_full_chain, verify_result.verified_cert);
   EXPECT_TRUE(
       x509_util::CryptoBufferEqual(google_full_chain->cert_buffer(),
                                    verify_result.verified_cert->cert_buffer()));
