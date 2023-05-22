@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/policy_util.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -101,18 +102,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   friend class CellularPolicyHandlerTest;
 
   // Represents policy eSIM install request parameters. Requests are queued and
-  // processed one at a time. |smdp_address| represents the smdp address that
-  // will be used to install the eSIM profile as activation code and
-  // |onc_config| is the ONC configuration of the cellular policy.
+  // processed one at a time. |activation_code| represents the SM-DP+ activation
+  // code that will be used to install the eSIM profile, and |onc_config| is the
+  // ONC configuration of the cellular policy.
   struct InstallPolicyESimRequest {
-    InstallPolicyESimRequest(const std::string& smdp_address,
+    InstallPolicyESimRequest(policy_util::SmdxActivationCode activation_code,
                              const base::Value::Dict& onc_config);
     InstallPolicyESimRequest(const InstallPolicyESimRequest&) = delete;
     InstallPolicyESimRequest& operator=(const InstallPolicyESimRequest&) =
         delete;
     ~InstallPolicyESimRequest();
 
-    const std::string smdp_address;
+    policy_util::SmdxActivationCode activation_code;
     base::Value::Dict onc_config;
     net::BackoffEntry retry_backoff;
   };

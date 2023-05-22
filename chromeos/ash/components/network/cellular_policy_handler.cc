@@ -46,9 +46,9 @@ constexpr base::TimeDelta kCellularDeviceWaitTime = base::Seconds(30);
 }  // namespace
 
 CellularPolicyHandler::InstallPolicyESimRequest::InstallPolicyESimRequest(
-    const std::string& smdp_address,
+    policy_util::SmdxActivationCode activation_code,
     const base::Value::Dict& onc_config)
-    : smdp_address(smdp_address),
+    : activation_code(std::move(activation_code)),
       onc_config(onc_config.Clone()),
       retry_backoff(&kRetryBackoffPolicy) {}
 
@@ -84,8 +84,10 @@ void CellularPolicyHandler::Init(
 
 void CellularPolicyHandler::InstallESim(const std::string& smdp_address,
                                         const base::Value::Dict& onc_config) {
-  PushRequestAndProcess(
-      std::make_unique<InstallPolicyESimRequest>(smdp_address, onc_config));
+  PushRequestAndProcess(std::make_unique<InstallPolicyESimRequest>(
+      policy_util::SmdxActivationCode(
+          policy_util::SmdxActivationCode::Type::SMDP, smdp_address),
+      onc_config));
 }
 
 void CellularPolicyHandler::OnAvailableEuiccListChanged() {
@@ -256,7 +258,7 @@ base::Value::Dict CellularPolicyHandler::GetNewShillProperties() {
 const std::string& CellularPolicyHandler::GetCurrentSmdpAddress() const {
   DCHECK(is_installing_);
 
-  return remaining_install_requests_.front()->smdp_address;
+  return remaining_install_requests_.front()->activation_code.value;
 }
 
 void CellularPolicyHandler::OnConfigureESimService(
@@ -276,7 +278,7 @@ void CellularPolicyHandler::OnConfigureESimService(
   const std::string* iccid =
       policy_util::GetIccidFromONC(current_request->onc_config);
   managed_cellular_pref_handler_->AddIccidSmdpPair(
-      *iccid, current_request->smdp_address);
+      *iccid, current_request->activation_code.value);
   ProcessRequests();
 }
 
@@ -307,12 +309,13 @@ void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(
   }
 
   NET_LOG(EVENT) << "Successfully installed eSIM profile with SMDP address: "
-                 << current_request->smdp_address;
+                 << current_request->activation_code.value;
   current_request->retry_backoff.InformOfRequest(/*succeeded=*/true);
   HermesProfileClient::Properties* profile_properties =
       HermesProfileClient::Get()->GetProperties(*profile_path);
   managed_cellular_pref_handler_->AddIccidSmdpPair(
-      profile_properties->iccid().value(), current_request->smdp_address,
+      profile_properties->iccid().value(),
+      current_request->activation_code.value,
       /*sync_stub_networks=*/false);
 
   managed_network_configuration_handler_->NotifyPolicyAppliedToNetwork(
@@ -327,8 +330,8 @@ void CellularPolicyHandler::ScheduleRetry(
   if (reason != InstallRetryReason::kInternalError &&
       request->retry_backoff.failure_count() >= kInstallRetryLimit) {
     NET_LOG(ERROR) << "Install policy eSIM profile with SMDP address: "
-                   << request->smdp_address << " failed " << kInstallRetryLimit
-                   << " times.";
+                   << request->activation_code.value << " failed "
+                   << kInstallRetryLimit << " times.";
     ProcessRequests();
     return;
   }
