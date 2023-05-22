@@ -352,7 +352,7 @@ html.col-resize .jelly-splitter:not(.splitter-active):hover {
   background: none;
   border-bottom: 1px solid transparent;
   box-sizing: border-box;
-  color: var(--cros-text-color-secondary);
+  color: var(--cros-sys-on_surface_variant);
   display: flex;
   flex: none;
   flex-direction: row;
@@ -370,7 +370,7 @@ body.check-select .dialog-header {
 /* Display a border during check-select mode if we're in a dialog. (This
    can only happen in an open-multi-file dialog). */
 body[type='open-multi-file'].check-select .dialog-header {
-  border-top: 1px solid var(--cros-bg-color);
+  border-top: 1px solid var(--cros-sys-app_base);
 }
 
 .dialog-header > .spacer {
@@ -702,7 +702,7 @@ body.check-select-v1 #search-button {
 }
 
 html:not(.pointer-active) .dialog-header.files-ng #search-box .clear:hover {
-  background-color: var(--cros-ripple-color);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 .dialog-header.files-ng #search-box .clear > .icon {
@@ -739,10 +739,10 @@ html[dir='rtl'] #search-box .clear {
   /* bar color above already defines the opacity, so use 100% here */
   --cr-toggle-checked-bar-opacity: 100%;
   --cr-toggle-checked-button-color: var(--cros-sys-on_primary);
-  --cr-toggle-checked-ripple-color: var(--cros-focus-aura-color);
+  --cr-toggle-checked-ripple-color: transparent;
   --cr-toggle-unchecked-bar-color: var(--cros-sys-secondary);
   --cr-toggle-unchecked-button-color: var(--cros-sys-on_secondary);
-  --cr-toggle-unchecked-ripple-color: var(--cros-ripple-color);
+  --cr-toggle-unchecked-ripple-color: transparent;
   --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
   --cr-toggle-ripple-diameter: 32px;
   margin-inline: 6px;
@@ -751,7 +751,7 @@ html[dir='rtl'] #search-box .clear {
 
 /* only show the ripple ring for tab navigation */
 html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
-  --cr-toggle-ripple-ring: 2px solid var(--cros-focus-ring-color);
+  --cr-toggle-ripple-ring: 2px solid var(--cros-sys-focus_ring);
 }
 
 /* Container for the detail and thumbnail list views. */
@@ -975,7 +975,6 @@ body.check-select #read-only-indicator {
 
 .dialog-header.files-ng #read-only-icon {
   -webkit-mask-image: url(../images/files/ui/visibility_ng.svg);
-  background-color: var(--cros-icon-color-secondary);
   height: 20px;
   margin-inline-end: 8px;
   width: 20px;
@@ -1042,7 +1041,7 @@ body.check-select #read-only-indicator {
 }
 
 #empty-folder > .label > span#empty-folder-desc > a {
-  color: var(--cros-text-color-prominent);
+  color: var(--cros-sys-primary);
   font: var(--cros-body-1-font);
 }
 
@@ -1501,11 +1500,11 @@ html[dir='rtl'] body.files-ng #default-tasks-list li[selected]::after {
 #list-container .group-heading {
   border-bottom: 1px solid var(--cros-separator-color);
   box-sizing: border-box;
-  color: var(--cros-text-color-secondary);
+  color: var(--cros-sys-on_surface);
   font: var(--cros-button-2-font);
   /* The desired height plus the border width. */
   height: calc(56px + 1px);
-  padding-inline-start: 16px;
+  padding-inline-start: 20px;
   padding-top: 20px;
   /* Make sure clicking this area can unselect file items. */
   pointer-events: none;
@@ -1741,7 +1740,6 @@ body.check-select #list-container li[selected] .detail-checkmark {
 
 #list-container list li .detail-thumbnail > .thumbnail {
   -webkit-user-drag: none;
-  background-color: var(--cros-highlight-color-hover);
   background-position: center;
   background-size: cover;
   border-radius: 14px;
@@ -2035,7 +2033,7 @@ list:focus li[selected] .table-row-cell .dlp-managed-icon,
    * variable needs to be created and applied here.
    */
   --cr-icon-button-fill-color: var(--cros-sys-outline);
-  --cr-icon-button-hover-background-color: var(--cros-ripple-color);
+  --cr-icon-button-hover-background-color: var(--cros-sys-hover_on_subtle);
   --cr-icon-button-icon-size: 32px;
   --cr-icon-button-margin-start: 0px;
   --cr-icon-button-size: 32px;

@@ -470,7 +470,7 @@ function getCSS() {
       display: inline-block;
       position: relative;
 
-      font: var(--cros-title-1-font);;
+      font: var(--cros-title-1-font);
       margin: 0;
 
       /* elide wide text */

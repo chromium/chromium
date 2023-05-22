@@ -1,31 +1,70 @@
 <style include="cr-shared-style">
-    [slot='title'] {
+    :host-context([theme='legacy']) [slot='title'] {
       --cr-primary-text-color: var(--cros-text-color-primary);
     }
 
-    [slot='body'] > div {
+    :host-context([theme='refresh23']) [slot='title'] {
+      font: var(--cros-display-7-font);
+    }
+
+    :host-context([theme='legacy']) [slot='body'] > div {
       --cr-secondary-text-color: var(--cros-text-color-secondary);
       margin-bottom: var(--cr-form-field-bottom-spacing);
     }
 
-    cr-dialog::part(dialog) {
+    :host-context([theme='refresh23']) [slot='body'] {
+      font: var(--cros-body-1-font);
+    }
+
+    :host-context([theme='refresh23']) [slot='body'] #message {
+      margin-bottom: 20px;
+    }
+
+    :host-context([theme='legacy']) cr-dialog::part(dialog) {
       background-color: var(--cros-bg-color-elevation-3);
       border-radius: 12px;
+    }
+
+    cr-dialog::part(dialog) {
       box-shadow: var(--cros-elevation-3-shadow);
+      max-height: 480px;
       width: 512px;
     }
 
-    cr-dialog::part(dialog) {
-      max-height: 480px;
-    }
-
-    cr-dialog::part(dialog)::backdrop {
+    :host-context([theme='legacy']) cr-dialog::part(dialog)::backdrop {
       background-color: var(--cros-app-shield-60);
     }
 
-    cr-dialog::part(wrapper) {
+    :host-context([theme='legacy']) cr-dialog::part(wrapper) {
       /* subtract the internal padding in <cr-dialog> */
       padding: calc(24px - 20px);
+    }
+
+    :host-context([theme='refresh23']) cr-dialog {
+      --cr-dialog-background-color: var(--cros-sys-dialog_container);
+      --cr-dialog-body-padding-horizontal: 0;
+      --cr-dialog-button-container-padding-bottom: 0;
+      --cr-dialog-button-container-padding-horizontal: 0;
+      --cr-dialog-title-slot-padding-bottom: 16px;
+      --cr-dialog-title-slot-padding-end: 0;
+      --cr-dialog-title-slot-padding-start: 0;
+      /* horizontally align with the  close button */
+      --cr-dialog-title-slot-padding-top: 8px;
+      --cr-primary-text-color: var(--cros-sys-on_surface);
+      --cr-secondary-text-color: var(--cros-sys-on_surface_variant);
+    }
+
+    :host-context([theme='refresh23']) cr-dialog::part(dialog) {
+      border-radius: 20px;
+    }
+
+    :host-context([theme='refresh23']) cr-dialog::part(dialog)::backdrop {
+      background-color: var(--cros-sys-scrim);
+    }
+
+    :host-context([theme='refresh23']) cr-dialog::part(wrapper) {
+      padding: 32px;
+      padding-bottom: 28px;
     }
 </style>
 
