@@ -32,6 +32,9 @@ class ReadAnythingAppModel {
   bool requires_post_process_selection() {
     return requires_post_process_selection_;
   }
+  void set_requires_post_process_selection(bool value) {
+    requires_post_process_selection_ = value;
+  }
 
   // TODO(b/1266555): Ensure there is proper test coverage for all methods.
   // Theme

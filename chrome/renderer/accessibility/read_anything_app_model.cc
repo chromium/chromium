@@ -56,6 +56,8 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
   DCHECK(ContainsTree(active_tree_id_));
 
+  requires_post_process_selection_ = false;
+
   // If the previous selection was inside the distilled content, that means we
   // are currently displaying the distilled content in Read Anything. We may not
   // need to redraw the distilled content if the user's new selection is inside

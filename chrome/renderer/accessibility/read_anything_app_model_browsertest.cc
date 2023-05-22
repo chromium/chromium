@@ -171,6 +171,13 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   void ProcessSelection() { model_->PostProcessSelection(); }
 
+  bool RequiresPostProcessSelection() {
+    return model_->requires_post_process_selection();
+  }
+  void SetRequiresPostProcessSelection(bool requires_post_process_selection) {
+    model_->set_requires_distillation(requires_post_process_selection);
+  }
+
   ui::AXTreeID tree_id_;
 
  private:
@@ -734,8 +741,10 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelection_SelectionStateCorrect) {
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({update});
+  SetRequiresPostProcessSelection(true);
   ProcessSelection();
 
+  ASSERT_FALSE(RequiresPostProcessSelection());
   ASSERT_TRUE(HasSelection());
 
   ASSERT_TRUE(SelectionNodeIdsContains(1));
