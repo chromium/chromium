@@ -17,7 +17,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
-#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -48,7 +47,6 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 
@@ -530,31 +528,6 @@ class ClipboardHistoryControllerRefreshTest
 
   bool IsClipboardHistoryRefreshEnabled() const { return GetParam(); }
 
-  // Some toasts can display on multiple root windows, so the caller can use
-  // `root_window` to target a toast on a specific root window.
-  ToastOverlay* GetCurrentOverlay(
-      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
-    return Shell::Get()->toast_manager()->GetCurrentOverlayForTesting(
-        root_window);
-  }
-
-  views::LabelButton* GetDismissButton(
-      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
-    ToastOverlay* overlay = GetCurrentOverlay(root_window);
-    DCHECK(overlay);
-    return overlay->dismiss_button_for_testing();
-  }
-
-  void ClickDismissButton(
-      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
-    views::LabelButton* dismiss_button = GetDismissButton(root_window);
-    const gfx::Point button_center =
-        dismiss_button->GetBoundsInScreen().CenterPoint();
-    auto* event_generator = GetEventGenerator();
-    event_generator->MoveMouseTo(button_center);
-    event_generator->ClickLeftButton();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -810,21 +783,6 @@ TEST_P(ClipboardHistoryControllerRefreshTest,
   FlushMessageLoop();
 
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
-}
-
-// Tests that a toast is shown if something was copied to clipboard history.
-TEST_P(ClipboardHistoryControllerRefreshTest, ShowToast) {
-  // Copy something to enable the clipboard history menu.
-  WriteTextToClipboardAndConfirm(u"test");
-
-  ToastManagerImpl* manager_ = Shell::Get()->toast_manager();
-  if (IsClipboardHistoryRefreshEnabled()) {
-    EXPECT_TRUE(manager_->IsRunning(kClipboardCopyToastId));
-    ClickDismissButton();
-    EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-  } else {
-    EXPECT_FALSE(manager_->IsRunning(kClipboardCopyToastId));
-  }
 }
 
 class ClipboardHistoryControllerShowSourceTest

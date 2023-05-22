@@ -46,8 +46,6 @@ class ClipboardNudgeController;
 enum class LoginStatus;
 class ScopedClipboardHistoryPause;
 
-constexpr char kClipboardCopyToastId[] = "CopiedToClipboard";
-
 // Shows a menu with the last few things saved in the clipboard when the
 // keyboard shortcut is pressed.
 class ASH_EXPORT ClipboardHistoryControllerImpl
@@ -260,9 +258,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
 
   // Called when the contextual menu is closed.
   void OnMenuClosed();
-
-  // Called when toast button is pressed.
-  void ShowMenuFromToast();
 
   // Observers notified when clipboard history is shown, used, or updated.
   base::ObserverList<ClipboardHistoryController::Observer> observers_;

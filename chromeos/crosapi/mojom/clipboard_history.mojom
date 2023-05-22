@@ -26,7 +26,7 @@ enum ClipboardHistoryControllerShowSource {
   kVirtualKeyboard,
   // Used as a default value in case of version skew.
   [Default] kUnknown,
-  // Shown by a toast.
+  // Deprecated: Shown by a toast.
   [MinVersion=1] kToast,
   // Shown by long-pressing Ctrl+V.
   [MinVersion=2] kControlVLongpress,

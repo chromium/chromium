@@ -17734,7 +17734,7 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="2" label="Textfield Context Menu"/>
   <int value="3" label="Virtual Keyboard"/>
   <int value="4" label="Unknown"/>
-  <int value="5" label="Toast"/>
+  <int value="5" label="Toast (deprecated)"/>
   <int value="6" label="Ctrl+V Longpress"/>
 </enum>
 
@@ -102370,7 +102370,7 @@ would be helpful to identify which type is being sent.
   <int value="37" label="Eche Tray Copy Paste Not Implemented"/>
   <int value="38" label="Eche Tray Tablet Mode Not Supported"/>
   <int value="39" label="Notification Center Tray No Notifications"/>
-  <int value="40" label="Copy to Clipboard Action"/>
+  <int value="40" label="Copy to Clipboard Action (deprecated)"/>
   <int value="41" label="Video Conference Tray Speak-On-Mute Detected"/>
   <int value="42" label="Copy Gif To Clipboard Action"/>
 </enum>
