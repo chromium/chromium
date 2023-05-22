@@ -140,7 +140,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 112;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 113;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1121,5 +1121,61 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion111ToCurrent) {
 
     EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
     EXPECT_TRUE(connection.DoesColumnExist("keywords", "enforced_by_policy"));
+  }
+}
+
+// Tests that the autofill_profiles tables are deprecated and any profiles are
+// migrated to the new local_addresses and local_addresses_type_tokens tables.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion112ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_112.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(112, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesTableExist("local_addresses"));
+    EXPECT_FALSE(connection.DoesTableExist("local_addresses_type_tokens"));
+
+    // Add two profiles to the legacy tables. This cannot be done via
+    // AutofillTable, since it only operates on the new local_addresses tables.
+    // Note that the ZIP code must be present in the unstructured and
+    // structured address table.
+    ASSERT_TRUE(connection.ExecuteScriptForTesting(R"(
+      INSERT INTO autofill_profiles (guid, date_modified, zipcode)
+      VALUES ('00000000-0000-0000-0000-000000000000', 123, '4567');
+      INSERT INTO autofill_profile_names (guid, full_name)
+      VALUES ('00000000-0000-0000-0000-000000000000', 'full name');
+      INSERT INTO autofill_profile_addresses (guid, zip_code)
+      VALUES ('00000000-0000-0000-0000-000000000000', '4567');
+      INSERT INTO autofill_profiles (guid)
+      VALUES ('00000000-0000-0000-0000-000000000001');
+    )"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesTableExist("local_addresses"));
+    EXPECT_TRUE(connection.DoesTableExist("local_addresses_type_tokens"));
+
+    // Expect to find the profiles in the local_addresses tables. AutofillTable
+    // will read from them.
+    AutofillTable table;
+    table.Init(&connection, /*meta_table=*/nullptr);
+    std::unique_ptr<AutofillProfile> profile =
+        table.GetAutofillProfile("00000000-0000-0000-0000-000000000000",
+                                 AutofillProfile::Source::kLocalOrSyncable);
+    ASSERT_TRUE(profile);
+    EXPECT_EQ(profile->modification_date(), Time::FromTimeT(123));
+    EXPECT_EQ(profile->GetRawInfo(autofill::NAME_FULL), u"full name");
+    EXPECT_EQ(profile->GetRawInfo(autofill::ADDRESS_HOME_ZIP), u"4567");
+
+    EXPECT_TRUE(
+        table.GetAutofillProfile("00000000-0000-0000-0000-000000000001",
+                                 AutofillProfile::Source::kLocalOrSyncable));
   }
 }
