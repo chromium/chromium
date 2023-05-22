@@ -9810,6 +9810,24 @@
             ]
         }
     ],
+    "ParentalControlsOnLinuxMacWindows": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230515",
+                    "enable_features": [
+                        "EnableSupervisionOnDesktopAndIOS",
+                        "FilterWebsitesForSupervisedUsersOnDesktopAndIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "ParkableImages": [
         {
             "platforms": [
