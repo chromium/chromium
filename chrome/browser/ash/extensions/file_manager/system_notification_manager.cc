@@ -505,6 +505,30 @@ void SystemNotificationManager::HandleDeviceEvent(
   }
 }
 
+NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
+    const Event& event) {
+  // Parse the event args as a bulk-pinning progress struct.
+  using Progress = file_manager_private::BulkPinProgress;
+  Progress progress;
+  if (!Progress::Populate(event.event_args[0], progress)) {
+    LOG(ERROR) << "Cannot parse BulkPinProgress from " << event.event_args[0];
+    return nullptr;
+  }
+
+  // Check the bulk-pinning stage.
+  using Stage = file_manager_private::BulkPinStage;
+  if (progress.stage != Stage::BULK_PIN_STAGE_NOT_ENOUGH_SPACE) {
+    VLOG(1) << "Ignored BulkPinProgress with stage " << progress.stage;
+    return nullptr;
+  }
+
+  // Not enough space for bulk-pinning.
+  VLOG(1) << "Creating bulk-pinning error notification";
+  return CreateNotification(
+      "drive-bulk-pinning-error", IDS_FILE_BROWSER_DRIVE_SYNC_ERROR_TITLE,
+      IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION);
+}
+
 NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
     const Event& event) {
   NotificationPtr notification;
@@ -704,28 +728,31 @@ void SystemNotificationManager::HandleEvent(const Event& event) {
       break;
 
     case HistogramValue::FILE_MANAGER_PRIVATE_ON_BULK_PIN_PROGRESS:
-      // The bulk pin progress should not get a status outside the Files app,
-      // ignore this event.
+      notification = MakeBulkPinningErrorNotification(event);
+      force_as_system_notification = true;
+      break;
 
     default:
-      DLOG(WARNING) << "Ignored Event {name: " << event.event_name
-                    << ", arg: " << event.event_args[0]
-                    << ", histogram_value: " << event.histogram_value << "}";
-      break;
+      VLOG(1) << "Ignored Event {name: " << event.event_name
+              << ", histogram_value: " << event.histogram_value
+              << ", args: " << event.event_args << "}";
+      return;
   }
 
-  if (notification) {
-    // Check if we need to remove any progress notification when there
-    // are active SWA windows.
-    if (!force_as_system_notification && DoFilesSwaWindowsExist()) {
-      GetNotificationDisplayService()->Close(
-          NotificationHandler::Type::TRANSIENT, notification->id());
-      return;
-    }
-    GetNotificationDisplayService()->Display(
-        NotificationHandler::Type::TRANSIENT, *notification,
-        /*metadata=*/nullptr);
+  if (!notification) {
+    return;
   }
+
+  // Check if we need to remove any progress notification when there
+  // are active SWA windows.
+  if (!force_as_system_notification && DoFilesSwaWindowsExist()) {
+    GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                           notification->id());
+    return;
+  }
+
+  GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
+                                           *notification, nullptr);
 }
 
 void SystemNotificationManager::HandleIOTaskProgress(

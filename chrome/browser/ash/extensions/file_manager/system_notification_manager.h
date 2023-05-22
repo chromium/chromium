@@ -194,6 +194,8 @@ class SystemNotificationManager {
       file_manager::io_task::IOTaskController* io_task_controller);
 
  private:
+  NotificationPtr MakeBulkPinningErrorNotification(const Event& event);
+
   // Make notifications for DriveFS sync errors.
   NotificationPtr MakeDriveSyncErrorNotification(const Event& event);
 
