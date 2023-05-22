@@ -845,6 +845,8 @@ void FetchManager::Loader::PerformHTTPFetch() {
   request.SetAdAuctionHeaders(fetch_request_data_->AdAuctionHeaders());
   request.SetAttributionReportingEligibility(
       fetch_request_data_->AttributionReportingEligibility());
+  request.SetSharedStorageWritable(
+      fetch_request_data_->SharedStorageWritable());
 
   request.SetOriginalDestination(fetch_request_data_->OriginalDestination());
 

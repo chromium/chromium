@@ -50,10 +50,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
@@ -932,6 +934,12 @@ bool ResourceLoader::WillFollowRedirect(
   fetcher_->RecordResourceTimingOnRedirect(resource_.Get(), redirect_response,
                                            new_url);
 
+  // `Context().PrepareRequest()` below may update the value of
+  // `new_request->GetSharedStorageWritable()`. If it does, we will need to
+  // remove the corresponding header.
+  bool need_to_check_for_shared_storage_writable_change =
+      new_request->GetSharedStorageWritable() && removed_headers;
+
   // The following two calls may rewrite the new_request->Url() to
   // something else not for rejecting redirect but for other reasons.
   // E.g. WebFrameTestClient::WillSendRequest() and
@@ -960,6 +968,11 @@ bool ResourceLoader::WillFollowRedirect(
   DCHECK_EQ(new_request->GetRequestContext(), request_context);
   DCHECK_EQ(new_request->GetMode(), request_mode);
   DCHECK_EQ(new_request->GetCredentialsMode(), credentials_mode);
+
+  if (need_to_check_for_shared_storage_writable_change &&
+      !new_request->GetSharedStorageWritable()) {
+    removed_headers->push_back(http_names::kSharedStorageWritable.Ascii());
+  }
 
   if (new_request->Url() != KURL(new_url)) {
     CancelForRedirectAccessCheckError(new_request->Url(),

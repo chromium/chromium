@@ -370,6 +370,16 @@ void FrameFetchContext::PrepareRequest(
         attribution_src_loader->GetRuntimeFeatures());
   }
 
+  if (request.GetSharedStorageWritable()) {
+    auto* policy = GetPermissionsPolicy();
+    if (!policy ||
+        !request.IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+            policy, mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+            SecurityOrigin::Create(request.Url())->ToUrlOrigin())) {
+      request.SetSharedStorageWritable(false);
+    }
+  }
+
   GetLocalFrameClient()->DispatchWillSendRequest(request);
   FrameScheduler* frame_scheduler = GetFrame()->GetFrameScheduler();
   if (!for_redirect && frame_scheduler) {

@@ -282,6 +282,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool ad_auction_headers(const network::ResourceRequest& request) {
     return request.ad_auction_headers;
   }
+  static bool shared_storage_writable(const network::ResourceRequest& request) {
+    return request.shared_storage_writable;
+  }
   static bool has_user_gesture(const network::ResourceRequest& request) {
     return request.has_user_gesture;
   }

@@ -232,6 +232,7 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->keepalive_ = keepalive_;
   request->browsing_topics_ = browsing_topics_;
   request->ad_auction_headers_ = ad_auction_headers_;
+  request->shared_storage_writable_ = shared_storage_writable_;
   request->is_history_navigation_ = is_history_navigation_;
   request->window_id_ = window_id_;
   request->trust_token_params_ = trust_token_params_;

@@ -96,6 +96,7 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetKeepalive(original->Keepalive());
   request->SetBrowsingTopics(original->BrowsingTopics());
   request->SetAdAuctionHeaders(original->AdAuctionHeaders());
+  request->SetSharedStorageWritable(original->SharedStorageWritable());
   request->SetIsHistoryNavigation(original->IsHistoryNavigation());
   if (original->URLLoaderFactory()) {
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory> factory_clone;
@@ -128,9 +129,9 @@ static bool AreAnyMembersPresent(const RequestInit* init) {
          init->hasTargetAddressSpace() || init->hasCredentials() ||
          init->hasCache() || init->hasRedirect() || init->hasIntegrity() ||
          init->hasKeepalive() || init->hasBrowsingTopics() ||
-         init->hasAdAuctionHeaders() || init->hasPriority() ||
-         init->hasSignal() || init->hasDuplex() || init->hasPrivateToken() ||
-         init->hasAttributionReporting();
+         init->hasAdAuctionHeaders() || init->hasSharedStorageWritable() ||
+         init->hasPriority() || init->hasSignal() || init->hasDuplex() ||
+         init->hasPrivateToken() || init->hasAttributionReporting();
 }
 
 static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
@@ -563,6 +564,16 @@ Request* Request::CreateRequestWithRequestOrString(
     }
 
     request->SetAdAuctionHeaders(init->adAuctionHeaders());
+  }
+
+  if (init->hasSharedStorageWritable()) {
+    if (!execution_context->IsSecureContext()) {
+      exception_state.ThrowTypeError(
+          "sharedStorageWritable: sharedStorage operations are only available"
+          " in secure contexts.");
+      return nullptr;
+    }
+    request->SetSharedStorageWritable(init->sharedStorageWritable());
   }
 
   // "If |init|'s method member is present, let |method| be it and run these

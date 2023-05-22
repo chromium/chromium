@@ -26,7 +26,6 @@ struct ResourceRequest;
 
 namespace blink {
 
-class Request;
 class ResourceRequest;
 
 // Permissions Policy is a mechanism for controlling the availability of web
@@ -252,7 +251,6 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       mojom::PermissionsPolicyFeature feature) const;
 
  private:
-  friend class Request;
   friend class ResourceRequest;
   friend class PermissionsPolicyTest;
 

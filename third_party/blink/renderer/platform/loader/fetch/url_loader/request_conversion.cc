@@ -347,6 +347,7 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->keepalive = src.GetKeepalive();
   dest->browsing_topics = src.GetBrowsingTopics();
   dest->ad_auction_headers = src.GetAdAuctionHeaders();
+  dest->shared_storage_writable = src.GetSharedStorageWritable();
   dest->has_user_gesture = src.HasUserGesture();
   dest->enable_load_timing = true;
   dest->enable_upload_progress = src.ReportUploadProgress();
