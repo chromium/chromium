@@ -17,6 +17,8 @@ class Size;
 }
 namespace media {
 
+using IoctlAsCallback = base::RepeatingCallback<int(int, void*)>;
+
 // Returns a human readable description of |memory|.
 const char* V4L2MemoryToString(v4l2_memory memory);
 
@@ -42,23 +44,21 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
 // profiles is returned (this happens for example for VP8 on Hana MTK8173, or
 // for HEVC on Trogdor QC SC7180).
 std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
-    base::RepeatingCallback<int(int, void*)> ioctl_cb,
+    const IoctlAsCallback& ioctl_cb,
     uint32_t codec_as_pix_fmt);
 
 // Enumerates all supported pixel formats for a given device (accessed via
 // |ioctl_cb|) and for |buf_type|; these will be the supported video codecs
 // (e.g. V4L2_PIX_FMT_VP9) for V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE.
-std::vector<uint32_t> EnumerateSupportedPixFmts(
-    base::RepeatingCallback<int(int, void*)> ioctl_cb,
-    v4l2_buf_type buf_type);
+std::vector<uint32_t> EnumerateSupportedPixFmts(const IoctlAsCallback& ioctl_cb,
+                                                v4l2_buf_type buf_type);
 
 // Gets minimum and maximum resolution for fourcc |pixelformat|. If the driver
 // doesn't support enumeration, default values are returned instead.
-void GetSupportedResolution(
-    const base::RepeatingCallback<int(int, void*)>& ioctl_cb,
-    uint32_t pixelformat,
-    gfx::Size* min_resolution,
-    gfx::Size* max_resolution);
+void GetSupportedResolution(const IoctlAsCallback& ioctl_cb,
+                            uint32_t pixelformat,
+                            gfx::Size* min_resolution,
+                            gfx::Size* max_resolution);
 
 }  // namespace media
 
