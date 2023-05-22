@@ -193,6 +193,7 @@ const EcheApiBindingImpl = new (class {
     androidNetworkInfoCallback = callback;
   }
 
+  // TODO: rename this and similar methods to set'Xxx'Callback
   onPerformAction(callback) {
     console.log('echeapi receiver.js onPerformAction');
     performActionCallback = callback;
