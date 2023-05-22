@@ -29,6 +29,11 @@ cr-menu.chrome-menu {
   z-index: 600;  /* Must be below the overlay pane (1000). */
 }
 
+cr-menu#gear-menu,
+cr-menu#file-context-menu {
+  min-width: 256px;
+}
+
 cr-menu.chrome-menu[hidden] {
   display: block !important;  /* Overrides default [hidden] for animation. */
   opacity: 0;
@@ -197,6 +202,7 @@ button[disabled]:hover > .hover-layer {
   border-radius: 3px;
   height: 6px;
   margin-bottom: 6px;
+  margin-top: 8px;
 }
 
 .progress-track {

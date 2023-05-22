@@ -1830,7 +1830,7 @@ body.files-ng #drag-container .drag-contents {
   left: 8px;
   padding-inline-start: 8px;
   right: 8px;
-  top: 8px;
+  top: 12px;
 }
 
 body.files-ng #drag-container .drag-multiple {
