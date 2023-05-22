@@ -72,7 +72,7 @@ class ASH_EXPORT MediaNotificationProviderImpl
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item)
       override {}
-  void HideMediaDialog() override {}
+  void HideMediaDialog() override;
   void Focus() override {}
 
   // global_media_controls::MediaItemManagerObserver:
