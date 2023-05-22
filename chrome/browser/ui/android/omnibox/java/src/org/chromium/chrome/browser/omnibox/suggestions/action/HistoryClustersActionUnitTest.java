@@ -20,7 +20,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.action.OmniboxActionType;
+import org.chromium.components.omnibox.action.OmniboxActionId;
 
 /**
  * Tests for {@link HistoryClustersAction}.
@@ -67,7 +67,7 @@ public class HistoryClustersActionUnitTest {
         assertThrows(AssertionError.class,
                 ()
                         -> HistoryClustersAction.from(
-                                new OmniboxAction(OmniboxActionType.HISTORY_CLUSTERS, "", null) {
+                                new OmniboxAction(OmniboxActionId.HISTORY_CLUSTERS, "", null) {
                                     @Override
                                     public void execute(OmniboxActionDelegate d) {}
                                 }));

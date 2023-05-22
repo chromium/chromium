@@ -22,7 +22,7 @@ public interface OmniboxActionFactory {
      */
     @CalledByNative
     @NonNull
-    OmniboxAction buildOmniboxPedal(@NonNull String hint, @OmniboxPedalType int pedalId);
+    OmniboxAction buildOmniboxPedal(@NonNull String hint, @OmniboxPedalId int pedalId);
 
     /**
      * Create a new OmniboxActionInSuggest.

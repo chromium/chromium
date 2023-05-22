@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionFactory;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
-import org.chromium.components.omnibox.action.OmniboxPedalType;
+import org.chromium.components.omnibox.action.OmniboxPedalId;
 
 /**
  * A factory creating the OmniboxAction instances.
@@ -48,7 +48,7 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
 
     @Override
     public @NonNull OmniboxAction buildOmniboxPedal(
-            @NonNull String hint, @OmniboxPedalType int pedalId) {
+            @NonNull String hint, @OmniboxPedalId int pedalId) {
         return new OmniboxPedal(hint, pedalId);
     }
 

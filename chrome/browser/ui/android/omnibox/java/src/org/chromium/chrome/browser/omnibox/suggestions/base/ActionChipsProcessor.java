@@ -20,7 +20,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.action.OmniboxAction;
-import org.chromium.components.omnibox.action.OmniboxActionType;
+import org.chromium.components.omnibox.action.OmniboxActionId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -103,15 +103,15 @@ public class ActionChipsProcessor {
 
             // TODO(crbug/1418077): Move this to appropriate implementations.
             switch (chip.actionId) {
-                case OmniboxActionType.PEDAL:
+                case OmniboxActionId.PEDAL:
                     mLastVisiblePedals.add(OmniboxPedal.from(chip).pedalId);
                     break;
 
-                case OmniboxActionType.HISTORY_CLUSTERS:
+                case OmniboxActionId.HISTORY_CLUSTERS:
                     mJourneysActionShownPosition = position;
                     break;
 
-                case OmniboxActionType.ACTION_IN_SUGGEST:
+                case OmniboxActionId.ACTION_IN_SUGGEST:
                     var actionType = OmniboxActionInSuggest.from(chip).actionType;
                     mActionInSuggestShownOrUsed.put(actionType, false);
                     break;
@@ -136,11 +136,11 @@ public class ActionChipsProcessor {
      */
     private boolean actionSupported(@NonNull OmniboxAction action) {
         switch (action.actionId) {
-            case OmniboxActionType.PEDAL:
-            case OmniboxActionType.HISTORY_CLUSTERS:
+            case OmniboxActionId.PEDAL:
+            case OmniboxActionId.HISTORY_CLUSTERS:
                 return true;
 
-            case OmniboxActionType.ACTION_IN_SUGGEST:
+            case OmniboxActionId.ACTION_IN_SUGGEST:
                 return OmniboxActionInSuggest.from(action).actionType
                         != EntityInfoProto.ActionInfo.ActionType.CALL_VALUE
                         || mDialerAvailable;
@@ -155,11 +155,11 @@ public class ActionChipsProcessor {
      */
     private void executeAction(@NonNull OmniboxAction action, int position) {
         switch (action.actionId) {
-            case OmniboxActionType.HISTORY_CLUSTERS:
+            case OmniboxActionId.HISTORY_CLUSTERS:
                 OmniboxMetrics.recordResumeJourneyClick(position);
                 break;
 
-            case OmniboxActionType.ACTION_IN_SUGGEST:
+            case OmniboxActionId.ACTION_IN_SUGGEST:
                 var actionType = OmniboxActionInSuggest.from(action).actionType;
                 mActionInSuggestShownOrUsed.put(actionType, true);
                 break;

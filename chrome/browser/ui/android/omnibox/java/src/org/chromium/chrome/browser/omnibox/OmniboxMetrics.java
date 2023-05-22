@@ -13,7 +13,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileTy
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.EntityInfoProto.ActionInfo.ActionType;
 import org.chromium.components.omnibox.action.ActionInSuggestUmaType;
-import org.chromium.components.omnibox.action.OmniboxPedalType;
+import org.chromium.components.omnibox.action.OmniboxPedalId;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.lang.annotation.Retention;
@@ -177,21 +177,21 @@ public class OmniboxMetrics {
     /**
      * Record the pedal shown when the user used the omnibox to go somewhere.
      *
-     * @param type the shown pedal's {@link OmniboxActionType}.
+     * @param pedalId the shown pedal's {@link OmniboxActionId}.
      */
-    public static void recordPedalShown(@OmniboxPedalType int type) {
+    public static void recordPedalShown(@OmniboxPedalId int pedalId) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Omnibox.PedalShown", type, OmniboxPedalType.TOTAL_COUNT);
+                "Omnibox.PedalShown", pedalId, OmniboxPedalId.TOTAL_COUNT);
     }
 
     /**
      * Record a pedal is used.
      *
-    @param omniboxActionType the clicked pedal's {@link OmniboxActionType}.
+    @param omniboxActionType the clicked pedal's {@link OmniboxActionId}.
      */
-    public static void recordPedalUsed(@OmniboxPedalType int type) {
+    public static void recordPedalUsed(@OmniboxPedalId int pedalId) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Omnibox.SuggestionUsed.Pedal", type, OmniboxPedalType.TOTAL_COUNT);
+                "Omnibox.SuggestionUsed.Pedal", pedalId, OmniboxPedalId.TOTAL_COUNT);
     }
 
     /**

@@ -34,7 +34,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.action.OmniboxActionType;
+import org.chromium.components.omnibox.action.OmniboxActionId;
 
 import java.util.List;
 
@@ -98,11 +98,11 @@ public class OmniboxActionInSuggestUnitTest {
     public void safeCasting_assertsWithWrongClassType() {
         assertThrows(AssertionError.class,
                 ()
-                        -> OmniboxActionInSuggest.from(new OmniboxAction(
-                                OmniboxActionType.ACTION_IN_SUGGEST, "hint", null) {
-                    @Override
-                    public void execute(OmniboxActionDelegate d) {}
-                }));
+                        -> OmniboxActionInSuggest.from(
+                                new OmniboxAction(OmniboxActionId.ACTION_IN_SUGGEST, "hint", null) {
+                                    @Override
+                                    public void execute(OmniboxActionDelegate d) {}
+                                }));
     }
 
     @Test

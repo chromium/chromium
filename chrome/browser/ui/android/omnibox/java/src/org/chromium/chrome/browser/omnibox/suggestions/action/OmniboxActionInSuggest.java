@@ -14,7 +14,7 @@ import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.R;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
-import org.chromium.components.omnibox.action.OmniboxActionType;
+import org.chromium.components.omnibox.action.OmniboxActionId;
 
 import java.net.URISyntaxException;
 
@@ -30,7 +30,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
 
     public OmniboxActionInSuggest(@NonNull String hint,
             /* EntityInfoProto.ActionInfo.ActionType */ int actionType, @NonNull String actionUri) {
-        super(OmniboxActionType.ACTION_IN_SUGGEST, hint, ICON_MAP.get(actionType, null));
+        super(OmniboxActionId.ACTION_IN_SUGGEST, hint, ICON_MAP.get(actionType, null));
         this.actionType = actionType;
         mActionUri = actionUri;
     }
@@ -42,7 +42,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
      */
     public static @NonNull OmniboxActionInSuggest from(@NonNull OmniboxAction action) {
         assert action != null;
-        assert action.actionId == OmniboxActionType.ACTION_IN_SUGGEST;
+        assert action.actionId == OmniboxActionId.ACTION_IN_SUGGEST;
         assert action instanceof OmniboxActionInSuggest;
         return (OmniboxActionInSuggest) action;
     }

@@ -37,16 +37,16 @@ public abstract class OmniboxAction {
     public static final ChipIcon DEFAULT_ICON =
             new ChipIcon(R.drawable.action_default, /*tintWithTextColor=*/false);
     /** The type of an underlying action. */
-    public final @OmniboxActionType int actionId;
+    public final @OmniboxActionId int actionId;
     /** The string to present/announce to the user when the action is shown. */
     public final @NonNull String hint;
     /** The icon to use to decorate the Action chip. */
     public final @NonNull ChipIcon icon;
 
     public OmniboxAction(
-            @OmniboxActionType int type, @NonNull String hint, @Nullable ChipIcon icon) {
+            @OmniboxActionId int actionId, @NonNull String hint, @Nullable ChipIcon icon) {
         assert !TextUtils.isEmpty(hint);
-        this.actionId = type;
+        this.actionId = actionId;
         this.hint = hint;
         this.icon = icon != null ? icon : DEFAULT_ICON;
     }
