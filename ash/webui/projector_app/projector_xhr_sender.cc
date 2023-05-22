@@ -118,6 +118,8 @@ inline std::string RequestTypeToString(projector::mojom::RequestType method) {
       return "GET";
     case projector::mojom::RequestType::kPatch:
       return "PATCH";
+    case projector::mojom::RequestType::kDelete:
+      return "DELETE";
   }
 
   NOTREACHED_NORETURN();

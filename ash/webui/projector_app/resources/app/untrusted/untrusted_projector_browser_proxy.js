@@ -40,6 +40,10 @@ const requestMaps = new Map([
     'PATCH',
     RequestType.kPatch,
   ],
+  [
+    'DELETE',
+    RequestType.kDelete,
+  ],
 ]);
 
 const errorCodeMap = new Map([
