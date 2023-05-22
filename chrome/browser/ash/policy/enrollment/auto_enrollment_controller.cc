@@ -153,10 +153,13 @@ bool IsSystemClockSynchronized(
 }
 
 enum class AutoEnrollmentControllerTimeoutReport {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   kTimeoutCancelled = 0,
-  kTimeoutFRE,
-  kTimeout,
-  kMaxValue = kTimeout,
+  kTimeoutFRE = 1,
+  kTimeout = 2,
+  kTimeoutUnified = 3,
+  kMaxValue = kTimeoutUnified
 };
 
 void ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport report) {
@@ -644,7 +647,7 @@ void AutoEnrollmentController::Timeout() {
     // keeps the connection open.
     LOG(ERROR) << "EnrollmentStateFetcher didn't complete within time limit.";
     UpdateState(AutoEnrollmentState::kConnectionError);
-    // TODO(b/265923216): Report unified enrollment timeouts to UMA.
+    ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutUnified);
     return;
   }
 

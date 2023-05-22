@@ -26225,6 +26225,13 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="2" label="Error - Video Capturer Service crashed"/>
 </enum>
 
+<enum name="DeviceIdentifierStatus">
+  <int value="0" label="all device identifiers are present"/>
+  <int value="1" label="serial number is missing"/>
+  <int value="2" label="rlz_brand_code is missing"/>
+  <int value="3" label="all device identifiers are missing"/>
+</enum>
+
 <enum name="DeviceIdMismatch">
   <int value="0" label="BOTH_NONEMPTY"/>
   <int value="1" label="SYNC_EMPTY"/>
@@ -79019,6 +79026,12 @@ Called by update_net_trust_anchors.py.-->
     Successfully stored policies.
   </int>
   <int value="26" label="StoredPolicyFail">Failed to store policies.</int>
+</enum>
+
+<enum name="OwnershipStatus">
+  <int value="0" label="ownership unknown"/>
+  <int value="1" label="not yet owned"/>
+  <int value="2" label="ownership taken"/>
 </enum>
 
 <enum name="P2PLookupResult">

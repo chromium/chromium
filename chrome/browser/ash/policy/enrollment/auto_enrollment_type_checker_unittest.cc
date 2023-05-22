@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -18,6 +19,7 @@
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -447,6 +449,34 @@ TEST_F(AutoEnrollmentTypeCheckerInitializationTest, RetriesAllErrors) {
   EXPECT_FALSE(AutoEnrollmentTypeChecker::Initialized());
 }
 
+TEST_F(AutoEnrollmentTypeCheckerInitializationTest, UmaHistograms) {
+  base::HistogramTester histograms;
+  base::test::TestFuture<void> future;
+  network::URLLoaderCompletionStatus status;
+
+  AutoEnrollmentTypeChecker::Initialize(test_shared_loader_factory_,
+                                        future.GetCallback());
+
+  status.error_code = net::ERR_NETWORK_CHANGED;
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GURL("https://www.gstatic.com/chromeos-usd-experiment/v1.json"), status,
+      network::mojom::URLResponseHead::New(), "");
+  test_url_loader_factory_.AddResponse(
+      "https://www.gstatic.com/chromeos-usd-experiment/v1.json",
+      R"({"disable_up_to_version": 1})", net::HTTP_OK);
+
+  ASSERT_TRUE(future.Wait());
+  histograms.ExpectTotalCount(
+      kUMAStateDeterminationKillSwitchFetchNetworkErrorCode, 2);
+  histograms.ExpectBucketCount(
+      kUMAStateDeterminationKillSwitchFetchNetworkErrorCode,
+      -net::ERR_NETWORK_CHANGED, 1);
+  histograms.ExpectBucketCount(
+      kUMAStateDeterminationKillSwitchFetchNetworkErrorCode, -net::OK, 1);
+  histograms.ExpectUniqueSample(kUMAStateDeterminationKillSwitchFetchNumTries,
+                                2, 1);
+}
+
 TEST_F(AutoEnrollmentTypeCheckerInitializationTest, KilledBeforeInitStarted) {
   EXPECT_FALSE(AutoEnrollmentTypeChecker::Initialized());
   EXPECT_TRUE(AutoEnrollmentTypeChecker::
@@ -524,7 +554,7 @@ TEST_F(AutoEnrollmentTypeCheckerInitializationTest, KilledVersion) {
   base::test::TestFuture<void> future;
   test_url_loader_factory_.AddResponse(
       "https://www.gstatic.com/chromeos-usd-experiment/v1.json",
-      "{\"disable_up_to_version\": 1}", net::HTTP_OK);
+      R"({"disable_up_to_version": 1})", net::HTTP_OK);
 
   AutoEnrollmentTypeChecker::Initialize(test_shared_loader_factory_,
                                         future.GetCallback());
@@ -539,7 +569,7 @@ TEST_F(AutoEnrollmentTypeCheckerInitializationTest, ActiveVersion) {
   test_url_loader_factory_.AddResponse(
       "https://www.gstatic.com/chromeos-usd-experiment/v1.json",
       // TODO(b/265923216): Change to 0 when kCodeVersion is 1.
-      "{\"disable_up_to_version\": -1}", net::HTTP_OK);
+      R"({"disable_up_to_version": -1})", net::HTTP_OK);
 
   AutoEnrollmentTypeChecker::Initialize(test_shared_loader_factory_,
                                         future.GetCallback());

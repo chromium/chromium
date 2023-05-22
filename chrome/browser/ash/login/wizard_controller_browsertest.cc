@@ -1723,6 +1723,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Timeout) {
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
             GetErrorScreen()->GetParentScreen());
   test::OobeJS().ExpectHiddenPath(kGuestSessionLink);
+  histogram_tester()->ExpectBucketCount(
+      "Enterprise.AutoEnrollmentControllerTimeout", 3 /*kTimeoutUnified*/, 1);
 }
 
 // Tests that AutoEnrollmentController does not create another

@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -33,6 +34,7 @@
 #include "chromeos/ash/components/dbus/system_clock/system_clock_sync_observation.h"
 #include "chromeos/ash/components/system/factory_ping_embargo_check.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -46,9 +48,6 @@ namespace policy {
 namespace {
 
 namespace em = enterprise_management;
-
-// TODO(b/265923216): Review UMA stats in this file and compare them to stats
-// reported by auto_enrollment_client_impl.cc. Add missing, remove unnecessary.
 
 // TODO(b/265923216): Wrap callbacks into an object ensuring they are called.
 
@@ -110,9 +109,6 @@ struct DeterminationContext {
   // membership for. Must be set before RlweOprf and RlweQuery steps.
   std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>
       psm_rlwe_client;
-
-  // Time at which OPRF request was sent. Used to compute PSM protocol time.
-  base::TimeTicks oprf_request_time_;
 };
 
 void StorePsmError(PrefService* local_state) {
@@ -215,7 +211,41 @@ class DeviceIdentifiers {
             .value_or(""));
     out_serial_number =
         std::string(statistics_provider->GetMachineID().value_or(""));
+    ReportDeviceIdentifierStatus(out_serial_number.empty(),
+                                 out_rlz_brand_code.empty());
     return !out_serial_number.empty() && !out_rlz_brand_code.empty();
+  }
+
+ private:
+  static void ReportDeviceIdentifierStatus(bool serial_number_missing,
+                                           bool rlz_brand_code_missing) {
+    enum class DeviceIdentifierStatus {
+      // These values are persisted to logs. Entries should not be renumbered
+      // and numeric values should never be reused.
+      kAllPresent = 0,
+      kSerialNumberMissing = 1,
+      kRlzBrandCodeMissing = 2,
+      kAllMissing = 3,
+      kMaxValue = kAllMissing
+    };
+
+    if (serial_number_missing && rlz_brand_code_missing) {
+      base::UmaHistogramEnumeration(
+          kUMAStateDeterminationDeviceIdentifierStatus,
+          DeviceIdentifierStatus::kAllMissing);
+    } else if (serial_number_missing) {
+      base::UmaHistogramEnumeration(
+          kUMAStateDeterminationDeviceIdentifierStatus,
+          DeviceIdentifierStatus::kSerialNumberMissing);
+    } else if (rlz_brand_code_missing) {
+      base::UmaHistogramEnumeration(
+          kUMAStateDeterminationDeviceIdentifierStatus,
+          DeviceIdentifierStatus::kRlzBrandCodeMissing);
+    } else {
+      base::UmaHistogramEnumeration(
+          kUMAStateDeterminationDeviceIdentifierStatus,
+          DeviceIdentifierStatus::kAllPresent);
+    }
   }
 };
 
@@ -303,7 +333,6 @@ class RlweOprf {
          ->mutable_oprf_request() = *oprf_request;
 
     VLOG(1) << "Send PSM RLWE OPRF request";
-    context.oprf_request_time_ = base::TimeTicks::Now();
     job_ = context.device_management_service->CreateJob(std::move(config));
   }
 
@@ -311,6 +340,12 @@ class RlweOprf {
   void OnRequestDone(CompletionCallback completion_callback,
                      DMServerJobResult result) {
     // Handle errors
+    base::UmaHistogramEnumeration(
+        kUMAStateDeterminationPsmRlweOprfRequestDmStatusCode, result.dm_status,
+        static_cast<policy::DeviceManagementStatus>(DM_STATUS_SERVICE_MAX + 1));
+    base::UmaHistogramSparse(
+        kUMAStateDeterminationPsmRlweOprfRequestNetworkErrorCode,
+        -result.net_error);
     switch (result.dm_status) {
       case DM_STATUS_SUCCESS: {
         if (!result.response.has_private_set_membership_response() ||
@@ -389,8 +424,7 @@ class RlweQuery {
         /*oauth_token=*/absl::nullopt, context.url_loader_factory,
         base::BindOnce(&RlweQuery::OnRequestDone, weak_factory_.GetWeakPtr(),
                        base::Unretained(context.psm_rlwe_client.get()),
-                       std::move(completion_callback),
-                       context.oprf_request_time_));
+                       std::move(completion_callback)));
 
     *config->request()
          ->mutable_private_set_membership_request()
@@ -404,9 +438,14 @@ class RlweQuery {
   void OnRequestDone(
       private_membership::rlwe::PrivateMembershipRlweClient* psm_rlwe_client,
       CompletionCallback completion_callback,
-      base::TimeTicks oprf_request_time,
       DMServerJobResult result) {
     // Handle errors
+    base::UmaHistogramEnumeration(
+        kUMAStateDeterminationPsmRlweQueryRequestDmStatusCode, result.dm_status,
+        static_cast<policy::DeviceManagementStatus>(DM_STATUS_SERVICE_MAX + 1));
+    base::UmaHistogramSparse(
+        kUMAStateDeterminationPsmRlweQueryRequestNetworkErrorCode,
+        -result.net_error);
     switch (result.dm_status) {
       case DM_STATUS_SUCCESS: {
         // Check if the RLWE query response is empty.
@@ -500,7 +539,7 @@ class EnrollmentState {
         /*oauth_token=*/absl::nullopt, context.url_loader_factory,
         base::BindOnce(&EnrollmentState::OnRequestDone,
                        weak_factory_.GetWeakPtr(),
-                       std::move(completion_callback), base::TimeTicks::Now()));
+                       std::move(completion_callback)));
 
     auto* request = config->request()->mutable_device_state_retrieval_request();
     if (context.state_key.has_value()) {
@@ -514,9 +553,13 @@ class EnrollmentState {
   }
 
   void OnRequestDone(CompletionCallback completion_callback,
-                     base::TimeTicks start_time,
                      DMServerJobResult result) {
     // Handle errors
+    base::UmaHistogramEnumeration(
+        kUMAStateDeterminationStateRequestDmStatusCode, result.dm_status,
+        static_cast<policy::DeviceManagementStatus>(DM_STATUS_SERVICE_MAX + 1));
+    base::UmaHistogramSparse(kUMAStateDeterminationStateRequestNetworkErrorCode,
+                             -result.net_error);
     switch (result.dm_status) {
       case DM_STATUS_SUCCESS: {
         if (!result.response.has_device_state_retrieval_response()) {
@@ -793,15 +836,21 @@ class EnrollmentStateFetcherImpl::Sequence {
         context_(std::move(context)) {}
 
   void Start() {
-    if (!AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled()) {
+    fetch_started_ = base::TimeTicks::Now();
+    const bool enabled =
+        AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
+    base::UmaHistogramBoolean(kUMAStateDeterminationEnabled, enabled);
+    if (!enabled) {
       VLOG(1) << "Unified state determination is disabled";
-      return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
+      return ReportResult(AutoEnrollmentState::kNoEnrollment);
     }
 
     // Flex devices do not support FRE, hence there is no need to perform state
     // determination. Users are still able to manually enroll devices though.
-    if (ash::switches::IsRevenBranding()) {
-      return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
+    const bool is_on_flex = ash::switches::IsRevenBranding();
+    base::UmaHistogramBoolean(kUMAStateDeterminationOnFlex, is_on_flex);
+    if (is_on_flex) {
+      return ReportResult(AutoEnrollmentState::kNoEnrollment);
     }
     // TODO(b/265923216): Investigate the possibility of using bypassing PSM and
     // using state key to directly request state when identifiers are missing.
@@ -809,24 +858,75 @@ class EnrollmentStateFetcherImpl::Sequence {
                                       context_.rlz_brand_code,
                                       context_.serial_number)) {
       // Skip enrollment if serial number or brand code are missing.
-      return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
+      return ReportResult(AutoEnrollmentState::kNoEnrollment);
     }
 
+    step_started_ = base::TimeTicks::Now();
     system_clock_.Sync(context_.system_clock_client,
                        base::BindOnce(&Sequence::OnSystemClockSynced,
                                       weak_factory_.GetWeakPtr()));
   }
 
  private:
-  void OnSystemClockSynced(bool synchronized) {
-    if (!synchronized) {
-      LOG(ERROR) << "System clock failed to synchronize";
-      return std::move(report_result_)
-          .Run(AutoEnrollmentState::kConnectionError);
+  void ReportTotalDuration(base::TimeDelta fetch_duration,
+                           AutoEnrollmentState state) {
+    std::string uma_suffix;
+    switch (state) {
+      case AutoEnrollmentState::kIdle:
+      case AutoEnrollmentState::kPending:
+        NOTREACHED();
+        break;
+      case AutoEnrollmentState::kConnectionError:
+        uma_suffix = kUMASuffixConnectionError;
+        break;
+      case AutoEnrollmentState::kDisabled:
+        uma_suffix = kUMASuffixDisabled;
+        break;
+      case AutoEnrollmentState::kEnrollment:
+        uma_suffix = kUMASuffixEnrollment;
+        break;
+      case AutoEnrollmentState::kNoEnrollment:
+        uma_suffix = kUMASuffixNoEnrollment;
+        break;
+      case AutoEnrollmentState::kServerError:
+        uma_suffix = kUMASuffixServerError;
+        break;
     }
 
-    if (!embargo_date_.Passed(context_)) {
-      return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
+    base::UmaHistogramMediumTimes(kUMAStateDeterminationTotalDuration,
+                                  fetch_duration);
+    base::UmaHistogramMediumTimes(
+        base::StrCat({kUMAStateDeterminationTotalDurationByState, uma_suffix}),
+        fetch_duration);
+  }
+
+  void ReportStepDurationAndResetTimer(base::StringPiece uma_step_suffix) {
+    base::UmaHistogramTimes(
+        base::StrCat({kUMAStateDeterminationStepDuration, uma_step_suffix}),
+        base::TimeTicks::Now() - step_started_);
+    step_started_ = base::TimeTicks::Now();
+  }
+
+  void ReportResult(AutoEnrollmentState state) {
+    DCHECK(state != AutoEnrollmentState::kIdle);
+    DCHECK(state != AutoEnrollmentState::kPending);
+    ReportTotalDuration(base::TimeTicks::Now() - fetch_started_, state);
+    std::move(report_result_).Run(state);
+  }
+
+  void OnSystemClockSynced(bool synchronized) {
+    ReportStepDurationAndResetTimer(kUMASuffixSystemClockSync);
+    base::UmaHistogramBoolean(kUMAStateDeterminationSystemClockSynchronized,
+                              synchronized);
+    if (!synchronized) {
+      LOG(ERROR) << "System clock failed to synchronize";
+      return ReportResult(AutoEnrollmentState::kConnectionError);
+    }
+
+    const bool passed = embargo_date_.Passed(context_);
+    base::UmaHistogramBoolean(kUMAStateDeterminationEmbargoDatePassed, passed);
+    if (!passed) {
+      return ReportResult(AutoEnrollmentState::kNoEnrollment);
     }
 
     ownership_.Check(context_.device_settings_service,
@@ -835,14 +935,19 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnOwnershipChecked(ash::DeviceSettingsService::OwnershipStatus status) {
+    ReportStepDurationAndResetTimer(kUMASuffixOwnershipCheck);
+    base::UmaHistogramEnumeration(
+        kUMAStateDeterminationOwnershipStatus, status,
+        static_cast<ash::DeviceSettingsService::OwnershipStatus>(
+            ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_MAX + 1));
     if (status == ash::DeviceSettingsService::OWNERSHIP_UNKNOWN) {
       LOG(ERROR) << "Device ownership is unknown. Skipping enrollment";
-      return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
+      return ReportResult(AutoEnrollmentState::kNoEnrollment);
     }
 
     if (status == ash::DeviceSettingsService::OWNERSHIP_TAKEN) {
       VLOG(1) << "Device ownership is already taken. Skipping enrollment";
-      return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
+      return ReportResult(AutoEnrollmentState::kNoEnrollment);
     }
 
     state_keys_.Retrieve(context_.state_key_broker,
@@ -851,6 +956,9 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnStateKeysRetrieved(absl::optional<std::string> state_key) {
+    ReportStepDurationAndResetTimer(kUMASuffixStateKeyRetrieval);
+    base::UmaHistogramBoolean(kUMAStateDeterminationStateKeysRetrieved,
+                              state_key.has_value());
     LOG_IF(WARNING, !state_key) << "Failed to obtain state keys";
     context_.state_key = state_key;
     context_.psm_rlwe_client = context_.rlwe_client_factory.Run(
@@ -860,9 +968,10 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnOprfRequestDone(RlweOprf::Result result) {
+    ReportStepDurationAndResetTimer(kUMASuffixOPRFRequest);
     if (!result.has_value()) {
       StorePsmError(local_state_);
-      return std::move(report_result_).Run(result.error());
+      return ReportResult(result.error());
     }
     query_.Request(context_, result.value(),
                    base::BindOnce(&Sequence::OnQueryRequestDone,
@@ -870,9 +979,10 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnQueryRequestDone(RlweQuery::Result result) {
+    ReportStepDurationAndResetTimer(kUMASuffixQueryRequest);
     if (!result.has_value()) {
       StorePsmError(local_state_);
-      return std::move(report_result_).Run(result.error());
+      return ReportResult(result.error());
     }
 
     RlwePlaintextId psm_id =
@@ -882,8 +992,10 @@ class EnrollmentStateFetcherImpl::Sequence {
                  << psm_id.sensitive_id() << " is "
                  << (result.value() ? "" : " not") << " present on the server";
 
+    base::UmaHistogramBoolean(kUMAStateDeterminationPsmReportedAvailableState,
+                              result.value());
     if (!result.value()) {
-      return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
+      return ReportResult(AutoEnrollmentState::kNoEnrollment);
     }
     query_.StoreResponse(local_state_, result.value());
     state_.Request(context_, base::BindOnce(&Sequence::OnStateRequestDone,
@@ -891,16 +1003,23 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnStateRequestDone(EnrollmentState::Result result) {
+    ReportStepDurationAndResetTimer(kUMASuffixStateRequest);
+    base::UmaHistogramBoolean(kUMAStateDeterminationStateReturned,
+                              result.has_value());
     if (!result.has_value()) {
-      return std::move(report_result_).Run(result.error());
+      return ReportResult(result.error());
     }
     state_.StoreResponse(local_state_, result->dict);
-    return std::move(report_result_).Run(result->state);
+    return ReportResult(result->state);
   }
 
   // Used to report an error or the determined enrollment state. In production
   // code, this will point to `AutoEnrollmentController::UpdateState`.
   base::OnceCallback<void(AutoEnrollmentState)> report_result_;
+
+  // Time at which overall fetch or individual step has been started.
+  base::TimeTicks fetch_started_;
+  base::TimeTicks step_started_;
 
   // Used to store the initial enrollment state (if available) in a dict at
   // `prefs::kServerBackedDeviceState`.
