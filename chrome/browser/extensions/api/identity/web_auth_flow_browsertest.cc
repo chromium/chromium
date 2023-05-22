@@ -12,8 +12,10 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_features.h"
@@ -587,7 +589,7 @@ INSTANTIATE_TEST_SUITE_P(,
 class WebAuthFlowWithBrowserTabBrowserTest : public WebAuthFlowBrowserTest {
  public:
   WebAuthFlowWithBrowserTabBrowserTest() {
-    // By default the feature param is {{"browser_tab_mode", "new_tab"}}.
+    // By default the feature param is {{"browser_tab_mode", "popup_window"}}.
     scoped_feature_list_.InitAndEnableFeature(
         features::kWebAuthFlowInBrowserTab);
   }
@@ -605,7 +607,7 @@ class WebAuthFlowWithBrowserTabBrowserTest : public WebAuthFlowBrowserTest {
 // These two tests are combined into one in order not to re-test the tab
 // creation twice.
 IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
-                       InteractiveNewTabCreatedWithAuthURL_ThenCloseTab) {
+                       InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -620,8 +622,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
   navigation_observer.Wait();
 
   Browser* popup_browser = chrome::FindBrowserWithWebContents(web_contents());
-  TabStripModel* tabs = popup_browser->tab_strip_model();
+  EXPECT_EQ(popup_browser->type(), Browser::Type::TYPE_POPUP);
   EXPECT_NE(browser(), popup_browser);
+  TabStripModel* tabs = popup_browser->tab_strip_model();
   EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), auth_url);
 
   // Check info bar exists and displays proper message with extension name.
@@ -643,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     WebAuthFlowWithBrowserTabBrowserTest,
-    InteractiveNewTabCreatedWithAuthURL_ThenChangeURLBeforeAuthResult) {
+    InteractivePopupWindowCreatedWithAuthURL_ThenChangeURLBeforeAuthResult) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -667,8 +670,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(auth_info_bar);
 
   Browser* popup_browser = chrome::FindBrowserWithWebContents(web_contents());
-  TabStripModel* tabs = popup_browser->tab_strip_model();
+  EXPECT_EQ(popup_browser->type(), Browser::Type::TYPE_POPUP);
   EXPECT_NE(browser(), popup_browser);
+  TabStripModel* tabs = popup_browser->tab_strip_model();
 
   GURL new_url = embedded_test_server()->GetURL("a.com", "/new.html");
   EXPECT_CALL(mock(),
@@ -688,8 +692,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(auth_info_bar);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
-                       InteractiveNoBrowser_WebAuthCreatesBrowserWithTab) {
+IN_PROC_BROWSER_TEST_F(
+    WebAuthFlowWithBrowserTabBrowserTest,
+    InteractiveNoBrowser_WebAuthCreatesBrowserWithPopupWindow) {
   Profile* profile = browser()->profile();
   // Simulates an extension being opened, in order for the profile not to be
   // added for destruction.
@@ -712,6 +717,48 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
 
   Browser* new_browser = chrome::FindBrowserWithProfile(profile);
   EXPECT_TRUE(new_browser);
+  EXPECT_EQ(new_browser->type(), Browser::Type::TYPE_POPUP);
+  EXPECT_EQ(new_browser->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL(),
+            auth_url);
+}
+
+// This is a regression test for crbug/1445824, makes sure the opened popup
+// window does not trigger Session restore.
+IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
+                       InteractiveNoBrowser_NotActivatingSessionRestore) {
+  Profile* profile = browser()->profile();
+
+  // Enable SessionRestore to last used pages.
+  SessionStartupPref startup_pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(profile, startup_pref);
+
+  // Simulates an extension being opened, with no active browser.
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBackgroundMode);
+  ScopedKeepAlive keep_alive{KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED};
+  CloseBrowserSynchronously(browser());
+  ASSERT_FALSE(chrome::FindBrowserWithProfile(profile));
+
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  StartWebAuthFlow(auth_url, WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::Mode::INTERACTIVE, profile);
+  navigation_observer.Wait();
+
+  // Makes sure only one browser is created and profile is not trying to restore
+  // previous tabs.
+  EXPECT_FALSE(SessionRestore::IsRestoring(profile));
+  EXPECT_EQ(chrome::FindAllBrowsersWithProfile(profile).size(), 1u);
+
+  Browser* new_browser = chrome::FindBrowserWithProfile(profile);
+  EXPECT_TRUE(new_browser);
+  EXPECT_EQ(new_browser->type(), Browser::Type::TYPE_POPUP);
   EXPECT_EQ(new_browser->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetLastCommittedURL(),
@@ -763,20 +810,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
   EXPECT_FALSE(infobar_delegate);
 }
 
-class WebAuthFlowWithBrowserTabInPopupWindowBrowserTest
-    : public WebAuthFlowBrowserTest {
- public:
-  WebAuthFlowWithBrowserTabInPopupWindowBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kWebAuthFlowInBrowserTab,
-        {{"browser_tab_mode", "popup_window"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabInPopupWindowBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
                        PopupWindowOpened_ThenCloseWindow) {
   size_t initial_browser_count = chrome::GetTotalBrowserCount();
 
