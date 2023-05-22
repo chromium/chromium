@@ -44,6 +44,9 @@ dictionary AuctionAdInterestGroup {
 
   [ImplementedAs=biddingWasmHelperUrlDeprecated]
   USVString biddingWasmHelperUrl;
+  USVString updateURL;
+
+  [ImplementedAs=updateUrlDeprecated]
   USVString updateUrl;
   // TODO(https://crbug.com/1420080): Remove this deprecated field, in favor of
   // `updateUrl` above.

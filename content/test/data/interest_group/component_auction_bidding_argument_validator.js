@@ -40,7 +40,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 13) {
+  if (Object.keys(interestGroup).length !== 14) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -73,8 +73,12 @@ function validateInterestGroup(interestGroup) {
     throw 'Incorrect biddingLogicUrl ' + interestGroup.biddingLogicUrl;
   }
 
-  if (!interestGroup.updateUrl.startsWith('https://a.test') ||
-      !interestGroup.updateUrl.endsWith('/not_found_update_url.json')) {
+  if (!interestGroup.updateURL.startsWith('https://a.test') ||
+      !interestGroup.updateURL.endsWith('/not_found_update_url.json')) {
+    throw 'Incorrect updateURL ' + interestGroup.updateURL;
+  }
+
+  if (interestGroup.updateUrl !== interestGroup.updateURL) {
     throw 'Incorrect updateUrl ' + interestGroup.updateUrl;
   }
 

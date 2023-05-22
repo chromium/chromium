@@ -138,6 +138,18 @@ bool SetBiddingWasmHelperUrl(v8::Isolate* isolate,
          SetDictMember(isolate, object, "biddingWasmHelperUrl", v8_value);
 }
 
+bool SetUpdateUrl(v8::Isolate* isolate,
+                  v8::Local<v8::Object> object,
+                  const std::string& val) {
+  v8::Local<v8::Value> v8_value;
+  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
+    return false;
+  }
+  return SetDictMember(isolate, object, "updateURL", v8_value) &&
+         SetDictMember(isolate, object, "updateUrl", v8_value) &&
+         SetDictMember(isolate, object, "dailyUpdateUrl", v8_value);
+}
+
 // Converts a vector of blink::InterestGroup::Ads into a v8 object.
 bool CreateAdVector(AuctionV8Helper* v8_helper,
                     v8::Local<v8::Context> context,
@@ -1059,13 +1071,8 @@ BidderWorklet::V8State::GenerateSingleBid(
        !SetBiddingWasmHelperUrl(isolate, interest_group_object,
                                 wasm_helper_url_->spec())) ||
       (bidder_worklet_non_shared_params.update_url &&
-       (!interest_group_dict.Set(
-            "updateUrl", bidder_worklet_non_shared_params.update_url->spec()) ||
-        // TODO(https://crbug.com/1420080) Remove deprecated `dailyUpdateUrl`
-        // alias.
-        !interest_group_dict.Set(
-            "dailyUpdateUrl",
-            bidder_worklet_non_shared_params.update_url->spec()))) ||
+       !SetUpdateUrl(isolate, interest_group_object,
+                     bidder_worklet_non_shared_params.update_url->spec())) ||
       (trusted_bidding_signals_url_ &&
        !interest_group_dict.Set("trustedBiddingSignalsUrl",
                                 trusted_bidding_signals_url_->spec()))) {

@@ -265,7 +265,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
       "biddingWasmHelperURL must have the same origin as the InterestGroup "
       "owner and have no fragment identifier or embedded credentials.";
   const char kBadUpdateUrlError[] =
-      "updateUrl must have the same origin as the InterestGroup owner "
+      "updateURL must have the same origin as the InterestGroup owner "
       "and have no fragment identifier or embedded credentials.";
   const char kBadTrustedBiddingSignalsUrlError[] =
       "trustedBiddingSignalsUrl must have the same origin as the "
@@ -334,7 +334,7 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
     blink_interest_group = CreateMinimalInterestGroup();
     blink_interest_group->update_url = rejected_url;
     ExpectInterestGroupIsNotValid(
-        blink_interest_group, /*expected_error_field_name=*/"updateUrl",
+        blink_interest_group, /*expected_error_field_name=*/"updateURL",
         /*expected_error_field_value=*/rejected_url.GetString().Utf8(),
         /*expected_error=*/kBadUpdateUrlError);
 

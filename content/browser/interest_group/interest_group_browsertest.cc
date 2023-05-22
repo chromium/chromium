@@ -1757,8 +1757,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(
       base::StringPrintf(
           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-          "updateUrl 'https://update.a.test/' for AuctionAdInterestGroup with "
-          "owner '%s' and name 'tricycles' updateUrl must have the same origin "
+          "updateURL 'https://update.a.test/' for AuctionAdInterestGroup with "
+          "owner '%s' and name 'tricycles' updateURL must have the same origin "
           "as the InterestGroup owner and have no fragment identifier or "
           "embedded credentials.",
           test_origin_a.Serialize().c_str()),
@@ -2985,7 +2985,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(
       base::StringPrintf(
           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-          "updateUrl 'https://invalid^&' for AuctionAdInterestGroup with "
+          "updateURL 'https://invalid^&' for AuctionAdInterestGroup with "
           "owner '%s' and name 'cars' cannot be resolved to a valid URL.",
           origin_string.c_str()),
       EvalJs(shell(), JsReplace(R"(
@@ -3053,7 +3053,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(
       base::StringPrintf(
           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-          "updateUrl '%s' for AuctionAdInterestGroup with owner '%s' and name "
+          "updateURL '%s' for AuctionAdInterestGroup with owner '%s' and name "
           "'cars' must match dailyUpdateUrl, when both are present.",
           (origin_string + "/foo").c_str(), origin_string.c_str()),
       EvalJs(shell(), JsReplace(R"(
@@ -3698,6 +3698,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               base::StringPrintf("%s/bidding.wasm", origin_string.c_str())))
           .Build();
 
+  const blink::InterestGroup kExpectedGroupUpdateUrl =
+      blink::TestInterestGroupBuilder(/*owner=*/origin, /*name=*/"cars")
+          .SetUpdateUrl(
+              GURL(base::StringPrintf("%s/update.json", origin_string.c_str())))
+          .Build();
+
   struct TestCases {
     const std::string join_dict_contents;
     const std::string result;
@@ -3784,6 +3790,29 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
            "interest group biddingWasmHelperUrl doesn't have the same value as "
            "interest group biddingWasmHelperURL ('%s/bidding.wasm' vs "
            "'%s/bidding2.wasm')",
+           origin_string.c_str(), origin_string.c_str()),
+       absl::nullopt},
+      // ***
+      // updateURL
+      // ***
+      {base::StringPrintf(R"(updateUrl: '%s/update.json')",
+                          origin_string.c_str()),
+       "done", kExpectedGroupUpdateUrl},
+      {base::StringPrintf(R"(updateURL: '%s/update.json')",
+                          origin_string.c_str()),
+       "done", kExpectedGroupUpdateUrl},
+      {base::StringPrintf(R"(updateUrl: '%s/update.json',)"
+                          R"(updateURL: '%s/update.json')",
+                          origin_string.c_str(), origin_string.c_str()),
+       "done", kExpectedGroupUpdateUrl},
+      {base::StringPrintf(R"(updateUrl: '%s/update.json',)"
+                          R"(updateURL: '%s/update2.json')",
+                          origin_string.c_str(), origin_string.c_str()),
+       base::StringPrintf(
+           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+           "interest group updateUrl doesn't have the same value as "
+           "interest group updateURL ('%s/update.json' vs "
+           "'%s/update2.json')",
            origin_string.c_str(), origin_string.c_str()),
        absl::nullopt},
   };

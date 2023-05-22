@@ -625,18 +625,18 @@ bool CopyUpdateUrlFromIdlToMojo(const ExecutionContext& context,
                                 ExceptionState& exception_state,
                                 const AuctionAdInterestGroup& input,
                                 mojom::blink::InterestGroup& output) {
-  if (input.hasUpdateUrl()) {
+  if (input.hasUpdateURL()) {
     if (input.hasDailyUpdateUrl() &&
-        input.updateUrl() != input.dailyUpdateUrl()) {
+        input.updateURL() != input.dailyUpdateUrl()) {
       exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
-          input, "updateUrl", input.updateUrl(),
+          input, "updateURL", input.updateURL(),
           "must match dailyUpdateUrl, when both are present."));
       return false;
     }
-    KURL update_url = context.CompleteURL(input.updateUrl());
+    KURL update_url = context.CompleteURL(input.updateURL());
     if (!update_url.IsValid()) {
       exception_state.ThrowTypeError(
-          ErrorInvalidInterestGroup(input, "updateUrl", input.updateUrl(),
+          ErrorInvalidInterestGroup(input, "updateURL", input.updateURL(),
                                     "cannot be resolved to a valid URL."));
       return false;
     }
@@ -2083,7 +2083,7 @@ bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
             return false;
           }
         } else {
-          ad->setRenderURL(ad->renderUrlDeprecated());
+          ad->setRenderURL(std::move(ad->renderUrlDeprecated()));
         }
       }
       if (!ad->hasRenderURL()) {
@@ -2106,7 +2106,7 @@ bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
             return false;
           }
         } else {
-          ad->setRenderURL(ad->renderUrlDeprecated());
+          ad->setRenderURL(std::move(ad->renderUrlDeprecated()));
         }
       }
       if (!ad->hasRenderURL()) {
@@ -2128,7 +2128,7 @@ bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
         return false;
       }
     } else {
-      group->setBiddingLogicURL(group->biddingLogicUrlDeprecated());
+      group->setBiddingLogicURL(std::move(group->biddingLogicUrlDeprecated()));
     }
   }
 
@@ -2144,7 +2144,23 @@ bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
         return false;
       }
     } else {
-      group->setBiddingWasmHelperURL(group->biddingWasmHelperUrlDeprecated());
+      group->setBiddingWasmHelperURL(
+          std::move(group->biddingWasmHelperUrlDeprecated()));
+    }
+  }
+
+  if (group->hasUpdateUrlDeprecated()) {
+    if (group->hasUpdateURL()) {
+      if (group->updateUrlDeprecated() != group->updateURL()) {
+        exception_state.ThrowTypeError(ErrorRenameMismatch(
+            /*old_field_name=*/"interest group updateUrl",
+            /*old_field_value=*/group->updateUrlDeprecated(),
+            /*new_field_name=*/"interest group updateURL",
+            /*new_field_value=*/group->updateURL()));
+        return false;
+      }
+    } else {
+      group->setUpdateURL(std::move(group->updateUrlDeprecated()));
     }
   }
 

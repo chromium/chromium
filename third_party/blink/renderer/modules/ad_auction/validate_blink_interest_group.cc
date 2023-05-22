@@ -202,10 +202,10 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
 
   if (group.update_url) {
     if (!IsUrlAllowed(*group.update_url, group)) {
-      error_field_name = "updateUrl";
+      error_field_name = "updateURL";
       error_field_value = group.update_url->GetString();
       error =
-          "updateUrl must have the same origin as the InterestGroup owner "
+          "updateURL must have the same origin as the InterestGroup owner "
           "and have no fragment identifier or embedded credentials.";
       return false;
     }
