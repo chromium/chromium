@@ -22,6 +22,7 @@
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "sql/database.h"
+#include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -797,6 +798,14 @@ QuotaError QuotaDatabase::SetIsBootstrapped(bool bootstrap_flag) {
 
 QuotaError QuotaDatabase::RazeAndReopen() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Opening failed, don't bother to try again. If the error occurred while
+  // opening the db, it won't be open and trying to raze it will result in a
+  // MISUSE error.
+  if (db_ && !db_->is_open()) {
+    return QuotaError::kDatabaseError;
+  }
+
   // Try creating a database one last time if there isn't one.
   if (!db_) {
     if (!db_file_path_.empty()) {
@@ -810,13 +819,13 @@ QuotaError QuotaDatabase::RazeAndReopen() {
   // Abort the long-running transaction.
   db_->RollbackTransaction();
 
-  // Raze and close the database. Reset `db_` to nullptr so EnsureOpened will
-  // recreate the database.
+  // Raze and close the database.
   if (!db_->Raze()) {
     return QuotaError::kDatabaseError;
   }
-  db_ = nullptr;
 
+  // Reset `db_` to nullptr so EnsureOpened will recreate the database.
+  db_.reset();
   return EnsureOpened();
 }
 
@@ -920,6 +929,9 @@ QuotaError QuotaDatabase::EnsureOpened() {
       [](base::RepeatingCallback<void(int)> db_error_callback,
          int* sqlite_error_code_out, int sqlite_error_code,
          sql::Statement* statement) {
+        // This check is here to DCHECK the error code in a place that gives a
+        // useful stack trace.
+        sql::IsErrorCatastrophic(sqlite_error_code);
         *sqlite_error_code_out = sqlite_error_code;
 
         if (db_error_callback) {
