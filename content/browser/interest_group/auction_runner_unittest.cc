@@ -1585,6 +1585,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // each InterestGroup.
   void StartAuction(const GURL& seller_decision_logic_url,
                     const std::vector<StorageInterestGroup>& bidders) {
+    // Allows multiple auctions to be run in the same test.
+    private_aggregation_manager_.Reset();
+
     auction_complete_ = false;
 
     auto auction_config =

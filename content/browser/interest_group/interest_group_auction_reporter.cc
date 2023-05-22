@@ -40,7 +40,6 @@
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -249,20 +248,8 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
       continue;
     }
 
-    for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
-         requests) {
-      DCHECK(request);
-      // All for-event contributions have already been converted to histogram
-      // contributions by filling in post auction signals before reaching here.
-      DCHECK(request->contribution->is_histogram_contribution());
-      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-          contributions;
-      contributions.push_back(
-          std::move(request->contribution->get_histogram_contribution()));
-      remote->SendHistogramReport(std::move(contributions),
-                                  request->aggregation_mode,
-                                  std::move(request->debug_mode_details));
-    }
+    SplitContributionsIntoBatchesThenSendToHost(std::move(requests),
+                                                /*remote_host=*/remote);
   }
 }
 
@@ -772,8 +759,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     }
   }
 
-  // If any reports were queued (event-level or aggregated), send them now, if
-  // the winning ad has been navigated to.
+  // If any event-level reports were queued, send them now, if the winning ad
+  // has been navigated to.
   SendPendingReportsIfNavigated();
 
   OnReportingComplete(errors);
@@ -787,6 +774,7 @@ void InterestGroupAuctionReporter::OnReportingComplete(
                                   top_level_seller_winning_bid_info_.trace_id);
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   reporting_complete_ = true;
+  MaybeSendPrivateAggregationReports();
   MaybeInvokeCallback();
 }
 
@@ -798,6 +786,7 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
 
   // Send any pending reports that are gathered as reports run.
   SendPendingReportsIfNavigated();
+  MaybeSendPrivateAggregationReports();
 
   // Send pre-populated reports. Send these after the main reports, since
   // reports are sent over the network in FIFO order.
@@ -839,8 +828,9 @@ void InterestGroupAuctionReporter::MaybeInvokeCallback() {
 
 const InterestGroupAuctionReporter::SellerWinningBidInfo&
 InterestGroupAuctionReporter::GetBidderAuction() {
-  if (component_seller_winning_bid_info_)
+  if (component_seller_winning_bid_info_) {
     return component_seller_winning_bid_info_.value();
+  }
   return top_level_seller_winning_bid_info_;
 }
 
@@ -857,6 +847,12 @@ void InterestGroupAuctionReporter::SendPendingReportsIfNavigated() {
       std::move(pending_report_urls_), frame_origin_, *client_security_state_,
       url_loader_factory_);
   pending_report_urls_.clear();
+}
+
+void InterestGroupAuctionReporter::MaybeSendPrivateAggregationReports() {
+  if (!navigated_to_winning_ad_ || !reporting_complete_) {
+    return;
+  }
   OnFledgePrivateAggregationRequests(
       private_aggregation_manager_, main_frame_origin_,
       std::move(private_aggregation_requests_reserved_));

@@ -265,9 +265,12 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   }
 
   // Sends requests for the Private Aggregation API to
-  // private_aggregation_manager. The map should be keyed by reporting origin of
-  // the corresponding requests. Does nothing if `private_aggregation_requests`
-  // is empty.
+  // private_aggregation_manager. This does not handle requests conditional on
+  // non-reserved events, but does handle requests conditional on reserved
+  // events (and requests that aren't conditional on an event). The map should
+  // be keyed by reporting origin of the corresponding requests. Does nothing if
+  // `private_aggregation_requests` is empty. This should only be called once
+  // per auction.
   //
   // Static so that this can be invoked when there's no winner, and a reporter
   // isn't needed.
@@ -372,8 +375,13 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // added, and on first invocation of OnNavigateToWinningAd().
   // Does not send reports that are populated only on construction - those are
   // handled in OnNavigateToWinningAd(), since they never need to be sent when a
-  // reporting script completes.
+  // reporting script completes. Does not trigger Private Aggregation reports.
   void SendPendingReportsIfNavigated();
+
+  // This checks if the winning ad has been navigated to and if reporting is
+  // complete and sends all pending private aggregation requests if both are
+  // true. It should be called when either of these conditions becomes true.
+  void MaybeSendPrivateAggregationReports();
 
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,9 +19,11 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -307,6 +310,41 @@ FillInPrivateAggregationRequest(
           request->aggregation_mode, std::move(request->debug_mode_details)),
       final_event_type);
   return request_with_event_type;
+}
+
+void SplitContributionsIntoBatchesThenSendToHost(
+    std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
+    mojo::Remote<blink::mojom::PrivateAggregationHost>& remote_host) {
+  // Split the vector of requests into those with matching debug mode details.
+  std::map<
+      blink::mojom::DebugModeDetailsPtr,
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>>
+      contributions_map;
+
+  for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
+       requests) {
+    // All for-event contributions have already been converted to histogram
+    // contributions by filling in post auction signals using
+    // `FillInPrivateAggregationRequest()` before reaching here.
+    CHECK(request->contribution->is_histogram_contribution());
+    CHECK(request->debug_mode_details);
+
+    // TODO(alexmt): Split by this too when it can be non-default.
+    CHECK_EQ(request->aggregation_mode,
+             blink::mojom::AggregationServiceMode::kDefault);
+
+    contributions_map[std::move(request->debug_mode_details)].push_back(
+        std::move(request->contribution->get_histogram_contribution()));
+  }
+
+  for (auto& [debug_mode_details, contributions] : contributions_map) {
+    // TODO(alexmt): Use `std::map::extract()` to avoid the `Clone()` when
+    // this is allowed in Chromium.
+    remote_host->SendHistogramReport(
+        std::move(contributions),
+        blink::mojom::AggregationServiceMode::kDefault,
+        debug_mode_details.Clone());
+  }
 }
 
 }  // namespace content

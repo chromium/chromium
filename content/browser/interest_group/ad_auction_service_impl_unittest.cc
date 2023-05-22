@@ -6713,12 +6713,13 @@ class AdAuctionServiceImplPrivateAggregationEnabledTest
 };
 
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
-       PrivateAggregationReportForwarded) {
+       PrivateAggregationReportsForwarded) {
   constexpr char kBiddingScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
   privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+  privateAggregation.sendHistogramReport({bucket: 3n, value: 4});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
 }
 )";
@@ -6772,21 +6773,25 @@ function scoreAd(
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
+  base::RunLoop run_loop;
   EXPECT_CALL(mock_callback, Run)
-      .WillRepeatedly(
-          testing::Invoke([this](AggregatableReportRequest request,
-                                 PrivateAggregationBudgetKey budget_key) {
-            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-            EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
-            EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
-            EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
-            EXPECT_EQ(budget_key.api(),
-                      PrivateAggregationBudgetKey::Api::kFledge);
-            EXPECT_EQ(budget_key.origin(), kOriginA);
-          }));
+      .WillOnce(testing::Invoke([&](AggregatableReportRequest request,
+                                    PrivateAggregationBudgetKey budget_key) {
+        ASSERT_EQ(request.payload_contents().contributions.size(), 2u);
+        EXPECT_EQ(request.payload_contents().contributions[0].bucket, 1);
+        EXPECT_EQ(request.payload_contents().contributions[0].value, 2);
+        EXPECT_EQ(request.payload_contents().contributions[1].bucket, 3);
+        EXPECT_EQ(request.payload_contents().contributions[1].value, 4);
+        EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
+        EXPECT_EQ(budget_key.api(), PrivateAggregationBudgetKey::Api::kFledge);
+        EXPECT_EQ(budget_key.origin(), kOriginA);
+        run_loop.Quit();
+      }));
 
   absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   EXPECT_NE(auction_result, absl::nullopt);
+  InvokeCallbackForURN(*auction_result);
+  run_loop.Run();
 }
 
 TEST_F(AdAuctionServiceImplPrivateAggregationEnabledTest,
