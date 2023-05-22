@@ -101,6 +101,8 @@ void LayoutNGInlineListItem::OrdinalValueChanged() {
   LayoutObject* marker = Marker();
   if (auto* list_marker = ListMarker::Get(marker)) {
     list_marker->OrdinalValueChanged(*marker);
+    // UpdateMarkerTextIfNeeded() will be called by CollectInlinesInternal().
+    marker->SetNeedsCollectInlines();
   }
 }
 
