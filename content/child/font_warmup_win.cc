@@ -403,6 +403,8 @@ void PatchServiceManagerCalls() {
   if (recordreplay::IsReplaying())
     return;
 
+  recordreplay::AutoPassThroughEvents pt;
+
   static base::NoDestructor<base::win::IATPatchFunction> patch_open_sc_manager;
   DWORD patched = patch_open_sc_manager->Patch(
       L"dwrite.dll", service_provider_dll, "OpenSCManagerW",

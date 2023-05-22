@@ -640,6 +640,9 @@ void TaskQueueImpl::ReloadEmptyImmediateWorkQueue() {
 }
 
 void TaskQueueImpl::TakeImmediateIncomingQueueTasks(TaskDeque* queue, TaskDeque* record_replay_unordered_queue) {
+  recordreplay::Assert("[RUN-1916] TaskQueueImpl::TakeImmediateIncomingQueueTasks %zu",
+                       queue->size());
+
   DCHECK(queue->empty());
   // Now is a good time to consider reducing the empty queue's capacity if we're
   // wasting memory, before we make it the `immediate_incoming_queue`.
@@ -787,6 +790,8 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(
 
     // Leave the top task alone if it hasn't been canceled and it is not ready.
     const bool is_cancelled = task.task.IsCancelled();
+    recordreplay::Assert("[RUN-1916] TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue #2 %d %d",
+                         is_cancelled, lazy_now->has_value());
     if (!is_cancelled && task.earliest_delayed_run_time() > lazy_now->Now())
       break;
 
@@ -1358,6 +1363,11 @@ void TaskQueueImpl::ResetThrottler() {
 
 void TaskQueueImpl::UpdateWakeUp(LazyNow* lazy_now) {
   absl::optional<WakeUp> wake_up = GetNextDesiredWakeUp();
+
+  recordreplay::Assert("[RUN-548] TaskQueueImpl::UpdateWakeUp %ld %ld",
+                       wake_up.has_value() ? wake_up->time.ToInternalValue() : 0,
+                       wake_up.has_value() ? wake_up->leeway.ToInternalValue() : 0);
+
   if (main_thread_only().throttler && IsQueueEnabled()) {
     // GetNextAllowedWakeUp() may return a non-null wake_up even if |wake_up| is
     // nullopt, e.g. to throttle immediate tasks.

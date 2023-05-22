@@ -290,7 +290,8 @@ class FontFileStream
   HRESULT STDMETHODCALLTYPE RuntimeClassInitialize(HANDLE handle);
 
  private:
-  base::MemoryMappedFile data_;
+  // Note: This is a unique_ptr so it can be leaked when recording/replaying.
+  std::unique_ptr<base::MemoryMappedFile> data_;
 };
 
 }  // namespace content

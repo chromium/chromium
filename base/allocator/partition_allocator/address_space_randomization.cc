@@ -14,9 +14,13 @@
 #include <versionhelpers.h>
 #endif
 
+#include "base/record_replay.h"
+
 namespace partition_alloc {
 
 uintptr_t GetRandomPageBase() {
+  recordreplay::AutoDisallowEvents disallow("GetRandomPageBase");
+
   uintptr_t random = static_cast<uintptr_t>(internal::RandomValue());
 
 #if defined(ARCH_CPU_64_BITS)

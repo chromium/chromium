@@ -196,7 +196,7 @@ void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
     return;
   main_thread_only().next_delayed_do_work = run_time;
 
-  recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork #1 %ld",
+  recordreplay::Assert("[RUN-548] ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork #3 %ld",
                        main_thread_only().next_delayed_do_work.ToInternalValue());
 
   // It's very rare for PostDelayedTask to be called outside of a DoWork in

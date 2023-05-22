@@ -49,6 +49,8 @@
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 
+#include "base/record_replay.h"
+
 namespace base {
 
 namespace {
@@ -164,6 +166,10 @@ void UpdateTimerIntervalLocked() {
 
 // Returns the current value of the performance counter.
 int64_t QPCNowRaw() {
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("[RUN-1916] QPCNowRaw");
+  }
+
   LARGE_INTEGER perf_counter_now = {};
   // According to the MSDN documentation for QueryPerformanceCounter(), this
   // will never fail on systems that run XP or later.
@@ -602,6 +608,11 @@ TimeTicks::TickFunctionType TimeTicks::SetMockTickFunction(
 
 namespace subtle {
 TimeTicks TimeTicksNowIgnoringOverride() {
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("[RUN-1916] TimeTicksNowIgnoringOverride %d",
+                         g_time_ticks_now_ignoring_override_function == &QPCNow);
+  }
+
   return g_time_ticks_now_ignoring_override_function.load(
       std::memory_order_relaxed)();
 }

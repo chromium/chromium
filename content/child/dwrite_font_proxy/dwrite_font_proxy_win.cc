@@ -836,12 +836,20 @@ HRESULT FontFileEnumerator::RuntimeClassInitialize(
   return S_OK;
 }
 
-FontFileStream::FontFileStream() = default;
+FontFileStream::FontFileStream() {
+  data_ = std::make_unique<base::MemoryMappedFile>();
+}
 
-FontFileStream::~FontFileStream() = default;
+FontFileStream::~FontFileStream() {
+  // The destructor is not called at a consistent point when replaying,
+  // so we avoid releasing resources that must happen deterministically.
+  if (recordreplay::IsRecordingOrReplaying("leak-references")) {
+    (void)data_.release();
+  }
+}
 
 HRESULT FontFileStream::GetFileSize(UINT64* file_size) {
-  *file_size = data_.length();
+  *file_size = data_->length();
   return S_OK;
 }
 
@@ -856,9 +864,9 @@ HRESULT FontFileStream::ReadFileFragment(const void** fragment_start,
                                          void** fragment_context) {
   if (fragment_offset + fragment_size < fragment_offset)
     return E_FAIL;
-  if (fragment_offset + fragment_size > data_.length())
+  if (fragment_offset + fragment_size > data_->length())
     return E_FAIL;
-  *fragment_start = data_.data() + fragment_offset;
+  *fragment_start = data_->data() + fragment_offset;
   *fragment_context = nullptr;
   return S_OK;
 }
@@ -874,7 +882,7 @@ HRESULT FontFileStream::RuntimeClassInitialize(HANDLE handle) {
     return E_FAIL;
   }
 
-  if (!data_.Initialize(base::File(duplicate_handle))) {
+  if (!data_->Initialize(base::File(duplicate_handle))) {
     LogFontProxyError(MAPPED_FILE_FAILED);
     return E_FAIL;
   }
