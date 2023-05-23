@@ -14,6 +14,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_task.h"
 #include "components/history_clusters/core/history_clusters_types.h"
@@ -225,9 +226,14 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
     });
     cluster.visits.insert(cluster.visits.begin(), first_srp_visit);
 
-    // Cull visits that have a zero relevance score.
-    base::EraseIf(cluster.visits,
-                  [&](auto& visit) { return visit.score == 0.0; });
+    // Cull visits that have a zero relevance score, are Hidden, or Done.
+    base::EraseIf(cluster.visits, [&](auto& visit) {
+      return visit.score == 0.0 ||
+             visit.interaction_state ==
+                 history::ClusterVisit::InteractionState::kHidden ||
+             visit.interaction_state ==
+                 history::ClusterVisit::InteractionState::kDone;
+    });
 
     int visits_with_images = std::accumulate(
         cluster.visits.begin(), cluster.visits.end(), 0,

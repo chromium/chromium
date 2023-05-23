@@ -55,11 +55,14 @@ float MarkMatchesAndGetScore(const query_parser::QueryNodeVector& find_nodes,
   }
 
   for (auto& visit : cluster->visits) {
-    // 0-scored visits should not be considered; they should not be shown even
-    // if the cluster matches the query; nor should they surface the cluster
-    // even if the visit matches the query.
-    if (visit.score == 0)
+    // 0-scored and Hidden visits should not be considered; they should not be
+    // shown even if the cluster matches the query; nor should they surface th
+    // cluster even if the visit matches the query.
+    if (visit.score == 0 ||
+        visit.interaction_state ==
+            history::ClusterVisit::InteractionState::kHidden) {
       continue;
+    }
 
     bool match_found = false;
 
@@ -277,19 +280,40 @@ void CullNonProminentOrDuplicateClusters(
   }
 }
 
-void HideAndCullLowScoringVisits(std::vector<history::Cluster>& clusters,
-                                 size_t min_visits) {
+void CullVisitsThatShouldBeHidden(std::vector<history::Cluster>& clusters,
+                                  bool is_zero_query_state) {
+  // When searching for something, even clusters with one visit only should be
+  // shown. If there's no query, we want at least two.
+  const size_t min_visits = is_zero_query_state ? 2 : 1;
+
   DCHECK_GT(min_visits, 0u);
   base::EraseIf(clusters, [&](auto& cluster) {
     int index = -1;
     base::EraseIf(cluster.visits, [&](auto& visit) {
       index++;
-      return visit.score == 0.0 ||
-             (visit.score <
-                  GetConfig().min_score_to_always_show_above_the_fold &&
-              index >=
-                  static_cast<int>(
-                      GetConfig().num_visits_to_always_show_above_the_fold));
+      // Easy cases: cull all zero-score and explicitly Hidden visits.
+      if (visit.score == 0.0 ||
+          visit.interaction_state ==
+              history::ClusterVisit::InteractionState::kHidden) {
+        return true;
+      }
+
+      // Cull Done visits if the user is not searching for something too.
+      if (is_zero_query_state &&
+          visit.interaction_state ==
+              history::ClusterVisit::InteractionState::kDone) {
+        return true;
+      }
+
+      // Always leave alone high scoring visits.
+      if (visit.score >= GetConfig().min_score_to_always_show_above_the_fold) {
+        return false;
+      }
+
+      // At this point we know we have a low-scoring visit. If we haven't shown
+      // enough visits above the fold yet, admit these low-score ones first.
+      return index >= static_cast<int>(
+                          GetConfig().num_visits_to_always_show_above_the_fold);
     });
     return cluster.visits.size() < min_visits;
   });
@@ -389,7 +413,10 @@ bool IsUIRequestSource(ClusteringRequestSource source) {
 }
 
 bool IsShownVisitCandidate(const history::ClusterVisit& visit) {
-  return visit.score > 0.0f && !visit.annotated_visit.url_row.title().empty();
+  return visit.score > 0.0f &&
+         visit.interaction_state !=
+             history::ClusterVisit::InteractionState::kHidden &&
+         !visit.annotated_visit.url_row.title().empty();
 }
 
 bool IsVisitInCategories(const history::ClusterVisit& visit,

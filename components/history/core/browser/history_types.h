@@ -886,6 +886,9 @@ struct ClusterVisit {
     kDone = 2,
   };
 
+  // Used for both persistence and debug logging.
+  static int InteractionStateToInt(InteractionState state);
+
   ClusterVisit();
   ~ClusterVisit();
   ClusterVisit(const ClusterVisit&);

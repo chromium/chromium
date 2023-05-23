@@ -467,6 +467,11 @@ AnnotatedVisit& AnnotatedVisit::operator=(const AnnotatedVisit&) = default;
 AnnotatedVisit& AnnotatedVisit::operator=(AnnotatedVisit&&) = default;
 AnnotatedVisit::~AnnotatedVisit() = default;
 
+// static
+int ClusterVisit::InteractionStateToInt(ClusterVisit::InteractionState state) {
+  return static_cast<int>(state);
+}
+
 ClusterVisit::ClusterVisit() = default;
 ClusterVisit::~ClusterVisit() = default;
 ClusterVisit::ClusterVisit(const ClusterVisit&) = default;

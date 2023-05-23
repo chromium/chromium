@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
@@ -70,10 +71,14 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
                         {u"Red Oranges", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/false,
                        /*label=*/u"LabelOne"));
+  auto hidden_google_visit = GetHardcodedClusterVisit(1);
+  hidden_google_visit.interaction_state =
+      history::ClusterVisit::InteractionState::kHidden;
   all_clusters.push_back(
       history::Cluster(2,
                        {
                            GetHardcodedClusterVisit(2),
+                           hidden_google_visit,
                        },
                        {},
                        /*should_show_on_prominent_ui_surfaces=*/true,
@@ -100,7 +105,8 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
       {"red or", true, false},
       {"red ora", true, false},
       {"red oran", true, false},
-      // Verify that we can search by URL.
+      // Verify that we can search by URL. Also double checks that we don't find
+      // the hidden Google visit in the second cluster.
       {"goog", true, false},
       // Verify we can search by page title, even mismatching case.
       {"code", true, true},
@@ -115,7 +121,10 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
       {"goog red", false, false},
       // Verify that we can find clusters by label.
       {"labeltwo", false, true},
-  };
+      // Verify that hidden visits are findable.
+      {
+          "HiddenVisitLabel",
+      }};
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     SCOPED_TRACE(base::StringPrintf("Testing case i=%d, query=%s",
@@ -245,7 +254,7 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
   }
 }
 
-TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
+TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
   std::vector<history::Cluster> all_clusters;
 
   auto add_cluster = [&](int64_t cluster_id, std::vector<float> visit_scores) {
@@ -260,41 +269,54 @@ TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
   };
 
   // High scoring visits should always be above the fold.
-  add_cluster(4, {1, .8, .5, .5, .5});
+  add_cluster(0, {1, .8, .5, .5, .5});
 
   // Low scoring visits should be above the fold only if they're one of top 4.
-  add_cluster(6, {.4, .4, .4, .4, .4});
+  add_cluster(1, {.4, .4, .4, .4, .4});
 
   // 0 scoring visits should never be above the fold.
-  add_cluster(8, {0, 0, .8, .8});
+  add_cluster(2, {0, 0, .8, .8});
 
   // Clusters with 1 visit after filtering should be removed.
-  add_cluster(10, {.8, 0});
+  add_cluster(3, {.8, 0});
 
   // Clusters with 0 visits after filtering should be removed.
-  add_cluster(12, {0, 0});
+  add_cluster(4, {0, 0});
+
+  // Hidden and Done visits can be culled out.
+  add_cluster(5, {1, 1, 1, 1});
+  all_clusters[5].visits[0].interaction_state =
+      history::ClusterVisit::InteractionState::kHidden;
+  all_clusters[5].visits[1].interaction_state =
+      history::ClusterVisit::InteractionState::kDone;
 
   auto clusters = all_clusters;
-  // Try with `min_visits` = 2. This is how query-less state behaves.
-  HideAndCullLowScoringVisits(clusters, 2);
-  ASSERT_EQ(clusters.size(), 3u);
+  // Test the zero-query state.
+  CullVisitsThatShouldBeHidden(clusters, /*is_zero_query_state=*/true);
+  ASSERT_EQ(clusters.size(), 4u);
 
-  EXPECT_EQ(clusters[0].cluster_id, 4);
+  EXPECT_EQ(clusters[0].cluster_id, 0);
   EXPECT_EQ(clusters[0].visits.size(), 5u);
 
-  EXPECT_EQ(clusters[1].cluster_id, 6);
+  EXPECT_EQ(clusters[1].cluster_id, 1);
   EXPECT_EQ(clusters[1].visits.size(), 4u);
 
-  EXPECT_EQ(clusters[2].cluster_id, 8);
+  EXPECT_EQ(clusters[2].cluster_id, 2);
   EXPECT_EQ(clusters[2].visits.size(), 2u);
 
-  // Try with `min_visits` = 1. This is how query state behaves.
+  EXPECT_EQ(clusters[3].cluster_id, 5);
+  EXPECT_EQ(clusters[3].visits.size(), 2u);
+
+  // Test the queried state with a higher threshold of required visits.
   clusters = all_clusters;
-  HideAndCullLowScoringVisits(clusters, 1);
-  // Cluster 10, with 1 visit after filtering should no longer be removed.
-  ASSERT_EQ(clusters.size(), 4u);
-  EXPECT_EQ(clusters[3].cluster_id, 10);
+  CullVisitsThatShouldBeHidden(clusters, /*is_zero_query_state=*/false);
+  // Cluster id = 3, with 1 visit after filtering should no longer be removed.
+  ASSERT_EQ(clusters.size(), 5u);
+  EXPECT_EQ(clusters[3].cluster_id, 3);
   EXPECT_EQ(clusters[3].visits.size(), 1u);
+  // Cluster id = 5, with a Done visit, should have that Done visit visible.
+  EXPECT_EQ(clusters[4].cluster_id, 5);
+  EXPECT_EQ(clusters[4].visits.size(), 3u);
 }
 
 TEST(HistoryClustersUtilTest, CoalesceRelatedSearches) {
@@ -391,6 +413,17 @@ TEST(HistoryClustersUtilTest, IsShownVisitCandidateZeroScore) {
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
                                            base::Time::FromTimeT(10)),
       absl::nullopt, 0.0);
+
+  ASSERT_FALSE(IsShownVisitCandidate(cluster_visit));
+}
+
+TEST(HistoryClustersUtilTest, IsShownVisitCandidateHidden) {
+  history::ClusterVisit cluster_visit = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://two.com/"),
+                                           base::Time::FromTimeT(10)),
+      absl::nullopt, 1.0);
+  cluster_visit.interaction_state =
+      history::ClusterVisit::InteractionState::kHidden;
 
   ASSERT_FALSE(IsShownVisitCandidate(cluster_visit));
 }

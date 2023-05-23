@@ -232,6 +232,31 @@ TEST_F(HistoryClustersModuleServiceTest, GetClusters) {
       "NewTabPage.HistoryClusters.NumRelatedSearches", 3, 1);
 }
 
+TEST_F(HistoryClustersModuleServiceTest, GetClustersLowScoreOrHiddenOrDone) {
+  base::HistogramTester histogram_tester;
+
+  history::Cluster kSampleCluster =
+      SampleCluster(/*srp_visits=*/3, /*non_srp_visits=*/3);
+  kSampleCluster.visits[0].score = 0.0;
+  kSampleCluster.visits[1].interaction_state =
+      history::ClusterVisit::InteractionState::kDone;
+  kSampleCluster.visits[2].interaction_state =
+      history::ClusterVisit::InteractionState::kHidden;
+  kSampleCluster.visits[3].score = 0.0;
+
+  test_history_clusters_service().SetClustersToReturn({kSampleCluster});
+
+  std::vector<history::Cluster> clusters = GetClusters();
+  ASSERT_TRUE(clusters.empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.IneligibleReason", 4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.HasClusterToShow", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.NumClusterCandidates", 0, 1);
+}
+
 TEST_F(HistoryClustersModuleServiceTest, ClusterVisitsCulled) {
   base::HistogramTester histogram_tester;
 

@@ -230,11 +230,6 @@ ClusterVisit::InteractionState InteractionStateFromInt(int state) {
   return ClusterVisit::InteractionState::kDefault;
 }
 
-int InteractionStateToInt(ClusterVisit::InteractionState state) {
-  DCHECK_EQ(InteractionStateFromInt(static_cast<int>(state)), state);
-  return static_cast<int>(state);
-}
-
 }  // namespace
 
 VisitAnnotationsDatabase::VisitAnnotationsDatabase() = default;
@@ -662,7 +657,8 @@ void VisitAnnotationsDatabase::AddClusters(
       clusters_and_visits_statement.BindString16(6,
                                                  cluster_visit.url_for_display);
       clusters_and_visits_statement.BindInt(
-          7, InteractionStateToInt(cluster_visit.interaction_state));
+          7,
+          ClusterVisit::InteractionStateToInt(cluster_visit.interaction_state));
       if (!clusters_and_visits_statement.Run()) {
         DVLOG(0)
             << "Failed to execute 'clusters_and_visits' insert statement:  "
@@ -752,7 +748,7 @@ void VisitAnnotationsDatabase::AddVisitsToCluster(
     clusters_and_visits_statement.BindString(5, visit.normalized_url.spec());
     clusters_and_visits_statement.BindString16(6, visit.url_for_display);
     clusters_and_visits_statement.BindInt(
-        7, InteractionStateToInt(visit.interaction_state));
+        7, ClusterVisit::InteractionStateToInt(visit.interaction_state));
     if (!clusters_and_visits_statement.Run()) {
       DVLOG(0) << "Failed to execute 'clusters_and_visits' insert statement:  "
                << "cluster_id = " << cluster_id
@@ -886,7 +882,8 @@ void VisitAnnotationsDatabase::UpdateClusterVisit(
   statement.BindString(1, cluster_visit.url_for_deduping.spec());
   statement.BindString(2, cluster_visit.normalized_url.spec());
   statement.BindString16(3, cluster_visit.url_for_display);
-  statement.BindInt(4, InteractionStateToInt(cluster_visit.interaction_state));
+  statement.BindInt(
+      4, ClusterVisit::InteractionStateToInt(cluster_visit.interaction_state));
   statement.BindInt64(5, cluster_id);
   statement.BindInt64(6, cluster_visit.annotated_visit.visit_row.visit_id);
   if (!statement.Run()) {

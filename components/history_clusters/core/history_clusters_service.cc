@@ -502,9 +502,14 @@ void HistoryClustersService::PopulateClusterKeywordCache(
       // sensitive clusters here.
       continue;
     }
-    const size_t visible_visits = base::ranges::count_if(
-        cluster.visits,
-        [](const auto& cluster_visit) { return cluster_visit.score > 0; });
+    const size_t visible_visits =
+        base::ranges::count_if(cluster.visits, [](const auto& cluster_visit) {
+          // Hidden visits shouldn't contribute to the keyword bag, but Done
+          // visits still can, since they are searchable.
+          return cluster_visit.score > 0 &&
+                 cluster_visit.interaction_state !=
+                     history::ClusterVisit::InteractionState::kHidden;
+        });
     if (visible_visits < 2) {
       // Only accept keywords from clusters with at least two visits. This is a
       // simple first-pass technique to avoid overtriggering the omnibox action.

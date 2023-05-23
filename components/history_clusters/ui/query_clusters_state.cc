@@ -66,7 +66,8 @@ class QueryClustersState::PostProcessor
     // We have to do this AFTER applying the search query, because applying the
     // search query re-scores matching visits to promote them above non-matching
     // visits. Show 1-visit clusters only in query mode.
-    HideAndCullLowScoringVisits(clusters, query_.empty() ? 2 : 1);
+    CullVisitsThatShouldBeHidden(clusters,
+                                 /*is_zero_query_state=*/query_.empty());
     // Do this AFTER we cull the low scoring visits, so those visits don't get
     // their related searches coalesced onto the cluster level.
     CoalesceRelatedSearches(clusters);
