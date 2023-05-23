@@ -423,7 +423,8 @@ class SyncConsentTestWithModesParams
   SyncConsentTestWithModesParams() {
     std::tie(is_minor_user_, is_arc_restricted_) = GetParam();
     if (is_arc_restricted_)
-      scoped_feature_list_.InitAndEnableFeature(features::kLacrosSupport);
+      scoped_feature_list_.InitWithFeatures({features::kLacrosSupport},
+                                            {features::kOsSyncConsentRevamp});
   }
 
   SyncConsentTestWithModesParams(const SyncConsentTestWithModesParams&) =
@@ -486,7 +487,8 @@ class SyncConsentTestWithReviewParams
   SyncConsentTestWithReviewParams() {
     std::tie(is_lacros_supported_, is_review_settings_checked_) = GetParam();
     if (is_lacros_supported_) {
-      scoped_feature_list_.InitAndEnableFeature(features::kLacrosSupport);
+      scoped_feature_list_.InitWithFeatures({features::kLacrosSupport},
+                                            {features::kOsSyncConsentRevamp});
     }
   }
 
