@@ -145,5 +145,13 @@
     "square",
     "disclosure-open",
     "disclosure-closed",
+
+    // contenteditable content/IDL attribute
+    // https://html.spec.whatwg.org/C/#attr-contenteditable
+    // https://html.spec.whatwg.org/C/#dom-contenteditable
+    "true",
+    "plaintext-only",
+    "false",
+    "inherit",
   ],
 }

@@ -329,7 +329,8 @@ void HTMLElement::CollectStyleForPresentationAttribute(
                                               value);
     }
   } else if (name == html_names::kContenteditableAttr) {
-    if (value.empty() || EqualIgnoringASCIICase(value, "true")) {
+    AtomicString lower_value = value.LowerASCII();
+    if (lower_value.empty() || lower_value == keywords::kTrue) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadWrite);
       AddPropertyToPresentationAttributeStyle(
@@ -341,7 +342,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
         UseCounter::Count(GetDocument(),
                           WebFeature::kContentEditableTrueOnHTML);
       }
-    } else if (EqualIgnoringASCIICase(value, "plaintext-only")) {
+    } else if (lower_value == keywords::kPlaintextOnly) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserModify,
           CSSValueID::kReadWritePlaintextOnly);
@@ -351,7 +352,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kWebkitLineBreak, CSSValueID::kAfterWhiteSpace);
       UseCounter::Count(GetDocument(),
                         WebFeature::kContentEditablePlainTextOnly);
-    } else if (EqualIgnoringASCIICase(value, "false")) {
+    } else if (lower_value == keywords::kFalse) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadOnly);
     }
@@ -1072,17 +1073,20 @@ bool HTMLElement::HasCustomFocusLogic() const {
 }
 
 ContentEditableType HTMLElement::contentEditableNormalized() const {
-  const AtomicString& value =
-      FastGetAttribute(html_names::kContenteditableAttr);
+  AtomicString value =
+      FastGetAttribute(html_names::kContenteditableAttr).LowerASCII();
 
   if (value.IsNull())
     return ContentEditableType::kInherit;
-  if (value.empty() || EqualIgnoringASCIICase(value, "true"))
+  if (value.empty() || value == keywords::kTrue) {
     return ContentEditableType::kContentEditable;
-  if (EqualIgnoringASCIICase(value, "false"))
+  }
+  if (value == keywords::kFalse) {
     return ContentEditableType::kNotContentEditable;
-  if (EqualIgnoringASCIICase(value, "plaintext-only"))
+  }
+  if (value == keywords::kPlaintextOnly) {
     return ContentEditableType::kPlaintextOnly;
+  }
 
   return ContentEditableType::kInherit;
 }
@@ -1090,31 +1094,33 @@ ContentEditableType HTMLElement::contentEditableNormalized() const {
 String HTMLElement::contentEditable() const {
   switch (contentEditableNormalized()) {
     case ContentEditableType::kInherit:
-      return "inherit";
+      return keywords::kInherit;
     case ContentEditableType::kContentEditable:
-      return "true";
+      return keywords::kTrue;
     case ContentEditableType::kNotContentEditable:
-      return "false";
+      return keywords::kFalse;
     case ContentEditableType::kPlaintextOnly:
-      return "plaintext-only";
+      return keywords::kPlaintextOnly;
   }
 }
 
 void HTMLElement::setContentEditable(const String& enabled,
                                      ExceptionState& exception_state) {
-  if (EqualIgnoringASCIICase(enabled, "true"))
-    setAttribute(html_names::kContenteditableAttr, "true");
-  else if (EqualIgnoringASCIICase(enabled, "false"))
-    setAttribute(html_names::kContenteditableAttr, "false");
-  else if (EqualIgnoringASCIICase(enabled, "plaintext-only"))
-    setAttribute(html_names::kContenteditableAttr, "plaintext-only");
-  else if (EqualIgnoringASCIICase(enabled, "inherit"))
+  String lower_value = enabled.LowerASCII();
+  if (lower_value == keywords::kTrue) {
+    setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
+  } else if (lower_value == keywords::kFalse) {
+    setAttribute(html_names::kContenteditableAttr, keywords::kFalse);
+  } else if (lower_value == keywords::kPlaintextOnly) {
+    setAttribute(html_names::kContenteditableAttr, keywords::kPlaintextOnly);
+  } else if (lower_value == keywords::kInherit) {
     removeAttribute(html_names::kContenteditableAttr);
-  else
+  } else {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "The value provided ('" + enabled +
                                           "') is not one of 'true', 'false', "
                                           "'plaintext-only', or 'inherit'.");
+  }
 }
 
 V8UnionBooleanOrStringOrUnrestrictedDouble* HTMLElement::hidden() const {
