@@ -1677,8 +1677,11 @@ void Shell::Init(
   // `clipboard_history_controller_` is destroyed.
   chromeos::clipboard_history::SetQueryItemDescriptorsImpl(base::BindRepeating(
       [](ClipboardHistoryControllerImpl* controller) {
-        return clipboard_history_util::GetItemDescriptorsFrom(
-            controller->history()->GetItems());
+        if (clipboard_history_util::IsEnabledInCurrentMode()) {
+          return clipboard_history_util::GetItemDescriptorsFrom(
+              controller->history()->GetItems());
+        }
+        return std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>();
       },
       clipboard_history_controller_.get()));
   chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(

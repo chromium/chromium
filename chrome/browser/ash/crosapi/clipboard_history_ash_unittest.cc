@@ -9,7 +9,8 @@
 #include <vector>
 
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
-#include "base/functional/callback_helpers.h"
+#include "ash/test/ash_test_base.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -19,11 +20,24 @@
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/event_constants.h"
 
 namespace crosapi {
 
 namespace {
+
+using ::testing::ElementsAre;
+
+// Matchers --------------------------------------------------------------------
+
+MATCHER_P2(DescriptorMatches, display_format, display_text, "") {
+  return arg->display_format == display_format &&
+         arg->display_text == display_text;
+}
+
+// Helper classes --------------------------------------------------------------
 
 // A mocked client to check the descriptors received from Ash.
 class MockedClipboardHistoryClient
@@ -69,31 +83,52 @@ TEST_F(ClipboardHistoryAshTest, PasteClipboardItemById) {
   }
 }
 
-class ClipboardHistoryAshWithClientTest : public ClipboardHistoryAshTest {
+class ClipboardHistoryAshWithClientTest : public ash::AshTestBase {
  public:
-  // ClipboardHistoryAshTest:
+  // ash::AshTestBase:
   void SetUp() override {
     // Enable the clipboard history refresh feature.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kClipboardHistoryRefresh,
                               chromeos::features::kJelly},
         /*disabled_features=*/{});
-    ClipboardHistoryAshTest::SetUp();
+    ash::AshTestBase::SetUp();
 
-    // Initialize `mock_client_`
-    mock_client_ = std::make_unique<MockedClipboardHistoryClient>();
-    clipboard_history_ash_.RegisterClient(
-        mock_client_->receiver_.BindNewPipeAndPassRemote());
+    // `clipboard_history_ash_` should be created after Ash.
+    clipboard_history_ash_ = std::make_unique<ClipboardHistoryAsh>();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  // Waits until `mock_client_` receives descriptors. Returns the received
+  // descriptors.
+  std::vector<mojom::ClipboardHistoryItemDescriptorPtr>
+  WaitForReceivedDescriptors() {
+    base::RunLoop run_loop;
+    std::vector<mojom::ClipboardHistoryItemDescriptorPtr> received_descriptors;
+    EXPECT_CALL(mock_client_, SetClipboardHistoryItemDescriptors)
+        .WillOnce(
+            [&received_descriptors, &run_loop](
+                std::vector<mojom::ClipboardHistoryItemDescriptorPtr> ptrs) {
+              received_descriptors = std::move(ptrs);
+              run_loop.Quit();
+            });
+    run_loop.Run();
+    return received_descriptors;
+  }
+
+  void RegisterClient() {
+    clipboard_history_ash_->RegisterClient(
+        mock_client_.receiver_.BindNewPipeAndPassRemote());
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<MockedClipboardHistoryClient> mock_client_;
+  MockedClipboardHistoryClient mock_client_;
+  std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
 };
 
 // Verifies that the clipboard history client receives clipboard history item
 // descriptors from Ash as expected.
 TEST_F(ClipboardHistoryAshWithClientTest, Basics) {
+  RegisterClient();
   std::vector<std::vector<mojom::ClipboardHistoryItemDescriptor>> test_cases = {
       // Test case 1: The injected descriptors have different formats.
       {
@@ -138,35 +173,112 @@ TEST_F(ClipboardHistoryAshWithClientTest, Basics) {
       },
       // Test case 4: The injected descriptor array is empty.
       {}};
+
   for (const auto& input_descriptors : test_cases) {
-    // Inject the test input.
+    // Inject the test input through the custom description query callback.
+    chromeos::clipboard_history::SetQueryItemDescriptorsImpl(
+        chromeos::clipboard_history::QueryItemDescriptorsImpl());
     chromeos::clipboard_history::SetQueryItemDescriptorsImpl(
         base::BindLambdaForTesting(
             [&input_descriptors]() { return input_descriptors; }));
 
+    // Trigger the update to the client.
+    clipboard_history_ash_->UpdateRemoteDescriptorsForTesting();
+
     // Check the clipboard history item descriptors that the client receives.
-    EXPECT_CALL(*mock_client_, SetClipboardHistoryItemDescriptors)
-        .WillOnce([&input_descriptors](
-                      std::vector<mojom::ClipboardHistoryItemDescriptorPtr>
-                          received_ptrs) {
-          std::vector<mojom::ClipboardHistoryItemDescriptor>
-              received_descriptors;
-          for (const auto& ptr : received_ptrs) {
-            received_descriptors.emplace_back(ptr->item_id, ptr->display_format,
-                                              ptr->display_text,
-                                              ptr->file_count);
-          }
-          EXPECT_EQ(input_descriptors, received_descriptors);
-        });
-
-    // Update the descriptors on `mock_client_`. It is not a real code path.
-    // The real code path is covered by other tests.
-    clipboard_history_ash_.UpdateRemoteDescriptorsForTesting();
-    clipboard_history_ash_.FlushForTesting();
-
-    chromeos::clipboard_history::SetQueryItemDescriptorsImpl(
-        base::NullCallback());
+    auto received_ptrs = WaitForReceivedDescriptors();
+    std::vector<mojom::ClipboardHistoryItemDescriptor> received_descriptors;
+    for (const auto& ptr : received_ptrs) {
+      received_descriptors.emplace_back(ptr->item_id, ptr->display_format,
+                                        ptr->display_text, ptr->file_count);
+    }
+    EXPECT_EQ(input_descriptors, received_descriptors);
   }
+}
+
+// Verifies that the client should receive the expected descriptors when
+// clipboard history availability is toggled.
+TEST_F(ClipboardHistoryAshWithClientTest, ClipboardHistoryAvailabilityToggled) {
+  RegisterClient();
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(u"A");
+  }
+
+  EXPECT_THAT(WaitForReceivedDescriptors(),
+              ElementsAre(DescriptorMatches(
+                  crosapi::mojom::ClipboardHistoryDisplayFormat::kText, u"A")));
+
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(u"B");
+  }
+
+  EXPECT_THAT(
+      WaitForReceivedDescriptors(),
+      ElementsAre(
+          DescriptorMatches(
+              crosapi::mojom::ClipboardHistoryDisplayFormat::kText, u"B"),
+          DescriptorMatches(
+              crosapi::mojom::ClipboardHistoryDisplayFormat::kText, u"A")));
+
+  // Lock the screen. Clipboard history is no longer available, and its clients
+  // should be updated accordingly.
+  ash::TestSessionControllerClient* test_session_client =
+      GetSessionControllerClient();
+  test_session_client->SetSessionState(session_manager::SessionState::LOCKED);
+
+  // `mock_client` should receive an empty array of descriptors.
+  EXPECT_TRUE(WaitForReceivedDescriptors().empty());
+
+  // Activate the session. `mock_client` should receive the descriptors that
+  // were received before the session lock.
+  test_session_client->SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_THAT(
+      WaitForReceivedDescriptors(),
+      ElementsAre(
+          DescriptorMatches(
+              crosapi::mojom::ClipboardHistoryDisplayFormat::kText, u"B"),
+          DescriptorMatches(
+              crosapi::mojom::ClipboardHistoryDisplayFormat::kText, u"A")));
+}
+
+// Verifies that the client should receive descriptors after registration
+// if there are clipboard history items.
+TEST_F(ClipboardHistoryAshWithClientTest, RegisterWithNonEmptyHistoryItems) {
+  const std::vector<mojom::ClipboardHistoryItemDescriptor> initial_descriptors =
+      {
+          {base::UnguessableToken::Create(),
+           mojom::ClipboardHistoryDisplayFormat::kText, u"dummy text",
+           /*file_count=*/0u},
+          {base::UnguessableToken::Create(),
+           mojom::ClipboardHistoryDisplayFormat::kPng, u"dummy png",
+           /*file_count=*/0u},
+      };
+
+  chromeos::clipboard_history::SetQueryItemDescriptorsImpl(
+      chromeos::clipboard_history::QueryItemDescriptorsImpl());
+  chromeos::clipboard_history::SetQueryItemDescriptorsImpl(
+      base::BindLambdaForTesting(
+          [&initial_descriptors]() { return initial_descriptors; }));
+
+  RegisterClient();
+  EXPECT_THAT(
+      WaitForReceivedDescriptors(),
+      ElementsAre(
+          DescriptorMatches(
+              crosapi::mojom::ClipboardHistoryDisplayFormat::kText,
+              u"dummy text"),
+          DescriptorMatches(crosapi::mojom::ClipboardHistoryDisplayFormat::kPng,
+                            u"dummy png")));
+}
+
+// Verifies that the client should not receive any remote calls from Ash on
+// descriptor update after registration if clipboard history is empty.
+TEST_F(ClipboardHistoryAshWithClientTest, RegisterWithEmptyHistoryItems) {
+  EXPECT_CALL(mock_client_, SetClipboardHistoryItemDescriptors).Times(0);
+  RegisterClient();
+  clipboard_history_ash_->FlushForTesting();
 }
 
 }  // namespace crosapi
