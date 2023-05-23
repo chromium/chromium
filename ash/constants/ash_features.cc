@@ -577,7 +577,7 @@ BASE_FEATURE(kDriveFsMirroring,
 // Enables access to Chrome's Network Service for DriveFS.
 BASE_FEATURE(kDriveFsChromeNetworking,
              "DriveFsChromeNetworking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables DriveFS' bulk pinning functionality.
 BASE_FEATURE(kDriveFsBulkPinning,
