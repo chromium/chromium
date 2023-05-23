@@ -177,11 +177,16 @@ Harness::Harness() {
 }
 
 Harness::~Harness() {
-  for (auto ifc : wl_display_list_) {
-    if (ifc) {
-      wl_display_disconnect(ifc);
+  {% for interface in interfaces %}
+    for (auto ifc : {{interface.name}}_list_) {
+      if (ifc)
+        {% if interface.name == "wl_display" %}
+          wl_display_disconnect(ifc);
+        {% else %}
+          free(ifc);
+        {% endif %}
     }
-  }
+  {% endfor %}
 }
 
 void Harness::Run(const actions::actions& all_steps) {
