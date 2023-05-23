@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {SecurityTestRunner} from 'security_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that the mixed content explanation prompts the user to refresh when there are no recorded requests, and links to the network panel when there are recorded requests.\n`);
-  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   TestRunner.addResult('\nBefore Refresh --------------');
