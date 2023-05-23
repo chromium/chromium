@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/devtools_background_services.pb.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
@@ -18,6 +19,7 @@
 
 namespace content {
 
+class DevToolsBackgroundServicesContext;
 class RenderFrameHostImpl;
 
 namespace protocol {
@@ -48,6 +50,7 @@ class BackgroundServiceHandler
   Response ClearEvents(const std::string& service) override;
 
  private:
+  void SetDevToolsContext(DevToolsBackgroundServicesContext* devtools_context);
   void DidGetLoggedEvents(
       devtools::proto::BackgroundService service,
       std::unique_ptr<StartObservingCallback> callback,
@@ -62,7 +65,7 @@ class BackgroundServiceHandler
   std::unique_ptr<BackgroundService::Frontend> frontend_;
 
   // Owned by the storage partition.
-  DevToolsBackgroundServicesContextImpl* devtools_context_;
+  base::raw_ptr<DevToolsBackgroundServicesContextImpl> devtools_context_;
 
   base::flat_set<devtools::proto::BackgroundService> enabled_services_;
 
