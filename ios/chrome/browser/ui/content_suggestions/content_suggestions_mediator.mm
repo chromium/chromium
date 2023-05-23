@@ -429,6 +429,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           [self.feedDelegate contentSuggestionsWasUpdated];
         }
       }];
+    } else if (IsMagicStackEnabled()) {
+      [self.consumer scrollToNextMagicStackModuleForCompletedModule:
+                         SetUpListModuleTypeForSetUpListType(item.type)];
     }
   };
   [self.consumer markSetUpListItemComplete:item.type completion:completion];

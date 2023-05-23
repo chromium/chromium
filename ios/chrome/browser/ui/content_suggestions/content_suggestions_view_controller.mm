@@ -411,6 +411,23 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   _magicStackModuleOrder = order;
 }
 
+- (void)scrollToNextMagicStackModuleForCompletedModule:
+    (ContentSuggestionsModuleType)moduleType {
+  ContentSuggestionsModuleType currentModule = [self currentlyShownModule];
+  // Do not scroll if the completed module is not the currently shown module.
+  if (currentModule != moduleType) {
+    return;
+  }
+  CGFloat nextPageContentOffsetX = [self
+      getNextPageOffsetForOffset:_magicStackScrollView.contentOffset.x
+                        velocity:kMagicStackMinimumPaginationScrollVelocity +
+                                 1];
+  [_magicStackScrollView
+      setContentOffset:CGPointMake(nextPageContentOffsetX,
+                                   _magicStackScrollView.contentOffset.y)
+              animated:YES];
+}
+
 - (void)showSetUpListWithItems:(NSArray<SetUpListItemViewData*>*)items {
   if (!self.viewLoaded) {
     _savedSetUpListItems = items;
@@ -701,16 +718,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 // This reads out the new page whenever the user scrolls in VoiceOver.
 - (NSString*)accessibilityScrollStatusForScrollView:(UIScrollView*)scrollView {
-  CGFloat moduleWidth = [MagicStackModuleContainer
-      moduleWidthForHorizontalTraitCollection:self.traitCollection];
-  NSUInteger moduleCount = [_magicStackModuleOrder count];
-
-  NSUInteger closestPage = roundf(scrollView.contentOffset.x / moduleWidth);
-  closestPage = fminf(closestPage, moduleCount);
-
-  ContentSuggestionsModuleType type = (ContentSuggestionsModuleType)
-      [_magicStackModuleOrder[closestPage] intValue];
-  return [MagicStackModuleContainer titleStringForModule:type];
+  return [MagicStackModuleContainer
+      titleStringForModule:[self currentlyShownModule]];
 }
 
 #pragma mark - Private
