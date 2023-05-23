@@ -279,6 +279,12 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
 
 }  // namespace
 
+// Enable an updated dialog UI for the getDisplayMedia picker dialog under the
+// preferCurrentTab constraint.
+BASE_FEATURE(kShareThisTabDialog,
+             "ShareThisTabDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DesktopMediaPickerDialogView,
                                       kDesktopMediaPickerDialogViewIdentifier);
 
@@ -981,7 +987,7 @@ void DesktopMediaPickerViews::NotifyDialogResult(const DesktopMediaID& source) {
 // static
 std::unique_ptr<DesktopMediaPicker> DesktopMediaPicker::Create(
     const content::MediaStreamRequest* request) {
-  if (base::FeatureList::IsEnabled(media::kShareThisTabDialog) && request &&
+  if (base::FeatureList::IsEnabled(kShareThisTabDialog) && request &&
       request->video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
     return std::make_unique<ShareThisTabDialogViews>();

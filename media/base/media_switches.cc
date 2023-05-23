@@ -315,17 +315,6 @@ BASE_FEATURE(kFFmpegDecodeOpaqueVP8,
              "FFmpegDecodeOpaqueVP8",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable an updated dialog UI for the getDisplayMedia picker dialog under the
-// preferCurrentTab constraint.
-BASE_FEATURE(kShareThisTabDialog,
-             "ShareThisTabDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The length of the initial delay during which the "Allow"-button is disabled
-// in the share-this-tab dialog.
-const base::FeatureParam<int> kShareThisTabDialogActivationDelayMs{
-    &kShareThisTabDialog, "activation_delay_ms", 500};
-
 // Only used for disabling overlay fullscreen (aka SurfaceView) in Clank.
 BASE_FEATURE(kOverlayFullscreenVideo,
              "overlay-fullscreen-video",

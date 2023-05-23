@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
@@ -24,6 +25,8 @@ class MdTextButton;
 }  // namespace views
 
 class DesktopMediaPickerViews;
+
+BASE_DECLARE_FEATURE(kShareThisTabDialog);
 
 // Dialog view used for DesktopMediaPickerViews.
 //

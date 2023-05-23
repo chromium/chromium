@@ -61,6 +61,11 @@ void RecordUmaSelection() {
   RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab);
 }
 
+// The length of the initial delay during which the "Allow"-button is disabled
+// in the share-this-tab dialog.
+const base::FeatureParam<int> kShareThisTabDialogActivationDelayMs{
+    &kShareThisTabDialog, "activation_delay_ms", 500};
+
 }  // namespace
 
 ShareThisTabDialogView::ShareThisTabDialogView(
@@ -131,8 +136,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   const base::TimeDelta activation_delay =
       (ShouldAutoAccept() || ShouldAutoReject())
           ? base::Milliseconds(0)
-          : base::Milliseconds(
-                media::kShareThisTabDialogActivationDelayMs.Get());
+          : base::Milliseconds(kShareThisTabDialogActivationDelayMs.Get());
   activation_timer_.Start(FROM_HERE, activation_delay,
                           base::BindOnce(&ShareThisTabDialogView::Activate,
                                          weak_factory_.GetWeakPtr()));
