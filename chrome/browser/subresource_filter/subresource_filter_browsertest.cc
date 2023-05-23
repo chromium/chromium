@@ -1367,9 +1367,9 @@ IN_PROC_BROWSER_TEST_P(AutomaticLazyLoadFrameBrowserTest, UKM) {
   const GURL kSameOriginEmbedUrl(
       embedded_test_server()->GetURL(kMainFrameOrigin, "/title1.html"));
 
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kMainFrameUrl));
   content::RenderFrameHost* render_frame_host =
-      ui_test_utils::NavigateToURL(browser(), kMainFrameUrl);
-  ASSERT_TRUE(render_frame_host);
+      web_contents()->GetPrimaryMainFrame();
 
   InitTestPage(render_frame_host);
 
@@ -1403,6 +1403,7 @@ IN_PROC_BROWSER_TEST_P(AutomaticLazyLoadFrameBrowserTest, UKM) {
   // LazyEmbeds and LazyAds must be disabled when the page is reloaded.
   EXPECT_TRUE(render_frame_host->Reload());
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  render_frame_host = web_contents()->GetPrimaryMainFrame();
   InitTestPage(render_frame_host);
   AddAdIframe(render_frame_host, kAdUrl);
   AddIframe(render_frame_host, kEmbedUrl);

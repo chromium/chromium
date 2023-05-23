@@ -270,6 +270,10 @@ const std::vector<std::string>& TestRenderFrameHost::GetConsoleMessages() {
   return console_messages_;
 }
 
+void TestRenderFrameHost::ClearConsoleMessages() {
+  console_messages_.clear();
+}
+
 int TestRenderFrameHost::GetHeavyAdIssueCount(
     RenderFrameHostTester::HeavyAdIssueType type) {
   switch (type) {

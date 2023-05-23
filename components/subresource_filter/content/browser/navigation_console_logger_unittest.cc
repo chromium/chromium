@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -113,9 +114,13 @@ TEST_F(NavigationConsoleLoggerTest, MultipleNavigations_OneLog) {
         navigation->GetNavigationHandle(),
         blink::mojom::ConsoleMessageLevel::kWarning, "foo");
     navigation->Commit();
+    EXPECT_EQ(1u, GetConsoleMessages(main_rfh()).size());
   }
+  content::RenderFrameHostTester::For(main_rfh())->ClearConsoleMessages();
+  EXPECT_TRUE(GetConsoleMessages(main_rfh()).empty());
+
   NavigateAndCommit(GURL("http://example.test/"));
-  EXPECT_EQ(1u, GetConsoleMessages(main_rfh()).size());
+  EXPECT_TRUE(GetConsoleMessages(main_rfh()).empty());
 }
 
 TEST_F(NavigationConsoleLoggerTest, MultipleMessages) {
