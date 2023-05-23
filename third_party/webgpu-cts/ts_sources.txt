@@ -324,6 +324,7 @@ src/webgpu/api/validation/shader_module/overrides.spec.ts
 src/webgpu/api/validation/state/device_lost/destroy.spec.ts
 src/webgpu/api/validation/texture/bgra8unorm_storage.spec.ts
 src/webgpu/api/validation/texture/destroy.spec.ts
+src/webgpu/api/validation/texture/float32_filterable.spec.ts
 src/webgpu/api/validation/texture/rg11b10ufloat_renderable.spec.ts
 src/webgpu/idl/exposed.html.ts
 src/webgpu/idl/idl_test.ts
