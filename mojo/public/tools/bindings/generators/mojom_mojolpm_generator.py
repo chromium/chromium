@@ -24,6 +24,17 @@ _kind_to_proto_type = {
     mojom.INT64: "int64",
     mojom.UINT64: "uint64",
     mojom.DOUBLE: "double",
+    mojom.NULLABLE_BOOL: "bool",
+    mojom.NULLABLE_INT8: "int32",
+    mojom.NULLABLE_UINT8: "uint32",
+    mojom.NULLABLE_INT16: "int32",
+    mojom.NULLABLE_UINT16: "uint32",
+    mojom.NULLABLE_INT32: "int32",
+    mojom.NULLABLE_UINT32: "uint32",
+    mojom.NULLABLE_FLOAT: "float",
+    mojom.NULLABLE_INT64: "int64",
+    mojom.NULLABLE_UINT64: "uint64",
+    mojom.NULLABLE_DOUBLE: "double",
 }
 
 _kind_to_cpp_proto_type = {
@@ -38,6 +49,17 @@ _kind_to_cpp_proto_type = {
     mojom.INT64: "::google::protobuf::int64",
     mojom.UINT64: "::google::protobuf::int64",
     mojom.DOUBLE: "double",
+    mojom.NULLABLE_BOOL: "bool",
+    mojom.NULLABLE_INT8: "::google::protobuf::int32",
+    mojom.NULLABLE_UINT8: "::google::protobuf::uint32",
+    mojom.NULLABLE_INT16: "::google::protobuf::int32",
+    mojom.NULLABLE_UINT16: "::google::protobuf::uint32",
+    mojom.NULLABLE_INT32: "::google::protobuf::int32",
+    mojom.NULLABLE_UINT32: "::google::protobuf::uint32",
+    mojom.NULLABLE_FLOAT: "float",
+    mojom.NULLABLE_INT64: "::google::protobuf::int64",
+    mojom.NULLABLE_UINT64: "::google::protobuf::int64",
+    mojom.NULLABLE_DOUBLE: "double",
 }
 
 
