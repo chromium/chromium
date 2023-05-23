@@ -9,7 +9,6 @@
 #include "chrome/browser/companion/core/companion_permission_utils.h"
 #include "chrome/browser/companion/core/companion_url_builder.h"
 #include "chrome/browser/companion/core/promo_handler.h"
-#include "chrome/browser/companion/core/signin_delegate.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
+#include "chrome/browser/ui/webui/side_panel/companion/signin_delegate_impl.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/lens/buildflags.h"
@@ -41,13 +41,13 @@ CompanionPageHandler::CompanionPageHandler(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       companion_untrusted_ui_(companion_untrusted_ui),
-      signin_delegate_(SigninDelegate::Create(GetProfile())),
+      signin_delegate_(std::make_unique<SigninDelegateImpl>(
+          companion_untrusted_ui_->web_ui()->GetWebContents())),
       url_builder_(
           std::make_unique<CompanionUrlBuilder>(GetProfile()->GetPrefs(),
                                                 signin_delegate_.get())),
       promo_handler_(std::make_unique<PromoHandler>(GetProfile()->GetPrefs(),
-                                                    signin_delegate_.get(),
-                                                    this)),
+                                                    signin_delegate_.get())),
       consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
                           NewAnonymizedDataCollectionConsentHelper(
                               GetProfile()->GetPrefs())) {
@@ -187,8 +187,9 @@ void CompanionPageHandler::OnImageQuery(
 
 void CompanionPageHandler::OnPromoAction(
     side_panel::mojom::PromoType promo_type,
-    side_panel::mojom::PromoAction promo_action) {
-  promo_handler_->OnPromoAction(promo_type, promo_action);
+    side_panel::mojom::PromoAction promo_action,
+    const absl::optional<GURL>& exps_promo_url) {
+  promo_handler_->OnPromoAction(promo_type, promo_action, exps_promo_url);
   metrics_logger_->OnPromoAction(promo_type, promo_action);
 }
 
@@ -210,7 +211,7 @@ void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
 }
 
 void CompanionPageHandler::OnOpenInNewTabButtonURLChanged(
-    const ::GURL& url_to_open) {
+    const GURL& url_to_open) {
   auto* companion_helper =
       companion::CompanionTabHelper::FromWebContents(web_contents());
   DCHECK(companion_helper);
@@ -255,12 +256,6 @@ void CompanionPageHandler::OnCqJumptagClicked(
       web_contents()->GetPrimaryPage());
   text_highlighter_manager->CreateTextHighlighterAndRemoveExistingInstance(
       text_directive);
-}
-
-void CompanionPageHandler::EnableMsbb(bool enable_msbb) {
-  auto* consent_service =
-      UnifiedConsentServiceFactory::GetForProfile(GetProfile());
-  consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(enable_msbb);
 }
 
 Browser* CompanionPageHandler::GetBrowser() {

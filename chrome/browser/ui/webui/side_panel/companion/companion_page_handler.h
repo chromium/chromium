@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
-#include "chrome/browser/companion/core/msbb_delegate.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -33,7 +32,6 @@ class SigninDelegate;
 class CompanionPageHandler
     : public side_panel::mojom::CompanionPageHandler,
       public content::WebContentsObserver,
-      public MsbbDelegate,
       public unified_consent::UrlKeyedDataCollectionConsentHelper::Observer {
  public:
   CompanionPageHandler(
@@ -47,10 +45,11 @@ class CompanionPageHandler
   // side_panel::mojom::CompanionPageHandler:
   void ShowUI() override;
   void OnPromoAction(side_panel::mojom::PromoType promo_type,
-                     side_panel::mojom::PromoAction promo_action) override;
+                     side_panel::mojom::PromoAction promo_action,
+                     const absl::optional<GURL>& exps_promo_url) override;
   void OnRegionSearchClicked() override;
   void OnExpsOptInStatusAvailable(bool is_exps_opted_in) override;
-  void OnOpenInNewTabButtonURLChanged(const ::GURL& url_to_open) override;
+  void OnOpenInNewTabButtonURLChanged(const GURL& url_to_open) override;
   void RecordUiSurfaceShown(side_panel::mojom::UiSurface ui_surface,
                             uint32_t ui_surface_position,
                             uint32_t child_element_available_count,
@@ -78,9 +77,6 @@ class CompanionPageHandler
   void OnImageQuery(side_panel::mojom::ImageQuery image_query);
 
  private:
-  // MsbbDelegate overrides.
-  void EnableMsbb(bool enable_msbb) override;
-
   // Notifies the companion side panel about the URL of the main frame. Based on
   // the call site, either does a full reload of the side panel or does a
   // postmessage() update. Reload is done during initial load of the side panel,

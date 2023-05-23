@@ -135,8 +135,12 @@ interface CompanionPageHandler {
   // Notify the backend that the UI is ready to be shown.
   ShowUI();
 
-  // Called to notify the browser about user action on a promo.
-  OnPromoAction(PromoType promo_type, PromoAction promo_action);
+  // Called to notify the browser about user action of type `promo_action` on a
+  // promo of type `promo_type`.
+  // `exps_promo_url` is optionally used to pass the URL to be loaded for exps
+  // opt-in.
+  OnPromoAction(PromoType promo_type, PromoAction promo_action,
+                                      url.mojom.Url? exps_promo_url);
 
   // Called to notify the browser that user has clicked on region search button.
   OnRegionSearchClicked();

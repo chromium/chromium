@@ -68,6 +68,8 @@ const char kRelativeUrl4[] = "/simple.html#part1";
 const char kHost[] = "foo.com";
 const char kSearchQueryUrl[] = "https://www.google.com/search?q=xyz";
 
+const char kExpectedExpsPromoUrl[] = "https://foobar.com/";
+
 }  // namespace
 
 // Helper class to generate a script that sends a postmessage to the browser
@@ -80,6 +82,7 @@ struct CompanionScriptBuilder {
   // to the postmessage.
   absl::optional<PromoType> promo_type;
   absl::optional<PromoAction> promo_action;
+  absl::optional<std::string> exps_promo_url;
   absl::optional<bool> is_exps_opted_in;
   absl::optional<UiSurface> ui_surface;
   absl::optional<int> ui_surface_position;
@@ -114,6 +117,10 @@ struct CompanionScriptBuilder {
       ss << "message['promoAction'] = "
          << base::NumberToString(static_cast<size_t>(promo_action.value()))
          << ";";
+    }
+
+    if (exps_promo_url.has_value()) {
+      ss << "message['expsPromoUrl'] = '" << exps_promo_url.value() << "';";
     }
 
     if (is_exps_opted_in.has_value()) {
@@ -343,6 +350,12 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         companion_server_.GetURL("/upload").spec();
     feature_list_.InitAndEnableFeatureWithParameters(
         companion::features::kSidePanelCompanion, params);
+  }
+
+  void WaitForTabCount(int expected) {
+    while (browser()->tab_strip_model()->count() != expected) {
+      base::RunLoop().RunUntilIdle();
+    }
   }
 
   void WaitForHistogram(const std::string& histogram_name) {
@@ -704,6 +717,36 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
   ExpectUkmEntry(&ukm_recorder,
                  ukm::builders::Companion_PageView::kPromoEventName,
                  static_cast<int>(companion::PromoEvent::kMsbbRejected));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ExpsPromoURLLoadsInNewTab) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Show exps promo, user accepts it.
+  CompanionScriptBuilder builder(MethodType::kOnPromoAction);
+  builder.promo_type = PromoType::kExps;
+  builder.promo_action = PromoAction::kAccepted;
+  builder.exps_promo_url = kExpectedExpsPromoUrl;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Verify that a new tab opens up to load the exps URL.
+  WaitForTabCount(2);
+  EXPECT_TRUE(web_contents()->GetVisibleURL().spec().starts_with(
+      kExpectedExpsPromoUrl));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearchClick) {

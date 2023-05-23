@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
+#include "url/gurl.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -19,16 +20,13 @@ namespace companion {
 using side_panel::mojom::PromoAction;
 using side_panel::mojom::PromoType;
 
-class MsbbDelegate;
 class SigninDelegate;
 
 // Central class to handle user actions on various promos displayed in the
 // search companion.
 class PromoHandler {
  public:
-  PromoHandler(PrefService* pref_service,
-               SigninDelegate* signin_delegate,
-               MsbbDelegate* msbb_delegate);
+  PromoHandler(PrefService* pref_service, SigninDelegate* signin_delegate);
   ~PromoHandler();
 
   // Disallow copy/assign.
@@ -41,23 +39,23 @@ class PromoHandler {
 
   // Called in response to the mojo call from renderer. Takes necessary action
   // to handle the user action on the promo.
-  void OnPromoAction(PromoType promo_type, PromoAction promo_action);
+  void OnPromoAction(PromoType promo_type,
+                     PromoAction promo_action,
+                     const absl::optional<GURL>& exps_promo_url);
 
  private:
   void OnSigninPromo(PromoAction promo_action);
   void OnMsbbPromo(PromoAction promo_action);
-  void OnExpsPromo(PromoAction promo_action);
+  void OnExpsPromo(PromoAction promo_action,
+                   const absl::optional<GURL>& exps_promo_url);
   void IncrementPref(const std::string& pref_name);
 
   // Lifetime of the PrefService is bound to profile which outlives the lifetime
   // of the companion page.
   raw_ptr<PrefService> pref_service_;
 
-  // Delegate to handle sign-in flow.
+  // Delegate to handle promo acceptance flow.
   raw_ptr<SigninDelegate> signin_delegate_;
-
-  // Delegate to set MSBB.
-  raw_ptr<MsbbDelegate> msbb_delegate_;
 };
 
 }  // namespace companion

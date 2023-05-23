@@ -32,6 +32,7 @@ enum ParamType {
   // Arguments for MethodType.kOnPromoAction.
   PROMO_ACTION = 'promoAction',
   PROMO_TYPE = 'promoType',
+  EXPS_PROMO_URL = 'expsPromoUrl',
 
   // Arguments for MethodType.kOnPhFeedback.
   PH_FEEDBACK = 'phFeedback',
@@ -183,8 +184,11 @@ function onCompanionMessageEvent(event: MessageEvent) {
   } else if (methodType === MethodType.kOnPromoAction) {
     const promoType = data[ParamType.PROMO_TYPE];
     const promoAction = data[ParamType.PROMO_ACTION];
+    const expsPromoUrl = new Url();
+    expsPromoUrl.url = data[ParamType.EXPS_PROMO_URL] || '';
     if (validatePromoArguments(promoType, promoAction)) {
-      companionProxy.handler.onPromoAction(promoType, promoAction);
+      companionProxy.handler.onPromoAction(
+          promoType, promoAction, expsPromoUrl);
     }
   } else if (methodType === MethodType.kOnExpsOptInStatusAvailable) {
     companionProxy.handler.onExpsOptInStatusAvailable(
