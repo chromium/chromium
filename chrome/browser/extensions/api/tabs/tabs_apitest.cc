@@ -132,9 +132,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
       << message_;
 }
 
-// TODO(crbug.com/521410): Flaky on Wayland. Disabled for now on all platforms
-// pending further testing.
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Muted) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Muted) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/muted")) << message_;
 }
 
