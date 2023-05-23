@@ -132,7 +132,9 @@ enum class WidgetKitExtensionAction {
   ACTION_LOCKSCREEN_LAUNCHER_VOICE_SEARCH = 8,
   ACTION_LOCKSCREEN_LAUNCHER_GAME = 9,
   ACTION_QUICK_ACTIONS_LENS = 10,
-  kMaxValue = ACTION_QUICK_ACTIONS_LENS,
+  ACTION_SHORTCUTS_SEARCH = 11,
+  ACTION_SHORTCUTS_OPEN = 12,
+  kMaxValue = ACTION_SHORTCUTS_OPEN,
 };
 
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
@@ -661,6 +663,19 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
             WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_VOICE_SEARCH);
         break;
 
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+  if ([secureSourceApp isEqualToString:kWidgetKitHostShortcutsWidget]) {
+    switch (action) {
+      case ACTION_NEW_SEARCH:
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_SHORTCUTS_SEARCH);
+        break;
+      case ACTION_OPEN_URL:
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_SHORTCUTS_OPEN);
+        break;
       default:
         NOTREACHED();
         break;
