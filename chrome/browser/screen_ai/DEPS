@@ -3,5 +3,6 @@ include_rules = [
   "+components/keyed_service/content",
   "+components/prefs",
   "+components/component_updater",
+  "+chrome/browser/browser_process.h",
   "+chromeos/ash/components/dbus/dlcservice"
 ]

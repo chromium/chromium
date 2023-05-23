@@ -86,6 +86,8 @@ void ScreenAIServiceRouter::BindMainContentExtractor(
 }
 
 void ScreenAIServiceRouter::LaunchIfNotRunning() {
+  ScreenAIInstallState::GetInstance()->SetLastUsageTime();
+
   if (screen_ai_service_factory_.is_bound() ||
       screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
           screen_ai::ScreenAIInstallState::State::kFailed) {

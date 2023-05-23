@@ -123,14 +123,17 @@ void RegisterScreenAIComponent(ComponentUpdateService* cus,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (screen_ai::ScreenAIInstallState::ShouldInstall(local_state)) {
+    screen_ai::ScreenAIInstallState::GetInstance()->SetState(
+        screen_ai::ScreenAIInstallState::State::kDownloading);
+
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<ScreenAIComponentInstallerPolicy>());
     installer->Register(cus, base::OnceClosure());
     return;
   }
 
-  if (!screen_ai::GetLatestComponentBinaryPath().empty() &&
-      screen_ai::ScreenAIInstallState::ShouldUninstall(local_state)) {
+  // Clean up.
+  if (!screen_ai::GetLatestComponentBinaryPath().empty()) {
     ScreenAIComponentInstallerPolicy::DeleteComponent();
   }
 }

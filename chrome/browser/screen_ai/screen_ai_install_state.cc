@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
@@ -43,10 +44,13 @@ bool IsDeviceCompatible() {
 
 namespace screen_ai {
 
+// ScreenAIInstallState is created through ScreenAIDownloader and we expect on
+// and only one of it exists during browser's life time.
+ScreenAIInstallState* g_instance = nullptr;
+
 // static
 ScreenAIInstallState* ScreenAIInstallState::GetInstance() {
-  static base::NoDestructor<ScreenAIInstallState> instance;
-  return instance.get();
+  return g_instance;
 }
 
 // static
@@ -59,39 +63,41 @@ bool ScreenAIInstallState::VerifyLibraryVersion(const std::string& version) {
   return false;
 }
 
-ScreenAIInstallState::ScreenAIInstallState() = default;
-ScreenAIInstallState::~ScreenAIInstallState() = default;
+ScreenAIInstallState::ScreenAIInstallState() {
+  CHECK_EQ(g_instance, nullptr);
+  g_instance = this;
+}
 
-// static
-bool ScreenAIInstallState::ShouldInstall(PrefService* local_state) {
-  if (!features::IsScreenAIServiceNeeded() || !IsDeviceCompatible()) {
-    return false;
-  }
-
-  // Remove scheduled time for deletion as feature is needed.
-  local_state->SetTime(prefs::kScreenAIScheduledDeletionTimePrefName,
-                       base::Time());
-  return true;
+ScreenAIInstallState::~ScreenAIInstallState() {
+  CHECK_NE(g_instance, nullptr);
+  g_instance = nullptr;
 }
 
 // static
-bool ScreenAIInstallState::ShouldUninstall(PrefService* local_state) {
-  if (features::IsScreenAIServiceNeeded()) {
+bool ScreenAIInstallState::ShouldInstall(PrefService* local_state) {
+  if (!IsDeviceCompatible()) {
     return false;
   }
 
-  base::Time deletion_time =
-      local_state->GetTime(prefs::kScreenAIScheduledDeletionTimePrefName);
+  base::Time last_used_time =
+      local_state->GetTime(prefs::kScreenAILastUsedTimePrefName);
 
-  // Set deletion time if it is not set yet.
-  if (deletion_time.is_null()) {
-    local_state->SetTime(
-        prefs::kScreenAIScheduledDeletionTimePrefName,
-        base::Time::Now() + base::Days(kScreenAICleanUpDelayInDays));
+  if (last_used_time.is_null()) {
     return false;
   }
 
-  return deletion_time >= base::Time::Now();
+  if (base::Time::Now() >=
+      last_used_time + base::Days(kScreenAICleanUpDelayInDays)) {
+    local_state->ClearPref(prefs::kScreenAILastUsedTimePrefName);
+    return false;
+  }
+
+  return true;
+}
+
+void ScreenAIInstallState::SetLastUsageTime() {
+  g_browser_process->local_state()->SetTime(
+      prefs::kScreenAILastUsedTimePrefName, base::Time::Now());
 }
 
 void ScreenAIInstallState::AddObserver(
@@ -100,6 +106,7 @@ void ScreenAIInstallState::AddObserver(
   observer->StateChanged(state_);
 
   // Adding an observer indicates that we need the component.
+  SetLastUsageTime();
   if (state_ == State::kNotDownloaded) {
     DownloadComponent();
   }
@@ -145,11 +152,6 @@ void ScreenAIInstallState::SetState(State state) {
   for (ScreenAIInstallState::Observer* observer : observers_) {
     observer->StateChanged(state_);
   }
-}
-
-void ScreenAIInstallState::DownloadComponent() {
-  // TODO(crbug.com/1278249): Actually trigger download. Download is now
-  // triggered on browser start based on enabled flags.
 }
 
 void ScreenAIInstallState::SetDownloadProgress(double progress) {

@@ -69,8 +69,6 @@ void ManageInstallation(PrefService* local_state) {
     return;
   }
 
-  // TODO(https://crbug.com/1278249): Consider adding a timer to keep the DLC
-  // for a short time if it is installed and is not needed now.
   Uninstall();
 }
 

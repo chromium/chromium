@@ -73,6 +73,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/screen_ai/screen_ai_downloader.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/site_isolation/prefs_observer.h"
 #include "chrome/browser/ssl/secure_origin_prefs_observer.h"
@@ -1241,6 +1242,10 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   soda_installer_impl_ = std::make_unique<speech::SodaInstallerImplChromeOS>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  screen_ai_download_ = std::make_unique<screen_ai::ScreenAIDownloader>();
+#endif
 
   base::FilePath user_data_dir;
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);

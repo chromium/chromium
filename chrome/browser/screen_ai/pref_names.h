@@ -9,8 +9,8 @@ class PrefRegistrySimple;
 
 namespace prefs {
 
-// The scheduled time to clean up the ScreenAI library from the device.
-extern const char kScreenAIScheduledDeletionTimePrefName[];
+// The last time Screen AI library was used.
+extern const char kScreenAILastUsedTimePrefName[];
 
 }  // namespace prefs
 

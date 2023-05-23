@@ -32,7 +32,11 @@ class TestScreenAIInstallState : public screen_ai::ScreenAIInstallState {
   TestScreenAIInstallState(const TestScreenAIInstallState&) = delete;
   TestScreenAIInstallState& operator=(const TestScreenAIInstallState&) = delete;
 
-  ~TestScreenAIInstallState() = default;
+  ~TestScreenAIInstallState() override {}
+
+  void SetLastUsageTime() override {}
+
+  void DownloadComponent() override {}
 };
 
 class TestPdfOcrHandler : public PdfOcrHandler {

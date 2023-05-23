@@ -29,6 +29,7 @@ source_set("screen_ai_install_state") {
   deps = [
     ":prefs",
     "//base",
+    "//chrome/browser:browser_process",
     "//components/prefs",
     "//components/services/screen_ai/public/cpp:utilities",
     "//ui/accessibility:ax_base",

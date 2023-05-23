@@ -842,6 +842,12 @@ const char kTimesUPMAuthErrorShown[] = "times_upm_auth_error_shown";
 const char kSamlPasswordSyncToken[] = "saml.password_sync_token";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 05/2023.
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+const char kScreenAIScheduledDeletionTimePrefName[] =
+    "accessibility.screen_ai.scheduled_deletion_time";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -940,6 +946,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 05/2023.
   registry->RegisterBooleanPref(kPPAPISharedImagesSwapChainAllowed, true);
+
+// Deprecated 05/2023.
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  registry->RegisterTimePref(kScreenAIScheduledDeletionTimePrefName,
+                             base::Time());
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1945,6 +1957,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 05/2023
   local_state->ClearPref(kPPAPISharedImagesSwapChainAllowed);
+
+// Added 05/2023.
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  local_state->ClearPref(kScreenAIScheduledDeletionTimePrefName);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

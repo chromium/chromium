@@ -2481,6 +2481,8 @@ static_library("browser") {
       "accessibility/pdf_ocr_controller_factory.h",
       "renderer_context_menu/pdf_ocr_menu_observer.cc",
       "renderer_context_menu/pdf_ocr_menu_observer.h",
+      "screen_ai/screen_ai_downloader.cc",
+      "screen_ai/screen_ai_downloader.h",
     ]
     deps += [
       "//chrome/browser/screen_ai:prefs",
@@ -2491,7 +2493,9 @@ static_library("browser") {
       "//components/services/screen_ai/public/mojom",
     ]
 
-    if (!is_chromeos_ash) {
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/browser/screen_ai:screen_ai_chromeos_installer" ]
+    } else {
       sources += [
         "component_updater/screen_ai_component_installer.cc",
         "component_updater/screen_ai_component_installer.h",

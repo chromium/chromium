@@ -9,15 +9,14 @@
 
 namespace prefs {
 
-const char kScreenAIScheduledDeletionTimePrefName[] =
-    "accessibility.screen_ai.scheduled_deletion_time";
-
+const char kScreenAILastUsedTimePrefName[] =
+    "accessibility.screen_ai.last_used_time";
 }  // namespace prefs
 
 namespace screen_ai {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kScreenAIScheduledDeletionTimePrefName,
+  registry->RegisterTimePref(prefs::kScreenAILastUsedTimePrefName,
                              base::Time());
 }
 

@@ -43,7 +43,7 @@ class ScreenAIInstallState {
   ScreenAIInstallState();
   ScreenAIInstallState(const ScreenAIInstallState&) = delete;
   ScreenAIInstallState& operator=(const ScreenAIInstallState&) = delete;
-  ~ScreenAIInstallState();
+  virtual ~ScreenAIInstallState();
 
   static ScreenAIInstallState* GetInstance();
 
@@ -52,12 +52,13 @@ class ScreenAIInstallState {
   // expected.
   static bool VerifyLibraryVersion(const std::string& version);
 
-  // Returns true if the component is required. If the component is needed,
-  // removes the timer to delete the component from |local_state|.
+  // Returns true if the library is used recently and we need to keep it on
+  // device and updated.
   static bool ShouldInstall(PrefService* local_state);
 
-  // Returns true if the component is not used for long enough to be removed.
-  static bool ShouldUninstall(PrefService* local_state);
+  // Stores current time in a local state preference as the last time that the
+  // service is used.
+  virtual void SetLastUsageTime();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -70,8 +71,10 @@ class ScreenAIInstallState {
   // Sets the component state and informs the observers.
   void SetState(State state);
 
-  // Triggers component download if it's not done.
-  void DownloadComponent();
+  // Triggers component download if it's not done. This function depends on
+  // component updater or DLC downloader and since they need the install state,
+  // we need to move it to another build target to avoid circular dependency.
+  virtual void DownloadComponent() = 0;
 
   // Called by component downloaders to set download progress.
   void SetDownloadProgress(double progress);
