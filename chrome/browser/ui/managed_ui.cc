@@ -25,8 +25,11 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -125,6 +128,20 @@ bool ShouldDisplayManagedUi(Profile* profile) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+
+const gfx::VectorIcon& GetManagedUiIcon(Profile* profile) {
+  CHECK(ShouldDisplayManagedUi(profile));
+
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    return features::IsChromeRefresh2023()
+               ? vector_icons::kBusinessChromeRefreshIcon
+               : vector_icons::kBusinessIcon;
+  }
+
+  CHECK(ShouldDisplayManagedByParentUi(profile));
+  return vector_icons::kFamilyLinkIcon;
+}
+
 std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
   CHECK(ShouldDisplayManagedUi(profile));
   absl::optional<std::string> manager = GetAccountManagerIdentity(profile);

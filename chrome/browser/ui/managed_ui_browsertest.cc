@@ -23,8 +23,10 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -129,6 +131,45 @@ IN_PROC_BROWSER_TEST_P(ManagedUiTest, ShouldDisplayManagedUiSupervised) {
 // On ChromeOS we don't display the management UI for enterprise or supervised
 // users.
 #if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiIconEnterprise) {
+  // Simulate a managed device.
+  AddEnterpriseManagedPolicies();
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  // An un-supervised profile.
+  TestingProfile::Builder builder;
+  auto profile = builder.Build();
+
+  // Simulate a supervised profile.
+  TestingProfile::Builder builder_supervised;
+  builder_supervised.SetIsSupervisedProfile();
+  std::unique_ptr<TestingProfile> profile_supervised =
+      builder_supervised.Build();
+
+  EXPECT_EQ(vector_icons::kBusinessIcon.name,
+            chrome::GetManagedUiIcon(profile.get()).name);
+  // Enterprise management takes precedence over supervision in the management
+  // UI.
+  EXPECT_EQ(vector_icons::kBusinessIcon.name,
+            chrome::GetManagedUiIcon(profile_supervised.get()).name);
+}
+
+IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiIconSupervised) {
+  if (!IsManagedUiEnabledForSupervisedUsers()) {
+    return;
+  }
+
+  // Simulate a supervised profile.
+  TestingProfile::Builder builder;
+  builder.SetIsSupervisedProfile();
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  EXPECT_EQ(vector_icons::kFamilyLinkIcon.name,
+            chrome::GetManagedUiIcon(profile.get()).name);
+}
+
 IN_PROC_BROWSER_TEST_P(ManagedUiTest, GetManagedUiMenuItemLabelEnterprise) {
   // Simulate a managed profile.
   AddEnterpriseManagedPolicies();

@@ -1259,13 +1259,13 @@ void AppMenuModel::Build() {
           IDC_SHOW_MANAGEMENT_PAGE,
           chrome::GetManagedUiMenuItemLabel(browser_->profile()),
           ui::ImageModel::FromVectorIcon(
-              vector_icons::kBusinessIcon,
+              chrome::GetManagedUiIcon(browser_->profile()),
               ui::kColorMenuItemForegroundHighlighted, kIconSize));
     } else {
       AddItemWithIcon(IDC_SHOW_MANAGEMENT_PAGE,
                       chrome::GetManagedUiMenuItemLabel(browser_->profile()),
                       ui::ImageModel::FromVectorIcon(
-                          vector_icons::kBusinessChromeRefreshIcon,
+                          chrome::GetManagedUiIcon(browser_->profile()),
                           ui::kColorMenuIcon, kDefaultIconSize));
     }
   }

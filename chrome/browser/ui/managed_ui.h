@@ -13,6 +13,10 @@
 
 class Profile;
 
+namespace gfx {
+struct VectorIcon;
+}
+
 namespace chrome {
 
 // Returns true if a 'Managed by <...>' message should appear in
@@ -31,6 +35,9 @@ namespace chrome {
 bool ShouldDisplayManagedUi(Profile* profile);
 
 #if !BUILDFLAG(IS_ANDROID)
+// The icon to use in the Managed UI.
+const gfx::VectorIcon& GetManagedUiIcon(Profile* profile);
+
 // The label for the App Menu item for Managed UI.
 //
 // Must only be called if ShouldDisplayManagedUi(profile) is true.
