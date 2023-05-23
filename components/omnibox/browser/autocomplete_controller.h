@@ -396,6 +396,13 @@ class AutocompleteController : public AutocompleteProviderListener,
   // `OnUrlScoringModelDone()` and its completion callback from being called.
   void CancelUrlScoringModel();
 
+  // Constructs a destination URL from supplied search terms args.
+  // TODO(1418077): look for a way to dissolve this function into direct
+  // application where it's needed.
+  GURL ComputeURLFromSearchTermsArgs(
+      TemplateURL* template_url,
+      const TemplateURLRef::SearchTermsArgs& args) const;
+
   base::ObserverList<Observer> observers_;
 
   // The client passed to the providers.

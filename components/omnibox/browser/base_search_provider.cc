@@ -213,12 +213,13 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateActionInSuggest(
     const TemplateURLRef& search_url,
     const TemplateURLRef::SearchTermsArgs& original_search_terms_args,
     const SearchTermsData& search_terms_data) {
+  absl::optional<TemplateURLRef::SearchTermsArgs> action_search_terms_args;
   // If the Action's URL is empty, but the Action supplies additional search
   // parameters, compute new URL based on the base URL (that is specific to
   // the entire suggestion).
   if (action_info.action_uri().empty() &&
       !action_info.search_parameters().empty()) {
-    auto action_search_terms_args = original_search_terms_args;
+    action_search_terms_args = original_search_terms_args;
     std::string query_params;
     for (const auto& param : action_info.search_parameters()) {
       // Supply additional Query Parameters as instructed by the provider.
@@ -227,14 +228,11 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateActionInSuggest(
       }
       query_params += param.first + "=" + param.second;
     }
-    action_search_terms_args.additional_query_params = query_params;
-    action_info.set_action_uri(
-        GURL(search_url.ReplaceSearchTerms(action_search_terms_args,
-                                           search_terms_data))
-            .spec());
+    action_search_terms_args->additional_query_params = query_params;
   }
 
-  return base::MakeRefCounted<OmniboxActionInSuggest>(std::move(action_info));
+  return base::MakeRefCounted<OmniboxActionInSuggest>(
+      std::move(action_info), std::move(action_search_terms_args));
 }
 
 // static

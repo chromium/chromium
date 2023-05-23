@@ -40,6 +40,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/history_clusters/core/config.h"
+#include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -797,16 +798,25 @@ void AutocompleteController::
 void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
   TRACE_EVENT0("omnibox", "AutocompleteController::SetMatchDestinationURL");
-  const TemplateURL* template_url =
-      match->GetTemplateURL(template_url_service_, false);
-  if (!template_url)
-    return;
-
-  match->destination_url = GURL(template_url->url_ref().ReplaceSearchTerms(
-      *match->search_terms_args, template_url_service_->search_terms_data()));
+  auto url = ComputeURLFromSearchTermsArgs(
+      match->GetTemplateURL(template_url_service_, false),
+      *match->search_terms_args);
+  if (url.is_valid()) {
+    match->destination_url = std::move(url);
+  }
 #if BUILDFLAG(IS_ANDROID)
   match->UpdateJavaDestinationUrl();
 #endif
+}
+
+GURL AutocompleteController::ComputeURLFromSearchTermsArgs(
+    TemplateURL* template_url,
+    const TemplateURLRef::SearchTermsArgs& search_terms_args) const {
+  if (!template_url) {
+    return GURL::EmptyGURL();
+  }
+  return GURL(template_url->url_ref().ReplaceSearchTerms(
+      search_terms_args, template_url_service_->search_terms_data()));
 }
 
 const AutocompleteResult& AutocompleteController::result() const {
@@ -1342,6 +1352,32 @@ void AutocompleteController::UpdateAssistedQueryStats(
     }
     match->search_terms_args->assisted_query_stats = base::StringPrintf(
         "chrome.%s.%s", selected_index.c_str(), autocompletions.c_str());
+
+    // Duplicate AQS/SBS for eligible ActionsInSuggest.
+    // TODO(1418077): rather than computing the `action_uri`, keep the
+    // updated search_terms_args, and apply the query formulation time the
+    // moment the action is selected.
+    for (auto& scoped_action : match->actions) {
+      auto* action_in_suggest =
+          OmniboxActionInSuggest::FromAction(scoped_action.get());
+
+      if (action_in_suggest == nullptr ||
+          !action_in_suggest->search_terms_args.has_value()) {
+        continue;
+      }
+      auto& search_terms_args = action_in_suggest->search_terms_args.value();
+      search_terms_args.searchbox_stats.mutable_assisted_query_info()
+          ->MergeFrom(
+              match->search_terms_args->searchbox_stats.assisted_query_info());
+      search_terms_args.assisted_query_stats =
+          match->search_terms_args->assisted_query_stats;
+
+      action_in_suggest->action_info.set_action_uri(
+          ComputeURLFromSearchTermsArgs(
+              match->GetTemplateURL(template_url_service_, false),
+              search_terms_args)
+              .spec());
+    }
   }
 }
 

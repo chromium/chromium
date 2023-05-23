@@ -3141,8 +3141,8 @@ TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
         if (action_id == OmniboxActionId::ACTION_IN_SUGGEST) {
           omnibox::ActionInfo info;
           info.set_action_type(omnibox::ActionInfo_ActionType_DIRECTIONS);
-          match.actions.push_back(
-              base::MakeRefCounted<OmniboxActionInSuggest>(std::move(info)));
+          match.actions.push_back(base::MakeRefCounted<OmniboxActionInSuggest>(
+              std::move(info), absl::nullopt));
         } else {
           match.actions.push_back(
               base::MakeRefCounted<FakeOmniboxAction>(action_id));

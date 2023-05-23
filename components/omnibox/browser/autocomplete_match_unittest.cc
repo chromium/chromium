@@ -1223,8 +1223,8 @@ TEST_F(AutocompleteMatchTest, RearrangeActionsInSuggest) {
     for (auto& action_type : test_case.types_to_add) {
       omnibox::ActionInfo info;
       info.set_action_type(action_type);
-      match.actions.push_back(
-          base::MakeRefCounted<OmniboxActionInSuggest>(std::move(info)));
+      match.actions.push_back(base::MakeRefCounted<OmniboxActionInSuggest>(
+          std::move(info), absl::nullopt));
     }
 
     match.FilterAndSortActionsInSuggest();

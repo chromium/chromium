@@ -514,87 +514,36 @@ TEST_P(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
     const char* base_url;
     const char* action_url;
     std::vector<std::pair<const char*, const char*>> search_params;
-
     // query params order is not guaranteed to be the same across all platforms
-    // or even across multiple runs.
-    const char* expected_start_url;
-    std::vector<const char*> expect_query_param;
-    const char* expected_end_url;
+    // or even across multiple runs. the vector below captures possible
+    // variants.
+    std::vector<const char*> expect_query_params;
   } test_cases[]{
       // clang-format off
     // Cases explicitly not meant to produce any changes.
     { "no change: no supplied url, no search params",
       "https://www.google.com",
       // ActionInfo action_uri and search_params:
-      "", {},
-      // Resulting action_uri: head, params, tail:
-      "", {}, ""},
+      "", {}, {}},
 
     { "no change: supplied url, no search params",
       "https://www.google.com",
       // ActionInfo action_uri and search_params:
-      "https://maps.google.com", {},
-      // Resulting action_uri: head, params, tail:
-      "https://maps.google.com", {}, ""},
-
-    { "no change: supplied url, search params ignored",
-      "https://www.google.com",
-      // ActionInfo action_uri and search_params:
-      "https://maps.google.com", {{"a", "3"}},
-      // Resulting action_uri: head, params, tail:
-      "https://maps.google.com", {}, ""},
-
-    { "no change: uri is serialized data",
-      "https://g.co:119/search?q=a#f",
-      // ActionInfo action_uri and search_params:
-      "fce2", {{"a", "3"}, {"b", "7"}},
-      // Resulting action_uri: head, params, tail:
-      "fce2", {}, ""},
+      "https://maps.google.com", {}, {}},
 
     // Cases meant to generate new URL:
     // - action_uri has to be empty,
     // - search_params have to be non-empty.
-    { "generate: domain only; single query param",
+    { "generate: single query param",
       "https://g.co",
       // ActionInfo action_uri and search_params:
-      "", {{"a", "3"}},
-      // Resulting action_uri: head, params, tail:
-      "https://g.co/?", {"a=3"}, ""},
+      "", {{"a", "3"}}, {"a=3"}},
 
-    { "generate: domain and path; single query param",
-      "https://g.co/search",
-      // ActionInfo action_uri and search_params:
-      "", {{"a", "3"}},
-      // Resulting action_uri: head, params, tail:
-      "https://g.co/search?", {"a=3"}, ""},
-
-    { "generate: domain, path, query; single query param",
-      "https://g.co/search?q=abc&oq=def",
-      // ActionInfo action_uri and search_params:
-      "", {{"a", "3"}},
-      // Resulting action_uri: head, params, tail:
-      "https://g.co/search?", {"a=3", "q=abc", "oq=def"}, ""},
-
-    { "generate: domain, path, query, fragment; single query param",
-      "https://g.co/search?q=abc&oq=def#fragment",
-      // ActionInfo action_uri and search_params:
-      "", {{"a", "3"}},
-      // Resulting action_uri: head, params, tail:
-      "https://g.co/search?", {"a=3", "q=abc", "oq=def"}, "#fragment"},
-
-    { "generate: domain, port, path, query, fragment; single query param",
-      "https://g.co:119/search?q=abc&oq=def#fragment",
-      // ActionInfo action_uri and search_params:
-      "", {{"a", "3"}},
-      // Resulting action_uri: head, params, tail:
-      "https://g.co:119/search?", {"a=3", "q=abc", "oq=def"}, "#fragment"},
-
-    { "generate: domain, port, path, query, fragment; multiple params",
+    { "generate: multiple query params",
       "https://g.co:119/search?q=a#f",
       // ActionInfo action_uri and search_params:
-      "", {{"a", "3"}, {"aa", "7"}},
-      // Resulting action_uri: head, params, tail:
-      "https://g.co:119/search?", {"a=3", "aa=7", "q=a"}, "#f"},
+      "", {{"a", "3"}, {"A", "7"}},
+        {"A=7&a=3", "a=3&A=7"}},
       // clang-format on
   };
 
@@ -619,17 +568,21 @@ TEST_P(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
 
     auto* action_in_suggest = OmniboxActionInSuggest::FromAction(action.get());
 
-    const auto& action_uri = action_in_suggest->action_info_.action_uri();
-
-    EXPECT_THAT(action_uri, testing::StartsWith(test_case.expected_start_url))
+    // order of elements in ProtobufMap is not guaranteed, and in fact changes,
+    // even within the same platform. Instead of trying to decompose the params
+    // just check the params against variants that we specified in the
+    // expect_query_params.
+    EXPECT_EQ(action_in_suggest->search_terms_args.has_value(),
+              !test_case.expect_query_params.empty())
         << "while evaluating case `" << test_case.test_name << '`';
 
-    EXPECT_THAT(action_uri, testing::EndsWith(test_case.expected_end_url))
-        << "while evaluating case `" << test_case.test_name << '`';
-
-    for (auto* query_param : test_case.expect_query_param) {
-      EXPECT_THAT(action_uri, testing::HasSubstr(query_param))
-          << "while evaluating case `" << test_case.test_name << '`';
+    bool found_matching_param_sequence = test_case.expect_query_params.empty();
+    for (auto* param_sequence : test_case.expect_query_params) {
+      found_matching_param_sequence |=
+          action_in_suggest->search_terms_args->additional_query_params ==
+          param_sequence;
     }
+    EXPECT_TRUE(found_matching_param_sequence)
+        << "while evaluating case `" << test_case.test_name << '`';
   }
 }
