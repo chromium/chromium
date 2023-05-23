@@ -173,7 +173,7 @@ TEST_F(PermissionsPolicyTest, TestCrossOriginChildCannotEnableFeature) {
       CreateFromParentPolicy(nullptr, origin_a_);
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentPolicy(policy1.get(), origin_b_);
-  policy2->SetHeaderPolicy({{{kDefaultSelfFeature, /*allowed_origins=*/
+  policy2->SetHeaderPolicy({{{kDefaultSelfFeature,
                               /*allowed_origins=*/{},
                               /*self_if_matches=*/origin_b_,
                               /*matches_all_origins=*/false,
@@ -199,7 +199,7 @@ TEST_F(PermissionsPolicyTest, TestFrameSelfInheritance) {
   // they are at a different origin.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
-  policy1->SetHeaderPolicy({{{kDefaultSelfFeature, /*allowed_origins=*/
+  policy1->SetHeaderPolicy({{{kDefaultSelfFeature,
                               /*allowed_origins=*/{},
                               /*self_if_matches=*/origin_a_,
                               /*matches_all_origins=*/false,
@@ -235,7 +235,7 @@ TEST_F(PermissionsPolicyTest, TestReflexiveFrameSelfInheritance) {
   // it is embedded by frame 2, for which the feature is not enabled.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
-  policy1->SetHeaderPolicy({{{kDefaultSelfFeature, /*allowed_origins=*/
+  policy1->SetHeaderPolicy({{{kDefaultSelfFeature,
                               /*allowed_origins=*/{},
                               /*self_if_matches=*/origin_a_,
                               /*matches_all_origins=*/false,
@@ -434,7 +434,7 @@ TEST_F(PermissionsPolicyTest, TestChildPolicyCanBlockChildren) {
       CreateFromParentPolicy(nullptr, origin_a_);
   std::unique_ptr<PermissionsPolicy> policy2 =
       CreateFromParentPolicy(policy1.get(), origin_b_);
-  policy2->SetHeaderPolicy({{{kDefaultOnFeature, /*allowed_origins=*/
+  policy2->SetHeaderPolicy({{{kDefaultOnFeature,
                               /*allowed_origins=*/{},
                               /*self_if_matches=*/origin_b_,
                               /*matches_all_origins=*/false,
@@ -730,7 +730,7 @@ TEST_F(PermissionsPolicyTest, TestBlockedFrameCannotReenable) {
   // Feature should be enabled at the top level; disabled in all other frames.
   std::unique_ptr<PermissionsPolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
-  policy1->SetHeaderPolicy({{{kDefaultSelfFeature, /*allowed_origins=*/
+  policy1->SetHeaderPolicy({{{kDefaultSelfFeature,
                               /*allowed_origins=*/{},
                               /*self_if_matches=*/origin_a_,
                               /*matches_all_origins=*/false,
@@ -888,7 +888,7 @@ TEST_F(PermissionsPolicyTest, TestFeaturesAreIndependent) {
          /*self_if_matches=*/origin_a_,
          /*matches_all_origins=*/false,
          /*matches_opaque_src=*/false},
-        {kDefaultOnFeature, /*allowed_origins=*/
+        {kDefaultOnFeature,
          /*allowed_origins=*/{},
          /*self_if_matches=*/origin_a_,
          /*matches_all_origins=*/false,
