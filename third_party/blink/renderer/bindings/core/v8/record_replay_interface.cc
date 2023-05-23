@@ -537,13 +537,7 @@ function Pause_evaluateInFrame({ frameId, expression }) {
     return buildRrpObjectResult({ result: argsCdp });
   }
 
-  let rv = null;
-  try {
-    rv = doEvaluation();
-  }
-  catch (err) {
-    log(`[RuntimeError] evaluateInFrame err: ${err?.stack || err}`);
-  }
+  const rv = doEvaluation();
   return buildRrpObjectResult(rv);
 
   function doEvaluation() {
@@ -564,16 +558,10 @@ function Pause_evaluateInFrame({ frameId, expression }) {
 }
 
 function Pause_evaluateInGlobal({ expression }) {
-  let rv = null;
-  try {
-    rv = sendMessage("Runtime.evaluate", {
-      expression,
-      objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
-    });
-  }
-  catch (err) {
-    log(`[RuntimeError] evaluateInGlobal err: ${err?.stack || err}`);
-  }
+  const rv = sendMessage("Runtime.evaluate", {
+    expression,
+    objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
+  });
   return buildRrpObjectResult(rv);
 }
 
