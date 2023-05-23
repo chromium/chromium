@@ -263,11 +263,6 @@ std::string EasyUnlockService::GetLastRemoteStatusUnlockForLogging() {
   return std::string();
 }
 
-proximity_auth::ProximityAuthPrefManager*
-EasyUnlockService::GetProximityAuthPrefManager() {
-  return pref_manager_.get();
-}
-
 const multidevice::RemoteDeviceRefList
 EasyUnlockService::GetRemoteDevicesForTesting() const {
   if (!proximity_auth_system_) {

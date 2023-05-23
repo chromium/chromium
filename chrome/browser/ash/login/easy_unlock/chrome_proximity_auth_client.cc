@@ -38,12 +38,4 @@ void ChromeProximityAuthClient::FinalizeUnlock(bool success) {
     service->FinalizeUnlock(success);
 }
 
-proximity_auth::ProximityAuthPrefManager*
-ChromeProximityAuthClient::GetPrefManager() {
-  EasyUnlockService* service = EasyUnlockService::Get(profile_);
-  if (service)
-    return service->GetProximityAuthPrefManager();
-  return nullptr;
-}
-
 }  // namespace ash

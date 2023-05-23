@@ -16,7 +16,6 @@ static_library("proximity_auth") {
     "metrics.cc",
     "metrics.h",
     "proximity_auth_client.h",
-    "proximity_auth_pref_manager.h",
     "proximity_auth_pref_names.cc",
     "proximity_auth_pref_names.h",
     "proximity_auth_profile_pref_manager.cc",

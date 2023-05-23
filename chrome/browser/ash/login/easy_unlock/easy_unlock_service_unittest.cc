@@ -387,12 +387,6 @@ TEST_F(EasyUnlockServiceTest, NotAllowedForEphemeralAccounts) {
   EXPECT_FALSE(easy_unlock_service_->IsAllowed());
 }
 
-TEST_F(EasyUnlockServiceTest, GetProximityAuthPrefManager) {
-  InitializeService(true /* should_initialize_all_dependencies */);
-
-  EXPECT_TRUE(easy_unlock_service_->GetProximityAuthPrefManager());
-}
-
 TEST_F(EasyUnlockServiceTest, GetRemoteDevices) {
   InitializeService(true /* should_initialize_all_dependencies */);
   VerifyGetRemoteDevices(true /* are_remote_devices_expected */);

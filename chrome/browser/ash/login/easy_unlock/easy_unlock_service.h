@@ -37,7 +37,6 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 namespace proximity_auth {
-class ProximityAuthPrefManager;
 class ProximityAuthProfilePrefManager;
 class ProximityAuthSystem;
 }  // namespace proximity_auth
@@ -114,10 +113,6 @@ class EasyUnlockService
   // choice for unlock. Returns the empty string if the ProximityAuthSystem or
   // the UnlockManager is uninitialized.
   std::string GetLastRemoteStatusUnlockForLogging();
-
-  // Returns the ProximityAuthPrefManager, responsible for managing all
-  // EasyUnlock preferences.
-  proximity_auth::ProximityAuthPrefManager* GetProximityAuthPrefManager();
 
   // Retrieves the remote device list stored for the account in
   // |proximity_auth_system_|.

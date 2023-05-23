@@ -27,7 +27,6 @@ class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
   // proximity_auth::ProximityAuthClient:
   void UpdateSmartLockState(SmartLockState state) override;
   void FinalizeUnlock(bool success) override;
-  proximity_auth::ProximityAuthPrefManager* GetPrefManager() override;
 
  private:
   const raw_ptr<Profile, ExperimentalAsh> profile_;
