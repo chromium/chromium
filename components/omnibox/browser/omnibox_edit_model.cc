@@ -911,8 +911,11 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
     if (match.takeover_action) {
       ExecuteAction(selection, disposition, timestamp);
     } else {
-      OpenMatch(match, disposition, GURL(), std::u16string(), selection.line,
-                timestamp);
+      GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
+          input_, match,
+          autocomplete_controller()->autocomplete_provider_client());
+      OpenMatch(match, disposition, alternate_nav_url, std::u16string(),
+                selection.line, timestamp);
     }
   }
 }
