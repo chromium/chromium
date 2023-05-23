@@ -158,6 +158,8 @@ static_library("test_support") {
   sources = [
     "../browser/autofill/automated_tests/cache_replayer.cc",
     "../browser/autofill/automated_tests/cache_replayer.h",
+    "../browser/dips/dips_test_utils.cc",
+    "../browser/dips/dips_test_utils.h",
     "../browser/notifications/notification_display_service_tester.cc",
     "../browser/notifications/notification_display_service_tester.h",
     "../browser/notifications/stub_notification_platform_bridge.cc",
@@ -291,6 +293,7 @@ static_library("test_support") {
     "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/spellcheck/renderer",
+    "//components/ukm:test_support",
     "//components/user_education/common",
     "//ui/webui",
   ]

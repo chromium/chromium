@@ -6,6 +6,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -18,8 +22,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -48,12 +52,19 @@ class CookieControlsBubbleViewTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
-    content::CookieChangeObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    NavigateToUrlWithThirdPartyCookies();
-    if (name == "NotWorkingClicked" || name == "CookiesBlocked") {
-      observer.Wait();
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    if (name == "StatefulBounce") {
+      NavigateToUrlWithStatefulBounce();
+    } else {
+      content::CookieChangeObserver observer(web_contents);
+      NavigateToUrlWithThirdPartyCookies();
+      if (name == "NotWorkingClicked" || name == "CookiesBlocked") {
+        observer.Wait();
+      }
     }
+
     ASSERT_TRUE(cookie_controls_icon()->GetVisible());
     cookie_controls_icon_->ExecuteForTesting();
 
@@ -85,6 +96,41 @@ class CookieControlsBubbleViewTest : public DialogBrowserTest {
     EXPECT_TRUE(NavigateIframeToURL(
         web_contents, "test",
         embedded_test_server()->GetURL("b.com", "/setcookie.html")));
+  }
+
+  void NavigateToUrlWithStatefulBounce() {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    // Initial navigation to a.com.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+    // Bounce to tracking site b.com.
+    ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
+        web_contents, embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+    // TODO(crbug.com/1447854): This extra navigation is necessary for the test
+    // to end the redirect on a.com. Investigate why.
+    ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
+        web_contents, embedded_test_server()->GetURL("a.com", "/title1.html")));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+    ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
+        web_contents, embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+    // Include a stateful access from b.com.
+    ASSERT_TRUE(content::ExecJs(
+        web_contents->GetPrimaryMainFrame(),
+        base::StringPrintf(kStorageAccessScript, "LocalStorage"),
+        content::EXECUTE_SCRIPT_NO_USER_GESTURE,
+        /*world_id=*/1));
+
+    // Bounce back to a.com.
+    ASSERT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
+        web_contents, embedded_test_server()->GetURL("a.com", "/title1.html")));
+    // Terminate the redirect chain.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   }
 
   void SetThirdPartyCookieBlocking(bool enabled) {
@@ -147,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, BlockingDisabled) {
 
 // ==================== Pixel tests ====================
 
-// Test opening cookie controls bubble.
+// Test opening cookie controls bubble with blocked cookies present.
 // TODO(crbug.com/1432008): Failing on Linux ChromeOS debug build.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_InvokeUi_CookiesBlocked DISABLED_InvokeUi_CookiesBlocked
@@ -156,6 +202,19 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, BlockingDisabled) {
 #endif
 IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
                        MAYBE_InvokeUi_CookiesBlocked) {
+  SetThirdPartyCookieBlocking(true);
+  ShowAndVerifyUi();
+}
+
+// Test opening cookie controls bubble after a stateful redirect.
+// TODO(crbug.com/1447854): Flaky on Chrome OS and Linux builds.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_InvokeUi_StatefulBounce DISABLED_InvokeUi_StatefulBounce
+#else
+#define MAYBE_InvokeUi_StatefulBounce InvokeUi_StatefulBounce
+#endif
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
+                       MAYBE_InvokeUi_StatefulBounce) {
   SetThirdPartyCookieBlocking(true);
   ShowAndVerifyUi();
 }

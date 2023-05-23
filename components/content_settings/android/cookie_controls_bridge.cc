@@ -60,8 +60,9 @@ void CookieControlsBridge::OnCookiesCountChanged(int allowed_cookies,
   // The cookie counts change quite frequently, so avoid unnecessary
   // UI updates if possible.
   if (allowed_cookies_ == allowed_cookies &&
-      blocked_cookies_ == blocked_cookies)
+      blocked_cookies_ == blocked_cookies) {
     return;
+  }
 
   allowed_cookies_ = allowed_cookies;
   blocked_cookies_ = blocked_cookies;
@@ -69,6 +70,9 @@ void CookieControlsBridge::OnCookiesCountChanged(int allowed_cookies,
   Java_CookieControlsBridge_onCookiesCountChanged(
       env, jobject_, allowed_cookies, blocked_cookies);
 }
+
+// This is a no-op for Android.
+void CookieControlsBridge::OnStatefulBounceCountChanged(int bounce_count) {}
 
 void CookieControlsBridge::SetThirdPartyCookieBlockingEnabledForSite(
     JNIEnv* env,

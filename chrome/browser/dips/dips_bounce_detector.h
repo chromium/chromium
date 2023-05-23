@@ -157,6 +157,7 @@ class DIPSBounceDetectorDelegate {
   virtual void RecordEvent(DIPSRecordedEvent event,
                            const GURL& url,
                            const base::Time& time) = 0;
+  virtual void IncrementPageSpecificBounceCount(const GURL& final_url) = 0;
 };
 
 // ServerBounceDetectionState gets attached to NavigationHandle (which is a
@@ -308,6 +309,7 @@ class DIPSWebContentsObserver
   void RecordEvent(DIPSRecordedEvent event,
                    const GURL& url,
                    const base::Time& time) override;
+  void IncrementPageSpecificBounceCount(const GURL& final_url) override;
 
   // WebContentsObserver overrides:
   void DidStartNavigation(
@@ -325,6 +327,7 @@ class DIPSWebContentsObserver
   // Start SiteDataObserver overrides:
   void OnSiteDataAccessed(
       const content_settings::AccessDetails& access_details) override;
+  void OnStatefulBounceDetected() override;
   // End SiteDataObserver overrides.
 
   // raw_ptr<> is safe here because DIPSService is a KeyedService, associated

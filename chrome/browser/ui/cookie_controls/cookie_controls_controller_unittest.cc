@@ -31,6 +31,7 @@ class MockCookieControlsView : public content_settings::CookieControlsView {
               OnStatusChanged,
               (CookieControlsStatus, CookieControlsEnforcement, int, int));
   MOCK_METHOD(void, OnCookiesCountChanged, (int, int));
+  MOCK_METHOD(void, OnStatefulBounceCountChanged, (int));
 };
 
 }  // namespace

@@ -31,6 +31,8 @@
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
@@ -386,7 +388,25 @@ ukm::SourceId DIPSWebContentsObserver::GetPageUkmSourceId() const {
 void DIPSWebContentsObserver::HandleRedirectChain(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain) {
-  dips_service_->HandleRedirectChain(std::move(redirects), std::move(chain));
+  dips_service_->HandleRedirectChain(
+      std::move(redirects), std::move(chain),
+      base::BindRepeating(
+          &DIPSWebContentsObserver::IncrementPageSpecificBounceCount,
+          base::Unretained(this)));
+}
+
+void DIPSWebContentsObserver::IncrementPageSpecificBounceCount(
+    const GURL& final_url) {
+  // Do nothing if the current URL doesn't match the final URL of the chain.
+  // This means that the user has navigated away from the bounce destination, so
+  // we don't want to update settings for the wrong site.
+  if (WebContentsObserver::web_contents()->GetURL() != final_url) {
+    return;
+  }
+
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      WebContentsObserver::web_contents()->GetPrimaryPage());
+  pscs->IncrementStatefulBounceCount();
 }
 
 // A thin wrapper around NavigationHandle to implement DIPSNavigationHandle.
@@ -495,6 +515,8 @@ void DIPSWebContentsObserver::OnSiteDataAccessed(
   detector_.OnClientSiteDataAccessed(
       access_details.url, ToCookieOperation(access_details.access_type));
 }
+
+void DIPSWebContentsObserver::OnStatefulBounceDetected() {}
 
 void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
                                                   CookieOperation op) {

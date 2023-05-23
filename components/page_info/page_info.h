@@ -350,6 +350,7 @@ class PageInfo : private content_settings::CookieControlsView {
                        int allowed_cookies,
                        int blocked_cookies) override;
   void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
+  void OnStatefulBounceCountChanged(int bounce_count) override;
 
   // Populates this object's UI state with provided security context. This
   // function does not update visible UI-- that's part of Present*().

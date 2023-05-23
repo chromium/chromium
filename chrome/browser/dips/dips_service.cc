@@ -306,7 +306,8 @@ void DIPSService::InitializeStorage(base::Time time,
 
 void DIPSService::HandleRedirectChain(
     std::vector<DIPSRedirectInfoPtr> redirects,
-    DIPSRedirectChainInfoPtr chain) {
+    DIPSRedirectChainInfoPtr chain,
+    base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
   if (redirects.empty()) {
     DCHECK(!chain->is_partial_chain);
     for (auto& observer : observers_) {
@@ -321,22 +322,25 @@ void DIPSService::HandleRedirectChain(
   storage_.AsyncCall(&DIPSStorage::Read)
       .WithArgs(url)
       .Then(base::BindOnce(&DIPSService::GotState, weak_factory_.GetWeakPtr(),
-                           std::move(redirects), std::move(chain), 0));
+                           std::move(redirects), std::move(chain), 0,
+                           content_settings_callback));
 }
 
-void DIPSService::GotState(std::vector<DIPSRedirectInfoPtr> redirects,
-                           DIPSRedirectChainInfoPtr chain,
-                           size_t index,
-                           const DIPSState url_state) {
+void DIPSService::GotState(
+    std::vector<DIPSRedirectInfoPtr> redirects,
+    DIPSRedirectChainInfoPtr chain,
+    size_t index,
+    base::RepeatingCallback<void(const GURL&)> content_settings_callback,
+    const DIPSState url_state) {
   DCHECK_LT(index, redirects.size());
 
   DIPSRedirectInfo* redirect = redirects[index].get();
   // If there's any user interaction recorded in the DIPS DB, that's engagement.
   redirect->has_interaction = url_state.user_interaction_times().has_value();
-
   HandleRedirect(
       *redirect, *chain,
-      base::BindRepeating(&DIPSService::RecordBounce, base::Unretained(this)));
+      base::BindRepeating(&DIPSService::RecordBounce, base::Unretained(this)),
+      content_settings_callback);
 
   if (index + 1 >= redirects.size()) {
     // All redirects handled.
@@ -353,14 +357,17 @@ void DIPSService::GotState(std::vector<DIPSRedirectInfoPtr> redirects,
   storage_.AsyncCall(&DIPSStorage::Read)
       .WithArgs(url)
       .Then(base::BindOnce(&DIPSService::GotState, weak_factory_.GetWeakPtr(),
-                           std::move(redirects), std::move(chain), index + 1));
+                           std::move(redirects), std::move(chain), index + 1,
+                           content_settings_callback));
 }
 
-void DIPSService::RecordBounce(const GURL& url,
-                               const GURL& initial_url,
-                               const GURL& final_url,
-                               base::Time time,
-                               bool stateful) {
+void DIPSService::RecordBounce(
+    const GURL& url,
+    const GURL& initial_url,
+    const GURL& final_url,
+    base::Time time,
+    bool stateful,
+    base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
   // If the initial or final URL has a 1P exception for all embedded 3PCs (e.g.
   // Chrome Guard) then clear the tracking site from the DIPS DB, to avoid
   // deleting its storage. The exemption overrides any bounces from non-exempted
@@ -392,13 +399,21 @@ void DIPSService::RecordBounce(const GURL& url,
     return;
   }
 
+  // If the bounce is stateful and not exempted by cookie settings, increment
+  // the bounce counter in PageSpecificContentSettings.
+  if (stateful) {
+    content_settings_callback.Run(final_url);
+  }
+
   storage_.AsyncCall(&DIPSStorage::RecordBounce).WithArgs(url, time, stateful);
 }
 
 /*static*/
-void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
-                                 const DIPSRedirectChainInfo& chain,
-                                 RecordBounceCallback record_bounce) {
+void DIPSService::HandleRedirect(
+    const DIPSRedirectInfo& redirect,
+    const DIPSRedirectChainInfo& chain,
+    RecordBounceCallback record_bounce,
+    base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
   const std::string site = GetSiteForDIPS(redirect.url);
   bool initial_site_same = (site == chain.initial_site);
   bool final_site_same = (site == chain.final_site);
@@ -430,7 +445,8 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
   if (redirect.access_type != SiteDataAccessType::kUnknown) {
     record_bounce.Run(
         redirect.url, chain.initial_url, chain.final_url, redirect.time,
-        /*stateful=*/redirect.access_type > SiteDataAccessType::kRead);
+        /*stateful=*/redirect.access_type > SiteDataAccessType::kRead,
+        content_settings_callback);
   }
 
   RedirectCategory category =

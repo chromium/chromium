@@ -336,6 +336,8 @@ void PageInfo::OnStatusChanged(CookieControlsStatus status,
 void PageInfo::OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) {
 }
 
+void PageInfo::OnStatefulBounceCountChanged(int bounce_count) {}
+
 void PageInfo::OnThirdPartyToggleClicked(bool block_third_party_cookies) {
   DCHECK(status_ != CookieControlsStatus::kDisabled);
   DCHECK(status_ != CookieControlsStatus::kUninitialized);

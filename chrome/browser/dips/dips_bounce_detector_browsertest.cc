@@ -58,67 +58,6 @@ using testing::Pair;
 using ukm::builders::DIPS_Redirect;
 
 namespace {
-constexpr char kStorageAccessScript[] = R"(
-    async function accessDatabase() {
-      var my_db = openDatabase('my_db', '1.0', 'description', 1024);
-      var num_rows;
-      await new Promise((resolve, reject) => {
-        my_db.transaction((tx) => {
-          tx.executeSql('CREATE TABLE IF NOT EXISTS tbl (id unique, data)');
-          tx.executeSql('INSERT INTO tbl (id, data) VALUES (1, "foo")');
-          tx.executeSql('SELECT * FROM tbl', [], (tx, results) => {
-            num_rows = results.rows.length;
-          });
-        }, reject, resolve);
-      });
-      if(num_rows <= 0) {throw new Error('Failed to access!')}
-    }
-
-    function accessLocalStorage() {
-      localStorage.setItem('foo', 'bar');
-      return localStorage.getItem('foo');
-    }
-
-    function accessSessionStorage() {
-      sessionStorage.setItem('foo', 'bar');
-      return sessionStorage.getItem('foo') == 'bar';
-    }
-
-    async function accessFileSystem() {
-      const fs = await new Promise((resolve, reject) => {
-        window.webkitRequestFileSystem(TEMPORARY, 1024, resolve, reject);
-      });
-      return new Promise((resolve, reject) => {
-        fs.root.getFile('foo.txt', {create: true, exclusive: true}, resolve,
-          reject);
-      });
-    }
-
-    function accessIndexedDB() {
-      var request = indexedDB.open('my_db', 2);
-
-      request.onupgradeneeded = () => {
-        request.result.createObjectStore('store');
-      }
-      return new Promise((resolve) => {
-        request.onsuccess = () => {
-          request.result.close();
-          resolve(true);
-        }
-        request.onerror = () => {throw new Error('Failed to access!')}
-      });
-    }
-
-    function accessCache() {
-      return caches.open("cache")
-      .then((cache) => cache.put("/foo", new Response("bar")))
-      .then(() => true)
-      .catch(() => {throw new Error('Failed to access!')});
-    }
-
-    // Placeholder for execution statement.
-    access%s();
-  )";
 
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
@@ -206,6 +145,7 @@ class WCOCallbackLogger
   // Start SiteDataObserver overrides:
   void OnSiteDataAccessed(
       const content_settings::AccessDetails& access_details) override;
+  void OnStatefulBounceDetected() override;
   // End SiteDataObserver overrides.
 
   std::vector<std::string> log_;
@@ -312,6 +252,8 @@ void WCOCallbackLogger::OnSiteDataAccessed(
       AccessTypeToString(access_details.access_type).c_str(),
       FormatURL(access_details.url).c_str()));
 }
+
+void WCOCallbackLogger::OnStatefulBounceDetected() {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WCOCallbackLogger);
 
