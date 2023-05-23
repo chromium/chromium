@@ -35,7 +35,7 @@ function assertI18nString(value: unknown): I18nString {
  * Creates the warning-view controller.
  */
 export class Warning extends View {
-  private readonly errorNames: I18nString[] = [];
+  private errorNames: I18nString[] = [];
 
   constructor() {
     super(ViewName.WARNING);
@@ -63,21 +63,27 @@ export class Warning extends View {
     this.updateMessage();
   }
 
+  // If `value` is not specified in the `condition`, all the error will be
+  // cleared.
   override leaving(condition: LeaveCondition): boolean {
     assert(condition.kind === 'CLOSED');
 
-    // Recovered error-name for leaving the view.
-    const name = assertI18nString(condition.val);
+    if (condition.val === undefined) {
+      this.errorNames = [];
+    } else {
+      // Recovered error-name for leaving the view.
+      const name = assertI18nString(condition.val);
 
-    // Remove the recovered error from the stack but don't leave the view until
-    // there is no error left in the stack.
-    const index = this.errorNames.indexOf(name);
-    if (index !== -1) {
-      this.errorNames.splice(index, 1);
-    }
-    if (this.errorNames.length > 0) {
-      this.updateMessage();
-      return false;
+      // Remove the recovered error from the stack but don't leave the view
+      // until there is no error left in the stack.
+      const index = this.errorNames.indexOf(name);
+      if (index !== -1) {
+        this.errorNames.splice(index, 1);
+      }
+      if (this.errorNames.length > 0) {
+        this.updateMessage();
+        return false;
+      }
     }
     dom.get('#error-msg', HTMLElement).textContent = '';
     return true;
