@@ -103,7 +103,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_ALREADY_CHANGED_PASSWORD},
     {"appsLabel", IDS_PASSWORD_MANAGER_UI_APPS_LABEL},
     {"authTimedOut", IDS_PASSWORD_MANAGER_UI_AUTH_TIMED_OUT},
-    {"autosigninDescription", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_DESC},
     {"autosigninLabel", IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_LABEL},
     {"backToCheckup", IDS_PASSWORD_MANAGER_UI_BACK_TO_CHECKUP_ARIA_DESCRIPTION},
     {"backToPasswords",
@@ -389,6 +388,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddString("addShortcutDescription",
                     InsertBrandedPasswordManager(
                         IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_DESCRIPTION));
+
+  source->AddString("autosigninDescription",
+                    InsertBrandedPasswordManager(
+                        IDS_PASSWORD_MANAGER_UI_AUTOSIGNIN_TOGGLE_DESC));
 
   source->AddString(
       "emptyStateImportAccountStore",

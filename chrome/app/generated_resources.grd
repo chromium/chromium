@@ -12334,7 +12334,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Sign in easily
       </message>
       <message name="IDS_AUTO_SIGNIN_FIRST_RUN_TEXT" desc="The text of the dialog during the autosign-in first run experience for the Chrome signed out users.">
-        <ph name="PASSWORD_MANAGER_BRAND">$1<ex>Google Chrome</ex></ph> automatically signs you in to eligible sites with passwords you saved.
+        <ph name="PASSWORD_MANAGER_BRAND">$1<ex>Google Password Manager</ex></ph> remembers how you signed in and automatically signs you in when possible. When off, you'll be asked for confirmation every time.
       </message>
       <if expr="use_titlecase">
         <message name="IDS_AUTO_SIGNIN_FIRST_RUN_OK" desc="The text of the OK button in the dialog during the autosign-in first run experience.">
