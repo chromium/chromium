@@ -926,6 +926,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.Open.SourceVolume.{ProviderName}"
+    enum="OfficeFilesSourceVolume" expires_after="M124">
+  <owner>austinct@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Records the source volume an office file is opened
+    from.
+  </summary>
+  <token key="ProviderName">
+    <variant name="GoogleDrive"
+        summary="The file was opened using the file task for Google
+                 Drive/Workspace"/>
+    <variant name="MicrosoftOneDrive"
+        summary="The file was opened using the file task for
+                 OneDrive/Microsoft 365"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.Open.TransferRequired.{ProviderName}"
     enum="OfficeFilesTransferRequired" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>

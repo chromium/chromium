@@ -76100,6 +76100,24 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Quick Office"/>
 </enum>
 
+<enum name="OfficeFilesSourceVolume">
+  <int value="0" label="Google Drive"/>
+  <int value="1" label="My Files"/>
+  <int value="2" label="Removable Disk"/>
+  <int value="3" label="Archive File"/>
+  <int value="4" label="FileSystemProvider API"/>
+  <int value="5" label="MTP (Media Transfer Protocol) Device"/>
+  <int value="6" label="Media View"/>
+  <int value="7" label="Crostini Linux Files"/>
+  <int value="8" label="Android Files"/>
+  <int value="9" label="Android Documents Provider"/>
+  <int value="10" label="SMB File Share"/>
+  <int value="11" label="System internal"/>
+  <int value="12" label="Guest OS Files"/>
+  <int value="100" label="Unknown"/>
+  <int value="101" label="Microsoft OneDrive"/>
+</enum>
+
 <enum name="OfficeFilesTransferRequired">
   <int value="0" label="Not Required"/>
   <int value="1" label="Move"/>

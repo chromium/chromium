@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -65,6 +66,11 @@ const char kAndroidOneDriveAuthority[] =
     "com.microsoft.skydrive.content.StorageAccessProvider";
 constexpr char kNotificationId[] = "cloud_upload_open_failure";
 
+constexpr char kDriveOpenSourceVolumeMetric[] =
+    "FileBrowser.OfficeFiles.Open.SourceVolume.GoogleDrive";
+constexpr char kOneDriveOpenSourceVolumeMetric[] =
+    "FileBrowser.OfficeFiles.Open.SourceVolume.MicrosoftOneDrive";
+
 constexpr char kDriveTransferRequiredMetric[] =
     "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive";
 constexpr char kOneDriveTransferRequiredMetric[] =
@@ -94,6 +100,17 @@ enum class OfficeSetupFileHandler {
   kOtherLocalHandler = 4,
   kQuickOffice = 5,
   kMaxValue = kQuickOffice,
+};
+
+// Records the source volume that an office file is opened from. These values
+// represent the source volume types that are only relevant to office file
+// handling code - the rest are obtained from file_manager::VolumeType.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OfficeFilesSourceVolume {
+  kUnknown = 100,
+  kMicrosoftOneDrive = 101,
 };
 
 std::vector<ProvidedFileSystemInfo> GetODFSFileSystems(Profile* profile) {
@@ -379,6 +396,26 @@ bool CloudOpenTask::ExecuteInternal() {
 // Opens office files if they are in the correct cloud already. Otherwise moves
 // the files before opening.
 void CloudOpenTask::OpenOrMoveFiles() {
+  // Record the source volume type of the opened file.
+  int source_type;
+  if (UrlIsOnODFS(profile_, file_urls_.front())) {
+    source_type = static_cast<int>(OfficeFilesSourceVolume::kMicrosoftOneDrive);
+  } else {
+    auto* volume_manager = file_manager::VolumeManager::Get(profile_);
+    base::WeakPtr<file_manager::Volume> source =
+        volume_manager->FindVolumeFromPath(file_urls_.front().path());
+    if (source) {
+      source_type = source->type();
+    } else {
+      source_type = static_cast<int>(OfficeFilesSourceVolume::kUnknown);
+    }
+  }
+  if (cloud_provider_ == CloudProvider::kGoogleDrive) {
+    UMA_HISTOGRAM_SPARSE(kDriveOpenSourceVolumeMetric, source_type);
+  } else if (cloud_provider_ == CloudProvider::kOneDrive) {
+    UMA_HISTOGRAM_SPARSE(kOneDriveOpenSourceVolumeMetric, source_type);
+  }
+
   if (cloud_provider_ == CloudProvider::kGoogleDrive &&
       PathIsOnDriveFS(profile_, file_urls_.front().path())) {
     // The files are on Drive already.

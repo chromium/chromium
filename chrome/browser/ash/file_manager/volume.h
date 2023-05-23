@@ -19,8 +19,8 @@
 namespace file_manager {
 
 // Identifiers for volume types managed by Chrome OS file manager.
-// The enum values must be kept in sync with FileManagerVolumeType defined in
-// tools/metrics/histograms/enums.xml.
+// The enum values must be kept in sync with FileManagerVolumeType and
+// OfficeFilesSourceVolume defined in tools/metrics/histograms/enums.xml.
 enum VolumeType {
   VOLUME_TYPE_TESTING = -1,  // Used only in tests.
   VOLUME_TYPE_GOOGLE_DRIVE = 0,
