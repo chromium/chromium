@@ -94,10 +94,11 @@ constexpr auto kTextFieldMarginsForAppListBubble =
 
 // The default PlaceholderTextTypes used for productivity launcher. Randomly
 // selected when placeholder text would be shown.
-constexpr SearchBoxView::PlaceholderTextType kDefaultPlaceholders[3] = {
+constexpr SearchBoxView::PlaceholderTextType kDefaultPlaceholders[] = {
     SearchBoxView::PlaceholderTextType::kShortcuts,
     SearchBoxView::PlaceholderTextType::kTabs,
     SearchBoxView::PlaceholderTextType::kSettings,
+    SearchBoxView::PlaceholderTextType::kImages,
 };
 
 // PlaceholderTextTypes used for productivity launcher for cloud gaming devices.
@@ -936,6 +937,15 @@ void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
       search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
           a11y_name_template, l10n_util::GetStringUTF16(
                                   IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES)));
+      break;
+    case PlaceholderTextType::kImages:
+      search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
+          IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
+          l10n_util::GetStringUTF16(
+              IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_IMAGES)));
+      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+          a11y_name_template, l10n_util::GetStringUTF16(
+                                  IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_IMAGES)));
       break;
   }
 }
