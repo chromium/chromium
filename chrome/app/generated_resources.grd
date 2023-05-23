@@ -14865,6 +14865,21 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
     </if>
+    <!-- Performance hovercard strings -->
+    <if expr="not is_android">
+      <message name="IDS_HOVERCARD_TAB_MEMORY_USAGE" desc="Text at the bottom of a hovercard that shows how much memory a specific tab is using.">
+        This tab is using <ph name="MEMORY_USAGE">$1<ex>300 MB</ex></ph>
+      </message>
+      <message name="IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE" desc="Text at the bottom of a hovercard that indicates a tab is experiencing high memory usage.">
+        High memory usage: <ph name="MEMORY_USAGE">$1<ex>300 MB</ex></ph>
+      </message>
+      <message name="IDS_HOVERCARD_INACTIVE_TAB_MEMORY_SAVINGS" desc="Text at the bottom of a hovercard indicating how much memory has been saved when a tab was made inactive.">
+        Inactive tab savings: <ph name="MEMORY_SAVINGS">$1<ex>300 MB</ex></ph>
+      </message>
+      <message name="IDS_HOVERCARD_INACTIVE_TAB" desc="Text at the bottom of a hovercard indicating that a tab is inactive.">
+        Inactive tab
+      </message>
+    </if>
     <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
       Location
     </message>
