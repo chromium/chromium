@@ -704,7 +704,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOwnerTapToClickEnabled[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kEventRemappedToRightClick[];
+extern const char kAltEventRemappedToRightClick[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kSearchEventRemappedToRightClick[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kKeyEventRemappedToSixPackDelete[];

@@ -1785,12 +1785,15 @@ int EventRewriterAsh::RewriteModifierClick(const MouseEvent& mouse_event,
       if (matched_mask == kSearchLeftButton) {
         base::RecordAction(
             base::UserMetricsAction("SearchClickMappedToRightClick"));
+        delegate_->RecordEventRemappedToRightClick(
+            /*alt_based_right_click=*/false);
       } else {
         DCHECK(matched_mask == kAltLeftButton);
         base::RecordAction(
             base::UserMetricsAction("AltClickMappedToRightClick"));
+        delegate_->RecordEventRemappedToRightClick(
+            /*alt_based_right_click=*/true);
       }
-      delegate_->RecordEventRemappedToRightClick();
     } else {
       pressed_as_right_button_device_ids_.erase(mouse_event.source_device_id());
     }

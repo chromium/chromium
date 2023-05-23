@@ -848,6 +848,12 @@ const char kScreenAIScheduledDeletionTimePrefName[] =
     "accessibility.screen_ai.scheduled_deletion_time";
 #endif
 
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kEventRemappedToRightClick[] =
+    "ash.settings.event_remapped_to_right_click";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1184,6 +1190,11 @@ void RegisterProfilePrefsForMigration(
 // Deprecated 05/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterStringPref(kSamlPasswordSyncToken, std::string());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kEventRemappedToRightClick, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -2245,6 +2256,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 // Added 05/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kOfficeSetupComplete);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kEventRemappedToRightClick);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Added 05/2023.

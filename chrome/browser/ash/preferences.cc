@@ -347,7 +347,8 @@ void Preferences::RegisterProfilePrefs(
   // device.
   registry->RegisterBooleanPref(prefs::kSendFunctionKeys, false);
 
-  registry->RegisterBooleanPref(prefs::kEventRemappedToRightClick, false);
+  registry->RegisterIntegerPref(prefs::kAltEventRemappedToRightClick, 0);
+  registry->RegisterIntegerPref(prefs::kSearchEventRemappedToRightClick, 0);
   registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackDelete, 0);
   registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackEnd, 0);
   registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackHome, 0);

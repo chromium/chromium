@@ -1475,17 +1475,15 @@ const char kOwnerPrimaryPointingStickButtonRight[] =
 // Copy of owner tap-to-click option to use on login screen.
 const char kOwnerTapToClickEnabled[] = "owner.touchpad.enable_tap_to_click";
 
-// A boolean pref set to true if a user simulates a right click using their
-// keyboard and touchpad with either Alt+Click or Search+Click.
-// The value of this pref will be used to set the default behavior for
-// remapping to right click once the setting is added/configurable in device
-// settings.
-// Default setting:
-//  Boolean Pref is false: Off
-//  Boolean Pref is true: Use state of "kUseSearchForRightClick" flag to
-//  determine if Alt+Click or Search+Click should be the default.
-const char kEventRemappedToRightClick[] =
-    "ash.settings.event_remapped_to_right_click";
+// An integer pref that is incremented anytime a user simulates a right click
+// using their keyboard and touchpad with Alt+Click.
+const char kAltEventRemappedToRightClick[] =
+    "ash.settings.alt_event_remapped_to_right_click";
+
+// An integer pref that is incremented anytime a user simulates a right click
+// using their keyboard and touchpad with Search+Click.
+const char kSearchEventRemappedToRightClick[] =
+    "ash.settings.search_event_remapped_to_right_click";
 
 // An integer pref for tracking Alt and Search based key event rewrites for
 // the Delete "six pack" key. The value of this pref will be used to set the

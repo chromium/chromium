@@ -156,7 +156,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
                                  std::string());
     registry->RegisterStringPref(language::prefs::kPreferredLanguages,
                                  std::string());
-    registry->RegisterBooleanPref(prefs::kEventRemappedToRightClick, false);
+    registry->RegisterIntegerPref(prefs::kAltEventRemappedToRightClick, 0);
+    registry->RegisterIntegerPref(prefs::kSearchEventRemappedToRightClick, 0);
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackDelete, 0);
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackEnd, 0);
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackHome, 0);
