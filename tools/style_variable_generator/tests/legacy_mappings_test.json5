@@ -1,0 +1,17 @@
+{
+  options: {
+    CSS: {
+      prefix: 'cros'
+    },
+  },
+  legacy_mappings: {
+    'cros-legacy-color': '$text_color_primary',
+    'cros-legacy-color-w-opacity': 'rgba($text_color_primary.rgb, .3)',
+    'cros-hex': '#ffffff',
+    'cros-rgb': 'rgb(255, 255, 255)',
+    'cros-rgba': 'rgba(255, 255, 255, .5)',
+  },
+  colors: {
+    text_color_primary: '#000000',
+  },
+}
