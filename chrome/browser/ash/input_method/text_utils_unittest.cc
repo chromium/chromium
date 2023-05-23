@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/text_utils.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -103,17 +104,6 @@ TEST(TextUtilsTest, FindCurrentSentence) {
             Sentence(gfx::Range(14, 27), u"That is a cat"));
   EXPECT_EQ(FindCurrentSentence(u"This is a dog\n", 13u),
             Sentence(gfx::Range(0, 13), u"This is a dog"));
-}
-
-TEST(TextUtilsTest, GetCodepointsWithEmoji) {
-  EXPECT_EQ(GetLastNCodepoints("😀😀😀", 2), "😀😀");
-  EXPECT_EQ(GetLastNCodepoints("😁😁Hey", 3), "Hey");
-  EXPECT_EQ(GetLastNCodepoints("😁😁Hey", 4), "😁Hey");
-  EXPECT_EQ(GetLastNCodepoints("Nice job! 😀😀😀", 8), "job! 😀😀😀");
-}
-
-TEST(TextUtilsTest, GetCodepointsWithChineseCharacters) {
-  EXPECT_EQ(GetLastNCodepoints("你好 Rob!", 6), "好 Rob!");
 }
 
 }  // namespace

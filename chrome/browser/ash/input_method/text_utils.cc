@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/text_utils.h"
-#include "base/i18n/char_iterator.h"
-#include "base/strings/utf_string_conversions.h"
 
 // TODO(crbug/1223597) The rules to detect sentence end is not perfect, and we
 // may want to use regex to improve readability.
@@ -180,18 +178,6 @@ Sentence FindCurrentSentence(const std::u16string& text, uint32_t pos) {
 
   return Sentence(gfx::Range(start, end + 1),
                   text.substr(start, end - start + 1));
-}
-
-std::string GetLastNCodepoints(const std::string& text, size_t N) {
-  std::u16string u16text = base::UTF8ToUTF16(text);
-  for (auto iter = base::i18n::UTF16CharIterator::LowerBound(
-           u16text, u16text.length() - 1);
-       !iter.start(); iter.Rewind()) {
-    if ((size_t)iter.char_offset() == -N + 1) {
-      return base::UTF16ToUTF8(u16text.substr(iter.array_pos()));
-    }
-  }
-  return text;
 }
 
 }  // namespace input_method

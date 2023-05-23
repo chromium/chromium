@@ -44,7 +44,6 @@ Sentence FindLastSentence(const std::u16string& text, uint32_t pos);
 // Find the sentence containing the cursor position |pos|.
 Sentence FindCurrentSentence(const std::u16string& text, uint32_t pos);
 
-std::string GetLastNCodepoints(const std::string& text, size_t N);
 }  // namespace input_method
 }  // namespace ash
 
