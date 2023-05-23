@@ -325,7 +325,7 @@ void ChromeRenderFrameObserver::DidClearWindowObject() {
 
   // Install ReadAnythingAppController on render frames with the Read Anything
   // url, which is chrome-untrusted. ReadAnythingAppController installs v8
-  // bindings in the chrome.readAnything namespace which are consumed by
+  // bindings in the chrome.readingMode namespace which are consumed by
   // read_anything/app.ts, the resource of the Read Anything WebUI.
   if (features::IsReadAnythingEnabled() &&
       render_frame()->GetWebFrame()->GetDocument().Url() ==

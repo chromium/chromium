@@ -66,7 +66,7 @@ class ReadAnythingAppController
   ReadAnythingAppController& operator=(const ReadAnythingAppController&) =
       delete;
 
-  // Installs v8 context for Read Anything and adds chrome.readAnything binding
+  // Installs v8 context for Read Anything and adds chrome.readingMode binding
   // to page.
   static ReadAnythingAppController* Install(content::RenderFrame* render_frame);
 

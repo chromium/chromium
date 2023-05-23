@@ -9,7 +9,7 @@
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
 (() => {
-  chrome.readAnything.onConnected = () => {};
+  chrome.readingMode.onConnected = () => {};
 
   const readAnythingApp =
       document.querySelector('read-anything-app').shadowRoot;
@@ -31,25 +31,25 @@
     assertEquals(expected, getComputedStyle(container).fontFamily);
   };
 
-  chrome.readAnything.setThemeForTesting('Poppins', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Poppins', 18.0, 0, 0, 1, 0);
   assertFontName('Poppins');
 
-  chrome.readAnything.setThemeForTesting('Sans-serif', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Sans-serif', 18.0, 0, 0, 1, 0);
   assertFontName('sans-serif');
 
-  chrome.readAnything.setThemeForTesting('Serif', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Serif', 18.0, 0, 0, 1, 0);
   assertFontName('serif');
 
-  chrome.readAnything.setThemeForTesting('Comic Neue', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Comic Neue', 18.0, 0, 0, 1, 0);
   assertFontName('"Comic Neue"');
 
-  chrome.readAnything.setThemeForTesting('Lexend Deca', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('Lexend Deca', 18.0, 0, 0, 1, 0);
   assertFontName('"Lexend Deca"');
 
-  chrome.readAnything.setThemeForTesting('EB Garamond', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('EB Garamond', 18.0, 0, 0, 1, 0);
   assertFontName('"EB Garamond"');
 
-  chrome.readAnything.setThemeForTesting('STIX Two Text', 18.0, 0, 0, 1, 0);
+  chrome.readingMode.setThemeForTesting('STIX Two Text', 18.0, 0, 0, 1, 0);
   assertFontName('"STIX Two Text"');
 
   return result;

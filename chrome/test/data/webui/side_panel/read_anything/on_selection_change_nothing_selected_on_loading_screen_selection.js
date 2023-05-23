@@ -10,14 +10,14 @@
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
 (() => {
-  chrome.readAnything.onConnected = () => {};
+  chrome.readingMode.onConnected = () => {};
 
   const readAnythingApp =
       document.querySelector('read-anything-app').shadowRoot;
   const emptyState = readAnythingApp.getElementById('empty-state-container');
 
   let selectionChanged = false;
-  chrome.readAnything.onSelectionChange =
+  chrome.readingMode.onSelectionChange =
       (_anchorNodeId, _anchorOffset, _focusNodeId, _focusOffset) => {
         selectionChanged = true;
       };

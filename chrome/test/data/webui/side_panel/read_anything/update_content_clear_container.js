@@ -11,7 +11,7 @@
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
 (() => {
-  chrome.readAnything.onConnected = () => {};
+  chrome.readingMode.onConnected = () => {};
 
   const readAnythingApp =
       document.querySelector('read-anything-app').shadowRoot;
@@ -52,7 +52,7 @@
       },
     ],
   };
-  chrome.readAnything.setContentForTesting(axTree1, [2]);
+  chrome.readingMode.setContentForTesting(axTree1, [2]);
   const expected1 = '<div>First set of content.</div>';
   assertContainerInnerHTML(expected1);
 
@@ -74,7 +74,7 @@
       },
     ],
   };
-  chrome.readAnything.setContentForTesting(axTree2, [2]);
+  chrome.readingMode.setContentForTesting(axTree2, [2]);
   const expected2 = '<div>Second set of content.</div>';
   assertContainerInnerHTML(expected2);
 

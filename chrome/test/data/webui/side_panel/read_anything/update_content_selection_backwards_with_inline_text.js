@@ -9,7 +9,7 @@
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
 (() => {
-  chrome.readAnything.onConnected = () => {};
+  chrome.readingMode.onConnected = () => {};
 
   const readAnythingApp =
       document.querySelector('read-anything-app').shadowRoot;
@@ -41,7 +41,7 @@
     // asynchronously, the test must wait for this function to be called;
     // therefore we fire a custom event on-selection-change-for-text here
     // for the test to await.
-    chrome.readAnything.onSelectionChange =
+    chrome.readingMode.onSelectionChange =
         (anchorNodeId, anchorOffset, focusNodeId, focusOffset) => {
           readAnythingApp.dispatchEvent(
               new CustomEvent('on-selection-change-for-test', {
@@ -116,7 +116,7 @@
     },
   };
   setOnSelectionChangeForTest();
-  chrome.readAnything.setContentForTesting(axTree, []);
+  chrome.readingMode.setContentForTesting(axTree, []);
   // The expected string contains the complete text of each node in the
   // selection.
   const expected = '<div><p>World<a>Friend</a></p></div>';

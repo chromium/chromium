@@ -10,7 +10,7 @@
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
 (() => {
-  chrome.readAnything.onConnected = () => {};
+  chrome.readingMode.onConnected = () => {};
 
   const readAnythingApp =
       document.querySelector('read-anything-app').shadowRoot;
@@ -97,7 +97,7 @@
       is_backward: false,
     },
   };
-  chrome.readAnything.setContentForTesting(axTree, [2, 4]);
+  chrome.readingMode.setContentForTesting(axTree, [2, 4]);
   // The selection has content inside and outside the content nodes. The
   // expected string contains the complete text of each node in the selection.
   const expected = '<div><p>Hello</p><p>World</p><p>Friend!</p></div>';
