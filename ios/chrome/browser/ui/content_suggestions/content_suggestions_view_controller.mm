@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/action_list_module.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
@@ -24,7 +23,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_module.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_container_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -102,7 +101,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // StackView holding all of `mostVisitedViews`.
 @property(nonatomic, strong) UIStackView* mostVisitedStackView;
 // Module Container for the `mostVisitedViews` when being shown in Magic Stack.
-@property(nonatomic, strong) ActionListModule* mostVisitedModuleContainer;
+@property(nonatomic, strong)
+    MagicStackModuleContainer* mostVisitedModuleContainer;
 // Width Anchor of the Most Visited Tiles container.
 @property(nonatomic, strong)
     NSLayoutConstraint* mostVisitedContainerWidthAnchor;
@@ -110,7 +110,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsMostVisitedTileView*>* mostVisitedViews;
 // Module Container for the Shortcuts when being shown in Magic Stack.
-@property(nonatomic, strong) ActionListModule* shortcutsModuleContainer;
+@property(nonatomic, strong)
+    MagicStackModuleContainer* shortcutsModuleContainer;
 // StackView holding all of `shortcutsViews`.
 @property(nonatomic, strong) UIStackView* shortcutsStackView;
 // List of all of the Shortcut views.
@@ -458,17 +459,23 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       // construction of the Magic Stack.
       if (_magicStack) {
         if (shouldShowCompactedSetUpListModule) {
-          MultiRowModule* setUpListCompactedModule = [[MultiRowModule alloc]
-              initWithViews:_compactedSetUpListViews
-                       type:ContentSuggestionsModuleType::kCompactedSetUpList];
+          MultiRowContainerView* multiRowContainer =
+              [[MultiRowContainerView alloc]
+                  initWithViews:_compactedSetUpListViews];
+          MagicStackModuleContainer* setUpListCompactedModule =
+              [[MagicStackModuleContainer alloc]
+                  initWithContentView:multiRowContainer
+                                 type:ContentSuggestionsModuleType::
+                                          kCompactedSetUpList];
           [_magicStack
               insertArrangedSubview:setUpListCompactedModule
                             atIndex:[self indexForMagicStackModule:
                                               ContentSuggestionsModuleType::
                                                   kCompactedSetUpList]];
         } else {
-          ActionListModule* setUpListModule =
-              [[ActionListModule alloc] initWithContentView:view type:type];
+          MagicStackModuleContainer* setUpListModule =
+              [[MagicStackModuleContainer alloc] initWithContentView:view
+                                                                type:type];
           [_magicStack
               insertArrangedSubview:setUpListModule
                             atIndex:[self indexForMagicStackModule:type]];
@@ -556,7 +563,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                                            complete:NO];
     SetUpListItemView* view =
         [[SetUpListItemView alloc] initWithData:allSetData];
-    ActionListModule* allSetModule = [[ActionListModule alloc]
+    MagicStackModuleContainer* allSetModule = [[MagicStackModuleContainer alloc]
         initWithContentView:view
                        type:ContentSuggestionsModuleType::kSetUpListAllSet];
     // Determine which module to swap out.
@@ -730,7 +737,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     insertionIndex++;
   }
   if (IsMagicStackEnabled()) {
-    self.mostVisitedModuleContainer = [[ActionListModule alloc]
+    self.mostVisitedModuleContainer = [[MagicStackModuleContainer alloc]
         initWithContentView:self.mostVisitedStackView
                        type:ContentSuggestionsModuleType::kMostVisited];
     if (ShouldPutMostVisitedSitesInMagicStack()) {
@@ -832,7 +839,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         (ContentSuggestionsModuleType)[moduleType intValue];
     switch (type) {
       case ContentSuggestionsModuleType::kShortcuts: {
-        self.shortcutsModuleContainer = [[ActionListModule alloc]
+        self.shortcutsModuleContainer = [[MagicStackModuleContainer alloc]
             initWithContentView:self.shortcutsStackView
                            type:type];
         [_magicStack addArrangedSubview:self.shortcutsModuleContainer];
@@ -845,31 +852,38 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         break;
       }
       case ContentSuggestionsModuleType::kSetUpListSync: {
-        ActionListModule* setUpListSyncModule =
-            [[ActionListModule alloc] initWithContentView:_setUpListSyncItemView
-                                                     type:type];
+        MagicStackModuleContainer* setUpListSyncModule =
+            [[MagicStackModuleContainer alloc]
+                initWithContentView:_setUpListSyncItemView
+                               type:type];
         [_magicStack addArrangedSubview:setUpListSyncModule];
         break;
       }
       case ContentSuggestionsModuleType::kSetUpListDefaultBrowser: {
-        ActionListModule* setUpListDefaultBrowserModule =
-            [[ActionListModule alloc]
+        MagicStackModuleContainer* setUpListDefaultBrowserModule =
+            [[MagicStackModuleContainer alloc]
                 initWithContentView:_setUpListDefaultBrowserItemView
                                type:type];
         [_magicStack addArrangedSubview:setUpListDefaultBrowserModule];
         break;
       }
       case ContentSuggestionsModuleType::kSetUpListAutofill: {
-        ActionListModule* setUpListAutofillModule = [[ActionListModule alloc]
-            initWithContentView:_setUpListAutofillItemView
-                           type:type];
+        MagicStackModuleContainer* setUpListAutofillModule =
+            [[MagicStackModuleContainer alloc]
+                initWithContentView:_setUpListAutofillItemView
+                               type:type];
         [_magicStack addArrangedSubview:setUpListAutofillModule];
         break;
       }
       case ContentSuggestionsModuleType::kCompactedSetUpList: {
-        MultiRowModule* setUpListCompactedModule = [[MultiRowModule alloc]
-            initWithViews:_compactedSetUpListViews
-                     type:ContentSuggestionsModuleType::kCompactedSetUpList];
+        MultiRowContainerView* multiRowContainer =
+            [[MultiRowContainerView alloc]
+                initWithViews:_compactedSetUpListViews];
+        MagicStackModuleContainer* setUpListCompactedModule =
+            [[MagicStackModuleContainer alloc]
+                initWithContentView:multiRowContainer
+                               type:ContentSuggestionsModuleType::
+                                        kCompactedSetUpList];
         [_magicStack addArrangedSubview:setUpListCompactedModule];
         break;
       }

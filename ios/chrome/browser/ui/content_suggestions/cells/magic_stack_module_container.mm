@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -16,6 +17,18 @@
 #endif
 
 namespace {
+
+// The horizontal inset for the content within this container.
+const CGFloat kContentHorizontalInset = 16.0f;
+
+// The top inset for the content within this container.
+const CGFloat kContentTopInset = 14.0f;
+
+// The bottom inset for the content within this container.
+const CGFloat kContentBottomInset = 10.0f;
+
+// Vertical spacing between the content views.
+const float kContentVerticalSpacing = 12.0f;
 
 // The corner radius of this container.
 const float kCornerRadius = 24;
@@ -33,14 +46,51 @@ const int kModuleWidthRegular = 382;
 
 @end
 
-@implementation MagicStackModuleContainer
+@implementation MagicStackModuleContainer {
+  NSLayoutConstraint* _contentViewWidthAnchor;
+}
 
 - (instancetype)initWithType:(ContentSuggestionsModuleType)type {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+  }
+  return self;
+}
+
+- (instancetype)initWithContentView:(UIView*)contentView
+                               type:(ContentSuggestionsModuleType)type {
+  self = [super initWithFrame:CGRectZero];
+  if (self) {
     _type = type;
+
     self.layer.cornerRadius = kCornerRadius;
     self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+
+    UILabel* title = [[UILabel alloc] init];
+    title.text = [MagicStackModuleContainer titleStringForModule:type];
+    title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    title.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    title.accessibilityTraits |= UIAccessibilityTraitHeader;
+    title.accessibilityIdentifier =
+        [MagicStackModuleContainer titleStringForModule:type];
+
+    UIStackView* stackView = [[UIStackView alloc] init];
+    stackView.translatesAutoresizingMaskIntoConstraints = NO;
+    stackView.alignment = UIStackViewAlignmentLeading;
+    stackView.axis = UILayoutConstraintAxisVertical;
+    stackView.spacing = kContentVerticalSpacing;
+    stackView.distribution = UIStackViewDistributionFill;
+    [stackView addArrangedSubview:title];
+    [stackView addArrangedSubview:contentView];
+
+    self.accessibilityElements = @[ title, contentView ];
+
+    _contentViewWidthAnchor = [contentView.widthAnchor
+        constraintEqualToConstant:[self contentViewWidth]];
+    [NSLayoutConstraint activateConstraints:@[ _contentViewWidthAnchor ]];
+
+    [self addSubview:stackView];
+    AddSameConstraintsWithInsets(stackView, self, [self contentMargins]);
   }
   return self;
 }
@@ -75,11 +125,31 @@ const int kModuleWidthRegular = 382;
   }
 }
 
+- (NSDirectionalEdgeInsets)contentMargins {
+  NSDirectionalEdgeInsets contentMargins =
+      NSDirectionalEdgeInsetsMake(kContentTopInset, kContentHorizontalInset,
+                                  kContentBottomInset, kContentHorizontalInset);
+  if (_type == ContentSuggestionsModuleType::kCompactedSetUpList) {
+    contentMargins.trailing = 0;
+  }
+  return contentMargins;
+}
+
 - (CGSize)intrinsicContentSize {
   return CGSizeMake(
       [MagicStackModuleContainer
           moduleWidthForHorizontalTraitCollection:self.traitCollection],
       self.bounds.size.height);
+}
+
+#pragma mark - Helpers
+
+// Returns the expected width of the contentView subview.
+- (CGFloat)contentViewWidth {
+  NSDirectionalEdgeInsets insets = [self contentMargins];
+  return [MagicStackModuleContainer
+             moduleWidthForHorizontalTraitCollection:self.traitCollection] -
+         insets.leading - insets.trailing;
 }
 
 @end

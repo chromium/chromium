@@ -12,8 +12,9 @@ enum class ContentSuggestionsModuleType;
 // Container View for a module in the Magic Stack.
 @interface MagicStackModuleContainer : UIView
 
-// Initialize and configure for `type`.
-- (instancetype)initWithType:(ContentSuggestionsModuleType)type;
+// Initialize and configure with `contentView` for `type`.
+- (instancetype)initWithContentView:(UIView*)contentView
+                               type:(ContentSuggestionsModuleType)type;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
