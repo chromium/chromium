@@ -336,6 +336,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   // Resets member variables that were used during Aggregate().
   void ResetAfterAggregate();
 
+  void SetRenderPassDamageRect(AggregatedRenderPass* copy_pass,
+                               const ResolvedPassData& resolved_pass);
+
   const raw_ptr<SurfaceManager> manager_;
   const raw_ptr<DisplayResourceProvider> provider_;
 

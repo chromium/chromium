@@ -1334,13 +1334,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   frame->has_view_transition_save_directive =
       active_tree_->HasViewTransitionSaveRequest();
 
-  // Damage rects for non-root passes aren't meaningful, so set them to be
-  // equal to the output rect.
-  for (size_t i = 0; i + 1 < frame->render_passes.size(); ++i) {
-    viz::CompositorRenderPass* pass = frame->render_passes[i].get();
-    pass->damage_rect = pass->output_rect;
-  }
-
   // When we are displaying the HUD, change the root damage rect to cover the
   // entire root surface. This will disable partial-swap/scissor optimizations
   // that would prevent the HUD from updating, since the HUD does not cause
