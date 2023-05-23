@@ -6,6 +6,9 @@
 
 #include <memory>
 
+#include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,28 +18,21 @@
 #include "chrome/grit/chromium_strings.h"
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/version_info/version_info.h"
+#include "components/version_ui/version_handler_helper.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/user_agent.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/json/json_writer.h"
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
-#include "components/policy/core/common/policy_logger.h"
-#include "components/version_info/version_info.h"
-#include "components/version_ui/version_handler_helper.h"
-#include "content/public/common/user_agent.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace {
-
-#if BUILDFLAG(IS_ANDROID)
 // Returns the operating system information to be displayed on
 // chrome://policy/logs page.
 std::string GetOsInfo() {
-  // The base format for the OS version and build
+#if BUILDFLAG(IS_ANDROID)
+  // The base format for the OS version and build.
   constexpr char kOSVersionAndBuildFormat[] = "Android %s %s";
   return base::StringPrintf(
       kOSVersionAndBuildFormat,
@@ -44,6 +40,11 @@ std::string GetOsInfo() {
       (content::GetAndroidOSInfo(content::IncludeAndroidBuildNumber::Include,
                                  content::IncludeAndroidModel::Include))
           .c_str());
+#else
+  return base::StringPrintf("%s %s",
+                            base::SysInfo::OperatingSystemName().c_str(),
+                            base::SysInfo::OperatingSystemVersion().c_str());
+#endif  //  BUILDFLAG (IS_ANDROID)
 }
 
 // Returns the version information to be displayed on the chrome://policy/logs
@@ -58,7 +59,6 @@ base::Value::Dict GetVersionInfo() {
 
   return version_info;
 }
-#endif
 
 void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -143,7 +143,6 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kPolicyLogsStrings);
 
-#if BUILDFLAG(IS_ANDROID)
   source->AddBoolean(
       "loggingEnabled",
       policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
@@ -157,7 +156,6 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
 
   source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
   source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
-#endif  // BUILDFLAG(IS_ANDROID)
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kPolicyResources, kPolicyResourcesSize),

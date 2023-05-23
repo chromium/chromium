@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/proto/policy_signing_key.pb.h"
@@ -205,7 +206,7 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
       break;
 
     case LOAD_RESULT_NO_POLICY_FILE:
-      DVLOG(1) << "No policy found on disk";
+      DVLOG_POLICY(1, POLICY_FETCHING) << "No cloud policy found on disk";
       NotifyStoreLoaded();
       break;
 
@@ -223,7 +224,8 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
         // rotation - make sure we request a new key from the server on our
         // next fetch.
         doing_key_rotation = true;
-        DLOG(WARNING) << "Verification key rotation detected";
+        DLOG_POLICY(WARNING, POLICY_FETCHING)
+            << "Verification key rotation detected";
       }
 
       Validate(std::move(cloud_policy), std::move(key), validate_in_background,
@@ -343,7 +345,8 @@ void DesktopCloudPolicyStore::Store(const em::PolicyFetchResponse& policy) {
 void DesktopCloudPolicyStore::OnPolicyToStoreValidated(
     UserCloudPolicyValidator* validator) {
   validation_result_ = validator->GetValidationResult();
-  DVLOG(1) << "Policy validation complete: status = " << validator->status();
+  DVLOG_POLICY(1, POLICY_FETCHING)
+      << "Policy validation complete: status = " << validator->status();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
     NotifyStoreError();
