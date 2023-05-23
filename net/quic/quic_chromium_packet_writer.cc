@@ -126,14 +126,15 @@ quic::WriteResult QuicChromiumPacketWriter::WritePacket(
     const quic::QuicIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address,
     quic::PerPacketOptions* /*options*/) {
-  DCHECK(!IsWriteBlocked());
+  CHECK(!IsWriteBlocked());
   SetPacket(buffer, buf_len);
   return WritePacketToSocketImpl();
 }
 
 void QuicChromiumPacketWriter::WritePacketToSocket(
     scoped_refptr<ReusableIOBuffer> packet) {
-  DCHECK(!force_write_blocked_);
+  CHECK(!force_write_blocked_);
+  CHECK(!IsWriteBlocked());
   packet_ = std::move(packet);
   quic::WriteResult result = WritePacketToSocketImpl();
   if (result.error_code != ERR_IO_PENDING)
