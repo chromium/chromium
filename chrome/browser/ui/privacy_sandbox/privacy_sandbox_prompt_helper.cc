@@ -125,6 +125,12 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   auto* browser =
       chrome::FindBrowserWithWebContents(navigation_handle->GetWebContents());
 
+  // If a sign-in dialog is being currently displayed, the prompt should
+  // not be shown to avoid conflict.
+  if (browser->signin_view_controller()->ShowsModalDialog()) {
+    return;
+  }
+
   // If a Privacy Sandbox prompt already exists for this browser, do not attempt
   // to open another one.
   if (auto* privacy_sandbox_service =
