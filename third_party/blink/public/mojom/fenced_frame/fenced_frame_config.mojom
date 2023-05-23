@@ -147,7 +147,7 @@ struct FencedFrameConfig {
   // on a fenced frame, it can be used as a fingerprinting channel. Instead,
   // each API sets a list of feature permissions that a fenced frame needs to
   // enable to be allowed to load.
-  array<PermissionsPolicyFeature> required_permissions_to_load;
+  array<PermissionsPolicyFeature> effective_enabled_permissions;
 };
 
 // The `FencedFrameProperties` struct is used to transfer a redacted version
@@ -188,5 +188,5 @@ struct FencedFrameProperties {
 
   DeprecatedFencedFrameMode mode;
 
-  array<PermissionsPolicyFeature> required_permissions_to_load;
+  array<PermissionsPolicyFeature> effective_enabled_permissions;
 };

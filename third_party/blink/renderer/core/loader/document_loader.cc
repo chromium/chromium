@@ -2483,7 +2483,7 @@ void DocumentLoader::CommitNavigation() {
     auto required_permissions_for_fenced_frames =
         FencedFrameProperties()
             ? base::make_span(
-                  FencedFrameProperties()->required_permissions_to_load())
+                  FencedFrameProperties()->effective_enabled_permissions())
             : base::span<const mojom::blink::PermissionsPolicyFeature>();
     security_init.ApplyPermissionsPolicy(
         *frame_.Get(), response_, frame_policy_, initial_permissions_policy_,

@@ -5681,8 +5681,8 @@ void NavigationRequest::CommitNavigation() {
 
     if (response()) {
       HandleTopicsEligibleResponse(
-          response_head_->parsed_headers,
-          url::Origin::Create(common_params_->url), *GetRenderFrameHost(),
+          response_head_->parsed_headers, url::Origin::Create(GetURL()),
+          *GetRenderFrameHost(),
           browsing_topics::ApiCallerSource::kIframeAttribute);
     }
   }
@@ -7363,20 +7363,23 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   // * If the properties have no mapped url, the browser will send the renderer
   //   the `RedactedFencedFrameProperties` unconditionally.
   // * If the properties do have a mapped url, the browser will send the
-  //   renderer the `RedactedFencedFrameProperties` when the committed
-  //   origin is same-origin to the urn's mapped_url (after redirects).
+  //   renderer the `RedactedFencedFrameProperties`, redacting extra information
+  //   based on whether the origin is same-origin to the urn's mapped_url (after
+  //   redirects).
   // This is because we want to make fenced frame APIs available only
   // in same-origin contexts, when "same-origin" has a coherent definition.
   const auto& computed_fenced_frame_properties = ComputeFencedFrameProperties();
   if (computed_fenced_frame_properties.has_value()) {
-    if (!computed_fenced_frame_properties->mapped_url_.has_value() ||
-        url::Origin::Create(common_params_->url)
-            .IsSameOriginWith(computed_fenced_frame_properties->mapped_url_
-                                  ->GetValueIgnoringVisibility())) {
-      commit_params_->fenced_frame_properties =
-          computed_fenced_frame_properties->RedactFor(
-              content::FencedFrameEntity::kContent);
+    content::FencedFrameEntity entity =
+        content::FencedFrameEntity::kSameOriginContent;
+    if (computed_fenced_frame_properties->mapped_url_.has_value() &&
+        !url::Origin::Create(common_params_->url)
+             .IsSameOriginWith(computed_fenced_frame_properties->mapped_url_
+                                   ->GetValueIgnoringVisibility())) {
+      entity = content::FencedFrameEntity::kCrossOriginContent;
     }
+    commit_params_->fenced_frame_properties =
+        computed_fenced_frame_properties->RedactFor(entity);
   }
 
   if (ready_to_commit_callback_for_testing_)
@@ -8461,13 +8464,12 @@ bool NavigationRequest::IsFencedFrameRequiredPolicyFeatureAllowed(
       blink::GetPermissionsPolicyFeatureList();
 
   // Check if the outer document's permissions policies allow all of the
-  // required policies for `origin`.
-  if (GetParentFrameOrOuterDocument()
+  // required policies.
+  absl::optional<const blink::PermissionsPolicy::Allowlist> embedder_allowlist =
+      GetParentFrameOrOuterDocument()
           ->permissions_policy()
-          ->GetAllowlistForFeatureIfExists(feature) &&
-      !GetParentFrameOrOuterDocument()
-           ->permissions_policy()
-           ->IsFeatureEnabledForOrigin(feature, origin)) {
+          ->GetAllowlistForFeatureIfExists(feature);
+  if (embedder_allowlist && !embedder_allowlist->MatchesAll()) {
     return false;
   }
 
@@ -8497,9 +8499,12 @@ bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
   if (!frame_tree_node_->IsFencedFrameRoot())
     return true;
 
+  const absl::optional<FencedFrameProperties>&
+      computed_fenced_frame_properties = ComputeFencedFrameProperties();
+
   // Permissions policies only need to be checked for fenced frames created from
   // an API like FLEDGE or Shared Storage.
-  if (!fenced_frame_properties_) {
+  if (!computed_fenced_frame_properties) {
     return true;
   }
 
@@ -8510,7 +8515,7 @@ bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
   // extra policies defined in the outer document/"allow" attribute won't have
   // any effect.
   for (const blink::mojom::PermissionsPolicyFeature feature :
-       fenced_frame_properties_->required_permissions_to_load) {
+       computed_fenced_frame_properties->effective_enabled_permissions) {
     if (!IsFencedFrameRequiredPolicyFeatureAllowed(origin, feature)) {
       const blink::PermissionsPolicyFeatureToNameMap& feature_to_name_map =
           blink::GetPermissionsPolicyFeatureToNameMap();

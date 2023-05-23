@@ -180,7 +180,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
       const url::Origin& origin,
       base::span<const blink::mojom::PermissionsPolicyFeature>
-          required_permissions_to_load);
+          effective_enabled_permissions);
 
   static std::unique_ptr<PermissionsPolicy> CreateFromParsedPolicy(
       const ParsedPermissionsPolicy& parsed_policy,
@@ -274,7 +274,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features,
       base::span<const blink::mojom::PermissionsPolicyFeature>
-          required_permissions_to_load);
+          effective_enabled_permissions);
 
   // Returns whether or not the given feature is enabled by this policy for a
   // specific origin given a set of opt-in features. The opt-in features cannot

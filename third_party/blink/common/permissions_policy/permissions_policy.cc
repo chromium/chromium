@@ -368,16 +368,16 @@ PermissionsPolicy::~PermissionsPolicy() = default;
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
     const url::Origin& origin,
     base::span<const blink::mojom::PermissionsPolicyFeature>
-        required_permissions_to_load) {
+        effective_enabled_permissions) {
   return CreateForFencedFrame(origin, GetPermissionsPolicyFeatureList(),
-                              required_permissions_to_load);
+                              effective_enabled_permissions);
 }
 
 std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
     const url::Origin& origin,
     const PermissionsPolicyFeatureList& features,
     base::span<const blink::mojom::PermissionsPolicyFeature>
-        required_permissions_to_load) {
+        effective_enabled_permissions) {
   std::unique_ptr<PermissionsPolicy> new_policy =
       base::WrapUnique(new PermissionsPolicy(origin, features));
 
@@ -385,7 +385,7 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateForFencedFrame(
     new_policy->inherited_policies_[feature.first] = false;
   }
   for (const blink::mojom::PermissionsPolicyFeature feature :
-       required_permissions_to_load) {
+       effective_enabled_permissions) {
     new_policy->inherited_policies_[feature] = true;
   }
 

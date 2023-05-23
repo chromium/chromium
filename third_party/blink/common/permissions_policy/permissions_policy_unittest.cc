@@ -78,9 +78,9 @@ class PermissionsPolicyTest : public testing::Test {
   std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
       const url::Origin& origin,
       base::span<const blink::mojom::PermissionsPolicyFeature>
-          required_permissions_to_load) {
+          effective_enabled_permissions) {
     return PermissionsPolicy::CreateForFencedFrame(
-        origin, feature_list_, required_permissions_to_load);
+        origin, feature_list_, effective_enabled_permissions);
   }
 
   bool IsFeatureEnabledForSubresourceRequestAssumingOptIn(
@@ -2562,14 +2562,14 @@ TEST_F(PermissionsPolicyTest, CreateForDefaultFencedFrame) {
 
 TEST_F(PermissionsPolicyTest, CreateForFledgeFencedFrame) {
   std::vector<blink::mojom::PermissionsPolicyFeature>
-      required_permissions_to_load;
-  required_permissions_to_load.insert(
-      required_permissions_to_load.end(),
+      effective_enabled_permissions;
+  effective_enabled_permissions.insert(
+      effective_enabled_permissions.end(),
       std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
       std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
 
   std::unique_ptr<PermissionsPolicy> policy =
-      CreateForFencedFrame(origin_a_, required_permissions_to_load);
+      CreateForFencedFrame(origin_a_, effective_enabled_permissions);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_TRUE(policy->IsFeatureEnabled(
@@ -2580,14 +2580,14 @@ TEST_F(PermissionsPolicyTest, CreateForFledgeFencedFrame) {
 
 TEST_F(PermissionsPolicyTest, CreateForSharedStorageFencedFrame) {
   std::vector<blink::mojom::PermissionsPolicyFeature>
-      required_permissions_to_load;
-  required_permissions_to_load.insert(
-      required_permissions_to_load.end(),
+      effective_enabled_permissions;
+  effective_enabled_permissions.insert(
+      effective_enabled_permissions.end(),
       std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
       std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures));
 
   std::unique_ptr<PermissionsPolicy> policy =
-      CreateForFencedFrame(origin_a_, required_permissions_to_load);
+      CreateForFencedFrame(origin_a_, effective_enabled_permissions);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_TRUE(policy->IsFeatureEnabled(

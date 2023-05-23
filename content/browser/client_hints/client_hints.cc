@@ -588,7 +588,7 @@ struct ClientHintsExtendedData {
           frame_tree_node->GetFencedFrameProperties();
       base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
       if (fenced_frame_properties) {
-        permissions = fenced_frame_properties->required_permissions_to_load;
+        permissions = fenced_frame_properties->effective_enabled_permissions;
       }
       permissions_policy = blink::PermissionsPolicy::CreateForFencedFrame(
           resource_origin, permissions);
