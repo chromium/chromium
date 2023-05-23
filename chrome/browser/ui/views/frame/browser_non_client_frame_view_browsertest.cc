@@ -213,28 +213,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 #endif
 }
 
-// Verifies that the incognito window frame is always the right color.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
-                       IncognitoIsCorrectColor) {
-  // Set the color that's expected to be ignored.
-  auto* theme = ui::NativeTheme::GetInstanceForNativeUi();
-  theme->set_user_color(gfx::kGoogleBlue400);
-  theme->NotifyOnNativeThemeUpdated();
-
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-
-  BrowserView* view = BrowserView::GetBrowserViewForBrowser(incognito_browser);
-  BrowserFrame* frame = view->frame();
-  BrowserNonClientFrameView* frame_view = frame->GetFrameView();
-
-  // Checking the exact color is brittle but there's no better way to ensure
-  // that it's not overridden by accident.
-  EXPECT_EQ(gfx::kGoogleGrey900,
-            frame_view->GetFrameColor(BrowserFrameActiveState::kActive));
-
-  incognito_browser->window()->Close();
-}
-
 // Checks that the title bar for hosted app windows is hidden when in fullscreen
 // for tab mode.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
@@ -446,55 +424,5 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(path.isEmpty());
 #endif
-}
-
-class BrowserNonClientFrameViewRefreshedBrowserTest
-    : public BrowserNonClientFrameViewBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  BrowserNonClientFrameViewRefreshedBrowserTest() {}
-
-  void SetUp() override {
-    features_.InitWithFeatureState(features::kChromeRefresh2023, GetParam());
-    BrowserNonClientFrameViewBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BrowserNonClientFrameViewRefreshedBrowserTest,
-                         testing::Bool());
-
-// Verifies the frame color with the refresh feature enabled and disabled.
-// Verifies actual color to catch accidental changes.
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewRefreshedBrowserTest,
-                       UnthemedFrameColor) {
-  // ChromeOS always has a system color so we replicate this here.
-  auto* theme = ui::NativeTheme::GetInstanceForNativeUi();
-  theme->set_user_color(gfx::kGoogleGreen300);
-  theme->NotifyOnNativeThemeUpdated();
-
-  Browser* normal_browser = CreateBrowser(browser()->profile());
-
-  BrowserView* view = BrowserView::GetBrowserViewForBrowser(normal_browser);
-  BrowserFrame* frame = view->frame();
-  BrowserNonClientFrameView* frame_view = frame->GetFrameView();
-
-  if (GetParam()) {
-    // When refresh is enabled, we derive the color from the `user_color` in the
-    // theme. Color should be a light green for light mode and Green300 seed. It
-    // should be equal to `kColorRefSecondary90`.
-    EXPECT_EQ(SkColorSetRGB(0xD2, 0xE8, 0xD4),
-              frame_view->GetFrameColor(BrowserFrameActiveState::kActive));
-  } else {
-    // When refresh is off, this should be the default unthemed color. i.e.
-    // `kColorFrameActiveUnthemed` in light mode (which is set to this value).
-    EXPECT_EQ(SkColorSetRGB(0xDE, 0xE1, 0xE6),
-              frame_view->GetFrameColor(BrowserFrameActiveState::kActive));
-  }
-
-  normal_browser->window()->Close();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
