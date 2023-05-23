@@ -23,6 +23,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -36,6 +37,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_utils.h"
@@ -785,6 +787,15 @@ gfx::Rect HelpBubbleViewAsh::GetAnchorRect() const {
   }
 
   return anchor_rect;
+}
+
+void HelpBubbleViewAsh::GetWidgetHitTestMask(SkPath* mask) const {
+  // NOTE: Mask to bubble frame view contents bounds to exclude shadows.
+  mask->addRect(gfx::RectToSkRect(GetBubbleFrameView()->GetContentsBounds()));
+}
+
+bool HelpBubbleViewAsh::WidgetHasHitTestMask() const {
+  return true;
 }
 
 // static
