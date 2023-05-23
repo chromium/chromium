@@ -612,7 +612,7 @@ void Navigator::DidNavigate(
             },
             controller_.GetLastCommittedEntryIndex(),
             controller_.GetEntryCount()),
-        site_instance);
+        site_instance->group());
   }
 
   // Store some information for recording WebPlatform security metrics. These

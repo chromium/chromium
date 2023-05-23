@@ -4784,7 +4784,7 @@ absl::optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
 
 void RenderFrameHostManager::ExecutePageBroadcastMethod(
     PageBroadcastMethodCallback callback,
-    SiteInstanceImpl* instance_to_skip) {
+    SiteInstanceGroup* group_to_skip) {
   DCHECK(!frame_tree_node_->parent());
 
   // When calling a PageBroadcast Mojo method for an inner WebContents, we don't
@@ -4795,17 +4795,19 @@ void RenderFrameHostManager::ExecutePageBroadcastMethod(
        render_frame_host_->browsing_context_state()->proxy_hosts()) {
     if (outer_delegate_proxy == pair.second.get())
       continue;
-    if (pair.second->GetSiteInstance() == instance_to_skip)
+    if (pair.second->site_instance_group() == group_to_skip) {
       continue;
+    }
     callback.Run(pair.second->GetRenderViewHost());
   }
 
   if (speculative_render_frame_host_ &&
-      speculative_render_frame_host_->GetSiteInstance() != instance_to_skip) {
+      speculative_render_frame_host_->GetSiteInstance()->group() !=
+          group_to_skip) {
     callback.Run(speculative_render_frame_host_->render_view_host());
   }
 
-  if (render_frame_host_->GetSiteInstance() != instance_to_skip) {
+  if (render_frame_host_->GetSiteInstance()->group() != group_to_skip) {
     callback.Run(render_frame_host_->render_view_host());
   }
 }

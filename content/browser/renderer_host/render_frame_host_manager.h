@@ -524,9 +524,9 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // Executes a PageBroadcast Mojo method to every `blink::WebView` in the
   // FrameTree. This should only be called in the top-level
   // RenderFrameHostManager. The `callback` is called synchronously and the
-  // `instance_to_skip` won't be referenced after this method returns.
+  // `group_to_skip` won't be referenced after this method returns.
   void ExecutePageBroadcastMethod(PageBroadcastMethodCallback callback,
-                                  SiteInstanceImpl* instance_to_skip = nullptr);
+                                  SiteInstanceGroup* group_to_skip = nullptr);
 
   // Executes a RemoteMainFrame Mojo method to every instance in |proxy_hosts|.
   // This should only be called in the top-level RenderFrameHostManager.
