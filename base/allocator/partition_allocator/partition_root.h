@@ -415,13 +415,13 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE void RecommitSystemPagesForData(
       uintptr_t address,
       size_t length,
-      PageAccessibilityDisposition accessibility_disposition)
-      PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      PageAccessibilityDisposition accessibility_disposition,
+      bool request_tagging) PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
   PA_ALWAYS_INLINE bool TryRecommitSystemPagesForData(
       uintptr_t address,
       size_t length,
-      PageAccessibilityDisposition accessibility_disposition)
-      PA_LOCKS_EXCLUDED(lock_);
+      PageAccessibilityDisposition accessibility_disposition,
+      bool request_tagging) PA_LOCKS_EXCLUDED(lock_);
 
   [[noreturn]] PA_NOINLINE void OutOfMemory(size_t size);
 
@@ -501,7 +501,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE static size_t GetUsableSizeWithMac11MallocSizeHack(
       void* ptr);
 
-  PA_ALWAYS_INLINE PageAccessibilityConfiguration GetPageAccessibility() const;
+  PA_ALWAYS_INLINE PageAccessibilityConfiguration
+  GetPageAccessibility(bool request_tagging) const;
   PA_ALWAYS_INLINE PageAccessibilityConfiguration
       PageAccessibilityWithThreadIsolationIfEnabled(
           PageAccessibilityConfiguration::Permissions) const;
@@ -1615,15 +1616,17 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     uintptr_t address,
     size_t length,
-    PageAccessibilityDisposition accessibility_disposition) {
+    PageAccessibilityDisposition accessibility_disposition,
+    bool request_tagging) {
   internal::ScopedSyscallTimer timer{this};
 
-  bool ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
+  auto page_accessibility = GetPageAccessibility(request_tagging);
+  bool ok = TryRecommitSystemPages(address, length, page_accessibility,
                                    accessibility_disposition);
   if (PA_UNLIKELY(!ok)) {
     // Decommit some memory and retry. The alternative is crashing.
     DecommitEmptySlotSpans();
-    RecommitSystemPages(address, length, GetPageAccessibility(),
+    RecommitSystemPages(address, length, page_accessibility,
                         accessibility_disposition);
   }
 
@@ -1634,9 +1637,12 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
     uintptr_t address,
     size_t length,
-    PageAccessibilityDisposition accessibility_disposition) {
+    PageAccessibilityDisposition accessibility_disposition,
+    bool request_tagging) {
   internal::ScopedSyscallTimer timer{this};
-  bool ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
+
+  auto page_accessibility = GetPageAccessibility(request_tagging);
+  bool ok = TryRecommitSystemPages(address, length, page_accessibility,
                                    accessibility_disposition);
   if (PA_UNLIKELY(!ok)) {
     // Decommit some memory and retry. The alternative is crashing.
@@ -1644,7 +1650,7 @@ PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::TryRecommitSystemPagesForData(
       ::partition_alloc::internal::ScopedGuard guard(lock_);
       DecommitEmptySlotSpans();
     }
-    ok = TryRecommitSystemPages(address, length, GetPageAccessibility(),
+    ok = TryRecommitSystemPages(address, length, page_accessibility,
                                 accessibility_disposition);
   }
 
@@ -1710,11 +1716,11 @@ PartitionRoot<thread_safe>::GetUsableSizeWithMac11MallocSizeHack(void* ptr) {
 // PartitionRoots supporting it.
 template <bool thread_safe>
 PA_ALWAYS_INLINE PageAccessibilityConfiguration
-PartitionRoot<thread_safe>::GetPageAccessibility() const {
+PartitionRoot<thread_safe>::GetPageAccessibility(bool request_tagging) const {
   PageAccessibilityConfiguration::Permissions permissions =
       PageAccessibilityConfiguration::kReadWrite;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-  if (IsMemoryTaggingEnabled()) {
+  if (IsMemoryTaggingEnabled() && request_tagging) {
     permissions = PageAccessibilityConfiguration::kReadWriteTagged;
   }
 #endif

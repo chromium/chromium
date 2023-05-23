@@ -314,8 +314,6 @@ static_assert(kThreadIsolatedPoolHandle == kNumPools,
 // for allocations larger than this constant should not be backed with PROT_MTE
 // (which saves shadow tag memory). We also save CPU cycles by skipping tagging
 // of large areas which are less likely to benefit from MTE protection.
-// TODO(Richard.Townsend@arm.com): adjust RecommitSystemPagesForData to skip
-// PROT_MTE.
 constexpr size_t kMaxMemoryTaggingSize = 1024;
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)

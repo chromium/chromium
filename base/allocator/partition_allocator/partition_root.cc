@@ -1137,6 +1137,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
                 internal::PartitionPageSize());
 #endif
 
+  PA_DCHECK(new_slot_size > internal::kMaxMemoryTaggingSize);
   if (new_slot_size == current_slot_size) {
     // No need to move any memory around, but update size and cookie below.
     // That's because raw_size may have changed.
@@ -1151,9 +1152,10 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     // Grow within the actually reserved address space. Just need to make the
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
-    RecommitSystemPagesForData(slot_start + current_slot_size,
-                               recommit_slot_size_growth,
-                               PageAccessibilityDisposition::kRequireUpdate);
+    // Direct map never uses tagging, as size is always >kMaxMemoryTaggingSize.
+    RecommitSystemPagesForData(
+        slot_start + current_slot_size, recommit_slot_size_growth,
+        PageAccessibilityDisposition::kRequireUpdate, false);
     // The recommited system pages had been already reserved and all the
     // entries in the reservation offset table (for entire reservation_size
     // region) have been already initialized.
