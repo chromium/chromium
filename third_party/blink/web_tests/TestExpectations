@@ -6841,3 +6841,4 @@ crbug.com/1376679 [ Mac ] virtual/threaded-prefer-compositing/external/wpt/scrol
 crbug.com/1448021 fast/webgl/texture-color-profile.html [ Failure Pass ]
 crbug.com/1446723 http/tests/security/cross-origin-OffscreenCanvas2D-createPattern.html [ Failure Pass ]
 crbug.com/1448043 virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta-pinch-zoom.html [ Pass Timeout ]
+crbug.com/1448024 external/wpt/scroll-animations/scroll-timelines/scroll-timeline-invalidation.html [ Failure Pass ]
