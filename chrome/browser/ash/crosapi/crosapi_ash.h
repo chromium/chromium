@@ -76,6 +76,7 @@ class IdentityManagerAsh;
 class IdleServiceAsh;
 class ImageWriterAsh;
 class InSessionAuthAsh;
+class KerberosInBrowserAsh;
 class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
 class LocalPrinterAsh;
@@ -238,6 +239,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ImageWriter> receiver) override;
   void BindInSessionAuth(
       mojo::PendingReceiver<mojom::InSessionAuth> receiver) override;
+  void BindKerberosInBrowser(
+      mojo::PendingReceiver<mojom::KerberosInBrowser> receiver) override;
   void BindKeystoreService(
       mojo::PendingReceiver<mojom::KeystoreService> receiver) override;
   void BindKioskSessionService(
@@ -555,6 +558,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<IdleServiceAsh> idle_service_ash_;
   std::unique_ptr<ImageWriterAsh> image_writer_ash_;
   std::unique_ptr<InSessionAuthAsh> in_session_auth_ash_;
+  std::unique_ptr<KerberosInBrowserAsh> kerberos_in_browser_ash_;
   std::unique_ptr<KeystoreServiceAsh> keystore_service_ash_;
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;

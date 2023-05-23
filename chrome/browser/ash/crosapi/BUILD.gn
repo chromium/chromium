@@ -144,6 +144,8 @@ source_set("crosapi") {
     "image_writer_ash.h",
     "in_session_auth_ash.cc",
     "in_session_auth_ash.h",
+    "kerberos_in_browser_ash.cc",
+    "kerberos_in_browser_ash.h",
     "keystore_service_ash.cc",
     "keystore_service_ash.h",
     "keystore_service_factory_ash.cc",

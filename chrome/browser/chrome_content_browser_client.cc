@@ -681,6 +681,7 @@
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h"
 #include "chrome/common/chrome_descriptors.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/startup/browser_init_params.h"
 #include "chromeos/startup/browser_postlogin_params.h"
@@ -6371,7 +6372,7 @@ ChromeContentBrowserClient::CreateLoginDelegate(
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
     LoginAuthRequiredCallback auth_required_callback) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Negotiate challenge is handled via GSSAPI library, which can not receive
   // external credentials. However, on ChromeOS we can suggest the user to
   // create a TGT using their credentials. Note that the credentials are NOT
@@ -6380,10 +6381,19 @@ ChromeContentBrowserClient::CreateLoginDelegate(
   if (base::FeatureList::IsEnabled(net::features::kKerberosInBrowserRedirect) &&
       auth_info.scheme ==
           net::HttpAuth::SchemeToString(net::HttpAuth::AUTH_SCHEME_NEGOTIATE)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::KerberosInBrowserDialog::Show();
+#else
+    // Requests to show Kerberos ui via crosapi mojo call.
+    chromeos::LacrosService::Get()
+        ->GetRemote<crosapi::mojom::KerberosInBrowser>()
+        ->ShowKerberosInBrowserDialog();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return nullptr;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* system_proxy_manager = ash::SystemProxyManager::Get();
   // For Managed Guest Session and Kiosk devices, the credentials configured
   // via the policy SystemProxySettings may be used for proxy authentication.

@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/image_writer_ash.h"
 #include "chrome/browser/ash/crosapi/in_session_auth_ash.h"
+#include "chrome/browser/ash/crosapi/kerberos_in_browser_ash.h"
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
@@ -124,6 +125,7 @@
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
+#include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
@@ -225,6 +227,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       idle_service_ash_(std::make_unique<IdleServiceAsh>()),
       image_writer_ash_(std::make_unique<ImageWriterAsh>()),
       in_session_auth_ash_(std::make_unique<InSessionAuthAsh>()),
+      kerberos_in_browser_ash_(std::make_unique<KerberosInBrowserAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
@@ -568,6 +571,11 @@ void CrosapiAsh::BindImageWriter(
 void CrosapiAsh::BindInSessionAuth(
     mojo::PendingReceiver<mojom::InSessionAuth> receiver) {
   in_session_auth_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindKerberosInBrowser(
+    mojo::PendingReceiver<crosapi::mojom::KerberosInBrowser> receiver) {
+  kerberos_in_browser_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindKeystoreService(

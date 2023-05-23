@@ -52,6 +52,7 @@ import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/in_session_auth.mojom";
+import "chromeos/crosapi/mojom/kerberos_in_browser.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
@@ -138,8 +139,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 108
-// Next method id: 111
+// Next version: 109
+// Next method id: 112
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -405,6 +406,11 @@ interface Crosapi {
   [MinVersion=41]
   BindNetworkSettingsService@46(
       pending_receiver<NetworkSettingsService> receiver);
+
+  // Binds the KerberosInBrowser interface for showing Kerberos UI.
+  // Added in M114.
+  [MinVersion=108]
+  BindKerberosInBrowser@111(pending_receiver<KerberosInBrowser> receiver);
 
   // Binds the KeystoreService interface for challenging keys.
   // Added in M87.
@@ -708,8 +714,6 @@ interface Crosapi {
   // |browser_info| during startup.
   // Added in M87.
   [MinVersion=3] OnBrowserStartup@6(BrowserInfo browser_info);
-
-
 };
 
 [Stable, Extensible]
