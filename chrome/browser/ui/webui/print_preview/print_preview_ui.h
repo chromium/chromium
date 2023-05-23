@@ -43,6 +43,7 @@ namespace printing {
 
 class PrintPreviewHandler;
 
+// PrintPreviewUI lives on the UI thread.
 class PrintPreviewUI : public ConstrainedWebDialogUI,
                        public mojom::PrintPreviewUI {
  public:
@@ -126,7 +127,6 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   // Determines whether to cancel a print preview request based on the request
   // id.
-  // Can be called from any thread.
   static bool ShouldCancelRequest(const absl::optional<int32_t>& preview_ui_id,
                                   int request_id);
 
