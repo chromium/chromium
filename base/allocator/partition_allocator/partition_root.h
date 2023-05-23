@@ -1214,11 +1214,14 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
     if (PA_LIKELY(slot_size <= internal::kMaxMemoryTaggingSize)) {
       // slot_span is untagged at this point, so we have to recover its tag
       // again to increment and provide use-after-free mitigations.
-      internal::TagMemoryRangeIncrement(internal::TagAddr(slot_start),
-                                        slot_size);
+      uintptr_t slot_start_to_object_delta = object_addr - slot_start;
+      void* retagged_slot_start = internal::TagMemoryRangeIncrement(
+          internal::TagAddr(slot_start), slot_size);
       // Incrementing the MTE-tag in the memory range invalidates the |object|'s
       // tag, so it must be retagged.
-      object = internal::TagPtr(object);
+      object = reinterpret_cast<void*>(
+          reinterpret_cast<uintptr_t>(retagged_slot_start) +
+          slot_start_to_object_delta);
     }
   }
 #else
