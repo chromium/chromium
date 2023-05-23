@@ -20,6 +20,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "cc/slim/layer.h"
 #include "chrome/android/chrome_jni_headers/TabContentManager_jni.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/thumbnail/cc/features.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -278,6 +280,31 @@ content::RenderWidgetHostView* TabContentManager::GetRwhvForTab(
   return rwhv;
 }
 
+std::unique_ptr<thumbnail::ThumbnailCaptureTracker, base::OnTaskRunnerDeleter>
+TabContentManager::TrackCapture(thumbnail::TabId tab_id) {
+  std::unique_ptr<thumbnail::ThumbnailCaptureTracker, base::OnTaskRunnerDeleter>
+      tracker(new thumbnail::ThumbnailCaptureTracker(
+                  base::BindOnce(&TabContentManager::OnTrackingFinished,
+                                 weak_factory_.GetWeakPtr(), tab_id)),
+              base::OnTaskRunnerDeleter(
+                  base::SequencedTaskRunner::GetCurrentDefault()));
+  in_flight_captures_[tab_id] = tracker->GetWeakPtr();
+  return tracker;
+}
+
+void TabContentManager::OnTrackingFinished(
+    int tab_id,
+    thumbnail::ThumbnailCaptureTracker* tracker) {
+  auto it = in_flight_captures_.find(tab_id);
+  if (it == in_flight_captures_.end()) {
+    return;
+  }
+  // Remove only the latest tracker.
+  if (it->second.get() == tracker) {
+    in_flight_captures_.erase(it);
+  }
+}
+
 void TabContentManager::CaptureThumbnail(
     JNIEnv* env,
     const JavaParamRef<jobject>& tab,
@@ -285,6 +312,9 @@ void TabContentManager::CaptureThumbnail(
     jboolean write_to_cache,
     jdouble aspect_ratio,
     const base::android::JavaParamRef<jobject>& j_callback) {
+  // Ensure capture only happens on UI thread.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   TabAndroid* tab_android = TabAndroid::GetNativeTab(env, tab);
   DCHECK(tab_android);
   const int tab_id = tab_android->GetAndroidId();
@@ -303,10 +333,11 @@ void TabContentManager::CaptureThumbnail(
                             tab_id, tab_android->GetURL())) {
     return;
   }
-  TabReadbackCallback readback_done_callback = base::BindOnce(
-      &TabContentManager::OnTabReadback, weak_factory_.GetWeakPtr(), tab_id,
-      base::android::ScopedJavaGlobalRef<jobject>(j_callback), write_to_cache,
-      aspect_ratio);
+  TabReadbackCallback readback_done_callback =
+      base::BindOnce(&TabContentManager::OnTabReadback,
+                     weak_factory_.GetWeakPtr(), tab_id, TrackCapture(tab_id),
+                     base::android::ScopedJavaGlobalRef<jobject>(j_callback),
+                     write_to_cache, aspect_ratio);
   pending_tab_readbacks_[tab_id] = std::make_unique<TabReadbackRequest>(
       rwhv, thumbnail_scale, aspect_ratio, !write_to_cache,
       std::move(readback_done_callback));
@@ -327,8 +358,8 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
   skbitmap.setImmutable();
 
   if (thumbnail_cache_->CheckAndUpdateThumbnailMetaData(tab_id, url)) {
-    OnTabReadback(tab_id, nullptr, true, aspect_ratio, thumbnail_scale,
-                  skbitmap);
+    OnTabReadback(tab_id, TrackCapture(tab_id), nullptr, true, aspect_ratio,
+                  thumbnail_scale, skbitmap);
   }
 }
 
@@ -383,17 +414,35 @@ void TabContentManager::RemoveTabThumbnail(JNIEnv* env, jint tab_id) {
   NativeRemoveTabThumbnail(tab_id);
 }
 
+void TabContentManager::WaitForJpegTabThumbnail(
+    JNIEnv* env,
+    jint tab_id,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  DCHECK(base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor));
+
+  auto it = in_flight_captures_.find(tab_id);
+  if (it != in_flight_captures_.end() && it->second) {
+    // A capture is currently ongoing wait till it finishes.
+    it->second->AddOnJpegFinishedCallback(base::BindOnce(
+        &base::android::RunBooleanCallbackAndroid,
+        base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
+  } else {
+    // Thumbnail is not currently being captured. Run the callback.
+    RunBooleanCallbackAndroid(j_callback, true);
+  }
+}
+
 void TabContentManager::GetEtc1TabThumbnail(
     JNIEnv* env,
     jint tab_id,
     jdouble aspect_ratio,
     const base::android::JavaParamRef<jobject>& j_callback) {
-  thumbnail_cache_->DecompressThumbnailFromFile(
+  thumbnail_cache_->DecompressEtc1ThumbnailFromFile(
       tab_id, aspect_ratio,
       base::BindOnce(&TabContentManager::SendThumbnailToJava,
                      weak_factory_.GetWeakPtr(),
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback),
-                     /* need_downsampling */ true, aspect_ratio));
+                     /*need_downsampling=*/true, aspect_ratio));
 }
 
 void TabContentManager::OnUIResourcesWereEvicted() {
@@ -420,6 +469,8 @@ void TabContentManager::OnFinishedThumbnailRead(int tab_id) {
 
 void TabContentManager::OnTabReadback(
     int tab_id,
+    std::unique_ptr<thumbnail::ThumbnailCaptureTracker,
+                    base::OnTaskRunnerDeleter> tracker,
     base::android::ScopedJavaGlobalRef<jobject> j_callback,
     bool write_to_cache,
     double aspect_ratio,
@@ -437,7 +488,8 @@ void TabContentManager::OnTabReadback(
   }
 
   if (write_to_cache && thumbnail_scale > 0 && !bitmap.empty()) {
-    thumbnail_cache_->Put(tab_id, bitmap, thumbnail_scale, aspect_ratio);
+    thumbnail_cache_->Put(tab_id, std::move(tracker), bitmap, thumbnail_scale,
+                          aspect_ratio);
   }
 }
 
@@ -450,10 +502,10 @@ void TabContentManager::SendThumbnailToJava(
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (!bitmap.isNull() && result) {
     // We want to show thumbnails in a specific aspect ratio. Therefore, the
-    // thumbnail saved needs to be cropped to the target aspect ratio, otherwise
-    // it would be vertically center-aligned and the top would be hidden in
-    // portrait mode, or it would be shown in the wrong aspect ratio in
-    // landscape mode.
+    // thumbnail saved needs to be cropped to the target aspect ratio,
+    // otherwise it would be vertically center-aligned and the top would be
+    // hidden in portrait mode, or it would be shown in the wrong aspect ratio
+    // in landscape mode.
     int scale = need_downsampling ? 2 : 1;
 
     int width = std::min(bitmap.width() / scale,
@@ -494,6 +546,9 @@ jlong JNI_TabContentManager_Init(JNIEnv* env,
                                  jboolean use_approximation_thumbnail,
                                  jboolean save_jpeg_thumbnails,
                                  jdouble jpeg_aspect_ratio) {
+  // Ensure this and its thumbnail cache are created on the UI thread.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   TabContentManager* manager = new TabContentManager(
       env, obj, default_cache_size, approximation_cache_size,
       compression_queue_max_size, write_queue_max_size,
