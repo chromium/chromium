@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {EntryLocation} from '../externs/entry_location.js';
@@ -59,16 +58,7 @@ export function setUp() {
       volumeManager, searchWrapper, optionsContainer, pathContainer);
 }
 
-/**
- * Resets flags state.
- */
-export function tearDown() {
-  loadTimeData.resetForTesting();
-}
-
-export async function testQueryUpdatedV1() {
-  loadTimeData.overrideValues({FILES_SEARCH_V2: false});
-
+export async function testQueryUpdated() {
   // Test 1: Enter a query.
   const input = searchWrapper.querySelector('cr-input') as CrInputElement;
   input.value = 'hello';
@@ -96,5 +86,3 @@ export async function testQueryUpdatedV1() {
     return state.search;
   });
 }
-
-// TODO(b:241868453): Add test for V2
