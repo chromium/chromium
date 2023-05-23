@@ -174,9 +174,9 @@ public class ContactEditor extends EditorBase<AutofillContact> {
         super.edit(toEdit, doneCallback, cancelCallback);
 
         final AutofillContact contact = toEdit == null
-                ? new AutofillContact(mContext, new AutofillProfile(), null, null, null,
-                          INVALID_NAME | INVALID_PHONE_NUMBER | INVALID_EMAIL, mRequestPayerName,
-                          mRequestPayerPhone, mRequestPayerEmail)
+                ? new AutofillContact(mContext, AutofillProfile.builder().build(), null, null, null,
+                        INVALID_NAME | INVALID_PHONE_NUMBER | INVALID_EMAIL, mRequestPayerName,
+                        mRequestPayerPhone, mRequestPayerEmail)
                 : toEdit;
 
         final EditorFieldModel nameField = mRequestPayerName

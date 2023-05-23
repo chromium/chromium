@@ -44,7 +44,6 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
@@ -85,13 +84,18 @@ public class AddressEditorTest {
             new AddressUiComponent(AddressField.STREET_ADDRESS, /*label=*/"street address label",
                     /*isRequired=*/true, /*isFullLine=*/true));
 
-    private static final AutofillProfile sProfile = new AutofillProfile(/*guid=*/"",
-            /*isLocal=*/true, Source.LOCAL_OR_SYNCABLE, /*honorific prefix=*/"",
-            /*fullName=*/"Seb Doe", /*companyName=*/"Google", /*streetAddress=*/"111 First St",
-            /*region=*/"CA", /*locality=*/"Los Angeles", /*dependentLocality=*/"",
-            /*postalCode=*/"90291", /*sortingCode=*/"", /*countryCode*/ "US",
-            /*phoneNumber=*/"650-253-0000", /*emailAddress=*/"first@gmail.com",
-            /*languageCode=*/"en-US");
+    private static final AutofillProfile sProfile = AutofillProfile.builder()
+                                                            .setFullName("Seb Doe")
+                                                            .setCompanyName("Google")
+                                                            .setStreetAddress("111 First St")
+                                                            .setRegion("CA")
+                                                            .setLocality("Los Angeles")
+                                                            .setPostalCode("90291")
+                                                            .setCountryCode("US")
+                                                            .setPhoneNumber("650-253-0000")
+                                                            .setEmailAddress("first@gmail.com")
+                                                            .setLanguageCode("en-US")
+                                                            .build();
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -367,7 +371,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(null, unused -> {});
 
-        validateShownFields(mEditorModelCapture.getValue(), new AutofillProfile());
+        validateShownFields(mEditorModelCapture.getValue(), AutofillProfile.builder().build());
     }
 
     @Test
