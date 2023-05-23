@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<vector android:alpha="0.9" android:height="24dp"
+    android:viewportHeight="24" android:viewportWidth="24"
+    android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#1967D2" android:pathData="M21.6,4.73c0,-0.83 -0.52,-1.56 -1.3,-1.85l-7.64,-2.76c-0.43,-0.16 -0.91,-0.16 -1.34,0L3.7,2.88C2.92,3.16 2.4,3.9 2.4,4.73v5.25c0.02,0.9 0.09,1.77 0.21,2.66c0.57,3.82 2.73,8.15 8.64,11.18c0.47,0.24 1.03,0.24 1.5,0c5.91,-3.03 8.07,-7.36 8.64,-11.18c0.12,-0.89 0.19,-1.76 0.21,-2.66V4.73z"/>
+    <group>
+        <clip-path android:pathData="M21.6,4.73c0,-0.83 -0.52,-1.56 -1.3,-1.85l-7.64,-2.76c-0.43,-0.16 -0.91,-0.16 -1.34,0L3.7,2.88C2.92,3.16 2.4,3.9 2.4,4.73v5.25c0.02,0.9 0.09,1.77 0.21,2.66c0.57,3.82 2.73,8.15 8.64,11.18c0.47,0.24 1.03,0.24 1.5,0c5.91,-3.03 8.07,-7.36 8.64,-11.18c0.12,-0.89 0.19,-1.76 0.21,-2.66V4.73z"/>
+        <path android:fillColor="#185ABC" android:pathData="M0,-0.27h12v24.55h-12z"/>
+    </group>
+    <path android:fillColor="#E8F0FE" android:pathData="M12.11,16.4c-3.09,0 -5.6,-2.51 -5.6,-5.6s2.51,-5.6 5.6,-5.6c1.51,0 2.78,0.56 3.75,1.46l-1.48,1.42c-0.43,-0.4 -1.16,-0.87 -2.27,-0.87c-1.95,0 -3.53,1.61 -3.53,3.6s1.59,3.6 3.53,3.6c2.25,0 3.18,-1.62 3.27,-2.7H12V9.78h5.35c0.08,0.35 0.13,0.68 0.13,1.14C17.49,14.13 15.35,16.4 12.11,16.4z"/>
+    <group>
+        <clip-path android:pathData="M12.11,16.4c-3.09,0 -5.6,-2.51 -5.6,-5.6s2.51,-5.6 5.6,-5.6c1.51,0 2.78,0.56 3.75,1.46l-1.48,1.42c-0.43,-0.4 -1.16,-0.87 -2.27,-0.87c-1.95,0 -3.53,1.61 -3.53,3.6s1.59,3.6 3.53,3.6c2.25,0 3.18,-1.62 3.27,-2.7H12V9.78h5.35c0.08,0.35 0.13,0.68 0.13,1.14C17.49,14.13 15.35,16.4 12.11,16.4z"/>
+        <path android:fillColor="#D2E3FC" android:pathData="M6.4,5.2h5.6v11.2h-5.6z"/>
+    </group>
+</vector>
