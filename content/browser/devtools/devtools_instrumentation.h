@@ -51,6 +51,7 @@ struct WebTransportError;
 namespace download {
 struct DownloadCreateInfo;
 class DownloadItem;
+class DownloadUrlParameters;
 }  // namespace download
 
 namespace content {
@@ -176,6 +177,9 @@ void OnNavigationRequestFailed(
     const network::URLLoaderCompletionStatus& status);
 bool ShouldBypassCSP(const NavigationRequest& nav_request);
 
+void ApplyNetworkOverridesForDownload(
+    RenderFrameHostImpl* rfh,
+    download::DownloadUrlParameters* parameters);
 void WillBeginDownload(download::DownloadCreateInfo* info,
                        download::DownloadItem* item);
 

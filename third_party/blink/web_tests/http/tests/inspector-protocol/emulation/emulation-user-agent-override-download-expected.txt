@@ -1,0 +1,6 @@
+Tests that Emulation.setUserAgentOverride applies to renderer-initiated downloads.
+Clicked the link
+Intercepted the download
+url: http://127.0.0.1:8000/inspector-protocol/emulation/resources/echo-headers.php
+user agent: Test UA
+

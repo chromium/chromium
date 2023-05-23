@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
@@ -693,6 +694,17 @@ bool EmulationHandler::ApplyUserAgentMetadataOverrides(
     return false;
   *override_out = user_agent_metadata_;
   return true;
+}
+
+void EmulationHandler::ApplyNetworkOverridesForDownload(
+    download::DownloadUrlParameters* parameters) {
+  net::HttpRequestHeaders headers;
+  bool user_agent_overridden;
+  bool accept_language_overridden;
+  ApplyOverrides(&headers, &user_agent_overridden, &accept_language_overridden);
+  for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();) {
+    parameters->add_request_header(it.name(), it.value());
+  }
 }
 
 }  // namespace protocol
