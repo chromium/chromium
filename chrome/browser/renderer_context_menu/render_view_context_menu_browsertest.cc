@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
         WebAppProvider::GetForTest(browser()->profile());
     base::RunLoop run_loop;
 
-    ASSERT_TRUE(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+    ASSERT_TRUE(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
     provider->install_finalizer().UninstallWebApp(
         app_id, webapps::WebappUninstallSource::kAppMenu,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {

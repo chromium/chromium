@@ -797,6 +797,11 @@ bool WebAppRegistrar::WasInstalledBySubApp(const AppId& app_id) const {
   return web_app && web_app->IsSubAppInstalledApp();
 }
 
+bool WebAppRegistrar::CanUserUninstallWebApp(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->CanUserUninstallWebApp();
+}
+
 bool WebAppRegistrar::IsAllowedLaunchProtocol(
     const AppId& app_id,
     const std::string& protocol_scheme) const {

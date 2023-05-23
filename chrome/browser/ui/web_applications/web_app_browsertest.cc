@@ -1352,13 +1352,13 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_ExternalPrefMigration,
   AppId app_id =
       provider->registrar_unsafe().LookupExternalAppId(install_url).value();
 
-  EXPECT_FALSE(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+  EXPECT_FALSE(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
 
   InstallWebAppFromPage(browser(), install_url);
 
   // Performing a user install on the page should not override the "policy"
   // install source.
-  EXPECT_FALSE(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+  EXPECT_FALSE(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
   const WebApp& web_app = *provider->registrar_unsafe().GetAppById(app_id);
   EXPECT_TRUE(web_app.IsSynced());
   EXPECT_TRUE(web_app.IsPolicyInstalledApp());

@@ -571,9 +571,7 @@ std::u16string WebAppBrowserController::GetFormattedUrlOrigin() const {
 }
 
 bool WebAppBrowserController::CanUserUninstall() const {
-  return WebAppUiManagerImpl::Get(&*provider_)
-      ->dialog_manager()
-      .CanUserUninstallWebApp(app_id());
+  return registrar().CanUserUninstallWebApp(app_id());
 }
 
 void WebAppBrowserController::Uninstall(

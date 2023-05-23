@@ -309,13 +309,6 @@ void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
                           uninstall_source, std::move(callback));
 }
 
-bool WebAppInstallFinalizer::CanUserUninstallWebApp(const AppId& app_id) const {
-  DCHECK(started_);
-
-  const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
-  return app ? app->CanUserUninstallWebApp() : false;
-}
-
 void WebAppInstallFinalizer::UninstallWebApp(
     const AppId& app_id,
     webapps::WebappUninstallSource webapp_uninstall_source,

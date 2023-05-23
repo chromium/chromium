@@ -42,7 +42,6 @@ class FakeInstallFinalizer final : public WebAppInstallFinalizer {
       WebAppManagement::Type source,
       webapps::WebappUninstallSource uninstall_surface,
       UninstallWebAppCallback callback) override;
-  bool CanUserUninstallWebApp(const AppId& app_id) const override;
   void UninstallWebApp(const AppId& app_id,
                        webapps::WebappUninstallSource uninstall_source,
                        UninstallWebAppCallback callback) override;

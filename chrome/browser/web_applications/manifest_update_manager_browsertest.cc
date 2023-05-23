@@ -1408,8 +1408,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   )";
   OverrideManifest(kManifestTemplate, {"blue", kInstallableIconList});
   AppId app_id = InstallPolicyApp();
-  EXPECT_FALSE(
-      GetProvider().install_finalizer().CanUserUninstallWebApp(app_id));
+  EXPECT_FALSE(GetProvider().registrar_unsafe().CanUserUninstallWebApp(app_id));
 
   OverrideManifest(kManifestTemplate, {"red", kInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
@@ -1425,8 +1424,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   // Policy installed apps should continue to be not uninstallable by the user
   // after updating.
-  EXPECT_FALSE(
-      GetProvider().install_finalizer().CanUserUninstallWebApp(app_id));
+  EXPECT_FALSE(GetProvider().registrar_unsafe().CanUserUninstallWebApp(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
@@ -1443,8 +1441,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   )";
   OverrideManifest(kManifestTemplate, {"blue", kInstallableIconList});
   AppId app_id = InstallKioskApp();
-  EXPECT_FALSE(
-      GetProvider().install_finalizer().CanUserUninstallWebApp(app_id));
+  EXPECT_FALSE(GetProvider().registrar_unsafe().CanUserUninstallWebApp(app_id));
 
   OverrideManifest(kManifestTemplate, {"red", kInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
@@ -1460,8 +1457,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   // Kiosk installed apps should continue to be not uninstallable by the user
   // after updating.
-  EXPECT_FALSE(
-      GetProvider().install_finalizer().CanUserUninstallWebApp(app_id));
+  EXPECT_FALSE(GetProvider().registrar_unsafe().CanUserUninstallWebApp(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,

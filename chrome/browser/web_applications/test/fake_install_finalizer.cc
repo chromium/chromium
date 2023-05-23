@@ -77,11 +77,6 @@ void FakeInstallFinalizer::UninstallExternalWebAppByUrl(
                      }));
 }
 
-bool FakeInstallFinalizer::CanUserUninstallWebApp(const AppId& app_id) const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void FakeInstallFinalizer::UninstallWebApp(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,

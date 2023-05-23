@@ -404,9 +404,9 @@ void UninstallImpl(WebAppProvider* provider,
     return;
   }
 
-  WebAppDialogManager& web_app_dialog_manager =
-      web_app_ui_manager->dialog_manager();
-  if (web_app_dialog_manager.CanUserUninstallWebApp(app_id)) {
+  if (provider->registrar_unsafe().CanUserUninstallWebApp(app_id)) {
+    WebAppDialogManager& web_app_dialog_manager =
+        web_app_ui_manager->dialog_manager();
     webapps::WebappUninstallSource webapp_uninstall_source =
         WebAppPublisherHelper::ConvertUninstallSourceToWebAppUninstallSource(
             uninstall_source);
@@ -785,7 +785,7 @@ void WebAppPublisherHelper::UninstallWebApp(
 
   DCHECK(provider_);
   DCHECK(
-      provider_->install_finalizer().CanUserUninstallWebApp(web_app->app_id()));
+      provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id()));
   webapps::WebappUninstallSource webapp_uninstall_source =
       ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
   provider_->install_finalizer().UninstallWebApp(

@@ -219,11 +219,6 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
             }));
   }
 
-  bool CanUserUninstallWebApp(const AppId& app_id) const override {
-    NOTIMPLEMENTED();
-    return false;
-  }
-
   void UninstallWebApp(const AppId& app_id,
                        webapps::WebappUninstallSource uninstall_source,
                        UninstallWebAppCallback callback) override {

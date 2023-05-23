@@ -140,6 +140,10 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns true if the app was installed by the SubApp API.
   bool WasInstalledBySubApp(const AppId& app_id) const;
 
+  // Returns true if the app exists and is allowed to be uninstalled by the user
+  // e.g. it is not policy installed.
+  bool CanUserUninstallWebApp(const AppId& app_id) const;
+
   // Returns the AppIds and URLs of apps externally installed from
   // |install_source|.
   base::flat_map<AppId, base::flat_set<GURL>> GetExternallyInstalledApps(
