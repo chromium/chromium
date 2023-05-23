@@ -8,6 +8,7 @@ import("//third_party/blink/renderer/config.gni")
 # for production.
 static_idl_files_in_modules = get_path_info(
         [
+          "//third_party/blink/renderer/modules/ad_auction/ad_auction_data_config.idl",
           "//third_party/blink/renderer/modules/ad_auction/ad_request_config.idl",
           "//third_party/blink/renderer/modules/ad_auction/ads.idl",
           "//third_party/blink/renderer/modules/ad_auction/auction_ad.idl",

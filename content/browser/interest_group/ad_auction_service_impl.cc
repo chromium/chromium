@@ -358,6 +358,13 @@ void AdAuctionServiceImpl::DeprecatedReplaceInURN(
   std::move(callback).Run();
 }
 
+void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
+    const url::Origin& seller,
+    GetInterestGroupAdAuctionDataCallback callback) {
+  // TODO(behamilton): Implement this functionality.
+  std::move(callback).Run({});
+}
+
 void AdAuctionServiceImpl::CreateAdRequest(
     blink::mojom::AdRequestConfigPtr config,
     CreateAdRequestCallback callback) {

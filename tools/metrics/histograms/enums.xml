@@ -42573,6 +42573,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4573" label="V8InvalidatedNumberStringNotRegexpLikeProtector"/>
   <int value="4574" label="CriticalCHRestartNavigationTiming"/>
   <int value="4575" label="TopLevelDocumentWithEmbeddedCredentials"/>
+  <int value="4576" label="V8Navigator_GetInterestGroupAdAuctionData_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

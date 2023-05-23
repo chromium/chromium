@@ -13934,6 +13934,195 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(last_request_is_ad_auction_header_request());
 }
 
+class InterestGroupBiddingAndAuctionServerBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupBiddingAndAuctionServerBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeBiddingAndAuctionServer);
+  }
+
+  // Attempts to get the auction blob for seller.  Returns kSuccess if the
+  // operation claims to have succeeded, and the exception message on failure.
+  //
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  [[nodiscard]] std::string GetInterestGroupAdAuctionData(
+      url::Origin seller,
+      absl::optional<ToRenderFrameHost> execution_target = absl::nullopt) {
+    return EvalJs(execution_target ? *execution_target : shell(),
+                  JsReplace(R"(
+    (async function() {
+      try {
+        let data = await navigator.getInterestGroupAdAuctionData({
+          seller: $1
+        });
+        return btoa(String.fromCharCode.apply(null, data));
+      } catch (e) {
+        return e.toString();
+      }
+    })())",
+                            seller))
+        .ExtractString();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       TestEmpty) {
+  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ("", GetInterestGroupAdAuctionData(test_origin));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       TestInvalidSeller) {
+  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
+      "'Navigator': seller 'null' for AdAuctionDataConfig must be a valid "
+      "https origin.",
+      GetInterestGroupAdAuctionData(url::Origin()));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       ChecksPermissionPolicyWarning) {
+  // TODO(behamilton): Merge with
+  // InterestGroupBrowserTest.FeaturesEnabledForAllByPermissionsPolicy once this
+  // feature has been released.
+  GURL test_url = https_server_->GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test("
+      "a.test,"
+      "b.test("
+      "c.test{allow-join-ad-interest-group;run-ad-auction},"
+      "a.test{allow-join-ad-interest-group;run-ad-auction},"
+      "a.test{allow-join-ad-interest-group;run-ad-auction}"
+      ")"
+      ")");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* same_origin_iframe = ChildFrameAt(main_frame, 0);
+  RenderFrameHost* cross_origin_iframe = ChildFrameAt(main_frame, 1);
+  RenderFrameHost* inner_cross_origin_iframe =
+      ChildFrameAt(cross_origin_iframe, 0);
+  RenderFrameHost* same_origin_iframe_in_cross_origin_iframe =
+      ChildFrameAt(cross_origin_iframe, 1);
+  RenderFrameHost* same_origin_iframe_in_cross_origin_iframe2 =
+      ChildFrameAt(cross_origin_iframe, 2);
+
+  RenderFrameHost* execution_targets[] = {
+      main_frame,
+      same_origin_iframe,
+      cross_origin_iframe,
+      inner_cross_origin_iframe,
+      same_origin_iframe_in_cross_origin_iframe,
+      same_origin_iframe_in_cross_origin_iframe2};
+
+  for (auto* execution_target : execution_targets) {
+    SCOPED_TRACE(execution_target->GetLastCommittedURL().spec());
+    WebContentsConsoleObserver console_observer(shell()->web_contents());
+    console_observer.SetPattern(WarningPermissionsPolicy("*", "*"));
+
+    EXPECT_EQ("", GetInterestGroupAdAuctionData(test_origin, execution_target));
+#if BUILDFLAG(IS_ANDROID)
+    RenderFrameHost* execution_targets_with_message[] = {cross_origin_iframe};
+#else
+    RenderFrameHost* execution_targets_with_message[] = {
+        cross_origin_iframe, inner_cross_origin_iframe,
+        same_origin_iframe_in_cross_origin_iframe};
+#endif  // BUILDFLAG(IS_ANDROID)
+    if (base::Contains(execution_targets_with_message, execution_target)) {
+      EXPECT_EQ(WarningPermissionsPolicy("run-ad-auction",
+                                         "getInterestGroupAdAuctionData"),
+                console_observer.GetMessageAt(0));
+    } else {
+      EXPECT_TRUE(console_observer.messages().empty());
+    }
+  }
+}
+
+class InterestGroupBiddingAndAuctionServerRestrictedPermissionsPolicyBrowserTest
+    : public InterestGroupBiddingAndAuctionServerBrowserTest {
+ public:
+  InterestGroupBiddingAndAuctionServerRestrictedPermissionsPolicyBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBiddingAndAuctionServerRestrictedPermissionsPolicyBrowserTest,
+    ChecksPermissionPolicyEnforce) {
+  // TODO(behamilton): Merge with
+  // InterestGroupBrowserTest.EnabledByPermissionsPolicy once this feature has
+  // been released.
+  GURL test_url = https_server_->GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test("
+      "a.test,"
+      "b.test("
+      "c.test{allow-join-ad-interest-group;run-ad-auction},"
+      "a.test{allow-join-ad-interest-group;run-ad-auction},"
+      "a.test{allow-join-ad-interest-group;run-ad-auction}"
+      ")"
+      ")");
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* same_origin_iframe = ChildFrameAt(main_frame, 0);
+  RenderFrameHost* cross_origin_iframe = ChildFrameAt(main_frame, 1);
+  RenderFrameHost* inner_cross_origin_iframe =
+      ChildFrameAt(cross_origin_iframe, 0);
+  RenderFrameHost* same_origin_iframe_in_cross_origin_iframe =
+      ChildFrameAt(cross_origin_iframe, 1);
+  RenderFrameHost* same_origin_iframe_in_cross_origin_iframe2 =
+      ChildFrameAt(cross_origin_iframe, 2);
+
+  RenderFrameHost* execution_targets[] = {
+      main_frame,
+      same_origin_iframe,
+      cross_origin_iframe,
+      inner_cross_origin_iframe,
+      same_origin_iframe_in_cross_origin_iframe,
+      same_origin_iframe_in_cross_origin_iframe2};
+
+  for (auto* execution_target : execution_targets) {
+    SCOPED_TRACE(execution_target->GetLastCommittedURL().spec());
+    RenderFrameHost* execution_targets_with_message[] = {
+        cross_origin_iframe, inner_cross_origin_iframe,
+        same_origin_iframe_in_cross_origin_iframe,
+        same_origin_iframe_in_cross_origin_iframe2};
+    if (base::Contains(execution_targets_with_message, execution_target)) {
+      EXPECT_EQ(
+          "NotAllowedError: Failed to execute 'getInterestGroupAdAuctionData' "
+          "on 'Navigator': "
+          "Feature run-ad-auction is not enabled by Permissions Policy",
+          GetInterestGroupAdAuctionData(test_origin, execution_target));
+    } else {
+      EXPECT_EQ("",
+                GetInterestGroupAdAuctionData(test_origin, execution_target));
+    }
+  }
+}
+
 }  // namespace
 
 }  // namespace content
