@@ -673,13 +673,6 @@ skia_source_set("skia_core_and_effects") {
 }
 
 # Bits that involve special vector-y hardware.
-if (current_cpu == "arm64") {
-  skia_source_set("skia_opts_crc32") {
-    sources = skia_opts.crc32_sources
-    cflags = [ "-march=armv8-a+crc" ]
-    visibility = [ ":skia_opts" ]
-  }
-}
 if (current_cpu == "x86" || current_cpu == "x64") {
   skia_source_set("skia_opts_sse3") {
     sources = skia_opts.ssse3_sources
@@ -688,16 +681,6 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     }
     if (is_win) {
       defines = [ "SK_CPU_SSE_LEVEL=31" ]
-    }
-    visibility = [ ":skia_opts" ]
-  }
-  skia_source_set("skia_opts_sse42") {
-    sources = skia_opts.sse42_sources
-    if (!is_win || is_clang) {
-      cflags = [ "-msse4.2" ]
-    }
-    if (is_win) {
-      defines = [ "SK_CPU_SSE_LEVEL=42" ]
     }
     visibility = [ ":skia_opts" ]
   }
@@ -751,7 +734,6 @@ skia_source_set("skia_opts") {
       ":skia_opts_hsw",
       ":skia_opts_skx",
       ":skia_opts_sse3",
-      ":skia_opts_sse42",
     ]
   } else if (current_cpu == "arm") {
     # The assembly uses the frame pointer register (r7 in Thumb/r11 in
@@ -771,7 +753,7 @@ skia_source_set("skia_opts") {
       }
     }
   } else if (current_cpu == "arm64") {
-    deps += [ ":skia_opts_crc32" ]
+    # Conditional and empty body needed to avoid assert() below.
   } else if (current_cpu == "mipsel") {
     cflags += [ "-fomit-frame-pointer" ]
   } else if (current_cpu == "mips64el") {
