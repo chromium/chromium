@@ -112,6 +112,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
       l10n_util::GetStringFUTF16(IDS_SHARE_THIS_TAB_DIALOG_TITLE, app_name_));
   // TODO(crbug.com/1448008): Prevent non-initial focus of the title label.
   title_label->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  SetInitiallyFocusedView(title_label);
 
   views::Label* description_label =
       AddChildView(std::make_unique<views::Label>());
@@ -165,6 +166,10 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_ALLOW));
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+
+  // Simply pressing ENTER without tab-key navigating to the button
+  // must not accept the dialog, or else that'd be a security issue.
+  SetDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE);
 }
 
 ShareThisTabDialogView::~ShareThisTabDialogView() = default;
