@@ -32,7 +32,7 @@ export function uuidv4(): `${string}-${string}-${string}-${string}-${string}` {
   }
 
   const randomValues = new Uint8Array(16);
-  self.crypto.getRandomValues(randomValues);
+  crypto.getRandomValues(randomValues);
 
   // Set version (4) and variant (RFC4122) bits.
   randomValues[6] = (randomValues[6]! & 0x0f) | 0x40;
