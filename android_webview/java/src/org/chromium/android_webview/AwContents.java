@@ -2550,6 +2550,9 @@ public class AwContents implements SmartClipProvider {
      */
     public void goBackOrForward(int steps) {
         if (TRACE) Log.i(TAG, "%s goBackOrForward=%d", this, steps);
+        if (!canGoBackOrForward(steps)) {
+            return;
+        }
         if (!isDestroyed(WARN)) mNavigationController.goToOffset(steps);
     }
 
