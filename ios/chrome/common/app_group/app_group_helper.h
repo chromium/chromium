@@ -20,6 +20,9 @@
 // [NSUserDefaults standardUserDefaults].
 + (NSUserDefaults*)groupUserDefaults;
 
+// Directory containing the favicons to be used by widgets.
++ (NSURL*)widgetsFaviconsFolder;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_HELPER_H_

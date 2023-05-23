@@ -55,6 +55,8 @@ NSString* const kWidgetKitHostDinoGameWidget = @"dino-game-widget";
 // Host used to identify the Lockscreen Launcher widget.
 NSString* const kWidgetKitHostLockscreenLauncherWidget =
     @"lockscreen-launcher-widget";
+// Host used to identify the Chrome Shortcuts widget.
+NSString* const kWidgetKitHostShortcutsWidget = @"shortcuts-widget";
 // Path for search action.
 NSString* const kWidgetKitActionSearch = @"/search";
 // Path for incognito action.
@@ -67,6 +69,8 @@ NSString* const kWidgetKitActionQRReader = @"/qrreader";
 NSString* const kWidgetKitActionLens = @"/lens";
 // Path for Game action.
 NSString* const kWidgetKitActionGame = @"/game";
+// Path for open URL action.
+NSString* const kWidgetKitActionOpenURL = @"/open";
 
 const CGFloat kAppGroupTriggersVoiceSearchTimeout = 15.0;
 
@@ -218,6 +222,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       command = app_group::kChromeAppGroupQRScannerCommand;
     } else if ([completeURL.path isEqualToString:kWidgetKitActionLens]) {
       command = app_group::kChromeAppGroupLensCommand;
+    } else if ([completeURL.path isEqual:kWidgetKitActionOpenURL]) {
+      command = app_group::kChromeAppGroupOpenURLCommand;
     } else if ([completeURL.path isEqualToString:kWidgetKitActionGame]) {
       if ([sourceWidget isEqualToString:kWidgetKitHostDinoGameWidget]) {
         LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
@@ -660,7 +666,6 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         break;
     }
   }
-
   return params;
 }
 
