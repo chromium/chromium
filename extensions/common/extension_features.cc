@@ -109,6 +109,12 @@ BASE_FEATURE(kForceWebRequestProxyForTest,
              "ForceWebRequestProxyForTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Launches Native Host executables directly on Windows rather than using a
+// cmd.exe process as a proxy.
+BASE_FEATURE(kLaunchWindowsNativeHostsDirectly,
+             "LaunchWindowsNativeHostsDirectly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether extensions can use the new favicon fetching in Manifest V3.
 BASE_FEATURE(kNewExtensionFaviconHandling,
              "ExtensionsNewFaviconHandling",

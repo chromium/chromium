@@ -69,6 +69,8 @@ BASE_DECLARE_FEATURE(kExtensionsMenuAccessControlWithPermittedSites);
 
 BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 
+BASE_DECLARE_FEATURE(kLaunchWindowsNativeHostsDirectly);
+
 BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
 
 BASE_DECLARE_FEATURE(kNewWebstoreDomain);

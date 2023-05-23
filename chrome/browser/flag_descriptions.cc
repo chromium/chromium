@@ -4886,6 +4886,13 @@ const char kUseWinrtMidiApiDescription[] =
     "Use Windows Runtime MIDI API for WebMIDI (effective only on Windows 10 or "
     "later).";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+const char kLaunchWindowsNativeHostsDirectlyName[] =
+    "Force Native Host Executables to Launch Directly";
+const char kLaunchWindowsNativeHostsDirectlyDescription[] =
+    "Force Native Host executables to launch directly via CreateProcess.";
+#endif  // ENABLE_EXTENSIONS
+
 #if BUILDFLAG(ENABLE_PRINTING)
 const char kPrintWithPostScriptType42FontsName[] =
     "Print with PostScript Type 42 fonts";

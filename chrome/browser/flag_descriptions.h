@@ -2795,6 +2795,11 @@ extern const char kUseWaitableSwapChainDescription[];
 extern const char kUseWinrtMidiApiName[];
 extern const char kUseWinrtMidiApiDescription[];
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+extern const char kLaunchWindowsNativeHostsDirectlyName[];
+extern const char kLaunchWindowsNativeHostsDirectlyDescription[];
+#endif  // ENABLE_EXTENSIONS
+
 #if BUILDFLAG(ENABLE_PRINTING)
 extern const char kPrintWithPostScriptType42FontsName[];
 extern const char kPrintWithPostScriptType42FontsDescription[];

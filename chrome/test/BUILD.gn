@@ -3342,6 +3342,12 @@ if (!is_android) {
         "../browser/user_bypass/user_bypass_web_contents_observer_browsertest.cc",
       ]
 
+      if (is_win) {
+        data_deps += [
+          "//chrome/browser/extensions/api:native_messaging_test_echo_&_host",
+        ]
+      }
+
       if (is_chromeos_ash && enable_extensions) {
         deps +=
             [ "//chromeos/ash/components/network/portal_detector:test_support" ]

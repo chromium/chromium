@@ -9097,6 +9097,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionWebFileHandlersDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(extensions_features::kExtensionWebFileHandlers)},
 #endif  // IS_CHROMEOS_ASH
+#if BUILDFLAG(IS_WIN)
+    {"launch-windows-native-hosts-directly",
+     flag_descriptions::kLaunchWindowsNativeHostsDirectlyName,
+     flag_descriptions::kLaunchWindowsNativeHostsDirectlyDescription, kOsWin,
+     FEATURE_VALUE_TYPE(
+         extensions_features::kLaunchWindowsNativeHostsDirectly)},
+#endif  // IS_WIN
 #endif  // ENABLE_EXTENSIONS
 
     {"canvas-oop-rasterization", flag_descriptions::kCanvasOopRasterizationName,

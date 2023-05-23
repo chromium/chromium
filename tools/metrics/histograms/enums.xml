@@ -60080,6 +60080,7 @@ from previous Chrome versions.
       label="DesktopPWAsMigrationUserDisplayModeCleanUp:enabled"/>
   <int value="-1408869905"
       label="AutofillEnforceMinRequiredFieldsForQuery:disabled"/>
+  <int value="-1408800976" label="LaunchWindowsNativeHostsDirectly:enabled"/>
   <int value="-1408696172" label="CompositeBGColorAnimation:enabled"/>
   <int value="-1408370474" label="AssistantRoutines:enabled"/>
   <int value="-1408288176" label="enable-account-consistency"/>
@@ -61190,6 +61191,7 @@ from previous Chrome versions.
   <int value="-832561975" label="enable-picture-in-picture"/>
   <int value="-832154680"
       label="AutofillEnforceDelaysInStrikeDatabase:enabled"/>
+  <int value="-832058463" label="LaunchWindowsNativeHostsDirectly:disabled"/>
   <int value="-831855839"
       label="DeprecateOldKeyboardShortcutsAccelerator:enabled"/>
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
