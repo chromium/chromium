@@ -366,6 +366,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 #pragma mark - SetUpListViewDelegate
 
 - (void)didSelectSetUpListItem:(SetUpListItemType)type {
+  [self.contentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
   switch (type) {
     case SetUpListItemType::kSignInSync:
       [self showSignIn];

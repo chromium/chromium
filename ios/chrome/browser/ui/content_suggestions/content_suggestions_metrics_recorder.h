@@ -16,6 +16,7 @@ class WebState;
 typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 
 @class ContentSuggestionsMostVisitedItem;
+enum class SetUpListItemType;
 
 // Metrics recorder for the content suggestions.
 @interface ContentSuggestionsMetricsRecorder : NSObject
@@ -46,6 +47,15 @@ typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 
 // Logs a most visited tile being removed.
 - (void)recordMostVisitedTileRemoved;
+
+// Logs the Set Up List being shown.
+- (void)recordSetUpListShown;
+
+// Logs a Set Up List item being shown.
+- (void)recordSetUpListItemShown:(SetUpListItemType)type;
+
+// Logs a Set Up List item being selected.
+- (void)recordSetUpListItemSelected:(SetUpListItemType)type;
 
 @end
 

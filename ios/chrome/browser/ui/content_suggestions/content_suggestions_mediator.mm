@@ -303,7 +303,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
   if ([self shouldShowSetUpList]) {
     self.setUpList.delegate = self;
-    [self.consumer showSetUpListWithItems:[self setUpListItems]];
+    NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
+    [self.consumer showSetUpListWithItems:items];
+    [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
+    for (SetUpListItemViewData* item in items) {
+      [self.contentSuggestionsMetricsRecorder
+          recordSetUpListItemShown:item.type];
+    }
   }
   // Show Shortcuts if the Tile Ablation is not enabled and either:
   // 1) Magic Stack is enabled (always show shortcuts in Magic Stack).

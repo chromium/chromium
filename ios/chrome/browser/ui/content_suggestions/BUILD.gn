@@ -154,6 +154,8 @@ source_set("metrics") {
     "//components/favicon_base",
     "//components/ntp_tiles",
     "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/ntp:set_up_list_item_type",
+    "//ios/chrome/browser/ntp:set_up_list_metrics",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/favicon",

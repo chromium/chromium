@@ -2192,6 +2192,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SetUpList.Displayed" enum="Boolean"
+    expires_after="2023-12-01">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    This histogram counts the number of times the Set Up List is shown on the
+    NTP.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SetUpList.ItemCompleted" enum="IOSSetUpListItemType"
+    expires_after="2023-12-01">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    This histogram counts the number of times Set Up List items are completed.
+    It is recorded when the Set Up List item is marked complete in prefs, or
+    when Set Up List is loaded and the code detects that an item was completed
+    since the last time Set Up List was displayed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SetUpList.ItemDisplayed" enum="IOSSetUpListItemType"
+    expires_after="2023-12-01">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    This histogram counts the number of times Set Up List items are displayed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SetUpList.ItemSelected" enum="IOSSetUpListItemType"
+    expires_after="2023-12-01">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    This histogram counts the number of times Set Up List items are selected.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ShareExtension.ReceivedEntriesCount" units="files"
     expires_after="2023-10-04">
   <owner>olivierrobin@chromium.org</owner>

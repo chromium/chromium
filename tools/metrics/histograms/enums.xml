@@ -54560,6 +54560,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="6" label="Migrated Multi Scenes to Single Scene"/>
 </enum>
 
+<enum name="IOSSetUpListItemType">
+  <int value="1" label="SignIn Sync"/>
+  <int value="2" label="Default Browser"/>
+  <int value="3" label="Autofill"/>
+  <int value="4" label="Follow"/>
+</enum>
+
 <enum name="IOSShareAction">
   <int value="0" label="Unknown"/>
   <int value="1" label="Cancel"/>
