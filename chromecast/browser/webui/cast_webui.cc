@@ -69,7 +69,7 @@ void CastWebUI::RegisterMessageCallback(
 }
 
 void CastWebUI::CallJavascriptFunction(const std::string& function,
-                                       std::vector<base::Value> args) {
+                                       base::Value::List args) {
   message_handler_->CallJavascriptFunction(
       function, std::vector<const base::ValueView>(args.begin(), args.end()));
 }
