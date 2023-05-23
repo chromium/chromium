@@ -715,6 +715,11 @@ class IdlCompiler(object):
                         key='Measure',
                         values=ext_attrs.value_of(
                             'LegacyWindowAlias_Measure')))
+            if 'LegacyWindowAlias_MeasureAs' in ext_attrs:
+                extended_attributes.append(
+                    ExtendedAttribute(key='MeasureAs',
+                                      values=ext_attrs.value_of(
+                                          'LegacyWindowAlias_MeasureAs')))
             if 'LegacyWindowAlias_RuntimeEnabled' in ext_attrs:
                 feature_name = ext_attrs.value_of(
                     'LegacyWindowAlias_RuntimeEnabled')
