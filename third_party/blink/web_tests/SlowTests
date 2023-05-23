@@ -348,7 +348,9 @@ crbug.com/1081534 [ Mac11 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-com
 crbug.com/1081534 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Slow ]
 crbug.com/1081534 [ Debug Mac12 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
 crbug.com/1081534 [ Mac10.14 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
-crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [ Slow ]
+crbug.com/1081534 [ Debug Mac12 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [ Slow ]
+crbug.com/1081534 [ Debug Mac13 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [ Slow ]
+crbug.com/1081534 [ Mac10.14 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [ Slow ]
 crbug.com/1081534 [ Debug Mac12 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-image.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-pattern.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
@@ -363,7 +365,6 @@ crbug.com/1302791 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-imag
 
 # Slow canvas tests
 crbug.com/1205133 virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Slow ]
-crbug.com/1243943 [ Debug Mac12 ] virtual/gpu/fast/canvas/canvas-blending-transforms.html [ Slow ]
 crbug.com/1312081 [ Linux ] virtual/gpu/fast/canvas/canvas-blend-solid.html [ Slow ]
 
 
@@ -1034,7 +1035,6 @@ crbug.com/869364 [ Mac10.15 Release ] http/tests/devtools/console/console-correc
 crbug.com/869364 [ Mac11 Release ] http/tests/devtools/console/console-correct-suggestions.js [ Slow ]
 crbug.com/869364 [ Mac12 ] http/tests/devtools/console/console-correct-suggestions.js [ Slow ]
 crbug.com/869364 [ Release Win ] http/tests/devtools/console/console-correct-suggestions.js [ Slow ]
-crbug.com/886566 [ Debug Mac13-arm64 ] http/tests/csspaint/invalidation-background-image.html [ Slow ]
 crbug.com/886566 [ Mac10.15 Release ] http/tests/csspaint/invalidation-background-image.html [ Slow ]
 crbug.com/886566 [ Mac11 Release ] http/tests/csspaint/invalidation-background-image.html [ Slow ]
 crbug.com/886566 [ Mac12 ] http/tests/csspaint/invalidation-background-image.html [ Slow ]
