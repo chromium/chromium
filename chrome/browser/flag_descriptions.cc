@@ -2808,6 +2808,11 @@ const char kRoundedDisplay[] = "Rounded display";
 const char kRoundedDisplayDescription[] =
     "Enables rounded corners for the display";
 
+const char kRoundedWindows[] = "Use rounded windows";
+const char kRoundedWindowsDescription[] =
+    "Specifies the radius of rounded windows in DIPs (Device Independent "
+    "Pixels)";
+
 const char kMBIModeName[] = "MBI Scheduling Mode";
 const char kMBIModeDescription[] =
     "Enables independent agent cluster scheduling, via the "

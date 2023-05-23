@@ -5,6 +5,7 @@
 #include "chromeos/constants/chromeos_features.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
@@ -95,6 +96,12 @@ bool IsClipboardHistoryRefreshEnabled() {
 #endif
 }
 
+BASE_FEATURE(kRoundedWindows,
+             "RoundedWindows",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kRoundedWindowsRadius[] = "window_radius";
+
 bool IsCloudGamingDeviceEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsCloudGamingDevice();
@@ -135,6 +142,21 @@ bool IsUploadOfficeToCloudEnabled() {
 #else
   return base::FeatureList::IsEnabled(kUploadOfficeToCloud);
 #endif
+}
+
+bool IsRoundedWindowsEnabled() {
+  // Rounded windows are under the Jelly feature.
+  return base::FeatureList::IsEnabled(kRoundedWindows) &&
+         base::FeatureList::IsEnabled(kJelly);
+}
+
+int RoundedWindowsRadiusInDip() {
+  if (!IsRoundedWindowsEnabled()) {
+    return 0;
+  }
+
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kRoundedWindows, kRoundedWindowsRadius, /*default_value=*/8);
 }
 
 }  // namespace chromeos::features

@@ -1582,6 +1582,9 @@ extern const char kRestrictGamepadAccessDescription[];
 extern const char kRoundedDisplay[];
 extern const char kRoundedDisplayDescription[];
 
+extern const char kRoundedWindows[];
+extern const char kRoundedWindowsDescription[];
+
 extern const char kMBIModeName[];
 extern const char kMBIModeDescription[];
 

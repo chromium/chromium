@@ -6616,6 +6616,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "rounded-windows",
+    "owners": [
+      "zoraiznaeem",
+      "chromeos-foundations@google.com"
+    ],
+    "expiry_milestone": 117
+  },
+  {
     "name": "run-video-capture-service-in-browser",
     "owners": [ "agpalak", "herre" ],
     "expiry_milestone": 120

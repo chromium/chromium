@@ -61638,6 +61638,7 @@ from previous Chrome versions.
   <int value="-593536514" label="ExperimentalTabController:enabled"/>
   <int value="-593079381" label="component-updater"/>
   <int value="-592628080" label="DnsProxyEnableDOH:disabled"/>
+  <int value="-592148755" label="RoundedWindows:enabled"/>
   <int value="-591874964" label="LiteVideo:enabled"/>
   <int value="-591219096" label="SystemChinesePhysicalTyping:enabled"/>
   <int value="-589096918" label="ash-enable-fullscreen-app-list"/>
@@ -64291,6 +64292,7 @@ from previous Chrome versions.
   <int value="836406476" label="EnableTouchableAppContextMenu:enabled"/>
   <int value="837350465" label="SystemProxyForSystemServices:enabled"/>
   <int value="838887742" label="manual-enhanced-bookmarks"/>
+  <int value="838944327" label="RoundedWindows:disabled"/>
   <int value="839230937" label="AutofillEnableCardNicknameUpstream:disabled"/>
   <int value="839798268" label="SafeBrowsingTelemetryForApkDownloads:disabled"/>
   <int value="840057845" label="HardwareMediaKeyHandling:enabled"/>
