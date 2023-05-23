@@ -29,8 +29,4 @@ void ColorProviderSource::NotifyColorProviderChanged() {
     observer.OnColorProviderChanged();
 }
 
-absl::optional<SkColor> ColorProviderSource::GetUserColor() const {
-  return absl::nullopt;
-}
-
 }  // namespace ui
