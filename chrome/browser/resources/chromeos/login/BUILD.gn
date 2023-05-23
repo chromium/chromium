@@ -216,6 +216,7 @@ preprocess_if_expr("preprocess_unconditional_existing") {
     "display_manager.js",
     "install_oobe_error_store.js",
     "i18n_setup.js",
+    "lazy_load_screens.js",
     "login_ui_tools.js",
     "multi_tap_detector.js",
     "oobe.css",
@@ -225,6 +226,7 @@ preprocess_if_expr("preprocess_unconditional_existing") {
     "oobe_screen.css",
     "oobe_trace.js",
     "oobe_trace_start.js",
+    "priority_screens_oobe_flow.js",
     "screens.js",
   ]
 }

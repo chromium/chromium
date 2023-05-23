@@ -1651,6 +1651,11 @@ BASE_FEATURE(kOobeHidDetectionRevamp,
 // Enables OOBE Jelly features.
 BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables lazy loading in OOBE's WebUI by prioritizing the first screen.n.
+BASE_FEATURE(kOobeLazyLoading,
+             "OobeLazyLoading",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables OOBE Simon features.
 BASE_FEATURE(kFeatureManagementOobeSimon,
              "FeatureManagementOobeSimon",
@@ -3238,6 +3243,11 @@ bool IsOobeDrivePinningEnabled() {
 bool IsOobeSoftwareUpdateEnabled() {
   return base::FeatureList::IsEnabled(kOobeSoftwareUpdate);
 }
+
+bool IsOobeLazyLoadingEnabled() {
+  return base::FeatureList::IsEnabled(kOobeLazyLoading);
+}
+
 
 bool IsOobeQuickStartEnabled() {
   return base::FeatureList::IsEnabled(kOobeQuickStart);

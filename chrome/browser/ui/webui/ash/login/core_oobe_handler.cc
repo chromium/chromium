@@ -65,6 +65,8 @@ void CoreOobeHandler::DeclareJSCallbacks() {
               &CoreOobeHandler::HandleInitializeCoreHandler);
   AddCallback("screenStateInitialize",
               &CoreOobeHandler::HandleScreenStateInitialize);
+  AddCallback("priorityScreensLoaded",
+              &CoreOobeHandler::HandlePrriorityScreensLoaded);
 
   AddCallback("updateCurrentScreen",
               &CoreOobeHandler::HandleUpdateCurrentScreen);
@@ -92,7 +94,10 @@ ui::EventSink* CoreOobeHandler::GetEventSink() {
 void CoreOobeHandler::ShowScreenWithData(
     const OobeScreenId& screen,
     absl::optional<base::Value::Dict> data) {
-  CHECK(ui_init_state_ == UiState::kFullyInitialized);
+  const bool is_safe_priority_call =
+      IsPriorityScreen(screen.name) &&
+      ui_init_state_ == UiState::kPriorityScreensLoaded;
+  CHECK(ui_init_state_ == UiState::kFullyInitialized || is_safe_priority_call);
 
   base::Value::Dict screen_params;
   screen_params.Set("id", screen.name);
@@ -164,6 +169,16 @@ void CoreOobeHandler::SetBluetoothDeviceInfo(
   CallJS("cr.ui.Oobe.setBluetoothDeviceInfo", bluetooth_name);
 }
 
+bool CoreOobeHandler::IsPriorityScreen(const std::string& screen_name) {
+  // List of screens that are supported for prioritization. Currently, only the
+  // Welcome Screen ('connect') is supported.
+  const std::vector<std::string> supported_screens{"connect"};
+
+  const auto iter = std::find(supported_screens.begin(),
+                              supported_screens.end(), screen_name);
+  return iter != supported_screens.end();
+}
+
 void CoreOobeHandler::HandleInitializeCoreHandler() {
   VLOG(3) << "CoreOobeHandler::HandleInitializeCoreHandler";
   CHECK(ui_init_state_ == UiState::kUninitialized);
@@ -173,9 +188,17 @@ void CoreOobeHandler::HandleInitializeCoreHandler() {
       UiState::kCoreHandlerInitialized);
 }
 
+void CoreOobeHandler::HandlePrriorityScreensLoaded() {
+  VLOG(3) << "CoreOobeHandler::HandlePrriorityScreensLoaded";
+  CHECK(ui_init_state_ == UiState::kCoreHandlerInitialized);
+  ui_init_state_ = UiState::kPriorityScreensLoaded;
+  GetOobeUI()->GetCoreOobe()->UpdateUiInitState(
+      UiState::kPriorityScreensLoaded);
+}
+
 void CoreOobeHandler::HandleScreenStateInitialize() {
   VLOG(3) << "CoreOobeHandler::HandleScreenStateInitialize";
-  CHECK(ui_init_state_ == UiState::kCoreHandlerInitialized);
+  CHECK(ui_init_state_ == UiState::kPriorityScreensLoaded);
   ui_init_state_ = UiState::kFullyInitialized;
   GetOobeUI()->GetCoreOobe()->UpdateUiInitState(UiState::kFullyInitialized);
 }
