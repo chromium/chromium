@@ -159,6 +159,8 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock);
 
+  void SetRefreshFrameCallbackForTesting(RefreshFrameCallback* rrf_callback);
+
   base::WeakPtr<Core> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
@@ -256,19 +258,19 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
   int max_cpu_consumption_percentage_;
 
   // True when waiting for |desktop_capturer_| to capture current frame.
-  bool capture_in_progress_;
+  bool capture_in_progress_ = false;
 
   // True when waiting for |desktop_capturer_| to capture current frame as a
   // response to refresh frame request.
-  bool refresh_in_progress_;
+  bool refresh_in_progress_ = false;
 
   // True if the first capture call has returned. Used to log the first capture
   // result.
-  bool first_capture_returned_;
+  bool first_capture_returned_ = false;
 
   // True if the first capture permanent error has been logged. Used to log the
   // first capture permanent error.
-  bool first_permanent_error_logged;
+  bool first_permanent_error_logged = false;
 
   // The type of the capturer.
   DesktopMediaID::Type capturer_type_;
@@ -284,10 +286,12 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
 
   // The time when Core::CaptureFrame() is called. Used to derive the delta
   // time since last call. The delta time then drives the frame-rate filter
-  // which results in an average capture frame rate in `frame_rate_`.
+  // which results in an average capture frame rate in `frame_ra>e_`.
   base::TimeTicks last_capture_time_;
 
   std::unique_ptr<webrtc::BasicDesktopFrame> black_frame_;
+
+  raw_ptr<RefreshFrameCallback> rrf_callback_ = nullptr;
 
   // TODO(jiayl): Remove wake_lock_ when there is an API to keep the
   // screen from sleeping for the drive-by web.
@@ -404,6 +408,14 @@ void DesktopCaptureDevice::Core::SetMockTimeForTesting(
   tick_clock_ = tick_clock;
   capture_timer_ = std::make_unique<base::OneShotTimer>(tick_clock_);
   capture_timer_->SetTaskRunner(task_runner);
+  request_refresh_frame_timer_ =
+      std::make_unique<base::OneShotTimer>(tick_clock_);
+  request_refresh_frame_timer_->SetTaskRunner(task_runner);
+}
+
+void DesktopCaptureDevice::Core::SetRefreshFrameCallbackForTesting(
+    RefreshFrameCallback* rrf_callback) {
+  rrf_callback_ = rrf_callback;
 }
 
 void DesktopCaptureDevice::Core::OnCaptureResult(
@@ -597,6 +609,10 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
       frame_color_space, 0 /* clockwise_rotation */, false /* flip_y */, now,
       now - first_ref_time_);
 
+  if (rrf_callback_ && frame_is_refresh) {
+    rrf_callback_->OnCaptureFrameIsRefresh();
+  }
+
   ScheduleNextCaptureFrame();
 }
 
@@ -612,7 +628,6 @@ void DesktopCaptureDevice::Core::OnCaptureTimer() {
 
 void DesktopCaptureDevice::Core::OnRequestRefreshFrameTimer() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DVLOG(2) << __func__;
 
   if (!client_) {
     return;
@@ -638,8 +653,14 @@ void DesktopCaptureDevice::Core::CaptureFrame(bool is_refresh_frame) {
     // frame the default way. The following is a no-op, if the timer was not
     // running.
     request_refresh_frame_timer_->Stop();
+    capture_in_progress_ = true;
   } else {
     refresh_in_progress_ = true;
+    // Cancel any outstanding default capture attempts since we know that a
+    // request frame is about to be captured. If we don't do this there is a
+    // risk that the pending default capture event triggers back-to-back with
+    // the RRF and that can cause a spike in the frame rate.
+    capture_timer_->Stop();
   }
 
   if (last_capture_time_.is_null()) {
@@ -882,7 +903,12 @@ DesktopCaptureDevice::DesktopCaptureDevice(
 void DesktopCaptureDevice::SetMockTimeForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* tick_clock) {
-  core_->SetMockTimeForTesting(task_runner, tick_clock);
+  core_->SetMockTimeForTesting(task_runner, tick_clock);  // IN-TEST
+}
+
+void DesktopCaptureDevice::SetRefreshFrameCallbackForTesting(
+    RefreshFrameCallback* rrf_callback) {
+  core_->SetRefreshFrameCallbackForTesting(rrf_callback);  // IN-TEST
 }
 
 }  // namespace content
