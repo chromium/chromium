@@ -73,6 +73,7 @@
 /chromevox/third_party/sre/src
 /chromite
 /crossbench
+/clang_format/script
 /cld_2/src
 /cld_3/src
 /colorama/src

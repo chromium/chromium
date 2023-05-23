@@ -160,7 +160,7 @@ We have an emacs module,
 which adds c-mode formatting. Then add to your .emacs:
 
 ```el
-(load "/<path/to/chromium>/src/buildtools/clang_format/script/clang-format.el")
+(load "/<path/to/chromium>/src/third_party/clang_format/script/clang-format.el")
 (add-hook 'c-mode-common-hook
     (function (lambda () (local-set-key (kbd "TAB") 'clang-format-region))))
 ```

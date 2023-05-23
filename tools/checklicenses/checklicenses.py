@@ -209,8 +209,13 @@ PATH_SPECIFIC_ALLOWLISTED_LICENSES = {
         'UNKNOWN',
     ],
 
+    # TODO(crbug.com/1447924): remove buildtools path
     # http://crbug.com/333508
     'buildtools/clang_format/script': [
+        'UNKNOWN',
+    ],
+    # http://crbug.com/333508
+    'third_party/clang_format/script': [
         'UNKNOWN',
     ],
     'third_party/devscripts': [
