@@ -912,7 +912,8 @@ std::u16string Substitute(const std::u16string& s,
   return result;
 }
 
-// All ServerFieldTypes stored for an AutofillProfile in `kContactInfoTable`.
+// All ServerFieldTypes stored for an AutofillProfile in
+// `GetProfileTypeTokensTable(profile-source)`
 // When introducing a new field type, it suffices to add it here. When removing
 // a field type, removing it from the list suffices (no additional clean-up in
 // the table necessary).
@@ -922,7 +923,7 @@ std::u16string Substitute(const std::u16string& s,
 // - Some supported types (like PHONE_HOME_CITY_CODE) are not stored.
 // - Some non-supported types are stored (usually types that don't have filling
 //   support yet).
-std::vector<ServerFieldType> GetStoredContactInfoTypes() {
+std::vector<ServerFieldType> GetStoredTypesForAutofillProfile() {
   return {COMPANY_NAME,
           NAME_HONORIFIC_PREFIX,
           NAME_FIRST,
@@ -1010,7 +1011,7 @@ bool AddAutofillProfileToTable(sql::Database* db,
   BindAutofillProfileToStatement(profile, modification_date, s);
   if (!s.Run())
     return false;
-  for (ServerFieldType type : GetStoredContactInfoTypes()) {
+  for (ServerFieldType type : GetStoredTypesForAutofillProfile()) {
     if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForLandmark) &&
         type == ADDRESS_HOME_LANDMARK) {

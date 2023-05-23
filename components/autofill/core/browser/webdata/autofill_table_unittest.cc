@@ -172,14 +172,10 @@ class AutofillTableProfileTest
  public:
   void SetUp() override {
     AutofillTableTest::SetUp();
-    if (profile_source() == AutofillProfile::Source::kAccount) {
-      // Only enable support for new setting visible features for kAccount
-      // source.
-      features_.InitWithFeatures(
-          {features::kAutofillEnableSupportForLandmark,
-           features::kAutofillEnableSupportForBetweenStreets},
-          {});
-    }
+    features_.InitWithFeatures(
+        {features::kAutofillEnableSupportForLandmark,
+         features::kAutofillEnableSupportForBetweenStreets},
+        {});
   }
   AutofillProfile::Source profile_source() const { return GetParam(); }
 
@@ -966,17 +962,11 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_PREMISE_NAME, u"Premise", VerificationStatus::kUserVerified);
   ASSERT_EQ(home_profile.GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Street Name");
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForLandmark)) {
-    home_profile.SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_LANDMARK, u"Red tree", VerificationStatus::kObserved);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets)) {
-    home_profile.SetRawInfoWithVerificationStatus(
-        ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva",
-        VerificationStatus::kObserved);
-  }
+  home_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_LANDMARK, u"Red tree", VerificationStatus::kObserved);
+  home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS,
+                                                u"Marcos y Oliva",
+                                                VerificationStatus::kObserved);
 
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   home_profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
@@ -1222,14 +1212,8 @@ TEST_P(AutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90025");
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForLandmark)) {
-    profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForBetweenStreets)) {
-    profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva");
-  }
+  profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
+  profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   profile.SetRawInfoAsInt(BIRTHDATE_DAY, 14);
   profile.SetRawInfoAsInt(BIRTHDATE_MONTH, 3);
