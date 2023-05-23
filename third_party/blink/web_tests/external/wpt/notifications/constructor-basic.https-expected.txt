@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Called the notification constructor with one argument.
+FAIL Constructing a notification without a NotificationOptions defaults to null. assert_equals: Expected null by default expected (object) null but got (boolean) false
+FAIL constructing a notification with a NotificationOptions dictionary correctly sets and reflects the silent attribute. assert_equals: Expected silent to be null when initialized with null. expected (object) null but got (boolean) false
+Harness: the test ran to completion.
+
