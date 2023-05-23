@@ -77,7 +77,9 @@ export const SELECTOR_MAP = {
   panRightButton: '#pan-right',
   photoAspectRatioSettingButton: '#settings-photo-aspect-ratio',
   photoResolutionSettingButton: '#settings-photo-resolution',
+  // TODO(kamchonlathorn): Remove this once its usage in Tast is removed.
   previewExposureTime: '#preview-exposure-time',
+  previewResolution: '#preview-resolution',
   previewVideo: '#preview-video',
   previewViewport: '#preview-viewport',
   ptzResetAllButton: '#ptz-reset-all',
