@@ -491,10 +491,6 @@ void MediaSessionItemProducer::OnSessionBecameInactive(const std::string& id) {
   item_manager_->HideItem(id);
 }
 
-void MediaSessionItemProducer::HideMediaDialog() {
-  item_manager_->HideDialog();
-}
-
 void MediaSessionItemProducer::OnReceivedAudioFocusRequests(
     std::vector<media_session::mojom::AudioFocusRequestStatePtr> sessions) {
   for (auto& session : sessions)
