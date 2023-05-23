@@ -986,7 +986,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.Actions"
-    enum="AppListFederatedActions" expires_after="2023-07-01">
+    enum="AppListFederatedActions" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -1009,7 +1009,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.InitStatus"
-    enum="AppListFederatedInitStatus" expires_after="2023-07-01">
+    enum="AppListFederatedInitStatus" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -1019,7 +1019,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.ReportStatus"
-    enum="AppListFederatedReportStatus" expires_after="2023-07-01">
+    enum="AppListFederatedReportStatus" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
   <summary>
@@ -1029,7 +1029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Federated.SearchSessionConclusion"
-    enum="AppListFederatedSearchSessionConclusion" expires_after="2023-09-01">
+    enum="AppListFederatedSearchSessionConclusion" expires_after="2024-02-01">
   <owner>amandadeacon@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
