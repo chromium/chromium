@@ -70,7 +70,9 @@ ExternallyManagedAppManager::SynchronizeRequest::SynchronizeRequest(
     : callback(std::move(callback)),
       remaining_install_requests(pending_installs.size()),
       pending_installs(std::move(pending_installs)),
-      remaining_uninstall_requests(remaining_uninstall_requests) {}
+      remaining_uninstall_requests(remaining_uninstall_requests) {
+  CHECK(this->callback);
+}
 
 ExternallyManagedAppManager::SynchronizeRequest::~SynchronizeRequest() =
     default;
@@ -164,6 +166,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
     std::vector<ExternalInstallOptions> desired_apps_install_options,
     ExternalInstallSource install_source,
     SynchronizeCallback callback) {
+  CHECK(callback);
   DCHECK(base::ranges::all_of(
       desired_apps_install_options,
       [&install_source](const ExternalInstallOptions& install_options) {
@@ -494,6 +497,7 @@ base::Value ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
     ExternalInstallSource install_source,
     SynchronizeCallback callback,
     AllAppsLock& lock) {
+  CHECK(callback);
   base::Value::Dict debug_info;
   debug_info.Set("install_source", base::ToString(install_source));
   base::Value::List* desired_installs =
