@@ -220,7 +220,6 @@ Refer to README.md for content description and update process.
  <item id="sigined_exchange_cert_fetcher" added_in_milestone="66" content_hash_code="007c2dac" os_list="linux,windows,chromeos,android" file_path="content/browser/web_package/signed_exchange_cert_fetcher.cc" />
  <item id="signed_in_profile_avatar" added_in_milestone="62" content_hash_code="071dd1bf" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_downloader.cc" />
  <item id="socket_bio_adapter" added_in_milestone="66" content_hash_code="014a4058" os_list="linux,windows,chromeos,android" file_path="net/socket/socket_bio_adapter.cc" />
- <item id="spdy_push_stream" added_in_milestone="67" content_hash_code="042048b5" os_list="linux,windows,chromeos,android" file_path="net/spdy/spdy_session.cc" />
  <item id="spdy_session_control" added_in_milestone="66" content_hash_code="01c6f3f0" os_list="linux,windows,chromeos,android" file_path="net/spdy/spdy_session.cc" />
  <item id="speech_recognition_downstream" added_in_milestone="62" content_hash_code="07323e31" os_list="linux,windows,chromeos" file_path="content/browser/speech/speech_recognition_engine.cc" />
  <item id="speech_recognition_upstream" added_in_milestone="62" content_hash_code="0075966b" os_list="linux,windows,chromeos" file_path="content/browser/speech/speech_recognition_engine.cc" />

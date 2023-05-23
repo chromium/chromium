@@ -937,13 +937,6 @@ class NET_EXPORT SpdySession
   void CompleteStreamRequest(
       const base::WeakPtr<SpdyStreamRequest>& pending_request);
 
-  // Cancel pushed stream with |stream_id|, if still unclaimed.  Identifying a
-  // pushed stream by GURL instead of stream ID could result in incorrect
-  // behavior if a pushed stream was claimed but later another stream was pushed
-  // for the same GURL.
-  // TODO(https://crbug.com/1426477): Remove.
-  void CancelPushedStreamIfUnclaimed(spdy::SpdyStreamId stream_id);
-
   // BufferedSpdyFramerVisitorInterface:
   void OnError(
       http2::Http2DecoderAdapter::SpdyFramerError spdy_framer_error) override;
@@ -1141,11 +1134,6 @@ class NET_EXPORT SpdySession
   // them into a separate ActiveStreamMap, and not deliver network events to
   // them?
   ActiveStreamMap active_streams_;
-
-  // Not owned. |push_delegate_| outlives the session and handles server pushes
-  // received by session.
-  // TODO(https://crbug.com/1426477): Remove.
-  raw_ptr<ServerPushDelegate> push_delegate_;
 
   // Set of all created streams but that have not yet sent any frames.
   //
@@ -1357,11 +1345,6 @@ class NET_EXPORT SpdySession
 
   const bool is_http2_enabled_;
   const bool is_quic_enabled_;
-
-  // TODO(https://crbug.com/1426477): Remove.
-  // If true, accept pushed streams from server.
-  // If false, reset pushed streams immediately.
-  const bool enable_push_;
 
   // True if the server has advertised WebSocket support via
   // spdy::SETTINGS_ENABLE_CONNECT_PROTOCOL, see

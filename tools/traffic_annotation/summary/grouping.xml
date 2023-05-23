@@ -206,7 +206,6 @@ after discussions on the right group.
       <annotation id="reporting"/>
       <annotation id="socket_bio_adapter"/>
       <annotation id="spdy_session_control"/>
-      <annotation id="spdy_push_stream"/>
       <annotation id="websocket_basic_stream"/>
       <annotation id="websocket_stream"/>
       <annotation id="notification_client"/>
