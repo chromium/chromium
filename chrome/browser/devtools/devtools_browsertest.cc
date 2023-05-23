@@ -2683,16 +2683,9 @@ class MockWebUIProvider
 // This tests checks that window is correctly initialized when DevTools is
 // opened while navigation through history with forward and back actions.
 // (crbug.com/627407)
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// Flaky on MAC and lacros https://crbug.com/1443360
-#define MAYBE_TestWindowInitializedOnNavigateBack \
-  DISABLED_TestWindowInitializedOnNavigateBack
-#else
-#define MAYBE_TestWindowInitializedOnNavigateBack \
-  TestWindowInitializedOnNavigateBack
-#endif
+// TODO(https://crbug.com/1443360): Deflake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       MAYBE_TestWindowInitializedOnNavigateBack) {
+                       DISABLED_TestWindowInitializedOnNavigateBack) {
   TestChromeWebUIControllerFactory test_factory;
   content::ScopedWebUIControllerFactoryRegistration factory_registration(
       &test_factory);
