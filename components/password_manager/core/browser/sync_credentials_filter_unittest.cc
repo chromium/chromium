@@ -230,14 +230,15 @@ TEST_P(CredentialsFilterTest, ShouldSave_NotSignedIn) {
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
                   .IsEmpty());
   SetSyncingPasswords(false);
-  // If kEnablePasswordsAccountStorage is enabled, then Chrome shouldn't offer
-  // to save the password for the primary account. If there is no primary
-  // account yet, then the just-signed-in account will *become* the primary
-  // account immediately, so it shouldn't be saved either.
+  // See comments inside ShouldSave() for the justification.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(filter_->ShouldSave(form));
+#else
   if (base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage))
     EXPECT_FALSE(filter_->ShouldSave(form));
   else
     EXPECT_TRUE(filter_->ShouldSave(form));
+#endif
 }
 
 TEST_P(CredentialsFilterTest, ShouldSave_NotSyncCredential) {
