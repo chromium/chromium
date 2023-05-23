@@ -4280,6 +4280,25 @@
             ]
         }
     ],
+    "DesktopOmniboxGrouping": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_NON_ZPS_V2",
+                    "enable_features": [
+                        "OmniboxGroupingFrameworkForNonZPS"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxPerf": [
         {
             "platforms": [
