@@ -87,6 +87,7 @@
       android:label="@string/app_name"
       android:largeHeap="false"
       android:manageSpaceActivity="@string/manage_space_activity"
+      android:memtagMode="async"
       android:multiArch="true"
       android:networkSecurityConfig="@xml/network_security_config"
       android:roundIcon="@drawable/ic_launcher_round"
