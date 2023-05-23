@@ -3557,13 +3557,12 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
   if (add_separator)
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 #if BUILDFLAG(IS_MAC)
-  menu_model_.AddItem(
-      IDC_SEND_TAB_TO_SELF,
-      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF));
+  menu_model_.AddItem(IDC_SEND_TAB_TO_SELF,
+                      l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
 #else
   menu_model_.AddItemWithIcon(
       IDC_SEND_TAB_TO_SELF,
-      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
+      l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
       ui::ImageModel::FromVectorIcon(kLaptopAndSmartphoneIcon));
 #endif
 }

@@ -1947,7 +1947,7 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
 
   menu_contents->InsertItemAt(
       index, IDC_SEND_TAB_TO_SELF,
-      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF));
+      l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
 #if !BUILDFLAG(IS_MAC)
   menu_contents->SetIcon(
       index, ui::ImageModel::FromVectorIcon(kLaptopAndSmartphoneIcon));

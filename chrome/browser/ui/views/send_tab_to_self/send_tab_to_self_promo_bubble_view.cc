@@ -33,7 +33,7 @@ SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
   DCHECK(controller_);
 
   SetShowCloseButton(true);
-  SetTitle(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF);
+  SetTitle(IDS_SEND_TAB_TO_SELF);
 
   auto* provider = ChromeLayoutProvider::Get();
   set_fixed_width(

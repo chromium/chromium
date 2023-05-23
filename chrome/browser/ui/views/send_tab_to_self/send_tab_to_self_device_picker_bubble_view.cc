@@ -77,7 +77,7 @@ bool SendTabToSelfDevicePickerBubbleView::ShouldShowCloseButton() const {
 }
 
 std::u16string SendTabToSelfDevicePickerBubbleView::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF);
+  return l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF);
 }
 
 void SendTabToSelfDevicePickerBubbleView::WindowClosing() {
