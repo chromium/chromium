@@ -12824,6 +12824,21 @@
             ]
         }
     ],
+    "StructuredMetricsService": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableStructuredMetricsService"
+                    ]
+                }
+            ]
+        }
+    ],
     "StylusPointerAdjustment": [
         {
             "platforms": [
