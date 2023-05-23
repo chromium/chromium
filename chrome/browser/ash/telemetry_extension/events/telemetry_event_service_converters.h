@@ -105,10 +105,10 @@ crosapi::mojom::TelemetryExtensionException::Reason Convert(
 cros_healthd::mojom::EventCategoryEnum Convert(
     crosapi::mojom::TelemetryEventCategoryEnum input);
 
-template <class InputT,
-          class OutputT,
+template <class OutputT,
+          class InputT,
           std::enable_if_t<std::is_enum_v<InputT>, bool> = true>
-std::vector<OutputT> Convert(std::vector<InputT> input) {
+std::vector<OutputT> ConvertVector(std::vector<InputT> input) {
   std::vector<OutputT> result;
   for (auto elem : input) {
     result.push_back(Convert(elem));

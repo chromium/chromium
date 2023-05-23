@@ -30,8 +30,8 @@ crosapi::mojom::TelemetryKeyboardInfoPtr UncheckedConvertPtr(
   result->region_code = input->region_code;
   result->number_pad_present = Convert(input->number_pad_present);
   result->top_row_keys =
-      Convert<diagnostics::mojom::TopRowKey,
-              crosapi::mojom::TelemetryKeyboardTopRowKey>(input->top_row_keys);
+      ConvertVector<crosapi::mojom::TelemetryKeyboardTopRowKey>(
+          input->top_row_keys);
   result->top_right_key = Convert(input->top_right_key);
   result->has_assistant_key =
       crosapi::mojom::BoolValue::New(input->has_assistant_key);
