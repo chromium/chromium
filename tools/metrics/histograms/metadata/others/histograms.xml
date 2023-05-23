@@ -4084,10 +4084,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.SourceStoredStatus2"
+<histogram name="Conversions.SourceStoredStatus3"
     enum="ConversionStorageSourceStatus" expires_after="2023-10-08">
+  <owner>tquintanilla@chromium.org</owner>
   <owner>anthonygarant@chromium.org</owner>
-  <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Measures how often sources are stored successfully or rejected and why.

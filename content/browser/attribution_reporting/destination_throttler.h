@@ -25,6 +25,8 @@ namespace content {
 class CONTENT_EXPORT DestinationThrottler {
  public:
   struct Policy {
+    // TODO(tquintanilla): Move these parameters to `AttributionConfig` to align
+    // with other parameters.
     int max_total = 200;
     int max_per_reporting_site = 50;
     base::TimeDelta rate_limit_window = base::Minutes(1);
@@ -58,6 +60,8 @@ class CONTENT_EXPORT DestinationThrottler {
       const attribution_reporting::DestinationSet& destinations,
       const net::SchemefulSite& source_site,
       const net::SchemefulSite& reporting_site);
+
+  int GetMaxPerReportingSite() const { return policy_.max_per_reporting_site; }
 
  private:
   void CleanUpOldEntries();

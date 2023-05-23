@@ -58,6 +58,7 @@
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -184,9 +185,9 @@ bool IsStorageKeySessionOnly(
 
 void RecordStoreSourceStatus(StoreSourceResult result) {
   static_assert(StorableSource::Result::kMaxValue ==
-                    StorableSource::Result::kSuccessNoised,
-                "Bump version of Conversions.SourceStoredStatus2 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus2",
+                    StorableSource::Result::kDestinationBothLimitsReached,
+                "Bump version of Conversions.SourceStoredStatus3 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus3",
                                 result.status);
 }
 
@@ -360,6 +361,20 @@ std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
 
   return std::make_unique<AttributionStorageDelegateImpl>(
       AttributionNoiseMode::kDefault, AttributionDelayMode::kDefault);
+}
+
+StorableSource::Result ThrottleResultToStorableSourceResult(
+    DestinationThrottler::Result r) {
+  switch (r) {
+    case DestinationThrottler::Result::kAllowed:
+      return StorableSource::Result::kSuccess;
+    case DestinationThrottler::Result::kHitGlobalLimit:
+      return StorableSource::Result::kDestinationGlobalLimitReached;
+    case DestinationThrottler::Result::kHitReportingLimit:
+      return StorableSource::Result::kDestinationReportingLimitReached;
+    case DestinationThrottler::Result::kHitBothLimits:
+      return StorableSource::Result::kDestinationBothLimitsReached;
+  }
 }
 
 bool IsOperationAllowed(
@@ -576,30 +591,7 @@ void AttributionManagerImpl::HandleSource(
     return;
   }
 
-  // TODO(csharrison): Consider enforcing this limit after checking metrics.
-  DestinationThrottler::Result throttle_result = throttler_.UpdateAndGetResult(
-      source.registration().destination_set,
-      net::SchemefulSite(source.common_info().source_origin()),
-      net::SchemefulSite(source.common_info().reporting_origin()));
-  base::UmaHistogramEnumeration("Conversions.DestinationThrottlerResult",
-                                throttle_result);
-
   MaybeEnqueueEvent(std::move(source));
-}
-
-void AttributionManagerImpl::StoreSource(StorableSource source,
-                                         bool is_debug_cookie_set) {
-  absl::optional<uint64_t> cleared_debug_key;
-  if (!is_debug_cookie_set) {
-    cleared_debug_key =
-        std::exchange(source.registration().debug_key, absl::nullopt);
-  }
-
-  attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
-      .WithArgs(source)
-      .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
-                           weak_factory_.GetWeakPtr(), std::move(source),
-                           cleared_debug_key, is_debug_cookie_set));
 }
 
 void AttributionManagerImpl::RecordPendingAggregatableReportsTimings() {
@@ -742,7 +734,8 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 
   absl::visit(base::Overloaded{
                   [&](StorableSource& source) {
-                    StoreSource(std::move(source), is_debug_cookie_set);
+                    CheckDestinationThrottlerAndStoreSource(
+                        std::move(source), is_debug_cookie_set);
                   },
                   [&](AttributionTrigger& trigger) {
                     StoreTrigger(std::move(trigger), is_debug_cookie_set);
@@ -751,6 +744,39 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
               pending_events_.front());
 
   pending_events_.pop_front();
+}
+
+void AttributionManagerImpl::CheckDestinationThrottlerAndStoreSource(
+    StorableSource source,
+    bool is_debug_cookie_set) {
+  DestinationThrottler::Result throttle_result = throttler_.UpdateAndGetResult(
+      source.registration().destination_set,
+      net::SchemefulSite(source.common_info().source_origin()),
+      net::SchemefulSite(source.common_info().reporting_origin()));
+  base::UmaHistogramEnumeration("Conversions.DestinationThrottlerResult",
+                                throttle_result);
+
+  absl::optional<uint64_t> cleared_debug_key;
+  if (!is_debug_cookie_set) {
+    cleared_debug_key =
+        std::exchange(source.registration().debug_key, absl::nullopt);
+  }
+
+  if (StorableSource::Result result =
+          ThrottleResultToStorableSourceResult(throttle_result);
+      result == StorableSource::Result::kSuccess) {
+    attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
+        .WithArgs(source)
+        .Then(base::BindOnce(&AttributionManagerImpl::OnSourceStored,
+                             weak_factory_.GetWeakPtr(), std::move(source),
+                             cleared_debug_key, is_debug_cookie_set));
+  } else {
+    StoreSourceResult store_result(result);
+    store_result.max_destinations_per_rate_limit_window_reporting_origin =
+        throttler_.GetMaxPerReportingSite();
+    OnSourceStored(source, cleared_debug_key, is_debug_cookie_set,
+                   StoreSourceResult(result));
+  }
 }
 
 void AttributionManagerImpl::AddPendingAggregatableReportTiming(

@@ -19890,6 +19890,9 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Excessive reporting orgins"/>
   <int value="5" label="Prohibited by browser policy"/>
   <int value="6" label="Success but noise applied"/>
+  <int value="7" label="Excessive destinations (per-reporting rate-limit)"/>
+  <int value="8" label="Excessive destinations (global rate-limit)"/>
+  <int value="9" label="Excessive destinations (both rate-limits)"/>
 </enum>
 
 <enum name="ConversionStorageSqlInitStatus">

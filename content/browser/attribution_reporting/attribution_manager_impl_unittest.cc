@@ -1384,7 +1384,7 @@ TEST_F(AttributionManagerImplTest, HandleSource_RecordsMetric) {
   base::HistogramTester histograms;
   attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
   task_environment_.RunUntilIdle();
-  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus2",
+  histograms.ExpectUniqueSample("Conversions.SourceStoredStatus3",
                                 StorableSource::Result::kSuccess, 1);
 }
 
@@ -1580,7 +1580,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredSources(), IsEmpty());
 
   histograms.ExpectUniqueSample(
-      "Conversions.SourceStoredStatus2",
+      "Conversions.SourceStoredStatus3",
       StorableSource::Result::kProhibitedByBrowserPolicy, 1);
 }
 
@@ -2243,6 +2243,112 @@ TEST_F(AttributionManagerImplTest,
 
   attribution_manager_->HandleSource(source, kFrameId);
   EXPECT_THAT(StoredSources(), SizeIs(1));
+}
+
+TEST_F(AttributionManagerImplTest,
+       HandleSource_DestinationThrottleReportingLimitReached) {
+  base::HistogramTester histograms;
+
+  // Current reporting limit for Destination Throttle
+  int max_per_reporting_source_site = 50;
+
+  for (int i = 0; i < max_per_reporting_source_site; i++) {
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i) + ".test")})
+            .Build(),
+        kFrameId);
+  }
+  EXPECT_THAT(StoredSources(), SizeIs(max_per_reporting_source_site));
+
+  // Should fail due to limit
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  EXPECT_THAT(StoredSources(), SizeIs(max_per_reporting_source_site));
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus3",
+                               StorableSource::Result::kSuccess, 50);
+  histograms.ExpectBucketCount(
+      "Conversions.SourceStoredStatus3",
+      StorableSource::Result::kDestinationReportingLimitReached, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       HandleSource_DestinationThrottleGlobalLimitReached) {
+  base::HistogramTester histograms;
+
+  // Current global limit for Destination Throttle
+  int max_global_source_site = 200;
+  for (int i = 0; i < max_global_source_site; i++) {
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize(
+                "https://r" + base::NumberToString(i) + ".test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i) + ".test")})
+            .Build(),
+        kFrameId);
+  }
+  EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
+
+  // Should fail due to limit
+  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus3",
+                               StorableSource::Result::kSuccess, 200);
+  histograms.ExpectBucketCount(
+      "Conversions.SourceStoredStatus3",
+      StorableSource::Result::kDestinationGlobalLimitReached, 1);
+}
+
+TEST_F(AttributionManagerImplTest,
+       HandleSource_DestinationThrottleBothLimitsReached) {
+  base::HistogramTester histograms;
+
+  int max_global_source_site = 200;
+  for (int i = 0; i < max_global_source_site; i += 4) {
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i) + ".test")})
+            .Build(),
+        kFrameId);
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i + 1) + ".test")})
+            .Build(),
+        kFrameId);
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r3.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i + 2) + ".test")})
+            .Build(),
+        kFrameId);
+    attribution_manager_->HandleSource(
+        SourceBuilder()
+            .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r4.test"))
+            .SetDestinationSites({net::SchemefulSite::Deserialize(
+                "https://d" + base::NumberToString(i + 3) + ".test")})
+            .Build(),
+        kFrameId);
+  }
+  EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
+
+  // Should fail due to limit
+  attribution_manager_->HandleSource(
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
+          .Build(),
+      kFrameId);
+  EXPECT_THAT(StoredSources(), SizeIs(max_global_source_site));
+  histograms.ExpectBucketCount("Conversions.SourceStoredStatus3",
+                               StorableSource::Result::kSuccess, 200);
+  histograms.ExpectBucketCount(
+      "Conversions.SourceStoredStatus3",
+      StorableSource::Result::kDestinationBothLimitsReached, 1);
 }
 
 TEST_F(AttributionManagerImplTest,

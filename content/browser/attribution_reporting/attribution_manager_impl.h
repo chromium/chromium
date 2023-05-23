@@ -176,7 +176,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void MaybeEnqueueEvent(SourceOrTrigger);
   void ProcessEvents();
   void ProcessNextEvent(bool is_debug_cookie_set);
-  void StoreSource(StorableSource source, bool is_debug_cookie_set);
   void StoreTrigger(AttributionTrigger trigger, bool is_debug_cookie_set);
 
   void GetReportsToSend();
@@ -241,6 +240,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void OnOsRegistration(const OsRegistration&,
                         bool is_debug_key_allowed,
                         bool success);
+
+  void CheckDestinationThrottlerAndStoreSource(StorableSource source,
+                                               bool is_debug_cookie_set);
 
   DestinationThrottler throttler_;
 
