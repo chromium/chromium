@@ -1472,6 +1472,31 @@
             ]
         }
     ],
+    "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Heuristic_AddressLine_1_And_2_1",
+                    "params": {
+                        "AutofillHeuristicPrecedenceOverAutocompleteScope": "address_line_1_and_2",
+                        "AutofillServerPrecedenceOverAutocompleteScope": "none"
+                    },
+                    "enable_features": [
+                        "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillSurveys": [
         {
             "platforms": [
