@@ -1313,6 +1313,8 @@ component("ash") {
     "system/camera/autozoom_toast_controller.h",
     "system/camera/autozoom_toast_view.cc",
     "system/camera/autozoom_toast_view.h",
+    "system/camera/camera_app_prefs.cc",
+    "system/camera/camera_app_prefs.h",
     "system/camera/camera_effects_controller.cc",
     "system/camera/camera_effects_controller.h",
     "system/caps_lock_notification_controller.cc",

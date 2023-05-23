@@ -1377,6 +1377,10 @@ const char kAutozoomState[] = "ash.camera.autozoom_state";
 // nudge was shown.
 const char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
 
+// Boolean pref to record if the DevTools should be opened with the camera app
+// by default.
+const char kCameraAppDevToolsOpen[] = "ash.camera.cca_dev_tools_open";
+
 // An boolean pref that specifies the recovery service activation for user.
 // When the pref is set to `true`, the user data recovery is activated. When the
 // pref is set to `false`, the user data recovery is not activated. The default

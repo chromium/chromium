@@ -39,10 +39,6 @@ class CameraAppWindowManager : public views::WidgetObserver {
           usage_monitor,
       base::OnceCallback<void(bool)> callback);
 
-  void SetDevToolsEnabled(bool enabled);
-
-  bool IsDevToolsEnabled();
-
   // views::WidgetObserver:
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -65,9 +61,6 @@ class CameraAppWindowManager : public views::WidgetObserver {
   void ResumeCameraUsage();
   void OnResumedCameraUsage(views::Widget* prev_owner);
   void ResumeNextOrIdle();
-
-  // Whether dev tools window should be opened when opening CCA window.
-  bool dev_tools_enabled_ = false;
 
   base::flat_map<views::Widget*,
                  mojo::Remote<camera_app::mojom::CameraUsageOwnershipMonitor>>

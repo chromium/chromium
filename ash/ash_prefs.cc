@@ -35,6 +35,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
 #include "ash/system/camera/autozoom_nudge_controller.h"
+#include "ash/system/camera/camera_app_prefs.h"
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
@@ -90,6 +91,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   AutozoomNudgeController::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
   CalendarController::RegisterProfilePrefs(registry);
+  camera_app_prefs::RegisterProfilePrefs(registry);
   CameraEffectsController::RegisterProfilePrefs(registry);
   CaptureModeController::RegisterProfilePrefs(registry);
   CellularSetupNotifier::RegisterProfilePrefs(registry);

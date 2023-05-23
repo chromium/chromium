@@ -643,6 +643,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomState[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomNudges[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCameraAppDevToolsOpen[];
+
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRecoveryFactorBehavior[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kApnMigratedIccids[];

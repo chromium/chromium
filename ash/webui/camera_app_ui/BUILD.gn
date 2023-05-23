@@ -36,6 +36,7 @@ static_library("camera_app_ui") {
     ":document_scanning",
     ":mojo_bindings",
     ":window_managemet",
+    "//ash",
     "//ash/public/cpp",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/web_applications",
