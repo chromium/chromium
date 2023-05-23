@@ -747,7 +747,7 @@ const gCSSProperties2 = {
     types: [ 'color' ]
   },
   'line-height': {
-    // https://w3c.github.io/csswg-drafts/css-inline/#line-height-property
+    // https://drafts.csswg.org/css-inline/#line-height-property
     types: [
         { type: 'discrete', options: [ [ 'normal', '10px' ],
                                        [ 'normal', '10', 'normal', '100px' ] ] }
