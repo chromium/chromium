@@ -298,11 +298,11 @@ void LazyLoadImageObserver::OnVisibilityChanged(
       // WebEffectiveConnectionType.
       if (visible_load_time_metrics.is_initially_intersecting) {
         UMA_HISTOGRAM_ENUMERATION(
-            "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2",
+            "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3",
             GetNetworkStateNotifier().EffectiveType());
       } else {
         UMA_HISTOGRAM_ENUMERATION(
-            "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2",
+            "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3",
             GetNetworkStateNotifier().EffectiveType());
       }
     } else {

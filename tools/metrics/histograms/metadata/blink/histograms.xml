@@ -3587,7 +3587,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold2"
+<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3"
     enum="NQEEffectiveConnectionType" expires_after="2023-11-12">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -3597,7 +3597,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold2"
+<histogram name="Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3"
     enum="NQEEffectiveConnectionType" expires_after="2023-11-05">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
