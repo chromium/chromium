@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "ios/web/public/session/session_certificate_policy_cache.h"
+#include "ios/web/session/session_certificate.h"
 
 @class CRWSessionCertificateStorage;
 
@@ -37,7 +38,7 @@ class SessionCertificatePolicyCacheImpl final
 
  private:
   // Represents the allowed certificates.
-  NSMutableSet<CRWSessionCertificateStorage*>* allowed_certs_;
+  SessionCertificateSet allowed_certs_;
 };
 
 }  // namespace web
