@@ -18,7 +18,6 @@ class FlexLayout;
 class NewTabButton;
 class TabSearchButton;
 class TabStrip;
-class TipMarqueeView;
 class TabStripScrollContainer;
 
 // Container for the tabstrip and the other views sharing space with it -
@@ -44,8 +43,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   NewTabButton* new_tab_button() { return new_tab_button_; }
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
-
-  TipMarqueeView* tip_marquee_view() { return tip_marquee_view_; }
 
   views::View* reserved_grab_handle_space_for_testing() {
     return reserved_grab_handle_space_;
@@ -87,7 +84,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
       tab_strip_scroll_container_ = nullptr;
   raw_ptr<NewTabButton, DanglingUntriaged> new_tab_button_ = nullptr;
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
-  raw_ptr<TipMarqueeView, DanglingUntriaged> tip_marquee_view_ = nullptr;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
