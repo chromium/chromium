@@ -144,4 +144,73 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadAlign) {
 }
 #endif  // defined(ARCH_CPU_64_BITS)
 
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+#if BUILDFLAG(IS_ANDROID)
+TEST(PartitionAllocMemoryTaggingTest,
+     ChangeMemoryTaggingModeForAllThreadsPerProcess) {
+  base::CPU cpu;
+  // If the underlying platform does not support MTE, skip this test to avoid
+  // hiding failures.
+  if (!cpu.has_mte()) {
+    GTEST_SKIP();
+  }
+
+  // The mode should be set to synchronous on startup by AndroidManifest.xml
+  // for base_unittests.
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+            TagViolationReportingMode::kSynchronous);
+
+  // Skip changing to kDisabled, because scudo does not support enabling MTE
+  // once it is disabled.
+  ChangeMemoryTaggingModeForAllThreadsPerProcess(
+      TagViolationReportingMode::kAsynchronous);
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+            TagViolationReportingMode::kAsynchronous);
+  ChangeMemoryTaggingModeForAllThreadsPerProcess(
+      TagViolationReportingMode::kSynchronous);
+  // End with mode changed back to synchronous.
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+            TagViolationReportingMode::kSynchronous);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+TEST(PartitionAllocMemoryTaggingTest, ChangeMemoryTaggingModeForCurrentThread) {
+  base::CPU cpu;
+  // If the underlying platform does not support MTE, skip this test to avoid
+  // hiding failures.
+  if (!cpu.has_mte()) {
+    GTEST_SKIP();
+  }
+
+  TagViolationReportingMode original_mode =
+      GetMemoryTaggingModeForCurrentThread();
+
+  ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode::kDisabled);
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+            TagViolationReportingMode::kDisabled);
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kSynchronous);
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+            TagViolationReportingMode::kSynchronous);
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kAsynchronous);
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+            TagViolationReportingMode::kAsynchronous);
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kSynchronous);
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+            TagViolationReportingMode::kSynchronous);
+  ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode::kDisabled);
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+            TagViolationReportingMode::kDisabled);
+  ChangeMemoryTaggingModeForCurrentThread(
+      TagViolationReportingMode::kAsynchronous);
+  EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
+            TagViolationReportingMode::kAsynchronous);
+
+  // Restore mode to original.
+  ChangeMemoryTaggingModeForCurrentThread(original_mode);
+}
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+
 }  // namespace partition_alloc::internal

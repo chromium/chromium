@@ -51,7 +51,8 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void ChangeMemoryTaggingModeForAllThreadsPerProcess(TagViolationReportingMode);
 #endif
 
-// Gets the memory tagging mode for the calling thread.
+// Gets the memory tagging mode for the calling thread. Returns kUndefined if
+// MTE support is not available.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 TagViolationReportingMode GetMemoryTaggingModeForCurrentThread();
 
