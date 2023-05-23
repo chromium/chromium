@@ -443,7 +443,10 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
   [wrapper resetUndoManagerChanged];
 
   NSString* text = nil;
-  if (node_count == 1) {
+  if (base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)) {
+    text = base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+        IDS_IOS_BOOKMARK_DELETED_BOOKMARKS, node_count));
+  } else if (node_count == 1) {
     text = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_SINGLE_BOOKMARK_DELETE);
   } else {
     text =
