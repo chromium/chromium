@@ -298,6 +298,21 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     }
   }
 
+  if (params->shared_dictionary_directory &&
+      params->shared_dictionary_enabled) {
+    SCOPED_UMA_HISTOGRAM_TIMER(
+        "NetworkService.TimeToGrantSharedDictionaryAccess");
+    // The path must exist for the cache ACL to be set. Create if needed.
+    if (base::CreateDirectory(params->shared_dictionary_directory->path())) {
+      if (!MaybeGrantAccessToDataPath(sandbox_params,
+                                      &*params->shared_dictionary_directory)) {
+        PLOG(ERROR)
+            << "Failed to grant sandbox access to shared dictionary directory "
+            << params->shared_dictionary_directory->path();
+      }
+    }
+  }
+
   // No file paths (e.g. in-memory context) so nothing to do.
   if (!params->file_paths)
     return SandboxGrantResult::kDidNotAttemptToGrantSandboxAccess;

@@ -215,8 +215,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ApplicationStatusListener* app_status_listener() const {
-    return app_status_listener_.get();
+  const std::vector<std::unique_ptr<base::android::ApplicationStatusListener>>&
+  app_status_listeners() const {
+    return app_status_listeners_;
   }
 #endif
 
@@ -754,8 +755,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   OnConnectionCloseCallback on_connection_close_callback_;
 
 #if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<base::android::ApplicationStatusListener>
-      app_status_listener_;
+  std::vector<std::unique_ptr<base::android::ApplicationStatusListener>>
+      app_status_listeners_;
 #endif
 
   mojo::Receiver<mojom::NetworkContext> receiver_;

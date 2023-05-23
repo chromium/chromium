@@ -551,6 +551,13 @@ struct NetworkContextParams {
   // comment when we finish the implementation.
   bool shared_dictionary_enabled = false;
 
+  // Points to the shared dictionary directory containing the sqlite database
+  // file named "db" for metadata and the disk cache directory named "cache".
+  // This field is used only when `shared_dictionary_enabled` field is set to
+  // true. If this field is empty, shared dictionaries will be stored in-memory
+  // only.
+  TransferableDirectory? shared_dictionary_directory;
+
   // Parameters for constructing the FirstPartySetsAccessDelegate.
   // |first_party_sets_access_delegate_params| is the initial configuration to
   // use. If nullptr, uses the default configuration. Updated configurations

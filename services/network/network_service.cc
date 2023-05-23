@@ -769,8 +769,11 @@ void NetworkService::OnPeerToPeerConnectionsCountChange(uint32_t count) {
 #if BUILDFLAG(IS_ANDROID)
 void NetworkService::OnApplicationStateChange(
     base::android::ApplicationState state) {
-  for (auto* network_context : network_contexts_)
-    network_context->app_status_listener()->Notify(state);
+  for (auto* network_context : network_contexts_) {
+    for (auto const& listener : network_context->app_status_listeners()) {
+      listener->Notify(state);
+    }
+  }
 }
 #endif
 

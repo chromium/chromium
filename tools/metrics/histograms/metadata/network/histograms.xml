@@ -4164,6 +4164,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.TimeToGrantSharedDictionaryAccess" units="ms"
+    expires_after="2023-10-08">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    The time taken to permit the sandbox access to the shared dictionary
+    directory during network context initialization. This is recorded each time
+    a network context is created with a valid shared dictionary directory
+    specified. This histogram is platform dependent so values from different
+    platforms cannot be directly compared. On Windows, this records the amount
+    of time taken to set the filesystem ACLs to allow the sandbox access to the
+    cache directory.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.TimeToMigrateData" units="ms"
     expires_after="2023-11-12">
   <owner>wfh@chromium.org</owner>

@@ -312,6 +312,9 @@ void CreateNetworkContextInternal(
     if (params->http_cache_directory) {
       params->http_cache_directory->OpenForTransfer();
     }
+    if (params->shared_dictionary_directory) {
+      params->shared_dictionary_directory->OpenForTransfer();
+    }
   }
 
   // This might recreate g_client if the network service needed to be restarted.

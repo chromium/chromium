@@ -3096,6 +3096,10 @@ void StoragePartitionImpl::InitNetworkContext() {
   if (base::FeatureList::IsEnabled(
           blink::features::kCompressionDictionaryTransportBackend)) {
     context_params->shared_dictionary_enabled = true;
+    if (!is_in_memory()) {
+      context_params->shared_dictionary_directory =
+          partition_path_.Append(FILE_PATH_LITERAL("Shared Dictionary"));
+    }
   }
 
   network_context_.reset();

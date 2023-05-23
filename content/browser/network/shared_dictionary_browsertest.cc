@@ -1,4 +1,3 @@
-
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -33,10 +32,12 @@ void WaitForHistogram(const std::string& histogram_name) {
   }
 }
 
-}  // namespace
+enum class BrowserType { kNormal, kOffTheRecord };
 
 // Tests end to end functionality of "compression dictionary transport" feature.
-class SharedDictionaryBrowserTest : public ContentBrowserTest {
+class SharedDictionaryBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<BrowserType> {
  public:
   SharedDictionaryBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -54,6 +55,8 @@ class SharedDictionaryBrowserTest : public ContentBrowserTest {
   }
 
  protected:
+  BrowserType GetBrowserType() const { return GetParam(); }
+
   int64_t GetTestDataFileSize(const std::string& name) {
     base::FilePath file_path;
     CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
@@ -71,12 +74,28 @@ class SharedDictionaryBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharedDictionaryBrowserTest, LinkRelDictionary) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedDictionaryBrowserTest,
+                         testing::Values(BrowserType::kNormal,
+                                         BrowserType::kOffTheRecord),
+                         [](const testing::TestParamInfo<BrowserType>& info) {
+                           switch (info.param) {
+                             case BrowserType::kNormal:
+                               return "Normal";
+                             case BrowserType::kOffTheRecord:
+                               return "OffTheRecord";
+                           }
+                         });
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, LinkRelDictionary) {
+  Shell* target_shell = GetBrowserType() == BrowserType::kNormal
+                            ? shell()
+                            : CreateOffTheRecordBrowser();
   GURL url = embedded_test_server()->GetURL("/shared_dictionary/blank.html");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(NavigateToURL(target_shell, url));
 
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(), R"(
+  EXPECT_TRUE(ExecJs(target_shell->web_contents()->GetPrimaryMainFrame(), R"(
     (async ()=>{
       const link = document.createElement('link');
       link.rel = 'dictionary';
@@ -84,12 +103,17 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryBrowserTest, LinkRelDictionary) {
       document.body.appendChild(link);
     })();
   )"));
+  const std::string histogram_name =
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize";
 
-  WaitForHistogram("Net.SharedDictionaryWriterInMemory.DictionarySize");
+  WaitForHistogram(histogram_name);
   histogram_tester.ExpectBucketCount(
-      "Net.SharedDictionaryWriterInMemory.DictionarySize",
-      GetTestDataFileSize("shared_dictionary/test.dict"),
+      histogram_name, GetTestDataFileSize("shared_dictionary/test.dict"),
       /*expected_count=*/1);
 }
+
+}  // namespace
 
 }  // namespace content

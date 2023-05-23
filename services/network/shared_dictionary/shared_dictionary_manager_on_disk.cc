@@ -5,6 +5,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -103,6 +104,10 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
                           base::DoNothing());
     return;
   }
+
+  base::UmaHistogramCustomCounts(
+      "Net.SharedDictionaryManagerOnDisk.DictionarySize", info.size(), 1,
+      100000000, 50);
   CHECK(result.value().primary_key_in_database.has_value());
   info.set_primary_key_in_database(*result.value().primary_key_in_database);
   if (result.value().disk_cache_key_token_to_be_removed) {
