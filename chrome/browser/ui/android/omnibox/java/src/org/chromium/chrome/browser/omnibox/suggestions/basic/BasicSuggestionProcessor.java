@@ -130,7 +130,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         setSuggestionDrawableState(model,
                 SuggestionDrawableState.Builder
-                        .forDrawableRes(getContext(), getSuggestionIcon(suggestion))
+                        .forDrawableRes(mContext, getSuggestionIcon(suggestion))
                         .setAllowTint(true)
                         .build());
 
