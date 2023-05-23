@@ -1662,23 +1662,21 @@ Status IndexedDBDatabase::GetKeyGeneratorCurrentNumberOperation(
 
 Status IndexedDBDatabase::ClearOperation(
     int64_t object_store_id,
-    scoped_refptr<IndexedDBCallbacks> callbacks,
+    blink::mojom::IDBDatabase::ClearCallback success_callback,
     IndexedDBTransaction* transaction) {
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::ClearOperation", "txn.id",
                transaction->id());
-
-  if (!IsObjectStoreIdInMetadata(object_store_id))
-    return leveldb::Status::InvalidArgument("Invalid object_store_id.");
-
-  Status s = backing_store_->ClearObjectStore(
-      transaction->BackingStoreTransaction(), id(), object_store_id);
-  if (!s.ok())
-    return s;
-  callbacks->OnSuccess();
-
-  factory_->NotifyIndexedDBContentChanged(
-      bucket_locator(), metadata_.name,
-      metadata_.object_stores[object_store_id].name);
+  Status s = leveldb::Status::InvalidArgument("Invalid object_store_id.");
+  if (IsObjectStoreIdInMetadata(object_store_id)) {
+    s = backing_store_->ClearObjectStore(transaction->BackingStoreTransaction(),
+                                         id(), object_store_id);
+  }
+  if (s.ok()) {
+    factory_->NotifyIndexedDBContentChanged(
+        bucket_locator(), metadata_.name,
+        metadata_.object_stores[object_store_id].name);
+  }
+  std::move(success_callback).Run(s.ok());
   return s;
 }
 

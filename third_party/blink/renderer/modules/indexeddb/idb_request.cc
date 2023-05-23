@@ -445,6 +445,12 @@ void IDBRequest::HandleResponse(
                     WrapPersistent(transaction_.Get()))));
 }
 
+void IDBRequest::OnClear(bool success) {
+  if (success) {
+    HandleResponse();
+  }
+}
+
 void IDBRequest::EnqueueResponse(DOMException* error) {
   TRACE_EVENT0("IndexedDB", "IDBRequest::EnqueueResponse(DOMException)");
   if (!ShouldEnqueueEvent()) {

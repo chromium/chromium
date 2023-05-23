@@ -425,9 +425,10 @@ interface IDBDatabase {
   GetKeyGeneratorCurrentNumber(int64 transaction_id,
                                int64 object_store_id,
                                pending_associated_remote<IDBCallbacks> pending_callbacks);
+  // Correlates to IDBObjectStore::clear()
   Clear(int64 transaction_id,
-        int64 object_store_id,
-        pending_associated_remote<IDBCallbacks> pending_callbacks);
+        int64 object_store_id) => (bool success);
+  // Correlates to IDBObjectStore::createIndex()
   CreateIndex(int64 transaction_id,
               int64 object_store_id,
               int64 index_id,

@@ -114,8 +114,7 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
           pending_callbacks) override;
   void Clear(int64_t transaction_id,
              int64_t object_store_id,
-             mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
-                 pending_callbacks) override;
+             ClearCallback callback) override;
   void CreateIndex(int64_t transaction_id,
                    int64_t object_store_id,
                    int64_t index_id,

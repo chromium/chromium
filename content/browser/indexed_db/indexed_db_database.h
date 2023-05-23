@@ -293,9 +293,10 @@ class CONTENT_EXPORT IndexedDBDatabase {
       scoped_refptr<IndexedDBCallbacks> callbacks,
       IndexedDBTransaction* transaction);
 
-  leveldb::Status ClearOperation(int64_t object_store_id,
-                                 scoped_refptr<IndexedDBCallbacks> callbacks,
-                                 IndexedDBTransaction* transaction);
+  leveldb::Status ClearOperation(
+      int64_t object_store_id,
+      blink::mojom::IDBDatabase::ClearCallback callback,
+      IndexedDBTransaction* transaction);
 
   bool IsObjectStoreIdInMetadata(int64_t object_store_id) const;
   bool IsObjectStoreIdAndIndexIdInMetadata(int64_t object_store_id,

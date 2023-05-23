@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "v8/include/v8.h"
 
@@ -772,8 +773,9 @@ IDBRequest* IDBObjectStore::clear(ScriptState* script_state,
 
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
-  BackendDB()->Clear(transaction_->Id(), Id(),
-                     request->CreateWebCallbacks().release());
+  BackendDB()->Clear(
+      transaction_->Id(), Id(),
+      WTF::BindOnce(&IDBRequest::OnClear, WrapPersistent(request)));
   return request;
 }
 

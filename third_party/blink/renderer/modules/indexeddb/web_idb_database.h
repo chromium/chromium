@@ -105,7 +105,9 @@ class MODULES_EXPORT WebIDBDatabase final {
   void GetKeyGeneratorCurrentNumber(int64_t transaction_id,
                                     int64_t object_store_id,
                                     WebIDBCallbacks*);
-  void Clear(int64_t transaction_id, int64_t object_store_id, WebIDBCallbacks*);
+  void Clear(int64_t transaction_id,
+             int64_t object_store_id,
+             mojom::blink::IDBDatabase::ClearCallback success_callback);
   void CreateIndex(int64_t transaction_id,
                    int64_t object_store_id,
                    int64_t index_id,

@@ -933,8 +933,6 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
   EXPECT_EQ(connection2->version, metadata2.version);
   EXPECT_EQ(connection2->db_name, metadata2.name);
 
-  std::unique_ptr<StrictMock<MockMojoIndexedDBCallbacks>> clear_callbacks;
-
   // Clear object store.
   base::RunLoop loop5;
   base::RepeatingClosure quit_closure5 =
@@ -943,12 +941,6 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
       FROM_HERE, base::BindLambdaForTesting([&]() {
         ::testing::InSequence dummy;
 
-        clear_callbacks =
-            std::make_unique<StrictMock<MockMojoIndexedDBCallbacks>>();
-
-        EXPECT_CALL(*clear_callbacks, Success())
-            .Times(1)
-            .WillOnce(RunClosure(quit_closure5));
         EXPECT_CALL(*connection2->connection_callbacks,
                     Complete(kTransactionId2))
             .Times(1)
@@ -957,14 +949,13 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
             *connection2->open_callbacks,
             MockedSuccessDatabase(IsAssociatedInterfacePtrInfoValid(false), _))
             .Times(1)
-            .WillOnce(RunClosure(std::move(quit_closure5)));
+            .WillOnce(RunClosure(quit_closure5));
 
         connection2->database.Bind(std::move(pending_database2));
         ASSERT_TRUE(connection2->database.is_bound());
         ASSERT_TRUE(connection2->version_change_transaction.is_bound());
-        connection2->database->Clear(
-            kTransactionId2, kObjectStoreId,
-            clear_callbacks->CreateInterfacePtrAndBind());
+        connection2->database->Clear(kTransactionId2, kObjectStoreId,
+                                     base::IgnoreArgs<bool>(quit_closure5));
         connection2->version_change_transaction->Commit(0);
       }));
   loop5.Run();
@@ -976,7 +967,6 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_NotifyIndexedDBContentChanged) {
   base::RunLoop loop6;
   context_impl_->IDBTaskRunner()->PostTask(FROM_HERE,
                                            base::BindLambdaForTesting([&]() {
-                                             clear_callbacks.reset();
                                              connection2.reset();
                                              loop6.Quit();
                                            }));

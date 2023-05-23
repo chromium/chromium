@@ -282,6 +282,8 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
       mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
           receiver);
 
+  void OnClear(bool success);
+
   // Only IDBOpenDBRequest instances should receive these:
   virtual void EnqueueBlocked(int64_t old_version) { NOTREACHED(); }
   virtual void EnqueueUpgradeNeeded(int64_t old_version,

@@ -275,14 +275,13 @@ void WebIDBDatabase::GetKeyGeneratorCurrentNumber(int64_t transaction_id,
       GetCallbacksProxy(base::WrapUnique(callbacks)));
 }
 
-void WebIDBDatabase::Clear(int64_t transaction_id,
-                           int64_t object_store_id,
-                           WebIDBCallbacks* callbacks) {
+void WebIDBDatabase::Clear(
+    int64_t transaction_id,
+    int64_t object_store_id,
+    mojom::blink::IDBDatabase::ClearCallback success_callback) {
   IndexedDBDispatcher::ResetCursorPrefetchCaches(transaction_id, nullptr);
-
-  callbacks->SetState(nullptr, transaction_id);
   database_->Clear(transaction_id, object_store_id,
-                   GetCallbacksProxy(base::WrapUnique(callbacks)));
+                   std::move(success_callback));
 }
 
 void WebIDBDatabase::CreateIndex(int64_t transaction_id,

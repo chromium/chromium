@@ -586,35 +586,30 @@ void DatabaseImpl::GetKeyGeneratorCurrentNumber(
       std::move(callbacks)));
 }
 
-void DatabaseImpl::Clear(
-    int64_t transaction_id,
-    int64_t object_store_id,
-    mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
-        pending_callbacks) {
+void DatabaseImpl::Clear(int64_t transaction_id,
+                         int64_t object_store_id,
+                         ClearCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto callbacks = base::MakeRefCounted<IndexedDBCallbacks>(
-      dispatcher_host_->AsWeakPtr(), bucket_info_, std::move(pending_callbacks),
-      idb_runner_);
-  if (!connection_->IsConnected())
+  if (!connection_->IsConnected()) {
+    std::move(callback).Run(/*success=*/false);
     return;
+  }
 
   IndexedDBTransaction* transaction =
       connection_->GetTransaction(transaction_id);
-  if (!transaction)
-    return;
-
-  if (!transaction->IsAcceptingRequests()) {
+  if (!transaction || !transaction->IsAcceptingRequests()) {
     // TODO(https://crbug.com/1249908): If the transaction was already committed
     // (or is in the process of being committed) we should kill the renderer.
     // This branch however also includes cases where the browser process aborted
     // the transaction, as currently we don't distinguish that state from the
     // transaction having been committed. So for now simply ignore the request.
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::ClearOperation, connection_->database()->AsWeakPtr(),
-      object_store_id, std::move(callbacks)));
+      object_store_id, std::move(callback)));
 }
 
 void DatabaseImpl::CreateIndex(int64_t transaction_id,
