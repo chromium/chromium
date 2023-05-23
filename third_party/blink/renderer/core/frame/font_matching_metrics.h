@@ -194,6 +194,13 @@ class FontMatchingMetrics {
   void ReportLocalFontExistenceByUniqueNameOnly(const AtomicString& font_name,
                                                 bool font_exists);
 
+  // Reports a local font's existence was looked up by a name, but its actual
+  // font data may or may not have been loaded. This includes lookups where the
+  // name is allowed to match full font names or family names.
+  void ReportLocalFontExistenceByUniqueOrFamilyName(
+      const AtomicString& font_name,
+      bool font_exists);
+
   // Constructs a builder with a hash of the FontSelectionRequest already added.
   IdentifiableTokenBuilder GetTokenBuilderWithFontSelectionRequest(
       const FontDescription& font_description);
@@ -237,6 +244,7 @@ class FontMatchingMetrics {
   TokenToTokenHashMap font_lookups_as_last_resort_;
   TokenToTokenHashMap generic_font_lookups_;
   TokenToTokenHashMap font_load_postscript_name_;
+  TokenToTokenHashMap local_font_existence_by_unique_or_family_name_;
   TokenToTokenHashMap local_font_existence_by_unique_name_only_;
 
   uint64_t total_emoji_clusters_shaped_ = 0;
