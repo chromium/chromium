@@ -29,6 +29,7 @@ class ArcWindowWatcher : public aura::EnvObserver {
    public:
     // Notifies that window count has changed.
     virtual void OnArcWindowCountChanged(uint32_t count) = 0;
+    virtual void OnWillDestroyWatcher() = 0;
   };
 
   class ArcWindowDisplayObserver : public base::CheckedObserver {
@@ -36,6 +37,7 @@ class ArcWindowWatcher : public aura::EnvObserver {
     // Notifies that a new window is display. This is guaranteed to happen
     // after the count is updated.
     virtual void OnArcWindowDisplayed(const std::string& pkg_name) = 0;
+    virtual void OnWillDestroyWatcher() = 0;
   };
 
   // Returns the single ArcWindowWatcher instance.
@@ -77,8 +79,10 @@ class ArcWindowWatcher : public aura::EnvObserver {
   bool HasDisplayObserver(ArcWindowDisplayObserver* observer) const;
 
  private:
-  base::ObserverList<ArcWindowCountObserver> arc_window_count_observers_;
-  base::ObserverList<ArcWindowDisplayObserver> arc_window_display_observers_;
+  base::ObserverList<ArcWindowCountObserver, /* check_empty= */ true>
+      arc_window_count_observers_;
+  base::ObserverList<ArcWindowDisplayObserver, /* check_empty= */ true>
+      arc_window_display_observers_;
 
   // Some are arc windows, some are unknown.
   TrackerList trackers_;

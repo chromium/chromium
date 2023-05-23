@@ -115,11 +115,19 @@ ArcWindowWatcher::ArcWindowWatcher() {
 
 ArcWindowWatcher::~ArcWindowWatcher() {
   DCHECK(instance_ == this);
-  // Make sure no new trackers are created.
+  // Stop observing Env, to ensure no new trackers are created.
   aura::Env::GetInstance()->RemoveObserver(this);
 
   // Then remove all existing trackers in one shot.
   trackers_.clear();
+
+  // Tell observers, so they have a chance to un-subscribe.
+  for (auto& observer : arc_window_display_observers_) {
+    observer.OnWillDestroyWatcher();
+  }
+  for (auto& observer : arc_window_count_observers_) {
+    observer.OnWillDestroyWatcher();
+  }
 
   instance_ = nullptr;
 }

@@ -72,6 +72,10 @@ void ArcAppLaunchThrottleObserver::OnArcWindowDisplayed(
   OnLaunchedOrRequestExpired(package_name);
 }
 
+void ArcAppLaunchThrottleObserver::OnWillDestroyWatcher() {
+  window_display_observation_.Reset();
+}
+
 void ArcAppLaunchThrottleObserver::OnLaunchedOrRequestExpired(
     const std::string& name) {
   // This request has already expired or there are outstanding requests,

@@ -31,4 +31,8 @@ void ArcWindowObserver::OnArcWindowCountChanged(uint32_t count) {
   SetActive(count > 0);
 }
 
+void ArcWindowObserver::OnWillDestroyWatcher() {
+  observation_.Reset();
+}
+
 }  // namespace arc
