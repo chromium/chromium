@@ -23,8 +23,8 @@ def pytest_addoption(parser):
   parser.addoption('--target-platform',
                    default=test_utils.get_hosted_platform(),
                    dest='target_platform',
-                   choices=['linux', 'win', 'mac', 'android', 'cros',
-                            'lacros'],
+                   choices=['linux', 'win', 'mac', 'android', 'webview',
+                            'cros', 'lacros'],
                    help='If present, run for the target platform, '
                    'defaults to the host platform.')
 
@@ -119,6 +119,14 @@ def chromedriver_path(pytestconfig) -> str:
   elif platform == "win":
     ver = test_utils.find_version('win64', channel)
     downloaded_dir = test_utils.download_chrome_win(version=str(ver))
+  elif platform in ('android', 'webview'):
+    # For Android/Webview, we will use install_webview or install_chrome to
+    # download and install APKs, however, we will still need the chromedriver
+    # binaries for the hosts. Currently we will only run on Linux, so fetching
+    # the chromedriver for Linux only.
+    ver = test_utils.find_version(platform, channel)
+    downloaded_dir = test_utils.download_chromedriver_linux_host(
+      channel=channel, version=str(ver))
   else:
     return None
 
