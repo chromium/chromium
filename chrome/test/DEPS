@@ -46,6 +46,7 @@ include_rules = [
   "+components/nacl/browser",
   "+components/nacl/common",
   "+components/nacl/renderer",
+  "+components/network_session_configurator/common",
   "+components/network_time",
   "+components/offline_pages/buildflags",
   "+components/offline_pages/core",

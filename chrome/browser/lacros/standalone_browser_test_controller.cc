@@ -180,6 +180,7 @@ void StandaloneBrowserTestController::InstallSubApp(
   auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(sub_app_start_url);
   info->parent_app_id = parent_app_id;
+  info->title = u"Test Web App";
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
