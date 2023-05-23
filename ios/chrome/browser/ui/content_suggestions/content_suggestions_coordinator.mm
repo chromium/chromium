@@ -367,6 +367,9 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 - (void)didSelectSetUpListItem:(SetUpListItemType)type {
   [self.contentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  set_up_list_prefs::RecordInteraction(localState);
+
   switch (type) {
     case SetUpListItemType::kSignInSync:
       [self showSignIn];

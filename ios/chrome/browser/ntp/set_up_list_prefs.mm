@@ -21,6 +21,7 @@ const char kDefaultBrowserItemState[] =
 const char kAutofillItemState[] = "set_up_list.autofill_item.state";
 const char kFollowItemState[] = "set_up_list.follow_item.state";
 const char kDisabled[] = "set_up_list.disabled";
+const char kLastInteraction[] = "set_up_list.last_interaction";
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   int unknown = static_cast<int>(SetUpListItemState::kUnknown);
@@ -29,6 +30,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kAutofillItemState, unknown);
   registry->RegisterIntegerPref(kFollowItemState, unknown);
   registry->RegisterBooleanPref(kDisabled, false);
+  registry->RegisterTimePref(kLastInteraction, base::Time());
 }
 
 const char* PrefNameForItem(SetUpListItemType type) {
@@ -77,6 +79,14 @@ bool IsSetUpListDisabled(PrefService* prefs) {
 
 void DisableSetUpList(PrefService* prefs) {
   prefs->SetBoolean(kDisabled, true);
+}
+
+void RecordInteraction(PrefService* prefs) {
+  prefs->SetTime(kLastInteraction, base::Time::Now());
+}
+
+base::Time GetLastInteraction(PrefService* prefs) {
+  return prefs->GetTime(kLastInteraction);
 }
 
 }  // namespace set_up_list_prefs
