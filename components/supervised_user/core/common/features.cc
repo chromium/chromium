@@ -76,10 +76,10 @@ BASE_FEATURE(kRetireStaticDenyList,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the new local extension approvals experience, which requests approval
-// through a platform-specific Parent Access Widget.
+// through a platform-specific Parent Access Widget. Available on ChromeOS.
 BASE_FEATURE(kLocalExtensionApprovalsV2,
              "LocalExtensionApprovalsV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Stops creating Supervised User Service for Incognito profile.
 BASE_FEATURE(kUpdateSupervisedUserFactoryCreation,

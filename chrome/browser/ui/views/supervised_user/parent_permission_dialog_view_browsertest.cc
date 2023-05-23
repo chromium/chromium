@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -37,6 +38,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
@@ -64,7 +66,12 @@ class ParentPermissionDialogViewTest
   };
 
   ParentPermissionDialogViewTest()
-      : TestParentPermissionDialogViewObserver(this) {}
+      : TestParentPermissionDialogViewObserver(this) {
+    // This UI is only used in V1 extensions approvals flow, so to test it V2
+    // flow needs to be disabled.
+    feature_list_.InitAndDisableFeature(
+        supervised_user::kLocalExtensionApprovalsV2);
+  }
 
   ParentPermissionDialogViewTest(const ParentPermissionDialogViewTest&) =
       delete;
@@ -260,6 +267,8 @@ class ParentPermissionDialogViewTest
       supervised_user_extensions_delegate_;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
+
   raw_ptr<ParentPermissionDialogView, ExperimentalAsh> view_ = nullptr;
   std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
   ParentPermissionDialog::Result result_;
