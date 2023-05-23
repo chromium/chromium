@@ -1573,7 +1573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.NumOfMonitors" units="count"
-    expires_after="2023-06-11">
+    expires_after="2023-12-11">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1584,7 +1584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.{Filter}.FilterPatternsPerMinute"
-    units="count" expires_after="2023-06-11">
+    units="count" expires_after="2023-12-11">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1600,7 +1600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.AdvertisementMonitor.{Filter}.{Operation}.Result"
-    enum="BlueZResultOfAdvertisementMonitor" expires_after="2023-06-11">
+    enum="BlueZResultOfAdvertisementMonitor" expires_after="2023-12-11">
   <owner>apusaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
