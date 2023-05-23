@@ -340,7 +340,6 @@ source_set("tests") {
     deps += [
       "//device/bluetooth:mocks",
       "//services/device/public/cpp/bluetooth:bluetooth",
-      "//services/device/public/cpp/serial:switches",
       "//services/device/serial",
       "//services/device/serial:test_support",
     ]

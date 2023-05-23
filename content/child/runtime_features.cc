@@ -370,6 +370,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(blink::features::kDesktopPWAsTabStripCustomizations)},
           {"WebEnvironmentIntegrity",
            raw_ref(features::kWebEnvironmentIntegrity)},
+          {"WebSerialBluetooth",
+           raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
           {"WGIGamepadTriggerRumble",
            raw_ref(features::kEnableWindowsGamingInputDataFetcher)},
           {"UserAgentFull", raw_ref(blink::features::kFullUserAgent)},

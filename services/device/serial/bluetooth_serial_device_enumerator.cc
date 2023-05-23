@@ -14,7 +14,7 @@
 #include "base/unguessable_token.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
-#include "services/device/public/cpp/serial/serial_switches.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/serial.mojom.h"
 
 namespace device {
@@ -101,8 +101,8 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceRemoved(
 
 BluetoothSerialDeviceEnumerator::BluetoothSerialDeviceEnumerator(
     scoped_refptr<base::SingleThreadTaskRunner> adapter_runner) {
-  DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableBluetoothSerialPortProfileInSerialApi));
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kEnableBluetoothSerialPortProfileInSerialApi));
 
   helper_ = base::SequenceBound<AdapterHelper>(
       std::move(adapter_runner), weak_ptr_factory_.GetWeakPtr(),

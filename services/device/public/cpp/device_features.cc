@@ -26,5 +26,9 @@ BASE_FEATURE(kMacCoreLocationBackend,
 BASE_FEATURE(kCrOSGeolocationReducedWifiPollingInterval,
              "ReducedWifiPollingInterval",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enable serial communication for SPP devices.
+BASE_FEATURE(kEnableBluetoothSerialPortProfileInSerialApi,
+             "EnableBluetoothSerialPortProfileInSerialApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

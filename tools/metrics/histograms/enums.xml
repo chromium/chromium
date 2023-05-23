@@ -42575,6 +42575,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4574" label="CriticalCHRestartNavigationTiming"/>
   <int value="4575" label="TopLevelDocumentWithEmbeddedCredentials"/>
   <int value="4576" label="V8Navigator_GetInterestGroupAdAuctionData_Method"/>
+  <int value="4577" label="WebSerialBluetooth"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -66266,6 +66267,8 @@ from previous Chrome versions.
   <int value="1863622457" label="WebAuthentication:enabled"/>
   <int value="1864062646" label="ChromeWhatsNewUI:disabled"/>
   <int value="1864412948" label="AvatarsCloudMigration:disabled"/>
+  <int value="1864947900"
+      label="EnableBluetoothSerialPortProfileInSerialApi:enabled"/>
   <int value="1865068568" label="disable-audio-support-for-desktop-share"/>
   <int value="1865211159" label="ShelfStackedHotseat:disabled"/>
   <int value="1865799183" label="javascript-harmony"/>
@@ -66697,6 +66700,8 @@ from previous Chrome versions.
   <int value="2093235103" label="default-tile-width"/>
   <int value="2093949489" label="ArrayPrototypeValues:enabled"/>
   <int value="2094335682" label="StreamlinedUsbPrinterSetup:enabled"/>
+  <int value="2095250358"
+      label="EnableBluetoothSerialPortProfileInSerialApi:disabled"/>
   <int value="2095740699" label="OmniboxPedalsBatch3:disabled"/>
   <int value="2096688830" label="RequestDesktopSitePerSiteIph:disabled"/>
   <int value="2096736155" label="BrowsingDataLifetimeManager:enabled"/>

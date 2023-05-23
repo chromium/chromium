@@ -2400,7 +2400,6 @@ static_library("browser") {
     "//services/data_decoder/public/cpp",
     "//services/device/public/cpp:device_features",
     "//services/device/public/cpp/geolocation",
-    "//services/device/public/cpp/serial:switches",
     "//services/device/public/cpp/usb",
     "//services/device/public/mojom",
     "//services/device/public/mojom:usb",

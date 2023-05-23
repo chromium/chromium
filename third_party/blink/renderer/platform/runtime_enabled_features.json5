@@ -3986,6 +3986,11 @@
       status: "stable",
       base_feature: "none",
     },
+    {
+      name: "WebSerialBluetooth",
+      status: "experimental",
+      base_feature: "none",
+    },
     // WebShare is enabled by default on Android.
     {
       name: "WebShare",

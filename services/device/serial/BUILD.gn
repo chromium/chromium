@@ -50,7 +50,6 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac) {
       "//net",
       "//services/device/public/cpp:device_features",
       "//services/device/public/cpp/bluetooth:bluetooth",
-      "//services/device/public/cpp/serial:switches",
     ]
 
     if (is_linux || is_chromeos) {

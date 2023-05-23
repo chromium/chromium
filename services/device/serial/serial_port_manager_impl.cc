@@ -13,7 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "services/device/public/cpp/serial/serial_switches.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/serial/bluetooth_serial_device_enumerator.h"
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 #include "services/device/serial/serial_device_enumerator.h"
@@ -79,8 +79,8 @@ void SerialPortManagerImpl::GetDevices(GetDevicesCallback callback) {
     observed_enumerator_.AddObservation(enumerator_.get());
   }
   auto devices = enumerator_->GetDevices();
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableBluetoothSerialPortProfileInSerialApi)) {
+  if (base::FeatureList::IsEnabled(
+          features::kEnableBluetoothSerialPortProfileInSerialApi)) {
     if (!bluetooth_enumerator_) {
       bluetooth_enumerator_ =
           std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);
@@ -120,8 +120,8 @@ void SerialPortManagerImpl::OpenPort(
     return;
   }
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableBluetoothSerialPortProfileInSerialApi)) {
+  if (base::FeatureList::IsEnabled(
+          features::kEnableBluetoothSerialPortProfileInSerialApi)) {
     if (!bluetooth_enumerator_) {
       bluetooth_enumerator_ =
           std::make_unique<BluetoothSerialDeviceEnumerator>(ui_task_runner_);

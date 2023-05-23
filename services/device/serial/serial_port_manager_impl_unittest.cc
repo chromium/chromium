@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -27,7 +28,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
-#include "services/device/public/cpp/serial/serial_switches.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/test/fake_serial_port_client.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "services/device/serial/bluetooth_serial_device_enumerator.h"
@@ -114,8 +115,8 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
   // is called at the beginning of test cases that do require a
   // MockBluetoothAdapter.
   void SetupBluetoothEnumerator() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableBluetoothSerialPortProfileInSerialApi);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
 
     ON_CALL(*adapter_, GetDevices())
         .WillByDefault(
@@ -141,8 +142,8 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
   }
 
   void SetupBluetoothEnumeratorWithExpectations() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableBluetoothSerialPortProfileInSerialApi);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
 
     ON_CALL(*adapter_, GetDevices())
         .WillByDefault(
@@ -185,6 +186,7 @@ class SerialPortManagerImplTest : public DeviceServiceTestBase {
       base::MakeRefCounted<MockBluetoothAdapter>();
   scoped_refptr<MockBluetoothSocket> mock_socket_ =
       base::MakeRefCounted<MockBluetoothSocket>();
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   void Bind(mojo::PendingReceiver<mojom::SerialPortManager> receiver) {
     manager_->Bind(std::move(receiver));
@@ -408,8 +410,8 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
 
 TEST_F(SerialPortManagerImplTest,
        BluetoothSerialDeviceEnumerator_DeleteBeforeAdapterInit) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableBluetoothSerialPortProfileInSerialApi);
+  scoped_feature_list_.InitWithFeatures(
+      {features::kEnableBluetoothSerialPortProfileInSerialApi}, {});
 
   auto adapter = base::MakeRefCounted<TestingBluetoothAdapter>();
   BluetoothAdapterFactory::SetAdapterForTesting(adapter);
