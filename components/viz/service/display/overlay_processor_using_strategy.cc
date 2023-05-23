@@ -838,7 +838,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
         if (scale_factor < 1.0f) {
           UpdateDownscalingCapabilities(scale_factor, /*success=*/true);
         }
-        LogWorkingScaleFactorCountUMA(scale_factor * 100);
+        LogWorkingScaleFactorCountUMA(scale_factor);
         LogFramesScalingRequiredCandidateBoolUMA(
             attempted_scaling_required_overlays);
       }
