@@ -53,7 +53,7 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
                                      const OfflineAudioContextOptions*,
                                      ExceptionState&);
 
-  OfflineAudioContext(Document*,
+  OfflineAudioContext(LocalDOMWindow*,
                       unsigned number_of_channels,
                       uint32_t number_of_frames,
                       float sample_rate,
@@ -100,7 +100,6 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
 
   using OfflineGraphAutoLocker = DeferredTaskHandler::OfflineGraphAutoLocker;
 
-  // Document notification
   bool HasPendingActivity() const final;
 
  private:

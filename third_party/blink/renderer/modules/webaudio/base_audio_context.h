@@ -63,9 +63,9 @@ class ChannelSplitterNode;
 class ConstantSourceNode;
 class ConvolverNode;
 class DelayNode;
-class Document;
 class DynamicsCompressorNode;
 class ExceptionState;
+class LocalDOMWindow;
 class GainNode;
 class IIRFilterNode;
 class OscillatorNode;
@@ -112,7 +112,7 @@ class MODULES_EXPORT BaseAudioContext
 
   void Dispose();
 
-  // Document notification
+  // ExecutionContextLifecycleStateObserver overrides:
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
   void ContextDestroyed() override;
   bool HasPendingActivity() const override;
@@ -341,7 +341,7 @@ class MODULES_EXPORT BaseAudioContext
  protected:
   enum ContextType { kRealtimeContext, kOfflineContext };
 
-  explicit BaseAudioContext(Document*, enum ContextType);
+  explicit BaseAudioContext(LocalDOMWindow*, enum ContextType);
 
   void Initialize();
   virtual void Uninitialize();
@@ -367,8 +367,8 @@ class MODULES_EXPORT BaseAudioContext
   // When the context goes away, reject any pending script promise resolvers.
   virtual void RejectPendingResolvers();
 
-  // Returns the Document wich wich the instance is associated.
-  Document* GetDocument() const;
+  // Returns the window with which the instance is associated.
+  LocalDOMWindow* GetWindow() const;
 
   // The audio thread relies on the main thread to perform some operations over
   // the objects that it owns and controls; this method posts the task to

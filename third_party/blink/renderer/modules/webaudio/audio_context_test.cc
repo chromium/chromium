@@ -127,7 +127,7 @@ TEST_F(AudioContextTest, AudioContextOptions_WebAudioLatencyHint) {
           V8AudioContextLatencyCategory(
               V8AudioContextLatencyCategory::Enum::kInteractive)));
   AudioContext* interactive_context = AudioContext::Create(
-      GetDocument(), interactive_options, ASSERT_NO_EXCEPTION);
+      GetFrame().DomWindow(), interactive_options, ASSERT_NO_EXCEPTION);
 
   AudioContextOptions* balanced_options = AudioContextOptions::Create();
   balanced_options->setLatencyHint(
@@ -135,7 +135,7 @@ TEST_F(AudioContextTest, AudioContextOptions_WebAudioLatencyHint) {
           V8AudioContextLatencyCategory(
               V8AudioContextLatencyCategory::Enum::kBalanced)));
   AudioContext* balanced_context = AudioContext::Create(
-      GetDocument(), balanced_options, ASSERT_NO_EXCEPTION);
+      GetFrame().DomWindow(), balanced_options, ASSERT_NO_EXCEPTION);
   EXPECT_GT(balanced_context->baseLatency(),
             interactive_context->baseLatency());
 
@@ -145,7 +145,7 @@ TEST_F(AudioContextTest, AudioContextOptions_WebAudioLatencyHint) {
           V8AudioContextLatencyCategory(
               V8AudioContextLatencyCategory::Enum::kPlayback)));
   AudioContext* playback_context = AudioContext::Create(
-      GetDocument(), playback_options, ASSERT_NO_EXCEPTION);
+      GetFrame().DomWindow(), playback_options, ASSERT_NO_EXCEPTION);
   EXPECT_GT(playback_context->baseLatency(), balanced_context->baseLatency());
 
   AudioContextOptions* exact_too_small_options = AudioContextOptions::Create();
@@ -153,7 +153,7 @@ TEST_F(AudioContextTest, AudioContextOptions_WebAudioLatencyHint) {
       MakeGarbageCollected<V8UnionAudioContextLatencyCategoryOrDouble>(
           interactive_context->baseLatency() / 2));
   AudioContext* exact_too_small_context = AudioContext::Create(
-      GetDocument(), exact_too_small_options, ASSERT_NO_EXCEPTION);
+      GetFrame().DomWindow(), exact_too_small_options, ASSERT_NO_EXCEPTION);
   EXPECT_EQ(exact_too_small_context->baseLatency(),
             interactive_context->baseLatency());
 
@@ -165,7 +165,7 @@ TEST_F(AudioContextTest, AudioContextOptions_WebAudioLatencyHint) {
       MakeGarbageCollected<V8UnionAudioContextLatencyCategoryOrDouble>(
           exact_latency_sec));
   AudioContext* exact_ok_context = AudioContext::Create(
-      GetDocument(), exact_ok_options, ASSERT_NO_EXCEPTION);
+      GetFrame().DomWindow(), exact_ok_options, ASSERT_NO_EXCEPTION);
   EXPECT_EQ(exact_ok_context->baseLatency(), exact_latency_sec);
 
   AudioContextOptions* exact_too_big_options = AudioContextOptions::Create();
@@ -173,15 +173,15 @@ TEST_F(AudioContextTest, AudioContextOptions_WebAudioLatencyHint) {
       MakeGarbageCollected<V8UnionAudioContextLatencyCategoryOrDouble>(
           playback_context->baseLatency() * 2));
   AudioContext* exact_too_big_context = AudioContext::Create(
-      GetDocument(), exact_too_big_options, ASSERT_NO_EXCEPTION);
+      GetFrame().DomWindow(), exact_too_big_options, ASSERT_NO_EXCEPTION);
   EXPECT_EQ(exact_too_big_context->baseLatency(),
             playback_context->baseLatency());
 }
 
 TEST_F(AudioContextTest, AudioContextAudibility_ServiceUnbind) {
   AudioContextOptions* options = AudioContextOptions::Create();
-  AudioContext* audio_context =
-      AudioContext::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
 
   audio_context->set_was_audible_for_testing(true);
   ResetAudioContextManagerForAudioContext(audio_context);
@@ -193,8 +193,8 @@ TEST_F(AudioContextTest, AudioContextAudibility_ServiceUnbind) {
 
 TEST_F(AudioContextTest, ExecutionContextPaused) {
   AudioContextOptions* options = AudioContextOptions::Create();
-  AudioContext* audio_context =
-      AudioContext::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
 
   audio_context->set_was_audible_for_testing(true);
   EXPECT_FALSE(web_audio_device_paused_);
@@ -209,8 +209,8 @@ TEST_F(AudioContextTest, ExecutionContextPaused) {
 // Test initialization/uninitialization of MediaDeviceService.
 TEST_F(AudioContextTest, MediaDevicesService) {
   AudioContextOptions* options = AudioContextOptions::Create();
-  AudioContext* audio_context =
-      AudioContext::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
 
   EXPECT_FALSE(audio_context->is_media_device_service_initialized_);
   audio_context->InitializeMediaDeviceService();

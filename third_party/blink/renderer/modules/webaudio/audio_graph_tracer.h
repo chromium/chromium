@@ -18,7 +18,7 @@ class AudioListener;
 class AudioNode;
 class AudioParam;
 class BaseAudioContext;
-class Document;
+class LocalDOMWindow;
 class InspectorWebAudioAgent;
 class Page;
 
@@ -71,7 +71,7 @@ class MODULES_EXPORT AudioGraphTracer final
   BaseAudioContext* GetContextById(const String contextId);
 
   static AudioGraphTracer* FromPage(Page*);
-  static AudioGraphTracer* FromDocument(const Document&);
+  static AudioGraphTracer* FromWindow(const LocalDOMWindow&);
 
  private:
   Member<InspectorWebAudioAgent> inspector_agent_;

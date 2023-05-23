@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_periodic_wave_constraints.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -86,16 +85,15 @@
 namespace blink {
 
 // Constructor for rendering to the audio hardware.
-BaseAudioContext::BaseAudioContext(Document* document,
+BaseAudioContext::BaseAudioContext(LocalDOMWindow* window,
                                    enum ContextType context_type)
     : ActiveScriptWrappable<BaseAudioContext>({}),
-      ExecutionContextLifecycleStateObserver(document->GetExecutionContext()),
-      InspectorHelperMixin(*AudioGraphTracer::FromDocument(*document),
-                           String()),
+      ExecutionContextLifecycleStateObserver(window),
+      InspectorHelperMixin(*AudioGraphTracer::FromWindow(*window), String()),
       destination_node_(nullptr),
-      task_runner_(document->GetTaskRunner(TaskType::kInternalMedia)),
+      task_runner_(window->GetTaskRunner(TaskType::kInternalMedia)),
       deferred_task_handler_(DeferredTaskHandler::Create(
-          document->GetTaskRunner(TaskType::kInternalMedia))),
+          window->GetTaskRunner(TaskType::kInternalMedia))),
       periodic_wave_sine_(nullptr),
       periodic_wave_square_(nullptr),
       periodic_wave_sawtooth_(nullptr),
@@ -226,18 +224,20 @@ AudioDestinationNode* BaseAudioContext::destination() const {
 void BaseAudioContext::WarnIfContextClosed(const AudioHandler* handler) const {
   DCHECK(handler);
 
-  if (IsContextCleared() && GetDocument()) {
-    GetDocument()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kOther,
-        mojom::ConsoleMessageLevel::kWarning,
-        "Construction of " + handler->NodeTypeName() +
-            " is not useful when context is closed."));
+  if (IsContextCleared() && GetExecutionContext()) {
+    GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::ConsoleMessageSource::kOther,
+            mojom::ConsoleMessageLevel::kWarning,
+            "Construction of " + handler->NodeTypeName() +
+                " is not useful when context is closed."));
   }
 }
 
 void BaseAudioContext::WarnForConnectionIfContextClosed() const {
-  if (IsContextCleared() && GetDocument()) {
-    GetDocument()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+  if (IsContextCleared() && GetExecutionContext()) {
+    GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<
+                                             ConsoleMessage>(
         mojom::ConsoleMessageSource::kOther,
         mojom::ConsoleMessageLevel::kWarning,
         "Connecting nodes after the context has been closed is not useful."));
@@ -716,9 +716,8 @@ void BaseAudioContext::NotifySourceNodeFinishedProcessing(
   GetDeferredTaskHandler().GetFinishedSourceHandlers()->push_back(handler);
 }
 
-Document* BaseAudioContext::GetDocument() const {
-  LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
-  return window ? window->document() : nullptr;
+LocalDOMWindow* BaseAudioContext::GetWindow() const {
+  return To<LocalDOMWindow>(GetExecutionContext());
 }
 
 void BaseAudioContext::NotifySourceNodeStartedProcessing(AudioNode* node) {
