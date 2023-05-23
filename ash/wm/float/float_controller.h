@@ -148,13 +148,10 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
 
  private:
   class FloatedWindowInfo;
-  friend class DefaultState;
-  friend class TabletModeWindowState;
   friend class ClientControlledState;
-  friend class WindowFloatTest;
-  FRIEND_TEST_ALL_PREFIXES(WindowFloatMetricsTest, FloatWindowCountPerSession);
-  FRIEND_TEST_ALL_PREFIXES(WindowFloatMetricsTest,
-                           FloatWindowMovedToAnotherDeskCountPerSession);
+  friend class DefaultState;
+  friend class FloatTestApi;
+  friend class TabletModeWindowState;
 
   // Calls `FloatImpl()` and additionally updates the magnetism if needed.
   void FloatForTablet(aura::Window* window,

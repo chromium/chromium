@@ -22,6 +22,7 @@
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/float/float_test_api.h"
 #include "ash/wm/float/scoped_window_tucker.h"
 #include "ash/wm/float/tablet_mode_float_window_resizer.h"
 #include "ash/wm/float/tablet_mode_tuck_education.h"
@@ -890,7 +891,7 @@ TEST_F(WindowFloatMetricsTest, FloatWindowCountPerSession) {
   NewDesk();
   std::unique_ptr<aura::Window> window_2 = CreateFloatedWindow();
   // Check total counts.
-  EXPECT_EQ(Shell::Get()->float_controller()->floated_window_counter_, 3);
+  EXPECT_EQ(FloatTestApi::GetFloatedWindowCounter(), 3);
 }
 
 // Tests the float window moved to another desk counts.
@@ -924,12 +925,12 @@ TEST_F(WindowFloatMetricsTest, FloatWindowMovedToAnotherDeskCountPerSession) {
   auto* float_controller = Shell::Get()->float_controller();
   ASSERT_EQ(float_controller->FindDeskOfFloatedWindow(window_1.get()), desk_2);
   // Check total counts, it should count 1.
-  EXPECT_EQ(float_controller->floated_window_move_to_another_desk_counter_, 1);
+  EXPECT_EQ(FloatTestApi::GetFloatedWindowMoveToAnotherDeskCounter(), 1);
   // Move to `desk_2` and remove `desk_2` by combine 2 desks.
   // Check total counts, it should count 2.
   ActivateDesk(desk_2);
   RemoveDesk(desk_2, DeskCloseType::kCombineDesks);
-  EXPECT_EQ(float_controller->floated_window_move_to_another_desk_counter_, 2);
+  EXPECT_EQ(FloatTestApi::GetFloatedWindowMoveToAnotherDeskCounter(), 2);
 }
 
 // Tests that the float window duration histogram is properly recorded.

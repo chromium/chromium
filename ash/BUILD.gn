@@ -4156,6 +4156,8 @@ static_library("test_support") {
     "wm/desks/templates/saved_desk_test_helper.h",
     "wm/desks/templates/saved_desk_test_util.cc",
     "wm/desks/templates/saved_desk_test_util.h",
+    "wm/float/float_test_api.cc",
+    "wm/float/float_test_api.h",
     "wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.cc",
     "wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h",
     "wm/lock_state_controller_test_api.cc",
