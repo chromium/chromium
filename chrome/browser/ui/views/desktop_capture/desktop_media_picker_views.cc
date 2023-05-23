@@ -283,7 +283,7 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
 // preferCurrentTab constraint.
 BASE_FEATURE(kShareThisTabDialog,
              "ShareThisTabDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DesktopMediaPickerDialogView,
                                       kDesktopMediaPickerDialogViewIdentifier);
