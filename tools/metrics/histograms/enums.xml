@@ -60368,6 +60368,7 @@ from previous Chrome versions.
   <int value="-1274502866" label="AllowDisableMouseAcceleration:enabled"/>
   <int value="-1274154806" label="LacrosWaylandLogging:disabled"/>
   <int value="-1273786900" label="SyncAndroidPromosWithTitle:disabled"/>
+  <int value="-1273469081" label="PolicyLogsPageDesktop:enabled"/>
   <int value="-1272990935"
       label="SyncAndroidLimitNTPPromoImpressions:disabled"/>
   <int value="-1272593346" label="NewTabLoadingAnimation:disabled"/>
@@ -63579,6 +63580,7 @@ from previous Chrome versions.
   <int value="417709910"
       label="AutofillSendExperimentIdsInPaymentsRPCs:disabled"/>
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
+  <int value="418911180" label="PolicyLogsPageDesktop:disabled"/>
   <int value="420160748" label="CornerShortcuts:enabled"/>
   <int value="420356964" label="OobeJelly:enabled"/>
   <int value="420682005" label="AdaptiveButtonInTopToolbar:enabled"/>
