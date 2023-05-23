@@ -147,18 +147,18 @@ void InspectDOMHandler::DidReceiveConsoleMessage(
     return;
   }
 
-  std::vector<base::Value> params;
   std::string sender_frame_id = sender_frame->GetFrameId();
   web::WebFrame* main_web_frame =
       web_state->GetPageWorldWebFramesManager()->GetMainWebFrame();
   std::string main_web_frame_id =
       main_web_frame ? main_web_frame->GetFrameId() : sender_frame_id;
-  params.push_back(base::Value(main_web_frame_id));
-  params.push_back(base::Value(sender_frame_id));
-  params.push_back(base::Value(message.url.spec()));
-  params.push_back(base::Value(base::SysNSStringToUTF8(message.level)));
-  params.push_back(base::Value(base::SysNSStringToUTF8(message.message)));
 
+  auto params = base::Value::List()
+                    .Append(main_web_frame_id)
+                    .Append(sender_frame_id)
+                    .Append(message.url.spec())
+                    .Append(base::SysNSStringToUTF8(message.level))
+                    .Append(base::SysNSStringToUTF8(message.message));
   inspect_ui_main_frame->CallJavaScriptFunction(
       "inspectWebUI.logMessageReceived", params);
 }

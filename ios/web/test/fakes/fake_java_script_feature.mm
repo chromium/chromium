@@ -70,13 +70,13 @@ void FakeJavaScriptFeature::ReplaceDivContents(WebFrame* web_frame) {
 
 void FakeJavaScriptFeature::ReplyWithPostMessage(
     WebFrame* web_frame,
-    const std::vector<base::Value>& parameters) {
+    const base::Value::List& parameters) {
   CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessage, parameters);
 }
 
 void FakeJavaScriptFeature::ReplyWithPostMessageCommonJS(
     WebFrame* web_frame,
-    const std::vector<base::Value>& parameters) {
+    const base::Value::List& parameters) {
   CallJavaScriptFunction(web_frame, kScriptReplyWithPostMessageCommonJS,
                          parameters);
 }

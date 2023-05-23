@@ -32,12 +32,11 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   bool IsMainFrame() const override;
   GURL GetSecurityOrigin() const override;
   BrowserState* GetBrowserState() override;
+  bool CallJavaScriptFunction(const std::string& name,
+                              const base::Value::List& parameters) override;
   bool CallJavaScriptFunction(
       const std::string& name,
-      const std::vector<base::Value>& parameters) override;
-  bool CallJavaScriptFunction(
-      const std::string& name,
-      const std::vector<base::Value>& parameters,
+      const base::Value::List& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
   bool ExecuteJavaScript(const std::u16string& script) override;
@@ -67,7 +66,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // `last_received_content_world_`. Always returns true.
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const std::vector<base::Value>& parameters,
+      const base::Value::List& parameters,
       JavaScriptContentWorld* content_world) override;
   // The JavaScript call which would be executed by a real WebFrame will be
   // added to `java_script_calls_`. Always returns true.
@@ -76,7 +75,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // `content_world` is stored to `last_received_content_world_`.
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const std::vector<base::Value>& parameters,
+      const base::Value::List& parameters,
       JavaScriptContentWorld* content_world,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;

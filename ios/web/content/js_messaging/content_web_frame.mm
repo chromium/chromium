@@ -33,7 +33,7 @@ void WebWithErrorToContentJavaScriptCallbackAdapter(
 
 std::u16string CreateFunctionCallWithParameters(
     const std::string& name,
-    const std::vector<base::Value>& parameters) {
+    const base::Value::List& parameters) {
   std::vector<std::string> parameter_strings(parameters.size());
   for (size_t i = 0; i < parameters.size(); ++i) {
     base::JSONWriter::Write(parameters[i], &parameter_strings[i]);
@@ -84,13 +84,13 @@ BrowserState* ContentWebFrame::GetBrowserState() {
 
 bool ContentWebFrame::CallJavaScriptFunction(
     const std::string& name,
-    const std::vector<base::Value>& parameters) {
+    const base::Value::List& parameters) {
   return ExecuteJavaScript(CreateFunctionCallWithParameters(name, parameters));
 }
 
 bool ContentWebFrame::CallJavaScriptFunction(
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   // TODO(crbug.com/1423527): Handle timeouts.
@@ -100,7 +100,7 @@ bool ContentWebFrame::CallJavaScriptFunction(
 
 bool ContentWebFrame::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     JavaScriptContentWorld* content_world) {
   // TODO(crbug.com/1423527): Handle injecting into an isolated world.
   return ExecuteJavaScript(CreateFunctionCallWithParameters(name, parameters));
@@ -108,7 +108,7 @@ bool ContentWebFrame::CallJavaScriptFunctionInContentWorld(
 
 bool ContentWebFrame::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     JavaScriptContentWorld* content_world,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {

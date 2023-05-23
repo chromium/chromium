@@ -175,7 +175,7 @@ void JavaScriptFeature::ScriptMessageReceived(WebState* web_state,
 bool JavaScriptFeature::CallJavaScriptFunction(
     WebFrame* web_frame,
     const std::string& function_name,
-    const std::vector<base::Value>& parameters) {
+    const base::Value::List& parameters) {
   DCHECK(web_frame);
 
   JavaScriptFeatureManager* feature_manager =
@@ -193,7 +193,7 @@ bool JavaScriptFeature::CallJavaScriptFunction(
 bool JavaScriptFeature::CallJavaScriptFunction(
     WebFrame* web_frame,
     const std::string& function_name,
-    const std::vector<base::Value>& parameters,
+    const base::Value::List& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   DCHECK(web_frame);

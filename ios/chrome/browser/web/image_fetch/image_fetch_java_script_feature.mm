@@ -60,9 +60,9 @@ void ImageFetchJavaScriptFeature::GetImageData(web::WebState* web_state,
     return;
   }
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(call_id));
-  parameters.push_back(base::Value(url.spec()));
+  base::Value::List parameters;
+  parameters.Append(call_id);
+  parameters.Append(url.spec());
   CallJavaScriptFunction(main_frame, "imageFetch.getImageData", parameters);
 }
 

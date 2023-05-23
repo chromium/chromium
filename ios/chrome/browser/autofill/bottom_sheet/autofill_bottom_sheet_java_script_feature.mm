@@ -59,8 +59,8 @@ void AutofillBottomSheetJavaScriptFeature::AttachListeners(
   for (auto renderer_id : renderer_ids) {
     renderer_id_list.Append(static_cast<int>(renderer_id.value()));
   }
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(std::move(renderer_id_list)));
+  base::Value::List parameters;
+  parameters.Append(std::move(renderer_id_list));
   CallJavaScriptFunction(frame, "bottomSheet.attachListeners", parameters);
 }
 

@@ -91,9 +91,8 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   ASSERT_FALSE(feature()->last_received_web_state());
   ASSERT_FALSE(feature()->last_received_message());
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(
-      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
+  auto parameters =
+      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -120,9 +119,8 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   ASSERT_FALSE(feature()->last_received_web_state());
   ASSERT_FALSE(feature()->last_received_message());
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(
-      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
+  auto parameters =
+      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -149,9 +147,8 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
   ASSERT_FALSE(feature()->last_received_web_state());
   ASSERT_FALSE(feature()->last_received_message());
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(
-      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
+  auto parameters =
+      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessageCommonJS(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -277,9 +274,8 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, MessageHandlerInIsolatedWorld) {
   ASSERT_FALSE(feature()->last_received_web_state());
   ASSERT_FALSE(feature()->last_received_message());
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(
-      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
+  auto parameters =
+      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(GetMainFrame(), parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {

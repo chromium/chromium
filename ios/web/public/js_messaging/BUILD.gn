@@ -7,11 +7,14 @@ import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("js_messaging") {
   deps = [
-    "//base",
     "//ios/web/public/",
     "//url",
   ]
-  public_deps = [ "//third_party/abseil-cpp:absl" ]
+
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
 
   frameworks = [ "Foundation.framework" ]
 

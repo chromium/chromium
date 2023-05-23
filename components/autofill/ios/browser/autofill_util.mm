@@ -324,7 +324,7 @@ JavaScriptResultCallback CreateBoolCallback(
 }
 
 void ExecuteJavaScriptFunction(const std::string& name,
-                               const std::vector<base::Value>& parameters,
+                               const base::Value::List& parameters,
                                web::WebFrame* frame,
                                JavaScriptResultCallback callback) {
   __block JavaScriptResultCallback cb = std::move(callback);

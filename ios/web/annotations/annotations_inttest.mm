@@ -197,8 +197,8 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     const base::TimeDelta kCallJavascriptFunctionTimeout =
         kWaitForJSCompletionTimeout;
     __block bool message_received = false;
-    std::vector<base::Value> params;
-    params.push_back(base::Value(1000));
+    base::Value::List params;
+    params.Append(1000);
     MainWebFrame()->CallJavaScriptFunctionInContentWorld(
         "annotationsTest.getPageTaggedText", params, content_world_,
         base::BindOnce(^(const base::Value* result) {
@@ -218,8 +218,8 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     const base::TimeDelta kCallJavascriptFunctionTimeout =
         kWaitForJSCompletionTimeout;
     __block bool message_received = false;
-    std::vector<base::Value> params;
-    params.push_back(base::Value(index));
+    base::Value::List params;
+    params.Append(index);
     MainWebFrame()->CallJavaScriptFunctionInContentWorld(
         "annotationsTest.clickAnnotation", params, content_world_,
         base::BindOnce(^(const base::Value* result) {

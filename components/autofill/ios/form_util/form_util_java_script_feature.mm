@@ -46,9 +46,9 @@ FormUtilJavaScriptFeature::~FormUtilJavaScriptFeature() = default;
 void FormUtilJavaScriptFeature::SetUpForUniqueIDsWithInitialState(
     web::WebFrame* frame,
     uint32_t next_available_id) {
-  std::vector<base::Value> parameters;
-  parameters.emplace_back(static_cast<int>(next_available_id));
-  CallJavaScriptFunction(frame, "fill.setUpForUniqueIDs", parameters);
+  CallJavaScriptFunction(
+      frame, "fill.setUpForUniqueIDs",
+      base::Value::List().Append(static_cast<int>(next_available_id)));
 }
 
 }  // namespace autofill

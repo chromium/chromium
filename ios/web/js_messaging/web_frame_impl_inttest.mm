@@ -59,9 +59,9 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnMainFrame) {
   ASSERT_TRUE(main_frame);
 
   __block bool called = false;
-  std::vector<base::Value> params;
   main_frame->CallJavaScriptFunction(
-      "message.getFrameId", params, base::BindOnce(^(const base::Value* value) {
+      "message.getFrameId", base::Value::List(),
+      base::BindOnce(^(const base::Value* value) {
         ASSERT_TRUE(value->is_string());
         EXPECT_EQ(value->GetString(), main_frame->GetFrameId());
         called = true;
@@ -88,9 +88,9 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionOnIframe) {
   ASSERT_TRUE(iframe);
 
   __block bool called = false;
-  std::vector<base::Value> params;
   iframe->CallJavaScriptFunction(
-      "message.getFrameId", params, base::BindOnce(^(const base::Value* value) {
+      "message.getFrameId", base::Value::List(),
+      base::BindOnce(^(const base::Value* value) {
         ASSERT_TRUE(value->is_string());
         EXPECT_EQ(value->GetString(), iframe->GetFrameId());
         called = true;
@@ -116,9 +116,8 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionTimeout) {
   ASSERT_TRUE(main_frame);
 
   __block bool called = false;
-  std::vector<base::Value> params;
   main_frame->CallJavaScriptFunction(
-      "testFunctionNeverReturns", params,
+      "testFunctionNeverReturns", base::Value::List(),
       base::BindOnce(^(const base::Value* value) {
         EXPECT_FALSE(value);
         called = true;
@@ -152,14 +151,13 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
   JavaScriptContentWorld world(GetBrowserState(), WKContentWorld.pageWorld);
   __block bool called = false;
 
-  std::vector<base::Value> function_params;
   auto block = ^(const base::Value* value) {
     ASSERT_TRUE(value->is_string());
     EXPECT_EQ(value->GetString(), "10");
     called = true;
   };
   EXPECT_TRUE(main_frame_impl->CallJavaScriptFunctionInContentWorld(
-      "fakeFunction", function_params, &world, base::BindOnce(block),
+      "fakeFunction", base::Value::List(), &world, base::BindOnce(block),
       // Increase feature timeout in order to fail on test specific timeout.
       2 * kWaitForJSCompletionTimeout));
 
@@ -188,14 +186,13 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
   JavaScriptContentWorld world(GetBrowserState(),
                                WKContentWorld.defaultClientWorld);
   __block bool called = false;
-  std::vector<base::Value> function_params;
   auto block = ^(const base::Value* value) {
     ASSERT_TRUE(value->is_string());
     EXPECT_EQ(value->GetString(), "10");
     called = true;
   };
   EXPECT_TRUE(main_frame_impl->CallJavaScriptFunctionInContentWorld(
-      "fakeFunction", function_params, &world, base::BindOnce(block),
+      "fakeFunction", base::Value::List(), &world, base::BindOnce(block),
       // Increase feature timeout in order to fail on test specific timeout.
       2 * kWaitForJSCompletionTimeout));
 

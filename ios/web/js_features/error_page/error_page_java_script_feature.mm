@@ -90,8 +90,8 @@ void ErrorPageJavaScriptFeature::ScriptMessageReceived(
 
     int high_score = [[NSUserDefaults standardUserDefaults]
         integerForKey:kEasterEggHighScore];
-    std::vector<base::Value> parameters;
-    parameters.push_back(base::Value(high_score));
+
+    auto parameters = base::Value::List().Append(high_score);
     frame->CallJavaScriptFunction(
         "errorPageController.initializeEasterEggHighScore", parameters);
   }

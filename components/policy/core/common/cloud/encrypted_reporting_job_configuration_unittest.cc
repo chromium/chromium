@@ -378,10 +378,10 @@ TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddEncryptedRecord) {
 TEST_F(EncryptedReportingJobConfigurationTest, CorrectlyAddsMultipleRecords) {
   const std::vector<std::string> kEncryptedWrappedRecords{
       "T", "E", "S", "T", "_", "I", "N", "F", "O"};
-  std::vector<base::Value> records;
+  base::Value::List records;
   RequestPayloadBuilder builder;
   for (auto value : kEncryptedWrappedRecords) {
-    records.push_back(GenerateSingleRecord(value));
+    records.Append(GenerateSingleRecord(value));
     builder.AddRecord(records.back());
   }
 
@@ -429,10 +429,10 @@ TEST_F(EncryptedReportingJobConfigurationTest,
        CorrectlyAddsMultipleRecordsWithAttachEncryptionSettings) {
   const std::vector<std::string> kEncryptedWrappedRecords{
       "T", "E", "S", "T", "_", "I", "N", "F", "O"};
-  std::vector<base::Value> records;
+  base::Value::List records;
   RequestPayloadBuilder builder{/*attach_encryption_settings=*/true};
   for (auto value : kEncryptedWrappedRecords) {
-    records.push_back(GenerateSingleRecord(value));
+    records.Append(GenerateSingleRecord(value));
     builder.AddRecord(records.back());
   }
 

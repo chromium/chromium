@@ -52,9 +52,9 @@ void AnnotationsJavaScriptFeature::ExtractText(WebState* web_state,
     return;
   }
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(maximum_text_length));
-  parameters.push_back(base::Value(seq_id));
+  base::Value::List parameters;
+  parameters.Append(maximum_text_length);
+  parameters.Append(seq_id);
   CallJavaScriptFunction(frame, "annotations.extractText", parameters);
 }
 
@@ -67,8 +67,8 @@ void AnnotationsJavaScriptFeature::DecorateAnnotations(
     return;
   }
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(std::move(annotations)));
+  base::Value::List parameters;
+  parameters.Append(std::move(annotations));
   CallJavaScriptFunction(frame, "annotations.decorateAnnotations", parameters);
 }
 

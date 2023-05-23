@@ -20,8 +20,8 @@
 #error "This file requires ARC support."
 #endif
 
-using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
@@ -56,11 +56,11 @@ TEST_F(JavaScriptFeatureManagerPageContentWorldIntTest,
   ASSERT_FALSE(feature()->last_received_web_state());
   ASSERT_FALSE(feature()->last_received_message());
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(
-      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
   WebFrame* frame =
       feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
+
+  auto parameters =
+      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(frame, parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -99,9 +99,8 @@ TEST_F(JavaScriptFeatureManagerPageContentWorldIntTest,
 
   ASSERT_TRUE(child_frame);
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(
-      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
+  auto parameters =
+      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(child_frame, parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -145,11 +144,11 @@ TEST_F(JavaScriptFeatureManagerAnyContentWorldIntTest,
   ASSERT_FALSE(feature()->last_received_web_state());
   ASSERT_FALSE(feature()->last_received_message());
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(
-      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
   WebFrame* frame =
       feature()->GetWebFramesManager(web_state())->GetMainWebFrame();
+
+  auto parameters =
+      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(frame, parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
@@ -188,9 +187,8 @@ TEST_F(JavaScriptFeatureManagerAnyContentWorldIntTest,
 
   ASSERT_TRUE(child_frame);
 
-  std::vector<base::Value> parameters;
-  parameters.push_back(
-      base::Value(kFakeJavaScriptFeaturePostMessageReplyValue));
+  auto parameters =
+      base::Value::List().Append(kFakeJavaScriptFeaturePostMessageReplyValue);
   feature()->ReplyWithPostMessage(child_frame, parameters);
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {

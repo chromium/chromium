@@ -47,18 +47,15 @@ FormHandlersJavaScriptFeature::~FormHandlersJavaScriptFeature() = default;
 void FormHandlersJavaScriptFeature::TrackFormMutations(
     web::WebFrame* frame,
     int mutation_tracking_delay) {
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(mutation_tracking_delay));
-  CallJavaScriptFunction(frame, "formHandlers.trackFormMutations", parameters);
+  CallJavaScriptFunction(frame, "formHandlers.trackFormMutations",
+                         base::Value::List().Append(mutation_tracking_delay));
 }
 
 void FormHandlersJavaScriptFeature::ToggleTrackingUserEditedFields(
     web::WebFrame* frame,
     bool track_user_edited_fields) {
-  std::vector<base::Value> parameters;
-  parameters.push_back(base::Value(track_user_edited_fields));
   CallJavaScriptFunction(frame, "formHandlers.toggleTrackingUserEditedFields",
-                         parameters);
+                         base::Value::List().Append(track_user_edited_fields));
 }
 
 absl::optional<std::string>
