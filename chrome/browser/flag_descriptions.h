@@ -2799,6 +2799,9 @@ extern const char kUseWaitableSwapChainDescription[];
 extern const char kUseWinrtMidiApiName[];
 extern const char kUseWinrtMidiApiDescription[];
 
+extern const char kWindows11MicaTitlebarName[];
+extern const char kWindows11MicaTitlebarDescription[];
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kLaunchWindowsNativeHostsDirectlyName[];
 extern const char kLaunchWindowsNativeHostsDirectlyDescription[];

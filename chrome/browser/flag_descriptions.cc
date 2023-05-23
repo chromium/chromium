@@ -4893,6 +4893,11 @@ const char kUseWinrtMidiApiDescription[] =
     "Use Windows Runtime MIDI API for WebMIDI (effective only on Windows 10 or "
     "later).";
 
+const char kWindows11MicaTitlebarName[] = "Windows 11 Mica titlebar";
+const char kWindows11MicaTitlebarDescription[] =
+    "Use the DWM system-drawn Mica titlebar on Windows 11, version 22H2 (build "
+    "22621) and above.";
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 const char kLaunchWindowsNativeHostsDirectlyName[] =
     "Force Native Host Executables to Launch Directly";

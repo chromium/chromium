@@ -60219,6 +60219,7 @@ from previous Chrome versions.
   <int value="-1342039126" label="AshNewSystemMenu:enabled"/>
   <int value="-1341685799" label="AutofillAssistantDirectActions:enabled"/>
   <int value="-1341092934" label="enable-accelerated-overflow-scroll"/>
+  <int value="-1340674276" label="Windows11MicaTitlebar:enabled"/>
   <int value="-1340518055"
       label="AssistantNonPersonalizedVoiceSearch:disabled"/>
   <int value="-1340460869" label="ShutdownSupportForKeepalive:enabled"/>
@@ -62601,6 +62602,7 @@ from previous Chrome versions.
   <int value="-79327236" label="ModeSpecificPowerButton:enabled"/>
   <int value="-79015588"
       label="ExperimentalAccessibilityDictationMoreCommands:enabled"/>
+  <int value="-78721378" label="Windows11MicaTitlebar:disabled"/>
   <int value="-78308597" label="DesktopPartialTranslate:enabled"/>
   <int value="-78035185" label="custom_summary"/>
   <int value="-77872983" label="BookmarkAppsMac:disabled"/>

@@ -7865,6 +7865,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "windows11-mica-titlebar",
+    "owners": [ "j@jloeffler.com", "pkasting" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "xsurface-metrics-reporting",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 115
