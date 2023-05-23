@@ -104,9 +104,10 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         View dialogView =
                 getActivity().getLayoutInflater().inflate(R.layout.clear_reset_dialog, null);
         TextView mainMessage = dialogView.findViewById(R.id.main_message);
-        mainMessage.setText(R.string.website_reset_confirmation);
+        mainMessage.setText(getString(
+                R.string.website_group_reset_confirmation, mSiteGroup.getDomainAndRegistry()));
         TextView signedOutText = dialogView.findViewById(R.id.signed_out_text);
-        signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_message);
+        signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_group_message);
         TextView offlineText = dialogView.findViewById(R.id.offline_text);
         offlineText.setText(R.string.webstorage_clear_data_dialog_offline_message);
         if (getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()) {

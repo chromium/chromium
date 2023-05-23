@@ -1282,7 +1282,12 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         View dialogView =
                 getActivity().getLayoutInflater().inflate(R.layout.clear_reset_dialog, null);
         TextView mainMessage = dialogView.findViewById(R.id.main_message);
-        mainMessage.setText(R.string.website_reset_confirmation);
+        if (SiteSettingsUtil.isSiteDataImprovementEnabled()) {
+            mainMessage.setText(getString(
+                    R.string.website_single_reset_confirmation, mSite.getAddress().getHost()));
+        } else {
+            mainMessage.setText(R.string.website_reset_confirmation);
+        }
         TextView signedOutText = dialogView.findViewById(R.id.signed_out_text);
         signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_message);
         TextView offlineText = dialogView.findViewById(R.id.offline_text);
