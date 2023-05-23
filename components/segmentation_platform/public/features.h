@@ -65,6 +65,8 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformDeviceTier);
 // Feature flag for enabling tablet productivity user segment.
 BASE_DECLARE_FEATURE(kSegmentationPlatformTabletProductivityUser);
 
+// Feature flag for enabling model execution report sampling.
+BASE_DECLARE_FEATURE(kSegmentationPlatformModelExecutionSampling);
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

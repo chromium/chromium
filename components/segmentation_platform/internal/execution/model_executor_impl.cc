@@ -16,6 +16,7 @@
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -205,6 +206,8 @@ void ModelExecutorImpl::OnModelExecutionComplete(
         model_metadata.signal_storage_length() *
         metadata_utils::GetTimeUnit(model_metadata);
     if (state->segment_info.model_version() &&
+        state->segment_info.model_source() ==
+            proto::ModelSource::SERVER_MODEL_SOURCE &&
         SegmentationUkmHelper::AllowedToUploadData(signal_storage_length,
                                                    clock_)) {
       if (state->upload_tensors) {
