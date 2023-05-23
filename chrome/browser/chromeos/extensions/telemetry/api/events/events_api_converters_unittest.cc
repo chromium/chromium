@@ -5,7 +5,10 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
 
 #include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos::converters {
@@ -43,6 +46,162 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest,
   EXPECT_EQ(
       Convert(crosapi::TelemetryAudioJackEventInfo::DeviceType::kMicrophone),
       cx_events::AudioJackDeviceType::kMicrophone);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardConnectionType) {
+  EXPECT_EQ(
+      Convert(crosapi::TelemetryKeyboardConnectionType::kUnmappedEnumField),
+      cx_events::KeyboardConnectionType::kNone);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardConnectionType::kInternal),
+            cx_events::KeyboardConnectionType::kInternal);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardConnectionType::kUsb),
+            cx_events::KeyboardConnectionType::kUsb);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardConnectionType::kBluetooth),
+            cx_events::KeyboardConnectionType::kBluetooth);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardConnectionType::kUnknown),
+            cx_events::KeyboardConnectionType::kUnknown);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardPhysicalLayout) {
+  EXPECT_EQ(
+      Convert(crosapi::TelemetryKeyboardPhysicalLayout::kUnmappedEnumField),
+      cx_events::PhysicalKeyboardLayout::kNone);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardPhysicalLayout::kUnknown),
+            cx_events::PhysicalKeyboardLayout::kUnknown);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS),
+            cx_events::PhysicalKeyboardLayout::kChromeOs);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardMechanicalLayout) {
+  EXPECT_EQ(
+      Convert(crosapi::TelemetryKeyboardMechanicalLayout::kUnmappedEnumField),
+      cx_events::MechanicalKeyboardLayout::kNone);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardMechanicalLayout::kUnknown),
+            cx_events::MechanicalKeyboardLayout::kUnknown);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardMechanicalLayout::kAnsi),
+            cx_events::MechanicalKeyboardLayout::kAnsi);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardMechanicalLayout::kIso),
+            cx_events::MechanicalKeyboardLayout::kIso);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardMechanicalLayout::kJis),
+            cx_events::MechanicalKeyboardLayout::kJis);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardNumberPadPresence) {
+  EXPECT_EQ(
+      Convert(crosapi::TelemetryKeyboardNumberPadPresence::kUnmappedEnumField),
+      cx_events::KeyboardNumberPadPresence::kNone);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardNumberPadPresence::kUnknown),
+            cx_events::KeyboardNumberPadPresence::kUnknown);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardNumberPadPresence::kPresent),
+            cx_events::KeyboardNumberPadPresence::kPresent);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardNumberPadPresence::kNotPresent),
+            cx_events::KeyboardNumberPadPresence::kNotPresent);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRowKey) {
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kUnmappedEnumField),
+            cx_events::KeyboardTopRowKey::kNone);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kNone),
+            cx_events::KeyboardTopRowKey::kNoKey);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kUnknown),
+            cx_events::KeyboardTopRowKey::kUnknown);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kBack),
+            cx_events::KeyboardTopRowKey::kBack);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kForward),
+            cx_events::KeyboardTopRowKey::kForward);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kRefresh),
+            cx_events::KeyboardTopRowKey::kRefresh);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kFullscreen),
+            cx_events::KeyboardTopRowKey::kFullscreen);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kOverview),
+            cx_events::KeyboardTopRowKey::kOverview);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kScreenshot),
+            cx_events::KeyboardTopRowKey::kScreenshot);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kScreenBrightnessDown),
+            cx_events::KeyboardTopRowKey::kScreenBrightnessDown);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kScreenBrightnessUp),
+            cx_events::KeyboardTopRowKey::kScreenBrightnessUp);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kPrivacyScreenToggle),
+            cx_events::KeyboardTopRowKey::kPrivacyScreenToggle);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kMicrophoneMute),
+            cx_events::KeyboardTopRowKey::kMicrophoneMute);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kVolumeMute),
+            cx_events::KeyboardTopRowKey::kVolumeMute);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kVolumeDown),
+            cx_events::KeyboardTopRowKey::kVolumeDown);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kVolumeUp),
+            cx_events::KeyboardTopRowKey::kVolumeUp);
+
+  EXPECT_EQ(
+      Convert(crosapi::TelemetryKeyboardTopRowKey::kKeyboardBacklightToggle),
+      cx_events::KeyboardTopRowKey::kKeyboardBacklightToggle);
+
+  EXPECT_EQ(
+      Convert(crosapi::TelemetryKeyboardTopRowKey::kKeyboardBacklightDown),
+      cx_events::KeyboardTopRowKey::kKeyboardBacklightDown);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kKeyboardBacklightUp),
+            cx_events::KeyboardTopRowKey::kKeyboardBacklightUp);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kNextTrack),
+            cx_events::KeyboardTopRowKey::kNextTrack);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kPreviousTrack),
+            cx_events::KeyboardTopRowKey::kPreviousTrack);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kPlayPause),
+            cx_events::KeyboardTopRowKey::kPlayPause);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kScreenMirror),
+            cx_events::KeyboardTopRowKey::kScreenMirror);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRowKey::kDelete),
+            cx_events::KeyboardTopRowKey::kDelete);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRightKey) {
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRightKey::kUnmappedEnumField),
+            cx_events::KeyboardTopRightKey::kNone);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRightKey::kUnknown),
+            cx_events::KeyboardTopRightKey::kUnknown);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRightKey::kPower),
+            cx_events::KeyboardTopRightKey::kPower);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRightKey::kLock),
+            cx_events::KeyboardTopRightKey::kLock);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryKeyboardTopRightKey::kControlPanel),
+            cx_events::KeyboardTopRightKey::kControlPanel);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertLidState) {
@@ -115,6 +274,134 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kPower),
             crosapi::TelemetryEventCategoryEnum::kPower);
+
+  EXPECT_EQ(Convert(cx_events::EventCategory::kKeyboardDiagnostic),
+            crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertKeyboardInfo) {
+  constexpr int kId = 1;
+  constexpr char kName[] = "TESTNAME";
+  constexpr char kRegionCode[] = "de";
+
+  auto input = crosapi::TelemetryKeyboardInfo::New();
+  input->id = crosapi::UInt32Value::New(kId);
+  input->connection_type = crosapi::TelemetryKeyboardConnectionType::kBluetooth;
+  input->name = kName;
+  input->physical_layout = crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS;
+  input->mechanical_layout = crosapi::TelemetryKeyboardMechanicalLayout::kAnsi;
+  input->region_code = kRegionCode;
+  input->number_pad_present =
+      crosapi::TelemetryKeyboardNumberPadPresence::kPresent;
+  input->top_row_keys = {crosapi::TelemetryKeyboardTopRowKey::kBack,
+                         crosapi::TelemetryKeyboardTopRowKey::kForward};
+  input->top_right_key = crosapi::TelemetryKeyboardTopRightKey::kPower;
+  input->has_assistant_key = crosapi::BoolValue::New(true);
+
+  auto result = ConvertStructPtr<cx_events::KeyboardInfo>(std::move(input));
+
+  ASSERT_TRUE(result.id.has_value());
+  EXPECT_EQ(*result.id, kId);
+
+  EXPECT_EQ(result.connection_type,
+            cx_events::KeyboardConnectionType::kBluetooth);
+
+  ASSERT_TRUE(result.name.has_value());
+  EXPECT_EQ(*result.name, kName);
+
+  EXPECT_EQ(result.physical_layout,
+            cx_events::PhysicalKeyboardLayout::kChromeOs);
+  EXPECT_EQ(result.mechanical_layout,
+            cx_events::MechanicalKeyboardLayout::kAnsi);
+
+  ASSERT_TRUE(result.region_code.has_value());
+  EXPECT_EQ(*result.region_code, kRegionCode);
+
+  EXPECT_EQ(result.number_pad_present,
+            cx_events::KeyboardNumberPadPresence::kPresent);
+
+  ASSERT_EQ(result.top_row_keys.size(), 2UL);
+  EXPECT_THAT(result.top_row_keys,
+              testing::ElementsAre(cx_events::KeyboardTopRowKey::kBack,
+                                   cx_events::KeyboardTopRowKey::kForward));
+
+  EXPECT_EQ(result.top_right_key, cx_events::KeyboardTopRightKey::kPower);
+
+  ASSERT_TRUE(result.has_assistant_key.has_value());
+  EXPECT_TRUE(result.has_assistant_key.value());
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest,
+     ConvertKeyboardDiagnosticEventInfo) {
+  constexpr int kId = 1;
+  constexpr char kName[] = "TESTNAME";
+  constexpr char kRegionCode[] = "de";
+
+  const std::vector<uint32_t> kTestedKeys = {1, 2, 3, 4, 5, 6};
+  const std::vector<uint32_t> kTestedTopRowKeys = {7, 8, 9, 10, 11, 12};
+
+  auto keyboard = crosapi::TelemetryKeyboardInfo::New();
+  keyboard->id = crosapi::UInt32Value::New(kId);
+  keyboard->connection_type =
+      crosapi::TelemetryKeyboardConnectionType::kBluetooth;
+  keyboard->name = kName;
+  keyboard->physical_layout =
+      crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS;
+  keyboard->mechanical_layout =
+      crosapi::TelemetryKeyboardMechanicalLayout::kAnsi;
+  keyboard->region_code = kRegionCode;
+  keyboard->number_pad_present =
+      crosapi::TelemetryKeyboardNumberPadPresence::kPresent;
+  keyboard->top_row_keys = {crosapi::TelemetryKeyboardTopRowKey::kBack,
+                            crosapi::TelemetryKeyboardTopRowKey::kForward};
+  keyboard->top_right_key = crosapi::TelemetryKeyboardTopRightKey::kPower;
+  keyboard->has_assistant_key = crosapi::BoolValue::New(true);
+
+  auto input = crosapi::TelemetryKeyboardDiagnosticEventInfo::New();
+  input->keyboard_info = std::move(keyboard);
+  input->tested_keys = kTestedKeys;
+  input->tested_top_row_keys = kTestedTopRowKeys;
+
+  auto result = ConvertStructPtr<cx_events::KeyboardDiagnosticEventInfo>(
+      std::move(input));
+
+  ASSERT_TRUE(result.keyboard_info.has_value());
+
+  auto keyboard_info_result = std::move(result.keyboard_info.value());
+  ASSERT_TRUE(keyboard_info_result.id.has_value());
+  EXPECT_EQ(*keyboard_info_result.id, kId);
+
+  EXPECT_EQ(keyboard_info_result.connection_type,
+            cx_events::KeyboardConnectionType::kBluetooth);
+
+  ASSERT_TRUE(keyboard_info_result.name.has_value());
+  EXPECT_EQ(*keyboard_info_result.name, kName);
+
+  EXPECT_EQ(keyboard_info_result.physical_layout,
+            cx_events::PhysicalKeyboardLayout::kChromeOs);
+  EXPECT_EQ(keyboard_info_result.mechanical_layout,
+            cx_events::MechanicalKeyboardLayout::kAnsi);
+
+  ASSERT_TRUE(keyboard_info_result.region_code.has_value());
+  EXPECT_EQ(*keyboard_info_result.region_code, kRegionCode);
+
+  EXPECT_EQ(keyboard_info_result.number_pad_present,
+            cx_events::KeyboardNumberPadPresence::kPresent);
+
+  ASSERT_EQ(keyboard_info_result.top_row_keys.size(), 2UL);
+  EXPECT_THAT(keyboard_info_result.top_row_keys,
+              testing::ElementsAre(cx_events::KeyboardTopRowKey::kBack,
+                                   cx_events::KeyboardTopRowKey::kForward));
+
+  EXPECT_EQ(keyboard_info_result.top_right_key,
+            cx_events::KeyboardTopRightKey::kPower);
+
+  ASSERT_TRUE(keyboard_info_result.has_assistant_key.has_value());
+  EXPECT_TRUE(keyboard_info_result.has_assistant_key.value());
+
+  EXPECT_THAT(result.tested_keys, testing::ElementsAre(1, 2, 3, 4, 5, 6));
+  EXPECT_THAT(result.tested_top_row_keys,
+              testing::ElementsAre(7, 8, 9, 10, 11, 12));
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertAudioJackEventInfo) {

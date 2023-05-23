@@ -92,6 +92,7 @@ source_set("event_converters") {
     "//base",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -139,6 +140,7 @@ source_set("unit_tests") {
     ":event_converters",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/crosapi/mojom",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

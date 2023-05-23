@@ -4,9 +4,14 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
 
+#include <cstdint>
+
 #include "base/notreached.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
+#include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos::converters {
 
@@ -25,6 +30,48 @@ cx_events::AudioJackEventInfo UncheckedConvertPtr(
 
   result.event = Convert(ptr->state);
   result.device_type = Convert(ptr->device_type);
+
+  return result;
+}
+
+cx_events::KeyboardInfo UncheckedConvertPtr(
+    crosapi::TelemetryKeyboardInfoPtr ptr) {
+  cx_events::KeyboardInfo result;
+
+  result.id = ConvertStructPtr<absl::optional<uint32_t>>(std::move(ptr->id));
+  result.connection_type = Convert(ptr->connection_type);
+  result.name = std::move(ptr->name);
+  result.physical_layout = Convert(ptr->physical_layout);
+  result.mechanical_layout = Convert(ptr->mechanical_layout);
+  result.region_code = std::move(ptr->region_code);
+  result.number_pad_present = Convert(ptr->number_pad_present);
+  if (ptr->top_row_keys) {
+    result.top_row_keys =
+        ConvertVector<cx_events::KeyboardTopRowKey>(ptr->top_row_keys.value());
+  }
+  result.top_right_key = Convert(ptr->top_right_key);
+  if (ptr->has_assistant_key) {
+    result.has_assistant_key = ptr->has_assistant_key->value;
+  }
+
+  return result;
+}
+
+cx_events::KeyboardDiagnosticEventInfo UncheckedConvertPtr(
+    crosapi::TelemetryKeyboardDiagnosticEventInfoPtr ptr) {
+  cx_events::KeyboardDiagnosticEventInfo result;
+
+  result.keyboard_info =
+      ConvertStructPtr<cx_events::KeyboardInfo>(std::move(ptr->keyboard_info));
+
+  if (ptr->tested_keys) {
+    result.tested_keys = ConvertVector<int>(ptr->tested_keys.value());
+  }
+
+  if (ptr->tested_top_row_keys) {
+    result.tested_top_row_keys =
+        ConvertVector<int>(ptr->tested_top_row_keys.value());
+  }
 
   return result;
 }
@@ -70,6 +117,10 @@ cx_events::PowerEventInfo UncheckedConvertPtr(
   return result;
 }
 
+absl::optional<uint32_t> UncheckedConvertPtr(crosapi::UInt32ValuePtr ptr) {
+  return ptr->value;
+}
+
 }  // namespace unchecked
 
 cx_events::AudioJackEvent Convert(
@@ -94,6 +145,140 @@ cx_events::AudioJackDeviceType Convert(
       return cx_events::AudioJackDeviceType::kHeadphone;
     case crosapi::TelemetryAudioJackEventInfo_DeviceType::kMicrophone:
       return cx_events::AudioJackDeviceType::kMicrophone;
+  }
+  NOTREACHED();
+}
+
+cx_events::KeyboardConnectionType Convert(
+    crosapi::TelemetryKeyboardConnectionType input) {
+  switch (input) {
+    case crosapi::TelemetryKeyboardConnectionType::kUnmappedEnumField:
+      return cx_events::KeyboardConnectionType::kNone;
+    case crosapi::TelemetryKeyboardConnectionType::kInternal:
+      return cx_events::KeyboardConnectionType::kInternal;
+    case crosapi::TelemetryKeyboardConnectionType::kUsb:
+      return cx_events::KeyboardConnectionType::kUsb;
+    case crosapi::TelemetryKeyboardConnectionType::kBluetooth:
+      return cx_events::KeyboardConnectionType::kBluetooth;
+    case crosapi::TelemetryKeyboardConnectionType::kUnknown:
+      return cx_events::KeyboardConnectionType::kUnknown;
+  }
+  NOTREACHED();
+}
+
+cx_events::PhysicalKeyboardLayout Convert(
+    crosapi::TelemetryKeyboardPhysicalLayout input) {
+  switch (input) {
+    case crosapi::TelemetryKeyboardPhysicalLayout::kUnmappedEnumField:
+      return cx_events::PhysicalKeyboardLayout::kNone;
+    case crosapi::TelemetryKeyboardPhysicalLayout::kUnknown:
+      return cx_events::PhysicalKeyboardLayout::kUnknown;
+    case crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS:
+      return cx_events::PhysicalKeyboardLayout::kChromeOs;
+  }
+  NOTREACHED();
+}
+
+cx_events::MechanicalKeyboardLayout Convert(
+    crosapi::TelemetryKeyboardMechanicalLayout input) {
+  switch (input) {
+    case crosapi::TelemetryKeyboardMechanicalLayout::kUnmappedEnumField:
+      return cx_events::MechanicalKeyboardLayout::kNone;
+    case crosapi::TelemetryKeyboardMechanicalLayout::kUnknown:
+      return cx_events::MechanicalKeyboardLayout::kUnknown;
+    case crosapi::TelemetryKeyboardMechanicalLayout::kAnsi:
+      return cx_events::MechanicalKeyboardLayout::kAnsi;
+    case crosapi::TelemetryKeyboardMechanicalLayout::kIso:
+      return cx_events::MechanicalKeyboardLayout::kIso;
+    case crosapi::TelemetryKeyboardMechanicalLayout::kJis:
+      return cx_events::MechanicalKeyboardLayout::kJis;
+  }
+  NOTREACHED();
+}
+
+cx_events::KeyboardNumberPadPresence Convert(
+    crosapi::TelemetryKeyboardNumberPadPresence input) {
+  switch (input) {
+    case crosapi::TelemetryKeyboardNumberPadPresence::kUnmappedEnumField:
+      return cx_events::KeyboardNumberPadPresence::kNone;
+    case crosapi::TelemetryKeyboardNumberPadPresence::kUnknown:
+      return cx_events::KeyboardNumberPadPresence::kUnknown;
+    case crosapi::TelemetryKeyboardNumberPadPresence::kPresent:
+      return cx_events::KeyboardNumberPadPresence::kPresent;
+    case crosapi::TelemetryKeyboardNumberPadPresence::kNotPresent:
+      return cx_events::KeyboardNumberPadPresence::kNotPresent;
+  }
+  NOTREACHED();
+}
+
+cx_events::KeyboardTopRowKey Convert(
+    crosapi::TelemetryKeyboardTopRowKey input) {
+  switch (input) {
+    case crosapi::TelemetryKeyboardTopRowKey::kUnmappedEnumField:
+      return cx_events::KeyboardTopRowKey::kNone;
+    case crosapi::TelemetryKeyboardTopRowKey::kNone:
+      return cx_events::KeyboardTopRowKey::kNoKey;
+    case crosapi::TelemetryKeyboardTopRowKey::kUnknown:
+      return cx_events::KeyboardTopRowKey::kUnknown;
+    case crosapi::TelemetryKeyboardTopRowKey::kBack:
+      return cx_events::KeyboardTopRowKey::kBack;
+    case crosapi::TelemetryKeyboardTopRowKey::kForward:
+      return cx_events::KeyboardTopRowKey::kForward;
+    case crosapi::TelemetryKeyboardTopRowKey::kRefresh:
+      return cx_events::KeyboardTopRowKey::kRefresh;
+    case crosapi::TelemetryKeyboardTopRowKey::kFullscreen:
+      return cx_events::KeyboardTopRowKey::kFullscreen;
+    case crosapi::TelemetryKeyboardTopRowKey::kOverview:
+      return cx_events::KeyboardTopRowKey::kOverview;
+    case crosapi::TelemetryKeyboardTopRowKey::kScreenshot:
+      return cx_events::KeyboardTopRowKey::kScreenshot;
+    case crosapi::TelemetryKeyboardTopRowKey::kScreenBrightnessDown:
+      return cx_events::KeyboardTopRowKey::kScreenBrightnessDown;
+    case crosapi::TelemetryKeyboardTopRowKey::kScreenBrightnessUp:
+      return cx_events::KeyboardTopRowKey::kScreenBrightnessUp;
+    case crosapi::TelemetryKeyboardTopRowKey::kPrivacyScreenToggle:
+      return cx_events::KeyboardTopRowKey::kPrivacyScreenToggle;
+    case crosapi::TelemetryKeyboardTopRowKey::kMicrophoneMute:
+      return cx_events::KeyboardTopRowKey::kMicrophoneMute;
+    case crosapi::TelemetryKeyboardTopRowKey::kVolumeMute:
+      return cx_events::KeyboardTopRowKey::kVolumeMute;
+    case crosapi::TelemetryKeyboardTopRowKey::kVolumeDown:
+      return cx_events::KeyboardTopRowKey::kVolumeDown;
+    case crosapi::TelemetryKeyboardTopRowKey::kVolumeUp:
+      return cx_events::KeyboardTopRowKey::kVolumeUp;
+    case crosapi::TelemetryKeyboardTopRowKey::kKeyboardBacklightToggle:
+      return cx_events::KeyboardTopRowKey::kKeyboardBacklightToggle;
+    case crosapi::TelemetryKeyboardTopRowKey::kKeyboardBacklightDown:
+      return cx_events::KeyboardTopRowKey::kKeyboardBacklightDown;
+    case crosapi::TelemetryKeyboardTopRowKey::kKeyboardBacklightUp:
+      return cx_events::KeyboardTopRowKey::kKeyboardBacklightUp;
+    case crosapi::TelemetryKeyboardTopRowKey::kNextTrack:
+      return cx_events::KeyboardTopRowKey::kNextTrack;
+    case crosapi::TelemetryKeyboardTopRowKey::kPreviousTrack:
+      return cx_events::KeyboardTopRowKey::kPreviousTrack;
+    case crosapi::TelemetryKeyboardTopRowKey::kPlayPause:
+      return cx_events::KeyboardTopRowKey::kPlayPause;
+    case crosapi::TelemetryKeyboardTopRowKey::kScreenMirror:
+      return cx_events::KeyboardTopRowKey::kScreenMirror;
+    case crosapi::TelemetryKeyboardTopRowKey::kDelete:
+      return cx_events::KeyboardTopRowKey::kDelete;
+  }
+  NOTREACHED();
+}
+
+cx_events::KeyboardTopRightKey Convert(
+    crosapi::TelemetryKeyboardTopRightKey input) {
+  switch (input) {
+    case crosapi::TelemetryKeyboardTopRightKey::kUnmappedEnumField:
+      return cx_events::KeyboardTopRightKey::kNone;
+    case crosapi::TelemetryKeyboardTopRightKey::kUnknown:
+      return cx_events::KeyboardTopRightKey::kUnknown;
+    case crosapi::TelemetryKeyboardTopRightKey::kPower:
+      return cx_events::KeyboardTopRightKey::kPower;
+    case crosapi::TelemetryKeyboardTopRightKey::kLock:
+      return cx_events::KeyboardTopRightKey::kLock;
+    case crosapi::TelemetryKeyboardTopRightKey::kControlPanel:
+      return cx_events::KeyboardTopRightKey::kControlPanel;
   }
   NOTREACHED();
 }
@@ -164,8 +349,14 @@ crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
       return crosapi::TelemetryEventCategoryEnum::kSdCard;
     case cx_events::EventCategory::kPower:
       return crosapi::TelemetryEventCategoryEnum::kPower;
+    case cx_events::EventCategory::kKeyboardDiagnostic:
+      return crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic;
   }
   NOTREACHED();
+}
+
+int Convert(uint32_t input) {
+  return static_cast<int>(input);
 }
 
 }  // namespace chromeos::converters
