@@ -1201,4 +1201,59 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ControlTimeout) {
   EXPECT_THAT(result_future.Take(), IsError(SmartCardError::kNoService));
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, GetAttrib) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, R"(
+      chrome.smartCardProviderPrivate.onGetAttribRequested.addListener(
+          getAttrib);
+
+      function getAttrib(requestId, scardHandle, attribId) {
+        if (scardHandle !== validHandle || attribId !== 111) {
+          chrome.smartCardProviderPrivate.reportDataResult(requestId,
+            new Uint8Array().buffer,
+            "INVALID_PARAMETER");
+          return;
+        }
+
+        let responseData = new Uint8Array([1, 100, 255]);
+
+        chrome.smartCardProviderPrivate.reportDataResult(requestId,
+          responseData.buffer, "SUCCESS");
+      }
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
+
+  connection->GetAttrib(111u, result_future.GetCallback());
+
+  device::mojom::SmartCardDataResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_data());
+
+  EXPECT_EQ(result->get_data(), std::vector<uint8_t>({1u, 100u, 255u}));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, GetAttribTimeout) {
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
+
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, R"(
+      chrome.smartCardProviderPrivate.onGetAttribRequested.addListener(
+          function (requestId, scardHandle, attribId) {
+            // Do nothing.
+          });
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
+
+  connection->GetAttrib(111u, result_future.GetCallback());
+
+  device::mojom::SmartCardDataResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
 }  // namespace extensions

@@ -532,6 +532,23 @@ void SmartCardProviderPrivateAPI::SendControl(ContextId scard_context,
           .Append(base::Value(std::move(data))));
 }
 
+void SmartCardProviderPrivateAPI::SendGetAttrib(ContextId scard_context,
+                                                Handle handle,
+                                                uint32_t id,
+                                                GetAttribCallback callback) {
+  auto process_result =
+      base::BindOnce(&SmartCardProviderPrivateAPI::ProcessDataResult,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  DispatchEventWithTimeout(
+      scard_context, scard_api::OnGetAttribRequested::kEventName,
+      extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_GET_ATTRIB_REQUESTED,
+      std::move(process_result), std::move(callback),
+      &SmartCardProviderPrivateAPI::OnGetAttribTimeout,
+      /*event_arguments=*/
+      base::Value::List().Append(handle.GetUnsafeValue()).Append(int(id)));
+}
+
 void SmartCardProviderPrivateAPI::ReportResult(
     RequestId request_id,
     ResultArgs result_args,
@@ -1057,6 +1074,20 @@ void SmartCardProviderPrivateAPI::Control(uint32_t control_code,
                      control_code, std::move(data), std::move(callback)));
 }
 
+void SmartCardProviderPrivateAPI::GetAttrib(uint32_t id,
+                                            GetAttribCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const auto& [context_id, handle] = connection_receivers_.current_context();
+  CHECK(context_id);
+  CHECK(handle);
+
+  RunOrQueueRequest(context_id,
+                    base::BindOnce(&SmartCardProviderPrivateAPI::SendGetAttrib,
+                                   weak_ptr_factory_.GetWeakPtr(), context_id,
+                                   handle, id, std::move(callback)));
+}
+
 SmartCardProviderPrivateAPI::ContextData&
 SmartCardProviderPrivateAPI::GetContextData(ContextId scard_context) {
   auto it = context_data_map_.find(scard_context);
@@ -1126,6 +1157,11 @@ ON_TIMEOUT_IMPL(Transmit,
                 SmartCardResult::NewError(SmartCardError::kNoService))
 
 ON_TIMEOUT_IMPL(Control,
+                ReportResult,
+                std::vector<uint8_t>(),
+                SmartCardResult::NewError(SmartCardError::kNoService))
+
+ON_TIMEOUT_IMPL(GetAttrib,
                 ReportResult,
                 std::vector<uint8_t>(),
                 SmartCardResult::NewError(SmartCardError::kNoService))

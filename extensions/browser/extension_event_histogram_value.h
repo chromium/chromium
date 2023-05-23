@@ -537,6 +537,7 @@ enum HistogramValue {
   SMART_CARD_PROVIDER_PRIVATE_ON_TRANSMIT_REQUESTED = 515,
   SMART_CARD_PROVIDER_PRIVATE_ON_CONTROL_REQUESTED = 516,
   OS_EVENTS_ON_POWER_EVENT = 517,
+  SMART_CARD_PROVIDER_PRIVATE_ON_GET_ATTRIB_REQUESTED = 518,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
