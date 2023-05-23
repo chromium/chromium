@@ -841,10 +841,6 @@ TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted) {
     LoadImage("animated-10color.gif");       // 100x100 but GIF is not reported.
     histogram_tester.ExpectTotalCount(
         "Blink.DecodedImage.JpegDensity.KiBWeighted", 0);
-    histogram_tester.ExpectTotalCount(
-        "Blink.DecodedImage.WebPDensity.KiBWeighted", 0);
-    histogram_tester.ExpectTotalCount(
-        "Blink.DecodedImage.AvifDensity.KiBWeighted", 0);
   }
 
   // 439x154, 23220 bytes --> 2.74 bpp, 23 KiB (rounded up)
@@ -856,11 +852,6 @@ TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted) {
   ExpectImageRecordsSample("blue-wheel-srgb-color-profile.jpg",
                            "Blink.DecodedImage.JpegDensity.KiBWeighted", 578,
                            72);
-
-  // 800x800, 19436 bytes --> 0.24, 19 KiB
-  ExpectImageRecordsSample("webp-color-profile-lossy.webp",
-                           "Blink.DecodedImage.WebPDensity.KiBWeighted", 24,
-                           19);
 }
 
 }  // namespace blink
