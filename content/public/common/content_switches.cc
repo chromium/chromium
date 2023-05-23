@@ -933,8 +933,9 @@ const char kWebXrRuntimeNone[] = "no-vr-runtime";
 const char kWebXrRuntimeOrientationSensors[] = "orientation-sensors";
 
 // The following are the runtimes that WebXr supports.
+const char kWebXrRuntimeCardboard[] = "cardboard";
+const char kWebXrRuntimeGVR[] = "gvr";
 const char kWebXrRuntimeOpenXr[] = "openxr";
-const char kWebXrRuntimeWMR[] = "windows-mixed-reality";
 
 #if BUILDFLAG(IS_ANDROID)
 // Disable Media Session API

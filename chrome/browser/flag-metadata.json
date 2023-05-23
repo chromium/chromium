@@ -2953,6 +2953,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-openxr-android",
+    "owners": [ "alcooper", "bajones", "bialpio", "xr-dev@chromium.org" ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "enable-os-feedback",
     "owners": [ "xiangdongkong", "cros-feedback-app@google.com" ],
     "expiry_milestone": 116

@@ -442,7 +442,14 @@ const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kWebXrRuntimeChoiceNone, switches::kWebXrForceRuntime,
      switches::kWebXrRuntimeNone},
-
+#if BUILDFLAG(ENABLE_CARDBOARD)
+    {flag_descriptions::kWebXrRuntimeChoiceCardboard,
+     switches::kWebXrForceRuntime, switches::kWebXrRuntimeCardboard},
+#endif
+#if BUILDFLAG(ENABLE_GVR_SERVICES)
+    {flag_descriptions::kWebXrRuntimeChoiceGVR, switches::kWebXrForceRuntime,
+     switches::kWebXrRuntimeGVR},
+#endif
 #if BUILDFLAG(ENABLE_OPENXR)
     {flag_descriptions::kWebXrRuntimeChoiceOpenXR, switches::kWebXrForceRuntime,
      switches::kWebXrRuntimeOpenXr},
@@ -4968,12 +4975,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebXrIncubationsDescription, kOsAll,
      FEATURE_VALUE_TYPE(device::features::kWebXrIncubations)},
     {"webxr-runtime", flag_descriptions::kWebXrForceRuntimeName,
-     flag_descriptions::kWebXrForceRuntimeDescription, kOsDesktop,
+     flag_descriptions::kWebXrForceRuntimeDescription, kOsDesktop | kOsAndroid,
      MULTI_VALUE_TYPE(kWebXrForceRuntimeChoices)},
 #if BUILDFLAG(IS_ANDROID)
     {"webxr-shared-buffers", flag_descriptions::kWebXrSharedBuffersName,
      flag_descriptions::kWebXrSharedBuffersDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(device::features::kWebXrSharedBuffers)},
+#if BUILDFLAG(ENABLE_OPENXR)
+    {"enable-openxr-android", flag_descriptions::kOpenXRName,
+     flag_descriptions::kOpenXRDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(device::features::kOpenXR)},
+#endif
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // ENABLE_VR
 #if BUILDFLAG(IS_CHROMEOS_ASH)

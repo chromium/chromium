@@ -242,9 +242,10 @@ CONTENT_EXPORT extern const char kWebRtcLocalEventLogging[];
 extern const char kWebRtcMaxCaptureFramerate[];
 CONTENT_EXPORT extern const char kWebXrForceRuntime[];
 CONTENT_EXPORT extern const char kWebXrRuntimeNone[];
+CONTENT_EXPORT extern const char kWebXrRuntimeCardboard[];
+CONTENT_EXPORT extern const char kWebXrRuntimeGVR[];
 CONTENT_EXPORT extern const char kWebXrRuntimeOrientationSensors[];
 CONTENT_EXPORT extern const char kWebXrRuntimeOpenXr[];
-CONTENT_EXPORT extern const char kWebXrRuntimeWMR[];
 CONTENT_EXPORT extern const char kZygoteCmdPrefix[];
 CONTENT_EXPORT extern const char kZygoteProcess[];
 

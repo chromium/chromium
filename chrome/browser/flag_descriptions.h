@@ -1992,6 +1992,8 @@ extern const char kWebXrForceRuntimeName[];
 extern const char kWebXrForceRuntimeDescription[];
 
 extern const char kWebXrRuntimeChoiceNone[];
+extern const char kWebXrRuntimeChoiceCardboard[];
+extern const char kWebXrRuntimeChoiceGVR[];
 extern const char kWebXrRuntimeChoiceOpenXR[];
 
 extern const char kWebXrIncubationsName[];
@@ -2529,6 +2531,11 @@ extern const char kWebXrSharedBuffersDescription[];
 
 extern const char kXsurfaceMetricsReportingName[];
 extern const char kXsurfaceMetricsReportingDescription[];
+
+#if BUILDFLAG(ENABLE_VR) && BUILDFLAG(ENABLE_OPENXR)
+extern const char kOpenXRName[];
+extern const char kOpenXRDescription[];
+#endif
 
 // Non-Android ----------------------------------------------------------------
 

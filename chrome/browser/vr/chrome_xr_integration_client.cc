@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_xr_runtime.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/xr_install_helper.h"
+#include "content/public/common/content_switches.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/features.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
@@ -97,6 +98,25 @@ class CameraIndicationObserver : public content::BrowserXRRuntime::Observer {
   std::unique_ptr<content::MediaStreamUI> ui_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+// If none of the runtimes are enabled, this function will be unused.
+// This is a bit more scalable than wrapping it in all the typedefs
+[[maybe_unused]] bool IsEnabled(const base::CommandLine* command_line,
+                                const std::string& name,
+                                const base::Feature* maybe_feature = nullptr) {
+  // If we don't have a forced runtime we just need to check if the feature is
+  // enabled.
+  if (!command_line->HasSwitch(switches::kWebXrForceRuntime)) {
+    // Either we were passed a feature, in which case we need to check if it's
+    // enabled. Or we weren't, in which case the feature should be enabled.
+    return maybe_feature ? base::FeatureList::IsEnabled(*maybe_feature) : true;
+  }
+
+  return (base::CompareCaseInsensitiveASCII(
+              command_line->GetSwitchValueASCII(switches::kWebXrForceRuntime),
+              name) == 0);
+}
+#endif
 }  // namespace
 
 namespace vr {
@@ -124,16 +144,20 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
 #if BUILDFLAG(IS_ANDROID)
   // May be unused if all runtimes are disabled.
   [[maybe_unused]] bool preferred_vr_runtime_added = false;
+  [[maybe_unused]] const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
 #if BUILDFLAG(ENABLE_OPENXR)
   if (!preferred_vr_runtime_added &&
-      base::FeatureList::IsEnabled(device::features::kOpenXR)) {
+      IsEnabled(command_line, switches::kWebXrRuntimeOpenXr,
+                &device::features::kOpenXR)) {
     providers.emplace_back(std::make_unique<webxr::OpenXrDeviceProvider>());
     preferred_vr_runtime_added = true;
   }
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 #if BUILDFLAG(ENABLE_CARDBOARD)
   if (!preferred_vr_runtime_added &&
-      base::FeatureList::IsEnabled(device::features::kEnableCardboard)) {
+      IsEnabled(command_line, switches::kWebXrRuntimeCardboard,
+                &device::features::kEnableCardboard)) {
     base::android::ScopedJavaLocalRef<jobject>
         j_vr_compositor_delegate_provider =
             vr::Java_VrCompositorDelegateProviderImpl_Constructor(
@@ -145,7 +169,8 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
   }
 #endif  // BUILDFLAG(ENABLE_CARDBOARD)
 #if BUILDFLAG(ENABLE_GVR_SERVICES)
-  if (!preferred_vr_runtime_added) {
+  if (!preferred_vr_runtime_added &&
+      IsEnabled(command_line, switches::kWebXrRuntimeGVR)) {
     providers.push_back(std::make_unique<device::GvrDeviceProvider>());
     preferred_vr_runtime_added = true;
   }

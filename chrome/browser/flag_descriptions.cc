@@ -3478,6 +3478,8 @@ const char kWebXrForceRuntimeDescription[] =
     "attached hardware.";
 
 const char kWebXrRuntimeChoiceNone[] = "No Runtime";
+const char kWebXrRuntimeChoiceCardboard[] = "Cardboard";
+const char kWebXrRuntimeChoiceGVR[] = "Google VR Services";
 const char kWebXrRuntimeChoiceOpenXR[] = "OpenXR";
 
 const char kWebXrIncubationsName[] = "WebXR Incubations";
@@ -4426,6 +4428,12 @@ const char kEnableAndroidGamepadVibrationDescription[] =
 
 const char kCormorantName[] = "Cormorant";
 const char kCormorantDescription[] = "Enables the experimental Cormorant UI.";
+
+#if BUILDFLAG(ENABLE_VR) && BUILDFLAG(ENABLE_OPENXR)
+const char kOpenXRName[] = "Enable OpenXR WebXR Runtime";
+const char kOpenXRDescription[] =
+    "Enables the use of the OpenXR runtime to create WebXR sessions.";
+#endif
 
 // Non-Android -----------------------------------------------------------------
 
