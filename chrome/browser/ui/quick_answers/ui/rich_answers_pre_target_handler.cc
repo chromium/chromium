@@ -67,6 +67,14 @@ void RichAnswersPreTargetHandler::OnMouseEvent(ui::MouseEvent* mouse_event) {
     QuickAnswersController::Get()->DismissQuickAnswers(
         quick_answers::QuickAnswersExitPoint::kUnspecified);
   }
+
+  // TODO(b/265255821): handle scrolling of the rich answers view card.
+  // Limit scroll events to the rich answers card while it is visible.
+  // This means other windows and views will not be scrollable until the rich
+  // answers view is dismissed.
+  if (mouse_event->type() == ui::ET_MOUSEWHEEL && mouse_event->cancelable()) {
+    mouse_event->StopPropagation();
+  }
 }
 
 void RichAnswersPreTargetHandler::OnScrollEvent(ui::ScrollEvent* scroll_event) {

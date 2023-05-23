@@ -46,6 +46,10 @@ using quick_answers::QuickAnswer;
 using quick_answers::QuickAnswerResultText;
 using quick_answers::ResultType;
 
+// Rich card dimensions.
+constexpr int kDefaultRichCardWidth = 360;
+constexpr int kMaximumRichCardHeight = 600;
+
 constexpr auto kMainViewInsets = gfx::Insets::TLBR(20, 20, 0, 20);
 
 // Buttons view.
@@ -239,16 +243,18 @@ void RichAnswersView::AddFrameButtons() {
 void RichAnswersView::UpdateBounds() {
   auto display_bounds = display::Screen::GetScreen()
                             ->GetDisplayMatching(anchor_view_bounds_)
-                            .bounds();
+                            .work_area();
 
-  // TODO(b/259440976): Calculate desired bounds based on anchor view bounds.
-  gfx::Rect bounds = {
-      {display_bounds.width() / 2 - 200, display_bounds.height() / 2 - 300},
-      {400, 600}};
+  // TODO(b/283860409): Update the card height of the rich answers view
+  // depending on the card contents.
+  gfx::Rect bounds = {{anchor_view_bounds_.x(),
+                       anchor_view_bounds_.y() - kMaximumRichCardHeight / 2},
+                      {kDefaultRichCardWidth, kMaximumRichCardHeight}};
+  bounds.AdjustToFit(display_bounds);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // For Ash, convert the position relative to the screen.
-  // For Lacros, `bounds` is already relative to the toplevel window and the
-  // position will be calculated on server side.
+  // For Lacros, `bounds` is already relative to the top-level window and
+  // the position will be calculated on server side.
   wm::ConvertRectFromScreen(GetWidget()->GetNativeWindow()->parent(), &bounds);
 #endif
   GetWidget()->SetBounds(bounds);

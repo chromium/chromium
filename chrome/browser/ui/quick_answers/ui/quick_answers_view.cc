@@ -690,7 +690,7 @@ void QuickAnswersView::UpdateBounds() {
   int y_min = anchor_view_bounds_.y() - kMarginDip - MaximumViewHeight();
   if (y_min < display::Screen::GetScreen()
                   ->GetDisplayMatching(anchor_view_bounds_)
-                  .bounds()
+                  .work_area()
                   .y()) {
     // The Quick Answers view will be off screen if showing above the anchor.
     // Show below the anchor instead.
@@ -700,7 +700,7 @@ void QuickAnswersView::UpdateBounds() {
   gfx::Rect bounds = {{anchor_view_bounds_.x(), y}, {GetBoundsWidth(), height}};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // For Ash, convert the position relative to the screen.
-  // For Lacros, `bounds` is already relative to the toplevel window and the
+  // For Lacros, `bounds` is already relative to the top-level window and the
   // position will be calculated on server side.
   wm::ConvertRectFromScreen(GetWidget()->GetNativeWindow()->parent(), &bounds);
 #endif

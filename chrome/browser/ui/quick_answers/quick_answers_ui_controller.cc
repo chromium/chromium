@@ -108,7 +108,7 @@ void QuickAnswersUiController::CreateRichAnswersView() {
   // will be copyable, i.e. we can copy a struct to a view without worrying
   // about object-life-time management.
   views::UniqueWidgetPtr widget = quick_answers::RichAnswersView::CreateWidget(
-      quick_answers_view()->bounds(), weak_factory_.GetWeakPtr(),
+      quick_answers_view()->GetAnchorViewBounds(), weak_factory_.GetWeakPtr(),
       *controller_->quick_answer());
 
   if (!widget) {

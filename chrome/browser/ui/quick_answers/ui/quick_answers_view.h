@@ -74,6 +74,8 @@ class QuickAnswersView : public views::View {
 
   ui::ImageModel GetIconImageModelForTesting();
 
+  gfx::Rect GetAnchorViewBounds() { return anchor_view_bounds_; }
+
  private:
   void InitLayout();
   void AddContentView();
