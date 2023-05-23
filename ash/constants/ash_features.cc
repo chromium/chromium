@@ -582,7 +582,7 @@ BASE_FEATURE(kEapGtcWifiAuthentication,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the System Web App (SWA) version of Eche.
-BASE_FEATURE(kEcheSWA, "EcheSWA", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEcheSWA, "EcheSWA", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the Debug Mode of Eche.
 BASE_FEATURE(kEcheSWADebugMode,
