@@ -10,18 +10,11 @@ option java_outer_classname = 'AuxiliarySearchGroupProto';
 
 package auxiliary_search;
 
-enum GroupType {
-  UNKNOWN_GROUP_TYPE = 0;
-  BOOKMARK_GROUP = 1;
-  TAB_GROUP = 2;
-}
-
 // Contains information about the tabs and bookmarks.
-message AuxiliarySearchGroup {
-  message Entry {
+message AuxiliarySearchBookmarkGroup {
+  message Bookmark {
     optional string title = 1;
     optional string url = 2;
   }
-  repeated Entry entry = 1;
-  optional GroupType group_type = 2;
+  repeated Bookmark bookmark = 1;
 }
