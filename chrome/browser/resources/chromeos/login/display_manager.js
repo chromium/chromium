@@ -431,6 +431,7 @@ export function invokePolymerMethod(element, name, ...args) {
         const stepId = this.screens_[this.currentStep_];
         const step = $(stepId);
         const defaultControl = step.defaultControl;
+        innerContainer.classList.add('down-finished');
         if (defaultControl) {
           defaultControl.focus();
         }

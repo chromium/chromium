@@ -250,7 +250,8 @@ Styles related to the `md-screen-container`
               min-height 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00),
               min-width 900ms cubic-bezier(0.20, 0.00, 0.00, 1.00);
 }
-:root.simon-enabled #oobe.connect #inner-container #connect {
+:root.simon-enabled #oobe.connect #inner-container:not(.down-finished)
+#connect {
   /* Property duration curve delay */
   transition: opacity 250ms linear 900ms;
 }
