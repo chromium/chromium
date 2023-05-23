@@ -90301,6 +90301,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Unknown error."/>
 </enum>
 
+<enum name="RelatedActiveContentsSyncAccessInfo">
+  <int value="0" label="kNoSyncAccess"/>
+  <int value="1" label="kPotentiallySyncAccessibleDefaultSiteInstance"/>
+  <int value="2" label="kPotentiallySyncAccessibleNormalSiteInstance"/>
+</enum>
+
 <enum name="RelaunchNotificationShowResult">
   <obsolete>
     Removed in M90.
