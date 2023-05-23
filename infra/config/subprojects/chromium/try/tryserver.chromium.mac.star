@@ -182,7 +182,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "mac12-arm64-rel-compilator",
-    os = os.MAC_12,
+    os = os.MAC_DEFAULT,
     check_for_flakiness = True,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
