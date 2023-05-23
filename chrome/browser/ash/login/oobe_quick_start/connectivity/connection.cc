@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/handshake_helpers.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
@@ -23,6 +22,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
+#include "crypto/random.h"
 
 namespace ash::quick_start {
 
@@ -41,21 +41,31 @@ std::unique_ptr<Connection> Connection::Factory::Create(
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated) {
+  auto nonce_generator = std::make_unique<NonceGenerator>();
   return std::make_unique<Connection>(
       nearby_connection, session_context, std::move(quick_start_decoder),
-      std::move(on_connection_closed), std::move(on_connection_authenticated));
+      std::move(nonce_generator), std::move(on_connection_closed),
+      std::move(on_connection_authenticated));
+}
+
+Connection::Nonce Connection::NonceGenerator::Generate() {
+  Nonce nonce;
+  crypto::RandBytes(nonce);
+  return nonce;
 }
 
 Connection::Connection(
     NearbyConnection* nearby_connection,
     Connection::SessionContext session_context,
     mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
+    std::unique_ptr<NonceGenerator> nonce_generator,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated)
     : nearby_connection_(nearby_connection),
       random_session_id_(session_context.session_id),
       shared_secret_(session_context.shared_secret),
       secondary_shared_secret_(session_context.secondary_shared_secret),
+      nonce_generator_(std::move(nonce_generator)),
       on_connection_closed_(std::move(on_connection_closed)),
       on_connection_authenticated_(std::move(on_connection_authenticated)),
       decoder_(std::move(quick_start_decoder)) {
@@ -260,8 +270,9 @@ void Connection::SendMessage(std::unique_ptr<QuickStartMessage> message,
 
 void Connection::InitiateHandshake(const std::string& authentication_token,
                                    HandshakeSuccessCallback callback) {
-  nearby_connection_->Write(
-      handshake::BuildHandshakeMessage(authentication_token, shared_secret_));
+  Connection::Nonce nonce = nonce_generator_->Generate();
+  nearby_connection_->Write(requests::BuildTargetDeviceHandshakeMessage(
+      authentication_token, shared_secret_, nonce));
 
   // TODO(b/234655072): Read response from phone and run callback.
 }

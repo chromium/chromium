@@ -8,7 +8,6 @@ assert(is_chromeos_ash)
 
 source_set("connectivity") {
   deps = [
-    "proto",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
@@ -32,8 +31,6 @@ source_set("connectivity") {
     "fast_pair_advertiser.h",
     "fido_assertion_info.cc",
     "fido_assertion_info.h",
-    "handshake_helpers.cc",
-    "handshake_helpers.h",
     "random_session_id.cc",
     "random_session_id.h",
     "target_device_connection_broker.cc",

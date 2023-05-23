@@ -15,6 +15,7 @@ static_library("quick_start") {
     "quick_start_requests.h",
   ]
   deps = [
+    "proto",
     "//base",
     "//components/cbor",
     "//crypto",
@@ -27,6 +28,7 @@ source_set("test_support") {
   testonly = true
   public_deps = [ ":quick_start" ]
   deps = [
+    "proto",
     "//base",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom:mojom",
