@@ -154,7 +154,6 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
 
     void setListMenuButtonDelegate(ListMenuButtonDelegate listMenuButtonDelegate) {
         mMoreButton.setDelegate(listMenuButtonDelegate);
-        mMoreButton.setVisibility(View.VISIBLE);
     }
 
     void setPopupListener(PopupMenuShownListener listener) {

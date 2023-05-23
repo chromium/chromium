@@ -141,4 +141,13 @@ public class ImprovedBookmarkRowTest {
         Assert.assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_YES,
                 mImprovedBookmarkRow.findViewById(R.id.more).getImportantForAccessibility());
     }
+
+    @Test
+    public void testListMenuButtonDelegateDoesNotChangeVisibility() {
+        int visibility = mImprovedBookmarkRow.findViewById(R.id.more).getVisibility();
+        mModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE, null);
+        // Setting the delegate shouldn't affect visibility.
+        Assert.assertEquals(
+                visibility, mImprovedBookmarkRow.findViewById(R.id.more).getVisibility());
+    }
 }
