@@ -338,9 +338,10 @@ bool StylusWritingGestureDelete::MaybeApplyGesture(LocalFrame* frame) {
   // Delete the text between offsets and set cursor.
   InputMethodController& input_method_controller =
       frame->GetInputMethodController();
-  input_method_controller.ReplaceText("", gesture_range.value());
   input_method_controller.SetEditableSelectionOffsets(
-      PlainTextRange(gesture_range->Start(), gesture_range->Start()));
+      PlainTextRange(gesture_range->End(), gesture_range->End()));
+  input_method_controller.DeleteSurroundingText(
+      gesture_range->End() - gesture_range->Start(), 0);
   return true;
 }
 
