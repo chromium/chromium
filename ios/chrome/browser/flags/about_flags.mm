@@ -93,7 +93,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_retention_field_trial_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_field_trial_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
@@ -532,16 +532,17 @@ const FeatureEntry::FeatureVariation kIOSNewPostRestoreExperienceVariations[] =
     {{"minimal", kIOSNewPostRestoreExperienceMinimal,
       std::size(kIOSNewPostRestoreExperienceMinimal), nullptr}};
 
-const FeatureEntry::FeatureParam kNewTabPageRetentionTileAblationHideAll[] = {
-    {ntp_tiles::kNewTabPageRetentionParam, "1"}};
-const FeatureEntry::FeatureParam kNewTabPageRetentionTileAblationHideMVTOnly[] =
-    {{ntp_tiles::kNewTabPageRetentionParam, "2"}};
-const FeatureEntry::FeatureVariation kNewTabPageRetentionVariations[] = {
-    {"- Tile ablation, Hide all", kNewTabPageRetentionTileAblationHideAll,
-     std::size(kNewTabPageRetentionTileAblationHideAll), nullptr},
+const FeatureEntry::FeatureParam kNewTabPageFieldTrialTileAblationHideAll[] = {
+    {ntp_tiles::kNewTabPageFieldTrialParam, "1"}};
+const FeatureEntry::FeatureParam
+    kNewTabPageFieldTrialTileAblationHideMVTOnly[] = {
+        {ntp_tiles::kNewTabPageFieldTrialParam, "2"}};
+const FeatureEntry::FeatureVariation kNewTabPageFieldTrialVariations[] = {
+    {"- Tile ablation, Hide all", kNewTabPageFieldTrialTileAblationHideAll,
+     std::size(kNewTabPageFieldTrialTileAblationHideAll), nullptr},
     {"- Tile ablation, Hide MVT only",
-     kNewTabPageRetentionTileAblationHideMVTOnly,
-     std::size(kNewTabPageRetentionTileAblationHideMVTOnly), nullptr}};
+     kNewTabPageFieldTrialTileAblationHideMVTOnly,
+     std::size(kNewTabPageFieldTrialTileAblationHideMVTOnly), nullptr}};
 
 const FeatureEntry::FeatureParam kEnableExpKitTextClassifierDate[] = {
     {"date", "true"}};
@@ -1137,11 +1138,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSPasswordBottomSheetName,
      flag_descriptions::kIOSPasswordBottomSheetDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordBottomSheet)},
-    {"ios-new-tab-page-retention", flag_descriptions::kNewTabPageRetentionName,
-     flag_descriptions::kNewTabPageRetentionDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_tiles::kNewTabPageRetention,
-                                    kNewTabPageRetentionVariations,
-                                    ntp_tiles::kNewTabPageRetentionName)},
+    {"ios-new-tab-page-retention", flag_descriptions::kNewTabPageFieldTrialName,
+     flag_descriptions::kNewTabPageFieldTrialDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_tiles::kNewTabPageFieldTrial,
+                                    kNewTabPageFieldTrialVariations,
+                                    ntp_tiles::kNewTabPageFieldTrialName)},
     {"autofill-parse-iban-fields",
      flag_descriptions::kAutofillParseIBANFieldsName,
      flag_descriptions::kAutofillParseIBANFieldsDescription, flags_ui::kOsIos,

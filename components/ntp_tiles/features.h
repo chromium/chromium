@@ -9,8 +9,8 @@
 
 namespace ntp_tiles {
 
-// Experiment groups for the new tab page retention experiments.
-enum class NewTabPageRetentionExperimentBehavior {
+// Experiment groups for the new tab page field trial experiments.
+enum class NewTabPageFieldTrialExperimentBehavior {
   // Default.
   kDefault = 0,
   // Hides all NTP tiles for new users.
@@ -36,20 +36,20 @@ BASE_DECLARE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature);
 // If this feature is enabled, we enable popular sites in the suggestions UI.
 BASE_DECLARE_FEATURE(kUsePopularSitesSuggestions);
 
-// Feature flag to enable new tab page retention experiment on IOS.
-// Use `GetDefaultNTPRetentionExperimentType()` instead of this
+// Feature flag to enable new tab page field trial experiment on IOS.
+// Use `GetNewTabPageFieldTrialExperimentType()` instead of this
 // constant directly.
-BASE_DECLARE_FEATURE(kNewTabPageRetention);
+BASE_DECLARE_FEATURE(kNewTabPageFieldTrial);
 
-// Feature name for the NTP retention field trial.
-extern const char kNewTabPageRetentionName[];
+// Feature name for the NTP field trial.
+extern const char kNewTabPageFieldTrialName[];
 
-// Feature parameters for the new tab page retention experiment.
-extern const char kNewTabPageRetentionParam[];
+// Feature parameters for the new tab page experiment.
+extern const char kNewTabPageFieldTrialParam[];
 
-// Returns the currently enabled NTP retention experiment type. If none are
+// Returns the currently enabled NTP field trial experiment type. If none are
 // enabled, returns the default value.
-NewTabPageRetentionExperimentBehavior GetNewTabPageRetentionExperimentType();
+NewTabPageFieldTrialExperimentBehavior GetNewTabPageFieldTrialExperimentType();
 
 }  // namespace ntp_tiles
 
