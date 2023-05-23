@@ -14,9 +14,8 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <rpc.h>
-
 #include "base/strings/string_piece_forward.h"
+#include "base/win/windows_types.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace device {

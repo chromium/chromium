@@ -22,7 +22,11 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
+// rpc.h needs to be included before winuser.h.
+#include <rpc.h>
+
 #include <Winuser.h>
+
 #include "device/fido/win/discovery.h"
 #include "device/fido/win/webauthn_api.h"
 #endif  // BUILDFLAG(IS_WIN)

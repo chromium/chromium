@@ -13,6 +13,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <rpc.h>
+#endif
+
 namespace device {
 
 TEST(BluetoothUUIDTest, BluetoothUUID) {
