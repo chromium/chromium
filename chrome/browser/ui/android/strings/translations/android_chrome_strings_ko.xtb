@@ -88,7 +88,6 @@
 <translation id="13931502444227376">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 사이트의 <ph name="BEGIN_LINK1" />서비스 약관<ph name="END_LINK1" />을 확인하세요.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />에서 검색</translation>
 <translation id="139993653570221430">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다. 시험 버전은 현재의 광고 게재 방식을 기반으로 실행되므로 변경사항이 당장 적용되는 것은 아닙니다.</translation>
-<translation id="1406000523432664303">'추적 안함'</translation>
 <translation id="1407069428457324124">어두운 테마</translation>
 <translation id="1407135791313364759">모두 열기</translation>
 <translation id="1409879593029778104">파일이 이미 존재하여 <ph name="FILE_NAME" /> 다운로드가 중지되었습니다.</translation>
@@ -794,7 +793,6 @@
 <translation id="5317780077021120954">저장</translation>
 <translation id="5319359161174645648">Google에서 추천하는 Chrome</translation>
 <translation id="5321849971085220133">Chrome은 사용자 추적을 줄이고 안전은 강화하는 새로운 브라우징 방식을 모색 중입니다. 또한 Chrome은 <ph name="BEGIN_LINK" />관심분야를 추정<ph name="END_LINK" />하고 내가 직접 이를 관리할 수 있도록 합니다. 이후 방문하는 사이트에서는 Chrome이 알려주는 내 관심분야에 따라 광고를 표시할 수 있습니다.</translation>
-<translation id="5324858694974489420">자녀 보호 설정</translation>
 <translation id="5326921373682845375">미리 로드된 페이지는 암호화되어 있으며, 페이지로 연결하는 사이트가 Google 사이트이므로 이러한 페이지를 비공개로 미리 로드할 때 Google 서버에 새로운 정보가 수신되지 않습니다.</translation>
 <translation id="5329858041417644019">관리 대상 브라우저가 아닙니다</translation>
 <translation id="5339031667684712858">삭제한 사이트</translation>
@@ -805,7 +803,6 @@
 <translation id="5368227114232678694">이 기기에서 비공개로 인터넷을 사용하려면 시크릿 모드를 사용하세요.</translation>
 <translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5401851137404501592">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다.</translation>
-<translation id="5403644198645076998">특정 사이트만 허용</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" />에 코드(<ph name="ONE_TIME_CODE" />)를 제출하시겠습니까?</translation>
 <translation id="5414836363063783498">확인 중...</translation>
 <translation id="5423934151118863508">자주 방문한 페이지가 여기에 표시됩니다.</translation>
@@ -847,7 +844,6 @@
 <translation id="5626134646977739690">이름:</translation>
 <translation id="5628604359369369630">읽지 않음 - 오프라인에서 사용 가능</translation>
 <translation id="5635091213277904818">Chrome에서는 30일이 지난 사이트를 자동 삭제합니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 또는 사이트에서 광고를 추천하지 못하도록 차단할 수도 있습니다.</translation>
-<translation id="5639724618331995626">모든 사이트 허용</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />검색 기록<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />다른 활동 형식<ph name="END_LINK2" />이 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="564667659802381754">개인 정보 보호 가이드 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">지난 7일</translation>
@@ -882,7 +878,6 @@
 <translation id="5797949256525811424">주제를 차단했습니다.</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{#시간 전}other{#시간 전}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
-<translation id="5813552293717797987">이 브라우저는 <ph name="PARENT_NAME_1" />님 및 <ph name="PARENT_NAME_2" />님이 관리합니다.</translation>
 <translation id="5814749351757353073">즐겨 찾는 사이트의 최신 소식 확인하기</translation>
 <translation id="5822875253699806474">방문한 사이트로 빠르게 돌아가려면 탭과 방문 기록을 동기화하세요</translation>
 <translation id="583281660410589416">알 수 없음</translation>
@@ -1251,7 +1246,6 @@
 <translation id="7655900163790317559">블루투스 켜는 중…</translation>
 <translation id="7656862631699126784">시크릿 모드 탭 잠금 사용 설정</translation>
 <translation id="7658239707568436148">취소</translation>
-<translation id="7663313374500954251">이 브라우저는 <ph name="PARENT_NAME" />님이 관리합니다.</translation>
 <translation id="7665369617277396874">계정 추가</translation>
 <translation id="766587987807204883">기사가 여기 표시되며 오프라인 상태에서도 읽을 수 있습니다.</translation>
 <translation id="768232549260819724">GIF 복사됨</translation>
@@ -1360,7 +1354,6 @@
 <translation id="8130309322784422030">저장된 로그인 정보가 오래되었을 수 있습니다</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8156139159503939589">어떤 언어로 읽을 수 있으신가요?</translation>
-<translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8186512483418048923">파일 <ph name="FILES" />개가 남았습니다.</translation>
 <translation id="8189750580333936930">개인 정보 보호 샌드박스</translation>
 <translation id="8190358571722158785">1일 남음</translation>
@@ -1452,7 +1445,6 @@
 <translation id="8617240290563765734">다운로드한 콘텐츠에 지정된 추천 URL을 여시겠습니까?</translation>
 <translation id="8621068256433641644">스마트폰</translation>
 <translation id="8636825310635137004">다른 기기에서 탭을 가져오려면 동기화를 사용 설정하세요.</translation>
-<translation id="8641930654639604085">성인용 사이트 차단 시도</translation>
 <translation id="864544049772947936">창 관리(<ph name="INSTANCE_COUNTS" />개)</translation>
 <translation id="8645920082661222035">위험한 이벤트가 발생하기 전에 이를 예측하여 알립니다.</translation>
 <translation id="8646467750715887511">사용자가 페이지를 열어야 페이지가 로드됩니다.</translation>
@@ -1500,7 +1492,6 @@
 <translation id="8898822736010347272">모든 웹 사용자에게 영향을 주는 새로운 위협을 발견하고 사용자를 보호하는 데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
 <translation id="8909135823018751308">공유…</translation>
 <translation id="8912362522468806198">Google 계정</translation>
-<translation id="8920114477895755567">부모님의 세부정보를 기다리는 중</translation>
 <translation id="8921980840204105660">동기화하여 다른 기기에서 북마크를 가져오세요.</translation>
 <translation id="8922289737868596582">옵션 더보기 버튼을 눌러 페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>

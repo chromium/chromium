@@ -150,7 +150,6 @@ Things to consider:
   • If Chrome crashes, details about the crash may include some personal info.
 
   • If you turn on sync, metrics may also include info about URLs that you visit.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">You're getting standard security protection for this Chrome profile</translation>
 <translation id="9112744793181547300">Set Chrome as default?</translation>
 <translation id="9122931302567044771">This means that Chrome will request the desktop site every time.</translation>
 </translationbundle>

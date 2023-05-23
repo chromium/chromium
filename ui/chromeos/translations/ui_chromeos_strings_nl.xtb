@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Installeren met Linux</translation>
 <translation id="2225536596944493418">Weet je zeker dat je <ph name="NUMBER_OF_ITEMS" /> items wilt verwijderen?</translation>
 <translation id="2230062665678605299">Kan map '<ph name="FOLDER_NAME" />' niet maken. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Je Google Drive-cachegeheugen is gewist.</translation>
 <translation id="2239068707900391003">Persoon met koffie</translation>
 <translation id="2251368349685848079">Herstellen uit prullenbak</translation>
 <translation id="2278133026967558505">Bestandstoegang door alle websites en URL's</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">Aangepaste naamservers</translation>
 <translation id="4465725236958772856">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, beheerd door je beheerder, verbinden</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4474142134969976028">Geen overeenkomende resultaten</translation>
 <translation id="4477002475007461989">Roemeens</translation>
 <translation id="4477219268485577442">Bulgaars fonetisch</translation>
@@ -620,6 +620,7 @@
 <translation id="5838451609423551646">Alle items uit selectie zijn verwijderd.</translation>
 <translation id="5838825566232597749">Amerikaans Workman (internationaal)</translation>
 <translation id="5845721951356578987">Verpleegkundige</translation>
+<translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Opzoeken van DHCP mislukt</translation>
 <translation id="5896749729057314184">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, niet geactiveerd, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>

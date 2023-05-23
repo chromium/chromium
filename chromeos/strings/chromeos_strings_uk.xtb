@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Вимкнути темну тему</translation>
 <translation id="1807246157184219062">Світла</translation>
 <translation id="1827738518074806965">Мистецька галерея</translation>
+<translation id="1836553715834333258">Колір системи</translation>
 <translation id="1838374766361614909">Очистити поле пошуку</translation>
+<translation id="1840474674287087346">Колір робочого столу</translation>
 <translation id="1851218745569890714">Відеоконференції</translation>
 <translation id="1852934301711881861">Установити ОС Chrome Flex</translation>
 <translation id="1856388568474281774">Стрілка вниз</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">Навігація у веб-переглядачі</translation>
 <translation id="2874939134665556319">Попередня композиція</translation>
 <translation id="2878387241690264070">Акумулятор розрядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
-<translation id="2902312830803030883">Додаткові дії</translation>
 <translation id="2926057806159140518">Введіть ім’я користувача та пароль або зіскануйте QR-код</translation>
 <translation id="2940811910881150316">Не вдалося перевірити клавіатуру. Відкрийте кришку й повторіть спробу.</translation>
-<translation id="2981143481017883351">Доступні ексклюзивні анімації для пристроїв Chromebook</translation>
 <translation id="3008341117444806826">ОНОВИТИ</translation>
 <translation id="3009958530611748826">Виберіть, у якій папці зберегти</translation>
 <translation id="3017079585324758401">Фон</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">Напрямок ключа</translation>
 <translation id="3294437725009624529">Гість</translation>
 <translation id="3303855915957856445">Немає результатів</translation>
+<translation id="3305294846493618482">більше</translation>
 <translation id="3310640316857623290">Затримка DNS значно довша, ніж дозволено</translation>
 <translation id="3328783797891415197">Триває перевірка</translation>
 <translation id="3340011300870565703">Рівень заряду акумулятора правого навушника – <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">ОС Windows</translation>
 <translation id="3368922792935385530">Підключено</translation>
 <translation id="3369013195428705271">Видалити всю історію друку? Поточні завдання друку збережуться.</translation>
-<translation id="3386675685417744672">Тільки на пристроях Chromebook</translation>
 <translation id="3404249063913988450">Активувати заставку</translation>
 <translation id="3413935475507503304">Щоб оновити, натисніть "Далі".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">ЗАСТЕРЕЖЕННЯ</translation>
 <translation id="4054683689023980771">Завантаження зображення</translation>
 <translation id="4060260348856573701">Нове ім’я точки доступу (APN)</translation>
-<translation id="4079743696465895866">Вибрати ексклюзивні анімації для пристрою Chromebook</translation>
 <translation id="4093865285251893588">Зображення профілю</translation>
 <translation id="409427325554347132">Зберегти дані перевірки</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">Зберегти зіскановані файли в</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не вдалося надіслати запит ping шлюзу мережі не за умовчанням</translation>
+<translation id="4500966230243561393">Колір інтерфейсу</translation>
 <translation id="4503223151711056411">Стрілка вліво</translation>
 <translation id="4507392511610824664">збільшити яскравість</translation>
 <translation id="4511264077854731334">Портал</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">Зупинити перевірку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Показувати фотографії, час, прогноз погоди й медіадані на неактивному екрані.</translation>
+<translation id="5035083460461104704">Колір теми</translation>
 <translation id="5038292761217083259">кольорова клавіатура</translation>
 <translation id="5039804452771397117">Дозволити</translation>
 <translation id="5049856988445523908">SIM-карту заблоковано (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">Нейтральні кольори</translation>
 <translation id="7620771111601174153">Дізнатися більше в Довідковому центрі</translation>
 <translation id="763165478673169849">Час останнього скидання</translation>
+<translation id="7633068090678117093">Фонове зображення</translation>
 <translation id="7648838807254605802">велика затримка HTTPS</translation>
 <translation id="765159867434478292">Розділити</translation>
 <translation id="7656388927906093505">Це миша.</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">Аналог</translation>
 <translation id="8930622219860340959">Бездротове</translation>
 <translation id="8936793075252196307">IP-адреса клієнта</translation>
+<translation id="8944651180182756621">Колір панелі запуску</translation>
 <translation id="894617464444543719">Це телефон.</translation>
 <translation id="8957423540740801332">праворуч</translation>
 <translation id="8968751544471797276">Швидкість заряджання</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">Виконати перевірку пам'яті</translation>
 <translation id="9161276708550942948">пробіл</translation>
 <translation id="9173638680043580060">Залишилося менше хвилини</translation>
+<translation id="9174334653006917325">Колір інтерфейсу</translation>
 <translation id="917720651393141712">Перевірити</translation>
 <translation id="9188992814426075118">Колір підсвічування клавіатури може автоматично підлаштовуватися до фонового малюнка</translation>
 <translation id="9189000703457422362">Не вдалося підключитися до цієї мережі через автоматично виявлені точки доступу. Щоб отримати додаткову інформацію, зверніться до свого оператора мобільного зв’язку.</translation>

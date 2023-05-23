@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Instaliranje uz Linux</translation>
 <translation id="2225536596944493418">Jeste li sigurni da želite izbrisati te stavke (njih <ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Nije moguće izraditi mapu "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Vaša je predmemorija Google diska izbrisana.</translation>
 <translation id="2239068707900391003">Osoba drži šalicu kave</translation>
 <translation id="2251368349685848079">Vrati iz otpada</translation>
 <translation id="2278133026967558505">Pristup datoteci za sve web-lokacije i URL-ove</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">Prilagođeni poslužitelji naziva</translation>
 <translation id="4465725236958772856">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, upravlja administrator, povežite</translation>
 <translation id="4470564870223067757">hangul 2 set</translation>
+<translation id="4472575034687746823">Početak korištenja</translation>
 <translation id="4474142134969976028">Nema podudarnih rezultata</translation>
 <translation id="4477002475007461989">rumunjski</translation>
 <translation id="4477219268485577442">bugarska (fonetska)</translation>
@@ -619,6 +619,7 @@
 <translation id="5838451609423551646">Uklonjeni su svi unosi iz odabira.</translation>
 <translation id="5838825566232597749">Američka međunarodna Workman</translation>
 <translation id="5845721951356578987">Medicinska sestra</translation>
+<translation id="5860491529813859533">Uključi</translation>
 <translation id="5861477046012235702">Igrač</translation>
 <translation id="5864471791310927901">DHCP pretraživanje nije uspjelo</translation>
 <translation id="5896749729057314184">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nije aktivirana, jačina signala <ph name="SIGNAL_STRENGTH" />%, pojedinosti</translation>

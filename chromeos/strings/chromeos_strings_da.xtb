@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Deaktiver Mørkt tema</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
+<translation id="1836553715834333258">Systemfarve</translation>
 <translation id="1838374766361614909">Ryd søgning</translation>
+<translation id="1840474674287087346">Computerfarve</translation>
 <translation id="1851218745569890714">Videomøder</translation>
 <translation id="1852934301711881861">Installer ChromeOS Flex</translation>
 <translation id="1856388568474281774">Pil ned</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">Browsernavigation</translation>
 <translation id="2874939134665556319">Forrige nummer</translation>
 <translation id="2878387241690264070">Batteriet blev afladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
-<translation id="2902312830803030883">Flere handlinger</translation>
 <translation id="2926057806159140518">Angiv dit brugernavn og din adgangskode, eller scan din QR-kode</translation>
 <translation id="2940811910881150316">Enheden kan ikke testes. Åbn skærmen igen for at teste den.</translation>
-<translation id="2981143481017883351">Eksklusive Chromebook-aktiver er nu tilgængelige</translation>
 <translation id="3008341117444806826">OPDATER</translation>
 <translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
 <translation id="3017079585324758401">Baggrund</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">Nøgleretning</translation>
 <translation id="3294437725009624529">Gæst</translation>
 <translation id="3303855915957856445">Der blev ikke fundet nogen søgeresultater</translation>
+<translation id="3305294846493618482">mere</translation>
 <translation id="3310640316857623290">DNS-forsinkelsen er markant højere end den tilladte grænse</translation>
 <translation id="3328783797891415197">Testen kører</translation>
 <translation id="3340011300870565703">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri på højre øretelefon.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Tilsluttet</translation>
 <translation id="3369013195428705271">Er du sikker på, at du vil rydde hele udskriftshistorikken? Dine igangværende udskriftsjobs ryddes ikke.</translation>
-<translation id="3386675685417744672">Kun på Chromebook</translation>
 <translation id="3404249063913988450">Aktivér Pauseskærm</translation>
 <translation id="3413935475507503304">Klik på Næste for at fortsætte med opdateringen.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">ADVARSEL</translation>
 <translation id="4054683689023980771">Downloader billedet</translation>
 <translation id="4060260348856573701">Nyt adgangspunkt</translation>
-<translation id="4079743696465895866">Vælg kunst, der kun er tilgængeligt på Chromebooks</translation>
 <translation id="4093865285251893588">Profilbillede</translation>
 <translation id="409427325554347132">Gem testoplysninger</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">Scan til</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for det netværk, der ikke er angivet som standardnetværk</translation>
+<translation id="4500966230243561393">Grænsefladefarve</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
 <translation id="4507392511610824664">lysstyrke op</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Se billeder, klokken, vejret og medieoplysninger, når din skærm er inaktiv.</translation>
+<translation id="5035083460461104704">Temafarve</translation>
 <translation id="5038292761217083259">flerfarvet tastatur</translation>
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Få flere oplysninger i Hjælp</translation>
 <translation id="763165478673169849">Tidspunkt for seneste nulstilling</translation>
+<translation id="7633068090678117093">Baggrundsbillede</translation>
 <translation id="7648838807254605802">Høj HTTPS-forsinkelse</translation>
 <translation id="765159867434478292">Opdel</translation>
 <translation id="7656388927906093505">Enheden er en mus.</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Trådløs</translation>
 <translation id="8936793075252196307">Klient-IP-adresse</translation>
+<translation id="8944651180182756621">Applistefarve</translation>
 <translation id="894617464444543719">Enheden er en telefon.</translation>
 <translation id="8957423540740801332">højre</translation>
 <translation id="8968751544471797276">Opladningshastighed</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">Kør hukommelsestest</translation>
 <translation id="9161276708550942948">mellemrum</translation>
 <translation id="9173638680043580060">Mindre end ét minut tilbage</translation>
+<translation id="9174334653006917325">Brugerfladefarve</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Dit tastatur kan automatisk tilpasses din baggrund</translation>
 <translation id="9189000703457422362">Der kan ikke oprettes forbindelse til dette netværk via automatisk registrerede APN'er. Kontakt dit mobilselskab for at få flere oplysninger.</translation>

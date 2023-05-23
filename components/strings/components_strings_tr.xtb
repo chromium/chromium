@@ -979,6 +979,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3380864720620200369">İstemci Kimliği:</translation>
 <translation id="3381668585148405088">Satın alma işleminizi doğrulayın</translation>
 <translation id="3383566085871012386">Mevcut öncelik sırası</translation>
+<translation id="3384522979010096022">Kuruluşunuz bu siteyi görüntülemenize izin vermiyor</translation>
 <translation id="3387261909427947069">Ödeme Yöntemleri</translation>
 <translation id="3391030046425686457">Teslimat adresi</translation>
 <translation id="3391482648489541560">dosya düzenleme</translation>
@@ -1346,7 +1347,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Notlar</translation>
 <translation id="425582637250725228">Yaptığınız değişiklikler kaydedilmemiş olabilir.</translation>
-<translation id="425869179292622354">Sanal kartla daha güvenli hale getirilsin mi?</translation>
 <translation id="4258748452823770588">İmza yanlış</translation>
 <translation id="4261046003697461417">Korumalı dokümanlarda ek açıklama özelliği kullanılamaz</translation>
 <translation id="4265872034478892965">Yöneticiniz tarafından izin verildi</translation>

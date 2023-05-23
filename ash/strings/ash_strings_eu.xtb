@@ -29,7 +29,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1104084341931202936">Erakutsi erabilerraztasun-ezarpenak</translation>
 <translation id="1104621072296271835">Gailuek are hobeto funtzionatzen dute batera</translation>
 <translation id="1111021433905331574">Teklatuaren atzeko argiztapenaren kolorea aldatzeko, joan Ezarpenak &gt; <ph name="APP_TITLE" /> atalera</translation>
-<translation id="1112998165730922436">Igortzea pausatu da</translation>
 <translation id="112308213915226829">Ezkutatu apala automatikoki</translation>
 <translation id="1142002900084379065">Azken argazkiak</translation>
 <translation id="1148499908455722006">Ireki <ph name="USER_NAME" /> erabiltzailearen informazio-leihoa</translation>
@@ -338,7 +337,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2526581474998477112">Desblokeatu leihoak</translation>
 <translation id="2530896289327917474">Aktibatu edo desaktibatu testu-kurtsorearen bidez arakatzeko eginbidea</translation>
 <translation id="2531025035050312891">gailua motela</translation>
-<translation id="2542089167727451762">Sakatu profileko irudia</translation>
 <translation id="254900897760075745">Kopiatu hautatutako edukia arbelean</translation>
 <translation id="2549711466868162843">Hobetu argiztapena</translation>
 <translation id="2549985041256363841">Hasi grabatzen</translation>
@@ -507,7 +505,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="334252345105450327">Atera pantaila-argazki bat</translation>
 <translation id="334927402682780278">Hautatu kurtsoretik lerroaren amaiera arteko testua</translation>
 <translation id="3349345708646875009">Ireki ataza-kudeatzailea</translation>
-<translation id="3351879221545518001">Pantailako edukia igortzen ari zara.</translation>
 <translation id="3354555338129305222">zergatik da motela gailua</translation>
 <translation id="3364721542077212959">Arkatzaren tresnak</translation>
 <translation id="3365977133351922112">Telefonoa urrunegi dago. Gertura ezazu.</translation>
@@ -1503,10 +1500,10 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7860671499921112077">Pasatu hiru hatz gora ikuspegi orokorrean sartzeko</translation>
 <translation id="7862292329216937261">Gailua gonbidatu gisa erabiltzeko, saioa amaitu behar duzu. Jarraian, hautatu Arakatu gonbidatu gisa aukera pantailaren behealdean.</translation>
 <translation id="7866482334467279021">aktibatuta</translation>
-<translation id="7868900307798234037">Hatz-markarekin desblokeatzen</translation>
 <translation id="7872786842639831132">Desaktibatuta</translation>
 <translation id="7875575368831396199">Bluetootha desaktibatuta dago <ph name="DEVICE_TYPE" /> gailuan. Aktiba ezazu Phone Hub erabiltzeko.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Itzuli gailuaren aurreko bertsiora orain}=1{Itzuli gailuaren aurreko bertsiora segundo bat barru}other{Itzuli gailuaren aurreko bertsiora # segundo barru}}</translation>
+<translation id="7884446017008693258">Wifi-gunearen ezarpenak</translation>
 <translation id="7884902759927478774">Utzi fitxa arrastatzeari</translation>
 <translation id="7886169021410746335">Doitu pribatutasun-ezarpenak</translation>
 <translation id="7886277072580235377">Interneteko saioari buruzko informazioa ezabatu egingo da hura amaitzen duzunean. <ph name="LEARN_MORE" /></translation>
@@ -1602,7 +1599,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: <ph name="BATTERY_STATUS" />.</translation>
 <translation id="8247998213073982446">Aplikazioa (<ph name="APP_NAME" />)</translation>
 <translation id="8255234195843591763">Gailua eguneratzeko, berrezar ezazu</translation>
-<translation id="826107067893790409">Sakatu Sartu <ph name="USER_EMAIL_ADDRESS" /> desblokeatzeko</translation>
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8270450402312105425">{0,plural, =1{Itzuli gailuaren aurreko bertsiora ordubete barru}other{Itzuli gailuaren aurreko bertsiora # ordu barru}}</translation>
 <translation id="8277261673056602147">Nabarmendu pantailako testua</translation>

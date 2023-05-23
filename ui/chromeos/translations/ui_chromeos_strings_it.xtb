@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Installa con Linux</translation>
 <translation id="2225536596944493418">Vuoi eliminare <ph name="NUMBER_OF_ITEMS" /> elementi?</translation>
 <translation id="2230062665678605299">Impossibile creare la cartella "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">La cache di Google Drive è stata svuotata.</translation>
 <translation id="2239068707900391003">Persona con caffè</translation>
 <translation id="2251368349685848079">Ripristina dal cestino</translation>
 <translation id="2278133026967558505">Accesso ai file da parte di tutti i siti web e gli URL</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">Assegna nomi personalizzati a server</translation>
 <translation id="4465725236958772856">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, gestita dall'amministratore, connetti</translation>
 <translation id="4470564870223067757">Hangul 2 Set</translation>
+<translation id="4472575034687746823">Come iniziare</translation>
 <translation id="4474142134969976028">Nessun risultato corrispondente</translation>
 <translation id="4477002475007461989">Rumeno</translation>
 <translation id="4477219268485577442">Fonetica bulgara</translation>
@@ -618,6 +618,7 @@
 <translation id="5838451609423551646">Tutti gli elementi sono stati rimossi dalla selezione.</translation>
 <translation id="5838825566232597749">Internazionale Workman USA</translation>
 <translation id="5845721951356578987">Infermiera</translation>
+<translation id="5860491529813859533">Attiva</translation>
 <translation id="5861477046012235702">Giocatore</translation>
 <translation id="5864471791310927901">Ricerca DHCP non riuscita</translation>
 <translation id="5896749729057314184">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>

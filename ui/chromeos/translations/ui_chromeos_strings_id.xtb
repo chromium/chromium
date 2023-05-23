@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Instal dengan Linux</translation>
 <translation id="2225536596944493418">Yakin ingin menghapus <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Cache Google Drive Anda telah dihapus.</translation>
 <translation id="2239068707900391003">Orang dengan kopi</translation>
 <translation id="2251368349685848079">Pulihkan dari sampah</translation>
 <translation id="2278133026967558505">Akses file oleh semua situs dan URL</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">Server nama khusus</translation>
 <translation id="4465725236958772856">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Dikelola oleh Administrator Anda, Sambungkan</translation>
 <translation id="4470564870223067757">2 Himpunan Hangul</translation>
+<translation id="4472575034687746823">Memulai</translation>
 <translation id="4474142134969976028">Tidak ada hasil yang cocok</translation>
 <translation id="4477002475007461989">Rumania</translation>
 <translation id="4477219268485577442">Fonetik Bulgaria</translation>
@@ -619,6 +619,7 @@
 <translation id="5838451609423551646">Semua entri dihapus dari pilihan.</translation>
 <translation id="5838825566232597749">Internasional Workman AS</translation>
 <translation id="5845721951356578987">Perawat</translation>
+<translation id="5860491529813859533">Aktifkan</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Pencarian DHCP gagal</translation>
 <translation id="5896749729057314184">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Tidak Diaktifkan, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>

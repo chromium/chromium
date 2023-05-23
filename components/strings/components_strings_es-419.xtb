@@ -980,6 +980,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3380864720620200369">ID de cliente:</translation>
 <translation id="3381668585148405088">Verificar tu compra</translation>
 <translation id="3383566085871012386">Orden de prioridad actual</translation>
+<translation id="3384522979010096022">Tu organización no te permite ver este sitio</translation>
 <translation id="3387261909427947069">Formas de pago</translation>
 <translation id="3391030046425686457">Dirección de entrega</translation>
 <translation id="3391482648489541560">edición de archivo</translation>
@@ -1347,7 +1348,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="425582637250725228">Es posible que los cambios que implementaste no se puedan guardar.</translation>
-<translation id="425869179292622354">¿Deseas aumentar su nivel de seguridad con una tarjeta virtual?</translation>
 <translation id="4258748452823770588">Firma no válida</translation>
 <translation id="4261046003697461417">No se pueden realizar anotaciones en documentos protegidos</translation>
 <translation id="4265872034478892965">Permitido por tu administrador</translation>
@@ -2408,7 +2408,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6890531741535756070">Elegiste realizar la verificación con <ph name="DEVICE_LABEL" /> en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Es posible que este proveedor haya almacenado información sobre tu forma de pago, la que puedes <ph name="BEGIN_LINK" />solicitar que se borre<ph name="END_LINK" />.</translation>
 <translation id="6890956352250146925">Opciones para cookies y datos de sitios</translation>
 <translation id="6891596781022320156">No se admite el nivel de políticas.</translation>
-<translation id="6895330447102777224">Tu tarjeta se confirmó</translation>
+<translation id="6895330447102777224">Se confirmó tu tarjeta</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897140037006041989">Usuario-agente</translation>
 <translation id="6898699227549475383">Organización (O)</translation>

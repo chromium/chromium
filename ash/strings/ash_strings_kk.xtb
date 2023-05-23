@@ -29,7 +29,6 @@
 <translation id="1104084341931202936">Арнайы мүмкіндіктер параметрлерін көрсету</translation>
 <translation id="1104621072296271835">Құрылғылар бірігіп жақсы жұмыс істейді</translation>
 <translation id="1111021433905331574">Пернетақта жарығының түсін "Параметрлер &gt; <ph name="APP_TITLE" />" бөлімінен өзгерте аласыз.</translation>
-<translation id="1112998165730922436">Трансляциялау кідіртілді</translation>
 <translation id="112308213915226829">Сөрені автоматты жасыру</translation>
 <translation id="1142002900084379065">Жақында түскен фотосуреттер</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> аккаунты туралы ақпарат диалогтік терезесін ашу</translation>
@@ -338,7 +337,6 @@
 <translation id="2526581474998477112">Терезелер құлпын ашу</translation>
 <translation id="2530896289327917474">Пернелер арқылы навигациялауды қосу немесе өшіру</translation>
 <translation id="2531025035050312891">құрылғы баяу</translation>
-<translation id="2542089167727451762">Профиль суретіңізді түртіңіз.</translation>
 <translation id="254900897760075745">Таңдалған мазмұнды буферге көшіру</translation>
 <translation id="2549711466868162843">Жарықтығын жақсарту</translation>
 <translation id="2549985041256363841">Бейнеге түсіруді бастау</translation>
@@ -507,7 +505,6 @@
 <translation id="334252345105450327">Скриншот түсіру</translation>
 <translation id="334927402682780278">Курсордан жолдың соңына дейінгі мәтінді таңдау</translation>
 <translation id="3349345708646875009">Тапсырмалар реттегішін ашу</translation>
-<translation id="3351879221545518001">Экранды трансляциялап жатырсыз.</translation>
 <translation id="3354555338129305222">неге құрылғым баяу</translation>
 <translation id="3364721542077212959">Стилус құралдары</translation>
 <translation id="3365977133351922112">Телефоныңыз тым алыста. Оны жақындатыңыз.</translation>
@@ -1503,10 +1500,10 @@
 <translation id="7860671499921112077">Үш саусақпен жоғары сырғытып, "Шолу" бөліміне кіріңіз.</translation>
 <translation id="7862292329216937261">Құрылғыны қонақ ретінде пайдалану үшін аккаунттан шығып, экранның төменгі жағындағы "Қонақ ретінде шолу" параметрін таңдаңыз.</translation>
 <translation id="7866482334467279021">Қосу</translation>
-<translation id="7868900307798234037">Саусақ ізімен ашылуда</translation>
 <translation id="7872786842639831132">Өшірулі</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> құрылғыңызда Bluetooth өшірулі сияқты. Phone Hub функциясын пайдалану үшін Bluetooth қосыңыз.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Құрылғыны алдыңғы нұсқаға қазір қайтару}=1{Құрылғыны алдыңғы нұсқаға 1 секундта қайтару}other{Құрылғыны алдыңғы нұсқаға # секундта қайтару}}</translation>
+<translation id="7884446017008693258">Хотспот параметрлері</translation>
 <translation id="7884902759927478774">Қойындыны сүйреуден бас тарту</translation>
 <translation id="7886169021410746335">Құпиялық параметрлерін реттеу</translation>
 <translation id="7886277072580235377">Сіз шыққан кезде, сеансыңыз өшіріледі. <ph name="LEARN_MORE" /></translation>
@@ -1602,7 +1599,6 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, телефонның батарея заряды: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, қолданба</translation>
 <translation id="8255234195843591763">Жаңарту үшін бастапқы күйге қайтарыңыз.</translation>
-<translation id="826107067893790409">Enter пернесін басып, <ph name="USER_EMAIL_ADDRESS" /> үшін құрылғының құлпын ашыңыз.</translation>
 <translation id="8261506727792406068">Жою</translation>
 <translation id="8270450402312105425">{0,plural, =1{Құрылғыны бір сағатта алдыңғы нұсқаға қайтару қажет}other{Құрылғыны # сағатта алдыңғы нұсқаға қайтару қажет}}</translation>
 <translation id="8277261673056602147">Экрандағы мәтінді ерекшелеу</translation>

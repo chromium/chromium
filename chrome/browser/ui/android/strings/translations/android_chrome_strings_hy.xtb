@@ -86,7 +86,6 @@
 <translation id="13931502444227376">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />օգտագործման պայմաններին<ph name="END_LINK1" />։</translation>
 <translation id="1397811292916898096">Որոնում <ph name="PRODUCT_NAME" />-ում</translation>
 <translation id="139993653570221430">Դուք ցանկացած ժամանակ Chrome-ի կարգավորումներում կարող եք փոխել ձեր ընտրությունը։ Փորձարկումներն ընթանում են գովազդի ցուցադրման ընթացիկ ռեժիմին զուգահեռ, ինչի արդյունքում փոփոխություններն անմիջապես տեսանելի չեն լինի ձեզ։</translation>
-<translation id="1406000523432664303">«Չհետևել»</translation>
 <translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը կանխվեց, քանի որ ֆայլն արդեն գոյություն ունի:</translation>
@@ -788,7 +787,6 @@
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5319359161174645648">Google-ը խորհուրդ է տալիս Chrome դիտարկիչը</translation>
 <translation id="5321849971085220133">Chrome-ը նոր եղանակներ է գտնում՝ ձեր գործողությունների հետագծումը նվազեցնելու և ձեր կողմից կայքերի այցելությունն ավելի անվտանգ դարձնելու համար։ Chrome-ը նաև <ph name="BEGIN_LINK" />որոշում է ձեր հետաքրքրությունները<ph name="END_LINK" /> և տալիս է ձեզ դրանք կառավարելու հնարավորություն։ Այնուհետև, կայքերը, որոնք այցելում եք, կարող են Chrome-ից իմանալ ձեր հետաքրքրությունները՝ գովազդ ցուցադրելու համար։</translation>
-<translation id="5324858694974489420">Ծնողական կայանքներ</translation>
 <translation id="5326921373682845375">Քանի որ նախապես բեռնված էջերը գաղտնագրված են, և էջերին հղվող կայքը Google-ի կայք է, Google-ի սերվերները այս էջերն անանուն կերպով նախաբեռնելիս նոր տեղեկություններ չեն ստանում։</translation>
 <translation id="5329858041417644019">Ձեր դիտարկիչը չի կառավարվում</translation>
 <translation id="5339031667684712858">Կայքերը, որոնք հեռացրել եք</translation>
@@ -799,7 +797,6 @@
 <translation id="5368227114232678694">Օգտագործեք ինկոգնիտո ռեժիմը, որպեսզի ձեր այցելությունների պատմությունը չպահվի</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="5401851137404501592">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։</translation>
-<translation id="5403644198645076998">Թույլատրել միայն որոշ կայքեր</translation>
 <translation id="5409881200985013443">Ուղարկե՞լ <ph name="ONE_TIME_CODE" /> կոդը <ph name="CLIENT_NAME" />-ին</translation>
 <translation id="5414836363063783498">Ստուգում…</translation>
 <translation id="5423934151118863508">Ձեր հաճախակի այցելած էջերը կցուցադրվեն այստեղ</translation>
@@ -841,7 +838,6 @@
 <translation id="5626134646977739690">Անուն՝</translation>
 <translation id="5628604359369369630">Չկարդացված – Հասանելի է անցանց ռեժիմում</translation>
 <translation id="5635091213277904818">Chrome-ը ավտոմատ ջնջում է այն կայքերը, որոնք ավելացվել են առնվազն 30 օր առաջ։ Եթե դուք նորից այցելեք որոշակի կայք, այն կրկին կարող է հայտնվել ցանկում։ Դուք նաև կարող եք արգելել կայքին գովազդ առաջարկել։</translation>
-<translation id="5639724618331995626">Թույլատրել բոլոր կայքերը</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Որոնումների պատմությունը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />այլ գործողություններ<ph name="END_LINK2" /> կարող են պահվել ձեր Google հաշվում</translation>
 <translation id="564667659802381754">Գաղտնիության ուղեցույց <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Վերջին 7 օրվա</translation>
@@ -875,7 +871,6 @@
 <translation id="5797949256525811424">Թեման արգելափակված է</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ժամ առաջ}one{# ժամ առաջ}other{# ժամ առաջ}}</translation>
 <translation id="5810288467834065221">© Google LLC <ph name="YEAR" />։ Բոլոր իրավունքները պահպանված են:</translation>
-<translation id="5813552293717797987">Այս դիտարկիչը կառավարվում է <ph name="PARENT_NAME_1" /> և <ph name="PARENT_NAME_2" /> հաշիվների կողմից։</translation>
 <translation id="5814749351757353073">Բաժանորդագրվեք ձեր սիրած կայքերին</translation>
 <translation id="5822875253699806474">Համաժամացրեք ձեր ներդիրները և պատմությունը, որպեսզի արագ վերադառնաք ձեր այցելած կայքեր</translation>
 <translation id="583281660410589416">Անհայտ</translation>
@@ -1242,7 +1237,6 @@
 <translation id="7655900163790317559">Bluetooth-ը միանում է…</translation>
 <translation id="7656862631699126784">Միացնել ինկոգնիտո ներդիրների կողպումը</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
-<translation id="7663313374500954251">Այս դիտարկիչը կառավարվում է <ph name="PARENT_NAME" /> հաշվի կողմից։</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
 <translation id="766587987807204883">Հոդվածները ցուցադրվում են այստեղ։ Դրանք կարող եք կարդալ նույնիսկ անցանց ռեժիմում։</translation>
 <translation id="768232549260819724">GIF-ը պատճենված է</translation>
@@ -1351,7 +1345,6 @@
 <translation id="8130309322784422030">Հնարավոր է՝ մուտքի պահված տվյալները հնացել են</translation>
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>
 <translation id="8156139159503939589">Ի՞նչ լեզուներով եք կարդում</translation>
-<translation id="8168435359814927499">Բովանդակություն</translation>
 <translation id="8186512483418048923">Մնաց <ph name="FILES" /> ֆայլ</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Մնացել է 1 օր</translation>
@@ -1442,7 +1435,6 @@
 <translation id="8617240290563765734">Բացե՞լ ներբեռնված բովանդակությունում հատկորոշված URL-ը:</translation>
 <translation id="8621068256433641644">հեռախոս</translation>
 <translation id="8636825310635137004">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար միացրեք համաժամացումը:</translation>
-<translation id="8641930654639604085">Արգելափակել մեծահասակների համար նախատեսված կայքերը</translation>
 <translation id="864544049772947936">Կառավարել պատուհանները (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին</translation>
 <translation id="8646467750715887511">Էջերը բեռնվում են միայն, եթե բացում եք դրանք։</translation>
@@ -1490,7 +1482,6 @@
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
 <translation id="8909135823018751308">Կիսվել…</translation>
 <translation id="8912362522468806198">Google հաշիվ</translation>
-<translation id="8920114477895755567">Ծնողների տվյալները սպասվում են:</translation>
 <translation id="8921980840204105660">Կատարեք համաժամացում, որպեսզի ձեր մյուս սարքերի էջանիշները հասանելի դառնան։</translation>
 <translation id="8922289737868596582">«Այլ տարբերակներ» կոճակի օգնությամբ ներբեռնեք էջերը՝ անցանց ռեժիմում օգտագործելու համար</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>

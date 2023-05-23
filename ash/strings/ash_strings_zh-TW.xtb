@@ -29,7 +29,6 @@
 <translation id="1104084341931202936">顯示無障礙設定</translation>
 <translation id="1104621072296271835">完成連結可進一步提升裝置效能</translation>
 <translation id="1111021433905331574">你可以在「設定」&gt;「<ph name="APP_TITLE" />」中變更鍵盤背光的顏色</translation>
-<translation id="1112998165730922436">已暫停投放</translation>
 <translation id="112308213915226829">自動隱藏檔案櫃</translation>
 <translation id="1142002900084379065">最近的相片</translation>
 <translation id="1148499908455722006">開啟「<ph name="USER_NAME" />」的資訊對話方塊</translation>
@@ -338,7 +337,6 @@
 <translation id="2526581474998477112">解鎖視窗</translation>
 <translation id="2530896289327917474">開啟或關閉鍵盤瀏覽功能</translation>
 <translation id="2531025035050312891">裝置運作緩慢</translation>
-<translation id="2542089167727451762">輕觸你的個人資料圖片</translation>
 <translation id="254900897760075745">將所選內容複製到剪貼簿</translation>
 <translation id="2549711466868162843">提高亮度</translation>
 <translation id="2549985041256363841">開始錄影</translation>
@@ -507,7 +505,6 @@
 <translation id="334252345105450327">擷取螢幕畫面</translation>
 <translation id="334927402682780278">選取從游標到該行結尾之間的文字</translation>
 <translation id="3349345708646875009">開啟工作管理員</translation>
-<translation id="3351879221545518001">你目前正在投放畫面。</translation>
 <translation id="3354555338129305222">為什麼裝置運作緩慢</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
 <translation id="3365977133351922112">你的手機距離太遠，請拿近一點。</translation>
@@ -1499,10 +1496,10 @@
 <translation id="7860671499921112077">以三指向上滑動即可進入「總覽」</translation>
 <translation id="7862292329216937261">如要以訪客身分使用這部裝置，請務必登出並選取畫面底部的「以訪客身分瀏覽」。</translation>
 <translation id="7866482334467279021">開啟</translation>
-<translation id="7868900307798234037">指紋辨識成功，正在解鎖</translation>
 <translation id="7872786842639831132">關閉</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 的藍牙功能似乎已關閉。請開啟藍牙功能，才能使用 Phone Hub。</translation>
 <translation id="7877557217297072640">{0,plural, =0{立即將裝置復原為較舊的版本}=1{在 1 秒內將裝置復原為較舊的版本}other{在 # 秒內將裝置復原為較舊的版本}}</translation>
+<translation id="7884446017008693258">無線基地台設定</translation>
 <translation id="7884902759927478774">取消分頁拖曳</translation>
 <translation id="7886169021410746335">調整隱私權設定</translation>
 <translation id="7886277072580235377">登出帳戶後，系統將清除你的網際網路工作階段。<ph name="LEARN_MORE" /></translation>
@@ -1598,7 +1595,6 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，應用程式</translation>
 <translation id="8255234195843591763">重設以更新</translation>
-<translation id="826107067893790409">按下 Enter 鍵即可解除鎖定 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8270450402312105425">{0,plural, =1{在 1 小時內將裝置復原為先前的版本}other{在 # 小時內將裝置復原為先前的版本}}</translation>
 <translation id="8277261673056602147">醒目顯示畫面上的文字</translation>

@@ -239,10 +239,8 @@
 <translation id="2873483161362553159">Premikanje po brskalniku</translation>
 <translation id="2874939134665556319">Prejšnja skladba</translation>
 <translation id="2878387241690264070">Izpraznjeno: <ph name="RATE" /> v <ph name="NUM_SECONDS" /> s.</translation>
-<translation id="2902312830803030883">Več dejanj</translation>
 <translation id="2926057806159140518">Vnesite uporabniško ime in geslo ali optično preberite kodo QR.</translation>
 <translation id="2940811910881150316">Naprave ni mogoče preizkusiti. Če želite preizkusiti, znova odprite pokrov.</translation>
-<translation id="2981143481017883351">Ekskluzivni elementi za Chromebook so zdaj na voljo</translation>
 <translation id="3008341117444806826">OSVEŽI</translation>
 <translation id="3009958530611748826">Izberite mapo za shranjevanje</translation>
 <translation id="3017079585324758401">Ozadje</translation>
@@ -280,6 +278,7 @@
 <translation id="3291996639387199448">Smer ključa</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3303855915957856445">Ni rezultatov iskanja</translation>
+<translation id="3305294846493618482">več</translation>
 <translation id="3310640316857623290">Zakasnitev DNS-ja je znatno nad dovoljenim pragom</translation>
 <translation id="3328783797891415197">Preizkus se izvaja</translation>
 <translation id="3340011300870565703">Raven napolnjenosti baterije desne slušalke: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -288,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Ali ste prepričani, da želite izbrisati vso zgodovino tiskanja? Tiskalna opravila, ki potekajo, ne bodo izbrisana.</translation>
-<translation id="3386675685417744672">Samo za Chromebook</translation>
 <translation id="3404249063913988450">Omogočanje ohranjevalnika zaslona</translation>
 <translation id="3413935475507503304">Če želite nadaljevati posodobitev, kliknite Naprej.</translation>
 <translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -369,7 +367,6 @@
 <translation id="404928562651467259">OPOZORILO</translation>
 <translation id="4054683689023980771">Prenašanje slike</translation>
 <translation id="4060260348856573701">Nov APN</translation>
-<translation id="4079743696465895866">Izberite ekskluzivna umetniška dela za Chromebook</translation>
 <translation id="4093865285251893588">Slika profila</translation>
 <translation id="409427325554347132">Shrani podrobnosti preizkusa</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>

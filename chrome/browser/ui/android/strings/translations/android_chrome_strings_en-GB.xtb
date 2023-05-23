@@ -88,7 +88,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="13931502444227376">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />Terms of Service<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Search with <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">You can change your mind at any time in Chrome settings. The trials run alongside the current way that ads get served, so you won’t see changes right away.</translation>
-<translation id="1406000523432664303">‘Do Not Track’</translation>
 <translation id="1407069428457324124">Dark theme</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> download prevented because file already exists.</translation>
@@ -794,7 +793,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>
 <translation id="5321849971085220133">Chrome is finding new ways to reduce tracking and keep you even safer as you browse. Chrome also <ph name="BEGIN_LINK" />estimates your interests<ph name="END_LINK" /> and enables you to manage them. Then, sites that you visit can ask Chrome for your interests to show you ads.</translation>
-<translation id="5324858694974489420">Parental Settings</translation>
 <translation id="5326921373682845375">Because the preloaded pages are encrypted, and the site linking to the pages is a Google site, Google servers don’t receive new information when privately preloading these pages.</translation>
 <translation id="5329858041417644019">Your browser is not managed</translation>
 <translation id="5339031667684712858">Sites that you removed</translation>
@@ -805,7 +803,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5368227114232678694">To browse privately on this device, try out Incognito</translation>
 <translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5401851137404501592">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site.</translation>
-<translation id="5403644198645076998">Only allow certain sites</translation>
 <translation id="5409881200985013443">Submit <ph name="ONE_TIME_CODE" /> on <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifying…</translation>
 <translation id="5423934151118863508">Your most visited pages will appear here</translation>
@@ -847,7 +844,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5626134646977739690">Name:</translation>
 <translation id="5628604359369369630">Unread – available offline</translation>
 <translation id="5635091213277904818">Chrome auto-deletes sites that are older than 30 days. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you.</translation>
-<translation id="5639724618331995626">Allow all sites</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Search history<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />other forms of activity<ph name="END_LINK2" /> may be saved in your Google Account</translation>
 <translation id="564667659802381754">Privacy Guide <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Last 7 days</translation>
@@ -882,7 +878,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5797949256525811424">Blocked topic</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# hour ago}other{# hours ago}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
-<translation id="5813552293717797987">This browser is managed by <ph name="PARENT_NAME_1" /> and <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814749351757353073">Keep up with your favourite sites</translation>
 <translation id="5822875253699806474">To quickly get back to sites that you’ve visited, sync your tabs and history</translation>
 <translation id="583281660410589416">Unknown</translation>
@@ -1251,7 +1246,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7655900163790317559">Turning on Bluetooth…</translation>
 <translation id="7656862631699126784">Turn on Incognito lock</translation>
 <translation id="7658239707568436148">Cancel</translation>
-<translation id="7663313374500954251">This browser is managed by <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Add account</translation>
 <translation id="766587987807204883">Articles appear here, which you can read even when you're offline</translation>
 <translation id="768232549260819724">GIF copied</translation>
@@ -1360,7 +1354,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8130309322784422030">Your stored sign-in info might be out of date</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8156139159503939589">What languages do you read?</translation>
-<translation id="8168435359814927499">Content</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> files left</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 day left</translation>
@@ -1452,7 +1445,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8617240290563765734">Open the suggested URL specified in the downloaded content?</translation>
 <translation id="8621068256433641644">phone</translation>
 <translation id="8636825310635137004">To get your tabs from your other devices, turn on sync.</translation>
-<translation id="8641930654639604085">Try to block mature sites</translation>
 <translation id="864544049772947936">Manage windows (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Predicts and warns you about dangerous events before they happen</translation>
 <translation id="8646467750715887511">Pages load only after you open them.</translation>
@@ -1500,7 +1492,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8909135823018751308">Share…</translation>
 <translation id="8912362522468806198">Google Account</translation>
-<translation id="8920114477895755567">Waiting for details of parents.</translation>
 <translation id="8921980840204105660">Sync to get your bookmarks from your other devices</translation>
 <translation id="8922289737868596582">Download pages from the More Options button to use them offline</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>

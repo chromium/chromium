@@ -142,7 +142,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1870148520156231997">Afficher le mot de passe</translation>
 <translation id="1872096359983322073">Lampe torche</translation>
 <translation id="1883255238294161206">Réduire la liste</translation>
-<translation id="1891796056033961979">Retrouvez, entre autres, sur cet écran vos favoris, mots de passe et paramètres enregistrés</translation>
 <translation id="1894023287452300670">Effectuez le suivi du prix ici</translation>
 <translation id="1910975740091000991">Chrome pour iOS</translation>
 <translation id="1911619930368729126">Importer dans Google Drive</translation>
@@ -442,7 +441,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3891414008432200754">Prix</translation>
 <translation id="3892144330757387737">Votre historique s'affichera ici</translation>
 <translation id="3897092660631435901">Menu</translation>
-<translation id="3899568514738536144">Afficher l'historique de navigation</translation>
 <translation id="3904829425754749514">Votre organisation a désactivé la synchronisation. Vos favoris, historique, mots de passe et autres paramètres resteront accessibles sur cet appareil, mais les modifications ne seront pas synchronisées avec votre compte.</translation>
 <translation id="3913386780052199712">Connecté à Google Chrome</translation>
 <translation id="3915450441834151894">Informations sur le site</translation>
@@ -499,7 +497,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="430793432425771671">Tout synchroniser</translation>
 <translation id="4309403553630140242">Appuyez deux fois pour obtenir plus d'informations</translation>
 <translation id="430967081421617822">Toutes les données</translation>
-<translation id="4324952538601951430">Retrouvez ici vos favoris, vos mots de passe et vos paramètres enregistrés, etc.</translation>
 <translation id="4334428914252001502">1 article non lu.</translation>
 <translation id="4338650699862464074">Envoie à Google les URL des pages que vous consultez.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Cette adresse sera supprimée de cet appareil et des autres appareils connectés à votre compte.}one{Cette adresse sera supprimée de cet appareil et des autres appareils connectés à votre compte.}other{Ces adresses seront supprimées de cet appareil et des autres appareils connectés à votre compte.}}</translation>
@@ -1056,7 +1053,6 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="7840771868269352570">Les éléments sélectionnés seront supprimés.</translation>
 <translation id="7845466610722898">Afficher la liste de lecture</translation>
 <translation id="784551991304901159">Pour afficher le contenu, sélectionnez "Activer" dans le menu</translation>
-<translation id="7846158885638438868">{count,plural, =1{Ajouté aux favoris dans "{title}"}one{Ajouté aux favoris dans "{title}"}other{Ajoutés aux favoris dans "{title}"}}</translation>
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7856733331829174190">Téléchargement impossible</translation>
 <translation id="785938070103630874">Ouvrez la section des mots de passe, des modes de paiement, de l'adresse, etc.</translation>
@@ -1136,9 +1132,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="8299613349954694191">Ouvrez un onglet de navigation privée pour naviguer sur le Web en mode privé.</translation>
 <translation id="8316944564970119719">Saisissez le site et le mot de passe, puis appuyez sur Enregistrer</translation>
-<translation id="8317835149433843300">Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas enregistré dans votre compte Google.
-
-Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Appuyez de manière prolongée pour afficher plus d'options d'onglets</translation>
 <translation id="8328777765163860529">Tout fermer</translation>

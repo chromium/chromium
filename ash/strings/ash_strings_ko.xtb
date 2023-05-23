@@ -29,7 +29,6 @@
 <translation id="1104084341931202936">접근성 설정 표시</translation>
 <translation id="1104621072296271835">기기가 연결되면 더욱 원활하게 작동합니다</translation>
 <translation id="1111021433905331574">설정 &gt; <ph name="APP_TITLE" />에서 키보드 백라이트 색상을 변경할 수 있습니다.</translation>
-<translation id="1112998165730922436">전송 일시중지됨</translation>
 <translation id="112308213915226829">앱 표시줄 자동 숨김</translation>
 <translation id="1142002900084379065">최근 사진</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> 정보 대화상자 열기</translation>
@@ -338,7 +337,6 @@
 <translation id="2526581474998477112">창 잠금 해제</translation>
 <translation id="2530896289327917474">캐럿 브라우징 사용 설정 또는 중지</translation>
 <translation id="2531025035050312891">기기 속도가 느림</translation>
-<translation id="2542089167727451762">프로필 이미지 탭</translation>
 <translation id="254900897760075745">클립보드에 선택한 콘텐츠 복사</translation>
 <translation id="2549711466868162843">밝기 개선</translation>
 <translation id="2549985041256363841">녹화 시작</translation>
@@ -507,7 +505,6 @@
 <translation id="334252345105450327">스크린샷 찍기</translation>
 <translation id="334927402682780278">커서부터 마지막 줄까지 텍스트 선택</translation>
 <translation id="3349345708646875009">작업 관리자 열기</translation>
-<translation id="3351879221545518001">현재 화면을 전송하고 있습니다.</translation>
 <translation id="3354555338129305222">내 기기 속도가 느린 이유</translation>
 <translation id="3364721542077212959">스타일러스 도구</translation>
 <translation id="3365977133351922112">휴대전화가 너무 멀리 있습니다. 휴대전화를 가까이 가져오세요.</translation>
@@ -1503,10 +1500,10 @@
 <translation id="7860671499921112077">최근 사용을 시작하려면 세 손가락을 사용해 위로 스와이프하세요.</translation>
 <translation id="7862292329216937261">게스트로 기기를 사용하려면 로그아웃한 다음 화면 하단에서 게스트로 로그인을 선택해야 합니다.</translation>
 <translation id="7866482334467279021">사용</translation>
-<translation id="7868900307798234037">지문으로 잠금 해제</translation>
 <translation id="7872786842639831132">꺼짐</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" />의 블루투스가 꺼져 있는 것 같습니다. 휴대전화 허브를 사용하려면 블루투스를 사용 설정하세요.</translation>
 <translation id="7877557217297072640">{0,plural, =0{지금 기기를 이전 버전으로 되돌리세요}=1{1초 이내에 기기를 이전 버전으로 되돌리세요}other{#초 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
+<translation id="7884446017008693258">핫스팟 설정</translation>
 <translation id="7884902759927478774">탭 드래그 취소</translation>
 <translation id="7886169021410746335">개인 정보 보호 설정 조정</translation>
 <translation id="7886277072580235377">로그아웃하면 인터넷 세션이 삭제됩니다. <ph name="LEARN_MORE" /></translation>
@@ -1602,7 +1599,6 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 휴대전화 배터리 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, 앱</translation>
 <translation id="8255234195843591763">재설정하여 업데이트</translation>
-<translation id="826107067893790409">Enter 키를 눌러서 <ph name="USER_EMAIL_ADDRESS" /> 잠금 해제</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8270450402312105425">{0,plural, =1{1시간 이내에 기기를 이전 버전으로 되돌리세요}other{#시간 이내에 기기를 이전 버전으로 되돌리세요}}</translation>
 <translation id="8277261673056602147">화면에서 텍스트 강조표시</translation>

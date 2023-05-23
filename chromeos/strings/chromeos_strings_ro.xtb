@@ -239,10 +239,8 @@
 <translation id="2873483161362553159">Navigare în browser</translation>
 <translation id="2874939134665556319">Melodia anterioară</translation>
 <translation id="2878387241690264070">S-a descărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
-<translation id="2902312830803030883">Mai multe acțiuni</translation>
 <translation id="2926057806159140518">Introdu numele de utilizator și parola sau scanează codul QR</translation>
 <translation id="2940811910881150316">Nu se poate testa dispozitivul. Redeschide capacul pentru testare.</translation>
-<translation id="2981143481017883351">Sunt disponibile elemente exclusive pentru Chromebook</translation>
 <translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
 <translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
 <translation id="3017079585324758401">Fundal</translation>
@@ -280,6 +278,7 @@
 <translation id="3291996639387199448">Direcția cheii</translation>
 <translation id="3294437725009624529">Invitat</translation>
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>
+<translation id="3305294846493618482">mai multe</translation>
 <translation id="3310640316857623290">Latența DNS depășește semnificativ pragul permisibil</translation>
 <translation id="3328783797891415197">Se rulează testul</translation>
 <translation id="3340011300870565703">Nivelul bateriei căștii drepte a dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -288,7 +287,6 @@
 <translation id="3360306038446926262">Ferestre</translation>
 <translation id="3368922792935385530">Conectat</translation>
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
-<translation id="3386675685417744672">Exclusiv pe Chromebook</translation>
 <translation id="3404249063913988450">Activează screensaverul</translation>
 <translation id="3413935475507503304">Ca să continui cu actualizarea, dă clic pe Înainte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -369,7 +367,6 @@
 <translation id="404928562651467259">AVERTISMENT</translation>
 <translation id="4054683689023980771">Se descarcă imaginea</translation>
 <translation id="4060260348856573701">APN nou</translation>
-<translation id="4079743696465895866">Selectează opere de artă exclusive pentru Chromebook</translation>
 <translation id="4093865285251893588">Imagine de profil</translation>
 <translation id="409427325554347132">Salvează detaliile testului</translation>
 <translation id="4095829376260267438">WPA2 / WPA3</translation>

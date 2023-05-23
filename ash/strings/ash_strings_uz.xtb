@@ -29,7 +29,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1104084341931202936">Qulayliklar sozlamalarini ochish</translation>
 <translation id="1104621072296271835">Qurilmalaringiz birgalikda yaxshiroq ishlaydi</translation>
 <translation id="1111021433905331574">Klaviatura orqa chirogʻi rangini Sozlamalar &gt; <ph name="APP_TITLE" /> sahifasidan oʻzgartirish mumkin</translation>
-<translation id="1112998165730922436">Translatsiya pauza qilindi</translation>
 <translation id="112308213915226829">Javonni avtomatik yashirish</translation>
 <translation id="1142002900084379065">Yaqinda olingan suratlar</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> axborot oynasini ochish</translation>
@@ -338,7 +337,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2526581474998477112">Oynalarni yechish</translation>
 <translation id="2530896289327917474">Faol kursor rejimini yoqish yoki oʻchirish</translation>
 <translation id="2531025035050312891">qurilma sekin ishlayapti</translation>
-<translation id="2542089167727451762">Profil rasmingizni bosing</translation>
 <translation id="254900897760075745">Tanlangan kontentni vaqtincha xotiraga nusxalash</translation>
 <translation id="2549711466868162843">Yoritish darajasini yaxshilash</translation>
 <translation id="2549985041256363841">Yozuvni boshlash</translation>
@@ -507,7 +505,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="334252345105450327">Skrinshot olish</translation>
 <translation id="334927402682780278">Kursordan qator oxirigacha matnni belgilash</translation>
 <translation id="3349345708646875009">Vazifalar boshqaruvini ochish</translation>
-<translation id="3351879221545518001">Hozir ekraningiz translatsiya qilinmoqda.</translation>
 <translation id="3354555338129305222">nega qurilmam sekin ishlayapti</translation>
 <translation id="3364721542077212959">Stilus vositalari</translation>
 <translation id="3365977133351922112">Telefon sizdan uzoqda. Telefonni yaqinlashtiring.</translation>
@@ -1503,10 +1500,10 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7860671499921112077">Umumiy nazarni ochish uchun 3 ta barmoq bilan pastga suring</translation>
 <translation id="7862292329216937261">Qurilmadan mehmon rejimida foydalanish uchun joriy hisobdan chiqing va ekran quyidagi “Mehmon sifatida kezish” bandini tanlang.</translation>
 <translation id="7866482334467279021">yoniq</translation>
-<translation id="7868900307798234037">Ekran qulfi barmoq izi orqali yechildi</translation>
 <translation id="7872786842639831132">Oʻchiq</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> qurilmangizda Bluetooth yoniqligini tekshiring. Phone Hub xizmatidan foydalanish uchun Bluetooth aloqasini yoqing</translation>
 <translation id="7877557217297072640">{0,plural, =0{Qurilma tizimini hoziroq eski versiyaga qaytaring}=1{Qurilma tizimini 1 soniya ichida eski versiyaga qaytaring}other{Qurilma tizimini # soniya ichida eski versiyaga qaytaring}}</translation>
+<translation id="7884446017008693258">Hotspot sozlamalari</translation>
 <translation id="7884902759927478774">Varaq tortilishini bekor qilish</translation>
 <translation id="7886169021410746335">Maxfiylik sozlamalarini moslash</translation>
 <translation id="7886277072580235377">Hisobingizdan chiqishingiz bilan seansdagi jarayonlar tozalanadi. <ph name="LEARN_MORE" /></translation>
@@ -1602,7 +1599,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8247060538831475781">Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Telefon quvvati: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Ilova</translation>
 <translation id="8255234195843591763">Yangilash uchun asliga qaytarish</translation>
-<translation id="826107067893790409">Qurilmani <ph name="USER_EMAIL_ADDRESS" /> uchun qulfdan chiqarish uchun Enter tugmasini bosing</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8270450402312105425">{0,plural, =1{Qurilma tizimini bir soat ichida eski versiyaga qaytaring}other{Qurilma tizimini # soat ichida eski versiyaga qaytaring}}</translation>
 <translation id="8277261673056602147">Ekrandagi matnni tanlash</translation>

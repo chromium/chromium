@@ -237,10 +237,8 @@
 <translation id="2873483161362553159">Navigation</translation>
 <translation id="2874939134665556319">Piste précédente</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
-<translation id="2902312830803030883">Autres actions</translation>
 <translation id="2926057806159140518">Saisissez votre nom d'utilisateur et votre mot de passe ou scannez votre code QR</translation>
 <translation id="2940811910881150316">Impossible de tester l'appareil. Rouvrez l'écran pour tester.</translation>
-<translation id="2981143481017883351">Composants Chromebook exclusifs désormais disponibles</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionner un dossier de destination</translation>
 <translation id="3017079585324758401">Arrière-plan</translation>
@@ -278,6 +276,7 @@
 <translation id="3291996639387199448">Direction de la clé</translation>
 <translation id="3294437725009624529">Invité</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
+<translation id="3305294846493618482">plus</translation>
 <translation id="3310640316857623290">Seuil de latence autorisé largement dépassé par le DNS</translation>
 <translation id="3328783797891415197">Test en cours</translation>
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
@@ -286,7 +285,6 @@
 <translation id="3360306038446926262">Fenêtres</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique des impressions ? Vos tâches d'impression en cours ne seront pas supprimées de cet historique.</translation>
-<translation id="3386675685417744672">Exclusivité Chromebook</translation>
 <translation id="3404249063913988450">Activer l'économiseur d'écran</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur "Suivant".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -367,7 +365,6 @@
 <translation id="404928562651467259">AVERTISSEMENT</translation>
 <translation id="4054683689023980771">Téléchargement de l'image…</translation>
 <translation id="4060260348856573701">Nouvel APN</translation>
-<translation id="4079743696465895866">Sélectionner une exclusivité Chromebook</translation>
 <translation id="4093865285251893588">Image de profil</translation>
 <translation id="409427325554347132">Enregistrer les résultats du test</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>

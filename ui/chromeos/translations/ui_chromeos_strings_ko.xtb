@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Linux 앱 설치</translation>
 <translation id="2225536596944493418">선택한 <ph name="NUMBER_OF_ITEMS" />개의 항목을 삭제하시겠습니까?</translation>
 <translation id="2230062665678605299">'<ph name="FOLDER_NAME" />' 폴더를 생성할 수 없습니다. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Google Drive 캐시가 삭제되었습니다.</translation>
 <translation id="2239068707900391003">커피를 마시는 사람</translation>
 <translation id="2251368349685848079">휴지통에서 복원</translation>
 <translation id="2278133026967558505">모든 웹사이트 및 URL에서 파일 액세스</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">사용자 지정 네임서버</translation>
 <translation id="4465725236958772856">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, 관리자가 관리함, 연결</translation>
 <translation id="4470564870223067757">한글 두벌식</translation>
+<translation id="4472575034687746823">시작하기</translation>
 <translation id="4474142134969976028">일치하는 결과가 없습니다.</translation>
 <translation id="4477002475007461989">루마니아어</translation>
 <translation id="4477219268485577442">불가리아어 표음</translation>
@@ -619,6 +619,7 @@
 <translation id="5838451609423551646">모든 항목이 선택 해제되었습니다.</translation>
 <translation id="5838825566232597749">미국 워크맨(국제)</translation>
 <translation id="5845721951356578987">간호사</translation>
+<translation id="5860491529813859533">사용</translation>
 <translation id="5861477046012235702">게이머</translation>
 <translation id="5864471791310927901">DHCP 조회 실패</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>

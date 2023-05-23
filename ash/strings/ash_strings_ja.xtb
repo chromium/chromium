@@ -29,7 +29,6 @@
 <translation id="1104084341931202936">ユーザー補助機能の設定を表示</translation>
 <translation id="1104621072296271835">デバイスを連携させると活用の幅が広がります</translation>
 <translation id="1111021433905331574">[設定] &gt; [<ph name="APP_TITLE" />] でキーボードのバックライトの色を変更できます</translation>
-<translation id="1112998165730922436">キャストを一時停止しました</translation>
 <translation id="112308213915226829">シェルフを自動的に非表示にする</translation>
 <translation id="1142002900084379065">最近の写真</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> の情報ダイアログを開きます</translation>
@@ -338,7 +337,6 @@
 <translation id="2526581474998477112">ウィンドウの固定を解除</translation>
 <translation id="2530896289327917474">カーソル ブラウジングをオンまたはオフにする</translation>
 <translation id="2531025035050312891">デバイスの動作が遅い</translation>
-<translation id="2542089167727451762">プロフィール画像をタップしてください</translation>
 <translation id="254900897760075745">選択した内容をクリップボードにコピーする</translation>
 <translation id="2549711466868162843">明るさを調整</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
@@ -507,7 +505,6 @@
 <translation id="334252345105450327">スクリーンショットを撮って</translation>
 <translation id="334927402682780278">カーソル位置から行末までのテキストを選択する</translation>
 <translation id="3349345708646875009">タスク マネージャーを開きます</translation>
-<translation id="3351879221545518001">現在、画面をキャストしています。</translation>
 <translation id="3354555338129305222">デバイスの動作が遅い理由</translation>
 <translation id="3364721542077212959">タッチペン ツール</translation>
 <translation id="3365977133351922112">スマートフォンが遠すぎます。近づけてください。</translation>
@@ -1504,10 +1501,10 @@
 <translation id="7860671499921112077">概要モードに切り替えるには、3 本の指で上にスワイプします</translation>
 <translation id="7862292329216937261">このデバイスをゲストとして使用するには、ログアウトして、画面の下部にある [ゲストとしてブラウジング] を選択する必要があります。</translation>
 <translation id="7866482334467279021">オン</translation>
-<translation id="7868900307798234037">指紋によるロック解除</translation>
 <translation id="7872786842639831132">オフ</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> で Bluetooth がオフになっているようです。スマートフォン ハブを使用するには、Bluetooth をオンにしてください。</translation>
 <translation id="7877557217297072640">{0,plural, =0{今すぐデバイスを以前のバージョンに戻してください}=1{1 秒以内にデバイスを以前のバージョンに戻してください}other{# 秒以内にデバイスを以前のバージョンに戻してください}}</translation>
+<translation id="7884446017008693258">アクセス ポイント設定</translation>
 <translation id="7884902759927478774">タブのドラッグをキャンセルする</translation>
 <translation id="7886169021410746335">プライバシー設定を調整する</translation>
 <translation id="7886277072580235377">ログアウトするとインターネット セッションは終了します。<ph name="LEARN_MORE" /></translation>
@@ -1603,7 +1600,6 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />、アプリ</translation>
 <translation id="8255234195843591763">リセットして更新してください</translation>
-<translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> に対してロックを解除するには、Enter キーを押します</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8270450402312105425">{0,plural, =1{1 時間以内にデバイスを以前のバージョンに戻してください}other{# 時間以内にデバイスを以前のバージョンに戻してください}}</translation>
 <translation id="8277261673056602147">画面上のテキストを選択</translation>

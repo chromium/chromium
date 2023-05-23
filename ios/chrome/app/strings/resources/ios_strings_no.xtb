@@ -142,7 +142,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1870148520156231997">Vis passordet</translation>
 <translation id="1872096359983322073">Lommelykt</translation>
 <translation id="1883255238294161206">Skjul liste</translation>
-<translation id="1891796056033961979">Lagrede bokmerker, passord, innstillinger med mer er tilgjengelig på denne skjermen.</translation>
 <translation id="1894023287452300670">Spor prisen her</translation>
 <translation id="1910975740091000991">Chrome for iOS</translation>
 <translation id="1911619930368729126">Last opp til Google Disk</translation>
@@ -444,7 +443,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Her finner du loggen din</translation>
 <translation id="3897092660631435901">Meny</translation>
-<translation id="3899568514738536144">Se nettleserloggen</translation>
 <translation id="3904829425754749514">Organisasjonen din har slått av synkronisering. Du kan fremdeles se bokmerkene dine, loggen din, passordene dine og andre innstillinger på denne enheten. Hvis du gjør endringer, blir de ikke synkronisert med kontoen din.</translation>
 <translation id="3913386780052199712">Pålogget Chrome</translation>
 <translation id="3915450441834151894">Opplysninger om nettstedet</translation>
@@ -501,7 +499,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="430793432425771671">Synkroniser alt</translation>
 <translation id="4309403553630140242">Dobbelttrykk for å se mer informasjon</translation>
 <translation id="430967081421617822">Alle datoer</translation>
-<translation id="4324952538601951430">Her finner du nå blant annet bokmerker, passord og innstillinger du har lagret</translation>
 <translation id="4334428914252001502">1 ulest artikkel.</translation>
 <translation id="4338650699862464074">Sender Google nettadressene til sider du besøker.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Denne adressen slettes fra denne og de andre påloggede enhetene dine.}other{Disse adressene slettes fra denne og de andre påloggede enhetene dine.}}</translation>
@@ -1057,7 +1054,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7840771868269352570">De valgte elementene blir fjernet.</translation>
 <translation id="7845466610722898">Vis leselisten</translation>
 <translation id="784551991304901159">For å se innhold, velg «Slå på» på menyen</translation>
-<translation id="7846158885638438868">{count,plural, =1{Lagret som bokmerke i «{title}»}other{Lagret som bokmerke i «{title}»}}</translation>
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7856733331829174190">Kunne ikke laste ned</translation>
 <translation id="785938070103630874">Åpne passord, betalingsmåter eller adresse med mer</translation>
@@ -1137,9 +1133,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8299417921174340354">For å bruke passord må du først angi en adgangskode på enheten din.</translation>
 <translation id="8299613349954694191">Åpne en inkognitofane for å surfe privat på nettet.</translation>
 <translation id="8316944564970119719">Skriv inn nettsted og passord, og lagre deretter</translation>
-<translation id="8317835149433843300">Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chrome lagres ikke i Google-kontoen din.
-
-Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nytt søk</translation>
 <translation id="8323906514956095947">Trykk og hold inne for flere fanealternativer</translation>
 <translation id="8328777765163860529">Lukk alle</translation>

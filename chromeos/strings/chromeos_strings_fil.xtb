@@ -239,10 +239,8 @@
 <translation id="2873483161362553159">Pag-navigate sa browser</translation>
 <translation id="2874939134665556319">Nakaraang track</translation>
 <translation id="2878387241690264070">Nag-discharge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
-<translation id="2902312830803030883">Higit pang pagkilos</translation>
 <translation id="2926057806159140518">Ilagay ang iyong username at password o i-scan ang iyong QR code</translation>
 <translation id="2940811910881150316">Hindi masuri ang device. Buksang ulit ang takip para suriin.</translation>
-<translation id="2981143481017883351">Available na ngayon ang mga eksklusibong asset sa Chromebook</translation>
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="3017079585324758401">Background</translation>
@@ -280,6 +278,7 @@
 <translation id="3291996639387199448">Direksyon ng key</translation>
 <translation id="3294437725009624529">Bisita</translation>
 <translation id="3303855915957856445">Walang nakitang resulta ng paghahanap</translation>
+<translation id="3305294846493618482">higit pa</translation>
 <translation id="3310640316857623290">Napakataas kumpara sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="3328783797891415197">Tumatakbo ang pagsusuri</translation>
 <translation id="3340011300870565703">May <ph name="BATTERY_PERCENTAGE" />% baterya ang kanang bud ng device.</translation>
@@ -288,7 +287,6 @@
 <translation id="3360306038446926262">Mga Window</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
-<translation id="3386675685417744672">Eksklusibo sa Chromebook</translation>
 <translation id="3404249063913988450">I-enable ang screen saver</translation>
 <translation id="3413935475507503304">Para magpatuloy sa update, i-click ang Susunod.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -369,7 +367,6 @@
 <translation id="404928562651467259">BABALA</translation>
 <translation id="4054683689023980771">Dina-download ang larawan</translation>
 <translation id="4060260348856573701">Bagong APN</translation>
-<translation id="4079743696465895866">Pumili ng artwork na eksklusibo sa Chromebook</translation>
 <translation id="4093865285251893588">Larawan sa profile</translation>
 <translation id="409427325554347132">I-save ang mga detalye ng pagsubok</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>

@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Linux सह इंस्टॉल करा</translation>
 <translation id="2225536596944493418">तुम्हाला नक्की <ph name="NUMBER_OF_ITEMS" /> आयटम हटवायचे आहेत का?</translation>
 <translation id="2230062665678605299">फोल्डर "<ph name="FOLDER_NAME" />" तयार करण्‍यात अक्षम. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">तुमची Google Drive कॅशे साफ केली आहे.</translation>
 <translation id="2239068707900391003">कॉफी पीत असलेली व्यक्ती</translation>
 <translation id="2251368349685848079">ट्रॅशमधून रिस्टोअर करा</translation>
 <translation id="2278133026967558505">सर्व वेबसाइट आणि URLs ना फाइलचा अ‍ॅक्सेस आहे</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">कस्टम नाव सर्व्हर</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, कनेक्ट करा</translation>
 <translation id="4470564870223067757">हँगल 2 संच</translation>
+<translation id="4472575034687746823">सुरुवात करा</translation>
 <translation id="4474142134969976028">जुळणारे परिणाम नाहीत</translation>
 <translation id="4477002475007461989">रोमानियन</translation>
 <translation id="4477219268485577442">बल्गेरियन ध्वन्यात्मक</translation>
@@ -619,6 +619,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5838451609423551646">निवडीमधून सर्व नोंदी काढून टाकल्या आहेत.</translation>
 <translation id="5838825566232597749">यूएस कामगार आंतरराष्ट्रीय</translation>
 <translation id="5845721951356578987">परिचारिका</translation>
+<translation id="5860491529813859533">सुरू करा</translation>
 <translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP लुकअप अयशस्वी</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_NAME" /> चे <ph name="NETWORK_INDEX" /> पैकी <ph name="NETWORK_COUNT" /> नेटवर्क, ॲक्टिव्हेट केलेले नाही, सिग्नलची क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>

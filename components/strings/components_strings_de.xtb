@@ -1093,6 +1093,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3658742229777143148">Überarbeitung</translation>
 <translation id="3664782872746246217">Suchbegriffe:</translation>
 <translation id="3667704023705708645">Risikokapital</translation>
+<translation id="3671117652518853176">Wenn diese Option deaktiviert ist, wirst du aus Sicherheitsgründen möglicherweise gelegentlich zur Bestätigung aufgefordert</translation>
 <translation id="3671540257457995106">Größenanpassung zulassen?</translation>
 <translation id="3672568546897166916">Fehler bei <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Dritte Rolle</translation>
@@ -1127,6 +1128,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3736520371357197498">Wenn du die Sicherheitsrisiken kennst, kannst du <ph name="BEGIN_LINK" />diese unsichere Website aufrufen<ph name="END_LINK" />, bevor die gefährlichen Programme entfernt wurden.</translation>
 <translation id="3738166223076830879">Dein Browser wird von deinem Administrator verwaltet.</translation>
 <translation id="3740319564441798148">Fernbusse und -züge</translation>
+<translation id="3743765582345153106">Bei Verwendung von Autofill immer bestätigen</translation>
 <translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
 <translation id="3744286742364977428">Dateien, die du herunterlädst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß den Unternehmensrichtlinien gespeichert werden.</translation>
 <translation id="3744899669254331632">Du kannst <ph name="SITE" /> zurzeit nicht aufrufen, weil die Website verschlüsselte Anmeldedaten gesendet hat, die von Chromium nicht verarbeitet werden können. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
@@ -1342,7 +1344,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Notiz</translation>
 <translation id="425582637250725228">Deine Änderungen werden eventuell nicht gespeichert.</translation>
-<translation id="425869179292622354">Möchtest du deine Karte durch eine virtuelle Karte besser schützen?</translation>
 <translation id="4258748452823770588">Fehlerhafte Signatur</translation>
 <translation id="4261046003697461417">Geschützte Dokumente können nicht mit Anmerkungen versehen werden</translation>
 <translation id="4265872034478892965">Von deinem Administrator zugelassen</translation>
@@ -1733,6 +1734,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5171045022955879922">Suchen oder URL eingeben</translation>
 <translation id="5172758083709347301">Computer</translation>
 <translation id="5177076414499237632">Informationen zu Quelle und Thema dieser Seite</translation>
+<translation id="5179490652562926740">Einstellungen für die Zahlungsbestätigung gespeichert</translation>
 <translation id="5179510805599951267">Nicht auf <ph name="ORIGINAL_LANGUAGE" />? Diesen Fehler melden</translation>
 <translation id="518639307526414276">Haustiernahrung und -pflegemittel</translation>
 <translation id="5190072300954988691">Kamera- und Mikrofonberechtigung nicht gewährt</translation>
@@ -3300,6 +3302,7 @@ Weitere Details:
 <translation id="9048662076076074925">24 x 36 Zoll</translation>
 <translation id="9049981332609050619">Du hast versucht, auf <ph name="DOMAIN" /> zuzugreifen, der Server hat sich jedoch mit einem ungültigen Zertifikat ausgewiesen.</translation>
 <translation id="9050666287014529139">Passphrase</translation>
+<translation id="9053840549256861041">Wir führen eine neue Funktion zum Datenschutz bei Werbung ein. Diese Funktion heißt „Erfolgsmessung von Anzeigen“. Chrome gibt nur sehr begrenzte Informationen zwischen Websites weiter – dazu zählt beispielsweise, wann dir eine Anzeige präsentiert wurde, damit Websites die Leistung von Werbung analysieren können.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Eventuell wurde sie verschoben, bearbeitet oder gelöscht.</translation>
 <translation id="9063398205799684336">Umschlag Kaku 2</translation>

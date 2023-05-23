@@ -239,10 +239,8 @@
 <translation id="2873483161362553159">ဘရောင်ဇာ လမ်းညွှန်မှု</translation>
 <translation id="2874939134665556319">ယခင်တစ်ပုဒ်</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားလျော့သွားသည်။</translation>
-<translation id="2902312830803030883">နောက်ထပ် လုပ်ဆောင်ချက်များ</translation>
 <translation id="2926057806159140518">သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ထည့်ပါ (သို့) QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
 <translation id="2940811910881150316">စက်ကို စမ်းသပ်၍မရပါ။ စမ်းသပ်ရန် အဖုံးပြန်ဖွင့်ပါ။</translation>
-<translation id="2981143481017883351">Chromebook အထူးသီးသန့် ပိုင်ဆိုင်မှုများကို ယခု ရနိုင်ပြီ</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
 <translation id="3017079585324758401">နောက်ခံ</translation>
@@ -280,6 +278,7 @@
 <translation id="3291996639387199448">ကီးလမ်းညွှန်ချက်</translation>
 <translation id="3294437725009624529">ဧည့်သည်</translation>
 <translation id="3303855915957856445">မည်သည့်ရှာဖွေမှု ရလဒ်မျှ မတွေ့ပါ</translation>
+<translation id="3305294846493618482">နောက်ထပ်</translation>
 <translation id="3310640316857623290">DNS တုံ့ပြန်ချိန်က ခွင့်ပြုနိုင်သောသတ်မှတ်ကာလကို သိသာစွာကျော်နေသည်</translation>
 <translation id="3328783797891415197">စစ်ဆေးနေသည်</translation>
 <translation id="3340011300870565703">ညာနားကြပ်တွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
@@ -288,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3369013195428705271">ပုံနှိပ်မှတ်တမ်း အားလုံးကို ရှင်းထုတ်လိုသည်မှာ သေချာသလား။ ပုံနှိပ်ထုတ်နေသော ဖိုင်များကို ရှင်းထုတ်မည်မဟုတ်ပါ။</translation>
-<translation id="3386675685417744672">Chromebook အထူးသီးသန့်</translation>
 <translation id="3404249063913988450">စခရင်နားချိန်ပုံ ဖွင့်ရန်</translation>
 <translation id="3413935475507503304">ရှေ့ဆက်၍ အပ်ဒိတ်လုပ်ရန် ‘ရှေ့သို့’ ကို နှိပ်ပါ။</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -369,7 +367,6 @@
 <translation id="404928562651467259">သတိပေးချက်</translation>
 <translation id="4054683689023980771">ပုံကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="4060260348856573701">APN အသစ်</translation>
-<translation id="4079743696465895866">Chromebook အထူးသီးသန့် ပိုစတာပုံ ရွေးရန်</translation>
 <translation id="4093865285251893588">ပရိုဖိုင်ပုံ</translation>
 <translation id="409427325554347132">စာသားအသေးစိတ် သိမ်းရန်</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>

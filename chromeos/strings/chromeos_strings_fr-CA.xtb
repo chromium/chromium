@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Désactiver le thème sombre</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1827738518074806965">Galerie d'art</translation>
+<translation id="1836553715834333258">Couleur du système</translation>
 <translation id="1838374766361614909">Effacer les termes de recherche</translation>
+<translation id="1840474674287087346">Couleur du bureau</translation>
 <translation id="1851218745569890714">Vidéoconférence</translation>
 <translation id="1852934301711881861">Installer Chrome OS Flex</translation>
 <translation id="1856388568474281774">Flèche vers le bas</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">Navigation dans le navigateur</translation>
 <translation id="2874939134665556319">Chanson précédente</translation>
 <translation id="2878387241690264070">Déchargée de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
-<translation id="2902312830803030883">Autres actions</translation>
 <translation id="2926057806159140518">Entrez votre nom d'utilisateur et votre mot de passe ou numérisez votre code QR</translation>
 <translation id="2940811910881150316">Impossible de tester l'appareil. Rouvrir le couvercle pour tester.</translation>
-<translation id="2981143481017883351">Éléments Chromebook exclusifs maintenant offerts</translation>
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionnez un dossier dans lequel enregistrer les fichiers</translation>
 <translation id="3017079585324758401">Arrière-plan</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">Direction de la clé</translation>
 <translation id="3294437725009624529">Invité</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé</translation>
+<translation id="3305294846493618482">plus</translation>
 <translation id="3310640316857623290">La latence du DNS dépasse le seuil acceptable de manière considérable</translation>
 <translation id="3328783797891415197">Exécution du test en cours…</translation>
 <translation id="3340011300870565703">Le niveau de la pile de l'écouteur droit est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique d'impression? Vos tâches d'impression courantes ne seront pas effacées.</translation>
-<translation id="3386675685417744672">Exclusivité Chromebook</translation>
 <translation id="3404249063913988450">Activer l'écran de veille</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur Suivant.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">AVERTISSEMENT</translation>
 <translation id="4054683689023980771">Téléchargement de l'image en cours</translation>
 <translation id="4060260348856573701">Nouveau nom du point d'accès</translation>
-<translation id="4079743696465895866">Sélectionnez une illustration exclusive Chromebook</translation>
 <translation id="4093865285251893588">Image de profil</translation>
 <translation id="409427325554347132">Enregistrer les détails du test</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">Numériser vers</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
+<translation id="4500966230243561393">Couleur de l'interface</translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
 <translation id="4507392511610824664">augmenter la luminosité</translation>
 <translation id="4511264077854731334">Portail</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Quand l'écran est en veille, vous pouvez afficher des photos, l'heure, la météo et des informations multimédias.</translation>
+<translation id="5035083460461104704">Couleur du thème</translation>
 <translation id="5038292761217083259">clavier multicolore</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5049856988445523908">Carte SIM verrouillée (<ph name="LOCK_TYPE" />)</translation>
@@ -812,6 +813,7 @@
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7620771111601174153">En savoir plus dans le centre d'aide</translation>
 <translation id="763165478673169849">Heure de la dernière réinitialisation</translation>
+<translation id="7633068090678117093">Image d'arrière-plan</translation>
 <translation id="7648838807254605802">Latence HTTPS élevée</translation>
 <translation id="765159867434478292">Diviser</translation>
 <translation id="7656388927906093505">L'appareil est une souris.</translation>
@@ -977,6 +979,7 @@
 <translation id="8930521118335213258">Application similaire</translation>
 <translation id="8930622219860340959">Sans fil</translation>
 <translation id="8936793075252196307">Adresse IP du client</translation>
+<translation id="8944651180182756621">Couleur du lanceur</translation>
 <translation id="894617464444543719">L'appareil est un téléphone.</translation>
 <translation id="8957423540740801332">droite</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>
@@ -1010,6 +1013,7 @@
 <translation id="9149391708638971077">Exécuter le test de mémoire</translation>
 <translation id="9161276708550942948">espace</translation>
 <translation id="9173638680043580060">Il reste moins d'une minute</translation>
+<translation id="9174334653006917325">Couleur de l'interface utilisateur</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Votre clavier peut automatiquement s'agencer à votre fond d'écran</translation>
 <translation id="9189000703457422362">Impossible de se connecter à ce réseau à l'aide des noms de points d'accès (APN) détectés automatiquement. Contactez votre fournisseur de services cellulaires pour plus d'informations.</translation>

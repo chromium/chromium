@@ -239,10 +239,8 @@
 <translation id="2873483161362553159">براؤزر نیویگیشن</translation>
 <translation id="2874939134665556319">پچھلا ٹریک</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> سیکنڈ میں <ph name="RATE" /> ڈسچارج ہوئی۔</translation>
-<translation id="2902312830803030883">مزید کارروائیاں</translation>
 <translation id="2926057806159140518">‏اپنا صارف نام اور پاس ورڈ درج کریں یا اپنا QR کوڈ اسکین کریں</translation>
 <translation id="2940811910881150316">آلہ کو ٹیسٹ نہیں کیا جا سکتا۔ ٹیسٹ کرنے کے لیے پپوٹوں کو دوبارہ کھولیں۔</translation>
-<translation id="2981143481017883351">‏Chromebook کے خصوصی اثاثے دستیاب ہیں</translation>
 <translation id="3008341117444806826">ریفریش کریں</translation>
 <translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
 <translation id="3017079585324758401">پس منظر</translation>
@@ -280,6 +278,7 @@
 <translation id="3291996639387199448">کلیدی ڈائریکشن</translation>
 <translation id="3294437725009624529">مہمان</translation>
 <translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
+<translation id="3305294846493618482">مزید</translation>
 <translation id="3310640316857623290">‏DNS تاخیر قابل اجازت حد سے نمایاں طور پر زیادہ ہے</translation>
 <translation id="3328783797891415197">ٹیسٹ جاری ہے</translation>
 <translation id="3340011300870565703">آلے کے دائیں بڈ میں <ph name="BATTERY_PERCENTAGE" />فیصد بیٹری ہے۔</translation>
@@ -288,7 +287,6 @@
 <translation id="3360306038446926262">ونڈوز</translation>
 <translation id="3368922792935385530">منسلک</translation>
 <translation id="3369013195428705271">کیا آپ واقعی پرنٹ کی تمام سرگزشت کو صاف کرنا چاہتے ہیں؟ آپ کی جاری پرنٹ جابز کو صاف نہیں کیا جائے گا۔</translation>
-<translation id="3386675685417744672">‏Chromebook خصوصی</translation>
 <translation id="3404249063913988450">اسکرین سیور فعال کریں</translation>
 <translation id="3413935475507503304">اپ ڈیٹ کے ساتھ آگے بڑھنے کے لیے اگلے پر کلک کریں۔</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -369,7 +367,6 @@
 <translation id="404928562651467259">وارننگ</translation>
 <translation id="4054683689023980771">تصویرڈاؤن لوڈ ہو رہی ہے</translation>
 <translation id="4060260348856573701">‏نیا APN</translation>
-<translation id="4079743696465895866">‏Chromebook کے خصوصی آرٹ ورک کو منتخب کریں</translation>
 <translation id="4093865285251893588">پروفائل تصویر</translation>
 <translation id="409427325554347132">ٹیسٹ کی تفصیلات محفوظ کریں</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>

@@ -976,6 +976,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3380864720620200369">ID client:</translation>
 <translation id="3381668585148405088">Verifica l'acquisto</translation>
 <translation id="3383566085871012386">Ordine di precedenza corrente</translation>
+<translation id="3384522979010096022">La tua organizzazione non ti consente di visualizzare questo sito</translation>
 <translation id="3387261909427947069">Metodi di pagamento</translation>
 <translation id="3391030046425686457">Indirizzo di consegna</translation>
 <translation id="3391482648489541560">modifica di file</translation>
@@ -1343,7 +1344,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="425582637250725228">Le modifiche apportate potrebbero non essere salvate.</translation>
-<translation id="425869179292622354">Vuoi renderla più sicura con una carta virtuale?</translation>
 <translation id="4258748452823770588">Firma errata</translation>
 <translation id="4261046003697461417">Non è possibile inserire annotazioni nei documenti protetti</translation>
 <translation id="4265872034478892965">Consentita dall'amministratore</translation>
@@ -1961,7 +1961,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5764725887548570807">Formato di origine non valido.</translation>
 <translation id="5764920692828389743">Invia a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Seleziona un indirizzo per conoscere i requisiti e i metodi di consegna</translation>
-<translation id="57689295674415555">Il numero della carta virtuale non è stato compilato?</translation>
+<translation id="57689295674415555">Il numero della carta virtuale non è stato inserito?</translation>
 <translation id="5772086939108830423">Usa una passkey su un altro dispositivo</translation>
 <translation id="5776313857861697733">Priorità</translation>
 <translation id="5776574724412881956">I dati della carta virtuale non sono stati inseriti? Fai clic sui dati della carta virtuale per copiarli negli appunti. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>

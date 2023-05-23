@@ -142,7 +142,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="1870148520156231997">Ipakita ang Password</translation>
 <translation id="1872096359983322073">Torch</translation>
 <translation id="1883255238294161206">Tiklupin ang listahan</translation>
-<translation id="1891796056033961979">Available sa screen na ito ang iyong mga naka-save na bookmark, password, setting, at higit pa.</translation>
 <translation id="1894023287452300670">Subaybayan ang presyo rito</translation>
 <translation id="1910975740091000991">Chrome para sa iOS</translation>
 <translation id="1911619930368729126">I-upload sa Google Drive</translation>
@@ -444,7 +443,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3891414008432200754">Presyo</translation>
 <translation id="3892144330757387737">Makikita mo rito ang iyong history</translation>
 <translation id="3897092660631435901">Menu</translation>
-<translation id="3899568514738536144">Tingnan ang history ng pag-browse</translation>
 <translation id="3904829425754749514">Na-off ng iyong organisasyon ang pag-sync. Makikita mo pa rin ang iyong mga bookmark, history, password, at iba pang setting sa device na ito. Kung gagawa ka ng mga pagbabago, hindi masi-sync ang mga ito sa iyong account.</translation>
 <translation id="3913386780052199712">Naka-sign in sa Chrome</translation>
 <translation id="3915450441834151894">Impormasyon ng Site</translation>
@@ -501,7 +499,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="430793432425771671">I-sync Lahat</translation>
 <translation id="4309403553630140242">Mag-double tap para sa higit pang impormasyon</translation>
 <translation id="430967081421617822">Lahat ng Oras</translation>
-<translation id="4324952538601951430">Narito na ngayon ang mga naka-save mong bookmark, password, setting, at higit pa</translation>
 <translation id="4334428914252001502">1 hindi pa nababasang artikulo.</translation>
 <translation id="4338650699862464074">Magpadala ng mga URL ng mga page na binibisita mo sa Google.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Made-delete ang address na ito mula rito at sa iyong iba pang naka-sign in na device.}one{Made-delete ang mga address na ito mula rito at sa iyong iba pang naka-sign in na device}other{Made-delete ang mga address na ito mula rito at sa iyong iba pang naka-sign in na device}}</translation>
@@ -1057,7 +1054,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7840771868269352570">Maaalis ang mga pinili mong item.</translation>
 <translation id="7845466610722898">Ipakita ang Listahan ng Babasahin</translation>
 <translation id="784551991304901159">Para makakita ng content, piliin ang I-on mula sa menu</translation>
-<translation id="7846158885638438868">{count,plural, =1{Na-bookmark sa "{title}"}one{Na-bookmark sa "{title}"}other{Na-bookmark sa "{title}"}}</translation>
 <translation id="7853202427316060426">Aktibidad</translation>
 <translation id="7856733331829174190">Hindi Ma-download</translation>
 <translation id="785938070103630874">Buksan ang Mga Password, Paraan ng Pagbabayad, o Address at Higit Pa</translation>
@@ -1137,9 +1133,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8299417921174340354">Para gumamit ng mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="8299613349954694191">Magbukas ng tab na Incognito para pribadong i-browse ang web.</translation>
 <translation id="8316944564970119719">Ilagay ang Site at Password, at Pagkatapos ay I-save</translation>
-<translation id="8317835149433843300">Hindi mae-encrypt ang mga paraan ng pagbabayad at address mula sa Google Pay. Hindi mase-save sa iyong Google Account ang history ng pag-browse mula sa Chrome.
-
-Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o sino-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Bagong Paghahanap</translation>
 <translation id="8323906514956095947">Pindutin nang matagal para sa higit pang opsyon sa tab</translation>
 <translation id="8328777765163860529">Isara Lahat</translation>

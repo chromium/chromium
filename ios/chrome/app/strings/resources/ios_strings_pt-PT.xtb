@@ -142,7 +142,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="1870148520156231997">Mostrar palavra-passe</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1883255238294161206">Fechar lista</translation>
-<translation id="1891796056033961979">Os seus marcadores, palavras-passe, definições e outros conteúdos guardados estão disponíveis neste ecrã.</translation>
 <translation id="1894023287452300670">Monitorize o preço aqui</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1911619930368729126">Carregar p/ Google Drive</translation>
@@ -379,6 +378,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3464194322481586217">Não foi possível acompanhar o preço.</translation>
 <translation id="3469166899695866866">Pretende parar a transferência?</translation>
 <translation id="3470502288861289375">A copiar...</translation>
+<translation id="3471148582064653480">Sincronize as palavras-passe, o histórico e muito mais.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{para {COUNT} site ou app}other{para {COUNT} sites e apps}}</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Mês de validade</translation>
@@ -399,6 +399,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3551320343578183772">Fechar Separador</translation>
 <translation id="3565207542107370586">Limpar dados de navegação…</translation>
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
+<translation id="3577555362230509265">Use o Chrome noutras apps.</translation>
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
 <translation id="3595252146048399851">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
@@ -442,7 +443,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3891414008432200754">Preço</translation>
 <translation id="3892144330757387737">O seu histórico será apresentado aqui</translation>
 <translation id="3897092660631435901">Menu</translation>
-<translation id="3899568514738536144">Veja o histórico de navegação</translation>
 <translation id="3904829425754749514">A sua organização desativou a sincronização. Ainda pode ver os seus marcadores, histórico, palavras-passe e outras definições neste dispositivo. Se fizer alterações, estes não serão sincronizadas com a sua conta.</translation>
 <translation id="3913386780052199712">Sessão iniciada no Chrome</translation>
 <translation id="3915450441834151894">Informações do site</translation>
@@ -499,7 +499,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="430793432425771671">Sincronizar Tudo</translation>
 <translation id="4309403553630140242">Toque duas vezes para obter mais informações.</translation>
 <translation id="430967081421617822">Sempre</translation>
-<translation id="4324952538601951430">Agora, os seus marcadores, palavras-passe e definições guardados, e muito mais, estão aqui</translation>
 <translation id="4334428914252001502">1 artigo não lido.</translation>
 <translation id="4338650699862464074">Envia para a Google os URLs das páginas que visita.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Esta morada vai ser eliminada deste e de outros dispositivos com sessão iniciada}other{Estas moradas vão ser eliminadas deste e de outros dispositivos com sessão iniciada}}</translation>
@@ -1055,7 +1054,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7840771868269352570">Os itens selecionados serão removidos.</translation>
 <translation id="7845466610722898">Mostrar Lista de leitura</translation>
 <translation id="784551991304901159">Para ver o conteúdo, selecione Ativar no menu</translation>
-<translation id="7846158885638438868">{count,plural, =1{Adicionado aos marcadores em "{title}"}other{Adicionados aos marcadores em "{title}"}}</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7856733331829174190">Impossível transferir</translation>
 <translation id="785938070103630874">Abra palavras-passe, métodos de pagamento, moradas e muito mais</translation>
@@ -1135,9 +1133,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8299417921174340354">Para utilizar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="8299613349954694191">Abra um separador de navegação anónima para navegar na Web de forma privada.</translation>
 <translation id="8316944564970119719">Introduza o site e a palavra-passe e, em seguida, guarde</translation>
-<translation id="8317835149433843300">Os métodos de pagamento e as moradas do Google Pay não são encriptados. O histórico de navegação do Chrome não é guardado na sua Conta Google.
-
-Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8323906514956095947">Toque sem soltar para obter mais opções de separadores.</translation>
 <translation id="8328777765163860529">Fechar Tudo</translation>

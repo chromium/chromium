@@ -239,10 +239,8 @@
 <translation id="2873483161362553159">Brauseris navigeerimine</translation>
 <translation id="2874939134665556319">Eelmine lugu</translation>
 <translation id="2878387241690264070">Tühjenes <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundiga.</translation>
-<translation id="2902312830803030883">Veel toiminguid</translation>
 <translation id="2926057806159140518">Sisestage kasutajanimi ja parool või skannige QR-kood</translation>
 <translation id="2940811910881150316">Seadet ei saa testida. Testimiseks avage uuesti kaas.</translation>
-<translation id="2981143481017883351">Eksklusiivsed Chromebooki varad on nüüd saadaval</translation>
 <translation id="3008341117444806826">VÄRSKENDA</translation>
 <translation id="3009958530611748826">Valige kaust, kuhu salvestada</translation>
 <translation id="3017079585324758401">Taust</translation>
@@ -280,6 +278,7 @@
 <translation id="3291996639387199448">Võtme suund</translation>
 <translation id="3294437725009624529">Külaline</translation>
 <translation id="3303855915957856445">Otsingutulemusi ei leitud</translation>
+<translation id="3305294846493618482">rohkem</translation>
 <translation id="3310640316857623290">DNS-i latentsusaeg ületab märkimisväärselt lubatud piiri</translation>
 <translation id="3328783797891415197">Test on pooleli</translation>
 <translation id="3340011300870565703">Seadme parema kõrvaklapi aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -288,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Ühendatud</translation>
 <translation id="3369013195428705271">Kas soovite kindlasti kogu printimise ajaloo kustutada? Teie pooleliolevaid prinditöid ei kustutata.</translation>
-<translation id="3386675685417744672">Eksklusiivne Chromebook</translation>
 <translation id="3404249063913988450">Ekraanisäästja lubamine</translation>
 <translation id="3413935475507503304">Värskendamisega jätkamiseks klõpsake nupul Järgmine.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -369,7 +367,6 @@
 <translation id="404928562651467259">HOIATUS</translation>
 <translation id="4054683689023980771">Pildi allalaadimine</translation>
 <translation id="4060260348856573701">Uus APN</translation>
-<translation id="4079743696465895866">Valige Chromebooki eksklusiivne kunstiteos</translation>
 <translation id="4093865285251893588">Profiilipilt</translation>
 <translation id="409427325554347132">Salvesta testi üksikasjad</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>

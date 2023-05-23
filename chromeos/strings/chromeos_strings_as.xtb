@@ -239,10 +239,8 @@
 <translation id="2873483161362553159">ব্ৰাউজাৰ নেভিগেশ্বন</translation>
 <translation id="2874939134665556319">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
-<translation id="2902312830803030883">অধিক কাৰ্য</translation>
 <translation id="2926057806159140518">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড দিয়ক অথবা আপোনাৰ কিউ আৰ ক’ড স্কেন কৰক</translation>
 <translation id="2940811910881150316">ডিভাইচটো পৰীক্ষা কৰিব নোৱাৰি। পৰীক্ষা কৰিবলৈ ঢাকনীখন পুনৰ খোলক।</translation>
-<translation id="2981143481017883351">বিশেষ Chromebook সম্পদ এতিয়া উপলব্ধ</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="3017079585324758401">নেপথ্য</translation>
@@ -280,6 +278,7 @@
 <translation id="3291996639387199448">চাবিৰ নির্দেশনা</translation>
 <translation id="3294437725009624529">অতিথি</translation>
 <translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
+<translation id="3305294846493618482">অধিক</translation>
 <translation id="3310640316857623290">DNSৰ বিলম্বতা যথেষ্ট পৰিমাণে অনুমতি দিয়া সীমাতকৈ ওপৰত আছে</translation>
 <translation id="3328783797891415197">পৰীক্ষা চলি আছে</translation>
 <translation id="3340011300870565703">ডিভাইচটোৰ সোঁফালৰ বাডটোত <ph name="BATTERY_PERCENTAGE" />% বেটাৰী আছে।</translation>
@@ -288,7 +287,6 @@
 <translation id="3360306038446926262">ৱিণ্ড’</translation>
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
 <translation id="3369013195428705271">আপুনি সকলো প্ৰিণ্টৰ ইতিহাস নিশ্চিতভাৱে মচিব বিচাৰেনে? আপোনাৰ চলি থকা প্ৰিণ্টৰ কামসমূহ মচা নহয়।</translation>
-<translation id="3386675685417744672">Chromebookৰ বিশেষ</translation>
 <translation id="3404249063913988450">স্ক্ৰীন ছেভাৰ সক্ষম কৰক</translation>
 <translation id="3413935475507503304">আপডে’টটো কাৰ্যকৰী কৰিবলৈ, পৰৱৰ্তীত টিপক।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -369,7 +367,6 @@
 <translation id="404928562651467259">সকীয়নি</translation>
 <translation id="4054683689023980771">প্ৰতিচ্ছবি ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="4060260348856573701">নতুন এপিএন</translation>
-<translation id="4079743696465895866">Chromebookৰ বিশেষ শিল্পকৰ্ম বাছনি কৰক</translation>
 <translation id="4093865285251893588">প্ৰ’ফাইলৰ প্রতিচ্ছবি</translation>
 <translation id="409427325554347132">পৰীক্ষাৰ সবিশেষ ছেভ কৰক</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>

@@ -29,7 +29,6 @@
 <translation id="1104084341931202936">ප්‍රවේශ්‍යතා සැකසීම් පෙන්වන්න</translation>
 <translation id="1104621072296271835">ඔබේ උපාංග එක්ව වඩා හොඳින් වැඩ කරයි</translation>
 <translation id="1111021433905331574">ඔබට සැකසීම් &gt; <ph name="APP_TITLE" /> තුළ ඔබගේ යතුරු පුවරුවේ පසුබිම් ආලෝකයේ වර්ණය වෙනස් කළ හැකිය</translation>
-<translation id="1112998165730922436">විකාශය විරාම කර ඇත</translation>
 <translation id="112308213915226829">ස්වයං සැඟවුම් රාක්කය</translation>
 <translation id="1142002900084379065">මෑත ඡායාරූප</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
@@ -338,7 +337,6 @@
 <translation id="2526581474998477112">කවුළු අගුළු අරින්න</translation>
 <translation id="2530896289327917474">කැරට් බ්‍රවුස් කිරීම ක්‍රියාත්මක හෝ ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="2531025035050312891">උපාංගය මන්දගාමී වේ</translation>
-<translation id="2542089167727451762">ඔබේ පැතිකඩ රූපයට තට්ටු කරන්න</translation>
 <translation id="254900897760075745">තෝරන ලද අන්තර්ගතය ක්ලිප්බෝඩ් වෙත පිටපත් කරන්න</translation>
 <translation id="2549711466868162843">ආලෝකය වැඩි දියුණු කරන්න</translation>
 <translation id="2549985041256363841">පටිගත කිරීම අරඹන්න</translation>
@@ -507,7 +505,6 @@
 <translation id="334252345105450327">තිර රුවක් ලබා ගන්න</translation>
 <translation id="334927402682780278">කර්සරයේ සිට පේළියේ අවසානය දක්වා පෙළ තෝරන්න</translation>
 <translation id="3349345708646875009">කාර්ය කළමණාකරු විවෘත කරන්න</translation>
-<translation id="3351879221545518001">ඔබ දැනට තිරය විකාශය කරයි.</translation>
 <translation id="3354555338129305222">මගේ උපාංගය මන්දගාමී වන්නේ ඇයි</translation>
 <translation id="3364721542077212959">පන්හිඳ මෙවලම්</translation>
 <translation id="3365977133351922112">ඔබගේ දුරකථනය දුර වැඩිය. ඔබගේ දුරකථනය සමීපයට ගෙන එන්න.</translation>
@@ -1503,10 +1500,10 @@
 <translation id="7860671499921112077">දළ විශ්ලේෂණයට ඇතුළු වීමට ඇඟිලි තුනකින් ඉහළට ස්වයිප් කරන්න</translation>
 <translation id="7862292329216937261">උපාංගය ආගන්තුකයෙකු ලෙස භාවිතය සඳහා, ඔබ වැරීමට සහ පසුව තිරයෙහි පහළින් ඇති ආගන්තුකයෙකු ලෙස බ්‍රවුස් කරන්න තේරීමට අවශ්‍ය වේ.</translation>
 <translation id="7866482334467279021">ක්‍රියාත්මකයි</translation>
-<translation id="7868900307798234037">ඇඟිලි සලකුණ සමඟ අඟුල අරින්න</translation>
 <translation id="7872786842639831132">ක්‍රියාවිරහිතයි</translation>
 <translation id="7875575368831396199">ඔබගේ <ph name="DEVICE_TYPE" /> හි බ්ලූටූත් ක්‍රියාවිරහිත කර ඇති බව පෙනේ. Phone Hub භාවිත කිරීමට කරුණාකර බ්ලූටූත් ක්‍රියාත්මක කරන්න.</translation>
 <translation id="7877557217297072640">{0,plural, =0{දැන් උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}=1{තත්පර 1ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}one{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}other{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}}</translation>
+<translation id="7884446017008693258">හොට්ස්පොට් සැකසීම්</translation>
 <translation id="7884902759927478774">පටිති ඇදගෙන යාම අවලංගු කරන්න</translation>
 <translation id="7886169021410746335">පෞද්ගලිකත්ව සැකසීම් සීරුමාරු කරන්න</translation>
 <translation id="7886277072580235377">ඔබ වරනය වන විට ඔබගේ අන්තර්ජාල සැසිය හිස් වනු ඇත. <ph name="LEARN_MORE" /></translation>
@@ -1602,7 +1599,6 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, දුරකථන බැටරිය <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, යෙදුම</translation>
 <translation id="8255234195843591763">යාවත්කාලීන කිරීමට යළි සකසන්න</translation>
-<translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> සඳහා අගුලු ඇරීමට Enter ඔබන්න</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="8270450402312105425">{0,plural, =1{පැයක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}one{පැය #ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}other{පැය #ක් ඇතුළත උපාංගය පෙර අනුවාදයට වෙනස් කරන්න}}</translation>
 <translation id="8277261673056602147">ඔබේ තිරයේ පෙළ උද්දීපනය කරන්න</translation>

@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Linux વડે ઇન્સ્ટૉલ કરો</translation>
 <translation id="2225536596944493418">શું તમે ખરેખર <ph name="NUMBER_OF_ITEMS" /> આઇટમને ડિલીટ કરવા માંગો છો?</translation>
 <translation id="2230062665678605299">ફોલ્ડર "<ph name="FOLDER_NAME" />" બનાવવામાં અક્ષમ. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">તમારી Google Drive કૅશ ફાઇલ સાફ કરી હતી.</translation>
 <translation id="2239068707900391003">કૉફીનો કપ પકડીને ઉભેલી વ્યક્તિ</translation>
 <translation id="2251368349685848079">ટ્રેશમાંથી રિસ્ટોર કરો</translation>
 <translation id="2278133026967558505">બધી વેબસાઇટ અને URLs દ્વારા ફાઇલનો ઍક્સેસ</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">કસ્ટમ નામ સર્વર્સ</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, તમારા વ્યવસ્થાપક દ્વારા મેનેજ કરવામાં આવે છે, કનેક્ટ કરો</translation>
 <translation id="4470564870223067757">હંગુલ 2 સેટ</translation>
+<translation id="4472575034687746823">શરૂ કરો</translation>
 <translation id="4474142134969976028">કોઈ મેળ ખાતું પરિણામ નથી</translation>
 <translation id="4477002475007461989">રોમાનિયન</translation>
 <translation id="4477219268485577442">બલ્ગેરિયન ધ્વન્યાત્મક</translation>
@@ -619,6 +619,7 @@
 <translation id="5838451609423551646">પસંદગીમાંથી બધી એન્ટ્રી કાઢી નાખી.</translation>
 <translation id="5838825566232597749">US Workman આંતરરાષ્ટ્રિય</translation>
 <translation id="5845721951356578987">નર્સ</translation>
+<translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5861477046012235702">ગેમ રમનાર</translation>
 <translation id="5864471791310927901">DHCP લુકઅપ નિષ્ફળ</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, સક્રિય કર્યા વિનાનું, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>

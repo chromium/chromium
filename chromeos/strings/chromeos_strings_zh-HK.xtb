@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">停用深色主題背景</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1827738518074806965">畫廊</translation>
+<translation id="1836553715834333258">系統顏色</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
+<translation id="1840474674287087346">桌面顏色</translation>
 <translation id="1851218745569890714">視像會議</translation>
 <translation id="1852934301711881861">安裝 ChromeOS Flex</translation>
 <translation id="1856388568474281774">向下箭咀</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">瀏覽器導覽</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
 <translation id="2878387241690264070">已在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
-<translation id="2902312830803030883">更多操作</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼，或掃瞄 QR 碼</translation>
 <translation id="2940811910881150316">無法測試裝置。請重新打開機蓋以進行測試。</translation>
-<translation id="2981143481017883351">現已推出 Chromebook 獨家資產</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">金鑰方向</translation>
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3303855915957856445">找不到任何搜尋結果</translation>
+<translation id="3305294846493618482">更多</translation>
 <translation id="3310640316857623290">DNS 延遲時間大幅超過允許的門檻</translation>
 <translation id="3328783797891415197">測試執行中</translation>
 <translation id="3340011300870565703">裝置嘅右邊耳機有 <ph name="BATTERY_PERCENTAGE" />% 電。</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369013195428705271">您確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
-<translation id="3386675685417744672">Chromebook 獨家</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
 <translation id="3413935475507503304">如要繼續進行更新，請按一下 [下一步]。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">警告</translation>
 <translation id="4054683689023980771">正在下載圖片</translation>
 <translation id="4060260348856573701">新增 APN</translation>
-<translation id="4079743696465895866">選取 Chromebook 獨家藝術圖片</translation>
 <translation id="4093865285251893588">個人檔案圖片</translation>
 <translation id="409427325554347132">儲存測試詳細資料</translation>
 <translation id="4095829376260267438">WPA2 和 WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">掃瞄儲存位置</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
+<translation id="4500966230243561393">介面顏色</translation>
 <translation id="4503223151711056411">向左箭咀</translation>
 <translation id="4507392511610824664">校光</translation>
 <translation id="4511264077854731334">入口網站</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">停止測試</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">在螢幕閒置時，顯示相片、時間、天氣和媒體資訊。</translation>
+<translation id="5035083460461104704">主題顏色</translation>
 <translation id="5038292761217083259">多色鍵盤</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5049856988445523908">SIM 卡已鎖定 (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">中性色調</translation>
 <translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
 <translation id="763165478673169849">上次重設時間</translation>
+<translation id="7633068090678117093">背景圖片</translation>
 <translation id="7648838807254605802">HTTPS 延遲時間長</translation>
 <translation id="765159867434478292">分割</translation>
 <translation id="7656388927906093505">裝置類型係滑鼠。</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">對等</translation>
 <translation id="8930622219860340959">無線網絡</translation>
 <translation id="8936793075252196307">用戶端 IP 位址</translation>
+<translation id="8944651180182756621">啟動器顏色</translation>
 <translation id="894617464444543719">裝置類型係手機。</translation>
 <translation id="8957423540740801332">向右</translation>
 <translation id="8968751544471797276">充電率</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">執行記憶體測試</translation>
 <translation id="9161276708550942948">空格鍵</translation>
 <translation id="9173638680043580060">尚餘不到 1 分鐘</translation>
+<translation id="9174334653006917325">UI 顏色</translation>
 <translation id="917720651393141712">測試</translation>
 <translation id="9188992814426075118">鍵盤可自動與桌布配搭</translation>
 <translation id="9189000703457422362">無法透過自動偵測的 APN 連線至此網絡。請聯絡流動網絡供應商以瞭解詳情。</translation>

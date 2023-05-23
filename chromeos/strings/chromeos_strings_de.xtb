@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> verwaltet dieses Gerät und kann möglicherweise deine Aktivitäten überwachen.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Senden</translation>
+<translation id="1488850966314959671">Mit den aktivierten benutzerdefinierten APNs kann keine Verbindung zu diesem Netzwerk hergestellt werden. Wende dich für weitere Informationen an deinen Mobilfunkanbieter.</translation>
 <translation id="1491076385728777984">Die Firmware auf „<ph name="DEVICE_NAME" />“ wird aktualisiert</translation>
 <translation id="1499041187027566160">Lautstärke erhöhen</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> verwaltet diesen Nutzer und kann per Remotezugriff Einstellungen ändern und die Nutzeraktivität überwachen.</translation>
@@ -236,10 +237,8 @@
 <translation id="2873483161362553159">Browsernavigation</translation>
 <translation id="2874939134665556319">Vorheriger Titel</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
-<translation id="2902312830803030883">Weitere Aktionen</translation>
 <translation id="2926057806159140518">Gib Nutzernamen und Passwort ein oder scanne deinen QR-Code</translation>
 <translation id="2940811910881150316">Gerät kann nicht getestet werden. Klappe das Gerät zum Testen wieder auf.</translation>
-<translation id="2981143481017883351">Exklusive Chromebook-Assets jetzt verfügbar</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
 <translation id="3009958530611748826">Ordner als Speicherort auswählen</translation>
 <translation id="3017079585324758401">Hintergrund</translation>
@@ -277,6 +276,7 @@
 <translation id="3291996639387199448">Schlüsselrichtung</translation>
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
+<translation id="3305294846493618482">mehr</translation>
 <translation id="3310640316857623290">Die DNS-Latenz liegt deutlich über dem zulässigen Grenzwert</translation>
 <translation id="3328783797891415197">Test wird ausgeführt</translation>
 <translation id="3340011300870565703">Der Akkustand des rechten Kopfhörers liegt bei <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -285,7 +285,6 @@
 <translation id="3360306038446926262">Fenster</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3369013195428705271">Möchtest du den gesamten Druckverlauf wirklich löschen? Deine laufenden Druckaufträge werden nicht gelöscht.</translation>
-<translation id="3386675685417744672">Exklusiv auf Chromebook</translation>
 <translation id="3404249063913988450">Bildschirmschoner aktivieren</translation>
 <translation id="3413935475507503304">Klicke zum Fortsetzen der Aktualisierung auf „Weiter“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -366,7 +365,6 @@
 <translation id="404928562651467259">Warnung</translation>
 <translation id="4054683689023980771">Bild wird heruntergeladen</translation>
 <translation id="4060260348856573701">Neuer APN</translation>
-<translation id="4079743696465895866">Exklusives Chromebook-Video auswählen</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="409427325554347132">Testdetails speichern</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -563,6 +561,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Neu scannen</translation>
 <translation id="5583640892426849032">Rücktaste</translation>
+<translation id="5584044598279886848">Dieser APN kann nicht deaktiviert oder entfernt werden. Aktivierte APNs zum Anhängen müssen deaktiviert oder entfernt werden.</translation>
 <translation id="5600027863942488546">Die Taste „<ph name="KEY_NAME" />“ wurde getestet</translation>
 <translation id="5620281292257375798">Nur zur internen Nutzung</translation>
 <translation id="5649768706273821470">Anhören</translation>
@@ -749,6 +748,7 @@
 <translation id="7130438335435247835">Zugangspunkt (APN)</translation>
 <translation id="7131634559772719176">Voreinstellung bestätigen</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nameserver}other{Nameserver}}</translation>
+<translation id="7135814714616751706">Tastenkombinationen suchen</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
@@ -779,6 +779,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Drücke zum Anzeigen des Ergebnisses in der Google Suche die Suchtaste + Leertaste.</translation>
 <translation id="7343649194310845056">Netzwerkgeräte</translation>
+<translation id="7353413232959255829">Suchergebnis <ph name="LIST_POSITION" /> von <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Drücke die Eingabetaste, um die Tastenkombination aufzurufen.</translation>
 <translation id="7359657277149375382">Dateityp</translation>
 <translation id="73631062356239394">Diagnosedaten teilen</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -1010,6 +1011,7 @@
 <translation id="9173638680043580060">Nur noch wenige Sekunden</translation>
 <translation id="917720651393141712">Testen</translation>
 <translation id="9188992814426075118">Die Tastatur kann automatisch an den Hintergrund angepasst werden</translation>
+<translation id="9189000703457422362">Über automatisch erkannte APNs kann keine Verbindung zu diesem Netzwerk hergestellt werden. Wende dich für weitere Informationen an deinen Mobilfunkanbieter.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Gateway kann von Android-Apps aus nicht kontaktiert werden</translation>
 <translation id="9211490828691860325">Alle Desktops</translation>

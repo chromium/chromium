@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Nonaktifkan tema gelap</translation>
 <translation id="1807246157184219062">Terang</translation>
 <translation id="1827738518074806965">Galeri seni</translation>
+<translation id="1836553715834333258">Warna sistem</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
+<translation id="1840474674287087346">Warna desktop</translation>
 <translation id="1851218745569890714">Konferensi Video</translation>
 <translation id="1852934301711881861">Instal ChromeOS Flex</translation>
 <translation id="1856388568474281774">Panah bawah</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">Navigasi browser</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
 <translation id="2878387241690264070">Daya terpakai <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
-<translation id="2902312830803030883">Tindakan lainnya</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
 <translation id="2940811910881150316">Tidak dapat menguji perangkat. Buka kembali penutup untuk menguji.</translation>
-<translation id="2981143481017883351">Aset eksklusif untuk Chromebook kini tersedia</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">Arah kunci</translation>
 <translation id="3294437725009624529">Tamu</translation>
 <translation id="3303855915957856445">Hasil penelusuran tidak ditemukan</translation>
+<translation id="3305294846493618482">lainnya</translation>
 <translation id="3310640316857623290">Latensi DNS jauh melebihi ambang batas yang diizinkan</translation>
 <translation id="3328783797891415197">Pengujian sedang berjalan</translation>
 <translation id="3340011300870565703">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai earbud kanan.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3369013195428705271">Yakin ingin menghapus semua histori cetak? Pekerjaan cetak yang sedang berlangsung tidak akan dihapus.</translation>
-<translation id="3386675685417744672">Eksklusif untuk Chromebook</translation>
 <translation id="3404249063913988450">Aktifkan screen saver</translation>
 <translation id="3413935475507503304">Untuk melanjutkan update, klik Berikutnya.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">PERINGATAN</translation>
 <translation id="4054683689023980771">Mendownload gambar</translation>
 <translation id="4060260348856573701">APN baru</translation>
-<translation id="4079743696465895866">Pilih karya seni eksklusif untuk Chromebook</translation>
 <translation id="4093865285251893588">Gambar profil</translation>
 <translation id="409427325554347132">Simpan detail pengujian</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">Pindai ke</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal melakukan ping ke gateway jaringan non-default</translation>
+<translation id="4500966230243561393">Warna antarmuka</translation>
 <translation id="4503223151711056411">Panah kiri</translation>
 <translation id="4507392511610824664">tingkatkan kecerahan</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">Hentikan pengujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Jika layar tidak ada aktivitas, akan ditampilkan foto, waktu, cuaca, dan info media.</translation>
+<translation id="5035083460461104704">Warna tema</translation>
 <translation id="5038292761217083259">keyboard multiwarna</translation>
 <translation id="5039804452771397117">Izinkan</translation>
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">Netral</translation>
 <translation id="7620771111601174153">Pelajari lebih lanjut di Pusat Bantuan</translation>
 <translation id="763165478673169849">Waktu Reset Terakhir</translation>
+<translation id="7633068090678117093">Gambar latar</translation>
 <translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
 <translation id="765159867434478292">Pisahkan</translation>
 <translation id="7656388927906093505">Perangkat adalah mouse.</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Nirkabel</translation>
 <translation id="8936793075252196307">Alamat IP klien</translation>
+<translation id="8944651180182756621">Warna peluncur</translation>
 <translation id="894617464444543719">Perangkat adalah ponsel.</translation>
 <translation id="8957423540740801332">ke kanan</translation>
 <translation id="8968751544471797276">Kecepatan pengisian daya</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
 <translation id="9161276708550942948">spasi</translation>
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>
+<translation id="9174334653006917325">Warna UI</translation>
 <translation id="917720651393141712">Uji</translation>
 <translation id="9188992814426075118">Keyboard dapat otomatis menyesuaikan dengan wallpaper Anda</translation>
 <translation id="9189000703457422362">Tidak dapat terhubung ke jaringan ini menggunakan APN yang terdeteksi secara otomatis. Hubungi operator seluler Anda untuk mengetahui informasi selengkapnya.</translation>

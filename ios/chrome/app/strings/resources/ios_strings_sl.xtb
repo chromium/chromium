@@ -142,7 +142,6 @@
 <translation id="1870148520156231997">Razkrijte geslo</translation>
 <translation id="1872096359983322073">Svetilka</translation>
 <translation id="1883255238294161206">Strni seznam</translation>
-<translation id="1891796056033961979">Vaši shranjeni zaznamki, gesla, nastavitve in drugo so na voljo na tem zaslonu.</translation>
 <translation id="1894023287452300670">Spremljajte ceno tukaj.</translation>
 <translation id="1910975740091000991">Chrome za iOS</translation>
 <translation id="1911619930368729126">Prenos v Google Drive</translation>
@@ -444,7 +443,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Tukaj bo prikazana zgodovina</translation>
 <translation id="3897092660631435901">Meni</translation>
-<translation id="3899568514738536144">Ogled zgodovine brskanja</translation>
 <translation id="3904829425754749514">Vaša organizacija je izklopila sinhronizacijo. Še vedno si lahko ogledate zaznamke, zgodovino, gesla in druge nastavitve v tej napravi. Če naredite spremembe, ne bodo sinhronizirane z računom.</translation>
 <translation id="3913386780052199712">Prijavljeni ste v Chrome</translation>
 <translation id="3915450441834151894">Podatki o spletnem mestu</translation>
@@ -501,7 +499,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="430793432425771671">Sinhroniziraj vse</translation>
 <translation id="4309403553630140242">Dvakrat se dotaknite, če želite več informacij</translation>
 <translation id="430967081421617822">Od začetka</translation>
-<translation id="4324952538601951430">Vaši shranjeni zaznamki, gesla, nastavitve in drugo so zdaj tukaj.</translation>
 <translation id="4334428914252001502">1 neprebran članek.</translation>
 <translation id="4338650699862464074">Googlu pošlje URL-je strani, ki jih obiščete.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Ta naslov bo izbrisan iz te in drugih naprav, v katerih ste prijavljeni.}one{Ti naslovi bodo izbrisani iz te naprave in drugih naprav, v katerih ste prijavljeni.}two{Ti naslovi bodo izbrisani iz te naprave in drugih naprav, v katerih ste prijavljeni.}few{Ti naslovi bodo izbrisani iz te naprave in drugih naprav, v katerih ste prijavljeni.}other{Ti naslovi bodo izbrisani iz te naprave in drugih naprav, v katerih ste prijavljeni.}}</translation>
@@ -1057,7 +1054,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7840771868269352570">Izbrani elementi bodo odstranjeni.</translation>
 <translation id="7845466610722898">Pokaži bralni seznam</translation>
 <translation id="784551991304901159">Če si želite ogledati vsebino, v meniju izberite možnost »Vklopi«.</translation>
-<translation id="7846158885638438868">{count,plural, =1{Zaznamek je ustvarjen v »{title}«}one{Zaznamki so ustvarjeni v »{title}«}two{Zaznamki so ustvarjeni v »{title}«}few{Zaznamki so ustvarjeni v »{title}«}other{Zaznamki so ustvarjeni v »{title}«}}</translation>
 <translation id="7853202427316060426">Dejavnost</translation>
 <translation id="7856733331829174190">Prenos ni uspel</translation>
 <translation id="785938070103630874">Odprite gesla, plačilna sredstva ali naslov in drugo</translation>
@@ -1137,9 +1133,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8299417921174340354">Če želite uporabiti gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="8299613349954694191">Odpiranje anonimnega zavihka za zasebno brskanje po spletu.</translation>
 <translation id="8316944564970119719">Vnesite spletno mesto in geslo, nato shranite.</translation>
-<translation id="8317835149433843300">Plačilna sredstva in naslovi iz Googla Pay ne bodo šifrirani. Zgodovina brskanja v Chromu ne bo shranjena v računu Google.
-
-Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Novo iskanje</translation>
 <translation id="8323906514956095947">Pridržite za več možnosti zavihkov</translation>
 <translation id="8328777765163860529">Zapri vse</translation>

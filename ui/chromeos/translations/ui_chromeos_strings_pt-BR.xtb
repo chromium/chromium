@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Instalar com o Linux</translation>
 <translation id="2225536596944493418">Tem certeza de que quer excluir <ph name="NUMBER_OF_ITEMS" /> itens?</translation>
 <translation id="2230062665678605299">Não é possível criar a pasta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Seu cache do Google Drive foi limpo.</translation>
 <translation id="2239068707900391003">Pessoa com café</translation>
 <translation id="2251368349685848079">Restaurar da lixeira</translation>
 <translation id="2278133026967558505">Todos os sites e URLs têm acesso a arquivos</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">Servidores de nome personalizados</translation>
 <translation id="4465725236958772856">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, gerenciada pelo seu administrador, conectar</translation>
 <translation id="4470564870223067757">Conjunto de letras coreanas (Hangul 2)</translation>
+<translation id="4472575034687746823">Vamos começar</translation>
 <translation id="4474142134969976028">Nenhum resultado correspondente</translation>
 <translation id="4477002475007461989">Romeno</translation>
 <translation id="4477219268485577442">Búlgaro fonético</translation>
@@ -619,6 +619,7 @@
 <translation id="5838451609423551646">Todas as entradas removidas da seleção.</translation>
 <translation id="5838825566232597749">Workman internacional dos EUA</translation>
 <translation id="5845721951356578987">Profissional de enfermagem</translation>
+<translation id="5860491529813859533">Ativar</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Falha ao procurar DHCP</translation>
 <translation id="5896749729057314184">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inativa, intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>

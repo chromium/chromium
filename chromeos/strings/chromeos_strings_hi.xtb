@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">गहरे रंग वाली थीम बंद करें</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1827738518074806965">आर्ट गैलरी</translation>
+<translation id="1836553715834333258">सिस्टम का रंग</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
+<translation id="1840474674287087346">डेस्कटॉप का रंग</translation>
 <translation id="1851218745569890714">वीडियो कॉन्फ़्रेंसिंग</translation>
 <translation id="1852934301711881861">ChromeOS Flex इंस्टॉल करें</translation>
 <translation id="1856388568474281774">डाउन ऐरो</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">ब्राउज़र नेविगेशन</translation>
 <translation id="2874939134665556319">पिछला ट्रैक</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> डिस्चार्ज हुई.</translation>
-<translation id="2902312830803030883">और क्रियाएं</translation>
 <translation id="2926057806159140518">अपना उपयोगकर्ता नाम और पासवर्ड डालें या अपना क्यूआर कोड स्कैन करें</translation>
 <translation id="2940811910881150316">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए लिड को फिर से खोलें.</translation>
-<translation id="2981143481017883351">Chromebook के लिए खास ऐसेट अब उपलब्ध हैं</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3017079585324758401">बैकग्राउंड</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">कुंजी का डायरेक्शन</translation>
 <translation id="3294437725009624529">अतिथि</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
+<translation id="3305294846493618482">पूरा यूआरएल देखें</translation>
 <translation id="3310640316857623290">डीएनएस, इंतज़ार की समयसीमा से बहुत ऊपर है</translation>
 <translation id="3328783797891415197">टेस्ट चल रहा है</translation>
 <translation id="3340011300870565703">डिवाइस के दाएं बड में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3369013195428705271">क्या आप वाकई अपना पूरा प्रिंट इतिहास मिटाना चाहते हैं? प्रिंट का जो काम अभी चल रहा है उसकी जानकारी (प्रिंट जॉब) नहीं मिटाई जाएगी.</translation>
-<translation id="3386675685417744672">Chromebook के लिए खास</translation>
 <translation id="3404249063913988450">स्क्रीन सेवर चालू करें</translation>
 <translation id="3413935475507503304">अपडेट करने के लिए 'आगे बढ़ें' पर क्लिक करें.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">चेतावनी</translation>
 <translation id="4054683689023980771">इमेज डाउनलोड हो रही है</translation>
 <translation id="4060260348856573701">नया एपीएन</translation>
-<translation id="4079743696465895866">Chromebook के लिए खास आर्टवर्क चुनें</translation>
 <translation id="4093865285251893588">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="409427325554347132">जांच की जानकारी सेव करें</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">स्कैन की हुई फ़ाइल यहां सेव करें</translation>
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4483049906298469269">ऐसे नेटवर्क गेटवे को पिंग नहीं किया जा सका जो डिफ़ॉल्ट के तौर पर सेट नहीं है</translation>
+<translation id="4500966230243561393">इंटरफ़ेस का रंग</translation>
 <translation id="4503223151711056411">लेफ़्ट ऐरो</translation>
 <translation id="4507392511610824664">स्क्रीन की रोशनी बढ़ाएं</translation>
 <translation id="4511264077854731334">पोर्टल</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">टेस्ट बंद करें</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">अगर स्क्रीन इस्तेमाल में न हो, तो फ़ोटो, समय, मौसम, और मीडिया की जानकारी दिखाएं.</translation>
+<translation id="5035083460461104704">थीम का रंग</translation>
 <translation id="5038292761217083259">कीबोर्ड की रोशनी के लिए एक से ज़्यादा रंग</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5049856988445523908">सिम लॉक है (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">न्यूट्रल</translation>
 <translation id="7620771111601174153">इसके बारे में ज़्यादा जानने के लिए सहायता केंद्र पर जाएं</translation>
 <translation id="763165478673169849">आखिर में रीसेट किया गया समय</translation>
+<translation id="7633068090678117093">बैकग्राउंड की इमेज</translation>
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
 <translation id="765159867434478292">विभाजन करें</translation>
 <translation id="7656388927906093505">डिवाइस एक माउस है.</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">पीयर</translation>
 <translation id="8930622219860340959">वायरलेस</translation>
 <translation id="8936793075252196307">क्लाइंट का आईपी पता</translation>
+<translation id="8944651180182756621">लॉन्चर का रंग</translation>
 <translation id="894617464444543719">डिवाइस एक फ़ोन है.</translation>
 <translation id="8957423540740801332">दाईं</translation>
 <translation id="8968751544471797276">चार्ज होने की दर</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">मेमोरी टेस्ट चलाएं</translation>
 <translation id="9161276708550942948">स्पेस</translation>
 <translation id="9173638680043580060">एक मिनट से कम बचा है</translation>
+<translation id="9174334653006917325">यूज़र इंटरफ़ेस (यूआई) का रंग</translation>
 <translation id="917720651393141712">टेस्ट</translation>
 <translation id="9188992814426075118">कीबोर्ड की बैकलाइट, आपके वॉलपेपर के हिसाब से अपने-आप सेट हो सकती है</translation>
 <translation id="9189000703457422362">अपने-आप पता लगने वाले एपीएन का इस्तेमाल करके, इस नेटवर्क से कनेक्ट नहीं किया जा सकता. ज़्यादा जानकारी के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>

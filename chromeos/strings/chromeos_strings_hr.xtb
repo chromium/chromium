@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Onemogućivanje tamne teme</translation>
 <translation id="1807246157184219062">Svijetlo</translation>
 <translation id="1827738518074806965">Umjetnička galerija</translation>
+<translation id="1836553715834333258">Boja sustava</translation>
 <translation id="1838374766361614909">Brisanje pretraživanja</translation>
+<translation id="1840474674287087346">Boja radne površine</translation>
 <translation id="1851218745569890714">Videokonferencije</translation>
 <translation id="1852934301711881861">Instaliraj ChromeOS Flex</translation>
 <translation id="1856388568474281774">Strelica prema dolje</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">Kretanje preglednikom</translation>
 <translation id="2874939134665556319">Prethodna pjesma</translation>
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
-<translation id="2902312830803030883">Druge radnje</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i zaporku ili skenirajte QR kôd</translation>
 <translation id="2940811910881150316">Testiranje uređaja nije uspjelo. Ponovo otvorite poklopac da biste testirali.</translation>
-<translation id="2981143481017883351">Sada su dostupni ekskluzivni elementi za Chromebook</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="3017079585324758401">Pozadina</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">Glavna smjernica</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3303855915957856445">Nisu pronađeni rezultati pretraživanja</translation>
+<translation id="3305294846493618482">više</translation>
 <translation id="3310640316857623290">Latencija DNS-a značajno iznad dopuštenog praga</translation>
 <translation id="3328783797891415197">Test se izvodi</translation>
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije za desnu slušalicu.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Spojeno</translation>
 <translation id="3369013195428705271">Jeste li sigurni da želite izbrisati svu povijest ispisa? Zadaci ispisa u tijeku neće se izbrisati.</translation>
-<translation id="3386675685417744672">Ekskluzivno na Chromebooku</translation>
 <translation id="3404249063913988450">Omogućivanje čuvara zaslona</translation>
 <translation id="3413935475507503304">Da biste nastavili s ažuriranjem, kliknite Dalje.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">UPOZORENJE</translation>
 <translation id="4054683689023980771">Preuzimanje slike</translation>
 <translation id="4060260348856573701">Novi APN</translation>
-<translation id="4079743696465895866">Odaberite ekskluzivna umjetnička djela na Chromebooku</translation>
 <translation id="4093865285251893588">Profilna slika</translation>
 <translation id="409427325554347132">Spremi pojedinosti testa</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">Skeniraj u</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Pinganje pristupnika mreže koja nije zadana nije uspjelo</translation>
+<translation id="4500966230243561393">Boja sučelja</translation>
 <translation id="4503223151711056411">Strelica lijevo</translation>
 <translation id="4507392511610824664">pojačavanje svjetline</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kad je zaslon neaktivan, prikažite fotografije, vremensku prognozu i medijske informacije.</translation>
+<translation id="5035083460461104704">Boja teme</translation>
 <translation id="5038292761217083259">višebojna tipkovnica</translation>
 <translation id="5039804452771397117">Dopusti</translation>
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7620771111601174153">Saznajte više u centru za pomoć</translation>
 <translation id="763165478673169849">Vrijeme posljednjeg poništavanja</translation>
+<translation id="7633068090678117093">Pozadinska slika</translation>
 <translation id="7648838807254605802">Visoka latencija HTTPS-a</translation>
 <translation id="765159867434478292">Podijeli</translation>
 <translation id="7656388927906093505">Uređaj je miš.</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">Aplikacija iste kategorije</translation>
 <translation id="8930622219860340959">Bežično</translation>
 <translation id="8936793075252196307">IP adresa klijenta</translation>
+<translation id="8944651180182756621">Boja pokretača</translation>
 <translation id="894617464444543719">Uređaj je telefon.</translation>
 <translation id="8957423540740801332">desno</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">Pokreni test memorije</translation>
 <translation id="9161276708550942948">razmaknica</translation>
 <translation id="9173638680043580060">Preostalo je manje od minute</translation>
+<translation id="9174334653006917325">Boja korisničkog sučelja</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Tipkovnica se može automatski uskladiti s pozadinom</translation>
 <translation id="9189000703457422362">Povezivanje s tom mrežom nije moguće pomoću automatski otkrivenih APN-ova. Za više informacija obratite se mobilnom operateru.</translation>

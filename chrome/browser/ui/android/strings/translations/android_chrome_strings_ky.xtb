@@ -88,7 +88,6 @@
 <translation id="13931502444227376">Улантуу үчүн <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөнүңүздү, электрондук почтаңыздын дарегин жана профилиңиздин сүрөтүн ушул сайт менен бөлүшөт. Бул сайттын <ph name="BEGIN_LINK1" />тейлөө шарттарын<ph name="END_LINK1" /> карап көрүңүз.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> аркылуу издөө</translation>
 <translation id="139993653570221430">Каалаган убакта Chrome параметрлерине өтүп, баш тартсаңыз болот. Сынамык версиялар жарнамалардын учурдагы көрсөтүлүшү менен чогуу колдонулат, андыктан өзгөрүүлөр дароо көрүнбөйт.</translation>
-<translation id="1406000523432664303">Байкоо салынбасын</translation>
 <translation id="1407069428457324124">Караңгы тема</translation>
 <translation id="1407135791313364759">Баарын ачуу</translation>
 <translation id="1409879593029778104">Мындай файл бар болгондуктан, <ph name="FILE_NAME" /> жүктөлүп алынган жок.</translation>
@@ -786,7 +785,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5319359161174645648">Google Chrome'ду сунуштайт</translation>
 <translation id="5321849971085220133">Chrome көз салуу аракеттерин азайтып, серептеп жатканда коопсуздугуңузду арттыруунун жаңы жолдорун издеп жатат. Ошондой эле, Chrome <ph name="BEGIN_LINK" />кызыккан нерселериңизди божомолдоп<ph name="END_LINK" />, аларды тескөөнү өзүңүзгө тапшырат. Андан соң сиз кирген сайттар жарнамаларды көрсөтүү үчүн Chrome'дон кызыккан нерселериңиз тууралуу маалыматты сурашы мүмкүн.</translation>
-<translation id="5324858694974489420">Ата-энелик жөндөөлөр</translation>
 <translation id="5326921373682845375">Алдын ала жүктөлгөн барактар шифрленип, барактарга шилтеме берген сайт Google'дун сайты болуп эсептелгендиктен, Google серверлери бул барактарды алдын ала жүктөөдө жаңы маалымат албайт.</translation>
 <translation id="5329858041417644019">Серепчиңиз башкарылган жок</translation>
 <translation id="5339031667684712858">Өчүргөн сайттарыңыз</translation>
@@ -797,7 +795,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5368227114232678694">Бул түзмөктө купуя карап чыгуу үчүн Жашыруун режимди колдонуңуз</translation>
 <translation id="5375577065097716013">Google Lens аркылуу издөө <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="5401851137404501592">Улантуу үчүн <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөнүңүздү, электрондук почтаңыздын дарегин жана профилиңиздин сүрөтүн ушул сайт менен бөлүшөт.</translation>
-<translation id="5403644198645076998">Белгилүү сайттарга гана кирүүгө уруксат</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> түзмөгүнө <ph name="ONE_TIME_CODE" /> тапшырылсынбы?</translation>
 <translation id="5414836363063783498">Текшерилүүдө…</translation>
 <translation id="5423934151118863508">Эң көп каралган беттер бул жерде көрүнөт</translation>
@@ -839,7 +836,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5626134646977739690">Аты:</translation>
 <translation id="5628604359369369630">Окула элек – Оффлайн режиминде жеткиликтүү</translation>
 <translation id="5635091213277904818">Chrome 30 күн мурун кошулган сайттарды автоматтык түрдө жок кылып турат. Сиз кайрадан баш баккан сайт тизмеге кайра кошулушу мүмкүн. Же сайттын жарнамаларын бөгөттөп койсоңуз болот.</translation>
-<translation id="5639724618331995626">Бардык сайттарга кирүүгө уруксат</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Издөө таржымалы<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />аракеттердин башка формалары<ph name="END_LINK2" /> Google аккаунтуңузга сакталышы мүмкүн</translation>
 <translation id="564667659802381754">Купуялык жетектемеси <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Акыркы 7 күн</translation>
@@ -874,7 +870,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5797949256525811424">Бөгөттөлгөн тема</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# саат мурун}other{# саат мурун}}</translation>
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" /> Баардык укуктар корголгон.</translation>
-<translation id="5813552293717797987">Бул серепчи <ph name="PARENT_NAME_1" /> жана <ph name="PARENT_NAME_2" /> тарабынан башкарылат.</translation>
 <translation id="5814749351757353073">Жактырган сайттарыңызды колдоно бериңиз</translation>
 <translation id="5822875253699806474">Көргөн сайттарга тез кайтуу үчүн өтмөктөр менен таржымалды шайкештириңиз</translation>
 <translation id="583281660410589416">Белгисиз</translation>
@@ -1243,7 +1238,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7655900163790317559">Bluetooth күйгүзүлүүдө…</translation>
 <translation id="7656862631699126784">Жашыруун өтмөктөрдү кулпулоону күйгүзүү</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
-<translation id="7663313374500954251">Бул серепчи <ph name="PARENT_NAME" /> тарабынан башкарылат.</translation>
 <translation id="7665369617277396874">Аккаунт кошуу</translation>
 <translation id="766587987807204883">Оффлайн режиминде да окула турган макалалар ушул жерде көрүнөт</translation>
 <translation id="768232549260819724">GIF көчүрүлдү</translation>
@@ -1352,7 +1346,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8130309322784422030">Сакталган кирүү маалыматынын мөөнөтү өтүп кеткен окшойт</translation>
 <translation id="813082847718468539">Сайттын маалыматын карап көрүү</translation>
 <translation id="8156139159503939589">Кайсы тилдерде окуй аласыз?</translation>
-<translation id="8168435359814927499">Мазмун</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> файл калды</translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">1 күн калды</translation>
@@ -1444,7 +1437,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8617240290563765734">Жүктөлүп алынган мазмунда белгиленип сунушталган URL ачылсынбы?</translation>
 <translation id="8621068256433641644">телефондо</translation>
 <translation id="8636825310635137004">Өтмөктөрүңүздү башка түзмөктөрүңүздөн алуу үчүн шайкештирүүнү күйгүзүңүз.</translation>
-<translation id="8641930654639604085">Чоң кишилерге ылайыктуу сайттарга кирүүгө бөгөт коюуга аракет кылуу</translation>
 <translation id="864544049772947936">Терезелерди башкаруу (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Кооптуу нерселерди божомолдоп, алар орун алганга чейин сизге кабарлап турат</translation>
 <translation id="8646467750715887511">Барактар ачылгандан кийин гана жүктөлөт.</translation>
@@ -1492,7 +1484,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8898822736010347272">Сиз баш баккан айрым барактардын URL даректерин, чектелген тутум маалыматын жана айрым барактардын мазмунун бардык колдонуучулар үчүн мүмкүн болгон коркунучтарды аныктап, бөгөттөө үчүн Google'га жөнөтөт.</translation>
 <translation id="8909135823018751308">Бөлүшүү…</translation>
 <translation id="8912362522468806198">Google аккаунту</translation>
-<translation id="8920114477895755567">Ата-эненин чоо-жайы күтүлүүдө.</translation>
 <translation id="8921980840204105660">Башка түзмөктөрдөгү кыстармаларды колдонуу үчүн шайкештирүүнү иштетиңиз</translation>
 <translation id="8922289737868596582">"Дагы параметрлер" баскычын басып, оффлайн режиминде иштөө үчүн барактарды жүктөп алуу</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>

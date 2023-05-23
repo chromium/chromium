@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">டார்க் தீமினை முடக்குதல்</translation>
 <translation id="1807246157184219062">வெளிச்சம்</translation>
 <translation id="1827738518074806965">ஆர்ட் கேலரி</translation>
+<translation id="1836553715834333258">சிஸ்டம் வண்ணம்</translation>
 <translation id="1838374766361614909">தேடலை அழி</translation>
+<translation id="1840474674287087346">டெஸ்க்டாப் வண்ணம்</translation>
 <translation id="1851218745569890714">வீடியோ கான்ஃபிரன்ஸ்</translation>
 <translation id="1852934301711881861">ChromeOS Flexஸை நிறுவு</translation>
 <translation id="1856388568474281774">கீழ்நோக்கிய அம்புக்குறி</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">உலாவி வழிசெலுத்தல்</translation>
 <translation id="2874939134665556319">முந்தைய டிராக்</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் இறங்கியது.</translation>
-<translation id="2902312830803030883">மேலும் செயல்கள்</translation>
 <translation id="2926057806159140518">உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் டைப் செய்யவும் அல்லது QR குறியீட்டை ஸ்கேன் செய்யவும்</translation>
 <translation id="2940811910881150316">சாதனத்தைச் சோதிக்க முடியவில்லை. சோதிக்க ஸ்கிரீனை மீண்டும் திறக்கவும்.</translation>
-<translation id="2981143481017883351">பிரத்தியேக Chromebook அசெட்டுகள் தற்போது கிடைக்கின்றன</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3017079585324758401">பின்புலம்</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">குறியீட்டு முறை</translation>
 <translation id="3294437725009624529">கெஸ்ட்</translation>
 <translation id="3303855915957856445">தேடல் முடிவுகள் எதுவுமில்லை</translation>
+<translation id="3305294846493618482">மேலும்</translation>
 <translation id="3310640316857623290">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடக் குறிப்பிடத்தக்க அளவு அதிகமாக உள்ளது</translation>
 <translation id="3328783797891415197">சோதனை நடைபெறுகிறது</translation>
 <translation id="3340011300870565703">வலதுபக்க இயர்பட் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">இணைக்கப்பட்டது</translation>
 <translation id="3369013195428705271">இதுவரையிலான அச்சுப் பணிகள் அனைத்தையும் அழிக்கவா? செயல்பாட்டில் இருக்கும் அச்சுப் பணிகள் அழிக்கப்படாது.</translation>
-<translation id="3386675685417744672">Chromebookகிற்குப் பிரத்தியேகமானது</translation>
 <translation id="3404249063913988450">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
 <translation id="3413935475507503304">புதுப்பிப்பைத் தொடர, அடுத்து என்பதைக் கிளிக் செய்யவும்.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">எச்சரிக்கை</translation>
 <translation id="4054683689023980771">படத்தைப் பதிவிறக்குகிறது</translation>
 <translation id="4060260348856573701">புதிய APN</translation>
-<translation id="4079743696465895866">Chromebookகிற்குப் பிரத்தியேகமான ஆர்ட்வொர்க்கைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="4093865285251893588">சுயவிவரப் படம்</translation>
 <translation id="409427325554347132">பரிசோதனை விவரங்களைச் சேமி</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">இதில் சேமி</translation>
 <translation id="4479639480957787382">ஈத்தர்நெட்</translation>
 <translation id="4483049906298469269">இயல்புநிலையற்ற நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
+<translation id="4500966230243561393">இடைமுக வண்ணம்</translation>
 <translation id="4503223151711056411">இடது அம்புக்குறி</translation>
 <translation id="4507392511610824664">ஒளிர்வை அதிகரிப்பதற்கான ஐகான்</translation>
 <translation id="4511264077854731334">போர்ட்டல்</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">சோதனையை நிறுத்து</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">திரை செயலில் இல்லாதபோது படங்கள், நேரம், வானிலை, மீடியா தகவல்கள் ஆகியவற்றைக் காட்டு.</translation>
+<translation id="5035083460461104704">தீமின் வண்ணம்</translation>
 <translation id="5038292761217083259">கீபோர்டு பலவண்ணம்</translation>
 <translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5049856988445523908">சிம் லாக் செய்யப்பட்டுள்ளது (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">நியூட்ரல்</translation>
 <translation id="7620771111601174153">உதவி மையத்தில் மேலும் அறிக</translation>
 <translation id="763165478673169849">கடைசியாக மீட்டமைத்த நேரம்</translation>
+<translation id="7633068090678117093">பின்புல படம்</translation>
 <translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="765159867434478292">பிரி</translation>
 <translation id="7656388927906093505">சாதனம் ஒரு மவுஸ்.</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">பியர்</translation>
 <translation id="8930622219860340959">கம்பியில்லா</translation>
 <translation id="8936793075252196307">கிளையண்ட் IP முகவரி</translation>
+<translation id="8944651180182756621">தொடக்கி வண்ணம்</translation>
 <translation id="894617464444543719">சாதனம் ஒரு மொபைல்.</translation>
 <translation id="8957423540740801332">வலது</translation>
 <translation id="8968751544471797276">சார்ஜிங் விகிதம்</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">நினைவகச் சோதனையை இயக்கு</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">ஒரு நிமிடத்திற்கும் குறைவான நேரமே மீதமுள்ளது</translation>
+<translation id="9174334653006917325">UI வண்ணம்</translation>
 <translation id="917720651393141712">சோதனை செய்</translation>
 <translation id="9188992814426075118">உங்கள் வால்பேப்பருக்கு ஏற்றவாறு கீபோர்டு வண்ணம் தானாகவே மாறும்</translation>
 <translation id="9189000703457422362">தானாகக் கண்டறியப்பட்ட APNகளைப் பயன்படுத்தி இந்த நெட்வொர்க் உடன் இணைக்க முடியவில்லை. கூடுதல் தகவலுக்கு உங்கள் மொபைல் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>

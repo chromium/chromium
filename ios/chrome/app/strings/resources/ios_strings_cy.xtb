@@ -142,7 +142,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich c
 <translation id="1870148520156231997">Datgelu'r Cyfrinair</translation>
 <translation id="1872096359983322073">Tortsh</translation>
 <translation id="1883255238294161206">Crebachu'r rhestr</translation>
-<translation id="1891796056033961979">Mae eich nodau tudalen, cyfrineiriau, gosodiadau a rhagor sydd wedi'u cadw ar gael o'r sgrîn hon.</translation>
 <translation id="1894023287452300670">Dilyn y pris yma</translation>
 <translation id="1910975740091000991">Chrome ar gyfer iOS</translation>
 <translation id="1911619930368729126">Uwchlwytho i Google Drive</translation>
@@ -444,7 +443,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3891414008432200754">Pris</translation>
 <translation id="3892144330757387737">Byddwch yn gweld eich hanes yma</translation>
 <translation id="3897092660631435901">Dewislen</translation>
-<translation id="3899568514738536144">Gweld hanes pori</translation>
 <translation id="3904829425754749514">Mae eich sefydliad wedi diffodd cysoni. Gallwch weld eich nodau tudalen, eich hanes, eich cyfrineiriau a'ch gosodiadau eraill ar y ddyfais hon o hyd. Os byddwch yn gwneud newidiadau, ni fyddant yn cysoni i'ch cyfrif.</translation>
 <translation id="3913386780052199712">Wedi mewngofnodi i Chrome</translation>
 <translation id="3915450441834151894">Gwybodaeth am y Wefan</translation>
@@ -501,7 +499,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="430793432425771671">Cysoni Popeth</translation>
 <translation id="4309403553630140242">Tapiwch ddwywaith am ragor o wybodaeth</translation>
 <translation id="430967081421617822">Erioed</translation>
-<translation id="4324952538601951430">Mae eich nodau tudalen, cyfrineiriau, gosodiadau a rhagor wedi'u cadw yma nawr</translation>
 <translation id="4334428914252001502">Mae 1 erthygl sydd heb ei darllen.</translation>
 <translation id="4338650699862464074">Yn anfon URL o dudalennau rydych yn ymweld â nhw at Google.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Bydd y cyfeiriad hwn yn cael ei ddileu o'r ddyfais hon a'ch dyfeisiau eraill sydd wedi mewngofnodi.}zero{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon a'ch dyfeisiau eraill sydd wedi mewngofnodi.}two{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon a'ch dyfeisiau eraill sydd wedi mewngofnodi.}few{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon a'ch dyfeisiau eraill sydd wedi mewngofnodi.}many{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon a'ch dyfeisiau eraill sydd wedi mewngofnodi.}other{Bydd y cyfeiriadau hyn yn cael eu dileu o'r ddyfais hon a'ch dyfeisiau eraill sydd wedi mewngofnodi.}}</translation>
@@ -1057,7 +1054,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7840771868269352570">Bydd yr eitemau rydych yn eu dewis yn cael eu dileu.</translation>
 <translation id="7845466610722898">Dangos y Rhestr Ddarllen</translation>
 <translation id="784551991304901159">I weld cynnwys, dewiswch Troi Ymlaen o'r ddewislen</translation>
-<translation id="7846158885638438868">{count,plural, =1{Wedi creu nod tudalen ar gyfer "{title}"}zero{Wedi creu nod tudalen ar gyfer "{title}"}two{Wedi creu nodau tudalen ar gyfer "{title}"}few{Wedi creu nodau tudalen ar gyfer "{title}"}many{Wedi creu nodau tudalen ar gyfer "{title}"}other{Wedi creu nodau tudalen ar gyfer "{title}"}}</translation>
 <translation id="7853202427316060426">Gweithgarwch</translation>
 <translation id="7856733331829174190">Wedi methu â Lawrlwytho</translation>
 <translation id="785938070103630874">Agorwch Cyfrineiriau, Dulliau Talu neu Cyfeiriad a Rhagor</translation>
@@ -1137,9 +1133,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8299417921174340354">I ddefnyddio cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="8299613349954694191">Gallwch agor tab Anhysbys i bori'r we yn breifat.</translation>
 <translation id="8316944564970119719">Rhowch y Wefan a'r Cyfrinair a Chadwch</translation>
-<translation id="8317835149433843300">Ni fydd dulliau talu a chyfeiriadau o Google Pay yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cael ei gadw yn eich Cyfrif Google.
-
-Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Chwiliad Newydd</translation>
 <translation id="8323906514956095947">Cyffyrddwch a daliwch i weld rhagor o ddewisiadau tab</translation>
 <translation id="8328777765163860529">Cau Pob Un</translation>

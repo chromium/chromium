@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">ダークモードを無効にする</translation>
 <translation id="1807246157184219062">明</translation>
 <translation id="1827738518074806965">アート ギャラリー</translation>
+<translation id="1836553715834333258">システムカラー</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
+<translation id="1840474674287087346">デスクトップの色</translation>
 <translation id="1851218745569890714">ビデオ会議</translation>
 <translation id="1852934301711881861">ChromeOS Flex をインストール</translation>
 <translation id="1856388568474281774">下矢印</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">ブラウザ操作</translation>
 <translation id="2874939134665556319">前のトラック</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 放電しました。</translation>
-<translation id="2902312830803030883">その他の操作</translation>
 <translation id="2926057806159140518">ユーザー名とパスワードを入力するか、QR コードをスキャンしてください</translation>
 <translation id="2940811910881150316">デバイスをテストできません。テストするにはディスプレイをもう一度開きます。</translation>
-<translation id="2981143481017883351">Chromebook 限定のアセットが利用可能に</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">鍵の方向</translation>
 <translation id="3294437725009624529">ゲスト</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
+<translation id="3305294846493618482">続き</translation>
 <translation id="3310640316857623290">DNS の応答時間が許容値を大幅に超えています</translation>
 <translation id="3328783797891415197">テスト実行中</translation>
 <translation id="3340011300870565703">デバイスの右イヤフォンのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">ウィンドウ</translation>
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369013195428705271">印刷履歴をすべて削除してもよろしいですか？実行中の印刷ジョブは削除されません。</translation>
-<translation id="3386675685417744672">Chromebook 限定</translation>
 <translation id="3404249063913988450">スクリーン セーバーを有効にする</translation>
 <translation id="3413935475507503304">更新を進めるには、[次へ] をクリックしてください。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">警告</translation>
 <translation id="4054683689023980771">画像のダウンロード中</translation>
 <translation id="4060260348856573701">新しい APN</translation>
-<translation id="4079743696465895866">Chromebook 限定のアートワークを選択する</translation>
 <translation id="4093865285251893588">プロフィール画像</translation>
 <translation id="409427325554347132">テストの詳細を保存</translation>
 <translation id="4095829376260267438">WPA2 / WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">スキャンの保存先</translation>
 <translation id="4479639480957787382">イーサネット</translation>
 <translation id="4483049906298469269">デフォルト以外のネットワーク ゲートウェイに向けた ping が失敗しました</translation>
+<translation id="4500966230243561393">インターフェースの色</translation>
 <translation id="4503223151711056411">左矢印</translation>
 <translation id="4507392511610824664">明るさを上げる</translation>
 <translation id="4511264077854731334">ポータル</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">テストを停止</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">画面がアイドル状態のときに、写真、時刻、天気、メディア情報を表示します。</translation>
+<translation id="5035083460461104704">テーマの色</translation>
 <translation id="5038292761217083259">キーボードをマルチカラーにする</translation>
 <translation id="5039804452771397117">許可する</translation>
 <translation id="5049856988445523908">SIM はロックされています（<ph name="LOCK_TYPE" />）</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">中間色</translation>
 <translation id="7620771111601174153">詳しくはヘルプセンターをご覧ください</translation>
 <translation id="763165478673169849">前回のリセット時間</translation>
+<translation id="7633068090678117093">背景画像</translation>
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="765159867434478292">分割</translation>
 <translation id="7656388927906093505">デバイスの種類はマウスです。</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">ピア</translation>
 <translation id="8930622219860340959">ワイヤレス</translation>
 <translation id="8936793075252196307">クライアント IP アドレス</translation>
+<translation id="8944651180182756621">ランチャーの色</translation>
 <translation id="894617464444543719">デバイスの種類はスマートフォンです。</translation>
 <translation id="8957423540740801332">右</translation>
 <translation id="8968751544471797276">充電率</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">メモリテストを実行</translation>
 <translation id="9161276708550942948">スペース</translation>
 <translation id="9173638680043580060">残り 1 分未満</translation>
+<translation id="9174334653006917325">UI の色</translation>
 <translation id="917720651393141712">テスト</translation>
 <translation id="9188992814426075118">キーボードのバックライトの色を壁紙に合わせて自動調整できます</translation>
 <translation id="9189000703457422362">自動検出された APN を使用してこのネットワークとの接続を試みましたが接続できません。詳しくは、ご利用の携帯通信会社にお問い合わせください。</translation>

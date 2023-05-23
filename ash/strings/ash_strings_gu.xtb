@@ -29,7 +29,6 @@
 <translation id="1104084341931202936">ઍક્સેસિબિલિટી સેટિંગ બતાવો</translation>
 <translation id="1104621072296271835">તમારા ઉપકરણો એક સાથે હોય ત્યારે વધુ કાર્યક્ષમ હોય છે</translation>
 <translation id="1111021433905331574">તમે સેટિંગ &gt; <ph name="APP_TITLE" />માં જઈને તમારા કીબોર્ડની બૅકલાઇટનો રંગ બદલી શકો છો</translation>
-<translation id="1112998165730922436">કાસ્ટિંગ થોભાવ્યું</translation>
 <translation id="112308213915226829">સ્વતઃછુપાવો શેલ્ફ</translation>
 <translation id="1142002900084379065">તાજેતરના ફોટા</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> માટે માહિતી સંવાદ ખોલો</translation>
@@ -338,7 +337,6 @@
 <translation id="2526581474998477112">વિન્ડો અનલૉક કરો</translation>
 <translation id="2530896289327917474">ટેક્સ્ટના કર્સર વડે બ્રાઉઝ કરવાનું ચાલુ અથવા બંધ કરો</translation>
 <translation id="2531025035050312891">ડિવાઇસ ધીમું છે</translation>
-<translation id="2542089167727451762">તમારા પ્રોફાઇલ ફોટા પર ટૅપ કરો</translation>
 <translation id="254900897760075745">પસંદ કરેલું કન્ટેન્ટ ક્લિપબોર્ડ પર કૉપિ કરો</translation>
 <translation id="2549711466868162843">લાઇટિંગમાં સુધારો કરો</translation>
 <translation id="2549985041256363841">રેકોર્ડિંગ શરૂ કરો</translation>
@@ -507,7 +505,6 @@
 <translation id="334252345105450327">સ્ક્રીનશૉટ લો</translation>
 <translation id="334927402682780278">કર્સરથી લાઇનના છેડા સુધીની ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="3349345708646875009">'કાર્યના મેનેજર' સુવિધા ખોલો</translation>
-<translation id="3351879221545518001">તમે હાલમાં સ્ક્રીનને કાસ્ટ કરી રહ્યા છો.</translation>
 <translation id="3354555338129305222">મારું ડિવાઇસ શા માટે ધીમું છે</translation>
 <translation id="3364721542077212959">સ્ટાઇલસનાં સાધનો</translation>
 <translation id="3365977133351922112">તમારો ફોન ઘણો દૂર છે. તમારો ફોન થોડો નજીક લાવો.</translation>
@@ -1503,10 +1500,10 @@
 <translation id="7860671499921112077">ઓવરવ્યૂમાં દાખલ થવા માટે, ત્રણ આંગળી વડે ઉપરની તરફ સ્વાઇપ કરો</translation>
 <translation id="7862292329216937261">અતિથિ તરીકે ડિવાઇસનો ઉપયોગ કરવા માટે, પહેલા તમારે સાઇન આઉટ કરવું જરૂરી છે અને ત્યાર પછી સ્ક્રીનની સૌથી નીચે દેખાતા 'અતિથિ તરીકે બ્રાઉઝ કરો' પસંદ કરો.</translation>
 <translation id="7866482334467279021">ચાલુ</translation>
-<translation id="7868900307798234037">ફિંગરપ્રિન્ટથી અનલૉક કરી રહ્યાં છે</translation>
 <translation id="7872786842639831132">બંધ છે</translation>
 <translation id="7875575368831396199">એવું લાગે છે કે તમારા <ph name="DEVICE_TYPE" /> પર બ્લૂટૂથ બંધ કરેલું છે. કૃપા કરીને ફોન હબનો ઉપયોગ કરવા માટે બ્લૂટૂથ ચાલુ કરો.</translation>
 <translation id="7877557217297072640">{0,plural, =0{ડિવાઇસને હમણાં જ પાછલા વર્ઝનમાં બદલો}=1{ડિવાઇસને 1 સેકન્ડની અંદર પાછલા વર્ઝનમાં બદલો}one{ડિવાઇસને # સેકન્ડની અંદર પાછલા વર્ઝનમાં બદલો}other{ડિવાઇસને # સેકન્ડની અંદર પાછલા વર્ઝનમાં બદલો}}</translation>
+<translation id="7884446017008693258">હૉટસ્પૉટના સેટિંગ</translation>
 <translation id="7884902759927478774">ટૅબને ખેંચવાનું રદ કરો</translation>
 <translation id="7886169021410746335">ગોપનીયતા સેટિંગ ગોઠવો</translation>
 <translation id="7886277072580235377">જ્યારે તમે સાઇન આઉટ કરશો, ત્યારે તમારા ઇન્ટરનેટ સત્રની માહિતી સાફ કરવામાં આવશે. <ph name="LEARN_MORE" /></translation>
@@ -1602,7 +1599,6 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, ફોનની બૅટરી <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446">ઍપ: <ph name="APP_NAME" /></translation>
 <translation id="8255234195843591763">અપડેટ કરવા માટે રીસેટ કરો</translation>
-<translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> માટે અનલૉક કરવા Enter દબાવો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8270450402312105425">{0,plural, =1{એક કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}one{# કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}other{# કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}}</translation>
 <translation id="8277261673056602147">તમારી સ્ક્રીન પરના ટેક્સ્ટને હાઇલાઇટ કરો</translation>

@@ -148,7 +148,6 @@ Tänk på detta:
 <ph name="BEGIN_INDENT" />  • Information om hur du använder Chrome skickas till Google men kopplas inte till dig.
   • Om Chrome kraschar kan personliga uppgifter finnas med i kraschinformationen.
   • Om du aktiverar synkronisering kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Du får standardsäkerhetsskydd för den här Chromium-profilen</translation>
 <translation id="9112744793181547300">Vill du ställa in Chrome som standardwebbläsare?</translation>
 <translation id="9122931302567044771">Detta betyder att datorversionen av webbplatsen begärs varje gång i Chrome.</translation>
 </translationbundle>

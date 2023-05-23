@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Slökkva á dökku þema</translation>
 <translation id="1807246157184219062">Ljóst</translation>
 <translation id="1827738518074806965">Listasafn</translation>
+<translation id="1836553715834333258">Kerfislitur</translation>
 <translation id="1838374766361614909">Hreinsa leit</translation>
+<translation id="1840474674287087346">Skjáborðslitur</translation>
 <translation id="1851218745569890714">Myndfundur</translation>
 <translation id="1852934301711881861">Setja upp ChromeOS Flex</translation>
 <translation id="1856388568474281774">Ör niður</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">Vafrafletting</translation>
 <translation id="2874939134665556319">Fyrra lag</translation>
 <translation id="2878387241690264070">Afhleðsla nam <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
-<translation id="2902312830803030883">Fleiri aðgerðir</translation>
 <translation id="2926057806159140518">Sláðu inn notandanafn og aðgangsorð eða skannaðu QR-kóðann</translation>
 <translation id="2940811910881150316">Ekki hægt að prófa tæki. Opnaðu lokið aftur til að prófa.</translation>
-<translation id="2981143481017883351">Sérstakir Chromebook-eiginleikar eru nú fáanlegir</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
 <translation id="3009958530611748826">Veldu möppu til að vista í</translation>
 <translation id="3017079585324758401">Bakgrunnur</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">Lykilstefna</translation>
 <translation id="3294437725009624529">Gestur</translation>
 <translation id="3303855915957856445">Engar leitarniðurstöður fundust</translation>
+<translation id="3305294846493618482">meira</translation>
 <translation id="3310640316857623290">DNS-biðtími er töluvert yfir leyfðum þröskuldi</translation>
 <translation id="3328783797891415197">Próf í gangi</translation>
 <translation id="3340011300870565703">Rafhleðsla hægra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Gluggar</translation>
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3369013195428705271">Viltu örugglega hreinsa allan prentferil? Prentverk sem eru í gangi verða ekki hreinsuð.</translation>
-<translation id="3386675685417744672">Aðeins fyrir Chromebook</translation>
 <translation id="3404249063913988450">Virkja skjávara</translation>
 <translation id="3413935475507503304">Til að halda áfram að uppfæra skaltu smella á „Áfram“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">VIÐVÖRUN</translation>
 <translation id="4054683689023980771">Sækir mynd</translation>
 <translation id="4060260348856573701">Nýr aðgangsstaður</translation>
-<translation id="4079743696465895866">Velja sérstök Chromebook-listaverk</translation>
 <translation id="4093865285251893588">Prófílmynd</translation>
 <translation id="409427325554347132">Vista niðurstöður prófunar</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">Skanna í</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ping-prófun ósjálfgefinnar netkerfisgáttar mistókst</translation>
+<translation id="4500966230243561393">Litur viðmóts</translation>
 <translation id="4503223151711056411">Ör til vinstri</translation>
 <translation id="4507392511610824664">auka birtustig</translation>
 <translation id="4511264077854731334">Gátt</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">Stöðva próf</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Sjáðu myndir, klukku, veður og upplýsingar úr fjölmiðlum þegar skjárinn er aðgerðalaus.</translation>
+<translation id="5035083460461104704">Þemalitur</translation>
 <translation id="5038292761217083259">lyklaborð í mörgum litum</translation>
 <translation id="5039804452771397117">Leyfa</translation>
 <translation id="5049856988445523908">SIM læst (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">Hlutlaust</translation>
 <translation id="7620771111601174153">Fáðu frekari upplýsingar í hjálparmiðstöðinni</translation>
 <translation id="763165478673169849">Tími síðustu endurstillingar</translation>
+<translation id="7633068090678117093">Bakgrunnsmynd</translation>
 <translation id="7648838807254605802">Langur HTTPS-biðtími</translation>
 <translation id="765159867434478292">Skipta</translation>
 <translation id="7656388927906093505">Tækið er mús.</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">Samanburður</translation>
 <translation id="8930622219860340959">Þráðlaust</translation>
 <translation id="8936793075252196307">IP-tala biðlara</translation>
+<translation id="8944651180182756621">Litur ræsiforrits</translation>
 <translation id="894617464444543719">Tækið er sími.</translation>
 <translation id="8957423540740801332">hægri</translation>
 <translation id="8968751544471797276">Hleðsluhraði</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">Keyra minnispróf</translation>
 <translation id="9161276708550942948">bil</translation>
 <translation id="9173638680043580060">Innan við mínúta eftir</translation>
+<translation id="9174334653006917325">Litur notendaviðmóts</translation>
 <translation id="917720651393141712">Prófa</translation>
 <translation id="9188992814426075118">Lyklaborðið getur passað sjálfkrafa við veggfóðrið</translation>
 <translation id="9189000703457422362">Ekki næst tenging við þetta netkerfi með aðgangsstöðum sem eru greindir sjálfkrafa. Hafðu samband við símafyrirtækið þitt til að fá frekari upplýsingar.</translation>

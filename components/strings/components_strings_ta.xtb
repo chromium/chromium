@@ -976,6 +976,7 @@
 <translation id="3380864720620200369">கிளையண்ட் ஐடி:</translation>
 <translation id="3381668585148405088">உங்கள் பர்ச்சேஸைச் சரிபாருங்கள்</translation>
 <translation id="3383566085871012386">தற்போதைய முன்னுரிமை வரிசை</translation>
+<translation id="3384522979010096022">நீங்கள் இந்தத் தளத்தைப் பார்க்க உங்கள் நிறுவனம் அனுமதிக்கவில்லை</translation>
 <translation id="3387261909427947069">கட்டண முறைகள்</translation>
 <translation id="3391030046425686457">டெலிவரி முகவரி</translation>
 <translation id="3391482648489541560">ஃபைலைத் திருத்துதல்</translation>
@@ -1091,7 +1092,7 @@
 <translation id="3658742229777143148">மீள்திருத்தங்கள்</translation>
 <translation id="3664782872746246217">தேடல் குறிப்புகள்:</translation>
 <translation id="3667704023705708645">துணிகர முதலீடு</translation>
-<translation id="3671117652518853176">முடக்கப்பட்டிருந்தால், பாதுகாப்பு நோக்கங்களுக்காகச் உறுதிசெய்யுமாறு உங்களிடம் அவ்வப்போது கேட்கப்படலாம்</translation>
+<translation id="3671117652518853176">முடக்கப்பட்டிருந்தால், பாதுகாப்பு நோக்கங்களுக்காக உறுதிசெய்யுமாறு உங்களிடம் அவ்வப்போது கேட்கப்படலாம்</translation>
 <translation id="3671540257457995106">அளவை மாற்ற அனுமதிக்கவா?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> இல் பிழை: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">ரோல் 3</translation>
@@ -1342,7 +1343,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">குறிப்பு</translation>
 <translation id="425582637250725228">உங்கள் மாற்றங்கள் சேமிக்கப்படாமல் இருக்கலாம்.</translation>
-<translation id="425869179292622354">விர்ச்சுவல் கார்டு மூலம் இதை மேலும் பாதுகாப்பானதாக்க வேண்டுமா?</translation>
 <translation id="4258748452823770588">தவறான கையொப்பம்</translation>
 <translation id="4261046003697461417">பாதுகாக்கப்பட்ட ஆவணங்களில் விரிவுரையைச் சேர்க்க முடியாது</translation>
 <translation id="4265872034478892965">உங்கள் நிர்வாகி அனுமதித்தார்</translation>

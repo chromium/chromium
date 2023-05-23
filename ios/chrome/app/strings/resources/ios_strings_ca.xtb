@@ -142,7 +142,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="1870148520156231997">Mostra la contrasenya</translation>
 <translation id="1872096359983322073">Llanterna</translation>
 <translation id="1883255238294161206">Redueix la llista</translation>
-<translation id="1891796056033961979">Les adreces d'interès, les contrasenyes, la configuració i altres dades desades estan disponibles en aquesta pantalla.</translation>
 <translation id="1894023287452300670">Fes un seguiment del preu aquí</translation>
 <translation id="1910975740091000991">Chrome per a iOS</translation>
 <translation id="1911619930368729126">Penja a Google Drive</translation>
@@ -444,7 +443,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3891414008432200754">Preu</translation>
 <translation id="3892144330757387737">Trobaràs l'historial aquí</translation>
 <translation id="3897092660631435901">Menú</translation>
-<translation id="3899568514738536144">Mostra l'historial de navegació</translation>
 <translation id="3904829425754749514">La teva organització ha desactivat la sincronització. Encara pots veure les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en aquest dispositiu. Si fas canvis, no se sincronitzaran amb el teu compte.</translation>
 <translation id="3913386780052199712">Sessió iniciada a Chrome</translation>
 <translation id="3915450441834151894">Informació del lloc web</translation>
@@ -501,7 +499,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="430793432425771671">Sincronitza-ho tot</translation>
 <translation id="4309403553630140242">Fes doble toc per obtenir més informació</translation>
 <translation id="430967081421617822">Sempre</translation>
-<translation id="4324952538601951430">Les adreces d'interès, les contrasenyes, la configuració i altres dades desades ara són aquí</translation>
 <translation id="4334428914252001502">Un article no llegit.</translation>
 <translation id="4338650699862464074">Envia a Google els URL de les pàgines que visites.</translation>
 <translation id="4342054591427973606">{count,plural, =1{Aquesta adreça se suprimirà d'aquest dispositiu i dels altres en què tinguis la sessió iniciada.}other{Aquestes adreces se suprimiran d'aquest dispositiu i dels altres en què tinguis la sessió iniciada.}}</translation>
@@ -1057,7 +1054,6 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7840771868269352570">Els elements seleccionats se suprimiran.</translation>
 <translation id="7845466610722898">Mostra la llista de lectura</translation>
 <translation id="784551991304901159">Per veure contingut, al menú, selecciona Activa</translation>
-<translation id="7846158885638438868">{count,plural, =1{S'ha afegit a les adreces d'interès a "{title}"}other{S'han afegit a les adreces d'interès a "{title}"}}</translation>
 <translation id="7853202427316060426">Activitat</translation>
 <translation id="7856733331829174190">No s'ha pogut baixar</translation>
 <translation id="785938070103630874">Obre les contrasenyes, les formes de pagament o l'adreça i altres dades</translation>
@@ -1137,9 +1133,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8299417921174340354">Per utilitzar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="8299613349954694191">Obre una pestanya d'incògnit per navegar pel web de manera privada.</translation>
 <translation id="8316944564970119719">Introdueix el lloc web i la contrasenya i, a continuació, desa els canvis</translation>
-<translation id="8317835149433843300">Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no es desarà al teu Compte de Google.
-
-Només qui sàpiga la teva frase de contrasenya pot llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Cerca nova</translation>
 <translation id="8323906514956095947">Mantén premut el botó per veure més opcions de pestanyes</translation>
 <translation id="8328777765163860529">Tanca-ho tot</translation>

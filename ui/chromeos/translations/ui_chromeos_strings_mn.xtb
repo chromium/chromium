@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Linux-р суулгах</translation>
 <translation id="2225536596944493418">Та <ph name="NUMBER_OF_ITEMS" /> зүйлийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" /> ". <ph name="ERROR_MESSAGE" /> хавтас үүсгэх боломжгүй байна</translation>
-<translation id="2236732657580416950">Таны Google Драйвын завсрын санах ойг арилгасан.</translation>
 <translation id="2239068707900391003">Кофетой хүн</translation>
 <translation id="2251368349685848079">Хогийн савнаас сэргээх</translation>
 <translation id="2278133026967558505">Бүх вебсайт болон URL файлд хандах боломжтой</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">Стандарт нэртэй серверүүд</translation>
 <translation id="4465725236958772856">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, таны администратор удирддаг, холбогдох</translation>
 <translation id="4470564870223067757">Хангыль 2 Багц</translation>
+<translation id="4472575034687746823">Эхлүүлэх</translation>
 <translation id="4474142134969976028">Таарах ямар ч илэрц байхгүй</translation>
 <translation id="4477002475007461989">Румын</translation>
 <translation id="4477219268485577442">Болгарын авиа зүй</translation>
@@ -616,6 +616,7 @@
 <translation id="5838451609423551646">Сонголт хийх хэсгээс бүх оролтыг хассан.</translation>
 <translation id="5838825566232597749">Олон улсын US Workman гар</translation>
 <translation id="5845721951356578987">Сувилагч</translation>
+<translation id="5860491529813859533">Асаах</translation>
 <translation id="5861477046012235702">Тоглогч</translation>
 <translation id="5864471791310927901">DHCP лавлаж харах ажиллагаа амжилтгүй боллоо</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Идэвхжүүлээгүй, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Дэлгэрэнгүй</translation>

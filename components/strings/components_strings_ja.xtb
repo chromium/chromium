@@ -979,6 +979,7 @@
 <translation id="3380864720620200369">クライアント ID:</translation>
 <translation id="3381668585148405088">購入の確認</translation>
 <translation id="3383566085871012386">現在の優先順位</translation>
+<translation id="3384522979010096022">組織では、このサイトの表示を許可していません</translation>
 <translation id="3387261909427947069">お支払い方法</translation>
 <translation id="3391030046425686457">配送先住所</translation>
 <translation id="3391482648489541560">ファイルの編集</translation>
@@ -1346,7 +1347,6 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4253168017788158739">メモ</translation>
 <translation id="425582637250725228">行った変更が保存されない可能性があります。</translation>
-<translation id="425869179292622354">仮想カードでセキュリティを高めますか？</translation>
 <translation id="4258748452823770588">署名が不適切です</translation>
 <translation id="4261046003697461417">保護されたドキュメントに注釈を追加することはできません</translation>
 <translation id="4265872034478892965">管理者によって許可</translation>

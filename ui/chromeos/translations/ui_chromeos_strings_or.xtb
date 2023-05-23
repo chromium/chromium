@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Linux ସହିତ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="2225536596944493418">ଆପଣ କ'ଣ ନିଶ୍ଚିତ ରୂପେ <ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଡିଲିଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="2230062665678605299">ଫୋଲ୍ଡର୍‌ ତିଆରି କରିବାରେ ଅକ୍ଷମ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">ଆପଣଙ୍କ Google Drive କେଶକୁ ଖାଲି କରାଯାଇଛି।</translation>
 <translation id="2239068707900391003">କଫି ପିଉଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="2251368349685848079">ଟ୍ରାସରୁ ରିଷ୍ଟୋର୍ କରନ୍ତୁ</translation>
 <translation id="2278133026967558505">ସମସ୍ତ ୱେବସାଇଟ ଏବଂ URL ଦ୍ୱାରା ଫାଇଲ ଆକ୍ସେସ</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">କଷ୍ଟମ୍ ନାମ ସର୍ଭର୍</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, ଆପଣଙ୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‌ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4470564870223067757">ହଂଗୁଲ୍ 2 ସେଟ୍</translation>
+<translation id="4472575034687746823">ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="4474142134969976028">ମେଳ ହେଉଥିବା କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="4477002475007461989">ରୋମାନିଆନ୍</translation>
 <translation id="4477219268485577442">ବୁଲ୍‍‍ଗେରିଆନ୍ ଫୋନେଟିକ୍</translation>
@@ -613,6 +613,7 @@
 <translation id="5838451609423551646">ସମସ୍ତ ବଛାଯାଇଥିବା ଫାଇଲ୍‌ଗୁଡ଼ିକ କଢ଼ାଯାଇଛି।</translation>
 <translation id="5838825566232597749">US ୱର୍କମ୍ୟାନ୍ ଆନ୍ତର୍ଜାତୀୟ</translation>
 <translation id="5845721951356578987">ନର୍ସ</translation>
+<translation id="5860491529813859533">ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5861477046012235702">ଗେମର</translation>
 <translation id="5864471791310927901">DHCP ଲୁକଅପ୍ ବିଫଳ ହେଲା।</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_NAME" />ର <ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କକୁ ନିଷ୍କ୍ରିୟ କରାଯାଇଛି, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>

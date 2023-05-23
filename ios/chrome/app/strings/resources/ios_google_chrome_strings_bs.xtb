@@ -148,7 +148,6 @@ Stvari za razmatranje:
 <ph name="BEGIN_INDENT" />  • Informacije o vašem korištenju Chromea se šalju Googleu, ali se ne povezuju s vama.
   • Ako dođe do pada Chromea, detalji o padu mogu uključivati neke lične informacije.
   • Ako uključite sinhronizaciju, pokazatelji također mogu uključivati informacije o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Za ovaj Chrome profil dobijate standardnu sigurnosnu zaštitu</translation>
 <translation id="9112744793181547300">Postaviti Chrome kao zadani preglednik?</translation>
 <translation id="9122931302567044771">Ovo znači da će Chrome svaki put zatražiti web lokaciju za računar.</translation>
 </translationbundle>

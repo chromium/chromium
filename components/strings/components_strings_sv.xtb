@@ -979,6 +979,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3380864720620200369">Klient-ID:</translation>
 <translation id="3381668585148405088">Verifiera köpet</translation>
 <translation id="3383566085871012386">Nuvarande prioritetsordning</translation>
+<translation id="3384522979010096022">Organisationen tillåter inte att du visar den här webbplatsen</translation>
 <translation id="3387261909427947069">Betalningsmetoder</translation>
 <translation id="3391030046425686457">Leveransadress</translation>
 <translation id="3391482648489541560">filredigering</translation>
@@ -1346,7 +1347,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4250716950689692560">A4 x 4</translation>
 <translation id="4253168017788158739">Kommentar</translation>
 <translation id="425582637250725228">Ändringar som du har gjort kanske inte sparas.</translation>
-<translation id="425869179292622354">Vill du göra det säkrare med ett virtuellt kort?</translation>
 <translation id="4258748452823770588">Felaktig signatur</translation>
 <translation id="4261046003697461417">Det går inte annotera i skyddade dokument</translation>
 <translation id="4265872034478892965">Beviljades av administratören</translation>

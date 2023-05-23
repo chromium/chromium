@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Deaktivovat tmavý motiv</translation>
 <translation id="1807246157184219062">Světlé</translation>
 <translation id="1827738518074806965">Galerie umění</translation>
+<translation id="1836553715834333258">Systémová barva</translation>
 <translation id="1838374766361614909">Vymazat vyhledávání</translation>
+<translation id="1840474674287087346">Barva plochy</translation>
 <translation id="1851218745569890714">Videokonference</translation>
 <translation id="1852934301711881861">Nainstalovat ChromeOS Flex</translation>
 <translation id="1856388568474281774">Šipka dolů</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">Navigace v prohlížeči</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
 <translation id="2878387241690264070">Vybilo se <ph name="RATE" /> kapacity během <ph name="NUM_SECONDS" /> sekund.</translation>
-<translation id="2902312830803030883">Další akce</translation>
 <translation id="2926057806159140518">Zadejte uživatelské jméno nebo heslo nebo naskenujte svůj QR kód</translation>
 <translation id="2940811910881150316">Zařízení nelze otestovat. Znovu otevřete víko.</translation>
-<translation id="2981143481017883351">Jsou k dispozici exkluzivní položky pro Chromebooky</translation>
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="3017079585324758401">Pozadí</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">Směr klíče</translation>
 <translation id="3294437725009624529">Host</translation>
 <translation id="3303855915957856445">Nebyly nalezeny žádné výsledky</translation>
+<translation id="3305294846493618482">více</translation>
 <translation id="3310640316857623290">DNS má latenci výrazně nad prahovou hodnotou</translation>
 <translation id="3328783797891415197">Běží test</translation>
 <translation id="3340011300870565703">Stav baterie pravého sluchátka je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3369013195428705271">Opravdu chcete vymazat celou historii tisku? Probíhající tiskové úlohy vymazány nebudou.</translation>
-<translation id="3386675685417744672">Exkluzivně na Chromeboocích</translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
 <translation id="3413935475507503304">Pokud chcete pokračovat v aktualizaci, klikněte na Další.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">UPOZORNĚNÍ</translation>
 <translation id="4054683689023980771">Stahování obrázku</translation>
 <translation id="4060260348856573701">Nový přístupový bod (APN)</translation>
-<translation id="4079743696465895866">Vybrat umělecké dílo dostupné pouze na Chromeboocích</translation>
 <translation id="4093865285251893588">Profilová fotka</translation>
 <translation id="409427325554347132">Uložit podrobnosti testu</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">Uložit do</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepodařilo se pingnout bránu jiné než výchozí sítě</translation>
+<translation id="4500966230243561393">Barva rozhraní</translation>
 <translation id="4503223151711056411">Šipka vlevo</translation>
 <translation id="4507392511610824664">zvýšit jas</translation>
 <translation id="4511264077854731334">Portál</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">Zastavit test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Když je obrazovka nečinná, zobrazovat fotky, čas, počasí a informace z médií.</translation>
+<translation id="5035083460461104704">Barva motivu</translation>
 <translation id="5038292761217083259">vícebarevná klávesnice</translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5049856988445523908">Zamknutá SIM karta (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">Neutrální</translation>
 <translation id="7620771111601174153">Další informace v centru nápovědy</translation>
 <translation id="763165478673169849">Čas posledního resetování</translation>
+<translation id="7633068090678117093">Obrázek na pozadí</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
 <translation id="765159867434478292">Rozdělit</translation>
 <translation id="7656388927906093505">Zařízení je myš.</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Bezdrátové připojení</translation>
 <translation id="8936793075252196307">IP adresa klienta</translation>
+<translation id="8944651180182756621">Barva Spouštěče</translation>
 <translation id="894617464444543719">Zařízení je telefon.</translation>
 <translation id="8957423540740801332">vpravo</translation>
 <translation id="8968751544471797276">Rychlost nabíjení</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">Spustit test paměti</translation>
 <translation id="9161276708550942948">mezera</translation>
 <translation id="9173638680043580060">Zbývá méně než minuta</translation>
+<translation id="9174334653006917325">Barva uživatelského rozhraní</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klávesnice může automaticky odpovídat tapetě</translation>
 <translation id="9189000703457422362">K této síti se pomocí automaticky zjištěných APN nelze připojit. Další informace vám sdělí mobilní operátor.</translation>

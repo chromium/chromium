@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Installer avec Linux</translation>
 <translation id="2225536596944493418">Voulez-vous vraiment supprimer <ph name="NUMBER_OF_ITEMS" /> éléments ?</translation>
 <translation id="2230062665678605299">Impossible de créer le dossier "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Votre cache Google Drive a été vidé.</translation>
 <translation id="2239068707900391003">Personne avec un café</translation>
 <translation id="2251368349685848079">Restaurer à partir de la corbeille</translation>
 <translation id="2278133026967558505">Accès aux fichiers pour tous les sites Web et URL</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">Serveurs de noms personnalisés</translation>
 <translation id="4465725236958772856">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, géré par votre administrateur, connexion</translation>
 <translation id="4470564870223067757">Hangûl, dubeol-sik</translation>
+<translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4474142134969976028">Aucun résultat</translation>
 <translation id="4477002475007461989">Roumain</translation>
 <translation id="4477219268485577442">Phonétique bulgare</translation>
@@ -619,6 +619,7 @@
 <translation id="5838451609423551646">Tous les éléments sélectionnés ont été supprimés.</translation>
 <translation id="5838825566232597749">Clavier Workman international américain</translation>
 <translation id="5845721951356578987">Personnel de santé</translation>
+<translation id="5860491529813859533">Activer</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Échec de la vérification DHCP</translation>
 <translation id="5896749729057314184">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, désactivé, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>

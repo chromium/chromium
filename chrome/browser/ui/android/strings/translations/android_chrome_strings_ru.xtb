@@ -88,7 +88,6 @@
 <translation id="13931502444227376">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />условиями предоставления услуг<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096">Поиск в <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Вы можете в любое время изменить свое решение в настройках Chrome. Экспериментальные функции действуют одновременно с текущими настройками показа рекламы, поэтому вы не сразу заметите изменения.</translation>
-<translation id="1406000523432664303">Запрет отслеживания</translation>
 <translation id="1407069428457324124">Тёмная тема</translation>
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="1409879593029778104">Скачивание файла <ph name="FILE_NAME" /> остановлено, так как он уже существует.</translation>
@@ -794,7 +793,6 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5319359161174645648">Google рекомендует браузер Chrome</translation>
 <translation id="5321849971085220133">Мы ищем новые способы ограничить отслеживание и сделать работу с браузером ещё безопаснее. Основываясь на вашей истории, Chrome <ph name="BEGIN_LINK" />предполагает, какие темы вам интересны<ph name="END_LINK" />. Затем сайты, которые вы посещаете, могут запрашивать у Chrome эту информацию, чтобы показывать рекламу. При этом вы можете выбирать, какие темы будут доступны сайтам.</translation>
-<translation id="5324858694974489420">Родительские настройки</translation>
 <translation id="5326921373682845375">Так как предзагруженные страницы зашифрованы и на них ссылается сайт на платформе Google, наши серверы не получают новых сведений во время анонимной предзагрузки.</translation>
 <translation id="5329858041417644019">Этот браузер не управляется администратором</translation>
 <translation id="5339031667684712858">Сайты, которые вы удалили</translation>
@@ -805,7 +803,6 @@
 <translation id="5368227114232678694">Чтобы анонимно работать в интернете на этом устройстве, воспользуйтесь режимом инкогнито.</translation>
 <translation id="5375577065097716013">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5401851137404501592">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт.</translation>
-<translation id="5403644198645076998">Разрешить доступ только к определенным сайтам</translation>
 <translation id="5409881200985013443">Отправить код <ph name="ONE_TIME_CODE" /> на устройство "<ph name="CLIENT_NAME" />"?</translation>
 <translation id="5414836363063783498">Проверка…</translation>
 <translation id="5423934151118863508">Здесь появятся страницы, которые вы чаще всего просматриваете.</translation>
@@ -847,7 +844,6 @@
 <translation id="5626134646977739690">Имя:</translation>
 <translation id="5628604359369369630">Не прочитано – доступно в офлайн-режиме</translation>
 <translation id="5635091213277904818">Chrome автоматически удаляет сайты через 30 дней с момента их добавления. Если вы повторно посетите сайт, он может вновь появиться в списке. Вы также можете запретить сайту предлагать рекламу.</translation>
-<translation id="5639724618331995626">Разрешить доступ ко всем сайтам</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />История поиска<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />сведения о других действиях<ph name="END_LINK2" /> могут сохраняться в аккаунте Google.</translation>
 <translation id="564667659802381754">Руководство по конфиденциальности <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
@@ -882,7 +878,6 @@
 <translation id="5797949256525811424">Тема заблокирована</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# час назад}one{# час назад}few{# часа назад}many{# часов назад}other{# часа назад}}</translation>
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" />. Все права защищены.</translation>
-<translation id="5813552293717797987">Этим браузером управляют <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814749351757353073">Подпишитесь на любимые сайты</translation>
 <translation id="5822875253699806474">Чтобы быстро возвращаться к просмотренным сайтам, включите синхронизацию вкладок и истории.</translation>
 <translation id="583281660410589416">Неизвестно</translation>
@@ -1251,7 +1246,6 @@
 <translation id="7655900163790317559">Включение Bluetooth…</translation>
 <translation id="7656862631699126784">Включить блокировку вкладок инкогнито</translation>
 <translation id="7658239707568436148">Отмена</translation>
-<translation id="7663313374500954251">Этим браузером управляет <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Добавить аккаунт</translation>
 <translation id="766587987807204883">Здесь появляются статьи, которые можно читать даже в офлайн-режиме.</translation>
 <translation id="768232549260819724">GIF-файл скопирован.</translation>
@@ -1360,7 +1354,6 @@
 <translation id="8130309322784422030">Сохраненные учетные данные могли устареть.</translation>
 <translation id="813082847718468539">Сведения о сайте</translation>
 <translation id="8156139159503939589">На каких языках вы читаете?</translation>
-<translation id="8168435359814927499">Контент</translation>
 <translation id="8186512483418048923">Осталось файлов: <ph name="FILES" /></translation>
 <translation id="8189750580333936930">Privacy Sandbox</translation>
 <translation id="8190358571722158785">Остался 1 день</translation>
@@ -1452,7 +1445,6 @@
 <translation id="8617240290563765734">Открыть предложенный URL из скачанного контента?</translation>
 <translation id="8621068256433641644">телефоне</translation>
 <translation id="8636825310635137004">Чтобы получить доступ к вкладкам на всех ваших устройствах, включите синхронизацию.</translation>
-<translation id="8641930654639604085">Блокировать сайты для взрослых</translation>
 <translation id="864544049772947936">Управлять окнами (<ph name="INSTANCE_COUNTS" />)</translation>
 <translation id="8645920082661222035">Предсказывает опасные события и предупреждает вас о них.</translation>
 <translation id="8646467750715887511">Страницы загружаются только после того, как вы их откроете.</translation>
@@ -1500,7 +1492,6 @@
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей Интернета)</translation>
 <translation id="8909135823018751308">Поделиться...</translation>
 <translation id="8912362522468806198">Аккаунт Google</translation>
-<translation id="8920114477895755567">Недостаточно данных о родителях.</translation>
 <translation id="8921980840204105660">Чтобы стали доступны закладки с других устройств, выполните синхронизацию.</translation>
 <translation id="8922289737868596582">Скачивайте страницы через меню кнопки "Ещё" и открывайте их без подключения к Интернету</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>

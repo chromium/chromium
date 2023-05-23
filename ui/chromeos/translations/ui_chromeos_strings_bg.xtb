@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Инсталиране с Linux</translation>
 <translation id="2225536596944493418">Наистина ли искате да изтриете <ph name="NUMBER_OF_ITEMS" /> елемента?</translation>
 <translation id="2230062665678605299">Не можем да създадем папката „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Кешът ви в Google Диск бе изчистен.</translation>
 <translation id="2239068707900391003">Човек с кафе</translation>
 <translation id="2251368349685848079">Възстановяване от кошчето</translation>
 <translation id="2278133026967558505">Достъп до файла от всички уебсайтове и URL адреси</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">Специално зададени сървъри за имена</translation>
 <translation id="4465725236958772856">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, управлява се от администратора ви, свързване</translation>
 <translation id="4470564870223067757">Хангъл, 2 набора</translation>
+<translation id="4472575034687746823">Първи стъпки</translation>
 <translation id="4474142134969976028">Няма съответстващи резултати</translation>
 <translation id="4477002475007461989">Румънски</translation>
 <translation id="4477219268485577442">Българска фонетична клавиатура</translation>
@@ -619,6 +619,7 @@
 <translation id="5838451609423551646">Премахнахте избора на всички елементи.</translation>
 <translation id="5838825566232597749">Американска (Уъркман) международна клавиатура</translation>
 <translation id="5845721951356578987">Медицинска сестра</translation>
+<translation id="5860491529813859533">Включване</translation>
 <translation id="5861477046012235702">Геймър</translation>
 <translation id="5864471791310927901">Търсенето на DHCP сървър не бе успешно</translation>
 <translation id="5896749729057314184">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, неактивирана, сила на сигнала: <ph name="SIGNAL_STRENGTH" />%, подробности</translation>

@@ -148,7 +148,6 @@ Wichtige Hinweise:
 <ph name="BEGIN_INDENT" />  • Daten zu deiner Chrome-Nutzung werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden.
   • Falls Chrome abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
   • Falls du die Synchronisierung aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Dieses Chrome-Profil wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="9112744793181547300">Chrome als Standardbrowser festlegen?</translation>
 <translation id="9122931302567044771">Das bedeutet, dass Chrome immer die Desktopversion der Website anfordert.</translation>
 </translationbundle>

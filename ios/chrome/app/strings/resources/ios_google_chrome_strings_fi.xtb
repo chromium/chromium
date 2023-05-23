@@ -148,7 +148,6 @@ Huomioitavaa:
 <ph name="BEGIN_INDENT" />  • Chromen käytöstä lähetetään tietoja Googlelle, mutta niitä ei liitetä sinuun
   • Chromen kaatumisesta kerättävät tiedot saattavat sisältää henkilökohtaisia tietoja
   • Jos laitat synkronoinnin päälle, tiedot voivat koskea myös avaamiasi URL-osoitteita<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Tällä Chrome-profiililla on perustason suojaus</translation>
 <translation id="9112744793181547300">Valitaanko Chrome oletukseksi?</translation>
 <translation id="9122931302567044771">Tämä tarkoittaa, että Chrome pyytää aina tietokonesivustoa.</translation>
 </translationbundle>

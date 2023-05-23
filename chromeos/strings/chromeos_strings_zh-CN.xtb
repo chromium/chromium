@@ -237,10 +237,8 @@
 <translation id="2873483161362553159">浏览器导航</translation>
 <translation id="2874939134665556319">上一首</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
-<translation id="2902312830803030883">更多操作</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
 <translation id="2940811910881150316">无法测试设备。重新打开设备的盖子即可进行测试。</translation>
-<translation id="2981143481017883351">Chromebook 专有资源现已推出</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -278,6 +276,7 @@
 <translation id="3291996639387199448">密钥方向</translation>
 <translation id="3294437725009624529">访客</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
+<translation id="3305294846493618482">更多</translation>
 <translation id="3310640316857623290">DNS 延迟时间明显超出了允许的阈值</translation>
 <translation id="3328783797891415197">正在运行测试</translation>
 <translation id="3340011300870565703">设备右侧耳机的电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
@@ -286,7 +285,6 @@
 <translation id="3360306038446926262">窗口</translation>
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3369013195428705271">确定要清除所有打印记录吗？您正在执行的打印任务不会被清除。</translation>
-<translation id="3386675685417744672">Chromebook 专有</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -367,7 +365,6 @@
 <translation id="404928562651467259">警告</translation>
 <translation id="4054683689023980771">正在下载图片</translation>
 <translation id="4060260348856573701">新建 APN</translation>
-<translation id="4079743696465895866">选择 Chromebook 专有艺术作品</translation>
 <translation id="4093865285251893588">个人资料图片</translation>
 <translation id="409427325554347132">保存测试详细信息</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>

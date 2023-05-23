@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Instalează cu Linux</translation>
 <translation id="2225536596944493418">Sigur dorești să ștergi <ph name="NUMBER_OF_ITEMS" /> elemente?</translation>
 <translation id="2230062665678605299">Nu s-a putut crea dosarul „<ph name="FOLDER_NAME" />”. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Memoria cache Google Drive a fost ștearsă.</translation>
 <translation id="2239068707900391003">Persoană cu o ceașcă de cafea</translation>
 <translation id="2251368349685848079">Restabilește din coșul de gunoi</translation>
 <translation id="2278133026967558505">Acces la fișiere pentru toate site-urile și adresele URL</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">Servere de nume personalizate</translation>
 <translation id="4465725236958772856">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, gestionată de administratorul tău, conectează-te</translation>
 <translation id="4470564870223067757">Hangul setul 2</translation>
+<translation id="4472575034687746823">Începeți</translation>
 <translation id="4474142134969976028">Niciun rezultat</translation>
 <translation id="4477002475007461989">Română</translation>
 <translation id="4477219268485577442">Bulgară fonetică</translation>
@@ -619,6 +619,7 @@
 <translation id="5838451609423551646">S-au eliminat toate intrările din selecție.</translation>
 <translation id="5838825566232597749">Tastatură S.U.A. Workman internațională</translation>
 <translation id="5845721951356578987">Asistentă medicală</translation>
+<translation id="5860491529813859533">Activează</translation>
 <translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Căutarea DHCP nu a reușit</translation>
 <translation id="5896749729057314184">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inactivă, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>

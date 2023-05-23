@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Деактивиране на тъмната тема</translation>
 <translation id="1807246157184219062">Светло</translation>
 <translation id="1827738518074806965">Художествена галерия</translation>
+<translation id="1836553715834333258">Системен цвят</translation>
 <translation id="1838374766361614909">Изчистване на търсенето</translation>
+<translation id="1840474674287087346">Цвят на работния плот</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
 <translation id="1852934301711881861">Инсталиране на ChromeOS Flex</translation>
 <translation id="1856388568474281774">Стрелка за надолу</translation>
@@ -237,10 +239,8 @@
 <translation id="2873483161362553159">Придвижване в браузъра</translation>
 <translation id="2874939134665556319">Предишен запис</translation>
 <translation id="2878387241690264070">За <ph name="NUM_SECONDS" /> секунди батерията се разреди с(ъс) <ph name="RATE" />.</translation>
-<translation id="2902312830803030883">Още действия</translation>
 <translation id="2926057806159140518">Въведете потребителското име и паролата си или сканирайте QR кода си</translation>
 <translation id="2940811910881150316">Устройството не може да бъде тествано. За целта отворете капака.</translation>
-<translation id="2981143481017883351">Вече са налице активи специално за Chromebook</translation>
 <translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
 <translation id="3009958530611748826">Изберете папка, в която да запазите</translation>
 <translation id="3017079585324758401">Фон</translation>
@@ -278,6 +278,7 @@
 <translation id="3291996639387199448">Посока на ключа</translation>
 <translation id="3294437725009624529">Гост</translation>
 <translation id="3303855915957856445">Няма намерени резултати от търсенето</translation>
+<translation id="3305294846493618482">още</translation>
 <translation id="3310640316857623290">Забавянето на DNS е значително над допустимия праг</translation>
 <translation id="3328783797891415197">Тестът се изпълнява</translation>
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
@@ -286,7 +287,6 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3369013195428705271">Наистина ли искате да изчистите цялата история на отпечатването? Текущите задания за печат няма да бъдат изтрити.</translation>
-<translation id="3386675685417744672">Специално за Chromebook</translation>
 <translation id="3404249063913988450">Активиране на скрийнсейвъра</translation>
 <translation id="3413935475507503304">За да продължите с актуализацията, кликнете върху „Напред“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -367,7 +367,6 @@
 <translation id="404928562651467259">ПРЕДУПРЕЖДЕНИЕ</translation>
 <translation id="4054683689023980771">Изображението се изтегля</translation>
 <translation id="4060260348856573701">Ново име на точка за достъп (APN)</translation>
-<translation id="4079743696465895866">Изберете съдържание специално за Chromebook</translation>
 <translation id="4093865285251893588">Изображение на потребителския профил</translation>
 <translation id="409427325554347132">Запазване на подробностите за теста</translation>
 <translation id="4095829376260267438">WPA2 + WPA3</translation>
@@ -421,6 +420,7 @@
 <translation id="4454245904991689773">Сканиране във</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Неуспех при команда ping към шлюза на допълнителната мрежа</translation>
+<translation id="4500966230243561393">Цвят на интерфейса</translation>
 <translation id="4503223151711056411">Стрелка за наляво</translation>
 <translation id="4507392511610824664">увеличаване на яркостта</translation>
 <translation id="4511264077854731334">Портал</translation>
@@ -499,6 +499,7 @@
 <translation id="500920857929044050">Спиране на теста</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Показване на снимки, часа, времето и информация за мултимедията, когато екранът е неактивен.</translation>
+<translation id="5035083460461104704">Цвят на темата</translation>
 <translation id="5038292761217083259">многоцветна клавиатура</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5049856988445523908">SIM картата е заключена (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +815,7 @@
 <translation id="7618774594543487847">Неутрален</translation>
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
 <translation id="763165478673169849">Последен час на нулиране</translation>
+<translation id="7633068090678117093">Фоново изображение</translation>
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
 <translation id="765159867434478292">Разделяне</translation>
 <translation id="7656388927906093505">Устройството е мишка.</translation>
@@ -979,6 +981,7 @@
 <translation id="8930521118335213258">Подобни свойства</translation>
 <translation id="8930622219860340959">Безжична</translation>
 <translation id="8936793075252196307">IP адрес на клиентската програма</translation>
+<translation id="8944651180182756621">Цвят на стартовия панел</translation>
 <translation id="894617464444543719">Устройството е телефон.</translation>
 <translation id="8957423540740801332">надясно</translation>
 <translation id="8968751544471797276">Скорост на зареждане</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9149391708638971077">Тестване на паметта</translation>
 <translation id="9161276708550942948">интервал</translation>
 <translation id="9173638680043580060">Остава по-малко от минута</translation>
+<translation id="9174334653006917325">Цвят на потребителския интерфейс</translation>
 <translation id="917720651393141712">Тест</translation>
 <translation id="9188992814426075118">Фоновото осветление на клавиатурата може да се променя автоматично спрямо тапета ви</translation>
 <translation id="9189000703457422362">Не може да се установи връзка с тази мрежа посредством автоматично откритите имена на точките за достъп (APN). Обърнете се към мобилния си оператор за още информация.</translation>

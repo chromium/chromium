@@ -29,7 +29,6 @@
 <translation id="1104084341931202936">সাধ্য সুবিধাৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="1104621072296271835">আপোনাৰ ডিভাইচসমূহে একেলগে আৰু ভালকৈ কাম কৰে</translation>
 <translation id="1111021433905331574">আপুনি ছেটিং &gt; <ph name="APP_TITLE" />ত আপোনাৰ কীব’ৰ্ডৰ পিছফালৰ পোহৰৰ ৰং সলনি কৰিব পাৰে</translation>
-<translation id="1112998165730922436">কাষ্ট কৰাটো পজ কৰা হৈছে</translation>
 <translation id="112308213915226829">শ্বেল্ফ স্বয়ংক্রিয়ভাৱে লুকুৱাওক</translation>
 <translation id="1142002900084379065">শেহতীয়া ফট’</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" />ৰ বাবে তথ্যৰ ডায়ল’গ খোলক</translation>
@@ -338,7 +337,6 @@
 <translation id="2526581474998477112">ৱিণ্ড’ আনলক কৰক</translation>
 <translation id="2530896289327917474">কেৰেট ব্ৰাউজিং অন অথবা অফ কৰক</translation>
 <translation id="2531025035050312891">ডিভাইচটো লেহেমীয়া হৈছে</translation>
-<translation id="2542089167727451762">আপোনাৰ প্ৰ’ফাইলৰ প্ৰতিচ্ছবিত টিপক</translation>
 <translation id="254900897760075745">বাছনি কৰা সমল প্ৰতিলিপি কৰি ক্লিপব’ৰ্ডত ৰাখক</translation>
 <translation id="2549711466868162843">উজ্জ্বলতা উন্নত কৰক</translation>
 <translation id="2549985041256363841">ৰেকৰ্ডিং কৰা আৰম্ভ কৰক</translation>
@@ -507,7 +505,6 @@
 <translation id="334252345105450327">এটা স্ক্ৰীনশ্বট লওক</translation>
 <translation id="334927402682780278">কাৰ্ছৰৰ পৰা শাৰীৰ শেষলৈকে পাঠ বাছনি কৰক</translation>
 <translation id="3349345708646875009">কাৰ্য পৰিচালক খোলক</translation>
-<translation id="3351879221545518001">আপুনি বর্তমান স্ক্ৰীন কাষ্ট কৰি আছে।</translation>
 <translation id="3354555338129305222">মোৰ ডিভাইচটো কিয় লেহেমীয়া হৈছে</translation>
 <translation id="3364721542077212959">ষ্টাইলাছ সঁজুলি</translation>
 <translation id="3365977133351922112">আপোনাৰ ফ’নটো অনেক দূৰত আছে। আপোনাৰ ফ’নটো ওচৰলৈ আনক।</translation>
@@ -1503,10 +1500,10 @@
 <translation id="7860671499921112077">অৱলোকনত সোমাবলৈ তিনিটা আঙুলিৰে ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="7862292329216937261">অতিথি হিচাপে ডিভাইচটো ব্যৱহাৰ কৰিবলৈ, আপুনি ছাইন আউট কৰিব লাগিব আৰু তাৰ পাছত স্ক্ৰীনৰ একেবাৰে তলত অতিথি হিচাপে ব্ৰাউজ কৰক বাছনি কৰিব লাগিব।</translation>
 <translation id="7866482334467279021">অন আছে</translation>
-<translation id="7868900307798234037">ফিংগাৰপ্ৰিণ্টেৰে আনল’ক</translation>
 <translation id="7872786842639831132">অফ আছে</translation>
 <translation id="7875575368831396199">আপোনাৰ <ph name="DEVICE_TYPE" />ত ব্লুটুথ অফ কৰি থোৱা আছে যেন লাগিছে। ফ’ন হাব ব্যৱহাৰ কৰিবলৈ অনুগ্ৰহ কৰি ব্লুটুথ অন কৰক।</translation>
 <translation id="7877557217297072640">{0,plural, =0{এতিয়াই ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}=1{১ ছেকেণ্ডৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}one{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}other{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}}</translation>
+<translation id="7884446017008693258">হটস্পটৰ ছেটিং</translation>
 <translation id="7884902759927478774">টেব টানি অনাটো বাতিল কৰক</translation>
 <translation id="7886169021410746335">গোপনীয়তাৰ ছেটিংসমূহ মিলাওক</translation>
 <translation id="7886277072580235377">আপুনি ছাইন আউট কৰিলে আপোনাৰ ইণ্টাৰনেট ছেশ্বন মচা হ’ব। <ph name="LEARN_MORE" /></translation>
@@ -1602,7 +1599,6 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, এপ্‌</translation>
 <translation id="8255234195843591763">আপডে’ট কৰিবলৈ ৰিছেট কৰক</translation>
-<translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে আনলক কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8270450402312105425">{0,plural, =1{এঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}one{# ঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}other{# ঘণ্টাৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ সলনি কৰক}}</translation>
 <translation id="8277261673056602147">আপোনাৰ স্ক্ৰীনত থকা পাঠ হাইলাইট কৰক</translation>

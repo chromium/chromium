@@ -477,7 +477,6 @@
 <translation id="1410806973194718079">Не удалось проверить правила.</translation>
 <translation id="1411400282355634827">Сбросить все разрешения для устройств Bluetooth?</translation>
 <translation id="1411724932979011919">Запись должна быть в формате LPA: 1$&lt;smdp address&gt;$&lt;activation code&gt;.</translation>
-<translation id="1412681350727866021">Другие расширения</translation>
 <translation id="1414315029670184034">Запретить сайтам доступ к камере</translation>
 <translation id="1414648216875402825">Вы устанавливаете нестабильную версию <ph name="PRODUCT_NAME" />, которая содержит разрабатываемые в настоящий момент функции. Будьте осторожны: возможны сбои и неизвестные ошибки.</translation>
 <translation id="1415708812149920388">Доступ к буферу обмена закрыт</translation>
@@ -716,7 +715,6 @@
 <translation id="1610272688494140697">Настройки приложения</translation>
 <translation id="161042844686301425">Голубой</translation>
 <translation id="1611432201750675208">Ваше устройство заблокировано</translation>
-<translation id="1611776894942218234">Устройство должно использовать бета-канал</translation>
 <translation id="1612019740169791082">Контейнер не поддерживает изменение размера диска. Чтобы скорректировать объем хранилища, зарезервированного для Linux, выполните резервное копирование, а затем восстановите данные, используя новый контейнер.</translation>
 <translation id="1613019471223620622">Показать пароль для пользователя <ph name="USERNAME" /> в домене <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Старые версии приложений Chrome перестанут работать с декабря 2022 года. Вы можете проверить наличие обновлений.</translation>
@@ -1811,7 +1809,6 @@
 <translation id="2508428939232952663">Аккаунт Google Play</translation>
 <translation id="2509495747794740764">Укажите значение от 10 до 200.</translation>
 <translation id="2509566264613697683">8x</translation>
-<translation id="2510332280791537533">В этом профиле Chrome используется стандартная система защиты.</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (выбран)</translation>
 <translation id="2513396635448525189">Изображение на экране входа</translation>
 <translation id="2514326558286966059">Снимайте блокировку с помощью отпечатка пальца ещё быстрее</translation>
@@ -2831,9 +2828,6 @@
 <translation id="3434272557872943250">Если у ребенка включена запись дополнительной истории приложений и веб-поиска, эта информация может сохраняться в его аккаунте. Узнать больше об этой функции и о том, как изменить ее настройки, можно на странице families.google.com.</translation>
 <translation id="3434475275396485144">Этот параметр может изменить только администратор телефона</translation>
 <translation id="3434512374684753970">Аудио и видео</translation>
-<translation id="343517373502662180"><ph name="BEGIN_PARAGRAPH1" />На следующем экране войдите в аккаунт Google.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Этот аккаунт используется для Gmail, YouTube, Chrome и других сервисов Google. С его помощью вы можете легко получать доступ к своим данным и персонализированному контенту.<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Если у вас нет аккаунта Google, его можно создать на следующей странице.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3435688026795609344">Расширение "<ph name="EXTENSION_NAME" />" запрашивает <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Безопасность</translation>
 <translation id="343578350365773421">Закончилась бумага</translation>
@@ -4216,6 +4210,7 @@
 <translation id="4643612240819915418">Открыть видео в новой вкладке</translation>
 <translation id="4643833688073835173">Chromebook использует встроенный датчик, чтобы распознавать людей, находящихся перед экраном. Все полученные данные сразу обрабатываются и удаляются. Они не отправляются в Google.</translation>
 <translation id="4644205769234414680">Разрешить использование в режиме инкогнито</translation>
+<translation id="4645575059429386691">Управляется вашими родителями</translation>
 <translation id="4645676300727003670">&amp;Сохранить</translation>
 <translation id="4646675363240786305">Порты</translation>
 <translation id="4647090755847581616">&amp;Закрыть вкладку</translation>
@@ -5392,7 +5387,6 @@
 <translation id="5713960379473463904">Стиль ввода пробелов</translation>
 <translation id="5715711091495208045">Посредник: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">Смените их прямо сейчас</translation>
-<translation id="5719603411793408026">Поисковая система по умолчанию</translation>
 <translation id="5719854774000914513">Разрешить сайтам отправлять запрос на подключение к HID-устройствам</translation>
 <translation id="572155275267014074">Настройки Android</translation>
 <translation id="5722086096420375088">Зеленый с белым</translation>
@@ -6134,7 +6128,6 @@
 <translation id="6377268785556383139">1 результат поиска по запросу "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6378392501584240055">Открыть список сетей Wi-Fi</translation>
 <translation id="6380143666419481200">Принять условия и продолжить</translation>
-<translation id="6382958439467370461">Нет неактивных сочетаний клавиш.</translation>
 <translation id="6383382161803538830">Режим чтения недоступен на этой странице</translation>
 <translation id="638418309848716977">Поддерживаемые ссылки</translation>
 <translation id="6384275966486438344">Использование поисковой системы <ph name="SEARCH_HOST" /></translation>
@@ -6541,7 +6534,6 @@
 <translation id="6728528977475057549">Код IBAN заканчивается на <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Введите имя пользователя.</translation>
 <translation id="6731320427842222405">Это может занять несколько минут</translation>
-<translation id="6733620523445262364">Закладка "<ph name="BOOKMARK_TITLE" />" создана.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (идентификатор: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">Показать cookie и другие данные...</translation>
 <translation id="6736243959894955139">Адрес</translation>
@@ -6560,6 +6552,7 @@
 <translation id="67465227497040338">Показать пароль для <ph name="DOMAIN" /></translation>
 <translation id="6748465660675848252">Если вы продолжите сейчас, восстановлены будут только синхронизированные, но не локальные данные.</translation>
 <translation id="6748980958975836188">Я принимаю <ph name="BEGIN_LINK1" />Условия использования<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" /></translation>
+<translation id="6749473226660745022">Фото</translation>
 <translation id="6750757184909117990">Отключить мобильную сеть</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (инкогнито)</translation>
 <translation id="6756157672127672536">С помощью приложения "Файлы" можно быстро открывать документы, сохраненные на Google Диске, внешнем накопителе или устройстве с Chrome OS.</translation>
@@ -7378,7 +7371,6 @@
 <translation id="7465635034594602553">Произошла ошибка. Запустите <ph name="APP_NAME" /> снова через несколько минут.</translation>
 <translation id="7465778193084373987">URL отзыва сертификатов Netscape</translation>
 <translation id="7466431077154602932">Компактный вид</translation>
-<translation id="7466556884531675354">Нет сохраненных заметок</translation>
 <translation id="746861123368584540">Расширение загружено.</translation>
 <translation id="7470424110735398630">Разрешить сайтам просматривать буфер обмена</translation>
 <translation id="747114903913869239">Ошибка: не удается расшифровать расширение</translation>
@@ -8046,7 +8038,6 @@
 <translation id="8030852056903932865">Разрешить</translation>
 <translation id="8032244173881942855">Невозможно транслировать вкладку</translation>
 <translation id="8032569120109842252">Вы подписаны</translation>
-<translation id="8033023935541439900">Меню диакритических знаков открыто. С помощью клавиш со стрелками влево и вправо выберите символ, а потом нажмите Ввод, чтобы вставить его.</translation>
 <translation id="8033827949643255796">Выделено.</translation>
 <translation id="8033958968890501070">Время истекло</translation>
 <translation id="8035059678007243127">Страница возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -8913,6 +8904,7 @@
 <translation id="8776294611668764629">Ваша организация заблокировала файл, так как он слишком большой для проверки безопасности. Можно открывать файлы размером до 50 МБ.</translation>
 <translation id="8777628254805677039">пароль суперпользователя</translation>
 <translation id="8778393144535275552">Удалить показанные данные</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">С помощью файлов cookie сайт может только определять, какие действия вы совершали на нем.</translation>
 <translation id="8780123805589053431">Получать описания изображений от Google</translation>
 <translation id="8780443667474968681">Голосовой поиск отключен.</translation>
@@ -8937,7 +8929,6 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Открыть вкладку в другом окне}one{Открыть вкладки в другом окне}few{Открыть вкладки в другом окне}many{Открыть вкладки в другом окне}other{Открыть вкладки в другом окне}}</translation>
 <translation id="8805140816472474147">Чтобы начать синхронизацию, подтвердите настройки.</translation>
 <translation id="8805385115381080995">Сайты реже запрашивают проверку личности, поэтому вы меньше отвлекаетесь от работы в браузере.</translation>
-<translation id="8806680466228877631">Нажмите <ph name="SHORTCUT" />, чтобы снова открыть случайно закрытую вкладку</translation>
 <translation id="8807588541160250261">Если нет подключенных устройств</translation>
 <translation id="8807632654848257479">Стабильная</translation>
 <translation id="8808478386290700967">Интернет-магазин Chrome</translation>
@@ -9121,7 +9112,6 @@
 <translation id="8965037249707889821">Введите старый пароль</translation>
 <translation id="89667524227025535">Отсканируйте QR-код с помощью камеры устройства или введите код активации, предоставленный вашим оператором связи.</translation>
 <translation id="8966809848145604011">Другие профили</translation>
-<translation id="8966870118594285808">Если вы случайно закрыли вкладку, откройте ее снова</translation>
 <translation id="8967427617812342790">Добавить в список для чтения</translation>
 <translation id="8968527460726243404">Системное средство записи изображений в Chrome OS</translation>
 <translation id="8968766641738584599">Сохранить карту</translation>
@@ -9247,7 +9237,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         Узнать о том, какие данные собирает Google и как их использует, можно на странице <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />.</translation>
-<translation id="9066777626153702300">Неактивные сайты</translation>
 <translation id="9066782832737749352">Озвучивание текста</translation>
 <translation id="9068298336633421551">Предоставить приложениям и сервисам Android доступ к данным о местоположении устройства. Чтобы повышать точность геолокации и улучшать некоторые сервисы, компания Google может периодически собирать анонимные геоданные пользователей.</translation>
 <translation id="9068598199622656904">Если нужно сочетание клавиш, можно нажимать их по одной, а не одновременно</translation>

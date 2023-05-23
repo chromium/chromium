@@ -29,7 +29,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1104084341931202936">Erişilebilirlik ayarlarını göster</translation>
 <translation id="1104621072296271835">Cihazlarınız birlikte daha da iyi çalışır</translation>
 <translation id="1111021433905331574">Ayarlar &gt; <ph name="APP_TITLE" /> bölümüne giderek klavye arka ışığınızın rengini değiştirebilirsiniz</translation>
-<translation id="1112998165730922436">Yayın duraklatıldı</translation>
 <translation id="112308213915226829">Rafı otomatik gizle</translation>
 <translation id="1142002900084379065">Yeni eklenen fotoğraflar</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> için bilgi iletişim kutusunu aç</translation>
@@ -338,7 +337,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2526581474998477112">Pencerelerin kilidini açın</translation>
 <translation id="2530896289327917474">Metin imleciyle göz atmayı açma veya kapatma</translation>
 <translation id="2531025035050312891">cihaz yavaş</translation>
-<translation id="2542089167727451762">Profil resminize dokunun</translation>
 <translation id="254900897760075745">Seçili içeriği panoya kopyala</translation>
 <translation id="2549711466868162843">Işığı iyileştir</translation>
 <translation id="2549985041256363841">Kaydı başlat</translation>
@@ -507,7 +505,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="334252345105450327">Ekran görüntüsü al</translation>
 <translation id="334927402682780278">İmleç konumundan satırın sonuna kadar olan metni seç</translation>
 <translation id="3349345708646875009">Görev yöneticisini açın</translation>
-<translation id="3351879221545518001">Şu anda ekranı yayınlıyorsunuz.</translation>
 <translation id="3354555338129305222">cihazım neden yavaş</translation>
 <translation id="3364721542077212959">Ekran kalemi araçları</translation>
 <translation id="3365977133351922112">Telefonunuz çok uzakta. Telefonunuzu daha yakına getirin.</translation>
@@ -1503,10 +1500,10 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7860671499921112077">Genel Bakış'a girmek için üç parmakla yukarı kaydırın</translation>
 <translation id="7862292329216937261">Cihazı misafir olarak kullanmak için oturumu kapattıktan sonra ekranın alt tarafındaki Misafir olarak göz at'ı seçmeniz gerekir.</translation>
 <translation id="7866482334467279021">açık</translation>
-<translation id="7868900307798234037">Parmak iziyle kilit açılıyor</translation>
 <translation id="7872786842639831132">Kapalı</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> cihazınızda Bluetooth kapalı görünüyor. Telefon Merkezini kullanmak için lütfen Bluetooth'u açın.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Cihazı şimdi önceki sürüme geçirin}=1{Cihazı 1 saniye içinde önceki sürüme geçirin}other{Cihazı # saniye içinde önceki sürüme geçirin}}</translation>
+<translation id="7884446017008693258">Hotspot Ayarları</translation>
 <translation id="7884902759927478774">Sekme sürükleme işlemini iptal et</translation>
 <translation id="7886169021410746335">Gizlilik ayarlarını yapma</translation>
 <translation id="7886277072580235377">Oturumu kapattığınızda internet oturumunuz temizlenecektir. <ph name="LEARN_MORE" /></translation>
@@ -1602,7 +1599,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, <ph name="BATTERY_STATUS" /> Telefon Pili</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Uygulama</translation>
 <translation id="8255234195843591763">Güncellemek için sıfırlayın</translation>
-<translation id="826107067893790409">Enter tuşuna basarak <ph name="USER_EMAIL_ADDRESS" /> için kilidi açın</translation>
 <translation id="8261506727792406068">Sil</translation>
 <translation id="8270450402312105425">{0,plural, =1{Cihazı bir saat içinde önceki sürüme geçirin}other{Cihazı # saat içinde önceki sürüme geçirin}}</translation>
 <translation id="8277261673056602147">Ekrandaki metni vurgula</translation>

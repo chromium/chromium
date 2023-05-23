@@ -142,7 +142,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1870148520156231997">Mostrar senha</translation>
 <translation id="1872096359983322073">Lanterna</translation>
 <translation id="1883255238294161206">Recolher lista</translation>
-<translation id="1891796056033961979">Favoritos, senhas, configurações e outros dados salvos estão disponíveis nesta tela.</translation>
 <translation id="1894023287452300670">Monitore o preço aqui</translation>
 <translation id="1910975740091000991">Chrome para iOS</translation>
 <translation id="1911619930368729126">Enviar para o Google Drive</translation>
@@ -444,7 +443,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3891414008432200754">Preço</translation>
 <translation id="3892144330757387737">Você verá seu histórico aqui</translation>
 <translation id="3897092660631435901">Menu</translation>
-<translation id="3899568514738536144">Abrir histórico de navegação</translation>
 <translation id="3904829425754749514">Sua organização desativou a sincronização. Ainda é possível ver seus favoritos, seu histórico, suas senhas e outras configurações neste dispositivo. Se você fizer mudanças, elas não serão sincronizadas com sua conta.</translation>
 <translation id="3913386780052199712">Conta conectada ao Chrome</translation>
 <translation id="3915450441834151894">Informações do site</translation>
@@ -501,7 +499,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="430793432425771671">Sincronizar tudo</translation>
 <translation id="4309403553630140242">Toque duas vezes para ver mais informações</translation>
 <translation id="430967081421617822">Todo o período</translation>
-<translation id="4324952538601951430">Favoritos, senhas, configurações e muito mais salvos aqui</translation>
 <translation id="4334428914252001502">1 artigo não lido.</translation>
 <translation id="4338650699862464074">Envia URLs das páginas que você visita para o Google.</translation>
 <translation id="4342054591427973606">{count,plural, =1{O endereço vai ser excluído deste e de outros dispositivos conectados.}one{O endereço vai ser excluído deste e de outros dispositivos conectados.}other{Os endereços vão ser excluídos deste e de outros dispositivos conectados.}}</translation>
@@ -1057,7 +1054,6 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7840771868269352570">Os itens selec. serão removidos.</translation>
 <translation id="7845466610722898">Mostrar "Lista de leitura"</translation>
 <translation id="784551991304901159">Para ver o conteúdo, selecione "Ativar" no menu</translation>
-<translation id="7846158885638438868">{count,plural, =1{Favorito salvo em "{title}"}one{Favorito salvo em "{title}"}other{Favoritos salvos em "{title}"}}</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7856733331829174190">Falha no download</translation>
 <translation id="785938070103630874">Abrir senhas, formas de pagamento, endereço e mais</translation>
@@ -1137,9 +1133,6 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8299417921174340354">Para usar senhas, defina uma no dispositivo primeiro.</translation>
 <translation id="8299613349954694191">Abra uma guia anônima para navegar com privacidade.</translation>
 <translation id="8316944564970119719">Insira o site, a senha e clique em "Salvar"</translation>
-<translation id="8317835149433843300">As formas de pagamento e os endereços do Google Pay não serão criptografados. O histórico de navegação do Chrome não será salvo na sua Conta do Google.
-
-Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa senha não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8323906514956095947">Toque no botão e mantenha-o pressionado para ver mais opções da guia</translation>
 <translation id="8328777765163860529">Fechar todos</translation>

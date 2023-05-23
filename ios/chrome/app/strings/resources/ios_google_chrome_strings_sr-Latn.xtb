@@ -35,6 +35,7 @@
 <translation id="2732745070297234559">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
 <translation id="2736805085127235148">Chrome obaveštenja su trenutno isključena u podešavanjima uređaja.</translation>
 <translation id="2767464022270041271">Nema sačuvanih lozinki. Google menadžer lozinki može da vam proverava lozinke kada ih sačuvate.</translation>
+<translation id="2840432500933227975">Otvorite podešavanja Chrome-a u iOS-u, pa dodirnite Podrazumevana aplikacija pregledača i izaberite Chrome.</translation>
 <translation id="2869959624320573933">Prijavite se u Chrome</translation>
 <translation id="2957447865124070833">Izaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Odjavljujete se sa naloga kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, što će izbrisati Chrome podatke sa ovog uređaja. Podaci će ostati na Google nalogu.</translation>
@@ -50,6 +51,7 @@
 <translation id="3655656110921623717">To znači da će Chrome svaki put zahtevati mobilni sajt.</translation>
 <translation id="3706101708757577809">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="3720541637541300822">Zaključajte kartice bez arhiviranja posle zatvaranja Chrome-a</translation>
+<translation id="3827545470516145620">Dobijate standardnu bezbednosnu zaštitu na ovom uređaju</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne može da koristi kameru</translation>
 <translation id="3980220367029651214">Menjate nalog za sinhronizaciju iz <ph name="USER_EMAIL1" /> u <ph name="USER_EMAIL2" />. Postojećim Chrome podacima upravlja <ph name="DOMAIN" />. Promena će izbrisati podatke sa ovog uređaja, ali će podaci ostati na <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizacija zahteva da ostanete odjavljeni sa Chrome-a.</translation>
@@ -148,7 +150,6 @@
 <ph name="BEGIN_INDENT" />  • Informacije o vašem korišćenju Chrome-a se šalju Google-u, ali nisu povezane sa vama.
   • Ako Chrome otkaže, detalji o otkazivanju mogu da sadrže neke lične podatke.
   • Ako uključite sinhronizaciju, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete.<ph name="END_INDENT" /></translation>
-<translation id="9103442491611662960">Dobijate standardnu bezbednosnu zaštitu za ovaj Chrome profil</translation>
 <translation id="9112744793181547300">Želite da podesite Chrome kao podrazumevani?</translation>
 <translation id="9122931302567044771">To znači da će Chrome svaki put zahtevati sajt za računar.</translation>
 </translationbundle>

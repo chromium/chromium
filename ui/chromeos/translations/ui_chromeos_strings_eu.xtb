@@ -147,7 +147,6 @@
 <translation id="2208919847696382164">Instalatu Linux-ekin</translation>
 <translation id="2225536596944493418">Ziur <ph name="NUMBER_OF_ITEMS" /> elementu ezabatu nahi dituzula?</translation>
 <translation id="2230062665678605299">Ezin  izan da sortu "<ph name="FOLDER_NAME" />" fitxategia. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="2236732657580416950">Garbitu egin da Google Drive-ko cachea.</translation>
 <translation id="2239068707900391003">Kafe-kikara bati eusten ari dion pertsona</translation>
 <translation id="2251368349685848079">Leheneratu zaborrontzitik</translation>
 <translation id="2278133026967558505">Webgune eta URL guztiek atzi dezakete fitxategia</translation>
@@ -419,6 +418,7 @@
 <translation id="4462159676511157176">Izen-zerbitzari pertsonalizatuak</translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" />. Administratzaileak kudeatua. Konektatu.</translation>
 <translation id="4470564870223067757">2. hangul-karaktere sorta</translation>
+<translation id="4472575034687746823">Hasi erabiltzen</translation>
 <translation id="4474142134969976028">Ez dago emaitzarik</translation>
 <translation id="4477002475007461989">Errumaniarra</translation>
 <translation id="4477219268485577442">Bulgariar fonetikoa</translation>
@@ -618,6 +618,7 @@
 <translation id="5838451609423551646">Kendu dira sarrera guztiak hautapenetik.</translation>
 <translation id="5838825566232597749">Nazioarteko US Workman</translation>
 <translation id="5845721951356578987">Erizaina</translation>
+<translation id="5860491529813859533">Aktibatu</translation>
 <translation id="5861477046012235702">Jokalaria</translation>
 <translation id="5864471791310927901">DHCP bilaketak huts egin du</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, aktibatu gabe, seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, xehetasunak</translation>

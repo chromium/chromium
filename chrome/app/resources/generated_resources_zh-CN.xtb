@@ -473,7 +473,6 @@
 <translation id="1410806973194718079">无法检查政策</translation>
 <translation id="1411400282355634827">重置所有蓝牙设备权限？</translation>
 <translation id="1411724932979011919">所输入代码的格式应为 LPA:1$&lt;smdp 地址&gt;$&lt;激活码&gt;</translation>
-<translation id="1412681350727866021">更多扩展程序</translation>
 <translation id="1414315029670184034">不允许网站使用您的摄像头</translation>
 <translation id="1414648216875402825">您即将更新到 <ph name="PRODUCT_NAME" />的不稳定版本，其中含有尚处于开发阶段的功能。系统可能会出现崩溃和意外错误。继续操作前，请三思。</translation>
 <translation id="1415708812149920388">已被禁止读取剪贴板</translation>
@@ -708,7 +707,6 @@
 <translation id="1610272688494140697">应用设置</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611432201750675208">您的设备已锁定</translation>
-<translation id="1611776894942218234">设备必须采用 Beta 渠道</translation>
 <translation id="1612019740169791082">您的容器配置不支持调整磁盘空间大小。若要调整预留给 Linux 的空间，请先备份旧容器中的内容，然后再将这些内容恢复到新容器中。</translation>
 <translation id="1613019471223620622">显示 <ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的密码</translation>
 <translation id="1613149688105334014">2022 年 12 月之后，多款旧版 Chrome 应用将无法开启。您可查看是否有可用的新版本。</translation>
@@ -1799,7 +1797,6 @@
 <translation id="2508428939232952663">Google Play 商店帐号</translation>
 <translation id="2509495747794740764">缩放值必须是一个介于 10 到 200 之间的数字。</translation>
 <translation id="2509566264613697683">8 倍</translation>
-<translation id="2510332280791537533">您的这份 Chrome 个人资料正在享受标准安全保护功能</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" />（已选择）</translation>
 <translation id="2513396635448525189">登录图片</translation>
 <translation id="2514326558286966059">指纹解锁更快捷</translation>
@@ -2816,9 +2813,6 @@
 <translation id="3434272557872943250">如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。您可在 families.google.com 上详细了解这些设置以及如何调整它们。</translation>
 <translation id="3434475275396485144">此设置由您的手机管理员管理</translation>
 <translation id="3434512374684753970">音频和视频</translation>
-<translation id="343517373502662180"><ph name="BEGIN_PARAGRAPH1" />在下一个界面上，登录您的 Google 帐号。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />此帐号即您用于 Gmail、YouTube、Chrome 和其他 Google 服务的帐号。使用您的帐号可畅享个性化体验并轻松访问您的所有信息。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />如果尚无 Google 帐号，可以在下一个界面上创建一个。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3435688026795609344">“<ph name="EXTENSION_NAME" />”正在请求您提供 <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="343578350365773421">纸张已用完</translation>
@@ -4197,6 +4191,7 @@
 <translation id="4643612240819915418">在新标签页中打开视频(&amp;O)</translation>
 <translation id="4643833688073835173">您的 Chromebook 使用内置传感器检测是否有人位于设备前。所有数据都会立即在您的设备上处理，完成后便会删除。传感器数据绝不会发送给 Google。</translation>
 <translation id="4644205769234414680">在无痕模式下启用</translation>
+<translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4645676300727003670">保留(&amp;K)</translation>
 <translation id="4646675363240786305">端口</translation>
 <translation id="4647090755847581616">关闭标签页(&amp;C)</translation>
@@ -5364,7 +5359,6 @@
 <translation id="5713960379473463904">空格输入样式</translation>
 <translation id="5715711091495208045">插件代理程序：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">您应立即更改这些密码</translation>
-<translation id="5719603411793408026">默认搜索引擎</translation>
 <translation id="5719854774000914513">网站可以请求连接到 HID 设备</translation>
 <translation id="572155275267014074">Android 设置</translation>
 <translation id="5722086096420375088">绿色和白色</translation>
@@ -6102,7 +6096,6 @@
 <translation id="6377268785556383139">1 个与“<ph name="SEARCH_TEXT" />”相符的搜索结果</translation>
 <translation id="6378392501584240055">在 Wi-Fi 网络中打开</translation>
 <translation id="6380143666419481200">接受并继续</translation>
-<translation id="6382958439467370461">没有无效的快捷字词</translation>
 <translation id="6383382161803538830">此页面不支持朗读模式</translation>
 <translation id="638418309848716977">支持的链接</translation>
 <translation id="6384275966486438344">将您的搜索设置更改为：<ph name="SEARCH_HOST" /></translation>
@@ -6501,7 +6494,6 @@
 <translation id="6728528977475057549">尾号为 <ph name="LAST_FOUR_DIGITS" /> 的 IBAN</translation>
 <translation id="6729192290958770680">请输入用户名</translation>
 <translation id="6731320427842222405">这可能需要几分钟时间</translation>
-<translation id="6733620523445262364">已创建书签“<ph name="BOOKMARK_TITLE" />”。</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />（ID：<ph name="EXTENSION_OR_APP_ID" />）</translation>
 <translation id="6735304988756581115">显示 Cookie 和其他网站数据…</translation>
 <translation id="6736243959894955139">地址</translation>
@@ -6520,6 +6512,7 @@
 <translation id="67465227497040338">显示 <ph name="DOMAIN" /> 的密码</translation>
 <translation id="6748465660675848252">您可以继续，但系统将只恢复已同步的数据和设置。所有本地数据都将会丢失。</translation>
 <translation id="6748980958975836188">我已阅读并同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
+<translation id="6749473226660745022">照片</translation>
 <translation id="6750757184909117990">停用移动网络</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" />（无痕）</translation>
 <translation id="6756157672127672536">通过“文件”应用，您可以快速访问自己保存在 Google 云端硬盘、外部存储空间或 Chrome 操作系统设备上的文件。</translation>
@@ -7338,7 +7331,6 @@
 <translation id="7465635034594602553">出了点问题。请在几分钟后重新运行 <ph name="APP_NAME" />。</translation>
 <translation id="7465778193084373987">Netscape 证书吊销网址</translation>
 <translation id="7466431077154602932">精简视图</translation>
-<translation id="7466556884531675354">未保存任何备注</translation>
 <translation id="746861123368584540">扩展程序已加载完毕</translation>
 <translation id="7470424110735398630">允许查看您的剪贴板</translation>
 <translation id="747114903913869239">错误：无法对扩展程序进行解码</translation>
@@ -8005,7 +7997,6 @@
 <translation id="8030852056903932865">批准</translation>
 <translation id="8032244173881942855">无法投放标签页。</translation>
 <translation id="8032569120109842252">已关注</translation>
-<translation id="8033023935541439900">已打开重音符号菜单。按向左键或向右键即可浏览，按 Enter 键即可插入。</translation>
 <translation id="8033827949643255796">已选中</translation>
 <translation id="8033958968890501070">已超时</translation>
 <translation id="8035059678007243127">无痕式往返缓存版页面：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -8865,6 +8856,7 @@
 <translation id="8776294611668764629">贵组织屏蔽了此文件，因为它过大，无法接受安全检查。您只能打开不超过 50 MB 的文件。</translation>
 <translation id="8777628254805677039">根密码</translation>
 <translation id="8778393144535275552">清除所显示网站的数据</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">网站只能使用 Cookie 查看您在相应网站上的浏览活动</translation>
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
@@ -8889,7 +8881,6 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{将标签页移至另一个窗口}other{将标签页移至另一个窗口}}</translation>
 <translation id="8805140816472474147">请确认同步设置以开始同步。</translation>
 <translation id="8805385115381080995">由于网站要求您验证自己是真实用户的情况随之减少，浏览体验将变得更加流畅。</translation>
-<translation id="8806680466228877631"><ph name="SHORTCUT" /> 可以重新打开意外关闭的标签页</translation>
 <translation id="8807588541160250261">未连接任何设备时</translation>
 <translation id="8807632654848257479">稳定</translation>
 <translation id="8808478386290700967">Chrome 应用商店</translation>
@@ -9073,7 +9064,6 @@
 <translation id="8965037249707889821">输入旧密码</translation>
 <translation id="89667524227025535">请使用您设备的摄像头扫描二维码，或者输入您的运营商提供的激活码</translation>
 <translation id="8966809848145604011">其他个人资料</translation>
-<translation id="8966870118594285808">如果您无意中关闭了某个标签页，可将其重新打开</translation>
 <translation id="8967427617812342790">添加到阅读清单</translation>
 <translation id="8968527460726243404">Chrome 操作系统映像写入工具</translation>
 <translation id="8968766641738584599">保存卡片</translation>
@@ -9199,7 +9189,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         如需了解 Google 会收集哪些数据及相应原因，请访问 <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />。</translation>
-<translation id="9066777626153702300">无效网站</translation>
 <translation id="9066782832737749352">文字转语音</translation>
 <translation id="9068298336633421551">允许有位置信息权限的 Android 应用和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
 <translation id="9068598199622656904">只需一次按下一个键即可执行键盘快捷操作，而不用同时按住多个键</translation>

@@ -474,7 +474,6 @@
 <translation id="1410806973194718079">ตรวจสอบนโยบายไม่ได้</translation>
 <translation id="1411400282355634827">รีเซ็ตสิทธิ์ทั้งหมดของอุปกรณ์บลูทูธไหม</translation>
 <translation id="1411724932979011919">รหัสที่คุณป้อนต้องอยู่ในรูปแบบ LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
-<translation id="1412681350727866021">ส่วนขยายเพิ่มเติม</translation>
 <translation id="1414315029670184034">ไม่อนุญาตให้เว็บไซต์ใช้กล้องของคุณ</translation>
 <translation id="1414648216875402825">คุณกำลังอัปเดตไปเป็น <ph name="PRODUCT_NAME" /> ในเวอร์ชันที่ไม่เสถียร ซึ่งมีฟีเจอร์ที่ยังอยู่ระหว่างดำเนินการ จะมีข้อขัดข้องและข้อบกพร่องที่ไม่คาดคิดเกิดขึ้น โปรดดำเนินการต่อด้วยความระมัดระวัง</translation>
 <translation id="1415708812149920388">การเข้าถึงการอ่านคลิปบอร์ดถูกปฏิเสธ</translation>
@@ -714,7 +713,6 @@
 <translation id="1610272688494140697">การตั้งค่าแอป</translation>
 <translation id="161042844686301425">สีฟ้า</translation>
 <translation id="1611432201750675208">อุปกรณ์ล็อกอยู่</translation>
-<translation id="1611776894942218234">อุปกรณ์ต้องอยู่ในเวอร์ชันเบต้า</translation>
 <translation id="1612019740169791082">คอนเทนเนอร์ไม่ได้กำหนดค่าไว้ให้รองรับการปรับขนาดดิสก์ หากต้องการปรับพื้นที่ว่างที่สำรองไว้สำหรับ Linux ให้สำรองข้อมูลแล้วคืนค่าในคอนเทนเนอร์ใหม่</translation>
 <translation id="1613019471223620622">แสดงรหัสผ่านของ <ph name="USERNAME" /> ใน <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">แอป Chrome เวอร์ชันเก่าจะเปิดใช้งานไม่ได้แล้วหลังจากเดือนธันวาคม 2022 คุณตรวจสอบได้ว่ามีเวอร์ชันใหม่พร้อมให้บริการหรือไม่ โดยทำดังนี้</translation>
@@ -1809,7 +1807,6 @@
 <translation id="2508428939232952663">บัญชี Google Play Store</translation>
 <translation id="2509495747794740764">จำนวนขนาดต้องเป็นตัวเลขระหว่าง 10 และ 200</translation>
 <translation id="2509566264613697683">8x</translation>
-<translation id="2510332280791537533">คุณกำลังได้รับการรักษาความปลอดภัยแบบมาตรฐานสำหรับโปรไฟล์ Chrome นี้</translation>
 <translation id="2512065992892294946">ภาษา<ph name="LANGUAGE" /> (เลือกไว้)</translation>
 <translation id="2513396635448525189">รูปภาพการเข้าสู่ระบบ</translation>
 <translation id="2514326558286966059">ปลดล็อกได้เร็วขึ้นด้วยลายนิ้วมือ</translation>
@@ -2829,9 +2826,6 @@
 <translation id="3434272557872943250">หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน ดูข้อมูลเพิ่มเติมเกี่ยวกับการตั้งค่าเหล่านี้และวิธีปรับเปลี่ยนที่ families.google.com</translation>
 <translation id="3434475275396485144">การตั้งค่านี้จัดการโดยผู้ดูแลระบบของโทรศัพท์</translation>
 <translation id="3434512374684753970">เสียงและวิดีโอ</translation>
-<translation id="343517373502662180"><ph name="BEGIN_PARAGRAPH1" />ในหน้าจอถัดไป ให้ลงชื่อเข้าใช้ด้วยบัญชี Google<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />ซึ่งเป็นบัญชีเดียวกับที่คุณใช้สำหรับ Gmail, YouTube, Chrome และบริการอื่นๆ ของ Google ใช้บัญชีเพื่อรับประสบการณ์การใช้งานที่ปรับเปลี่ยนให้เหมาะกับคุณและเข้าถึงข้อมูลทั้งหมดได้ง่ายๆ<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />หากไม่มีบัญชี Google คุณจะสร้างบัญชีได้ในหน้าจอถัดไป<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" ขอ <ph name="CODE_TYPE" /> ของคุณ</translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="343578350365773421">กระดาษหมด</translation>
@@ -4214,6 +4208,7 @@
 <translation id="4643612240819915418">เ&amp;ปิดวิดีโอในแท็บใหม่</translation>
 <translation id="4643833688073835173">Chromebook ใช้เซ็นเซอร์ในตัวเพื่อตรวจหาผู้คนที่อยู่ด้านหน้าอุปกรณ์ของคุณ อุปกรณ์จะประมวลผลข้อมูลทั้งหมดในทันที จากนั้นจะลบข้อมูลออก และจะไม่มีการส่งข้อมูลเซ็นเซอร์ให้ Google</translation>
 <translation id="4644205769234414680">อนุญาตให้ใช้ในโหมดไม่ระบุตัวตน</translation>
+<translation id="4645575059429386691">มีการจัดการโดยผู้ปกครอง</translation>
 <translation id="4645676300727003670">&amp;เก็บไว้</translation>
 <translation id="4646675363240786305">พอร์ต</translation>
 <translation id="4647090755847581616">&amp;ปิดแท็บ</translation>
@@ -5388,7 +5383,6 @@
 <translation id="5713960379473463904">รูปแบบการป้อนช่องว่าง</translation>
 <translation id="5715711091495208045">โบรกเกอร์ปลั๊กอิน: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">คุณควรเปลี่ยนรหัสผ่านดังกล่าวตอนนี้เลย</translation>
-<translation id="5719603411793408026">เครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="5719854774000914513">เว็บไซต์สามารถขอเชื่อมต่อกับอุปกรณ์ HID ได้</translation>
 <translation id="572155275267014074">การตั้งค่า Android</translation>
 <translation id="5722086096420375088">สีเขียวและสีขาว</translation>
@@ -6129,7 +6123,6 @@
 <translation id="6377268785556383139">มีผลการค้นหา "<ph name="SEARCH_TEXT" />" 1 รายการ</translation>
 <translation id="6378392501584240055">เปิดในเครือข่าย Wi-Fi</translation>
 <translation id="6380143666419481200">ยอมรับและดำเนินการต่อ</translation>
-<translation id="6382958439467370461">ไม่มีทางลัดที่ไม่ได้ใช้งาน</translation>
 <translation id="6383382161803538830">โหมดการอ่านไม่พร้อมใช้งานในหน้านี้</translation>
 <translation id="638418309848716977">ลิงก์ที่รองรับ</translation>
 <translation id="6384275966486438344">เปลี่ยนการตั้งค่าการค้นหาของคุณเป็น: <ph name="SEARCH_HOST" /></translation>
@@ -6530,7 +6523,6 @@
 <translation id="6728528977475057549">IBAN ที่ลงท้ายด้วย <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">ป้อนชื่อผู้ใช้</translation>
 <translation id="6731320427842222405">การดำเนินการนี้อาจใช้เวลาสองถึงสามนาที</translation>
-<translation id="6733620523445262364">สร้าง '<ph name="BOOKMARK_TITLE" />' แล้ว</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (รหัส: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">แสดงคุกกี้และข้อมูลอื่นของเว็บไซต์...</translation>
 <translation id="6736243959894955139">ที่อยู่</translation>
@@ -6549,6 +6541,7 @@
 <translation id="67465227497040338">แสดงรหัสผ่านสําหรับ <ph name="DOMAIN" /></translation>
 <translation id="6748465660675848252">คุณสามารถดำเนินการต่อได้ แต่ระบบจะกู้คืนข้อมูลที่ซิงค์และการตั้งค่าเท่านั้น ข้อมูลในเครื่องทั้งหมดจะสูญหาย</translation>
 <translation id="6748980958975836188">ฉันได้อ่านและยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> รวมถึง<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Chrome และ Chrome OS<ph name="END_LINK2" /></translation>
+<translation id="6749473226660745022">รูปภาพ</translation>
 <translation id="6750757184909117990">ปิดใช้เครือข่ายมือถือ</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (โหมดไม่ระบุตัวตน)</translation>
 <translation id="6756157672127672536">แอป Files ให้การเข้าถึงไฟล์ที่คุณบันทึกไว้ใน Google ไดรฟ์ ที่จัดเก็บข้อมูลภายนอก หรืออุปกรณ์ Chrome OS ของคุณอย่างรวดเร็ว</translation>
@@ -7367,7 +7360,6 @@
 <translation id="7465635034594602553">เกิดข้อผิดพลาด โปรดรอสักครู่แล้วเรียกใช้ <ph name="APP_NAME" /> อีกครั้ง</translation>
 <translation id="7465778193084373987">URL การเพิกถอนใบรับรองของ Netscape</translation>
 <translation id="7466431077154602932">มุมมองแบบอัดแน่น</translation>
-<translation id="7466556884531675354">ไม่มีโน้ตที่บันทึกไว้</translation>
 <translation id="746861123368584540">โหลดส่วนขยายแล้ว</translation>
 <translation id="7470424110735398630">ได้รับอนุญาตให้ดูคลิปบอร์ด</translation>
 <translation id="747114903913869239">ข้อผิดพลาด: ไม่สามารถถอดรหัสส่วนขยาย</translation>
@@ -8035,7 +8027,6 @@
 <translation id="8030852056903932865">อนุมัติ</translation>
 <translation id="8032244173881942855">ไม่สามารถแคสต์แท็บ</translation>
 <translation id="8032569120109842252">กำลังติดตาม</translation>
-<translation id="8033023935541439900">เมนูเครื่องหมายการเน้นเสียงเปิดอยู่ กดซ้ายหรือขวาเพื่อเลือกเครื่องหมายที่ต้องการและกด Enter เพื่อแทรก</translation>
 <translation id="8033827949643255796">เลือกแล้ว</translation>
 <translation id="8033958968890501070">หมดเวลา</translation>
 <translation id="8035059678007243127">หน้าแคชย้อนหลังในโหมดไม่ระบุตัวตน: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -8899,6 +8890,7 @@
 <translation id="8776294611668764629">องค์กรบล็อกไฟล์นี้เนื่องจากไฟล์มีขนาดใหญ่เกินไปสําหรับการตรวจสอบความปลอดภัย ไฟล์ที่เปิดต้องมีขนาดไม่เกิน 50 MB</translation>
 <translation id="8777628254805677039">รหัสผ่านระดับรูท</translation>
 <translation id="8778393144535275552">ล้างข้อมูลที่แสดง</translation>
+<translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">เว็บไซต์สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณเฉพาะในเว็บไซต์นั้นๆ</translation>
 <translation id="8780123805589053431">รับคำอธิบายรูปภาพจาก Google</translation>
 <translation id="8780443667474968681">ปิดการค้นหาด้วยเสียงแล้ว</translation>
@@ -8923,7 +8915,6 @@
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{ย้ายแท็บไปที่หน้าต่างใหม่}other{ย้ายหลายแท็บไปที่หน้าต่างใหม่}}</translation>
 <translation id="8805140816472474147">ยืนยันการตั้งค่าการซิงค์เพื่อเริ่มซิงค์</translation>
 <translation id="8805385115381080995">การท่องเว็บจะรวดเร็วขึ้นเนื่องจากเว็บไซต์อาจขอให้ยืนยันว่าคุณเป็นคนจริงๆ น้อยลง</translation>
-<translation id="8806680466228877631"><ph name="SHORTCUT" /> จะเปิดแท็บที่ปิดไปโดยไม่ได้ตั้งใจขึ้นมาอีกครั้งได้</translation>
 <translation id="8807588541160250261">เมื่อไม่มีอุปกรณ์ใดเชื่อมต่ออยู่</translation>
 <translation id="8807632654848257479">เสถียร</translation>
 <translation id="8808478386290700967">ร้านค้าบนเว็บ</translation>
@@ -9107,7 +9098,6 @@
 <translation id="8965037249707889821">ป้อนรหัสผ่านเก่า</translation>
 <translation id="89667524227025535">สแกนคิวอาร์โค้ดโดยใช้กล้องของอุปกรณ์หรือป้อนรหัสเปิดใช้งานที่ผู้ให้บริการระบุมา</translation>
 <translation id="8966809848145604011">โปรไฟล์อื่นๆ</translation>
-<translation id="8966870118594285808">เปิดแท็บอีกครั้งหากปิดไปโดยไม่ได้ตั้งใจ</translation>
 <translation id="8967427617812342790">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="8968527460726243404">ตัวเขียนอิมเมจระบบ ChromeOS</translation>
 <translation id="8968766641738584599">บันทึกบัตร</translation>
@@ -9233,7 +9223,6 @@
         <ph name="BREAK" />
         <ph name="BREAK" />
         อ่านเกี่ยวกับข้อมูลที่ Google เก็บรวบรวมและเหตุผลได้ที่ <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /></translation>
-<translation id="9066777626153702300">เว็บไซต์ที่ไม่ได้ใช้งาน</translation>
 <translation id="9066782832737749352">การอ่านออกเสียงข้อความ</translation>
 <translation id="9068298336633421551">อนุญาตให้แอปและบริการของ Android ที่มีสิทธิ์เข้าถึงตำแหน่งใช้ตำแหน่งของอุปกรณ์นี้ Google อาจเก็บรวบรวมข้อมูลตำแหน่งเป็นระยะๆ และใช้ข้อมูลนี้ในแบบไม่ระบุตัวบุคคลเพื่อปรับปรุงความแม่นยำของตำแหน่งและการบริการตามสถานที่</translation>
 <translation id="9068598199622656904">กดทีละ 1 แป้นสำหรับแป้นพิมพ์ลัดแทนการกดแป้นค้างไว้พร้อมกัน</translation>
