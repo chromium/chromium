@@ -6,6 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -16,15 +17,36 @@
 #include "chrome/browser/platform_util_internal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_switches.h"
 #include "net/base/mac/url_conversions.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace platform_util {
 
+// Returns true if revealing file paths in the Finder should be skipped
+// because it's not needed while running a test.
+bool WorkspacePathRevealDisabledForTest() {
+  // Note: the kTestType switch is only added on browser tests, but not unit
+  // tests. Unit tests need to add the switch manually:
+  //
+  //   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  //   command_line->AppendSwitch(switches::kTestType);
+  //
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType);
+}
+
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   DCHECK([NSThread isMainThread]);
   NSURL* url = base::mac::FilePathToNSURL(full_path);
+
+  // The Finder creates a new window on each `full_path` reveal. Skip
+  // revealing the path during testing to avoid an avalanche of new
+  // Finder windows.
+  if (WorkspacePathRevealDisabledForTest()) {
+    return;
+  }
+
   [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[ url ]];
 }
 
