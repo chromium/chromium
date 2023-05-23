@@ -16,7 +16,6 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/time/event_date_formatter_util.h"

@@ -22,11 +22,13 @@ class RoundedCornersF;
 
 namespace ash {
 
-// Label ID's.
+// View ID's.
 constexpr int kSummaryLabelID = 100;
 constexpr int kTimeLabelID = 101;
 constexpr int kEventListItemDotID = 102;
 constexpr int kJoinButtonID = 103;
+constexpr int kEventListMultiDayEventsContainer = 104;
+constexpr int kEventListSameDayEventsContainer = 105;
 
 class CalendarViewController;
 
