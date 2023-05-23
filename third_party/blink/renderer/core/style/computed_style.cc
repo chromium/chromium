@@ -301,21 +301,6 @@ static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
   return false;
 }
 
-// The transition to/from nullptr style can affect subsequent siblings
-// if they reference a named timeline which appeared/disappeared.
-static bool AffectsScrollAnimations(const ComputedStyle* old_style,
-                                    const ComputedStyle* new_style) {
-  if (old_style &&
-      (old_style->ScrollTimelineName() || old_style->ViewTimelineName())) {
-    return true;
-  }
-  if (new_style &&
-      (new_style->ScrollTimelineName() || new_style->ViewTimelineName())) {
-    return true;
-  }
-  return false;
-}
-
 bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
                                             const ComputedStyle* old_style,
                                             const ComputedStyle* new_style) {
@@ -399,9 +384,6 @@ ComputedStyle::Difference ComputedStyle::ComputeDifference(
     return Difference::kEqual;
   }
   if (!old_style || !new_style) {
-    if (AffectsScrollAnimations(old_style, new_style)) {
-      return Difference::kDescendantAffecting;
-    }
     return Difference::kInherited;
   }
 

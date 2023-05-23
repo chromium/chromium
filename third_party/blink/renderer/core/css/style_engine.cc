@@ -3197,13 +3197,7 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
 
   SelectorFilterRootScope filter_scope(parent);
-  StyleRecalcChange sibling_change =
-      root_element.RecalcStyle(change, style_recalc_context);
-
-  if (sibling_change.RecalcSiblingDescendants()) {
-    root_element.RecalcSubsequentSiblingStyles(change.Combine(sibling_change),
-                                               style_recalc_context);
-  }
+  root_element.RecalcStyle(change, style_recalc_context);
 
   for (ContainerNode* ancestor = root_element.GetStyleRecalcParent(); ancestor;
        ancestor = ancestor->GetStyleRecalcParent()) {

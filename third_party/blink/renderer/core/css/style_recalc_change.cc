@@ -92,9 +92,6 @@ String StyleRecalcChange::ToString() const {
     case kRecalcDescendants:
       builder.Append("kRecalcDescendants");
       break;
-    case kRecalcSiblingDescendants:
-      builder.Append("kRecalcSiblingDescendants");
-      break;
   }
   builder.Append(", flags=");
   if (!flags_) {
