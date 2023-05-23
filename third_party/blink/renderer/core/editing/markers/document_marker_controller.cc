@@ -430,12 +430,17 @@ void DocumentMarkerController::MoveMarkers(const Text& src_node,
 }
 
 void DocumentMarkerController::DidRemoveNodeFromMap(
-    DocumentMarker::MarkerType type) {
+    DocumentMarker::MarkerType type,
+    bool clear_document_allowed) {
   DocumentMarker::MarkerTypeIndex type_index = MarkerTypeToMarkerIndex(type);
   if (markers_[type_index]->empty()) {
     markers_[type_index] = nullptr;
     possibly_existing_marker_types_ = possibly_existing_marker_types_.Subtract(
         DocumentMarker::MarkerTypes(type));
+  }
+  if (clear_document_allowed &&
+      possibly_existing_marker_types_ == DocumentMarker::MarkerTypes()) {
+    SetDocument(nullptr);
   }
 }
 
@@ -1345,7 +1350,7 @@ void DocumentMarkerController::DidUpdateCharacterData(CharacterData* node,
     }
     if (list->IsEmpty()) {
       marker_map->erase(text_node);
-      DidRemoveNodeFromMap(type);
+      DidRemoveNodeFromMap(type, false);
     }
   }
 

@@ -229,7 +229,13 @@ class CORE_EXPORT DocumentMarkerController final
                                          const Text* key) const;
 
   // Called when a node is removed from a marker map.
-  void DidRemoveNodeFromMap(DocumentMarker::MarkerType);
+  // When clear_document_allowed is true this class will be removed from the
+  // mutation observer list when the marker set is empty. For efficiency
+  // it should generally be true, but it must be false when called
+  // from a method that implements SynchronousMutationObserver interfaces
+  // (currently only DidUpdateCharacterData);
+  void DidRemoveNodeFromMap(DocumentMarker::MarkerType,
+                            bool clear_document_allowed = true);
 
   MarkerMaps markers_;
 
