@@ -141,6 +141,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     return idp_data_for_display_;
   }
 
+  bool IsAutoReauthn() { return auto_reauthn_; }
+
   void AcceptAccountsDialogForDevtools(const GURL& config_url,
                                        const IdentityRequestAccount& account);
   void DismissAccountsDialogForDevtools(bool should_embargo);
@@ -221,8 +223,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::unique_ptr<IdentityProviderInfo> idp_info,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::AccountList accounts);
-  void OnAccountSelected(bool auto_reauthn,
-                         const GURL& idp_config_url,
+  void OnAccountSelected(const GURL& idp_config_url,
                          const std::string& account_id,
                          bool is_sign_in);
   void OnDismissFailureDialog(
@@ -393,6 +394,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // the navigator.credentials.get call.
   std::vector<GURL> idp_order_;
 
+  // Auto re-authentication.
+  bool auto_reauthn_{false};
   MediationRequirement mediation_requirement_;
 
   std::unique_ptr<MDocProvider> mdoc_provider_;

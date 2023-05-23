@@ -11,7 +11,8 @@ async function triggerDialog() {
           clientId: '123',
           nonce: '2',
         }]
-      }
+      },
+      mediation: 'required',
     });
     return result.token;
   } catch (error) {

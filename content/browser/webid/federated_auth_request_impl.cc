@@ -676,7 +676,7 @@ void FederatedAuthRequestImpl::RequestToken(
                                  /*should_delay_callback=*/true);
         return;
       }
-      // TODO(crbug.com/1383384): Handle auto_reauthn for multi IDP.
+      // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
       if (ShouldFailBeforeFetchingAccounts(
               idp_ptr->get_federated()->config_url)) {
         CompleteRequestWithError(
@@ -1125,12 +1125,12 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
   DCHECK(render_frame_host().GetPage().IsPrimary());
 
-  // TODO(crbug.com/1383384): Handle auto_reauthn for multi IDP.
+  // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
   bool auto_reauthn_enabled =
       mediation_requirement_ != MediationRequirement::kRequired &&
       IsFedCmAutoReauthnEnabled();
 
-  bool auto_reauthn = auto_reauthn_enabled;
+  auto_reauthn_ = auto_reauthn_enabled;
   bool is_auto_reauthn_setting_enabled = false;
   bool is_auto_reauthn_embargoed = false;
   absl::optional<base::TimeDelta> time_from_embargo;
@@ -1141,7 +1141,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   if (auto_reauthn_enabled) {
     is_auto_reauthn_setting_enabled =
         auto_reauthn_permission_delegate_->IsAutoReauthnSettingEnabled();
-    auto_reauthn &= is_auto_reauthn_setting_enabled;
     is_auto_reauthn_embargoed =
         auto_reauthn_permission_delegate_->IsAutoReauthnEmbargoed(
             GetEmbeddingOrigin());
@@ -1157,18 +1156,18 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
           "Auto re-authn was previously triggered less than 10 minutes ago. "
           "Only one auto re-authn request can be made every 10 minutes.");
     }
-    auto_reauthn &= !is_auto_reauthn_embargoed;
     requires_user_mediation = RequiresUserMediation();
-    auto_reauthn &= !requires_user_mediation;
     // Auto signs in returning users if they have a single returning account and
     // are signing in.
     has_single_returning_account =
         GetSingleReturningAccount(&auto_reauthn_idp, &auto_reauthn_account);
-    auto_reauthn &= has_single_returning_account;
+    auto_reauthn_ &= !requires_user_mediation &&
+                     is_auto_reauthn_setting_enabled &&
+                     !is_auto_reauthn_embargoed && has_single_returning_account;
     if (!has_single_returning_account &&
         mediation_requirement_ == MediationRequirement::kSilent) {
       fedcm_metrics_->RecordAutoReauthnMetrics(
-          has_single_returning_account, auto_reauthn_account, auto_reauthn,
+          has_single_returning_account, auto_reauthn_account, auto_reauthn_,
           !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
           time_from_embargo, requires_user_mediation);
 
@@ -1190,13 +1189,13 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
           /*should_delay_callback=*/false);
       return;
     }
-  }
 
-  if (auto_reauthn) {
-    IdentityRequestAccount account{*auto_reauthn_account};
-    IdentityProviderData idp{*auto_reauthn_idp};
-    idp.accounts = {account};
-    idp_data_for_display_ = {idp};
+    if (auto_reauthn_) {
+      IdentityRequestAccount account{*auto_reauthn_account};
+      IdentityProviderData idp{*auto_reauthn_idp};
+      idp.accounts = {account};
+      idp_data_for_display_ = {idp};
+    }
   }
 
   // TODO(crbug.com/1408520): opt-out affordance is not included in the origin
@@ -1230,18 +1229,17 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       WebContents::FromRenderFrameHost(&render_frame_host()),
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       idp_data_for_display_,
-      auto_reauthn ? SignInMode::kAuto : SignInMode::kExplicit,
+      auto_reauthn_ ? SignInMode::kAuto : SignInMode::kExplicit,
       show_auto_reauthn_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
-                     weak_ptr_factory_.GetWeakPtr(), auto_reauthn),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
                      weak_ptr_factory_.GetWeakPtr()));
-  devtools_instrumentation::OnFedCmAccountsDialogShown(&render_frame_host(),
-                                                       auto_reauthn);
+  devtools_instrumentation::OnFedCmAccountsDialogShown(&render_frame_host());
 
   if (auto_reauthn_enabled) {
     fedcm_metrics_->RecordAutoReauthnMetrics(
-        has_single_returning_account, auto_reauthn_account, auto_reauthn,
+        has_single_returning_account, auto_reauthn_account, auto_reauthn_,
         !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
         time_from_embargo, requires_user_mediation);
   }
@@ -1482,8 +1480,7 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
   });
 }
 
-void FederatedAuthRequestImpl::OnAccountSelected(bool auto_reauthn,
-                                                 const GURL& idp_config_url,
+void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
                                                  const std::string& account_id,
                                                  bool is_sign_in) {
   DCHECK(!account_id.empty());
@@ -1503,7 +1500,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(bool auto_reauthn,
     return;
   }
 
-  if (auto_reauthn) {
+  if (auto_reauthn_) {
     // Embargo auto re-authn to mitigate a deadloop where an auto
     // re-authenticated user gets auto re-authenticated again soon after logging
     // out of the active session.
@@ -2024,7 +2021,7 @@ void FederatedAuthRequestImpl::AcceptAccountsDialogForDevtools(
     const IdentityRequestAccount& account) {
   bool is_sign_in =
       account.login_state == IdentityRequestAccount::LoginState::kSignIn;
-  OnAccountSelected(/*auto_reauthn=*/false, config_url, account.id, is_sign_in);
+  OnAccountSelected(config_url, account.id, is_sign_in);
 }
 
 void FederatedAuthRequestImpl::DismissAccountsDialogForDevtools(

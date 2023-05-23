@@ -1890,13 +1890,12 @@ void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept) {
   DispatchToAgents(ftn, &protocol::FedCmHandler::WillShowDialog, intercept);
 }
 
-void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host,
-                                bool auto_reauthn) {
+void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host) {
   FrameTreeNode* ftn = FrameTreeNode::From(render_frame_host);
   if (!ftn) {
     return;
   }
-  DispatchToAgents(ftn, &protocol::FedCmHandler::OnDialogShown, auto_reauthn);
+  DispatchToAgents(ftn, &protocol::FedCmHandler::OnDialogShown);
 }
 
 }  // namespace devtools_instrumentation

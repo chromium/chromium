@@ -1,4 +1,4 @@
-Check that the dialogShown event works after enabling the FedCm domain
+Check that the dialogShown event works after enabling the FedCm domain then triggering the FedCm dialog
 msg.params: {
     accounts : [
         [0] : {

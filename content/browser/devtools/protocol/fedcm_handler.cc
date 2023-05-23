@@ -36,8 +36,18 @@ void FedCmHandler::Wire(UberDispatcher* dispatcher) {
 }
 
 DispatchResponse FedCmHandler::Enable(Maybe<bool> in_disableRejectionDelay) {
+  auto* auth_request = GetFederatedAuthRequest();
+  bool was_enabled = enabled_;
   enabled_ = true;
   disable_delay_ = in_disableRejectionDelay.fromMaybe(false);
+
+  // OnDialogShown should have been called previously if was_enabled is true.
+  // This could happen if FedCmHandler::Enable was called to enable/disable the
+  // rejection delay.
+  if (!was_enabled && auth_request && auth_request->GetDialogController()) {
+    OnDialogShown();
+  }
+
   return DispatchResponse::Success();
 }
 
@@ -46,15 +56,14 @@ DispatchResponse FedCmHandler::Disable() {
   return DispatchResponse::Success();
 }
 
-void FedCmHandler::OnDialogShown(bool auto_reauthn) {
-  static int next_dialog_id_ = 0;
-
-  dialog_id_ = base::NumberToString(next_dialog_id_++);
-
+void FedCmHandler::OnDialogShown() {
   DCHECK(frontend_);
   if (!enabled_) {
     return;
   }
+
+  static int next_dialog_id_ = 0;
+  dialog_id_ = base::NumberToString(next_dialog_id_++);
 
   auto* auth_request = GetFederatedAuthRequest();
   const auto* idp_data = GetIdentityProviderData(auth_request);
@@ -114,7 +123,7 @@ void FedCmHandler::OnDialogShown(bool auto_reauthn) {
   IdentityRequestDialogController* dialog = auth_request->GetDialogController();
   CHECK(dialog);
 
-  FedCm::DialogType dialog_type = auto_reauthn
+  FedCm::DialogType dialog_type = auth_request->IsAutoReauthn()
                                       ? FedCm::DialogTypeEnum::AutoReauthn
                                       : FedCm::DialogTypeEnum::AccountChooser;
   Maybe<String> maybe_subtitle;
