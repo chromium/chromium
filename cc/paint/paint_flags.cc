@@ -16,10 +16,6 @@
 
 namespace {
 
-bool affects_alpha(const SkColorFilter* cf) {
-  return cf && !cf->isAlphaUnchanged();
-}
-
 template <typename T>
 bool AreValuesEqualForTesting(const sk_sp<T>& a, const sk_sp<T>& b) {
   return base::ValuesEquivalent(a, b, [](const T& x, const T& y) {
@@ -100,7 +96,7 @@ bool PaintFlags::nothingToDraw() const {
     case SkBlendMode::kDstOver:
     case SkBlendMode::kPlus:
       if (getAlpha() == 0) {
-        return !affects_alpha(color_filter_.get()) && !image_filter_;
+        return !color_filter_ && !image_filter_;
       }
       break;
     case SkBlendMode::kDst:
