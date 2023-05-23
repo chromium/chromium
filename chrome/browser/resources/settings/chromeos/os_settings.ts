@@ -126,6 +126,7 @@ export {SettingsPerDevicePointingStickSubsectionElement} from './device_page/per
 export {SettingsPerDeviceTouchpadElement} from './device_page/per_device_touchpad.js';
 export {SettingsPerDeviceTouchpadSubsectionElement} from './device_page/per_device_touchpad_subsection.js';
 export {OsSettingsCellularSetupDialogElement} from './internet_page/cellular_setup_dialog.js';
+export {HotspotSummaryItemElement} from './internet_page/hotspot_summary_item.js';
 export {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page/internet_page_browser_proxy.js';
 export {NetworkSummaryElement} from './internet_page/network_summary.js';
 export {NetworkSummaryItemElement} from './internet_page/network_summary_item.js';

@@ -31,7 +31,7 @@ const HotspotSummaryItemElementBase =
     Constructor<PolymerElement&I18nMixinInterface&
                 CrPolicyNetworkBehaviorMojoInterface>;
 
-class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
+export class HotspotSummaryItemElement extends HotspotSummaryItemElementBase {
   static get is() {
     return 'hotspot-summary-item' as const;
   }

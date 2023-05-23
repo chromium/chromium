@@ -321,11 +321,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'hotspot_subpage_tests.js',
    {enabled: ['ash::features::kHotspot']},
  ],
- [
-   'HotspotSummaryItem',
-   'hotspot_summary_item_tests.js',
-   {enabled: ['ash::features::kHotspot']},
- ],
  ['InputPage', 'input_page_test.js'],
  ['InternetConfig', 'internet_config_test.js'],
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
@@ -348,6 +343,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'InternetPageCellularSetupDialog',
    'internet_page/cellular_setup_dialog_test.js'
+ ],
+ [
+   'InternetPageHotspotSummaryItem',
+   'internet_page/hotspot_summary_item_test.js',
+   {enabled: ['ash::features::kHotspot']},
  ],
  [
    'InternetPageInternetDetailSubpage',
