@@ -78,6 +78,7 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
       mojom::ConnectionStatus connection_status);
   void NotifyRequestBackgroundConnectionAttempt();
 
+  void TriggerBackgroundConnectionIfNecessary();
   void ResetConnectionStatus();
 
   void set_feature_status_for_test(FeatureStatus feature_status) {
@@ -87,6 +88,11 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
   mojom::ConnectionStatus connection_status_for_ui_ =
       mojom::ConnectionStatus::kConnectionStatusDisconnected;
   base::Time last_update_timestamp_ = base::Time();
+
+  // Tracks the current status of the eche connection (app stream or
+  // background).
+  bool is_connecting_or_connected_ = false;
+
   std::unique_ptr<base::OneShotTimer> status_check_delay_timer_{};
   FeatureStatus feature_status_ = FeatureStatus::kDisconnected;
   mojo::Receiver<mojom::ConnectionStatusObserver> connection_status_receiver_{

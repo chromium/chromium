@@ -233,6 +233,8 @@ class ASH_EXPORT EcheTray
   // the window is closed.
   void StartGracefulClose();
 
+  void OnBackgroundConnectionTimeout();
+
   void SetEcheConnectionStatusHandler(
       eche_app::EcheConnectionStatusHandler* eche_connection_status_handler);
 
@@ -347,7 +349,9 @@ class ASH_EXPORT EcheTray
   // attach to.
   std::unique_ptr<AshWebView> initializer_webview_{};
   std::unique_ptr<base::DelayTimer> initializer_timeout_{};
+  base::OnceClosure on_initializer_closed_;
   bool has_reported_initializer_result_ = false;
+  bool has_retried_initializer_ = false;
 
   raw_ptr<eche_app::EcheConnectionStatusHandler, ExperimentalAsh>
       eche_connection_status_handler_ = nullptr;

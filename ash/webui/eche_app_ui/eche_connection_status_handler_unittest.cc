@@ -249,9 +249,6 @@ TEST_F(EcheConnectionStatusHandlerTest, CheckConnectionStatusForUi) {
   EXPECT_EQ(GetLastConnectionChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusChangedCalls(), 2u);
-  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
-            mojom::ConnectionStatus::kConnectionStatusConnected);
-  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
 }
 
 TEST_F(EcheConnectionStatusHandlerTest,
@@ -270,7 +267,10 @@ TEST_F(EcheConnectionStatusHandlerTest,
             mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
 
-  // After more than 10 seconds pass, extra calls should happen.
+  // After more than 10 seconds pass, extra calls should happen when there is no
+  // active stream.
+  NotifyConnectionStatusChanged(
+      mojom::ConnectionStatus::kConnectionStatusDisconnected);
   SetFeatureStatus(FeatureStatus::kConnected);
   task_environment_.FastForwardBy(base::Seconds(11));
   handler().CheckConnectionStatusForUi();
@@ -280,12 +280,23 @@ TEST_F(EcheConnectionStatusHandlerTest,
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 1u);
 
+  // After more than 10 seconds pass, no extra calls should happen if there's an
+  // active stream.
+  NotifyConnectionStatusChanged(
+      mojom::ConnectionStatus::kConnectionStatusConnected);
+  task_environment_.FastForwardBy(base::Seconds(11));
+  handler().CheckConnectionStatusForUi();
+
+  EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
+            mojom::ConnectionStatus::kConnectionStatusConnected);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);        // no change
+  EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 1u);  // no change
+
   // Reset to Disconnected
   handler().SetConnectionStatusForUi(
       mojom::ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 3u);
   EXPECT_EQ(GetNumRequestBackgroundConnectionAttemptCalls(), 1u);
-
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusDisconnected);
 
@@ -294,6 +305,8 @@ TEST_F(EcheConnectionStatusHandlerTest,
       mojom::ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 4u);
 
+  NotifyConnectionStatusChanged(
+      mojom::ConnectionStatus::kConnectionStatusDisconnected);
   task_environment_.FastForwardBy(base::Minutes(11));
   handler().CheckConnectionStatusForUi();
 
@@ -337,16 +350,17 @@ TEST_F(EcheConnectionStatusHandlerTest, SetConnectionStatusForUi) {
 
 TEST_F(EcheConnectionStatusHandlerTest, OnFeatureStatusChanged) {
   handler().OnFeatureStatusChanged(FeatureStatus::kDisconnected);
+  // always resets to "loading" on disconnections.
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
-            mojom::ConnectionStatus::kConnectionStatusDisconnected);
-  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 0u);
+            mojom::ConnectionStatus::kConnectionStatusConnecting);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
 
   handler().SetConnectionStatusForUi(
       mojom::ConnectionStatus::kConnectionStatusConnected);
 
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnected);
-  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
 
   handler().OnFeatureStatusChanged(FeatureStatus::kConnected);
 
@@ -354,7 +368,7 @@ TEST_F(EcheConnectionStatusHandlerTest, OnFeatureStatusChanged) {
 
   EXPECT_EQ(GetLastConnectionForUiChangedStatus(),
             mojom::ConnectionStatus::kConnectionStatusConnected);
-  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 2u);
+  EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 3u);
 }
 
 }  // namespace ash::eche_app
