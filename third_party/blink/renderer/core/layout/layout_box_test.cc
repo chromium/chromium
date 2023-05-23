@@ -1964,7 +1964,7 @@ TEST_F(LayoutBoxTest, AnchorInInlineContainingBlock) {
       <span style="position: relative">
         <span id="anchor" style="anchor-name: --a">anchor</span>
         <div id="target" anchor="not-implicit-anchor"
-             style="position: absolute"></div>
+             style="position: absolute; top: anchor(--a top)"></div>
       </span>
       some text
     </div>
@@ -1984,15 +1984,15 @@ TEST_F(LayoutBoxTest, AnchorInInlineContainingBlockWithNameConflicts) {
     <div>
       <span style="position: relative">
         <span id="anchor1" style="anchor-name: --a">anchor</span>
-        <div id="target1" style="position: absolute"></div>
+        <div id="target1" style="position: absolute;top: anchor(--a top)"></div>
       </span>
       <span style="position: relative">
         <span id="anchor2" style="anchor-name: --a">anchor</span>
-        <div id="target2" style="position: absolute"></div>
+        <div id="target2" style="position: absolute;top: anchor(--a top)"></div>
       </span>
       <span style="position: relative">
         <span id="anchor3" style="anchor-name: --a">anchor</span>
-        <div id="target3" style="position: absolute"></div>
+        <div id="target3" style="position: absolute;top: anchor(--a top)"></div>
       </span>
     </div>
   )HTML");
@@ -2002,13 +2002,13 @@ TEST_F(LayoutBoxTest, AnchorInInlineContainingBlockWithNameConflicts) {
 
   const LayoutBox* target1 =
       To<LayoutBox>(GetLayoutObjectByElementId("target1"));
-  // TODO(crbug.com/1446442): Should get #anchor1.
-  EXPECT_EQ(nullptr, target1->FindTargetAnchor(anchor_name));
+  EXPECT_EQ(GetLayoutObjectByElementId("anchor1"),
+            target1->FindTargetAnchor(anchor_name));
 
   const LayoutBox* target2 =
       To<LayoutBox>(GetLayoutObjectByElementId("target2"));
-  // TODO(crbug.com/1446442): Should get #anchor2.
-  EXPECT_EQ(nullptr, target2->FindTargetAnchor(anchor_name));
+  EXPECT_EQ(GetLayoutObjectByElementId("anchor2"),
+            target2->FindTargetAnchor(anchor_name));
 
   const LayoutBox* target3 =
       To<LayoutBox>(GetLayoutObjectByElementId("target3"));
