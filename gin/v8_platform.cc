@@ -477,8 +477,11 @@ double V8Platform::MonotonicallyIncreasingTime() {
       static_cast<double>(base::Time::kMicrosecondsPerSecond);
 }
 
+extern "C" void V8RecordReplayAssert(const char* format, ...);
+
 double V8Platform::CurrentClockTimeMillis() {
   double now_seconds = base::Time::Now().ToJsTime() / 1000;
+  V8RecordReplayAssert("[RUN-1348-2017] V8Platform::CurrentClockTimeMillis %d", g_time_clamper.IsCreated());
   return g_time_clamper.Get().ClampTimeResolution(now_seconds) * 1000;
 }
 
