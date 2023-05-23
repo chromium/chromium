@@ -32,9 +32,6 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     return true;
   }
   void OnPacket() override { *output_ << "OnPacket\n"; }
-  void OnPublicResetPacket(const QuicPublicResetPacket& packet) override {
-    *output_ << "OnPublicResetPacket\n";
-  }
   void OnVersionNegotiationPacket(
       const QuicVersionNegotiationPacket& packet) override {
     *output_ << "OnVersionNegotiationPacket\n";

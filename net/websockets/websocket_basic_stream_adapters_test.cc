@@ -1155,16 +1155,15 @@ class WebSocketQuicStreamAdapterTest
     quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
         data.size(), quiche::SimpleBufferAllocator::Get());
     return server_maker_.MakeDataPacket(
-        packet_number, client_data_stream_id1_,
-        /*should_include_version=*/false, /*fin=*/false,
+        packet_number, client_data_stream_id1_, /*fin=*/false,
         base::StrCat({base::StringPiece(buffer.data(), buffer.size()), data}));
   }
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructRstPacket(
       uint64_t packet_number,
       quic::QuicRstStreamErrorCode error_code) {
-    return client_maker_.MakeRstPacket(packet_number, /*include_version=*/true,
-                                       client_data_stream_id1_, error_code,
+    return client_maker_.MakeRstPacket(packet_number, client_data_stream_id1_,
+                                       error_code,
                                        /*include_stop_sending_if_v99=*/true);
   }
 
@@ -1182,8 +1181,8 @@ class WebSocketQuicStreamAdapterTest
       uint64_t largest_received,
       uint64_t smallest_received) {
     return client_maker_.MakeAckAndRstPacket(
-        packet_number, /*include_version=*/false, client_data_stream_id1_,
-        error_code, largest_received, smallest_received,
+        packet_number, client_data_stream_id1_, error_code, largest_received,
+        smallest_received,
         /*include_stop_sending_if_v99=*/true);
   }
 
@@ -1361,13 +1360,12 @@ TEST_P(WebSocketQuicStreamAdapterTest, AsyncAdapterCreation) {
   mock_quic_data_.AddWrite(SYNCHRONOUS,
                            ConstructSettingsPacket(packet_number++));
 
-  mock_quic_data_.AddWrite(SYNCHRONOUS,
-                           client_maker_.MakeStreamsBlockedPacket(
-                               packet_number++, true, kMaxOpenStreams,
-                               /* unidirectional = */ false));
+  mock_quic_data_.AddWrite(SYNCHRONOUS, client_maker_.MakeStreamsBlockedPacket(
+                                            packet_number++, kMaxOpenStreams,
+                                            /* unidirectional = */ false));
 
   mock_quic_data_.AddRead(
-      ASYNC, server_maker_.MakeMaxStreamsPacket(1, true, kMaxOpenStreams + 2,
+      ASYNC, server_maker_.MakeMaxStreamsPacket(1, kMaxOpenStreams + 2,
                                                 /* unidirectional = */ false));
 
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);
@@ -1419,7 +1417,6 @@ TEST_P(WebSocketQuicStreamAdapterTest, SendRequestHeadersThenDisconnect) {
       SYNCHRONOUS,
       client_maker_.MakeRequestHeadersPacket(
           packet_number++, client_data_stream_id1_,
-          /*should_include_version=*/true,
           /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
           std::move(request_header_block), nullptr));
 
@@ -1456,17 +1453,15 @@ TEST_P(WebSocketQuicStreamAdapterTest, OnHeadersReceivedThenDisconnect) {
       SYNCHRONOUS,
       client_maker_.MakeRequestHeadersPacket(
           packet_number++, client_data_stream_id1_,
-          /*should_include_version=*/true,
           /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
           std::move(request_header_block), nullptr));
 
   spdy::Http2HeaderBlock response_header_block = WebSocketHttp2Response({});
-  mock_quic_data_.AddRead(ASYNC,
-                          server_maker_.MakeResponseHeadersPacket(
-                              /*packet_number=*/1, client_data_stream_id1_,
-                              /*should_include_version=*/false, /*fin=*/false,
-                              std::move(response_header_block),
-                              /*spdy_headers_frame_length=*/nullptr));
+  mock_quic_data_.AddRead(
+      ASYNC, server_maker_.MakeResponseHeadersPacket(
+                 /*packet_number=*/1, client_data_stream_id1_, /*fin=*/false,
+                 std::move(response_header_block),
+                 /*spdy_headers_frame_length=*/nullptr));
   mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
   mock_quic_data_.AddWrite(
       SYNCHRONOUS, ConstructAckAndRstPacket(packet_number++,
@@ -1510,17 +1505,15 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
       SYNCHRONOUS,
       client_maker_.MakeRequestHeadersPacket(
           packet_number++, client_data_stream_id1_,
-          /*should_include_version=*/true,
           /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
           std::move(request_header_block), nullptr));
 
   spdy::Http2HeaderBlock response_header_block = WebSocketHttp2Response({});
-  mock_quic_data_.AddRead(ASYNC,
-                          server_maker_.MakeResponseHeadersPacket(
-                              /*packet_number=*/1, client_data_stream_id1_,
-                              /*should_include_version=*/false, /*fin=*/false,
-                              std::move(response_header_block),
-                              /*spdy_headers_frame_length=*/nullptr));
+  mock_quic_data_.AddRead(
+      ASYNC, server_maker_.MakeResponseHeadersPacket(
+                 /*packet_number=*/1, client_data_stream_id1_, /*fin=*/false,
+                 std::move(response_header_block),
+                 /*spdy_headers_frame_length=*/nullptr));
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);
 
   mock_quic_data_.AddRead(ASYNC, ConstructServerDataPacket(2, "foo"));
@@ -1596,17 +1589,15 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
       SYNCHRONOUS,
       client_maker_.MakeRequestHeadersPacket(
           packet_number++, client_data_stream_id1_,
-          /*should_include_version=*/true,
           /*fin=*/false, ConvertRequestPriorityToQuicPriority(LOWEST),
           std::move(request_header_block), nullptr));
 
   spdy::Http2HeaderBlock response_header_block = WebSocketHttp2Response({});
-  mock_quic_data_.AddRead(ASYNC,
-                          server_maker_.MakeResponseHeadersPacket(
-                              /*packet_number=*/1, client_data_stream_id1_,
-                              /*should_include_version=*/false, /*fin=*/false,
-                              std::move(response_header_block),
-                              /*spdy_headers_frame_length=*/nullptr));
+  mock_quic_data_.AddRead(
+      ASYNC, server_maker_.MakeResponseHeadersPacket(
+                 /*packet_number=*/1, client_data_stream_id1_, /*fin=*/false,
+                 std::move(response_header_block),
+                 /*spdy_headers_frame_length=*/nullptr));
   mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);
   // First read is the same size as the buffer, next is smaller, last is larger.
   mock_quic_data_.AddRead(ASYNC, ConstructServerDataPacket(2, "abc"));

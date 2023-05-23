@@ -1471,7 +1471,7 @@ TEST_F(HttpServerPropertiesManagerTest, PersistAdvertisedVersionsToPref) {
   base::Time expiration1;
   ASSERT_TRUE(base::Time::FromUTCString("2036-12-01 10:00:00", &expiration1));
   quic::ParsedQuicVersionVector advertised_versions = {
-      quic::ParsedQuicVersion::Q046(), quic::ParsedQuicVersion::Q043()};
+      quic::ParsedQuicVersion::Q046()};
   alternative_service_info_vector.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           quic_alternative_service1, expiration1, advertised_versions));
@@ -1523,7 +1523,7 @@ TEST_F(HttpServerPropertiesManagerTest, PersistAdvertisedVersionsToPref) {
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
       "{\"alternative_service\":[{"
-      "\"advertised_alpns\":[\"h3-Q046\",\"h3-Q043\"],\"expiration\":"
+      "\"advertised_alpns\":[\"h3-Q046\"],\"expiration\":"
       "\"13756212000000000\","
       "\"port\":443,\"protocol_str\":\"quic\"},{\"advertised_alpns\":[],"
       "\"expiration\":\"13758804000000000\",\"host\":\"www.google.com\","
@@ -1558,7 +1558,7 @@ TEST_F(HttpServerPropertiesManagerTest, ReadAdvertisedVersionsFromPref) {
       "\"expiration\":\"9223372036854775807\","
       // Add 33 which we know is not supported, as regression test for
       // https://crbug.com/1061509
-      "\"advertised_alpns\":[\"h3-Q033\",\"h3-Q046\",\"h3-Q043\"]}]}");
+      "\"advertised_alpns\":[\"h3-Q033\",\"h3-Q050\",\"h3-Q046\"]}]}");
 
   const url::SchemeHostPort server("https", "example.com", 443);
   HttpServerProperties::ServerInfo server_info;
@@ -1592,8 +1592,8 @@ TEST_F(HttpServerPropertiesManagerTest, ReadAdvertisedVersionsFromPref) {
   const quic::ParsedQuicVersionVector loaded_advertised_versions =
       alternative_service_info_vector[1].advertised_versions();
   ASSERT_EQ(2u, loaded_advertised_versions.size());
-  EXPECT_EQ(quic::ParsedQuicVersion::Q043(), loaded_advertised_versions[0]);
-  EXPECT_EQ(quic::ParsedQuicVersion::Q046(), loaded_advertised_versions[1]);
+  EXPECT_EQ(quic::ParsedQuicVersion::Q046(), loaded_advertised_versions[0]);
+  EXPECT_EQ(quic::ParsedQuicVersion::Q050(), loaded_advertised_versions[1]);
 
   // No other fields should have been populated.
   server_info.alternative_services.reset();
@@ -1662,7 +1662,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   AlternativeServiceInfoVector alternative_service_info_vector_2;
   // Quic alternative service set with two advertised QUIC versions.
   quic::ParsedQuicVersionVector advertised_versions = {
-      quic::ParsedQuicVersion::Q046(), quic::ParsedQuicVersion::Q043()};
+      quic::ParsedQuicVersion::Q046(), quic::ParsedQuicVersion::Q050()};
   alternative_service_info_vector_2.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           quic_alternative_service1, expiration1, advertised_versions));
@@ -1683,7 +1683,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
       "{\"alternative_service\":"
-      "[{\"advertised_alpns\":[\"h3-Q046\",\"h3-Q043\"],"
+      "[{\"advertised_alpns\":[\"h3-Q046\",\"h3-Q050\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
       "\"anonymization\":[],"
@@ -1698,7 +1698,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   AlternativeServiceInfoVector alternative_service_info_vector_3;
   // A same set of QUIC versions but listed in a different order.
   quic::ParsedQuicVersionVector advertised_versions_2 = {
-      quic::ParsedQuicVersion::Q043(), quic::ParsedQuicVersion::Q046()};
+      quic::ParsedQuicVersion::Q050(), quic::ParsedQuicVersion::Q046()};
   alternative_service_info_vector_3.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           quic_alternative_service1, expiration1, advertised_versions_2));
@@ -1719,7 +1719,7 @@ TEST_F(HttpServerPropertiesManagerTest,
       "\"server_info\":\"quic_server_info1\"}],"
       "\"servers\":["
       "{\"alternative_service\":"
-      "[{\"advertised_alpns\":[\"h3-Q043\",\"h3-Q046\"],"
+      "[{\"advertised_alpns\":[\"h3-Q050\",\"h3-Q046\"],"
       "\"expiration\":\"13756212000000000\",\"port\":443,"
       "\"protocol_str\":\"quic\"}],"
       "\"anonymization\":[],"

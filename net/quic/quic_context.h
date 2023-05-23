@@ -31,9 +31,9 @@ DefaultSupportedQuicVersions() {
 // QUIC shared code but that Chrome refuses to use because modern clients
 // should only use versions at least as recent as the oldest default version.
 inline NET_EXPORT_PRIVATE quic::ParsedQuicVersionVector ObsoleteQuicVersions() {
-  return quic::ParsedQuicVersionVector{
-      quic::ParsedQuicVersion::Q043(), quic::ParsedQuicVersion::Q046(),
-      quic::ParsedQuicVersion::Q050(), quic::ParsedQuicVersion::Draft29()};
+  return quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q046(),
+                                       quic::ParsedQuicVersion::Q050(),
+                                       quic::ParsedQuicVersion::Draft29()};
 }
 
 // All of the QUIC versions that Chrome can support. This is the subset of

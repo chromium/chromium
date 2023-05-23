@@ -3970,18 +3970,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.PublicResetAddressMismatch2"
-    enum="QuicAddressMismatch" expires_after="2024-04-03">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    When a public reset packet is received, whether the client IP address and
-    port number in it differ from the client IP address and port number in the
-    ServerHello handshake message. In the comparison, the first address is the
-    one in ServerHello and the second address is the one in public reset.
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicSession.Pushed" units="count"
     expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>
