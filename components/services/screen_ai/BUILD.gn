@@ -79,7 +79,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "public/cpp/screen_ai_install_state_unittest.cc",
     "screen_ai_ax_tree_serializer_unittest.cc",
     "screen_ai_service_impl_unittest.cc",
   ]
@@ -97,7 +96,6 @@ source_set("unit_tests") {
     ":screen_ai",
     "//base/test:test_support",
     "//components/services/screen_ai/proto",
-    "//components/services/screen_ai/public/cpp:screen_ai_install_state",
     "//components/ukm:test_support",
     "//testing/gtest",
     "//ui/accessibility:test_support",

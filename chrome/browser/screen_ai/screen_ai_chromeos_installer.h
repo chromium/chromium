@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_CHROMEOS_INSTALLER_H_
-#define COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_CHROMEOS_INSTALLER_H_
+#ifndef CHROME_BROWSER_SCREEN_AI_SCREEN_AI_CHROMEOS_INSTALLER_H_
+#define CHROME_BROWSER_SCREEN_AI_SCREEN_AI_CHROMEOS_INSTALLER_H_
 
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 
@@ -17,4 +17,4 @@ void ManageInstallation(PrefService* local_state);
 
 }  // namespace screen_ai::chrome_os_installer
 
-#endif  // COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_CHROMEOS_INSTALLER_H_
+#endif  // CHROME_BROWSER_SCREEN_AI_SCREEN_AI_CHROMEOS_INSTALLER_H_

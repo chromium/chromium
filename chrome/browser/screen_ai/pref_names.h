@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_PREF_NAMES_H_
-#define COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_PREF_NAMES_H_
+#ifndef CHROME_BROWSER_SCREEN_AI_PREF_NAMES_H_
+#define CHROME_BROWSER_SCREEN_AI_PREF_NAMES_H_
 
 class PrefRegistrySimple;
 
@@ -21,4 +21,4 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace screen_ai
 
-#endif  // COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_PREF_NAMES_H_
+#endif  // CHROME_BROWSER_SCREEN_AI_PREF_NAMES_H_

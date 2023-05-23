@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 
 #include <memory>
 
@@ -12,8 +12,8 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/screen_ai/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/screen_ai/public/cpp/pref_names.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -24,7 +24,7 @@
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
 const char kMinExpectedVersion[] = "114.0";
-}
+}  // namespace
 
 namespace {
 
@@ -76,8 +76,9 @@ bool ScreenAIInstallState::ShouldInstall(PrefService* local_state) {
 
 // static
 bool ScreenAIInstallState::ShouldUninstall(PrefService* local_state) {
-  if (features::IsScreenAIServiceNeeded())
+  if (features::IsScreenAIServiceNeeded()) {
     return false;
+  }
 
   base::Time deletion_time =
       local_state->GetTime(prefs::kScreenAIScheduledDeletionTimePrefName);
@@ -107,8 +108,9 @@ void ScreenAIInstallState::AddObserver(
 void ScreenAIInstallState::RemoveObserver(
     ScreenAIInstallState::Observer* observer) {
   auto pos = base::ranges::find(observers_, observer);
-  if (pos != observers_.end())
+  if (pos != observers_.end()) {
     observers_.erase(pos);
+  }
 }
 
 void ScreenAIInstallState::SetComponentFolder(
@@ -140,8 +142,9 @@ void ScreenAIInstallState::SetState(State state) {
   }
 
   state_ = state;
-  for (ScreenAIInstallState::Observer* observer : observers_)
+  for (ScreenAIInstallState::Observer* observer : observers_) {
     observer->StateChanged(state_);
+  }
 }
 
 void ScreenAIInstallState::DownloadComponent() {
@@ -151,8 +154,9 @@ void ScreenAIInstallState::DownloadComponent() {
 
 void ScreenAIInstallState::SetDownloadProgress(double progress) {
   DCHECK_EQ(state_, State::kDownloading);
-  for (ScreenAIInstallState::Observer* observer : observers_)
+  for (ScreenAIInstallState::Observer* observer : observers_) {
     observer->DownloadProgressChanged(progress);
+  }
 }
 
 bool ScreenAIInstallState::IsComponentAvailable() {

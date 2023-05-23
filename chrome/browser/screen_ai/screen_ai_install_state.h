@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_INSTALL_STATE_H_
-#define COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_INSTALL_STATE_H_
+#ifndef CHROME_BROWSER_SCREEN_AI_SCREEN_AI_INSTALL_STATE_H_
+#define CHROME_BROWSER_SCREEN_AI_SCREEN_AI_INSTALL_STATE_H_
 
 #include <vector>
 
@@ -94,4 +94,4 @@ class ScreenAIInstallState {
 
 }  // namespace screen_ai
 
-#endif  // COMPONENTS_SERVICES_SCREEN_AI_PUBLIC_CPP_SCREEN_AI_INSTALL_STATE_H_
+#endif  // CHROME_BROWSER_SCREEN_AI_SCREEN_AI_INSTALL_STATE_H_

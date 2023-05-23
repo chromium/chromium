@@ -221,7 +221,7 @@
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "components/services/screen_ai/public/cpp/pref_names.h"  // nogncheck
+#include "chrome/browser/screen_ai/pref_names.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

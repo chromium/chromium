@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 
 namespace settings {
 

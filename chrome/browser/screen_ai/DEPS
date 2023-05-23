@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/keyed_service/core",
+  "+components/keyed_service/content",
+  "+components/prefs",
+  "+components/component_updater",
+  "+chromeos/ash/components/dbus/dlcservice"
+]

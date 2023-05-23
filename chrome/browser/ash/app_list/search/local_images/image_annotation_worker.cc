@@ -22,10 +22,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_images/search_utils.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 
 namespace app_list {
 namespace {

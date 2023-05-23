@@ -17,9 +17,9 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {

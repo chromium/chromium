@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router.h"
 
 #include <utility>
 
@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/thread_pool.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"

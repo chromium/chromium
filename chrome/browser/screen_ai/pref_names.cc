@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/screen_ai/public/cpp/pref_names.h"
+#include "chrome/browser/screen_ai/pref_names.h"
 
 #include "base/files/file_path.h"
 #include "components/prefs/pref_registry_simple.h"

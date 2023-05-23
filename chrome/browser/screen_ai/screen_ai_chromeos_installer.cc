@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/screen_ai/public/cpp/screen_ai_chromeos_installer.h"
+#include "chrome/browser/screen_ai/screen_ai_chromeos_installer.h"
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 
 namespace {
@@ -34,8 +34,9 @@ void OnInstallCompleted(
 }
 
 void OnUninstallCompleted(const std::string& err) {
-  if (err != dlcservice::kErrorNone)
+  if (err != dlcservice::kErrorNone) {
     VLOG(0) << "Unistall failed: " << err;
+  }
 }
 
 void OnInstallProgress(double progress) {

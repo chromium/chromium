@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 
+#include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
 #include "content/public/browser/browser_context.h"
 
 namespace screen_ai {
