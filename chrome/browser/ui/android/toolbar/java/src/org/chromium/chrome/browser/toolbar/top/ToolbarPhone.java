@@ -2760,8 +2760,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (!mShouldShowModernizeVisualUpdate) {
             return;
         }
+
         mDropdownListScrolled = true;
-        mLocationBar.setStatusIconBackgroundVisibility(true);
+        if (!OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+            mLocationBar.setStatusIconBackgroundVisibility(true);
+        }
         updateToolbarAndLocationBarColor();
     }
 
@@ -2770,8 +2773,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (!mShouldShowModernizeVisualUpdate) {
             return;
         }
+
         mDropdownListScrolled = false;
-        mLocationBar.setStatusIconBackgroundVisibility(false);
+        if (!OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+            mLocationBar.setStatusIconBackgroundVisibility(false);
+        }
         updateToolbarAndLocationBarColor();
     }
 
