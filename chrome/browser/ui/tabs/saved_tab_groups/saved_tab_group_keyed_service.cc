@@ -90,8 +90,7 @@ void SavedTabGroupKeyedService::StoreLocalToSavedId(
   // crashed session / window. This means we will have to manually trigger the
   // local to saved group linking.
   if (model()->is_loaded()) {
-    model_.OnGroupOpenedInTabStrip(saved_guid, local_group_id);
-    ConnectLocalTabGroup(local_group_id, saved_guid);
+    ConnectLocalTabGroupIfPossible(local_group_id, saved_guid);
   } else {
     saved_guid_to_local_group_id_mapping_.emplace_back(saved_guid,
                                                        local_group_id);
@@ -265,7 +264,7 @@ void SavedTabGroupKeyedService::DisconnectLocalTabGroup(
   model_.OnGroupClosedInTabStrip(group_id);
 }
 
-void SavedTabGroupKeyedService::ConnectLocalTabGroup(
+void SavedTabGroupKeyedService::ConnectLocalTabGroupIfPossible(
     const tab_groups::TabGroupId& local_group_id,
     const base::Uuid& saved_guid) {
   const TabStripModel* tab_strip_model =
@@ -277,16 +276,21 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
   const gfx::Range& tab_range = tab_group->ListTabs();
   const SavedTabGroup* const saved_group = model_.Get(saved_guid);
   CHECK(saved_group);
-  CHECK(tab_range.length() == saved_group->saved_tabs().size());
+
+  if (tab_range.length() != saved_group->saved_tabs().size()) {
+    return;
+  }
 
   std::vector<std::pair<content::WebContents*, base::Uuid>>
       web_contents_to_guid_mapping;
 
-  for (size_t i = tab_range.start(); i < tab_range.end(); ++i) {
-    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+  for (size_t index_in_tabstrip = tab_range.start();
+       index_in_tabstrip < tab_range.end(); ++index_in_tabstrip) {
+    content::WebContents* web_contents =
+        tab_strip_model->GetWebContentsAt(index_in_tabstrip);
     CHECK(web_contents);
 
-    const size_t saved_tab_index = i - tab_range.start();
+    const int saved_tab_index = index_in_tabstrip - tab_range.start();
     const SavedTabGroupTab& saved_tab =
         saved_group->saved_tabs()[saved_tab_index];
 
@@ -294,6 +298,7 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
                                               saved_tab.saved_tab_guid());
   }
 
+  model_.OnGroupOpenedInTabStrip(saved_guid, local_group_id);
   listener_.ConnectToLocalTabGroup(*model_.Get(saved_guid),
                                    std::move(web_contents_to_guid_mapping));
 
@@ -307,8 +312,7 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
       continue;
     }
 
-    model_.OnGroupOpenedInTabStrip(saved_guid, local_group_id);
-    ConnectLocalTabGroup(local_group_id, saved_guid);
+    ConnectLocalTabGroupIfPossible(local_group_id, saved_guid);
   }
 
   // Clear `saved_guid_to_local_group_id_mapping_` to save space when finished.

@@ -50,8 +50,9 @@ class SavedTabGroupKeyedService : public KeyedService,
       const base::Uuid& saved_group_guid,
       const tab_groups::TabGroupId& group_id) override;
   void DisconnectLocalTabGroup(const tab_groups::TabGroupId& group_id) override;
-  void ConnectLocalTabGroup(const tab_groups::TabGroupId& group_id,
-                            const base::Uuid& saved_group_guid) override;
+  void ConnectLocalTabGroupIfPossible(
+      const tab_groups::TabGroupId& group_id,
+      const base::Uuid& saved_group_guid) override;
 
   // SavedTabGroupModelObserver
   void SavedTabGroupModelLoaded() override;
