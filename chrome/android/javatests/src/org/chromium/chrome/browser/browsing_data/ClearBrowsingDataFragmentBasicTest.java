@@ -164,6 +164,7 @@ public class ClearBrowsingDataFragmentBasicTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/1446404")
     public void testRenderSearchHistoryLinkSignedInGoogleDSE() throws IOException {
         mSigninTestRule.addTestAccountThenSignin();
         setSyncable(false);
