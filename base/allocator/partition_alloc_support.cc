@@ -694,8 +694,8 @@ void InstallDanglingRawPtrChecks() {
   // pointers errors are never ignored, by crashing at exit, as a last resort.
   // This makes quarantine memory bloat more likely to be detected.
   static bool first_run_in_process = true;
-  if (!first_run_in_process) {
-    first_run_in_process = true;
+  if (first_run_in_process) {
+    first_run_in_process = false;
     AtExitManager::RegisterTask(base::BindOnce(CheckDanglingRawPtrBufferEmpty));
   }
 
