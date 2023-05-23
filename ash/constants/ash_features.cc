@@ -1788,7 +1788,7 @@ BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
 
 // Maximum number of seconds to wait for ping response before disconnecting
 const base::FeatureParam<base::TimeDelta> kPhoneHubPingTimeout{
-    &kPhoneHubPingOnBubbleOpen, "PhoneHubPingTimeout", base::Seconds(60)};
+    &kPhoneHubPingOnBubbleOpen, "PhoneHubPingTimeout", base::Seconds(5)};
 
 // Controls whether policy provided trust anchors are allowed at the lock
 // screen.
