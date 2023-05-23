@@ -57,6 +57,10 @@ class ShelfPartyFeaturePodControllerTest
     return IsQsRevampEnabled() ? tile_->GetVisible() : button_->GetVisible();
   }
 
+  bool IsButtonToggled() {
+    return IsQsRevampEnabled() ? tile_->IsToggled() : button_->IsToggled();
+  }
+
   void PressIcon() { controller_->OnIconPressed(); }
 
  private:
@@ -71,27 +75,52 @@ INSTANTIATE_TEST_SUITE_P(QsRevamp,
                          testing::Bool());
 
 TEST_P(ShelfPartyFeaturePodControllerTest, ButtonVisibility) {
+  auto* session_controller = GetSessionControllerClient();
   // The button is visible in an active session.
   CreateButton();
   EXPECT_TRUE(IsButtonVisible());
 
   // The button is not visible at the lock screen.
-  GetSessionControllerClient()->LockScreen();
+  session_controller->LockScreen();
+  CreateButton();
+  EXPECT_FALSE(IsButtonVisible());
+
+  // The button is not visible when enterprise managed.
+  session_controller->set_is_enterprise_managed(true);
+  session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
   CreateButton();
   EXPECT_FALSE(IsButtonVisible());
 }
 
 TEST_P(ShelfPartyFeaturePodControllerTest, PressIconTogglesShelfParty) {
+  auto* shelf_model = Shell::Get()->shelf_controller()->model();
   CreateButton();
-  ASSERT_FALSE(Shell::Get()->shelf_controller()->model()->in_shelf_party());
+  ASSERT_FALSE(shelf_model->in_shelf_party());
 
   // Pressing the icon enables shelf party.
   PressIcon();
-  EXPECT_TRUE(Shell::Get()->shelf_controller()->model()->in_shelf_party());
+  EXPECT_TRUE(shelf_model->in_shelf_party());
 
   // Pressing the icon again disables shelf party.
   PressIcon();
-  EXPECT_FALSE(Shell::Get()->shelf_controller()->model()->in_shelf_party());
+  EXPECT_FALSE(shelf_model->in_shelf_party());
+}
+
+TEST_P(ShelfPartyFeaturePodControllerTest, ShelfPartyToggled) {
+  auto* shelf_model = Shell::Get()->shelf_controller()->model();
+  CreateButton();
+  ASSERT_FALSE(shelf_model->in_shelf_party());
+  EXPECT_FALSE(IsButtonToggled());
+
+  // Toggles the shelf party from `shelf_model` to enable shelf party.
+  shelf_model->ToggleShelfParty();
+  EXPECT_TRUE(shelf_model->in_shelf_party());
+  EXPECT_TRUE(IsButtonToggled());
+
+  // Toggles again to disable shelf party.
+  shelf_model->ToggleShelfParty();
+  EXPECT_FALSE(shelf_model->in_shelf_party());
+  EXPECT_FALSE(IsButtonToggled());
 }
 
 }  // namespace ash
