@@ -5,10 +5,9 @@
 // https://wicg.github.io/scheduling-apis/#sec-task-controller
 [
     Exposed=(Window,Worker),
-    ImplementedAs=DOMTaskController,
-    MeasureAs=TaskControllerConstructor
+    ImplementedAs=DOMTaskController
 ] interface TaskController : AbortController {
-    [CallWith=ExecutionContext] constructor(optional TaskControllerInit init = {});
+    [CallWith=ExecutionContext, MeasureAs=TaskControllerConstructor] constructor(optional TaskControllerInit init = {});
     [MeasureAs=TaskControllerSetPriority, RaisesException] void setPriority(TaskPriority priority);
 };
 
