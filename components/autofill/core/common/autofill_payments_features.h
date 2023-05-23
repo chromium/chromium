@@ -37,6 +37,7 @@ BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardMetadata);
 BASE_DECLARE_FEATURE(kAutofillEnforceDelaysInStrikeDatabase);
 BASE_DECLARE_FEATURE(kAutofillFillIbanFields);
 BASE_DECLARE_FEATURE(kAutofillFillMerchantPromoCodeFields);
+BASE_DECLARE_FEATURE(kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
 BASE_DECLARE_FEATURE(kAutofillOfferToSaveCardWithSameLastFour);
 BASE_DECLARE_FEATURE(kAutofillParseIBANFields);
 BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);

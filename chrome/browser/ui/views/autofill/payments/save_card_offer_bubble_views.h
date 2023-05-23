@@ -50,14 +50,13 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   ~SaveCardOfferBubbleViews() override;
 
   std::unique_ptr<views::View> CreateMainContentView() override;
-
   std::unique_ptr<views::View> CreateRequestExpirationDateView();
   std::unique_ptr<views::View> CreateUploadExplanationView();
+  std::unique_ptr<LegalMessageView> CreateLegalMessageView();
 
   void LinkClicked(const GURL& url);
 
   raw_ptr<views::Textfield> cardholder_name_textfield_ = nullptr;
-
   raw_ptr<LegalMessageView> legal_message_view_ = nullptr;
 
   // Holds expiration inputs:
