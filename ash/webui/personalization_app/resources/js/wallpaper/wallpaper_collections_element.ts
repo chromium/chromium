@@ -426,7 +426,9 @@ export class WallpaperCollections extends WithPersonalizationStore {
       this.tiles_ = this.tiles_.filter(tile => !isTimeOfDay(tile));
     }
 
-    this.splitCollections_ = {
+    // Delay assigning `this.splitCollections_` until the correct number of
+    // tiles are assigned.
+    const splitCollections = {
       regular: collections.filter(collection => !isTimeOfDay(collection)),
       timeOfDay,
     };
@@ -435,7 +437,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
     // of day, local images, and google photos.
     const firstBackdropIndex = this.getFirstRegularBackdropTileIndex();
     const desiredNumTiles =
-        this.splitCollections_.regular.length + firstBackdropIndex;
+        splitCollections.regular.length + firstBackdropIndex;
 
     // Adjust the number of loading tiles to match the collections that just
     // came in.  There may be more (or fewer) loading tiles than necessary to
@@ -456,6 +458,10 @@ export class WallpaperCollections extends WithPersonalizationStore {
     if (this.tiles_.length > desiredNumTiles) {
       this.splice('tiles_', desiredNumTiles);
     }
+
+    // Assign `this.splitCollections_` now that
+    // `tiles_.length === desiredNumTiles`.
+    this.splitCollections_ = splitCollections;
   }
 
   /**
