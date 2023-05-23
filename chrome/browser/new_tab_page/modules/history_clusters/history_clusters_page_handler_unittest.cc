@@ -19,7 +19,6 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
-#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_metrics_logger.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
@@ -286,6 +285,10 @@ TEST_F(HistoryClustersPageHandlerTest, GetClusters) {
     for (size_t u = 1; u < cluster_mojom->visits.size(); u++) {
       ASSERT_EQ(kSampleNonSearchUrl, cluster_mojom->visits[u]->url_for_display);
     }
+
+    // Just report them all shown so UKM can get recorded.
+    handler().RecordLayoutTypeShown(
+        ntp::history_clusters::mojom::LayoutType::kLayout1, cluster_mojom->id);
   }
 
   // Reset handler to make sure UKM is recorded.
@@ -427,6 +430,84 @@ TEST_F(HistoryClustersPageHandlerTest, DismissCluster) {
   handler().DismissCluster(std::move(visits_mojom));
   ASSERT_EQ(1u, visit_ids.size());
   ASSERT_EQ(1u, visit_ids.front());
+}
+
+TEST_F(HistoryClustersPageHandlerTest, RecordClick) {
+  // Send down some clusters so we have a logger.
+  int64_t cluster_id = 123;
+  std::vector<history::Cluster> sample_clusters = {SampleCluster(0, 1, 2)};
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals =
+      {{cluster_id, HistoryClustersModuleRankingSignals()}};
+  EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
+      .WillOnce(testing::Invoke(
+          [&sample_clusters, &ranking_signals](
+              base::OnceCallback<void(
+                  std::vector<history::Cluster>,
+                  base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
+                  callback) {
+            std::move(callback).Run(sample_clusters, ranking_signals);
+            return nullptr;
+          }));
+  base::MockCallback<HistoryClustersPageHandler::GetClustersCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_));
+  handler().GetClusters(callback.Get());
+
+  // Simulate a click and layout type.
+  handler().RecordLayoutTypeShown(
+      ntp::history_clusters::mojom::LayoutType::kLayout1, cluster_id);
+  handler().RecordClick(cluster_id);
+
+  // Reset handler to make sure UKM is recorded.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ResetHandler();
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::NewTabPage_HistoryClusters::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::NewTabPage_HistoryClusters::kLayoutTypeShownName, 1);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 1);
+}
+
+TEST_F(HistoryClustersPageHandlerTest, RecordLayoutTypeShown) {
+  // Send down some clusters so we have a logger.
+  int64_t cluster_id = 123;
+  std::vector<history::Cluster> sample_clusters = {SampleCluster(0, 1, 2)};
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals =
+      {{cluster_id, HistoryClustersModuleRankingSignals()}};
+  EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
+      .WillOnce(testing::Invoke(
+          [&sample_clusters, &ranking_signals](
+              base::OnceCallback<void(
+                  std::vector<history::Cluster>,
+                  base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
+                  callback) {
+            std::move(callback).Run(sample_clusters, ranking_signals);
+            return nullptr;
+          }));
+  base::MockCallback<HistoryClustersPageHandler::GetClustersCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_));
+  handler().GetClusters(callback.Get());
+
+  // Simulate a layout type being chosen for the cluster.
+  ntp::history_clusters::mojom::LayoutType layout_type =
+      ntp::history_clusters::mojom::LayoutType::kLayout3;
+  handler().RecordLayoutTypeShown(layout_type, cluster_id);
+
+  // Reset handler to make sure UKM is recorded.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ResetHandler();
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::NewTabPage_HistoryClusters::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::NewTabPage_HistoryClusters::kLayoutTypeShownName, 3);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::NewTabPage_HistoryClusters::kDidEngageWithModuleName, 0);
 }
 
 TEST_F(HistoryClustersPageHandlerTest, NotLoadCartWithoutFeature) {

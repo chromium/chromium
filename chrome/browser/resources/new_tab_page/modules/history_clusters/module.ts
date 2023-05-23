@@ -12,6 +12,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {Cart} from '../../cart.mojom-webui.js';
 import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
+import {LayoutType} from '../../history_clusters.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
 import {InfoDialogElement} from '../info_dialog';
@@ -27,18 +28,6 @@ export const LAYOUT_2_MIN_IMAGE_VISITS = 1;
 export const LAYOUT_2_MIN_VISITS = 3;
 export const LAYOUT_3_MIN_IMAGE_VISITS = 2;
 export const LAYOUT_3_MIN_VISITS = 4;
-
-/**
- * Available module UI layouts. This enum must match the numbering for
- * NTPHistoryClustersModuleDisplayLayout in enums.xml. These values are
- * persisted to logs. Entries should not be renumbered, removed or reused.
- */
-export enum HistoryClusterLayoutType {
-  NONE = 0,
-  LAYOUT_1 = 1,  // 2 image visits
-  LAYOUT_2 = 2,  // 1 image visit & 2 non-image visits
-  LAYOUT_3 = 3,  // 2 image visits & 2 non-image visits
-}
 
 /**
  * Available module element types. This enum must match the numbering for
@@ -99,12 +88,15 @@ export class HistoryClustersModuleElement extends I18nMixin
 
   cluster: Cluster;
   cart: Cart|null;
-  layoutType: HistoryClusterLayoutType;
+  layoutType: LayoutType;
   searchResultPage: URLVisit;
   private setDisabledModulesListenerId_: number|null = null;
 
   override ready() {
     super.ready();
+
+    HistoryClustersProxyImpl.getInstance().handler.recordLayoutTypeShown(
+        this.layoutType, this.cluster.id);
 
     listenOnce(window, 'unload', () => {
       const visitTiles: TileModuleElement[] = Array.from(
@@ -152,7 +144,7 @@ export class HistoryClustersModuleElement extends I18nMixin
     }
   }
 
-  private isLayout_(type: HistoryClusterLayoutType): boolean {
+  private isLayout_(type: LayoutType): boolean {
     return type === this.layoutType;
   }
 
@@ -174,10 +166,11 @@ export class HistoryClustersModuleElement extends I18nMixin
     chrome.metricsPrivate.recordEnumerationValue(
         `NewTabPage.HistoryClusters.Layout${this.layoutType}.Click`, type,
         Object.keys(HistoryClusterElementType).length);
+    HistoryClustersProxyImpl.getInstance().handler.recordClick(this.cluster.id);
   }
 
   private recordTileClickIndex_(tile: HTMLElement, tileType: string) {
-    assert(this.layoutType !== HistoryClusterLayoutType.NONE);
+    assert(this.layoutType !== LayoutType.kNone);
     const index = Array.from(tile.parentNode!.children).indexOf(tile);
     chrome.metricsPrivate.recordValue(
         {
@@ -245,10 +238,10 @@ export class HistoryClustersModuleElement extends I18nMixin
 customElements.define(
     HistoryClustersModuleElement.is, HistoryClustersModuleElement);
 
-function recordSelectedLayout(option: HistoryClusterLayoutType) {
+function recordSelectedLayout(option: LayoutType) {
   chrome.metricsPrivate.recordEnumerationValue(
       'NewTabPage.HistoryClusters.DisplayLayout', option,
-      Object.keys(HistoryClusterLayoutType).length);
+      Object.keys(LayoutType).length);
 }
 
 function processLayoutVisits(
@@ -275,7 +268,7 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
       await HistoryClustersProxyImpl.getInstance().handler.getClusters();
   // Do not show module if there are no clusters.
   if (clusters.length === 0) {
-    recordSelectedLayout(HistoryClusterLayoutType.NONE);
+    recordSelectedLayout(LayoutType.kNone);
     return null;
   }
 
@@ -310,25 +303,25 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
     // Decide which one to use by checking if there are enough total
     // visits for layout 3.
     if (visitCount >= LAYOUT_3_MIN_VISITS) {
-      element.layoutType = HistoryClusterLayoutType.LAYOUT_3;
+      element.layoutType = LayoutType.kLayout3;
       element.cluster.visits = processLayoutVisits(
           visits, LAYOUT_3_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS);
     } else {
       // If we have enough image visits, we have enough total visits
       // for layout 1, since all visits shown are image visits.
-      element.layoutType = HistoryClusterLayoutType.LAYOUT_1;
+      element.layoutType = LayoutType.kLayout1;
       element.cluster.visits = processLayoutVisits(
           visits, LAYOUT_1_MIN_VISITS, LAYOUT_1_MIN_IMAGE_VISITS);
     }
   } else if (
       imageCount === LAYOUT_2_MIN_IMAGE_VISITS &&
       visitCount >= LAYOUT_2_MIN_VISITS) {
-    element.layoutType = HistoryClusterLayoutType.LAYOUT_2;
+    element.layoutType = LayoutType.kLayout2;
     element.cluster.visits = processLayoutVisits(
         visits, LAYOUT_2_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS);
   } else {
     // If the data doesn't fit any layout, don't show the module.
-    recordSelectedLayout(HistoryClusterLayoutType.NONE);
+    recordSelectedLayout(LayoutType.kNone);
     return null;
   }
 

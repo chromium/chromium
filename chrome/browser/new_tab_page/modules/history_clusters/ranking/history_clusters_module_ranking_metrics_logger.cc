@@ -18,37 +18,65 @@ HistoryClustersModuleRankingMetricsLogger::
 void HistoryClustersModuleRankingMetricsLogger::AddSignals(
     base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
         ranking_signals) {
-  ranking_signals_.insert(ranking_signals.begin(), ranking_signals.end());
+  for (const auto& ranking_signal : ranking_signals) {
+    ranking_metrics_infos_[ranking_signal.first].ranking_signals =
+        ranking_signal.second;
+  }
+}
+
+void HistoryClustersModuleRankingMetricsLogger::SetClicked(int64_t cluster_id) {
+  if (ranking_metrics_infos_.contains(cluster_id)) {
+    ranking_metrics_infos_[cluster_id].clicked = true;
+  }
+}
+
+void HistoryClustersModuleRankingMetricsLogger::SetLayoutTypeShown(
+    ntp::history_clusters::mojom::LayoutType layout_type,
+    int64_t cluster_id) {
+  if (ranking_metrics_infos_.contains(cluster_id)) {
+    ranking_metrics_infos_[cluster_id].layout_type = layout_type;
+  }
 }
 
 void HistoryClustersModuleRankingMetricsLogger::RecordUkm(
     bool record_in_cluster_id_order) {
   if (!record_in_cluster_id_order) {
     // Record in whatever order if we just care to log the signals.
-    for (auto& ranking_signals : ranking_signals_) {
-      ukm::builders::NewTabPage_HistoryClusters builder(ukm_source_id_);
-      ranking_signals.second.PopulateUkmEntry(&builder);
-      builder.Record(ukm::UkmRecorder::Get());
+    for (auto& ranking_metrics_info : ranking_metrics_infos_) {
+      MaybeRecordRankingMetricsInfo(ranking_metrics_info.second);
     }
     return;
   }
 
   // Otherwise, sort by cluster ID before logging the records.
-  std::vector<std::tuple<int64_t, HistoryClustersModuleRankingSignals>>
-      ranking_signals_vector;
-  ranking_signals_vector.reserve(ranking_signals_.size());
-  for (const auto& ranking_signals : ranking_signals_) {
-    ranking_signals_vector.emplace_back(ranking_signals.first,
-                                        ranking_signals.second);
+  std::vector<std::tuple<int64_t, RankingMetricsInfo>>
+      ranking_metrics_info_vector;
+  ranking_metrics_info_vector.reserve(ranking_metrics_infos_.size());
+  for (const auto& ranking_metrics_info : ranking_metrics_infos_) {
+    ranking_metrics_info_vector.emplace_back(ranking_metrics_info.first,
+                                             ranking_metrics_info.second);
   }
   base::ranges::stable_sort(
-      ranking_signals_vector, [&](const auto& rs1, const auto& rs2) {
+      ranking_metrics_info_vector, [&](const auto& rs1, const auto& rs2) {
         return std::get<int64_t>(rs1) < std::get<int64_t>(rs2);
       });
-  for (const auto& ranking_signals : ranking_signals_vector) {
-    ukm::builders::NewTabPage_HistoryClusters builder(ukm_source_id_);
-    std::get<HistoryClustersModuleRankingSignals>(ranking_signals)
-        .PopulateUkmEntry(&builder);
-    builder.Record(ukm::UkmRecorder::Get());
+  for (const auto& ranking_metrics_info : ranking_metrics_info_vector) {
+    MaybeRecordRankingMetricsInfo(
+        std::get<RankingMetricsInfo>(ranking_metrics_info));
   }
+}
+
+void HistoryClustersModuleRankingMetricsLogger::MaybeRecordRankingMetricsInfo(
+    const RankingMetricsInfo& ranking_metrics_info) {
+  if (ranking_metrics_info.layout_type ==
+      ntp::history_clusters::mojom::LayoutType::kNone) {
+    return;
+  }
+
+  ukm::builders::NewTabPage_HistoryClusters builder(ukm_source_id_);
+  ranking_metrics_info.ranking_signals.PopulateUkmEntry(&builder);
+  builder.SetDidEngageWithModule(ranking_metrics_info.clicked);
+  builder.SetLayoutTypeShown(
+      static_cast<int64_t>(ranking_metrics_info.layout_type));
+  builder.Record(ukm::UkmRecorder::Get());
 }

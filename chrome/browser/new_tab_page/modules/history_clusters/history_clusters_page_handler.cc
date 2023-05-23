@@ -281,3 +281,13 @@ void HistoryClustersPageHandler::DismissCluster(
   history_service->HideVisits(visit_ids, base::BindOnce([]() {}),
                               &hide_visits_task_tracker_);
 }
+
+void HistoryClustersPageHandler::RecordClick(int64_t cluster_id) {
+  ranking_metrics_logger_->SetClicked(cluster_id);
+}
+
+void HistoryClustersPageHandler::RecordLayoutTypeShown(
+    ntp::history_clusters::mojom::LayoutType layout_type,
+    int64_t cluster_id) {
+  ranking_metrics_logger_->SetLayoutTypeShown(layout_type, cluster_id);
+}
