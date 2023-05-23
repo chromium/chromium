@@ -41,4 +41,29 @@ typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierAddPasswordButton,
 };
 
+// Enum with all possible UI states for the Password Manager's Password Checkup
+// cell.
+typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
+  // When no insecure passwords were detected.
+  PasswordCheckStateSafe,
+  // When user has unmuted compromised passwords.
+  PasswordCheckStateUnmutedCompromisedPasswords,
+  // When user has reused passwords.
+  PasswordCheckStateReusedPasswords,
+  // When user has weak passwords.
+  PasswordCheckStateWeakPasswords,
+  // When user has dismissed warnings.
+  PasswordCheckStateDismissedWarnings,
+  // When check was not perfect and state is unclear.
+  PasswordCheckStateDefault,
+  // When password check is running.
+  PasswordCheckStateRunning,
+  // When user has no passwords and check can't be performed.
+  PasswordCheckStateDisabled,
+  // When password check failed due to network issues, quota limit or others.
+  PasswordCheckStateError,
+  // When password check failed due to user being signed out.
+  PasswordCheckStateSignedOut,
+};
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONSTANTS_H_

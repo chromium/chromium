@@ -12,6 +12,7 @@ source_set("password") {
   ]
   deps = [
     ":common",
+    ":password_constants",
     ":password_ui",
     "//components/keyed_service/core",
     "//components/password_manager/core/common:features",
