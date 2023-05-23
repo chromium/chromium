@@ -12,7 +12,8 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink()
     : LayerTreeFrameSink(/*context_provider=*/nullptr,
                          /*worker_context_provider_wrapper=*/nullptr,
                          /*compositor_task_runner=*/nullptr,
-                         /*gpu_memory_buffer_manager=*/nullptr) {}
+                         /*gpu_memory_buffer_manager=*/nullptr,
+                         /*shared_image_interface=*/nullptr) {}
 
 TestLayerTreeFrameSink::~TestLayerTreeFrameSink() = default;
 

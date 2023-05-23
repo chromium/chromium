@@ -23,6 +23,7 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -75,10 +76,12 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
   };
 
-  AsyncLayerTreeFrameSink(scoped_refptr<viz::ContextProvider> context_provider,
-                          scoped_refptr<RasterContextProviderWrapper>
-                              worker_context_provider_wrapper,
-                          InitParams* params);
+  AsyncLayerTreeFrameSink(
+      scoped_refptr<viz::ContextProvider> context_provider,
+      scoped_refptr<RasterContextProviderWrapper>
+          worker_context_provider_wrapper,
+      std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface,
+      InitParams* params);
   AsyncLayerTreeFrameSink(const AsyncLayerTreeFrameSink&) = delete;
   ~AsyncLayerTreeFrameSink() override;
 

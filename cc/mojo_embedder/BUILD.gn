@@ -21,6 +21,7 @@ cc_component("mojo_embedder") {
     "//components/power_scheduler",
     "//components/viz/client",
     "//components/viz/common",
+    "//gpu/ipc/client",
     "//mojo/public/cpp/bindings",
     "//services/viz/public/mojom",
   ]

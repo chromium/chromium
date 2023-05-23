@@ -362,8 +362,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
       !is_gpu_compositing_disabled_ && !compositor->force_software_compositor();
 
   if (gpu_compositing) {
-    auto context_result =
-        TryCreateContextsForGpuCompositing(std::move(gpu_channel_host));
+    auto context_result = TryCreateContextsForGpuCompositing(gpu_channel_host);
     if (context_result == gpu::ContextResult::kTransientFailure) {
       // Get a new GpuChannelHost and retry context creation.
       gpu_channel_establish_factory_->EstablishGpuChannel(
@@ -466,13 +465,22 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
   params.compositor_task_runner = compositor->task_runner();
   params.gpu_memory_buffer_manager =
-      compositor->context_factory()->GetGpuMemoryBufferManager();
+      compositor->context_factory()
+          ? compositor->context_factory()->GetGpuMemoryBufferManager()
+          : nullptr;
   params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
+
+  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface;
+  if (gpu_channel_host) {
+    shared_image_interface =
+        gpu_channel_host->CreateClientSharedImageInterface();
+  }
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           std::move(context_provider),
-          std::move(worker_context_provider_wrapper), &params);
+          std::move(worker_context_provider_wrapper),
+          std::move(shared_image_interface), &params);
   compositor->SetLayerTreeFrameSink(std::move(frame_sink),
                                     std::move(display_private));
   if (compositor->use_external_begin_frame_control()) {

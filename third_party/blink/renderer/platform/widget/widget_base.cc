@@ -650,7 +650,8 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
         std::move(render_frame_metadata_observer_remote));
     std::move(callback).Run(
         std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
-            nullptr, nullptr, params.get()),
+            /*context_provider=*/nullptr, /*worker_context_provider=*/nullptr,
+            /*shared_image_interface=*/nullptr, params.get()),
         std::move(render_frame_metadata_observer));
     return;
   }
@@ -710,7 +711,8 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
         std::move(render_frame_metadata_observer_remote));
     std::move(callback).Run(
         std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
-            nullptr, nullptr, params.get()),
+            /*context_provider=*/nullptr, /*worker_context_provider=*/nullptr,
+            gpu_channel_host->CreateClientSharedImageInterface(), params.get()),
         std::move(render_frame_metadata_observer));
     return;
   }
@@ -813,7 +815,8 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   std::move(callback).Run(
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           std::move(context_provider),
-          std::move(worker_context_provider_wrapper), params.get()),
+          std::move(worker_context_provider_wrapper),
+          gpu_channel_host->CreateClientSharedImageInterface(), params.get()),
       std::move(render_frame_metadata_observer));
 }
 
