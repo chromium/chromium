@@ -63,7 +63,7 @@ BASE_FEATURE(kRealboxWidthBehavior,
 // searchbox.
 BASE_FEATURE(kRealboxRoundedCorners,
              "NtpRealboxRoundedCorners",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the real search box ("realbox") on the New Tab page will show a
 // Google (g) icon instead of the typical magnifying glass (aka loupe).
