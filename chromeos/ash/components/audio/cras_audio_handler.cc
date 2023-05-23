@@ -1254,10 +1254,6 @@ void CrasAudioHandler::OnAudioPolicyPrefChanged() {
   ApplyAudioPolicy();
 }
 
-void CrasAudioHandler::OnSpeakOnMuteDetectionPrefChanged() {
-  ApplySpeakOnMuteDetectionState();
-}
-
 const AudioDevice* CrasAudioHandler::GetDeviceFromId(uint64_t device_id) const {
   AudioDeviceMap::const_iterator it = audio_devices_.find(device_id);
   if (it == audio_devices_.end())
@@ -1424,7 +1420,9 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   if (input_muted_by_microphone_mute_switch_)
     SetInputMute(true, InputMuteChangeMethod::kPhysicalShutter);
 
-  ApplySpeakOnMuteDetectionState();
+  // Sets speak-on-mute detection enabled based on feature flag.
+  CrasAudioClient::Get()->SetSpeakOnMuteDetection(
+      features::IsSpeakOnMuteEnabled());
 }
 
 void CrasAudioHandler::ApplyAudioPolicy() {
@@ -1437,22 +1435,6 @@ void CrasAudioHandler::ApplyAudioPolicy() {
   UpdateAudioMute();
   // Policy for audio input is handled by kAudioCaptureAllowed in the Chrome
   // media system.
-}
-
-void CrasAudioHandler::ApplySpeakOnMuteDetectionState() {
-  if (!features::IsSpeakOnMuteEnabled()) {
-    return;
-  }
-
-  bool som_on = audio_pref_handler_->GetSpeakOnMuteDetectionEnabledValue();
-
-  if (speak_on_mute_detection_on_ == som_on) {
-    return;
-  }
-
-  speak_on_mute_detection_on_ = som_on;
-  // Sets speak-on-mute detection enabled based on pref value.
-  CrasAudioClient::Get()->SetSpeakOnMuteDetection(speak_on_mute_detection_on_);
 }
 
 void CrasAudioHandler::UpdateAudioMute() {

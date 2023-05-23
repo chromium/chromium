@@ -72,9 +72,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   // Reads the audio output allowed value from prefs.
   virtual bool GetAudioOutputAllowedValue() const = 0;
 
-  // Reads the speak-on-mute detection enabled value from prefs.
-  virtual bool GetSpeakOnMuteDetectionEnabledValue() const = 0;
-
   // Adds an audio preference observer.
   virtual void AddAudioPrefObserver(AudioPrefObserver* observer) = 0;
   // Removes an audio preference observer.
