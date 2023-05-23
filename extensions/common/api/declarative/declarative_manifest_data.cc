@@ -48,7 +48,7 @@ class ErrorBuilder {
 // the manifest key for the internal key.
 bool ConvertManifestRule(DeclarativeManifestData::Rule& rule,
                          ErrorBuilder* error_builder) {
-  auto convert_list = [error_builder](std::vector<base::Value>& list) {
+  auto convert_list = [error_builder](base::Value::List& list) {
     for (base::Value& value : list) {
       base::Value::Dict* dictionary = value.GetIfDict();
       if (!dictionary) {

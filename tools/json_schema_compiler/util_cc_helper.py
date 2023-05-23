@@ -26,6 +26,12 @@ class UtilCCHelper(object):
     """
     return '%s::CreateValueFromArray(%s)' % (_API_UTIL_NAMESPACE, src)
 
+  def AppendToContainer(self, container, value):
+    """Appends |value| to |container|.
+    """
+    return '%s::AppendToContainer(%s, %s);' % (
+      _API_UTIL_NAMESPACE, container, value)
+
   def GetIncludePath(self):
     return '#include "tools/json_schema_compiler/util.h"'
 

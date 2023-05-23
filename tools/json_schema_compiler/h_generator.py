@@ -222,15 +222,19 @@ class _Generator(object):
         c.Comment(type_.description)
       c.Cblock(self._GenerateType(type_.item_type, is_toplevel=is_toplevel))
       if generate_typedefs:
-        (c.Append('typedef std::vector<%s > %s;' % (
-                       self._type_helper.GetCppType(type_.item_type),
-                       classname))
-        )
+        item_cpp_type = self._type_helper.GetCppType(type_.item_type)
+        if item_cpp_type != 'base::Value':
+          (c.Append('using %s = std::vector<%s >;' % (
+                        classname,
+                        item_cpp_type))
+          )
+        else:
+          c.Append('using %s = base::Value::List;' % classname)
     elif type_.property_type == PropertyType.STRING:
       if generate_typedefs:
         if type_.description:
           c.Comment(type_.description)
-        c.Append('typedef std::string %(classname)s;')
+        c.Append('using %(classname)s = std::string;')
     elif type_.property_type == PropertyType.ENUM:
       if type_.description:
         c.Comment(type_.description)

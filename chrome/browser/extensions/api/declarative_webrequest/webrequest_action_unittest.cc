@@ -47,10 +47,10 @@ const char kUnknownActionType[] = "unknownType";
 std::unique_ptr<WebRequestActionSet> CreateSetOfActions(const char* json) {
   base::Value::List parsed_value = base::test::ParseJsonList(json);
 
-  WebRequestActionSet::Values actions;
-  for (const base::Value& entry : parsed_value) {
+  base::Value::List actions;
+  for (base::Value& entry : parsed_value) {
     CHECK(entry.is_dict());
-    actions.push_back(entry.Clone());
+    actions.Append(std::move(entry));
   }
 
   std::string error;
@@ -200,7 +200,7 @@ TEST(WebRequestActionTest, CreateActionSet) {
   bool bad_message = false;
   std::unique_ptr<WebRequestActionSet> result;
 
-  WebRequestActionSet::Values input;
+  base::Value::List input;
 
   // Test empty input.
   error.clear();
@@ -220,7 +220,7 @@ TEST(WebRequestActionTest, CreateActionSet) {
   base::Value::List wrong_format_action;
 
   // Test success.
-  input.emplace_back(std::move(correct_action));
+  input.Append(std::move(correct_action));
   error.clear();
   result = WebRequestActionSet::Create(nullptr, nullptr, input, &error,
                                        &bad_message);
@@ -233,7 +233,7 @@ TEST(WebRequestActionTest, CreateActionSet) {
   EXPECT_EQ(10, result->GetMinimumPriority());
 
   // Test failure.
-  input.emplace_back(std::move(incorrect_action));
+  input.Append(std::move(incorrect_action));
   error.clear();
   result = WebRequestActionSet::Create(nullptr, nullptr, input, &error,
                                        &bad_message);
@@ -241,7 +241,7 @@ TEST(WebRequestActionTest, CreateActionSet) {
   EXPECT_FALSE(result.get());
 
   // Test wrong data type passed.
-  input.emplace_back(std::move(wrong_format_action));
+  input.Append(std::move(wrong_format_action));
   error.clear();
   result = WebRequestActionSet::Create(nullptr, nullptr, input, &error,
                                        &bad_message);

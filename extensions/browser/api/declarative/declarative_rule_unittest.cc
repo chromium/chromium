@@ -66,9 +66,9 @@ typedef DeclarativeConditionSet<RecordingCondition> RecordingConditionSet;
 
 TEST(DeclarativeConditionTest, ErrorConditionSet) {
   URLMatcher matcher;
-  RecordingConditionSet::Values conditions;
-  conditions.push_back(ParseJson("{\"key\": 1}"));
-  conditions.push_back(ParseJson("{\"bad_key\": 2}"));
+  base::Value::List conditions;
+  conditions.Append(ParseJson("{\"key\": 1}"));
+  conditions.Append(ParseJson("{\"bad_key\": 2}"));
 
   std::string error;
   std::unique_ptr<RecordingConditionSet> result = RecordingConditionSet::Create(
@@ -79,9 +79,9 @@ TEST(DeclarativeConditionTest, ErrorConditionSet) {
 
 TEST(DeclarativeConditionTest, CreateConditionSet) {
   URLMatcher matcher;
-  RecordingConditionSet::Values conditions;
-  conditions.push_back(ParseJson("{\"key\": 1}"));
-  conditions.push_back(ParseJson("[\"val1\", 2]"));
+  base::Value::List conditions;
+  conditions.Append(ParseJson("{\"key\": 1}"));
+  conditions.Append(ParseJson("[\"val1\", 2]"));
 
   // Test insertion
   std::string error;
@@ -157,11 +157,11 @@ struct FulfillableCondition {
 
 TEST(DeclarativeConditionTest, FulfillConditionSet) {
   typedef DeclarativeConditionSet<FulfillableCondition> FulfillableConditionSet;
-  FulfillableConditionSet::Values conditions;
-  conditions.push_back(ParseJson("{\"url_id\": 1, \"max\": 3}"));
-  conditions.push_back(ParseJson("{\"url_id\": 2, \"max\": 5}"));
-  conditions.push_back(ParseJson("{\"url_id\": 3, \"max\": 1}"));
-  conditions.push_back(ParseJson("{\"max\": -5}"));  // No url.
+  base::Value::List conditions;
+  conditions.Append(ParseJson("{\"url_id\": 1, \"max\": 3}"));
+  conditions.Append(ParseJson("{\"url_id\": 2, \"max\": 5}"));
+  conditions.Append(ParseJson("{\"url_id\": 3, \"max\": 1}"));
+  conditions.Append(ParseJson("{\"max\": -5}"));  // No url.
 
   // Test insertion
   std::string error;
@@ -258,9 +258,9 @@ class SummingAction : public base::RefCounted<SummingAction> {
 typedef DeclarativeActionSet<SummingAction> SummingActionSet;
 
 TEST(DeclarativeActionTest, ErrorActionSet) {
-  SummingActionSet::Values actions;
-  actions.push_back(ParseJson("{\"value\": 1}"));
-  actions.push_back(ParseJson("{\"error\": \"the error\"}"));
+  base::Value::List actions;
+  actions.Append(ParseJson("{\"value\": 1}"));
+  actions.Append(ParseJson("{\"error\": \"the error\"}"));
 
   std::string error;
   bool bad = false;
@@ -271,8 +271,8 @@ TEST(DeclarativeActionTest, ErrorActionSet) {
   EXPECT_FALSE(result);
 
   actions.clear();
-  actions.push_back(ParseJson("{\"value\": 1}"));
-  actions.push_back(ParseJson("{\"bad\": 3}"));
+  actions.Append(ParseJson("{\"value\": 1}"));
+  actions.Append(ParseJson("{\"bad\": 3}"));
   result = SummingActionSet::Create(nullptr, nullptr, actions, &error, &bad);
   EXPECT_EQ("", error);
   EXPECT_TRUE(bad);
@@ -280,9 +280,9 @@ TEST(DeclarativeActionTest, ErrorActionSet) {
 }
 
 TEST(DeclarativeActionTest, ApplyActionSet) {
-  SummingActionSet::Values actions;
-  actions.push_back(ParseJson("{\"value\": 1, \"priority\": 5}"));
-  actions.push_back(ParseJson("{\"value\": 2}"));
+  base::Value::List actions;
+  actions.Append(ParseJson("{\"value\": 1, \"priority\": 5}"));
+  actions.Append(ParseJson("{\"value\": 2}"));
 
   // Test insertion
   std::string error;

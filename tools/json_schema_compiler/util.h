@@ -155,29 +155,25 @@ void AddItemToList(const T& from, base::Value::List& out) {
   out.Append(from.ToValue());
 }
 
-// Set |out| to the the contents of |from|. Requires PopulateItem to be
+// Returns a list matching the contents of |from|. Requires PopulateItem to be
 // implemented for |T|.
-template <class T>
-void PopulateListFromArray(const std::vector<T>& from, base::Value::List& out) {
-  out.clear();
-  for (const T& item : from)
-    AddItemToList(item, out);
-}
-
-// Set |out| to the the contents of |from| if |from| is not null. Requires
-// PopulateItem to be implemented for |T|.
-template <class T>
-void PopulateListFromOptionalArray(const std::unique_ptr<std::vector<T>>& from,
-                                   base::Value::List& out) {
-  if (from)
-    PopulateListFromArray(*from, out);
-}
-
 template <class T>
 base::Value::List CreateValueFromArray(const std::vector<T>& from) {
   base::Value::List list;
-  PopulateListFromArray(from, list);
+  for (const T& item : from) {
+    AddItemToList(item, list);
+  }
   return list;
+}
+
+template <class T>
+void AppendToContainer(base::Value::List& container, T&& value) {
+  container.Append(std::forward<T>(value));
+}
+
+template <class C, class T>
+void AppendToContainer(std::vector<C>& container, T&& value) {
+  container.emplace_back(std::forward<T>(value));
 }
 
 }  // namespace util

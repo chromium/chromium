@@ -85,7 +85,7 @@ void GeneratedPref::AddUserSelectableValue(
   if (!pref_object->user_selectable_values) {
     pref_object->user_selectable_values.emplace();
   }
-  pref_object->user_selectable_values->push_back(base::Value(value));
+  pref_object->user_selectable_values->Append(value);
 }
 
 }  // namespace settings_private

@@ -184,9 +184,9 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
         &pref_object, reporting_pref);
 
     pref_object.user_selectable_values.emplace();
-    pref_object.user_selectable_values->emplace_back(
+    pref_object.user_selectable_values->Append(
         base::to_underlying(SafeBrowsingSetting::STANDARD));
-    pref_object.user_selectable_values->emplace_back(
+    pref_object.user_selectable_values->Append(
         base::to_underlying(SafeBrowsingSetting::DISABLED));
   }
 }

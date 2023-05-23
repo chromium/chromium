@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/url_matcher/url_matcher.h"
 #include "extensions/common/api/events.h"
 #include "extensions/common/extension.h"
@@ -26,7 +27,6 @@
 
 namespace base {
 class Time;
-class Value;
 }
 
 namespace content {
@@ -59,7 +59,6 @@ namespace extensions {
 template<typename ConditionT>
 class DeclarativeConditionSet {
  public:
-  using Values = std::vector<base::Value>;
   using Conditions = std::vector<std::unique_ptr<const ConditionT>>;
   using const_iterator = typename Conditions::const_iterator;
 
@@ -72,7 +71,7 @@ class DeclarativeConditionSet {
   static std::unique_ptr<DeclarativeConditionSet> Create(
       const Extension* extension,
       url_matcher::URLMatcherConditionFactory* url_matcher_condition_factory,
-      const Values& condition_values,
+      const base::Value::List& condition_values,
       std::string* error);
 
   const Conditions& conditions() const {
@@ -143,7 +142,6 @@ class DeclarativeConditionSet {
 template<typename ActionT>
 class DeclarativeActionSet {
  public:
-  using Values = std::vector<base::Value>;
   using Actions = std::vector<scoped_refptr<const ActionT>>;
 
   explicit DeclarativeActionSet(const Actions& actions);
@@ -157,7 +155,7 @@ class DeclarativeActionSet {
   static std::unique_ptr<DeclarativeActionSet> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const Values& action_values,
+      const base::Value::List& action_values,
       std::string* error,
       bool* bad_message);
 
@@ -307,7 +305,7 @@ std::unique_ptr<DeclarativeConditionSet<ConditionT>>
 DeclarativeConditionSet<ConditionT>::Create(
     const Extension* extension,
     url_matcher::URLMatcherConditionFactory* url_matcher_condition_factory,
-    const Values& condition_values,
+    const base::Value::List& condition_values,
     std::string* error) {
   Conditions result;
 
@@ -361,7 +359,7 @@ template <typename ActionT>
 std::unique_ptr<DeclarativeActionSet<ActionT>>
 DeclarativeActionSet<ActionT>::Create(content::BrowserContext* browser_context,
                                       const Extension* extension,
-                                      const Values& action_values,
+                                      const base::Value::List& action_values,
                                       std::string* error,
                                       bool* bad_message) {
   *error = "";
