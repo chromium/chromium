@@ -35,6 +35,7 @@ public class QuickDeleteController {
     private final @NonNull Context mContext;
     private final @NonNull QuickDeleteDelegate mDelegate;
     private final @NonNull QuickDeleteDialogDelegate mDialogDelegate;
+    private final @NonNull QuickDeleteTabsFilter mDeleteTabsFilter;
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull LayoutManager mLayoutManager;
     private final @NonNull View mAnimationView;
@@ -61,6 +62,9 @@ public class QuickDeleteController {
         mLayoutManager = layoutManager;
         mDialogDelegate = new QuickDeleteDialogDelegate(
                 context, modalDialogManager, this::onDialogDismissed, tabModelSelector);
+        mDeleteTabsFilter =
+                new QuickDeleteTabsFilter(tabModelSelector.getModel(/*incognito=*/false));
+
         mAnimationView = animationView;
         mAnimationView.setBackgroundResource(R.drawable.quick_delete_animation);
     }
@@ -87,6 +91,7 @@ public class QuickDeleteController {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 QuickDeleteMetricsDelegate.recordHistogram(
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
+                mDeleteTabsFilter.closeTabsFilteredForQuickDelete();
                 mDelegate.performQuickDelete(this::onQuickDeleteFinished);
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
