@@ -560,7 +560,7 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kBorderStyle:
       return Get4Values(borderStyleShorthand());
     case CSSPropertyID::kColumnRule:
-      return GetShorthandValue(columnRuleShorthand());
+      return GetShorthandValueForColumnRule(columnRuleShorthand());
     case CSSPropertyID::kColumns:
       return GetShorthandValueForColumns(columnsShorthand());
     case CSSPropertyID::kContainIntrinsicSize:
@@ -1737,6 +1737,56 @@ String StylePropertySerializer::GetShorthandValue(
     }
     result.Append(value_text);
   }
+  return result.ReleaseString();
+}
+
+String StylePropertySerializer::GetShorthandValueForColumnRule(
+    const StylePropertyShorthand& shorthand) const {
+  DCHECK_EQ(shorthand.length(), 3u);
+
+  const CSSValue* column_rule_width =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue* column_rule_style =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+  const CSSValue* column_rule_color =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+
+  StringBuilder result;
+  if (!(IsA<CSSIdentifierValue>(column_rule_width) &&
+        To<CSSIdentifierValue>(column_rule_width)->GetValueID() ==
+            CSSValueID::kMedium) &&
+      !column_rule_width->IsInitialValue()) {
+    String column_rule_width_text = column_rule_width->CssText();
+    result.Append(column_rule_width_text);
+  }
+
+  if (!(IsA<CSSIdentifierValue>(column_rule_style) &&
+        To<CSSIdentifierValue>(column_rule_style)->GetValueID() ==
+            CSSValueID::kNone) &&
+      !column_rule_style->IsInitialValue()) {
+    String column_rule_style_text = column_rule_style->CssText();
+    if (!result.empty()) {
+      result.Append(" ");
+    }
+
+    result.Append(column_rule_style_text);
+  }
+  if (!(IsA<CSSIdentifierValue>(column_rule_color) &&
+        To<CSSIdentifierValue>(column_rule_color)->GetValueID() ==
+            CSSValueID::kCurrentcolor) &&
+      !column_rule_color->IsInitialValue()) {
+    String column_rule_color_text = column_rule_color->CssText();
+    if (!result.empty()) {
+      result.Append(" ");
+    }
+
+    result.Append(column_rule_color_text);
+  }
+
+  if (result.empty()) {
+    return "medium";
+  }
+
   return result.ReleaseString();
 }
 
