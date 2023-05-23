@@ -54,12 +54,6 @@ found in the LICENSE file.
             app:iconImage="@drawable/ic_web_asset_24dp"
             app:summaryText="@string/privacy_guide_sb_standard_item_three" />
 
-        <!-- Extra empty space, necessary due to crbug.com/1287979. -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="16dp"
-            android:visibility="invisible" />
-
     </LinearLayout>
 
 </ScrollView>

@@ -79,11 +79,5 @@ found in the LICENSE file.
             app:iconImage="@drawable/ic_account_circle_24dp"
             app:summaryText="@string/privacy_guide_sb_enhanced_item_seven" />
 
-        <!-- Extra empty space, necessary due to crbug.com/1287979. -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:visibility="invisible" />
-
     </LinearLayout>
 </ScrollView>
