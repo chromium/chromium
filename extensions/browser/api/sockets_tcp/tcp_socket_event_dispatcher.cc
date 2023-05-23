@@ -182,8 +182,10 @@ void TCPSocketEventDispatcher::PostEvent(const ReadParams& params,
   DCHECK_CURRENTLY_ON(params.thread_id);
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DispatchEvent, params.browser_context_id,
-                                params.extension_id, std::move(event)));
+      FROM_HERE,
+      base::BindOnce(&DispatchEvent,
+                     base::UnsafeDanglingUntriaged(params.browser_context_id),
+                     params.extension_id, std::move(event)));
 }
 
 // static
