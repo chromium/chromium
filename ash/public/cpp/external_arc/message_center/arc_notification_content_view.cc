@@ -86,6 +86,10 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
   void Observe(aura::Window* window) { observation_.Observe(window); }
   void Reset() { observation_.Reset(); }
 
+  bool IsSlideCapturedByArc() const {
+    return is_current_slide_handled_by_android_;
+  }
+
  private:
   // ui::EventHandler
   void OnEvent(ui::Event* event) override {
@@ -395,6 +399,11 @@ void ArcNotificationContentView::UpdateCornerRadius(float top_radius,
 }
 
 void ArcNotificationContentView::OnSlideChanged(bool in_progress) {
+  if (event_forwarder_->IsSlideCapturedByArc()) {
+    // The callback is called by SlideOutController, but no animation actually
+    // happens because it's forcibly disabled by EventForwarder.
+    return;
+  }
   slide_in_progress_ = in_progress;
   if (slide_helper_)
     slide_helper_->Update(in_progress);
