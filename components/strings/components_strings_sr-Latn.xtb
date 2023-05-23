@@ -1454,7 +1454,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4526465106919207193">Ljudi i društvo</translation>
 <translation id="4530347922939905757">SMS</translation>
 <translation id="4531477351494678589">Broj virtuelne kartice:</translation>
-<translation id="4540780316273593836">Nešto nije u redu</translation>
+<translation id="4540780316273593836">Došlo je do greške</translation>
 <translation id="4541810033354695636">proširena realnost</translation>
 <translation id="4542971377163063093">6. fioka</translation>
 <translation id="455113658016510503">A9</translation>
@@ -2322,7 +2322,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6710594484020273272">&lt;Unesite termin za pretragu&gt;</translation>
 <translation id="671076103358959139">Token za registraciju:</translation>
-<translation id="6711464428925977395">Nešto nije u redu sa proksi serverom ili je adresa netačna.</translation>
+<translation id="6711464428925977395">Došlo je do greške sa proksi serverom ili je adresa netačna.</translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi da pravi 3D mapu okruženja i da prati položaj kamere</translation>
 <translation id="6718612893943028815">Dozvolićete korišćenje kamere?</translation>
 <translation id="6721678857435001674">da vidi proizvođača i model bezbednosnog ključa</translation>
@@ -2575,7 +2575,7 @@ Dodatni detalji:
 <translation id="7341357280245177602">Polovna vozila</translation>
 <translation id="7346048084945669753">Povezan je:</translation>
 <translation id="7349921148288539306">Dozvoljeno dok ne zatvorite ovu karticu</translation>
-<translation id="7352651011704765696">Nešto nije u redu</translation>
+<translation id="7352651011704765696">Došlo je do greške</translation>
 <translation id="7353601530677266744">Komandna linija</translation>
 <translation id="7354880545102894991">Jeftina putovanja i putovanja u poslednjem trenutku</translation>
 <translation id="7359588939039777303">Oglasi su blokirani.</translation>

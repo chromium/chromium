@@ -525,7 +525,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4520798012560649652">Saznajte više o režimu bez arhiviranja</translation>
 <translation id="452750746583162491">Pregledajte sinhronizovane podatke</translation>
 <translation id="4536418791685807335">Probajte ponovo da se prijavite.</translation>
-<translation id="4540780316273593836">Nešto nije u redu</translation>
+<translation id="4540780316273593836">Došlo je do greške</translation>
 <translation id="4550040941166547650">Samo na ovom uređaju</translation>
 <translation id="457292989631956153">{COUNT,plural, =1{Želite da zatvorite {COUNT} neaktivnu karticu?}one{Želite da zatvorite {COUNT} neaktivnu karticu?}few{Želite da zatvorite {COUNT} neaktivne kartice?}other{Želite da zatvorite {COUNT} neaktivnih kartica?}}</translation>
 <translation id="457386861538956877">Još...</translation>
@@ -982,7 +982,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7346909386216857016">Važi</translation>
 <translation id="734758817008927353">Opcije za čuvanje kartice</translation>
 <translation id="7351537303876921605">Dodirnite Napravi link u kontekstualnom meniju</translation>
-<translation id="7352651011704765696">Nešto nije u redu</translation>
+<translation id="7352651011704765696">Došlo je do greške</translation>
 <translation id="7353432112255316844">Potvrdite svoj identitet</translation>
 <translation id="7383797227493018512">Lista za čitanje</translation>
 <translation id="7398893703713203428">Create Link (Napravi link)</translation>

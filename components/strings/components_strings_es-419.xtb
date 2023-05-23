@@ -2390,7 +2390,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6890531741535756070">Elegiste realizar la verificación con <ph name="DEVICE_LABEL" /> en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Es posible que este proveedor haya almacenado información sobre tu forma de pago, la que puedes <ph name="BEGIN_LINK" />solicitar que se borre<ph name="END_LINK" />.</translation>
 <translation id="6890956352250146925">Opciones para cookies y datos de sitios</translation>
 <translation id="6891596781022320156">No se admite el nivel de políticas.</translation>
-<translation id="6895330447102777224">Tu tarjeta se confirmó</translation>
+<translation id="6895330447102777224">Se confirmó tu tarjeta</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897140037006041989">Usuario-agente</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
