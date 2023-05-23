@@ -36,11 +36,13 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/features/feature_session_type.h"
@@ -61,9 +63,10 @@ const AccountId kAccountId1 =
 
 constexpr char kDeviceLocalAccountId[] = "device_local_account";
 
-AccountId CreateDeviceLocalKioskAppAccountId(const std::string& account_id) {
-  return AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
-      kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_KIOSK_APP));
+AccountId CreateDeviceLocalAccountId(const std::string& account_id,
+                                     policy::DeviceLocalAccount::Type type) {
+  return AccountId::FromUserEmail(
+      policy::GenerateDeviceLocalAccountUserId(account_id, type));
 }
 
 }  // namespace
@@ -231,6 +234,23 @@ class UserManagerTest : public testing::Test {
                      kiosk_app_id))));
   }
 
+  // Should be used to setup device local accounts of `TYPE_PUBLIC_SESSION` and
+  // `TYPE_SAML_PUBLIC_SESSION` types.
+  void SetDeviceLocalPublicAccount(
+      const std::string& account_id,
+      policy::DeviceLocalAccount::Type type,
+      policy::DeviceLocalAccount::EphemeralMode ephemeral_mode) {
+    settings_helper_.Set(
+        kAccountsPrefDeviceLocalAccounts,
+        base::Value(base::Value::List().Append(
+            base::Value::Dict()
+                .Set(kAccountsPrefDeviceLocalAccountsKeyId, account_id)
+                .Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                     static_cast<int>(type))
+                .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
+                     static_cast<int>(ephemeral_mode)))));
+  }
+
   void RetrieveTrustedDevicePolicies() {
     GetChromeUserManager()->RetrieveTrustedDevicePolicies();
   }
@@ -292,6 +312,89 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForOwnerAccountId) {
   EXPECT_FALSE(IsEphemeralAccountId(kOwnerAccountId));
 }
 
+// Tests that `IsEphemeralAccountId(account_id)` returns true when `account_id`
+// is a guest account id.
+TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForGuestAccountId) {
+  EXPECT_TRUE(IsEphemeralAccountId(user_manager::GuestAccountId()));
+
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ false,
+      /* owner= */ kOwnerAccountId.GetUserEmail());
+  RetrieveTrustedDevicePolicies();
+
+  EXPECT_TRUE(IsEphemeralAccountId(user_manager::GuestAccountId()));
+}
+
+// Tests that `IsEphemeralAccountId(account_id)` returns false when `account_id`
+// is a stub account id.
+TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForStubAccountId) {
+  EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAccountId()));
+
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ true,
+      /* owner= */ kOwnerAccountId.GetUserEmail());
+  RetrieveTrustedDevicePolicies();
+
+  EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAccountId()));
+}
+
+// Tests that `IsEphemeralAccountId(account_id)` returns false when `account_id`
+// is a stub ad account id.
+TEST_F(UserManagerTest, IsEphemeralAccountIdFalseForStubAdAccountId) {
+  EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAdAccountId()));
+
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ true,
+      /* owner= */ kOwnerAccountId.GetUserEmail());
+  RetrieveTrustedDevicePolicies();
+
+  EXPECT_FALSE(IsEphemeralAccountId(user_manager::StubAdAccountId()));
+}
+
+// Tests that `IsEphemeralAccountId(account_id)` returns true when `account_id`
+// is a public account id.
+TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForPublicAccountId) {
+  const AccountId public_accout_id = CreateDeviceLocalAccountId(
+      kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+
+  EXPECT_TRUE(IsEphemeralAccountId(public_accout_id));
+
+  // Set all ephemeral related policies to `false` to make sure that policies
+  // don't affect ephemeral mode of the public account.
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ false,
+      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetDeviceLocalPublicAccount(
+      kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION,
+      policy::DeviceLocalAccount::EphemeralMode::kDisable);
+  RetrieveTrustedDevicePolicies();
+
+  EXPECT_TRUE(IsEphemeralAccountId(public_accout_id));
+}
+
+// Tests that `IsEphemeralAccountId(account_id)` returns true when `account_id`
+// is a SAML public account id.
+TEST_F(UserManagerTest, IsEphemeralAccountIdTrueForSamlPublicAccountId) {
+  const AccountId saml_public_accout_id = CreateDeviceLocalAccountId(
+      kDeviceLocalAccountId,
+      policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION);
+
+  EXPECT_TRUE(IsEphemeralAccountId(saml_public_accout_id));
+
+  // Set all ephemeral related policies to `false` to make sure that policies
+  // don't affect ephemeral mode of the SAML public account.
+  SetDeviceSettings(
+      /* ephemeral_users_enabled= */ false,
+      /* owner= */ kOwnerAccountId.GetUserEmail());
+  SetDeviceLocalPublicAccount(
+      kDeviceLocalAccountId,
+      policy::DeviceLocalAccount::TYPE_SAML_PUBLIC_SESSION,
+      policy::DeviceLocalAccount::EphemeralMode::kDisable);
+  RetrieveTrustedDevicePolicies();
+
+  EXPECT_TRUE(IsEphemeralAccountId(saml_public_accout_id));
+}
+
 // Tests that `UserManager` correctly parses device-wide ephemeral users policy
 // by calling `IsEphemeralAccountId(account_id)` function.
 TEST_F(UserManagerTest, IsEphemeralAccountIdUsesEphemeralUsersEnabledPolicy) {
@@ -310,8 +413,8 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdUsesEphemeralUsersEnabledPolicy) {
 // `IsEphemeralAccountId(account_id)` function.
 TEST_F(UserManagerTest,
        IsEphemeralAccountIdRespectsFollowDeviceWidePolicyEphemeralMode) {
-  const AccountId account_id =
-      CreateDeviceLocalKioskAppAccountId(kDeviceLocalAccountId);
+  const AccountId account_id = CreateDeviceLocalAccountId(
+      kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_KIOSK_APP);
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
@@ -335,8 +438,8 @@ TEST_F(UserManagerTest,
 // ephemeral mode equals to `kUnset` by calling
 // `IsEphemeralAccountId(account_id)` function.
 TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsUnsetEphemeralMode) {
-  const AccountId account_id =
-      CreateDeviceLocalKioskAppAccountId(kDeviceLocalAccountId);
+  const AccountId account_id = CreateDeviceLocalAccountId(
+      kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_KIOSK_APP);
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
@@ -360,8 +463,8 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsUnsetEphemeralMode) {
 // ephemeral mode equals to `kDisable` by calling
 // `IsEphemeralAccountId(account_id)` function.
 TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsDisableEphemeralMode) {
-  const AccountId account_id =
-      CreateDeviceLocalKioskAppAccountId(kDeviceLocalAccountId);
+  const AccountId account_id = CreateDeviceLocalAccountId(
+      kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_KIOSK_APP);
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 
@@ -380,9 +483,9 @@ TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsDisableEphemeralMode) {
 // Tests that `UserManager` correctly parses device-local accounts with
 // ephemeral mode equals to `kEnable` by calling
 // `IsEphemeralAccountId(account_id)` function.
-TEST_F(UserManagerTest, IsEphemeralAccountIdRespectsEnableEphemeralMode) {
-  const AccountId account_id =
-      CreateDeviceLocalKioskAppAccountId(kDeviceLocalAccountId);
+TEST_F(UserManagerTest, IsEphemeralAccountIdRespectssEnableEphemeralMode) {
+  const AccountId account_id = CreateDeviceLocalAccountId(
+      kDeviceLocalAccountId, policy::DeviceLocalAccount::TYPE_KIOSK_APP);
 
   EXPECT_FALSE(IsEphemeralAccountId(account_id));
 

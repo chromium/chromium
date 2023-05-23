@@ -1372,12 +1372,12 @@ void UserSessionManager::InitProfilePreferences(
       user_manager::KnownUser(g_browser_process->local_state())
           .GetOnboardingCompletedVersion(user->GetAccountId());
   if (!onboarding_completed_version.has_value()) {
-    // Kiosks do not have onboarding.
+    // Device local accounts do not have onboarding.
     if (LoginDisplayHost::default_host() &&
         LoginDisplayHost::default_host()->GetSigninUI() &&
         user_manager->GetPrimaryUser() == user &&
         !user_manager->IsUserNonCryptohomeDataEphemeral(user->GetAccountId()) &&
-        !user->IsKioskType()) {
+        !user->IsDeviceLocalAccount()) {
       LoginDisplayHost::default_host()
           ->GetSigninUI()
           ->SetAuthSessionForOnboarding(user_context);
