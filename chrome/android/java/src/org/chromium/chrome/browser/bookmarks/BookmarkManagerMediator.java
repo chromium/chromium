@@ -121,15 +121,9 @@ class BookmarkManagerMediator
                         openFolder(parent.getId());
                     }
                 } else {
-                    if (node.isFolder()) {
-                        refresh();
-                    } else {
-                        int deletedPosition = getPositionForBookmark(node.getId());
-                        if (deletedPosition >= 0) {
-                            mModelList.removeAt(deletedPosition);
-                            syncAdapterAndSelectionDelegate();
-                        }
-                    }
+                    // Needs to remove the current node, and update any transitive parents that may
+                    // be showing child counts. Just refresh() for now.
+                    refresh();
                 }
             } else if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
                 // We cannot rely on removing the specific list item that corresponds to the

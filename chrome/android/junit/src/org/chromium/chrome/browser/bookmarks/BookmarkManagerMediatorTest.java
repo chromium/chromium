@@ -187,7 +187,7 @@ public class BookmarkManagerMediatorTest {
     private final BookmarkItem mFolderItem3 =
             new BookmarkItem(mFolderId3, "Folder3", null, true, mFolderId1, true, false, 0, false);
     private final BookmarkItem mBookmarkItem21 = new BookmarkItem(mBookmarkId21, "Bookmark21",
-            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId1, true, false, 0,
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId2, true, false, 0,
             false);
     private final BookmarkItem mReadingListFolderItem = new BookmarkItem(mReadingListFolderId,
             "Reading List", null, true, mRootFolderId, false, false, 0, false);
@@ -773,7 +773,7 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    public void testcreateListMenuModelList() {
+    public void testCreateListMenuModelList() {
         finishLoading();
         mMediator.openFolder(mFolderId2);
 
@@ -843,5 +843,24 @@ public class BookmarkManagerMediatorTest {
         // delete.
         menu.onItemClick(null, null, 3, 0);
         verify(mBookmarkModel).deleteBookmarks(mBookmarkId21);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testParentFolderUpdatedWhenChildDeleted() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
+        assertEquals(3, mModelList.size());
+        assertEquals(
+                1, mModelList.get(1).model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
+
+        doReturn(0).when(mBookmarkModel).getTotalBookmarkCount(mFolderId2);
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        mBookmarkModelObserverArgumentCaptor.getValue().bookmarkNodeRemoved(
+                mFolderItem2, 0, mBookmarkItem21, false);
+
+        assertEquals(
+                0, mModelList.get(1).model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT));
     }
 }
