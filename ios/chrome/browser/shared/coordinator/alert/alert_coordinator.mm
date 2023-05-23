@@ -103,7 +103,7 @@
                              }];
 
   alertAction.accessibilityIdentifier =
-      [NSString stringWithFormat:@"%@%@", title, @"AlertAction"];
+      [title stringByAppendingString:@"AlertAction"];
   alertAction.enabled = enabled;
 
   [self.alertController addAction:alertAction];

@@ -721,6 +721,12 @@ id<GREYMatcher> SafetyCheckTableViewMatcher() {
   return [ChromeMatchersAppInterface safetyCheckTableViewMatcher];
 }
 
+id<GREYMatcher> AlertAction(NSString* title) {
+  return grey_allOf(
+      grey_accessibilityID([title stringByAppendingString:@"AlertAction"]),
+      grey_interactable(), nil);
+}
+
 #pragma mark - Overflow Menu Destinations
 
 id<GREYMatcher> BookmarksDestinationButton() {

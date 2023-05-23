@@ -581,6 +581,9 @@ id<GREYMatcher> DefaultBrowserSettingsTableViewMatcher();
 // Returns a matcher for safety check table view.
 id<GREYMatcher> SafetyCheckTableViewMatcher();
 
+// Returns a matcher for action in an AlertCoordinator.
+id<GREYMatcher> AlertAction(NSString* title);
+
 #pragma mark - Promo style view controller
 
 // Returns matcher for the primary action button.

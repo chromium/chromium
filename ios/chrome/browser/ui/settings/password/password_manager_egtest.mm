@@ -258,12 +258,8 @@ id<GREYMatcher> DeleteConfirmationButtonForGrouping() {
 // Matcher for the Delete button in Confirmation Alert for batch passwords
 // deletion when password grouping is enabled.
 id<GREYMatcher> BatchDeleteConfirmationButtonForGrouping() {
-  return grey_allOf(
-      grey_accessibilityID([NSString
-          stringWithFormat:@"%@%@",
-                           l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE),
-                           @"AlertAction"]),
-      grey_interactable(), nullptr);
+  return chrome_test_util::AlertAction(
+      l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE));
 }
 
 // Matcher for the Delete button in the list view, located at the bottom of the
