@@ -538,9 +538,19 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   }
 
   // Set up an interceptor for prefetch.
+
+  // TODO(crbug.com/1431387): Do not depend on the initiator liveness, e.g. by
+  // plumbing `GlobalRenderFrameHostId` or switching to `LocalFrameToken`. See
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4372403/comment/ff141ba3_0ffd99ff/
+  // for more details.
+  GlobalRenderFrameHostId initiator_render_frame_host_id;
+  if (RenderFrameHost* initiator_render_frame_host =
+          initiator_document_.AsRenderFrameHostIfValid()) {
+    initiator_render_frame_host_id = initiator_render_frame_host->GetGlobalId();
+  }
   std::unique_ptr<PrefetchURLLoaderInterceptor> prefetch_interceptor =
       content::PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
-          frame_tree_node_id_, request_info_->previous_render_frame_host_id);
+          frame_tree_node_id_, initiator_render_frame_host_id);
   if (prefetch_interceptor) {
     interceptors_.push_back(std::move(prefetch_interceptor));
   }

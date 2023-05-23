@@ -548,14 +548,14 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   }
 
   void Navigate(const GURL& url,
-                const GlobalRenderFrameHostId& previous_rfh_id) {
+                const absl::optional<blink::LocalFrameToken>&
+                    initiator_local_frame_token) {
     mock_navigation_handle_ =
         std::make_unique<testing::NiceMock<MockNavigationHandle>>(
             web_contents());
     mock_navigation_handle_->set_url(url);
-
-    ON_CALL(*mock_navigation_handle_, GetPreviousRenderFrameHostId)
-        .WillByDefault(testing::Return(previous_rfh_id));
+    mock_navigation_handle_->set_initiator_frame_token(
+        base::OptionalToPtr(initiator_local_frame_token));
 
     PrefetchDocumentManager* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
@@ -715,7 +715,7 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
@@ -800,7 +800,7 @@ TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -861,7 +861,7 @@ TEST_F(PrefetchServiceTest, NoPrefetchingDomainNotInAllowList) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -936,7 +936,7 @@ TEST_F(PrefetchServiceAllowAllDomainsTest, AllowAllDomains) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -1025,7 +1025,7 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -1098,7 +1098,7 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -1160,7 +1160,7 @@ TEST_F(PrefetchServiceTest, NonProxiedPrefetchDoesNotRequireAllowList) {
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -1223,7 +1223,7 @@ TEST_F(PrefetchServiceTest, NotEligibleHostnameNonUnique) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -1287,7 +1287,7 @@ TEST_F(PrefetchServiceTest, NotEligibleDataSaverEnabled) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -1341,7 +1341,7 @@ TEST_F(PrefetchServiceTest, NotEligibleNonHttps) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("http://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("http://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -1405,7 +1405,7 @@ TEST_F(PrefetchServiceTest, NotEligiblePrefetchProxyNotAvailable) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -1472,7 +1472,7 @@ TEST_F(PrefetchServiceTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -1539,7 +1539,7 @@ TEST_F(PrefetchServiceTest, NotEligibleOriginWithinRetryAfterWindow) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -1597,7 +1597,7 @@ TEST_F(PrefetchServiceTest, EligibleNonHttpsNonProxiedPotentiallyTrustworthy) {
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://localhost"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://localhost"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -1660,7 +1660,7 @@ TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -1723,7 +1723,7 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -1785,7 +1785,7 @@ TEST_F(PrefetchServiceTest, NotEligibleUserHasCookies) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -1846,7 +1846,7 @@ TEST_F(PrefetchServiceTest, EligibleUserHasCookiesForDifferentUrl) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -1913,7 +1913,7 @@ TEST_F(PrefetchServiceTest, EligibleSameOriginPrefetchCanHaveExistingCookies) {
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -1988,7 +1988,7 @@ TEST_F(PrefetchServiceTest, MAYBE_SameOriginPrefetchIgnoresProxyRequirement) {
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -2063,7 +2063,7 @@ TEST_F(PrefetchServiceTest,
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://other.example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://other.example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -2128,7 +2128,7 @@ TEST_F(PrefetchServiceTest, NotEligibleExistingConnectProxy) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -2196,7 +2196,7 @@ TEST_F(PrefetchServiceTest, EligibleExistingConnectProxyButSameOriginPrefetch) {
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
@@ -2264,7 +2264,7 @@ TEST_F(PrefetchServiceTest, FailedNon2XXResponseCode) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_NOT_FOUND, 1);
@@ -2323,7 +2323,7 @@ TEST_F(PrefetchServiceTest, FailedNetError) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -2391,7 +2391,7 @@ TEST_F(PrefetchServiceTest, HandleRetryAfterResponse) {
                       {{"Retry-After", "1234"}, {"X-Testing", "Hello World"}},
                       "");
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode",
@@ -2453,7 +2453,7 @@ TEST_F(PrefetchServiceTest, SuccessNonHTML) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, body);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -2517,13 +2517,11 @@ TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  // Since the navigation is occurring in a RenderFrameHost other than where the
+  // Since the navigation is occurring in a LocalFrameToken other than where the
   // prefetch was requested from, we cannot use it.
-  GlobalRenderFrameHostId other_rfh_id(
-      main_rfh()->GetGlobalId().child_id + 1,
-      main_rfh()->GetGlobalId().frame_routing_id + 1);
-  ASSERT_NE(other_rfh_id, main_rfh()->GetGlobalId());
-  Navigate(GURL("https://example.com"), other_rfh_id);
+  blink::LocalFrameToken other_token(base::UnguessableToken::Create());
+  ASSERT_NE(other_token, main_rfh()->GetFrameToken());
+  Navigate(GURL("https://example.com"), other_token);
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -2630,7 +2628,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 3);
   EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 2);
 
-  Navigate(GURL("https://example1.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example1.com"), main_rfh()->GetFrameToken());
 
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics1 =
       GetMetricsForMostRecentNavigation();
@@ -2653,7 +2651,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   EXPECT_TRUE(serveable_prefetch_container1->IsPrefetchServable(
       base::TimeDelta::Max()));
 
-  Navigate(GURL("https://example2.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example2.com"), main_rfh()->GetFrameToken());
 
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics2 =
       GetMetricsForMostRecentNavigation();
@@ -2676,7 +2674,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   EXPECT_TRUE(serveable_prefetch_container2->IsPrefetchServable(
       base::TimeDelta::Max()));
 
-  Navigate(GURL("https://example3.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example3.com"), main_rfh()->GetFrameToken());
 
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics3 =
       GetMetricsForMostRecentNavigation();
@@ -2766,7 +2764,7 @@ TEST_F(PrefetchServiceWithHTMLOnlyTest, FailedNonHTMLWithHTMLOnly) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, body);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -2841,7 +2839,7 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, DecoyRequest) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -2905,7 +2903,7 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest,
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -2988,7 +2986,7 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, MAYBE_RedirectDecoyRequest) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -3053,7 +3051,7 @@ TEST_F(PrefetchServiceHoldbackTest, PrefetchHeldback) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -3116,7 +3114,7 @@ TEST_F(PrefetchServiceIncognitoTest, OffTheRecordIneligible) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -3174,7 +3172,7 @@ TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
 
   EXPECT_EQ(RequestCount(), 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -3261,7 +3259,7 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
                             std::size(kHTMLBody));
 
   // Navigate to the URL before the prefetch response is complete.
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   // Check the metrics while the prefetch is still in progress.
   histogram_tester.ExpectUniqueSample(
@@ -3393,7 +3391,7 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
       {{"X-Testing", "Hello World"}, {"No-Vary-Search", R"(params=("a"))"}},
       kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   base::WeakPtr<PrefetchContainer> serveable_prefetch_container =
       GetPrefetchToServe(GURL("https://example.com"));
@@ -3499,7 +3497,7 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_PrefetchEligibleRedirect) {
                       /*use_prefetch_proxy=*/true,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -3595,7 +3593,7 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_IneligibleRedirectCookies) {
       "PrefetchProxy.Redirect.NetworkContextStateTransition",
       PrefetchRedirectNetworkContextTransition::kIsolatedToIsolated, 1);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -3687,7 +3685,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
       "PrefetchProxy.Redirect.NetworkContextStateTransition",
       PrefetchRedirectNetworkContextTransition::kIsolatedToIsolated, 1);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -3769,7 +3767,7 @@ TEST_F(PrefetchServiceAllowRedirectTest, MAYBE_InvalidRedirect) {
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Redirect.NetworkContextStateTransition", 0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -3860,7 +3858,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -3963,7 +3961,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
       "PrefetchProxy.Redirect.NetworkContextStateTransition",
       PrefetchRedirectNetworkContextTransition::kDefaultToDefault, 1);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
@@ -4062,7 +4060,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -4169,7 +4167,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -4275,7 +4273,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
                       /*use_prefetch_proxy=*/false,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
-  Navigate(GURL("https://other.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://other.com"), main_rfh()->GetFrameToken());
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
@@ -4352,7 +4350,7 @@ TEST_F(PrefetchServiceAllowRedirectTest,
                            /*use_prefetch_proxy=*/false);
   VerifyFollowRedirectParams(0);
 
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
@@ -4489,7 +4487,7 @@ TEST_F(PrefetchServiceNeverBlockUntilHeadTest, MAYBE_HeadNotReceived) {
                            /*use_prefetch_proxy=*/true);
 
   // Navigate to the URL before the head of the prefetch response is received.
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   // Since PrefetchService cannot block until headers for this prefetch, it
   // should immediately return null.
@@ -4568,7 +4566,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest, MAYBE_BlockUntilHeadReceived) {
                            /*use_prefetch_proxy=*/true);
 
   // Navigate to the URL before the head of the prefetch response is received
-  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
 
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
@@ -4680,7 +4678,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
                            /*use_prefetch_proxy=*/true);
 
   // Navigate to the URL before the head of the prefetch response is received
-  Navigate(GURL("https://example.com/index.html"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com/index.html"), main_rfh()->GetFrameToken());
 
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
@@ -4796,7 +4794,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
                            /*use_prefetch_proxy=*/true);
 
   // Navigate to the URL before the head of the prefetch response is received
-  Navigate(GURL("https://example.com/index.html"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com/index.html"), main_rfh()->GetFrameToken());
 
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
@@ -4904,7 +4902,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
                            /*use_prefetch_proxy=*/true);
 
   // Navigate to the URL before the head of the prefetch response is received
-  Navigate(GURL("https://example.com/index.html"), main_rfh()->GetGlobalId());
+  Navigate(GURL("https://example.com/index.html"), main_rfh()->GetFrameToken());
 
   // Request the prefetch from the PrefetchService. The given callback shouldn't
   // be called until after the head is received.
@@ -5007,7 +5005,7 @@ class PrefetchServiceNewLimitsTest : public PrefetchServiceTest {
     MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
                         /*use_prefetch_proxy=*/false,
                         {{"X-Testing", "Hello World"}}, kHTMLBody);
-    Navigate(url, main_rfh()->GetGlobalId());
+    Navigate(url, main_rfh()->GetFrameToken());
     base::WeakPtr<PrefetchContainer> servable_prefetch_container =
         GetPrefetchToServe(url);
     return servable_prefetch_container;
@@ -5039,7 +5037,7 @@ TEST_F(PrefetchServiceNewLimitsTest,
                           blink::mojom::SpeculationEagerness::kEager));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(RequestCount(), 0);
-  Navigate(url_3, main_rfh()->GetGlobalId());
+  Navigate(url_3, main_rfh()->GetFrameToken());
   ASSERT_FALSE(GetPrefetchToServe(url_3));
 
   // We can still prefetch |url_4| as it is a conservative prefetch.

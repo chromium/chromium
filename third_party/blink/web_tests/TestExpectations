@@ -233,8 +233,6 @@ crbug.com/1302831 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/bac
 
 crbug.com/1343590 virtual/prefetch/external/wpt/speculation-rules/prefetch/redirect-url.https.html [ Failure ]
 
-crbug.com/1432886 virtual/prefetch/external/wpt/speculation-rules/prefetch/initiators-iframe-location-href.sub.https.html?cross-site [ Failure ]
-crbug.com/1432886 virtual/prefetch/external/wpt/speculation-rules/prefetch/initiators-iframe-location-href.sub.https.html?same-site [ Failure ]
 crbug.com/1432886 virtual/prefetch/external/wpt/speculation-rules/prefetch/initiators-a-element.sub.https.html?cross-site [ Failure ]
 crbug.com/1432886 virtual/prefetch/external/wpt/speculation-rules/prefetch/initiators-a-element.sub.https.html?same-site [ Failure ]
 crbug.com/1432886 virtual/prefetch/external/wpt/speculation-rules/prefetch/initiators-window-open.sub.https.html?cross-site [ Failure ]

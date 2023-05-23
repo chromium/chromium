@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
+#include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/prefetch_metrics.h"
@@ -78,12 +79,16 @@ PrefetchDocumentManager::~PrefetchDocumentManager() {
 
 void PrefetchDocumentManager::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  // Ignore navigations for a different RenderFrameHost.
-  if (render_frame_host().GetGlobalId() !=
-      navigation_handle->GetPreviousRenderFrameHostId()) {
+  // Ignore navigations for a different LocalFrameToken.
+  // TODO(crbug.com/1431804, crbug.com/1431387): LocalFrameToken is used here
+  // for scoping while RenderFrameHost's ID is used elsewhere. In the long term
+  // we should fix this inconsistency, but the current code is at least not
+  // worse than checking RenderFrameHostId here.
+  if (render_frame_host().GetFrameToken() !=
+      navigation_handle->GetInitiatorFrameToken()) {
     DVLOG(1) << "PrefetchDocumentManager::DidStartNavigation() for "
              << navigation_handle->GetURL()
-             << ": skipped (different RenderFrameHost)";
+             << ": skipped (different LocalFrameToken)";
     return;
   }
 
