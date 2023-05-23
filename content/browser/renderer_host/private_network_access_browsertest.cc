@@ -2943,7 +2943,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1170335): Expect `kAllow` here once inheritance is
+  // TODO(https://crbug.com/1291252): Expect `kAllow` here once inheritance is
   // properly implemented.
   EXPECT_EQ(security_state->local_network_request_policy,
             network::mojom::LocalNetworkRequestPolicy::kBlock);
@@ -2961,7 +2961,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
       child_frame->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
 
-  // TODO(https://crbug.com/1170335): Expect `kAllow` here once inheritance is
+  // TODO(https://crbug.com/1291252): Expect `kAllow` here once inheritance is
   // properly implemented.
   EXPECT_EQ(security_state->local_network_request_policy,
             network::mojom::LocalNetworkRequestPolicy::kBlock);
@@ -3949,7 +3949,7 @@ IN_PROC_BROWSER_TEST_F(
 // against the parent document's address space. This is incorrect, as the
 // initiator of the navigation is not always the parent document.
 //
-// TODO(https://crbug.com/1170335): Revisit this when the initiator's address
+// TODO(https://crbug.com/1291252): Revisit this when the initiator's address
 // space is used instead.
 //
 // Top-level navigations are never blocked.

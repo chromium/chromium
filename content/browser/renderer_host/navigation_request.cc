@@ -4936,9 +4936,8 @@ void NavigationRequest::OnStartChecksComplete(
   // there is no client security state for top-level navigations, which mainly
   // means that Private Network Access checks are skipped for such requests.
   //
-  // TODO(https://crbug.com/1170335): Pass the client security state of the
-  // navigation initiator to this navigation request somehow and use that
-  // instead.
+  // TODO(https://crbug.com/1291252): Use the client security state of the
+  // navigation initiator instead.
   //
   // TODO(https://crbug.com/1129326): Figure out the UX story for main-frame
   // navigations, then revisit the exception made in that case.
