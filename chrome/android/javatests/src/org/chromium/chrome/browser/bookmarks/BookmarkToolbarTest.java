@@ -88,8 +88,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @Mock
     BookmarkOpener mBookmarkOpener;
     @Mock
-    Runnable mOpenSearchUiRunnable;
-    @Mock
     Callback<BookmarkId> mOpenFolderCallback;
 
     private Activity mActivity;
@@ -163,7 +161,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         mBookmarkToolbar.setSelectionDelegate(mSelectionDelegate);
         mBookmarkToolbar.setBookmarkUiMode(BookmarkUiMode.FOLDER);
         mBookmarkToolbar.setIsDialogUi(true);
-        mBookmarkToolbar.setOpenSearchUiRunnable(mOpenSearchUiRunnable);
         mBookmarkToolbar.setOpenFolderCallback(mOpenFolderCallback);
     }
 

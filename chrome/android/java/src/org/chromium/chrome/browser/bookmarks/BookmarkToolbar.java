@@ -50,7 +50,6 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private boolean mEditButtonVisible;
     private boolean mNewFolderButtonVisible;
 
-    private Runnable mOpenSearchUiRunnable;
     private Callback<BookmarkId> mOpenFolderCallback;
     private Function<Integer, Boolean> mMenuIdClickedFunction;
 
@@ -146,10 +145,6 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
 
     void setCurrentFolder(BookmarkId folder) {
         mCurrentFolder = mBookmarkModel.getBookmarkById(folder);
-    }
-
-    void setOpenSearchUiRunnable(Runnable runnable) {
-        mOpenSearchUiRunnable = runnable;
     }
 
     void setOpenFolderCallback(Callback<BookmarkId> openFolderCallback) {

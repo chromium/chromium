@@ -80,8 +80,6 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         }
         bookmarkDelegateSupplier.onAvailable((bookmarkDelegate) -> {
             mBookmarkDelegate = bookmarkDelegate;
-            mModel.set(BookmarkToolbarProperties.OPEN_SEARCH_UI_RUNNABLE,
-                    mBookmarkDelegate::openSearchUi);
             mModel.set(
                     BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK, mBookmarkDelegate::openFolder);
             mBookmarkDelegate.addUiObserver(this);

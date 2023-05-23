@@ -56,8 +56,6 @@ class BookmarkToolbarProperties {
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
 
     /** Callables to delegate business logic back to the mediator */
-    static final WritableObjectPropertyKey<Runnable> OPEN_SEARCH_UI_RUNNABLE =
-            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Function<Integer, Boolean>> MENU_ID_CLICKED_FUNCTION =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Callback<BookmarkId>> OPEN_FOLDER_CALLBACK =
@@ -67,6 +65,5 @@ class BookmarkToolbarProperties {
             TITLE, BOOKMARK_UI_MODE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED,
             SEARCH_BUTTON_VISIBLE, EDIT_BUTTON_VISIBLE, NEW_FOLDER_BUTTON_VISIBLE,
             NAVIGATION_BUTTON_STATE, CURRENT_FOLDER, CHECKED_SORT_MENU_ID, CHECKED_VIEW_MENU_ID,
-            OPEN_SEARCH_UI_RUNNABLE, MENU_ID_CLICKED_FUNCTION, OPEN_FOLDER_CALLBACK,
-            FAKE_SELECTION_STATE_CHANGE};
+            MENU_ID_CLICKED_FUNCTION, OPEN_FOLDER_CALLBACK, FAKE_SELECTION_STATE_CHANGE};
 }

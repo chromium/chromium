@@ -86,8 +86,6 @@ public class BookmarkToolbarMediatorTest {
     @Mock
     private SelectionDelegate mSelectionDelegate;
     @Mock
-    private Runnable mOpenSearchUiRunnable;
-    @Mock
     private Callback mOpenFolderCallback;
     @Mock
     private BookmarkId mBookmarkId;
@@ -126,8 +124,6 @@ public class BookmarkToolbarMediatorTest {
                          .with(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING)
                          .with(BookmarkToolbarProperties.IS_DIALOG_UI, false)
                          .with(BookmarkToolbarProperties.DRAG_ENABLED, false)
-                         .with(BookmarkToolbarProperties.OPEN_SEARCH_UI_RUNNABLE,
-                                 mOpenSearchUiRunnable)
                          .with(BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK, mOpenFolderCallback)
                          .build();
         mBookmarkDelegateSupplier = new OneshotSupplierImpl<>();
