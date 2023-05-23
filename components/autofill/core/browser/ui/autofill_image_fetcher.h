@@ -42,8 +42,8 @@ class AutofillImageFetcher {
   virtual ~AutofillImageFetcher() = default;
 
   // Once invoked, the image fetcher starts fetching images asynchronously based
-  // on the urls. |card_art_urls| is a span of with credit cards' card art image
-  // url. |callback| will be invoked when all the requests have been completed.
+  // on the urls. `card_art_urls` is a span of with credit cards' card art image
+  // url. `callback` will be invoked when all the requests have been completed.
   // The callback will receive a vector of CreditCardArtImage, for (only) those
   // cards for which the AutofillImageFetcher could successfully fetch the
   // image.
@@ -56,8 +56,8 @@ class AutofillImageFetcher {
   virtual GURL ResolveCardArtURL(const GURL& card_art_url);
 
   // Subclasses may override this to provide custom handling of a fetched card
-  // art image. The default behavior is a no-op. The passed-in |card_art_url| is
-  // the original URL before resolving via |ResolveCardArtURL|.
+  // art image. The default behavior is a no-op. The passed-in `card_art_url` is
+  // the original URL before resolving via `ResolveCardArtURL`.
   virtual gfx::Image ResolveCardArtImage(const GURL& card_art_url,
                                          const gfx::Image& card_art_image);
 
@@ -75,8 +75,8 @@ class AutofillImageFetcher {
 
  protected:
   // Called when an image is fetched. If the fetch was unsuccessful,
-  // |card_art_image| will be an empty gfx::Image(). If the original URL was
-  // invalid, |fetch_image_request_timestamp| will also be null.
+  // `card_art_image` will be an empty gfx::Image(). If the original URL was
+  // invalid, `fetch_image_request_timestamp` will also be null.
   void OnCardArtImageFetched(
       base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
           barrier_callback,

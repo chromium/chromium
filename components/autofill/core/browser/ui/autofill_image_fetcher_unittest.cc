@@ -38,11 +38,11 @@ class TestAutofillImageFetcher : public AutofillImageFetcher {
     return mock_image_fetcher_.get();
   }
 
-  void set_modify_card_art_url(bool modify_card_art_url) {
-    modify_card_art_url_ = modify_card_art_url;
+  void set_card_art_url_override(const GURL& card_art_url_override) {
+    card_art_url_override_ = card_art_url_override;
   }
-  void set_modify_card_art_image(bool modify_card_art_image) {
-    modify_card_art_image_ = modify_card_art_image;
+  void set_card_art_image_override(const gfx::Image& card_art_image_override) {
+    card_art_image_override_ = card_art_image_override;
   }
 
   void SimulateOnImageFetched(
@@ -64,18 +64,18 @@ class TestAutofillImageFetcher : public AutofillImageFetcher {
     return weak_ptr_factory_.GetWeakPtr();
   }
   GURL ResolveCardArtURL(const GURL& card_art_url) override {
-    return modify_card_art_url_ ? GURL(card_art_url.spec() + "?param")
-                                : card_art_url;
+    return card_art_url_override_.is_valid() ? card_art_url_override_
+                                             : card_art_url;
   }
   gfx::Image ResolveCardArtImage(const GURL& card_art_url,
                                  const gfx::Image& card_art_image) override {
-    return modify_card_art_image_ ? gfx::test::CreateImage(5, 5)
-                                  : card_art_image;
+    return !card_art_image_override_.IsEmpty() ? card_art_image_override_
+                                               : card_art_image;
   }
 
  private:
-  bool modify_card_art_url_ = false;
-  bool modify_card_art_image_ = false;
+  GURL card_art_url_override_;
+  gfx::Image card_art_image_override_;
 
   std::unique_ptr<image_fetcher::MockImageFetcher> mock_image_fetcher_;
   base::WeakPtrFactory<TestAutofillImageFetcher> weak_ptr_factory_{this};
@@ -167,26 +167,27 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtURL) {
-  // Set the AutofillImageFetcher to modify the input |fake_url1| in
+  // Set the AutofillImageFetcher to replace the input `fake_url1` in
   // ResolveCardArtURL.
-  autofill_image_fetcher()->set_modify_card_art_url(true);
+  GURL override_url = GURL("https://www.other.com/fake_image2");
+  autofill_image_fetcher()->set_card_art_url_override(override_url);
 
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
 
   // The underlying image fetcher should only get called for the modified URL.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url1, _, _, _))
       .Times(0);
-  EXPECT_CALL(*mock_image_fetcher(),
-              FetchImageAndData_(GURL(fake_url1.spec() + "?param"), _, _, _))
+  EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(override_url, _, _, _))
       .Times(1);
   std::vector<GURL> urls = {fake_url1};
   autofill_image_fetcher()->FetchImagesForURLs(urls, base::DoNothing());
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
-  // Set the AutofillImageFetcher to modify the input |fake_url1| in
+  // Set the AutofillImageFetcher to replace the input `fake_image1` in
   // ResolveCardArtImage.
-  autofill_image_fetcher()->set_modify_card_art_image(true);
+  gfx::Image override_image = gfx::test::CreateImage(5, 5);
+  autofill_image_fetcher()->set_card_art_image_override(override_image);
 
   GURL fake_url1 = GURL("https://www.example.com/fake_image1");
   gfx::Image fake_image1 = gfx::test::CreateImage(1, 2);
@@ -205,12 +206,12 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
   autofill_image_fetcher()->SimulateOnImageFetched(
       barrier_callback, fake_url1, AutofillTickClock::NowTicks(), fake_image1);
 
-  // The received image should not be |fake_image1|, because ResolveCardArtImage
+  // The received image should be `override_image`, because ResolveCardArtImage
   // should have changed it.
   ASSERT_EQ(1U, received_images.size());
   ASSERT_TRUE(received_images.contains(fake_url1));
-  EXPECT_FALSE(
-      gfx::test::AreImagesEqual(fake_image1, received_images[fake_url1]));
+  EXPECT_TRUE(
+      gfx::test::AreImagesEqual(override_image, received_images[fake_url1]));
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_InvalidUrlFailure) {
