@@ -27,9 +27,10 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const base::Time start_time,
     const base::Time end_time,
     bool all_day_event = false,
-    const GURL video_conference_url = GURL()) {
+    const GURL video_conference_url = GURL(),
+    const char* summary = "summary") {
   return calendar_test_utils::CreateEvent(
-      "id_0", "summary_0", start_time, end_time,
+      "id_0", summary, start_time, end_time,
       google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
       google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
       all_day_event, video_conference_url);
@@ -38,7 +39,8 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
 std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>>
 CreateUpcomingEvents(int event_count = 1,
                      bool all_day_event = false,
-                     const GURL video_conference_url = GURL()) {
+                     const GURL video_conference_url = GURL(),
+                     const char* summary = "summary") {
   std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;
   auto event_in_ten_mins_start_time =
       base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
@@ -48,7 +50,7 @@ CreateUpcomingEvents(int event_count = 1,
   for (int i = 0; i < event_count; ++i) {
     events.push_back(CreateEvent(event_in_ten_mins_start_time,
                                  event_in_ten_mins_end_time, all_day_event,
-                                 video_conference_url));
+                                 video_conference_url, summary));
   }
 
   return events;
@@ -201,7 +203,7 @@ TEST_F(CalendarUpNextViewTest, ShouldShowMultipleUpcomingEvents) {
 }
 
 TEST_F(CalendarUpNextViewTest,
-       ShouldShowSingleEventTakingUpFullWidthOfParentView) {
+       ShouldShowSingleEventWithShortTitleTakingUpFullWidthOfParentView) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -209,6 +211,24 @@ TEST_F(CalendarUpNextViewTest,
 
   // Create UpNextView with a single upcoming event.
   CreateUpNextView(CreateUpcomingEvents());
+
+  EXPECT_EQ(GetContentsView()->children().size(), size_t(1));
+  EXPECT_EQ(GetContentsView()->children()[0]->width(),
+            GetScrollView()->width());
+}
+
+TEST_F(CalendarUpNextViewTest,
+       ShouldShowSingleEventWithLongTitleTakingUpFullWidthOfParentView) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Create UpNextView with a single upcoming event.
+  CreateUpNextView(
+      CreateUpcomingEvents(1, false, GURL(),
+                           "Meeting title with really long long long long long "
+                           "long long name that should ellipsis"));
 
   EXPECT_EQ(GetContentsView()->children().size(), size_t(1));
   EXPECT_EQ(GetContentsView()->children()[0]->width(),
