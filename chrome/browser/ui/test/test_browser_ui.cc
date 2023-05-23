@@ -136,7 +136,8 @@ void TestBrowserUi::ShowAndVerifyUi() {
 #if BUILDFLAG(IS_WIN)
   // Gold files for pixel tests are for light mode, so if dark mode is not
   // forced, and host is in dark mode, skip test.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+  if (!IsInteractiveUi() &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceDarkMode) &&
       ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     GTEST_SKIP() << "Host is in dark mode; skipping test";
