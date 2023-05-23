@@ -78,6 +78,7 @@ source_set("unit_tests") {
     ":set_up_list",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/ntp:set_up_list",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

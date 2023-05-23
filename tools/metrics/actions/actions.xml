@@ -11712,6 +11712,32 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.DefaultBrowserPromo.SetUpList.Accepted">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user accepted a Set Up List default browser promo modal, and was taken
+    to the Settings app. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserPromo.SetUpList.Appear">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user triggered the SetUpList default browser promo and it appeared, iOS
+    only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserPromo.SetUpList.Dismiss">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user dismissed a Set Up List default browser promo modal. iOS only.
+  </description>
+</action>
+
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted">
   <owner>rkgibson@google.com</owner>
   <owner>djean@chromium.org</owner>

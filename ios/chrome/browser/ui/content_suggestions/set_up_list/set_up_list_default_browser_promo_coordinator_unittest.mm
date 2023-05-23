@@ -7,7 +7,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
@@ -55,6 +58,8 @@ class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
 // Test that touching the primary button calls the correct delegate method
 // and opens the settings.
 TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, PrimaryButton) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   [coordinator_ start];
 
   OCMExpect([delegate_ setUpListDefaultBrowserPromoDidFinish:YES]);
@@ -67,10 +72,20 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, PrimaryButton) {
 
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserPromo.SetUpList.Action",
+      IOSDefaultBrowserFullscreenPromoAction::kActionButton, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "IOS.DefaultBrowserPromo.SetUpList.Appear"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "IOS.DefaultBrowserPromo.SetUpList.Accepted"));
 }
 
 // Test that touching the secondary button calls the correct delegate method.
 TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SecondaryButton) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   [coordinator_ start];
 
   OCMExpect([delegate_ setUpListDefaultBrowserPromoDidFinish:NO]);
@@ -79,10 +94,19 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SecondaryButton) {
 
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserPromo.SetUpList.Action",
+      IOSDefaultBrowserFullscreenPromoAction::kCancel, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "IOS.DefaultBrowserPromo.SetUpList.Appear"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "IOS.DefaultBrowserPromo.SetUpList.Dismiss"));
 }
 
 // Test that touching the secondary button calls the correct delegate method.
 TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SwipeToDismiss) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   [coordinator_ start];
 
   OCMExpect([delegate_ setUpListDefaultBrowserPromoDidFinish:NO]);
@@ -93,4 +117,11 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SwipeToDismiss) {
 
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserPromo.SetUpList.Action",
+      IOSDefaultBrowserFullscreenPromoAction::kCancel, 1);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "IOS.DefaultBrowserPromo.SetUpList.Appear"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "IOS.DefaultBrowserPromo.SetUpList.Dismiss"));
 }

@@ -590,6 +590,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserPromo.SetUpList.Action"
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2023-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    The action taken by the user in response to the Set Up List default browser
+    promo.
+  </summary>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserPromo.TailoredFullscreen.{Action}"
     enum="IOSDefaultBrowserTailoredPromoType" expires_after="2023-12-01">
   <owner>sebsg@chromium.org</owner>
