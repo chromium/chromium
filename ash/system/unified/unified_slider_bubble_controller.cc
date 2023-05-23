@@ -57,7 +57,6 @@ void ConfigureSliderViewStyle(UnifiedSliderView* slider_view,
     // Toggle toast has only a button and label. Slider toast has a slider, a
     // button on the slider body, and possible trailing buttons.
     const bool is_toggle_toast =
-        slider_type == SliderType::SLIDER_TYPE_MIC ||
         slider_type == SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE;
     auto* layout =
         slider_view->SetLayoutManager(std::make_unique<views::BoxLayout>(

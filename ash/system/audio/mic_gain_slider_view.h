@@ -10,6 +10,10 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace views {
+class Label;
+}  // namespace views
+
 namespace ash {
 
 class MicGainSliderController;
@@ -47,6 +51,8 @@ class MicGainSliderView : public UnifiedSliderView,
   // True if the audio device this slider represents is internal.
   const bool internal_;
 
+  // Owned by views hierarchy.
+  raw_ptr<views::Label, ExperimentalAsh> toast_label_ = nullptr;
   // View used for a11y alert when mute state changes.
   raw_ptr<views::View, ExperimentalAsh> announcement_view_ = nullptr;
 };
