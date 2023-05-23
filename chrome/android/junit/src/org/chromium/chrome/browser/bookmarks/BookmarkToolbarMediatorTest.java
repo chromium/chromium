@@ -76,27 +76,29 @@ public class BookmarkToolbarMediatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarios =
             new ActivityScenarioRule<>(TestActivity.class);
     @Mock
-    BookmarkDelegate mBookmarkDelegate;
+    private BookmarkDelegate mBookmarkDelegate;
     @Mock
-    DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
+    private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
     @Mock
-    BookmarkModel mBookmarkModel;
+    private BookmarkModel mBookmarkModel;
     @Mock
-    BookmarkOpener mBookmarkOpener;
+    private BookmarkOpener mBookmarkOpener;
     @Mock
-    SelectionDelegate mSelectionDelegate;
+    private SelectionDelegate mSelectionDelegate;
     @Mock
-    Runnable mOpenSearchUiRunnable;
+    private Runnable mOpenSearchUiRunnable;
     @Mock
-    Callback mOpenFolderCallback;
+    private Callback mOpenFolderCallback;
     @Mock
-    BookmarkId mBookmarkId;
+    private BookmarkId mBookmarkId;
     @Mock
-    BookmarkItem mBookmarkItem;
+    private BookmarkItem mBookmarkItem;
     @Mock
-    BookmarkUiPrefs mBookmarkUiPrefs;
+    private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock
+    private BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
     @Spy
-    Context mContext;
+    private Context mContext;
 
     BookmarkToolbarMediator mMediator;
     PropertyModel mModel;
@@ -129,9 +131,10 @@ public class BookmarkToolbarMediatorTest {
                          .with(BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK, mOpenFolderCallback)
                          .build();
         mBookmarkDelegateSupplier = new OneshotSupplierImpl<>();
-        mMediator = new BookmarkToolbarMediator(mContext, mModel,
-                mDragReorderableRecyclerViewAdapter, mBookmarkDelegateSupplier, mSelectionDelegate,
-                mBookmarkModel, mBookmarkOpener, mBookmarkUiPrefs);
+        mMediator =
+                new BookmarkToolbarMediator(mContext, mModel, mDragReorderableRecyclerViewAdapter,
+                        mBookmarkDelegateSupplier, mSelectionDelegate, mBookmarkModel,
+                        mBookmarkOpener, mBookmarkUiPrefs, mBookmarkAddNewFolderCoordinator);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
     }
 
@@ -151,9 +154,10 @@ public class BookmarkToolbarMediatorTest {
         verify(mContext).startActivity(intentCaptor.capture());
         assertEquals(clazz.getName(), intentCaptor.getValue().getComponent().getClassName());
 
-        mMediator = new BookmarkToolbarMediator(mContext, mModel,
-                mDragReorderableRecyclerViewAdapter, mBookmarkDelegateSupplier, mSelectionDelegate,
-                mBookmarkModel, mBookmarkOpener, mBookmarkUiPrefs);
+        mMediator =
+                new BookmarkToolbarMediator(mContext, mModel, mDragReorderableRecyclerViewAdapter,
+                        mBookmarkDelegateSupplier, mSelectionDelegate, mBookmarkModel,
+                        mBookmarkOpener, mBookmarkUiPrefs, mBookmarkAddNewFolderCoordinator);
     }
 
     @Test
@@ -316,6 +320,29 @@ public class BookmarkToolbarMediatorTest {
         setCurrentSelection(mBookmarkId);
         assertTrue(mMediator.onMenuIdClick(R.id.selection_open_in_incognito_tab_id));
         verify(mBookmarkOpener).openBookmarksInNewTabs(any(), eq(true));
+    }
+
+    @Test
+    public void testOnMenuItemClick_addNewFolder() {
+        assertTrue(mMediator.onMenuIdClick(R.id.create_new_folder_menu_id));
+        verify(mBookmarkAddNewFolderCoordinator).show(any());
+    }
+
+    @Test
+    public void testAddNewFolder() {
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertTrue(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
+        assertTrue(mMediator.onMenuIdClick(R.id.create_new_folder_menu_id));
+        verify(mBookmarkAddNewFolderCoordinator).show(any());
+
+        doReturn(mBookmarkId).when(mBookmarkModel).getReadingListFolder();
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
+
+        doReturn(null).when(mBookmarkModel).getReadingListFolder();
+        doReturn(mBookmarkId).when(mBookmarkModel).getPartnerFolderId();
+        mMediator.onFolderStateSet(mBookmarkId);
+        assertFalse(mModel.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
     }
 
     @Test

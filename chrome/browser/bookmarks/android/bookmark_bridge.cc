@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <queue>
 #include <string>
@@ -22,6 +23,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/string_compare.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -490,10 +492,16 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::GetPartnerFolderId(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(partner_bookmarks_shim_->IsLoaded());
+  if (!partner_bookmarks_shim_->IsLoaded()) {
+    return nullptr;
+  }
 
   const BookmarkNode* partner_node =
       partner_bookmarks_shim_->GetPartnerBookmarksRoot();
+  if (!partner_node) {
+    return nullptr;
+  }
+
   ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
       env, partner_node->id(), GetBookmarkType(partner_node));
   return folder_id_obj;

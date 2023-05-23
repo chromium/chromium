@@ -14,6 +14,7 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecy
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -29,7 +30,7 @@ public class BookmarkToolbarCoordinator {
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
             boolean isDialogUi, OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier,
             BookmarkModel bookmarkModel, BookmarkOpener bookmarkOpener,
-            BookmarkUiPrefs bookmarkUiPrefs) {
+            BookmarkUiPrefs bookmarkUiPrefs, ModalDialogManager modalDialogManager) {
         mToolbar = (BookmarkToolbar) selectableListLayout.initializeToolbar(
                 R.layout.bookmark_toolbar, selectionDelegate, 0, R.id.normal_menu_group,
                 R.id.selection_mode_menu_group, null, isDialogUi);
@@ -45,7 +46,8 @@ public class BookmarkToolbarCoordinator {
         mModel.set(BookmarkToolbarProperties.DRAG_ENABLED, false);
         mMediator = new BookmarkToolbarMediator(context, mModel, dragReorderableRecyclerViewAdapter,
                 bookmarkDelegateSupplier, selectionDelegate, bookmarkModel, bookmarkOpener,
-                bookmarkUiPrefs);
+                bookmarkUiPrefs,
+                new BookmarkAddNewFolderCoordinator(context, modalDialogManager, bookmarkModel));
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }

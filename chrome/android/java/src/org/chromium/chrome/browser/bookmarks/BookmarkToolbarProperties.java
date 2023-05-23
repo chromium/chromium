@@ -40,6 +40,8 @@ class BookmarkToolbarProperties {
     static final WritableBooleanPropertyKey SEARCH_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
     static final WritableBooleanPropertyKey EDIT_BUTTON_VISIBLE = new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey NEW_FOLDER_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
     // Can change within SelectableListToolbar which makes the model value to become stale.
     static final WritableObjectPropertyKey<Integer> NAVIGATION_BUTTON_STATE =
             new WritableObjectPropertyKey<>(/*skipEquality=*/true);
@@ -63,7 +65,8 @@ class BookmarkToolbarProperties {
 
     static final PropertyKey[] ALL_KEYS = {BOOKMARK_MODEL, BOOKMARK_OPENER, SELECTION_DELEGATE,
             TITLE, BOOKMARK_UI_MODE, SOFT_KEYBOARD_VISIBLE, IS_DIALOG_UI, DRAG_ENABLED,
-            SEARCH_BUTTON_VISIBLE, EDIT_BUTTON_VISIBLE, NAVIGATION_BUTTON_STATE, CURRENT_FOLDER,
-            CHECKED_SORT_MENU_ID, CHECKED_VIEW_MENU_ID, OPEN_SEARCH_UI_RUNNABLE,
-            MENU_ID_CLICKED_FUNCTION, OPEN_FOLDER_CALLBACK, FAKE_SELECTION_STATE_CHANGE};
+            SEARCH_BUTTON_VISIBLE, EDIT_BUTTON_VISIBLE, NEW_FOLDER_BUTTON_VISIBLE,
+            NAVIGATION_BUTTON_STATE, CURRENT_FOLDER, CHECKED_SORT_MENU_ID, CHECKED_VIEW_MENU_ID,
+            OPEN_SEARCH_UI_RUNNABLE, MENU_ID_CLICKED_FUNCTION, OPEN_FOLDER_CALLBACK,
+            FAKE_SELECTION_STATE_CHANGE};
 }

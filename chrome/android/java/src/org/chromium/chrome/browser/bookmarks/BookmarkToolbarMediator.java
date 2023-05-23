@@ -31,6 +31,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.Objects;
 
 /** Responsible for the business logic for the BookmarkManagerToolbar. */
 class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
@@ -42,6 +43,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
     private final BookmarkModel mBookmarkModel;
     private final BookmarkOpener mBookmarkOpener;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
+    private final BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
 
     // TODO(crbug.com/1413463): Remove reference to BookmarkDelegate if possible.
     private @Nullable BookmarkDelegate mBookmarkDelegate;
@@ -52,7 +54,8 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
             OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier,
             SelectionDelegate selectionDelegate, BookmarkModel bookmarkModel,
-            BookmarkOpener bookmarkOpener, BookmarkUiPrefs bookmarkUiPrefs) {
+            BookmarkOpener bookmarkOpener, BookmarkUiPrefs bookmarkUiPrefs,
+            BookmarkAddNewFolderCoordinator bookmarkAddNewFolderCoordinator) {
         mContext = context;
         mModel = model;
 
@@ -64,6 +67,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         mBookmarkModel = bookmarkModel;
         mBookmarkOpener = bookmarkOpener;
         mBookmarkUiPrefs = bookmarkUiPrefs;
+        mBookmarkAddNewFolderCoordinator = bookmarkAddNewFolderCoordinator;
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID,
@@ -89,6 +93,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         // Sorting/viewing submenu needs to be caught, but haven't been implemented yet.
         // TODO(crbug.com/1413463): Handle the new toolbar options.
         if (id == R.id.create_new_folder_menu_id) {
+            mBookmarkAddNewFolderCoordinator.show(mCurrentFolder);
             return true;
         } else if (id == R.id.normal_options_submenu) {
             return true;
@@ -229,6 +234,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
                 folderItem != null && folderItem.isEditable());
         if (folderItem == null) return;
 
+        // Title, navigation buttons.
         String title;
         @NavigationButton
         int navigationButton;
@@ -259,6 +265,12 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
         // Should typically be the last thing done, because lots of other properties will trigger
         // an incorrect button state, and we need to override that.
         mModel.set(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE, navigationButton);
+
+        // New folder button.
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            mModel.set(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE,
+                    isAddNewFolderButtonVisible());
+        }
     }
 
     @Override
@@ -295,5 +307,10 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
                 return R.id.sort_by_reverse_alpha;
         }
         return ResourcesCompat.ID_NULL;
+    }
+
+    private boolean isAddNewFolderButtonVisible() {
+        return !Objects.equals(mCurrentFolder, mBookmarkModel.getReadingListFolder())
+                && !Objects.equals(mCurrentFolder, mBookmarkModel.getPartnerFolderId());
     }
 }

@@ -39,6 +39,9 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE) {
             bookmarkToolbar.setEditButtonVisible(
                     model.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
+        } else if (key == BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE) {
+            bookmarkToolbar.setNewFolderButtonVisible(
+                    model.get(BookmarkToolbarProperties.NEW_FOLDER_BUTTON_VISIBLE));
         } else if (key == BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE) {
             bookmarkToolbar.setNavigationButtonState(
                     model.get(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE));

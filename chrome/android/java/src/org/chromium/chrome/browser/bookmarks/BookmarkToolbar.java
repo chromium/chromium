@@ -48,6 +48,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     private boolean mIsSelectionUiShowing;
     private boolean mSearchButtonVisible;
     private boolean mEditButtonVisible;
+    private boolean mNewFolderButtonVisible;
 
     private Runnable mOpenSearchUiRunnable;
     private Callback<BookmarkId> mOpenFolderCallback;
@@ -124,6 +125,11 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
     void setEditButtonVisible(boolean visible) {
         mEditButtonVisible = visible;
         getMenu().findItem(R.id.edit_menu_id).setVisible(visible);
+    }
+
+    void setNewFolderButtonVisible(boolean visible) {
+        mNewFolderButtonVisible = visible;
+        getMenu().findItem(R.id.create_new_folder_menu_id).setVisible(visible);
     }
 
     void setNavigationButtonState(@NavigationButton int navigationButtonState) {
