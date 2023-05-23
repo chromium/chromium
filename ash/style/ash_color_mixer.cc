@@ -643,6 +643,13 @@ void AddAshColorMixer(ui::ColorProvider* provider,
 
   mixer[ui::kColorTooltipBackground] = {cros_tokens::kCrosSysOnSurface};
   mixer[ui::kColorTooltipForeground] = {cros_tokens::kCrosSysInverseOnSurface};
+
+  if (chromeos::features::IsJellyEnabled() && !key.custom_theme) {
+    // Only override frame color if there's no custom theme or we'll
+    // override the value from the theme.
+    mixer[ui::kColorFrameActive] = {cros_tokens::kCrosSysHeader};
+    mixer[ui::kColorFrameInactive] = {cros_tokens::kCrosSysHeaderUnfocused};
+  }
 }
 
 }  // namespace ash
