@@ -1035,7 +1035,6 @@ public class StartSurfaceTest {
     @Feature({"StartSurface"})
     @EnableFeatures({ChromeFeatureList.SPARE_TAB, ChromeFeatureList.START_SURFACE_SPARE_TAB})
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
-    @DisabledTest(message = "crbug.com/1170673 - NoInstant_NoReturn version is flaky")
     public void test_UsesSpareTabForNavigationFromSearchBox() {
         if (!mImmediateReturn) return;
 
