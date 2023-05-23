@@ -5768,11 +5768,6 @@ crbug.com/1180274 [ Release Win10.20h2 ] virtual/partitioned-cookies/http/tests/
 # Sheriff 2022-07-12
 crbug.com/1343674 editing/deleting/460938.html [ Failure Pass ]
 
-# Disable test to land a MSE change. Spec change (MSE PR#306) is still pending,
-# and once landed, this line can be removed.
-crbug.com/878133 external/wpt/media-source/idlharness.window.html [ Failure Pass ]
-
-
 # Sheriff 2022-07-15
 crbug.com/1344652 [ Mac ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
 crbug.com/1344771 virtual/force-defer-script/external/wpt/html/semantics/scripting-1/the-script-element/defer-script/document-write.html [ Crash Failure Pass Timeout ]
