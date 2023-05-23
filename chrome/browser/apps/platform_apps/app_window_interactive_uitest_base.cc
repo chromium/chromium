@@ -22,6 +22,14 @@ void FullscreenChangeWaiter::Wait() {
     content::RunAllPendingInMessageLoop();
 }
 
+// Some of these tests fail if run on a machine with a non 1.0 device scale
+// factor, so make the test override the device scale factor.
+void AppWindowInteractiveTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  extensions::PlatformAppBrowserTest::SetUpCommandLine(command_line);
+  command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
+}
+
 bool AppWindowInteractiveTest::RunAppWindowInteractiveTest(
     const char* testName) {
   ExtensionTestMessageListener launched_listener("Launched",

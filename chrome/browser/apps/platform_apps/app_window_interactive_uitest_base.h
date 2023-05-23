@@ -44,6 +44,8 @@ class AppWindowInteractiveTest : public extensions::PlatformAppBrowserTest {
   AppWindowInteractiveTest(const AppWindowInteractiveTest&) = delete;
   AppWindowInteractiveTest& operator=(const AppWindowInteractiveTest&) = delete;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
   bool RunAppWindowInteractiveTest(const char* testName);
 
   bool SimulateKeyPress(ui::KeyboardCode key);
