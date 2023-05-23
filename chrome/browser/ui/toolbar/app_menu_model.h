@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -85,6 +86,8 @@ enum AppMenuAction {
   MENU_ACTION_VISIT_CHROME_WEB_STORE = 57,
   MENU_ACTION_PASSWORD_MANAGER = 58,
   MENU_ACTION_TRANSLATE_PAGE = 59,
+  // ToolsMenuModel
+  MENU_ACTION_SHOW_CHROME_LABS = 60,
   LIMIT_MENU_ACTION
 };
 
@@ -110,6 +113,7 @@ class ZoomMenuModel : public ui::SimpleMenuModel {
 class ToolsMenuModel : public ui::SimpleMenuModel {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPerformanceMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChromeLabsMenuItem);
 
   ToolsMenuModel(ui::SimpleMenuModel::Delegate* delegate, Browser* browser);
 
@@ -120,6 +124,8 @@ class ToolsMenuModel : public ui::SimpleMenuModel {
 
  private:
   void Build(Browser* browser);
+
+  std::unique_ptr<ChromeLabsModel> chrome_labs_model_ = nullptr;
 };
 
 class ExtensionsMenuModel : public ui::SimpleMenuModel {

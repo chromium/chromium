@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_UTILS_H_
-#define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_UTILS_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_UTILS_H_
+#define CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_UTILS_H_
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 
 class Profile;
 
@@ -21,4 +21,9 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
 // menu item, etc..) be shown.
 bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile);
 
-#endif  //  CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_UTILS_H_
+// This will return true if there are new experiments and they haven't yet been
+// seen.
+bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
+                                          Profile* profile);
+
+#endif  //  CHROME_BROWSER_UI_TOOLBAR_CHROME_LABS_UTILS_H_

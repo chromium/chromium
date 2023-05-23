@@ -521,6 +521,7 @@ class BrowserView : public BrowserWindow,
   void ShowSidePanel(
       absl::optional<SidePanelEntryId> entry_id,
       absl::optional<SidePanelOpenTrigger> open_trigger) override;
+  void ShowChromeLabs() override;
 
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;

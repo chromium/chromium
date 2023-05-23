@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
 #include "chrome/browser/about_flags.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/flags_ui/feature_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_utils.h"
 
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
@@ -90,8 +90,9 @@ void UpdateChromeLabsNewBadgePrefs(Profile* profile,
     }
   }
 
-  for (const std::string& key : entries_to_remove)
+  for (const std::string& key : entries_to_remove) {
     new_badge_prefs.Remove(key);
+  }
 }
 
 bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile) {
@@ -107,4 +108,29 @@ bool ShouldShowChromeLabsUI(const ChromeLabsModel* model, Profile* profile) {
                               [&profile](const LabInfo& lab) {
                                 return IsChromeLabsFeatureValid(lab, profile);
                               });
+}
+
+bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
+                                          Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ScopedDictPrefUpdate update(
+      profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
+#else
+  ScopedDictPrefUpdate update(g_browser_process->local_state(),
+                              chrome_labs_prefs::kChromeLabsNewBadgeDict);
+#endif
+
+  base::Value::Dict& new_badge_prefs = update.Get();
+
+  std::vector<std::string> lab_internal_names;
+  const std::vector<LabInfo>& all_labs = model->GetLabInfo();
+
+  return base::ranges::any_of(
+      all_labs.begin(), all_labs.end(), [&new_badge_prefs](const LabInfo& lab) {
+        absl::optional<int> new_badge_pref_value =
+            new_badge_prefs.FindInt(lab.internal_name);
+        // Show the dot indicator if new experiments have not been seen yet.
+        return new_badge_pref_value ==
+               chrome_labs_prefs::kChromeLabsNewExperimentPrefValue;
+      });
 }

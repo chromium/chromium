@@ -1403,6 +1403,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_NAME_WINDOW" desc="The text label of the Name Window menu item, used to give a user-specified name to a window.">
           Name &amp;window...
         </message>
+        <message name="IDS_CHROMELABS" desc="The text label of the Chrome Labs menu item">
+          Chrome &amp;Labs...
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_VIEW_SOURCE" desc="In Title Case: The text label of the View Page Source menu item">
@@ -1449,6 +1452,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_NAME_WINDOW" desc="In Title Case: The text label of the Name Window menu item, used to give a user-specified name to a window.">
           Name &amp;Window...
+        </message>
+        <message name="IDS_CHROMELABS" desc="In Title Case: The text label of the Chrome Labs menu item">
+          Chrome &amp;Labs...
         </message>
       </if>
 

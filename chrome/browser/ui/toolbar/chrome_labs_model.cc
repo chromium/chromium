@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,10 +22,11 @@ absl::optional<std::vector<LabInfo>>& GetTestData() {
 }
 
 void SetLabInfoForTesting(const std::vector<LabInfo>& test_feature_info) {
-  if (test_feature_info.empty())
+  if (test_feature_info.empty()) {
     GetTestData().reset();
-  else
+  } else {
     GetTestData() = test_feature_info;
+  }
 }
 
 // TODO(elainechien): Explore better ways to allow developers to add their
@@ -33,8 +34,9 @@ void SetLabInfoForTesting(const std::vector<LabInfo>& test_feature_info) {
 // Experiments featured in labs must have feature entries of type FEATURE_VALUE
 // (Default, Enabled, Disabled states) or FEATURE_WITH_PARAMS_VALUE
 const std::vector<LabInfo>& GetData() {
-  if (GetTestData())
+  if (GetTestData()) {
     return GetTestData().value();
+  }
 
   static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
     std::vector<LabInfo> lab_info;

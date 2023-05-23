@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_coordinator.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/dot_indicator.h"
@@ -29,33 +29,20 @@ class ChromeLabsButton : public ToolbarButton {
 
   void HideDotIndicator();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-  void SetShouldCircumventDeviceCheckForTesting(bool should_circumvent) {
-    should_circumvent_device_check_for_testing_ = should_circumvent;
-  }
-#endif
+  void ButtonPressed();
 
   bool GetDotIndicatorVisibilityForTesting() const {
     return new_experiments_indicator_->GetVisible();
   }
 
-  ChromeLabsCoordinator* GetChromeLabsCoordinatorForTesting() {
+  ChromeLabsCoordinator* GetChromeLabsCoordinator() {
     return chrome_labs_coordinator_.get();
   }
 
  private:
-  void ButtonPressed();
-
   void UpdateDotIndicator();
 
   raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool is_waiting_to_show_ = false;
-  // Used to circumvent the IsRunningOnChromeOS() check in ash-chrome tests.
-  bool should_circumvent_device_check_for_testing_ = false;
-#endif
 
   raw_ptr<const ChromeLabsModel, DanglingUntriaged> model_;
 

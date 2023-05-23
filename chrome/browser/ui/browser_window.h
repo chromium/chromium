@@ -646,6 +646,9 @@ class BrowserWindow : public ui::BaseWindow {
       absl::optional<SidePanelEntryId> entry_id = absl::nullopt,
       absl::optional<SidePanelOpenTrigger> open_trigger = absl::nullopt) = 0;
 
+  // Shows the Chrome Labs bubble if enabled.
+  virtual void ShowChromeLabs() = 0;
+
  protected:
   friend class BrowserCloseManager;
   friend class BrowserView;

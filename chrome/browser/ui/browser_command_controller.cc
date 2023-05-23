@@ -788,6 +788,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
                                         SidePanelOpenTrigger::kAppMenu);
       break;
 #endif
+    case IDC_SHOW_CHROME_LABS:
+      window()->ShowChromeLabs();
+      break;
     case IDC_SHOW_BOOKMARK_BAR:
       ToggleBookmarkBar(browser_);
       break;
@@ -1327,6 +1330,9 @@ void BrowserCommandController::InitCommandState() {
                                             true);
       command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU_SHOW_UI,
                                             true);
+    }
+    if (base::FeatureList::IsEnabled(features::kChromeLabs)) {
+      command_updater_.UpdateCommandEnabled(IDC_SHOW_CHROME_LABS, true);
     }
   }
 

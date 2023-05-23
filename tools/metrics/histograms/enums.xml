@@ -114673,6 +114673,7 @@ Called by update_scheduler_enums.py.-->
   <int value="57" label="Visited Chrome Web Store via extensions sub menu."/>
   <int value="58" label="Password Manager"/>
   <int value="59" label="Translate Page"/>
+  <int value="60" label="Show Chrome Labs"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">

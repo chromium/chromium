@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 
+#include <algorithm>
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
@@ -28,6 +32,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -49,9 +54,7 @@ namespace {
 class MenuError : public GlobalError {
  public:
   explicit MenuError(int command_id)
-      : command_id_(command_id),
-        execute_count_(0) {
-  }
+      : command_id_(command_id), execute_count_(0) {}
 
   MenuError(const MenuError&) = delete;
   MenuError& operator=(const MenuError&) = delete;
@@ -86,7 +89,7 @@ class FakeIconDelegate : public AppMenuIconController::Delegate {
   }
 };
 
-} // namespace
+}  // namespace
 
 class AppMenuModelTest : public BrowserWithTestWindowTest,
                          public ui::AcceleratorProvider {
@@ -125,8 +128,17 @@ class ExtensionsMenuModelTest : public AppMenuModelTest,
                                 public testing::WithParamInterface<bool> {
  public:
   ExtensionsMenuModelTest() {
-    feature_list_.InitWithFeatureState(features::kExtensionsMenuInAppMenu,
-                                       GetParam());
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features = {features::kExtensionsMenuInAppMenu};
+      disabled_features = {features::kChromeRefresh2023};
+    } else {
+      enabled_features = {};
+      disabled_features = {features::kExtensionsMenuInAppMenu,
+                           features::kChromeRefresh2023};
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ExtensionsMenuModelTest(const ExtensionsMenuModelTest&) = delete;
@@ -139,6 +151,18 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ExtensionsMenuModelTest,
     /* features::kNewExtensionsTopLevelMenu enabled */ testing::Bool());
+
+class TestAppMenuModelCR2023 : public AppMenuModelTest {
+ public:
+  TestAppMenuModelCR2023() {
+    feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
+  }
+
+  TestAppMenuModelCR2023(const TestAppMenuModelCR2023&) = delete;
+  TestAppMenuModelCR2023& operator=(const TestAppMenuModelCR2023&) = delete;
+
+  ~TestAppMenuModelCR2023() override = default;
+};
 
 // Copies parts of MenuModelTest::Delegate and combines them with the
 // AppMenuModel since AppMenuModel is now a SimpleMenuModel::Delegate and
@@ -240,7 +264,7 @@ TEST_F(AppMenuModelTest, Basics) {
   for (size_t i = 0; i < item_count; ++i) {
     if (model.GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
       // The bookmarks submenu comes after the Tabs and Downloads items.
-      bookmarks_model_index = i + 2;
+      bookmarks_model_index = i + (features::IsChromeRefresh2023() ? 3 : 2);
       break;
     }
   }
@@ -317,6 +341,51 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
   size_t performance_index =
       toolModel.GetIndexOfCommandId(IDC_PERFORMANCE).value();
   EXPECT_TRUE(toolModel.IsEnabledAt(performance_index));
+}
+
+TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
+  // Skip the items that are either not supposed to have an icon, or are not
+  // ready to be tested. Remove items once they're ready for testing.
+  static const std::vector<int> skip_commands = {
+      IDC_RECENT_TABS_MENU, IDC_ABOUT, IDC_PIN_TO_START_SCREEN,
+      IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, IDC_TAKE_SCREENSHOT};
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const auto check_for_icons = [](std::u16string menu_name,
+                                  ui::MenuModel* model) -> void {
+    auto check_for_icons_impl = [](std::u16string menu_name,
+                                   ui::MenuModel* model,
+                                   auto& check_for_icons_ref) -> void {
+      // Except where noted by the above vector, all menu items in CR2023 must
+      // have icons.
+      for (size_t i = 0; i < model->GetItemCount(); ++i) {
+        auto menu_type = model->GetTypeAt(i);
+        if (menu_type != ui::MenuModel::TYPE_ACTIONABLE_SUBMENU &&
+            menu_type != ui::MenuModel::TYPE_SUBMENU &&
+            std::find(skip_commands.cbegin(), skip_commands.cend(),
+                      model->GetCommandIdAt(i)) != skip_commands.cend()) {
+          continue;
+        }
+        if (menu_type != ui::MenuModel::TYPE_SEPARATOR &&
+            menu_type != ui::MenuModel::TYPE_TITLE) {
+          EXPECT_TRUE(!model->GetIconAt(i).IsEmpty())
+              << "\"" << menu_name << "\" menu item \"" << model->GetLabelAt(i)
+              << "\" is missing the icon!";
+        }
+        if ((menu_type == ui::MenuModel::TYPE_SUBMENU ||
+             menu_type == ui::MenuModel::TYPE_ACTIONABLE_SUBMENU) &&
+            std::find(skip_commands.cbegin(), skip_commands.cend(),
+                      model->GetCommandIdAt(i)) == skip_commands.cend()) {
+          check_for_icons_ref(model->GetLabelAt(i), model->GetSubmenuModelAt(i),
+                              check_for_icons_ref);
+        }
+      }
+    };
+    check_for_icons_impl(menu_name, model, check_for_icons_impl);
+  };
+
+  check_for_icons(u"<Root Menu>", &model);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
