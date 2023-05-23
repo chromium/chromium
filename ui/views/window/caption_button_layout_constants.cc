@@ -4,27 +4,14 @@
 
 #include "ui/views/window/caption_button_layout_constants.h"
 
-#include "build/chromeos_buildflags.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/geometry/size.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace views {
 
 gfx::Size GetCaptionButtonLayoutSize(CaptionButtonLayoutSize size) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsJellyrollEnabled()) {
-    return gfx::Size(
-        36,
-        size == CaptionButtonLayoutSize::kBrowserCaptionMaximized ? 34 : 40);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   if (size == CaptionButtonLayoutSize::kNonBrowserCaption) {
-    return gfx::Size(32, 32);
+    return gfx::Size(kCaptionButtonWidth, 32);
   }
 
   // |kBrowserMaximizedCaptionButtonHeight| should be kept in sync with those
@@ -33,11 +20,9 @@ gfx::Size GetCaptionButtonLayoutSize(CaptionButtonLayoutSize size) {
   // location.
   int height = ui::TouchUiController::Get()->touch_ui() ? 41 : 34;
   if (size == CaptionButtonLayoutSize::kBrowserCaptionRestored) {
-    // Restored window titlebars are 8 DIP taller than maximized.
-    height += 8;
+    height += 8;  // Restored window titlebars are 8 DIP taller than maximized.
   }
-
-  return gfx::Size(32, height);
+  return gfx::Size(kCaptionButtonWidth, height);
 }
 
 }  // namespace views
