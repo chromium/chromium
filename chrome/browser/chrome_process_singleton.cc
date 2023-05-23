@@ -55,6 +55,7 @@ const char* EnrollMachineInEarlySingletonFeature() {
   const version_info::Channel channel = chrome::GetChannel();
   if (channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::DEV &&
+      channel != version_info::Channel::BETA &&
       channel != version_info::Channel::UNKNOWN) {
     return kEarlySingletonDefaultGroup;
   }
