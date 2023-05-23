@@ -4,10 +4,10 @@
 
 #include "ios/web/public/session/proto/proto_util.h"
 
-#import <ostream>
-#import <type_traits>
+#include <ostream>
+#include <type_traits>
 
-#import "base/notreached.h"
+#include "base/notreached.h"
 
 namespace web {
 
