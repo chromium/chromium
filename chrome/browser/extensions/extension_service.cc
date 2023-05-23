@@ -480,6 +480,7 @@ void ExtensionService::Shutdown() {
       this);
   external_install_manager_->Shutdown();
   corrupted_extension_reinstaller_.Shutdown();
+  extension_registrar_.Shutdown();
 }
 
 void ExtensionService::Init() {

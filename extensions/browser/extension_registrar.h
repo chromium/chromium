@@ -97,6 +97,9 @@ class ExtensionRegistrar : public ProcessManagerObserver {
 
   ~ExtensionRegistrar() override;
 
+  // Called when the associated Profile is going to be destroyed.
+  void Shutdown();
+
   // Adds the extension to the ExtensionRegistry. The extension will be added to
   // the enabled, disabled, blocklisted or blocked set. If the extension is
   // added as enabled, it will be activated.
@@ -186,7 +189,7 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   const raw_ptr<Delegate> delegate_;
 
   // Keyed services we depend on. Cached here for repeated access.
-  const raw_ptr<ExtensionSystem, DanglingUntriaged> extension_system_;
+  raw_ptr<ExtensionSystem> extension_system_;
   const raw_ptr<ExtensionPrefs> extension_prefs_;
   const raw_ptr<ExtensionRegistry> registry_;
   const raw_ptr<RendererStartupHelper> renderer_helper_;
