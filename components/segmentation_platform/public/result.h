@@ -71,12 +71,19 @@ struct AnnotatedNumericResult {
 
   // The result from the model.
   proto::PredictionResult result;
+
+  // The request ID used for identifying a specific training data inputs. Can be
+  // null if training data was not uploaded for that execution.
+  TrainingRequestId request_id;
 };
 
 using ClassificationResultCallback =
     base::OnceCallback<void(const ClassificationResult&)>;
 using AnnotatedNumericResultCallback =
     base::OnceCallback<void(const AnnotatedNumericResult&)>;
+
+using RawResult = AnnotatedNumericResult;
+using RawResultCallback = base::OnceCallback<void(const RawResult&)>;
 
 }  // namespace segmentation_platform
 

@@ -11,6 +11,7 @@
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
@@ -32,17 +33,10 @@ class RequestHandler {
       std::unique_ptr<SegmentResultProvider> result_provider,
       ExecutionService* execution_service);
 
-  // Client API. See `SegmentationPlatformService::GetClassificationResult`.
-  virtual void GetClassificationResult(
-      const PredictionOptions& options,
-      scoped_refptr<InputContext> input_context,
-      ClassificationResultCallback callback) = 0;
-
-  // Client API. See SegmentationPlatformService::GetAnnotatedNumericResult`.
-  virtual void GetAnnotatedNumericResult(
-      const PredictionOptions& options,
-      scoped_refptr<InputContext> input_context,
-      AnnotatedNumericResultCallback callback) = 0;
+  // Fetches raw result for on demand executions.
+  virtual void GetPredictionResult(const PredictionOptions& options,
+                                   scoped_refptr<InputContext> input_context,
+                                   RawResultCallback callback) = 0;
 };
 
 }  // namespace segmentation_platform

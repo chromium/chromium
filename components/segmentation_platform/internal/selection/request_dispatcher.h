@@ -56,6 +56,7 @@ class RequestDispatcher {
                                scoped_refptr<InputContext> input_context,
                                ClassificationResultCallback callback);
 
+  // Client API. See `SegmentationPlatformService::GetAnnotatedNumericResult`.
   void GetAnnotatedNumericResult(const std::string& segmentation_key,
                                  const PredictionOptions& options,
                                  scoped_refptr<InputContext> input_context,
@@ -74,12 +75,10 @@ class RequestDispatcher {
   void ExecuteAllPendingActions();
   void ExecutePendingActionsForKey(const std::string& segmentation_key);
 
-  template <typename ResultType, typename Request>
   void GetModelResult(const std::string& segmentation_key,
                       const PredictionOptions& options,
                       scoped_refptr<InputContext> input_context,
-                      Request request,
-                      base::OnceCallback<void(const ResultType&)> callback);
+                      AnnotatedNumericResultCallback callback);
 
   // Configs for all registered clients.
   const raw_ptr<const ConfigHolder> config_holder_;

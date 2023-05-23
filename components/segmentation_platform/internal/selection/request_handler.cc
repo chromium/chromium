@@ -46,27 +46,19 @@ class RequestHandlerImpl : public RequestHandler {
   RequestHandlerImpl(const RequestHandlerImpl&) = delete;
   RequestHandlerImpl& operator=(const RequestHandlerImpl&) = delete;
 
-  // Client API. See `SegmentationPlatformService::GetClassificationResult`.
-  void GetClassificationResult(const PredictionOptions& options,
-                               scoped_refptr<InputContext> input_context,
-                               ClassificationResultCallback callback) override;
-  void GetAnnotatedNumericResult(
-      const PredictionOptions& options,
-      scoped_refptr<InputContext> input_context,
-      AnnotatedNumericResultCallback callback) override;
+  // RequestHandler impl.
+  void GetPredictionResult(const PredictionOptions& options,
+                           scoped_refptr<InputContext> input_context,
+                           RawResultCallback callback) override;
 
  private:
   void GetModelResult(const PredictionOptions& options,
                       scoped_refptr<InputContext> input_context,
                       SegmentResultProvider::SegmentResultCallback callback);
 
-  void OnGetModelResultForClassification(
+  void OnGetPredictionResult(
       scoped_refptr<InputContext> input_context,
-      ClassificationResultCallback classification_callback,
-      std::unique_ptr<SegmentResultProvider::SegmentResult> result);
-  void OnGetAnnotatedNumericResult(
-      scoped_refptr<InputContext> input_context,
-      AnnotatedNumericResultCallback callback,
+      RawResultCallback callback,
       std::unique_ptr<SegmentResultProvider::SegmentResult> result);
 
   TrainingRequestId CollectTrainingData(
@@ -95,27 +87,15 @@ RequestHandlerImpl::RequestHandlerImpl(
 
 RequestHandlerImpl::~RequestHandlerImpl() = default;
 
-void RequestHandlerImpl::GetClassificationResult(
+void RequestHandlerImpl::GetPredictionResult(
     const PredictionOptions& options,
     scoped_refptr<InputContext> input_context,
-    ClassificationResultCallback callback) {
+    RawResultCallback callback) {
   DCHECK(options.on_demand_execution);
-  GetModelResult(
-      options, input_context,
-      base::BindOnce(&RequestHandlerImpl::OnGetModelResultForClassification,
-                     weak_ptr_factory_.GetWeakPtr(), input_context,
-                     std::move(callback)));
-}
-void RequestHandlerImpl::GetAnnotatedNumericResult(
-    const PredictionOptions& options,
-    scoped_refptr<InputContext> input_context,
-    AnnotatedNumericResultCallback callback) {
-  DCHECK(options.on_demand_execution);
-  GetModelResult(
-      options, input_context,
-      base::BindOnce(&RequestHandlerImpl::OnGetAnnotatedNumericResult,
-                     weak_ptr_factory_.GetWeakPtr(), input_context,
-                     std::move(callback)));
+  GetModelResult(options, input_context,
+                 base::BindOnce(&RequestHandlerImpl::OnGetPredictionResult,
+                                weak_ptr_factory_.GetWeakPtr(), input_context,
+                                std::move(callback)));
 }
 
 void RequestHandlerImpl::GetModelResult(
@@ -135,52 +115,24 @@ void RequestHandlerImpl::GetModelResult(
   result_provider_->GetSegmentResult(std::move(result_options));
 }
 
-void RequestHandlerImpl::OnGetModelResultForClassification(
+void RequestHandlerImpl::OnGetPredictionResult(
     scoped_refptr<InputContext> input_context,
-    ClassificationResultCallback classification_callback,
-    std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
-  PostProcessor post_processor;
-  PredictionStatus status = PredictionStatus::kFailed;
-  proto::PredictionResult pred_result;
-  absl::optional<TrainingRequestId> request_id;
-  if (result) {
-    stats::RecordSegmentSelectionFailure(
-        *config_, stats::GetSuccessOrFailureReason(result->state));
-    status = ResultStateToPredictionStatus(result->state);
-    pred_result = result->result;
-    stats::RecordClassificationResultComputed(*config_, pred_result);
+    RawResultCallback callback,
+    std::unique_ptr<SegmentResultProvider::SegmentResult> segment_result) {
+  RawResult result(PredictionStatus::kFailed);
+  if (segment_result) {
+    result.request_id = CollectTrainingData(input_context);
 
-    request_id = CollectTrainingData(input_context);
+    auto status = ResultStateToPredictionStatus(segment_result->state);
+    result = PostProcessor().GetRawResult(segment_result->result, status);
+
+    stats::RecordSegmentSelectionFailure(
+        *config_, stats::GetSuccessOrFailureReason(segment_result->state));
+    stats::RecordClassificationResultComputed(*config_, segment_result->result);
   } else {
     stats::RecordSegmentSelectionFailure(
         *config_, stats::SegmentationSelectionFailureReason::
                       kOnDemandModelExecutionFailed);
-  }
-  ClassificationResult classification_result =
-      post_processor.GetPostProcessedClassificationResult(pred_result, status);
-
-  if (request_id && !request_id.value().is_null()) {
-    classification_result.request_id = request_id.value();
-  }
-
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(classification_callback),
-                                classification_result));
-}
-
-void RequestHandlerImpl::OnGetAnnotatedNumericResult(
-    scoped_refptr<InputContext> input_context,
-    AnnotatedNumericResultCallback callback,
-    std::unique_ptr<SegmentResultProvider::SegmentResult> segment_result) {
-  PredictionStatus status = PredictionStatus::kFailed;
-  AnnotatedNumericResult result(status);
-  absl::optional<TrainingRequestId> request_id;
-  if (segment_result) {
-    status = ResultStateToPredictionStatus(segment_result->state);
-    result = PostProcessor().GetAnnotatedNumericResult(segment_result->result,
-                                                       status);
-
-    request_id = CollectTrainingData(input_context);
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));

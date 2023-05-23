@@ -14,11 +14,13 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/config_holder.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "components/segmentation_platform/public/result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,20 +34,44 @@ namespace {
 // Test clients.
 const char kDeviceSwitcherClient[] = "device_switcher";
 const char kAdaptiveToolbarClient[] = "adaptive_toolbar";
+const char kTestLabel1[] = "test_label1";
+const char kTestLabel2[] = "test_label2";
+
+proto::PredictionResult CreatePredictionResultWithBinaryClassifier(
+    const char* const label) {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForBinaryClassifier(0.5f, label, "unused");
+
+  proto::PredictionResult prediction_result;
+  prediction_result.add_result(0.8f);
+  prediction_result.mutable_output_config()->Swap(
+      model_metadata.mutable_output_config());
+  return prediction_result;
+}
+
+proto::PredictionResult CreatePredictionResultWithGenericPredictor() {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+  writer.AddOutputConfigForGenericPredictor({"output1", "output2"});
+
+  proto::PredictionResult prediction_result;
+  prediction_result.add_result(0.8f);
+  prediction_result.add_result(0.2f);
+  prediction_result.mutable_output_config()->Swap(
+      model_metadata.mutable_output_config());
+  return prediction_result;
+}
 
 class MockRequestHandler : public RequestHandler {
  public:
   MockRequestHandler() = default;
   ~MockRequestHandler() override = default;
 
-  MOCK_METHOD3(GetClassificationResult,
-               void(const PredictionOptions& options,
-                    scoped_refptr<InputContext> input_context,
-                    ClassificationResultCallback callback));
-  MOCK_METHOD3(GetAnnotatedNumericResult,
+  MOCK_METHOD3(GetPredictionResult,
                void(const PredictionOptions& prediction_options,
                     scoped_refptr<InputContext> input_context,
-                    AnnotatedNumericResultCallback callback));
+                    RawResultCallback callback));
 };
 
 class RequestDispatcherTest : public testing::Test {
@@ -112,7 +138,7 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitFailure) {
   EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Request handler will never be invoked if init fails.
-  EXPECT_CALL(*request_handler1_, GetClassificationResult(_, _, _)).Times(0);
+  EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _)).Times(0);
 
   base::RunLoop loop;
   request_dispatcher_->GetClassificationResult(
@@ -143,15 +169,18 @@ TEST_F(RequestDispatcherTest,
   EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Request from client 1.
-  ClassificationResult result1(PredictionStatus::kSucceeded);
-  result1.ordered_labels.emplace_back("test_label1");
-  EXPECT_CALL(*request_handler1_, GetClassificationResult(_, _, _))
-      .WillRepeatedly(Invoke([&](const PredictionOptions& options,
-                                 scoped_refptr<InputContext> input_context,
-                                 ClassificationResultCallback callback) {
-        std::move(callback).Run(result1);
-      }));
+  RawResult raw_result1(PredictionStatus::kSucceeded);
+  raw_result1.result = CreatePredictionResultWithBinaryClassifier(kTestLabel1);
+  EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _))
+      .WillRepeatedly(
+          Invoke([&raw_result1](const PredictionOptions& options,
+                                scoped_refptr<InputContext> input_context,
+                                RawResultCallback callback) {
+            std::move(callback).Run(raw_result1);
+          }));
 
+  ClassificationResult result1(PredictionStatus::kSucceeded);
+  result1.ordered_labels.emplace_back(kTestLabel1);
   request_dispatcher_->GetClassificationResult(
       kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
@@ -160,15 +189,18 @@ TEST_F(RequestDispatcherTest,
   EXPECT_EQ(1, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Request from client 2.
-  ClassificationResult result2(PredictionStatus::kSucceeded);
-  result2.ordered_labels.emplace_back("test_label2");
-  EXPECT_CALL(*request_handler2_, GetClassificationResult(_, _, _))
-      .WillRepeatedly(Invoke([&](const PredictionOptions& options,
-                                 scoped_refptr<InputContext> input_context,
-                                 ClassificationResultCallback callback) {
-        std::move(callback).Run(result2);
-      }));
+  RawResult raw_result2(PredictionStatus::kSucceeded);
+  raw_result2.result = CreatePredictionResultWithBinaryClassifier(kTestLabel2);
+  EXPECT_CALL(*request_handler2_, GetPredictionResult(_, _, _))
+      .WillRepeatedly(
+          Invoke([&raw_result2](const PredictionOptions& options,
+                                scoped_refptr<InputContext> input_context,
+                                RawResultCallback callback) {
+            std::move(callback).Run(raw_result2);
+          }));
 
+  ClassificationResult result2(PredictionStatus::kSucceeded);
+  result2.ordered_labels.emplace_back(kTestLabel2);
   request_dispatcher_->GetClassificationResult(
       kAdaptiveToolbarClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
@@ -205,15 +237,18 @@ TEST_F(RequestDispatcherTest,
   EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Request from client 1.
-  ClassificationResult result1(PredictionStatus::kSucceeded);
-  result1.ordered_labels.emplace_back("test_label1");
-  EXPECT_CALL(*request_handler1_, GetClassificationResult(_, _, _))
-      .WillRepeatedly(Invoke([&](const PredictionOptions& options,
-                                 scoped_refptr<InputContext> input_context,
-                                 ClassificationResultCallback callback) {
-        std::move(callback).Run(result1);
-      }));
+  RawResult raw_result1(PredictionStatus::kSucceeded);
+  raw_result1.result = CreatePredictionResultWithBinaryClassifier(kTestLabel1);
+  EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _))
+      .WillRepeatedly(
+          Invoke([&raw_result1](const PredictionOptions& options,
+                                scoped_refptr<InputContext> input_context,
+                                RawResultCallback callback) {
+            std::move(callback).Run(raw_result1);
+          }));
 
+  ClassificationResult result1(PredictionStatus::kSucceeded);
+  result1.ordered_labels.emplace_back(kTestLabel1);
   request_dispatcher_->GetClassificationResult(
       kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
@@ -222,15 +257,18 @@ TEST_F(RequestDispatcherTest,
   EXPECT_EQ(1, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Request from client 2.
+  RawResult raw_result2(PredictionStatus::kSucceeded);
+  raw_result2.result = CreatePredictionResultWithBinaryClassifier(kTestLabel2);
+  EXPECT_CALL(*request_handler2_, GetPredictionResult(_, _, _))
+      .WillRepeatedly(
+          Invoke([&raw_result2](const PredictionOptions& options,
+                                scoped_refptr<InputContext> input_context,
+                                RawResultCallback callback) {
+            std::move(callback).Run(raw_result2);
+          }));
+
   ClassificationResult result2(PredictionStatus::kSucceeded);
   result2.ordered_labels.emplace_back("test_label2");
-  EXPECT_CALL(*request_handler2_, GetClassificationResult(_, _, _))
-      .WillRepeatedly(Invoke([&](const PredictionOptions& options,
-                                 scoped_refptr<InputContext> input_context,
-                                 ClassificationResultCallback callback) {
-        std::move(callback).Run(result2);
-      }));
-
   request_dispatcher_->GetClassificationResult(
       kAdaptiveToolbarClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
@@ -286,15 +324,18 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccessAndModelsLoaded) {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR);
 
   // Request from client 1.
-  ClassificationResult result1(PredictionStatus::kSucceeded);
-  result1.ordered_labels.emplace_back("test_label1");
-  EXPECT_CALL(*request_handler1_, GetClassificationResult(_, _, _))
-      .WillRepeatedly(Invoke([&](const PredictionOptions& options,
-                                 scoped_refptr<InputContext> input_context,
-                                 ClassificationResultCallback callback) {
-        std::move(callback).Run(result1);
-      }));
+  RawResult raw_result1(PredictionStatus::kSucceeded);
+  raw_result1.result = CreatePredictionResultWithBinaryClassifier(kTestLabel1);
+  EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _))
+      .WillRepeatedly(
+          Invoke([&raw_result1](const PredictionOptions& options,
+                                scoped_refptr<InputContext> input_context,
+                                RawResultCallback callback) {
+            std::move(callback).Run(raw_result1);
+          }));
 
+  ClassificationResult result1(PredictionStatus::kSucceeded);
+  result1.ordered_labels.emplace_back(kTestLabel1);
   request_dispatcher_->GetClassificationResult(
       kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
@@ -302,15 +343,18 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccessAndModelsLoaded) {
   EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Request from client 2.
-  ClassificationResult result2(PredictionStatus::kSucceeded);
-  result2.ordered_labels.emplace_back("test_label2");
-  EXPECT_CALL(*request_handler2_, GetClassificationResult(_, _, _))
-      .WillRepeatedly(Invoke([&](const PredictionOptions& options,
-                                 scoped_refptr<InputContext> input_context,
-                                 ClassificationResultCallback callback) {
-        std::move(callback).Run(result2);
-      }));
+  RawResult raw_result2(PredictionStatus::kSucceeded);
+  raw_result2.result = CreatePredictionResultWithBinaryClassifier(kTestLabel2);
+  EXPECT_CALL(*request_handler2_, GetPredictionResult(_, _, _))
+      .WillRepeatedly(
+          Invoke([&raw_result2](const PredictionOptions& options,
+                                scoped_refptr<InputContext> input_context,
+                                RawResultCallback callback) {
+            std::move(callback).Run(raw_result2);
+          }));
 
+  ClassificationResult result2(PredictionStatus::kSucceeded);
+  result2.ordered_labels.emplace_back(kTestLabel2);
   request_dispatcher_->GetClassificationResult(
       kAdaptiveToolbarClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
@@ -325,19 +369,20 @@ TEST_F(RequestDispatcherTest, TestAnnotatedNumericResultRequestWithWaiting) {
   options.on_demand_execution = true;
 
   // Request from client 1.
-  AnnotatedNumericResult result1(PredictionStatus::kSucceeded);
-  result1.result.add_result(1.0);
-  EXPECT_CALL(*request_handler1_, GetAnnotatedNumericResult(_, _, _))
-      .WillRepeatedly(Invoke([&](const PredictionOptions& options,
-                                 scoped_refptr<InputContext> input_context,
-                                 AnnotatedNumericResultCallback callback) {
-        std::move(callback).Run(result1);
-      }));
+  RawResult raw_result1(PredictionStatus::kSucceeded);
+  raw_result1.result = CreatePredictionResultWithGenericPredictor();
+  EXPECT_CALL(*request_handler1_, GetPredictionResult(_, _, _))
+      .WillRepeatedly(
+          Invoke([&raw_result1](const PredictionOptions& options,
+                                scoped_refptr<InputContext> input_context,
+                                RawResultCallback callback) {
+            std::move(callback).Run(raw_result1);
+          }));
 
   request_dispatcher_->GetAnnotatedNumericResult(
       kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetAnnotatedNumericResult,
-                     base::Unretained(this), loop.QuitClosure(), result1));
+                     base::Unretained(this), loop.QuitClosure(), raw_result1));
   EXPECT_EQ(1, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Init platform.

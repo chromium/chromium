@@ -311,13 +311,13 @@ TEST(PostProcessorTest, GetTTLForMultiClassWithNoLabels) {
             post_processor.GetTTLForPredictedResult(pred_result));
 }
 
-TEST(PostProcessorTest, GetAnnotatedNumericResult) {
+TEST(PostProcessorTest, GetRawResult) {
   proto::PredictionResult pred_result = metadata_utils::CreatePredictionResult(
       /*model_scores=*/{0.1, 0.2, 0.3},
       GetTestOutputConfigForGenericClassifier(),
       /*timestamp=*/base::Time::Now());
-  AnnotatedNumericResult result = PostProcessor().GetAnnotatedNumericResult(
-      pred_result, PredictionStatus::kSucceeded);
+  RawResult result =
+      PostProcessor().GetRawResult(pred_result, PredictionStatus::kSucceeded);
   EXPECT_EQ(pred_result.SerializeAsString(), result.result.SerializeAsString());
   EXPECT_EQ(PredictionStatus::kSucceeded, result.status);
   EXPECT_NEAR(0.1, *result.GetResultForLabel("Output1"), 0.001);

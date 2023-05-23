@@ -193,20 +193,16 @@ base::TimeDelta PostProcessor::GetTTLForPredictedResult(
   return base::TimeDelta();
 }
 
-AnnotatedNumericResult PostProcessor::GetAnnotatedNumericResult(
+RawResult PostProcessor::GetRawResult(
     const proto::PredictionResult& prediction_result,
     PredictionStatus status) {
   if (status != PredictionStatus::kSucceeded) {
-    return AnnotatedNumericResult(status);
+    return RawResult(status);
   }
   if (!IsValidResult(prediction_result)) {
-    return AnnotatedNumericResult(PredictionStatus::kFailed);
+    return RawResult(PredictionStatus::kFailed);
   }
-  DCHECK_EQ(prediction_result.result_size(), prediction_result.output_config()
-                                                 .predictor()
-                                                 .generic_predictor()
-                                                 .output_labels_size());
-  AnnotatedNumericResult result(status);
+  RawResult result(status);
   result.result = prediction_result;
   return result;
 }
