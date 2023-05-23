@@ -308,6 +308,7 @@ public class RootUiCoordinator
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     @Nullable
     private final BackPressManager mBackPressManager;
+    private final @NonNull Supplier<Bundle> mSavedInstanceStateSupplier;
     @Nullable
     private PageZoomCoordinator mPageZoomCoordinator;
     private AppMenuObserver mAppMenuObserver;
@@ -360,6 +361,7 @@ public class RootUiCoordinator
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
+     * @param savedInstanceStateSupplier Supplies the saved instance state.
      */
     public RootUiCoordinator(@NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
@@ -397,7 +399,8 @@ public class RootUiCoordinator
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
-            boolean initializeUiWithIncognitoColors, @Nullable BackPressManager backPressManager) {
+            boolean initializeUiWithIncognitoColors, @Nullable BackPressManager backPressManager,
+            @NonNull Supplier<Bundle> savedInstanceStateSupplier) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -424,6 +427,7 @@ public class RootUiCoordinator
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
         mInitializeUiWithIncognitoColors = initializeUiWithIncognitoColors;
         mBackPressManager = backPressManager;
+        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
 
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
@@ -802,10 +806,14 @@ public class RootUiCoordinator
                 getIncognitoReauthCoordinatorFactory();
         assert incognitoReauthCoordinatorFactory
                 != null : "Sub-classes need to provide a valid factory instance.";
+        boolean isIncognitoReauthPendingOnRestore = mSavedInstanceStateSupplier.hasValue()
+                && mSavedInstanceStateSupplier.get().getBoolean(
+                        IncognitoReauthControllerImpl.KEY_IS_INCOGNITO_REAUTH_PENDING, false);
         mIncognitoReauthController =
                 new IncognitoReauthControllerImpl(mTabModelSelectorSupplier.get(),
                         mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
-                        mProfileSupplier, incognitoReauthCoordinatorFactory, mActivity.getTaskId());
+                        mProfileSupplier, incognitoReauthCoordinatorFactory,
+                        () -> isIncognitoReauthPendingOnRestore, mActivity.getTaskId());
         mIncognitoReauthControllerOneshotSupplier.set(mIncognitoReauthController);
     }
 
