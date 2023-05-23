@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/core_oobe.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
@@ -75,36 +74,15 @@ CoreOobe::~CoreOobe() {
 
 void CoreOobe::ShowScreenWithData(const OobeScreenId& screen,
                                   absl::optional<base::Value::Dict> data) {
-  const bool is_priority_screen = view_ && view_->IsPriorityScreen(screen.name);
-
-  switch (ui_init_state_) {
-    case CoreOobeView::UiState::kUninitialized:
-    case CoreOobeView::UiState::kCoreHandlerInitialized:
-      // In this early state, we defer all show screen calls.
-      pending_calls_.show_screen_with_data =
-          base::BindOnce(&CoreOobe::ShowScreenWithData, base::Unretained(this),
-                         screen, std::move(data));
-      return;
-    case CoreOobeView::UiState::kPriorityScreensLoaded:
-      // Priority screens can be shown at this point. All others are deferred.
-      if (!is_priority_screen || !features::IsOobeLazyLoadingEnabled()) {
-        pending_calls_.show_screen_with_data =
-            base::BindOnce(&CoreOobe::ShowScreenWithData,
-                           base::Unretained(this), screen, std::move(data));
-        return;
-      }
-      break;
-    case CoreOobeView::UiState::kFullyInitialized:
-      // All screens can be shown at this point.
-      break;
+  // Defer until fully initialized.
+  if (ui_init_state_ != CoreOobeView::UiState::kFullyInitialized) {
+    pending_calls_.show_screen_with_data =
+        base::BindOnce(&CoreOobe::ShowScreenWithData, base::Unretained(this),
+                       screen, std::move(data));
+    return;
   }
-  // Clear any pending calls that could exist. (An edge case when a priority
-  // screen is shown when a regular screen has been deferred. No known instances
-  // in the codebase) Mostly a sanity check.
-  pending_calls_.show_screen_with_data.Reset();
 
-  // Since CoreOobeHandler is always created before us, this call can never be
-  // silently dropped under normal circumstances.
+  // Decide whether or not to show the screen based on availability.
   if (view_) {
     view_->ShowScreenWithData(screen, std::move(data));
   }
@@ -236,16 +214,9 @@ void CoreOobe::UpdateUiInitState(CoreOobeView::UiState state) {
       CHECK(ui_init_state_ == CoreOobeView::UiState::kUninitialized);
       ui_init_state_ = CoreOobeView::UiState::kCoreHandlerInitialized;
       break;
-    case CoreOobeView::UiState::kPriorityScreensLoaded:
-      CHECK(ui_init_state_ == CoreOobeView::UiState::kCoreHandlerInitialized);
-      ui_init_state_ = CoreOobeView::UiState::kPriorityScreensLoaded;
-      if (features::IsOobeLazyLoadingEnabled()) {
-        MaybeShowPriorityScreen();
-      }
-      break;
     case CoreOobeView::UiState::kFullyInitialized:
       // OOBE is fully loaded.
-      CHECK(ui_init_state_ == CoreOobeView::UiState::kPriorityScreensLoaded);
+      CHECK(ui_init_state_ == CoreOobeView::UiState::kCoreHandlerInitialized);
       ui_init_state_ = CoreOobeView::UiState::kFullyInitialized;
       // Execute deferred JavaScript in the CoreHandler first.
       ExecutePendingCalls();
@@ -271,17 +242,6 @@ void CoreOobe::ExecutePendingCalls() {
   }
   if (pending_calls_.forward_cancel) {
     std::move(pending_calls_.forward_cancel).Run();
-  }
-}
-
-void CoreOobe::MaybeShowPriorityScreen() {
-  CHECK(features::IsOobeLazyLoadingEnabled());
-  CHECK(ui_init_state_ == CoreOobeView::UiState::kPriorityScreensLoaded);
-  // Run any pending show screen call. If the screen is not supported for
-  // prioritization, ShowScreenWithData will defer it and it will be shown
-  // once the UI fully initializes.
-  if (pending_calls_.show_screen_with_data) {
-    std::move(pending_calls_.show_screen_with_data).Run();
   }
 }
 
