@@ -81,7 +81,6 @@ absl::optional<WifiData> GetWifiData() {
     ap_data.radio_signal_strength = access_point.signal_strength;
     ap_data.channel = access_point.channel;
     ap_data.signal_to_noise = access_point.signal_to_noise;
-    ap_data.ssid = base::UTF8ToUTF16(access_point.ssid);
     wifi_data.access_point_data.insert(ap_data);
   }
   return wifi_data;

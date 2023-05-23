@@ -7,21 +7,17 @@
 #include <assert.h>
 #include <stdint.h>
 
-#include "base/strings/utf_string_conversions.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
 
 namespace device {
 
 bool ConvertToAccessPointData(const NDIS_WLAN_BSSID& data,
                               AccessPointData* access_point_data) {
-  // Currently we get only MAC address, signal strength and SSID.
+  // Currently we get only MAC address and signal strength.
   // TODO(steveblock): Work out how to get age, channel and signal-to-noise.
   DCHECK(access_point_data);
   access_point_data->mac_address = MacAddressAsString16(data.MacAddress);
   access_point_data->radio_signal_strength = data.Rssi;
-  // Note that _NDIS_802_11_SSID::Ssid::Ssid is not null-terminated.
-  base::UTF8ToUTF16(reinterpret_cast<const char*>(data.Ssid.Ssid),
-                    data.Ssid.SsidLength, &access_point_data->ssid);
   return true;
 }
 

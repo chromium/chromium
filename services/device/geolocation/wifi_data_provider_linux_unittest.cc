@@ -185,13 +185,7 @@ class GeolocationWifiDataProviderLinuxTest : public testing::Test {
             dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
 
-        if (property_name == "Ssid") {
-          const uint8_t kSsid[] = {0x74, 0x65, 0x73, 0x74};  // "test"
-          dbus::MessageWriter variant_writer(response.get());
-          writer.OpenVariant("ay", &variant_writer);
-          variant_writer.AppendArrayOfBytes(kSsid, std::size(kSsid));
-          writer.CloseContainer(&variant_writer);
-        } else if (property_name == "HwAddress") {
+        if (property_name == "HwAddress") {
           // This will be converted to "00-11-22-33-44-55".
           const std::string kMacAddress = "00:11:22:33:44:55";
           writer.AppendVariantOfString(kMacAddress);
@@ -222,7 +216,6 @@ TEST_F(GeolocationWifiDataProviderLinuxTest, GetAccessPointData) {
 
   // Check the contents of the access point data.
   // The expected values come from CreateAccessPointProxyResponse() above.
-  EXPECT_EQ("test", base::UTF16ToUTF8(access_point_data.ssid));
   EXPECT_EQ("00-11-22-33-44-55",
             base::UTF16ToUTF8(access_point_data.mac_address));
   EXPECT_EQ(-50, access_point_data.radio_signal_strength);

@@ -21,7 +21,6 @@ struct AccessPointData {
   int radio_signal_strength;  // Measured in dBm
   int channel;
   int signal_to_noise;  // Ratio in dB
-  std::u16string ssid;  // Network identifier
 };
 
 // This is to allow AccessPointData to be used in std::set. We order

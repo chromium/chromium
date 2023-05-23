@@ -234,30 +234,6 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
         kNetworkManagerServiceName, access_point_path);
 
     AccessPointData access_point_data;
-    {
-      std::unique_ptr<dbus::Response> ssid_response(
-          GetAccessPointProperty(access_point_proxy, "Ssid"));
-      if (!ssid_response)
-        continue;
-      // The response should contain a variant that contains an array of bytes.
-      dbus::MessageReader ssid_reader(ssid_response.get());
-      dbus::MessageReader variant_reader(ssid_response.get());
-      if (!ssid_reader.PopVariant(&variant_reader)) {
-        LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << ssid_response->ToString();
-        continue;
-      }
-      const uint8_t* ssid_bytes = nullptr;
-      size_t ssid_length = 0;
-      if (!variant_reader.PopArrayOfBytes(&ssid_bytes, &ssid_length)) {
-        LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << ssid_response->ToString();
-        continue;
-      }
-      std::string ssid(ssid_bytes, ssid_bytes + ssid_length);
-      access_point_data.ssid = base::UTF8ToUTF16(ssid);
-    }
-
     {  // Read the mac address
       std::unique_ptr<dbus::Response> mac_response(
           GetAccessPointProperty(access_point_proxy, "HwAddress"));
@@ -315,7 +291,6 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
       access_point_data.channel = frquency_in_khz_to_channel(frequency * 1000);
     }
     VLOG(1) << "Access point data of " << access_point_path.value() << ": "
-            << "SSID: " << access_point_data.ssid << ", "
             << "MAC: " << access_point_data.mac_address << ", "
             << "Strength: " << access_point_data.radio_signal_strength << ", "
             << "Channel: " << access_point_data.channel;
