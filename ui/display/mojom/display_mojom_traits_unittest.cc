@@ -297,7 +297,10 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const bool color_correction_in_linear_space = true;
   const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateREC709();
   const int32_t bits_per_channel = 8;
-  const gfx::HDRStaticMetadata hdr_static_metadata(100.0, 80.0, 0.0);
+  const gfx::HDRStaticMetadata hdr_static_metadata(
+      100.0, 80.0, 0.0,
+      gfx::HDRStaticMetadata::EotfMask(
+          {gfx::HDRStaticMetadata::Eotf::kGammaSdrRange}));
   const std::string display_name("whatever display_name");
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("a/cb");
   const int64_t product_code = 19;
@@ -355,7 +358,10 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const bool color_correction_in_linear_space = true;
   const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateREC709();
   const uint32_t bits_per_channel = 8u;
-  const gfx::HDRStaticMetadata hdr_static_metadata(100.0, 80.0, 0.0);
+  const gfx::HDRStaticMetadata hdr_static_metadata(
+      100.0, 80.0, 0.0,
+      gfx::HDRStaticMetadata::EotfMask(
+          {gfx::HDRStaticMetadata::Eotf::kGammaSdrRange}));
   const std::string display_name("whatever display_name");
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("z/b");
   const int64_t product_code = 9;
@@ -414,7 +420,10 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const std::string display_name("HP Z24i");
   const gfx::ColorSpace display_color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t bits_per_channel = 8u;
-  const gfx::HDRStaticMetadata hdr_static_metadata(100.0, 80.0, 0.0);
+  const gfx::HDRStaticMetadata hdr_static_metadata(
+      100.0, 80.0, 0.0,
+      gfx::HDRStaticMetadata::EotfMask(
+          {gfx::HDRStaticMetadata::Eotf::kGammaSdrRange}));
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("a/cb");
   const int64_t product_code = 139;
   const int32_t year_of_manufacture = 2018;
@@ -475,7 +484,12 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   const gfx::ColorSpace display_color_space =
       gfx::ColorSpace::CreateDisplayP3D65();
   const uint32_t bits_per_channel = 9u;
-  const gfx::HDRStaticMetadata hdr_static_metadata(200.0, 100.0, 0.0);
+  const gfx::HDRStaticMetadata hdr_static_metadata(
+      200.0, 100.0, 0.0,
+      gfx::HDRStaticMetadata::EotfMask({
+          gfx::HDRStaticMetadata::Eotf::kGammaSdrRange,
+          gfx::HDRStaticMetadata::Eotf::kPq,
+      }));
   const std::string display_name("");
   const base::FilePath sys_path;
   const int64_t product_code = 139;

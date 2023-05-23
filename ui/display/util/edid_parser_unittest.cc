@@ -734,7 +734,14 @@ struct TestParams {
        gfx::ColorSpace::MatrixID::BT2020_CL}},
      {gfx::ColorSpace::TransferID::BT709, gfx::ColorSpace::TransferID::PQ,
       gfx::ColorSpace::TransferID::HLG},
-     absl::make_optional<gfx::HDRStaticMetadata>(603.666, 530.095, 0.00454),
+     absl::make_optional<gfx::HDRStaticMetadata>(
+         603.666,
+         530.095,
+         0.00454,
+         gfx::HDRStaticMetadata::EotfMask({
+             gfx::HDRStaticMetadata::Eotf::kGammaSdrRange,
+             gfx::HDRStaticMetadata::Eotf::kPq,
+         })),
      24,
      kHDRMetadata,
      kHDRMetadataLength},

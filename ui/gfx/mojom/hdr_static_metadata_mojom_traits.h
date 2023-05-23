@@ -20,6 +20,9 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
     return input.max_avg;
   }
   static float min(const gfx::HDRStaticMetadata& input) { return input.min; }
+  static uint8_t supported_eotf_mask(const gfx::HDRStaticMetadata& input) {
+    return input.supported_eotf_mask;
+  }
 
   static bool Read(gfx::mojom::HDRStaticMetadataDataView data,
                    gfx::HDRStaticMetadata* output);

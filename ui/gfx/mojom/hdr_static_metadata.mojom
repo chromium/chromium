@@ -9,4 +9,5 @@ struct HDRStaticMetadata {
   float max;
   float max_avg;
   float min;
+  uint8 supported_eotf_mask;
 };

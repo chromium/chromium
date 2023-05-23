@@ -551,7 +551,12 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
           .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
           .SetColorSpace(display_color_space)
           .SetBitsPerChannel(10u)
-          .SetHDRStaticMetadata({600.0, 500.0, 0.01})
+          .SetHDRStaticMetadata(
+              {600.0, 500.0, 0.01,
+               gfx::HDRStaticMetadata::EotfMask({
+                   gfx::HDRStaticMetadata::Eotf::kGammaSdrRange,
+                   gfx::HDRStaticMetadata::Eotf::kPq,
+               })})
           .Build();
 
   ui::DeviceDataManager::CreateInstance();
