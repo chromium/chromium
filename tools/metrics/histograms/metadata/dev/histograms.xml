@@ -520,6 +520,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.Workspaces.PopulateWallClockTime" units="ms"
+    expires_after="M120">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>hablich@chromium.org</owner>
+  <summary>
+    Wall clock time elapsed to initially populate a Workspaces folder. Recorded
+    in the FileSystem#populate() method of FileSystemWorkspaceBinding.ts.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
