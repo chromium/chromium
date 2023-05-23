@@ -781,4 +781,24 @@ GURL ConvertUserDataToGURL(NSString* urlString) {
   }
 }
 
+const BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
+    const GURL& url,
+    bookmarks::BookmarkModel* local_model,
+    bookmarks::BookmarkModel* account_model) {
+  const BookmarkNode* local_bookmark =
+      local_model->GetMostRecentlyAddedUserNodeForURL(url);
+  if (!account_model) {
+    return local_bookmark;
+  }
+  const BookmarkNode* account_bookmark =
+      account_model->GetMostRecentlyAddedUserNodeForURL(url);
+  if (local_bookmark && account_bookmark) {
+    // Found bookmarks in both models, return one that was added more recently.
+    return local_bookmark->date_added() > account_bookmark->date_added()
+               ? local_bookmark
+               : account_bookmark;
+  }
+  return local_bookmark ? local_bookmark : account_bookmark;
+}
+
 }  // namespace bookmark_utils_ios

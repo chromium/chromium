@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -64,8 +65,15 @@ void BookmarkIOSUnitTestSupport::SetUp() {
 const BookmarkNode* BookmarkIOSUnitTestSupport::AddBookmark(
     const BookmarkNode* parent,
     const std::u16string& title) {
-  bookmarks::BookmarkModel* model = GetBookmarkModelForNode(parent);
   GURL url(u"http://example.com/bookmark" + title);
+  return AddBookmark(parent, title, url);
+}
+
+const BookmarkNode* BookmarkIOSUnitTestSupport::AddBookmark(
+    const BookmarkNode* parent,
+    const std::u16string& title,
+    const GURL& url) {
+  bookmarks::BookmarkModel* model = GetBookmarkModelForNode(parent);
   return model->AddURL(parent, parent->children().size(), title, url);
 }
 

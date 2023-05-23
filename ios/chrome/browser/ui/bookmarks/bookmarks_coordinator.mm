@@ -227,7 +227,8 @@ enum class PresentedState {
 }
 
 - (void)createBookmarkURL:(const GURL&)URL title:(NSString*)title {
-  if (!_profileBookmarkModel->loaded()) {
+  if (!bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get())) {
     return;
   }
 
@@ -247,12 +248,14 @@ enum class PresentedState {
 }
 
 - (void)presentBookmarkEditorForURL:(const GURL&)URL {
-  if (!_profileBookmarkModel->loaded()) {
+  if (!bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get())) {
     return;
   }
 
   const BookmarkNode* bookmark =
-      _profileBookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
+      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
+          URL, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   if (!bookmark) {
     return;
   }
@@ -552,13 +555,14 @@ enum class PresentedState {
   DCHECK(URLWithTitle) << [self description];
   NSString* title = URLWithTitle.title;
   GURL URL = URLWithTitle.URL;
-  if (!_profileBookmarkModel->loaded()) {
+  if (!bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get())) {
     return;
   }
 
   const BookmarkNode* existingBookmark =
-      _profileBookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
-
+      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
+          URL, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   if (existingBookmark) {
     [self presentBookmarkEditorForURL:URL];
   } else {
@@ -569,7 +573,8 @@ enum class PresentedState {
 - (void)bookmarkWithFolderChooser:(NSArray<URLWithTitle*>*)URLs {
   DCHECK(URLs.count > 0) << "URLs are missing " << [self description];
 
-  if (!_profileBookmarkModel->loaded()) {
+  if (!bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get())) {
     return;
   }
 
@@ -578,12 +583,14 @@ enum class PresentedState {
 }
 
 - (void)openToExternalBookmark:(GURL)URL {
-  if (!_profileBookmarkModel->loaded()) {
+  if (!bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get())) {
     return;
   }
 
   const BookmarkNode* existingBookmark =
-      _profileBookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
+      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
+          URL, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   [self
       presentBookmarksAtDisplayedFolderNode:_profileBookmarkModel->mobile_node()
                           selectingBookmark:existingBookmark];
@@ -695,7 +702,8 @@ enum class PresentedState {
   self.bookmarkBrowser.snackbarCommandsHandler = self.snackbarCommandsHandler;
 
   NSArray<BookmarksHomeViewController*>* replacementViewControllers = nil;
-  if (_profileBookmarkModel->loaded()) {
+  if (bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get())) {
     // Set the root node if the model has been loaded. If the model has not been
     // loaded yet, the root node will be set in BookmarksHomeViewController
     // after the model is finished loading.

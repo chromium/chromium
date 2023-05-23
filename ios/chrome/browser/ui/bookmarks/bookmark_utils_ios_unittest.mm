@@ -457,6 +457,115 @@ TEST_P(BookmarkIOSUtilsUnitTest, ShouldDisplayCloudSlashIconForProfileModel) {
                 &sync_setup_service));
 }
 
+TEST_P(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedNoMatchingBookmarks) {
+  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+              GURL("http://example.com/a"));
+  if (IsAccountStorageEnabled()) {
+    AddBookmark(account_bookmark_model_->mobile_node(), u"b",
+                GURL("http://example.com/b"));
+  }
+
+  const BookmarkNode* result =
+      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
+          GURL("http://example.com/c"), profile_bookmark_model_,
+          account_bookmark_model_);
+  EXPECT_EQ(result, nullptr);
+}
+
+TEST_P(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedMatchingLocalBookmark) {
+  const BookmarkNode* local_bookmark =
+      AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+                  GURL("http://example.com/a"));
+  if (IsAccountStorageEnabled()) {
+    AddBookmark(account_bookmark_model_->mobile_node(), u"b",
+                GURL("http://example.com/b"));
+  }
+
+  const BookmarkNode* result =
+      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
+          GURL("http://example.com/a"), profile_bookmark_model_,
+          account_bookmark_model_);
+  EXPECT_EQ(result, local_bookmark);
+}
+
+TEST_P(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedMatchingAccountBookmark) {
+  if (!IsAccountStorageEnabled()) {
+    GTEST_SKIP() << "Need account storage to test matches in that storage";
+  }
+
+  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+              GURL("http://example.com/a"));
+  const BookmarkNode* account_bookmark =
+      AddBookmark(account_bookmark_model_->mobile_node(), u"b",
+                  GURL("http://example.com/b"));
+
+  const BookmarkNode* result =
+      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
+          GURL("http://example.com/b"), profile_bookmark_model_,
+          account_bookmark_model_);
+  EXPECT_EQ(result, account_bookmark);
+}
+
+TEST_P(BookmarkIOSUtilsUnitTest,
+       GetMostRecentlyAddedMatchingBothStoragesLocalWins) {
+  if (!IsAccountStorageEnabled()) {
+    GTEST_SKIP() << "Need account storage to test matches in both storages";
+  }
+
+  const BookmarkNode* local_bookmark =
+      AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+                  GURL("http://example.com/a"));
+  const BookmarkNode* account_bookmark =
+      AddBookmark(account_bookmark_model_->mobile_node(), u"b",
+                  GURL("http://example.com/a"));
+
+  base::Time added_time_account_bookmark = base::Time::Now();
+  account_bookmark_model_->SetDateAdded(account_bookmark,
+                                        added_time_account_bookmark);
+  // Simulate local bookmark being added after the account one.
+  base::Time added_time_local_bookmark =
+      added_time_account_bookmark + base::Seconds(1);
+  profile_bookmark_model_->SetDateAdded(local_bookmark,
+                                        added_time_local_bookmark);
+
+  const BookmarkNode* result =
+      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
+          GURL("http://example.com/a"), profile_bookmark_model_,
+          account_bookmark_model_);
+  // Local bookmark is more recent, so it should be returned.
+  EXPECT_EQ(result, local_bookmark);
+}
+
+TEST_P(BookmarkIOSUtilsUnitTest,
+       GetMostRecentlyAddedMatchingBothStoragesAccountWins) {
+  if (!IsAccountStorageEnabled()) {
+    GTEST_SKIP() << "Need account storage to test matches in both storages";
+  }
+
+  const BookmarkNode* local_bookmark =
+      AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+                  GURL("http://example.com/a"));
+  const BookmarkNode* account_bookmark =
+      AddBookmark(account_bookmark_model_->mobile_node(), u"b",
+                  GURL("http://example.com/a"));
+
+  base::Time added_time_local_bookmark = base::Time::Now();
+  profile_bookmark_model_->SetDateAdded(local_bookmark,
+                                        added_time_local_bookmark);
+  // Simulate account bookmark being added after the local one.
+  base::Time added_time_account_bookmark =
+      added_time_local_bookmark + base::Seconds(1);
+  account_bookmark_model_->SetDateAdded(account_bookmark,
+                                        added_time_account_bookmark);
+
+  const BookmarkNode* result =
+      bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
+          GURL("http://example.com/a"), profile_bookmark_model_,
+          account_bookmark_model_);
+  // Account bookmark is more recent, so it should be returned.
+  EXPECT_EQ(result, account_bookmark);
+}
+
 INSTANTIATE_TEST_SUITE_P(All, BookmarkIOSUtilsUnitTest, ::testing::Bool());
 
 }  // namespace

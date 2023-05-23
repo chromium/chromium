@@ -21,6 +21,7 @@ class BookmarkNode;
 class ManagedBookmarkService;
 }  // namespace bookmarks
 class Browser;
+class GURL;
 class TestChromeBrowserState;
 
 // Provides common bookmark testing infrastructure.
@@ -34,6 +35,10 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   const bookmarks::BookmarkNode* AddBookmark(
       const bookmarks::BookmarkNode* parent,
       const std::u16string& title);
+  const bookmarks::BookmarkNode* AddBookmark(
+      const bookmarks::BookmarkNode* parent,
+      const std::u16string& title,
+      const GURL& url);
   const bookmarks::BookmarkNode* AddFolder(
       const bookmarks::BookmarkNode* parent,
       const std::u16string& title);

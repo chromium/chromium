@@ -241,6 +241,16 @@ NSArray<NSNumber*>* CreateBookmarkPath(bookmarks::BookmarkModel* model,
 // Converts NSString entered by the user to a GURL.
 GURL ConvertUserDataToGURL(NSString* urlString);
 
+// Uses `GetMostRecentlyAddedUserNodeForURL` to find the most recently added
+// bookmark node with the corresponding URL in both models. If both models
+// contain matching entries - compares them and returns the most recently added
+// entry. If only one model has a matching entry - returns that entry. If no
+// models contain matching entries - returns null.
+const bookmarks::BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
+    const GURL& url,
+    bookmarks::BookmarkModel* local_model,
+    bookmarks::BookmarkModel* account_model);
+
 }  // namespace bookmark_utils_ios
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_UTILS_IOS_H_
