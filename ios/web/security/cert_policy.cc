@@ -14,7 +14,7 @@ CertPolicy::~CertPolicy() {}
 
 // We consider a given `cert` to be a match to a saved allowed cert if the
 // `error` is an exact match to or subset of the errors in the saved CertStatus.
-CertPolicy::Judgment CertPolicy::Check(net::X509Certificate* cert,
+CertPolicy::Judgment CertPolicy::Check(const net::X509Certificate* cert,
                                        net::CertStatus error) const {
   auto allowed_iter = allowed_.find(cert->CalculateChainFingerprint256());
   if ((allowed_iter != allowed_.end()) && (allowed_iter->second & error) &&
@@ -24,7 +24,8 @@ CertPolicy::Judgment CertPolicy::Check(net::X509Certificate* cert,
   return UNKNOWN;  // We don't have a policy for this cert.
 }
 
-void CertPolicy::Allow(net::X509Certificate* cert, net::CertStatus error) {
+void CertPolicy::Allow(const net::X509Certificate* cert,
+                       net::CertStatus error) {
   // If this same cert had already been saved with a different error status,
   // this will replace it with the new error status.
   allowed_[cert->CalculateChainFingerprint256()] = error;
