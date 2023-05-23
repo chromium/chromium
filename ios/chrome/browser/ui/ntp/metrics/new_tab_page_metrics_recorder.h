@@ -37,7 +37,8 @@ enum class IOSHomeActionType {
   kReturnToRecentTab = 2,
   kFeedCard = 3,
   kFakebox = 4,
-  kMaxValue = kFakebox,
+  kSetUpList = 5,
+  kMaxValue = kSetUpList,
 };
 
 // Metrics recorder for the new tab page.
