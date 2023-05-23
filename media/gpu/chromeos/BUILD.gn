@@ -225,3 +225,21 @@ test("image_processor_test") {
     "//ui/gl:test_support",
   ]
 }
+
+if (use_v4l2_codec) {
+  test("image_processor_perftest") {
+    sources = [ "image_processor_perftest.cc" ]
+    deps = [
+      ":chromeos",
+      "//base/test:test_support",
+      "//media:test_support",
+      "//media/gpu:video_frame_mapper_common",
+      "//media/gpu/test:video_test_environment",
+      "//testing/gtest",
+      "//testing/perf",
+      "//third_party/libyuv",
+      "//ui/gl",
+      "//ui/gl:test_support",
+    ]
+  }
+}
