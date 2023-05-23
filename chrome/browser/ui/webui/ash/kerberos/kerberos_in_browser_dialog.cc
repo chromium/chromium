@@ -27,11 +27,6 @@ constexpr int kKerberosInBrowserDialogWidth = 370;
 constexpr int kKerberosInBrowserDialogHeight = 155;
 }  // namespace
 
-// static
-bool KerberosInBrowserDialog::IsShown() {
-  return g_dialog != nullptr;
-}
-
 void KerberosInBrowserDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->z_order = ui::ZOrderLevel::kNormal;
@@ -91,6 +86,16 @@ void KerberosInBrowserDialog::Show(base::OnceClosure close_dialog_closure) {
   // ChromeOS is defined.
   WindowBackdrop::Get(g_dialog->dialog_window())
       ->SetBackdropType(WindowBackdrop::BackdropType::kSemiOpaque);
+}
+
+// static
+bool KerberosInBrowserDialog::IsShown() {
+  return g_dialog != nullptr;
+}
+
+// static
+KerberosInBrowserDialog* KerberosInBrowserDialog::GetDialogForTesting() {
+  return g_dialog;
 }
 
 }  // namespace ash
