@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.common.PlatformServiceBridge;
-import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
+import org.chromium.android_webview.nonembedded.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.services.AwMinidumpUploaderDelegate;
 import org.chromium.android_webview.services.AwMinidumpUploaderDelegate.SamplingDelegate;
 import org.chromium.android_webview.services.CrashReceiverService;

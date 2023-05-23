@@ -619,10 +619,10 @@ android_library("browser_java") {
   ]
   deps = [
     ":common_aidl_java",
-    ":common_crash_java",
     ":common_java",
     ":common_platform_services_java",
     ":common_variations_java",
+    ":crash_client_java",
     ":resources",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
@@ -723,20 +723,12 @@ android_library("platform_service_bridge_upstream_implementation_java") {
   deps = [ ":common_platform_services_java" ]
 }
 
-android_library("common_crash_java") {
-  sources = [
-    "java/src/org/chromium/android_webview/common/crash/AwCrashReporterClient.java",
-    "java/src/org/chromium/android_webview/common/crash/CrashInfo.java",
-    "java/src/org/chromium/android_webview/common/crash/CrashUploadUtil.java",
-    "java/src/org/chromium/android_webview/common/crash/SystemWideCrashDirectories.java",
-  ]
+android_library("crash_client_java") {
+  sources = [ "java/src/org/chromium/android_webview/common/crash/AwCrashReporterClient.java" ]
 
   deps = [
-    ":common_java",
     "//base:base_java",
     "//base:jni_java",
-    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
-    "//components/minidump_uploader:minidump_uploader_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

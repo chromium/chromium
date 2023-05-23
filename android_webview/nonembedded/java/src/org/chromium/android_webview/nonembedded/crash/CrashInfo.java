@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.android_webview.common.crash;
+package org.chromium.android_webview.nonembedded.crash;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -133,6 +133,26 @@ public class CrashInfo {
 
         mCrashKeys = a.mCrashKeys;
         mCrashKeys.putAll(b.mCrashKeys);
+    }
+
+    /**
+     * Create a {@link CrashInfo} object for testing.
+     *
+     * {@code appPackageName} is used as a representative of crash keys in tests.
+     */
+    public static CrashInfo createCrashInfoForTesting(String localId, long captureTime,
+            String uploadId, long uploadTime, String appPackageName, UploadState state) {
+        Map<String, String> crashKeys = new HashMap<>();
+        if (appPackageName != null) {
+            crashKeys.put("app-package-name", appPackageName);
+        }
+        CrashInfo crashInfo = new CrashInfo(localId, crashKeys);
+        crashInfo.captureTime = captureTime;
+        crashInfo.uploadId = uploadId;
+        crashInfo.uploadTime = uploadTime;
+        crashInfo.uploadState = state;
+
+        return crashInfo;
     }
 
     /**

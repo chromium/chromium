@@ -241,13 +241,15 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
   android_manifest = "../javatests/AndroidManifest.xml"
 
   deps = [
+    ":crash_test_utils_java",
     ":webview_instrumentation_test_mock_services_java",
     ":webview_instrumentation_test_utils_java",
     "//android_webview:android_webview_java",
     "//android_webview:common_aidl_java",
-    "//android_webview:common_crash_java",
     "//android_webview:common_platform_services_java",
     "//android_webview:common_variations_java",
+    "//android_webview:crash_client_java",
+    "//android_webview/nonembedded:crash_java",
     "//android_webview/nonembedded:devui_java",
     "//android_webview/nonembedded:services_java",
     "//android_webview/nonembedded:util_java",
@@ -307,7 +309,8 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/androidx_javascriptengine:javascriptengine_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings_java",
-    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/metrics_proto:metrics_proto_java",
     "//third_party/mockito:mockito_java",
@@ -428,8 +431,6 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/WebViewFindApisTestRule.java",
     "../javatests/src/org/chromium/android_webview/test/WebViewModalDialogOverrideTest.java",
     "../javatests/src/org/chromium/android_webview/test/XRWOriginTrialTest.java",
-    "../javatests/src/org/chromium/android_webview/test/common/crash/CrashInfoEqualityMatcher.java",
-    "../javatests/src/org/chromium/android_webview/test/common/crash/CrashInfoTest.java",
     "../javatests/src/org/chromium/android_webview/test/common/services/ServiceConnectionDelayRecorderTest.java",
     "../javatests/src/org/chromium/android_webview/test/common/variations/VariationsUtilsTest.java",
     "../javatests/src/org/chromium/android_webview/test/component_updater/EmbeddedComponentLoaderTest.java",
@@ -683,6 +684,15 @@ generate_jni("android_webview_unittests_jni") {
   sources = [ "../unittestjava/src/org/chromium/android_webview/unittest/MockAwContentsClientBridge.java" ]
 }
 
+android_library("crash_test_utils_java") {
+  testonly = true
+  sources = [ "../nonembedded/java/src/org/chromium/android_webview/nonembedded/crash/CrashInfoEqualityMatcher.java" ]
+  deps = [
+    "//android_webview/nonembedded:crash_java",
+    "//third_party/hamcrest:hamcrest_java",
+  ]
+}
+
 # robolectric tests
 robolectric_binary("android_webview_junit_tests") {
   sources = [
@@ -703,10 +713,13 @@ robolectric_binary("android_webview_junit_tests") {
     "../junit/src/org/chromium/android_webview/robolectric/metrics/AwSiteVisitLoggerTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/nonembedded/AwComponentUpdateServiceSafeModeTest.java",
     "../junit/src/org/chromium/android_webview/robolectric/nonembedded/NetworkFetcherTaskTest.java",
+    "../junit/src/org/chromium/android_webview/robolectric/nonembedded/crash/CrashInfoTest.java",
   ]
 
   deps = [
+    ":crash_test_utils_java",
     "//android_webview:android_webview_java",
+    "//android_webview/nonembedded:crash_java",
     "//android_webview/nonembedded:services_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",

@@ -8,7 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONException;
 
-import org.chromium.android_webview.common.crash.CrashInfo;
+import org.chromium.android_webview.nonembedded.crash.CrashInfo;
 import org.chromium.base.Log;
 
 import java.io.File;

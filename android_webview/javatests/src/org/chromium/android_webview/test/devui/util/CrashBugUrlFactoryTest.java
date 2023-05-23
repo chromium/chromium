@@ -23,8 +23,8 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.android_webview.common.crash.CrashInfo;
 import org.chromium.android_webview.devui.util.CrashBugUrlFactory;
+import org.chromium.android_webview.nonembedded.crash.CrashInfo;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.test.util.Batch;
