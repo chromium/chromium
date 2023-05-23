@@ -4910,21 +4910,6 @@
             ]
         }
     ],
-    "DriveFsChromeNetworking": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230127",
-                    "enable_features": [
-                        "DriveFsChromeNetworking"
-                    ]
-                }
-            ]
-        }
-    ],
     "EcheNetworkConnectionState": [
         {
             "platforms": [
