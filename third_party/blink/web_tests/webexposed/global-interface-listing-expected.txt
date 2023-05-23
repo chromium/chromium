@@ -5547,6 +5547,7 @@ interface MLGraphBuilder
     method resample2d
     method reshape
     method sigmoid
+    method slice
     method softmax
     method sub
     method transpose

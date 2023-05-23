@@ -46,8 +46,9 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kRelu,
     kReshape,
     kResample2d,
-    kSoftmax,
     kSigmoid,
+    kSlice,
+    kSoftmax,
     kTranspose
   };
 
@@ -123,6 +124,25 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
  private:
   Vector<uint32_t> beginning_padding_;
   Vector<uint32_t> ending_padding_;
+};
+
+class MODULES_EXPORT MLSliceOperator : public MLOperator {
+ public:
+  MLSliceOperator(MLGraphBuilder* builder,
+                  const Vector<uint32_t>& beginning_padding,
+                  const Vector<uint32_t>& ending_padding);
+
+  MLSliceOperator(const MLSliceOperator&) = delete;
+  MLSliceOperator& operator=(const MLSliceOperator&) = delete;
+
+  ~MLSliceOperator();
+
+  const Vector<uint32_t>& Starts() const;
+  const Vector<uint32_t>& Sizes() const;
+
+ private:
+  Vector<uint32_t> starts_;
+  Vector<uint32_t> sizes_;
 };
 }  // namespace blink
 

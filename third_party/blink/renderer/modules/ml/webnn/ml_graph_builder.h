@@ -214,6 +214,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* sigmoid(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* sigmoid(ExceptionState& exception_state);
 
+  MLOperand* slice(const MLOperand* input,
+                   const Vector<uint32_t>& starts,
+                   const Vector<uint32_t>& sizes,
+                   ExceptionState& exception_state);
+
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
 
   MLOperand* transpose(const MLOperand* input,

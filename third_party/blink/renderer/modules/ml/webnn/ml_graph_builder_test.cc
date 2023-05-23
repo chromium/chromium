@@ -3850,6 +3850,119 @@ TEST_F(MLGraphBuilderTest, SigmoidTest) {
   }
 }
 
+TEST_F(MLGraphBuilderTest, SliceTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test building slice with starts = {0, 1, 2} and sizes = {1, 2, 3}.
+    Vector<uint32_t> input_shape({3, 4, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* output =
+        builder->slice(input, {0, 1, 2}, {1, 2, 3}, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 2, 3}));
+    const MLOperator* slice = output->Operator();
+    EXPECT_NE(slice, nullptr);
+    EXPECT_EQ(slice->Kind(), MLOperator::OperatorKind::kSlice);
+    EXPECT_EQ(slice->IsConnected(), true);
+    EXPECT_EQ(slice->Options(), nullptr);
+  }
+  {
+    // Test throwing error when the length of sizes is not equal to the rank of
+    // the input tensor.
+    Vector<uint32_t> input_shape({3, 4, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    const Vector<uint32_t> starts = {1, 2, 3};
+    const Vector<uint32_t> sizes = {1, 1};
+    auto* output =
+        builder->slice(input, starts, sizes, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The length of sizes must be equal to the rank of the input tensor.");
+  }
+  {
+    // Test throwing error when the length of starts is not equal to the rank
+    // of the input tensor.
+    Vector<uint32_t> input_shape({3, 4, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    const Vector<uint32_t> starts = {1, 2, 1, 3};
+    const Vector<uint32_t> sizes = {1, 1, 1};
+    auto* output =
+        builder->slice(input, starts, sizes, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "The length of starts must be equal to the rank of the input tensor.");
+  }
+  {
+    // Test throwing error when the starting index is equal to or greater than
+    // input size in the same dimension.
+    Vector<uint32_t> input_shape({3, 4, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    const Vector<uint32_t> starts = {0, 4, 4};
+    const Vector<uint32_t> sizes = {1, 1, 1};
+    auto* output =
+        builder->slice(input, starts, sizes, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "For dimension (1): the starting index to slice must be less "
+              "than input size (4).");
+  }
+  {
+    // Test throwing error when the number of elements to slice is equal to 0.
+    Vector<uint32_t> input_shape({3, 4, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    const Vector<uint32_t> starts = {1, 2, 3};
+    const Vector<uint32_t> sizes = {1, 0, 1};
+    auto* output =
+        builder->slice(input, starts, sizes, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "For dimension (1): the number of elements to slice must not be 0.");
+  }
+  {
+    // Test throwing error when the ending index to slice is greater than input
+    // size in the same dimension.
+    Vector<uint32_t> input_shape({3, 4, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    const Vector<uint32_t> starts = {0, 1, 2};
+    const Vector<uint32_t> sizes = {3, 4, 1};
+    auto* output =
+        builder->slice(input, starts, sizes, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "For dimension (1): the ending index to slice must not be "
+              "greater than input "
+              "size (4).");
+  }
+}
+
 class FakeMLGraphBackend final : public MLGraph {
  public:
   // Create and build a FakeMLGraphBackend object. Resolve the promise with

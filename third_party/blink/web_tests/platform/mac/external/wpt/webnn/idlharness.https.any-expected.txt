@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 408 tests; 279 PASS, 129 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 408 tests; 282 PASS, 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -245,7 +245,7 @@ PASS MLGraphBuilder interface: operation resample2d(MLOperand, optional MLResamp
 PASS MLGraphBuilder interface: operation reshape(MLOperand, sequence<unsigned long?>)
 PASS MLGraphBuilder interface: operation sigmoid(MLOperand)
 PASS MLGraphBuilder interface: operation sigmoid()
-FAIL MLGraphBuilder interface: operation slice(MLOperand, sequence<unsigned long>, sequence<unsigned long>) assert_own_property: interface prototype object missing non-static operation expected property "slice" missing
+PASS MLGraphBuilder interface: operation slice(MLOperand, sequence<unsigned long>, sequence<unsigned long>)
 FAIL MLGraphBuilder interface: operation softmax(MLOperand) assert_equals: property has wrong .length expected 0 but got 1
 FAIL MLGraphBuilder interface: operation softmax() assert_equals: property has wrong .length expected 0 but got 1
 FAIL MLGraphBuilder interface: operation softplus(MLOperand, optional MLSoftplusOptions) assert_own_property: interface prototype object missing non-static operation expected property "softplus" missing
@@ -385,8 +385,8 @@ PASS MLGraphBuilder interface: calling reshape(MLOperand, sequence<unsigned long
 PASS MLGraphBuilder interface: builder must inherit property "sigmoid(MLOperand)" with the proper type
 PASS MLGraphBuilder interface: calling sigmoid(MLOperand) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "sigmoid()" with the proper type
-FAIL MLGraphBuilder interface: builder must inherit property "slice(MLOperand, sequence<unsigned long>, sequence<unsigned long>)" with the proper type assert_inherits: property "slice" not found in prototype chain
-FAIL MLGraphBuilder interface: calling slice(MLOperand, sequence<unsigned long>, sequence<unsigned long>) on builder with too few arguments must throw TypeError assert_inherits: property "slice" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "slice(MLOperand, sequence<unsigned long>, sequence<unsigned long>)" with the proper type
+PASS MLGraphBuilder interface: calling slice(MLOperand, sequence<unsigned long>, sequence<unsigned long>) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "softmax(MLOperand)" with the proper type
 PASS MLGraphBuilder interface: calling softmax(MLOperand) on builder with too few arguments must throw TypeError
 PASS MLGraphBuilder interface: builder must inherit property "softmax()" with the proper type

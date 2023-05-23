@@ -164,6 +164,8 @@ dictionary MLTransposeOptions{
   [RaisesException] MLOperand sigmoid(MLOperand input);
   [RaisesException] MLActivation sigmoid();
 
+  [RaisesException] MLOperand slice(MLOperand input, sequence<[EnforceRange] unsigned long> starts, sequence<[EnforceRange] unsigned long> sizes);
+
   [RaisesException] MLOperand transpose(MLOperand input, optional MLTransposeOptions options = {});
 
   [RaisesException] MLOperand softmax(MLOperand input);

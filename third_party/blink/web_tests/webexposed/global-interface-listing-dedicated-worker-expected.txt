@@ -1190,6 +1190,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method resample2d
 [Worker]     method reshape
 [Worker]     method sigmoid
+[Worker]     method slice
 [Worker]     method softmax
 [Worker]     method sub
 [Worker]     method transpose
