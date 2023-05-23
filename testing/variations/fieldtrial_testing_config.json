@@ -2954,11 +2954,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled8_20230420",
+                    "name": "Enabled5MinutesKillDelay",
                     "params": {
-                        "critical_threshold_percentage": "800"
+                        "critical_threshold_percentage": "800",
+                        "priority_app_lmk_delay_list": "com.mojang.minecraftpe,com.cisco.anyconnect.vpn.android.avf,com.cisco.anyconnect.vpn.android.avf:nchs,com.cisco.anyconnect.vpn.android.avf:umbrella,zscaler.com.zschromeosapp,net.openvpn.openvpn,net.openvpn.openvpn:openvpn_service,com.checkpoint.VPN,com.fortinet.forticlient_vpn,com.fast.free.unblock.secure.vpn,com.zscaler.doeprod4522",
+                        "priority_app_lmk_delay_sec": "300"
                     },
                     "enable_features": [
+                        "ArcPriorityAppLmkDelay",
                         "ChromeOSMemoryPressureSignalStudyArc"
                     ]
                 }
