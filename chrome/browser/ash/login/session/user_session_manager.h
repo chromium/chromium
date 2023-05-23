@@ -225,8 +225,9 @@ class UserSessionManager
   // Show various notifications if applicable.
   void ShowNotificationsIfNeeded(Profile* profile);
 
-  // Launch various setting pages (or dialogs) if applicable.
-  void MaybeLaunchSettings(Profile* profile);
+  // Perform actions that were deferred from OOBE or onboarding flow once the
+  // browser is launched if applicable.
+  void PerformPostBrowserLaunchOOBEActions(Profile* profile);
 
   // Invoked when the user is logging in for the first time, or is logging in to
   // an ephemeral session type, such as guest or a public session.

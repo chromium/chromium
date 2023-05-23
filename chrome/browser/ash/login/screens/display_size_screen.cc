@@ -50,6 +50,37 @@ std::string DisplaySizeScreen::GetResultString(Result result) {
   }
 }
 
+void DisplaySizeScreen::MaybeUpdateZoomFactor(Profile* profile) {
+  auto* prefs = profile->GetPrefs();
+  if (!prefs->HasPrefPath(prefs::kOobeDisplaySizeFactorDeferred)) {
+    return;
+  }
+
+  auto factors = GetZoomFactors();
+  // Verify thae existence of available factors.
+  if (factors.empty()) {
+    return;
+  }
+
+  double stored_zoom_factor =
+      prefs->GetDouble(prefs::kOobeDisplaySizeFactorDeferred);
+  prefs->ClearPref(prefs::kOobeDisplaySizeFactorDeferred);
+
+  // Find the nearest available zoom factor to the stored zoom factor. This is
+  // done to account for any changes in the available zoom factors since the
+  // preference was stored.
+  float selected_zoom_factor = factors[0];
+  for (float factor : factors) {
+    if (abs(stored_zoom_factor - factor) < abs(selected_zoom_factor - factor)) {
+      selected_zoom_factor = factor;
+    }
+  }
+
+  auto display_id_ = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  display_manager->UpdateZoomFactor(display_id_, selected_zoom_factor);
+}
+
 DisplaySizeScreen::DisplaySizeScreen(base::WeakPtr<DisplaySizeScreenView> view,
                                      const ScreenExitCallback& exit_callback)
     : BaseScreen(DisplaySizeScreenView::kScreenId, OobeScreenPriority::DEFAULT),
