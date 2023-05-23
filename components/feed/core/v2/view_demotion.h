@@ -26,7 +26,7 @@ struct DocViewCount {
   // Uniquely identifies content.
   uint64_t docid = 0;
   // Number of views.
-  uint64_t view_count = 0;
+  int64_t view_count = 0;
 
   bool operator==(const DocViewCount& rhs) const;
 };

@@ -323,10 +323,10 @@ void WriteDocIdsTable(const std::vector<DocViewCount> doc_view_counts,
   ids->set_type(feedwire::TypeKind::TYPE_UINT64);
   feedwire::Table::Column* counts = table.add_columns();
   counts->set_name("FEED_CARD_VIEW");
-  counts->set_type(feedwire::TypeKind::TYPE_UINT64);
+  counts->set_type(feedwire::TypeKind::TYPE_INT64);
   for (const auto& doc_view_count : doc_view_counts) {
     ids->add_uint64_values(doc_view_count.docid);
-    counts->add_uint64_values(doc_view_count.view_count);
+    counts->add_int64_values(doc_view_count.view_count);
   }
 }
 
