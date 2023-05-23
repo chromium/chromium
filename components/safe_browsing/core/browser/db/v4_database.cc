@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -274,21 +275,34 @@ bool V4Database::AreAllStoresAvailable(
 }
 
 void V4Database::GetStoresMatchingFullHash(
-    const FullHashStr& full_hash,
+    const std::vector<FullHashStr>& full_hashes,
     const StoresToCheck& stores_to_check,
-    StoreAndHashPrefixes* matched_store_and_hash_prefixes) {
+    base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback) {
+  FullHashToStoreAndHashPrefixesMap results;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sb_sequence_checker_);
-  matched_store_and_hash_prefixes->clear();
-  for (const ListIdentifier& identifier : stores_to_check) {
-    if (!IsStoreAvailable(identifier))
-      continue;
-    const auto& store_pair = store_map_->find(identifier);
-    DCHECK(store_pair != store_map_->end());
-    const std::unique_ptr<V4Store>& store = store_pair->second;
-    HashPrefixStr hash_prefix = store->GetMatchingHashPrefix(full_hash);
-    if (!hash_prefix.empty()) {
-      matched_store_and_hash_prefixes->emplace_back(identifier, hash_prefix);
+  for (const auto& full_hash : full_hashes) {
+    for (const ListIdentifier& identifier : stores_to_check) {
+      if (!IsStoreAvailable(identifier)) {
+        continue;
+      }
+      const auto& store_pair = store_map_->find(identifier);
+      DCHECK(store_pair != store_map_->end());
+      const std::unique_ptr<V4Store>& store = store_pair->second;
+      HashPrefixStr hash_prefix = store->GetMatchingHashPrefix(full_hash);
+      if (!hash_prefix.empty()) {
+        results[full_hash].emplace_back(identifier, hash_prefix);
+      }
     }
+  }
+
+  if (base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase) &&
+      kMmapSafeBrowsingDatabaseAsync.Get()) {
+    // Until this is asynchronous for accessing memory mapped files on
+    // background threads, simulate this being async.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
+  } else {
+    std::move(callback).Run(std::move(results));
   }
 }
 

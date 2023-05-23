@@ -271,6 +271,25 @@ void MaybeDeleteStore(const base::FilePath& path) {
   }
 }
 
+bool GetPrefixMatchesIsAsync() {
+  return base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase) &&
+         kMmapSafeBrowsingDatabaseAsync.Get();
+}
+
+void HandleUrlCallback(base::OnceCallback<void(bool)> callback,
+                       FullHashToStoreAndHashPrefixesMap results) {
+  bool allowed = !results.empty();
+  if (GetPrefixMatchesIsAsync()) {
+    // This callback was already run asynchronously so no need for another
+    // thread hop.
+    std::move(callback).Run(allowed);
+  } else {
+    // Need a thread hop to avoid reentrancy.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), allowed));
+  }
+}
+
 }  // namespace
 
 V4LocalDatabaseManager::PendingCheck::PendingCheck(
@@ -529,12 +548,8 @@ void V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
       std::vector<GURL>(1, url),
       MechanismExperimentHashDatabaseCache::kNoExperiment);
 
-  AsyncMatch result =
-      HandleAllowlistCheck(std::move(check), /*allow_async_check=*/false);
-  DCHECK_NE(AsyncMatch::ASYNC, result);
-  sb_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), result == AsyncMatch::MATCH));
+  HandleAllowlistCheck(std::move(check), /*allow_async_full_hash_check=*/false,
+                       std::move(callback));
 }
 
 bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
@@ -580,7 +595,9 @@ AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
       std::vector<GURL>(1, url),
       MechanismExperimentHashDatabaseCache::kNoExperiment);
 
-  return HandleAllowlistCheck(std::move(check), /*allow_async_check=*/true);
+  return HandleAllowlistCheck(std::move(check),
+                              /*allow_async_full_hash_check=*/true,
+                              base::OnceCallback<void(bool)>());
 }
 
 void V4LocalDatabaseManager::MatchDownloadAllowlistUrl(
@@ -733,23 +750,14 @@ void V4LocalDatabaseManager::GetArtificialPrefixMatches(
   }
 }
 
-bool V4LocalDatabaseManager::GetPrefixMatches(
-    const std::unique_ptr<PendingCheck>& check) {
+void V4LocalDatabaseManager::GetPrefixMatches(
+    PendingCheck* check,
+    base::OnceCallback<void(FullHashToStoreAndHashPrefixesMap)> callback) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(enabled_);
 
-  check->full_hash_to_store_and_hash_prefixes.clear();
-  for (const auto& full_hash : check->full_hashes) {
-    StoreAndHashPrefixes matched_store_and_hash_prefixes;
-    v4_database_->GetStoresMatchingFullHash(full_hash, check->stores_to_check,
-                                            &matched_store_and_hash_prefixes);
-    if (!matched_store_and_hash_prefixes.empty()) {
-      (check->full_hash_to_store_and_hash_prefixes)[full_hash] =
-          matched_store_and_hash_prefixes;
-    }
-  }
-
-  return !check->full_hash_to_store_and_hash_prefixes.empty();
+  v4_database_->GetStoresMatchingFullHash(
+      check->full_hashes, check->stores_to_check, std::move(callback));
 }
 
 void V4LocalDatabaseManager::GetSeverestThreatTypeAndMetadata(
@@ -803,37 +811,107 @@ SBThreatType V4LocalDatabaseManager::GetSBThreatTypeForList(
 
 AsyncMatch V4LocalDatabaseManager::HandleAllowlistCheck(
     std::unique_ptr<PendingCheck> check,
-    bool allow_async_check) {
+    bool allow_async_full_hash_check,
+    base::OnceCallback<void(bool)> callback) {
   // We don't bother queuing allowlist checks since the DB will
   // normally be available already -- allowlists are used after page load,
   // and navigations are blocked until the DB is ready and dequeues checks.
   // The caller should have already checked that the DB is ready.
   DCHECK(v4_database_);
 
-  GetPrefixMatches(check);
+  PendingCheck* check_ptr = check.get();
+  AsyncMatch match;
+
+  GetPrefixMatches(
+      check_ptr,
+      base::BindOnce(&V4LocalDatabaseManager::HandleAllowlistCheckContinuation,
+                     weak_factory_.GetWeakPtr(), std::move(check),
+                     allow_async_full_hash_check, std::move(callback),
+                     GetPrefixMatchesIsAsync() ? nullptr : &match));
+
+  if (GetPrefixMatchesIsAsync()) {
+    AddPendingCheck(check_ptr);
+    return AsyncMatch::ASYNC;
+  }
+
+  return match;
+}
+
+void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
+    std::unique_ptr<PendingCheck> check,
+    bool allow_async_full_hash_check,
+    base::OnceCallback<void(bool)> callback,
+    AsyncMatch* match,
+    FullHashToStoreAndHashPrefixesMap results) {
+  DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
+
+  AsyncMatch local_match;
+  if (GetPrefixMatchesIsAsync()) {
+    if (!enabled_) {
+      DCHECK(pending_checks_.empty());
+      return;
+    }
+
+    const auto it = pending_checks_.find(check.get());
+    if (it == pending_checks_.end()) {
+      // The check has since been cancelled.
+      return;
+    }
+
+    RemovePendingCheck(it);
+    match = &local_match;
+  }
+
+  check->full_hash_to_store_and_hash_prefixes = results;
   GetArtificialPrefixMatches(check);
   if (check->full_hash_to_store_and_hash_prefixes.empty() &&
       check->artificial_full_hash_to_store_and_hash_prefixes.empty()) {
-    return AsyncMatch::NO_MATCH;
-  }
+    *match = AsyncMatch::NO_MATCH;
+  } else {
+    // Look for any full-length hash in the matches. If there is one,
+    // there's no need for a full-hash check. This saves bandwidth for
+    // very popular sites since they'll have full-length hashes locally.
+    // These loops will have exactly 1 entry most of the time.
+    bool found = false;
+    for (const auto& entry : check->full_hash_to_store_and_hash_prefixes) {
+      for (const auto& store_and_prefix : entry.second) {
+        if (store_and_prefix.hash_prefix.size() == kMaxHashPrefixLength) {
+          *match = AsyncMatch::MATCH;
+          found = true;
+          break;
+        }
+      }
+    }
 
-  // Look for any full-length hash in the matches. If there is one,
-  // there's no need for a full-hash check. This saves bandwidth for
-  // very popular sites since they'll have full-length hashes locally.
-  // These loops will have exactly 1 entry most of the time.
-  for (const auto& entry : check->full_hash_to_store_and_hash_prefixes) {
-    for (const auto& store_and_prefix : entry.second) {
-      if (store_and_prefix.hash_prefix.size() == kMaxHashPrefixLength) {
-        return AsyncMatch::MATCH;
+    if (!found) {
+      if (!allow_async_full_hash_check) {
+        *match = AsyncMatch::NO_MATCH;
+      } else {
+        *match = AsyncMatch::ASYNC;
+        ScheduleFullHashCheck(std::move(check));
+        return;
       }
     }
   }
 
-  if (!allow_async_check) {
-    return AsyncMatch::NO_MATCH;
+  if (check->client_callback_type == ClientCallbackType::CHECK_OTHER) {
+    bool result = *match == AsyncMatch::MATCH;
+    if (GetPrefixMatchesIsAsync()) {
+      // This is already asynchronous so no need for another PostTask.
+      std::move(callback).Run(result);
+    } else {
+      sb_task_runner()->PostTask(FROM_HERE,
+                                 base::BindOnce(std::move(callback), result));
+    }
+  } else if (check->client_callback_type ==
+             ClientCallbackType::CHECK_CSD_ALLOWLIST) {
+    if (GetPrefixMatchesIsAsync()) {
+      check->most_severe_threat_type = SB_THREAT_TYPE_CSD_ALLOWLIST;
+      RespondToClient(std::move(check));
+    }
+  } else {
+    NOTREACHED();
   }
-  ScheduleFullHashCheck(std::move(check));
-  return AsyncMatch::ASYNC;
 }
 
 bool V4LocalDatabaseManager::HandleCheck(std::unique_ptr<PendingCheck> check) {
@@ -842,15 +920,57 @@ bool V4LocalDatabaseManager::HandleCheck(std::unique_ptr<PendingCheck> check) {
     return false;
   }
 
-  GetPrefixMatches(check);
+  PendingCheck* check_ptr = check.get();
+  AsyncMatch match;
+  GetPrefixMatches(
+      check_ptr,
+      base::BindOnce(&V4LocalDatabaseManager::HandleCheckContinuation,
+                     weak_factory_.GetWeakPtr(), std::move(check),
+                     GetPrefixMatchesIsAsync() ? nullptr : &match));
+
+  if (GetPrefixMatchesIsAsync()) {
+    AddPendingCheck(check_ptr);
+    return false;
+  }
+
+  return match == AsyncMatch::NO_MATCH;
+}
+
+void V4LocalDatabaseManager::HandleCheckContinuation(
+    std::unique_ptr<PendingCheck> check,
+    AsyncMatch* match,
+    FullHashToStoreAndHashPrefixesMap results) {
+  AsyncMatch local_match;
+  if (GetPrefixMatchesIsAsync()) {
+    if (!enabled_) {
+      DCHECK(pending_checks_.empty());
+      return;
+    }
+
+    const auto it = pending_checks_.find(check.get());
+    if (it == pending_checks_.end()) {
+      // The check has since been cancelled.
+      return;
+    }
+
+    RemovePendingCheck(it);
+    match = &local_match;
+  }
+
+  check->full_hash_to_store_and_hash_prefixes = results;
   GetArtificialPrefixMatches(check);
   if (check->full_hash_to_store_and_hash_prefixes.empty() &&
       check->artificial_full_hash_to_store_and_hash_prefixes.empty()) {
-    return true;
-  }
+    *match = AsyncMatch::NO_MATCH;
 
-  ScheduleFullHashCheck(std::move(check));
-  return false;
+    if (GetPrefixMatchesIsAsync()) {
+      RespondToClient(std::move(check));
+    }
+  } else {
+    *match = AsyncMatch::ASYNC;
+
+    ScheduleFullHashCheck(std::move(check));
+  }
 }
 
 void V4LocalDatabaseManager::PopulateArtificialDatabase() {
@@ -917,8 +1037,8 @@ void V4LocalDatabaseManager::HandleUrl(
       std::vector<GURL>(1, url),
       MechanismExperimentHashDatabaseCache::kNoExperiment);
 
-  sb_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), GetPrefixMatches(check)));
+  GetPrefixMatches(check.get(),
+                   base::BindOnce(&HandleUrlCallback, std::move(callback)));
 }
 
 void V4LocalDatabaseManager::OnFullHashResponse(
@@ -977,12 +1097,42 @@ void V4LocalDatabaseManager::ProcessQueuedChecks() {
   checks.swap(queued_checks_);
 
   for (auto& it : checks) {
-    if (!GetPrefixMatches(it)) {
-      RespondToClient(std::move(it));
-    } else {
-      AddPendingCheck(it.get());
-      PerformFullHashCheck(std::move(it));
+    PendingCheck* check_ptr = it.get();
+
+    if (GetPrefixMatchesIsAsync()) {
+      AddPendingCheck(check_ptr);
     }
+
+    GetPrefixMatches(
+        check_ptr,
+        base::BindOnce(&V4LocalDatabaseManager::ProcessQueuedChecksContinuation,
+                       weak_factory_.GetWeakPtr(), std::move(it)));
+  }
+}
+
+void V4LocalDatabaseManager::ProcessQueuedChecksContinuation(
+    std::unique_ptr<PendingCheck> check,
+    FullHashToStoreAndHashPrefixesMap results) {
+  if (GetPrefixMatchesIsAsync()) {
+    if (!enabled_) {
+      DCHECK(pending_checks_.empty());
+      return;
+    }
+
+    const auto it = pending_checks_.find(check.get());
+    if (it == pending_checks_.end()) {
+      // The check has since been cancelled.
+      return;
+    }
+
+    RemovePendingCheck(it);
+  }
+
+  if (results.empty()) {
+    RespondToClient(std::move(check));
+  } else {
+    AddPendingCheck(check.get());
+    PerformFullHashCheck(std::move(check));
   }
 }
 

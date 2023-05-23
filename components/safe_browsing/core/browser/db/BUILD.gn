@@ -130,6 +130,7 @@ static_library("v4_database") {
     ":v4_protocol_manager_util",
     ":v4_store",
     "//base",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:webui_proto",
   ]
 }

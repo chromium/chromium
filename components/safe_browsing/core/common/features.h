@@ -174,6 +174,10 @@ BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 // mapped into memory.
 BASE_DECLARE_FEATURE(kMmapSafeBrowsingDatabase);
 
+// Whether hash prefix lookups are done on a background thread when
+// kMmapSafeBrowsingDatabase is enabled.
+extern const base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync;
+
 // Enables unpacking of nested archives during downloads.
 BASE_DECLARE_FEATURE(kNestedArchives);
 

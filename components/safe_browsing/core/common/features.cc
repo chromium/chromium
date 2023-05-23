@@ -175,6 +175,10 @@ BASE_FEATURE(kMmapSafeBrowsingDatabase,
              "MmapSafeBrowsingDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync{
+    &kMmapSafeBrowsingDatabase, "MmapSafeBrowsingDatabaseAsync",
+    /*default_value=*/false};
+
 BASE_FEATURE(kNestedArchives,
              "SafeBrowsingArchiveImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
