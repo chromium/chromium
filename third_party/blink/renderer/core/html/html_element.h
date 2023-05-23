@@ -66,9 +66,6 @@ enum class PopoverValueType {
   kHint,
   kManual,
 };
-constexpr const char* kPopoverTypeValueAuto = "auto";
-constexpr const char* kPopoverTypeValueHint = "hint";
-constexpr const char* kPopoverTypeValueManual = "manual";
 
 enum class PopoverTriggerAction {
   kNone,
@@ -227,7 +224,7 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual bool IsPotentiallyRenderBlocking() const { return false; }
 
   // Popover API related functions.
-  void UpdatePopoverAttribute(String);
+  void UpdatePopoverAttribute(const AtomicString&);
   bool HasPopoverAttribute() const;
   // The IDL reflections:
   AtomicString popover() const;

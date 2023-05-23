@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -1173,14 +1174,15 @@ void HTMLElement::setHidden(
 }
 
 namespace {
-PopoverValueType GetPopoverTypeFromAttributeValue(String value) {
-  if (EqualIgnoringASCIICase(value, kPopoverTypeValueAuto) ||
-      (!value.IsNull() && value.empty())) {
+
+PopoverValueType GetPopoverTypeFromAttributeValue(const AtomicString& value) {
+  AtomicString lower_value = value.LowerASCII();
+  if (lower_value == keywords::kAuto || (!value.IsNull() && value.empty())) {
     return PopoverValueType::kAuto;
-  } else if (EqualIgnoringASCIICase(value, kPopoverTypeValueHint) &&
+  } else if (lower_value == keywords::kHint &&
              RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
     return PopoverValueType::kHint;
-  } else if (EqualIgnoringASCIICase(value, kPopoverTypeValueManual)) {
+  } else if (lower_value == keywords::kManual) {
     return PopoverValueType::kManual;
   } else if (!value.IsNull()) {
     // Invalid values default to popover=manual.
@@ -1190,7 +1192,7 @@ PopoverValueType GetPopoverTypeFromAttributeValue(String value) {
 }
 }  // namespace
 
-void HTMLElement::UpdatePopoverAttribute(String value) {
+void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
   if (!RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           GetDocument().GetExecutionContext())) {
     // If the feature flag isn't enabled, give a console warning about this
@@ -1215,7 +1217,7 @@ void HTMLElement::UpdatePopoverAttribute(String value) {
 
   PopoverValueType type = GetPopoverTypeFromAttributeValue(value);
   if (type == PopoverValueType::kManual &&
-      !EqualIgnoringASCIICase(value, kPopoverTypeValueManual)) {
+      !EqualIgnoringASCIICase(value, keywords::kManual)) {
     GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
@@ -1276,15 +1278,15 @@ AtomicString HTMLElement::popover() const {
   if (attribute_value.IsNull()) {
     return attribute_value;  // Nullable
   } else if (attribute_value.empty()) {
-    return kPopoverTypeValueAuto;  // ReflectEmpty = "auto"
-  } else if (attribute_value == kPopoverTypeValueAuto ||
-             attribute_value == kPopoverTypeValueManual) {
+    return keywords::kAuto;  // ReflectEmpty = "auto"
+  } else if (attribute_value == keywords::kAuto ||
+             attribute_value == keywords::kManual) {
     return attribute_value;  // ReflectOnly
-  } else if (attribute_value == kPopoverTypeValueHint &&
+  } else if (attribute_value == keywords::kHint &&
              RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
     return attribute_value;  // ReflectOnly (with HTMLPopoverHint enabled)
   } else {
-    return kPopoverTypeValueManual;  // ReflectInvalid = "manual"
+    return keywords::kManual;  // ReflectInvalid = "manual"
   }
 }
 void HTMLElement::setPopover(const AtomicString& value) {

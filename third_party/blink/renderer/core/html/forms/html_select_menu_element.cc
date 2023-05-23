@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -277,7 +278,7 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   HTMLElement* new_popover;
   new_popover = MakeGarbageCollected<HTMLDivElement>(document);
-  new_popover->setAttribute(html_names::kPopoverAttr, kPopoverTypeValueAuto);
+  new_popover->setAttribute(html_names::kPopoverAttr, keywords::kAuto);
   new_popover->setAttribute(html_names::kPartAttr, kListboxPartName);
   new_popover->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
   new_popover->SetShadowPseudoId(AtomicString("-internal-selectmenu-listbox"));
