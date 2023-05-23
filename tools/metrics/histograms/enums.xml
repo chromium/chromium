@@ -60074,6 +60074,7 @@ from previous Chrome versions.
   <int value="-1414207639" label="RequestDesktopSiteDefaultsLogging:enabled"/>
   <int value="-1412230070" label="query-tiles-instant-background-task"/>
   <int value="-1411980923" label="LinkCapturingUiUpdate:enabled"/>
+  <int value="-1411777757" label="WebRtcSendPacketBatch:enabled"/>
   <int value="-1411733990" label="OmniboxDedupeGoogleDriveURLs:disabled"/>
   <int value="-1411003295" label="disable-encrypted-media"/>
   <int value="-1410394131" label="EvDetailsInPageInfo:enabled"/>
@@ -64414,6 +64415,7 @@ from previous Chrome versions.
   <int value="897457037" label="AutocorrectByDefault:enabled"/>
   <int value="897695337" label="TabStripRedesign:enabled"/>
   <int value="898311758" label="ReaderMode:disabled"/>
+  <int value="898719518" label="VSyncDecoding:disabled"/>
   <int value="899347105" label="NearbySharingWifiLan:enabled"/>
   <int value="900614020" label="ContentSuggestionsShowSummary:disabled"/>
   <int value="902209599" label="ShelfHotseat:enabled"/>
@@ -64442,6 +64444,7 @@ from previous Chrome versions.
   <int value="913138924" label="RecurrentInterstitialFeature:disabled"/>
   <int value="913855453" label="VirtualKeyboardFloatingResizable:disabled"/>
   <int value="914708297" label="CCTResizableAllowResizeByUserGesture:enabled"/>
+  <int value="914915562" label="WebRtcSendPacketBatch:disabled"/>
   <int value="915046146" label="RequestDesktopSiteDefaultsLogging:disabled"/>
   <int value="915402820" label="RequestDesktopSiteExceptions:disabled"/>
   <int value="916316159" label="disable-new-app-list-mixer"/>
@@ -66540,6 +66543,7 @@ from previous Chrome versions.
   <int value="2006413281"
       label="ContextualSuggestionsAlternateCardLayout:enabled"/>
   <int value="2006856618" label="BiometricTouchToFill:enabled"/>
+  <int value="2007213924" label="VSyncDecoding:enabled"/>
   <int value="2007421572" label="EapGtcWifiAuthentication:disabled"/>
   <int value="2008599705" label="EnableFeedbackPanel:enabled"/>
   <int value="2008878342" label="TouchToFillAndroid:disabled"/>
