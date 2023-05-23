@@ -14580,6 +14580,48 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="NewTabPage.HistoryClusters">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <summary>
+    Metrics related to a History Clusters module shown on the New Tab Page.
+    Recorded for each History Clusters module shown on a 1P New Tab Page load,
+    which can be multiple for a page load.
+  </summary>
+  <metric name="BelongsToBoostedCategory" enum="Boolean">
+    <summary>
+      Cluster is of a boosted category.
+    </summary>
+  </metric>
+  <metric name="MinutesSinceMostRecentVisit">
+    <summary>
+      Minutes since the shown cluster's most recent visit, exponentially
+      bucketed using GetExponentialBucketMin with a spacing of 1.3.
+    </summary>
+  </metric>
+  <metric name="NumAbandonedCarts">
+    <summary>
+      Number of abandoned carts associated with the cluster.
+    </summary>
+  </metric>
+  <metric name="NumTotalVisits">
+    <summary>
+      Number of total visits in the same cluster including ones that are not
+      necessarily shown in the module.
+    </summary>
+  </metric>
+  <metric name="NumUniqueHosts">
+    <summary>
+      Number of unique hosts represented in the cluster.
+    </summary>
+  </metric>
+  <metric name="NumVisitsWithImage">
+    <summary>
+      Number of visits with an image to show.
+    </summary>
+  </metric>
+</event>
+
 <event name="NoStatePrefetch" singular="True">
   <owner>tbansal@chromium.org</owner>
   <summary>

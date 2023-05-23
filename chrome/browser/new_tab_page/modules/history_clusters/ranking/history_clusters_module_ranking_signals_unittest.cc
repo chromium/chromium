@@ -4,13 +4,23 @@
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 
+#include "base/test/task_environment.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-using HistoryClustersModuleRankingSignalsTest = testing::Test;
+class HistoryClustersModuleRankingSignalsTest : public testing::Test {
+ public:
+  HistoryClustersModuleRankingSignalsTest() = default;
+  ~HistoryClustersModuleRankingSignalsTest() override = default;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+};
 
 TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorNoCartsNoBoost) {
   history::Cluster cluster;
@@ -52,6 +62,34 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorNoCartsNoBoost) {
   // github.com and search.com
   EXPECT_EQ(signals.num_unique_hosts, 2u);
   EXPECT_EQ(signals.num_abandoned_carts, 0u);
+
+  // Verify UKM.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ukm::builders::NewTabPage_HistoryClusters builder(ukm::NoURLSourceId());
+  signals.PopulateUkmEntry(&builder);
+  builder.Record(ukm::UkmRecorder::Get());
+
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::NewTabPage_HistoryClusters::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  auto* entry = entries[0];
+  test_ukm_recorder.EntryHasMetric(entry,
+                                   ukm::builders::NewTabPage_HistoryClusters::
+                                       kMinutesSinceMostRecentVisitName);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::NewTabPage_HistoryClusters::kBelongsToBoostedCategoryName,
+      0);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::NewTabPage_HistoryClusters::kNumVisitsWithImageName,
+      2);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::NewTabPage_HistoryClusters::kNumTotalVisitsName, 3);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::NewTabPage_HistoryClusters::kNumUniqueHostsName, 2);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::NewTabPage_HistoryClusters::kNumAbandonedCartsName,
+      0);
 }
 
 TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorHasCartsAndBoost) {
@@ -98,6 +136,34 @@ TEST_F(HistoryClustersModuleRankingSignalsTest, ConstructorHasCartsAndBoost) {
   EXPECT_EQ(signals.num_unique_hosts, 3u);
   // m.merchant.com and www.merchant.com should both match to merchant.com.
   EXPECT_EQ(signals.num_abandoned_carts, 1u);
+
+  // Verify UKM.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ukm::builders::NewTabPage_HistoryClusters builder(ukm::NoURLSourceId());
+  signals.PopulateUkmEntry(&builder);
+  builder.Record(ukm::UkmRecorder::Get());
+
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::NewTabPage_HistoryClusters::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  auto* entry = entries[0];
+  test_ukm_recorder.EntryHasMetric(entry,
+                                   ukm::builders::NewTabPage_HistoryClusters::
+                                       kMinutesSinceMostRecentVisitName);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry,
+      ukm::builders::NewTabPage_HistoryClusters::kBelongsToBoostedCategoryName,
+      1);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::NewTabPage_HistoryClusters::kNumVisitsWithImageName,
+      2);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::NewTabPage_HistoryClusters::kNumTotalVisitsName, 3);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::NewTabPage_HistoryClusters::kNumUniqueHostsName, 3);
+  test_ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::NewTabPage_HistoryClusters::kNumAbandonedCartsName,
+      1);
 }
 
 }  // namespace

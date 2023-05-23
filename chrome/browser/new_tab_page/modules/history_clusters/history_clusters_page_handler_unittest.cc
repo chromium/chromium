@@ -19,6 +19,8 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_service_factory.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_metrics_logger.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -35,8 +37,10 @@
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,7 +79,10 @@ class MockHistoryClustersModuleService : public HistoryClustersModuleService {
   MOCK_METHOD1(
       GetClusters,
       std::unique_ptr<history_clusters::HistoryClustersServiceTask>(
-          base::OnceCallback<void(std::vector<history::Cluster>)> callback));
+          base::OnceCallback<void(
+              std::vector<history::Cluster>,
+              base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
+              callback));
 };
 
 class MockHistoryService : public history::HistoryService {
@@ -123,6 +130,7 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
     handler_ = std::make_unique<HistoryClustersPageHandler>(
         mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>(),
         web_contents_.get());
+    ukm_source_id_ = web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId();
   }
 
   void TearDown() override {
@@ -143,6 +151,10 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
   MockHistoryService& mock_history_service() { return *mock_history_service_; }
 
   HistoryClustersPageHandler& handler() { return *handler_; }
+
+  ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
+
+  void ResetHandler() { handler_.reset(); }
 
  private:
   // BrowserWithTestWindowTest:
@@ -174,6 +186,7 @@ class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
   raw_ptr<MockHistoryService> mock_history_service_;
   raw_ptr<MockCartService> mock_cart_service_;
   std::unique_ptr<HistoryClustersPageHandler> handler_;
+  ukm::SourceId ukm_source_id_;
 };
 
 history::ClusterVisit SampleVisitForURL(
@@ -234,16 +247,21 @@ history::Cluster SampleCluster(int srp_visits,
 TEST_F(HistoryClustersPageHandlerTest, GetClusters) {
   const int kSampleClusterCount = 3;
   std::vector<history::Cluster> sample_clusters;
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
   for (int i = 0; i < kSampleClusterCount; i++) {
     sample_clusters.push_back(
         SampleCluster(i, /*srp_visits=*/1, /*non_srp_visits=*/2));
+    ranking_signals[i] = HistoryClustersModuleRankingSignals();
   }
   EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
       .WillOnce(testing::Invoke(
-          [&sample_clusters](
-              base::OnceCallback<void(std::vector<history::Cluster>)> callback)
+          [&sample_clusters, &ranking_signals](
+              base::OnceCallback<void(
+                  std::vector<history::Cluster>,
+                  base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
+                  callback)
               -> std::unique_ptr<history_clusters::HistoryClustersServiceTask> {
-            std::move(callback).Run(sample_clusters);
+            std::move(callback).Run(sample_clusters, ranking_signals);
             return nullptr;
           }));
 
@@ -269,6 +287,13 @@ TEST_F(HistoryClustersPageHandlerTest, GetClusters) {
       ASSERT_EQ(kSampleNonSearchUrl, cluster_mojom->visits[u]->url_for_display);
     }
   }
+
+  // Reset handler to make sure UKM is recorded.
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  ResetHandler();
+  auto entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::NewTabPage_HistoryClusters::kEntryName);
+  ASSERT_EQ(entries.size(), 3u);
 }
 
 TEST_F(HistoryClustersPageHandlerTest, GetFakeCluster) {
@@ -330,9 +355,12 @@ TEST_F(HistoryClustersPageHandlerTest,
 TEST_F(HistoryClustersPageHandlerTest, NoClusters) {
   EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
       .WillOnce(testing::Invoke(
-          [&](base::OnceCallback<void(std::vector<history::Cluster>)> callback)
+          [&](base::OnceCallback<void(
+                  std::vector<history::Cluster>,
+                  base::flat_map<int64_t, HistoryClustersModuleRankingSignals>)>
+                  callback)
               -> std::unique_ptr<history_clusters::HistoryClustersServiceTask> {
-            std::move(callback).Run({});
+            std::move(callback).Run({}, {});
             return nullptr;
           }));
 

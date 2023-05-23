@@ -12,6 +12,7 @@
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -24,7 +25,6 @@
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_handler.h"
-#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #endif
 
 namespace {
@@ -58,7 +58,9 @@ class HistoryClustersModuleRankerTest : public testing::Test {
 
   std::vector<history::Cluster> RankClusters(
       HistoryClustersModuleRanker* ranker,
-      std::vector<history::Cluster> in_clusters) {
+      std::vector<history::Cluster> in_clusters,
+      base::flat_map<int64_t, HistoryClustersModuleRankingSignals>*
+          out_ranking_signals) {
     // Within each cluster, sort visits.
     for (auto& cluster : in_clusters) {
       history_clusters::StableSortVisits(cluster.visits);
@@ -66,15 +68,21 @@ class HistoryClustersModuleRankerTest : public testing::Test {
 
     std::vector<history::Cluster> clusters;
     base::RunLoop run_loop;
-    ranker->RankClusters(std::move(in_clusters),
-                         base::BindOnce(
-                             [](base::RunLoop* run_loop,
-                                std::vector<history::Cluster>* out_clusters,
-                                std::vector<history::Cluster> clusters) {
-                               *out_clusters = std::move(clusters);
-                               run_loop->Quit();
-                             },
-                             &run_loop, &clusters));
+    ranker->RankClusters(
+        std::move(in_clusters),
+        base::BindOnce(
+            [](base::RunLoop* run_loop,
+               std::vector<history::Cluster>* out_clusters,
+               base::flat_map<int64_t, HistoryClustersModuleRankingSignals>*
+                   out_ranking_signals,
+               std::vector<history::Cluster> clusters,
+               base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
+                   ranking_signals) {
+              *out_clusters = std::move(clusters);
+              *out_ranking_signals = std::move(ranking_signals);
+              run_loop->Quit();
+            },
+            &run_loop, &clusters, out_ranking_signals));
 
     run_loop.Run();
     return clusters;
@@ -122,19 +130,28 @@ TEST_F(HistoryClustersModuleRankerTest, RecencyOnly) {
                          visit4, /*normalized_url=*/absl::nullopt, 0.3)};
 
   history::Cluster cluster2 = cluster1;
+  cluster2.cluster_id = 2;
   // Make the visit time before the first cluster and the first visit have a
   // different visit ID so we can differentiate the two clusters.
   cluster2.visits[1].annotated_visit.visit_row.visit_id = 123;
   cluster2.visits[1].annotated_visit.visit_row.visit_time =
       base::Time::FromTimeT(10);
+  // Drop all images to differentiate.
+  for (auto& cluster_visit : cluster2.visits) {
+    cluster_visit.annotated_visit.visit_row.is_known_to_sync = false;
+    cluster_visit.annotated_visit.content_annotations.has_url_keyed_image =
+        false;
+  }
 
   base::flat_set<std::string> boost = {};
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       /*optimization_guide_model_provider=*/nullptr, /*cart_service=*/nullptr,
       boost);
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
   std::vector<history::Cluster> clusters =
-      RankClusters(module_ranker.get(), {cluster1, cluster2});
+      RankClusters(module_ranker.get(), {cluster1, cluster2}, &ranking_signals);
 
+  // Order is [2, 1].
   EXPECT_THAT(
       history_clusters::testing::ToVisitResults(clusters),
       ElementsAre(ElementsAre(history_clusters::testing::VisitResult(
@@ -145,6 +162,16 @@ TEST_F(HistoryClustersModuleRankerTest, RecencyOnly) {
                                                                      u"search"),
                               history_clusters::testing::VisitResult(4, 0.3),
                               history_clusters::testing::VisitResult(1, 0.1))));
+
+  ASSERT_EQ(ranking_signals.size(), 2u);
+  EXPECT_TRUE(ranking_signals.contains(1));
+  EXPECT_TRUE(ranking_signals.contains(2));
+  // Just check the visits with image since that is the differentiator in
+  // signals between the two clusters.
+  // Cluster ID 1 has 2 images.
+  EXPECT_EQ(ranking_signals[1].num_visits_with_image, 2u);
+  // Cluster ID 2 has 0 images.
+  EXPECT_EQ(ranking_signals[2].num_visits_with_image, 0u);
 }
 
 TEST_F(HistoryClustersModuleRankerTest, WithCategoryBoosting) {
@@ -214,19 +241,25 @@ TEST_F(HistoryClustersModuleRankerTest, WithCategoryBoosting) {
     // Change the time to be earlier.
     cluster_visit.annotated_visit.visit_row.visit_time =
         base::Time::FromTimeT(1);
+    // Drop images.
+    cluster_visit.annotated_visit.visit_row.is_known_to_sync = false;
+    cluster_visit.annotated_visit.content_annotations.has_url_keyed_image =
+        false;
   }
 
   base::flat_set<std::string> boost = {"boosted", "boostedbuthidden"};
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       /*optimization_guide_model_provider=*/nullptr, /*cart_service=*/nullptr,
       boost);
-  std::vector<history::Cluster> clusters =
-      RankClusters(module_ranker.get(), {cluster1, cluster2, cluster3});
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
+  std::vector<history::Cluster> clusters = RankClusters(
+      module_ranker.get(), {cluster1, cluster2, cluster3}, &ranking_signals);
 
   // The second and third clusters should be picked since it contains a boosted
   // category even though they were earlier than the first cluster and the
   // visits should be sorted according to score. Tiebreaker between multiple
   // clusters is still time.
+  // Ordered as [2, 3, 1].
   EXPECT_THAT(
       history_clusters::testing::ToVisitResults(clusters),
       ElementsAre(ElementsAre(history_clusters::testing::VisitResult(
@@ -241,6 +274,20 @@ TEST_F(HistoryClustersModuleRankerTest, WithCategoryBoosting) {
                                                                      u"search"),
                               history_clusters::testing::VisitResult(4, 0.3),
                               history_clusters::testing::VisitResult(1, 0.0))));
+
+  ASSERT_EQ(ranking_signals.size(), 3u);
+  ASSERT_TRUE(ranking_signals.contains(1));
+  ASSERT_TRUE(ranking_signals.contains(2));
+  ASSERT_TRUE(ranking_signals.contains(3));
+  // Just check the differentiators between each of the clusters.
+  // Cluster ID 1 does not have boosted category.
+  EXPECT_FALSE(ranking_signals[1].belongs_to_boosted_category);
+  // Cluster ID 2 has 2 images and has boosted category.
+  EXPECT_EQ(ranking_signals[2].num_visits_with_image, 2u);
+  EXPECT_TRUE(ranking_signals[2].belongs_to_boosted_category);
+  // Cluster ID 3 has boosted category and 0 images.
+  EXPECT_EQ(ranking_signals[3].num_visits_with_image, 0u);
+  EXPECT_TRUE(ranking_signals[3].belongs_to_boosted_category);
 }
 
 class HistoryClustersModuleRankerCartTest
@@ -302,10 +349,11 @@ TEST_F(HistoryClustersModuleRankerCartTest,
           testing::Invoke([&carts](CartDB::LoadCallback callback) -> void {
             std::move(callback).Run(true, carts);
           })));
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       /*optimization_guide_model_provider=*/nullptr, &cart_service, boost);
   std::vector<history::Cluster> clusters =
-      RankClusters(module_ranker.get(), {cluster1, cluster2});
+      RankClusters(module_ranker.get(), {cluster1, cluster2}, &ranking_signals);
 
   EXPECT_THAT(
       history_clusters::testing::ToVisitResults(clusters),
@@ -335,12 +383,13 @@ class FakeModelHandler : public HistoryClustersModuleRankingModelHandler {
 
   bool CanExecuteAvailableModel() override { return true; }
 
-  void ExecuteBatch(
-      const std::vector<HistoryClustersModuleRankingSignals>& inputs,
-      ExecuteBatchCallback callback) override {
+  void ExecuteBatch(std::vector<HistoryClustersModuleRankingSignals>* inputs,
+                    ExecuteBatchCallback callback) override {
+    CHECK(inputs);
+
     std::vector<float> outputs;
-    outputs.reserve(inputs.size());
-    for (const auto& input : inputs) {
+    outputs.reserve(inputs->size());
+    for (const auto& input : *inputs) {
       float score = input.belongs_to_boosted_category ? 1 : 0;
       outputs.push_back(
           score + static_cast<float>(
@@ -397,20 +446,29 @@ TEST_F(HistoryClustersModuleRankerWithModelTest,
                          visit4, /*normalized_url=*/absl::nullopt, 0.3)};
 
   history::Cluster cluster2 = cluster1;
+  cluster2.cluster_id = 2;
   // Make the visit time before the first cluster and the first visit have a
   // different visit ID so we can differentiate the two clusters.
   cluster2.visits[1].annotated_visit.visit_row.visit_id = 123;
   cluster2.visits[1].annotated_visit.visit_row.visit_time =
       base::Time::FromTimeT(10);
+  // Drop all images to differentiate.
+  for (auto& cluster_visit : cluster2.visits) {
+    cluster_visit.annotated_visit.visit_row.is_known_to_sync = false;
+    cluster_visit.annotated_visit.content_annotations.has_url_keyed_image =
+        false;
+  }
 
   auto model_provider = std::make_unique<
       optimization_guide::TestOptimizationGuideModelProvider>();
   base::flat_set<std::string> boost = {};
   auto module_ranker = std::make_unique<HistoryClustersModuleRanker>(
       model_provider.get(), /*cart_service=*/nullptr, boost);
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
   std::vector<history::Cluster> clusters =
-      RankClusters(module_ranker.get(), {cluster1, cluster2});
+      RankClusters(module_ranker.get(), {cluster1, cluster2}, &ranking_signals);
 
+  // Ordered as [2, 1].
   EXPECT_THAT(
       history_clusters::testing::ToVisitResults(clusters),
       ElementsAre(ElementsAre(history_clusters::testing::VisitResult(
@@ -421,6 +479,16 @@ TEST_F(HistoryClustersModuleRankerWithModelTest,
                                                                      u"search"),
                               history_clusters::testing::VisitResult(4, 0.3),
                               history_clusters::testing::VisitResult(1, 0.1))));
+
+  ASSERT_EQ(ranking_signals.size(), 2u);
+  EXPECT_TRUE(ranking_signals.contains(1));
+  EXPECT_TRUE(ranking_signals.contains(2));
+  // Just check the visits with image since that is the differentiator in
+  // signals between the two clusters.
+  // Cluster ID 1 has 2 images.
+  EXPECT_EQ(ranking_signals[1].num_visits_with_image, 2u);
+  // Cluster ID 2 has 0 images.
+  EXPECT_EQ(ranking_signals[2].num_visits_with_image, 0u);
 }
 
 TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
@@ -492,6 +560,10 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
     cluster_visit.annotated_visit.visit_row.visit_id++;
     // Change the time to be 1 minute ago.
     cluster_visit.annotated_visit.visit_row.visit_time = now - base::Minutes(1);
+    // Drop images.
+    cluster_visit.annotated_visit.visit_row.is_known_to_sync = false;
+    cluster_visit.annotated_visit.content_annotations.has_url_keyed_image =
+        false;
   }
 
   base::flat_set<std::string> boost = {"boosted", "boostedbuthidden"};
@@ -509,9 +581,11 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
       model_provider.get(), &cart_service, boost);
   auto model_handler = std::make_unique<FakeModelHandler>(model_provider.get());
   module_ranker->OverrideModelHandlerForTesting(std::move(model_handler));
-  std::vector<history::Cluster> clusters =
-      RankClusters(module_ranker.get(), {cluster1, cluster2, cluster3});
+  base::flat_map<int64_t, HistoryClustersModuleRankingSignals> ranking_signals;
+  std::vector<history::Cluster> clusters = RankClusters(
+      module_ranker.get(), {cluster1, cluster2, cluster3}, &ranking_signals);
 
+  // Ordered as [3, 2, 1].
   EXPECT_THAT(
       history_clusters::testing::ToVisitResults(clusters),
       ElementsAre(ElementsAre(history_clusters::testing::VisitResult(
@@ -532,6 +606,20 @@ TEST_F(HistoryClustersModuleRankerWithModelTest, ModelAvailable) {
       commerce::CartHistoryClusterAssociationStatus::
           kAssociatedWithNonTopCluster,
       1);
+
+  ASSERT_EQ(ranking_signals.size(), 3u);
+  ASSERT_TRUE(ranking_signals.contains(1));
+  ASSERT_TRUE(ranking_signals.contains(2));
+  ASSERT_TRUE(ranking_signals.contains(3));
+  // Just check the differentiators between each of the clusters.
+  // Cluster ID 1 does not have boosted category.
+  EXPECT_FALSE(ranking_signals[1].belongs_to_boosted_category);
+  // Cluster ID 2 has 2 images and has boosted category.
+  EXPECT_EQ(ranking_signals[2].num_visits_with_image, 2u);
+  EXPECT_TRUE(ranking_signals[2].belongs_to_boosted_category);
+  // Cluster ID 3 has boosted category and 0 images.
+  EXPECT_EQ(ranking_signals[3].num_visits_with_image, 0u);
+  EXPECT_TRUE(ranking_signals[3].belongs_to_boosted_category);
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

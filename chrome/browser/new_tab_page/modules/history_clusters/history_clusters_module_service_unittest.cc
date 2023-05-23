@@ -16,6 +16,7 @@
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_context.h"
@@ -96,7 +97,9 @@ class HistoryClustersModuleServiceTest : public testing::Test {
     base::RunLoop run_loop;
     auto task = service().GetClusters(base::BindOnce(
         [](base::RunLoop* run_loop, std::vector<history::Cluster>* out_clusters,
-           std::vector<history::Cluster> clusters) {
+           std::vector<history::Cluster> clusters,
+           base::flat_map<int64_t, HistoryClustersModuleRankingSignals>
+               ranking_signals) {
           *out_clusters = std::move(clusters);
           run_loop->Quit();
         },

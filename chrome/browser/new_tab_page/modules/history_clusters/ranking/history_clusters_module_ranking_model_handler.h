@@ -44,7 +44,7 @@ class HistoryClustersModuleRankingModelHandler
   // Virtual for testing.
   using ExecuteBatchCallback = base::OnceCallback<void(BatchModelOutput)>;
   virtual void ExecuteBatch(
-      const std::vector<HistoryClustersModuleRankingSignals>& inputs,
+      std::vector<HistoryClustersModuleRankingSignals>* inputs,
       ExecuteBatchCallback callback);
 
  private:

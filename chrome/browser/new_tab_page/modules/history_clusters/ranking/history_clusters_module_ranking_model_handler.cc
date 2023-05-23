@@ -93,30 +93,32 @@ bool HistoryClustersModuleRankingModelHandler::CanExecuteAvailableModel() {
 }
 
 void HistoryClustersModuleRankingModelHandler::ExecuteBatch(
-    const std::vector<HistoryClustersModuleRankingSignals>& inputs,
+    std::vector<HistoryClustersModuleRankingSignals>* inputs,
     ExecuteBatchCallback callback) {
+  CHECK(inputs);
+
   // Validate model.
   auto model_metadata = ParsedSupportedFeaturesForLoadedModel<
       new_tab_page::proto::HistoryClustersModuleRankingModelMetadata>();
   if (!model_metadata ||
       model_metadata->version() >
           HistoryClustersModuleRankingSignals::kClientVersion) {
-    std::vector<float> outputs(inputs.size());
+    std::vector<float> outputs(inputs->size());
     std::move(callback).Run(std::move(outputs));
     return;
   }
 
   // Execute batch.
   auto batch_job = std::make_unique<BatchModelOutput>();
-  batch_job->reserve(inputs.size());
+  batch_job->reserve(inputs->size());
   BatchModelOutput* batch_job_ptr = batch_job.get();
   pending_jobs_.insert(std::move(batch_job));
   auto barrier_closure = base::BarrierClosure(
-      inputs.size(),
+      inputs->size(),
       base::BindOnce(&HistoryClustersModuleRankingModelHandler::OnBatchExecuted,
                      weak_ptr_factory_.GetWeakPtr(), batch_job_ptr,
                      std::move(callback)));
-  for (const auto& input : inputs) {
+  for (const auto& input : *inputs) {
     std::vector<float> input_vector =
         ConstructInputVector(*model_metadata, input);
     ExecuteModelWithInput(base::BindOnce(&OnSingleExecutionComplete,
