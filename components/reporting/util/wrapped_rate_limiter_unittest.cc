@@ -35,10 +35,10 @@ class WrappedRateLimiterTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  raw_ptr<MockRateLimiter> mock_rate_limiter_;
   WrappedRateLimiter::SmartPtr wrapped_rate_limiter_{
       nullptr, base::OnTaskRunnerDeleter(nullptr)};
   WrappedRateLimiter::AsyncAcquireCb async_acquire_cb_;
+  raw_ptr<MockRateLimiter> mock_rate_limiter_;
 };
 
 TEST_F(WrappedRateLimiterTest, SuccessfulAcquire) {
@@ -91,6 +91,7 @@ TEST_F(WrappedRateLimiterTest, MultipleCalls) {
 
 TEST_F(WrappedRateLimiterTest, AcquireAfterDestruction) {
   test::TestEvent<bool> acuire_event;
+  mock_rate_limiter_ = nullptr;
   wrapped_rate_limiter_.reset();
   async_acquire_cb_.Run(123U, acuire_event.cb());
   EXPECT_FALSE(acuire_event.result());
