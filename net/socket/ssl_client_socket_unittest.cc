@@ -3002,6 +3002,22 @@ TEST_P(SSLClientSocketVersionTest, SessionResumption) {
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
   EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+
+  // Pick up the ticket again and confirm resumption works.
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
+  sock_.reset();
+
+  // Updating the context-wide configuration should flush the session cache.
+  SSLContextConfig config;
+  config.disabled_cipher_suites = {1234};
+  ssl_config_service_->UpdateSSLConfigAndNotify(config);
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
 }
 
 namespace {

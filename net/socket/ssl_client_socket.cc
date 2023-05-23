@@ -131,11 +131,10 @@ void SSLClientContext::RemoveObserver(Observer* observer) {
 }
 
 void SSLClientContext::OnSSLContextConfigChanged() {
-  // TODO(davidben): Should we flush |ssl_client_session_cache_| here? We flush
-  // the socket pools, but not the session cache. While BoringSSL-based servers
-  // never change version or cipher negotiation based on client-offered
-  // sessions, other servers do.
   config_ = ssl_config_service_->GetSSLContextConfig();
+  if (ssl_client_session_cache_) {
+    ssl_client_session_cache_->Flush();
+  }
   NotifySSLConfigChanged(SSLConfigChangeType::kSSLConfigChanged);
 }
 
