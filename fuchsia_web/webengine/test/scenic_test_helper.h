@@ -29,7 +29,7 @@ class ScenicTestHelper {
   fuchsia::ui::views::ViewRef CloneViewRef();
 
  protected:
-  FrameImpl* frame_impl_;
+  fuchsia::ui::views::ViewRef view_ref_;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_TEST_SCENIC_TEST_HELPER_H_

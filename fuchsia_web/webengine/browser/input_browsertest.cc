@@ -23,7 +23,6 @@
 #include "fuchsia_web/webengine/test/test_data.h"
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/ozone/public/ozone_platform.h"
 
 using fuchsia_input::Key;
 using fuchsia_ui_input3::KeyEvent;
@@ -194,10 +193,6 @@ class KeyboardInputTest : public WebEngineBrowserTest {
   }
 
   void SetUp() override {
-    if (ui::OzonePlatform::GetPlatformNameForTest() == "headless") {
-      GTEST_SKIP() << "Keyboard inputs are ignored in headless mode.";
-    }
-
     scoped_feature_list_.InitWithFeatures({features::kKeyboardInput}, {});
     WebEngineBrowserTest::SetUp();
   }

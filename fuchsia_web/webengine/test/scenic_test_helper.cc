@@ -4,8 +4,8 @@
 
 #include "fuchsia_web/webengine/test/scenic_test_helper.h"
 
-#include <fuchsia/web/cpp/fidl.h>
-#include <lib/ui/scenic/cpp/view_creation_tokens.h>
+#include <lib/ui/scenic/cpp/view_ref_pair.h>
+#include <lib/ui/scenic/cpp/view_token_pair.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/run_loop.h"
@@ -19,7 +19,7 @@ namespace {
 const gfx::Rect kBounds = {1000, 1000};
 }  // namespace
 
-ScenicTestHelper::ScenicTestHelper() = default;
+ScenicTestHelper::ScenicTestHelper() {}
 ScenicTestHelper::~ScenicTestHelper() = default;
 
 // Simulate the creation of a Scenic View, except bypassing the actual
@@ -27,17 +27,19 @@ ScenicTestHelper::~ScenicTestHelper() = default;
 // StubWindow.
 void ScenicTestHelper::CreateScenicView(FrameImpl* frame_impl,
                                         fuchsia::web::FramePtr& frame) {
-  DCHECK(frame_impl);
-  frame_impl_ = frame_impl;
+  scenic::ViewRefPair view_ref_pair = scenic::ViewRefPair::New();
+  view_ref_ = std::move(view_ref_pair.view_ref);
+  fuchsia::ui::views::ViewRef view_ref_dup;
+  zx_status_t status = view_ref_.reference.duplicate(ZX_RIGHT_SAME_RIGHTS,
+                                                     &view_ref_dup.reference);
+  ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
 
-  scenic::ViewCreationTokenPair token_pair =
-      scenic::ViewCreationTokenPair::New();
-  fuchsia::web::CreateView2Args create_view_args;
-  create_view_args.set_view_creation_token(std::move(token_pair.view_token));
-  frame->CreateView2(std::move(create_view_args));
-
+  auto view_tokens = scenic::ViewTokenPair::New();
+  frame->CreateViewWithViewRef(std::move(view_tokens.view_token),
+                               std::move(view_ref_pair.control_ref),
+                               std::move(view_ref_dup));
   base::RunLoop().RunUntilIdle();
-  frame_impl_->window_tree_host_for_test()->Show();
+  frame_impl->window_tree_host_for_test()->Show();
 }
 
 void ScenicTestHelper::SetUpViewForInteraction(
@@ -50,6 +52,9 @@ void ScenicTestHelper::SetUpViewForInteraction(
 }
 
 fuchsia::ui::views::ViewRef ScenicTestHelper::CloneViewRef() {
-  DCHECK(frame_impl_);
-  return frame_impl_->window_tree_host_for_test()->CreateViewRef();
+  fuchsia::ui::views::ViewRef dup;
+  zx_status_t status =
+      view_ref_.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
+  ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
+  return dup;
 }
