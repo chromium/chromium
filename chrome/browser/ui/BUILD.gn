@@ -1976,6 +1976,7 @@ static_library("ui") {
       "//components/services/app_service/public/cpp:preferred_apps",
       "//components/services/app_service/public/cpp:run_on_os_login",
       "//components/services/app_service/public/cpp:types",
+      "//components/supervised_user/core/common",
       "//components/ui_metrics",
       "//components/url_formatter",
       "//components/user_education/common",
@@ -2058,10 +2059,7 @@ static_library("ui") {
       "webui/family_link_user_internals/family_link_user_internals_ui.cc",
       "webui/family_link_user_internals/family_link_user_internals_ui.h",
     ]
-    deps += [
-      "//components/supervised_user/core/browser",
-      "//components/supervised_user/core/common",
-    ]
+    deps += [ "//components/supervised_user/core/browser" ]
   }
 
   if (enable_supervised_users && enable_extensions) {
