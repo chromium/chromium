@@ -410,7 +410,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   self.searchTerm = @"";
 
-  if (_profileBookmarkModel->loaded()) {
+  if (bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get())) {
     [self loadBookmarkViews];
   } else {
     [self showLoadingSpinnerBackground];
@@ -425,7 +426,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.navigationController.interactivePopGestureRecognizer.delegate = self;
 
   // Hide the toolbar if we're displaying the root node.
-  if (_profileBookmarkModel->loaded() &&
+  if (bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get()) &&
       (![self isDisplayingBookmarkRoot] ||
        self.mediator.currentlyShowingSearchResults)) {
     self.navigationController.toolbarHidden = NO;
@@ -529,7 +531,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   [self editExternalBookmarkIfSet];
 
-  DCHECK(_profileBookmarkModel->loaded());
+  DCHECK(bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+      _profileBookmarkModel.get(), _accountBookmarkModel.get()));
   DCHECK([self isViewLoaded]);
 }
 
