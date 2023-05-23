@@ -41,7 +41,7 @@ BASE_FEATURE(kChromeWhatsNewUI,
 // with submenu to manage extensions and visit chrome web store.
 BASE_FEATURE(kExtensionsMenuInAppMenu,
              "ExtensionsMenuInAppMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !defined(ANDROID)
 // Enables "Access Code Cast" UI.
