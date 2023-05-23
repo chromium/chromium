@@ -9031,6 +9031,9 @@ TEST_P(DeskButtonTest, DeskBarNewDeskButton) {
 
 // Tests that we can go to saved desk library directly via desk button desk bar.
 TEST_P(DeskButtonTest, DeskBarLibraryButton) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
   // Add a saved desk, so that the library button can show up.
   AddSavedDeskEntry(desk_model(), base::Uuid::GenerateRandomV4(),
                     "saved_desk_1", base::Time::Now(),

@@ -1821,6 +1821,14 @@ void OverviewGrid::ShowSavedDeskLibrary() {
 
   UpdateSaveDeskButtons();
 
+  // If the overview desk bar is not created at this point, create it. This is
+  // only possible for clicking library button on the desk button desk bar,
+  // since for the overview desk bar, there has to be a bar before we can click
+  // on the library button.
+  if (!desks_widget_) {
+    MaybeInitDesksWidget();
+  }
+
   // When desks bar is at zero state, the library button's state update will be
   // handled by `UpdateNewMiniViews` when expanding the desks bar.
   if (desks_bar_view_->IsZeroState()) {
