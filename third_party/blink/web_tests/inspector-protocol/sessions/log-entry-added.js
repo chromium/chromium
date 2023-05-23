@@ -23,30 +23,32 @@
     messages2 = [];
   }
 
+  const exampleDiscouragedApi = "document.write('Hello World!')";
+
   testRunner.log('Enabling logging in session1');
   session1.protocol.Log.enable();
   session1.protocol.Log.startViolationsReport({config: [{name: 'discouragedAPIUse', threshold: -1}]});
   testRunner.log('Triggering violation');
-  await session1.evaluate(`document.body.addEventListener('DOMSubtreeModified', () => {})`);
+  await session1.evaluate(exampleDiscouragedApi);
   dumpMessages();
 
   testRunner.log('Enabling logging in session2');
   session2.protocol.Log.enable();
   session2.protocol.Log.startViolationsReport({config: [{name: 'discouragedAPIUse', threshold: -1}]});
   testRunner.log('Triggering violation');
-  await session1.evaluate(`document.body.addEventListener('DOMSubtreeModified', () => {})`);
+  await session1.evaluate(exampleDiscouragedApi);
   dumpMessages();
 
   testRunner.log('Disabling logging in session1');
   session1.protocol.Log.disable();
   testRunner.log('Triggering violation');
-  await session1.evaluate(`document.body.addEventListener('DOMSubtreeModified', () => {})`);
+  await session1.evaluate(exampleDiscouragedApi);
   dumpMessages();
 
   testRunner.log('Disabling logging in session2');
   session2.protocol.Log.disable();
   testRunner.log('Triggering violation');
-  await session1.evaluate(`document.body.addEventListener('DOMSubtreeModified', () => {})`);
+  await session1.evaluate(exampleDiscouragedApi);
   dumpMessages();
 
   testRunner.completeTest();
