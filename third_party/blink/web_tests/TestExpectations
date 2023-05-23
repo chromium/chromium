@@ -4580,7 +4580,6 @@ crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
 
 # Failing on Webkit Linux Leak
 crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Failure Pass ]
-crbug.com/1046784 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js [ Failure Pass ]
 
 # Sheriff 2020-07-23
 

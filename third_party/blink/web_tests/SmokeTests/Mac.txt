@@ -1884,7 +1884,6 @@ virtual/threaded/external/wpt/css/css-scroll-snap/input/keyboard.html
 virtual/threaded/external/wpt/scroll-animations/css/at-scroll-timeline-default-descriptors-iframe.html
 virtual/threaded/external/wpt/scroll-animations/scroll-timelines/current-time-nan.html
 virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html
-virtual/threaded/http/tests/devtools/tracing/timeline-misc/timeline-event-causes.js
 virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js
 virtual/threaded/printing/absolute-position-headers-and-footers.html
 virtual/threaded/printing/fixed-positioned-headers-and-footers-inside-transform.html
