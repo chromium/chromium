@@ -4,6 +4,7 @@
 
 package org.chromium.components.webauthn;
 
+import android.util.Pair;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Binder;
@@ -90,11 +91,13 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
             "com.google.android.gms.fido.fido2.privileged.START";
     private static final int BROWSER_API_ID = 149;
     private static final Api.ClientKey<FidoClient> BROWSER_CLIENT_KEY = new Api.ClientKey<>();
-    private static final Api<ApiOptions.NoOptions> BROWSER_API =
+    private static final Pair<Api<ApiOptions.NoOptions>, String> BROWSER_API = Pair.create(
             new Api<>("Fido.FIDO2_PRIVILEGED_API",
                     new FidoClient.Builder(
                             BROWSER_DESCRIPTOR, BROWSER_START_SERVICE_ACTION, BROWSER_API_ID),
-                    BROWSER_CLIENT_KEY);
+                    BROWSER_CLIENT_KEY), BROWSER_DESCRIPTOR);
+
+    private final String mDescriptor;
 
     /**
      * Construct an instance.
@@ -102,12 +105,13 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
      * @param context the Android {@link Context} for the current process.
      */
     public Fido2ApiCall(Context context) {
-        super(context, BROWSER_API, ApiOptions.NO_OPTIONS, new ApiExceptionMapper());
+        super(context, BROWSER_API.first, ApiOptions.NO_OPTIONS, new ApiExceptionMapper());
+        mDescriptor = BROWSER_API.second;
     }
 
     public Parcel start() {
         Parcel p = Parcel.obtain();
-        p.writeInterfaceToken(BROWSER_DESCRIPTOR);
+        p.writeInterfaceToken(mDescriptor);
         return p;
     }
 
