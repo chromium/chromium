@@ -222,8 +222,8 @@ class NET_EXPORT URLRequestContext final {
   // Returns current value of the |check_cleartext_permitted| flag.
   bool check_cleartext_permitted() const { return check_cleartext_permitted_; }
 
-  bool require_network_isolation_key() const {
-    return require_network_isolation_key_;
+  bool require_network_anonymization_key() const {
+    return require_network_anonymization_key_;
   }
 
   // If != handles::kInvalidNetworkHandle, the network which this
@@ -291,8 +291,9 @@ class NET_EXPORT URLRequestContext final {
   void set_check_cleartext_permitted(bool check_cleartext_permitted) {
     check_cleartext_permitted_ = check_cleartext_permitted;
   }
-  void set_require_network_isolation_key(bool require_network_isolation_key) {
-    require_network_isolation_key_ = require_network_isolation_key;
+  void set_require_network_anonymization_key(
+      bool require_network_anonymization_key) {
+    require_network_anonymization_key_ = require_network_anonymization_key;
   }
   void set_bound_network(handles::NetworkHandle network) {
     bound_network_ = network;
@@ -357,7 +358,7 @@ class NET_EXPORT URLRequestContext final {
 
   // Triggers a DCHECK if a NetworkAnonymizationKey/IsolationInfo is not
   // provided to a request when true.
-  bool require_network_isolation_key_ = false;
+  bool require_network_anonymization_key_ = false;
 
   handles::NetworkHandle bound_network_;
 

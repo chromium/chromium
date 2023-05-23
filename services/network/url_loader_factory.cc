@@ -151,7 +151,7 @@ mojom::CrossOriginEmbedderPolicyReporter* URLLoaderFactory::GetCoepReporter()
 }
 
 bool URLLoaderFactory::ShouldRequireNetworkIsolationKey() const {
-  return context_->require_network_isolation_key();
+  return context_->require_network_anonymization_key();
 }
 
 scoped_refptr<ResourceSchedulerClient>

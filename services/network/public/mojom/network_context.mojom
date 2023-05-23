@@ -526,9 +526,9 @@ struct NetworkContextParams {
   // See comments on NetworkContext.SetSplitAuthCacheByNetworkAnonymizationKey.
   bool split_auth_cache_by_network_anonymization_key = false;
 
-  // If true, all requests that can take a NetworkIsolationKey or IsolationInfo
-  // must be given a non-empty one.
-  bool require_network_isolation_key = false;
+  // If true, all requests that can take a NetworkAnonymizationKey
+  // or IsolationInfo must be given a non-empty one.
+  bool require_network_anonymization_key = false;
 
   // If true, then the correct permissions have been set on the network service
   // files and sandbox can be enabled for this network context.

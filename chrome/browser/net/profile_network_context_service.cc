@@ -1001,9 +1001,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   network_context_params->split_auth_cache_by_network_anonymization_key =
       ShouldSplitAuthCacheByNetworkIsolationKey();
 
-  // All consumers of the main NetworkContext must provide NetworkIsolationKeys
-  // / IsolationInfos, so storage can be isolated on a per-site basis.
-  network_context_params->require_network_isolation_key = true;
+  // All consumers of the main NetworkContext must provide
+  // NetworkAnonymizationKeys / IsolationInfos, so storage can be isolated on a
+  // per-site basis.
+  network_context_params->require_network_anonymization_key = true;
 
   ContentSetting anti_abuse_content_setting =
       HostContentSettingsMapFactory::GetForProfile(profile_)
