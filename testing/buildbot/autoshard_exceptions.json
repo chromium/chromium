@@ -388,37 +388,5 @@
                 "shards": "3"
             }
         }
-    },
-    "chromium.win": {
-        "Win10 Tests x64": {
-            "updater_tests": {
-                "debug": {
-                    "avg_num_builds_per_peak_hour": "75.0",
-                    "estimated_bot_hour_delta": "-1.76",
-                    "prev_avg_pending_time_sec": "200.3",
-                    "prev_p50_pending_time_sec": "14.0",
-                    "prev_p90_pending_time_sec": "669.0",
-                    "prev_percentile_duration_minutes": "5.69",
-                    "prev_shard_count": "2",
-                    "simulated_max_shard_duration": "11.38",
-                    "try_builder": "win-rel"
-                },
-                "shards": "1"
-            },
-            "updater_tests_system": {
-                "debug": {
-                    "avg_num_builds_per_peak_hour": "75.0",
-                    "estimated_bot_hour_delta": "-1.77",
-                    "prev_avg_pending_time_sec": "201.0",
-                    "prev_p50_pending_time_sec": "15.0",
-                    "prev_p90_pending_time_sec": "668.0",
-                    "prev_percentile_duration_minutes": "5.87",
-                    "prev_shard_count": "2",
-                    "simulated_max_shard_duration": "11.74",
-                    "try_builder": "win-rel"
-                },
-                "shards": "1"
-            }
-        }
     }
 }
