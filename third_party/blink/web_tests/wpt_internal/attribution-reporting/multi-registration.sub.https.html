@@ -13,12 +13,14 @@ attribution_reporting_promise_test(async t => {
   registerAttributionSrcByImg([
     createRedirectChain([
       {
+        reportingOrigin: otherReportingOrigin,
         source: {
           destination: 'https://{{host}}',
           source_event_id: '1',
         },
       },
       {
+        reportingOrigin: otherReportingOrigin,
         trigger: {
           event_trigger_data: [{trigger_data: '0'}],
         },
@@ -42,19 +44,14 @@ attribution_reporting_promise_test(async t => {
   ].join(' '));
 
   {
-    const payload = await pollEventLevelReports();
-    assert_equals(payload.reports.length, 1);
-    const report = JSON.parse(payload.reports[0].body);
-    assert_equals(report.source_event_id, '1');
-    assert_equals(report.trigger_data, '0');
-  }
-
-  {
     const payload = await pollEventLevelReports(otherReportingOrigin);
-    assert_equals(payload.reports.length, 1);
-    const report = JSON.parse(payload.reports[0].body);
-    assert_equals(report.source_event_id, '2');
-    assert_equals(report.trigger_data, '1');
+    assert_greater_than(payload.reports.length, 0);
+    // TODO(johnidel): Ideally we could use multiple origins to verify the
+    // report contents, however the remote origin is treated as same-site
+    // to the default reporting origin, and the API forbids multiple
+    // different reporting origins for the same-site. This causes
+    // the registrations of sources and triggers to be racy so we can't
+    // verify 2 reports are received.
   }
 }, 'Multi-registration succeeds.');
 </script>

@@ -3599,4 +3599,37 @@ TEST_F(AttributionStorageTest, MaximumAggregatableReportsPerSource) {
             MaybeCreateAndStoreAggregatableReport(trigger));
 }
 
+TEST_F(AttributionStorageTest, MaxSourceReportingOriginsPerSite) {
+  auto store_source = [&](std::string source, std::string reporting) {
+    storage()->StoreSource(
+        SourceBuilder()
+            .SetSourceOrigin(*SuitableOrigin::Deserialize(source))
+            .SetReportingOrigin(*SuitableOrigin::Deserialize(reporting))
+            .SetExpiry(base::Days(2))
+            .Build());
+  };
+  store_source("https://a.test", "https://reporter.test");
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
+
+  store_source("https://a.test", "https://a.reporter.test");
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
+
+  store_source("https://b.test", "https://a.reporter.test");
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
+
+  store_source("https://b.test", "https://otherreporter.test");
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(3));
+
+  task_environment_.FastForwardBy(base::Days(1));
+
+  // After 1 day a new origin can be used.
+  store_source("https://a.test", "https://a.reporter.test");
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(4));
+
+  // The reporter used on the first day can't be used even though it is
+  // repeated.
+  store_source("https://a.test", "https://reporter.test");
+  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(4));
+}
+
 }  // namespace content

@@ -51,7 +51,8 @@ bool operator==(const AttributionConfig::RateLimitConfig& a,
   const auto tie = [](const AttributionConfig::RateLimitConfig& config) {
     return std::make_tuple(
         config.time_window, config.max_source_registration_reporting_origins,
-        config.max_attribution_reporting_origins, config.max_attributions);
+        config.max_attribution_reporting_origins, config.max_attributions,
+        config.origins_per_site_window);
   };
   return tie(a) == tie(b);
 }

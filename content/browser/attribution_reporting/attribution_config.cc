@@ -6,9 +6,21 @@
 
 #include <cmath>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
+
+namespace {
+
+const base::FeatureParam<int> kMaxReportingOriginsPerSiteParam{
+    &blink::features::kConversionMeasurement,
+    "max_reporting_origins_per_source_reporting_site",
+    AttributionConfig::RateLimitConfig::
+        kDefaultMaxReportingOriginsPerSourceReportingSite};
+
+}
 
 bool AttributionConfig::Validate() const {
   if (max_sources_per_origin <= 0) {
@@ -52,6 +64,11 @@ bool AttributionConfig::RateLimitConfig::Validate() const {
   }
 
   return true;
+}
+
+int AttributionConfig::RateLimitConfig::
+    GetMaxSourceReportingOriginsPerReportingSite() const {
+  return kMaxReportingOriginsPerSiteParam.Get();
 }
 
 bool AttributionConfig::EventLevelLimit::Validate() const {

@@ -204,6 +204,15 @@ TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceAllowedSql) {
                         {"source_site", "reporting_site"}));
 }
 
+TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceReportingOriginsBySiteSql) {
+  const auto plan = GetPlan(
+      attribution_queries::kRateLimitSelectSourceReportingOriginsBySiteSql);
+  ASSERT_TRUE(plan.has_value());
+  EXPECT_THAT(plan.value(),
+              UsesIndex("rate_limit_source_site_reporting_site_idx",
+                        {"source_site", "reporting_site"}));
+}
+
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectReportingOriginsSql) {
   const auto plan =
       GetPlan(attribution_queries::kRateLimitSelectReportingOriginsSql);
