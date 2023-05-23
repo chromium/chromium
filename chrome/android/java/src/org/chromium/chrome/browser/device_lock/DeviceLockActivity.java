@@ -1,0 +1,107 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.device_lock;
+
+import android.accounts.Account;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.FrameLayout;
+
+import androidx.annotation.CallSuper;
+
+import org.chromium.chrome.browser.SynchronousInitializationActivity;
+import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
+import org.chromium.components.signin.AccountUtils;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+
+/**
+ * Informs the user on using a device lock to protect their privacy and data on the device. If
+ * the device does not currently have a device lock, the user will be prompted to create one.
+ */
+public class DeviceLockActivity
+        extends SynchronousInitializationActivity implements DeviceLockCoordinator.Delegate {
+    private static final String ARGUMENT_FRAGMENT_ARGS = "DeviceLockActivity.FragmentArgs";
+    private static final String ARGUMENT_IN_SIGN_IN_FLOW =
+            "DeviceLockActivity.FragmentArgs.InSignInFlow";
+    private static final String ARGUMENT_SELECTED_ACCOUNT =
+            "DeviceLockActivity.FragmentArgs.SelectedAccount";
+
+    private FrameLayout mFrameLayout;
+    private WindowAndroid mWindowAndroid;
+    private DeviceLockCoordinator mDeviceLockCoordinator;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mFrameLayout = new FrameLayout(this);
+        setContentView(mFrameLayout);
+        mWindowAndroid = new ActivityWindowAndroid(this, /* listenToActivityState= */ true,
+                IntentRequestTracker.createFromActivity(this));
+
+        Bundle fragmentArgs = getIntent().getBundleExtra(ARGUMENT_FRAGMENT_ARGS);
+        Account selectedAccount = AccountUtils.createAccountFromName(
+                fragmentArgs.getString(ARGUMENT_SELECTED_ACCOUNT));
+        mDeviceLockCoordinator =
+                new DeviceLockCoordinator(fragmentArgs.getBoolean(ARGUMENT_IN_SIGN_IN_FLOW), this,
+                        mWindowAndroid, this, selectedAccount);
+    }
+
+    @CallSuper
+    @Override
+    protected void onDestroy() {
+        mWindowAndroid.destroy();
+        mDeviceLockCoordinator.destroy();
+        super.onDestroy();
+    }
+
+    @Override
+    protected ModalDialogManager createModalDialogManager() {
+        return null;
+    }
+
+    protected static Bundle createArguments(boolean inSignInFlow, String selectedAccount) {
+        Bundle result = new Bundle();
+        result.putBoolean(ARGUMENT_IN_SIGN_IN_FLOW, inSignInFlow);
+        result.putString(ARGUMENT_SELECTED_ACCOUNT, selectedAccount);
+        return result;
+    }
+
+    /**
+     * Creates a new intent to start the {@link DeviceLockActivity}.
+     */
+    protected static Intent createIntent(
+            Context context, boolean inSignInFlow, String selectedAccount) {
+        Intent intent = new Intent(context, DeviceLockActivity.class);
+        intent.putExtra(ARGUMENT_FRAGMENT_ARGS,
+                DeviceLockActivity.createArguments(inSignInFlow, selectedAccount));
+        return intent;
+    }
+
+    @Override
+    public void setView(View view) {
+        mFrameLayout.removeAllViews();
+        mFrameLayout.addView(view);
+    }
+
+    @Override
+    public void onDeviceLockReady() {
+        Intent intent = new Intent();
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+    }
+
+    @Override
+    public void onDeviceLockRefused() {
+        Intent intent = new Intent();
+        setResult(Activity.RESULT_CANCELED, intent);
+        finish();
+    }
+}

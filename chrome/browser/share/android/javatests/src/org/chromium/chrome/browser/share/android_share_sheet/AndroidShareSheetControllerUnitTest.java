@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
@@ -137,6 +138,8 @@ public class AndroidShareSheetControllerUnitTest {
     @Mock
     Tab mTab;
     @Mock
+    DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    @Mock
     Profile mProfile;
     @Mock
     Tracker mTracker;
@@ -182,7 +185,9 @@ public class AndroidShareSheetControllerUnitTest {
         doReturn(mWindow).when(mTab).getWindowAndroid();
 
         mController = new AndroidShareSheetController(mBottomSheetController,
-                () -> mTab, () -> mTabModelSelector, () -> mProfile, mPrintCallback::notifyCalled);
+                ()
+                        -> mTab,
+                () -> mTabModelSelector, () -> mProfile, mPrintCallback::notifyCalled, null);
     }
 
     @After
@@ -251,7 +256,11 @@ public class AndroidShareSheetControllerUnitTest {
                 new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build();
         AndroidShareSheetController.showShareSheet(params, chromeShareExtras,
                 mBottomSheetController,
-                () -> mTab, () -> mTabModelSelector, () -> mProfile, mPrintCallback::notifyCalled);
+                ()
+                        -> mTab,
+                ()
+                        -> mTabModelSelector,
+                () -> mProfile, mPrintCallback::notifyCalled, mDeviceLockActivityLauncher);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         chooseCustomAction(intent, R.string.print_share_activity_title);
@@ -394,7 +403,11 @@ public class AndroidShareSheetControllerUnitTest {
                         .build();
         AndroidShareSheetController.showShareSheet(params, chromeShareExtras,
                 mBottomSheetController,
-                () -> mTab, () -> mTabModelSelector, () -> mProfile, mPrintCallback::notifyCalled);
+                ()
+                        -> mTab,
+                ()
+                        -> mTabModelSelector,
+                () -> mProfile, mPrintCallback::notifyCalled, mDeviceLockActivityLauncher);
 
         Intent chooserIntent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         Intent shareIntent = chooserIntent.getParcelableExtra(Intent.EXTRA_INTENT);
@@ -441,7 +454,11 @@ public class AndroidShareSheetControllerUnitTest {
                         .build();
         AndroidShareSheetController.showShareSheet(params, chromeShareExtras,
                 mBottomSheetController,
-                () -> mTab, () -> mTabModelSelector, () -> mProfile, mPrintCallback::notifyCalled);
+                ()
+                        -> mTab,
+                ()
+                        -> mTabModelSelector,
+                () -> mProfile, mPrintCallback::notifyCalled, mDeviceLockActivityLauncher);
 
         // Since link to share failed, the content being shared is a plain text.
         Intent chooserIntent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();

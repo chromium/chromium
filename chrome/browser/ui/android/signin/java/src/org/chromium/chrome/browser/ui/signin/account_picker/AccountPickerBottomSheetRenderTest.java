@@ -317,8 +317,7 @@ public class AccountPickerBottomSheetRenderTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(
                     mActivityTestRule.getActivity().getWindowAndroid(), getBottomSheetController(),
-                    mAccountPickerDelegate, accountPickerBottomSheetStrings);
-
+                    mAccountPickerDelegate, accountPickerBottomSheetStrings, null);
         });
         ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_selected_account), isDisplayed()));
     }
