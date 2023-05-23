@@ -52,12 +52,10 @@ class MandatoryReauthBubbleControllerImplTest
   }
 
   void ClickAcceptButton() {
-    controller()->OnAcceptButton();
     controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kAccepted);
   }
 
   void ClickCancelButton() {
-    controller()->OnCancelButton();
     controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kCancelled);
   }
 

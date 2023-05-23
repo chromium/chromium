@@ -29,12 +29,6 @@ MandatoryReauthOptInBubbleView::MandatoryReauthOptInBubbleView(
       controller_(controller) {
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller->GetCancelButtonText());
-  SetCancelCallback(
-      base::BindOnce(&MandatoryReauthOptInBubbleView::OnDialogCancelled,
-                     base::Unretained(this)));
-  SetAcceptCallback(
-      base::BindOnce(&MandatoryReauthOptInBubbleView::OnDialogAccepted,
-                     base::Unretained(this)));
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -74,18 +68,6 @@ void MandatoryReauthOptInBubbleView::WindowClosing() {
 }
 
 MandatoryReauthOptInBubbleView::~MandatoryReauthOptInBubbleView() = default;
-
-void MandatoryReauthOptInBubbleView::OnDialogAccepted() {
-  if (controller_) {
-    controller_->OnAcceptButton();
-  }
-}
-
-void MandatoryReauthOptInBubbleView::OnDialogCancelled() {
-  if (controller_) {
-    controller_->OnCancelButton();
-  }
-}
 
 void MandatoryReauthOptInBubbleView::Init() {
   SetID(DialogViewId::MAIN_CONTENT_VIEW_LOCAL);

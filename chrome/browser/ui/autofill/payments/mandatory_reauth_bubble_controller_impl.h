@@ -35,8 +35,6 @@ class MandatoryReauthBubbleControllerImpl
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetCancelButtonText() const override;
   std::u16string GetExplanationText() const override;
-  void OnAcceptButton() override;
-  void OnCancelButton() override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
   AutofillBubbleBase* GetBubbleView() override;
   bool IsIconVisible() override;

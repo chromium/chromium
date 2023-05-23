@@ -82,22 +82,15 @@ std::u16string MandatoryReauthBubbleControllerImpl::GetExplanationText() const {
       IDS_AUTOFILL_MANDATORY_REAUTH_OPT_IN_EXPLANATION);
 }
 
-void MandatoryReauthBubbleControllerImpl::OnAcceptButton() {
-  std::move(accept_mandatory_reauth_callback_).Run();
-}
-
-void MandatoryReauthBubbleControllerImpl::OnCancelButton() {
-  std::move(cancel_mandatory_reauth_callback_).Run();
-}
-
 void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
 
-  if (closed_reason == PaymentsBubbleClosedReason::kCancelled ||
-      closed_reason == PaymentsBubbleClosedReason::kAccepted) {
-    // If the user explicitly cancelled or accepted the dialog, we don't want to
-    // display it anymore so we set it to inactive.
+  if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
+    std::move(accept_mandatory_reauth_callback_).Run();
+    current_bubble_type_ = MandatoryReauthBubbleType::kInactive;
+  } else if (closed_reason == PaymentsBubbleClosedReason::kCancelled) {
+    std::move(cancel_mandatory_reauth_callback_).Run();
     current_bubble_type_ = MandatoryReauthBubbleType::kInactive;
   } else {
     close_mandatory_reauth_callback_.Run();

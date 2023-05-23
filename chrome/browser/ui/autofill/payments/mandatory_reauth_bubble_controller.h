@@ -32,8 +32,6 @@ class MandatoryReauthBubbleController {
   virtual std::u16string GetCancelButtonText() const = 0;
   virtual std::u16string GetExplanationText() const = 0;
 
-  virtual void OnAcceptButton() = 0;
-  virtual void OnCancelButton() = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
 
   // Returns the current bubble view. Can return nullptr if bubble is not

@@ -36,9 +36,6 @@ class MandatoryReauthOptInBubbleView : public AutofillBubbleBase,
  protected:
   ~MandatoryReauthOptInBubbleView() override;
 
-  void OnDialogAccepted();
-  void OnDialogCancelled();
-
   // LocationBarBubbleDelegateView:
   void Init() override;
 
