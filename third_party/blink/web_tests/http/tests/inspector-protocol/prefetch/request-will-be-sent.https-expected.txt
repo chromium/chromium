@@ -111,6 +111,7 @@ Network.onResponseReceived{
             proxyStart : -1
             pushEnd : 0
             pushStart : 0
+            receiveHeadersStart : <number>
             receiveHeadersEnd : <number>
             requestTime : <number>
             sendEnd : <number>
@@ -260,6 +261,7 @@ Network.onResponseReceived{
             proxyStart : -1
             pushEnd : 0
             pushStart : 0
+            receiveHeadersStart : <number>
             receiveHeadersEnd : <number>
             requestTime : <number>
             sendEnd : <number>

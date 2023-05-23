@@ -909,6 +909,8 @@ void RecordTiming(perfetto::TracedValue context,
            timing.CalculateMillisecondDelta(timing.WorkerReady()));
   dict.Add("sendStart", timing.CalculateMillisecondDelta(timing.SendStart()));
   dict.Add("sendEnd", timing.CalculateMillisecondDelta(timing.SendEnd()));
+  dict.Add("receiveHeadersStart",
+           timing.CalculateMillisecondDelta(timing.ReceiveHeadersStart()));
   dict.Add("receiveHeadersEnd",
            timing.CalculateMillisecondDelta(timing.ReceiveHeadersEnd()));
   dict.Add("pushStart", timing.PushStart().since_origin().InSecondsF());

@@ -89,6 +89,7 @@
         validateRelativeMs(data.timing, 'connectStart');
         validateRelativeMs(data.timing, 'dnsEnd');
         validateRelativeMs(data.timing, 'dnsStart');
+        validateRelativeMs(data.timing, 'receiveHeadersStart');
         validateRelativeMs(data.timing, 'receiveHeadersEnd');
         validateRelativeMs(data.timing, 'sendEnd');
         validateRelativeMs(data.timing, 'sendStart');

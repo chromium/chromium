@@ -750,6 +750,8 @@ static std::unique_ptr<protocol::Network::ResourceTiming> BuildObjectForTiming(
           timing.CalculateMillisecondDelta(timing.WorkerRespondWithSettled()))
       .setSendStart(timing.CalculateMillisecondDelta(timing.SendStart()))
       .setSendEnd(timing.CalculateMillisecondDelta(timing.SendEnd()))
+      .setReceiveHeadersStart(
+          timing.CalculateMillisecondDelta(timing.ReceiveHeadersStart()))
       .setReceiveHeadersEnd(
           timing.CalculateMillisecondDelta(timing.ReceiveHeadersEnd()))
       .setPushStart(timing.PushStart().since_origin().InSecondsF())

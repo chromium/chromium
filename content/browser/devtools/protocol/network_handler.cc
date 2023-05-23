@@ -604,6 +604,8 @@ std::unique_ptr<Network::ResourceTiming> GetTiming(
       .SetPushStart(
           timeDelta(load_timing.push_start, load_timing.request_start, 0))
       .SetPushEnd(timeDelta(load_timing.push_end, load_timing.request_start, 0))
+      .SetReceiveHeadersStart(timeDelta(load_timing.receive_headers_start,
+                                        load_timing.request_start))
       .SetReceiveHeadersEnd(
           timeDelta(load_timing.receive_headers_end, load_timing.request_start))
       .Build();
