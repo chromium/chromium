@@ -1406,17 +1406,21 @@ body.files-ng .thumbnail-frame > .img-container {
 #list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status,
 #list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
 #list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
-#list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
+#list-container.thumbnail-view li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress,
+#list-container.thumbnail-view li.cant-pin:not([renaming]) .inline-status,
+#list-container.thumbnail-view li.cant-pin:not([renaming]) .inline-status xf-icon[type=cant-pin] {
   display: flex;
 }
 
-#list-container.thumbnail-view li.pinned .inline-status xf-icon[type=offline] {
+#list-container.thumbnail-view li.pinned .inline-status xf-icon[type=offline],
+#list-container.thumbnail-view li.cant-pin .inline-status xf-icon[type=cant-pin] {
   --xf-icon-color: var(--cros-icon-color-secondary);
 }
 
 /* Only display outlines for entries with thumbnails. */
 #list-container.thumbnail-view li:has(.thumbnail) .inline-status .progress,
-#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status xf-icon[type=offline] {
+#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status xf-icon[type=offline],
+#list-container.thumbnail-view li.cant-pin:has(.thumbnail) .inline-status xf-icon[type=cant-pin] {
   --xf-icon-color-outline: var(--cros-bg-color);
 }
 
@@ -2362,12 +2366,15 @@ body.files-ng #list-container li .detail-thumbnail {
 #list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status,
 #list-container .list li.pinned:not([renaming]):not(.dim-offline)[data-sync-status=not_found] .inline-status xf-icon,
 #list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status,
-#list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress {
+#list-container .list li:not([renaming])[data-sync-status]:not([data-sync-status=not_found]) .inline-status .progress,
+#list-container .list li.cant-pin:not([renaming]) .inline-status,
+#list-container .list li.cant-pin:not([renaming]) .inline-status xf-icon[type=cant-pin] {
   display: flex;
 }
 
 #list-container .list li.encrypted .encryption-status xf-icon[type=encrypted],
-#list-container .list li.pinned .inline-status xf-icon[type=offline] {
+#list-container .list li.pinned .inline-status xf-icon[type=offline],
+#list-container .list li.cant-pin .inline-status xf-icon[type=cant-pin] {
   --xf-icon-color: var(--cros-icon-color-secondary);
 }
 

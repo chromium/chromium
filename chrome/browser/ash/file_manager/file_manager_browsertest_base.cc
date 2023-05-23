@@ -443,6 +443,7 @@ struct AddEntriesMessage {
     bool pinned = false;                // Whether the file should be pinned.
     bool available_offline = false;  // Whether the file is available_offline.
     std::string alternate_url;       // Entry's alternate URL on Drive.
+    bool can_pin = true;             // Whether the file can be pinned.
 
     TestEntryInfo& SetSharedOption(SharedOption option) {
       shared_option = option;
@@ -532,6 +533,7 @@ struct AddEntriesMessage {
                                    &TestEntryInfo::available_offline);
       converter->RegisterStringField("alternateUrl",
                                      &TestEntryInfo::alternate_url);
+      converter->RegisterBoolField("canPin", &TestEntryInfo::can_pin);
     }
 
     // Maps |value| to an EntryType. Returns true on success.
@@ -1391,6 +1393,7 @@ class DriveFsTestVolume : public TestVolume {
         entry.folder_feature.is_external_media;
     metadata.alternate_url = entry.alternate_url;
     metadata.shortcut = (entry.entry_type == AddEntriesMessage::LINK);
+    metadata.can_pin = entry.can_pin;
     fake_drivefs_helper_->fake_drivefs().SetMetadata(std::move(metadata));
 
     ASSERT_TRUE(UpdateModifiedTime(entry));
@@ -1452,6 +1455,22 @@ class DriveFsTestVolume : public TestVolume {
 
   absl::optional<bool> IsItemPinned(const std::string& path) {
     return fake_drivefs_helper_->fake_drivefs().IsItemPinned(path);
+  }
+
+  void SetCanPin(const std::string& path, bool can_pin) {
+    ASSERT_TRUE(fake_drivefs_helper_->fake_drivefs().SetCanPin(path, can_pin));
+
+    const base::FilePath file_path(path);
+    absl::optional<drivefs::FakeDriveFs::FileMetadata> metadata =
+        fake_drivefs_helper_->fake_drivefs().GetItemMetadata(file_path);
+    ASSERT_TRUE(metadata.has_value()) << "No file metadata with path: " << path;
+
+    std::vector<drivefs::mojom::FileChangePtr> file_changes;
+    file_changes.emplace_back(absl::in_place, file_path,
+                              drivefs::mojom::FileChange::Type::kModify,
+                              metadata.value().stable_id);
+    auto& drivefs_delegate = fake_drivefs_helper_->fake_drivefs().delegate();
+    drivefs_delegate->OnFilesChanged(std::move(file_changes));
   }
 
  private:
@@ -3541,6 +3560,15 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     absl::optional<bool> is_pinned = drive_volume_->IsItemPinned(*path);
     ASSERT_TRUE(is_pinned.has_value()) << "Supplied path is unknown: " << *path;
     base::JSONWriter::Write(base::Value(is_pinned.value()), output);
+    return;
+  }
+
+  if (name == "setCanPin") {
+    const std::string* path = value.FindString("path");
+    ASSERT_TRUE(path) << "No supplied path to setCanPin";
+    absl::optional<bool> can_pin = value.FindBool("canPin");
+    ASSERT_TRUE(can_pin.has_value()) << "Need to supply canPin";
+    drive_volume_->SetCanPin(*path, can_pin.value());
     return;
   }
 

@@ -1568,6 +1568,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled")
             .EnableBulkPinning(),
         TestCase("drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled")
+            .EnableBulkPinning(),
+        TestCase("driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin")
             .EnableBulkPinning()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),

@@ -41,6 +41,7 @@ struct FakeMetadata {
   std::string doc_id;
   std::string alternate_url;
   bool shortcut = false;
+  bool can_pin = true;
 };
 
 class FakeDriveFsBootstrapListener : public DriveFsBootstrapListener {
@@ -125,6 +126,8 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   absl::optional<bool> IsItemPinned(const std::string& path);
 
+  bool SetCanPin(const std::string& path, bool can_pin);
+
   struct FileMetadata {
     FileMetadata();
     FileMetadata(const FileMetadata&);
@@ -143,6 +146,7 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
     int64_t stable_id = 0;
     std::string alternate_url;
     bool shortcut = false;
+    bool can_pin = true;
   };
 
   absl::optional<FakeDriveFs::FileMetadata> GetItemMetadata(

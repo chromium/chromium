@@ -360,6 +360,7 @@ void FakeDriveFs::SetMetadata(const FakeMetadata& metadata) {
   stored_metadata.shared = metadata.shared;
   stored_metadata.shortcut = metadata.shortcut;
   stored_metadata.alternate_url = metadata.alternate_url;
+  stored_metadata.can_pin = metadata.can_pin;
 }
 
 void FakeDriveFs::DisplayConfirmDialog(
@@ -376,6 +377,16 @@ absl::optional<bool> FakeDriveFs::IsItemPinned(const std::string& path) {
     }
   }
   return absl::nullopt;
+}
+
+bool FakeDriveFs::SetCanPin(const std::string& path, bool can_pin) {
+  for (auto& metadata : metadata_) {
+    if (metadata.first.value() == path) {
+      metadata.second.can_pin = can_pin;
+      return true;
+    }
+  }
+  return false;
 }
 
 absl::optional<FakeDriveFs::FileMetadata> FakeDriveFs::GetItemMetadata(
@@ -450,8 +461,11 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
 
   metadata->capabilities = stored_metadata.capabilities.Clone();
   metadata->stable_id = stored_metadata.stable_id;
+  using CanPinStatus = mojom::FileMetadata::CanPinStatus;
+  metadata->can_pin =
+      (stored_metadata.can_pin) ? CanPinStatus::kOk : CanPinStatus::kDisabled;
   if (stored_metadata.hosted) {
-    metadata->can_pin = mojom::FileMetadata::CanPinStatus::kDisabled;
+    metadata->can_pin = CanPinStatus::kDisabled;
   }
   if (stored_metadata.shortcut) {
     metadata->shortcut_details = mojom::ShortcutDetails::New();

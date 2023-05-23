@@ -134,6 +134,7 @@ constants.ICON_TYPES = {
   BULK_PINNING_DONE: 'bulk_pinning_done',
   BULK_PINNING_OFFLINE: 'bulk_pinning_offline',
   CAMERA_FOLDER: 'camera-folder',
+  CANT_PIN: 'cant-pin',
   CHECK: 'check',
   CLOUD_DONE: 'cloud_done',
   CLOUD_ERROR: 'cloud_error',

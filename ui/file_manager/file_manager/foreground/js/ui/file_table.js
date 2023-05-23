@@ -1034,6 +1034,7 @@ export class FileTable extends Table {
                   'syncStatus',
                   'progress',
                   'shortcut',
+                  'canPin',
                 ])[0],
             util.isTeamDriveRoot(entry));
         listItem.toggleAttribute(

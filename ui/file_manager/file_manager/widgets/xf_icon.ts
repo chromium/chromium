@@ -192,6 +192,10 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/volumes/camera.svg);
     }
 
+    :host([type="cant-pin"]) span {
+      -webkit-mask-image: url(../foreground/images/files/ui/cant_pin.svg);
+    }
+
     :host([type="computer"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/computer.svg);
     }

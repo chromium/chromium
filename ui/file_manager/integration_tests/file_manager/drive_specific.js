@@ -1491,3 +1491,26 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
   await remoteCall.waitForElement(
       appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
 };
+
+/**
+ * Tests that files that can't be pinned should have the correct CSS class
+ * applied to them. When they go back to being able to be pinned (e.g. from Docs
+ * offline coming back online) then ensure the inline icon is updated.
+ */
+testcase.driveCantPinItemsShouldHaveClassNameAndGetUpdatedWhenCanPin =
+    async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.cantPinFile]);
+
+  // Ensure the `cant_pin.txt` file has the cant-pin class.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="text.txt"].cant-pin');
+
+  // Update the file metadata to ensure the file can now be pinned.
+  await sendTestMessage(
+      {name: 'setCanPin', path: '/root/text.txt', canPin: true});
+
+  // Wait for the `.cant-pin` class to be removed.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="text.txt"]:not(.cant-pin)');
+};

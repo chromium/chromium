@@ -368,6 +368,7 @@ filelist.decorateListItem = (li, entry, metadataModel, volumeManager) => {
     'progress',
     'contentMimeType',
     'shortcut',
+    'canPin',
   ])[0];
   filelist.updateListItemExternalProps(
       li, entry, externalProps, util.isTeamDriveRoot(entry));
@@ -571,37 +572,61 @@ filelist.updateListItemExternalProps =
       }
 
       const inlineStatus = li.querySelector('.inline-status');
-      if (inlineStatus) {
-        // Clear the inline status' aria label and set it to "in progress",
-        // "queued", or "available offline" with the respective order of
-        // precedence if applicable.
-        inlineStatus.setAttribute(
-            'aria-label',
-            externalProps.pinned ? str('OFFLINE_COLUMN_LABEL') : '');
+      if (!inlineStatus) {
+        return;
+      }
 
-        const {syncStatus} = externalProps;
-        let progress = externalProps.progress ?? 0;
-        if (util.isInlineSyncStatusEnabled() && syncStatus) {
-          switch (syncStatus) {
-            case chrome.fileManagerPrivate.SyncStatus.QUEUED:
-            case chrome.fileManagerPrivate.SyncStatus.ERROR:
-              progress = 0;
-              inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
-              break;
-            case chrome.fileManagerPrivate.SyncStatus.IN_PROGRESS:
-              inlineStatus.setAttribute(
-                  'aria-label',
-                  `${str('IN_PROGRESS_LABEL')} - ${
-                      (progress * 100).toFixed(0)}%`);
-              break;
-            default:
-              break;
-          }
+      if (util.isDriveFsBulkPinningEnabled()) {
+        const inlineIcon = inlineStatus.querySelector('xf-icon');
 
-          li.setAttribute('data-sync-status', syncStatus);
-          li.querySelector('.progress')
-              .setAttribute('progress', progress.toFixed(2));
+        if (!util.isNullOrUndefined(externalProps.canPin) &&
+            !externalProps.canPin) {
+          // Items that can't be pinned should show a dashed icon to indicate
+          // they cannot be used offline (e.g. google forms can't be made
+          // available offline).
+          li.classList.toggle('cant-pin', true);
+          inlineIcon.type = 'cant-pin';
+          inlineStatus.setAttribute(
+              'aria-label', str('DRIVE_ITEM_UNAVAILABLE_OFFLINE'));
+          return;
         }
+
+        // In the event a previous item that could not be pinned has instead
+        // become pinnable, ensure the inline status icon is reset and the class
+        // is removed.
+        li.classList.toggle('cant-pin', false);
+        inlineIcon.type = 'offline';
+      }
+
+      // Clear the inline status' aria label and set it to "in progress",
+      // "queued", or "available offline" with the respective order of
+      // precedence if applicable.
+      inlineStatus.setAttribute(
+          'aria-label',
+          externalProps.pinned ? str('OFFLINE_COLUMN_LABEL') : '');
+
+      const {syncStatus} = externalProps;
+      let progress = externalProps.progress ?? 0;
+      if (util.isInlineSyncStatusEnabled() && syncStatus) {
+        switch (syncStatus) {
+          case chrome.fileManagerPrivate.SyncStatus.QUEUED:
+          case chrome.fileManagerPrivate.SyncStatus.ERROR:
+            progress = 0;
+            inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
+            break;
+          case chrome.fileManagerPrivate.SyncStatus.IN_PROGRESS:
+            inlineStatus.setAttribute(
+                'aria-label',
+                `${str('IN_PROGRESS_LABEL')} - ${
+                    (progress * 100).toFixed(0)}%`);
+            break;
+          default:
+            break;
+        }
+
+        li.setAttribute('data-sync-status', syncStatus);
+        li.querySelector('.progress')
+            .setAttribute('progress', progress.toFixed(2));
       }
     };
 
