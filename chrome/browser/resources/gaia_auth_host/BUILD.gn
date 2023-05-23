@@ -134,7 +134,6 @@ if (is_chromeos_ash) {
 
   js_library("saml_username_autofill") {
     sources = [ "$preprocess_folder/scroll_helper_injected.js" ]
-    deps = [ "//ash/webui/common/resources:util" ]
     extra_deps = [ ":preprocess_src" ]
   }
 
