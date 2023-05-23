@@ -228,7 +228,7 @@ JNI_REGISTRATION_EXPORT bool RegisterNative_org_chromium_base_natives_GEN_1JNI(J
 
 // Step 4: Registration function.
 
-namespace None {
+namespace  {
 
 bool RegisterNatives(JNIEnv* env) {
   // Register natives in a proxy.
@@ -240,6 +240,6 @@ bool RegisterNatives(JNIEnv* env) {
   return true;
 }
 
-}  // namespace None
+}  // namespace 
 
 #endif  // TEMP_DIR_HEADER_

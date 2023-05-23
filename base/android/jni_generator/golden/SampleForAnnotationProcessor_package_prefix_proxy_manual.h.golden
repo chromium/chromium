@@ -175,7 +175,7 @@ JNI_REGISTRATION_EXPORT bool RegisterNative_this_is_a_package_prefix_J_N(JNIEnv*
 
 // Step 4: Registration function.
 
-namespace None {
+namespace  {
 
 bool RegisterNatives(JNIEnv* env) {
   // Register natives in a proxy.
@@ -187,6 +187,6 @@ bool RegisterNatives(JNIEnv* env) {
   return true;
 }
 
-}  // namespace None
+}  // namespace 
 
 #endif  // TEMP_DIR_HEADER_

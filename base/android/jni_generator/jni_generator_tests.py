@@ -15,15 +15,17 @@ import collections
 import copy
 import difflib
 import inspect
+import logging
 import os
+import pathlib
+import shlex
+import subprocess
 import sys
 import tempfile
 import unittest
-import jni_generator
-import jni_registration_generator
 import zipfile
-from util import build_utils
 
+_SCRIPT_DIR = os.path.normpath(os.path.dirname(__file__))
 _INCLUDES = ('base/android/jni_generator/jni_generator_helper.h')
 _JAVA_SRC_DIR = os.path.join('java', 'src', 'org', 'chromium', 'example',
                              'jni_generator')
@@ -33,53 +35,89 @@ _JAVA_SRC_DIR = os.path.join('java', 'src', 'org', 'chromium', 'example',
 _REBASELINE_ENV = 'REBASELINE'
 
 
-class JniGeneratorOptions(object):
-  """The mock options object which is passed to the jni_generator.py script."""
-
+class CommonOptions:
   def __init__(self):
-    self.cpp = 'cpp'
     self.enable_jni_multiplexing = False
-    self.enable_profiling = False
+    self.package_prefix = None
+    self.use_proxy_hash = False
+
+  def to_args(self):
+    ret = []
+    if self.package_prefix:
+      ret += ['--package_prefix', self.package_prefix]
+    return ret
+
+
+class JniGeneratorOptions(CommonOptions):
+  def __init__(self):
+    super().__init__()
     self.includes = _INCLUDES
-    self.input_files = None
+    self.input_file = None
     self.jar_file = None
-    self.javap = build_utils.JAVAP_PATH
-    self.namespace = None
     self.output_dir = None
-    self.output_names = None
-    self.package_prefix = None
-    self.ptr_type = 'long'
-    self.split_name = None
-    self.srcjar_path = None
-    self.unchecked_exceptions = False
-    self.use_proxy_hash = False
+    self.output_name = 'output.h'
+
+  def to_args(self):
+    ret = super().to_args()
+    ret += ['--output_dir', self.output_dir]
+    ret += ['--input_file', self.input_file]
+    ret += ['--output_name', self.output_name]
+    if self.jar_file:
+      ret += ['--jar_file', self.jar_file]
+    if self.enable_jni_multiplexing:
+      ret.append('--enable_jni_multiplexing')
+    if self.includes:
+      ret += ['--includes', self.includes, '--ptr_type', 'long']
+    if self.use_proxy_hash:
+      ret.append('--use_proxy_hash')
+    return ret
 
 
-class JniRegistrationGeneratorOptions(object):
+class JniRegistrationGeneratorOptions(CommonOptions):
   """The mock options object which is passed to the jni_generator.py script."""
 
   def __init__(self):
-    self.sources_exclusions = []
-    self.namespace = None
-    self.enable_proxy_mocks = False
-    self.require_mocks = False
-    self.use_proxy_hash = False
-    self.enable_jni_multiplexing = False
-    self.manual_jni_registration = False
-    self.include_test_only = False
-    self.header_path = None
-    self.module_name = None
-    self.package_prefix = None
-    self.remove_uncalled_methods = False
+    super().__init__()
     self.add_stubs_for_missing_native = False
+    self.enable_proxy_mocks = False
+    self.header_path = None
+    self.include_test_only = False
+    self.manual_jni_registration = False
+    self.module_name = ''
+    self.remove_uncalled_methods = False
+    self.require_mocks = False
+
+  def to_args(self):
+    ret = super().to_args()
+    if self.add_stubs_for_missing_native:
+      ret.append('--add-stubs-for-missing-native')
+    if self.enable_jni_multiplexing:
+      ret.append('--enable-jni-multiplexing')
+    if self.enable_proxy_mocks:
+      ret.append('--enable-proxy-mocks')
+    if self.header_path:
+      ret += ['--header-path', self.header_path]
+    if self.include_test_only:
+      ret.append('--include-test-only')
+    if self.manual_jni_registration:
+      ret.append('--manual-jni-registration')
+    if self.module_name:
+      ret += ['--module-name', self.module_name]
+    if self.package_prefix:
+      ret += ['--package_prefix', self.package_prefix]
+    if self.remove_uncalled_methods:
+      ret.append('--remove-uncalled-methods')
+    if self.require_mocks:
+      ret.append('--require-mocks')
+    if self.use_proxy_hash:
+      ret.append('--use-proxy-hash')
+    return ret
 
 
 class BaseTest(unittest.TestCase):
 
   def _TestEndToEndGeneration(self, input_file, options, golden):
     with tempfile.TemporaryDirectory() as tdir:
-      options.output_dir = tdir
-      options.output_names = ['output.h']
       relative_input_file = self._JoinScriptDir(
           os.path.join(_JAVA_SRC_DIR, input_file))
       if input_file.endswith('.class'):
@@ -87,11 +125,16 @@ class BaseTest(unittest.TestCase):
         with zipfile.ZipFile(jar_path, 'w') as z:
           z.write(relative_input_file, input_file)
         options.jar_file = jar_path
-        options.input_files = [input_file]
+        options.input_file = input_file
       else:
-        options.input_files = [relative_input_file]
-      jni_generator.DoGeneration(options)
-      with open(os.path.join(tdir, 'output.h'), 'r') as f:
+        options.input_file = relative_input_file
+
+      options.output_dir = tdir
+      cmd = [self._JoinScriptDir('jni_generator.py')] + options.to_args()
+      logging.info('Running: %s', shlex.join(cmd))
+      subprocess.check_call(cmd)
+      output_path = os.path.join(tdir, options.output_name)
+      with open(output_path, 'r') as f:
         contents = f.read()
       self.AssertGoldenTextEquals(contents, golden)
 
@@ -102,27 +145,38 @@ class BaseTest(unittest.TestCase):
                                 src_files_for_asserts_and_stubs=None,
                                 header_golden=None):
     with tempfile.TemporaryDirectory() as tdir:
-      options.srcjar_path = os.path.join(tdir, 'srcjar.jar')
-      if header_golden:
-        options.header_path = os.path.join(tdir, 'header.h')
-
-      native_sources = {
+      native_sources = [
           self._JoinScriptDir(os.path.join(_JAVA_SRC_DIR, f))
           for f in input_src_files
-      }
+      ]
 
       if src_files_for_asserts_and_stubs:
-        java_sources = {
+        java_sources = [
             self._JoinScriptDir(os.path.join(_JAVA_SRC_DIR, f))
             for f in src_files_for_asserts_and_stubs
-        }
+        ]
       else:
         java_sources = native_sources
 
-      jni_registration_generator._Generate(options, native_sources,
-                                           java_sources)
+      java_sources_file = pathlib.Path(tdir) / 'java_sources.txt'
+      java_sources_file.write_text('\n'.join(java_sources))
+      native_sources_file = pathlib.Path(tdir) / 'native_sources.txt'
+      native_sources_file.write_text('\n'.join(native_sources))
 
-      with zipfile.ZipFile(options.srcjar_path, 'r') as srcjar:
+      cmd = [self._JoinScriptDir('jni_registration_generator.py')]
+      cmd += ['--java-sources-files', str(java_sources_file)]
+      cmd += ['--native-sources-file', str(native_sources_file)]
+      srcjar_path = os.path.join(tdir, 'srcjar.jar')
+      cmd += ['--srcjar-path', srcjar_path]
+      if header_golden:
+        header_path = os.path.join(tdir, 'header.h')
+        cmd += ['--header-path', header_path]
+
+      cmd += options.to_args()
+      logging.info('Running: %s', shlex.join(cmd))
+      subprocess.check_call(cmd)
+
+      with zipfile.ZipFile(srcjar_path, 'r') as srcjar:
         for name in srcjar.namelist():
           self.assertTrue(
               name in name_to_goldens,
@@ -130,7 +184,7 @@ class BaseTest(unittest.TestCase):
           contents = srcjar.read(name).decode('utf-8')
           self.AssertGoldenTextEquals(contents, name_to_goldens[name])
       if header_golden:
-        with open(options.header_path, 'r') as f:
+        with open(header_path, 'r') as f:
           # Temp directory will cause some diffs each time we run if we don't
           # normalize.
           contents = f.read().replace(
@@ -138,8 +192,7 @@ class BaseTest(unittest.TestCase):
           self.AssertGoldenTextEquals(contents, header_golden)
 
   def _JoinScriptDir(self, path):
-    script_dir = os.path.dirname(sys.argv[0])
-    return os.path.join(script_dir, path)
+    return os.path.join(_SCRIPT_DIR, path)
 
   def _JoinGoldenPath(self, golden_file_name):
     return self._JoinScriptDir(os.path.join('golden', golden_file_name))

@@ -892,8 +892,9 @@ def _MakeProxySignature(options, proxy_native):
 
 def _GetFilesSetFromSources(sources_files, file_exclusions):
   def should_include(p):
-    return (p.startswith('..') and p not in file_exclusions
-            and not p.endswith('.kt') and not p.endswith('package-info.java'))
+    return ((p.startswith('..') or os.path.isabs(p))
+            and p not in file_exclusions and not p.endswith('.kt')
+            and not p.endswith('package-info.java'))
 
   java_file_paths = set()
   for f in sources_files:
