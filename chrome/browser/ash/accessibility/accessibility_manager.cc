@@ -1061,6 +1061,10 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
   const bool enabled =
       pref_service->GetBoolean(prefs::kAccessibilityDictationEnabled);
 
+  if (accessibility_service_client_) {
+    accessibility_service_client_->SetDictationEnabled(enabled);
+  }
+
   if (enabled &&
       pref_service->GetString(prefs::kAccessibilityDictationLocale).empty()) {
     // Dictation was turned on but the language pref isn't set yet. Determine if
@@ -1081,11 +1085,13 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
   if (!::features::IsDictationOfflineAvailable()) {
     // Show network dictation dialog if needed. Locale doesn't matter as no
     // languages are supported by SODA.
-    if (enabled && triggered_by_user && ShouldShowNetworkDictationDialog(""))
+    if (enabled && triggered_by_user && ShouldShowNetworkDictationDialog("")) {
       ShowNetworkDictationDialog();
+    }
     return;
   }
 
+  // We only reach this point if SODA is available.
   if (triggered_by_user && !enabled) {
     // Note: This should not be called at start-up or it will
     // push back SODA deletion each time start-up occurs with dictation
@@ -1093,9 +1099,6 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
     speech::SodaInstaller::GetInstance()->SetUninstallTimer(
         pref_service, g_browser_process->local_state());
   }
-
-  if (accessibility_service_client_)
-    accessibility_service_client_->SetDictationEnabled(enabled);
 
   if (!enabled)
     return;
