@@ -14,9 +14,6 @@ EntryId::EntryId(std::string app_id, AppType app_type)
     : entry_type(EntryType::kApp), id(std::move(app_id)), app_type(app_type) {}
 EntryId::EntryId(const GURL& url)
     : entry_type(EntryType::kWebPage), id(url.spec()) {}
-EntryId::EntryId(std::string phone_hub_app_package_name)
-    : entry_type(EntryType::kPhoneHubApp),
-      id(std::move(phone_hub_app_package_name)) {}
 
 bool EntryId::operator==(const EntryId& other) const {
   return entry_type == other.entry_type && id == other.id &&

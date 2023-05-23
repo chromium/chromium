@@ -28,9 +28,6 @@ struct EntryId {
   // Constructor for web pages.
   explicit EntryId(const GURL& url);
 
-  // Constructor for phone hub app.
-  explicit EntryId(std::string phone_hub_app_package_name);
-
   EntryId(const EntryId&) = default;
   EntryId& operator=(const EntryId&) = default;
   EntryId(EntryId&&) = default;

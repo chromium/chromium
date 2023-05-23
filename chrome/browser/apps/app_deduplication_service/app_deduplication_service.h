@@ -63,6 +63,10 @@ class AppDeduplicationService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
                            DeduplicateDataToEntries);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
+                           DeduplicateDataToEntriesInvalidAppType);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
+                           DeduplicateDataToEntriesInvalidAppId);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
                            PrefUnchangedAfterServerError);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
                            PrefSetAfterServerSuccess);

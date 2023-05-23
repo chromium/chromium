@@ -23,11 +23,36 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "third_party/crashpad/crashpad/util/string/split_string.h"
 
 namespace {
 // Folder path to where the deduplication data will be stored on disk.
 constexpr char kAppDeduplicationFolderPath[] =
     "app_deduplication_service/deduplication_data/";
+
+// Converts PackageId strings to EntryIds when the source is Website.
+absl::optional<apps::deduplication::EntryId> GetEntryIdForWebsite(
+    const std::string& id) {
+  size_t separator = id.find_first_of(':');
+  apps::deduplication::EntryId entry_id;
+
+  if (separator == std::string::npos || separator == id.size() - 1) {
+    LOG(ERROR) << "Source is an unsupported type.";
+    return absl::nullopt;
+  }
+
+  std::string app_type = id.substr(0, separator);
+  std::string app_id = id.substr(separator + 1);
+  GURL entry_url = GURL(app_id);
+
+  if (entry_url.is_valid() && app_type == "website") {
+    entry_id = apps::deduplication::EntryId(entry_url);
+  } else {
+    LOG(ERROR) << "Source is an unsupported type.";
+    return absl::nullopt;
+  }
+  return entry_id;
+}
 }  // namespace
 
 namespace apps::deduplication {
@@ -147,8 +172,6 @@ void AppDeduplicationService::OnDuplicatedGroupListUpdated(
         entry_id = EntryId(app_id, AppType::kArc);
       } else if (source == "web") {
         entry_id = EntryId(app_id, AppType::kWeb);
-      } else if (source == "phonehub") {
-        entry_id = EntryId(app_id);
       } else if (source == "website") {
         GURL entry_url = GURL(app_id);
         if (entry_url.is_valid()) {
@@ -322,21 +345,24 @@ void AppDeduplicationService::DeduplicateDataToEntries(
     DuplicateGroup duplicate_group;
     for (auto const& id : group.package_id()) {
       absl::optional<PackageId> package_id = PackageId::FromString(id);
-      if (!package_id.has_value()) {
-        // TODO(sharminzaman@): Add support for websites.
-        continue;
-      }
-
-      AppType source = package_id.value().app_type();
-      std::string app_id = package_id.value().identifier();
+      std::string app_id;
       EntryId entry_id;
-
-      if (source == AppType::kArc || source == AppType::kWeb) {
-        entry_id = EntryId(app_id, source);
+      if (!package_id.has_value()) {
+        absl::optional<EntryId> web_id = GetEntryIdForWebsite(id);
+        if (!web_id.has_value()) {
+          continue;
+        }
+        entry_id = web_id.value();
       } else {
-        LOG(ERROR) << "Source is an unsupported type.";
-        NOTREACHED();
+        AppType source = package_id.value().app_type();
+        app_id = package_id.value().identifier();
+        if (source != AppType::kArc && source != AppType::kWeb) {
+          LOG(ERROR) << "Source is an unsupported type.";
+          NOTREACHED();
+        }
+        entry_id = EntryId(app_id, source);
       }
+
       entry_to_group_map_[entry_id] = index;
       // Initialize entry status.
       entry_status_[entry_id] = entry_id.entry_type == EntryType::kApp
@@ -345,8 +371,10 @@ void AppDeduplicationService::DeduplicateDataToEntries(
       Entry entry(std::move(entry_id));
       duplicate_group.entries.push_back(std::move(entry));
     }
-    duplication_map_[index] = std::move(duplicate_group);
-    index++;
+    if (!duplicate_group.entries.empty()) {
+      duplication_map_[index] = std::move(duplicate_group);
+      index++;
+    }
   }
 
   apps::AppServiceProxy* proxy =
