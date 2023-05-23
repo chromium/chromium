@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckApisWithoutFeatureFlagFail) {
+                       CheckSdCardApiWithoutFeatureFlagFail) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 
@@ -343,6 +343,28 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
       function sdCardNotWorking() {
         chrome.test.assertThrows(() => {
           chrome.os.events.onSdCardEvent.addListener((event) => {
+            // unreachable.
+          });
+        }, [],
+          'Cannot read properties of undefined (reading \'addListener\')'
+        );
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       CheckPowerApiWithoutFeatureFlagFail) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      function powerNotWorking() {
+        chrome.test.assertThrows(() => {
+          chrome.os.events.onPowerEvent.addListener((event) => {
             // unreachable.
           });
         }, [],
@@ -368,7 +390,7 @@ class PendingApprovalTelemetryExtensionEventsApiBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckApisWithFeatureFlagWork) {
+                       CheckSdCardApiWithFeatureFlagWork) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
 
@@ -395,6 +417,40 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
         });
 
         await chrome.os.events.startCapturingEvents("sd_card");
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
+                       CheckPowerApiWithFeatureFlagWork) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto power_info = crosapi::TelemetryPowerEventInfo::New();
+        power_info->state =
+            crosapi::TelemetryPowerEventInfo::State::kAcInserted;
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kPower,
+            crosapi::TelemetryEventInfo::NewPowerEventInfo(
+                std::move(power_info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onPowerEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            event: 'ac_inserted'
+          });
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("power");
       }
     ]);
   )");
