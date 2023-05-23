@@ -114,7 +114,6 @@ class ASH_EXPORT LockScreenMediaControlsView
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  void OnThemeChanged() override;
 
   // media_session::mojom::MediaControllerObserver:
   void MediaSessionInfoChanged(
@@ -205,8 +204,6 @@ class ASH_EXPORT LockScreenMediaControlsView
 
   // Animates |contents_view_| to its original position.
   void RunResetControlsAnimation();
-
-  void UpdateColors();
 
   // Used to control the active session.
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;

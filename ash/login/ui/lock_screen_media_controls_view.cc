@@ -14,7 +14,6 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -328,7 +327,9 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
                               base::Unretained(this)));
   progress_ = contents_view_->AddChildView(std::move(progress_view));
 
-  UpdateColors();
+  progress_->SetForegroundColorId(kColorAshProgressBarColorForeground);
+  progress_->SetBackgroundColorId(kColorAshProgressBarColorBackground);
+  progress_->SetTextColorId(kColorAshTextColorPrimary);
 
   // |button_row_| contains the buttons for controlling playback.
   auto button_row = std::make_unique<NonAccessibleView>();
@@ -504,11 +505,6 @@ void LockScreenMediaControlsView::OnMouseExited(const ui::MouseEvent& event) {
   }
 
   header_row_->SetForceShowCloseButton(false);
-}
-
-void LockScreenMediaControlsView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  UpdateColors();
 }
 
 void LockScreenMediaControlsView::MediaSessionInfoChanged(
@@ -916,17 +912,6 @@ void LockScreenMediaControlsView::RunResetControlsAnimation() {
 
   contents_view_->layer()->SetTransform(gfx::Transform());
   contents_view_->layer()->SetOpacity(1);
-}
-
-void LockScreenMediaControlsView::UpdateColors() {
-  const auto* color_provider = AshColorProvider::Get();
-
-  progress_->SetForegroundColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kProgressBarColorForeground));
-  progress_->SetBackgroundColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kProgressBarColorBackground));
-  progress_->SetTextColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 BEGIN_METADATA(LockScreenMediaControlsView, views::View)
