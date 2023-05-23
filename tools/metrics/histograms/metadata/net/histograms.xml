@@ -2889,14 +2889,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.ClosedByPublicReset" enum="Boolean"
-    expires_after="2024-04-03">
+<histogram name="Net.QuicSession.ClosedByPublicReset{HandshakeType}"
+    enum="Boolean" expires_after="2024-04-03">
   <owner>wub@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    For a QUIC session that is closed by a public reset, this boolean shows
-    whether it is a public reset sent from a Google server or not.
+    For a QUIC session that is closed by a public reset, where the handshake was
+    {HandshakeType}, this boolean shows whether it is a public reset sent from a
+    Google server or not.
   </summary>
+  <token key="HandshakeType">
+    <variant name="" summary="not confirmed"/>
+    <variant name=".HandshakeConfirmed" summary="confirmed"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.ClosedByRtoAtClient.ReceivedPacketCount"
@@ -3037,203 +3042,105 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.ConnectionCloseErrorCodeClient"
-    enum="QuicErrorCodes" expires_after="2023-10-01">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC error code which resulted in the QUIC connection being closed by
-    the client.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.ConnectionCloseErrorCodeClientECH"
-    enum="QuicErrorCodes" expires_after="2024-04-03">
-  <owner>davidben@chromium.org</owner>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC error code which resulted in the QUIC connection being closed by
-    the client to an ECH-capable server.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.ConnectionCloseErrorCodeClientGoogle"
-    enum="QuicErrorCodes" expires_after="2023-10-08">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC error code which resulted in the QUIC connection being closed by
-    the client to a Google server.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.ConnectionCloseErrorCodeServer"
-    enum="QuicErrorCodes" expires_after="2023-10-01">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC error code which resulted in the QUIC connection being closed by
-    the server.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.ConnectionCloseErrorCodeServerECH"
-    enum="QuicErrorCodes" expires_after="2024-04-03">
-  <owner>davidben@chromium.org</owner>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC error code which resulted in the QUIC connection being closed by
-    the an ECH-capable server.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.ConnectionCloseErrorCodeServerGoogle"
-    enum="QuicErrorCodes" expires_after="2023-10-08">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC error code which resulted in the QUIC connection being closed by
-    the a Google server.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplication"
-    enum="QuicHttp3ErrorCodes" expires_after="2022-11-13">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from the server.
-  </summary>
-</histogram>
-
 <histogram
-    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationECH"
-    enum="QuicHttp3ErrorCodes" expires_after="2024-04-03">
-  <owner>davidben@chromium.org</owner>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from an ECH-capable server.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationGoogle"
+    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplication{GQuicMissing}{ServerType}{HandshakeType}"
     enum="QuicHttp3ErrorCodes" expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from a Google server.
+    received from the server{GQuicMissing}. This is recorded for connections
+    made to {ServerType}{HandshakeType}.
   </summary>
+  <token key="GQuicMissing">
+    <variant name="" summary=""/>
+    <variant name="GQuicErrorMissing"
+        summary=", when the GQUIC error was missing"/>
+  </token>
+  <token key="ServerType">
+    <variant name="" summary="all QUIC servers"/>
+    <variant name="ECH" summary="ECH-capable servers">
+      <owner>davidben@chromium.org</owner>
+      <owner>dschinazi@chromium.org</owner>
+      <owner>src/net/quic/OWNERS</owner>
+    </variant>
+    <variant name="Google" summary="Google servers"/>
+  </token>
+  <token key="HandshakeType">
+    <variant name="" summary=""/>
+    <variant name=".HandshakeConfirmed"
+        summary=", where the handshake was confirmed"/>
+    <variant name=".HandshakeNotConfirmed"
+        summary=", where the handshake was not confirmed"/>
+  </token>
 </histogram>
 
 <histogram
-    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationGQuicErrorMissing"
-    enum="QuicHttp3ErrorCodes" expires_after="2023-11-19">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from the server, when the GQUIC error was missing.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationGQuicErrorMissingECH"
-    enum="QuicHttp3ErrorCodes" expires_after="2024-04-03">
-  <owner>davidben@chromium.org</owner>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from an ECH-capable server, when the GQUIC error was missing.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationGQuicErrorMissingGoogle"
-    enum="QuicHttp3ErrorCodes" expires_after="2023-08-08">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from a Google server, when the GQUIC error was missing.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransport"
-    enum="QuicTransportErrorCodes" expires_after="2022-11-13">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC transport error code in a CONNECTION_CLOSE frame received from the
-    server.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportECH"
-    enum="QuicTransportErrorCodes" expires_after="2024-03-22">
-  <owner>davidben@chromium.org</owner>
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from an ECH-capable server.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportGoogle"
-    enum="QuicTransportErrorCodes" expires_after="2024-03-22">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from a Google server.
-
-    Warning: this histogram was expired from 09/12/2022 to 03/22/2023; data may
-    be missing.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportGQuicErrorMissing"
-    enum="QuicTransportErrorCodes" expires_after="2023-10-01">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The QUIC transport error code in a CONNECTION_CLOSE frame received from the
-    server, when the GQUIC error was missing.
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportGQuicErrorMissingECH"
+    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransport{GQuicMissing}{ServerType}{HandshakeType}"
     enum="QuicTransportErrorCodes" expires_after="2024-04-03">
-  <owner>davidben@chromium.org</owner>
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from an ECH-capable server, when the GQUIC error was missing.
+    The QUIC transport error code in a CONNECTION_CLOSE frame received from the
+    server{GQuicMissing}. This is recorded for connections made to
+    {ServerType}{HandshakeType}.
+
+    Warning: the ConnectionCloseErrorCodeServerIetfTransportGoogle variant was
+    expired from 09/12/2022 to 03/22/2023; data may be missing.
   </summary>
+  <token key="GQuicMissing">
+    <variant name="" summary=""/>
+    <variant name="GQuicErrorMissing"
+        summary=", when the GQUIC error was missing"/>
+  </token>
+  <token key="ServerType">
+    <variant name="" summary="all QUIC servers"/>
+    <variant name="ECH" summary="ECH-capable servers">
+      <owner>davidben@chromium.org</owner>
+      <owner>dschinazi@chromium.org</owner>
+      <owner>src/net/quic/OWNERS</owner>
+    </variant>
+    <variant name="Google" summary="Google servers"/>
+  </token>
+  <token key="HandshakeType">
+    <variant name="" summary=""/>
+    <variant name=".HandshakeConfirmed"
+        summary=", where the handshake was confirmed"/>
+    <variant name=".HandshakeNotConfirmed"
+        summary=", where the handshake was not confirmed"/>
+  </token>
 </histogram>
 
 <histogram
-    name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfTransportGQuicErrorMissingGoogle"
-    enum="QuicTransportErrorCodes" expires_after="2023-10-01">
+    name="Net.QuicSession.ConnectionCloseErrorCode{Closer}{ServerType}{HandshakeType}"
+    enum="QuicErrorCodes" expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from a Google server, when the GQUIC error was missing.
+    The QUIC error code which resulted in the QUIC connection being closed by
+    the {Closer}. This is recorded for connections made to
+    {ServerType}{HandshakeType}.
   </summary>
+  <token key="Closer">
+    <variant name="Client" summary="client"/>
+    <variant name="Server" summary="server"/>
+  </token>
+  <token key="ServerType">
+    <variant name="" summary="all QUIC servers"/>
+    <variant name="ECH" summary="ECH-capable servers">
+      <owner>davidben@chromium.org</owner>
+      <owner>dschinazi@chromium.org</owner>
+      <owner>src/net/quic/OWNERS</owner>
+    </variant>
+    <variant name="Google" summary="Google servers"/>
+  </token>
+  <token key="HandshakeType">
+    <variant name="" summary=""/>
+    <variant name=".HandshakeConfirmed"
+        summary=", where the handshake was confirmed"/>
+    <variant name=".HandshakeNotConfirmed"
+        summary=", where the handshake was not confirmed"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionDuration" units="ms"
