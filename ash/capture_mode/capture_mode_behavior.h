@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace aura {
 class Window;
@@ -91,6 +92,12 @@ class CaptureModeBehavior {
   // in order to differentiate the metrics for example "Projector." is used to
   // indicate the histogram is for a projector-initiated capture mode session.
   virtual const char* GetClientMetricComponent() const;
+
+  // Returns the client specific buttons info to be shown in the notification
+  // view. The buttons info list may differ based on whether `for_video` is true
+  // or not.
+  virtual std::vector<message_center::ButtonInfo> GetNotificationButtonsInfo(
+      bool for_video) const;
 
   // Creates the capture mode bar view, which might look different depending on
   // the actual type of the behavior.

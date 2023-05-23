@@ -132,7 +132,8 @@ enum ScreenshotNotificationButtonIndex {
 
 // The video notification button index.
 enum VideoNotificationButtonIndex {
-  BUTTON_DELETE_VIDEO = 0,
+  BUTTON_SHARE_TO_YOUTUBE = 0,
+  BUTTON_DELETE_VIDEO,
 };
 
 // Returns the file extension for the given `recording_type` and the current
@@ -1399,7 +1400,10 @@ void CaptureModeController::OnImageFileSaved(
   DCHECK(png_bytes && png_bytes->size());
   const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
   CopyImageToClipboard(image);
-  ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage);
+  // TODO(michelefan): Do not hard-code `BehaviorType::kDefault`. Screenshot
+  // notification should be separated among different behaviors.
+  ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage,
+                          GetBehavior(BehaviorType::kDefault));
   if (Shell::Get()->session_controller()->IsActiveUserSessionStarted())
     RecordSaveToLocation(GetSaveToOption(file_saved_path));
   // NOTE: Holding space `client` may be `nullptr` in tests.
@@ -1422,7 +1426,7 @@ void CaptureModeController::OnVideoFileSaved(
     if (behavior->ShouldShowPreviewNotification()) {
       ShowPreviewNotification(saved_video_file_path,
                               gfx::Image(video_thumbnail),
-                              CaptureModeType::kVideo);
+                              CaptureModeType::kVideo, behavior);
       // NOTE: Holding space `client` may be `nullptr` in tests.
       if (auto* client = HoldingSpaceController::Get()->client()) {
         client->AddItemOfType(is_gif
@@ -1451,7 +1455,8 @@ void CaptureModeController::OnVideoFileSaved(
 void CaptureModeController::ShowPreviewNotification(
     const base::FilePath& screen_capture_path,
     const gfx::Image& preview_image,
-    const CaptureModeType type) {
+    const CaptureModeType type,
+    const CaptureModeBehavior* behavior) {
   const bool for_video = type == CaptureModeType::kVideo;
   const int title_id = GetNotificationTitleIdForFile(screen_capture_path);
   const int message_id = for_video && low_disk_space_threshold_reached_
@@ -1459,13 +1464,7 @@ void CaptureModeController::ShowPreviewNotification(
                              : IDS_ASH_SCREEN_CAPTURE_MESSAGE;
 
   message_center::RichNotificationData optional_fields;
-  message_center::ButtonInfo edit_button(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT));
-  if (!for_video && !Shell::Get()->session_controller()->IsUserSessionBlocked())
-    optional_fields.buttons.push_back(edit_button);
-  message_center::ButtonInfo delete_button(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
-  optional_fields.buttons.push_back(delete_button);
+  optional_fields.buttons = behavior->GetNotificationButtonsInfo(for_video);
 
   optional_fields.image = preview_image;
   optional_fields.image_path = screen_capture_path;
@@ -1491,12 +1490,20 @@ void CaptureModeController::HandleNotificationClicked(
   } else {
     const int button_index_value = button_index.value();
     if (type == CaptureModeType::kVideo) {
-      DCHECK_EQ(button_index_value,
-                VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO);
-      DeleteFileAsync(blocking_task_runner_, screen_capture_path,
-                      std::move(on_file_deleted_callback_for_test_));
+      switch (button_index_value) {
+        case VideoNotificationButtonIndex::BUTTON_SHARE_TO_YOUTUBE:
+          OnShareToYouTubeButtonPressed();
+          break;
+        case VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO:
+          DeleteFileAsync(blocking_task_runner_, screen_capture_path,
+                          std::move(on_file_deleted_callback_for_test_));
+          break;
+        default:
+          NOTREACHED();
+          break;
+      }
     } else {
-      DCHECK_EQ(type, CaptureModeType::kImage);
+      CHECK_EQ(type, CaptureModeType::kImage);
       switch (button_index_value) {
         case ScreenshotNotificationButtonIndex::BUTTON_EDIT:
           delegate_->OpenScreenshotInImageEditor(screen_capture_path);

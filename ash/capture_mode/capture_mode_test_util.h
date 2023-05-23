@@ -15,6 +15,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -143,6 +146,12 @@ PillButton* GetStartRecordingButton();
 IconButton* GetSettingsButton();
 IconButton* GetCloseButton();
 
+// Returns the capture mode related notifications from the message center.
+const message_center::Notification* GetPreviewNotification();
+
+// Clicks on the area in the notification specified by the `button_index`.
+void ClickOnNotification(absl::optional<int> button_index);
+
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-
 // related features in its constructor, so test fixtures that use this should
@@ -192,6 +201,21 @@ class ViewVisibilityChangeWaiter : public views::ViewObserver {
  private:
   const raw_ptr<views::View, ExperimentalAsh> view_;
   base::RunLoop wait_loop_;
+};
+
+// Defines a waiter to observe the notification changes.
+class CaptureNotificationWaiter : public message_center::MessageCenterObserver {
+ public:
+  CaptureNotificationWaiter();
+  ~CaptureNotificationWaiter() override;
+
+  void Wait();
+
+  // message_center::MessageCenterObserver:
+  void OnNotificationAdded(const std::string& notification_id) override;
+
+ private:
+  base::RunLoop run_loop_;
 };
 
 }  // namespace ash

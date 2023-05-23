@@ -9,15 +9,30 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "ui/base/l10n/l10n_util.h"
+
+namespace message_center {
+
+bool operator==(const ButtonInfo& lhs, const ButtonInfo& rhs) {
+  return std::tie(lhs.title, lhs.icon, lhs.placeholder, lhs.type) ==
+         std::tie(rhs.title, rhs.icon, rhs.placeholder, rhs.type);
+}
+
+}  // namespace message_center
 
 namespace ash {
+
+using ButtonInfo = message_center::ButtonInfo;
 
 class GameDashboardCaptureModeTest : public AshTestBase {
  public:
@@ -151,6 +166,49 @@ TEST_F(GameDashboardCaptureModeTest, CaptureBarPosition) {
   EXPECT_EQ(bar_bounds.CenterPoint().x(), window_bounds.CenterPoint().x());
   EXPECT_EQ(bar_bounds.bottom() + capture_mode::kCaptureBarBottomPadding,
             window_bounds.bottom());
+}
+
+// Tests that the game dashboard-initiated capture mode session shows the
+// notification view with 'Share to YouTube' button and 'delete' buttons.
+TEST_F(GameDashboardCaptureModeTest, NotificationView) {
+  CaptureModeController* controller = StartGameCaptureModeSession();
+  CaptureModeSession* session = controller->capture_mode_session();
+  CaptureModeBehavior* active_behavior = session->active_behavior();
+  ASSERT_TRUE(active_behavior);
+  StartVideoRecordingImmediately();
+  CaptureModeTestApi().FlushRecordingServiceForTesting();
+
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+
+  // Request and wait for a video frame so that the recording service can use it
+  // to create a video thumbnail.
+  test_delegate->RequestAndWaitForVideoFrame();
+  SkBitmap service_thumbnail =
+      gfx::Image(test_delegate->GetVideoThumbnail()).AsBitmap();
+  EXPECT_FALSE(service_thumbnail.drawsNothing());
+
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  EXPECT_FALSE(controller->is_recording_in_progress());
+  CaptureNotificationWaiter().Wait();
+
+  const message_center::Notification* notification = GetPreviewNotification();
+  EXPECT_TRUE(notification);
+  EXPECT_FALSE(notification->image().IsEmpty());
+
+  std::vector<ButtonInfo> expected_buttons_info = {
+      ButtonInfo(
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SHARE_TO_YOUTUBE)),
+      ButtonInfo(
+          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE))};
+  auto actual_buttons_info =
+      active_behavior->GetNotificationButtonsInfo(/*for_video=*/true);
+  EXPECT_EQ(actual_buttons_info.size(), 2u);
+  EXPECT_TRUE(actual_buttons_info == expected_buttons_info);
+
+  const int share_to_youtube_button = 0;
+  ClickOnNotification(share_to_youtube_button);
+  EXPECT_FALSE(GetPreviewNotification());
 }
 
 }  // namespace ash

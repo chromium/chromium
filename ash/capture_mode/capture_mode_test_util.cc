@@ -46,6 +46,8 @@ namespace ash {
 
 namespace {
 
+constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
+
 // Dispatch the simulated virtual key event to the WindowEventDispatcher.
 void DispatchVKEvent(ui::test::EventGenerator* event_generator,
                      bool is_press,
@@ -337,6 +339,23 @@ IconButton* GetCloseButton() {
   return GetCaptureModeBarView()->close_button();
 }
 
+const message_center::Notification* GetPreviewNotification() {
+  const message_center::NotificationList::Notifications notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  for (const auto* notification : notifications) {
+    if (notification->id() == kScreenCaptureNotificationId) {
+      return notification;
+    }
+  }
+  return nullptr;
+}
+
+void ClickOnNotification(absl::optional<int> button_index) {
+  const message_center::Notification* notification = GetPreviewNotification();
+  CHECK(notification);
+  notification->delegate()->Click(button_index, absl::nullopt);
+}
+
 // -----------------------------------------------------------------------------
 // ProjectorCaptureModeIntegrationHelper:
 
@@ -402,6 +421,28 @@ void ViewVisibilityChangeWaiter::OnViewVisibilityChanged(
     views::View* observed_view,
     views::View* starting_view) {
   wait_loop_.Quit();
+}
+
+// -----------------------------------------------------------------------------
+// CaptureNotificationWaiter:
+
+CaptureNotificationWaiter::CaptureNotificationWaiter() {
+  message_center::MessageCenter::Get()->AddObserver(this);
+}
+
+CaptureNotificationWaiter::~CaptureNotificationWaiter() {
+  message_center::MessageCenter::Get()->RemoveObserver(this);
+}
+
+void CaptureNotificationWaiter::Wait() {
+  run_loop_.Run();
+}
+
+void CaptureNotificationWaiter::OnNotificationAdded(
+    const std::string& notification_id) {
+  if (notification_id == kScreenCaptureNotificationId) {
+    run_loop_.Quit();
+  }
 }
 
 }  // namespace ash

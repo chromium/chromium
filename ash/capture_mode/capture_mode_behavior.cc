@@ -21,6 +21,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -29,6 +30,8 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
 
@@ -239,6 +242,16 @@ class GameDashboardBehavior : public CaptureModeBehavior,
     pre_selected_window_->AddObserver(this);
   }
 
+  std::vector<message_center::ButtonInfo> GetNotificationButtonsInfo(
+      bool for_video) const override {
+    CHECK(for_video);
+
+    return {message_center::ButtonInfo{l10n_util::GetStringUTF16(
+                IDS_ASH_SCREEN_CAPTURE_SHARE_TO_YOUTUBE)},
+            message_center::ButtonInfo{l10n_util::GetStringUTF16(
+                IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE)}};
+  }
+
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     CHECK_EQ(window, pre_selected_window_);
@@ -382,6 +395,23 @@ void CaptureModeBehavior::SetPreSelectedWindow(
 
 const char* CaptureModeBehavior::GetClientMetricComponent() const {
   return "";
+}
+
+std::vector<message_center::ButtonInfo>
+CaptureModeBehavior::GetNotificationButtonsInfo(bool for_video) const {
+  std::vector<message_center::ButtonInfo> buttons_info;
+
+  if (!for_video &&
+      !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    message_center::ButtonInfo edit_button(
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_EDIT));
+    buttons_info.push_back(edit_button);
+  }
+  message_center::ButtonInfo delete_button(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_BUTTON_DELETE));
+  buttons_info.push_back(delete_button);
+
+  return buttons_info;
 }
 
 std::unique_ptr<CaptureModeBarView>

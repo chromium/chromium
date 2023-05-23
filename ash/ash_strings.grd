@@ -5571,6 +5571,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SAVE_TO_DIALOG_TITLE" desc="The title of the folder selection dialog, where users can select a location to save their captured images and screen recordings.">
         Select a folder to save to
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SHARE_TO_YOUTUBE" desc="The share to YouTube button label for the screen capture notification.">
+        Share to YouTube
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SHOW_CAMERA_USER_NUDGE" desc="The message shown in a toast widget to nudge the user and alert them to check out the new settings that allow them to show camera during video recording.">
         You can now record yourself and your screen at the same time
       </message>
