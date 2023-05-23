@@ -65,8 +65,10 @@ bool operator==(const AttributionConfig::EventLevelLimit& a,
                            config.max_reports_per_destination,
                            config.max_attributions_per_navigation_source,
                            config.max_attributions_per_event_source,
-                           config.first_report_window_deadline,
-                           config.second_report_window_deadline);
+                           config.first_navigation_report_window_deadline,
+                           config.second_navigation_report_window_deadline,
+                           config.first_event_report_window_deadline,
+                           config.second_event_report_window_deadline);
   };
   return tie(a) == tie(b);
 }
@@ -100,6 +102,13 @@ using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 
 using ::attribution_reporting::SuitableOrigin;
+
+AttributionConfig::EventLevelLimit EventLevelLimitWith(
+    base::FunctionRef<void(AttributionConfig::EventLevelLimit&)> f) {
+  AttributionConfig::EventLevelLimit limit;
+  f(limit);
+  return limit;
+}
 
 // Pick an arbitrary offset time to test correct handling.
 constexpr base::Time kOffsetTime = base::Time::UnixEpoch() + base::Days(5);
@@ -599,26 +608,37 @@ TEST(AttributionInteropParserTest, ValidConfig) {
       {R"json({"rate_limit_max_attributions":"10"})json", false,
        AttributionConfig{.rate_limit = {.max_attributions = 10}}},
       {R"json({"navigation_source_trigger_data_cardinality":"10"})json", false,
-       AttributionConfig{
-           .event_level_limit = {.navigation_source_trigger_data_cardinality =
-                                     10}}},
+       AttributionConfig{.event_level_limit = EventLevelLimitWith(
+                             [](AttributionConfig::EventLevelLimit& e) {
+                               e.navigation_source_trigger_data_cardinality =
+                                   10;
+                             })}},
       {R"json({"event_source_trigger_data_cardinality":"10"})json", false,
-       AttributionConfig{
-           .event_level_limit = {.event_source_trigger_data_cardinality = 10}}},
+       AttributionConfig{.event_level_limit = EventLevelLimitWith(
+                             [](AttributionConfig::EventLevelLimit& e) {
+                               e.event_source_trigger_data_cardinality = 10;
+                             })}},
       {R"json({"randomized_response_epsilon":"inf"})json", false,
-       AttributionConfig{.event_level_limit =
-                             {.randomized_response_epsilon =
-                                  std ::numeric_limits<double>::infinity()}}},
+       AttributionConfig{.event_level_limit = EventLevelLimitWith(
+                             [](AttributionConfig::EventLevelLimit& e) {
+                               e.randomized_response_epsilon =
+                                   std::numeric_limits<double>::infinity();
+                             })}},
       {R"json({"max_event_level_reports_per_destination":"10"})json", false,
-       AttributionConfig{
-           .event_level_limit = {.max_reports_per_destination = 10}}},
+       AttributionConfig{.event_level_limit = EventLevelLimitWith(
+                             [](AttributionConfig::EventLevelLimit& e) {
+                               e.max_reports_per_destination = 10;
+                             })}},
       {R"json({"max_attributions_per_navigation_source":"10"})json", false,
-       AttributionConfig{
-           .event_level_limit = {.max_attributions_per_navigation_source =
-                                     10}}},
+       AttributionConfig{.event_level_limit = EventLevelLimitWith(
+                             [](AttributionConfig::EventLevelLimit& e) {
+                               e.max_attributions_per_navigation_source = 10;
+                             })}},
       {R"json({"max_attributions_per_event_source":"10"})json", false,
-       AttributionConfig{
-           .event_level_limit = {.max_attributions_per_event_source = 10}}},
+       AttributionConfig{.event_level_limit = EventLevelLimitWith(
+                             [](AttributionConfig::EventLevelLimit& e) {
+                               e.max_attributions_per_event_source = 10;
+                             })}},
       {R"json({"max_aggregatable_reports_per_destination":"10"})json", false,
        AttributionConfig{
            .aggregate_limit = {.max_reports_per_destination = 10}}},
@@ -655,13 +675,15 @@ TEST(AttributionInteropParserTest, ValidConfig) {
                           .max_source_registration_reporting_origins = 20,
                           .max_attribution_reporting_origins = 15,
                           .max_attributions = 10},
-           .event_level_limit = {.navigation_source_trigger_data_cardinality =
-                                     100,
-                                 .event_source_trigger_data_cardinality = 10,
-                                 .randomized_response_epsilon = 0.2,
-                                 .max_reports_per_destination = 10,
-                                 .max_attributions_per_navigation_source = 5,
-                                 .max_attributions_per_event_source = 1},
+           .event_level_limit =
+               EventLevelLimitWith([](AttributionConfig::EventLevelLimit& e) {
+                 e.navigation_source_trigger_data_cardinality = 100;
+                 e.event_source_trigger_data_cardinality = 10;
+                 e.randomized_response_epsilon = 0.2;
+                 e.max_reports_per_destination = 10;
+                 e.max_attributions_per_navigation_source = 5;
+                 e.max_attributions_per_event_source = 1;
+               }),
            .aggregate_limit = {.max_reports_per_destination = 10,
                                .aggregatable_budget_per_source = 1000,
                                .min_delay = base::Minutes(10),

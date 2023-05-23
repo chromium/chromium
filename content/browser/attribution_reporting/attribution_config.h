@@ -40,7 +40,16 @@ struct CONTENT_EXPORT AttributionConfig {
     // should also be updated.
   };
 
-  struct EventLevelLimit {
+  struct CONTENT_EXPORT EventLevelLimit {
+    EventLevelLimit();
+
+    EventLevelLimit(const EventLevelLimit&);
+    EventLevelLimit(EventLevelLimit&&);
+    ~EventLevelLimit();
+
+    EventLevelLimit& operator=(const EventLevelLimit&);
+    EventLevelLimit& operator=(EventLevelLimit&&);
+
     // Returns true if this config is valid.
     [[nodiscard]] bool Validate() const;
 
@@ -70,10 +79,17 @@ struct CONTENT_EXPORT AttributionConfig {
     static constexpr base::TimeDelta kDefaultSecondReportWindowDeadline =
         base::Days(7);
 
-    // Controls the report window deadlines for scheduling report times.
-    base::TimeDelta first_report_window_deadline =
+    // Controls the report window deadlines for scheduling navigation report
+    // times.
+    base::TimeDelta first_navigation_report_window_deadline =
         kDefaultFirstReportWindowDeadline;
-    base::TimeDelta second_report_window_deadline =
+    base::TimeDelta second_navigation_report_window_deadline =
+        kDefaultSecondReportWindowDeadline;
+
+    // Controls the report window deadlines for scheduling event report times.
+    base::TimeDelta first_event_report_window_deadline =
+        kDefaultFirstReportWindowDeadline;
+    base::TimeDelta second_event_report_window_deadline =
         kDefaultSecondReportWindowDeadline;
 
     // When adding new members, the corresponding `Validate()` definition and

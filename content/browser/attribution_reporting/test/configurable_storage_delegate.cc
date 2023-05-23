@@ -24,6 +24,17 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace {
+
+content::AttributionConfig::EventLevelLimit EventLevelLimitWith(
+    base::FunctionRef<void(content::AttributionConfig::EventLevelLimit&)> f) {
+  content::AttributionConfig::EventLevelLimit limit;
+  f(limit);
+  return limit;
+}
+
+}  // namespace
+
 namespace content {
 
 ConfigurableStorageDelegate::ConfigurableStorageDelegate()
@@ -41,20 +52,19 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate()
                   .max_attributions = std::numeric_limits<int64_t>::max(),
               },
           .event_level_limit =
-              {
-                  .navigation_source_trigger_data_cardinality =
-                      std::numeric_limits<uint64_t>::max(),
-                  .event_source_trigger_data_cardinality =
-                      std::numeric_limits<uint64_t>::max(),
-                  .randomized_response_epsilon =
-                      std::numeric_limits<double>::infinity(),
-                  .max_reports_per_destination =
-                      std::numeric_limits<int>::max(),
-                  .max_attributions_per_navigation_source =
-                      std::numeric_limits<int>::max(),
-                  .max_attributions_per_event_source =
-                      std::numeric_limits<int>::max(),
-              },
+              EventLevelLimitWith([](AttributionConfig::EventLevelLimit& e) {
+                e.navigation_source_trigger_data_cardinality =
+                    std::numeric_limits<uint64_t>::max();
+                e.event_source_trigger_data_cardinality =
+                    std::numeric_limits<uint64_t>::max();
+                e.randomized_response_epsilon =
+                    std::numeric_limits<double>::infinity();
+                e.max_reports_per_destination = std::numeric_limits<int>::max();
+                e.max_attributions_per_navigation_source =
+                    std::numeric_limits<int>::max();
+                e.max_attributions_per_event_source =
+                    std::numeric_limits<int>::max();
+              }),
           .aggregate_limit =
               {
                   .max_reports_per_destination =
