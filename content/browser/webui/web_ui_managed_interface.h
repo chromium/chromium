@@ -38,6 +38,8 @@ SaveWebUIManagedInterfaceInDocument(content::WebUIController*,
 
 }  // namespace internal
 
+using WebUIManagedInterfaceNoPageHandler = void;
+
 // WebUIManagedInterface is an optional base class for implementing classes
 // that interact with Mojo endpoints e.g. implement a Mojo interface or
 // communicate with a Mojo Remote.
@@ -61,30 +63,63 @@ SaveWebUIManagedInterfaceInDocument(content::WebUIController*,
 //                            BarObserver> { ... }
 //
 // TODO(crbug.com/1417272): provide helpers to retrieve InterfaceImpl objects.
-template <typename InterfaceImpl, typename... Interfaces>
-class WebUIManagedInterface;
-
-template <typename InterfaceImpl, typename PageHandler, typename Page>
-class WebUIManagedInterface<InterfaceImpl, PageHandler, Page>
-    : public PageHandler, public internal::WebUIManagedInterfaceBase {
+template <typename InterfaceImpl, typename PageHandler, typename Page = void>
+class WebUIManagedInterface : public internal::WebUIManagedInterfaceBase {
  public:
-  static void Create(content::WebUIController*,
-                     mojo::PendingReceiver<PageHandler>,
-                     mojo::PendingRemote<Page>);
+  template <typename T>
+  using EnableIfNotVoid = typename std::enable_if_t<!std::is_void_v<T>>;
+
+  // Method for when PageHandler is void.
+  static void Create(content::WebUIController* webui_controller,
+                     mojo::PendingRemote<Page> pending_remote) {
+    return WebUIManagedInterface::Create(webui_controller, mojo::NullReceiver(),
+                                         std::move(pending_remote));
+  }
+
+  static void Create(
+      content::WebUIController* webui_controller,
+      mojo::PendingReceiver<PageHandler> pending_receiver,
+      mojo::PendingRemote<Page> pending_remote = mojo::NullRemote()) {
+    static_assert(
+        !std::is_void_v<PageHandler> || !std::is_void_v<Page>,
+        "Either PageHandler must be non-void or Page must be non-void.");
+
+    auto interface_impl = std::make_unique<InterfaceImpl>();
+    auto* interface_impl_ptr = interface_impl.get();
+    interface_impl->webui_controller_ = webui_controller;
+
+    if constexpr (!std::is_void_v<PageHandler>) {
+      interface_impl->page_handler_receiver_.emplace(
+          interface_impl_ptr, std::move(pending_receiver));
+    }
+
+    if constexpr (!std::is_void_v<Page>) {
+      interface_impl->page_remote_.Bind(std::move(pending_remote));
+    }
+
+    internal::SaveWebUIManagedInterfaceInDocument(webui_controller,
+                                                  std::move(interface_impl));
+    interface_impl_ptr->ready_ = true;
+    interface_impl_ptr->OnReady();
+  }
 
   // Invoked when Mojo endpoints are bound and ready to use.
   // TODO(crbug.com/1417260): Remove this by saving endpoints in an external
   // storage before constructing `InterfaceImpl`.
   virtual void OnReady() {}
 
+  template <typename P = PageHandler, typename = EnableIfNotVoid<P>>
   mojo::Receiver<PageHandler>& receiver() {
     CHECK(ready_) << "Mojo endpoints are not ready. Please use OnReady().";
-    return page_handler_receiver_;
+    return page_handler_receiver_.value();
   }
+
+  template <typename P = Page, typename = EnableIfNotVoid<P>>
   mojo::Remote<Page>& remote() {
     CHECK(ready_) << "Mojo endpoints are not ready. Please use OnReady().";
     return page_remote_;
   }
+
   content::WebUIController* webui_controller() {
     CHECK(ready_) << "webui_controller() is not ready. Please use OnReady().";
     return webui_controller_;
@@ -92,110 +127,27 @@ class WebUIManagedInterface<InterfaceImpl, PageHandler, Page>
 
  private:
   bool ready_ = false;
-  mojo::Receiver<PageHandler> page_handler_receiver_{this};
-  mojo::Remote<Page> page_remote_;
+
+  // When `PageHandler` is void, declare an unused bool member variable instead
+  // of a mojo::Receiver<PageHandler>. This allows us to share the same class
+  // instead of having three different specializations at the cost of an extra
+  // bool member.
+  using PageHandlerReceiverType =
+      std::conditional_t<std::is_void_v<PageHandler>,
+                         bool,
+                         mojo::Receiver<PageHandler>>;
+  absl::optional<PageHandlerReceiverType> page_handler_receiver_;
+
+  // When `Page` is void, declare a unused bool member variable instead of a
+  // mojo::Remote<PageHandler>. This allows us to share the same class
+  // instead of having three different specializations at the cost of an extra
+  // bool member.
+  using PageRemoteType =
+      std::conditional_t<std::is_void_v<Page>, bool, mojo::Remote<Page>>;
+  PageRemoteType page_remote_;
+
   raw_ptr<content::WebUIController> webui_controller_;
 };
-
-template <typename InterfaceImpl, typename PageHandler>
-class WebUIManagedInterface<InterfaceImpl, PageHandler>
-    : public PageHandler, public internal::WebUIManagedInterfaceBase {
- public:
-  static void Create(content::WebUIController*,
-                     mojo::PendingReceiver<PageHandler>);
-
-  // Invoked when Mojo endpoints are bound and ready to use.
-  // TODO(crbug.com/1417260): Remove this by saving endpoints in an external
-  // storage before constructing `InterfaceImpl`.
-  virtual void OnReady() {}
-
-  mojo::Receiver<PageHandler>& receiver() {
-    CHECK(ready_) << "Mojo endpoints are not ready. Please use OnReady().";
-    return page_handler_receiver_;
-  }
-  content::WebUIController* webui_controller() {
-    CHECK(ready_) << "webui_controller() is not ready. Please use OnReady().";
-    return webui_controller_;
-  }
-
- private:
-  bool ready_ = false;
-  mojo::Receiver<PageHandler> page_handler_receiver_{this};
-  raw_ptr<content::WebUIController> webui_controller_;
-};
-
-using WebUIManagedInterfaceNoPageHandler = void;
-
-template <typename InterfaceImpl, typename Page>
-class WebUIManagedInterface<InterfaceImpl,
-                            WebUIManagedInterfaceNoPageHandler,
-                            Page> : public internal::WebUIManagedInterfaceBase {
- public:
-  static void Create(content::WebUIController*, mojo::PendingRemote<Page>);
-
-  // Invoked when Mojo endpoints are bound and ready to use.
-  // TODO(crbug.com/1417260): Remove this by saving endpoints in an external
-  // storage before constructing `InterfaceImpl`.
-  virtual void OnReady() {}
-
-  mojo::Remote<Page>& remote() {
-    CHECK(ready_) << "Mojo endpoints are not ready. Please use OnReady().";
-    return page_remote_;
-  }
-  content::WebUIController* webui_controller() {
-    CHECK(ready_) << "webui_controller() is not ready. Please use OnReady().";
-    return webui_controller_;
-  }
-
- private:
-  bool ready_ = false;
-  mojo::Remote<Page> page_remote_;
-  raw_ptr<content::WebUIController> webui_controller_;
-};
-
-template <typename InterfaceImpl, typename PageHandler, typename Page>
-void WebUIManagedInterface<InterfaceImpl, PageHandler, Page>::Create(
-    content::WebUIController* webui_controller,
-    mojo::PendingReceiver<PageHandler> pending_receiver,
-    mojo::PendingRemote<Page> pending_remote) {
-  auto interface_impl = std::make_unique<InterfaceImpl>();
-  auto* interface_impl_ptr = interface_impl.get();
-  interface_impl->webui_controller_ = webui_controller;
-  interface_impl->page_handler_receiver_.Bind(std::move(pending_receiver));
-  interface_impl->page_remote_.Bind(std::move(pending_remote));
-  internal::SaveWebUIManagedInterfaceInDocument(webui_controller,
-                                                std::move(interface_impl));
-  interface_impl_ptr->ready_ = true;
-  interface_impl_ptr->OnReady();
-}
-
-template <typename InterfaceImpl, typename PageHandler>
-void WebUIManagedInterface<InterfaceImpl, PageHandler>::Create(
-    content::WebUIController* webui_controller,
-    mojo::PendingReceiver<PageHandler> pending_receiver) {
-  auto interface_impl = std::make_unique<InterfaceImpl>();
-  auto* interface_impl_ptr = interface_impl.get();
-  interface_impl->webui_controller_ = webui_controller;
-  interface_impl->page_handler_receiver_.Bind(std::move(pending_receiver));
-  internal::SaveWebUIManagedInterfaceInDocument(webui_controller,
-                                                std::move(interface_impl));
-  interface_impl_ptr->ready_ = true;
-  interface_impl_ptr->OnReady();
-}
-
-template <typename InterfaceImpl, typename Page>
-void WebUIManagedInterface<InterfaceImpl, void, Page>::Create(
-    content::WebUIController* webui_controller,
-    mojo::PendingRemote<Page> pending_remote) {
-  auto interface_impl = std::make_unique<InterfaceImpl>();
-  auto* interface_impl_ptr = interface_impl.get();
-  interface_impl->webui_controller_ = webui_controller;
-  interface_impl->page_remote_.Bind(std::move(pending_remote));
-  internal::SaveWebUIManagedInterfaceInDocument(webui_controller,
-                                                std::move(interface_impl));
-  interface_impl_ptr->ready_ = true;
-  interface_impl_ptr->OnReady();
-}
 
 }  // namespace content
 
