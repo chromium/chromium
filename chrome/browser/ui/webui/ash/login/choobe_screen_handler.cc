@@ -35,6 +35,8 @@ void ChoobeScreenHandler::Show(const std::vector<ScreenSummary>& screens) {
     screen_dict.Set("title", base::Value(screen.title_id));
     screen_dict.Set("icon", base::Value(screen.icon_id));
     screen_dict.Set("selected", false);
+    screen_dict.Set("is_revisitable", screen.is_revisitable);
+    screen_dict.Set("is_synced", screen.is_synced);
     screens_list.Append(std::move(screen_dict));
   }
 

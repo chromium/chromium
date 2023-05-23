@@ -104,6 +104,13 @@ export class OobeScreensList extends OobeScreensListBase {
     this.notifyPath('screensList_');
   }
 
+  getSubtitile_(locale, screen_subtitle) {
+    if (screen_subtitle) {
+      return this.i18nDynamic(locale, screen_subtitle);
+    }
+    return '';
+  }
+
   isScreenDisabled(is_revisitable, is_completed) {
     return (!is_revisitable) && is_completed;
   }
