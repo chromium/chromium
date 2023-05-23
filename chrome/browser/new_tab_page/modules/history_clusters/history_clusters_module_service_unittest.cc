@@ -162,7 +162,16 @@ history::Cluster SampleCluster(int id,
   sample_non_srp_visit.score = 0.9;
 
   std::vector<history::ClusterVisit> visits;
-  visits.insert(visits.end(), srp_visits, sample_srp_visit);
+  if (srp_visits > 0) {
+    for (size_t i = 0; i < (srp_visits - 1u); i++) {
+      history::ClusterVisit sample_srp_visit_modified = sample_srp_visit;
+      sample_srp_visit.url_for_display =
+          u"https://default-engine.com/search?q=not+top+search";
+      sample_srp_visit.score = 0.3;
+      visits.push_back(sample_srp_visit_modified);
+    }
+    visits.push_back(sample_srp_visit);
+  }
   visits.insert(visits.end(), non_srp_visits, sample_non_srp_visit);
 
   std::string kSampleLabel = "LabelOne";
