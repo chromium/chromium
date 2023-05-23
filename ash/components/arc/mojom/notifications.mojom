@@ -138,9 +138,9 @@ struct ArcNotificationData {
   // DEPRECATED: Subtexts for list notifications.
   [MinVersion=3]
   array<string>? deprecated_texts;
-  // DEPRECATED: Image for image notifications.
+  // Image for image notifications.
   [MinVersion=3]
-  ArcBitmap? deprecated_big_picture;
+  ArcBitmap? big_picture;
   // Flag if a notification is a custom notification backed by a
   // notification surface.
   [MinVersion=5]
