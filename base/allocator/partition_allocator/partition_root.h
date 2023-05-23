@@ -180,6 +180,11 @@ struct PartitionOptions {
     kIfAvailable,
   };
 
+  enum class MemoryTagging : uint8_t {
+    kEnabled,
+    kDisabled,
+  };
+
   AlignedAlloc aligned_alloc = AlignedAlloc::kDisallowed;
   ThreadCache thread_cache = ThreadCache::kDisabled;
   Quarantine quarantine = Quarantine::kDisallowed;
@@ -187,6 +192,7 @@ struct PartitionOptions {
   BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
   UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;
   size_t ref_count_size;
+  MemoryTagging memory_tagging = MemoryTagging::kDisabled;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolationOption thread_isolation;
 #endif
@@ -250,7 +256,9 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool;
-
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+    bool memory_tagging_enabled_ = false;
+#endif
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
     ThreadIsolationOption thread_isolation;
 #endif
@@ -1150,16 +1158,11 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeWithFlags(
   FreeNoHooks(object);
 }
 
-// Returns whether MTE is supported for this partition root. Because MTE stores
-// tagging information in the high bits of the pointer, it causes issues with
-// components like V8's ArrayBuffers which use custom pointer representations.
-// All custom representations encountered so far rely on an "is in configurable
-// pool?" check, so we use that as a proxy.
 template <bool thread_safe>
 PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsMemoryTaggingEnabled()
     const {
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-  return !flags.use_configurable_pool;
+  return flags.memory_tagging_enabled_;
 #else
   return false;
 #endif

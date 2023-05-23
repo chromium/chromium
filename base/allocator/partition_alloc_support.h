@@ -97,6 +97,13 @@ class BASE_EXPORT PartitionAllocSupport {
 
   static BrpConfiguration GetBrpConfiguration(const std::string& process_type);
 
+  // Returns true if memory tagging should be enabled if available for the given
+  // process type. May be called multiple times per process.
+  static bool ShouldEnableMemoryTagging(const std::string& process_type);
+
+  // For calling from within third_party/blink/.
+  static bool ShouldEnableMemoryTaggingInRendererProcess();
+
  private:
   PartitionAllocSupport();
 

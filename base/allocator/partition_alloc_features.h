@@ -119,6 +119,22 @@ enum class BackupRefPtrRefCountSize {
   k16B,
 };
 
+enum class MemtagMode {
+  // memtagMode will be SYNC.
+  kSync,
+  // memtagMode will be ASYNC.
+  kAsync,
+};
+
+enum class MemoryTaggingEnabledProcesses {
+  // Memory tagging enabled only in the browser process.
+  kBrowserOnly,
+  // Memory tagging enabled in all processes, except renderer.
+  kNonRenderer,
+  // Memory tagging enabled in all processes.
+  kAllProcesses,
+};
+
 enum class AlternateBucketDistributionMode : uint8_t {
   kDefault,
   kDenser,
@@ -131,6 +147,10 @@ extern const BASE_EXPORT base::FeatureParam<BackupRefPtrMode>
     kBackupRefPtrModeParam;
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrRefCountSize>
     kBackupRefPtrRefCountSizeParam;
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryTagging);
+extern const BASE_EXPORT base::FeatureParam<MemtagMode> kMemtagModeParam;
+extern const BASE_EXPORT base::FeatureParam<MemoryTaggingEnabledProcesses>
+    kMemoryTaggingEnabledProcessesParam;
 extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableDereferenceCheckParam;
 extern const BASE_EXPORT base::FeatureParam<bool>

@@ -26,6 +26,7 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/at_exit.h"
 #include "base/check.h"
+#include "base/cpu.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/stack_trace.h"
 #include "base/debug/task_trace.h"
@@ -888,6 +889,33 @@ void PartitionAllocSupport::ReconfigureForTests() {
 }
 
 // static
+bool PartitionAllocSupport::ShouldEnableMemoryTagging(
+    const std::string& process_type) {
+  if (!base::CPU::GetInstanceNoAllocation().has_mte()) {
+    return false;
+  }
+
+  DCHECK(base::FeatureList::GetInstance());
+  if (!base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocMemoryTagging)) {
+    return false;
+  }
+  switch (base::features::kMemoryTaggingEnabledProcessesParam.Get()) {
+    case base::features::MemoryTaggingEnabledProcesses::kBrowserOnly:
+      return process_type.empty();
+    case base::features::MemoryTaggingEnabledProcesses::kNonRenderer:
+      return process_type != switches::kRendererProcess;
+    case base::features::MemoryTaggingEnabledProcesses::kAllProcesses:
+      return true;
+  }
+}
+
+// static
+bool PartitionAllocSupport::ShouldEnableMemoryTaggingInRendererProcess() {
+  return ShouldEnableMemoryTagging(switches::kRendererProcess);
+}
+
+// static
 PartitionAllocSupport::BrpConfiguration
 PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
@@ -1147,11 +1175,43 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
                 .Get()
           : base::features::AlternateBucketDistributionMode::kDefault;
 
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+  bool enable_memory_tagging = ShouldEnableMemoryTagging(process_type);
+#if BUILDFLAG(IS_ANDROID)
+  if (enable_memory_tagging) {
+    partition_alloc::TagViolationReportingMode reporting_mode;
+    switch (base::features::kMemtagModeParam.Get()) {
+      case base::features::MemtagMode::kSync:
+        reporting_mode =
+            partition_alloc::TagViolationReportingMode::kSynchronous;
+        break;
+      case base::features::MemtagMode::kAsync:
+        reporting_mode =
+            partition_alloc::TagViolationReportingMode::kAsynchronous;
+        break;
+    }
+    partition_alloc::internal::ChangeMemoryTaggingModeForAllThreadsPerProcess(
+        reporting_mode);
+    CHECK_EQ(partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
+             reporting_mode);
+  } else if (base::CPU::GetInstanceNoAllocation().has_mte()) {
+    partition_alloc::internal::ChangeMemoryTaggingModeForAllThreadsPerProcess(
+        partition_alloc::TagViolationReportingMode::kDisabled);
+    CHECK_EQ(partition_alloc::internal::GetMemoryTaggingModeForCurrentThread(),
+             partition_alloc::TagViolationReportingMode::kDisabled);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+#else   // PA_CONFIG(HAS_MEMORY_TAGGING)
+  bool enable_memory_tagging = false;
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
       allocator_shim::EnableBrpPartitionMemoryReclaimer(
           brp_config.enable_brp_partition_memory_reclaimer),
-      allocator_shim::SplitMainPartition(brp_config.split_main_partition),
+      allocator_shim::EnableMemoryTagging(enable_memory_tagging),
+      allocator_shim::SplitMainPartition(brp_config.split_main_partition ||
+                                         enable_memory_tagging),
       allocator_shim::UseDedicatedAlignedPartition(
           brp_config.use_dedicated_aligned_partition),
       brp_config.ref_count_size,

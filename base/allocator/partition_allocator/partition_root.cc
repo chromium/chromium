@@ -921,6 +921,16 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
          PartitionOptions::UseConfigurablePool::kIfAvailable) &&
         IsConfigurablePoolAvailable();
     PA_DCHECK(!flags.use_configurable_pool || IsConfigurablePoolAvailable());
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+    flags.memory_tagging_enabled_ =
+        opts.memory_tagging == PartitionOptions::MemoryTagging::kEnabled;
+    // Memory tagging is not supported in the configurable pool because MTE
+    // stores tagging information in the high bits of the pointer, it causes
+    // issues with components like V8's ArrayBuffers which use custom pointer
+    // representations. All custom representations encountered so far rely on an
+    // "is in configurable pool?" check, so we use that as a proxy.
+    PA_CHECK(!flags.memory_tagging_enabled_ || !flags.use_configurable_pool);
+#endif
 
     // brp_enabled() is not supported in the configurable pool because
     // BRP requires objects to be in a different Pool.

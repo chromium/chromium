@@ -166,6 +166,30 @@ const base::FeatureParam<BackupRefPtrMode> kBackupRefPtrModeParam{
     &kPartitionAllocBackupRefPtr, "brp-mode", BackupRefPtrMode::kEnabled,
     &kBackupRefPtrModeOptions};
 
+BASE_FEATURE(kPartitionAllocMemoryTagging,
+             "PartitionAllocMemoryTagging",
+             FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr FeatureParam<MemtagMode>::Option kMemtagModeOptions[] = {
+    {MemtagMode::kSync, "sync"},
+    {MemtagMode::kAsync, "async"}};
+
+const base::FeatureParam<MemtagMode> kMemtagModeParam{
+    &kPartitionAllocMemoryTagging, "memtag-mode", MemtagMode::kAsync,
+    &kMemtagModeOptions};
+
+constexpr FeatureParam<MemoryTaggingEnabledProcesses>::Option
+    kMemoryTaggingEnabledProcessesOptions[] = {
+        {MemoryTaggingEnabledProcesses::kBrowserOnly, "browser-only"},
+        {MemoryTaggingEnabledProcesses::kNonRenderer, "non-renderer"},
+        {MemoryTaggingEnabledProcesses::kAllProcesses, "all-processes"}};
+
+const base::FeatureParam<MemoryTaggingEnabledProcesses>
+    kMemoryTaggingEnabledProcessesParam{
+        &kPartitionAllocMemoryTagging, "enabled-processes",
+        MemoryTaggingEnabledProcesses::kBrowserOnly,
+        &kMemoryTaggingEnabledProcessesOptions};
+
 const base::FeatureParam<bool> kBackupRefPtrAsanEnableDereferenceCheckParam{
     &kPartitionAllocBackupRefPtr, "asan-enable-dereference-check", true};
 const base::FeatureParam<bool> kBackupRefPtrAsanEnableExtractionCheckParam{

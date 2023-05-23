@@ -182,6 +182,8 @@ BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
 using EnableBrpPartitionMemoryReclaimer =
     base::StrongAlias<class EnableBrpPartitionMemoryReclaimerTag, bool>;
+using EnableMemoryTagging =
+    base::StrongAlias<class EnableMemoryTaggingTag, bool>;
 using SplitMainPartition = base::StrongAlias<class SplitMainPartitionTag, bool>;
 using UseDedicatedAlignedPartition =
     base::StrongAlias<class UseDedicatedAlignedPartitionTag, bool>;
@@ -194,6 +196,7 @@ using AlternateBucketDistribution =
 BASE_EXPORT void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
+    EnableMemoryTagging enable_memory_tagging,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,

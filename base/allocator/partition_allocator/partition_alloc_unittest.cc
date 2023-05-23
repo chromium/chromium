@@ -396,6 +396,13 @@ class PartitionAllocTest
             .backup_ref_ptr = PartitionOptions::BackupRefPtr::kEnabled,
 #endif
             .ref_count_size = GetParam().ref_count_size,
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
+            .memory_tagging =
+                partition_alloc::internal::base::CPU::GetInstanceNoAllocation()
+                        .has_mte()
+                    ? PartitionOptions::MemoryTagging::kEnabled
+                    : PartitionOptions::MemoryTagging::kDisabled,
+#endif
           },
           PartitionTestOptions{.use_memory_reclaimer = true,
                                .uncap_empty_slot_span_memory = true,

@@ -549,6 +549,7 @@ void EnablePartitionAllocMemoryReclaimer() {
 void ConfigurePartitions(
     EnableBrp enable_brp,
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
+    EnableMemoryTagging enable_memory_tagging,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
     size_t ref_count_size,
@@ -612,7 +613,11 @@ void ConfigurePartitions(
                   ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
                   : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
           .ref_count_size = ref_count_size,
-      });
+          .memory_tagging =
+              enable_memory_tagging
+                  ? partition_alloc::PartitionOptions::MemoryTagging::kEnabled
+                  : partition_alloc::PartitionOptions::MemoryTagging::
+                        kDisabled});
   partition_alloc::ThreadSafePartitionRoot* new_root = new_main_partition.get();
 
   partition_alloc::ThreadSafePartitionRoot* new_aligned_root;

@@ -974,18 +974,21 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
         slot_size <= kMaxMemoryTaggingSize);
   }
 
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
   const bool use_tagging =
       root->IsMemoryTaggingEnabled() && slot_size <= kMaxMemoryTaggingSize;
   if (PA_LIKELY(use_tagging)) {
     // Ensure the MTE-tag of the memory pointed by |return_slot| is unguessable.
     TagMemoryRangeRandomly(return_slot, slot_size);
   }
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
   uintptr_t next_slot_end = next_slot + slot_size;
   size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
     void* next_slot_ptr;
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
     if (PA_LIKELY(use_tagging)) {
       // Ensure the MTE-tag of the memory pointed by other provisioned slot is
       // unguessable. They will be returned to the app as is, and the MTE-tag
@@ -995,6 +998,9 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
       // No MTE-tagging for larger slots, just cast.
       next_slot_ptr = reinterpret_cast<void*>(next_slot);
     }
+#else  // PA_CONFIG(HAS_MEMORY_TAGGING)
+    next_slot_ptr = reinterpret_cast<void*>(next_slot);
+#endif
     auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot_ptr);
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);
