@@ -3975,7 +3975,7 @@
             ]
         }
     ],
-    "DIPSTriggeringAction": [
+    "DIPSStatefulBounceEnforcement": [
         {
             "platforms": [
                 "android",
@@ -3986,40 +3986,10 @@
             ],
             "experiments": [
                 {
-                    "name": "StorageTrigger",
+                    "name": "Enabled_v0",
                     "params": {
-                        "persist_database": "true",
-                        "triggering_action": "storage"
-                    },
-                    "enable_features": [
-                        "DIPS"
-                    ]
-                },
-                {
-                    "name": "BounceTrigger",
-                    "params": {
-                        "persist_database": "true",
-                        "triggering_action": "bounce"
-                    },
-                    "enable_features": [
-                        "DIPS"
-                    ]
-                },
-                {
-                    "name": "StatefulBounceTrigger",
-                    "params": {
-                        "persist_database": "true",
+                        "delete": "true",
                         "triggering_action": "stateful_bounce"
-                    },
-                    "enable_features": [
-                        "DIPS"
-                    ]
-                },
-                {
-                    "name": "PersistenceOnly",
-                    "params": {
-                        "persist_database": "true",
-                        "triggering_action": "none"
                     },
                     "enable_features": [
                         "DIPS"
