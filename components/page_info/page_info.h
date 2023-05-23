@@ -479,11 +479,11 @@ class PageInfo : private content_settings::CookieControlsView {
   std::u16string identity_status_description_android_;
 #endif
 
-  // Set when the user has explicitly bypassed an SSL error for this host or
-  // explicitly denied it (the latter of which is not currently possible in the
-  // Chrome UI). When |show_ssl_decision_revoke_button| is true, the connection
-  // area of the page info will include an option for the user to revoke their
-  // decision to bypass the SSL error for this host.
+  // Set when the user has explicitly bypassed an SSL error for this host
+  // and/or the user has explicitly bypassed an HTTP warning (from HTTPS-First
+  // Mode) for this host. When `show_ssl_decision_revoke_button` is true, the
+  // connection area of the page info UI will include an option for the user
+  // to revoke their decision to bypass warnings for this host.
   bool show_ssl_decision_revoke_button_;
 
   // Details about the connection to the website. In case of an encrypted

@@ -25,6 +25,7 @@
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -34,6 +35,7 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
+#include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
@@ -382,6 +384,10 @@ const std::u16string ChromePageInfoDelegate::GetClientApplicationName() {
   return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
 }
 #endif
+
+bool ChromePageInfoDelegate::IsHttpsFirstModeEnabled() {
+  return GetProfile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+}
 
 void ChromePageInfoDelegate::SetSecurityStateForTests(
     security_state::SecurityLevel security_level,

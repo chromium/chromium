@@ -60,6 +60,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON,
     VIEW_ID_PAGE_INFO_MORE_ABOUT_THIS_PAGE_BUTTON,
     VIEW_ID_PERMISSION_TOGGLE_ROW_TOGGLE_BUTTON,
+    VIEW_ID_PAGE_INFO_RESET_DECISIONS_LABEL,
   };
 
   // Creates a separator view with padding on top and bottom. Use with flex

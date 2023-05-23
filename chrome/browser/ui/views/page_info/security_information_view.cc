@@ -148,6 +148,8 @@ void SecurityInformationView::AddResetDecisionsLabel(
   views::StyledLabel* reset_cert_decisions_label =
       reset_decisions_label_container_->AddChildView(
           std::make_unique<views::StyledLabel>());
+  reset_cert_decisions_label->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_DECISIONS_LABEL);
   reset_cert_decisions_label->SetDefaultTextStyle(
       views::style::STYLE_SECONDARY);
   reset_cert_decisions_label->SetText(text);

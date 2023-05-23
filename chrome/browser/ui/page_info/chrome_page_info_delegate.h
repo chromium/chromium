@@ -91,6 +91,8 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   const std::u16string GetClientApplicationName() override;
 #endif
 
+  bool IsHttpsFirstModeEnabled() override;
+
  private:
   Profile* GetProfile() const;
 
