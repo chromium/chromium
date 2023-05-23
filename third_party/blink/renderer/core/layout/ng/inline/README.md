@@ -146,8 +146,8 @@ This phase:
 
 [CSS Calculating widths and margins]: https://drafts.csswg.org/css2/#Computing_widths_and_margins
 
-### <a name="create-line">Line Box Construction</a> ###
-[line Box Construction]: #create-line
+### <a name="line-box-construction">Line Box Construction</a> ###
+[line Box Construction]: #line-box-construction
 
 `NGInlineLayoutAlgorithm::CreateLine()` takes a list of [NGInlineItemResult] and
 produces a list of [NGLogicalLineItem].
@@ -369,7 +369,7 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [UAX#9 Resolving Embedding Levels]: http://www.unicode.org/reports/tr9/#Resolving_Embedding_Levels
 [UAX#9 Reordering Resolved Levels]: http://www.unicode.org/reports/tr9/#Reordering_Resolved_Levels
 
-[FontBaseline]: ../../../platform/fonts/font_baseline.h
+[FontBaseline]: ../../../../platform/fonts/font_baseline.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
 [NGBidiParagraph]: ng_bidi_paragraph.h
@@ -394,5 +394,5 @@ positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 [NGPhysicalFragment]: ../ng_physical_fragment.h
 [NGPhysicalLineBoxFragment]: ng_physical_line_box_fragment.h
 [NGPhysicalTextFragment]: ng_physical_text_fragment.h
-[ShapeResult]: ../../../platform/fonts/shaping/shape_result.h
-[ShapingLineBreaker]: ../../../platform/fonts/shaping/shaping_line_breaker.h
+[ShapeResult]: ../../../../platform/fonts/shaping/shape_result.h
+[ShapingLineBreaker]: ../../../../platform/fonts/shaping/shaping_line_breaker.h
