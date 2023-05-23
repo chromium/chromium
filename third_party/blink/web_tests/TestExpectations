@@ -266,11 +266,6 @@ crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/cs
 crbug.com/1443559 virtual/view-transition-mpa-serialization/inspector-protocol/css/css-get-styles-for-view-transition.js [ Failure ]
 crbug.com/1443559 virtual/view-transition-mpa-serialization/view-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/old-content-captures-clip-path.html [ Failure ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/only-child-new.html [ Timeout ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/only-child-old.html [ Timeout ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/root-to-shared-animation-end.html [ Timeout ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/root-to-shared-animation-incoming.html [ Timeout ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/root-to-shared-animation-start.html [ Timeout ]
 crbug.com/1443559 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 
 ########## Ref tests can't be rebaselined ##########

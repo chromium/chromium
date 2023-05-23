@@ -694,6 +694,13 @@ bool ViewTransitionStyleTracker::Capture() {
   for (const auto& root_name : AllRootTags())
     transition_names.push_front(root_name);
 
+#if DCHECK_IS_ON()
+  for (wtf_size_t i = 0; i < transition_names.size(); ++i) {
+    DCHECK_EQ(transition_names.Find(transition_names[i]), i)
+        << " Duplicate transition name: " << transition_names[i];
+  }
+#endif
+
   // This informs the style engine the set of names we have, which will be used
   // to create the pseudo element tree.
   document_->GetStyleEngine().SetViewTransitionNames(transition_names);
@@ -787,7 +794,6 @@ bool ViewTransitionStyleTracker::Start() {
       data->element_index = next_index++;
       element_data_map_.insert(name, data);
     }
-
     // Reuse any previously generated snapshot_id for this element. If there was
     // none yet, then generate the resource id.
     auto& snapshot_id =
@@ -828,10 +834,18 @@ bool ViewTransitionStyleTracker::Start() {
   if (found_new_names) {
     VectorOf<std::pair<AtomicString, int>> new_name_pairs;
     int next_name_index = 0;
-    for (const auto& root_name : AllRootTags())
+    HashSet<AtomicString> unique_names;
+    for (const auto& root_name : AllRootTags()) {
       new_name_pairs.push_back(std::make_pair(root_name, ++next_name_index));
-    for (auto& [name, data] : element_data_map_)
-      new_name_pairs.push_back(std::make_pair(name, data->element_index));
+      DCHECK(!unique_names.Contains(root_name));
+      unique_names.insert(root_name);
+    }
+    for (auto& [name, data] : element_data_map_) {
+      if (!unique_names.Contains(name)) {
+        new_name_pairs.push_back(std::make_pair(name, data->element_index));
+        unique_names.insert(name);
+      }
+    }
 
     std::sort(new_name_pairs.begin(), new_name_pairs.end(),
               [](const std::pair<AtomicString, int>& left,
@@ -842,6 +856,13 @@ bool ViewTransitionStyleTracker::Start() {
     VectorOf<AtomicString> new_names;
     for (auto& [name, index] : new_name_pairs)
       new_names.push_back(name);
+
+#if DCHECK_IS_ON()
+    for (wtf_size_t i = 0; i < new_names.size(); ++i) {
+      DCHECK_EQ(new_names.Find(new_names[i]), i)
+          << " Duplicate transition name: " << new_names[i];
+    }
+#endif
 
     document_->GetStyleEngine().SetViewTransitionNames(new_names);
   }
