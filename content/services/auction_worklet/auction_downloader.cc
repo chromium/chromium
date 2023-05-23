@@ -197,6 +197,7 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
 
   auto simple_url_loader = std::move(simple_url_loader_);
   std::string allow_fledge;
+  std::string auction_allowed;
 
   if (!body) {
     std::string error_msg;
@@ -229,13 +230,17 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
               /*decoded_body_length=*/body->size());
 
   if (!simple_url_loader->ResponseInfo()->headers ||
-      !simple_url_loader->ResponseInfo()->headers->GetNormalizedHeader(
-          "X-Allow-FLEDGE", &allow_fledge) ||
-      !base::EqualsCaseInsensitiveASCII(allow_fledge, "true")) {
+      ((!simple_url_loader->ResponseInfo()->headers->GetNormalizedHeader(
+            "X-Allow-FLEDGE", &allow_fledge) ||
+        !base::EqualsCaseInsensitiveASCII(allow_fledge, "true")) &&
+       (!simple_url_loader->ResponseInfo()->headers->GetNormalizedHeader(
+            "Ad-Auction-Allowed", &auction_allowed) ||
+        !base::EqualsCaseInsensitiveASCII(auction_allowed, "true")))) {
     std::move(auction_downloader_callback_)
         .Run(/*body=*/nullptr, /*headers=*/nullptr,
              base::StringPrintf(
-                 "Rejecting load of %s due to lack of X-Allow-FLEDGE: true.",
+                 "Rejecting load of %s due to lack of Ad-Auction-Allowed: true "
+                 "(or the deprecated X-Allow-FLEDGE: true).",
                  source_url_.spec().c_str()));
   } else if (!MimeTypeIsConsistent(mime_type_,
                                    simple_url_loader->ResponseInfo())) {

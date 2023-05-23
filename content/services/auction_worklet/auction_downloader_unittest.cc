@@ -133,7 +133,33 @@ TEST_F(AuctionDownloaderTest, AllowFledge) {
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to lack of "
-      "X-Allow-FLEDGE: true.",
+      "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
+      last_error_msg());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "Ad-Auction-Allowed: true");
+  EXPECT_TRUE(RunRequest());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "Ad-Auction-Allowed: false");
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to lack of "
+      "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
+      last_error_msg());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody,
+              "Ad-Auction-Allowed: true\nX-Allow-FLEDGE: true");
+  EXPECT_TRUE(RunRequest());
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody,
+              "Ad-Auction-Allowed: false\nX-Allow-FLEDGE: false");
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to lack of "
+      "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
       last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
@@ -141,7 +167,7 @@ TEST_F(AuctionDownloaderTest, AllowFledge) {
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to lack of "
-      "X-Allow-FLEDGE: true.",
+      "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
       last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
@@ -149,7 +175,7 @@ TEST_F(AuctionDownloaderTest, AllowFledge) {
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to lack of "
-      "X-Allow-FLEDGE: true.",
+      "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
       last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
@@ -157,7 +183,7 @@ TEST_F(AuctionDownloaderTest, AllowFledge) {
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to lack of "
-      "X-Allow-FLEDGE: true.",
+      "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
       last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
@@ -165,7 +191,7 @@ TEST_F(AuctionDownloaderTest, AllowFledge) {
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to lack of "
-      "X-Allow-FLEDGE: true.",
+      "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
       last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
@@ -173,7 +199,7 @@ TEST_F(AuctionDownloaderTest, AllowFledge) {
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to lack of "
-      "X-Allow-FLEDGE: true.",
+      "Ad-Auction-Allowed: true (or the deprecated X-Allow-FLEDGE: true).",
       last_error_msg());
 }
 
