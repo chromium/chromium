@@ -23,7 +23,7 @@ import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
-import {Route} from '../router.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './pointers.html.js';
 
@@ -140,8 +140,21 @@ class SettingsPointersElement extends SettingsPointersElementBase {
           Setting.kMouseSpeed,
         ]),
       },
+
+      /**
+       * Whether settings should be split per device.
+       */
+      isDeviceSettingsSplitEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableInputDeviceSettingsSplit');
+        },
+        readOnly: true,
+      },
     };
   }
+
+  private isDeviceSettingsSplitEnabled_: boolean;
 
   /**
    * Headings should only be visible if more than one subsection is present.
@@ -172,7 +185,16 @@ class SettingsPointersElement extends SettingsPointersElementBase {
     if (route !== routes.POINTERS) {
       return;
     }
-
+    if (Router.getInstance().currentRoute === routes.POINTERS &&
+        this.isDeviceSettingsSplitEnabled_) {
+      // Call setCurrentRoute function to go to the device page when
+      // the feature flag is turned on. We don't use navigateTo function since
+      // we don't want to navigate back to the previous point page.
+      setTimeout(() => {
+        Router.getInstance().setCurrentRoute(
+            routes.DEVICE, new URLSearchParams(), false);
+      });
+    }
     this.attemptDeepLink();
   }
 
