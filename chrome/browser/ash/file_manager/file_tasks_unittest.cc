@@ -454,6 +454,22 @@ class FileManagerFileTaskPreferencesTest
     profile()->GetTestingPrefService()->SetDict(prefs::kDefaultTasksBySuffix,
                                                 suffixes.Clone());
   }  // namespace file_manager::file_tasks
+
+  const base::Value::Dict& tasks_by_mime_type() {
+    return profile()->GetTestingPrefService()->GetDict(
+        prefs::kDefaultTasksByMimeType);
+  }
+
+  const base::Value::Dict& tasks_by_suffix() {
+    return profile()->GetTestingPrefService()->GetDict(
+        prefs::kDefaultTasksBySuffix);
+  }
+
+  void ClearPrefs() {
+    profile()->GetTestingPrefService()->ClearPref(
+        prefs::kDefaultTasksByMimeType);
+    profile()->GetTestingPrefService()->ClearPref(prefs::kDefaultTasksBySuffix);
+  }
 };
 
 // Test that the right task is chosen from multiple choices per mime types
@@ -741,11 +757,132 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   std::string files_app_id = package + "/" + activity;
   std::string files_task_id = files_app_id + "|arc|view";
   const std::string* default_task_id =
-      profile()
-          ->GetTestingPrefService()
-          ->GetDict(prefs::kDefaultTasksByMimeType)
-          .FindString(mime_type);
+      tasks_by_mime_type().FindString(mime_type);
   ASSERT_EQ(*default_task_id, files_task_id);
+}
+
+TEST_F(FileManagerFileTaskPreferencesTest,
+       UpdateDefaultTask_SetsOfficeFileHandlersForGroup) {
+  std::string app_id = "abcdef";
+  TaskType task_type = TASK_TYPE_FILE_HANDLER;
+  std::string activity = "first_activity";
+  TaskDescriptor fake_office_task(app_id, task_type, activity);
+
+  UpdateDefaultTask(profile(), fake_office_task, {".doc"},
+                    {"application/msword"});
+
+  std::string expected_task_id = MakeTaskID(app_id, task_type, activity);
+  ASSERT_EQ(*tasks_by_mime_type().FindString("application/msword"),
+            expected_task_id);
+  ASSERT_EQ(*tasks_by_mime_type().FindString(
+                "application/"
+                "vnd.openxmlformats-officedocument.wordprocessingml.document"),
+            expected_task_id);
+
+  ASSERT_EQ(*tasks_by_suffix().FindString(".doc"), expected_task_id);
+  ASSERT_EQ(*tasks_by_suffix().FindString(".docx"), expected_task_id);
+  ASSERT_EQ(tasks_by_suffix().FindString(".xls"), nullptr);
+  ASSERT_EQ(tasks_by_suffix().FindString(".pptx"), nullptr);
+
+  ClearPrefs();
+
+  UpdateDefaultTask(profile(), fake_office_task, {".xlsx"},
+                    {"application/"
+                     "vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+
+  ASSERT_EQ(*tasks_by_mime_type().FindString("application/vnd.ms-excel"),
+            expected_task_id);
+  ASSERT_EQ(*tasks_by_mime_type().FindString(
+                "application/vnd.ms-excel.sheet.macroEnabled.12"),
+            expected_task_id);
+  ASSERT_EQ(*tasks_by_mime_type().FindString(
+                "application/"
+                "vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+            expected_task_id);
+
+  ASSERT_EQ(*tasks_by_suffix().FindString(".xls"), expected_task_id);
+  ASSERT_EQ(*tasks_by_suffix().FindString(".xlsm"), expected_task_id);
+  ASSERT_EQ(*tasks_by_suffix().FindString(".xlsx"), expected_task_id);
+  ASSERT_EQ(tasks_by_suffix().FindString(".doc"), nullptr);
+  ASSERT_EQ(tasks_by_suffix().FindString(".pptx"), nullptr);
+
+  ClearPrefs();
+
+  UpdateDefaultTask(
+      profile(), fake_office_task, {".pptx"},
+      {"application/"
+       "vnd.openxmlformats-officedocument.presentationml.presentation"});
+
+  ASSERT_EQ(*tasks_by_mime_type().FindString("application/vnd.ms-powerpoint"),
+            expected_task_id);
+  ASSERT_EQ(
+      *tasks_by_mime_type().FindString(
+          "application/"
+          "vnd.openxmlformats-officedocument.presentationml.presentation"),
+      expected_task_id);
+
+  ASSERT_EQ(*tasks_by_suffix().FindString(".ppt"), expected_task_id);
+  ASSERT_EQ(*tasks_by_suffix().FindString(".pptx"), expected_task_id);
+  ASSERT_EQ(tasks_by_suffix().FindString(".doc"), nullptr);
+  ASSERT_EQ(tasks_by_suffix().FindString(".xlsm"), nullptr);
+}
+
+TEST_F(FileManagerFileTaskPreferencesTest,
+       UpdateDefaultTask_DoesNotSetOfficeFileHandlersForGroup) {
+  std::string app_id = "abcdef";
+  TaskType task_type = TASK_TYPE_FILE_HANDLER;
+  std::string activity = "first_activity";
+  TaskDescriptor fake_office_task(app_id, task_type, activity);
+
+  UpdateDefaultTask(profile(), fake_office_task, {".doc"}, {});
+
+  std::string expected_task_id = MakeTaskID(app_id, task_type, activity);
+  ASSERT_EQ(tasks_by_mime_type().FindString("application/msword"), nullptr);
+  ASSERT_EQ(tasks_by_mime_type().FindString(
+                "application/"
+                "vnd.openxmlformats-officedocument.wordprocessingml.document"),
+            nullptr);
+
+  ASSERT_EQ(*tasks_by_suffix().FindString(".doc"), expected_task_id);
+  ASSERT_EQ(tasks_by_suffix().FindString(".docx"), nullptr);
+  ASSERT_EQ(tasks_by_suffix().FindString(".xls"), nullptr);
+  ASSERT_EQ(tasks_by_suffix().FindString(".pptx"), nullptr);
+
+  ClearPrefs();
+
+  UpdateDefaultTask(profile(), fake_office_task, {}, {"application/msword"});
+
+  ASSERT_EQ(*tasks_by_mime_type().FindString("application/msword"),
+            expected_task_id);
+  ASSERT_EQ(tasks_by_mime_type().FindString(
+                "application/"
+                "vnd.openxmlformats-officedocument.wordprocessingml.document"),
+            nullptr);
+
+  ASSERT_EQ(tasks_by_suffix().FindString(".doc"), nullptr);
+  ASSERT_EQ(tasks_by_suffix().FindString(".docx"), nullptr);
+  ASSERT_EQ(tasks_by_suffix().FindString(".xls"), nullptr);
+  ASSERT_EQ(tasks_by_suffix().FindString(".pptx"), nullptr);
+
+  ClearPrefs();
+
+  UpdateDefaultTask(profile(), fake_office_task, {".doc", ".xls"},
+                    {"application/msword", "application/vnd.ms-excel"});
+
+  ASSERT_EQ(*tasks_by_mime_type().FindString("application/msword"),
+            expected_task_id);
+  ASSERT_EQ(*tasks_by_mime_type().FindString("application/vnd.ms-excel"),
+            expected_task_id);
+  ASSERT_EQ(tasks_by_mime_type().FindString(
+                "application/vnd.ms-excel.sheet.macroEnabled.12"),
+            nullptr);
+
+  ASSERT_EQ(*tasks_by_suffix().FindString(".doc"), expected_task_id);
+  ASSERT_EQ(tasks_by_suffix().FindString(".docx"), nullptr);
+  ASSERT_EQ(*tasks_by_suffix().FindString(".xls"), expected_task_id);
+  ASSERT_EQ(tasks_by_suffix().FindString(".xlsm"), nullptr);
+  ASSERT_EQ(tasks_by_suffix().FindString(".xlsx"), nullptr);
+  ASSERT_EQ(tasks_by_suffix().FindString(".pptx"), nullptr);
 }
 
 // Test the setting of a default file task for Office files to a Files App SWA.
