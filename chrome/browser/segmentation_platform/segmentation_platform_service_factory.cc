@@ -105,6 +105,9 @@ SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
 
 KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  if (context->IsOffTheRecord())
+    return nullptr;
+
   if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature))
     return new DummySegmentationPlatformService();
 
