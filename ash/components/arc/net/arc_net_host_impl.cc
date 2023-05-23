@@ -6,6 +6,7 @@
 
 #include <net/if.h>
 
+#include <queue>
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -17,6 +18,7 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -42,11 +44,11 @@
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "ui/aura/window.h"
 
 namespace {
 
@@ -222,15 +224,6 @@ void StopLohsFailureCallback(const std::string& error_name,
                              const std::string& error_message) {
   NET_LOG(ERROR) << __func__ << ": error:" << error_name
                  << ", message: " << error_message;
-}
-
-aura::Window* GetActiveWindow() {
-  const exo::WMHelper* wm_helper =
-      exo::WMHelper::HasInstance() ? exo::WMHelper::GetInstance() : nullptr;
-  if (!wm_helper) {
-    return nullptr;
-  }
-  return wm_helper->GetActiveWindow();
 }
 
 }  // namespace
@@ -1109,6 +1102,33 @@ void ArcNetHostImpl::AddPasspointCredentials(
                      weak_factory_.GetWeakPtr()));
 }
 
+aura::Window* ArcNetHostImpl::GetAppWindow(const std::string& package_name) {
+  std::queue<aura::Window*> windows = {};
+  for (auto* window : ash::Shell::GetAllRootWindows()) {
+    windows.push(window);
+  }
+  while (!windows.empty()) {
+    auto* window = windows.front();
+    windows.pop();
+    if (!window) {
+      continue;
+    }
+    for (auto* child_window : window->children()) {
+      windows.push(child_window);
+    }
+    const std::string* app_id = window->GetProperty(ash::kAppIDKey);
+    if (!app_id || app_id->empty()) {
+      continue;
+    }
+    const std::string window_package_name =
+        app_metadata_provider_->GetAppPackageName(*app_id);
+    if (window_package_name == package_name) {
+      return window;
+    }
+  }
+  return nullptr;
+}
+
 void ArcNetHostImpl::RequestPasspointAppApproval(
     mojom::PasspointApprovalRequestPtr request,
     RequestPasspointAppApprovalCallback callback) {
@@ -1117,30 +1137,18 @@ void ArcNetHostImpl::RequestPasspointAppApproval(
         mojom::PasspointApprovalResponse::New(/*allow=*/false));
     return;
   }
-  aura::Window* window = GetActiveWindow();
+
+  aura::Window* window = GetAppWindow(request->package_name);
   if (!window) {
-    NET_LOG(ERROR) << __func__ << ": Failed to get active window";
+    NET_LOG(ERROR) << __func__ << ": Failed to get app window";
     std::move(callback).Run(
         mojom::PasspointApprovalResponse::New(/*allow=*/false));
     return;
   }
-  const std::string* app_id = window->GetProperty(ash::kAppIDKey);
-  if (!app_id || app_id->empty()) {
-    NET_LOG(ERROR) << __func__ << ": Failed to get app info";
-    std::move(callback).Run(
-        mojom::PasspointApprovalResponse::New(/*allow=*/false));
-    return;
-  }
-  const std::string package_name =
-      app_metadata_provider_->GetAppPackageName(*app_id);
-  if (request->package_name != package_name) {
-    NET_LOG(ERROR) << __func__
-                   << ": Unexpected app package name of the active window: "
-                   << package_name;
-    std::move(callback).Run(
-        mojom::PasspointApprovalResponse::New(/*allow=*/false));
-    return;
-  }
+  // Prior to starting the dialog, the app is already expected to be on
+  // foreground, this is only necessary for edge cases (b/283739295).
+  window->Focus();
+
   PasspointDialogView::Show(window, std::move(request), std::move(callback));
 }
 
