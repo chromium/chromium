@@ -153,7 +153,7 @@ class PageActionIconView : public IconLabelBubbleView {
   // Invoked after the icon is pressed.
   virtual void OnPressed(bool activated) {}
 
-  // views::IconLabelBubbleView:
+  // IconLabelBubbleView:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
@@ -162,6 +162,7 @@ class PageActionIconView : public IconLabelBubbleView {
   void NotifyClick(const ui::Event& event) override;
   bool IsTriggerableEvent(const ui::Event& event) override;
   bool ShouldUpdateInkDropOnClickCanceled() const override;
+  void UpdateBorder() override;
 
  protected:
   // Calls OnExecuting and runs |command_id_| with a valid |command_updater_|.
@@ -198,8 +199,6 @@ class PageActionIconView : public IconLabelBubbleView {
   virtual void UpdateImpl() = 0;
 
  private:
-  void UpdatePageActionIconBorder();
-
   void InstallLoadingIndicator();
 
   // What color to paint the icon with.

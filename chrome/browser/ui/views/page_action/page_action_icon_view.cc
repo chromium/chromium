@@ -125,7 +125,7 @@ PageActionIconView::PageActionIconView(
   // Only shows bubble after mouse is released.
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnRelease);
-  UpdatePageActionIconBorder();
+  UpdateBorder();
 }
 
 PageActionIconView::~PageActionIconView() = default;
@@ -179,7 +179,7 @@ void PageActionIconView::ViewHierarchyChanged(
   View::ViewHierarchyChanged(details);
   if (details.is_add && details.child == this) {
     UpdateIconImage();
-    UpdatePageActionIconBorder();
+    UpdateBorder();
   }
 }
 
@@ -289,6 +289,7 @@ void PageActionIconView::Update() {
   } else {
     UpdateImpl();
   }
+  UpdateBorder();
 }
 
 void PageActionIconView::UpdateIconImage() {
@@ -327,8 +328,14 @@ content::WebContents* PageActionIconView::GetWebContents() const {
   return delegate_->GetWebContentsForPageActionIconView();
 }
 
-void PageActionIconView::UpdatePageActionIconBorder() {
-  const gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
+void PageActionIconView::UpdateBorder() {
+  gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
+  if (ShouldShowLabel() && OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    // TODO(crbug.com/1447066): Figure out what these values should be. For
+    // bonus point also try to move parts of this into the parent class. This is
+    // too bespoke.
+    new_insets += gfx::Insets::TLBR(0, 4, 0, 8);
+  }
   if (new_insets != GetInsets())
     SetBorder(views::CreateEmptyBorder(new_insets));
 }

@@ -47,12 +47,6 @@
 using content::WebContents;
 using security_state::SecurityLevel;
 
-namespace {
-constexpr int kDefaultInternalSpacing = 8;
-constexpr int kDefaultInternalSpacingTouchUI = 10;
-constexpr int kDefaultInternalSpacingChromeRefresh = 4;
-}  // namespace
-
 LocationIconView::LocationIconView(
     const gfx::FontList& font_list,
     IconLabelBubbleView::Delegate* parent_delegate,
@@ -199,19 +193,6 @@ bool LocationIconView::GetShowText() const {
   }
 
   return !location_bar_model->GetSecureDisplayText().empty();
-}
-
-int LocationIconView::GetInternalSpacing() const {
-  if (image()->GetPreferredSize().IsEmpty()) {
-    return 0;
-  }
-
-  return (ui::TouchUiController::Get()->touch_ui()
-              ? kDefaultInternalSpacingTouchUI
-              : (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-                     ? kDefaultInternalSpacingChromeRefresh
-                     : kDefaultInternalSpacing)) +
-         GetExtraInternalSpacing();
 }
 
 const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {

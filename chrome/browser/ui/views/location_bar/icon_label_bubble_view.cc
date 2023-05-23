@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_animator.h"
@@ -425,6 +426,7 @@ void IconLabelBubbleView::AnimationEnded(const gfx::Animation* animation) {
   views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnFocus(
       !views::FocusRing::Get(this));
   UpdateBackground();
+  UpdateBorder();
 }
 
 void IconLabelBubbleView::AnimationProgressed(const gfx::Animation* animation) {
@@ -481,7 +483,16 @@ void IconLabelBubbleView::UpdateBorder() {
 int IconLabelBubbleView::GetInternalSpacing() const {
   if (image()->GetPreferredSize().IsEmpty())
     return 0;
-  return (ui::TouchUiController::Get()->touch_ui() ? 10 : 8) +
+
+  constexpr int kDefaultInternalSpacing = 8;
+  constexpr int kDefaultInternalSpacingTouchUI = 10;
+  constexpr int kDefaultInternalSpacingChromeRefresh = 4;
+
+  return (ui::TouchUiController::Get()->touch_ui()
+              ? kDefaultInternalSpacingTouchUI
+              : (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+                     ? kDefaultInternalSpacingChromeRefresh
+                     : kDefaultInternalSpacing)) +
          GetExtraInternalSpacing();
 }
 
