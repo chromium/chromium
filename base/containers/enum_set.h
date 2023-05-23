@@ -181,7 +181,15 @@ class EnumSet {
 
   // Returns an EnumSet with all possible values.
   static constexpr EnumSet All() {
-    return EnumSet(EnumBitSet((1ULL << kValueCount) - 1));
+    if (kValueCount == 0) {
+      return EnumSet();
+    }
+    // Since `1 << kValueCount` may trigger shift-count-overflow warning if
+    // the `kValueCount` is 64, instead of returning `(1 << kValueCount) - 1`,
+    // the bitmask will be constructed from two parts: the most significant bits
+    // and the remaining.
+    uint64_t mask = 1ULL << (kValueCount - 1);
+    return EnumSet(EnumBitSet(mask - 1 + mask));
   }
 
   // Returns an EnumSet with all the values from start to end, inclusive.

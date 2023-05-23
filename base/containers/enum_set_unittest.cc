@@ -138,6 +138,15 @@ TEST_F(EnumSetTest, All) {
   EXPECT_TRUE(enums.Has(TestEnum::TEST_5));
 }
 
+TEST_F(EnumSetTest, AllExtreme) {
+  const TestEnumExtremeSet enums(TestEnumExtremeSet::All());
+  EXPECT_FALSE(enums.Empty());
+  EXPECT_EQ(static_cast<size_t>(64), enums.Size());
+  EXPECT_TRUE(enums.Has(TestEnumExtreme::TEST_0));
+  EXPECT_TRUE(enums.Has(TestEnumExtreme::TEST_63));
+  EXPECT_FALSE(enums.Has(TestEnumExtreme::TEST_64_OUT_OF_BOUNDS));
+}
+
 TEST_F(EnumSetTest, FromRange) {
   EXPECT_EQ(TestEnumSet({TestEnum::TEST_2, TestEnum::TEST_3, TestEnum::TEST_4}),
             TestEnumSet::FromRange(TestEnum::TEST_2, TestEnum::TEST_4));
