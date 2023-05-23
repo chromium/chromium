@@ -132,18 +132,10 @@ void JavaScriptBrowserTest::BuildJavascriptLibraries(
 std::u16string JavaScriptBrowserTest::BuildRunTestJSCall(
     bool is_async,
     const std::string& function_name,
-    std::vector<base::Value> test_func_args) {
-  std::vector<base::Value> arguments;
-  arguments.emplace_back(is_async);
-  arguments.emplace_back(function_name);
-  base::Value::List baked_argument_list;
-  for (auto& arg : test_func_args)
-    baked_argument_list.Append(std::move(arg));
-  arguments.emplace_back(std::move(baked_argument_list));
-
-  std::vector<base::ValueView> view_vector;
-  view_vector.reserve(arguments.size());
-  for (const auto& argument : arguments)
-    view_vector.push_back(argument);
-  return content::WebUI::GetJavascriptCall(std::string("runTest"), view_vector);
+    base::Value::List test_func_args) {
+  auto arguments = base::Value::List()
+                       .Append(is_async)
+                       .Append(function_name)
+                       .Append(std::move(test_func_args));
+  return content::WebUI::GetJavascriptCall(std::string("runTest"), arguments);
 }

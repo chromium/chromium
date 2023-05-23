@@ -43,6 +43,8 @@ class CONTENT_EXPORT WebUI {
   static std::u16string GetJavascriptCall(
       base::StringPiece function_name,
       base::span<const base::ValueView> arg_list);
+  static std::u16string GetJavascriptCall(base::StringPiece function_name,
+                                          const base::Value::List& arg_list);
 
   virtual ~WebUI() {}
 
