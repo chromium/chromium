@@ -243,11 +243,14 @@ void FrameCaret::PaintCaret(GraphicsContext& context,
   display_item_client_->PaintCaret(context, paint_offset, DisplayItem::kCaret);
 
   if (!frame_->Selection().IsHidden()) {
-    display_item_client_->RecordSelection(
-        context, paint_offset,
-        frame_->Selection().IsHandleVisible()
-            ? gfx::SelectionBound::Type::CENTER
-            : gfx::SelectionBound::Type::HIDDEN);
+    auto type = frame_->Selection().IsHandleVisible()
+                    ? gfx::SelectionBound::Type::CENTER
+                    : gfx::SelectionBound::Type::HIDDEN;
+
+    if (type == gfx::SelectionBound::Type::CENTER ||
+        base::FeatureList::IsEnabled(blink::features::kHiddenSelectionBounds)) {
+      display_item_client_->RecordSelection(context, paint_offset, type);
+    }
   }
 }
 

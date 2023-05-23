@@ -6,6 +6,7 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_range.h"
@@ -1426,8 +1427,11 @@ TEST_F(FrameSelectionTest, PositionDisconnectedInFlatTree) {
   }
 }
 
-TEST_F(FrameSelectionTest,
-       PaintCaretRecordsSelectionWhenCursorUpdatesRequested) {
+TEST_F(FrameSelectionTest, PaintCaretRecordsSelectionWithNoSelectionHandles) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kHiddenSelectionBounds);
+
   Text* text = AppendTextNode("Hello, World!");
   UpdateAllLifecyclePhasesForTest();
 

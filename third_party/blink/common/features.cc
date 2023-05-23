@@ -1529,6 +1529,10 @@ BASE_FEATURE(kStylusPointerAdjustment,
              "StylusPointerAdjustment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHiddenSelectionBounds,
+             "HiddenSelectionBounds",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDisableArrayBufferSizeLimitsForTesting,
              "DisableArrayBufferSizeLimitsForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);

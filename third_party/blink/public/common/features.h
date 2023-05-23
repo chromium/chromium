@@ -787,6 +787,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidExtendedKeyboardShortcuts);
 // enabling functions like writing into a nearby input element.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusPointerAdjustment);
 
+// Record the bounds of a selection even when there is no selection handle.
+// This allows providing more information to the IME, but was disabled because
+// of https://crbug.com/1441243.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHiddenSelectionBounds);
+
 // TODO(https://crbug.com/1201109): temporary flag to disable new ArrayBuffer
 // size limits, so that tests can be written against code receiving these
 // buffers. Remove when the bindings code instituting these limits is removed.
