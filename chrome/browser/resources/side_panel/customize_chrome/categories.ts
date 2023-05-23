@@ -184,7 +184,6 @@ export class CategoriesElement extends CategoriesElementBase {
   private async onUploadImageClick_() {
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
     if (success) {
-      this.pageHandler_.setDefaultColor();
       this.dispatchEvent(new Event('local-image-upload'));
     }
   }

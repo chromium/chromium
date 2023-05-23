@@ -703,6 +703,7 @@ TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundSuccess) {
           [&success](bool success_arg) { success = std::move(success_arg); }));
   EXPECT_CALL(mock_ntp_custom_background_service_, SelectLocalBackgroundImage)
       .Times(1);
+  EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
   handler().ChooseLocalCustomBackground(callback.Get());
   EXPECT_TRUE(success);
 }

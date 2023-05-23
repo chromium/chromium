@@ -513,10 +513,11 @@ void CustomizeChromePageHandler::FileSelected(const base::FilePath& path,
                                               void* params) {
   DCHECK(choose_local_custom_background_callback_);
   if (ntp_custom_background_service_) {
+    theme_service_->UseDefaultTheme();
+
     profile_->set_last_selected_directory(path.DirName());
     ntp_custom_background_service_->SelectLocalBackgroundImage(path);
   }
-
   select_file_dialog_ = nullptr;
   std::move(choose_local_custom_background_callback_).Run(true);
 }
