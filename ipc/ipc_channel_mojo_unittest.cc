@@ -19,7 +19,6 @@
 #include "base/location.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -1155,9 +1154,7 @@ class ListenerWithSyncAssociatedInterface
     receiver_.Bind(std::move(receiver));
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION IPC::Sender* sync_sender_ = nullptr;
+  raw_ptr<IPC::Sender> sync_sender_ = nullptr;
   int32_t next_expected_value_ = 0;
   int32_t response_value_ = 0;
   base::OnceClosure quit_closure_;
@@ -1298,12 +1295,8 @@ class SimpleTestClientImpl : public IPC::mojom::SimpleTestClient,
 
   bool use_sync_sender_ = false;
   mojo::AssociatedReceiver<IPC::mojom::SimpleTestClient> receiver_{this};
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION IPC::Sender* sync_sender_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION IPC::mojom::SimpleTestDriver* driver_ = nullptr;
+  raw_ptr<IPC::Sender> sync_sender_ = nullptr;
+  raw_ptr<IPC::mojom::SimpleTestDriver> driver_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
