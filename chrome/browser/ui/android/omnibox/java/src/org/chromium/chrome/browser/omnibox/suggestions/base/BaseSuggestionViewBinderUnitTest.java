@@ -28,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -37,11 +38,15 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.base.TestActivity;
@@ -60,6 +65,7 @@ public class BaseSuggestionViewBinderUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+    public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
     @Mock
     ImageView mIconView;
@@ -92,6 +98,7 @@ public class BaseSuggestionViewBinderUnitTest {
         PropertyModelChangeProcessor.create(mModel, mBaseView,
                 new BaseSuggestionViewBinder(
                         (m, v, p) -> { Assert.assertEquals(mContentView, v); }));
+        BaseSuggestionViewBinder.initializeDimensions(mActivity);
     }
 
     @Test
@@ -130,6 +137,63 @@ public class BaseSuggestionViewBinderUnitTest {
         ordered.verify(mIconView).setVisibility(View.GONE);
         // Ensure we're releasing drawable to free memory.
         ordered.verify(mIconView).setImageDrawable(null);
+    }
+
+    @Test
+    public void decorIcon_padding() {
+        SuggestionDrawableState state =
+                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
+        mModel.set(BaseSuggestionViewProperties.ICON, state);
+        int padding = mResources.getDimensionPixelSize(
+                org.chromium.chrome.browser.omnibox.R.dimen
+                        .omnibox_suggestion_24dp_icon_margin_start);
+
+        verify(mIconView).setPadding(padding, 0, padding, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void decorIcon_padding_small() {
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
+        BaseSuggestionViewBinder.initializeDimensions(mActivity);
+        SuggestionDrawableState state =
+                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
+        mModel.set(BaseSuggestionViewProperties.ICON, state);
+        int padding = mResources.getDimensionPixelSize(
+                org.chromium.chrome.browser.omnibox.R.dimen
+                        .omnibox_suggestion_24dp_icon_margin_start_modern_bigger);
+
+        verify(mIconView).setPadding(padding, 0, padding, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void decorIcon_padding_smaller() {
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLER_MARGINS.setForTesting(true);
+        BaseSuggestionViewBinder.initializeDimensions(mActivity);
+        SuggestionDrawableState state =
+                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
+        mModel.set(BaseSuggestionViewProperties.ICON, state);
+        int padding = mResources.getDimensionPixelSize(
+                org.chromium.chrome.browser.omnibox.R.dimen
+                        .omnibox_suggestion_24dp_icon_margin_start);
+
+        verify(mIconView).setPadding(padding, 0, padding, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void decorIcon_padding_smallest() {
+        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
+        BaseSuggestionViewBinder.initializeDimensions(mActivity);
+        SuggestionDrawableState state =
+                SuggestionDrawableState.Builder.forColor(0).setUseRoundedCorners(true).build();
+        mModel.set(BaseSuggestionViewProperties.ICON, state);
+        int padding = mResources.getDimensionPixelSize(
+                org.chromium.chrome.browser.omnibox.R.dimen
+                        .omnibox_suggestion_24dp_icon_margin_start);
+
+        verify(mIconView).setPadding(padding, 0, padding, 0);
     }
 
     @Test
