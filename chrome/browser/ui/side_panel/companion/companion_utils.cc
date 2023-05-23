@@ -75,8 +75,7 @@ void MaybeTriggerCompanionFeaturePromo(content::WebContents* web_contents) {
 
   Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
   PrefService* const pref_service = browser->profile()->GetPrefs();
-  if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion) &&
-      pref_service &&
+  if (IsCompanionFeatureEnabled() && pref_service &&
       pref_service->GetBoolean(
           prefs::kSidePanelCompanionEntryPinnedToToolbar)) {
     browser->window()->MaybeShowFeaturePromo(

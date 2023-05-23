@@ -6906,7 +6906,7 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="TextSearchCount">
     <summary>
-      The number of times text search box was used.
+      The number of times text search box was used, clamped to a max of 10.
     </summary>
   </metric>
   <metric name="VQ.ClickPosition">

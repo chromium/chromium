@@ -59,7 +59,7 @@ struct UiSurfaceMetrics {
   size_t child_element_shown_count = kInvalidNumChildren;
 
   // The number of times user clicked on the surface.
-  size_t click_count = 0;
+  uint32_t click_count = 0;
 
   // The position of the clicked UI element within its parent list. Applicable
   // to surfaces that show a list.

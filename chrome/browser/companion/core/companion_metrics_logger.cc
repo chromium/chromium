@@ -24,6 +24,9 @@ namespace {
 // surface can have for UMA/UKM collection.
 const int kMaxNumChildElements = 10;
 
+// The max count of text queries to report up to for UKM.
+const int kMaxNumTextSearches = 10;
+
 // Helper method to determine whether a UI surface is a list surface. List
 // surfaces are surfaces that take the form of a list with one or more items
 // inside it, e.g page entities.
@@ -191,7 +194,9 @@ void CompanionMetricsLogger::FlushStats() {
   // Text search.
   auto iter = ui_surface_metrics_.find(UiSurface::kSearchBox);
   if (iter != ui_surface_metrics_.end()) {
-    ukm_builder.SetTextSearchCount(iter->second.click_count);
+    ukm_builder.SetTextSearchCount(
+        std::clamp(iter->second.click_count, 0u,
+                   static_cast<unsigned int>(kMaxNumTextSearches)));
   }
 
   // Region search.
