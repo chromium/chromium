@@ -27,7 +27,6 @@
 #if defined(TOOLKIT_VIEWS)
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/test/widget_test.h"
@@ -116,10 +115,6 @@ bool TestBrowserDialog::VerifyUi() {
   }
 
   views::Widget* dialog_widget = *(added.begin());
-// TODO(https://crbug.com/958242) support Mac for pixel tests.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   dialog_widget->SetBlockCloseForTesting(true);
   // Deactivate before taking screenshot. Deactivated dialog pixel outputs
   // is more predictable than activated dialog.
@@ -134,21 +129,13 @@ bool TestBrowserDialog::VerifyUi() {
   const std::string screenshot_name = base::StrCat(
       {test_info->test_case_name(), "_", test_info->name(), "_", baseline_});
 
-  // For the CR2023 screenshots add a "CR2023" prefix so that they are compared
-  // exclusively with previous CR2023 screenshots. We would like Skia Gold to
-  // catch regressions in both CR2023 and non-CR2023.
-  // TODO(crbug.com/1444466): remove this after CR2023 launch.
-  const std::string screenshot_prefix = features::IsChromeRefresh2023()
-                                            ? "CR2023_BrowserUiDialog"
-                                            : "BrowserUiDialog";
-
-  if (!VerifyPixelUi(dialog_widget, screenshot_prefix, screenshot_name)) {
+  if (VerifyPixelUi(dialog_widget, "BrowserUiDialog", screenshot_name) ==
+      ui::test::ActionResult::kFailed) {
     LOG(INFO) << "VerifyUi(): Pixel compare failed.";
     return false;
   }
   if (is_active)
     dialog_widget->Activate();
-#endif  // BUILDFLAG(IS_MAC)
 
   if (!should_verify_dialog_bounds_)
     return true;

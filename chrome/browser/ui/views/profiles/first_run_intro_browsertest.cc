@@ -122,7 +122,8 @@ class FirstRunIntroPixelTest
     const std::string screenshot_name =
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});
 
-    return VerifyPixelUi(widget, "FirstRunIntroPixelTest", screenshot_name);
+    return VerifyPixelUi(widget, "FirstRunIntroPixelTest", screenshot_name) !=
+           ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {

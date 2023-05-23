@@ -121,7 +121,8 @@ class ProfilePickerUIPixelTest
     const std::string screenshot_name =
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});
 
-    return VerifyPixelUi(widget, "ProfilePickerUIPixelTest", screenshot_name);
+    return VerifyPixelUi(widget, "ProfilePickerUIPixelTest", screenshot_name) !=
+           ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {

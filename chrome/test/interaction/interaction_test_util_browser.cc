@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -22,7 +24,6 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/webview/webview.h"
@@ -36,17 +37,7 @@
 #include "ui/base/interaction/interaction_test_util_mac.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define SUPPORTS_PIXEL_TESTS 1
-#include "base/command_line.h"
-#include "chrome/browser/ui/test/test_browser_ui.h"
-#else
-#define SUPPORTS_PIXEL_TESTS 0
-#endif
-
 namespace {
-
-#if SUPPORTS_PIXEL_TESTS
 
 // Facilitates pixel testing with more versatile naming than TestBrowserUi.
 class PixelTestUi : public TestBrowserUi {
@@ -62,19 +53,14 @@ class PixelTestUi : public TestBrowserUi {
   void WaitForUserDismissal() override { NOTREACHED(); }
 
   bool VerifyUi() override {
+    return VerifyUiWithResult() != ui::test::ActionResult::kFailed;
+  }
+
+  ui::test::ActionResult VerifyUiWithResult() {
     auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    std::string test_name =
+    const std::string test_name =
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});
-
-    // For the CR2023 screenshots add a "CR2023" prefix so that they are
-    // compared exclusively with previous CR2023 screenshots. We would like Skia
-    // Gold to catch regressions in both CR2023 and non-CR2023.
-    // TODO(crbug.com/1444466): remove this after CR2023 launch.
-    if (features::IsChromeRefresh2023()) {
-      test_name = "CR2023_" + test_name;
-    }
-
     const std::string screenshot_name =
         screenshot_name_.empty()
             ? baseline_
@@ -87,8 +73,6 @@ class PixelTestUi : public TestBrowserUi {
   std::string screenshot_name_;
   std::string baseline_;
 };
-
-#endif  // SUPPORTS_PIXEL_TESTS
 
 // Special handler for browsers and browser tab strips that enables SelectTab().
 class InteractionTestUtilSimulatorBrowser
@@ -256,7 +240,6 @@ ui::test::ActionResult InteractionTestUtilBrowser::CompareScreenshot(
     return ui::test::ActionResult::kNotAttempted;
   }
 
-#if SUPPORTS_PIXEL_TESTS
   // pixel_browser_tests and pixel_interactive_ui_tests specify this command
   // line, which is checked by TestBrowserUi before attempting any screen
   // capture; otherwise screenshotting is a silent no-op.
@@ -269,10 +252,9 @@ ui::test::ActionResult InteractionTestUtilBrowser::CompareScreenshot(
   }
 
   PixelTestUi pixel_test_ui(view, screenshot_name, baseline);
-  return pixel_test_ui.VerifyUi() ? ui::test::ActionResult::kSucceeded
-                                  : ui::test::ActionResult::kFailed;
-#else  // !SUPPORTS_PIXEL_TESTS
-  LOG(WARNING) << "Current platform does not support pixel tests.";
-  return ui::test::ActionResult::kKnownIncompatible;
-#endif
+  ui::test::ActionResult result = pixel_test_ui.VerifyUiWithResult();
+  if (result == ui::test::ActionResult::kKnownIncompatible) {
+    LOG(WARNING) << "Current platform does not support pixel tests.";
+  }
+  return result;
 }
