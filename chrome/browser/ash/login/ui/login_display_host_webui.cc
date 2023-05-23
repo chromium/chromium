@@ -578,6 +578,8 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
         ->ShowAnimationWithEndCallback(base::BindOnce(
             &LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed,
             weak_factory_.GetWeakPtr()));
+    // We can show the wallpaper after the animation widget is shown.
+    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
   }
 }
 
@@ -715,11 +717,6 @@ void LoginDisplayHostWebUI::OnShowWebUITimeout() {
 }
 
 void LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed() {
-  // When the booting animation might be played we postpone the wallpaper
-  // call. Make sure initial wallpaper is shown before removing the animation
-  // layer.
-  WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
-
   booting_animation_finished_playing_ = true;
   if (webui_ready_to_take_over_) {
     // This function is called by the AnimationObserver which can't destroy the

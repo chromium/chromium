@@ -100,13 +100,13 @@ void BootingAnimationController::ShowAnimationWithEndCallback(
   }
 
   // If we are still waiting for the signal from DisplayConfigurator wait for
-  // not more than a second and play the animation anyway.
+  // not more than a few seconds and play the animation anyway.
   if (!IsDeviceReady()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BootingAnimationController::IgnoreGpuReadiness,
                        weak_factory_.GetWeakPtr()),
-        base::TimeDelta(base::Seconds(1)));
+        base::TimeDelta(base::Seconds(5)));
     return;
   }
   StartAnimation();
