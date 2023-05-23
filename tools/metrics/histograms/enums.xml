@@ -1860,6 +1860,8 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="New Tab Page (Camera)"/>
   <int value="7" label="Quick Action Search Widget (Camera)"/>
   <int value="8" label="Keyboard (Camera)"/>
+  <int value="9" label="App icon long press (Camera)"/>
+  <int value="10" label="iOS Spotlight (Camera)"/>
 </enum>
 
 <enum name="AmbientUiMode">

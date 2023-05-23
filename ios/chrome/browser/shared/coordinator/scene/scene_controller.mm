@@ -2276,9 +2276,13 @@ void InjectNTP(Browser* browser) {
       return ^{
         [weakSelf startQRCodeScanner];
       };
-    case START_LENS:
+    case START_LENS_FROM_HOME_SCREEN_WIDGET:
       return ^{
-        [weakSelf startLens];
+        [weakSelf startLensWithEntryPoint:LensEntrypoint::HomeScreenWidget];
+      };
+    case START_LENS_FROM_APP_ICON_LONG_PRESS:
+      return ^{
+        [weakSelf startLensWithEntryPoint:LensEntrypoint::AppIconLongPress];
       };
     case FOCUS_OMNIBOX:
       return ^{
@@ -2316,7 +2320,7 @@ void InjectNTP(Browser* browser) {
   [QRHandler showQRScanner];
 }
 
-- (void)startLens {
+- (void)startLensWithEntryPoint:(LensEntrypoint)entryPoint {
   if (!self.currentInterface.browser) {
     return;
   }
@@ -2324,7 +2328,7 @@ void InjectNTP(Browser* browser) {
       self.currentInterface.browser->GetCommandDispatcher(), LensCommands);
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
-          initWithEntryPoint:LensEntrypoint::HomeScreenWidget
+          initWithEntryPoint:entryPoint
            presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
       presentationCompletion:nil];
   [lensHandler openLensInputSelection:command];

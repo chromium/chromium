@@ -55,6 +55,20 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
       }
       // Home screen widget cannot log availailability.
       break;
+    case LensEntrypoint::AppIconLongPress:
+      // App icon entrypoint is controlled by the home screen widget flag.
+      if (!base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget)) {
+        flag_enabled = NO;
+      }
+      // App icon long press cannot log availailability.
+      break;
+    case LensEntrypoint::Spotlight:
+      // Spotlight entrypoint is controlled by the home screen widget flag.
+      if (!base::FeatureList::IsEnabled(kEnableLensInHomeScreenWidget)) {
+        flag_enabled = NO;
+      }
+      // Spotlight cannot log availailability.
+      break;
     default:
       NOTREACHED() << "Unsupported Lens Entry Point.";
   }

@@ -78,7 +78,8 @@
     case START_QR_CODE_SCANNER:
       [description appendString:@", should launch QR scanner"];
       break;
-    case START_LENS:
+    case START_LENS_FROM_APP_ICON_LONG_PRESS:
+    case START_LENS_FROM_HOME_SCREEN_WIDGET:
       [description appendString:@", should launch Lens"];
       break;
     case START_VOICE_SEARCH:

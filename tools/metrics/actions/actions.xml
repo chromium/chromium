@@ -3601,6 +3601,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ApplicationShortcut.LensPressedFromAppIconLongPress">
+  <owner>schechter@google.com</owner>
+  <owner>hujasonx@google.com</owner>
+  <description>
+    User tapped the Lens icon in the app icon long press menu for Chrome for
+    iOS.
+  </description>
+</action>
+
 <action name="ApplicationShortcut.LensPressedFromHomeScreenWidget">
   <owner>schechter@google.com</owner>
   <owner>hujasonx@google.com</owner>

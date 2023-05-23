@@ -408,7 +408,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitLens) {
       base::StringPrintf("%s://%s/", kChromeUIScheme, kChromeUINewTabHost);
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
-  EXPECT_EQ(params.postOpeningAction, START_LENS);
+  EXPECT_EQ(params.postOpeningAction, START_LENS_FROM_HOME_SCREEN_WIDGET);
   histogram_tester.ExpectUniqueSample("IOS.WidgetKit.Action", 10, 1);
 }
 

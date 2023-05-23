@@ -576,7 +576,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
             secureSourceApp:secureSourceApp
                 completeURL:url
             applicationMode:ApplicationModeForTabOpening::NORMAL];
-    [params setPostOpeningAction:START_LENS];
+    [params setPostOpeningAction:START_LENS_FROM_HOME_SCREEN_WIDGET];
     action = ACTION_LENS;
   }
 

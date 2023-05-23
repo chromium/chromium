@@ -634,8 +634,8 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     // Use a specific action id, as other Lens startup entry points may be added
     // in the future (e.g. Spotlight).
     base::RecordAction(UserMetricsAction(
-        "ApplicationShortcut.LensPressedFromHomeScreenWidget"));
-    startupParams.postOpeningAction = START_LENS;
+        "ApplicationShortcut.LensPressedFromAppIconLongPress"));
+    startupParams.postOpeningAction = START_LENS_FROM_APP_ICON_LONG_PRESS;
     connectionInformation.startupParameters = startupParams;
     return YES;
   }

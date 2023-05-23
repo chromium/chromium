@@ -127,14 +127,6 @@
 			<key>UIApplicationShortcutItemType</key>
 			<string>OpenVoiceSearch</string>
 		</dict>
-		<dict>
-			<key>UIApplicationShortcutItemIconSymbolName</key>
-			<string>qrcode</string>
-			<key>UIApplicationShortcutItemTitle</key>
-			<string>IDS_IOS_APPLICATION_SHORTCUT_QR_SCANNER_TITLE</string>
-			<key>UIApplicationShortcutItemType</key>
-			<string>OpenQRScanner</string>
-		</dict>
 	</array>
 	<key>UIPrerenderedIcon</key>
 	<true/>
