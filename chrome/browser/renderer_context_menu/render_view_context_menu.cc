@@ -1778,6 +1778,15 @@ void RenderViewContextMenu::AppendImageItems() {
 }
 
 void RenderViewContextMenu::AppendSearchWebForImageItems() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
+    // If Lacros is the only browser, disable image search in Ash because we
+    // have decided not to support this feature in the system UI so as not to
+    // confuse users by opening an Ash browser window.
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // TODO(b/266624865): Image Search items do not function correctly when
   // |GetBrowser| returns nullptr, as is the case for a context menu in the
   // side panel, so for now we do not append image items in that case.
@@ -3472,6 +3481,15 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
 
 bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
+    // If Lacros is the only browser, disable region search in Ash because we
+    // have decided not to support this feature in the system UI so as not to
+    // confuse users by opening an Ash browser window.
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // TODO(nguyenbryan): Refactor to use lens_region_search_helper.cc after PDF
   // support is cleaned up.
   if (!GetBrowser())
