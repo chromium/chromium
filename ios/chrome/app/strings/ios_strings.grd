@@ -546,6 +546,11 @@ locale.  The strings in this file are specific to iOS.
           =1 {Bookmark saved to "{title}"}
           other {Bookmarks saved to "{title}"}}
       </message>
+      <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE" desc="This confirmation message is intended to help users understand that a bookmark has been saved in Chrome. These users are not signed in to a Google Account and are not syncing their data, so we do not specify where the bookmark is saved. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
+          {count, plural,
+          =1 {Bookmark saved to "{title}". It is only saved to this device.}
+          other {Bookmarks saved to "{title}". It is only saved to this device.}}
+      </message>
       <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT" desc="Presented in a snackbar when bookmarks are created in an account. Specifies in which folder the bookmark was added. ">
           {count, plural,
           =1 {Bookmark saved in your Google Account, {email}}
