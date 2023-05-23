@@ -37,8 +37,14 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
     base::TimeTicks last_input_generation_ts,
     base::TimeTicks presentation_ts,
     base::TimeDelta vsync_interval) {
-  DCHECK_GE(last_input_generation_ts, first_input_generation_ts);
-  DCHECK_GT(presentation_ts, last_input_generation_ts);
+  if ((last_input_generation_ts < first_input_generation_ts) ||
+      (presentation_ts <= last_input_generation_ts)) {
+    // TODO(crbug/1447358): Investigate when these edge cases can be triggered
+    // in field and web tests. We have already seen this triggered in field, and
+    // some web tests where an event with null(0) timestamp gets coalesced with
+    // a "normal" input.
+    return;
+  }
   // TODO(b/276722271) : Analyze and reduce these cases of out of order
   // frame termination.
   if (presentation_ts <= prev_presentation_ts_) {

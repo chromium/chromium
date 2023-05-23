@@ -1396,13 +1396,6 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
         NOTREACHED();
     }
   }
-  // To handle web test failures which causes an event to be coalesced with an
-  // event having null(0) timestamp.
-  // TODO(b/276722271) : Investigate if this needs to be fixed on test side or
-  // if this is a valid scenario.
-  if (last_coalesced_ts.is_null()) {
-    last_coalesced_ts = input_generation_ts;
-  }
 
   TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",
               [events_metrics = std::cref(events_metrics_), fling_input_count,
