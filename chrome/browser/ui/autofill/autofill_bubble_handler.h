@@ -23,6 +23,7 @@ class VirtualCardManualFallbackBubbleController;
 class VirtualCardEnrollBubbleController;
 class MandatoryReauthBubbleController;
 enum class IbanBubbleType;
+enum class MandatoryReauthBubbleType;
 
 // TODO(crbug.com/1337392): consider removing this class and give the logic back
 // to each bubble's controller. This class serves also the avatar button /
@@ -90,7 +91,8 @@ class AutofillBubbleHandler {
   virtual AutofillBubbleBase* ShowMandatoryReauthBubble(
       content::WebContents* web_contents,
       MandatoryReauthBubbleController* controller,
-      bool is_user_gesture) = 0;
+      bool is_user_gesture,
+      MandatoryReauthBubbleType bubble_type) = 0;
 
   // TODO(crbug.com/964127): Wait for the integration with sign in after local
   // save to be landed to see if we need to merge password saved and credit card
