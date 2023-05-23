@@ -114,7 +114,9 @@ typedef NS_ENUM(NSInteger, BookmarksContextBarState) {
 };
 
 // Estimated TableView row height.
-const CGFloat kEstimatedRowHeight = 65.0;
+constexpr CGFloat kEstimatedRowHeight = 65.0;
+// Separation between non-empty account and profile sections.
+constexpr CGFloat kSpaceBetweenAccountAndProfileSections = 32.0;
 
 // Returns a vector of all URLs in `nodes`.
 std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
@@ -498,10 +500,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   self.tableView.dropDelegate = self.dragDropHandler;
   self.tableView.dragInteractionEnabled = true;
 
-  // Setting a sectionFooterHeight of 0 will be the same as not having a
-  // footerView, which shows a cell separator for the last cell. Removing this
-  // line will also create a default footer of height 30.
-  self.tableView.sectionFooterHeight = 1;
   self.tableView.accessibilityIdentifier = kBookmarksHomeTableViewIdentifier;
   self.tableView.estimatedRowHeight = kEstimatedRowHeight;
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
@@ -2529,6 +2527,29 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
                                                actionProvider:actionProvider];
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  return [self.tableViewModel numberOfItemsInSection:section] == 0
+             ? 0
+             : UITableViewAutomaticDimension;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  // Add space between profile and account sections only if both are not empty,
+  // to avoid useless space at the end of the account section content.
+  if ([self.tableViewModel sectionIdentifierForSectionIndex:section] ==
+          BookmarksHomeSectionIdentifierRootAccount &&
+      [self hasItemsInSectionIdentifier:
+                BookmarksHomeSectionIdentifierRootProfile] &&
+      [self hasItemsInSectionIdentifier:
+                BookmarksHomeSectionIdentifierRootAccount]) {
+    return kSpaceBetweenAccountAndProfileSections;
+  } else {
+    return 0;
+  }
 }
 
 #pragma mark - TableViewURLDragDataSource
