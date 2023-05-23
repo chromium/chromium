@@ -11294,7 +11294,6 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
-                "ios",
                 "linux",
                 "mac",
                 "windows"
@@ -11304,6 +11303,22 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ReadingListEnableDualReadingListModel"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ReadingListEnableDualReadingListModelAndOptInFlow": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReadingListEnableDualReadingListModel",
+                        "ReadingListEnableSyncTransportModeUponSignIn"
                     ]
                 }
             ]
