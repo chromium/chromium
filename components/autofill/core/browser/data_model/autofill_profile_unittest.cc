@@ -1530,35 +1530,6 @@ TEST(AutofillProfileTest, LabelsInAssignmentAndComparisonOperator) {
   EXPECT_NE(p1, p2);
 }
 
-// Test that the state to disallow confirmable merges is correctly set and
-// retrieved from the profile.
-TEST(AutofillProfileTest, SetAndGetProfileDisallowConfirmableMergestate) {
-  AutofillProfile p;
-  EXPECT_EQ(p.disallow_settings_visible_updates(), false);
-
-  p.set_disallow_settings_visible_updates(true);
-  EXPECT_EQ(p.disallow_settings_visible_updates(), true);
-}
-
-TEST(AutofillProfileTest, LockStateInAssignmentAndComparisonOperator) {
-  AutofillProfile p1;
-  p1.set_disallow_settings_visible_updates(true);
-
-  AutofillProfile p2;
-  EXPECT_EQ(p2.disallow_settings_visible_updates(), false);
-
-  p2 = p1;
-
-  // Check that the lock state was assigned correctly to p2.
-  EXPECT_EQ(p2.disallow_settings_visible_updates(), true);
-
-  // Now test that the comparison returns false if the lock state is not the
-  // same.
-  ASSERT_EQ(p1, p2);
-  p2.set_disallow_settings_visible_updates(false);
-  EXPECT_NE(p1, p2);
-}
-
 TEST(AutofillProfileTest, GetMetadata) {
   AutofillProfile local_profile = test::GetFullProfile();
   local_profile.set_use_count(2);

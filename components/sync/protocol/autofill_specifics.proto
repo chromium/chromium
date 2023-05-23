@@ -152,11 +152,8 @@ message AutofillProfileSpecifics {
   // Phone.
   repeated string phone_home_whole_number = 13;
 
-  // The state indicates if the profile qualifies to get merged with a
-  // profile observed in a form submission. If true, the profile can still be
-  // updated silently, but it should not be considered for merges that need to
-  // involve user interactions.
-  optional bool disallow_settings_visible_updates = 63;
+  reserved 63;
+  reserved "disallow_settings_visible_updates";
 
   // Birthdate fields.
   optional int32 birthdate_day = 64;

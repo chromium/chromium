@@ -581,7 +581,6 @@ void AddAutofillProfileDetailsFromStatement(sql::Statement& s,
   profile->set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
   profile->set_language_code(s.ColumnString(index++));
   profile->set_profile_label(s.ColumnString(index++));
-  profile->set_disallow_settings_visible_updates(s.ColumnBool(index++));
 }
 
 void BindEncryptedCardToColumn(sql::Statement* s,
@@ -1625,8 +1624,7 @@ AutofillTable::GetAutofillProfileFromLegacyTable(
   if (!SelectByGuid(db_, s, kAutofillProfilesTable,
                     {kCompanyName, kStreetAddress, kDependentLocality, kCity,
                      kState, kZipcode, kSortingCode, kCountryCode, kUseCount,
-                     kUseDate, kDateModified, kLanguageCode, kLabel,
-                     kDisallowSettingsVisibleUpdates},
+                     kUseDate, kDateModified, kLanguageCode, kLabel},
                     guid)) {
     return nullptr;
   }
