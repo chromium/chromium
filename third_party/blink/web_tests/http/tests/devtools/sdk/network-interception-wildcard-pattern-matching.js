@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+
 (async function() {
   TestRunner.addResult("Test to ensure the consistency of front-end patterns vs backend patterns for request interception.\n");
 
