@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
+#include "chrome/browser/ash/input_method/text_utils.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -67,13 +68,6 @@ absl::optional<AssistiveSuggestion> ToAssistiveSuggestion(
   return AssistiveSuggestion{.mode = suggestion_mode,
                              .type = AssistiveSuggestionType::kMultiWord,
                              .text = candidate->get_multi_word()->text};
-}
-
-std::string TrimText(const std::string& text) {
-  size_t text_length = text.length();
-  return text_length > kMaxNumberCharsSent
-             ? text.substr(text_length - kMaxNumberCharsSent)
-             : text;
 }
 
 MultiWordSuggestionType ToSuggestionType(
@@ -148,7 +142,7 @@ void SuggestionsServiceClient::RequestSuggestions(
   RecordRequestCandidates(suggestion_mode);
 
   auto query = TextSuggesterQuery::New();
-  query->text = TrimText(preceding_text);
+  query->text = GetLastNCodepoints(preceding_text, kMaxNumberCharsSent);
   query->suggestion_mode = ToTextSuggestionModeMojom(suggestion_mode);
 
   for (const auto& candidate : completion_candidates) {
