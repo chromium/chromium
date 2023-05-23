@@ -219,3 +219,8 @@ message PeerConnectionParameters {
   // switching to a different codec), without needing a full reconnection.
   optional bool request_sdp_restart = 4;
 }
+
+// Next ID: 2
+message ActiveDisplay {
+  optional int64 screen_id = 1;
+}

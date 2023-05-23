@@ -16,6 +16,7 @@
 
 namespace remoting::protocol {
 
+class ActiveDisplay;
 class Capabilities;
 class ExtensionMessage;
 class PairingResponse;
@@ -47,6 +48,10 @@ class ClientStub : public ClipboardStub,
 
   // Passes the host's transport info to the client.
   virtual void SetTransportInfo(const TransportInfo& transport_info) = 0;
+
+  // Sends the host's active display to the client. This is sent whenever the
+  // screen id associated with the active window changes.
+  virtual void SetActiveDisplay(const ActiveDisplay& active_display) = 0;
 };
 
 }  // namespace remoting::protocol
