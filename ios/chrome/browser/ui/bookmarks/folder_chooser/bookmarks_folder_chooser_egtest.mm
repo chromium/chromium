@@ -1068,7 +1068,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Tap on the snackbar.
   NSString* snackbarLabel =
-      l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
+      l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_EDIT_BOOKMARK);
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityLabel(snackbarLabel),

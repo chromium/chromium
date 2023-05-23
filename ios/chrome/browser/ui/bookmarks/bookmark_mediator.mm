@@ -117,7 +117,8 @@ using bookmarks::BookmarkNode;
 
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   action.handler = editAction;
-  action.title = l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON);
+  action.title =
+      l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_EDIT_BOOKMARK);
   action.accessibilityIdentifier = @"Edit";
 
   NSString* folderTitle =
