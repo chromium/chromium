@@ -42569,6 +42569,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4572" label="PerformanceNavigateSystemEntropy"/>
   <int value="4573" label="V8InvalidatedNumberStringNotRegexpLikeProtector"/>
   <int value="4574" label="CriticalCHRestartNavigationTiming"/>
+  <int value="4575" label="TopLevelDocumentWithEmbeddedCredentials"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

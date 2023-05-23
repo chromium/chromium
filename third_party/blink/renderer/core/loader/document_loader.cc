@@ -2980,6 +2980,13 @@ void DocumentLoader::RecordUseCountersForCommit() {
     CountUse(WebFeature::kEarlyHintsPreload);
   }
 
+  if (frame_->IsOutermostMainFrame() &&
+      !(Url().User().empty() && Url().Pass().empty())) {
+    // We're only measuring top-level documents here, as embedded documents
+    // with credentials are blocked (unless they match the credentials in the
+    // top-level document).
+    CountUse(WebFeature::kTopLevelDocumentWithEmbeddedCredentials);
+  }
 #if BUILDFLAG(IS_ANDROID)
   // Record whether this window was requested to be opened as a Popup.
   // Android doesn't treat popup windows any differently from normal windows

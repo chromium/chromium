@@ -3912,6 +3912,7 @@ enum WebFeature {
   kPerformanceNavigateSystemEntropy = 4572,
   kV8InvalidatedNumberStringNotRegexpLikeProtector = 4573,
   kCriticalCHRestartNavigationTiming = 4574,
+  kTopLevelDocumentWithEmbeddedCredentials = 4575,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
