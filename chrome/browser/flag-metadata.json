@@ -7404,7 +7404,7 @@
   {
     "name": "ui-enable-shared-image-cache-for-gpu",
     "owners": [ "rjkroege", "khushalsagar", "msisov@igalia.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 121
   },
   {
     "name": "ui-slow-animations",
