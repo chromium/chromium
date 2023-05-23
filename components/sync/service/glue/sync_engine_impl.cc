@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation_handler.h"
@@ -238,6 +239,7 @@ void SyncEngineImpl::StartConfiguration() {
 
 void SyncEngineImpl::StartSyncingWithServer() {
   DVLOG(1) << name_ << ": SyncEngineImpl::StartSyncingWithServer called.";
+  // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
   base::Time last_poll_time = prefs_->GetLastPollTime();
   // If there's no known last poll time (e.g. on initial start-up), we treat
   // this as if a poll just happened.
@@ -575,11 +577,29 @@ void SyncEngineImpl::OnCookieJarChanged(bool account_mismatch,
 }
 
 void SyncEngineImpl::SetInvalidationsForSessionsEnabled(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sessions_invalidation_enabled_ = enabled;
   SendInterestedTopicsToInvalidator();
 }
 
+bool SyncEngineImpl::IsNextPollTimeInThePast() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
+  base::Time last_poll_time = prefs_->GetLastPollTime();
+  base::TimeDelta poll_interval = prefs_->GetPollInterval();
+  if (last_poll_time.is_null() || poll_interval.is_zero()) {
+    // It's likely the first startup so the very first poll interval is just
+    // starting.
+    return false;
+  }
+
+  base::Time now = base::Time::Now();
+  return now >= last_poll_time + poll_interval;
+}
+
 void SyncEngineImpl::GetNigoriNodeForDebugging(AllNodesCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   sync_task_runner_->PostTask(
       FROM_HERE,
@@ -588,6 +608,7 @@ void SyncEngineImpl::GetNigoriNodeForDebugging(AllNodesCallback callback) {
 }
 
 void SyncEngineImpl::OnInvalidatorClientIdChange(const std::string& client_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::DoOnInvalidatorClientIdChange,

@@ -176,6 +176,7 @@ void SyncSchedulerImpl::Start(Mode mode, base::Time last_poll_time) {
     // actually have miss the real poll, unless the client is restarted.
     // Fixing that would require using an AlarmTimer though, which is only
     // supported on certain platforms.
+    // TODO(crbug.com/1448012): introduce a helper to deal with poll times.
     last_poll_reset_ =
         TimeTicks::Now() -
         (now - ComputeLastPollOnStart(last_poll_time, GetPollInterval(), now));

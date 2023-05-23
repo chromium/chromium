@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/test/fake_model_type_connector.h"
@@ -69,10 +70,25 @@ void FakeSyncManager::NotifySyncStatusChanged(const SyncStatus& status) {
                                 base::Unretained(this), status));
 }
 
+void FakeSyncManager::NotifySyncCycleCompleted(
+    const SyncCycleSnapshot& snapshot) {
+  sync_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&FakeSyncManager::DoNotifySyncCycleCompleted,
+                                base::Unretained(this), snapshot));
+}
+
 void FakeSyncManager::DoNotifySyncStatusChanged(const SyncStatus& status) {
   DCHECK(sync_task_runner_->RunsTasksInCurrentSequence());
   for (Observer& observer : observers_) {
     observer.OnSyncStatusChanged(status);
+  }
+}
+
+void FakeSyncManager::DoNotifySyncCycleCompleted(
+    const SyncCycleSnapshot& snapshot) {
+  DCHECK(sync_task_runner_->RunsTasksInCurrentSequence());
+  for (Observer& observer : observers_) {
+    observer.OnSyncCycleCompleted(snapshot);
   }
 }
 

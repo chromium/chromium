@@ -200,6 +200,12 @@ class SyncServiceImplTest : public ::testing::Test {
     }
   }
 
+  void SetInvalidationsEnabled() {
+    SyncStatus status = engine()->GetDetailedStatus();
+    status.notifications_enabled = true;
+    engine()->SetDetailedStatus(status);
+  }
+
   void TriggerPassphraseRequired() {
     service_->GetEncryptionObserverForTest()->OnPassphraseRequired(
         KeyDerivationParams::CreateForPbkdf2(), sync_pb::EncryptedData());
@@ -1392,8 +1398,8 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
   ON_CALL(mock_sync_service_observer, OnStateChanged)
       .WillByDefault(Invoke([this, &met_configuring_data_type_manager](
                                 SyncService* service) {
-        // TODO(crbug.com/1425026): verify that there are no errors during
-        // backend initialization.
+        EXPECT_NE(service->GetDownloadStatusFor(syncer::BOOKMARKS),
+                  SyncService::ModelTypeDownloadStatus::kError);
         if (!data_type_manager()) {
           return;
         }
@@ -1407,6 +1413,7 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
 
   // Observers must be added after initialization has been started.
   InitializeForNthSync(false);
+  ASSERT_THAT(engine(), IsNull());
 
   // GetDownloadStatusFor() must be called only after Initialize(), see
   // SyncServiceImpl::Initialize().
@@ -1415,9 +1422,11 @@ TEST_F(SyncServiceImplTest, ShouldReturnWaitingDownloadStatus) {
 
   service()->AddObserver(&mock_sync_service_observer);
   base::RunLoop().RunUntilIdle();
+  SetInvalidationsEnabled();
 
   EXPECT_TRUE(met_configuring_data_type_manager);
-  // TODO(crbug.com/1425026): add check for up-to-date status.
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kUpToDate);
   service()->RemoveObserver(&mock_sync_service_observer);
 }
 
@@ -1445,16 +1454,45 @@ TEST_F(SyncServiceImplTest, ShouldWaitUntilNoInvalidations) {
   SignIn();
   CreateService();
   InitializeForNthSync();
+  SetInvalidationsEnabled();
 
-  SyncStatus status;
+  SyncStatus status = engine()->GetDetailedStatus();
   status.invalidated_data_types.Put(BOOKMARKS);
   engine()->SetDetailedStatus(status);
 
   EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
             SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
-  // TODO(crbug.com/1425026): uncomment once up-to-date status is supported.
-  // EXPECT_EQ(service()->GetDownloadStatusFor(syncer::PASSWORDS),
-  //           SyncService::ModelTypeDownloadStatus::kUpToDate);
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::DEVICE_INFO),
+            SyncService::ModelTypeDownloadStatus::kUpToDate);
+}
+
+TEST_F(SyncServiceImplTest, ShouldWaitForInitializedInvalidations) {
+  SignIn();
+  CreateService();
+  InitializeForNthSync();
+  ASSERT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+
+  SetInvalidationsEnabled();
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kUpToDate);
+}
+
+TEST_F(SyncServiceImplTest, ShouldWaitForPollRequest) {
+  SignIn();
+  CreateService();
+  InitializeForNthSync();
+  SetInvalidationsEnabled();
+  ASSERT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kUpToDate);
+
+  engine()->SetPollIntervalElapsed(true);
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+
+  engine()->SetPollIntervalElapsed(false);
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kUpToDate);
 }
 
 }  // namespace

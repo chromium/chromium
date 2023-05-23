@@ -1847,39 +1847,46 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusFor(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
-    // Wait for refresh tokens to be loaded from the disk. GetDisableReasons()
-    // won't be empty until then.
+    DVLOG(1) << "Waiting for refresh tokens to be loaded from the disk";
+    // GetDisableReasons() won't be empty until then.
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
   // TODO(crbug.com/1425026): check whether this works when local sync is
   // enabled.
   if (!GetDisableReasons().Empty() || !GetDataTypesToConfigure().Has(type)) {
-    // Sync is disabled hence updates won't be downloaded from the server.
+    DVLOG(1)
+        << "Sync or " << ModelTypeToDebugString(type)
+        << " is disabled hence updates won't be downloaded from the server";
     return ModelTypeDownloadStatus::kError;
   }
 
   if (!data_type_manager_) {
-    // Wait for the sync engine to be fully initialized.
+    DVLOG(1) << "Waiting for the sync engine to be fully initialized";
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
   CHECK(engine_);
 
   if (data_type_manager_->GetDataTypesWithPermanentErrors().Has(type)) {
+    DVLOG(1) << "Permanent error for " << ModelTypeToDebugString(type);
     return ModelTypeDownloadStatus::kError;
   }
 
   if (!GetActiveDataTypes().Has(type) ||
       !engine_->GetDetailedStatus().notifications_enabled) {
+    DVLOG(1) << "Waiting for invalidations to be initialized";
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
-  if (engine_->GetDetailedStatus().invalidated_data_types.Has(type)) {
+  // If there are any incoming invalidations or poll time elapsed, there can be
+  // new updates to download from the server.
+  if (engine_->GetDetailedStatus().invalidated_data_types.Has(type) ||
+      engine_->IsNextPollTimeInThePast()) {
+    DVLOG(1)
+        << "Waiting for updates due to incoming invalidations or poll request";
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
-  // TODO(crbug.com/1425026): check for upcoming polling request.
-  NOTREACHED() << "Download status API is not fully implemented yet.";
   return ModelTypeDownloadStatus::kUpToDate;
 }
 

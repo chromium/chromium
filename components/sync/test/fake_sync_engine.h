@@ -43,6 +43,8 @@ class FakeSyncEngine : public SyncEngine,
     return started_handling_invalidations_;
   }
 
+  void SetPollIntervalElapsed(bool elapsed);
+
   // Manual completion of Initialize(), required if auto-completion was disabled
   // in the constructor.
   void TriggerInitializationCompletion(bool success);
@@ -107,6 +109,7 @@ class FakeSyncEngine : public SyncEngine,
   void OnCookieJarChanged(bool account_mismatch,
                           base::OnceClosure callback) override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
+  bool IsNextPollTimeInThePast() const override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
 
  private:
@@ -119,6 +122,7 @@ class FakeSyncEngine : public SyncEngine,
   SyncStatus sync_status_;
   CoreAccountId authenticated_account_id_;
   bool started_handling_invalidations_ = false;
+  bool is_next_poll_time_in_the_past_ = false;
 };
 
 }  // namespace syncer

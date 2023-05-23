@@ -182,6 +182,11 @@ class SyncEngine : public ModelTypeConfigurer {
   // Enables/Disables invalidations for session sync related datatypes.
   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
 
+  // Returns whether the poll interval elapsed since the last known poll time.
+  // If returns true, there will likely be the next PERIODIC sync cycle soon but
+  // it's not guaranteed, see SyncSchedulerImpl for details.
+  virtual bool IsNextPollTimeInThePast() const = 0;
+
   // Returns a Value::List representing Nigori node.
   virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
 };
