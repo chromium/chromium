@@ -1245,7 +1245,8 @@ int DownloadManagerImpl::BlockingShutdownCount() {
           it.second->GetDangerType() !=
               download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
           it.second->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+              download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING &&
+          !download->IsInsecure()) {
         ++count;
       }
     }

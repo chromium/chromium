@@ -566,6 +566,15 @@ TEST_F(DownloadItemModelTest, CompletedBubbleWarningStatusText) {
         .WillByDefault(Return(test_case.mixed_content_status));
     EXPECT_EQ(base::UTF16ToUTF8(model().GetStatusText()),
               test_case.expected_bubble_status_msg);
+#if !BUILDFLAG(IS_ANDROID)
+    // Android doesn't have BubbleUI info.
+    // Whether it's v2 or not doesn't affect the primary button, so it doesn't
+    // matter what we pass here.
+    EXPECT_EQ(model()
+                  .GetBubbleUIInfo(/*is_download_bubble_v2=*/false)
+                  .primary_button_command.value(),
+              DownloadCommands::Command::KEEP);
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   const struct DangerTypeTestCase {

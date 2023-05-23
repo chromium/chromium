@@ -952,6 +952,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
     case download::DownloadItem::InsecureDownloadStatus::BLOCK:
     case download::DownloadItem::InsecureDownloadStatus::WARN:
       return DownloadUIModel::BubbleUIInfo()
+          .AddPrimaryButton(DownloadCommands::Command::KEEP)
           .AddSubpageSummary(l10n_util::GetStringUTF16(
               IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_SUMMARY_INSECURE))
           .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
