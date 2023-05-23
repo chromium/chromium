@@ -20,6 +20,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace signin_ui_util {
 namespace {
@@ -172,7 +173,21 @@ void SigninUiDelegateImplLacros::OnReauthComplete(
     const std::string& email,
     const account_manager::AccountUpsertionResult& result) {
   if (result.status() !=
-      account_manager::AccountUpsertionResult::Status::kSuccess) {
+          account_manager::AccountUpsertionResult::Status::kSuccess &&
+      result.status() != account_manager::AccountUpsertionResult::Status::
+                             kIncompatibleMojoVersions) {
+    // Don't early return in case of incompatime mojo versions, to preserve the
+    // original behavior.
+    // TODO(b/275687807): Remove this in later Lacros version.
+    return;
+  }
+
+  if (result.account().has_value() &&
+      !gaia::AreEmailsSame(result.account()->raw_email, email)) {
+    // User has changed account, and didn't complete the reauthentication
+    // requested for `email`.
+    LOG(WARNING) << "User reauthenticated different account, don't show the "
+                    "sync UI flow";
     return;
   }
 
