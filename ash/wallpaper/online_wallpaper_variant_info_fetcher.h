@@ -26,7 +26,8 @@ namespace ash {
 
 class WallpaperControllerClient;
 
-// Resolves wallpaper variants from WallpaperInfo for WallpaperController.
+// Resolves wallpaper variants for WallpaperController. These variants can exist
+// from WallpaperInfo or can be fetched from the backdrop server.
 class ASH_EXPORT OnlineWallpaperVariantInfoFetcher {
  public:
   OnlineWallpaperVariantInfoFetcher();
@@ -59,6 +60,13 @@ class ASH_EXPORT OnlineWallpaperVariantInfoFetcher {
                            const WallpaperInfo& info,
                            ScheduleCheckpoint checkpoint,
                            FetchParamsCallback callback);
+
+  // Fetches the time of day wallpaper that has `unit_id` for the user with
+  // `account_id`. Callback is run after the operation completes.
+  void FetchTimeOfDayWallpaper(const AccountId& account_id,
+                               uint64_t unit_id,
+                               ScheduleCheckpoint checkpoint,
+                               FetchParamsCallback callback);
 
  private:
   // An internal representation of the partial information required to construct
@@ -95,6 +103,14 @@ class ASH_EXPORT OnlineWallpaperVariantInfoFetcher {
   void FindAndSetOnlineWallpaperVariants(
       std::unique_ptr<OnlineWallpaperRequest> request,
       const std::string& location,
+      FetchParamsCallback callback,
+      bool success,
+      const std::vector<backdrop::Image>& images);
+
+  // Used as callback when the time of day wallpapers are fetched.
+  void OnTimeOfDayWallpapersFetched(
+      std::unique_ptr<OnlineWallpaperRequest> request,
+      uint64_t unit_id,
       FetchParamsCallback callback,
       bool success,
       const std::vector<backdrop::Image>& images);
