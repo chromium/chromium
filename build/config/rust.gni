@@ -11,6 +11,10 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
+if (is_ios) {
+  import("//build/config/ios/config.gni")  # For `target_environment`
+}
+
 declare_args() {
   # Whether to allow Rust code to be part of the Chromium *build process*.
   # This can be used to create Rust test binaries, even if the flag below
@@ -206,7 +210,11 @@ if (is_linux || is_chromeos) {
   }
 } else if (is_ios) {
   if (current_cpu == "arm64") {
-    rust_abi_target = "aarch64-apple-ios"
+    if (target_environment == "simulator") {
+      rust_abi_target = "aarch64-apple-ios-sim"
+    } else {
+      rust_abi_target = "aarch64-apple-ios"
+    }
   } else if (current_cpu == "arm") {
     # There's also an armv7s-apple-ios, which targets a more recent ARMv7
     # generation CPU found in later iPhones. We'll go with the older one for
@@ -231,8 +239,10 @@ if (is_linux || is_chromeos) {
 } else if (is_win) {
   if (current_cpu == "arm64") {
     rust_abi_target = "aarch64-pc-windows-msvc"
-  } else if (current_cpu == "x86" || current_cpu == "x64") {
+  } else if (current_cpu == "x64") {
     rust_abi_target = "x86_64-pc-windows-msvc"
+  } else if (current_cpu == "x86") {
+    rust_abi_target = "i686-pc-windows-msvc"
   } else {
     assert(false, "Architecture not supported")
   }
