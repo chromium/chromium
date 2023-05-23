@@ -6834,3 +6834,4 @@ crbug.com/1448043 virtual/compositor-threaded-percent-based-scrolling-dsf-2/virt
 crbug.com/1448024 external/wpt/scroll-animations/scroll-timelines/scroll-timeline-invalidation.html [ Failure Pass ]
 crbug.com/1447101 media/video-source-none-supported.html [ Failure Pass Timeout ]
 crbug.com/1430215 external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Pass ]
+crbug.com/1434378 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/permissions-policy-fenced-frame.https.js [ Pass Timeout ]
