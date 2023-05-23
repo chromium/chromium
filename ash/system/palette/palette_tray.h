@@ -91,6 +91,7 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   // ShellObserver:
   void OnLockStateChanged(bool locked) override;
   void OnShellInitialized() override;
+  void OnShellDestroying() override;
 
   // WindowTreeHostManager::Observer:
   void OnDisplayConfigurationChanged() override;

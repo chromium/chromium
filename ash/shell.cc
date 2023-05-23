@@ -856,6 +856,10 @@ Shell::~Shell() {
   window_cycle_controller_.reset();
   overview_controller_.reset();
 
+  // As clients of `capture_mode_controller_`, `projector_controller_` and
+  // `game_dashboard_controller_` need to be destroyed before
+  // `capture_mode_controller_`
+  projector_controller_.reset();
   game_dashboard_controller_.reset();
 
   // This must be destroyed before deleting all the windows below in
@@ -1009,8 +1013,6 @@ Shell::~Shell() {
 
   display_color_manager_.reset();
   projecting_observer_.reset();
-
-  projector_controller_.reset();
 
   partial_magnifier_controller_.reset();
 
