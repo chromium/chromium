@@ -65,6 +65,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/tabs_search",
     "//ios/chrome/browser/tabs_search:tabs_search_factory",
     "//ios/chrome/browser/ui/bookmarks",
+    "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/bookmarks/editor",
     "//ios/chrome/browser/ui/bring_android_tabs",
     "//ios/chrome/browser/ui/commerce:price_card",

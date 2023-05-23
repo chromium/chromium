@@ -14,6 +14,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
@@ -52,6 +53,7 @@
 #import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_coordinator.h"
@@ -1321,13 +1323,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
-  bookmarks::BookmarkModel* bookmarkModel =
+  bookmarks::BookmarkModel* localOrSyncableBookmarkModel =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           self.regularBrowser->GetBrowserState());
-  bool currentlyBookmarked =
-      bookmarkModel && bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
-
-  if (currentlyBookmarked) {
+  bookmarks::BookmarkModel* accountBookmarkModel =
+      ios::AccountBookmarkModelFactory::GetForBrowserState(
+          self.regularBrowser->GetBrowserState());
+  if (bookmark_utils_ios::IsBookmarked(URL, localOrSyncableBookmarkModel,
+                                       accountBookmarkModel)) {
     [self editBookmarkWithURL:URL];
   } else {
     base::RecordAction(base::UserMetricsAction(

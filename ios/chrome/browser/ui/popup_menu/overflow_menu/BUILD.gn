@@ -63,6 +63,7 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/bookmarks:utils",
     "//ios/chrome/browser/ui/browser_container:ui",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp/metrics",

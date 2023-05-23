@@ -457,6 +457,62 @@ TEST_P(BookmarkIOSUtilsUnitTest, ShouldDisplayCloudSlashIconForProfileModel) {
                 &sync_setup_service));
 }
 
+TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedNoMatches) {
+  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+              GURL("http://example.com/a"));
+  if (IsAccountStorageEnabled()) {
+    AddBookmark(account_bookmark_model_->mobile_node(), u"b",
+                GURL("http://example.com/b"));
+  }
+
+  EXPECT_FALSE(bookmark_utils_ios::IsBookmarked(GURL("http://example.com/c"),
+                                                profile_bookmark_model_,
+                                                account_bookmark_model_));
+}
+
+TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedLocalMatch) {
+  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+              GURL("http://example.com/a"));
+  if (IsAccountStorageEnabled()) {
+    AddBookmark(account_bookmark_model_->mobile_node(), u"b",
+                GURL("http://example.com/b"));
+  }
+
+  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(GURL("http://example.com/a"),
+                                               profile_bookmark_model_,
+                                               account_bookmark_model_));
+}
+
+TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedAccountMatch) {
+  if (!IsAccountStorageEnabled()) {
+    GTEST_SKIP() << "Need account storage to test matches in that storage";
+  }
+
+  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+              GURL("http://example.com/a"));
+  AddBookmark(account_bookmark_model_->mobile_node(), u"b",
+              GURL("http://example.com/b"));
+
+  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(GURL("http://example.com/b"),
+                                               profile_bookmark_model_,
+                                               account_bookmark_model_));
+}
+
+TEST_P(BookmarkIOSUtilsUnitTest, IsBookmarkedBothStoragesMatch) {
+  if (!IsAccountStorageEnabled()) {
+    GTEST_SKIP() << "Need account storage to test matches in both storages";
+  }
+
+  AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
+              GURL("http://example.com/a"));
+  AddBookmark(account_bookmark_model_->mobile_node(), u"b",
+              GURL("http://example.com/a"));
+
+  EXPECT_TRUE(bookmark_utils_ios::IsBookmarked(GURL("http://example.com/a"),
+                                               profile_bookmark_model_,
+                                               account_bookmark_model_));
+}
+
 TEST_P(BookmarkIOSUtilsUnitTest, GetMostRecentlyAddedNoMatchingBookmarks) {
   AddBookmark(profile_bookmark_model_->mobile_node(), u"a",
               GURL("http://example.com/a"));

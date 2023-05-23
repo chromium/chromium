@@ -781,17 +781,26 @@ GURL ConvertUserDataToGURL(NSString* urlString) {
   }
 }
 
+bool IsBookmarked(const GURL& url,
+                  bookmarks::BookmarkModel* local_model,
+                  bookmarks::BookmarkModel* account_model) {
+  CHECK(local_model);
+  if (local_model->IsBookmarked(url)) {
+    return true;
+  }
+  return account_model && account_model->IsBookmarked(url);
+}
+
 const BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
     const GURL& url,
     bookmarks::BookmarkModel* local_model,
     bookmarks::BookmarkModel* account_model) {
+  CHECK(local_model);
   const BookmarkNode* local_bookmark =
       local_model->GetMostRecentlyAddedUserNodeForURL(url);
-  if (!account_model) {
-    return local_bookmark;
-  }
   const BookmarkNode* account_bookmark =
-      account_model->GetMostRecentlyAddedUserNodeForURL(url);
+      account_model ? account_model->GetMostRecentlyAddedUserNodeForURL(url)
+                    : nullptr;
   if (local_bookmark && account_bookmark) {
     // Found bookmarks in both models, return one that was added more recently.
     return local_bookmark->date_added() > account_bookmark->date_added()
