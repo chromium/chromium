@@ -21,8 +21,9 @@ class BrowserContext;
 }
 
 // Base class for Factories that take a BrowserContext object and return some
-// service on a one-to-one mapping. Each factory that derives from this class
-// *must* be a Singleton (only unit tests don't do that).
+// service on a one-to-one mapping. Barring unit tests, each factory that
+// derives from this class *must* be a singleton (base::NoDestructor is
+// recommended over base::Singleton).
 //
 // We do this because services depend on each other and we need to control
 // shutdown/destruction order. In each derived classes' constructors, the
