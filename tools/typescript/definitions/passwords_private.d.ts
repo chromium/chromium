@@ -111,9 +111,11 @@ declare global {
       }
 
       export interface PasswordUiEntry {
+        isPasskey: boolean;
         urls: UrlCollection;
         affiliatedDomains?: DomainInfo[];
         username: string;
+        displayName?: string;
         password?: string;
         federationText?: string;
         id: number;

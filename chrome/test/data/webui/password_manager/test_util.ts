@@ -22,8 +22,10 @@ export function makePasswordCheckStatus(params: PasswordCheckParams):
 }
 
 export interface PasswordEntryParams {
+  isPasskey?: boolean;
   url?: string;
   username?: string;
+  displayName?: string;
   password?: string;
   federationText?: string;
   id?: number;
@@ -62,12 +64,14 @@ export function createPasswordEntry(params?: PasswordEntryParams):
   const note = params.note || '';
 
   return {
+    isPasskey: params.isPasskey || false,
     urls: {
       signonRealm: 'https://' + url + '/login',
       shown: url,
       link: 'https://' + url + '/login',
     },
     username: username,
+    displayName: params.displayName,
     federationText: params.federationText,
     id: id,
     storedIn: storeType,
@@ -173,6 +177,7 @@ export function makeInsecureCredential(params: InsecureCredentialsParams):
     isMuted: params.isMuted ?? false,
   };
   return {
+    isPasskey: false,
     id: id || 0,
     storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
     changePasswordUrl: `https://${url}/`,

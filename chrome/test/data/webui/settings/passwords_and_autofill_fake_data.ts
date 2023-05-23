@@ -51,6 +51,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
   const note = params.note || '';
 
   return {
+    isPasskey: false,
     urls: {
       signonRealm: 'http://' + url + '/login',
       shown: url,
@@ -211,6 +212,7 @@ export function makeInsecureCredential(
     isMuted: isMuted ?? false,
   };
   return {
+    isPasskey: false,
     id: id || 0,
     storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
     changePasswordUrl: `http://${url}/`,
