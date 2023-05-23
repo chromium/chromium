@@ -4,6 +4,7 @@
 
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <vector>
@@ -370,7 +371,7 @@ void SavedTabGroupModel::MoveTabInGroupTo(const base::Uuid& group_id,
   // Copy `tab_id` to prevent uaf when ungrouping a saved tab: crbug/1401965.
   const base::Uuid copy_tab_id = tab_id;
   absl::optional<int> index = GetIndexOf(group_id);
-  saved_tab_groups_[index.value()].MoveTab(tab_id, new_index);
+  saved_tab_groups_[index.value()].MoveTabLocally(tab_id, new_index);
 
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(group_id, copy_tab_id);
@@ -383,12 +384,16 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeGroup(
 
   DCHECK(Contains(group_id));
 
-  int index = GetIndexOf(group_id).value();
+  const int index = GetIndexOf(group_id).value();
+  const int preferred_index = sync_specific.group().position();
+
   saved_tab_groups_[index].MergeGroup(std::move(sync_specific));
 
-  int preferred_index = Get(group_id)->position();
   if (index != preferred_index) {
-    Reorder(group_id, preferred_index);
+    const int num_groups = Count();
+    const int new_index =
+        preferred_index < num_groups ? preferred_index : num_groups - 1;
+    ReorderGroupFromSync(group_id, std::max(new_index, 0));
   }
 
   for (auto& observer : observers_) {
@@ -402,90 +407,45 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeTab(
     const sync_pb::SavedTabGroupSpecifics& sync_specific) {
   const base::Uuid& group_guid =
       base::Uuid::ParseLowercase(sync_specific.tab().group_guid());
-  absl::optional<int> group_index = GetIndexOf(group_guid);
-  CHECK(group_index.has_value());
 
   const base::Uuid& tab_guid = base::Uuid::ParseLowercase(sync_specific.guid());
-  CHECK(saved_tab_groups_[group_index.value()].ContainsTab(tab_guid));
+  SavedTabGroup* const group = GetGroupContainingTab(tab_guid);
+  CHECK(group);
 
-  SavedTabGroupTab merged_tab(*Get(group_guid)->GetTab(tab_guid));
-  merged_tab.MergeTab(std::move(sync_specific));
-  saved_tab_groups_[group_index.value()].ReplaceTabAt(tab_guid, merged_tab);
+  const absl::optional<int> index = group->GetIndexOfTab(tab_guid);
+  const int preferred_index = sync_specific.tab().position();
 
-  for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedFromSync(group_guid,
-                                          merged_tab.saved_tab_guid());
+  group->GetTab(tab_guid)->MergeTab(std::move(sync_specific));
+
+  if (index != preferred_index) {
+    const int num_tabs = group->saved_tabs().size();
+    const int new_index =
+        preferred_index < num_tabs ? preferred_index : num_tabs - 1;
+    group->MoveTabFromSync(tab_guid, std::max(new_index, 0));
   }
 
-  return merged_tab.ToSpecifics();
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedFromSync(group_guid, tab_guid);
+  }
+
+  return group->GetTab(tab_guid)->ToSpecifics();
 }
 
-void SavedTabGroupModel::Reorder(const base::Uuid& id, int new_index) {
-  CHECK_GE(new_index, 0);
-  CHECK_LT(new_index, Count());
-
-  absl::optional<int> index = GetIndexOf(id);
-  CHECK(index.has_value());
-  CHECK_GE(index.value(), 0);
-
-  SavedTabGroup group = saved_tab_groups_[index.value()];
-
-  saved_tab_groups_.erase(saved_tab_groups_.begin() + index.value());
-  saved_tab_groups_.emplace(saved_tab_groups_.begin() + new_index,
-                            std::move(group));
-
+void SavedTabGroupModel::ReorderGroupLocally(const base::Uuid& id,
+                                             int new_index) {
+  ReorderGroupImpl(id, new_index);
   UpdateGroupPositionsImpl();
-
   for (auto& observer : observers_) {
     observer.SavedTabGroupReorderedLocally();
   }
 }
 
-void SavedTabGroupModel::UpdateGroupPositionsImpl() {
-  for (size_t i = 0; i < saved_tab_groups_.size(); ++i)
-    saved_tab_groups_[i].SetPosition(i);
-}
-
-void SavedTabGroupModel::InsertGroupImpl(const SavedTabGroup& group) {
-  // We can always safely insert the first group.
-  if (saved_tab_groups_.empty()) {
-    saved_tab_groups_.emplace_back(std::move(group));
-    return;
+void SavedTabGroupModel::ReorderGroupFromSync(const base::Uuid& id,
+                                              int new_index) {
+  ReorderGroupImpl(id, new_index);
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupReorderedFromSync();
   }
-
-  // Because saved_tab_groups_ must be in sorted order, we can immediately place
-  // the group at the end of the vector if `group` is the largest
-  // element we have seen yet.
-  if (saved_tab_groups_[saved_tab_groups_.size() - 1].position() <
-      group.position()) {
-    saved_tab_groups_.emplace_back(std::move(group));
-    return;
-  }
-
-  // Insert `group` in front of an element if one of these criteria
-  // are met:
-  // 1. The current index is larger than `group`.
-  // 2. The current index has the same position as `group` and is not
-  // the most recently updated position.
-  for (size_t index = 0; index < saved_tab_groups_.size(); ++index) {
-    const SavedTabGroup& curr_group = saved_tab_groups_[index];
-    bool curr_position_larger = curr_group.position() > group.position();
-    bool curr_position_same = curr_group.position() == group.position();
-    bool curr_position_least_recently_updated =
-        curr_group.update_time_windows_epoch_micros() <=
-        group.update_time_windows_epoch_micros();
-
-    if (curr_position_larger ||
-        (curr_position_same && curr_position_least_recently_updated)) {
-      saved_tab_groups_.insert(saved_tab_groups_.begin() + index,
-                               std::move(group));
-      return;
-    }
-  }
-
-  // This can happen when the last element of the vector has the same position
-  // as `group` and was more recently updated.
-  saved_tab_groups_.emplace_back(std::move(group));
 }
 
 std::vector<sync_pb::SavedTabGroupSpecifics>
@@ -556,6 +516,77 @@ void SavedTabGroupModel::OnGroupOpenedInTabStrip(
   }
 }
 
+void SavedTabGroupModel::AddObserver(SavedTabGroupModelObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SavedTabGroupModel::RemoveObserver(SavedTabGroupModelObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void SavedTabGroupModel::ReorderGroupImpl(const base::Uuid& id, int new_index) {
+  DCHECK_GE(new_index, 0);
+  DCHECK_LT(new_index, Count());
+
+  absl::optional<int> index = GetIndexOf(id);
+  CHECK(index.has_value());
+  CHECK_GE(index.value(), 0);
+
+  SavedTabGroup group = saved_tab_groups_[index.value()];
+
+  saved_tab_groups_.erase(saved_tab_groups_.begin() + index.value());
+  saved_tab_groups_.emplace(saved_tab_groups_.begin() + new_index,
+                            std::move(group));
+}
+
+void SavedTabGroupModel::UpdateGroupPositionsImpl() {
+  for (size_t i = 0; i < saved_tab_groups_.size(); ++i) {
+    saved_tab_groups_[i].SetPosition(i);
+  }
+}
+
+void SavedTabGroupModel::InsertGroupImpl(const SavedTabGroup& group) {
+  // We can always safely insert the first group.
+  if (saved_tab_groups_.empty()) {
+    saved_tab_groups_.emplace_back(std::move(group));
+    return;
+  }
+
+  // Because saved_tab_groups_ must be in sorted order, we can immediately place
+  // the group at the end of the vector if `group` is the largest
+  // element we have seen yet.
+  if (saved_tab_groups_[saved_tab_groups_.size() - 1].position() <
+      group.position()) {
+    saved_tab_groups_.emplace_back(std::move(group));
+    return;
+  }
+
+  // Insert `group` in front of an element if one of these criteria
+  // are met:
+  // 1. The current index is larger than `group`.
+  // 2. The current index has the same position as `group` and is not
+  // the most recently updated position.
+  for (size_t index = 0; index < saved_tab_groups_.size(); ++index) {
+    const SavedTabGroup& curr_group = saved_tab_groups_[index];
+    bool curr_position_larger = curr_group.position() > group.position();
+    bool curr_position_same = curr_group.position() == group.position();
+    bool curr_position_least_recently_updated =
+        curr_group.update_time_windows_epoch_micros() <=
+        group.update_time_windows_epoch_micros();
+
+    if (curr_position_larger ||
+        (curr_position_same && curr_position_least_recently_updated)) {
+      saved_tab_groups_.insert(saved_tab_groups_.begin() + index,
+                               std::move(group));
+      return;
+    }
+  }
+
+  // This can happen when the last element of the vector has the same position
+  // as `group` and was more recently updated.
+  saved_tab_groups_.emplace_back(std::move(group));
+}
+
 std::unique_ptr<SavedTabGroup> SavedTabGroupModel::RemoveImpl(int index) {
   CHECK_GE(index, 0);
   std::unique_ptr<SavedTabGroup> removed_group =
@@ -574,12 +605,4 @@ void SavedTabGroupModel::UpdateVisualDataImpl(
 
   saved_group.SetTitle(visual_data->title());
   saved_group.SetColor(visual_data->color());
-}
-
-void SavedTabGroupModel::AddObserver(SavedTabGroupModelObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void SavedTabGroupModel::RemoveObserver(SavedTabGroupModelObserver* observer) {
-  observers_.RemoveObserver(observer);
 }

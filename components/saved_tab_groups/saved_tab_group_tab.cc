@@ -54,6 +54,7 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::MergeTab(
   if (ShouldMergeTab(sync_specific)) {
     SetURL(GURL(sync_specific.tab().url()));
     SetTitle(base::UTF8ToUTF16(sync_specific.tab().title()));
+    SetPosition(sync_specific.tab().position());
     SetUpdateTimeWindowsEpochMicros(base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(sync_specific.update_time_windows_epoch_micros())));
   }

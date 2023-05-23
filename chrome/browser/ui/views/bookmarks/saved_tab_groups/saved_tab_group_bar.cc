@@ -317,8 +317,8 @@ absl::optional<size_t> SavedTabGroupBar::GetDropIndex() const {
 }
 
 void SavedTabGroupBar::HandleDrop() {
-  // TODO(tbergquist): go through the controller/service
-  saved_tab_group_model_->Reorder(drag_data_->guid(), GetDropIndex().value());
+  saved_tab_group_model_->ReorderGroupLocally(drag_data_->guid(),
+                                              GetDropIndex().value());
   drag_data_.release();
   HideOverflowMenu();
   SchedulePaint();
@@ -420,29 +420,11 @@ void SavedTabGroupBar::SavedTabGroupUpdatedLocally(
 }
 
 void SavedTabGroupBar::SavedTabGroupReorderedLocally() {
-  // Selection sort the buttons to match the model's order.
-  std::unordered_map<std::string, SavedTabGroupButton*> buttons_by_guid;
-  for (views::View* child : children()) {
-    SavedTabGroupButton* button =
-        views::AsViewClass<SavedTabGroupButton>(child);
-    if (button) {
-      buttons_by_guid[button->guid().AsLowercaseString()] = button;
-    }
-  }
+  SavedTabGroupReordered();
+}
 
-  int i = 0;
-  for (SavedTabGroup group : saved_tab_group_model_->saved_tab_groups()) {
-    views::View* const button =
-        buttons_by_guid[group.saved_guid().AsLowercaseString()];
-    ReorderChildView(button, i);
-    button->SetVisible(i < kMaxVisibleButtons);
-
-    i++;
-  }
-
-  // Ensure the overflow button is the last button in the view hierarchy.
-  ReorderChildView(overflow_button_, children().size());
-  PreferredSizeChanged();
+void SavedTabGroupBar::SavedTabGroupReorderedFromSync() {
+  SavedTabGroupReordered();
 }
 
 void SavedTabGroupBar::SavedTabGroupAddedFromSync(const base::Uuid& guid) {
@@ -556,6 +538,32 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::Uuid& guid) {
   }
 
   SchedulePaint();
+}
+
+void SavedTabGroupBar::SavedTabGroupReordered() {
+  // Selection sort the buttons to match the model's order.
+  std::unordered_map<std::string, SavedTabGroupButton*> buttons_by_guid;
+  for (views::View* child : children()) {
+    SavedTabGroupButton* button =
+        views::AsViewClass<SavedTabGroupButton>(child);
+    if (button) {
+      buttons_by_guid[button->guid().AsLowercaseString()] = button;
+    }
+  }
+
+  int i = 0;
+  for (SavedTabGroup group : saved_tab_group_model_->saved_tab_groups()) {
+    views::View* const button =
+        buttons_by_guid[group.saved_guid().AsLowercaseString()];
+    ReorderChildView(button, i);
+    button->SetVisible(i < kMaxVisibleButtons);
+
+    i++;
+  }
+
+  // Ensure the overflow button is the last button in the view hierarchy.
+  ReorderChildView(overflow_button_, children().size());
+  PreferredSizeChanged();
 }
 
 void SavedTabGroupBar::LoadAllButtonsFromModel() {

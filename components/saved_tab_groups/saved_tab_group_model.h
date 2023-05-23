@@ -127,8 +127,11 @@ class SavedTabGroupModel {
       const sync_pb::SavedTabGroupSpecifics& sync_specific);
 
   // Changes the index of a given tab group by id. The new index provided is the
-  // expected index after the group is removed.
-  void Reorder(const base::Uuid& id, int new_index);
+  // expected index after the group is removed. Notify local observers if the
+  // group was reordered locally, and sync observers if the group was reordered
+  // from sync.
+  void ReorderGroupLocally(const base::Uuid& id, int new_index);
+  void ReorderGroupFromSync(const base::Uuid& id, int new_index);
 
   // Loads the entries (a sync_pb::SavedTabGroupSpecifics can be a group or a
   // tab) saved locally in the model type store (local storage) and attempts to
@@ -149,6 +152,9 @@ class SavedTabGroupModel {
   void RemoveObserver(SavedTabGroupModelObserver* observer);
 
  private:
+  // Moves the group denoted by `id` to the position `new_index`.
+  void ReorderGroupImpl(const base::Uuid& id, int new_index);
+
   // Updates all group positions to match the index they are currently stored
   // at.
   void UpdateGroupPositionsImpl();

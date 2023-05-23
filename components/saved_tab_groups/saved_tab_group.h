@@ -111,9 +111,16 @@ class SavedTabGroup {
   // replacement tab already exists. In this case we CHECK.
   SavedTabGroup& ReplaceTabAt(const base::Uuid& saved_tab_guid,
                               SavedTabGroupTab tab);
+
   // Moves the tab denoted by `tab_id` from its current index to the
-  // `new_index`.
-  SavedTabGroup& MoveTab(const base::Uuid& saved_tab_guid, size_t new_index);
+  // `new_index`. If the tab was moved locally update the positions of all tabs
+  // in the group. Otherwise, leave the order of the tabs as is. We do this
+  // because sync does not guarantee all the data will be sent, in the order the
+  // changes were made.
+  SavedTabGroup& MoveTabLocally(const base::Uuid& saved_tab_guid,
+                                size_t new_index);
+  SavedTabGroup& MoveTabFromSync(const base::Uuid& saved_tab_guid,
+                                 size_t new_index);
 
   // Merges this groups data with a specific from sync and returns the newly
   // merged specific. Side effect: Updates the values of this group.
@@ -144,6 +151,9 @@ class SavedTabGroup {
       const sync_pb::SavedTabGroup::SavedTabGroupColor color);
 
  private:
+  // Moves the tab denoted by `saved_tab_guid` to the position `new_index`.
+  void MoveTabImpl(const base::Uuid& saved_tab_guid, size_t new_index);
+
   // Insert `tab` into sorted order based on its position compared to already
   // stored tabs in its group. It should be noted that the list of tabs in each
   // group must already be in sorted order for this function to work as

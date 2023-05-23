@@ -191,8 +191,21 @@ SavedTabGroup& SavedTabGroup::ReplaceTabAt(const base::Uuid& tab_id,
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::MoveTab(const base::Uuid& saved_tab_guid,
-                                      size_t new_index) {
+SavedTabGroup& SavedTabGroup::MoveTabLocally(const base::Uuid& saved_tab_guid,
+                                             size_t new_index) {
+  MoveTabImpl(saved_tab_guid, new_index);
+  UpdateTabPositionsImpl();
+  return *this;
+}
+
+SavedTabGroup& SavedTabGroup::MoveTabFromSync(const base::Uuid& saved_tab_guid,
+                                              size_t new_index) {
+  MoveTabImpl(saved_tab_guid, new_index);
+  return *this;
+}
+
+void SavedTabGroup::MoveTabImpl(const base::Uuid& saved_tab_guid,
+                                size_t new_index) {
   absl::optional<size_t> curr_index = GetIndexOfTab(saved_tab_guid);
   CHECK(curr_index.has_value());
   CHECK_GE(curr_index.value(), 0u);
@@ -210,15 +223,6 @@ SavedTabGroup& SavedTabGroup::MoveTab(const base::Uuid& saved_tab_guid,
         saved_tabs_.rbegin() + ((saved_tabs_.size() - 1) - curr_index.value()),
         saved_tabs_.rbegin() + ((saved_tabs_.size() - 1) - curr_index.value()) +
             1);
-  }
-  UpdateTabPositionsImpl();
-  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
-  return *this;
-}
-
-void SavedTabGroup::UpdateTabPositionsImpl() {
-  for (size_t i = 0; i < saved_tabs_.size(); ++i) {
-    saved_tabs_[i].SetPosition(i);
   }
 }
 
@@ -263,6 +267,14 @@ void SavedTabGroup::InsertTabImpl(SavedTabGroupTab tab) {
   saved_tabs_.push_back(std::move(tab));
 }
 
+void SavedTabGroup::UpdateTabPositionsImpl() {
+  for (size_t i = 0; i < saved_tabs_.size(); ++i) {
+    saved_tabs_[i].SetPosition(i);
+  }
+
+  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+}
+
 bool SavedTabGroup::ShouldMergeGroup(
     const sync_pb::SavedTabGroupSpecifics& sync_specific) const {
   bool sync_update_is_latest =
@@ -280,6 +292,7 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroup::MergeGroup(
   if (ShouldMergeGroup(sync_specific)) {
     SetTitle(base::UTF8ToUTF16(sync_specific.group().title()));
     SetColor(SyncColorToTabGroupColor(sync_specific.group().color()));
+    SetPosition(sync_specific.group().position());
     SetUpdateTimeWindowsEpochMicros(base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(sync_specific.update_time_windows_epoch_micros())));
   }

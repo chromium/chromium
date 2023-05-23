@@ -464,15 +464,15 @@ TEST_F(SavedTabGroupModelTest, MoveElement) {
   ASSERT_EQ(0, saved_tab_group_model_->GetIndexOf(id_1_));
   ASSERT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
   ASSERT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
-  saved_tab_group_model_->Reorder(id_2_, 2);
+  saved_tab_group_model_->ReorderGroupLocally(id_2_, 2);
   EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_1_));
   EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_3_));
   EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_2_));
-  saved_tab_group_model_->Reorder(id_2_, 0);
+  saved_tab_group_model_->ReorderGroupLocally(id_2_, 0);
   EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_2_));
   EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_1_));
   EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
-  saved_tab_group_model_->Reorder(id_2_, 1);
+  saved_tab_group_model_->ReorderGroupLocally(id_2_, 1);
   EXPECT_EQ(0, saved_tab_group_model_->GetIndexOf(id_1_));
   EXPECT_EQ(1, saved_tab_group_model_->GetIndexOf(id_2_));
   EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(id_3_));
@@ -947,7 +947,7 @@ TEST_F(SavedTabGroupModelObserverTest, MoveElement) {
   saved_tab_group_model_->Add(stg_2);
   saved_tab_group_model_->Add(stg_3);
 
-  saved_tab_group_model_->Reorder(stg_2.saved_guid(), 2);
+  saved_tab_group_model_->ReorderGroupLocally(stg_2.saved_guid(), 2);
 
   EXPECT_TRUE(reordered_called_);
   EXPECT_EQ(2, saved_tab_group_model_->GetIndexOf(stg_2.saved_guid()));
