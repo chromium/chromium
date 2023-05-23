@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -4738,11 +4739,15 @@ bool ChromeContentBrowserClient::PreSpawnChild(
 
 bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {
   PrefService* local_state = g_browser_process->local_state();
-  if (local_state &&
-      local_state->HasPrefPath(prefs::kRendererCodeIntegrityEnabled) &&
-      !local_state->GetBoolean(prefs::kRendererCodeIntegrityEnabled))
-    return false;
-  return true;
+
+  // Code integrity defaults to enabled, unless specifically overridden by a
+  // policy controlled pref being set to false.
+  const bool is_code_integrity_enabled =
+      !local_state->HasPrefPath(prefs::kRendererCodeIntegrityEnabled) ||
+      local_state->GetBoolean(prefs::kRendererCodeIntegrityEnabled);
+  base::UmaHistogramBoolean("Windows.RendererCodeIntegrityEnabled",
+                            is_code_integrity_enabled);
+  return is_code_integrity_enabled;
 }
 
 // Note: Only use sparingly to add Chrome specific sandbox functionality here.

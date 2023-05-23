@@ -260,6 +260,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.RendererCodeIntegrityEnabled" enum="BooleanEnabled"
+    expires_after="M118">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records whether or not Renderer code integrity is enabled. This is enabled
+    by default but can be overridden by policy. This is recorded each time a new
+    renderer process starts.
+  </summary>
+</histogram>
+
 <histogram name="Windows.TouchDrag.Success" enum="BooleanSuccess"
     expires_after="2021-12-01">
   <owner>davidbienvenu@chromium.org</owner>
