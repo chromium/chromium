@@ -48,6 +48,16 @@ enum class RequestType {
   kWriteFile,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OperationCompletion {
+  kCompletedNormally = 0,
+  kCompletedAfterWarning = 1,
+  kAbortedFromNotification = 2,
+  kAbortedInternally = 3,
+  kMaxValue = kAbortedInternally,
+};
+
 // Manages requests between the service, async utils and the providing
 // extension or native provider.
 class RequestManager {
@@ -90,7 +100,8 @@ class RequestManager {
     virtual void OnRequestCreated(int request_id, RequestType type) = 0;
 
     // Called when the request is destroyed.
-    virtual void OnRequestDestroyed(int request_id) = 0;
+    virtual void OnRequestDestroyed(int request_id,
+                                    OperationCompletion completion) = 0;
 
     // Called when the request is executed.
     virtual void OnRequestExecuted(int request_id) = 0;
@@ -151,7 +162,7 @@ class RequestManager {
   void RemoveObserver(Observer* observer);
 
   // Destroys the request with the passed |request_id|.
-  void DestroyRequest(int request_id);
+  void DestroyRequest(int request_id, OperationCompletion completion);
 
  protected:
   struct Request {
@@ -167,6 +178,10 @@ class RequestManager {
 
     // Handler tied to this request.
     std::unique_ptr<HandlerInterface> handler;
+
+    // Indicates if this operation timed out and a warning has been shown to the
+    // user.
+    bool shown_unresponsive_notification = false;
   };
 
   // Called when a request with |request_id| timeouts.
@@ -180,6 +195,12 @@ class RequestManager {
 
   // Resets the timeout timer for the specified request.
   void ResetTimer(int request_id);
+
+  // Reject a request specifying how it was completed.
+  base::File::Error RejectRequestInternal(int request_id,
+                                          const RequestValue& response,
+                                          base::File::Error error,
+                                          OperationCompletion completion);
 
   raw_ptr<Profile> profile_;  // Not owned.
   std::map<int, std::unique_ptr<Request>> requests_;

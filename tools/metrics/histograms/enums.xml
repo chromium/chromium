@@ -44710,8 +44710,8 @@ Called by update_permissions_policy_enum.py.-->
 <enum name="FileSystemProviderOperationCompletion">
   <int value="0" label="CompletedNormally"/>
   <int value="1" label="CompletedAfterWarning"/>
-  <int value="2" label="AbortedManually"/>
-  <int value="3" label="AbortedOnTimeout"/>
+  <int value="2" label="AbortedFromNotification"/>
+  <int value="3" label="AbortedInternally"/>
 </enum>
 
 <enum name="FileType">

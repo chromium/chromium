@@ -30,6 +30,7 @@ namespace {
 
 using ash::file_system_provider::MountContext;
 using ash::file_system_provider::Observer;
+using ash::file_system_provider::OperationCompletion;
 using ash::file_system_provider::ProvidedFileSystemInfo;
 using ash::file_system_provider::ProvidedFileSystemInterface;
 using ash::file_system_provider::RequestManager;
@@ -53,7 +54,8 @@ class NotificationButtonClicker : public RequestManager::Observer {
 
   // RequestManager::Observer overrides.
   void OnRequestCreated(int request_id, RequestType type) override {}
-  void OnRequestDestroyed(int request_id) override {}
+  void OnRequestDestroyed(int request_id,
+                          OperationCompletion completion) override {}
   void OnRequestExecuted(int request_id) override {}
   void OnRequestFulfilled(int request_id,
                           const RequestValue& result,

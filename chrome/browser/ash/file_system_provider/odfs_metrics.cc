@@ -79,7 +79,8 @@ void ODFSMetrics::OnRequestCreated(int request_id, RequestType type) {
   request.latency_timer.Begin();
 }
 
-void ODFSMetrics::OnRequestDestroyed(int request_id) {
+void ODFSMetrics::OnRequestDestroyed(int request_id,
+                                     OperationCompletion completion) {
   auto it = requests_.find(request_id);
   if (it == requests_.end()) {
     return;
@@ -87,6 +88,8 @@ void ODFSMetrics::OnRequestDestroyed(int request_id) {
   Request& request = it->second;
   base::UmaHistogramMediumTimes(GetHistogramName("Time", request.request_type),
                                 request.latency_timer.Elapsed());
+  base::UmaHistogramEnumeration(
+      GetHistogramName("Completion", request.request_type), completion);
   requests_.erase(it);
 }
 

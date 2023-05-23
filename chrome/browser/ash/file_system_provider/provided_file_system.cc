@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/file_system_provider/operations/unmount.h"
 #include "chrome/browser/ash/file_system_provider/operations/write_file.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
+#include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"

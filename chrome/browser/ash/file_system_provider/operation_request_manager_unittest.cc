@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/file_system_provider/notification_manager_interface.h"
+#include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/ash/file_system_provider/request_value.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -294,6 +295,17 @@ class RequestObserver : public RequestManager::Observer {
     base::File::Error error_;
   };
 
+  class DestroyedEvent : public Event {
+   public:
+    DestroyedEvent(int request_id, OperationCompletion completion)
+        : Event(request_id), completion_(completion) {}
+
+    OperationCompletion completion() const { return completion_; }
+
+   private:
+    OperationCompletion completion_;
+  };
+
   RequestObserver() {}
 
   RequestObserver(const RequestObserver&) = delete;
@@ -307,8 +319,9 @@ class RequestObserver : public RequestManager::Observer {
   }
 
   // RequestManager::Observer overrides.
-  void OnRequestDestroyed(int request_id) override {
-    destroyed_.push_back(Event(request_id));
+  void OnRequestDestroyed(int request_id,
+                          OperationCompletion completion) override {
+    destroyed_.push_back(DestroyedEvent(request_id, completion));
   }
 
   // RequestManager::Observer overrides.
@@ -336,7 +349,7 @@ class RequestObserver : public RequestManager::Observer {
   }
 
   const std::vector<CreatedEvent>& created() const { return created_; }
-  const std::vector<Event>& destroyed() const { return destroyed_; }
+  const std::vector<DestroyedEvent>& destroyed() const { return destroyed_; }
   const std::vector<Event>& executed() const { return executed_; }
   const std::vector<FulfilledEvent>& fulfilled() const { return fulfilled_; }
   const std::vector<RejectedEvent>& rejected() const { return rejected_; }
@@ -344,7 +357,7 @@ class RequestObserver : public RequestManager::Observer {
 
  private:
   std::vector<CreatedEvent> created_;
-  std::vector<Event> destroyed_;
+  std::vector<DestroyedEvent> destroyed_;
   std::vector<Event> executed_;
   std::vector<FulfilledEvent> fulfilled_;
   std::vector<RejectedEvent> rejected_;
@@ -464,6 +477,8 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndFulFill) {
 
   ASSERT_EQ(1u, observer.destroyed().size());
   EXPECT_EQ(request_id, observer.destroyed()[0].request_id());
+  EXPECT_EQ(OperationCompletion::kCompletedNormally,
+            observer.destroyed()[0].completion());
   EXPECT_EQ(0u, observer.timed_out().size());
 
   request_manager_->RemoveObserver(&observer);
@@ -602,6 +617,8 @@ TEST_F(FileSystemProviderRequestManagerTest, CreateAndReject) {
 
   ASSERT_EQ(1u, observer.destroyed().size());
   EXPECT_EQ(request_id, observer.destroyed()[0].request_id());
+  EXPECT_EQ(OperationCompletion::kCompletedNormally,
+            observer.destroyed()[0].completion());
   EXPECT_EQ(0u, observer.timed_out().size());
 
   request_manager_->RemoveObserver(&observer);
@@ -765,6 +782,8 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnDestroy) {
   EXPECT_EQ(request_id, observer.rejected()[0].request_id());
   EXPECT_EQ(base::File::FILE_ERROR_ABORT, observer.rejected()[0].error());
   ASSERT_EQ(1u, observer.destroyed().size());
+  EXPECT_EQ(OperationCompletion::kAbortedInternally,
+            observer.destroyed()[0].completion());
 }
 
 TEST_F(FileSystemProviderRequestManagerTest, AbortOnTimeout) {
@@ -810,6 +829,8 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnTimeout) {
   EXPECT_EQ(request_id, observer.timed_out()[0].request_id());
   ASSERT_EQ(1u, observer.destroyed().size());
   EXPECT_EQ(request_id, observer.destroyed()[0].request_id());
+  EXPECT_EQ(OperationCompletion::kAbortedFromNotification,
+            observer.destroyed()[0].completion());
 
   request_manager_->RemoveObserver(&observer);
 }
@@ -853,6 +874,18 @@ TEST_F(FileSystemProviderRequestManagerTest, ContinueOnTimeout) {
   // Wait until the request is timed out again.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, notification_manager_->size());
+
+  // Fulfill and check that operation completion mode changes.
+  const base::File::Error result = request_manager_->FulfillRequest(
+      request_id,
+      RequestValue(RequestValue::CreateForTesting("i-like-vanilla")),
+      /*has_more=*/false);
+  EXPECT_EQ(base::File::FILE_OK, result);
+
+  ASSERT_EQ(1u, observer.fulfilled().size());
+  ASSERT_EQ(1u, observer.destroyed().size());
+  EXPECT_EQ(OperationCompletion::kCompletedAfterWarning,
+            observer.destroyed()[0].completion());
 
   request_manager_->RemoveObserver(&observer);
 }

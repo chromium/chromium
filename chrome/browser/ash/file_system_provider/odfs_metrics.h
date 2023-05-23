@@ -19,7 +19,8 @@ class ODFSMetrics : public RequestManager::Observer {
   ~ODFSMetrics() override;
   // RequestManager::Observer overrides:
   void OnRequestCreated(int request_id, RequestType type) override;
-  void OnRequestDestroyed(int request_id) override;
+  void OnRequestDestroyed(int request_id,
+                          OperationCompletion completion) override;
   void OnRequestExecuted(int request_id) override;
   void OnRequestFulfilled(int request_id,
                           const RequestValue& result,
