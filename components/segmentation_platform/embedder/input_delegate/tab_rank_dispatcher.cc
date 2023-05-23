@@ -47,9 +47,11 @@ void TabRankDispatcher::GetTopRankedTabs(const std::string& segmentation_key,
 
   std::queue<RankedTab> candidate_tabs;
   for (const auto& tab : all_tabs) {
-    if (tab_fetcher_->GetTimeSinceModified(tab) <= tab_filter.max_tab_age) {
-      candidate_tabs.push(RankedTab{.tab = tab});
+    if (!tab_filter.max_tab_age.is_zero() &&
+        tab_fetcher_->GetTimeSinceModified(tab) > tab_filter.max_tab_age) {
+      continue;
     }
+    candidate_tabs.push(RankedTab{.tab = tab});
   }
   GetNextResult(segmentation_key, std::move(candidate_tabs),
                 std::multiset<RankedTab>(), std::move(callback));
@@ -60,7 +62,7 @@ void TabRankDispatcher::GetNextResult(const std::string& segmentation_key,
                                       std::multiset<RankedTab> results,
                                       RankedTabsCallback callback) {
   if (candidate_tabs.empty()) {
-    std::move(callback).Run(false, std::move(results));
+    std::move(callback).Run(true, std::move(results));
     return;
   }
 

@@ -53,7 +53,7 @@ class TabRankDispatcher : public base::SupportsUserData::Data {
   struct TabFilter {
     // When the last modified time of the tab is higher than the max value, then
     // tab is excluded from the ranking.
-    base::TimeDelta max_tab_age = base::Hours(1);
+    base::TimeDelta max_tab_age;
   };
 
   // Fetches a list of ranked tabs for a given feature or ranking heuristic

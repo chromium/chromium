@@ -71,6 +71,10 @@ void TabResumptionRanker::ExecuteModelWithInput(
   // Assumes the first input to the model is TAB_METRICS.
   float time_since_modified_sec =
       inputs[processing::TabSessionSource::kInputTimeSinceModifiedSec];
+  if (time_since_modified_sec == 0) {
+    time_since_modified_sec =
+        inputs[processing::TabSessionSource::kInputLocalTabTimeSinceModified];
+  }
   // Add 1 to avoid divide by 0.
   float resumption_score = 1.0 / (time_since_modified_sec + 1);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

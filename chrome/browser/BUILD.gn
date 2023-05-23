@@ -1514,6 +1514,8 @@ static_library("browser") {
     "security_events/security_event_sync_bridge_impl.h",
     "segmentation_platform/chrome_browser_main_extra_parts_segmentation_platform.cc",
     "segmentation_platform/chrome_browser_main_extra_parts_segmentation_platform.h",
+    "segmentation_platform/client_util/local_tab_handler.cc",
+    "segmentation_platform/client_util/local_tab_handler.h",
     "segmentation_platform/segmentation_platform_config.cc",
     "segmentation_platform/segmentation_platform_config.h",
     "segmentation_platform/segmentation_platform_profile_observer.cc",
