@@ -5,6 +5,7 @@
 source_set("session") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":hash_util",
     "//base",
     "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",
@@ -22,6 +23,16 @@ source_set("session") {
     "session_certificate_policy_cache_impl.mm",
     "session_certificate_policy_cache_storage_builder.h",
     "session_certificate_policy_cache_storage_builder.mm",
+  ]
+}
+
+source_set("hash_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  visibility = [ ":session" ]
+  sources = [ "hash_util.h" ]
+  deps = [
+    "//base",
+    "//net",
   ]
 }
 

@@ -4,8 +4,10 @@
 
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/session/proto/session.pb.h"
+#import "ios/web/session/hash_util.h"
 #import "net/base/hash_value.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
@@ -127,6 +129,19 @@ size_t GetCertPolicyBytesEncoded() {
   storage.set_status(_status);
 }
 
+#pragma mark NSObject
+
+- (NSUInteger)hash {
+  return web::session::ComputeHash(_certificate, _host, _status);
+}
+
+- (BOOL)isEqual:(NSObject*)object {
+  CRWSessionCertificateStorage* other =
+      base::mac::ObjCCast<CRWSessionCertificateStorage>(object);
+
+  return [other cr_isEqualSameClass:self];
+}
+
 #pragma mark Accessors
 
 - (net::X509Certificate*)certificate {
@@ -177,6 +192,19 @@ size_t GetCertPolicyBytesEncoded() {
                      certStatus:serialization[StatusIndex]];
 }
 
+- (BOOL)cr_isEqualSameClass:(CRWSessionCertificateStorage*)other {
+  if (_host != other.host) {
+    return NO;
+  }
+
+  if (_status != other.status) {
+    return NO;
+  }
+
+  return net::x509_util::CryptoBufferEqual(_certificate->cert_buffer(),
+                                           other.certificate->cert_buffer());
+}
+
 @end
 
 #pragma mark - CRWSessionCertificatePolicyCacheStorage
@@ -209,6 +237,15 @@ size_t GetCertPolicyBytesEncoded() {
   }
 }
 
+#pragma mark NSObject
+
+- (BOOL)isEqual:(NSObject*)object {
+  CRWSessionCertificatePolicyCacheStorage* other =
+      base::mac::ObjCCast<CRWSessionCertificatePolicyCacheStorage>(object);
+
+  return [other cr_isEqualSameClass:self];
+}
+
 #pragma mark NSCoding
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
@@ -237,6 +274,22 @@ size_t GetCertPolicyBytesEncoded() {
 - (void)encodeWithCoder:(NSCoder*)aCoder {
   [aCoder encodeObject:self.certificateStorages
                 forKey:web::kCertificateStoragesKey];
+}
+
+#pragma mark Private
+
+- (BOOL)cr_isEqualSameClass:(CRWSessionCertificatePolicyCacheStorage*)other {
+  if (_certificateStorages.count != other.certificateStorages.count) {
+    return NO;
+  }
+
+  for (CRWSessionCertificateStorage* cert in other.certificateStorages) {
+    if (![_certificateStorages containsObject:cert]) {
+      return NO;
+    }
+  }
+
+  return YES;
 }
 
 @end
