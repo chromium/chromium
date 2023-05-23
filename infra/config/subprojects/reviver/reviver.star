@@ -84,6 +84,7 @@ polymorphic.launcher(
             dimensions = dimensions.dimensions(
                 builderless = "",
                 ssd = "",
+                free_space = "",
                 builder = "Android x64 Builder (dbg)",
             ),
             testers = [
