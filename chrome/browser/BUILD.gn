@@ -7112,6 +7112,7 @@ static_library("browser") {
       ]
       deps += [
         "//chromeos/services/tts/public/mojom",
+        "//services/accessibility:buildflags",
         "//services/accessibility/public/mojom",
         "//ui/events/ozone/layout:layout",
       ]
