@@ -529,7 +529,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(DELAY_TEMP_STRIP_REMOVAL, true);
     public static final CachedFlag sDiscoverMultiColumn = new CachedFlag(FEED_MULTI_COLUMN, true);
     public static final CachedFlag sEarlyLibraryLoad = new CachedFlag(EARLY_LIBRARY_LOAD, true);
-    public static final CachedFlag sEmptyStates = new CachedFlag(EMPTY_STATES, true);
     public static final CachedFlag sExperimentsForAgsa = new CachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
             new CachedFlag(FEED_LOADING_PLACEHOLDER, false);
@@ -628,7 +627,6 @@ public abstract class ChromeFeatureList {
         sDelayTempStripRemoval,
         sDiscoverMultiColumn,
         sEarlyLibraryLoad,
-        sEmptyStates,
         sFeedLoadingPlaceholder,
         sFoldableJankFix,
         sHideNonDisplayableAccountEmail,
