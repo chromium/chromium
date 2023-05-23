@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 
+#include "components/ml/webnn/graph_validation_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 
@@ -32,43 +33,23 @@ size_t GetBytesPerElement(V8MLOperandType::Enum operand_type) {
 
 absl::optional<size_t> ValidateAndCalculateElementsNumber(
     const Vector<uint32_t>& dimensions,
-    String& error_message) {
-  if (dimensions.empty()) {
-    error_message = "The dimensions is empty.";
-    return absl::nullopt;
-  }
-  base::CheckedNumeric<size_t> checked_number_of_elements = 1;
-  for (auto& d : dimensions) {
-    if (d == 0) {
-      error_message = "All dimensions should be positive.";
-      return absl::nullopt;
-    }
-    checked_number_of_elements *= d;
-  }
-  if (!checked_number_of_elements.IsValid()) {
-    error_message = "The number of elements is too large.";
-    return absl::nullopt;
-  }
-  return checked_number_of_elements.ValueOrDie();
+    String& error_message_blink) {
+  std::string error_message;
+  auto number_of_elements = webnn::ValidateAndCalculateElementsNumber(
+      base::make_span(dimensions), error_message);
+  error_message_blink = WTF::String::FromUTF8(error_message);
+  return number_of_elements;
 }
 
 absl::optional<size_t> ValidateAndCalculateByteLength(
     V8MLOperandType::Enum type,
     const Vector<uint32_t>& dimensions,
-    String& error_message) {
-  absl::optional<size_t> elements_num =
-      ValidateAndCalculateElementsNumber(dimensions, error_message);
-  if (!elements_num) {
-    return absl::nullopt;
-  }
-  auto checked_byte_length =
-      base::MakeCheckedNum<size_t>(elements_num.value()) *
-      GetBytesPerElement(type);
-  if (!checked_byte_length.IsValid()) {
-    error_message = "The byte length is too large.";
-    return absl::nullopt;
-  }
-  return checked_byte_length.ValueOrDie();
+    String& error_message_blink) {
+  std::string error_message;
+  auto byte_length = webnn::ValidateAndCalculateByteLength(
+      GetBytesPerElement(type), base::make_span(dimensions), error_message);
+  error_message_blink = WTF::String::FromUTF8(error_message);
+  return byte_length;
 }
 
 }  // namespace
