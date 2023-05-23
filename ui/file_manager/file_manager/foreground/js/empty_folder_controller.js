@@ -41,7 +41,6 @@ const TRASH_EMPTY_FOLDER =
 /**
  * The reauthentication required image for ODFS. There are no files when
  * reauthentication is required (scan fails).
- * TODO(b/279109210): fix light/dark colours.
  * @type {string}
  * @const
  */

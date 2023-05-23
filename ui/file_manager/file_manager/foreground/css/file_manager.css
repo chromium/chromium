@@ -1236,6 +1236,19 @@ body.check-select #read-only-indicator {
   --empty-folder-svg-file-color: var(--cros-illustration-secondary-color);
   --empty-folder-svg-ellipse-color: var(--cros-illustration-color-1);
   --empty-folder-svg-folder-color: var(--cros-illustration-color-1-shade-2);
+
+
+  /* TODO(b/283366482) Remove this manual GM3 -> GM2 mapping once b/280712160
+  fixed. */
+  --cros-sys-illo-color1: var(--cros-illustration-color-1);
+  --cros-sys-illo-color1-2: var(--cros-illustration-color-1-shade-2);
+  --cros-sys-illo-secondary: var(--cros-illustration-secondary-color);
+  --cros-sys-illo-color3: var(--cros-illustration-color-3);
+  --cros-sys-illo-color5: var(--cros-illustration-color-5);
+  --cros-sys-illo-color2: var(--cros-illustration-color-2);
+  --cros-sys-illo-base: var(--cros-illustration-base-color);
+
+
   margin-top: 64px;
   text-align: center;
 }
