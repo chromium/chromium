@@ -16,6 +16,7 @@ import {getTrustedScriptURL} from '//resources/js/static_types.js';
 
 import {Oobe} from './cr_ui.js';
 import * as OobeDebugger from './debug/debug.js';
+import * as QuickStartDebugger from './debug/quick_start_debugger.js';
 import * as OobeTestApi from './test_api/test_api.js';
 import {loadTimeData} from './i18n_setup.js';
 import {addScreensToMainContainer} from './login_ui_tools.js';
@@ -73,6 +74,10 @@ function initializeOobe() {
   // Initialize the on-screen debugger if present.
   if (OobeDebugger.DebuggerUI) {
     OobeDebugger.DebuggerUI.getInstance().register(document.body);
+  }
+  // Add the QuickStart debugger if present.
+  if (QuickStartDebugger.addDebugger) {
+    QuickStartDebugger.addDebugger();
   }
 
   // Add the OOBE Test API

@@ -298,6 +298,7 @@ extern const char kScheduledRebootGracePeriodInSecondsForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfHotseat[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowLoginDevOverlay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowOobeDevOverlay[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowOobeQuickStartDebugger[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShowTaps[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSkipForceOnlineSignInForTesting[];

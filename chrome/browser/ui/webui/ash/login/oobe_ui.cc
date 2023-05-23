@@ -168,6 +168,7 @@ constexpr char kArcPlaystoreCSSPath[] = "arc_support/playstore.css";
 constexpr char kArcPlaystoreJSPath[] = "arc_support/playstore.js";
 constexpr char kArcPlaystoreLogoPath[] = "arc_support/icon/playstore.svg";
 constexpr char kDebuggerMJSPath[] = "debug/debug.js";
+constexpr char kQuickStartDebuggerPath[] = "debug/quick_start_debugger.js";
 
 constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kTestAPIJsMPath[] = "test_api/test_api.js";
@@ -238,16 +239,26 @@ void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
 
 void AddDebuggerResources(content::WebUIDataSource* source) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  const bool enabled = command_line->HasSwitch(switches::kShowOobeDevOverlay);
+  const bool dev_overlay_enabled =
+      command_line->HasSwitch(switches::kShowOobeDevOverlay);
+  const bool quick_start_debugger_enabled =
+      command_line->HasSwitch(switches::kShowOobeQuickStartDebugger);
   // Enable for ChromeOS-on-linux for developers and test images.
-  if (enabled && base::SysInfo::IsRunningOnChromeOS()) {
+  if (dev_overlay_enabled && base::SysInfo::IsRunningOnChromeOS()) {
     LOG(WARNING) << "OOBE Debug overlay can only be used on test images";
     base::SysInfo::CrashIfChromeOSNonTestImage();
   }
 
   source->AddResourcePath(kDebuggerMJSPath,
-                          enabled ? IDR_OOBE_CONDITIONAL_DEBUG_DEBUG_JS
-                                  : IDR_OOBE_CONDITIONAL_DEBUG_NO_DEBUG_JS);
+                          dev_overlay_enabled
+                              ? IDR_OOBE_CONDITIONAL_DEBUG_DEBUG_JS
+                              : IDR_OOBE_CONDITIONAL_DEBUG_NO_DEBUG_JS);
+
+  source->AddResourcePath(
+      kQuickStartDebuggerPath,
+      quick_start_debugger_enabled
+          ? IDR_OOBE_CONDITIONAL_DEBUG_QUICK_START_DEBUGGER_JS
+          : IDR_OOBE_CONDITIONAL_DEBUG_NO_DEBUG_JS);
 }
 
 void AddTestAPIResources(content::WebUIDataSource* source) {

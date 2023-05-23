@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
 # TODO(crbug.com/1229130)
 # Uncomment once most screens are migrated.
@@ -18,4 +19,10 @@ import("//third_party/closure_compiler/compile_js.gni")
 copy("copy_js") {
   sources = [ "debug.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "quick_start_debugger.js",
+  ]
 }
