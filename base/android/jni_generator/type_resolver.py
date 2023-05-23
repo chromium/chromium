@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import re
-
 import java_lang_classes
 
 _PRIMITIVE_MAP = {
@@ -18,26 +16,19 @@ _PRIMITIVE_MAP = {
     'void': 'V',
 }
 
-_IMPORT_REGEX = re.compile(r'^import\s+(\S+?);', flags=re.MULTILINE)
-_INNER_TYPES_REGEX = re.compile(r'(?:class|interface|enum)\s+?(\w+?)\W')
-
 
 class TypeResolver:
   """Converts type names to fully qualified names."""
-  def __init__(self, fully_qualified_class):
-    self._fully_qualified_class = fully_qualified_class
-    self._package = '/'.join(fully_qualified_class.split('/')[:-1])
-    self._imports = []
-    self._inner_classes = []
+  def __init__(self, java_class):
+    self._java_class = java_class
+    self.imports = []
+    self._nested_classes = []
 
-  def parse_imports_and_nested_types(self, contents):
-    names = _IMPORT_REGEX.findall(contents)
-    self._imports.extend(
-        n.replace('.', '/') for n in names if not n.endswith('*'))
+  def add_import(self, java_class):
+    self.imports.append(java_class)
 
-    for name in _INNER_TYPES_REGEX.findall(contents):
-      if not self._fully_qualified_class.endswith(name):
-        self._inner_classes.append(f'{self._fully_qualified_class}${name}')
+  def add_nested_class(self, java_class):
+    self._nested_classes.append(java_class)
 
   def java_to_jni(self, param):
     """Converts a java param into a JNI signature type."""
@@ -61,25 +52,19 @@ class TypeResolver:
       # Coming from javap, use the fully qualified param directly.
       return param
 
-    for qualified_name in ([self._fully_qualified_class] + self._inner_classes):
-      if (qualified_name.endswith('/' + param)
-          or qualified_name.endswith('$' + param.replace('.', '$'))
-          or qualified_name == param):
-        return qualified_name
+    if self._java_class.name == param:
+      return self._java_class.full_name_with_slashes
+
+    for clazz in self._nested_classes:
+      if param in (clazz.name, clazz.nested_name):
+        return clazz.full_name_with_slashes
 
     # Is it from an import? (e.g. referecing Class from import pkg.Class;
     # note that referencing an inner class Inner from import pkg.Class.Inner
     # is not supported).
-    for qualified_name in self._imports:
-      if qualified_name.endswith('/' + param):
-        # Ensure it's not an inner class.
-        components = qualified_name.split('/')
-        if len(components) > 2 and components[-2][0].isupper():
-          raise SyntaxError('Inner class (%s) can not be imported '
-                            'and used by JNI (%s). Please import the outer '
-                            'class and use Outer.Inner instead.' %
-                            (qualified_name, param))
-        return qualified_name
+    for clazz in self.imports:
+      if param in (clazz.name, clazz.nested_name):
+        return clazz.full_name_with_slashes
 
     # Is it an inner class from an outer class import? (e.g. referencing
     # Class.Inner from import pkg.Class).
@@ -87,9 +72,9 @@ class TypeResolver:
       components = param.split('.')
       outer = '/'.join(components[:-1])
       inner = components[-1]
-      for qualified_name in self._imports:
-        if qualified_name.endswith('/' + outer):
-          return f'{qualified_name}${inner}'
+      for clazz in self.imports:
+        if clazz.name == outer:
+          return f'{clazz.full_name_with_slashes}${inner}'
       param = param.replace('.', '$')
 
     # java.lang classes always take priority over types from the same package.
@@ -99,7 +84,7 @@ class TypeResolver:
       return f'java/lang/{param}'
 
     # Type not found, falling back to same package as this class.
-    return f'{self._package}/{param}'
+    return f'{self._java_class.package_with_slashes}/{param}'
 
   def create_signature(self, params, returns):
     """Returns the JNI signature for the given datatypes."""
