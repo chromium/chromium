@@ -60,12 +60,22 @@ class PasswordManagerNavigationThrottleTest
   raw_ptr<content::RenderFrameHost> subframe_ = nullptr;
 };
 
-TEST_F(PasswordManagerNavigationThrottleTest, CreatesNavigationThrottle) {
+TEST_F(PasswordManagerNavigationThrottleTest,
+       CreatesNavigationThrottle_HelpSite) {
   EXPECT_TRUE(CreateNavigationThrottle({
       .url = GURL(password_manager::kManageMyPasswordsURL),
       .page_transition = ui::PAGE_TRANSITION_LINK,
       .initiator_origin =
           url::Origin::Create(GURL(password_manager::kReferrerURL)),
+  }));
+}
+
+TEST_F(PasswordManagerNavigationThrottleTest, CreatesNavigationThrottle_PGC) {
+  EXPECT_TRUE(CreateNavigationThrottle({
+      .url = GURL(password_manager::kManageMyPasswordsURL),
+      .page_transition = ui::PAGE_TRANSITION_LINK,
+      .initiator_origin =
+          url::Origin::Create(GURL(password_manager::kManageMyPasswordsURL)),
   }));
 }
 
@@ -79,7 +89,7 @@ TEST_F(PasswordManagerNavigationThrottleTest,
 }
 
 TEST_F(PasswordManagerNavigationThrottleTest,
-       DoesntCreateNavigationThrottleWhenURLDoesntMatch) {
+       DoesntCreateNavigationThrottleWhenURLDoesntMatch_HelpSite) {
   EXPECT_FALSE(CreateNavigationThrottle({
       .url = GURL("https://passwords.google.com/help"),
       .page_transition = ui::PAGE_TRANSITION_LINK,
@@ -89,11 +99,31 @@ TEST_F(PasswordManagerNavigationThrottleTest,
 }
 
 TEST_F(PasswordManagerNavigationThrottleTest,
-       DoesntCreateNavigationThrottleWhenNotLinkTransition) {
+       DoesntCreateNavigationThrottleWhenURLDoesntMatch_PGC) {
+  EXPECT_FALSE(CreateNavigationThrottle({
+      .url = GURL("https://passwords.google.com/help"),
+      .page_transition = ui::PAGE_TRANSITION_LINK,
+      .initiator_origin =
+          url::Origin::Create(GURL(password_manager::kManageMyPasswordsURL)),
+  }));
+}
+
+TEST_F(PasswordManagerNavigationThrottleTest,
+       DoesntCreateNavigationThrottleWhenNotLinkTransition_HelpSite) {
   EXPECT_FALSE(CreateNavigationThrottle({
       .url = GURL(password_manager::kManageMyPasswordsURL),
       .page_transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK,
       .initiator_origin =
           url::Origin::Create(GURL(password_manager::kReferrerURL)),
+  }));
+}
+
+TEST_F(PasswordManagerNavigationThrottleTest,
+       DoesntCreateNavigationThrottleWhenNotLinkTransition_PGC) {
+  EXPECT_FALSE(CreateNavigationThrottle({
+      .url = GURL(password_manager::kManageMyPasswordsURL),
+      .page_transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+      .initiator_origin =
+          url::Origin::Create(GURL(password_manager::kManageMyPasswordsURL)),
   }));
 }

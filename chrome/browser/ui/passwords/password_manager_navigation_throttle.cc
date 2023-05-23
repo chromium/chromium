@@ -41,7 +41,9 @@ bool IsTriggeredOnGoogleOwnedUI(NavigationHandle* handle) {
     return false;
 
   url::Origin origin = handle->GetInitiatorOrigin().value_or(url::Origin());
-  if (origin != url::Origin::Create(GURL(password_manager::kReferrerURL))) {
+  if (origin != url::Origin::Create(GURL(password_manager::kReferrerURL)) &&
+      origin !=
+          url::Origin::Create(GURL(password_manager::kManageMyPasswordsURL))) {
     return false;
   }
 
