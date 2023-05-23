@@ -29,7 +29,8 @@ FilesPolicyNotificationManager::~FilesPolicyNotificationManager() = default;
 
 void FilesPolicyNotificationManager::ShowDialog(
     file_manager::io_task::IOTaskId task_id,
-    FilesDialogType type) {
+    FilesDialogType type,
+    absl::optional<policy::Policy> policy) {
   auto* profile = Profile::FromBrowserContext(context_);
   DCHECK(profile);
 
@@ -40,11 +41,7 @@ void FilesPolicyNotificationManager::ShowDialog(
       browser ? browser->window()->GetNativeWindow() : nullptr;
 
   if (modal_parent) {
-    // TODO(b/282664769): Pass correct values. These should be stored by
-    // task_id.
-    ShowFilesPolicyDialog(base::DoNothing(), std::vector<DlpConfidentialFile>(),
-                          DlpFileDestination(""),
-                          DlpFilesController::FileAction::kCopy, modal_parent);
+    ShowFilesPolicyDialog(type, policy, modal_parent);
     return;
   }
 
@@ -52,12 +49,9 @@ void FilesPolicyNotificationManager::ShowDialog(
   // OnBrowserSetLastActive() to show the dialog.
   BrowserList::AddObserver(this);
   DCHECK(!pending_callback_);
-  // TODO(b/282664769): Bind correct values. These should be stored by task_id.
   pending_callback_ =
       base::BindOnce(&FilesPolicyNotificationManager::ShowFilesPolicyDialog,
-                     weak_factory_.GetWeakPtr(), base::DoNothing(),
-                     std::vector<DlpConfidentialFile>(), DlpFileDestination(""),
-                     DlpFilesController::FileAction::kCopy);
+                     weak_factory_.GetWeakPtr(), type, policy);
 
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.allowed_paths =
@@ -79,15 +73,16 @@ void FilesPolicyNotificationManager::ShowDialog(
 }
 
 void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
-    OnDlpRestrictionCheckedCallback callback,
-    const std::vector<DlpConfidentialFile>& confidential_files,
-    const DlpFileDestination& destination,
-    DlpFilesController::FileAction action,
+    FilesDialogType type,
+    absl::optional<policy::Policy> policy,
     gfx::NativeWindow modal_parent) {
+  // TODO(b/282664769): Pass correct values. These should be stored by
+  // task_id.
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      std::make_unique<FilesPolicyDialog>(std::move(callback),
-                                          confidential_files, destination,
-                                          action, modal_parent),
+      std::make_unique<FilesPolicyDialog>(
+          base::DoNothing(), std::vector<DlpConfidentialFile>(),
+          DlpFileDestination(""), DlpFilesController::FileAction::kCopy,
+          modal_parent),
       /*context=*/nullptr, /*parent=*/modal_parent);
   widget->Show();
   // TODO(ayaelattar): Timeout after total 5 minutes.

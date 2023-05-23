@@ -91,7 +91,7 @@ export class FileOperationHandler {
       case chrome.fileManagerPrivate.IOTaskState.PAUSED:
         // Check for policy errors - the task might be paused because of warning
         // level restrictions.
-        if (item.policyError) {
+        if (event.pauseParams && event.pauseParams.policyParams) {
           item.state = ProgressItemState.PAUSED;
           // TODO(b/279435843): Replace with translation strings.
           const extraButtonText =
@@ -100,14 +100,18 @@ export class FileOperationHandler {
             if (event.itemCount === 1) {
               // Single item: the user can continue the action directly from
               // the notification.
-              // TODO(b/281973963): Pass resume reason.
-              chrome.fileManagerPrivate.resumeIOTask(event.taskId, {});
+              const params = chrome.fileManagerPrivate.ResumeParams();
+              params.policyParams =
+                  chrome.fileManagerPrivate.PolicyResumeParams(
+                      event.pauseParams.policyParams.type);
+              chrome.fileManagerPrivate.resumeIOTask(event.taskId, params);
             } else {
               // Multiple items: the user can continue the action from the
               // review dialog.
               chrome.fileManagerPrivate.showPolicyDialog(
                   event.taskId,
-                  chrome.fileManagerPrivate.PolicyDialogType.WARNING);
+                  chrome.fileManagerPrivate.PolicyDialogType.WARNING,
+                  event.pauseParams.policyParams.type);
             }
           });
           break;

@@ -180,7 +180,7 @@ TEST_F(IOTaskControllerTest, PauseResume) {
 
   // Pause should synchronously send a progress status.
   PauseParams pause_params;
-  pause_params.policy_params = PolicyPauseParams(PolicyErrorType::kDlp);
+  pause_params.policy_params = PolicyPauseParams(policy::Policy::kDlp);
   EXPECT_CALL(observer, OnIOTaskStatus(AllOf(
                             Field(&ProgressStatus::state, State::kPaused),
                             Field(&ProgressStatus::task_id, task_id),

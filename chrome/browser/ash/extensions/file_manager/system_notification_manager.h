@@ -252,7 +252,8 @@ class SystemNotificationManager {
 
   // Helper function to show a data protection policy dialog.
   void ShowDataProtectionPolicyDialog(file_manager::io_task::IOTaskId task_id,
-                                      policy::FilesDialogType type);
+                                      policy::FilesDialogType type,
+                                      absl::optional<policy::Policy> policy);
 
   // Helper function bound to notification instances that hides notifications.
   void Dismiss(const std::string& notification_id);
@@ -261,7 +262,8 @@ class SystemNotificationManager {
   void CancelTask(file_manager::io_task::IOTaskId task_id);
 
   // Helper function to resume a task.
-  void ResumeTask(file_manager::io_task::IOTaskId task_id);
+  void ResumeTask(file_manager::io_task::IOTaskId task_id,
+                  policy::Policy policy);
 
   // Maps device paths to their mount status.
   // This is used for removable devices with single/multiple partitions.

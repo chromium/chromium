@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace policy {
 
@@ -20,6 +21,12 @@ enum class FilesDialogType {
   kUnknown,  // Not a valid type - no dialog will be created.
   kWarning,  // Warning dialog - user can select to proceed or not.
   kError,    // Error dialog - overview of blocked files.
+};
+
+// Type of policy. Used for warning type dialogs.
+enum class Policy {
+  kDlp,                   // Data Leak Prevention policy.
+  kEnterpriseConnectors,  // Enterprise Connectors policy.
 };
 
 // FilesPolicyDialog is a window modal dialog used to show detailed overview of

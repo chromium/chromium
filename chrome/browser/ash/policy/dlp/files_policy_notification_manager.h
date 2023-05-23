@@ -33,19 +33,17 @@ class FilesPolicyNotificationManager : public KeyedService,
 
   ~FilesPolicyNotificationManager() override;
 
-  // Shows a policy dialog of type `type` for task identified by `task_id`. Used
-  // for copy and move operations.
+  // Shows a policy dialog of type `type` and `policy` for task identified by
+  // `task_id`. Used for copy and move operations.
   void ShowDialog(file_manager::io_task::IOTaskId task_id,
-                  FilesDialogType type);
+                  FilesDialogType type,
+                  absl::optional<policy::Policy> policy);
 
  private:
   // Shows a FilesPolicyDialog.
-  void ShowFilesPolicyDialog(
-      OnDlpRestrictionCheckedCallback callback,
-      const std::vector<DlpConfidentialFile>& confidential_files,
-      const DlpFileDestination& destination,
-      DlpFilesController::FileAction action,
-      gfx::NativeWindow modal_parent);
+  void ShowFilesPolicyDialog(FilesDialogType type,
+                             absl::optional<policy::Policy> policy,
+                             gfx::NativeWindow modal_parent);
 
   // BrowserListObserver overrides:
   // Called when opening a new Files App window to use as the modal parent for a

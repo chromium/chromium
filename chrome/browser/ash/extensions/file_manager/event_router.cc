@@ -25,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -213,6 +215,16 @@ file_manager_private::PolicyErrorType GetPolicyErrorType(
     default:
       NOTREACHED();
       return file_manager_private::POLICY_ERROR_TYPE_NONE;
+  }
+}
+
+file_manager_private::PolicyErrorType GetPolicyErrorType(
+    policy::Policy policy) {
+  switch (policy) {
+    case policy::Policy::kDlp:
+      return file_manager_private::POLICY_ERROR_TYPE_DLP;
+    case policy::Policy::kEnterpriseConnectors:
+      return file_manager_private::POLICY_ERROR_TYPE_ENTERPRISE_CONNECTORS;
   }
 }
 

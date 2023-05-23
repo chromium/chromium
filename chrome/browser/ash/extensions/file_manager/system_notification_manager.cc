@@ -1105,14 +1105,16 @@ NotificationPtr SystemNotificationManager::MakeDataProtectionPolicyNotification(
       // notification.
       proceed_callback =
           BindRepeating(&SystemNotificationManager::ResumeTask,
-                        weak_ptr_factory_.GetWeakPtr(), status.task_id);
+                        weak_ptr_factory_.GetWeakPtr(), status.task_id,
+                        status.pause_params.policy_params->type);
     } else {
       // Multiple files: add the "Review" button. The user can continue the
       // action from the dialog.
       proceed_callback = BindRepeating(
           &SystemNotificationManager::ShowDataProtectionPolicyDialog,
           weak_ptr_factory_.GetWeakPtr(), status.task_id,
-          policy::FilesDialogType::kWarning);
+          policy::FilesDialogType::kWarning,
+          status.pause_params.policy_params->type);
     }
     cancel_callback =
         BindRepeating(&SystemNotificationManager::CancelTask,
@@ -1128,7 +1130,7 @@ NotificationPtr SystemNotificationManager::MakeDataProtectionPolicyNotification(
       proceed_callback = BindRepeating(
           &SystemNotificationManager::ShowDataProtectionPolicyDialog,
           weak_ptr_factory_.GetWeakPtr(), status.task_id,
-          policy::FilesDialogType::kError);
+          policy::FilesDialogType::kError, /*policy=*/absl::nullopt);
     }
     cancel_callback =
         BindRepeating(&SystemNotificationManager::Dismiss,
@@ -1162,7 +1164,8 @@ SystemNotificationManager::MakeDataProtectionPolicyProgressNotification(
 
 void SystemNotificationManager::ShowDataProtectionPolicyDialog(
     file_manager::io_task::IOTaskId task_id,
-    policy::FilesDialogType type) {
+    policy::FilesDialogType type,
+    absl::optional<policy::Policy> policy) {
   policy::FilesPolicyNotificationManager* manager =
       policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
           profile_);
@@ -1172,7 +1175,7 @@ void SystemNotificationManager::ShowDataProtectionPolicyDialog(
                << task_id;
     return;
   }
-  manager->ShowDialog(task_id, type);
+  manager->ShowDialog(task_id, type, policy);
 }
 
 void SystemNotificationManager::CancelTask(
@@ -1185,10 +1188,12 @@ void SystemNotificationManager::CancelTask(
 }
 
 void SystemNotificationManager::ResumeTask(
-    file_manager::io_task::IOTaskId task_id) {
+    file_manager::io_task::IOTaskId task_id,
+    policy::Policy policy) {
   if (io_task_controller_) {
-    // TODO(b/281973963): Pass resume reason.
-    io_task_controller_->Resume(task_id, {});
+    io_task::ResumeParams params;
+    params.policy_params->type = policy;
+    io_task_controller_->Resume(task_id, std::move(params));
   } else {
     LOG(ERROR) << "No TaskController, can't resume task_id: " << task_id;
   }

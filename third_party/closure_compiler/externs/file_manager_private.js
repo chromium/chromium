@@ -1745,8 +1745,9 @@ chrome.fileManagerPrivate.resumeIOTask = function(taskId, params) {};
  * in each I/O task's progress status.
  * @param {number} taskId
  * @param {!chrome.fileManagerPrivate.PolicyDialogType} type
+ * @param {!chrome.fileManagerPrivate.PolicyErrorType=} policy
  */
-chrome.fileManagerPrivate.showPolicyDialog = function(taskId, type) {};
+chrome.fileManagerPrivate.showPolicyDialog = function(taskId, type, policy) {};
 
 /**
  * Makes I/O tasks in state::PAUSED emit (broadcast) their current I/O task

@@ -14,7 +14,7 @@
 
 namespace policy {
 
-// The callback to be exectued when the user addresses the dialog. When
+// The callback to be executed when the user addresses the dialog. When
 // `should_proceed` is set to true, the action continues and is aborted
 // otherwise.
 using OnDlpRestrictionCheckedCallback =

@@ -82,7 +82,7 @@ bool ProgressStatus::IsCompleted() const {
 
 bool ProgressStatus::HasWarning() const {
   // We should show a warning if the task is paused because of policy.
-  return state == State::kPaused && policy_error.has_value();
+  return state == State::kPaused && pause_params.policy_params.has_value();
 }
 
 bool ProgressStatus::HasPolicyError() const {
