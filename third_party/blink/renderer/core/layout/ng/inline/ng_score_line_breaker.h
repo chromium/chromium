@@ -58,6 +58,8 @@ class CORE_EXPORT NGScoreLineBreaker {
   // with a higher penalty for the end of the paragraph.
   void BalanceBreakPoints(NGScoreLineBreakContext& context);
 
+  void SetScoresOutForTesting(Vector<float>* scores_out);
+
  private:
   struct NGLineBreakScore {
     float score = 0;            // best score found for this break
@@ -80,6 +82,7 @@ class CORE_EXPORT NGScoreLineBreaker {
   bool ComputeCandidates(const NGLineInfoList& line_info_list,
                          NGLineBreaker& line_breaker,
                          NGLineBreakCandidates& candidates);
+  void SetupParameters();
   void ComputeLineWidths(const NGLineInfoList& line_info_list);
   void ComputeScores(const NGLineBreakCandidates& candidates,
                      NGLineBreakScores& scores);
@@ -94,8 +97,15 @@ class CORE_EXPORT NGScoreLineBreaker {
   const NGInlineNode node_;
   const NGConstraintSpace& space_;
   const NGLineLayoutOpportunity& line_opportunity_;
+  LayoutUnit available_width_;
   LayoutUnit first_line_indent_;
+  float hyphen_penalty_ = .0f;
+  float line_penalty_ = .0f;
+  float zoom_ = .0f;
   bool is_balanced_ = false;
+  bool is_justified_ = false;
+
+  Vector<float>* scores_out_for_testing_ = nullptr;
 };
 
 }  // namespace blink

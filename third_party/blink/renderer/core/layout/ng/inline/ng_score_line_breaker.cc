@@ -13,6 +13,10 @@
 
 namespace blink {
 
+void NGScoreLineBreaker::SetScoresOutForTesting(Vector<float>* scores_out) {
+  scores_out_for_testing_ = scores_out;
+}
+
 void NGScoreLineBreaker::OptimalBreakPoints(
     const NGInlineBreakToken* break_token,
     NGScoreLineBreakContext& context) {
@@ -106,6 +110,8 @@ bool NGScoreLineBreaker::Optimize(const NGLineInfoList& line_info_list,
                                   NGLineBreakPoints& break_points) {
   DCHECK(break_points.empty());
 
+  SetupParameters();
+
   // Compute all break opportunities and their penalties.
   NGLineBreakCandidates candidates;
   if (!ComputeCandidates(line_info_list, line_breaker, candidates)) {
@@ -123,11 +129,10 @@ bool NGScoreLineBreaker::Optimize(const NGLineInfoList& line_info_list,
     return false;
   }
 
-  // Increase penalties to minimize typographic orphans.
-  // TODO(kojii): Review the penalty value. Take the width into account?
   if (candidates.size() >= 4) {
+    // Increase penalties to minimize typographic orphans.
     constexpr float kOrphansPenalty = 10000;
-    candidates[candidates.size() - 2].penalty += kOrphansPenalty;
+    candidates[candidates.size() - 2].penalty += kOrphansPenalty * zoom_;
   }
 
   ComputeLineWidths(line_info_list);
@@ -140,6 +145,14 @@ bool NGScoreLineBreaker::Optimize(const NGLineInfoList& line_info_list,
 
   // Determine final break points.
   ComputeBreakPoints(candidates, scores, break_points);
+
+  // Copy data for testing.
+  if (UNLIKELY(scores_out_for_testing_)) {
+    for (const NGLineBreakScore& score : scores) {
+      scores_out_for_testing_->push_back(score.score);
+    }
+  }
+
   return true;
 }
 
@@ -149,6 +162,7 @@ bool NGScoreLineBreaker::ComputeCandidates(const NGLineInfoList& line_info_list,
   // The first entry is a sentinel at the start of the line.
   DCHECK(candidates.empty());
   NGLineBreakCandidateContext context(candidates);
+  context.SetHyphenPenalty(hyphen_penalty_);
   context.EnsureFirstSentinel(line_info_list.Front());
 
   for (wtf_size_t i = 0; i < line_info_list.Size(); ++i) {
@@ -165,7 +179,7 @@ bool NGScoreLineBreaker::ComputeCandidates(const NGLineInfoList& line_info_list,
 }
 
 LayoutUnit NGScoreLineBreaker::AvailableWidth(wtf_size_t line_index) const {
-  LayoutUnit available_width = line_opportunity_.AvailableInlineSize();
+  LayoutUnit available_width = available_width_;
   if (line_index == 0) {
     available_width -= first_line_indent_;
   }
@@ -183,14 +197,36 @@ void NGScoreLineBreaker::ComputeLineWidths(
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 }
 
+void NGScoreLineBreaker::SetupParameters() {
+  // Use the same heuristic parameters as Minikin's `computePenalties()`.
+  // https://cs.android.com/android/platform/superproject/+/master:frameworks/minikin/libs/minikin/OptimalLineBreaker.cpp
+  available_width_ =
+      line_opportunity_.AvailableInlineSize().ClampNegativeToZero();
+  const ComputedStyle& block_style = node_.Style();
+  const float font_size = block_style.GetFontDescription().ComputedSize();
+  zoom_ = block_style.EffectiveZoom();
+  DCHECK_GT(zoom_, .0f);
+  // Penalties/scores should be a zoomed value. Because both `font_size` and
+  // `available_width` are zoomed, unzoom once.
+  const float width_times_font_size =
+      available_width_.ToFloat() * font_size / zoom_;
+  is_justified_ = block_style.GetTextAlign() == ETextAlign::kJustify;
+  if (is_justified_) {
+    // For justified text, make hyphenation more aggressive and no line penalty.
+    hyphen_penalty_ = width_times_font_size / 2;
+    line_penalty_ = .0f;
+  } else {
+    hyphen_penalty_ = width_times_font_size * 2;
+    line_penalty_ = hyphen_penalty_ * 2;
+  }
+}
+
 void NGScoreLineBreaker::ComputeScores(const NGLineBreakCandidates& candidates,
                                        NGLineBreakScores& scores) {
   DCHECK_GE(candidates.size(), 2u);
   DCHECK(scores.empty());
   scores.push_back(NGLineBreakScore{0, 0, 0});
   wtf_size_t active = 0;
-  const ComputedStyle& block_style = node_.Style();
-  const bool is_justified = block_style.GetTextAlign() == ETextAlign::kJustify;
 
   // `end` iterates through candidates for the end of the line.
   for (wtf_size_t end = 1; end < candidates.size(); ++end) {
@@ -232,7 +268,7 @@ void NGScoreLineBreaker::ComputeScores(const NGLineBreakCandidates& candidates,
       // successive candidate breaks are considered.
       float width_score = 0;
       float additional_penalty = 0;
-      if ((is_end_last_candidate || !is_justified) && delta < 0) {
+      if ((is_end_last_candidate || !is_justified_) && delta < 0) {
         width_score = kScoreOverfull;
       } else if (is_end_last_candidate && !is_balanced_) {
         // Increase penalty for hyphen on last line.
@@ -242,7 +278,9 @@ void NGScoreLineBreaker::ComputeScores(const NGLineBreakCandidates& candidates,
       } else if (delta < 0) {
         width_score = kScoreOverfull;
       } else {
-        width_score = delta * delta;
+        // Penalties/scores should be a zoomed value. Because `delta` is zoomed,
+        // unzoom once.
+        width_score = delta * delta / zoom_;
       }
       if (delta < 0) {
         active = start + 1;
@@ -257,9 +295,8 @@ void NGScoreLineBreaker::ComputeScores(const NGLineBreakCandidates& candidates,
     }
 
     scores.push_back(NGLineBreakScore{
-        // TODO(kojii): Add `line_penalty`.
-        best + end_candidate.penalty /* + context.line_penalty */,
-        best_prev_index, scores[best_prev_index].line_index + 1});
+        best + end_candidate.penalty + line_penalty_, best_prev_index,
+        scores[best_prev_index].line_index + 1});
   }
 }
 

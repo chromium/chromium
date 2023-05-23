@@ -1849,6 +1849,7 @@ void NGLineBreaker::AppendCandidates(const NGInlineItemResult& item_result,
     float end_position;
     NGLineBreakCandidateContext::State next_state =
         NGLineBreakCandidateContext::kBreak;
+    float penalty = 0;
     bool is_hyphenated = false;
     if (next_offset > offset.end) {
       // If the next break opportunity is beyond this item, stop at the end of
@@ -1893,15 +1894,15 @@ void NGLineBreaker::AppendCandidates(const NGInlineItemResult& item_result,
         DCHECK(!locations.Contains(word_len));
         DCHECK(std::is_sorted(locations.rbegin(), locations.rend()));
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
+        const float hyphen_penalty = context.HyphenPenalty();
         NGInlineItemTextIndex hyphen_offset = {item_index, 0};
         for (const wtf_size_t location : base::Reversed(locations)) {
           hyphen_offset.text_offset = offset.start + location;
           const float position =
               shape_result.PositionForOffset(hyphen_offset.text_offset);
-          float penalty = 0;  // TODO(kojii): penalty not implemented yet.
           context.Append(NGLineBreakCandidateContext::kBreak, hyphen_offset,
                          hyphen_offset, position, position + hyphen_advance,
-                         penalty,
+                         hyphen_penalty,
                          /*is_hyphenated*/ true);
         }
       }
@@ -1945,12 +1946,10 @@ void NGLineBreaker::AppendCandidates(const NGInlineItemResult& item_result,
       if (is_hyphenated) {
         end_position += HyphenAdvance(*current_style_, shape_result.IsLtr(),
                                       item_result.hyphen, hyphen_advance_cache);
+        penalty = context.HyphenPenalty();
       }
     }
 
-    // TODO(kojii): Increase the penalty if `last_ch` is not a space in
-    // space-delimiting lang? Or if '-', '/', etc.?
-    float penalty = 0;  // TODO(kojii): penalty not implemented yet.
     context.Append(next_state, {item_index, next_offset},
                    {item_index, end_offset}, next_position, end_position,
                    penalty, is_hyphenated);

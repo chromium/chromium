@@ -24,7 +24,23 @@ void TestLinesAreContiguous(const NGLineInfoList& line_info_list) {
 
 }  // namespace
 
-class NGScoreLineBreakerTest : public RenderingTest {};
+class NGScoreLineBreakerTest : public RenderingTest {
+ public:
+  Vector<float> ComputeScores(const NGInlineNode& node) {
+    const NGPhysicalBoxFragment* fragment =
+        node.GetLayoutBox()->GetPhysicalFragment(0);
+    const LayoutUnit width = fragment->Size().width;
+    NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
+    NGLineLayoutOpportunity line_opportunity(width);
+    NGScoreLineBreaker optimizer(node, space, line_opportunity);
+    Vector<float> scores;
+    optimizer.SetScoresOutForTesting(&scores);
+    NGScoreLineBreakContext context;
+    const NGInlineBreakToken* break_token = nullptr;
+    optimizer.OptimalBreakPoints(break_token, context);
+    return scores;
+  }
+};
 
 TEST_F(NGScoreLineBreakerTest, LastLines) {
   LoadAhem();
@@ -249,6 +265,43 @@ TEST_P(DisabledByLineBreakerTest, Data) {
     EXPECT_EQ(context.LineBreakPoints().size(), 0u);
   } else {
     EXPECT_NE(context.LineBreakPoints().size(), 0u);
+  }
+}
+
+TEST_F(NGScoreLineBreakerTest, Zoom) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-family: Ahem;
+      font-size: 10px;
+      width: 10ch;
+    }
+    </style>
+    <div id="target">
+      012 45 789
+      012 45 789
+      012 45 789
+      012
+    </div>
+  )HTML");
+  const NGInlineNode target = GetInlineNodeByElementId("target");
+  Vector<float> scores = ComputeScores(target);
+
+  constexpr float zoom = 2;
+  GetFrame().SetPageZoomFactor(zoom);
+  UpdateAllLifecyclePhasesForTest();
+  const Vector<float> scores2 = ComputeScores(target);
+
+  // The scores should be the same even when `EffectiveZoom()` are different.
+  EXPECT_EQ(scores.size(), scores2.size());
+  for (wtf_size_t i = 0; i < scores.size(); ++i) {
+    const float zoomed_score = scores[i] * zoom;
+    if (fabs(zoomed_score - scores2[i]) < 3) {
+      continue;  // Ignore floating point errors.
+    }
+    EXPECT_EQ(zoomed_score, scores2[i]) << i;
   }
 }
 
