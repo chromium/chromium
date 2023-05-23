@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "cc/paint/node_id.h"
@@ -237,12 +236,8 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual void setNodeId(int) = 0;
 
  private:
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION printing::MetafileSkia* metafile_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION paint_preview::PaintPreviewTracker* tracker_ = nullptr;
+  raw_ptr<printing::MetafileSkia> metafile_ = nullptr;
+  raw_ptr<paint_preview::PaintPreviewTracker> tracker_ = nullptr;
 };
 
 class CC_PAINT_EXPORT PaintCanvasAutoRestore {
