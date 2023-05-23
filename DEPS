@@ -1000,7 +1000,7 @@ deps = {
   },
 
   'src/third_party/androidx_javascriptengine/src': {
-      'url': Var('chromium_git') + '/aosp/platform/frameworks/support/javascriptengine/javascriptengine/src.git' + '@' + '32d6b492f879811b741c863b8ca2701b25a5651c',
+      'url': Var('chromium_git') + '/aosp/platform/frameworks/support/javascriptengine/javascriptengine/src.git' + '@' + '5afa1411d4818e3598a03fb7a3aaf43eecfd00fb',
       'condition': 'checkout_android',
   },
 
