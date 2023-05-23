@@ -1085,8 +1085,7 @@ void InjectNTP(Browser* browser) {
   }
   return postOpeningAction == NO_ACTION &&
          GetApplicationContext()->WasLastShutdownClean() &&
-         !IsChromeLikelyDefaultBrowser() &&
-         !HasUserOpenedSettingsFromFirstRunPromo();
+         !IsChromeLikelyDefaultBrowser();
 }
 
 - (void)maybeShowDefaultBrowserPromo:(Browser*)browser {

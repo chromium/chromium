@@ -91,6 +91,7 @@ NSString* const kDisplayedPromoCount = @"displayedPromoCount";
 NSString* const kRemindMeLaterPromoActionInteraction =
     @"remindMeLaterPromoActionInteraction";
 
+// TODO(crbug.com/1445240): Remove in M116+.
 // Key in storage containing a bool indicating if the user tapped on
 // button to open settings.
 NSString* const kOpenSettingsActionInteraction =
@@ -327,8 +328,7 @@ base::TimeDelta ComputeCooldown() {
   // "No thanks" button in first run default browser screen. Short cool down
   // should be set only one time, so after the first run promo there is a short
   // cool down before the next promo and after it goes back to normal.
-  if (DisplayedPromoCount() < 2 && HasUserInteractedWithFirstRunPromoBefore() &&
-      !HasUserOpenedSettingsFromFirstRunPromo()) {
+  if (DisplayedPromoCount() < 2 && HasUserInteractedWithFirstRunPromoBefore()) {
     return kPromosShortCoolDown;
   }
   return kFullscreenPromoCoolDown;
@@ -480,12 +480,6 @@ bool HasUserInteractedWithFullscreenPromoBefore() {
 bool HasUserInteractedWithTailoredFullscreenPromoBefore() {
   NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
       kUserHasInteractedWithTailoredFullscreenPromo);
-  return number.boolValue;
-}
-
-bool HasUserOpenedSettingsFromFirstRunPromo() {
-  NSNumber* number =
-      GetObjectFromStorageForKey<NSNumber>(kOpenSettingsActionInteraction);
   return number.boolValue;
 }
 
@@ -650,7 +644,6 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
     kUserInteractedWithNonModalPromoCount,
     kDisplayedPromoCount,
     kRemindMeLaterPromoActionInteraction,
-    kOpenSettingsActionInteraction,
     // clang-format on
   ];
 
@@ -673,13 +666,11 @@ bool HasAppLaunchedOnColdStartAndRecordsLaunch() {
 
 bool ShouldRegisterPromoWithPromoManager(bool is_signed_in) {
   // Consider showing the default browser promo if (1) launch is not after a
-  // crash, (2) chrome is not likely set as default browser, (3) the user
-  // skipped first run, (4) the user is not going through the First Run
-  // screens or first run was not recent, and (5) the user has not seen any
-  // default browser promo outside of the First Run screens.
+  // crash, (2) chrome is not likely set as default browser, (3) the user has
+  // not seen a default browser promo too recently, (4) the user is eligible
+  // for either the tailored or generic default browser promo.
   return GetApplicationContext()->WasLastShutdownClean() &&
-         !IsChromeLikelyDefaultBrowser() &&
-         !HasUserOpenedSettingsFromFirstRunPromo() && !UserInPromoCooldown() &&
+         !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown() &&
          (IsTailoredPromoEligibleUser(is_signed_in) ||
           IsGeneralPromoEligibleUser(is_signed_in));
 }
@@ -718,4 +709,11 @@ bool IsVideoPromoEligibleUser(feature_engagement::Tracker* tracker) {
   }
 
   return true;
+}
+
+void CleanupUnusedStorage() {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+  // TODO(crbug.com/1445240): Remove in M116+.
+  [defaults removeObjectForKey:kOpenSettingsActionInteraction];
 }
