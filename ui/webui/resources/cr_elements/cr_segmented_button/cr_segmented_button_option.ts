@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '../cr_shared_vars.css.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';

@@ -91,7 +91,7 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Radio buttons and groups',
               path: 'radios',
-              src: 'cr_radio_demo.html',
+              src: 'cr_radio/index.html',
             },
             {
               name: 'Scroll view',

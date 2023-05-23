@@ -6,7 +6,8 @@
   }
 
   cr-radio-group {
-    border: 1px var(--color-segmented-button-border) solid;
+    border: 1px var(--color-segmented-button-border,
+        var(--cr-fallback-color-tonal-outline)) solid;
     border-radius: var(--cr-segmented-button-height);
     box-sizing: border-box;
     display: grid;
