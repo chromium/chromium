@@ -24,7 +24,7 @@ thread_local ThreadLocalNode* g_thread_local_node;
 
 ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>)
     : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  CHECK(core::IsMojoIpczEnabled());
+  CHECK(IsDirectReceiverSupported());
   CHECK(!g_thread_local_node);
   g_thread_local_node = this;
 
@@ -212,3 +212,11 @@ void ThreadLocalNode::OnTransferredPortalAvailable() {
 }
 
 }  // namespace mojo::internal
+
+namespace mojo {
+
+bool IsDirectReceiverSupported() {
+  return core::IsMojoIpczEnabled();
+}
+
+}  // namespace mojo

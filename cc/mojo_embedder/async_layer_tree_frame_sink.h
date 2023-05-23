@@ -25,12 +25,14 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cc {
 
@@ -74,6 +76,12 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     UnboundMessagePipes pipes;
     bool wants_animate_only_begin_frames = false;
     base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
+
+    // If `true`, the CompositorFrameSinkClient receiver will receive IPC
+    // directly to the thread on which the AsyncLayerTreeFrameSink lives, rather
+    // than hopping through the I/O thread first. Only usable if the
+    // AsyncLayerTreeFrameSink lives on a thread which uses an IO message pump.
+    bool use_direct_client_receiver = false;
   };
 
   AsyncLayerTreeFrameSink(
@@ -126,6 +134,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   void OnMojoConnectionError(uint32_t custom_reason,
                              const std::string& description);
 
+  const bool use_direct_client_receiver_;
   bool begin_frames_paused_ = false;
   bool needs_begin_frames_ = false;
   viz::LocalSurfaceId local_surface_id_;
@@ -146,7 +155,12 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   // point to message pipe we want to use. It must be declared last and cleared
   // first.
   raw_ptr<viz::mojom::CompositorFrameSink> compositor_frame_sink_ptr_ = nullptr;
-  mojo::Receiver<viz::mojom::CompositorFrameSinkClient> client_receiver_{this};
+
+  using ClientReceiver = mojo::Receiver<viz::mojom::CompositorFrameSinkClient>;
+  using DirectClientReceiver =
+      mojo::DirectReceiver<viz::mojom::CompositorFrameSinkClient>;
+  absl::variant<absl::monostate, ClientReceiver, DirectClientReceiver>
+      client_receiver_;
 
   THREAD_CHECKER(thread_checker_);
   const bool wants_animate_only_begin_frames_;

@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
@@ -609,6 +610,12 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
     // not have that if we're running web tests in single threaded mode.
     // Set it to be our thread's task runner instead.
     params->compositor_task_runner = main_thread_compositor_task_runner_;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kDirectCompositorThreadIpc) &&
+      !for_web_tests && params->compositor_task_runner &&
+      mojo::IsDirectReceiverSupported()) {
+    params->use_direct_client_receiver = true;
   }
 
   // The renderer runs animations and layout for animate_only BeginFrames.

@@ -27,6 +27,10 @@ namespace blink {
 class WidgetInputHandlerImpl;
 }
 
+namespace cc::mojo_embedder {
+class AsyncLayerTreeFrameSink;
+}
+
 namespace mojo {
 
 namespace internal {
@@ -99,6 +103,7 @@ class DirectReceiverKey {
 
   // Update this list and get a mojo/OWNERS approval in order to gain access to
   // DirectReceiver construction.
+  friend class cc::mojo_embedder::AsyncLayerTreeFrameSink;
   friend class mojo::test::direct_receiver_unittest::ServiceImpl;
   friend class blink::WidgetInputHandlerImpl;
 };
@@ -154,6 +159,9 @@ class DirectReceiver {
       internal::ThreadLocalNode::Get()};
   Receiver<T> receiver_;
 };
+
+// Indicates whether DirectReceiver can be supported in the calling process.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS) bool IsDirectReceiverSupported();
 
 }  // namespace mojo
 

@@ -1121,7 +1121,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMainThreadHighPriorityImageLoading);
 
 // Enables input IPC to directly target the renderer's compositor thread without
 // hopping through the IO thread first.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInputIpcDirect);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDirectCompositorThreadIpc);
 
 }  // namespace features
 }  // namespace blink
