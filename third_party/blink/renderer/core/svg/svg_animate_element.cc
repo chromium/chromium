@@ -60,7 +60,8 @@ String ComputeCSSPropertyValue(SVGElement* element, CSSPropertyID id) {
   // Refer to comment in Element::computedStyle.
   DCHECK(element->InActiveDocument());
 
-  element->GetDocument().UpdateStyleAndLayoutTreeForNode(element);
+  element->GetDocument().UpdateStyleAndLayoutTreeForNode(
+      element, DocumentUpdateReason::kSMILAnimation);
 
   // Don't include any properties resulting from CSS Transitions/Animations or
   // SMIL animations, as we want to retrieve the "base value".

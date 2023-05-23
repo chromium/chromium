@@ -4734,7 +4734,8 @@ bool AXNodeObject::OnNativeBlurAction() {
     return false;
   }
 
-  document->UpdateStyleAndLayoutTreeForNode(node);
+  document->UpdateStyleAndLayoutTreeForNode(
+      node, DocumentUpdateReason::kAccessibility);
 
   // An AXObject's node will always be of type `Element`, `Document` or
   // `Text`. If the object we're currently on is associated with the currently
@@ -4764,7 +4765,8 @@ bool AXNodeObject::OnNativeFocusAction() {
   if (!document || !node)
     return false;
 
-  document->UpdateStyleAndLayoutTreeForNode(node);
+  document->UpdateStyleAndLayoutTreeForNode(
+      node, DocumentUpdateReason::kAccessibility);
 
   if (!CanSetFocusAttribute())
     return false;

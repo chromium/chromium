@@ -824,7 +824,8 @@ void HTMLElement::AttributeChanged(const AttributeModificationParams& params) {
     //
     // TODO(tkent): We should avoid updating style.  We'd like to check only
     // DOM-level focusability here.
-    GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+    GetDocument().UpdateStyleAndLayoutTreeForNode(this,
+                                                  DocumentUpdateReason::kFocus);
     if (!SupportsFocus())
       blur();
   }
@@ -1544,7 +1545,8 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   // Force a style update. This ensures that base property values are set prior
   // to `:popover-open` matching, so that transitions can start on the change to
   // top layer.
-  original_document.UpdateStyleAndLayoutTreeForNode(this);
+  original_document.UpdateStyleAndLayoutTreeForNode(
+      this, DocumentUpdateReason::kPopover);
 
   // Queue a delayed hide event, if necessary.
   if (RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
@@ -1852,7 +1854,8 @@ void HTMLElement::SetPopoverFocusOnShow() {
       GetDocument().GetExecutionContext()));
   // The layout must be updated here because we call Element::isFocusable,
   // which requires an up-to-date layout.
-  GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+  GetDocument().UpdateStyleAndLayoutTreeForNode(this,
+                                                DocumentUpdateReason::kPopover);
 
   if (auto* dialog = DynamicTo<HTMLDialogElement>(this)) {
     if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {

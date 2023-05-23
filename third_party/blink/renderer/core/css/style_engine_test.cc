@@ -3992,7 +3992,7 @@ TEST_F(StyleEngineContainerQueryTest,
   //
   // See implementation of `NodeLayoutUpgrade::ShouldUpgrade` for more
   // information.
-  GetDocument().UpdateStyleAndLayoutTreeForNode(a);
+  GetDocument().UpdateStyleAndLayoutTreeForNode(a, DocumentUpdateReason::kTest);
   EXPECT_FALSE(GetStyleEngine().StyleAffectedByLayout());
   EXPECT_FALSE(GetDocument().View()->NeedsLayout());
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*a));

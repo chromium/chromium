@@ -1938,7 +1938,8 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
   // TODO(junov): Computing style here will be problematic for applying the
   // NoAllocDirectCall IDL attribute to drawImage.
   if (!GetComputedStyle()) {
-    GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+    GetDocument().UpdateStyleAndLayoutTreeForNode(
+        this, DocumentUpdateReason::kCanvas);
     const_cast<HTMLCanvasElement*>(this)->EnsureComputedStyle();
   }
   return LayoutObject::ShouldRespectImageOrientation(GetLayoutObject());

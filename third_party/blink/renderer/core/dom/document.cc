@@ -2382,7 +2382,8 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
   }
 }
 
-void Document::UpdateStyleAndLayoutTreeForNode(const Node* node) {
+void Document::UpdateStyleAndLayoutTreeForNode(const Node* node,
+                                               DocumentUpdateReason) {
   DCHECK(node);
   if (!node->InActiveDocument()) {
     // If |node| is not in the active document, we can't update its style or
@@ -2401,7 +2402,8 @@ void Document::UpdateStyleAndLayoutTreeForNode(const Node* node) {
   UpdateStyleAndLayoutTree(upgrade);
 }
 
-void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node) {
+void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node,
+                                                  DocumentUpdateReason) {
   DCHECK(node);
   if (!node->InActiveDocument()) {
     DCHECK_EQ(node->ownerDocument(), this);
@@ -5119,8 +5121,11 @@ bool Document::SetFocusedElement(Element* new_focused_element,
   if (new_focused_element && new_focused_element->GetDocument() != this)
     return true;
 
-  if (new_focused_element)
-    UpdateStyleAndLayoutTreeForNode(new_focused_element);
+  if (new_focused_element) {
+    UpdateStyleAndLayoutTreeForNode(new_focused_element,
+                                    DocumentUpdateReason::kFocus);
+  }
+
   if (new_focused_element && new_focused_element->IsFocusable()) {
     if (IsRootEditableElement(*new_focused_element) &&
         !AcceptsEditingFocus(*new_focused_element)) {

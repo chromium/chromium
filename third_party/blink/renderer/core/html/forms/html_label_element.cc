@@ -236,7 +236,8 @@ bool HTMLLabelElement::WillRespondToMouseClickEvents() {
 }
 
 void HTMLLabelElement::Focus(const FocusParams& params) {
-  GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+  GetDocument().UpdateStyleAndLayoutTreeForNode(this,
+                                                DocumentUpdateReason::kFocus);
   if (IsFocusable()) {
     HTMLElement::Focus(params);
     return;

@@ -495,7 +495,8 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
         CanvasOps::kSetFont, IdentifiabilityBenignStringToken(new_font));
   }
 
-  canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(canvas());
+  canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(
+      canvas(), DocumentUpdateReason::kCanvas);
 
   // The following early exit is dependent on the cache not being empty
   // because an empty cache may indicate that a style change has occured
@@ -725,8 +726,10 @@ static inline TextDirection ToTextDirection(
 
 String CanvasRenderingContext2D::direction() const {
   if (GetState().GetDirection() ==
-      CanvasRenderingContext2DState::kDirectionInherit)
-    canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(canvas());
+      CanvasRenderingContext2DState::kDirectionInherit) {
+    canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(
+        canvas(), DocumentUpdateReason::kCanvas);
+  }
   return ToTextDirection(GetState().GetDirection(), canvas()) ==
                  TextDirection::kRtl
              ? kRtlDirectionString
@@ -931,7 +934,8 @@ TextMetrics* CanvasRenderingContext2D::measureText(const String& text) {
   if (!canvas()->GetDocument().GetFrame())
     return MakeGarbageCollected<TextMetrics>();
 
-  canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(canvas());
+  canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(
+      canvas(), DocumentUpdateReason::kCanvas);
 
   const Font& font = AccessFont();
 
@@ -986,7 +990,8 @@ void CanvasRenderingContext2D::DrawTextInternal(
   // accessFont needs the style to be up to date, but updating style can cause
   // script to run, (e.g. due to autofocus) which can free the canvas (set size
   // to 0, for example), so update style before grabbing the PaintCanvas.
-  canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(canvas());
+  canvas()->GetDocument().UpdateStyleAndLayoutTreeForNode(
+      canvas(), DocumentUpdateReason::kCanvas);
 
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)

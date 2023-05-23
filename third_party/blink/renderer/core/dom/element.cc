@@ -2397,7 +2397,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     //
     // TODO(tkent): We should avoid updating style.  We'd like to check only
     // DOM-level focusability here.
-    GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+    GetDocument().UpdateStyleAndLayoutTreeForNode(this,
+                                                  DocumentUpdateReason::kFocus);
     if (!SupportsFocus() && !GetFocusableArea()) {
       blur();
     }
@@ -5127,7 +5128,8 @@ void Element::Focus(const FocusParams& params) {
       params.gate_on_user_activation);
 
   // Ensure we have clean style (including forced display locks).
-  GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+  GetDocument().UpdateStyleAndLayoutTreeForNode(this,
+                                                DocumentUpdateReason::kFocus);
 
   // https://html.spec.whatwg.org/C/#focusing-steps
   //
@@ -5386,7 +5388,8 @@ bool Element::IsFocusableStyleAfterUpdate() const {
           *this, DisplayLockActivationReason::kUserFocus)) {
     return false;
   }
-  GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+  GetDocument().UpdateStyleAndLayoutTreeForNode(this,
+                                                DocumentUpdateReason::kFocus);
   return IsFocusableStyle();
 }
 

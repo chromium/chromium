@@ -1657,8 +1657,10 @@ bool Node::NeedsLayoutSubtreeUpdate() const {
 // FIXME: Shouldn't these functions be in the editing code?  Code that asks
 // questions about HTML in the core DOM class is obviously misplaced.
 bool Node::CanStartSelection() const {
-  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this))
-    GetDocument().UpdateStyleAndLayoutTreeForNode(this);
+  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*this)) {
+    GetDocument().UpdateStyleAndLayoutTreeForNode(
+        this, DocumentUpdateReason::kSelection);
+  }
   if (IsEditable(*this))
     return true;
 

@@ -279,7 +279,7 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
         CSSProperty::Get(property_name->Id()).IsLayoutDependentProperty();
     if (is_for_layout_dependent_property) {
       owner->GetDocument().UpdateStyleAndLayout(
-          DocumentUpdateReason::kJavaScript);
+          DocumentUpdateReason::kComputedStyle);
       // The style recalc could have caused the styled node to be discarded or
       // replaced if it was a PseudoElement so we need to update it.
       styled_node = StyledNode();
@@ -292,12 +292,14 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
   // property set by the UA stylesheet is queried.
   if (IsTransitionPseudoElement(styled_node->GetPseudoId())) {
     if (auto* view = document.View()) {
-      view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kJavaScript);
+      view->UpdateLifecycleToPrePaintClean(
+          DocumentUpdateReason::kComputedStyle);
     }
     return;
   }
 
-  document.UpdateStyleAndLayoutTreeForNode(styled_node);
+  document.UpdateStyleAndLayoutTreeForNode(
+      styled_node, DocumentUpdateReason::kComputedStyle);
 }
 
 void CSSComputedStyleDeclaration::UpdateStyleAndLayoutIfNeeded(
