@@ -19,9 +19,9 @@ const char kNTPIdentityDiscTappedAction[] = "MobileNTPIdentityDiscTapped";
 
 #pragma mark - Histograms
 
-const char kHomeActionOnNTPHistogram[] = "IOS.Home.ActionOnNTP";
-const char kHomeActionOnStartSurfaceHistogram[] =
-    "IOS.Home.ActionOnStartSurface";
+const char kActionOnNTPHistogram[] = "IOS.NTP.Click";
+const char kActionOnStartHistogram[] = "IOS.Start.Click";
 const char kNTPTimeSpentHistogram[] = "NewTabPage.TimeSpent";
 const char kNTPImpressionHistogram[] = "IOS.NTP.Impression";
+const char kStartImpressionHistogram[] = "IOS.Start.Impression";
 const char kNTPOverscrollActionHistogram[] = "IOS.NTP.OverscrollAction";

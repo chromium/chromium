@@ -26,9 +26,15 @@
   UmaHistogramMediumTimes(kNTPTimeSpentHistogram, timeSpent);
 }
 
-- (void)recordNTPImpression:(IOSNTPImpressionType)impressionType {
-  UMA_HISTOGRAM_ENUMERATION(kNTPImpressionHistogram, impressionType,
-                            IOSNTPImpressionType::kMaxValue);
+- (void)recordHomeImpression:(IOSNTPImpressionType)impressionType
+              isStartSurface:(BOOL)startSurface {
+  if (startSurface) {
+    UMA_HISTOGRAM_ENUMERATION(kStartImpressionHistogram, impressionType,
+                              IOSNTPImpressionType::kMaxValue);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(kNTPImpressionHistogram, impressionType,
+                              IOSNTPImpressionType::kMaxValue);
+  }
   [self recordImpressionForTileAblation];
 }
 
@@ -59,9 +65,9 @@
 - (void)recordHomeActionType:(IOSHomeActionType)type
               onStartSurface:(BOOL)isStartSurface {
   if (isStartSurface) {
-    UMA_HISTOGRAM_ENUMERATION(kHomeActionOnStartSurfaceHistogram, type);
+    UMA_HISTOGRAM_ENUMERATION(kActionOnStartHistogram, type);
   } else {
-    UMA_HISTOGRAM_ENUMERATION(kHomeActionOnNTPHistogram, type);
+    UMA_HISTOGRAM_ENUMERATION(kActionOnNTPHistogram, type);
   }
 }
 

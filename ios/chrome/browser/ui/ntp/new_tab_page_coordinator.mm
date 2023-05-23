@@ -1644,14 +1644,17 @@
       if ([self isFeedHeaderVisible]) {
         if ([self.feedExpandedPref value]) {
           [self.NTPMetricsRecorder
-              recordNTPImpression:IOSNTPImpressionType::kFeedVisible];
+              recordHomeImpression:IOSNTPImpressionType::kFeedVisible
+                    isStartSurface:[self isStartSurface]];
         } else {
           [self.NTPMetricsRecorder
-              recordNTPImpression:IOSNTPImpressionType::kFeedCollapsed];
+              recordHomeImpression:IOSNTPImpressionType::kFeedCollapsed
+                    isStartSurface:[self isStartSurface]];
         }
       } else {
         [self.NTPMetricsRecorder
-            recordNTPImpression:IOSNTPImpressionType::kFeedDisabled];
+            recordHomeImpression:IOSNTPImpressionType::kFeedDisabled
+                  isStartSurface:[self isStartSurface]];
       }
     } else {
       if (!self.didAppearTime.is_null()) {

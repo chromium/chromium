@@ -356,10 +356,10 @@ TEST_F(NewTabPageCoordinatorTest, FakeboxTappedMetricLogging) {
   NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
   [coordinator_ start];
   [coordinator_ didNavigateToNTPInWebState:web_state_];
-  histogram_tester_->ExpectUniqueSample("IOS.Home.ActionOnStartSurface",
+  histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kFakebox, 0);
   [coordinator_ fakeboxTapped];
-  histogram_tester_->ExpectUniqueSample("IOS.Home.ActionOnStartSurface",
+  histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kFakebox, 1);
   web::FakeNavigationContext navigation_context;
   navigation_context.SetUrl(GURL("chrome://version"));
@@ -373,14 +373,14 @@ TEST_F(NewTabPageCoordinatorTest, FakeboxTappedMetricLogging) {
   SetNTPAsCurrentURL();
   [coordinator_ start];
   [coordinator_ didNavigateToNTPInWebState:web_state_];
-  histogram_tester_->ExpectUniqueSample("IOS.Home.ActionOnStartSurface",
+  histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kFakebox, 1);
-  histogram_tester_->ExpectUniqueSample("IOS.Home.ActionOnNTP",
+  histogram_tester_->ExpectUniqueSample("IOS.NTP.Click",
                                         IOSHomeActionType::kFakebox, 0);
   [coordinator_ fakeboxTapped];
-  histogram_tester_->ExpectUniqueSample("IOS.Home.ActionOnStartSurface",
+  histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kFakebox, 1);
-  histogram_tester_->ExpectUniqueSample("IOS.Home.ActionOnNTP",
+  histogram_tester_->ExpectUniqueSample("IOS.NTP.Click",
                                         IOSHomeActionType::kFakebox, 1);
   [coordinator_ didNavigateAwayFromNTP];
   [coordinator_ stop];
@@ -399,7 +399,7 @@ TEST_F(NewTabPageCoordinatorTest, MVTStartMetricLogging) {
   [coordinator_ start];
   [coordinator_ didNavigateToNTPInWebState:web_state_];
 
-  histogram_tester_->ExpectUniqueSample("IOS.Home.ActionOnStartSurface",
+  histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kMostVisitedTile, 0);
 
   ContentSuggestionsMostVisitedItem* item =
@@ -423,7 +423,7 @@ TEST_F(NewTabPageCoordinatorTest, MVTStartMetricLogging) {
   // NewTabPageMetricsRecorder logged the metric before NewTabPageTabHelper
   // received the DidStartNavigation() WebStateObserver callback to reset
   // ShouldShowStartSurface() to false.
-  histogram_tester_->ExpectUniqueSample("IOS.Home.ActionOnStartSurface",
+  histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
                                         IOSHomeActionType::kMostVisitedTile, 1);
   EXPECT_FALSE(
       NewTabPageTabHelper::FromWebState(web_state_)->ShouldShowStartSurface());

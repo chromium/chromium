@@ -11,7 +11,7 @@ namespace base {
 class TimeDelta;
 }
 
-// The feed visibility when an NTP impression is logged.
+// The feed visibility when an Home impression is logged.
 // These match tools/metrics/histograms/enums.xml.
 enum class IOSNTPImpressionType {
   kFeedDisabled = 0,
@@ -29,7 +29,7 @@ enum class OverscrollActionType {
   kMaxValue = kCloseTab,
 };
 
-// These values are persisted to IOS.Home.ActionOn* histograms.
+// These values are persisted to IOS.Start/NTP.Click histograms.
 // Entries should not be renumbered and numeric values should never be reused.
 enum class IOSHomeActionType {
   kMostVisitedTile = 0,
@@ -46,8 +46,10 @@ enum class IOSHomeActionType {
 // Logs a metric for the "Return to Recent Tab" tile being shown.
 - (void)recordTimeSpentInNTP:(base::TimeDelta)timeSpent;
 
-// Logs a metric with the feed visibility when the NTP is shown.
-- (void)recordNTPImpression:(IOSNTPImpressionType)impressionType;
+// Logs a metric with the feed visibility when Home is shown. `startSurface` is
+// YES if Start is being shown, NO if a new tab page is being opened.
+- (void)recordHomeImpression:(IOSNTPImpressionType)impressionType
+              isStartSurface:(BOOL)startSurface;
 
 // Logs a metric for an overscroll action on the NTP.
 - (void)recordOverscrollActionForType:(OverscrollActionType)type;
