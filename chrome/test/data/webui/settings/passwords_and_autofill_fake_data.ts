@@ -517,6 +517,7 @@ export class PaymentsManagerExpectations {
   removedIbans: number = 0;
   isValidIban: number = 0;
   authenticateUserAndFlipMandatoryAuthToggle: number = 0;
+  authenticateUserToEditLocalCard: number = 0;
 }
 
 /**
@@ -548,6 +549,7 @@ export class TestPaymentsManager extends TestBrowserProxy implements
       'addVirtualCard',
       'isValidIban',
       'authenticateUserAndFlipMandatoryAuthToggle',
+      'authenticateUserToEditLocalCard',
     ]);
 
     // Set these to have non-empty data.
@@ -633,6 +635,11 @@ export class TestPaymentsManager extends TestBrowserProxy implements
     this.methodCalled('authenticateUserAndFlipMandatoryAuthToggle');
   }
 
+  authenticateUserToEditLocalCard() {
+    this.methodCalled('authenticateUserToEditLocalCard');
+    return Promise.resolve(true);
+  }
+
   /**
    * Verifies expectations.
    */
@@ -665,5 +672,9 @@ export class TestPaymentsManager extends TestBrowserProxy implements
         expected.authenticateUserAndFlipMandatoryAuthToggle,
         this.getCallCount('authenticateUserAndFlipMandatoryAuthToggle'),
         'authenticateUserAndFlipMandatoryAuthToggle mismatch');
+    assertEquals(
+        expected.authenticateUserToEditLocalCard,
+        this.getCallCount('authenticateUserToEditLocalCard'),
+        'authenticateUserToEditLocalCard mismatch');
   }
 }

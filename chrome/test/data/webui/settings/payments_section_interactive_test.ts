@@ -46,7 +46,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     PaymentsManagerImpl.setInstance(paymentsManager);
 
     const section = document.createElement('settings-payments-section');
-    section.prefs = {autofill: {credit_card_enabled: {value: true}}};
+    section.prefs = {
+      autofill: {
+        credit_card_enabled: {value: true},
+        payment_methods_mandatory_reauth: {value: true},
+      },
+    };
     document.body.appendChild(section);
     await flushTasks();
     return section;
@@ -157,7 +162,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
 
     // Simulate clicking the 'Edit' button in the menu.
     section.$.menuEditCreditCard.click();
-    flush();
+    await flushTasks();
     const creditCardDialog =
         section.shadowRoot!.querySelector('settings-credit-card-edit-dialog');
     assertTrue(!!creditCardDialog);

@@ -377,11 +377,12 @@ export class SettingsPaymentsSectionElement extends
   /**
    * Handles clicking on the "Edit" credit card button.
    */
-  private onMenuEditCreditCardClick_(e: Event) {
+  private async onMenuEditCreditCardClick_(e: Event) {
     e.preventDefault();
 
     if (this.activeCreditCard_!.metadata!.isLocal) {
-      this.showCreditCardDialog_ = true;
+      this.showCreditCardDialog_ =
+          await this.paymentsManager_.authenticateUserToEditLocalCard();
     } else {
       this.onRemoteEditCreditCardClick_();
     }
