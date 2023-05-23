@@ -410,6 +410,21 @@ TEST_P(ContentCaptureReceiverTest, MAYBE_ChildFrameCaptureContentFirst) {
   SetupChildFrame();
   child_frame_sender()->DidCaptureContent(helper()->test_data2(),
                                           true /* first_data */);
+
+  // Intentionally reuse the data.id from previous result, so we know navigating
+  // to same domain didn't create new ContentCaptureReceiver when call
+  // VerifySession(), otherwise, we can't test the code to handle the navigation
+  // in ContentCaptureReceiver - except when RenderDocument is enabled, where we
+  // will get new RenderFrameHosts after the navigation to |kMainFrameUrl|.
+  if (content::WillSameSiteNavigationsChangeRenderFrameHosts()) {
+    data = GetExpectedTestData(helper()->test_data(),
+                               GetFrameId(true /* main_frame */));
+  }
+  data.url = kMainFrameUrl;
+  // Currently, there is no way to fake frame size, set it to 0.
+  data.bounds = gfx::Rect();
+  expected.clear();
+  expected.push_back(data);
   VerifySession(expected, consumer()->parent_session());
 
   EXPECT_EQ(2u, consumer()->removed_sessions().size());
