@@ -431,11 +431,9 @@ void ArcVmDataMigrationScreen::OnGetAndroidDataInfoResponse(
       android_data_size_dest, free_disk_space);
   VLOG(1) << "Desired disk size for the migration is " << disk_size_;
 
-  // TODO(b/280248293): Fix calculation of required free disk space using
-  // `android_data_size_src`.
   const uint64_t required_free_disk_space =
       arc::GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
-          android_data_size_dest, free_disk_space);
+          android_data_size_src, android_data_size_dest, free_disk_space);
   VLOG(1) << "Required free disk space for the migration is "
           << required_free_disk_space;
   bool has_enough_free_disk_space = free_disk_space >= required_free_disk_space;

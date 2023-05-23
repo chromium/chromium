@@ -195,6 +195,7 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
     arc::SetArcVmDataMigrationStatus(profile_->GetPrefs(),
                                      arc::ArcVmDataMigrationStatus::kConfirmed);
     arc::data_migrator::GetAndroidDataInfoResponse response;
+    response.set_total_allocated_space_src(kDefaultAndroidDataSize);
     response.set_total_allocated_space_dest(kDefaultAndroidDataSize);
     FakeArcVmDataMigratorClient::Get()->set_get_android_data_info_response(
         response);
