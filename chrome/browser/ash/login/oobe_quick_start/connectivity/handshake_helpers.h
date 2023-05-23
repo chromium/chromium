@@ -7,7 +7,6 @@
 
 #include <array>
 
-#include "base/containers/span.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start::handshake {
@@ -28,15 +27,6 @@ std::vector<uint8_t> BuildHandshakeMessage(
     std::array<uint8_t, 32> secret,
     absl::optional<std::array<uint8_t, 12>> nonce = absl::nullopt,
     DeviceRole role = DeviceRole::kTarget);
-
-// Decode an AesGcmAuthenticationMessage proto, attempt to decrypt the auth
-// payload using the secret, and verify that the payload contains the correct
-// role and auth token. If the return value is true, then the remote device is
-// authenticated.
-bool VerifyHandshakeMessage(base::span<const uint8_t> auth_message_bytes,
-                            const std::string& auth_token,
-                            std::array<uint8_t, 32> secret,
-                            DeviceRole role = DeviceRole::kSource);
 
 }  // namespace ash::quick_start::handshake
 
