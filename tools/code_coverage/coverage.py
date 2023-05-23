@@ -1135,7 +1135,7 @@ def Main():
     # An input prof-data file(s) is already provided.
     if len(args.profdata_file) == 1:
       # If it's just one input file, use as-is.
-      profdata_file_path = args.profdata_file
+      profdata_file_path = args.profdata_file[0]
     else:
       # Otherwise, there are multiple profdata files and we need to merge them.
       profdata_file_path = _CreateCoverageProfileDataFromTargetProfDataFiles(args.profdata_file)
