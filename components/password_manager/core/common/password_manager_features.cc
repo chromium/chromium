@@ -305,7 +305,7 @@ BASE_FEATURE(kUsernameFirstFlowHonorAutocomplete,
 // cleartext.
 BASE_FEATURE(kPasswordGenerationPreviewOnHover,
              "PasswordGenerationPreviewOnHover",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 
