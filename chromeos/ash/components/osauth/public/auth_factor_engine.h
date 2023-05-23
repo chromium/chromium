@@ -23,14 +23,15 @@ namespace ash {
 //   giving them a chance to wait for underlying services to become ready.
 // * Once authentication attempt starts (for user/purpose), AuthHub
 //   invokes `StartAuthFlow` on each factor engine to query if the factor
-//   is present for the user/purpose.
+//   is present for the user/purpose. Factors are started in `kDisabled` state
+//   and would be enabled by AuthHub once all factors are ready.
 // * If factor is not present, `StopAuthFlow` would eventually be called on
 //   corresponding engine to release resources.
 // * If factor is present, AuthHub would check if there are any restrictions
 //   on using this factor, by querying methods like `IsDisabledByPolicy`.
 //   Once all restrictions are checked, factor might be disabled via calling
-//   `SetEnabled(false)` method. Disabled factor should not allow any
-//   authentication attempts.
+//   `SetUsageAllowed(kDisabled)` method. Disabled factor should not allow
+//   any authentication attempts.
 // * While authentication is active, factor engine should notify AuthHub
 //   about any events that might change factor restrictions: policy changes,
 //   factor lockout, etc.
@@ -63,6 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
   // When notifying methods, engine should identify itself by
   // providing `factor` value same as one returned by `GetFactor()`.
   class FactorEngineObserver {
+   public:
     virtual ~FactorEngineObserver() = default;
 
     // Notify AuthHub about result of factor presence check.
@@ -123,14 +125,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
                              AuthPurpose purpose,
                              FactorEngineObserver* observer) = 0;
 
+  // The way for the owning object to change the object that would
+  // be notified about engine events.
+  // All events after this call should be sent using new `observer`.
+  virtual void UpdateObserver(FactorEngineObserver* observer) = 0;
+
   // After this call Engine should stop notifying an `observer` set in
   // `StartAttempt`, and release any resources allocated as a result of
   // starting attempt.
-  // User/purpose are provided for convenience, they would match
-  // the ones passed in `StartAuthFlow` call.
-  virtual void StopAuthFlow(const AccountId& account,
-                            AuthPurpose purpose,
-                            ShutdownCallback callback) = 0;
+  virtual void StopAuthFlow(ShutdownCallback callback) = 0;
 
   // Used by AuthHub to control if authentication attempts can be performed
   // by the engine. Most relevant for factors like fingerprint that can not
@@ -158,6 +161,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
   // timeout during relevant lifecycle operations.
   virtual void InitializationTimedOut() {}
   virtual void ShutdownTimedOut() {}
+  virtual void StartFlowTimedOut() {}
+  virtual void StopFlowTimedOut() {}
 };
 
 }  // namespace ash
