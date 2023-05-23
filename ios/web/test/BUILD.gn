@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
@@ -108,18 +108,21 @@ source_set("test_constants") {
   ]
 }
 
-optimize_js("java_script_feature_test_inject_once_js") {
+optimize_ts("java_script_feature_test_inject_once_js") {
   testonly = true
 
-  primary_script = "resources/java_script_feature_test_inject_once.js"
-  sources = [ "resources/java_script_feature_test_inject_once.js" ]
+  sources = [ "resources/java_script_feature_test_inject_once.ts" ]
 
-  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
-optimize_js("java_script_feature_test_reinject_js") {
+optimize_ts("java_script_feature_test_reinject_js") {
   testonly = true
 
-  primary_script = "resources/java_script_feature_test_reinject.js"
-  sources = [ "resources/java_script_feature_test_reinject.js" ]
+  sources = [ "resources/java_script_feature_test_reinject.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
