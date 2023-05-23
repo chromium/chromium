@@ -471,11 +471,38 @@ const FeatureEntry::FeatureVariation kEnablePinnedTabsVariations[] = {
      std::size(kEnablePinnedTabsOverflow), nullptr},
 };
 
-const FeatureEntry::FeatureParam kAutofillBrandingIOSMonotone[] = {
-    {autofill::features::kAutofillBrandingIOSParam, "true"}};
+const FeatureEntry::FeatureParam
+    kAutofillBrandingIOSDismissWhenInteractedNoAnimation[] = {
+        {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
+         autofill::features::
+             kAutofillBrandingIOSParamFrequencyTypeDismissWhenInteracted},
+        {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
+         autofill::features::
+             kAutofillBrandingIOSParamFrequencyTypeDismissWhenInteracted}};
+const FeatureEntry::FeatureParam kAutofillBrandingIOSAlwaysShowAndDismiss[] = {
+    {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
+     autofill::features::
+         kAutofillBrandingIOSParamFrequencyTypeAlwaysShowAndDismiss},
+    {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
+     autofill::features::kAutofillBrandingIOSParamFrequencyTypeAlways}};
+const FeatureEntry::FeatureParam
+    kAutofillBrandingIOSDismissWhenInteractedWithAnimation[] = {
+        {autofill::features::kAutofillBrandingIOSParamFrequencyTypePhone,
+         autofill::features::
+             kAutofillBrandingIOSParamFrequencyTypeDismissWhenInteracted},
+        {autofill::features::kAutofillBrandingIOSParamFrequencyTypeTablet,
+         autofill::features::kAutofillBrandingIOSParamFrequencyTypeAlways}};
 const FeatureEntry::FeatureVariation kAutofillBrandingIOSVariations[] = {
-    {"(Monotone)", kAutofillBrandingIOSMonotone,
-     std::size(kAutofillBrandingIOSMonotone), nullptr}};
+    {"(will not show again after user interacts with keyboard accessories)",
+     kAutofillBrandingIOSDismissWhenInteractedNoAnimation,
+     std::size(kAutofillBrandingIOSDismissWhenInteractedNoAnimation), nullptr},
+    {"(shows and fades to the left every time)",
+     kAutofillBrandingIOSAlwaysShowAndDismiss,
+     std::size(kAutofillBrandingIOSAlwaysShowAndDismiss), nullptr},
+    {"(fades to the left after user interacts with keyboard accessories)",
+     kAutofillBrandingIOSDismissWhenInteractedWithAnimation,
+     std::size(kAutofillBrandingIOSDismissWhenInteractedWithAnimation),
+     nullptr}};
 
 const FeatureEntry::FeatureParam kIOSNewPostRestoreExperienceMinimal[] = {
     {post_restore_signin::features::kIOSNewPostRestoreExperienceParam, "true"}};

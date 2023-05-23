@@ -49,19 +49,6 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
 #pragma mark - Life Cycle
 
 - (void)loadView {
-  NSString* logoName;
-  switch (autofill::features::GetAutofillBrandingType()) {
-    case autofill::features::AutofillBrandingType::kFullColor:
-      logoName = @"fullcolor_branding_icon";
-      break;
-    case autofill::features::AutofillBrandingType::kMonotone:
-      logoName = @"monotone_branding_icon";
-      break;
-    case autofill::features::AutofillBrandingType::kDisabled:
-      NOTREACHED();
-      break;
-  }
-
   UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
   if (IsUIButtonConfigurationEnabled()) {
     UIButtonConfiguration* buttonConfiguration =
@@ -78,7 +65,7 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
   button.isAccessibilityElement = NO;  // Prevents VoiceOver users from tap.
   button.translatesAutoresizingMaskIntoConstraints = NO;
   self.view = button;
-  [self configureBrandingWithImageName:logoName];
+  [self configureBrandingWithImageName:@"fullcolor_branding_icon"];
 
   // Adds keyboard popup listener to show animation when keyboard is fully
   // settled.
@@ -87,22 +74,6 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
          selector:@selector(onKeyboardAnimationComplete)
              name:UIKeyboardDidShowNotification
            object:nil];
-}
-
-#pragma mark - UITraitEnvironment
-
-// UIImages with rendering mode UIImageRenderingModeAlwaysOriginal do not
-// automatically respond when the user interface mode changes. To fix this, the
-// view controller should get notified on these changes and update the image
-// accordingly. Similar issue and fix as crbug.com/998090.
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (self.traitCollection.userInterfaceStyle !=
-          previousTraitCollection.userInterfaceStyle &&
-      autofill::features::GetAutofillBrandingType() ==
-          autofill::features::AutofillBrandingType::kMonotone) {
-    [self configureBrandingWithImageName:@"monotone_branding_icon"];
-  }
 }
 
 #pragma mark - Accessors

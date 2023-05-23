@@ -145,8 +145,8 @@
 #pragma mark - Getter
 
 - (BOOL)isBrandingVisible {
-  if (autofill::features::GetAutofillBrandingType() ==
-      autofill::features::AutofillBrandingType::kDisabled) {
+  if (autofill::features::GetAutofillBrandingFrequencyType() ==
+      autofill::features::AutofillBrandingFrequencyType::kNever) {
     return NO;
   }
   return !(self.manualFillAccessoryViewController.allButtonsHidden &&

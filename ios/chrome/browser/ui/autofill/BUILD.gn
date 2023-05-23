@@ -257,7 +257,10 @@ source_set("features") {
     "features.cc",
     "features.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//ui/base",
+  ]
 }
 
 source_set("unit_tests") {
