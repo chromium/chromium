@@ -513,6 +513,7 @@ INSTANTIATE_TEST_SUITE_P(ContentExperiment,
                          testing::Values("trusted_advice",
                                          "safety_first",
                                          "try_something_new",
-                                         "convenience"));
+                                         "convenience",
+                                         "cross_device"));
 
 }  // namespace autofill

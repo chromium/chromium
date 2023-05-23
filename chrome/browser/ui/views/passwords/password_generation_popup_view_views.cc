@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
@@ -39,6 +40,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -121,7 +123,64 @@ int GetHelpTextMessageId() {
       return IDS_PASSWORD_GENERATION_HELP_TEXT_TRY_SOMETHING_NEW;
     case PasswordGenerationVariation::kConvenience:
       return IDS_PASSWORD_GENERATION_HELP_TEXT_CONVENIENCE;
+    case PasswordGenerationVariation::kCrossDevice:
+      return IDS_PASSWORD_GENERATION_HELP_TEXT;
   }
+}
+
+std::unique_ptr<views::FlexLayoutView> CreateLabelWithCheckIcon(
+    const std::u16string& label_text) {
+  auto label_with_icon = std::make_unique<views::FlexLayoutView>();
+
+  // TODO(crbug.com/1444070): Add correct check icon (without circle).
+  auto icon = std::make_unique<NonAccessibleImageView>();
+  icon->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kCheckCircleIcon, ui::kColorIconSecondary, kIconSize));
+  label_with_icon->AddChildView(std::move(icon));
+
+  auto spacer = std::make_unique<views::View>();
+  spacer->SetPreferredSize(
+      gfx::Size(autofill::PopupBaseView::GetHorizontalPadding(), /*height=*/1));
+  label_with_icon->AddChildView(std::move(spacer));
+
+  label_with_icon->AddChildView(
+      std::make_unique<views::Label>(label_text, CONTEXT_DIALOG_BODY_TEXT_SMALL,
+                                     views::style::STYLE_SECONDARY));
+
+  return label_with_icon;
+}
+
+// Creates help text listing benefits of password generation in bullet points.
+std::unique_ptr<views::View> CreateCrossDeviceFooter(
+    const std::u16string& primary_account_email,
+    base::RepeatingClosure open_password_manager_closure) {
+  auto cross_device_footer = std::make_unique<views::View>();
+
+  auto* layout =
+      cross_device_footer->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+
+  cross_device_footer->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_BENEFITS),
+      CONTEXT_DIALOG_BODY_TEXT_SMALL, views::style::STYLE_SECONDARY));
+  cross_device_footer->AddChildView(CreateLabelWithCheckIcon(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_CROSS_DEVICE)));
+  cross_device_footer->AddChildView(CreateLabelWithCheckIcon(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SECURITY)));
+  cross_device_footer->AddChildView(CreateLabelWithCheckIcon(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROACTIVE_CHECK)));
+
+  views::StyledLabel* help_label =
+      cross_device_footer->AddChildView(CreateGooglePasswordManagerLabel(
+          GetHelpTextMessageId(),
+          /*link_message_id=*/
+          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT,
+          primary_account_email, open_password_manager_closure));
+  help_label->SetDisplayedOnBackgroundColor(ui::kColorBubbleFooterBackground);
+
+  return cross_device_footer;
 }
 
 }  // namespace
@@ -378,6 +437,15 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
         view->controller_->OnGooglePasswordManagerLinkClicked();
       },
       base::Unretained(this));
+
+  if (password_manager::features::kPasswordGenerationExperimentVariationParam
+          .Get() == PasswordGenerationVariation::kCrossDevice) {
+    auto* cross_device_footer = AddChildView(CreateCrossDeviceFooter(
+        controller_->GetPrimaryAccountEmail(), open_password_manager_closure));
+    cross_device_footer->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
+    return;
+  }
 
   views::StyledLabel* help_label =
       AddChildView(CreateGooglePasswordManagerLabel(

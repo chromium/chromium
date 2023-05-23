@@ -3723,6 +3723,11 @@ const FeatureEntry::FeatureParam kPasswordGenerationConvenience[] = {
          .name,
      password_manager::features::kPasswordGenerationExperimentVariationOption[3]
          .name}};
+const FeatureEntry::FeatureParam kPasswordGenerationCrossDevice[] = {
+    {password_manager::features::kPasswordGenerationExperimentVariationParam
+         .name,
+     password_manager::features::kPasswordGenerationExperimentVariationOption[4]
+         .name}};
 
 const FeatureEntry::FeatureVariation kPasswordGenerationExperimentVariations[] =
     {
@@ -3734,6 +3739,8 @@ const FeatureEntry::FeatureVariation kPasswordGenerationExperimentVariations[] =
          std::size(kPasswordGenerationTrySomethingNew), nullptr},
         {"Convenience", kPasswordGenerationConvenience,
          std::size(kPasswordGenerationConvenience), nullptr},
+        {"Cross device", kPasswordGenerationCrossDevice,
+         std::size(kPasswordGenerationCrossDevice), nullptr},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 

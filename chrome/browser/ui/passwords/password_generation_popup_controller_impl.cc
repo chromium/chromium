@@ -482,6 +482,8 @@ std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() const {
       case PasswordGenerationVariation::kConvenience:
         return l10n_util::GetStringUTF16(
             IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE);
+      default:
+        break;
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
