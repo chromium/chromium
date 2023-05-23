@@ -121,13 +121,11 @@ bool SavedTabGroupMatchesChecker::IsExitConditionSatisfied(std::ostream* os) {
 
   const SavedTabGroupModel* const model = service_->model();
 
-  // Expect that a group in the model has the id, title, and color of `group_`.
-  // Other fields are either not synced (e.g. `local_group_id_`), have to do
-  // with the group's relationship to other entities (e.g. `position_`,
-  // `saved_tabs_`), or are implementation details (creation/update time).
+  // Expect that a group exists in the model with the same synced data as
+  // `group_`.
   for (const SavedTabGroup& group : model->saved_tab_groups()) {
-    if (group.saved_guid() == group_.saved_guid()) {
-      return group.title() == group_.title() && group.color() == group_.color();
+    if (group.IsSyncEquivalent(group_)) {
+      return true;
     }
   }
 
@@ -166,14 +164,11 @@ bool SavedTabMatchesChecker::IsExitConditionSatisfied(std::ostream* os) {
 
   const SavedTabGroupModel* const model = service_->model();
 
-  // Expect that a tab in the model has the id, url, and title of `tab_`. Other
-  // fields are either not synced (e.g. `local_tab_id_`, `favicon_`), have to do
-  // with the group's relationship to other entities (e.g. `position_`,
-  // `saved_group_`), or are implementation details (creation/update time).
+  // Expect that a tab exists in the model with the same synced data as `tab_`.
   for (const SavedTabGroup& group : model->saved_tab_groups()) {
     for (const SavedTabGroupTab& tab : group.saved_tabs()) {
-      if (tab.saved_tab_guid() == tab_.saved_tab_guid()) {
-        return tab.url() == tab_.url() && tab.title() == tab_.title();
+      if (tab.IsSyncEquivalent(tab_)) {
+        return true;
       }
     }
   }

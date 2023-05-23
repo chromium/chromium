@@ -336,7 +336,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
                        /*urls=*/{},
                        /*saved_guid=*/absl::nullopt, /*position=*/0);
   SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
-                        group1.saved_guid());
+                        group1.saved_guid(), /*group=*/nullptr,
+                        /*saved_tab_guid=*/absl::nullopt,
+                        /*local_tab_id=*/absl::nullopt, /*position=*/0);
 
   // Add a group with a tab to sync.
   AddDataToFakeServer(*group1.ToSpecifics());

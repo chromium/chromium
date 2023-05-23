@@ -100,6 +100,13 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::ToSpecifics()
   pb_tab->set_group_guid(saved_group_guid().AsLowercaseString());
   pb_tab->set_title(base::UTF16ToUTF8(title()));
   pb_tab->set_position(position());
+  // Note: When adding a new syncable field, also update IsSyncEquivalent().
 
   return pb_specific;
+}
+
+bool SavedTabGroupTab::IsSyncEquivalent(const SavedTabGroupTab& other) const {
+  return saved_tab_guid() == other.saved_tab_guid() && url() == other.url() &&
+         saved_group_guid() == other.saved_group_guid() &&
+         title() == other.title() && position() == other.position();
 }

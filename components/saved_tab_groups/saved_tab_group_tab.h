@@ -115,6 +115,9 @@ class SavedTabGroupTab {
   // Converts this `SavedTabGroupTab` into a `SavedTabGroupSpecifics` for sync.
   std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics() const;
 
+  // Returns true iff syncable data fields in `this` and `other` are equivalent.
+  bool IsSyncEquivalent(const SavedTabGroupTab& other) const;
+
  private:
   // The ID used to represent the tab in sync.
   base::Uuid saved_tab_guid_;

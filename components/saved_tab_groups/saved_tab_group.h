@@ -141,6 +141,9 @@ class SavedTabGroup {
   // Converts a `SavedTabGroupTab` into a `SavedTabGroupSpecifics` for sync.
   std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics() const;
 
+  // Returns true iff syncable data fields in `this` and `other` are equivalent.
+  bool IsSyncEquivalent(const SavedTabGroup& other) const;
+
   // Converts tab group color ids into the sync data type for saved tab group
   // colors.
   static ::sync_pb::SavedTabGroup_SavedTabGroupColor TabGroupColorToSyncColor(

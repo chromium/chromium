@@ -338,8 +338,14 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroup::ToSpecifics()
   pb_group->set_color(TabGroupColorToSyncColor(color()));
   pb_group->set_title(base::UTF16ToUTF8(title()));
   pb_group->set_position(position());
+  // Note: When adding a new syncable field, also update IsSyncEquivalent().
 
   return pb_specific;
+}
+
+bool SavedTabGroup::IsSyncEquivalent(const SavedTabGroup& other) const {
+  return saved_guid() == other.saved_guid() && color() == other.color() &&
+         title() == other.title() && position() == other.position();
 }
 
 // static
