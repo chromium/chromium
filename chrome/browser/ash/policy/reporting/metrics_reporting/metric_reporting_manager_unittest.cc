@@ -22,6 +22,8 @@
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/metrics/collector_base.h"
@@ -280,6 +282,9 @@ class MetricReportingManagerTest
         ->SetAppPlatformMetricsServiceForTesting(
             GetAppPlatformMetricsService());
 
+    // Initialize fake session manager client. Needed for setting up downstream
+    // app metric reporting components.
+    ::ash::SessionManagerClient::InitializeFakeInMemory();
     mock_delegate_ = std::make_unique<::testing::NiceMock<MockDelegate>>();
     info_queue_ptr_ = CreateMockMetricReportQueueHelper(
         mock_delegate_.get(), EventType::kDevice, Destination::INFO_METRIC,
@@ -304,6 +309,7 @@ class MetricReportingManagerTest
         .WillByDefault(Return(ByMove(std::move(telemetry_queue))));
   }
 
+  ::ash::SessionTerminationManager session_termination_manager_;
   raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> info_queue_ptr_;
   raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> telemetry_queue_ptr_;
   raw_ptr<test::FakeMetricReportQueue, ExperimentalAsh> event_queue_ptr_;

@@ -9,6 +9,8 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/reporting/metrics/fakes/fake_metric_report_queue.h"
 #include "components/reporting/metrics/fakes/fake_reporting_settings.h"
 #include "components/reporting/metrics/fakes/fake_sampler.h"
@@ -23,9 +25,14 @@ namespace {
 
 class AppUsageTelemetryPeriodicCollectorTest : public ::testing::Test {
  protected:
+  void SetUp() override {
+    ::ash::SessionManagerClient::InitializeFakeInMemory();
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  ::ash::SessionTerminationManager session_termination_manager_;
   test::FakeReportingSettings reporting_settings_;
   test::FakeSampler sampler_;
   test::FakeMetricReportQueue metric_report_queue_;
@@ -40,8 +47,8 @@ TEST_F(AppUsageTelemetryPeriodicCollectorTest,
 
   // Fast forward timer to trigger telemetry collection and verify data being
   // reported.
-  AppUsageTelemetryPeriodicCollector collector(&sampler_, &metric_report_queue_,
-                                               &reporting_settings_);
+  const AppUsageTelemetryPeriodicCollector collector(
+      &sampler_, &metric_report_queue_, &reporting_settings_);
   task_environment_.FastForwardBy(
       metrics::kDefaultAppUsageTelemetryCollectionRate);
   ASSERT_THAT(sampler_.GetNumCollectCalls(), Eq(1));
@@ -66,8 +73,8 @@ TEST_F(AppUsageTelemetryPeriodicCollectorTest, CollectMetricDataWhenRateSet) {
 
   // Fast forward timer to trigger telemetry collection and verify data being
   // reported.
-  AppUsageTelemetryPeriodicCollector collector(&sampler_, &metric_report_queue_,
-                                               &reporting_settings_);
+  const AppUsageTelemetryPeriodicCollector collector(
+      &sampler_, &metric_report_queue_, &reporting_settings_);
   task_environment_.FastForwardBy(kCollectionRate);
   ASSERT_THAT(sampler_.GetNumCollectCalls(), Eq(1));
   const auto& enqueued_metric_data =
@@ -88,8 +95,8 @@ TEST_F(AppUsageTelemetryPeriodicCollectorTest,
   MetricData metric_data;
   metric_data.mutable_telemetry_data();
   sampler_.SetMetricData(std::move(metric_data));
-  AppUsageTelemetryPeriodicCollector collector(&sampler_, &metric_report_queue_,
-                                               &reporting_settings_);
+  const AppUsageTelemetryPeriodicCollector collector(
+      &sampler_, &metric_report_queue_, &reporting_settings_);
 
   // Update collection rate setting before triggering collection. This is
   // so the rate controller can pick up updated setting value on collection and
@@ -133,8 +140,8 @@ TEST_F(AppUsageTelemetryPeriodicCollectorTest, CollectEmptyMetricData) {
 
   // Fast forward timer to trigger telemetry collection and verify no data is
   // being reported.
-  AppUsageTelemetryPeriodicCollector collector(&sampler_, &metric_report_queue_,
-                                               &reporting_settings_);
+  const AppUsageTelemetryPeriodicCollector collector(
+      &sampler_, &metric_report_queue_, &reporting_settings_);
   task_environment_.FastForwardBy(
       metrics::kDefaultAppUsageTelemetryCollectionRate);
   ASSERT_THAT(sampler_.GetNumCollectCalls(), Eq(1));
@@ -158,6 +165,26 @@ TEST_F(AppUsageTelemetryPeriodicCollectorTest, OnCollectorDestruction) {
       metrics::kDefaultAppUsageTelemetryCollectionRate);
   ASSERT_THAT(sampler_.GetNumCollectCalls(), Eq(0));
   ASSERT_TRUE(metric_report_queue_.IsEmpty());
+}
+
+TEST_F(AppUsageTelemetryPeriodicCollectorTest, OnSessionTermination) {
+  // Set up test sampler to report data.
+  MetricData metric_data;
+  metric_data.mutable_telemetry_data();
+  sampler_.SetMetricData(std::move(metric_data));
+
+  // Set up periodic collector and terminate session.
+  const AppUsageTelemetryPeriodicCollector collector(
+      &sampler_, &metric_report_queue_, &reporting_settings_);
+  session_termination_manager_.StopSession(
+      ::login_manager::SessionStopReason::USER_REQUESTS_SIGNOUT);
+
+  // Verify data being reported.
+  ASSERT_THAT(sampler_.GetNumCollectCalls(), Eq(1));
+  const auto& enqueued_metric_data =
+      metric_report_queue_.GetMetricDataReported();
+  ASSERT_TRUE(enqueued_metric_data.has_timestamp_ms());
+  ASSERT_TRUE(enqueued_metric_data.has_telemetry_data());
 }
 
 }  // namespace

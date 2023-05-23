@@ -8,6 +8,9 @@
 #include <memory>
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/reporting_settings.h"
@@ -20,7 +23,9 @@ namespace reporting {
 // similar to the `PeriodicCollector` but only controls the collection rate
 // based on the respective policy setting. This is to avoid data staleness
 // because we do not associate usage data with a timestamp today.
-class AppUsageTelemetryPeriodicCollector : public CollectorBase {
+class AppUsageTelemetryPeriodicCollector
+    : public CollectorBase,
+      public ::ash::SessionTerminationManager::Observer {
  public:
   AppUsageTelemetryPeriodicCollector(Sampler* sampler,
                                      MetricReportQueue* metric_report_queue,
@@ -40,11 +45,17 @@ class AppUsageTelemetryPeriodicCollector : public CollectorBase {
   bool CanCollect() const override;
 
  private:
+  // ::ash::SessionTerminationManager::Observer:
+  void OnSessionWillBeTerminated() override;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // `MetricReportQueue` used for enqueueing data collected by the sampler.
   const raw_ptr<MetricReportQueue> metric_report_queue_;
 
   // Component used to control collection rate based on the policy setting.
-  const std::unique_ptr<MetricRateController> rate_controller_;
+  std::unique_ptr<MetricRateController> rate_controller_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace reporting

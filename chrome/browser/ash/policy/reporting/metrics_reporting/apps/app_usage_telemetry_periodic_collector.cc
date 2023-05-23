@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
+#include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/metric_report_queue.h"
@@ -33,11 +35,17 @@ AppUsageTelemetryPeriodicCollector::AppUsageTelemetryPeriodicCollector(
           ::ash::reporting::kReportAppUsageCollectionRateMs,
           metrics::kDefaultAppUsageTelemetryCollectionRate,
           /*rate_unit_to_ms=*/1)) {
+  ::ash::SessionTerminationManager::Get()->AddObserver(this);
   rate_controller_->Start();
 }
 
-AppUsageTelemetryPeriodicCollector::~AppUsageTelemetryPeriodicCollector() =
-    default;
+AppUsageTelemetryPeriodicCollector::~AppUsageTelemetryPeriodicCollector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // `SessionTerminationManager` outlives the collector so we unregister it as
+  // an observer on destruction.
+  ::ash::SessionTerminationManager::Get()->RemoveObserver(this);
+}
 
 void AppUsageTelemetryPeriodicCollector::OnMetricDataCollected(
     bool is_event_driven,
@@ -56,6 +64,16 @@ bool AppUsageTelemetryPeriodicCollector::CanCollect() const {
   // timestamp with this usage telemetry data, we report it right away to
   // prevent staleness.
   return true;
+}
+
+void AppUsageTelemetryPeriodicCollector::OnSessionWillBeTerminated() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Make an attempt to collect any usage data that was recently recorded from
+  // the `AppUsageObserver` so we can prevent data staleness should the profile
+  // be inaccessible for too long.
+  Collect(/*is_event_driven=*/false);
+  rate_controller_.reset();
 }
 
 }  // namespace reporting
