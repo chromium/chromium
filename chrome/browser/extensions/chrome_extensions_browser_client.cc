@@ -78,7 +78,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/content_settings/content_settings_service.h"
@@ -941,40 +940,30 @@ void ChromeExtensionsBrowserClient::AddAPIActionOrEventToActivityLog(
   AddActionToExtensionActivityLog(browser_context, action);
 }
 
-content::StoragePartitionConfig
-ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
+void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
     content::BrowserContext* browser_context,
     content::SiteInstance* owner_site_instance,
     const std::string& partition_name,
-    bool in_memory) {
+    bool in_memory,
+    base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+        callback) {
   const GURL& owner_site_url = owner_site_instance->GetSiteURL();
   if (owner_site_url.SchemeIs(chrome::kIsolatedAppScheme)) {
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
         web_app::IsolatedWebAppUrlInfo::Create(owner_site_url);
     DCHECK(url_info.has_value()) << url_info.error();
 
-    content::StoragePartitionConfig storage_partition_config =
-        url_info->GetStoragePartitionConfigForControlledFrame(
-            browser_context, partition_name, in_memory);
-
-    // If persisted and not already loaded, register the StoragePartition with
-    // the web_app system.
-    content::StoragePartition* storage_partition =
-        browser_context->GetStoragePartition(storage_partition_config,
-                                             /*can_create=*/false);
-    if (!in_memory && storage_partition == nullptr) {
-      auto* profile = Profile::FromBrowserContext(browser_context);
-      auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
-      CHECK(web_app_provider);
-      web_app_provider->scheduler().RegisterControlledFramePartition(
-          url_info->app_id(), partition_name, base::DoNothing());
-    }
-
-    return storage_partition_config;
+    auto* profile = Profile::FromBrowserContext(browser_context);
+    auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
+    CHECK(web_app_provider);
+    web_app_provider->scheduler().GetControlledFramePartition(
+        *url_info, partition_name, in_memory, std::move(callback));
+    return;
   }
 
-  return ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
-      browser_context, owner_site_instance, partition_name, in_memory);
+  ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
+      browser_context, owner_site_instance, partition_name, in_memory,
+      std::move(callback));
 }
 
 void ChromeExtensionsBrowserClient::CreatePasswordReuseDetectionManager(

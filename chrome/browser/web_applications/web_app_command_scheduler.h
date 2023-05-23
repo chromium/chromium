@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 class Profile;
@@ -27,6 +28,7 @@ class Profile;
 struct WebAppInstallInfo;
 
 namespace content {
+class StoragePartitionConfig;
 class WebContents;
 }  // namespace content
 
@@ -185,10 +187,12 @@ class WebAppCommandScheduler {
 
   // Registers a <controlledframe>'s StoragePartition with the given Isolated
   // Web App.
-  void RegisterControlledFramePartition(
-      const AppId& app_id,
+  void GetControlledFramePartition(
+      const IsolatedWebAppUrlInfo& url_info,
       const std::string& partition_name,
-      base::OnceClosure callback,
+      bool in_memory,
+      base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+          callback,
       const base::Location& location = FROM_HERE);
 
   // Scheduler a command that installs a web app from sync.

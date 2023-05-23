@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -499,14 +500,16 @@ class ExtensionsBrowserClient {
       const std::u16string& url_title,
       int call_type);
 
-  // Returns the StoragePartitionConfig that should be used for a <webview> or
-  // <controlledframe> with the given |partition_name| that is owned by a frame
-  // within |owner_site_instance|.
-  virtual content::StoragePartitionConfig GetWebViewStoragePartitionConfig(
+  // Invokes |callback| with the StoragePartitionConfig that should be used for
+  // a <webview> or <controlledframe> with the given |partition_name| that is
+  // owned by a frame within |owner_site_instance|.
+  virtual void GetWebViewStoragePartitionConfig(
       content::BrowserContext* browser_context,
       content::SiteInstance* owner_site_instance,
       const std::string& partition_name,
-      bool in_memory);
+      bool in_memory,
+      base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+          callback);
 
   // Creates password reuse detection manager when new extension web contents
   // are created.

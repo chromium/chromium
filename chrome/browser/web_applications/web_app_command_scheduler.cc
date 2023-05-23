@@ -32,10 +32,10 @@
 #include "chrome/browser/web_applications/commands/update_file_handler_command.h"
 #include "chrome/browser/web_applications/commands/update_protocol_handler_approval_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/register_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
@@ -52,7 +52,9 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/installable/installable_manager.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 namespace {
@@ -383,22 +385,23 @@ void WebAppCommandScheduler::GetIsolatedWebAppBrowsingData(
       call_location);
 }
 
-void WebAppCommandScheduler::RegisterControlledFramePartition(
-    const AppId& app_id,
+void WebAppCommandScheduler::GetControlledFramePartition(
+    const IsolatedWebAppUrlInfo& url_info,
     const std::string& partition_name,
-    base::OnceClosure callback,
+    bool in_memory,
+    base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
+        callback,
     const base::Location& location) {
   if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   provider_->scheduler().ScheduleCallbackWithLock<AppLock>(
-      "RegisterControlledFramePartition",
-      std::make_unique<AppLockDescription>(app_id),
-      base::BindOnce(&RegisterControlledFramePartitionWithLock, app_id,
-                     partition_name, std::move(callback)),
+      "GetControlledFramePartition",
+      std::make_unique<AppLockDescription>(url_info.app_id()),
+      base::BindOnce(&GetControlledFramePartitionWithLock, &profile_.get(),
+                     url_info, partition_name, in_memory, std::move(callback)),
       location);
 }
 
