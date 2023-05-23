@@ -84,6 +84,9 @@ enum PhFeedback {
 
   // User clicked thumbs down.
   kThumbsDown = 2,
+
+  // User clicked report content.
+  kReportContent = 3,
 };
 
 // Data for uploading an image query.
@@ -178,7 +181,9 @@ interface CompanionPageHandler {
   OnCqCandidatesAvailable(array<string> text_directives);
 
   // Called in response to user feedback action on the PH surface.
-  OnPhFeedback(PhFeedback ph_feedback);
+  // `reporting_url` is optionally used to pass the URL to use for reporting
+  // content.
+  OnPhFeedback(PhFeedback ph_feedback, url.mojom.Url? reporting_url);
 
   // Called to notify the browser that the user has clicked on a jumptag.
   // `text_directive` is the URL fragment for highlighting and scrolling-to.

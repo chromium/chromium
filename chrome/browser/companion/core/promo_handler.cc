@@ -74,7 +74,7 @@ void PromoHandler::OnExpsPromo(PromoAction promo_action,
     IncrementPref(kExpsPromoDeclinedCountPref);
   } else if (promo_action == PromoAction::kAccepted) {
     if (exps_promo_url.has_value()) {
-      signin_delegate_->LoadExpsPromUrl(exps_promo_url.value());
+      signin_delegate_->LoadUrlInNewTab(exps_promo_url.value());
     }
   }
 }

@@ -30,7 +30,7 @@ class SigninDelegateImpl : public SigninDelegate {
   bool IsSignedIn() override;
   void StartSigninFlow() override;
   void EnableMsbb(bool enable_msbb) override;
-  void LoadExpsPromUrl(const GURL& exps_promo_url) override;
+  void LoadUrlInNewTab(const GURL& url) override;
 
  private:
   Profile* GetProfile();

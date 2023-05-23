@@ -66,8 +66,8 @@ void SigninDelegateImpl::EnableMsbb(bool enable_msbb) {
   consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(enable_msbb);
 }
 
-void SigninDelegateImpl::LoadExpsPromUrl(const GURL& exps_promo_url) {
-  content::OpenURLParams params(exps_promo_url, content::Referrer(),
+void SigninDelegateImpl::LoadUrlInNewTab(const GURL& url) {
+  content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                 /*is_renderer_initiated*/ false);
