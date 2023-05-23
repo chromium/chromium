@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 [
-    Exposed=Window,
     SecureContext,
     RuntimeEnabled=FedCmUserInfo
 ] dictionary IdentityUserInfo {
