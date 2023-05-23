@@ -462,7 +462,6 @@
 }
 
 - (void)locationBarDidBecomeFirstResponder {
-  [self.headerViewController locationBarBecomesFirstResponder];
   self.NTPViewController.omniboxFocused = YES;
 }
 

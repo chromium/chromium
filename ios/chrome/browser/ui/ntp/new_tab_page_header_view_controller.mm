@@ -662,14 +662,6 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
   _logoVendor.doodleObserver = self;
 }
 
-- (void)locationBarBecomesFirstResponder {
-  if (!self.isShowing) {
-    return;
-  }
-
-  [self.commandHandler fakeboxTapped];
-}
-
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
   if (_voiceSearchIsEnabled == voiceSearchIsEnabled) {
     return;
