@@ -104,7 +104,7 @@ void FrameColorHelper::AddNativeChromeColors(
     mixer[ui::kColorFrameActive] = {color.value()};
   } else if (dwm_frame_color_) {
     mixer[ui::kColorFrameActive] = {dwm_frame_color_.value()};
-  } else if (ShouldDefaultThemeUseMicaTitlebar() && !key.app_controller) {
+  } else if (ShouldDefaultThemeUseMicaTitlebar()) {
     mixer[ui::kColorFrameActive] = {key.color_mode == ColorMode::kDark
                                         ? kSystemMicaDarkFrameColor
                                         : kSystemMicaLightFrameColor};
@@ -114,7 +114,7 @@ void FrameColorHelper::AddNativeChromeColors(
     mixer[ui::kColorFrameInactive] = {color.value()};
   } else if (dwm_inactive_frame_color_) {
     mixer[ui::kColorFrameInactive] = {dwm_inactive_frame_color_.value()};
-  } else if (ShouldDefaultThemeUseMicaTitlebar() && !key.app_controller) {
+  } else if (ShouldDefaultThemeUseMicaTitlebar()) {
     mixer[ui::kColorFrameInactive] = {key.color_mode == ColorMode::kDark
                                           ? kSystemMicaDarkFrameColor
                                           : kSystemMicaLightFrameColor};
