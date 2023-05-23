@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,6 +31,13 @@ bool TabRestoreServiceHasClosedWindow(sessions::TabRestoreService* service) {
       return true;
   }
   return false;
+}
+
+void ShowAppMenu(Browser* browser) {
+  BrowserView::GetBrowserViewForBrowser(browser)
+      ->toolbar()
+      ->app_menu_button()
+      ->ShowMenu(views::MenuRunner::NO_FLAGS);
 }
 
 }  // namespace
@@ -57,8 +67,37 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
   EXPECT_TRUE(TabRestoreServiceHasClosedWindow(tab_restore_service));
 
   // Show the AppMenu.
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->toolbar()
-      ->app_menu_button()
-      ->ShowMenu(views::MenuRunner::NO_FLAGS);
+  ShowAppMenu(browser());
+}
+
+class AppMenuChromeRefresh2023BrowserTest : public AppMenuBrowserTest {
+ public:
+  AppMenuChromeRefresh2023BrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kChromeRefresh2023);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Opens up the app menu with a standard user profile.
+IN_PROC_BROWSER_TEST_F(AppMenuChromeRefresh2023BrowserTest, TestProfileRow) {
+  ShowAppMenu(browser());
+}
+
+// Opens up the app menu with a guest profile.
+IN_PROC_BROWSER_TEST_F(AppMenuChromeRefresh2023BrowserTest,
+                       TestGuestProfileRow) {
+  // TODO(crbug.com/1427667): ChromeOS specific profile logic still needs to be
+  // updated, setup this test for a Guest user session with appropriate command
+  // line switches afterwards.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  ShowAppMenu(CreateGuestBrowser());
+#endif
+}
+
+// Opens up the app menu with an incognito profile.
+IN_PROC_BROWSER_TEST_F(AppMenuChromeRefresh2023BrowserTest,
+                       TestIncognitoProfileRow) {
+  ShowAppMenu(CreateIncognitoBrowser(browser()->profile()));
 }

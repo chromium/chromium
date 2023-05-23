@@ -10,6 +10,9 @@
 #include "ui/gfx/geometry/size.h"
 
 enum LayoutConstant {
+  // The size of the avatar icon in the profile row of the app menu.
+  APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE,
+
   // The height of Bookmarks Bar when attached to the toolbar. The height of the
   // Bookmarks Bar is larger than the BOOKMARK_BAR_BUTTON_HEIGHT by a fixed
   // amount.

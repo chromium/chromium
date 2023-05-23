@@ -17,6 +17,8 @@
 int GetLayoutConstant(LayoutConstant constant) {
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (constant) {
+    case APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE:
+      return 24;
     case BOOKMARK_BAR_HEIGHT:
       // The fixed margin ensures the bookmark buttons appear centered relative
       // to the white space above and below.

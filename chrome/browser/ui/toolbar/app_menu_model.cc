@@ -28,7 +28,12 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -38,6 +43,7 @@
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -72,6 +78,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -191,6 +198,75 @@ void SetCommandIcon(ui::SimpleMenuModel* model,
                                       ui::SimpleMenuModel::kDefaultIconSize));
   }
 }
+
+ProfileAttributesEntry* GetProfileAttributesFromProfile(
+    const Profile* profile) {
+  return g_browser_process->profile_manager()
+      ->GetProfileAttributesStorage()
+      .GetProfileAttributesWithPath(profile->GetPath());
+}
+
+AccountInfo GetAccountInfoFromProfile(const Profile* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfileIfExists(profile);
+  // IdentityManager may be null if one is not mapped to the profile through the
+  // KeyedServiceFactory. We do not create one if it doesn't already exist and
+  // simply return an empty AccountInfo object.
+  if (!identity_manager) {
+    return AccountInfo();
+  }
+  CoreAccountInfo account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  return identity_manager->FindExtendedAccountInfo(account);
+}
+
+class ProfileSubMenuModel : public ui::SimpleMenuModel {
+ public:
+  ProfileSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
+                      const Profile* profile)
+      : SimpleMenuModel(delegate) {
+    int kAvatarIconSize =
+        GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
+    if (profile->IsIncognitoProfile()) {
+      avatar_image_model_ = ui::ImageModel::FromVectorIcon(
+          kIncognitoIcon, ui::kColorAvatarIconIncognito, kAvatarIconSize);
+      profile_name_ =
+          l10n_util::GetStringUTF16(IDS_INCOGNITO_PROFILE_MENU_TITLE);
+    } else if (profile->IsGuestSession()) {
+      avatar_image_model_ = ui::ImageModel::FromVectorIcon(
+          kAccountCircleChromeRefreshIcon, ui::kColorMenuIcon, kAvatarIconSize);
+      profile_name_ = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
+    } else {
+      ProfileAttributesEntry* profile_attributes =
+          GetProfileAttributesFromProfile(profile);
+      // If the profile is being deleted, profile_attributes may be null.
+      if (profile_attributes) {
+        AccountInfo account_info = GetAccountInfoFromProfile(profile);
+        gfx::Image avatar_image = profiles::GetSizedAvatarIcon(
+            account_info.IsEmpty()
+                ? profile_attributes->GetAvatarIcon(kAvatarIconSize)
+                : account_info.account_image,
+            kAvatarIconSize, kAvatarIconSize, profiles::SHAPE_CIRCLE);
+        avatar_image_model_ = ui::ImageModel::FromImage(avatar_image);
+        profile_name_ = profile_attributes->GetName();
+      }
+    }
+  }
+
+  ProfileSubMenuModel(const ProfileSubMenuModel&) = delete;
+  ProfileSubMenuModel& operator=(const ProfileSubMenuModel&) = delete;
+  ~ProfileSubMenuModel() override = default;
+
+  const ui::ImageModel& GetAvatarImageModel() const {
+    return avatar_image_model_;
+  }
+
+  const std::u16string& GetProfileName() const { return profile_name_; }
+
+ private:
+  ui::ImageModel avatar_image_model_;
+  std::u16string profile_name_;
+};
 
 }  // namespace
 
@@ -1084,6 +1160,17 @@ void AppMenuModel::Build() {
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
+
+  if (features::IsChromeRefresh2023()) {
+    sub_menus_.push_back(
+        std::make_unique<ProfileSubMenuModel>(this, browser()->profile()));
+    auto* const profile_submenu_model =
+        static_cast<ProfileSubMenuModel*>(sub_menus_.back().get());
+    AddSubMenu(IDC_PROFILE_MENU_IN_APP_MENU,
+               profile_submenu_model->GetProfileName(), profile_submenu_model);
+    SetIcon(GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value(),
+            profile_submenu_model->GetAvatarImageModel());
+  }
 
   if (!browser_->profile()->IsGuestSession() &&
       features::IsChromeRefresh2023() &&

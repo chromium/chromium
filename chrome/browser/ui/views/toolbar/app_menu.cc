@@ -33,11 +33,13 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_delegate.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -88,6 +90,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -1247,6 +1250,16 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
       PopulateMenu(item, model->GetSubmenuModelAt(i));
 
     switch (model->GetCommandIdAt(i)) {
+      case IDC_PROFILE_MENU_IN_APP_MENU: {
+        if (features::IsChromeRefresh2023()) {
+          // Profile row margins are different from the menu config item
+          // margins.
+          int vertical_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+              DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+          item->SetMargins(vertical_margin, vertical_margin);
+        }
+        break;
+      }
       case IDC_EDIT_MENU: {
         ui::ButtonMenuItemModel* submodel = model->GetButtonMenuItemAt(i);
         DCHECK_EQ(IDC_CUT, submodel->GetCommandIdAt(0));

@@ -24,6 +24,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
            << (dark_mode ? "Dark" : "Light") << " window.";
   ColorMixer& mixer = provider->AddMixer();
 
+  mixer[kColorAvatarIconIncognito] = {kColorSysOnSurfaceVariant};
   mixer[kColorBadgeBackground] = {kColorSysTonalContainer};
   mixer[kColorBadgeForeground] = {kColorSysOnTonalContainer};
   mixer[kColorBadgeInCocoaMenuBackground] = {kColorSysPrimary};
