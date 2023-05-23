@@ -9,10 +9,10 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/browsing_data/core/features.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
-
 // static
 ChromeBrowsingDataLifetimeManagerFactory*
 ChromeBrowsingDataLifetimeManagerFactory::GetInstance() {
@@ -35,6 +35,7 @@ ChromeBrowsingDataLifetimeManagerFactory::
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .Build()) {
   DependsOn(ChromeBrowsingDataRemoverDelegateFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 ChromeBrowsingDataLifetimeManagerFactory::

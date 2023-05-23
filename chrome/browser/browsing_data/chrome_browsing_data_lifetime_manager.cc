@@ -23,12 +23,17 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/browsing_data_policies_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -52,7 +57,7 @@
 namespace {
 
 constexpr int kInitialCleanupDelayInSeconds = 15;
-constexpr int kDefaultCleanupPeriodInHours = 1;
+constexpr int kDefaultCleanupPeriodInMinutes = 30;
 
 using ScheduledRemovalSettings =
     ChromeBrowsingDataLifetimeManager::ScheduledRemovalSettings;
@@ -260,6 +265,24 @@ base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
   return result;
 }
 
+// Returns the sync types that might be reuired to be disabled for the browsing
+// data types specified in the policy value.
+syncer::UserSelectableTypeSet GetSyncTypesForPolicyPref(
+    Profile* profile,
+    const std::string& pref_name) {
+  DCHECK(pref_name == browsing_data::prefs::kBrowsingDataLifetime ||
+         pref_name == browsing_data::prefs::kClearBrowsingDataOnExitList);
+
+  const base::Value& data_lifetime_value =
+      profile->GetPrefs()->GetValue(pref_name);
+
+  return pref_name == browsing_data::prefs::kBrowsingDataLifetime
+             ? browsing_data::GetSyncTypesForBrowsingDataLifetime(
+                   data_lifetime_value)
+             : browsing_data::GetSyncTypesForClearBrowsingData(
+                   data_lifetime_value);
+}
+
 }  // namespace
 
 namespace browsing_data {
@@ -305,7 +328,9 @@ void ChromeBrowsingDataLifetimeManager::ClearBrowsingDataForOnExitPolicy(
     bool keep_browser_alive) {
   const base::Value::List& data_types = profile_->GetPrefs()->GetList(
       browsing_data::prefs::kClearBrowsingDataOnExitList);
-  if (!data_types.empty() && !SyncServiceFactory::IsSyncAllowed(profile_)) {
+
+  if (IsConditionSatisfiedForBrowsingDataRemoval(GetSyncTypesForPolicyPref(
+          profile_, browsing_data::prefs::kClearBrowsingDataOnExitList))) {
     profile_->GetPrefs()->SetBoolean(
         browsing_data::prefs::kClearBrowsingDataOnExitDeletionPending, true);
     auto* remover = profile_->GetBrowsingDataRemover();
@@ -338,14 +363,24 @@ void ChromeBrowsingDataLifetimeManager::UpdateScheduledRemovalSettings() {
 }
 
 void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostDelayedTask(FROM_HERE,
+                        base::BindOnce(&ChromeBrowsingDataLifetimeManager::
+                                           StartScheduledBrowsingDataRemoval,
+                                       weak_ptr_factory_.GetWeakPtr()),
+                        base::Minutes(kDefaultCleanupPeriodInMinutes));
+
+  if (!IsConditionSatisfiedForBrowsingDataRemoval(GetSyncTypesForPolicyPref(
+          profile_, browsing_data::prefs::kBrowsingDataLifetime))) {
+    return;
+  }
+
   content::BrowsingDataRemover* remover = profile_->GetBrowsingDataRemover();
 
   for (auto& removal_settings : scheduled_removals_settings_) {
-    if (removal_settings.time_to_live_in_hours <= 0)
+    if (removal_settings.time_to_live_in_hours <= 0) {
       continue;
-
-    if (SyncServiceFactory::IsSyncAllowed(profile_))
-      continue;
+    }
 
     auto deletion_end_time = end_time_for_testing_.value_or(
         base::Time::Now() -
@@ -359,8 +394,9 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
       for (const auto& url : GetOpenedUrls(profile_)) {
         std::string domain = GetDomainAndRegistry(
             url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-        if (domain.empty())
+        if (domain.empty()) {
           domain = url.host();  // IP address or internal hostname.
+        }
         filter_builder->AddRegisterableDomain(domain);
       }
       remover->RemoveWithFilterAndReply(
@@ -385,10 +421,48 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
                     remover, /*filterable_deletion=*/false, profile_));
     }
   }
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostDelayedTask(FROM_HERE,
-                        base::BindOnce(&ChromeBrowsingDataLifetimeManager::
-                                           StartScheduledBrowsingDataRemoval,
-                                       weak_ptr_factory_.GetWeakPtr()),
-                        base::Hours(kDefaultCleanupPeriodInHours));
+}
+
+bool ChromeBrowsingDataLifetimeManager::
+    IsConditionSatisfiedForBrowsingDataRemoval(
+        const syncer::UserSelectableTypeSet sync_types) {
+  bool sync_disabled = !SyncServiceFactory::IsSyncAllowed(profile_);
+  // Return the state of sync if
+  // `features::kDataRetentionPoliciesDisableSyncTypesNeeded` is disabled or if
+  // sync is already disabled.
+  if (!browsing_data::IsPolicyDependencyEnabled() || sync_disabled) {
+    return sync_disabled;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Allow clearing data if browser signin is disabled.
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+    return true;
+  }
+  // If signin will be disabled on next startup, delay the browsing data
+  // clearing until then.
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kSigninAllowedOnNextStartup)) {
+    profile_->GetPrefs()->SetBoolean(
+        browsing_data::prefs::kClearBrowsingDataOnExitDeletionPending, true);
+    return false;
+  }
+#endif
+
+  // Check that sync types have been disabled if neither sync nor browser sign
+  // in is disabled.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+
+  // If the sync service is not available, data can be safely cleared as it is
+  // not synced.
+  if (!sync_service) {
+    return true;
+  }
+
+  for (syncer::UserSelectableType type : sync_types) {
+    if (!sync_service->GetUserSettings()->IsTypeManagedByPolicy(type)) {
+      return false;
+    }
+  }
+  return true;
 }
