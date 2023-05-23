@@ -13,7 +13,6 @@
 
 #include "base/big_endian.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -922,12 +921,6 @@ ResourceScaleFactor ResourceBundle::GetMaxResourceScaleFactor() const {
 #else
   return GetMaxSupportedResourceScaleFactor();
 #endif
-}
-
-bool ResourceBundle::IsScaleFactorSupported(ResourceScaleFactor scale_factor) {
-  const std::vector<ResourceScaleFactor>& supported_scale_factors =
-      ui::GetSupportedResourceScaleFactors();
-  return base::Contains(supported_scale_factors, scale_factor);
 }
 
 void ResourceBundle::CheckCanOverrideStringResources() {

@@ -63,8 +63,8 @@ float GetScaleForMaxSupportedResourceScaleFactor();
 
 // Returns true if the scale passed in is the list of supported scales for
 // the platform.
-// TODO(oshima): Deprecate this.
-COMPONENT_EXPORT(UI_DATA_PACK) bool IsSupportedScale(float scale);
+COMPONENT_EXPORT(UI_DATA_PACK)
+bool IsScaleFactorSupported(ResourceScaleFactor scale_factor);
 
 namespace test {
 

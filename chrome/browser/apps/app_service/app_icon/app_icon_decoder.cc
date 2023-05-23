@@ -15,8 +15,7 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/layout.h"
-#include "ui/base/resource/resource_bundle.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -162,10 +161,9 @@ void AppIconDecoder::UpdateImageSkia(
     return;
   }
 
+  CHECK(ui::IsScaleFactorSupported(scale_factor));
   gfx::ImageSkiaRep image_rep(bitmap,
                               ui::GetScaleForResourceScaleFactor(scale_factor));
-  DCHECK(ui::IsSupportedScale(image_rep.scale()));
-
   image_skia.RemoveRepresentation(image_rep.scale());
   image_skia.AddRepresentation(image_rep);
   image_skia.RemoveUnsupportedRepresentationsForScale(image_rep.scale());
