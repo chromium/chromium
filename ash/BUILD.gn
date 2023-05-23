@@ -390,8 +390,6 @@ component("ash") {
     "clipboard/clipboard_history_resource_manager.h",
     "clipboard/clipboard_history_util.cc",
     "clipboard/clipboard_history_util.h",
-    "clipboard/clipboard_manager_bubble_view.cc",
-    "clipboard/clipboard_manager_bubble_view.h",
     "clipboard/clipboard_nudge.cc",
     "clipboard/clipboard_nudge.h",
     "clipboard/clipboard_nudge_constants.h",
