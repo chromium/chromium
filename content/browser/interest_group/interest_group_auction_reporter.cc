@@ -244,7 +244,7 @@ void InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
     if (!private_aggregation_manager->BindNewReceiver(
             origin, main_frame_origin,
-            PrivateAggregationBudgetKey::Api::kFledge,
+            PrivateAggregationBudgetKey::Api::kProtectedAudience,
             /*context_id=*/absl::nullopt,
             remote.BindNewPipeAndPassReceiver())) {
       continue;

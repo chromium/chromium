@@ -28,6 +28,6 @@ message PrivateAggregationBudgets {
   // a window is not present, the budget used is inferred to be zero. For each
   // API (separately), the sum of budget_used should never be greater than
   // PrivateAggregationBudgeter::kMaxDailyBudget.
-  repeated PrivateAggregationBudgetPerHour fledge_budgets = 1;
+  repeated PrivateAggregationBudgetPerHour protected_audience_budgets = 1;
   repeated PrivateAggregationBudgetPerHour shared_storage_budgets = 2;
 }

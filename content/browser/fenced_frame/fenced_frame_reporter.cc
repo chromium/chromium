@@ -532,7 +532,7 @@ void FencedFrameReporter::MaybeBindPrivateAggregationHost() {
          main_frame_origin_.value().scheme() == url::kHttpsScheme);
   bool bound = private_aggregation_manager_->BindNewReceiver(
       winner_origin_.value(), main_frame_origin_.value(),
-      PrivateAggregationBudgetKey::Api::kFledge,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
       /*context_id=*/absl::nullopt,
       private_aggregation_host_.BindNewPipeAndPassReceiver());
   // FLEDGE's worklets should all be trustworthy, including `winner_origin_`, so

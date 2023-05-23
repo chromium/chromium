@@ -20,7 +20,7 @@ namespace content {
 // `PrivateAggregationBudgeter::kBudgetScopeDuration`.
 class CONTENT_EXPORT PrivateAggregationBudgetKey {
  public:
-  enum class Api { kFledge, kSharedStorage };
+  enum class Api { kProtectedAudience, kSharedStorage };
 
   // Represents a period of time for which budget usage is recorded. This
   // interval includes the `start_time()` instant but excludes the end time

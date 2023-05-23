@@ -119,8 +119,8 @@ google::protobuf::RepeatedPtrField<proto::PrivateAggregationBudgetPerHour>*
 GetHourlyBudgets(PrivateAggregationBudgetKey::Api api,
                  proto::PrivateAggregationBudgets& budgets) {
   switch (api) {
-    case PrivateAggregationBudgetKey::Api::kFledge:
-      return budgets.mutable_fledge_budgets();
+    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+      return budgets.mutable_protected_audience_budgets();
     case PrivateAggregationBudgetKey::Api::kSharedStorage:
       return budgets.mutable_shared_storage_budgets();
   }
@@ -441,7 +441,7 @@ void PrivateAggregationBudgeter::ClearDataImpl(
     storage_->budgets_data()->TryGetData(origin_key, &budgets);
 
     static constexpr PrivateAggregationBudgetKey::Api kAllApis[] = {
-        PrivateAggregationBudgetKey::Api::kFledge,
+        PrivateAggregationBudgetKey::Api::kProtectedAudience,
         PrivateAggregationBudgetKey::Api::kSharedStorage};
 
     for (PrivateAggregationBudgetKey::Api api : kAllApis) {

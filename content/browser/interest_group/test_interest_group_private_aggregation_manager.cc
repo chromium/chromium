@@ -44,7 +44,8 @@ bool TestInterestGroupPrivateAggregationManager::BindNewReceiver(
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   EXPECT_EQ(expected_top_frame_origin_, top_frame_origin);
-  EXPECT_EQ(PrivateAggregationBudgetKey::Api::kFledge, api_for_budgeting);
+  EXPECT_EQ(PrivateAggregationBudgetKey::Api::kProtectedAudience,
+            api_for_budgeting);
   EXPECT_FALSE(context_id.has_value());
 
   receiver_set_.Add(this, std::move(pending_receiver), worklet_origin);

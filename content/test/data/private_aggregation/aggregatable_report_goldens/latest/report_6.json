@@ -1,7 +1,9 @@
 {
-    "aggregation_service_payloads": [ {
-       "key_id": "example_id",
-       "payload": "IxviV/VY/k2Gl8jbZmyuJiW0ujqXSyLHpqkTZ7Wp+UafGxxA8kFsb18me6EXfcLRzltE6Z/TT34t6ruuYYKW12VEpUN2PAmhBcexa3C0036Xn7JWR98JG32Y4sOMVh/rG/2mcxrYxJuIQa9kqIYh"
-    } ],
-    "shared_info": "{\"api\":\"fledge\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"version\":\"0.1\"}"
+  "aggregation_service_payloads": [
+    {
+      "key_id": "example_id",
+      "payload": "vc3z+BWEMwcQ+DYITl0b4a1u+pZwk9nKlWM9lDRjEH4wJB/kOecjWq0buTgh7I3RrTQ2nt3EX7qDdT2Pn9y5nffPLPj5VfrQmhQReXEaXgJ9iuIi/OeENgt2JxDom98V5IYzpQVTx+cer2+3jEPn"
+    }
+  ],
+  "shared_info": "{\"api\":\"protected-audience\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"version\":\"0.1\"}"
 }

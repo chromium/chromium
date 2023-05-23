@@ -25,7 +25,7 @@
 namespace content {
 
 // An implementation of PrivateAggregationManager used for interest group tests
-// that tracks PrivateAggregationBudgetKey::Api::kFledge reports.
+// that tracks PrivateAggregationBudgetKey::Api::kProtectedAudience reports.
 class TestInterestGroupPrivateAggregationManager
     : public PrivateAggregationManager,
       public blink::mojom::PrivateAggregationHost {

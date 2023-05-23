@@ -6832,7 +6832,8 @@ function scoreAd(
         EXPECT_EQ(request.payload_contents().contributions[1].bucket, 3);
         EXPECT_EQ(request.payload_contents().contributions[1].value, 4);
         EXPECT_EQ(request.shared_info().reporting_origin, kOriginA);
-        EXPECT_EQ(budget_key.api(), PrivateAggregationBudgetKey::Api::kFledge);
+        EXPECT_EQ(budget_key.api(),
+                  PrivateAggregationBudgetKey::Api::kProtectedAudience);
         EXPECT_EQ(budget_key.origin(), kOriginA);
         run_loop.Quit();
       }));

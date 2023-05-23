@@ -18,14 +18,15 @@ std::string GetReportingPath(PrivateAggregationBudgetKey::Api api,
   static constexpr char kSharedReportingPathPrefix[] =
       "/.well-known/private-aggregation/";
   static constexpr char kDebugReportingPathInfix[] = "debug/";
-  static constexpr char kFledgeReportingPathSuffix[] = "report-fledge";
+  static constexpr char kProtectedAudienceReportingPathSuffix[] =
+      "report-protected-audience";
   static constexpr char kSharedStorageReportingPathSuffix[] =
       "report-shared-storage";
 
   base::StringPiece api_suffix;
   switch (api) {
-    case PrivateAggregationBudgetKey::Api::kFledge:
-      api_suffix = kFledgeReportingPathSuffix;
+    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+      api_suffix = kProtectedAudienceReportingPathSuffix;
       break;
     case PrivateAggregationBudgetKey::Api::kSharedStorage:
       api_suffix = kSharedStorageReportingPathSuffix;
@@ -39,8 +40,8 @@ std::string GetReportingPath(PrivateAggregationBudgetKey::Api api,
 
 std::string GetApiIdentifier(PrivateAggregationBudgetKey::Api api) {
   switch (api) {
-    case PrivateAggregationBudgetKey::Api::kFledge:
-      return "fledge";
+    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+      return "protected-audience";
     case PrivateAggregationBudgetKey::Api::kSharedStorage:
       return "shared-storage";
   }
