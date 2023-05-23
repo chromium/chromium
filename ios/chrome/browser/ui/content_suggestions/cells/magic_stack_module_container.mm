@@ -67,6 +67,7 @@ const int kModuleWidthRegular = 382;
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
+    case ContentSuggestionsModuleType::kSetUpListAllSet:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
     default:
       NOTREACHED();

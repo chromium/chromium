@@ -12,8 +12,8 @@ enum class SetUpListItemType {
   kDefaultBrowser = 2,
   kAutofill = 3,
   kFollow = 4,
-
-  kMaxValue = kFollow
+  kAllSet = 5,
+  kMaxValue = kAllSet
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_SET_UP_LIST_ITEM_TYPE_H_

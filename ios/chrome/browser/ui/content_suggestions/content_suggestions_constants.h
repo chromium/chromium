@@ -18,6 +18,7 @@ enum class ContentSuggestionsModuleType {
   kSetUpListDefaultBrowser,
   kSetUpListAutofill,
   kCompactedSetUpList,
+  kSetUpListAllSet,
 };
 
 // Represents the content suggestions collection view.

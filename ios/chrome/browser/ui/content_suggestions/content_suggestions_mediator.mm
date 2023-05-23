@@ -425,7 +425,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   ProceduralBlock completion = ^{
     if ([weakSelf.setUpList allItemsComplete]) {
       [weakSelf.consumer showSetUpListDoneWithAnimations:^{
-        [self.feedDelegate contentSuggestionsWasUpdated];
+        if (!IsMagicStackEnabled()) {
+          [self.feedDelegate contentSuggestionsWasUpdated];
+        }
       }];
     }
   };

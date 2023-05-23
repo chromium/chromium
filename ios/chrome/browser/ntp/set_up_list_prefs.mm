@@ -43,6 +43,8 @@ const char* PrefNameForItem(SetUpListItemType type) {
       return kAutofillItemState;
     case SetUpListItemType::kFollow:
       return kFollowItemState;
+    case SetUpListItemType::kAllSet:
+      NOTREACHED_NORETURN();
   }
 }
 

@@ -34,7 +34,8 @@ bool GetIsItemComplete(SetUpListItemType type,
     case SetUpListItemType::kAutofill:
       return password_manager_util::IsCredentialProviderEnabledOnStartup(prefs);
     case SetUpListItemType::kFollow:
-      return false;
+    case SetUpListItemType::kAllSet:
+      NOTREACHED_NORETURN();
   }
 }
 

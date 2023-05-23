@@ -440,20 +440,19 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
           SetUpListModuleTypeForSetUpListType(data.type);
       if (shouldShowCompactedSetUpListModule) {
         [_compactedSetUpListViews addObject:view];
-      } else {
-        switch (type) {
-          case ContentSuggestionsModuleType::kSetUpListSync:
-            _setUpListSyncItemView = view;
-            break;
-          case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
-            _setUpListDefaultBrowserItemView = view;
-            break;
-          case ContentSuggestionsModuleType::kSetUpListAutofill:
-            _setUpListAutofillItemView = view;
-            break;
-          default:
-            break;
-        }
+      }
+      switch (type) {
+        case ContentSuggestionsModuleType::kSetUpListSync:
+          _setUpListSyncItemView = view;
+          break;
+        case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+          _setUpListDefaultBrowserItemView = view;
+          break;
+        case ContentSuggestionsModuleType::kSetUpListAutofill:
+          _setUpListAutofillItemView = view;
+          break;
+        default:
+          break;
       }
       // Only add it to the Magic Stack here if it is after the inital
       // construction of the Magic Stack.
@@ -552,7 +551,18 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)showSetUpListDoneWithAnimations:(ProceduralBlock)animations {
   if (IsMagicStackEnabled()) {
-    // The MagicStack does not show the "All Set" view.
+    SetUpListItemViewData* allSetData =
+        [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAllSet
+                                           complete:NO];
+    SetUpListItemView* view =
+        [[SetUpListItemView alloc] initWithData:allSetData];
+    ActionListModule* allSetModule = [[ActionListModule alloc]
+        initWithContentView:view
+                       type:ContentSuggestionsModuleType::kSetUpListAllSet];
+    // Determine which module to swap out.
+    [self replaceModuleAtIndex:
+              [self indexForMagicStackModule:[self currentlyShownModule]]
+                    withModule:allSetModule];
     return;
   }
   __weak __typeof(self) weakSelf = self;
@@ -812,7 +822,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   _magicStack.axis = UILayoutConstraintAxisHorizontal;
   _magicStack.distribution = UIStackViewDistributionEqualSpacing;
   _magicStack.spacing = kMagicStackSpacing;
-  _magicStack.alignment = UIStackViewAlignmentCenter;
+  // Ensures modules take up entire height of the Magic Stack.
+  _magicStack.alignment = UIStackViewAlignmentFill;
   [_magicStackScrollView addSubview:_magicStack];
 
   // Add Magic Stack modules in order dictated by `_magicStackModuleOrder`.
@@ -895,6 +906,50 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     index++;
   }
   NOTREACHED_NORETURN();
+}
+
+// Returns the `ContentSuggestionsModuleType` type of the module being currently
+// shown in the Magic Stack.
+- (ContentSuggestionsModuleType)currentlyShownModule {
+  CGFloat offset = _magicStackScrollView.contentOffset.x;
+  CGFloat moduleWidth = [MagicStackModuleContainer
+      moduleWidthForHorizontalTraitCollection:self.traitCollection];
+  NSUInteger moduleCount = [_magicStackModuleOrder count];
+  // Find closest page to the current scroll offset.
+  CGFloat closestPage = roundf(offset / moduleWidth);
+  closestPage = fminf(closestPage, moduleCount);
+  return (ContentSuggestionsModuleType)[_magicStackModuleOrder[(
+      NSUInteger)closestPage] intValue];
+}
+
+// Replaces the module at `index` with `newModule` in the Magic Stack.
+- (void)replaceModuleAtIndex:(NSUInteger)index
+                  withModule:(MagicStackModuleContainer*)newModule {
+  newModule.alpha = 0;
+  UIView* moduleToHide = [_magicStack arrangedSubviews][index];
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:1.0
+      delay:0.0
+      options:UIViewAnimationOptionTransitionCurlDown
+      animations:^{
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf->_magicStack removeArrangedSubview:moduleToHide];
+        [strongSelf->_magicStack insertArrangedSubview:newModule atIndex:index];
+        moduleToHide.alpha = 0;
+        newModule.alpha = 1;
+      }
+      completion:^(BOOL finished) {
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [moduleToHide removeFromSuperview];
+        [strongSelf->_magicStack setNeedsLayout];
+        [strongSelf->_magicStack layoutIfNeeded];
+      }];
 }
 
 // Determines the final page offset given the scroll `offset` and the `velocity`

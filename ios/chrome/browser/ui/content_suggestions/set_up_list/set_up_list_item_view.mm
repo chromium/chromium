@@ -47,6 +47,7 @@ constexpr NSString* const kSetUpListItemDefaultBrowserID =
     @"kSetUpListItemDefaultBrowserID";
 constexpr NSString* const kSetUpListItemAutofillID =
     @"kSetUpListItemAutofillID";
+constexpr NSString* const kSetUpListItemAllSetID = @"kSetUpListItemAllSetID";
 constexpr NSString* const kSetUpListItemFollowID = @"kSetUpListItemFollowID";
 
 // Returns an NSAttributedString with strikethrough.
@@ -210,11 +211,13 @@ struct ViewConfig {
   [self addSubview:_contentStack];
   AddSameConstraints(_contentStack, self);
 
-  // Set up the tap gesture recognizer.
-  _tapGestureRecognizer =
-      [[UITapGestureRecognizer alloc] initWithTarget:self
-                                              action:@selector(handleTap:)];
-  [self addGestureRecognizer:_tapGestureRecognizer];
+  if (_type != SetUpListItemType::kAllSet) {
+    // Set up the tap gesture recognizer.
+    _tapGestureRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                action:@selector(handleTap:)];
+    [self addGestureRecognizer:_tapGestureRecognizer];
+  }
 }
 
 // Creates the title label.
@@ -259,6 +262,8 @@ struct ViewConfig {
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE);
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_AUTOFILL_TITLE);
+    case SetUpListItemType::kAllSet:
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
     case SetUpListItemType::kFollow:
       // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
       NOTREACHED_NORETURN();
@@ -274,6 +279,8 @@ struct ViewConfig {
       return l10n_util::GetNSString(_config.default_browser_description);
     case SetUpListItemType::kAutofill:
       return l10n_util::GetNSString(_config.autofill_description);
+    case SetUpListItemType::kAllSet:
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_DESCRIPTION);
     case SetUpListItemType::kFollow:
       // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
       NOTREACHED_NORETURN();
@@ -288,6 +295,8 @@ struct ViewConfig {
       return kSetUpListItemDefaultBrowserID;
     case SetUpListItemType::kAutofill:
       return kSetUpListItemAutofillID;
+    case SetUpListItemType::kAllSet:
+      return kSetUpListItemAllSetID;
     case SetUpListItemType::kFollow:
       return kSetUpListItemFollowID;
   }
