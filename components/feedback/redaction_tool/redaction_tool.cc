@@ -876,7 +876,7 @@ std::string RedactionTool::RedactCreditCardNumbers(
     // Timestamps in ms have a surprisingly high number of false positives.
     // Also log entries but those usually only match if there are several spaces
     // tying unrelated numbers together.
-    if (post_sequence.contains("ms")) {
+    if (post_sequence.find("ms") != re2::StringPiece::npos) {
       RecordCreditCardRedactionHistogram(CreditCardDetection::kTimestamp);
       result.append(sequence.data(), sequence.size());
       result.append(post_sequence.data(), post_sequence.size());
@@ -1105,7 +1105,7 @@ std::string RedactionTool::RedactCustomPatternWithContext(
 bool IsUrlExempt(re2::StringPiece url,
                  const char* const* first_party_extension_ids) {
   // We do not exempt anything with a query parameter.
-  if (url.contains("?")) {
+  if (url.find("?") != re2::StringPiece::npos) {
     return false;
   }
 
