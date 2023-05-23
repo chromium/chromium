@@ -76,6 +76,13 @@ const resetAttributionReports = url => {
   return fetch(url, options);
 };
 
+const redirectReportsTo = origin => {
+  return Promise.all([
+      fetch(`${eventLevelReportsUrl}?redirect_to=${origin}`, {method: 'POST'}),
+      fetch(`${aggregatableReportsUrl}?redirect_to=${origin}`, {method: 'POST'})
+    ]);
+};
+
 const getFetchParams = (origin, cookie) => {
   let credentials;
   const headers = [];
@@ -307,10 +314,12 @@ const delay = ms => new Promise(resolve => step_timeout(resolve, ms));
 
 /**
  * Method that polls a particular URL for reports. Once reports
- * are received, returns the payload as promise.
+ * are received, returns the payload as promise. Returns null if the
+ * timeout is reached before a report is available.
  */
-const pollAttributionReports = async (url, origin = location.origin) => {
-  while (true) {
+const pollAttributionReports = async (url, origin = location.origin, timeout = 60 * 1000 /*ms*/) => {
+  let startTime = performance.now();
+  while (performance.now() - startTime < timeout) {
     const resp = await fetch(new URL(url, origin));
     const payload = await resp.json();
     if (payload.reports.length > 0) {
@@ -318,6 +327,7 @@ const pollAttributionReports = async (url, origin = location.origin) => {
     }
     await delay(/*ms=*/ 100);
   }
+  return null;
 };
 
 // Verbose debug reporting must have been enabled on the source registration for this to work.

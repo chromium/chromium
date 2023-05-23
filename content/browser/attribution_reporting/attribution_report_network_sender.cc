@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -61,7 +62,8 @@ void AttributionReportNetworkSender::SendReport(
   net::HttpRequestHeaders headers;
   report.PopulateAdditionalHeaders(headers);
 
-  SendReport(std::move(url), body, std::move(headers),
+  url::Origin origin(report.GetReportingOrigin());
+  SendReport(std::move(url), std::move(origin), body, std::move(headers),
              base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
                             base::Unretained(this), std::move(report),
                             is_debug_report, std::move(sent_callback)));
@@ -71,15 +73,18 @@ void AttributionReportNetworkSender::SendReport(
     AttributionDebugReport report,
     DebugReportSentCallback callback) {
   GURL url = report.report_url();
+  // TODO(csharrison): Avoid reparsing the origin from the URL.
+  url::Origin origin = url::Origin::Create(url);
   std::string body = SerializeAttributionJson(report.ReportBody());
   SendReport(
-      std::move(url), body, net::HttpRequestHeaders(),
+      std::move(url), std::move(origin), body, net::HttpRequestHeaders(),
       base::BindOnce(&AttributionReportNetworkSender::OnVerboseDebugReportSent,
                      base::Unretained(this),
                      base::BindOnce(std::move(callback), std::move(report))));
 }
 
 void AttributionReportNetworkSender::SendReport(GURL url,
+                                                url::Origin origin,
                                                 const std::string& body,
                                                 net::HttpRequestHeaders headers,
                                                 UrlLoaderCallback callback) {
@@ -88,6 +93,8 @@ void AttributionReportNetworkSender::SendReport(GURL url,
   resource_request->headers = std::move(headers);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->mode = network::mojom::RequestMode::kSameOrigin;
+  resource_request->request_initiator = origin;
   resource_request->load_flags =
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();

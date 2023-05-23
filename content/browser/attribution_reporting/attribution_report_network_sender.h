@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/common/content_export.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -63,6 +64,7 @@ class CONTENT_EXPORT AttributionReportNetworkSender
                               scoped_refptr<net::HttpResponseHeaders>)>;
 
   void SendReport(GURL url,
+                  url::Origin origin,
                   const std::string& body,
                   net::HttpRequestHeaders headers,
                   UrlLoaderCallback callback);
