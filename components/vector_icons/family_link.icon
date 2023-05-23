@@ -1,0 +1,37 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A monochrome outline of the Family Link Kite icon, identical to the
+// "cr20:kite" used in WebUI.
+
+CANVAS_DIMENSIONS, 20,
+R_MOVE_TO, 4.63f, 8,
+R_LINE_TO, 5.69f, -6,
+LINE_TO, 16, 8,
+R_LINE_TO, -5.81f, 8.87f,
+R_CUBIC_TO, -0.08f, 0.12f, -0.18f, 0.24f, -0.28f, 0.35f,
+R_ARC_TO, 2.44f, 2.44f, 0, 0, 1, -1.78f, 0.78f,
+R_ARC_TO, 2.44f, 2.44f, 0, 0, 1, -1.78f, -0.78f,
+R_ARC_TO, 2.72f, 2.72f, 0, 0, 1, -0.74f, -1.88f,
+R_CUBIC_TO, 0, -0.36f, -0.13f, -0.69f, -0.37f, -0.94f,
+R_ARC_TO, 1.21f, 1.21f, 0, 0, 0, -0.89f, -0.39f,
+H_LINE_TO, 4,
+R_V_LINE_TO, -1.33f,
+R_H_LINE_TO, 0.33f,
+R_CUBIC_TO, 0.68f, 0, 1.31f, 0.28f, 1.78f, 0.78f,
+R_CUBIC_TO, 0.48f, 0.5f, 0.74f, 1.17f, 0.74f, 1.88f,
+R_CUBIC_TO, 0, 0.36f, 0.13f, 0.69f, 0.37f, 0.95f,
+R_CUBIC_TO, 0.24f, 0.26f, 0.55f, 0.39f, 0.9f, 0.39f,
+R_CUBIC_TO, 0.34f, 0, 0.65f, -0.14f, 0.9f, -0.39f,
+R_LINE_TO, 0.04f, -0.04f,
+R_CUBIC_TO, 0.04f, -0.04f, 0.07f, -0.09f, 0.11f, -0.14f,
+R_LINE_TO, 0.4f, -0.6f,
+LINE_TO, 4.63f, 8,
+CLOSE,
+R_MOVE_TO, 5.69f, 5.94f,
+LINE_TO, 6.54f, 8.17f,
+R_LINE_TO, 3.78f, -3.99f,
+R_LINE_TO, 3.78f, 3.99f,
+R_LINE_TO, -3.78f, 5.77f,
+CLOSE
