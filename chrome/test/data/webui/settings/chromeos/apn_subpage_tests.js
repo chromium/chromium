@@ -195,7 +195,11 @@ suite('ApnSubpageTest', function() {
       counter++;
     };
     apnSubpage.close();
+    await flushTasks();
+
     apnSubpage.close();
+    await flushTasks();
+
     assertEquals(1, counter);
     Router.getInstance().navigateToPreviousRoute = navigateToPreviousRoute;
   });
