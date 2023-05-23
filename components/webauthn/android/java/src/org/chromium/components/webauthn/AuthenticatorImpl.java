@@ -39,7 +39,6 @@ public final class AuthenticatorImpl implements Authenticator {
     public static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 223300000;
     private final WebAuthenticationDelegate.IntentSender mIntentSender;
     private final RenderFrameHost mRenderFrameHost;
-    private final @WebAuthenticationDelegate.Support int mSupportLevel;
 
     /** Ensures only one request is processed at a time. */
     private boolean mIsOperationPending;
@@ -74,13 +73,10 @@ public final class AuthenticatorImpl implements Authenticator {
      * @param renderFrameHost The host of the frame that has invoked the API.
      * @param intentSender If present then an interface that will be used to start {@link Intent}s
      *         from Play Services.
-     * @param supportLevel Whether this code should use the privileged or non-privileged Play
-     *         Services API. (Note that a value of `NONE` is not allowed.)
      */
-    public AuthenticatorImpl(WebAuthenticationDelegate.IntentSender intentSender,
-            RenderFrameHost renderFrameHost, @WebAuthenticationDelegate.Support int supportLevel) {
+    public AuthenticatorImpl(
+            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost) {
         assert renderFrameHost != null;
-        assert supportLevel != WebAuthenticationDelegate.Support.NONE;
 
         if (intentSender != null) {
             mIntentSender = intentSender;
@@ -89,7 +85,6 @@ public final class AuthenticatorImpl implements Authenticator {
         }
 
         mRenderFrameHost = renderFrameHost;
-        mSupportLevel = supportLevel;
         mOrigin = mRenderFrameHost.getLastCommittedOrigin();
 
         mGmsCorePackageVersion = PackageUtils.getPackageVersion(GMSCORE_PACKAGE_NAME);
@@ -104,7 +99,7 @@ public final class AuthenticatorImpl implements Authenticator {
             return sFido2CredentialRequestOverrideForTesting;
         }
 
-        return new Fido2CredentialRequest(mIntentSender, mSupportLevel);
+        return new Fido2CredentialRequest(mIntentSender);
     }
 
     /**

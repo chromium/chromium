@@ -27,8 +27,6 @@ import com.google.android.gms.common.internal.GmsClient;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
-
 import java.util.List;
 
 /**
@@ -57,7 +55,7 @@ import java.util.List;
  * <p>
  * Here's an example:
  * <pre>
- * Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext(), false);
+ * Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
  * Parcel args = call.start();
  * Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult(call);
  * args.writeStrongBinder(result);
@@ -84,18 +82,6 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
 
     private static final String TAG = "Fido2ApiCall";
 
-    private static final String APP_DESCRIPTOR =
-            "com.google.android.gms.fido.fido2.internal.regular.IFido2AppService";
-    private static final String APP_CALLBACK_DESCRIPTOR =
-            "com.google.android.gms.fido.fido2.internal.regular.IFido2AppCallbacks";
-    private static final String APP_START_SERVICE_ACTION =
-            "com.google.android.gms.fido.fido2.regular.START";
-    private static final int APP_API_ID = 148;
-    private static final Api.ClientKey<FidoClient> APP_CLIENT_KEY = new Api.ClientKey<>();
-    private static final Api<ApiOptions.NoOptions> APP_API = new Api<>("Fido.FIDO2_API",
-            new FidoClient.Builder(APP_DESCRIPTOR, APP_START_SERVICE_ACTION, APP_API_ID),
-            APP_CLIENT_KEY);
-
     private static final String BROWSER_DESCRIPTOR =
             "com.google.android.gms.fido.fido2.internal.privileged.IFido2PrivilegedService";
     private static final String BROWSER_CALLBACK_DESCRIPTOR =
@@ -110,27 +96,18 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                             BROWSER_DESCRIPTOR, BROWSER_START_SERVICE_ACTION, BROWSER_API_ID),
                     BROWSER_CLIENT_KEY);
 
-    final boolean mAppMode;
-
     /**
      * Construct an instance.
      *
      * @param context the Android {@link Context} for the current process.
-     * @param supportLevel Whether this code should use the privileged or non-privileged Play
-     *         Services API. (Note that a value of `NONE` is not allowed.)
      */
-    public Fido2ApiCall(Context context, @WebAuthenticationDelegate.Support int supportLevel) {
-        super(context,
-                supportLevel == WebAuthenticationDelegate.Support.APP ? APP_API : BROWSER_API,
-                ApiOptions.NO_OPTIONS, new ApiExceptionMapper());
-
-        assert supportLevel != WebAuthenticationDelegate.Support.NONE;
-        mAppMode = supportLevel == WebAuthenticationDelegate.Support.APP;
+    public Fido2ApiCall(Context context) {
+        super(context, BROWSER_API, ApiOptions.NO_OPTIONS, new ApiExceptionMapper());
     }
 
     public Parcel start() {
         Parcel p = Parcel.obtain();
-        p.writeInterfaceToken(mAppMode ? APP_DESCRIPTOR : BROWSER_DESCRIPTOR);
+        p.writeInterfaceToken(BROWSER_DESCRIPTOR);
         return p;
     }
 
@@ -239,12 +216,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
 
     public static final class PendingIntentResult
             extends Binder implements Callback<PendingIntent> {
-        private final boolean mAppMode;
         private TaskCompletionSource<PendingIntent> mCompletionSource;
-
-        public PendingIntentResult(Fido2ApiCall call) {
-            mAppMode = call.mAppMode;
-        }
 
         @Override
         public void setCompletionSource(TaskCompletionSource<PendingIntent> cs) {
@@ -255,8 +227,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
             switch (code) {
                 case IBinder.FIRST_CALL_TRANSACTION + 0:
-                    data.enforceInterface(
-                            mAppMode ? APP_CALLBACK_DESCRIPTOR : BROWSER_CALLBACK_DESCRIPTOR);
+                    data.enforceInterface(BROWSER_CALLBACK_DESCRIPTOR);
 
                     Status status = null;
                     if (data.readInt() != 0) {

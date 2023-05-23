@@ -9,13 +9,12 @@ import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.url.Origin;
 
 /** A mock Fido2CredentialRequest that returns NOT_IMPLEMENTED for all calls. */
 public class MockFido2CredentialRequest extends Fido2CredentialRequest {
     public MockFido2CredentialRequest() {
-        super(null, WebAuthenticationDelegate.Support.BROWSER);
+        super(null);
     }
 
     @Override

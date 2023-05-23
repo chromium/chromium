@@ -238,7 +238,7 @@ public class Fido2CredentialRequestTest {
         private OnSuccessListener<List<WebAuthnCredentialDetails>> mSuccessCallback;
 
         @Override
-        public void invokeFido2GetCredentials(String relyingPartyId, int supportLevel,
+        public void invokeFido2GetCredentials(String relyingPartyId,
                 OnSuccessListener<List<WebAuthnCredentialDetails>> successCallback,
                 OnFailureListener failureCallback) {
             if (mInvokeCallbackImmediately) {
@@ -419,8 +419,7 @@ public class Fido2CredentialRequestTest {
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
-        mRequest = new Fido2CredentialRequest(
-                mIntentSender, WebAuthenticationDelegate.Support.BROWSER);
+        mRequest = new Fido2CredentialRequest(mIntentSender);
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mRequest);
 
         mFido2ApiCallHelper = new MockFido2ApiCallHelper();
@@ -646,8 +645,7 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplMakeCredential_success() {
-        AuthenticatorImpl authenticator = new AuthenticatorImpl(
-                mIntentSender, mFrameHost, WebAuthenticationDelegate.Support.BROWSER);
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mIntentSender, mFrameHost);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -665,8 +663,7 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplMakeCredential_resultCanceled() {
-        AuthenticatorImpl authenticator = new AuthenticatorImpl(
-                mIntentSender, mFrameHost, WebAuthenticationDelegate.Support.BROWSER);
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mIntentSender, mFrameHost);
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             authenticator.makeCredential(mCreationOptions,
@@ -1019,8 +1016,7 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplGetAssertionWithUvmRequestedWithUvmResponded_success() {
-        AuthenticatorImpl authenticator = new AuthenticatorImpl(
-                mIntentSender, mFrameHost, WebAuthenticationDelegate.Support.BROWSER);
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mIntentSender, mFrameHost);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
         mRequestOptions.userVerificationMethods = true;
@@ -1039,8 +1035,7 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplGetAssertion_resultCanceled() {
-        AuthenticatorImpl authenticator = new AuthenticatorImpl(
-                mIntentSender, mFrameHost, WebAuthenticationDelegate.Support.BROWSER);
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mIntentSender, mFrameHost);
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             authenticator.getAssertion(mRequestOptions,

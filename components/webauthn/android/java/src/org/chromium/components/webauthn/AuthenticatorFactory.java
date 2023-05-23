@@ -32,13 +32,6 @@ public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
         }
 
         WebAuthenticationDelegate delegate = new WebAuthenticationDelegate();
-        @WebAuthenticationDelegate.Support
-        int supportLevel = delegate.getSupportLevel(webContents);
-        if (supportLevel == WebAuthenticationDelegate.Support.NONE) {
-            return null;
-        }
-
-        return new AuthenticatorImpl(
-                delegate.getIntentSender(webContents), mRenderFrameHost, supportLevel);
+        return new AuthenticatorImpl(delegate.getIntentSender(webContents), mRenderFrameHost);
     }
 }

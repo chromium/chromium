@@ -33,7 +33,6 @@ import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.net.GURLUtils;
@@ -87,7 +86,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
 
         mRequest = new Fido2CredentialRequest(
-                /*intentSender=*/null, WebAuthenticationDelegate.Support.BROWSER);
+                /*intentSender=*/null);
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mRequest);
 
         Fido2ApiTestHelper.mockFido2CredentialRequestJni(mMocker);

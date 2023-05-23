@@ -38,10 +38,10 @@ public class Fido2ApiCallHelper {
         return sInstance;
     }
 
-    public void invokeFido2GetCredentials(String relyingPartyId, int supportLevel,
+    public void invokeFido2GetCredentials(String relyingPartyId,
             OnSuccessListener<List<WebAuthnCredentialDetails>> successCallback,
             OnFailureListener failureCallback) {
-        Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext(), supportLevel);
+        Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
         Parcel args = call.start();
         Fido2ApiCall.WebAuthnCredentialDetailsListResult result =
                 new Fido2ApiCall.WebAuthnCredentialDetailsListResult();

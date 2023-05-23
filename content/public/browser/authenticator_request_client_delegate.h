@@ -169,19 +169,6 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // WebAuthenticationDelegate.java. See the comments in that file for details.
   virtual base::android::ScopedJavaLocalRef<jobject> GetIntentSender(
       WebContents* web_contents);
-
-  // GetSupportLevel returns one of:
-  //   0 -> No WebAuthn support for this `WebContents`.
-  //   1 -> WebAuthn should be implemented like an app.
-  //   2 -> WebAuthn should be implemented like a browser.
-  //
-  // The difference between app and browser is meaningful on Android because
-  // there is a different, privileged interface for browsers.
-  //
-  // The return value is an `int` rather than an enum because it's bounced
-  // access JNI boundaries multiple times and so it's only converted to an
-  // enum at the very end.
-  virtual int GetSupportLevel(WebContents* web_contents);
 #endif
 };
 
