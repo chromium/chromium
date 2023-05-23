@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -37,7 +38,7 @@ WindowCycleItemView::WindowCycleItemView(aura::Window* window)
 void WindowCycleItemView::ShowPreview() {
   DCHECK(!preview_view());
 
-  UpdateIconView();
+  header_view()->UpdateIconView(source_window());
   SetShowPreview(/*show=*/true);
   UpdatePreviewRoundedCorners(/*show=*/true);
 }

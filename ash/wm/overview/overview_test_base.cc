@@ -21,6 +21,7 @@
 #include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "components/app_constants/constants.h"
 #include "ui/aura/client/aura_constants.h"
@@ -118,7 +119,7 @@ CloseButton* OverviewTestBase::GetCloseButton(OverviewItem* item) {
 }
 
 views::Label* OverviewTestBase::GetLabelView(OverviewItem* item) {
-  return item->overview_item_view_->title_label();
+  return item->overview_item_view_->header_view()->title_label();
 }
 
 views::View* OverviewTestBase::GetBackdropView(OverviewItem* item) {

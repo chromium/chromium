@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "base/containers/contains.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -80,11 +81,12 @@ OverviewItemView::OverviewItemView(
     bool show_preview)
     : WindowMiniView(window),
       overview_item_(overview_item),
-      close_button_(header_view()->AddChildView(std::make_unique<CloseButton>(
-          std::move(close_callback),
-          chromeos::features::IsJellyrollEnabled()
-              ? CloseButton::Type::kMediumFloating
-              : CloseButton::Type::kLargeFloating))) {
+      close_button_(header_view()->icon_label_view()->AddChildView(
+          std::make_unique<CloseButton>(
+              std::move(close_callback),
+              chromeos::features::IsJellyrollEnabled()
+                  ? CloseButton::Type::kMediumFloating
+                  : CloseButton::Type::kLargeFloating))) {
   DCHECK(overview_item_);
   // This should not be focusable. It's also to avoid accessibility error when
   // |window->GetTitle()| is empty.
@@ -106,7 +108,7 @@ OverviewItemView::OverviewItemView(
     current_header_visibility_ = HeaderVisibility::kInvisible;
   }
 
-  UpdateIconView();
+  header_view()->UpdateIconView(window);
 }
 
 OverviewItemView::~OverviewItemView() = default;
@@ -283,7 +285,8 @@ void OverviewItemView::OnViewUnhighlighted() {
 gfx::Point OverviewItemView::GetMagnifierFocusPointInScreen() {
   // When this item is tabbed into, put the magnifier focus on the front of the
   // title, so that users can read the title first thing.
-  const gfx::Rect title_bounds = title_label()->GetBoundsInScreen();
+  const gfx::Rect title_bounds =
+      header_view()->title_label()->GetBoundsInScreen();
   return gfx::Point(GetMirroredXInView(title_bounds.x()),
                     title_bounds.CenterPoint().y());
 }

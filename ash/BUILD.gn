@@ -2523,6 +2523,8 @@ component("ash") {
     "wm/window_finder.cc",
     "wm/window_mini_view.cc",
     "wm/window_mini_view.h",
+    "wm/window_mini_view_header_view.cc",
+    "wm/window_mini_view_header_view.h",
     "wm/window_mirror_view.cc",
     "wm/window_mirror_view.h",
     "wm/window_mirror_view_pip.cc",

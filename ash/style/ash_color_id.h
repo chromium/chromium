@@ -129,7 +129,9 @@ namespace ash {
   /* Color for the background of the app count indicator on a folder */ \
   E_CPONLY(kColorAshFolderItemCountBackgroundColor) \
   /* Color for the background of the phantom window */ \
-  E_CPONLY(kColorAshPhantomWindowBackgroundColor)
+  E_CPONLY(kColorAshPhantomWindowBackgroundColor) \
+  /* Color for the stroke on the window header view */ \
+  E_CPONLY(kColorAshWindowHeaderStrokeColor)
 
 #include "ui/color/color_id_macros.inc"
 
