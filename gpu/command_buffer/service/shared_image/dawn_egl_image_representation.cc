@@ -5,7 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/dawn_egl_image_representation.h"
 
 #include "build/build_config.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 
 #include <dawn/native/OpenGLBackend.h>

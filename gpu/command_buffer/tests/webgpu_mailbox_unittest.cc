@@ -8,7 +8,7 @@
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/command_buffer/tests/webgpu_test.h"
 #include "gpu/config/gpu_test_config.h"

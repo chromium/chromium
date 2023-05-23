@@ -6,7 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_HOLDER_H_
 
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "ui/gl/progress_reporter.h"
 
 namespace gpu {

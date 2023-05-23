@@ -17,7 +17,7 @@
 #include "gpu/command_buffer/service/shared_image/external_vk_image_overlay_representation.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_skia_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"

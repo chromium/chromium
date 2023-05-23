@@ -17,7 +17,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"

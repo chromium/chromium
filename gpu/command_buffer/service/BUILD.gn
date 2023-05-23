@@ -254,8 +254,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/shared_image_backing_factory.h",
     "shared_image/shared_image_factory.cc",
     "shared_image/shared_image_factory.h",
-    "shared_image/shared_image_format_utils.cc",
-    "shared_image/shared_image_format_utils.h",
+    "shared_image/shared_image_format_service_utils.cc",
+    "shared_image/shared_image_format_service_utils.h",
     "shared_image/shared_image_manager.cc",
     "shared_image/shared_image_manager.h",
     "shared_image/shared_image_representation.cc",
@@ -491,7 +491,7 @@ target(link_target_type, "gles2_sources") {
       "shared_image/iosurface_image_backing.mm",
       "shared_image/iosurface_image_backing_factory.h",
       "shared_image/iosurface_image_backing_factory.mm",
-      "shared_image/shared_image_format_utils_mac.mm",
+      "shared_image/shared_image_format_service_utils_mac.mm",
     ]
 
     if (skia_use_metal) {

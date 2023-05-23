@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 
 #include <Metal/MTLPixelFormat.h>
 
@@ -38,8 +38,9 @@ unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
   }
 
   // Does not support external sampler.
-  if (format.PrefersExternalSampler())
+  if (format.PrefersExternalSampler()) {
     return static_cast<unsigned int>(MTLPixelFormatInvalid);
+  }
 
   // For multiplanar formats without external sampler, Metal formats are per
   // plane.

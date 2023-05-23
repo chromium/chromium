@@ -35,7 +35,7 @@
 #include "gpu/command_buffer/service/shared_image/gl_texture_android_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_passthrough_android_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_vk_android_image_representation.h"

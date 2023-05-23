@@ -38,7 +38,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/command_buffer/service/skia_utils.h"

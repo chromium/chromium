@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_FORMAT_UTILS_H_
-#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_FORMAT_UTILS_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_FORMAT_SERVICE_UTILS_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_FORMAT_SERVICE_UTILS_H_
 
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -122,4 +122,4 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
 
 }  // namespace gpu
 
-#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_FORMAT_UTILS_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_FORMAT_SERVICE_UTILS_H_

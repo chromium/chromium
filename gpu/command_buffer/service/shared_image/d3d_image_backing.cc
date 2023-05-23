@@ -14,7 +14,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_representation.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gl/egl_util.h"
