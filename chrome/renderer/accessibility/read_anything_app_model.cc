@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -462,6 +463,24 @@ void ReadAnythingAppModel::EraseTreeForTesting(ui::AXTreeID tree_id) {
   EraseTree(tree_id);
 }
 
+void ReadAnythingAppModel::OnScroll(bool on_selection,
+                                    bool from_reading_mode) const {
+  if (on_selection) {
+    // If the scroll event came from the side panel because of a selection, then
+    // this means the main panel was selected, causing the side panel to scroll
+    // & vice versa.
+    base::UmaHistogramEnumeration(
+        string_constants::kScrollEventHistogramName,
+        from_reading_mode ? ReadAnythingScrollEvent::kSelectedMainPanel
+                          : ReadAnythingScrollEvent::kSelectedSidePanel);
+  } else {
+    base::UmaHistogramEnumeration(
+        string_constants::kScrollEventHistogramName,
+        from_reading_mode ? ReadAnythingScrollEvent::kScrolledSidePanel
+                          : ReadAnythingScrollEvent::kScrolledMainPanel);
+  }
+}
+
 void ReadAnythingAppModel::ProcessNonGeneratedEvents(
     const std::vector<ui::AXEvent>& events) {
   // Note that this list of events may overlap with generated events in the
@@ -557,6 +576,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::ALERT:
         requires_distillation_ = true;
         break;
+      case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
+        OnScroll(event.event_params.event_from_action ==
+                     ax::mojom::Action::kSetSelection,
+                 /* from_reading_mode= */ false);
+        break;
 
       // Audit these events e.g. to trigger distillation.
       case ui::AXEventGenerator::Event::NONE:
@@ -622,7 +646,6 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::ROLE_CHANGED:
       case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
       case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
-      case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:

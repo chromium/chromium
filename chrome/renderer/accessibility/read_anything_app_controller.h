@@ -117,6 +117,7 @@ class ReadAnythingAppController
   bool IsOverline(ui::AXNodeID ax_node_id) const;
   void OnConnected();
   void OnCopy() const;
+  void OnScroll(bool on_selection) const;
   void OnLinkClicked(ui::AXNodeID ax_node_id) const;
   void OnSelectionChange(ui::AXNodeID anchor_node_id,
                          int anchor_offset,

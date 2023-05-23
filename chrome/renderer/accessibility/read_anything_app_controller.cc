@@ -572,6 +572,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
+      .SetMethod("onScroll", &ReadAnythingAppController::OnScroll)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
       .SetMethod("isSelectable", &ReadAnythingAppController::isSelectable)
       .SetMethod("onSelectionChange",
@@ -750,6 +751,10 @@ void ReadAnythingAppController::OnConnected() {
 
 void ReadAnythingAppController::OnCopy() const {
   page_handler_->OnCopy();
+}
+
+void ReadAnythingAppController::OnScroll(bool on_selection) const {
+  model_.OnScroll(on_selection, /* from_reading_mode= */ true);
 }
 
 void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {

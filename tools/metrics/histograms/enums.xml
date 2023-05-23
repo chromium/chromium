@@ -89403,6 +89403,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Very Loose"/>
 </enum>
 
+<enum name="ReadAnythingScrollEvent">
+  <int value="0" label="Side panel selected"/>
+  <int value="1" label="Main panel selected"/>
+  <int value="2" label="Side panel scrolled"/>
+  <int value="3" label="Main panel scrolled"/>
+</enum>
+
 <enum name="ReadAnythingSettingsChange">
   <int value="0" label="Font change"/>
   <int value="1" label="Font size change"/>
