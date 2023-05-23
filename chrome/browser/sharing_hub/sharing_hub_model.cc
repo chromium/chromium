@@ -115,7 +115,7 @@ void SharingHubModel::PopulateFirstPartyActions() {
 
   first_party_action_list_.emplace_back(
       IDC_SEND_TAB_TO_SELF, l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF),
-      &kLaptopAndSmartphoneIcon, "SharingHubDesktop.SendTabToSelfSelected", 0);
+      &kDevicesIcon, "SharingHubDesktop.SendTabToSelfSelected", 0);
 
   first_party_action_list_.emplace_back(
       IDC_QRCODE_GENERATOR,

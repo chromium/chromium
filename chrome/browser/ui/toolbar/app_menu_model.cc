@@ -1201,7 +1201,8 @@ void AppMenuModel::Build() {
           IDC_OPEN_IN_PWA_WINDOW,
           l10n_util::GetStringFUTF16(IDS_OPEN_IN_APP_WINDOW, truncated_name));
       if (features::IsChromeRefresh2023()) {
-        SetCommandIcon(this, IDC_OPEN_IN_PWA_WINDOW, kDesktopWindowsIcon);
+        SetCommandIcon(this, IDC_OPEN_IN_PWA_WINDOW,
+                       kDesktopWindowsChromeRefreshIcon);
       }
     }
   }
@@ -1313,7 +1314,7 @@ void AppMenuModel::Build() {
     SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);
     SetCommandIcon(this, IDC_PRINT, kPrintMenuIcon);
     SetCommandIcon(this, IDC_TRANSLATE_PAGE, kTranslateChromeRefreshIcon);
-    SetCommandIcon(this, IDC_ROUTE_MEDIA, kCastMenuIcon);
+    SetCommandIcon(this, IDC_ROUTE_MEDIA, kCastChromeRefreshIcon);
     SetCommandIcon(this, IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
     SetCommandIcon(this, IDC_PASSWORDS_AND_AUTOFILL_MENU,
                    kKeyChromeRefreshIcon);

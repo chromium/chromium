@@ -97,7 +97,7 @@ void FileSystemAccessIconView::OnExecuting(ExecuteSource execute_source) {
 }
 
 const gfx::VectorIcon& FileSystemAccessIconView::GetVectorIcon() const {
-  return has_write_access_ ? vector_icons::kSaveOriginalFileIcon
+  return has_write_access_ ? kFileSaveIcon
                            : vector_icons::kInsertDriveFileOutlineIcon;
 }
 

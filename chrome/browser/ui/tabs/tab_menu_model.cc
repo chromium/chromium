@@ -157,7 +157,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 #else
     AddItemWithIcon(TabStripModel::CommandSendTabToSelf,
                     l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
-                    ui::ImageModel::FromVectorIcon(kLaptopAndSmartphoneIcon));
+                    ui::ImageModel::FromVectorIcon(kDevicesIcon));
 #endif
   }
 

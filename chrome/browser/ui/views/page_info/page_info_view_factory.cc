@@ -352,9 +352,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                    : &vector_icons::kBluetoothScanningChromeRefreshIcon;
         break;
       case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
-        icon = show_blocked_badge
-                   ? &vector_icons::kSaveOriginalFileOffChromeRefreshIcon
-                   : &vector_icons::kSaveOriginalFileChromeRefreshIcon;
+        icon = show_blocked_badge ? &kFileSaveOffChromeRefreshIcon
+                                  : &kFileSaveChromeRefreshIcon;
         break;
       case ContentSettingsType::VR:
         icon = show_blocked_badge
@@ -465,7 +464,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = &vector_icons::kBluetoothScanningIcon;
       break;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
-      icon = &vector_icons::kSaveOriginalFileIcon;
+      icon = &kFileSaveIcon;
       break;
     case ContentSettingsType::VR:
     case ContentSettingsType::AR:

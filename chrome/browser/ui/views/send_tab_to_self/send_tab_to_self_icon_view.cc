@@ -110,7 +110,7 @@ void SendTabToSelfIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& SendTabToSelfIconView::GetVectorIcon() const {
-  return kLaptopAndSmartphoneIcon;
+  return kDevicesIcon;
 }
 
 SendTabToSelfBubbleController* SendTabToSelfIconView::GetController() const {

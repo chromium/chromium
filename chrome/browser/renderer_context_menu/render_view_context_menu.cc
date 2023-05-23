@@ -3563,7 +3563,7 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
   menu_model_.AddItemWithIcon(
       IDC_SEND_TAB_TO_SELF,
       l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
-      ui::ImageModel::FromVectorIcon(kLaptopAndSmartphoneIcon));
+      ui::ImageModel::FromVectorIcon(kDevicesIcon));
 #endif
 }
 

@@ -157,7 +157,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
   }
 
   if (icon_str == "device") {
-    return ImageViewFromVectorIcon(kLaptopAndSmartphoneIcon);
+    return ImageViewFromVectorIcon(kDevicesIcon);
   }
 
   if (icon_str == "google") {

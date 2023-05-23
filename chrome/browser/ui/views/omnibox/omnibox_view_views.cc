@@ -1949,8 +1949,7 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
       index, IDC_SEND_TAB_TO_SELF,
       l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
 #if !BUILDFLAG(IS_MAC)
-  menu_contents->SetIcon(
-      index, ui::ImageModel::FromVectorIcon(kLaptopAndSmartphoneIcon));
+  menu_contents->SetIcon(index, ui::ImageModel::FromVectorIcon(kDevicesIcon));
 #endif
   menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
 }

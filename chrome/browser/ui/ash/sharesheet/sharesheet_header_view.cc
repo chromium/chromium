@@ -440,7 +440,7 @@ const gfx::VectorIcon& SharesheetHeaderView::GetTextVectorIcon() {
     case (TextPlaceholderIcon::kGenericText):
       return chromeos::kTextIcon;
     case (TextPlaceholderIcon::kLink):
-      return kSharesheetLinkIcon;
+      return kLinkIcon;
   }
 }
 
