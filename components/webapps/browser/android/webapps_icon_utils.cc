@@ -94,6 +94,25 @@ int WebappsIconUtils::GetIdealShortcutIconSizeInPx() {
   return g_ideal_shortcut_icon_size;
 }
 
+int WebappsIconUtils::GetIdealIconSizeForIconType(
+    webapk::Image::Usage usage,
+    webapk::Image::Purpose purpose) {
+  switch (usage) {
+    case webapk::Image::PRIMARY_ICON:
+      if (purpose == webapk::Image::MASKABLE) {
+        return GetIdealAdaptiveLauncherIconSizeInPx();
+      } else {
+        return GetIdealHomescreenIconSizeInPx();
+      }
+    case webapk::Image::SPLASH_ICON:
+      return GetIdealSplashImageSizeInPx();
+    case webapk::Image::SHORTCUT_ICON:
+      return GetIdealShortcutIconSizeInPx();
+    default:
+      return 0;
+  }
+}
+
 bool WebappsIconUtils::DoesAndroidSupportMaskableIcons() {
   return base::android::BuildInfo::GetInstance()->sdk_int() >=
          base::android::SDK_VERSION_OREO;

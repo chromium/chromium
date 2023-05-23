@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_ANDROID_WEBAPPS_ICON_UTILS_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "components/webapk/webapk.pb.h"
 
 class SkBitmap;
 class GURL;
@@ -39,6 +40,10 @@ class WebappsIconUtils {
 
   // Returns the ideal size for a shortcut icon of a WebAPK.
   static int GetIdealShortcutIconSizeInPx();
+
+  // Returns the ideal size for a WebAPK icon of specific type
+  static int GetIdealIconSizeForIconType(webapk::Image::Usage usage,
+                                         webapk::Image::Purpose purpose);
 
   // Returns if the Android version supports Adaptive Icon (i.e. API level >=
   // 26)

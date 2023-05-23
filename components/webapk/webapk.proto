@@ -119,6 +119,7 @@ message Image {
     PRIMARY_ICON = 1;
     BADGE_ICON = 2;
     SPLASH_ICON = 3;
+    SHORTCUT_ICON = 4;
   }
 
   // Image's URL.

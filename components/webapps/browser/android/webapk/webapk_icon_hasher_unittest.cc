@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/webapps/browser/android/webapp_icon.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -48,7 +49,7 @@ class WebApkIconHasherRunner {
            const GURL& icon_url) {
     WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
         url_loader_factory, web_contents->GetWeakPtr(),
-        url::Origin::Create(icon_url), icon_url, /*timeout_ms=*/300,
+        url::Origin::Create(icon_url), WebappIcon(icon_url), /*timeout_ms=*/300,
         base::BindOnce(&WebApkIconHasherRunner::OnCompleted,
                        base::Unretained(this)));
 
@@ -62,10 +63,14 @@ class WebApkIconHasherRunner {
       content::WebContents* web_contents,
       const std::set<GURL>& icon_urls) {
     std::map<std::string, WebApkIconHasher::Icon> result;
+    std::vector<WebappIcon> icons;
+    for (auto icon_url : icon_urls) {
+      icons.emplace_back(icon_url);
+    }
     base::RunLoop run_loop;
     WebApkIconHasher::DownloadAndComputeMurmur2Hash(
         url_loader_factory, web_contents->GetWeakPtr(),
-        url::Origin::Create(*icon_urls.begin()), icon_urls,
+        url::Origin::Create(*icon_urls.begin()), icons,
         base::BindLambdaForTesting(
             [&](absl::optional<std::map<std::string, WebApkIconHasher::Icon>>
                     hashes) {
@@ -222,7 +227,7 @@ TEST_F(WebApkIconHasherTest, SVGImage) {
   WebApkIconHasherRunner runner;
   WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
       test_url_loader_factory(), web_contents()->GetWeakPtr(),
-      url::Origin::Create(icon_url), icon_url, /*timeout_ms=*/300,
+      url::Origin::Create(icon_url), WebappIcon(icon_url), /*timeout_ms=*/300,
       base::BindOnce(&WebApkIconHasherRunner::OnCompleted,
                      base::Unretained(&runner)));
   base::RunLoop().RunUntilIdle();
@@ -265,7 +270,7 @@ TEST_F(WebApkIconHasherTest, WebpImage) {
   WebApkIconHasherRunner runner;
   WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
       test_url_loader_factory(), web_contents()->GetWeakPtr(),
-      url::Origin::Create(icon_url), icon_url, /*timeout_ms=*/300,
+      url::Origin::Create(icon_url), WebappIcon(icon_url), /*timeout_ms=*/300,
       base::BindOnce(&WebApkIconHasherRunner::OnCompleted,
                      base::Unretained(&runner)));
   base::RunLoop().RunUntilIdle();
