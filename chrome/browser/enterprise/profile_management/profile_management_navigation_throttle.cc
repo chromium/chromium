@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/profile_token_management/profile_token_navigation_throttle.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_navigation_throttle.h"
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/profile_token_management/token_management_features.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/profile_token_web_signin_interceptor.h"
@@ -21,7 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace profile_token_management {
+namespace profile_management {
 
 constexpr char kTestHost[] = "www.google.com";
 
@@ -32,7 +32,7 @@ constexpr std::array<const char*, 1> kSupportedHosts{
 };
 
 class QueryParamTokenInfoGetter
-    : public ProfileTokenNavigationThrottle::TokenInfoGetter {
+    : public ProfileManagementNavigationThrottle::TokenInfoGetter {
  public:
   QueryParamTokenInfoGetter() = default;
   ~QueryParamTokenInfoGetter() override = default;
@@ -54,11 +54,12 @@ class QueryParamTokenInfoGetter
 
 }  // namespace
 
-ProfileTokenNavigationThrottle::TokenInfoGetter::~TokenInfoGetter() = default;
+ProfileManagementNavigationThrottle::TokenInfoGetter::~TokenInfoGetter() =
+    default;
 
 // static
-std::unique_ptr<ProfileTokenNavigationThrottle>
-ProfileTokenNavigationThrottle::MaybeCreateThrottleFor(
+std::unique_ptr<ProfileManagementNavigationThrottle>
+ProfileManagementNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle) {
   if (!base::FeatureList::IsEnabled(features::kEnableProfileTokenManagement) ||
       !g_browser_process->local_state() ||
@@ -66,11 +67,11 @@ ProfileTokenNavigationThrottle::MaybeCreateThrottleFor(
     return nullptr;
   }
 
-  return std::make_unique<ProfileTokenNavigationThrottle>(
+  return std::make_unique<ProfileManagementNavigationThrottle>(
       navigation_handle, std::make_unique<QueryParamTokenInfoGetter>());
 }
 
-ProfileTokenNavigationThrottle::ProfileTokenNavigationThrottle(
+ProfileManagementNavigationThrottle::ProfileManagementNavigationThrottle(
     content::NavigationHandle* navigation_handle,
     std::unique_ptr<TokenInfoGetter> token_info_getter)
     : NavigationThrottle(navigation_handle),
@@ -78,26 +79,28 @@ ProfileTokenNavigationThrottle::ProfileTokenNavigationThrottle(
   DCHECK(token_info_getter_);
 }
 
-ProfileTokenNavigationThrottle::~ProfileTokenNavigationThrottle() = default;
+ProfileManagementNavigationThrottle::~ProfileManagementNavigationThrottle() =
+    default;
 
 content::NavigationThrottle::ThrottleCheckResult
-ProfileTokenNavigationThrottle::WillProcessResponse() {
+ProfileManagementNavigationThrottle::WillProcessResponse() {
   auto host = navigation_handle()->GetURL().host();
   if (base::Contains(kSupportedHosts, host)) {
     token_info_getter_->GetTokenInfo(
         navigation_handle(),
-        base::BindOnce(&ProfileTokenNavigationThrottle::OnTokenInfoReceived,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(
+            &ProfileManagementNavigationThrottle::OnTokenInfoReceived,
+            weak_ptr_factory_.GetWeakPtr()));
     return DEFER;
   }
   return PROCEED;
 }
 
-const char* ProfileTokenNavigationThrottle::GetNameForLogging() {
-  return "ProfileTokenNavigationThrottle";
+const char* ProfileManagementNavigationThrottle::GetNameForLogging() {
+  return "ProfileManagementNavigationThrottle";
 }
 
-void ProfileTokenNavigationThrottle::OnTokenInfoReceived(
+void ProfileManagementNavigationThrottle::OnTokenInfoReceived(
     const std::string& id,
     const std::string& management_token) {
   if (!management_token.empty()) {
@@ -111,4 +114,4 @@ void ProfileTokenNavigationThrottle::OnTokenInfoReceived(
   Resume();
 }
 
-}  // namespace profile_token_management
+}  // namespace profile_management

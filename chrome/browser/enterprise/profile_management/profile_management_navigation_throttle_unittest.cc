@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/profile_token_management/profile_token_navigation_throttle.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_navigation_throttle.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/profile_token_management/token_management_features.h"
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
@@ -16,14 +16,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace profile_token_management {
+namespace profile_management {
 
 using testing::_;
 
 namespace {
 
 class MockTokenInfoGetter
-    : public ProfileTokenNavigationThrottle::TokenInfoGetter {
+    : public ProfileManagementNavigationThrottle::TokenInfoGetter {
  public:
   MockTokenInfoGetter() = default;
   ~MockTokenInfoGetter() override = default;
@@ -38,11 +38,12 @@ class MockTokenInfoGetter
 
 }  // namespace
 
-class ProfileTokenNavigationThrottleTest : public BrowserWithTestWindowTest {
+class ProfileManagementNavigationThrottleTest
+    : public BrowserWithTestWindowTest {
  public:
-  ProfileTokenNavigationThrottleTest() = default;
+  ProfileManagementNavigationThrottleTest() = default;
 
-  ~ProfileTokenNavigationThrottleTest() override = default;
+  ~ProfileManagementNavigationThrottleTest() override = default;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -59,7 +60,7 @@ class ProfileTokenNavigationThrottleTest : public BrowserWithTestWindowTest {
   }
 };
 
-TEST_F(ProfileTokenNavigationThrottleTest,
+TEST_F(ProfileManagementNavigationThrottleTest,
        ProfileTokenManagementFeatureDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kEnableProfileTokenManagement);
@@ -68,11 +69,11 @@ TEST_F(ProfileTokenNavigationThrottleTest,
                                             main_frame());
 
   auto throttle =
-      ProfileTokenNavigationThrottle::MaybeCreateThrottleFor(&test_handle);
+      ProfileManagementNavigationThrottle::MaybeCreateThrottleFor(&test_handle);
   ASSERT_EQ(nullptr, throttle.get());
 }
 
-TEST_F(ProfileTokenNavigationThrottleTest, ProfileCreationDisallowed) {
+TEST_F(ProfileManagementNavigationThrottleTest, ProfileCreationDisallowed) {
   base::test::ScopedFeatureList features(
       features::kEnableProfileTokenManagement);
   g_browser_process->local_state()->SetBoolean(prefs::kBrowserAddPersonEnabled,
@@ -83,11 +84,12 @@ TEST_F(ProfileTokenNavigationThrottleTest, ProfileCreationDisallowed) {
                                             main_frame());
 
   auto throttle =
-      ProfileTokenNavigationThrottle::MaybeCreateThrottleFor(&test_handle);
+      ProfileManagementNavigationThrottle::MaybeCreateThrottleFor(&test_handle);
   ASSERT_EQ(nullptr, throttle.get());
 }
 
-TEST_F(ProfileTokenNavigationThrottleTest, NoThrottlingWithUnsupportedHost) {
+TEST_F(ProfileManagementNavigationThrottleTest,
+       NoThrottlingWithUnsupportedHost) {
   base::test::ScopedFeatureList features(
       features::kEnableProfileTokenManagement);
   content::MockNavigationHandle test_handle(GURL("https://notasupported.host/"),
@@ -96,14 +98,14 @@ TEST_F(ProfileTokenNavigationThrottleTest, NoThrottlingWithUnsupportedHost) {
       std::make_unique<MockTokenInfoGetter>();
   EXPECT_CALL(*mock_info_getter, GetTokenInfo(_, _)).Times(0);
 
-  auto throttle = std::make_unique<ProfileTokenNavigationThrottle>(
+  auto throttle = std::make_unique<ProfileManagementNavigationThrottle>(
       &test_handle, std::move(mock_info_getter));
 
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillProcessResponse().action());
 }
 
-TEST_F(ProfileTokenNavigationThrottleTest, ThrottlingWithSupportedHost) {
+TEST_F(ProfileManagementNavigationThrottleTest, ThrottlingWithSupportedHost) {
   base::test::ScopedFeatureList features(
       features::kEnableProfileTokenManagement);
   content::MockNavigationHandle test_handle(
@@ -112,11 +114,11 @@ TEST_F(ProfileTokenNavigationThrottleTest, ThrottlingWithSupportedHost) {
       std::make_unique<MockTokenInfoGetter>();
   EXPECT_CALL(*mock_info_getter, GetTokenInfo(&test_handle, _)).Times(1);
 
-  auto throttle = std::make_unique<ProfileTokenNavigationThrottle>(
+  auto throttle = std::make_unique<ProfileManagementNavigationThrottle>(
       &test_handle, std::move(mock_info_getter));
 
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             throttle->WillProcessResponse().action());
 }
 
-}  // namespace profile_token_management
+}  // namespace profile_management
