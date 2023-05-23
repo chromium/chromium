@@ -30,6 +30,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="BlinkVisibleLoadTimeSuffixes">
+  <variant name="" summary="Aggregated across all connection types"/>
   <variant name=".2G" summary="2G effective connection type"/>
   <variant name=".3G" summary="3G effective connection type"/>
   <variant name=".4G" summary="4G effective connection type"/>
