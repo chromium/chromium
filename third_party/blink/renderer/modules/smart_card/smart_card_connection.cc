@@ -108,6 +108,35 @@ ScriptPromise SmartCardConnection::status() {
   return ScriptPromise();
 }
 
+ScriptPromise SmartCardConnection::control(ScriptState* script_state,
+                                           uint32_t control_code,
+                                           const DOMArrayPiece& data,
+                                           ExceptionState& exception_state) {
+  if (!EnsureNoOperationInProgress(exception_state) ||
+      !EnsureConnection(exception_state)) {
+    return ScriptPromise();
+  }
+
+  if (data.IsDetached() || data.IsNull()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid data.");
+    return ScriptPromise();
+  }
+
+  ongoing_request_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+
+  Vector<uint8_t> data_vector;
+  data_vector.Append(data.Bytes(), static_cast<wtf_size_t>(data.ByteLength()));
+
+  connection_->Control(
+      control_code, data_vector,
+      WTF::BindOnce(&SmartCardConnection::OnDataResult, WrapPersistent(this),
+                    WrapPersistent(ongoing_request_.Get())));
+
+  return ongoing_request_->Promise();
+}
+
 void SmartCardConnection::Trace(Visitor* visitor) const {
   visitor->Trace(connection_);
   visitor->Trace(ongoing_request_);
