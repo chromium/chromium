@@ -90,9 +90,7 @@ class PrivacyHubHandlerTest : public testing::Test {
       }
 
       // Assume that the data is stored in the last valid arg.
-      auto data_span =
-          base::make_span(data->args().begin(), data->args().end());
-      for (const auto& arg : base::Reversed(data_span)) {
+      for (const auto& arg : base::Reversed(data->args())) {
         if (&arg != data->arg1())
           return arg.Clone();
       }

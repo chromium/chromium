@@ -534,6 +534,29 @@ TEST(ValuesTest, ListInsert) {
   EXPECT_EQ(*iter, "Hello world!");
 }
 
+TEST(ValuesTest, ReverseIter) {
+  Value::List list;
+  const Value::List& const_list = list;
+
+  list.Append(Value(true));
+  list.Append(Value(123));
+  list.Append(Value("Hello world!"));
+
+  auto iter = list.rbegin();
+  EXPECT_TRUE(const_list.rbegin() == iter);
+  EXPECT_EQ(*iter, "Hello world!");
+
+  ++iter;
+  EXPECT_EQ(*iter, 123);
+
+  ++iter;
+  EXPECT_EQ(*iter, true);
+
+  ++iter;
+  EXPECT_TRUE(list.rend() == iter);
+  EXPECT_TRUE(const_list.rend() == iter);
+}
+
 // Test all three behaviors of EnsureDict() (Create a new dict where no
 // matchining values exist, return an existing dict, create a dict overwriting
 // a value of another type).
