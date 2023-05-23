@@ -97,6 +97,8 @@ class URLCookieAccessObserver : public content::WebContentsObserver {
 
   void Wait();
 
+  bool CookieAccessedInPrimaryPage() const;
+
  private:
   // WebContentsObserver overrides
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
@@ -106,6 +108,7 @@ class URLCookieAccessObserver : public content::WebContentsObserver {
 
   GURL url_;
   CookieOperation access_type_;
+  bool cookie_accessed_in_primary_page_ = false;
   base::RunLoop run_loop_;
 };
 

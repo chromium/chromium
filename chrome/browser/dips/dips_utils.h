@@ -11,6 +11,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "content/public/browser/navigation_handle.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -162,6 +163,35 @@ int64_t BucketizeBounceDelay(base::TimeDelta delta);
 // belongs to. Currently returns eTLD+1, but this is an implementation detail
 // and may change.
 std::string GetSiteForDIPS(const GURL& url);
+
+// Returns `True` iff the `navigation_handle` represents a navigation happening
+// in an iframe of the primary frame tree.
+inline bool IsInPrimaryPageIFrame(
+    content::NavigationHandle* navigation_handle) {
+  return navigation_handle->GetParentFrame()
+             ? navigation_handle->GetParentFrame()->GetPage().IsPrimary()
+             : false;
+}
+
+// Returns `True` iff both urls return a similar outcome off of
+// `GetSiteForDIPS()`.
+inline bool IsSameSiteForDIPS(const GURL& url1, const GURL& url2) {
+  return GetSiteForDIPS(url1) == GetSiteForDIPS(url2);
+}
+
+// Returns `True` iff the `navigation_handle` represents a navigation happening
+// in any frame of the primary page.
+// NOTE: This does not include fenced frames.
+inline bool IsInPrimaryPage(content::NavigationHandle* navigation_handle) {
+  return navigation_handle->GetParentFrame()
+             ? navigation_handle->GetParentFrame()->GetPage().IsPrimary()
+             : navigation_handle->IsInPrimaryMainFrame();
+}
+
+// Returns `True` iff the 'rfh' represents a frame in the primary page.
+inline bool IsInPrimaryPage(content::RenderFrameHost* rfh) {
+  return rfh->GetPage().IsPrimary();
+}
 
 enum class DIPSRecordedEvent {
   kStorage,

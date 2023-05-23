@@ -32,6 +32,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
@@ -545,10 +546,8 @@ void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
 void DIPSWebContentsObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
-  // TODO(crbug.com/1434764): handle same-site iframes.
-  if (!render_frame_host->IsInPrimaryMainFrame() || details.blocked_by_policy ||
-      !net::SiteForCookies::FromUrl(details.first_party_url)
-           .IsFirstParty(details.url)) {
+  if (!IsInPrimaryPage(render_frame_host) || details.blocked_by_policy ||
+      !IsSameSiteForDIPS(details.first_party_url, details.url)) {
     return;
   }
 
@@ -578,9 +577,20 @@ void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
 void DIPSWebContentsObserver::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const content::CookieAccessDetails& details) {
-  if (!navigation_handle->IsInPrimaryMainFrame() || details.blocked_by_policy ||
-      !net::SiteForCookies::FromUrl(details.first_party_url)
-           .IsFirstParty(details.url)) {
+  // Discard all notifications that are:
+  // - From other page types like FencedFrames, and Prerendered.
+  // - Blocked by policies.
+  // - That are not same site (wrt GetSiteForDIPS()) with the first party URL.
+  // TODO(crbug.com/1445739): Treat partitioned 3P cookies as 1P cookies.
+  if (!IsInPrimaryPage(navigation_handle) || details.blocked_by_policy ||
+      !IsSameSiteForDIPS(details.first_party_url, details.url)) {
+    return;
+  }
+
+  // All access within the primary page iframes are attributed to the URL of the
+  // main frame (ie the first party URL).
+  if (IsInPrimaryPageIFrame(navigation_handle)) {
+    detector_.OnClientSiteDataAccessed(details.url, details.type);
     return;
   }
 
