@@ -2729,10 +2729,19 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
                 ash::file_manager::kChromeUIFileManagerUntrustedURL) {
               const std::string* script = value.FindString("data");
               EXPECT_TRUE(script);
-              *output =
-                  content::EvalJs(frame, *script,
-                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-                      .ExtractString();
+
+              content::DOMMessageQueue message_queue;
+              EXPECT_TRUE(content::ExecJs(frame, *script));
+
+              std::string json;
+              EXPECT_TRUE(message_queue.WaitForMessage(&json));
+
+              base::Value result =
+                  base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS)
+                      .value();
+
+              EXPECT_TRUE(result.is_string());
+              *output = result.GetString();
               found = true;
               return content::RenderFrameHost::FrameIterationAction::kStop;
             }

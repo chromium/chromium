@@ -171,10 +171,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, InjectIframe) {
   // Second, verify that adding an iframe to the page from the extension will
   // succeed. Click a button whose event handler runs in the extension's world
   // which bypasses CSP, and adds the iframe.
-  EXPECT_EQ(true, content::EvalJs(
-                      web_contents(),
-                      "document.querySelector('#addIframeButton').click();",
-                      content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  content::DOMMessageQueue message_queue;
+  EXPECT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.querySelector('#addIframeButton').click();"));
+  std::string ack;
+  EXPECT_TRUE(message_queue.WaitForMessage(&ack));
+  EXPECT_EQ("true", ack);
   frame = GetFrameByName("added-by-extension");
   ASSERT_TRUE(frame);
   EXPECT_TRUE(WasFrameWithScriptLoaded(frame));

@@ -188,14 +188,26 @@ void DispatchOnTestSuiteSkipCheck(DevToolsWindow* window,
     script << (i ? "," : "") << '\"' << args_array[i] << '\"';
   }
   script << "])";
-  EXPECT_EQ("[OK]", content::EvalJs(wc, script.str(),
-                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+
+  content::DOMMessageQueue message_queue;
+  EXPECT_TRUE(content::ExecJs(wc, script.str()));
+
+  std::string result;
+  EXPECT_TRUE(message_queue.WaitForMessage(&result));
+
+  EXPECT_EQ("\"[OK]\"", result);
 }
 
 void LoadLegacyFilesInFrontend(DevToolsWindow* window) {
   WebContents* wc = DevToolsWindowTesting::Get(window)->main_web_contents();
-  ASSERT_EQ("[OK]", content::EvalJs(wc, "uiTests.setupLegacyFilesForTest();",
-                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  content::DOMMessageQueue message_queue;
+  EXPECT_TRUE(content::ExecJs(wc, "uiTests.setupLegacyFilesForTest();",
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  std::string result;
+  EXPECT_TRUE(message_queue.WaitForMessage(&result));
+
+  ASSERT_EQ("\"[OK]\"", result);
 }
 
 template <typename... T>

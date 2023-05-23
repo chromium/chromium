@@ -1627,7 +1627,6 @@ EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
                       !(options & EXECUTE_SCRIPT_NO_USER_GESTURE) &&
                       world_id == ISOLATED_WORLD_ID_GLOBAL;
 
-  DOMMessageQueue dom_message_queue(rfh);
   ExecuteJavaScriptForTestsWaiter waiter(rfh);
   rfh->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script), user_gesture,
                                  resolve_promises, world_id,
@@ -1651,30 +1650,6 @@ EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
         "a JavaScript error: \"" + result_value.GetString() + "\"";
     return EvalJsResult(base::Value(), AnnotateAndAdjustJsStackTraces(
                                            error_text, source_url, script, 0));
-  } else if (options & EXECUTE_SCRIPT_USE_MANUAL_REPLY) {
-    // Callers that set EXECUTE_SCRIPT_USE_MANUAL_REPLY expect this function to
-    // block until their JS calls `window.domAutomationController.send`. To
-    // support this, wait for a message from DOMMessageQueue and parse it as
-    // JSON.
-    std::string json;
-    if (!dom_message_queue.WaitForMessage(&json)) {
-      return EvalJsResult(base::Value(),
-                          "Cannot communicate with DOMMessageQueue.");
-    }
-
-    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-        json, base::JSON_ALLOW_TRAILING_COMMAS);
-    if (!parsed_json.has_value())
-      return EvalJsResult(base::Value(), parsed_json.error().message);
-    result_type = JavaScriptExecutionResultType::kSuccess;
-    return EvalJsResult(parsed_json->Clone(), std::string());
-  } else if (dom_message_queue.HasMessages()) {
-    return EvalJsResult(base::Value(),
-                        "Calling domAutomationController.send is only allowed "
-                        "when using EXECUTE_SCRIPT_USE_MANUAL_REPLY. When "
-                        "using EvalJs(), the completion value is the value of "
-                        "the last executed statement. When using ExecJs(), "
-                        "there is no result value.");
   }
 
   return EvalJsResult(result_value.Clone(), std::string());
@@ -1686,9 +1661,6 @@ EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
                                   const std::string& script,
                                   int options,
                                   int32_t world_id) {
-  CHECK(!(options & EXECUTE_SCRIPT_USE_MANUAL_REPLY))
-      << "USE_MANUAL_REPLY does not make sense with ExecJs.";
-
   // TODO(nick): Do we care enough about folks shooting themselves in the foot
   // here with e.g. ASSERT_TRUE(ExecJs("window == window.top")) -- when they
   // mean EvalJs -- to fail a CHECK() when eval_result.value.is_bool()?

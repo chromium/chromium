@@ -198,28 +198,18 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsAfterLifecycleUpdateErrors) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsWithManualReply) {
+IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsWithDomAutomationController) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
 
   std::string script = "window.domAutomationController.send(20); 'hi';";
 
-  // Calling domAutomationController is required for
-  // EXECUTE_SCRIPT_USE_MANUAL_REPLY.
-  EXPECT_EQ(20, EvalJs(shell(), script, EXECUTE_SCRIPT_USE_MANUAL_REPLY));
-
-  // Calling domAutomationController is an error with EvalJs.
-  auto result = EvalJs(shell(), script);
-  EXPECT_FALSE(20 == result);
-  EXPECT_FALSE("hi" == result);
-  EXPECT_THAT(result.error,
-              ::testing::EndsWith(
-                  "Calling domAutomationController.send is only allowed "
-                  "when using EXECUTE_SCRIPT_USE_MANUAL_REPLY. When "
-                  "using EvalJs(), the completion value is the value of "
-                  "the last executed statement. When using ExecJs(), "
-                  "there is no result value."));
+  // Calling domAutomationController is allowed with EvalJs, but doesn't
+  // influence the completion value.
+  EvalJsResult result = EvalJs(shell(), script);
+  EXPECT_NE(20, result);
+  EXPECT_EQ("hi", result);
 }
 
 IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, EvalJsTimeout) {
@@ -266,6 +256,17 @@ IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest,
           "is blocked by the document's CSP on this page. To test content that "
           "is protected by CSP, consider using EvalJsAfterLifecycleUpdate in "
           "an isolated world. Details:"));
+}
+
+IN_PROC_BROWSER_TEST_F(EvalJsBrowserTest, ExecJsWithDomAutomationController) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+
+  std::string script = "window.domAutomationController.send(20); 'hi';";
+
+  // Calling domAutomationController is allowed with ExecJs.
+  EXPECT_TRUE(ExecJs(shell(), script));
 }
 
 }  // namespace content

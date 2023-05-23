@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -856,17 +857,23 @@ class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
   }
 
   std::string ExecutePNACLUrlLoaderTest(const std::string& mode) {
-    std::string result(
-        EvalJs(
-            browser()->tab_strip_model()->GetActiveWebContents(),
-            base::StringPrintf("reportOnFetch = false;"
-                               "var iframe = document.createElement('iframe');"
-                               "iframe.src='%s#%s';"
-                               "document.body.appendChild(iframe);",
-                               test_page_url_.c_str(), mode.c_str()),
-            content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
-            .ExtractString());
-    EXPECT_EQ(base::StringPrintf("OnOpen%s", mode.c_str()), result);
+    content::DOMMessageQueue message_queue;
+    EXPECT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        base::StringPrintf("reportOnFetch = false;"
+                           "var iframe = document.createElement('iframe');"
+                           "iframe.src='%s#%s';"
+                           "document.body.appendChild(iframe);",
+                           test_page_url_.c_str(), mode.c_str())));
+
+    std::string json;
+    EXPECT_TRUE(message_queue.WaitForMessage(&json));
+
+    base::Value result =
+        base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS).value();
+
+    EXPECT_TRUE(result.is_string());
+    EXPECT_EQ(base::StringPrintf("OnOpen%s", mode.c_str()), result.GetString());
     return EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                   "reportRequests();")
         .ExtractString();
