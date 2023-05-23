@@ -374,6 +374,27 @@ class AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
   scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator_;
 };
 
+class AutofillPrivateAuthenticateUserToEditLocalCardFunction
+    : public ExtensionFunction {
+ public:
+  AutofillPrivateAuthenticateUserToEditLocalCardFunction() = default;
+  AutofillPrivateAuthenticateUserToEditLocalCardFunction(
+      const AutofillPrivateAuthenticateUserToEditLocalCardFunction&) = delete;
+  AutofillPrivateAuthenticateUserToEditLocalCardFunction& operator=(
+      const AutofillPrivateAuthenticateUserToEditLocalCardFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.authenticateUserToEditLocalCard",
+                             AUTOFILLPRIVATE_AUTHENTICATEUSERTOEDITLOCALCARD)
+
+ protected:
+  ~AutofillPrivateAuthenticateUserToEditLocalCardFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void CanShowEditDialogForLocalCard(bool can_show);
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_

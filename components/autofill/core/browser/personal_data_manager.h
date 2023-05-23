@@ -594,7 +594,7 @@ class PersonalDataManager : public KeyedService,
   bool IsSyncEnabledFor(syncer::UserSelectableType data_type) const;
 
   // Returns true if payments mandatory re-auth is enabled.
-  bool IsAutofillPaymentMethodsMandatoryReauthEnabled();
+  virtual bool IsAutofillPaymentMethodsMandatoryReauthEnabled();
 
   // Used to automatically import addresses without a prompt. Should only be
   // set to true in tests.

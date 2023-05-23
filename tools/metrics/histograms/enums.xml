@@ -36272,6 +36272,7 @@ Called by update_extension_histograms.py.-->
   <int value="1789" label="SIDEPANEL_OPEN"/>
   <int value="1790" label="AUTOTESTPRIVATE_INSTALLBRUSCHETTA"/>
   <int value="1791" label="AUTOTESTPRIVATE_REMOVEBRUSCHETTA"/>
+  <int value="1792" label="AUTOFILLPRIVATE_AUTHENTICATEUSERTOEDITLOCALCARD"/>
 </enum>
 
 <enum name="ExtensionIconState">
