@@ -1,0 +1,13 @@
+Tests that the type changes without an active listener
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL connection.type should be ethernet. Was unknown.
+FAIL connection.downlinkMax should be 2. Was Infinity.
+PASS connection.effectiveType is newEffectiveType
+PASS connection.rtt is newRtt
+PASS connection.downlink is newDownlinkMax
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

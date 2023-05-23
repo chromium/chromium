@@ -1,0 +1,29 @@
+Tests the basic operation of NetInfo.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS navigator.connection is defined.
+PASS navigator.connection.type is defined.
+PASS navigator.connection.saveData is defined.
+PASS navigator.connection.downlinkMax is defined.
+PASS navigator.connection.effectiveType is defined.
+PASS navigator.connection.rtt is defined.
+PASS navigator.connection.downlink is defined.
+PASS typeof connection.type is "string"
+FAIL connection.type should be bluetooth. Was unknown.
+PASS connection.saveData is false
+FAIL connection.downlinkMax should be 1. Was Infinity.
+PASS connection.effectiveType is newEffectiveType
+PASS connection.rtt is newRtt
+PASS connection.downlink is newDownlinkMax
+PASS typeof connection.type is "string"
+FAIL connection.type should be ethernet. Was unknown.
+PASS connection.saveData is false
+FAIL connection.downlinkMax should be 2. Was Infinity.
+PASS connection.effectiveType is newEffectiveType
+PASS connection.rtt is newRtt
+PASS connection.downlink is newDownlinkMax
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

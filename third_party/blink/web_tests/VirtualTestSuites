@@ -2074,5 +2074,14 @@
     "bases": ["external/wpt/longtask-timing"],
     "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame"],
     "expires": "Aug 1, 2023"
+  },
+  {
+    "prefix": "netinfo-constant-type",
+    "platforms": ["Linux"],
+    "bases": ["netinfo/"],
+    "args": [
+      "--enable-blink-features=NetInfoConstantType"
+    ],
+    "expires": "Dec 1, 2023"
   }
 ]

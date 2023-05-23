@@ -2355,6 +2355,9 @@
       base_feature: "none",
     },
     {
+      name: "NetInfoConstantType",
+    },
+    {
       name: "NetInfoDownlinkMax",
       public: true,
       // Only Android, ChromeOS support NetInfo downlinkMax, type and ontypechange now
