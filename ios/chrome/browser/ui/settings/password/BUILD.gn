@@ -238,6 +238,7 @@ source_set("eg_app_support+eg2") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
+    "//components/password_manager/ios:fake_bulk_leak_check_service",
     "//components/prefs",
     "//components/strings",
     "//ios/chrome/browser/passwords",
@@ -264,6 +265,7 @@ source_set("eg_test_support+eg2") {
   ]
 
   deps = [
+    "//components/password_manager/core/browser",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]

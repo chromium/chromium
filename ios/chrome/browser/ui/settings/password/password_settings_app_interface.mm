@@ -10,6 +10,7 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -17,7 +18,9 @@
 #import "components/password_manager/core/browser/password_store_consumer.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/passwords/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
@@ -36,6 +39,7 @@ using chrome_test_util::
     SetUpAndReturnMockReauthenticationModuleForExportFromSettings;
 using chrome_test_util::
     SetUpAndReturnMockReauthenticationModuleForPasswordManager;
+using password_manager::FakeBulkLeakCheckService;
 using password_manager::PasswordForm;
 
 namespace {
@@ -325,6 +329,24 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
       chrome_test_util::GetOriginalBrowserState();
   return browserState->GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService);
+}
+
++ (void)setupFakeBulkLeakCheckService {
+  IOSChromeBulkLeakCheckServiceFactory::GetInstance()->SetTestingFactory(
+      chrome_test_util::GetOriginalBrowserState(),
+      base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
+        return std::unique_ptr<KeyedService>(
+            std::make_unique<password_manager::FakeBulkLeakCheckService>());
+      })));
+}
+
++ (void)setFakeBulkLeakCheckBufferedState:
+    (password_manager::BulkLeakCheckServiceInterface::State)state {
+  FakeBulkLeakCheckService* fakeBulkLeakCheckService =
+      static_cast<FakeBulkLeakCheckService*>(
+          IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
+              chrome_test_util::GetOriginalBrowserState()));
+  fakeBulkLeakCheckService->SetBufferedState(state);
 }
 
 @end
