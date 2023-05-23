@@ -4,8 +4,10 @@
 
 #include "content/browser/preloading/preloading_decider.h"
 
+#include "base/check_op.h"
 #include "base/containers/enum_set.h"
 #include "base/strings/string_split.h"
+#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerenderer_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -162,6 +164,40 @@ void PreloadingDecider::OnPointerHover(const GURL& url) {
   }
 }
 
+void PreloadingDecider::AddStandbyCandidate(
+    const blink::mojom::SpeculationCandidatePtr& candidate) {
+  SpeculationCandidateKey key{candidate->url, candidate->action};
+  on_standby_candidates_[key].push_back(candidate.Clone());
+
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  if (candidate->no_vary_search_hint) {
+    SpeculationCandidateKey key_no_vary_search{
+        candidate->url.ReplaceComponents(replacements), candidate->action};
+    no_vary_search_hint_on_standby_candidates_[key_no_vary_search].insert(key);
+  }
+}
+
+void PreloadingDecider::RemoveStandbyCandidate(
+    const SpeculationCandidateKey key) {
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  SpeculationCandidateKey key_no_vary_search{
+      key.first.ReplaceComponents(replacements), key.second};
+  auto it = no_vary_search_hint_on_standby_candidates_.find(key_no_vary_search);
+  if (it != no_vary_search_hint_on_standby_candidates_.end()) {
+    it->second.erase(key);
+  }
+  on_standby_candidates_.erase(key);
+}
+
+void PreloadingDecider::ClearStandbyCandidates() {
+  no_vary_search_hint_on_standby_candidates_.clear();
+  on_standby_candidates_.clear();
+}
+
 void PreloadingDecider::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -213,7 +249,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
     SpeculationCandidateKey key{candidate->url, candidate->action};
     if (candidate->eagerness != blink::mojom::SpeculationEagerness::kEager &&
         processed_candidates_.find(key) == processed_candidates_.end()) {
-      on_standby_candidates_[key].push_back(candidate.Clone());
+      AddStandbyCandidate(candidate);
       // TODO(isaboori) In current implementation, after calling prefetcher
       // ProcessCandidatesForPrefetch, the prefetch_service starts checking the
       // eligibility of the candidates and it will add any eligible candidates
@@ -236,7 +272,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
     return false;
   };
 
-  on_standby_candidates_.clear();
+  ClearStandbyCandidates();
   base::EraseIf(candidates, should_mark_as_on_standby);
 
   prefetcher_.ProcessCandidatesForPrefetch(candidates);
@@ -247,31 +283,75 @@ void PreloadingDecider::UpdateSpeculationCandidates(
 bool PreloadingDecider::MaybePrefetch(const GURL& url,
                                       const PreloadingPredictor& predictor) {
   SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrefetch};
-  auto it = on_standby_candidates_.find(key);
-  if (it == on_standby_candidates_.end()) {
-    return false;
-  }
-
-  auto inner_it = base::ranges::find_if(it->second, [&](const auto& candidate) {
-    return IsSuitableCandidate(candidate, predictor);
-  });
-  if (inner_it == it->second.end()) {
-    return false;
-  }
-
-  // TODO(isaboori): prefetcher should provide MaybePrefetch interface to
-  // directly send the candidate to it instead of passing it as a vector.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(inner_it->Clone());
+
+  auto it = on_standby_candidates_.find(key);
+  if (it != on_standby_candidates_.end()) {
+    auto inner_it =
+        base::ranges::find_if(it->second, [&](const auto& candidate) {
+          return IsSuitableCandidate(candidate, predictor);
+        });
+    if (inner_it != it->second.end()) {
+      // TODO(isaboori): prefetcher should provide MaybePrefetch interface to
+      // directly send the candidate to it instead of passing it as a vector.
+      candidates.push_back(inner_it->Clone());
+    }
+  }
+
+  if (candidates.empty()) {
+    // Check all URLs that might match via NVS hint.
+    // If there are multiple candidates that match prefetch the first one.
+    GURL::Replacements replacements;
+    replacements.ClearRef();
+    replacements.ClearQuery();
+    const GURL url_without_query_and_ref = url.ReplaceComponents(replacements);
+    auto nvs_it = no_vary_search_hint_on_standby_candidates_.find(
+        {url_without_query_and_ref,
+         blink::mojom::SpeculationAction::kPrefetch});
+    if (nvs_it == no_vary_search_hint_on_standby_candidates_.end()) {
+      return false;
+    }
+    for (const auto& standby_key : nvs_it->second) {
+      CHECK_EQ(standby_key.second, blink::mojom::SpeculationAction::kPrefetch);
+      const GURL& prefetch_url = standby_key.first;
+      // Every prefetch in this set might come back with NVS header of
+      // "params" and match. But we will consider only the first prefetch that
+      // has a No-Vary-Search hint that is matching.
+      auto standby_it = on_standby_candidates_.find(standby_key);
+      CHECK(standby_it != on_standby_candidates_.end());
+      auto inner_it =
+          base::ranges::find_if(standby_it->second, [&](const auto& candidate) {
+            return candidate->no_vary_search_hint &&
+                   NoVarySearchHelper::ParseHttpNoVarySearchDataFromMojom(
+                       candidate->no_vary_search_hint)
+                       .AreEquivalent(url, prefetch_url) &&
+                   IsSuitableCandidate(candidate, predictor);
+          });
+      if (inner_it != standby_it->second.end()) {
+        candidates.push_back(inner_it->Clone());
+        key = standby_key;
+        break;
+      }
+    }
+  }
+
+  if (candidates.empty()) {
+    return false;
+  }
+
   prefetcher_.ProcessCandidatesForPrefetch(candidates);
   bool result = candidates.empty();
 
-  on_standby_candidates_.erase(it);
+  RemoveStandbyCandidate(key);
   processed_candidates_.insert(std::move(key));
   return result;
 }
 
 bool PreloadingDecider::ShouldWaitForPrefetchResult(const GURL& url) {
+  // TODO(liviutinta): Don't implement any No-Vary-Search hint matching here
+  // for now. It is not clear how to match `url` with a `processed_candidate`.
+  // Also, for a No-Vary-Search hint matched candidate we might end up not
+  // using the processed_candidate at all. We will revisit this later.
   auto it = processed_candidates_.find(
       {url, blink::mojom::SpeculationAction::kPrefetch});
   if (it == processed_candidates_.end())
@@ -296,7 +376,7 @@ bool PreloadingDecider::MaybePrerender(const GURL& url,
 
   bool result = prerenderer_->MaybePrerender(inner_it->Clone());
 
-  on_standby_candidates_.erase(it);
+  RemoveStandbyCandidate(it->first);
   processed_candidates_.insert(std::move(key));
   return result;
 }

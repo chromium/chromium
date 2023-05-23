@@ -92,6 +92,15 @@ class CONTENT_EXPORT PreloadingDecider
   using SpeculationCandidateKey =
       std::pair<GURL, blink::mojom::SpeculationAction>;
 
+  // Helper functions to add/remove a preloading candidate to
+  // |on_standby_candidates_| and to reset |on_standby_candidates_|. Use these
+  // methods to make sure |on_standby_candidates_| and
+  // |no_vary_search_hint_on_standby_candidates_| are kept in sync
+  void AddStandbyCandidate(
+      const blink::mojom::SpeculationCandidatePtr& candidate);
+  void RemoveStandbyCandidate(const SpeculationCandidateKey key);
+  void ClearStandbyCandidates();
+
   // |on_standby_candidates_| stores preloading candidates for each target URL,
   // action pairs that are safe to perform but are not marked as |kEager| and
   // should be performed when we are confident enough that the user will most
@@ -99,6 +108,15 @@ class CONTENT_EXPORT PreloadingDecider
   std::map<SpeculationCandidateKey,
            std::vector<blink::mojom::SpeculationCandidatePtr>>
       on_standby_candidates_;
+
+  // |nvs_hint_on_standby_candidates_| stores for a URL without query and
+  // fragment, action pairs that are safe to perform but are not marked as
+  // |kEager| and should be performed when we are confident enough that the user
+  // will most likely navigate to a URL that matches based on the presence
+  // of No-Vary-Search hint the candidate's URL.
+  // This map needs to be kept in sync with the |on_standby_candidates_| map.
+  std::map<SpeculationCandidateKey, std::set<SpeculationCandidateKey>>
+      no_vary_search_hint_on_standby_candidates_;
 
   // |processed_candidates_| stores all target URL, action pairs that are
   // already processed by prefetcher or prerenderer. Right now it is needed to

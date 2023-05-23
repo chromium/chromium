@@ -343,15 +343,19 @@ TEST_P(PreloadingDeciderTest, PrerenderOnPointerEventHeuristics) {
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
 
-  auto create_candidate = [&](blink::mojom::SpeculationAction action,
-                              const std::string& url) {
-    auto candidate = blink::mojom::SpeculationCandidate::New();
-    candidate->action = action;
-    candidate->url = GetSameOriginUrl(url);
-    candidate->referrer = blink::mojom::Referrer::New();
-    candidate->eagerness = eagerness;
-    return candidate;
-  };
+  auto create_candidate =
+      [&](blink::mojom::SpeculationAction action, const std::string& url,
+          network::mojom::NoVarySearchPtr&& no_vary_search_hint = nullptr) {
+        auto candidate = blink::mojom::SpeculationCandidate::New();
+        candidate->action = action;
+        candidate->url = GetSameOriginUrl(url);
+        candidate->referrer = blink::mojom::Referrer::New();
+        candidate->eagerness = eagerness;
+        if (no_vary_search_hint) {
+          candidate->no_vary_search_hint = std::move(no_vary_search_hint);
+        }
+        return candidate;
+      };
 
   auto call_pointer_event_handler = [&](const GURL& url) {
     switch (event_type) {
@@ -368,6 +372,10 @@ TEST_P(PreloadingDeciderTest, PrerenderOnPointerEventHeuristics) {
       blink::mojom::SpeculationAction::kPrerender, "/candidate1.html"));
   candidates.push_back(create_candidate(
       blink::mojom::SpeculationAction::kPrefetch, "/candidate2.html"));
+  candidates.push_back(create_candidate(
+      blink::mojom::SpeculationAction::kPrefetch, "/candidate4.html?a=1",
+      network::mojom::NoVarySearch::New(
+          network::mojom::SearchParamsVariance::NewNoVaryParams({"a"}), true)));
 
   preloading_decider->UpdateSpeculationCandidates(candidates);
   // It should not pass kModerate or kConservative candidates directly
@@ -399,11 +407,18 @@ TEST_P(PreloadingDeciderTest, PrerenderOnPointerEventHeuristics) {
     EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
     EXPECT_EQ(1u, prerenderer.Get()->prerenders_.size());
 
+    // It should prefetch if there is a prefetch candidate matching by
+    // No-Vary-Search hint.
+    call_pointer_event_handler(GetSameOriginUrl("/candidate4.html"));
+    EXPECT_FALSE(preconnect_delegate->Target().has_value());
+    EXPECT_EQ(2u, GetPrefetchService()->prefetches_.size());
+    EXPECT_EQ(1u, prerenderer.Get()->prerenders_.size());
+
     // It should preconnect if the target is not safe to prerender nor safe to
     // prefetch.
     call_pointer_event_handler(GetSameOriginUrl("/candidate3.html"));
     EXPECT_TRUE(preconnect_delegate->Target().has_value());
-    EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
+    EXPECT_EQ(2u, GetPrefetchService()->prefetches_.size());
     EXPECT_EQ(1u, prerenderer.Get()->prerenders_.size());
   } else {
     call_pointer_event_handler(GetSameOriginUrl("/candidate1.html"));
