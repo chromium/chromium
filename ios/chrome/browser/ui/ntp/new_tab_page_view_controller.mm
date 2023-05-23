@@ -452,8 +452,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
                                      kContentSuggestionsReset];
   }
 
-  [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
-
   // Adds the feed top section to the view hierarchy if it exists.
   if (self.feedTopSectionViewController) {
     [self addViewControllerAboveFeed:self.feedTopSectionViewController];
@@ -465,6 +463,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if (self.feedHeaderViewController) {
     [self addViewControllerAboveFeed:self.feedHeaderViewController];
   }
+
+  [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
 
   [self addViewControllerAboveFeed:self.headerViewController];
 
