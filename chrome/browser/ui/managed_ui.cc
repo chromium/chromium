@@ -42,6 +42,12 @@
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/common/features.h"
+#endif
+
 namespace chrome {
 
 namespace {
@@ -73,6 +79,32 @@ absl::optional<std::string> GetEnterpriseAccountDomain(Profile* profile) {
   return domain;
 }
 
+bool ShouldDisplayManagedByParentUi(Profile* profile) {
+#if !BUILDFLAG(ENABLE_SUPERVISED_USERS) || BUILDFLAG(IS_CHROMEOS)
+  // Don't display the managed by parent UI:
+  // * on unsupervised platforms
+  // * on ChromeOS, because similar UI is displayed at the OS level.
+  return false;
+#else
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // The EnableManagedByParentUiOnDesktop flag depends on
+  // EnableSupervisionOnDesktopAndIOS.
+  CHECK(
+      base::FeatureList::IsEnabled(
+          supervised_user::kEnableSupervisionOnDesktopAndIOS) ||
+      !base::FeatureList::IsEnabled(supervised_user::kEnableManagedByParentUi));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+  const auto* const supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  return supervised_user_service &&
+         supervised_user_service->IsSubjectToParentalControls() &&
+         base::FeatureList::IsEnabled(
+             supervised_user::kEnableManagedByParentUi);
+#endif  // !BUILDFLAG(ENABLE_SUPERVISED_USERS) || BUILDFLAG(IS_CHROMEOS)
+}
+
 }  // namespace
 
 bool ShouldDisplayManagedUi(Profile* profile) {
@@ -88,26 +120,33 @@ bool ShouldDisplayManagedUi(Profile* profile) {
     return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  return enterprise_util::IsBrowserManaged(profile);
+  return enterprise_util::IsBrowserManaged(profile) ||
+         ShouldDisplayManagedByParentUi(profile);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 std::u16string GetManagedUiMenuItemLabel(Profile* profile) {
+  CHECK(ShouldDisplayManagedUi(profile));
   absl::optional<std::string> manager = GetAccountManagerIdentity(profile);
   if (!manager &&
       base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
     manager = GetDeviceManagerIdentity();
   }
 
-  int string_id = IDS_MANAGED;
-  std::vector<std::u16string> replacements;
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    int string_id = IDS_MANAGED;
+    std::vector<std::u16string> replacements;
 
-  if (manager && !manager->empty()) {
-    string_id = IDS_MANAGED_BY;
-    replacements.push_back(base::UTF8ToUTF16(*manager));
+    if (manager && !manager->empty()) {
+      string_id = IDS_MANAGED_BY;
+      replacements.push_back(base::UTF8ToUTF16(*manager));
+    }
+
+    return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
   }
 
-  return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
+  CHECK(ShouldDisplayManagedByParentUi(profile));
+  return l10n_util::GetStringUTF16(IDS_MANAGED_BY_PARENT);
 }
 
 std::u16string GetManagedUiWebUILabel(Profile* profile) {
@@ -117,15 +156,29 @@ std::u16string GetManagedUiWebUILabel(Profile* profile) {
     manager = GetDeviceManagerIdentity();
   }
 
-  int string_id = IDS_MANAGED_WITH_HYPERLINK;
-  std::vector<std::u16string> replacements;
-  replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
-  if (manager && !manager->empty()) {
-    string_id = IDS_MANAGED_BY_WITH_HYPERLINK;
-    replacements.push_back(base::UTF8ToUTF16(*manager));
+  if (enterprise_util::IsBrowserManaged(profile)) {
+    int string_id = IDS_MANAGED_WITH_HYPERLINK;
+    std::vector<std::u16string> replacements = {
+        base::UTF8ToUTF16(chrome::kChromeUIManagementURL)};
+    if (manager && !manager->empty()) {
+      string_id = IDS_MANAGED_BY_WITH_HYPERLINK;
+      replacements.push_back(base::UTF8ToUTF16(*manager));
+    }
+
+    return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
   }
 
-  return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  if (ShouldDisplayManagedByParentUi(profile)) {
+    std::vector<std::u16string> replacements = {base::UTF8ToUTF16(
+        supervised_user::kManagedByParentUiMoreInfoUrl.Get())};
+    return l10n_util::GetStringFUTF16(IDS_MANAGED_BY_PARENT_WITH_HYPERLINK,
+                                      replacements, nullptr);
+  }
+#endif
+
+  // This method can be called even if we shouldn't display the managed UI.
+  return std::u16string();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_COMMON_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace supervised_user {
 
@@ -22,6 +23,8 @@ BASE_DECLARE_FEATURE(kSynchronousSignInChecking);
 BASE_DECLARE_FEATURE(kEnableSupervisionOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
 BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
+extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
 
 BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
 
