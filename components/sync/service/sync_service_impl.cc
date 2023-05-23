@@ -1358,6 +1358,8 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
   DCHECK(engine_);
   DCHECK(engine_->IsInitialized());
   DCHECK(!engine_->GetCacheGuid().empty());
+  DVLOG(1) << "Started DataTypeManager configuration, reason: "
+           << static_cast<int>(reason);
 
   ConfigureContext configure_context;
   configure_context.authenticated_account_id = GetAccountInfo().account_id;

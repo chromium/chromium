@@ -866,6 +866,7 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
   }
 #endif
 
+  DLOG(INFO) << "SyncTest::SetupSync() completed.";
   return true;
 }
 
