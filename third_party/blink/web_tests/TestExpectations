@@ -6831,3 +6831,5 @@ crbug.com/1447239 virtual/threaded-prefer-compositing/external/wpt/scroll-animat
 crbug.com/1447531 [ Mac10.13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Failure Pass Timeout ]
 crbug.com/1447531 [ Mac10.14 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Failure Pass ]
 crbug.com/1447244 [ Mac ] virtual/threaded/external/wpt/scroll-animations/css/animation-range-visual-test.html [ Failure Pass ]
+
+crbug.com/1377004 [ Mac ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Failure Pass Timeout ]
