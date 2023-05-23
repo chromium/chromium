@@ -1378,36 +1378,20 @@ const FeatureEntry::FeatureVariation
          std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
 };
 const FeatureEntry::FeatureParam kJourneysAllVisitsNoPairwiseMergeParams[] = {
-    {"collections_blocklist",
-     "/collection/it_glossary,/collection/periodicals,/collection/"
-     "software,/collection/websites"},
-    {"exclude_entities_that_have_no_collections", "true"},
     {"use_pairwise_merge", "false"},
     {"search_visits_only", "false"},
 };
 const FeatureEntry::FeatureParam kJourneysAllVisitsWithPairwiseMergeParams[] = {
-    {"collections_blocklist",
-     "/collection/it_glossary,/collection/periodicals,/collection/"
-     "software,/collection/websites"},
-    {"exclude_entities_that_have_no_collections", "true"},
     {"use_pairwise_merge", "true"},
     {"search_visits_only", "false"},
 };
 const FeatureEntry::FeatureParam kJourneysSearchVisitsNoPairwiseMergeParams[] =
     {
-        {"collections_blocklist",
-         "/collection/it_glossary,/collection/periodicals,/collection/"
-         "software,/collection/websites"},
-        {"exclude_entities_that_have_no_collections", "true"},
         {"use_pairwise_merge", "false"},
         {"search_visits_only", "true"},
 };
 const FeatureEntry::FeatureParam
     kJourneysSearchVisitsWithPairwiseMergeParams[] = {
-        {"collections_blocklist",
-         "/collection/it_glossary,/collection/periodicals,/collection/"
-         "software,/collection/websites"},
-        {"exclude_entities_that_have_no_collections", "true"},
         {"use_pairwise_merge", "true"},
         {"search_visits_only", "true"},
 };
