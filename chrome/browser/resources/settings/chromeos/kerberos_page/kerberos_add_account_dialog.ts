@@ -42,8 +42,8 @@ interface KerberosAddAccountDialogElement {
 }
 
 /**
- * The default placeholder that is shown in the username field
- * of authentication dialog.
+ * The default placeholder that is shown in the username field of the
+ * authentication dialog.
  */
 const DEFAULT_USERNAME_PLACEHOLDER: string = 'user@example.com';
 
@@ -95,11 +95,6 @@ class KerberosAddAccountDialogElement extends
         value: '',
       },
 
-      rememberPassword_: {
-        type: Boolean,
-        value: false,
-      },
-
       generalErrorText_: {
         type: String,
         value: '',
@@ -136,7 +131,17 @@ class KerberosAddAccountDialogElement extends
       },
 
       /**
-       * Whether the remember password options is allowed by policy.
+       * Whether the password should be remembered by default.
+       */
+      rememberPasswordByDefault_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('kerberosRememberPasswordByDefault');
+        },
+      },
+
+      /**
+       * Whether the remember password option is allowed by policy.
        */
       rememberPasswordEnabled_: {
         type: Boolean,
@@ -182,6 +187,7 @@ class KerberosAddAccountDialogElement extends
   private passwordErrorText_: string;
   private password_: string;
   private prefillDomain_: string;
+  private rememberPasswordByDefault_: boolean;
   private rememberPasswordEnabled_: boolean;
   private rememberPassword_: boolean;
   private showAdvancedConfig_: boolean;
@@ -194,6 +200,8 @@ class KerberosAddAccountDialogElement extends
     super();
 
     this.useRememberedPassword_ = false;
+    this.rememberPassword_ = this.rememberPasswordByDefault_ &&
+        this.rememberPasswordEnabled_ && !this.isGuestMode_;
     this.config_ = '';
     this.title_ = '';
     this.actionButtonLabel_ = '';

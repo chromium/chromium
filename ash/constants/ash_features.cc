@@ -1365,6 +1365,12 @@ BASE_FEATURE(kJapaneseFunctionRow,
              "JapaneseFunctionRow",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the "Remember password" button in the Kerberos "Add account"
+// dialog should be checked by default.
+BASE_FEATURE(kKerberosRememberPasswordByDefault,
+             "KerberosRememberPasswordByDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables IME button in the floating accessibility menu for the Kiosk session.
 BASE_FEATURE(kKioskEnableImeButton,
              "KioskEnableImeButton",
@@ -3045,6 +3051,10 @@ bool IsJellyEnabledForScanningApp() {
 bool IsJellyEnabledForShortcutCustomization() {
   return chromeos::features::IsJellyEnabled() &&
          base::FeatureList::IsEnabled(kShortcutCustomizationJelly);
+}
+
+bool IsKerberosRememberPasswordByDefaultEnabled() {
+  return base::FeatureList::IsEnabled(kKerberosRememberPasswordByDefault);
 }
 
 bool IsKeyboardBacklightToggleEnabled() {

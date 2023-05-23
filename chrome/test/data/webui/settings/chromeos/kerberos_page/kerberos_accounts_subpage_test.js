@@ -370,6 +370,9 @@ suite('KerberosAddAccountTests', function() {
     browserProxy = new TestKerberosAccountsBrowserProxy();
     KerberosAccountsBrowserProxyImpl.setInstanceForTesting(browserProxy);
     PolymerTest.clearBody();
+
+    // Start test with the "Remember password by default" feature enabled.
+    loadTimeData.overrideValues({kerberosRememberPasswordByDefault: true});
     createDialog(null);
   });
 
@@ -454,14 +457,25 @@ suite('KerberosAddAccountTests', function() {
     flush();
   }
 
-  // Verifies expected states if no account is preset.
-  test('StatesWithoutPresetAccount', async () => {
+  // Verifies expected states if no account is preset and password should be
+  // remembered by default.
+  test('StatesWithoutPresetAccountPasswordRemembered', async () => {
     assertTrue(title.startsWith('Add'));
     assertEquals('Add', actionButton.innerText);
     assertFalse(username.disabled);
     assertEquals('', username.value);
     assertEquals('', password.value);
     assertConfig(loadTimeData.getString('defaultKerberosConfig'));
+    assertTrue(rememberPassword.checked);
+  });
+
+  // Verifies the rememberPassword state if no account is preset and password
+  // should not be remembered by default.
+  test('StatesWithoutPresetAccountPasswordNotRemembered', async () => {
+    loadTimeData.overrideValues({kerberosRememberPasswordByDefault: false});
+    createDialog(null);
+    flush();
+
     assertFalse(rememberPassword.checked);
   });
 
@@ -477,16 +491,31 @@ suite('KerberosAddAccountTests', function() {
     // depends on the passwordWasRemembered property of the account.
   });
 
-  // The password input field is empty and 'Remember password' is not preset
-  // if |passwordWasRemembered| is false.
+  // The password input field is empty and 'Remember password' is checked if
+  // |passwordWasRemembered| is false and the password should be remembered by
+  // default.
   test('PasswordNotPresetIfPasswordWasNotRemembered', function() {
+    assertFalse(TEST_KERBEROS_ACCOUNTS[0].passwordWasRemembered);
+    createDialog(TEST_KERBEROS_ACCOUNTS[0]);
+    assertEquals('', password.value);
+    assertTrue(rememberPassword.checked);
+  });
+
+  // The password input field is empty and 'Remember password' is not checked if
+  // |passwordWasRemembered| is false and the password should not be remembered
+  // by default.
+  test('PasswordPresetIfPasswordWasNotRememberedAndFeatureEnabled', function() {
+    loadTimeData.overrideValues({kerberosRememberPasswordByDefault: false});
+    createDialog(null);
+    flush();
+
     assertFalse(TEST_KERBEROS_ACCOUNTS[0].passwordWasRemembered);
     createDialog(TEST_KERBEROS_ACCOUNTS[0]);
     assertEquals('', password.value);
     assertFalse(rememberPassword.checked);
   });
 
-  // The password input field is not empty and 'Remember password' is preset
+  // The password input field is not empty and 'Remember password' is checked
   // if |passwordWasRemembered| is true.
   test('PasswordPresetIfPasswordWasRemembered', function() {
     assertTrue(TEST_KERBEROS_ACCOUNTS[1].passwordWasRemembered);
@@ -523,22 +552,24 @@ suite('KerberosAddAccountTests', function() {
     loadTimeData.overrideValues({kerberosRememberPasswordEnabled: true});
   });
 
-  test('RememberPasswordVisibleOnUserSessions', function() {
+  test('RememberPasswordVisibleAndCheckedOnUserSessions', function() {
     assertFalse(loadTimeData.getBoolean('isGuest'));
     createDialog(null);
     flush();
 
     assertFalse(
         dialog.shadowRoot.querySelector('#rememberPasswordContainer').hidden);
+    assertTrue(rememberPassword.checked);
   });
 
-  test('RememberPasswordHiddenOnMgs', function() {
+  test('RememberPasswordHiddenAndNotCheckedOnMgs', function() {
     loadTimeData.overrideValues({isGuest: true});
     createDialog(null);
     flush();
 
     assertTrue(
         dialog.shadowRoot.querySelector('#rememberPasswordContainer').hidden);
+    assertFalse(rememberPassword.checked);
 
     // Reset for further tests.
     loadTimeData.overrideValues({isGuest: false});
