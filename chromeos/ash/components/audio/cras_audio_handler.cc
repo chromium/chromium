@@ -1453,11 +1453,6 @@ void CrasAudioHandler::ApplySpeakOnMuteDetectionState() {
   speak_on_mute_detection_on_ = som_on;
   // Sets speak-on-mute detection enabled based on pref value.
   CrasAudioClient::Get()->SetSpeakOnMuteDetection(speak_on_mute_detection_on_);
-
-  // No longer shows the opt-in nudge as user has changed the speak-on-mute
-  // detection setting.
-  audio_pref_handler_->SetShouldShowSpeakOnMuteOptInNudgeValue(
-      /*should_show_opt_in_nudge=*/false);
 }
 
 void CrasAudioHandler::UpdateAudioMute() {

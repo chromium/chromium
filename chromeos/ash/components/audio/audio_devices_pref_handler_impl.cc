@@ -351,17 +351,6 @@ bool AudioDevicesPrefHandlerImpl::GetSpeakOnMuteDetectionEnabledValue() const {
   return local_state_->GetBoolean(prefs::kUserSpeakOnMuteDetectionEnabled);
 }
 
-bool AudioDevicesPrefHandlerImpl::GetShouldShowSpeakOnMuteOptInNudgeValue()
-    const {
-  return local_state_->GetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge);
-}
-
-void AudioDevicesPrefHandlerImpl::SetShouldShowSpeakOnMuteOptInNudgeValue(
-    bool should_show_opt_in_nudge) {
-  local_state_->SetBoolean(prefs::kShouldShowSpeakOnMuteOptInNudge,
-                           should_show_opt_in_nudge);
-}
-
 void AudioDevicesPrefHandlerImpl::AddAudioPrefObserver(
     AudioPrefObserver* observer) {
   observers_.AddObserver(observer);
@@ -560,8 +549,7 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesState);
   registry->RegisterBooleanPref(prefs::kInputNoiseCancellationEnabled, false);
   registry->RegisterBooleanPref(prefs::kUserSpeakOnMuteDetectionEnabled, false);
-  registry->RegisterBooleanPref(prefs::kShouldShowSpeakOnMuteOptInNudge, true);
-  registry->RegisterIntegerPref(prefs::kSpeakOnMuteOptInNudgeShownCount, 0);
+  registry->RegisterBooleanPref(prefs::kUserSpeakOnMuteDetectionOptIn, false);
 
   // Register the prefs backing the audio muting policies.
   // Policy for audio input is handled by kAudioCaptureAllowed in the Chrome

@@ -5165,27 +5165,18 @@ TEST_P(CrasAudioHandlerTest, SpeakOnMuteDetectionPrefSwitchTest) {
   // Speak-on-mute detection should still be disabled since the pref is
   // disabled by default.
   EXPECT_FALSE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
-  EXPECT_FALSE(audio_pref_handler_->GetSpeakOnMuteDetectionEnabledValue());
-  // `kShouldShowSpeakOnMuteOptInNudge` pref should be enabled by default.
-  EXPECT_TRUE(audio_pref_handler_->GetShouldShowSpeakOnMuteOptInNudgeValue());
 
   // Simulate enable pref for speak-on-mute detection, which should enable
   // speak-on-mute detection.
   audio_pref_handler_->SetSpeakOnMuteDetectionEnabledValue(
       /*is_speak_on_mute_detection_enabled=*/true);
   EXPECT_TRUE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
-  // `kShouldShowSpeakOnMuteOptInNudge` pref should be disabled as the
-  // `kUserSpeakOnMuteDetectionEnabled` pref has been changed.
-  EXPECT_FALSE(audio_pref_handler_->GetShouldShowSpeakOnMuteOptInNudgeValue());
 
   // Simulate disable pref for speak-on-mute detection, which should disable
   // speak-on-mute detection.
   audio_pref_handler_->SetSpeakOnMuteDetectionEnabledValue(
       /*is_speak_on_mute_detection_enabled=*/false);
   EXPECT_FALSE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
-  // `kShouldShowSpeakOnMuteOptInNudge` pref should be disabled as the
-  // `kUserSpeakOnMuteDetectionEnabled` pref has been changed.
-  EXPECT_FALSE(audio_pref_handler_->GetShouldShowSpeakOnMuteOptInNudgeValue());
 }
 
 }  // namespace ash
