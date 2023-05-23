@@ -55,6 +55,8 @@
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touch_device_transform.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -108,6 +110,21 @@ constexpr mojom::TopRowKey kInternalJinlonTopRowKeys[] = {
     mojom::TopRowKey::kVolumeMute,
     mojom::TopRowKey::kVolumeDown,
     mojom::TopRowKey::kVolumeUp};
+
+constexpr ui::TopRowActionKey kInternalJinlonActionKeys[] = {
+    ui::TopRowActionKey::kBack,
+    ui::TopRowActionKey::kRefresh,
+    ui::TopRowActionKey::kFullscreen,
+    ui::TopRowActionKey::kOverview,
+    ui::TopRowActionKey::kScreenshot,
+    ui::TopRowActionKey::kScreenBrightnessDown,
+    ui::TopRowActionKey::kScreenBrightnessUp,
+    ui::TopRowActionKey::kPrivacyScreenToggle,
+    ui::TopRowActionKey::kKeyboardBacklightDown,
+    ui::TopRowActionKey::kKeyboardBacklightUp,
+    ui::TopRowActionKey::kVolumeMute,
+    ui::TopRowActionKey::kVolumeDown,
+    ui::TopRowActionKey::kVolumeUp};
 
 // One possible variant of a Dell configuration
 constexpr mojom::TopRowKey kInternalDellTopRowKeys[] = {
@@ -437,6 +454,7 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
     ui::DeviceCapabilities device_caps;
     const std::string base_name = path.BaseName().value();
     auto info = std::make_unique<InputDeviceInformation>();
+    std::unique_ptr<ui::KeyboardCapability::KeyboardInfo> keyboard_info;
 
     if (base_name == "event0") {
       device_caps = ui::kLinkKeyboard;
@@ -482,6 +500,16 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
       info->keyboard_top_row_layout =
           ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
       info->keyboard_scan_codes = kInternalJinlonScanCodes;
+
+      keyboard_info = std::make_unique<ui::KeyboardCapability::KeyboardInfo>();
+      keyboard_info->device_type =
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+      keyboard_info->top_row_action_keys.assign(
+          std::begin(kInternalJinlonActionKeys),
+          std::end(kInternalJinlonActionKeys));
+      keyboard_info->top_row_layout =
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+      keyboard_info->top_row_scan_codes = kInternalJinlonScanCodes;
       EXPECT_EQ(7, id);
     } else if (base_name == "event8") {
       device_caps = ui::kMicrosoftBluetoothNumberPad;
@@ -511,6 +539,18 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
       info->keyboard_scan_codes = kInternalJinlonScanCodes;
       // Set 0xC4 to be F8.
       info->keyboard_scan_codes[7] = 0xC4;
+
+      keyboard_info = std::make_unique<ui::KeyboardCapability::KeyboardInfo>();
+      keyboard_info->device_type =
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+      keyboard_info->top_row_action_keys.assign(
+          std::begin(kInternalJinlonActionKeys),
+          std::end(kInternalJinlonActionKeys));
+      keyboard_info->top_row_layout =
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+      keyboard_info->top_row_scan_codes = kInternalJinlonScanCodes;
+      keyboard_info->top_row_scan_codes[7] = 0xC4;
+      keyboard_info->top_row_action_keys[7] = ui::TopRowActionKey::kUnknown;
       EXPECT_EQ(11, id);
     } else if (base_name == "event12") {
       device_caps = ui::kMorphiusTabletModeSwitch;
@@ -546,6 +586,14 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
     info->connection_type =
         InputDataProvider::ConnectionTypeFromInputDeviceType(
             info->event_device_info.device_type());
+
+    if (keyboard_info) {
+      Shell::Get()
+          ->keyboard_capability()
+          ->DisableKeyboardInfoTrimmingForTesting();
+      Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
+          ui::KeyboardDevice(info->input_device), std::move(*keyboard_info));
+    }
 
     return info;
   }

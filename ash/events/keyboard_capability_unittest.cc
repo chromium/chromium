@@ -1121,6 +1121,8 @@ class TopRowLayoutCustomTest
         return CustomTopRowScanCode::kPreviousTrack;
       case ui::TopRowActionKey::kPlayPause:
         return CustomTopRowScanCode::kPlayPause;
+      case ui::TopRowActionKey::kPrivacyScreenToggle:
+        return CustomTopRowScanCode::kPrivacyScreenToggle;
       case ui::TopRowActionKey::kAllApplications:
       case ui::TopRowActionKey::kEmojiPicker:
       case ui::TopRowActionKey::kDictation:
@@ -1179,6 +1181,7 @@ INSTANTIATE_TEST_SUITE_P(
             ui::TopRowActionKey::kBack,
             ui::TopRowActionKey::kForward,
             ui::TopRowActionKey::kRefresh,
+            ui::TopRowActionKey::kPrivacyScreenToggle,
         },
         {
             ui::TopRowActionKey::kMicrophoneMute,
@@ -1193,7 +1196,6 @@ TEST_P(TopRowLayoutCustomTest, TopRowLayout) {
                               "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(keyboard, custom_layout_string_,
                                           /*has_custom_top_row=*/true);
-
   for (ui::TopRowActionKey action_key = ui::TopRowActionKey::kMinValue;
        action_key <= ui::TopRowActionKey::kMaxValue;
        action_key =

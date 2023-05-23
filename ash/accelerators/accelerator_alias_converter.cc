@@ -127,6 +127,7 @@ bool ShouldAlwaysShowWithExternalKeyboard(ui::TopRowActionKey action_key) {
     case ui::TopRowActionKey::kKeyboardBacklightToggle:
     case ui::TopRowActionKey::kKeyboardBacklightDown:
     case ui::TopRowActionKey::kKeyboardBacklightUp:
+    case ui::TopRowActionKey::kPrivacyScreenToggle:
     case ui::TopRowActionKey::kAllApplications:
     case ui::TopRowActionKey::kDictation:
       return false;
@@ -463,9 +464,12 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
   }
 
   for (const auto& accelerator : accelerators) {
+    // TODO(dpad): Handle privacy screen correctly. This can be simplified once
+    // drallion devices are properly handled in `KeyboardCapability`.
     if (auto action_key = ui::KeyboardCapability::ConvertToTopRowActionKey(
             accelerator.key_code());
-        action_key.has_value()) {
+        action_key.has_value() &&
+        action_key != ui::TopRowActionKey::kPrivacyScreenToggle) {
       // Accelerator should only be seen if the priority or internal keyboard
       // have the key OR if there is an external keyboard and the `action_key`
       // should always been shown when there is an external keyboard.

@@ -12,6 +12,7 @@
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/diagnostics/mojom/input.mojom-shared.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-shared.h"
 #include "base/check_op.h"
@@ -21,6 +22,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
@@ -66,67 +68,6 @@ constexpr auto kFKeyOrder =
                                                     {KEY_F13, kFKey13},
                                                     {KEY_F14, kFKey14},
                                                     {KEY_F15, kFKey15}});
-
-// Represents scancode value seen in scan code mapping received from
-// `EventRewriterAsh` which denotes that the FKey is missing on the
-// physical device.
-constexpr uint32_t kCustomScanCodeFKeyMissing = 0x00;
-
-// Mapping from keyboard scancodes to TopRowKeys (must be in scancode-sorted
-// order) for keyboards with custom top row layouts (vivaldi). This replicates
-// and should be identical to the mapping behaviour of ChromeOS: changes will
-// be needed if new AT scancodes or HID mappings are used in a top-row key,
-// likely added in ui/events/keycodes/dom/dom_code_data.inc.
-//
-// Note that there are currently no dedicated scancodes for kScreenMirror.
-constexpr auto kCustomScancodeMapping =
-    base::MakeFixedFlatMap<uint32_t, mojom::TopRowKey>({
-        // Scan code is only `kCustomScanCodeFKeyMissing` when the FKey is
-        // absent on the keyboard.
-        {kCustomScanCodeFKeyMissing, mojom::TopRowKey::kNone},
-
-        // Vivaldi-specific extended Set-1 AT-style scancodes.
-        {0x90, mojom::TopRowKey::kPreviousTrack},
-        {0x91, mojom::TopRowKey::kFullscreen},
-        {0x92, mojom::TopRowKey::kOverview},
-        {0x93, mojom::TopRowKey::kScreenshot},
-        {0x94, mojom::TopRowKey::kScreenBrightnessDown},
-        {0x95, mojom::TopRowKey::kScreenBrightnessUp},
-        {0x96, mojom::TopRowKey::kPrivacyScreenToggle},
-        {0x97, mojom::TopRowKey::kKeyboardBacklightDown},
-        {0x98, mojom::TopRowKey::kKeyboardBacklightUp},
-        {0x99, mojom::TopRowKey::kNextTrack},
-        {0x9A, mojom::TopRowKey::kPlayPause},
-        {0x9B, mojom::TopRowKey::kMicrophoneMute},
-        {0x9E, mojom::TopRowKey::kKeyboardBacklightToggle},
-        {0xA0, mojom::TopRowKey::kVolumeMute},
-        {0xAE, mojom::TopRowKey::kVolumeDown},
-        {0xB0, mojom::TopRowKey::kVolumeUp},
-        {0xE9, mojom::TopRowKey::kForward},
-        {0xEA, mojom::TopRowKey::kBack},
-        {0xE7, mojom::TopRowKey::kRefresh},
-
-        // HID 32-bit usage codes
-        {0x070046, mojom::TopRowKey::kScreenshot},
-        {0x0B002F, mojom::TopRowKey::kMicrophoneMute},
-        {0x0C00E2, mojom::TopRowKey::kVolumeMute},
-        {0x0C00E9, mojom::TopRowKey::kVolumeUp},
-        {0x0C00EA, mojom::TopRowKey::kVolumeDown},
-        {0x0C006F, mojom::TopRowKey::kScreenBrightnessUp},
-        {0x0C0070, mojom::TopRowKey::kScreenBrightnessDown},
-        {0x0C0079, mojom::TopRowKey::kKeyboardBacklightUp},
-        {0x0C007A, mojom::TopRowKey::kKeyboardBacklightDown},
-        {0x0C007C, mojom::TopRowKey::kKeyboardBacklightToggle},
-        {0x0C00B5, mojom::TopRowKey::kNextTrack},
-        {0x0C00B6, mojom::TopRowKey::kPreviousTrack},
-        {0x0C00CD, mojom::TopRowKey::kPlayPause},
-        {0x0C0224, mojom::TopRowKey::kBack},
-        {0x0C0225, mojom::TopRowKey::kForward},
-        {0x0C0227, mojom::TopRowKey::kRefresh},
-        {0x0C0232, mojom::TopRowKey::kFullscreen},
-        {0x0C029F, mojom::TopRowKey::kOverview},
-        {0x0C02D0, mojom::TopRowKey::kPrivacyScreenToggle},
-    });
 
 // Hard-coded top-row key mappings. These are intended to match the behaviour of
 // EventRewriterAsh::RewriteFunctionKeys for historical keyboards. No
@@ -259,6 +200,57 @@ absl::optional<std::string> GetRegionCode() {
   return std::string(layout_string.value());
 }
 
+constexpr mojom::TopRowKey ConvertTopRowActionKeyToDiagnosticsTopRowKey(
+    ui::TopRowActionKey action_key) {
+  switch (action_key) {
+    case ui::TopRowActionKey::kBack:
+      return mojom::TopRowKey::kBack;
+    case ui::TopRowActionKey::kForward:
+      return mojom::TopRowKey::kForward;
+    case ui::TopRowActionKey::kRefresh:
+      return mojom::TopRowKey::kRefresh;
+    case ui::TopRowActionKey::kFullscreen:
+      return mojom::TopRowKey::kFullscreen;
+    case ui::TopRowActionKey::kOverview:
+      return mojom::TopRowKey::kOverview;
+    case ui::TopRowActionKey::kScreenshot:
+      return mojom::TopRowKey::kScreenshot;
+    case ui::TopRowActionKey::kScreenBrightnessDown:
+      return mojom::TopRowKey::kScreenBrightnessDown;
+    case ui::TopRowActionKey::kScreenBrightnessUp:
+      return mojom::TopRowKey::kScreenBrightnessUp;
+    case ui::TopRowActionKey::kMicrophoneMute:
+      return mojom::TopRowKey::kMicrophoneMute;
+    case ui::TopRowActionKey::kVolumeMute:
+      return mojom::TopRowKey::kVolumeMute;
+    case ui::TopRowActionKey::kVolumeDown:
+      return mojom::TopRowKey::kVolumeDown;
+    case ui::TopRowActionKey::kVolumeUp:
+      return mojom::TopRowKey::kVolumeUp;
+    case ui::TopRowActionKey::kKeyboardBacklightToggle:
+      return mojom::TopRowKey::kKeyboardBacklightToggle;
+    case ui::TopRowActionKey::kKeyboardBacklightDown:
+      return mojom::TopRowKey::kKeyboardBacklightDown;
+    case ui::TopRowActionKey::kKeyboardBacklightUp:
+      return mojom::TopRowKey::kKeyboardBacklightUp;
+    case ui::TopRowActionKey::kNextTrack:
+      return mojom::TopRowKey::kNextTrack;
+    case ui::TopRowActionKey::kPreviousTrack:
+      return mojom::TopRowKey::kPreviousTrack;
+    case ui::TopRowActionKey::kPlayPause:
+      return mojom::TopRowKey::kPlayPause;
+    case ui::TopRowActionKey::kPrivacyScreenToggle:
+      return mojom::TopRowKey::kPrivacyScreenToggle;
+    case ui::TopRowActionKey::kAllApplications:
+    case ui::TopRowActionKey::kEmojiPicker:
+    case ui::TopRowActionKey::kDictation:
+    case ui::TopRowActionKey::kUnknown:
+      return mojom::TopRowKey::kUnknown;
+    case ui::TopRowActionKey::kNone:
+      return mojom::TopRowKey::kNone;
+  }
+}
+
 }  // namespace
 
 InputDataProviderKeyboard::InputDataProviderKeyboard() {}
@@ -314,24 +306,31 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
 
     case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom: {
       top_row_keys.reserve(top_row_scan_codes.size());
-      size_t index = 0;
-      for (const auto& scancode : top_row_scan_codes) {
-        // Skip all scancodes which map to kNone keys. This is most likely a
-        // result of an absent FKey (ex: Skipped FKeys on top row).
-        if (kCustomScancodeMapping.contains(scancode)) {
-          const auto& top_row_key = kCustomScancodeMapping.at(scancode);
-          if (top_row_key == mojom::TopRowKey::kNone) {
-            continue;
-          }
-          top_row_keys.push_back(top_row_key);
-        } else {
-          top_row_keys.push_back(mojom::TopRowKey::kUnknown);
-        }
 
-        top_row_key_scancode_indexes[scancode] = index++;
+      // If action keys cannot be found or if it has a different size than the
+      // top row scan codes, do not fill out the arrays.
+      // This will only happen if there is an error in `KeyboardCapability`.
+      const auto* action_keys =
+          Shell::Get()->keyboard_capability()->GetTopRowActionKeys(
+              ui::KeyboardDevice(device_info->input_device));
+      if (!action_keys || action_keys->size() != top_row_scan_codes.size()) {
+        break;
+      }
+
+      // Exclude all top row keys which are considered `kNone`.
+      size_t index = 0;
+      for (size_t i = 0; i < top_row_scan_codes.size(); i++) {
+        auto top_row_key =
+            ConvertTopRowActionKeyToDiagnosticsTopRowKey((*action_keys)[i]);
+        if (top_row_key == mojom::TopRowKey::kNone) {
+          continue;
+        }
+        top_row_keys.push_back(top_row_key);
+        top_row_key_scancode_indexes[top_row_scan_codes[i]] = index++;
       }
       break;
     }
+
     case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2:
       top_row_keys.assign(std::begin(kSystemKeys2), std::end(kSystemKeys2));
       // No specific top_row_key_scancode_indexes are needed
