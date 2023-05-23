@@ -5,8 +5,8 @@
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/structured/reporting/structured_metrics_log_metrics.h"
 #include "components/metrics/structured/structured_metrics_prefs.h"
-#include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 
@@ -19,7 +19,7 @@ StructuredMetricsReportingService::StructuredMetricsReportingService(
                        local_state,
                        storage_limits.max_log_size,
                        /*logs_event_manager=*/nullptr),
-      log_store_(std::make_unique<metrics::UnsentLogStoreMetricsImpl>(),
+      log_store_(std::make_unique<StructuredMetricsLogMetrics>(),
                  local_state,
                  prefs::kLogStoreName,
                  /* metadata_pref_name=*/nullptr,
