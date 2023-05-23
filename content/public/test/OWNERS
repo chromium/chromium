@@ -40,3 +40,6 @@ per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 ## For fenced frames changes.
 per-file fenced_frame*=file://third_party/blink/renderer/core/html/fenced_frame/OWNERS
+
+# For Service Worker tests support review.
+per-file embedded_worker_instance_test_harness.*=file://content/browser/service_worker/OWNERS

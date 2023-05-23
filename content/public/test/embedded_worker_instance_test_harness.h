@@ -19,6 +19,7 @@ namespace content {
 
 class EmbeddedWorkerInstance;
 class EmbeddedWorkerTestHelper;
+class ServiceWorkerVersion;
 
 // EmbeddedWorkerInstanceTestHarness provides helper functions to set up a test
 // environment with an EmbeddedWorkerInstance, and allow a test to test the
@@ -86,7 +87,7 @@ class EmbeddedWorkerInstanceTestHarness : public testing::Test {
 
  private:
   std::unique_ptr<BrowserTaskEnvironment> task_environment_;
-  std::unique_ptr<EmbeddedWorkerInstance> worker_;
+  scoped_refptr<content::ServiceWorkerVersion> worker_version_;
 };
 
 }  // namespace content
