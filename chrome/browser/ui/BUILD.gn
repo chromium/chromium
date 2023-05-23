@@ -5644,6 +5644,7 @@ static_library("ui") {
       "//services/media_session/public/mojom",
       "//ui/base/dragdrop:types",
       "//ui/gfx/geometry",
+      "//ui/lottie",
       "//ui/views:buildflags",
     ]
     public_deps += [ "//ui/base/dragdrop/mojom:mojom_headers" ]

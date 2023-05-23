@@ -14,6 +14,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class AnimatedImageView;
 class Label;
 }  // namespace views
 
@@ -118,7 +119,8 @@ class AuthenticatorRequestSheetView : public views::View {
   raw_ptr<views::ImageButton> close_button_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> step_specific_content_ = nullptr;
   AutoFocus should_focus_step_specific_content_ = AutoFocus::kNo;
-  raw_ptr<NonAccessibleImageView> step_illustration_ = nullptr;
+  raw_ptr<NonAccessibleImageView> step_illustration_image_ = nullptr;
+  raw_ptr<views::AnimatedImageView> step_illustration_animation_ = nullptr;
   raw_ptr<views::Label, DanglingUntriaged> error_label_ = nullptr;
 };
 

@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace gfx {
 struct VectorIcon;
 }
@@ -65,6 +67,18 @@ class AuthenticatorRequestSheetModel {
   virtual void OnAccept() = 0;
   virtual void OnCancel() = 0;
   virtual void OnManageDevices();
+
+  absl::optional<int> lottie_illustration_light_id() const {
+    return lottie_illustration_light_id_;
+  }
+
+  absl::optional<int> lottie_illustration_dark_id() const {
+    return lottie_illustration_dark_id_;
+  }
+
+ protected:
+  absl::optional<int> lottie_illustration_light_id_;
+  absl::optional<int> lottie_illustration_dark_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_

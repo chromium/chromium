@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -1365,6 +1366,88 @@ std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
           IDS_WEBAUTHN_USE_PASSKEY_QR_BODY,
           GetRelyingPartyIdString(dialog_model()));
   }
+}
+
+// AuthenticatorConnectingSheetModel ------------------------------------------
+
+AuthenticatorConnectingSheetModel::AuthenticatorConnectingSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden) {
+  lottie_illustration_light_id_ = IDR_WEBAUTHN_HYBRID_CONNECTING_LIGHT;
+  lottie_illustration_dark_id_ = IDR_WEBAUTHN_HYBRID_CONNECTING_DARK;
+}
+
+AuthenticatorConnectingSheetModel::~AuthenticatorConnectingSheetModel() =
+    default;
+
+const gfx::VectorIcon& AuthenticatorConnectingSheetModel::GetStepIllustration(
+    ImageColorScheme color_scheme) const {
+  // Uses Lottie instead.
+  return gfx::kNoneIcon;
+}
+
+std::u16string AuthenticatorConnectingSheetModel::GetStepTitle() const {
+  return u"Connecting with your device (UNTRANSLATED)";
+}
+
+std::u16string AuthenticatorConnectingSheetModel::GetStepDescription() const {
+  return u"This will just take a moment (UNTRANSLATED)";
+}
+
+// AuthenticatorConnectedSheetModel ------------------------------------------
+
+AuthenticatorConnectedSheetModel::AuthenticatorConnectedSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden) {}
+
+AuthenticatorConnectedSheetModel::~AuthenticatorConnectedSheetModel() = default;
+
+bool AuthenticatorConnectedSheetModel::IsActivityIndicatorVisible() const {
+  return false;
+}
+
+const gfx::VectorIcon& AuthenticatorConnectedSheetModel::GetStepIllustration(
+    ImageColorScheme color_scheme) const {
+  return color_scheme == ImageColorScheme::kDark ? kPasskeyPhoneDarkIcon
+                                                 : kPasskeyPhoneIcon;
+}
+
+std::u16string AuthenticatorConnectedSheetModel::GetStepTitle() const {
+  return u"Check your device (UNTRANSLATED)";
+}
+
+std::u16string AuthenticatorConnectedSheetModel::GetStepDescription() const {
+  return u"Follow the steps described on your device (UNTRANSLATED)";
+}
+
+// AuthenticatorCableErrorSheetModel ------------------------------------------
+
+AuthenticatorCableErrorSheetModel::AuthenticatorCableErrorSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden) {}
+
+AuthenticatorCableErrorSheetModel::~AuthenticatorCableErrorSheetModel() =
+    default;
+
+bool AuthenticatorCableErrorSheetModel::IsOtherMechanismButtonVisible() const {
+  return false;
+}
+
+const gfx::VectorIcon& AuthenticatorCableErrorSheetModel::GetStepIllustration(
+    ImageColorScheme color_scheme) const {
+  return color_scheme == ImageColorScheme::kDark ? kPasskeyErrorDarkIcon
+                                                 : kPasskeyErrorIcon;
+}
+
+std::u16string AuthenticatorCableErrorSheetModel::GetStepTitle() const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_ERROR_GENERIC_TITLE);
+}
+
+std::u16string AuthenticatorCableErrorSheetModel::GetStepDescription() const {
+  return u"Something went wrong (UNTRANSLATED)";
 }
 
 // AuthenticatorCreatePasskeySheetModel

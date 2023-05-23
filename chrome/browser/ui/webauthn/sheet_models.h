@@ -588,6 +588,50 @@ class AuthenticatorQRSheetModel : public AuthenticatorSheetModelBase {
   std::u16string GetStepDescription() const override;
 };
 
+class AuthenticatorConnectingSheetModel : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorConnectingSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorConnectingSheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  const gfx::VectorIcon& GetStepIllustration(
+      ImageColorScheme color_scheme) const override;
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+};
+
+class AuthenticatorConnectedSheetModel : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorConnectedSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorConnectedSheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  bool IsActivityIndicatorVisible() const override;
+  const gfx::VectorIcon& GetStepIllustration(
+      ImageColorScheme color_scheme) const override;
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+};
+
+class AuthenticatorCableErrorSheetModel : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorCableErrorSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorCableErrorSheetModel() override;
+
+ private:
+  // AuthenticatorSheetModelBase:
+  bool IsOtherMechanismButtonVisible() const override;
+  const gfx::VectorIcon& GetStepIllustration(
+      ImageColorScheme color_scheme) const override;
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+};
+
 class AuthenticatorCreatePasskeySheetModel
     : public AuthenticatorSheetModelBase {
  public:

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "cc/paint/skottie_wrapper.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -18,12 +19,15 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/lottie/animation.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
@@ -33,11 +37,18 @@
 
 namespace {
 
-// Height of the progress bar style activity indicator shown at the top of some
-// sheets.
-constexpr int kActivityIndicatorHeight = 4;
+// Margin between the top of the dialog and the start of any illustration.
+constexpr int kImageMarginTop = 22;
 
 using ImageColorScheme = AuthenticatorRequestSheetModel::ImageColorScheme;
+
+template <typename T>
+void ConfigureHeaderIllustration(T* illustration, gfx::Size header_size) {
+  illustration->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginTop, 0)));
+  illustration->SetSize(header_size);
+  illustration->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+}
 
 }  // namespace
 
@@ -84,34 +95,41 @@ AuthenticatorRequestSheetView::BuildStepSpecificContent() {
 
 std::unique_ptr<views::View>
 AuthenticatorRequestSheetView::CreateIllustrationWithOverlays() {
-  // Some sheets do not have an illustration.
-  const gfx::VectorIcon& illustration =
-      model()->GetStepIllustration(ImageColorScheme::kLight);
-  if (&illustration == &gfx::kNoneIcon) {
+  constexpr int kImageHeight = 112, kImageMarginBottom = 2;
+  constexpr int kHeaderHeight =
+      kImageHeight + kImageMarginTop + kImageMarginBottom;
+  const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+  const gfx::Size header_size(dialog_width, kHeaderHeight);
+
+  // The actual illustration image is set in `UpdateIconImageFromModel`, below,
+  // because it's not until that point that we know whether the light or dark
+  // illustration should be used.
+  View* illustration;
+  if (model()->lottie_illustration_light_id()) {
+    auto animation = std::make_unique<views::AnimatedImageView>();
+    animation->SetPreferredSize(gfx::Size(dialog_width, kImageHeight));
+    ConfigureHeaderIllustration(animation.get(), header_size);
+    step_illustration_animation_ = animation.get();
+    illustration = animation.release();
+  } else if (&model()->GetStepIllustration(ImageColorScheme::kLight) !=
+             &gfx::kNoneIcon) {
+    auto image_view = std::make_unique<NonAccessibleImageView>();
+    ConfigureHeaderIllustration(image_view.get(), header_size);
+    step_illustration_image_ = image_view.get();
+    illustration = image_view.release();
+  } else {
     return std::make_unique<views::View>();
   }
 
-  const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  constexpr int kImageHeight = 112, kImageMarginTop = 22,
-                kImageMarginBottom = 2;
-  const int header_height = kImageHeight + kImageMarginTop + kImageMarginBottom;
-  const gfx::Size image_view_size(dialog_width, header_height);
-
   // The container view has no layout, so its preferred size is hardcoded to
-  // match the size of the image, and all overlays are absolutely positioned.
+  // match the size of the header, and all overlays are absolutely positioned.
   auto header_view = std::make_unique<views::View>();
-  header_view->SetPreferredSize(image_view_size);
-
-  auto image_view = std::make_unique<NonAccessibleImageView>();
-  step_illustration_ = image_view.get();
-  image_view->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kImageMarginTop, 0, kImageMarginTop, 0)));
-  image_view->SetSize(image_view_size);
-  image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-  header_view->AddChildView(image_view.release());
+  header_view->SetPreferredSize(header_size);
+  header_view->AddChildView(illustration);
 
   if (model()->IsActivityIndicatorVisible()) {
+    constexpr int kActivityIndicatorHeight = 4;
     auto activity_indicator = std::make_unique<views::ProgressBar>(
         kActivityIndicatorHeight, false /* allow_round_corner */);
     activity_indicator->SetValue(-1 /* inifinite animation */);
@@ -213,14 +231,23 @@ void AuthenticatorRequestSheetView::OnThemeChanged() {
 }
 
 void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
-  if (!step_illustration_) {
-    return;
+  const bool is_dark = GetNativeTheme()->ShouldUseDarkColors();
+  if (step_illustration_image_) {
+    gfx::IconDescription icon_description(model()->GetStepIllustration(
+        is_dark ? ImageColorScheme::kDark : ImageColorScheme::kLight));
+    step_illustration_image_->SetImage(gfx::CreateVectorIcon(icon_description));
+  } else if (step_illustration_animation_) {
+    const int lottie_id = is_dark ? *model()->lottie_illustration_dark_id()
+                                  : *model()->lottie_illustration_light_id();
+    absl::optional<std::vector<uint8_t>> lottie_bytes =
+        ui::ResourceBundle::GetSharedInstance().GetLottieData(lottie_id);
+    scoped_refptr<cc::SkottieWrapper> skottie =
+        cc::SkottieWrapper::CreateSerializable(std::move(*lottie_bytes));
+    step_illustration_animation_->SetAnimatedImage(
+        std::make_unique<lottie::Animation>(skottie));
+    step_illustration_animation_->SizeToPreferredSize();
+    step_illustration_animation_->Play();
   }
-
-  gfx::IconDescription icon_description(model()->GetStepIllustration(
-      GetNativeTheme()->ShouldUseDarkColors() ? ImageColorScheme::kDark
-                                              : ImageColorScheme::kLight));
-  step_illustration_->SetImage(gfx::CreateVectorIcon(icon_description));
 }
 
 void AuthenticatorRequestSheetView::UpdateIconColors() {

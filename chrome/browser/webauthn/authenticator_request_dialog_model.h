@@ -109,6 +109,9 @@ class AuthenticatorRequestDialogModel {
     kCableActivate,
     kAndroidAccessory,
     kCableV2QRCode,
+    kCableV2Connecting,
+    kCableV2Connected,
+    kCableV2Error,
 
     // Authenticator Client PIN.
     kClientPinChange,
