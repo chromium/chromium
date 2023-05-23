@@ -162,10 +162,6 @@ void ScreenAIInstallState::SetDownloadProgress(double progress) {
 }
 
 bool ScreenAIInstallState::IsComponentAvailable() {
-  // Make sure the library becomes available only when it's needed.
-  CHECK(get_component_binary_path().empty() ||
-        features::IsScreenAIServiceNeeded());
-
   return !get_component_binary_path().empty();
 }
 

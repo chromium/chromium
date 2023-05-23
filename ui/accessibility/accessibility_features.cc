@@ -291,11 +291,6 @@ bool IsReadAnythingWithScreen2xEnabled() {
              ::features::kEmergencyDisableScreenAIMainContentExtraction);
 }
 
-bool IsScreenAIServiceNeeded() {
-  return IsPdfOcrEnabled() || IsLayoutExtractionEnabled() ||
-         IsReadAnythingWithScreen2xEnabled();
-}
-
 // This feature is only for debug purposes and for security/privacy reasons,
 // should be never enabled by default .
 BASE_FEATURE(kScreenAIDebugMode,
