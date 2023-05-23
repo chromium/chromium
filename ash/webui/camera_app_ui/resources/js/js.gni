@@ -66,6 +66,7 @@ compile_js_files = [
   "mojo/image_capture.ts",
   "mojo/type.ts",
   "mojo/util.ts",
+  "multi_window_manager.ts",
   "nav.ts",
   "perf.ts",
   "snackbar.ts",

@@ -292,10 +292,6 @@ aura::Window* CameraAppUI::window() {
   return web_ui()->GetWebContents()->GetTopLevelNativeWindow();
 }
 
-CameraAppWindowManager* CameraAppUI::app_window_manager() {
-  return CameraAppWindowManager::GetInstance();
-}
-
 const GURL& CameraAppUI::url() {
   return web_ui()->GetWebContents()->GetLastCommittedURL();
 }

@@ -69,6 +69,9 @@ enum WindowStateType {
 interface WindowStateMonitor {
   // Updates when any of the window states are changed.
   OnWindowStateChanged(array<WindowStateType> states);
+
+  // Updates when the window focus state is changed.
+  OnWindowFocusChanged(bool is_focus);
 };
 
 // The possible result of the file deletion monitor.
@@ -198,12 +201,6 @@ interface CameraAppHelper {
 
   // Opens the given URL in the browser.
   OpenUrlInBrowser(url.mojom.Url url);
-
-  // Sets the monitor to monitor the camera usage ownership changed. If the
-  // window operation is not supported for current instance, return false.
-  SetCameraUsageMonitor(
-      pending_remote<CameraUsageOwnershipMonitor> usage_monitor)
-          => (bool is_success);
 
   // Gets the controller to control and monitor the window state of app.
   GetWindowStateController()

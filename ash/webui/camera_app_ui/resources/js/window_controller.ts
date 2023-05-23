@@ -12,6 +12,8 @@ import {wrapEndpoint} from './mojo/util.js';
 
 type WindowStateChangedEventListener = (states: WindowStateType[]) => void;
 
+type WindowFocusChangedEventListener = (isFocused: boolean) => void;
+
 /**
  * Controller to get/set/listener for window state.
  */
@@ -29,7 +31,14 @@ export class WindowController {
   /**
    * Set of the listeners for window state changed events.
    */
-  private readonly listeners = new Set<WindowStateChangedEventListener>();
+  private readonly windowStateListeners =
+      new Set<WindowStateChangedEventListener>();
+
+  /**
+   * Set of the listeners for window focus changed events.
+   */
+  private readonly windowFocusListeners =
+      new Set<WindowFocusChangedEventListener>();
 
   /**
    * Binds the controller remote from Mojo interface.
@@ -42,8 +51,14 @@ export class WindowController {
     windowMonitorCallbackRouter.onWindowStateChanged.addListener(
         (states: WindowStateType[]) => {
           this.windowStates = states;
-          for (const listener of this.listeners) {
+          for (const listener of this.windowStateListeners) {
             listener(states);
+          }
+        });
+    windowMonitorCallbackRouter.onWindowFocusChanged.addListener(
+        (isFocused: boolean) => {
+          for (const listener of this.windowFocusListeners) {
+            listener(isFocused);
           }
         });
     const {states} = await this.windowStateController.addMonitor(
@@ -114,8 +129,15 @@ export class WindowController {
   /**
    * Adds listener for the window state changed events.
    */
-  addListener(listener: WindowStateChangedEventListener): void {
-    this.listeners.add(listener);
+  addWindowStateListener(listener: WindowStateChangedEventListener): void {
+    this.windowStateListeners.add(listener);
+  }
+
+  /**
+   * Adds listener for the window focus changed events.
+   */
+  addWindowFocusListener(listener: WindowFocusChangedEventListener): void {
+    this.windowFocusListeners.add(listener);
   }
 }
 

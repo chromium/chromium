@@ -56,6 +56,7 @@ class CameraAppWindowStateController
 
  private:
   void OnWindowStateChanged();
+  void OnWindowFocusChanged(bool is_focus);
   base::flat_set<WindowStateType> GetCurrentWindowStates();
 
   raw_ptr<views::Widget, ExperimentalAsh> widget_;

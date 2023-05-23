@@ -338,6 +338,7 @@ export enum ErrorType {
   IDLE_DETECTOR_FAILURE = 'idle-detector-failure',
   INVALID_REVIEW_UI_STATE = 'invalid-review-ui-state',
   METADATA_MAPPING_FAILURE = 'metadata-mapping-failure',
+  MULTI_WINDOW_HANDLING_FAILURE = 'multi-window-handling-failure',
   MULTIPLE_STREAMS_FAILURE = 'multiple-streams-failure',
   NO_AVAILABLE_LEVEL = 'no-available-level',
   PERF_METRICS_FAILURE = 'perf-metrics-failure',
