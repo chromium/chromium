@@ -291,13 +291,16 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       mojom::PermissionsPolicyFeature feature,
       const url::Origin& origin) const;
 
+  // Returns the inherited policy of the given feature for this document.
   bool InheritedValueForFeature(
       const PermissionsPolicy* parent_policy,
       std::pair<mojom::PermissionsPolicyFeature,
                 PermissionsPolicyFeatureDefault> feature,
       const ParsedPermissionsPolicy& container_policy) const;
 
-  // Returns the value of the given feature on the given origin.
+  // If the feature is in the declared policy, returns whether the given origin
+  // exists in its declared allowlist; otherwise, returns the value from
+  // inherited policy.
   bool GetFeatureValueForOrigin(mojom::PermissionsPolicyFeature feature,
                                 const url::Origin& origin) const;
 
@@ -319,6 +322,7 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // parent frame.
   PermissionsPolicyFeatureState inherited_policies_;
 
+  // The map of features to their default enable state.
   const raw_ref<const PermissionsPolicyFeatureList> feature_list_;
 };
 
