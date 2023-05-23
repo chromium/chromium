@@ -3436,6 +3436,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MissingParent) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        NullObjectOnHypertextOffsetComputation) {
+  if (!base::FeatureList::IsEnabled(blink::features::kMutationEvents)) {
+    // TODO(crbug.com/1446498) Remove this test (and the .html file) when
+    // MutationEvents are disabled for good. This is just a crash test related
+    // to `DOMNodeInserted`.
+    return;
+  }
   RunRegressionTest(
       FILE_PATH_LITERAL("null-object-on-hypertext-offset-computation.html"));
 }
