@@ -427,8 +427,11 @@ void ManualFillingControllerImpl::UpdateVisibility() {
       }
       if (source == FillingSource::AUTOFILL)
         continue;  // Autofill suggestions have no sheet.
-      absl::optional<AccessorySheetData> sheet =
-          GetControllerForFillingSource(source)->GetSheetData();
+      AccessoryController* controller = GetControllerForFillingSource(source);
+      if (!controller) {
+        continue;  // Most-likely, the controller was cleaned up already.
+      }
+      absl::optional<AccessorySheetData> sheet = controller->GetSheetData();
       if (sheet.has_value())
         view_->OnItemsAvailable(std::move(sheet.value()));
     }
