@@ -21,8 +21,6 @@ struct VectorIcon;
 namespace views {
 class BoxLayout;
 class Button;
-class ImageView;
-class Label;
 class ProgressBar;
 class ScrollView;
 class Separator;
@@ -58,7 +56,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   void Layout() override;
   int GetHeightForWidth(int width) const override;
   const char* GetClassName() const override;
-  void OnThemeChanged() override;
 
   // Exposes the layout manager of this view to give control to subclasses.
   views::BoxLayout* box_layout() { return box_layout_; }
@@ -158,20 +155,6 @@ class ASH_EXPORT TrayDetailedView : public views::View,
 
   // The back button that appears in the title row. Owned by views hierarchy.
   raw_ptr<views::Button, ExperimentalAsh> back_button_ = nullptr;
-
-  // The label in the title row. Owned by views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
-
-  // Owned by views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> sub_header_label_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> sub_header_image_view_ = nullptr;
-
-  // Owned by vector icon cache.
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> sub_header_icon_ = nullptr;
-
-  // The separator under the title row. Not all views have a separator. Owned by
-  // views hierarchy.
-  raw_ptr<views::Separator, ExperimentalAsh> title_separator_ = nullptr;
 
   // Gets modified to false in the constructor of the view if it doesn't have a
   // separator.

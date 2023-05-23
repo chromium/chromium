@@ -25,6 +25,10 @@ namespace gfx {
 struct VectorIcon;
 }
 
+namespace views {
+class ImageView;
+}
+
 namespace ash {
 class MicGainSliderController;
 class UnifiedAudioDetailedViewControllerSodaTest;
