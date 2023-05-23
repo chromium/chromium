@@ -936,6 +936,13 @@ BASE_FEATURE(kPushSubscriptionChangeEvent,
              "PushSubscriptionChangeEvent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, queues navigations instead of cancelling the previous
+// navigation if the previous navigation is already waiting for commit.
+// See https://crbug.com/838348 and https://crbug.com/1220337.
+BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
+             "QueueNavigationsWhileWaitingForCommit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Causes hidden tabs with crashed subframes to be marked for reload, meaning
 // that if a user later switches to that tab, the current page will be
 // reloaded.  This will hide crashed subframes from the user at the cost of

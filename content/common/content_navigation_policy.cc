@@ -198,6 +198,36 @@ bool ShouldSkipEarlyCommitPendingForCrashedFrame() {
   return skip_early_commit_pending_for_crashed_frame;
 }
 
+static constexpr base::FeatureParam<NavigationQueueingFeatureLevel>::Option
+    kNavigationQueueingFeatureLevels[] = {
+        {NavigationQueueingFeatureLevel::kNone, "none"},
+        {NavigationQueueingFeatureLevel::kAvoidRedundantCancellations,
+         "avoid-redundant"},
+        {NavigationQueueingFeatureLevel::kFull, "full"}};
+const base::FeatureParam<NavigationQueueingFeatureLevel>
+    kNavigationQueueingFeatureLevelParam{
+        &features::kQueueNavigationsWhileWaitingForCommit, "level",
+        NavigationQueueingFeatureLevel::kAvoidRedundantCancellations,
+        &kNavigationQueueingFeatureLevels};
+
+NavigationQueueingFeatureLevel GetNavigationQueueingFeatureLevel() {
+  if (base::FeatureList::IsEnabled(
+          features::kQueueNavigationsWhileWaitingForCommit)) {
+    return kNavigationQueueingFeatureLevelParam.Get();
+  }
+  return NavigationQueueingFeatureLevel::kNone;
+}
+
+bool ShouldAvoidRedundantNavigationCancellations() {
+  return GetNavigationQueueingFeatureLevel() >=
+         NavigationQueueingFeatureLevel::kAvoidRedundantCancellations;
+}
+
+bool ShouldQueueNavigationsWhenPendingCommitRFHExists() {
+  return GetNavigationQueueingFeatureLevel() ==
+         NavigationQueueingFeatureLevel::kFull;
+}
+
 bool ShouldRestrictCanAccessDataForOriginToUIThread() {
   // Only restrict calls to the UI thread if the feature is enabled, and if the
   // new blob URL support is enabled.

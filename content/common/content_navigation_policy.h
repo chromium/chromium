@@ -106,6 +106,30 @@ CONTENT_EXPORT extern const char kRenderDocumentLevelParameterName[];
 // TODO(https://crbug.com/1072817): Stop allowing this.
 CONTENT_EXPORT bool ShouldSkipEarlyCommitPendingForCrashedFrame();
 
+// The levels for the kQueueNavigationsWhileWaitingForCommit feature.
+enum class NavigationQueueingFeatureLevel {
+  // Feature is disabled.
+  kNone,
+  // Navigation code attempts to avoid unnecessary cancellations; otherwise,
+  // queueing navigations is pointless because the slow-to-commit page will
+  // simply cancel the queued navigation request.
+  kAvoidRedundantCancellations,
+  // Navigation code attempts to queue navigations rather than clobbering a
+  // speculative RenderFrameHost that is waiting for the renderer to acknowledge
+  // the navigation commit.
+  kFull,
+};
+
+CONTENT_EXPORT NavigationQueueingFeatureLevel
+GetNavigationQueueingFeatureLevel();
+
+// Returns true if GetNavigationQueueingFeatureLevel() returns at least
+// kAvoidRedundantCancellations.
+CONTENT_EXPORT bool ShouldAvoidRedundantNavigationCancellations();
+
+// Returns true if GetNavigationQueueingFeatureLevel() is kFull.
+CONTENT_EXPORT bool ShouldQueueNavigationsWhenPendingCommitRFHExists();
+
 // As part of the Citadel desktop protections, we want to stop allowing calls to
 // CanAccessDataForOrigin on the IO thread, and only allow it on the UI thread.
 CONTENT_EXPORT bool ShouldRestrictCanAccessDataForOriginToUIThread();

@@ -29,39 +29,6 @@ BASE_FEATURE(kEnsureAllowBindingsIsAlwaysForWebUI,
              "EnsureAllowBindingsIsAlwaysForWebUI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
-             "QueueNavigationsWhileWaitingForCommit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-static constexpr base::FeatureParam<NavigationQueueingFeatureLevel>::Option
-    kNavigationQueueingFeatureLevels[] = {
-        {NavigationQueueingFeatureLevel::kNone, "none"},
-        {NavigationQueueingFeatureLevel::kAvoidRedundantCancellations,
-         "avoid-redundant"},
-        {NavigationQueueingFeatureLevel::kFull, "full"}};
-const base::FeatureParam<NavigationQueueingFeatureLevel>
-    kNavigationQueueingFeatureLevelParam{
-        &kQueueNavigationsWhileWaitingForCommit, "level",
-        NavigationQueueingFeatureLevel::kAvoidRedundantCancellations,
-        &kNavigationQueueingFeatureLevels};
-
-NavigationQueueingFeatureLevel GetNavigationQueueingFeatureLevel() {
-  if (base::FeatureList::IsEnabled(kQueueNavigationsWhileWaitingForCommit)) {
-    return kNavigationQueueingFeatureLevelParam.Get();
-  }
-  return NavigationQueueingFeatureLevel::kNone;
-}
-
-bool ShouldAvoidRedundantNavigationCancellations() {
-  return GetNavigationQueueingFeatureLevel() >=
-         NavigationQueueingFeatureLevel::kAvoidRedundantCancellations;
-}
-
-bool ShouldQueueNavigationsWhenPendingCommitRFHExists() {
-  return GetNavigationQueueingFeatureLevel() ==
-         NavigationQueueingFeatureLevel::kFull;
-}
-
 BASE_FEATURE(kRestrictCanAccessDataForOriginToUIThread,
              "RestrictCanAccessDataForOriginToUIThread",
              base::FEATURE_ENABLED_BY_DEFAULT);

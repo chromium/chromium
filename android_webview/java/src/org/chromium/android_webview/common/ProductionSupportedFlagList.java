@@ -437,6 +437,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.BEFOREUNLOAD_EVENT_CANCEL_BY_PREVENT_DEFAULT,
                     "Enables showing the cancel dialog by calling preventDefault() "
                             + "on beforeunload event."),
+            Flag.baseFeature(ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
+                    "If enabled, allows navigations to be queued when there is "
+                            + "an existing pending commit navigation in progress."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

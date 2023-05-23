@@ -5504,7 +5504,7 @@ class UndoCommitNavigationBrowserTest : public NavigationBrowserTest {
         {"level", "none"},
     };
     feature_list_.InitAndEnableFeatureWithParameters(
-        kQueueNavigationsWhileWaitingForCommit, parameters);
+        features::kQueueNavigationsWhileWaitingForCommit, parameters);
   }
 
   void SetUpOnMainThread() override {
@@ -5708,7 +5708,7 @@ class CommitNavigationRaceBrowserTest
         {"level", GetParam() ? "full" : "none"},
     };
     feature_list_.InitAndEnableFeatureWithParameters(
-        kQueueNavigationsWhileWaitingForCommit, parameters);
+        features::kQueueNavigationsWhileWaitingForCommit, parameters);
   }
 
   void SetUpOnMainThread() override {
