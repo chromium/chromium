@@ -145,12 +145,14 @@ class Connection
       BootstrapConfigurationsCallback callback,
       absl::optional<std::vector<uint8_t>> response_bytes);
 
-  void SendMessage(std::unique_ptr<QuickStartMessage> message,
-                   ConnectionResponseCallback callback);
+  void SendMessageAndReadResponse(std::unique_ptr<QuickStartMessage> message,
+                                  ConnectionResponseCallback callback);
+  void SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
+                                ConnectionResponseCallback callback);
 
-  // Reusable method to serialize a payload into JSON bytes and send via Nearby
-  // Connections.
-  void SendPayload(const base::Value::Dict& message_payload);
+  void OnHandshakeResponse(const std::string& authentication_token,
+                           HandshakeSuccessCallback callback,
+                           absl::optional<std::vector<uint8_t>> response_bytes);
 
   void OnConnectionClosed(
       TargetDeviceConnectionBroker::ConnectionClosedReason reason);

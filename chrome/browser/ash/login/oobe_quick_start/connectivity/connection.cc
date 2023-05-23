@@ -110,9 +110,9 @@ void Connection::RequestWifiCredentials(
                      weak_ptr_factory_.GetWeakPtr(),
                      &mojom::QuickStartDecoder::DecodeWifiCredentialsResponse,
                      std::move(callback));
-  SendMessage(requests::BuildRequestWifiCredentialsMessage(session_id,
-                                                           shared_secret_str),
-              std::move(on_response_received));
+  SendMessageAndReadResponse(requests::BuildRequestWifiCredentialsMessage(
+                                 session_id, shared_secret_str),
+                             std::move(on_response_received));
 }
 
 void Connection::NotifySourceOfUpdate(int32_t session_id,
@@ -126,7 +126,7 @@ void Connection::NotifySourceOfUpdate(int32_t session_id,
   response_timeout_timer_.Start(FROM_HERE, kNotifySourceOfUpdateResponseTimeout,
                                 base::BindOnce(&Connection::OnResponseTimeout,
                                                weak_ptr_factory_.GetWeakPtr()));
-  SendMessage(
+  SendMessageAndReadResponse(
       requests::BuildNotifySourceOfUpdateMessage(session_id, shared_secret_str),
       base::BindOnce(&Connection::OnNotifySourceOfUpdateResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -141,14 +141,16 @@ void Connection::RequestAccountTransferAssertion(
 
   auto request_assertion =
       base::IgnoreArgs<absl::optional<std::vector<uint8_t>>>(base::BindOnce(
-          &Connection::SendMessage, weak_ptr_factory_.GetWeakPtr(),
+          &Connection::SendMessageAndReadResponse,
+          weak_ptr_factory_.GetWeakPtr(),
           requests::BuildAssertionRequestMessage(challenge_b64url),
           std::move(parse_assertion_response)));
 
   // Set up a callback to call GetInfo, calling back into RequestAssertion
   // (and ignoring the results of GetInfo) after the call succeeds.
   auto get_info = base::IgnoreArgs<absl::optional<std::vector<uint8_t>>>(
-      base::BindOnce(&Connection::SendMessage, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&Connection::SendMessageAndReadResponse,
+                     weak_ptr_factory_.GetWeakPtr(),
                      requests::BuildGetInfoRequestMessage(),
                      std::move(request_assertion)));
 
@@ -157,8 +159,8 @@ void Connection::RequestAccountTransferAssertion(
                      weak_ptr_factory_.GetWeakPtr(), std::move(get_info));
 
   // Call into SetBootstrapOptions, starting the chain of callbacks.
-  SendMessage(requests::BuildBootstrapOptionsRequest(),
-              std::move(bootstrap_configurations_response));
+  SendMessageAndReadResponse(requests::BuildBootstrapOptionsRequest(),
+                             std::move(bootstrap_configurations_response));
 }
 
 void Connection::OnNotifySourceOfUpdateResponse(
@@ -252,18 +254,45 @@ void Connection::OnBootstrapConfigurationsResponse(
   std::move(callback).Run(absl::nullopt);
 }
 
-void Connection::SendMessage(std::unique_ptr<QuickStartMessage> message,
-                             ConnectionResponseCallback callback) {
-  SendPayload(*message->GenerateEncodedMessage());
+void Connection::SendMessageAndReadResponse(
+    std::unique_ptr<QuickStartMessage> message,
+    ConnectionResponseCallback callback) {
+  std::string json_serialized_payload;
+  CHECK(base::JSONWriter::Write(*message->GenerateEncodedMessage(),
+                                &json_serialized_payload));
+
+  SendBytesAndReadResponse(std::vector<uint8_t>(json_serialized_payload.begin(),
+                                                json_serialized_payload.end()),
+                           std::move(callback));
+}
+
+void Connection::SendBytesAndReadResponse(std::vector<uint8_t>&& bytes,
+                                          ConnectionResponseCallback callback) {
+  nearby_connection_->Write(std::move(bytes));
   nearby_connection_->Read(std::move(callback));
 }
 
 void Connection::InitiateHandshake(const std::string& authentication_token,
                                    HandshakeSuccessCallback callback) {
-  nearby_connection_->Write(
-      handshake::BuildHandshakeMessage(authentication_token, shared_secret_));
+  SendBytesAndReadResponse(
+      handshake::BuildHandshakeMessage(authentication_token, shared_secret_),
+      base::BindOnce(&Connection::OnHandshakeResponse,
+                     weak_ptr_factory_.GetWeakPtr(), authentication_token,
+                     std::move(callback)));
+}
 
-  // TODO(b/234655072): Read response from phone and run callback.
+void Connection::OnHandshakeResponse(
+    const std::string& authentication_token,
+    HandshakeSuccessCallback callback,
+    absl::optional<std::vector<uint8_t>> response_bytes) {
+  if (!response_bytes) {
+    QS_LOG(ERROR) << "Failed to read handshake response from NearbyConnection";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  bool success = handshake::VerifyHandshakeMessage(
+      *response_bytes, authentication_token, shared_secret_);
+  std::move(callback).Run(success);
 }
 
 void Connection::WaitForUserVerification(
@@ -340,14 +369,6 @@ void Connection::DecodeData(DecoderMethod<T> decoder_method,
   base::BindOnce(decoder_method, decoder_, data.value(),
                  std::move(decoder_callback))
       .Run();
-}
-
-void Connection::SendPayload(const base::Value::Dict& message_payload) {
-  std::string json_serialized_payload;
-  CHECK(base::JSONWriter::Write(message_payload, &json_serialized_payload));
-  std::vector<uint8_t> request_payload(json_serialized_payload.begin(),
-                                       json_serialized_payload.end());
-  nearby_connection_->Write(request_payload);
 }
 
 void Connection::OnConnectionClosed(
