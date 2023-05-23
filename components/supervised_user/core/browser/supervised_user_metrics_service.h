@@ -23,7 +23,6 @@ class Time;
 
 namespace supervised_user {
 class SupervisedUserURLFilter;
-}  // namespace supervised_user
 
 // Service to initialize and control metric recorders of supervised users.
 class SupervisedUserMetricsService : public KeyedService {
@@ -67,5 +66,7 @@ class SupervisedUserMetricsService : public KeyedService {
   base::ObserverList<Observer> observers_;
   std::vector<std::unique_ptr<Observer>> supervised_user_metrics_;
 };
+
+}  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_METRICS_SERVICE_H_

@@ -8,6 +8,8 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_utils.h"
 
+namespace supervised_user {
+
 ParentalControlMetrics::ParentalControlMetrics(
     PrefService* user_prefs,
     supervised_user::SupervisedUserURLFilter* url_filter)
@@ -26,3 +28,5 @@ void ParentalControlMetrics::OnNewDay() {
   url_filter_->ReportManagedSiteListMetrics();
   url_filter_->ReportWebFilterTypeMetrics();
 }
+
+}  // namespace supervised_user

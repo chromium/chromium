@@ -13,6 +13,8 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
 
+namespace supervised_user {
+
 namespace {
 
 constexpr base::TimeDelta kTimerInterval = base::Minutes(10);
@@ -85,3 +87,5 @@ void SupervisedUserMetricsService::CheckForNewDay() {
                               GetDayId(now));
   }
 }
+
+}  // namespace supervised_user

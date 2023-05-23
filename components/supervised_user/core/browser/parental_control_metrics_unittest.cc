@@ -42,7 +42,8 @@ class ParentalControlMetricsTest : public testing::Test {
 
     filter_.SetFilterInitialized(true);
     parental_control_metrics_ =
-        std::make_unique<ParentalControlMetrics>(pref_service_.get(), &filter_);
+        std::make_unique<supervised_user::ParentalControlMetrics>(
+            pref_service_.get(), &filter_);
   }
 
  protected:
@@ -61,7 +62,8 @@ class ParentalControlMetricsTest : public testing::Test {
           base::BindRepeating([](const GURL& url) { return false; }),
           std::make_unique<MockServiceDelegate>());
 
-  std::unique_ptr<ParentalControlMetrics> parental_control_metrics_;
+  std::unique_ptr<supervised_user::ParentalControlMetrics>
+      parental_control_metrics_;
   base::HistogramTester histogram_tester_;
 
  private:
