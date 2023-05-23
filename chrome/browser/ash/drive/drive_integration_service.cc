@@ -56,6 +56,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/drive_notification_manager.h"
@@ -1663,8 +1664,9 @@ void DriveIntegrationService::PollHostedFilePinStates() {
 void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
                                               base::OnceClosure callback) {
   base::FilePath drive_path;
-  if (!ash::features::IsForceReSyncDriveEnabled() || !IsMounted() ||
-      !GetDriveFsInterface() ||
+  bool is_feature_enabled = ash::features::IsForceReSyncDriveEnabled() &&
+                            chromeos::features::IsUploadOfficeToCloudEnabled();
+  if (!is_feature_enabled || !IsMounted() || !GetDriveFsInterface() ||
       !GetRelativeDrivePath(local_path, &drive_path)) {
     std::move(callback).Run();
     return;
