@@ -196,7 +196,7 @@ void SavedTabMatchesChecker::SavedTabGroupUpdatedFromSync(
 // --- GroupOrderChecker ---
 // =========================
 GroupOrderChecker::GroupOrderChecker(SavedTabGroupKeyedService* service,
-                                     std::vector<base::GUID> group_ids)
+                                     std::vector<base::Uuid> group_ids)
     : group_ids_(group_ids), service_(service) {
   CHECK(service_);
   service_->model()->AddObserver(this);
@@ -245,8 +245,8 @@ void GroupOrderChecker::SavedTabGroupUpdatedFromSync(
 // --- TabOrderChecker ---
 // =======================
 TabOrderChecker::TabOrderChecker(SavedTabGroupKeyedService* service,
-                                 base::GUID group_id,
-                                 std::vector<base::GUID> tab_ids)
+                                 base::Uuid group_id,
+                                 std::vector<base::Uuid> tab_ids)
     : group_id_(group_id), tab_ids_(tab_ids), service_(service) {
   CHECK(service_);
   service_->model()->AddObserver(this);

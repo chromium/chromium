@@ -49,15 +49,15 @@ class SingleClientSavedTabGroupsSyncTest : public SyncTest {
             /*last_modified_time=*/update_time));
   }
 
-  void RemoveDataFromFakeServer(base::GUID guid) {
+  void RemoveDataFromFakeServer(base::Uuid uuid) {
     std::vector<sync_pb::SyncEntity> server_tabs_and_groups =
         GetFakeServer()->GetSyncEntitiesByModelType(syncer::SAVED_TAB_GROUP);
 
-    // Remove the entity with a matching `guid`.
+    // Remove the entity with a matching `uuid`.
     for (const sync_pb::SyncEntity& tab_or_group : server_tabs_and_groups) {
       const sync_pb::SavedTabGroupSpecifics actual_specifics =
           tab_or_group.specifics().saved_tab_group();
-      if (base::GUID::ParseCaseInsensitive(actual_specifics.guid()) == guid) {
+      if (base::Uuid::ParseCaseInsensitive(actual_specifics.guid()) == uuid) {
         // Replace it with a tombstone to remove it from sync.
         GetFakeServer()->InjectEntity(
             syncer::PersistentTombstoneEntity::CreateFromEntity(tab_or_group));
