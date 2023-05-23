@@ -190,7 +190,7 @@ syncer::SyncService* SyncServiceFactory::GetForProfile(Profile* profile) {
   }
 
   return static_cast<syncer::SyncService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static

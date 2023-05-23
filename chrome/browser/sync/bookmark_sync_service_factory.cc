@@ -12,7 +12,7 @@
 sync_bookmarks::BookmarkSyncService* BookmarkSyncServiceFactory::GetForProfile(
     Profile* profile) {
   return static_cast<sync_bookmarks::BookmarkSyncService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static

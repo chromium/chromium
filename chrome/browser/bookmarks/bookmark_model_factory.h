@@ -15,7 +15,7 @@ namespace bookmarks {
 class BookmarkModel;
 }
 
-// Singleton that owns all BookmarkModels and associates them with
+// Singleton that builds BookmarkModel instances and associates them with
 // BrowserContexts.
 class BookmarkModelFactory : public ProfileKeyedServiceFactory {
  public:

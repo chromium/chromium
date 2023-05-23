@@ -12,16 +12,17 @@ class Profile;
 
 namespace sync_bookmarks {
 class BookmarkSyncService;
-}
+}  // namespace sync_bookmarks
 
-// Singleton that owns the bookmark sync service.
+// Singleton that builds BookmarkSyncService instances and associates them with
+// BrowserContexts.
 class BookmarkSyncServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the instance of BookmarkSyncService associated with this profile
   // (creating one if none exists).
   static sync_bookmarks::BookmarkSyncService* GetForProfile(Profile* profile);
 
-  // Returns an instance of the BookmarkSyncServiceFactory singleton.
+  // Returns the instance of the BookmarkSyncServiceFactory singleton.
   static BookmarkSyncServiceFactory* GetInstance();
 
   BookmarkSyncServiceFactory(const BookmarkSyncServiceFactory&) = delete;
