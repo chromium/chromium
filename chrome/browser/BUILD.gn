@@ -497,6 +497,8 @@ static_library("browser") {
     "enterprise/reporting/legacy_tech/legacy_tech_report_generator.h",
     "enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.cc",
     "enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.h",
+    "enterprise/reporting/legacy_tech/legacy_tech_service.cc",
+    "enterprise/reporting/legacy_tech/legacy_tech_service.h",
     "enterprise/reporting/legacy_tech/legacy_tech_url_matcher.cc",
     "enterprise/reporting/legacy_tech/legacy_tech_url_matcher.h",
     "enterprise/reporting/prefs.cc",
