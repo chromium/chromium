@@ -11741,6 +11741,25 @@
             ]
         }
     ],
+    "SafeBrowsingNestedArchives": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingArchiveImprovements",
+                        "SafeBrowsingStrictDownloadtimeout"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingOnUIThread": [
         {
             "platforms": [
