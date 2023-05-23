@@ -90,7 +90,7 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // most heavy-lifting taking place in a background sequence. Upon completion,
   // loaded() will return true and observers will be notified via
   // BookmarkModelLoaded(). Uses different files depending on
-  // |sync_storage_type| to support local and account storages.
+  // |storage_type| to support local and account storages.
   // Please note that for the time being the local storage is also used when
   // sync is on.
   // TODO(crbug.com/1422201): Update the note above when the local storage is

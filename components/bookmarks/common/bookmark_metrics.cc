@@ -4,9 +4,12 @@
 
 #include "components/bookmarks/common/bookmark_metrics.h"
 
+#include <string>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "components/bookmarks/common/url_load_stats.h"
 
 namespace {
@@ -17,12 +20,29 @@ void RecordBookmarkParentFolderType(
     bookmarks::metrics::BookmarkFolderTypeForUMA parent) {
   base::UmaHistogramEnumeration("Bookmarks.ParentFolderType", parent);
 }
+
+std::string GetStorageStateSuffixForMetrics(
+    bookmarks::metrics::StorageStateForUma storage_state) {
+  switch (storage_state) {
+    case bookmarks::metrics::StorageStateForUma::kAccount:
+      return std::string(".AccountStorage");
+    case bookmarks::metrics::StorageStateForUma::kLocalOnly:
+      return std::string(".LocalStorage");
+    case bookmarks::metrics::StorageStateForUma::kSyncEnabled:
+      return std::string(".LocalStorageSyncing");
+  }
+  NOTREACHED_NORETURN();
 }
+
+}  // namespace
 
 namespace bookmarks::metrics {
 
-void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent) {
+void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent,
+                            StorageStateForUma storage_state) {
   base::RecordAction(base::UserMetricsAction("Bookmarks.Added"));
+  base::RecordComputedAction(base::StrCat(
+      {"Bookmarks.Added", GetStorageStateSuffixForMetrics(storage_state)}));
   RecordBookmarkParentFolderType(parent);
 }
 

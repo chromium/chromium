@@ -870,7 +870,8 @@ const BookmarkNode* BookmarkModel::AddNewURL(
     const std::u16string& title,
     const GURL& url,
     const BookmarkNode::MetaInfoMap* meta_info) {
-  metrics::RecordUrlBookmarkAdded(GetFolderType(parent));
+  metrics::RecordUrlBookmarkAdded(GetFolderType(parent),
+                                  client_->GetStorageStateForUma());
   return AddURL(parent, index, title, url, meta_info, absl::nullopt,
                 absl::nullopt, true);
 }

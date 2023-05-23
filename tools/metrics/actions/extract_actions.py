@@ -108,6 +108,7 @@ KNOWN_COMPUTED_USERS = (
     'devtools_ui_bindings.cc',  # see AddDevToolsActions()
     'sharing_hub_bubble_controller.cc',  # share targets
     'sharing_hub_sub_menu_model.cc',  # share targets
+    'bookmark_metrics.cc',  # see AddBookmarkUsageActions()
 )
 
 # The path to the root of the repository.
@@ -203,6 +204,19 @@ def AddBookmarkManagerActions(actions):
   actions.add('BookmarkManager_NavigateTo_Recent')
   actions.add('BookmarkManager_NavigateTo_Search')
   actions.add('BookmarkManager_NavigateTo_SubFolder')
+
+
+def AddBookmarkUsageActions(actions):
+  """Add actions that are sent by the PDF plugin.
+
+  Arguments
+    actions: set of actions to add to.
+  """
+  actions.add('Bookmarks.Added')
+  actions.add('Bookmarks.Added.AccountStorage')
+  actions.add('Bookmarks.Added.LocalStorage')
+  actions.add('Bookmarks.Added.LocalStorageSyncing')
+
 
 def AddChromeOSActions(actions):
   """Add actions reported by non-Chrome processes in Chrome OS.
@@ -741,6 +755,7 @@ def UpdateXml(original_xml):
   AddLiteralActions(actions)
   AddAutomaticResetBannerActions(actions)
   AddBookmarkManagerActions(actions)
+  AddBookmarkUsageActions(actions)
   AddChromeOSActions(actions)
   AddExtensionActions(actions)
   AddHistoryPageActions(actions)

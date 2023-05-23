@@ -60,6 +60,7 @@ class ChromeBookmarkClient : public bookmarks::BookmarkClient {
   bool IsPermanentNodeVisibleWhenEmpty(
       bookmarks::BookmarkNode::Type type) override;
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
+  bookmarks::metrics::StorageStateForUma GetStorageStateForUma() override;
   bool CanSetPermanentNodeTitle(
       const bookmarks::BookmarkNode* permanent_node) override;
   bool CanSyncNode(const bookmarks::BookmarkNode* node) override;

@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -68,6 +69,9 @@ class BookmarkClient {
   // Returns a task that will be used to load a managed root node. This task
   // will be invoked in the Profile's IO task runner.
   virtual LoadManagedNodeCallback GetLoadManagedNodeCallback() = 0;
+
+  // Returns the current storage state to be added as suffix to metrics.
+  virtual metrics::StorageStateForUma GetStorageStateForUma() = 0;
 
   // Returns true if the |permanent_node| can have its title updated.
   virtual bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) = 0;

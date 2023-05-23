@@ -36,8 +36,20 @@ enum class BookmarkEditSource {
   kMaxValue = kOther,
 };
 
+// An enum class to add storage state as a suffix to metrics.
+enum class StorageStateForUma {
+  // Account storage.
+  kAccount,
+  // Local storage that is not being synced at the time the metric is
+  // recorded.
+  kLocalOnly,
+  // Local storage that is being synced at the time the metric is recorded.
+  kSyncEnabled,
+};
+
 // Records when a bookmark is added by the user.
-void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent);
+void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent,
+                            StorageStateForUma storage_state);
 
 // Records when a bookmark folder is added by the user.
 void RecordBookmarkFolderAdded(BookmarkFolderTypeForUMA parent);
