@@ -300,12 +300,15 @@ export class TaskController {
     const tasks = fileTasks.getAnnotatedTasks();
     const items = [];
 
+    // We don't bold default task item in refresh23 style.
+    const shouldBoldDefaultItem = !util.isJellyEnabled();
+
     // Create items.
     for (const task of tasks) {
       if (task === fileTasks.defaultTask) {
         const title = task.title + ' ' + str('DEFAULT_TASK_LABEL');
         items.push(createDropdownItem(
-            task, title, /*bold=*/ true, /*isDefault=*/ true,
+            task, title, /*bold=*/ shouldBoldDefaultItem, /*isDefault=*/ true,
             /*isPolicyDefault=*/
             !!fileTasks.getPolicyDefaultHandlerStatus()));
       } else {
@@ -530,8 +533,8 @@ export class TaskController {
         defaultTask != null && !defaultTask.isDlpBlocked;
     this.shouldHideDefaultTask_ = defaultTask == null;
     this.defaultTaskCommand_.canExecuteChange(this.ui_.listContainer.element);
-    this.canExecuteOpenActions_ = taskCount > 1 ||
-      (taskCount === 1 && !defaultTask);
+    this.canExecuteOpenActions_ =
+        taskCount > 1 || (taskCount === 1 && !defaultTask);
     this.openWithCommand_.canExecuteChange(this.ui_.listContainer.element);
 
     this.ui_.tasksSeparator.hidden = taskCount === 0;
