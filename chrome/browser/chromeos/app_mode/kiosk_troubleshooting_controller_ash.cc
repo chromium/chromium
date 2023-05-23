@@ -50,6 +50,9 @@ bool KioskTroubleshootingControllerAsh::AcceleratorPressed(
     case TroubleshootingAcceleratorAction::SHOW_TASK_MANAGER:
       accelerators::ShowTaskManager();
       return true;
+    case TroubleshootingAcceleratorAction::OPEN_FEEDBACK_PAGE:
+      accelerators::OpenFeedbackPage();
+      return true;
   }
 
   return false;
@@ -80,6 +83,10 @@ void KioskTroubleshootingControllerAsh::RegisterTroubleshootingAccelerators() {
       {ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN),
        TroubleshootingAcceleratorAction::SHOW_TASK_MANAGER});
 
+  // Shift+Alt+I
+  accelerators_with_actions_.insert(
+      {ui::Accelerator(ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN),
+       TroubleshootingAcceleratorAction::OPEN_FEEDBACK_PAGE});
   Shell::Get()->accelerator_controller()->Register(GetAllAccelerators(), this);
 }
 

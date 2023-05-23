@@ -945,14 +945,23 @@ class FakeNewWindowDelegate : public ash::TestNewWindowDelegate {
 
   void ShowTaskManager() override { task_manager_called_ = true; }
 
+  void OpenFeedbackPage(FeedbackSource source,
+                        const std::string& description_template) override {
+    open_feedback_page_called_ = true;
+  }
+
   bool is_new_window_called() const { return new_window_called_; }
   bool is_new_tab_called() const { return new_tab_called_; }
   bool is_task_manager_called() const { return task_manager_called_; }
+  bool is_open_feedback_page_called() const {
+    return open_feedback_page_called_;
+  }
 
  private:
   bool new_window_called_ = false;
   bool new_tab_called_ = false;
   bool task_manager_called_ = false;
+  bool open_feedback_page_called_ = false;
 };
 
 // Tests actions after pressing troubleshooting shortcuts. Runs all tests for
@@ -991,11 +1000,17 @@ class AppSessionTroubleshootingShortcutsTest
     return fake_new_window_delegate_->is_task_manager_called();
   }
 
+  bool is_open_feedback_page_called() const {
+    return fake_new_window_delegate_->is_open_feedback_page_called();
+  }
+
  protected:
   ui::Accelerator new_window_accelerator =
       ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN);
   ui::Accelerator task_manager_accelerator =
       ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN);
+  ui::Accelerator open_feedback_page_accelerator =
+      ui::Accelerator(ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
 
  private:
   raw_ptr<FakeNewWindowDelegate> fake_new_window_delegate_;
@@ -1061,6 +1076,32 @@ TEST_P(AppSessionTroubleshootingShortcutsTest,
 
   ProcessInController(task_manager_accelerator);
   EXPECT_FALSE(is_task_manager_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       OpenFeedbackPageShortcutEnabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+
+  ProcessInController(open_feedback_page_accelerator);
+  EXPECT_TRUE(is_open_feedback_page_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       OpenFeedbackPageShortcutNoActionByDefault) {
+  SetUpKioskSession();
+
+  ProcessInController(open_feedback_page_accelerator);
+  EXPECT_FALSE(is_open_feedback_page_called());
+}
+
+TEST_P(AppSessionTroubleshootingShortcutsTest,
+       OpenFeedbackPageShortcutNoActionIfPolicyDisabled) {
+  SetUpKioskSession();
+  UpdateTroubleshootingToolsPolicy(/*enable=*/false);
+
+  ProcessInController(open_feedback_page_accelerator);
+  EXPECT_FALSE(is_open_feedback_page_called());
 }
 
 INSTANTIATE_TEST_SUITE_P(AppSessionTroubleshootingShortcuts,
