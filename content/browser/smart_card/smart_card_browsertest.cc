@@ -1057,4 +1057,50 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, Control) {
     })())"));
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardTest, GetAttribute) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  MockSmartCardReaderTracker& mock_tracker = CreateMockSmartCardReaderTracker();
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  MockSmartCardConnection mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+
+  {
+    InSequence s;
+
+    mock_tracker.ExpectStartReturnsFakeReader();
+
+    mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
+
+    EXPECT_CALL(mock_connection, GetAttrib(42, _))
+        .WillOnce(
+            [](uint32_t tag, SmartCardConnection::GetAttribCallback callback) {
+              std::move(callback).Run(
+                  device::mojom::SmartCardDataResult::NewData({12u, 34u}));
+            });
+
+    // When the document is destroyed
+    EXPECT_CALL(mock_tracker, Stop(_));
+  }
+
+  EXPECT_EQ("response: 12,34", EvalJs(shell(), R"(
+    (async () => {
+      let readers = await navigator.smartCard.getReaders();
+
+      if (readers.length !== 1) {
+        return "reader not found";
+      }
+
+      let reader = readers[0];
+      let connection = await reader.connect("shared", ["t1"]);
+
+      let response = await connection.getAttribute(42);
+
+      let responseString = new Uint8Array(response).toString();
+      return `response: ${responseString}`;
+    })())"));
+}
+
 }  // namespace content

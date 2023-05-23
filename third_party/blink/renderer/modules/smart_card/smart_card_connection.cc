@@ -137,6 +137,26 @@ ScriptPromise SmartCardConnection::control(ScriptState* script_state,
   return ongoing_request_->Promise();
 }
 
+ScriptPromise SmartCardConnection::getAttribute(
+    ScriptState* script_state,
+    uint32_t tag,
+    ExceptionState& exception_state) {
+  if (!EnsureNoOperationInProgress(exception_state) ||
+      !EnsureConnection(exception_state)) {
+    return ScriptPromise();
+  }
+
+  ongoing_request_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+
+  connection_->GetAttrib(
+      tag,
+      WTF::BindOnce(&SmartCardConnection::OnDataResult, WrapPersistent(this),
+                    WrapPersistent(ongoing_request_.Get())));
+
+  return ongoing_request_->Promise();
+}
+
 void SmartCardConnection::Trace(Visitor* visitor) const {
   visitor->Trace(connection_);
   visitor->Trace(ongoing_request_);

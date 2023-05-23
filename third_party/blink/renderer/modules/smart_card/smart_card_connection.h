@@ -41,6 +41,9 @@ class SmartCardConnection final : public ScriptWrappable {
                         uint32_t control_code,
                         const DOMArrayPiece& data,
                         ExceptionState& exception_state);
+  ScriptPromise getAttribute(ScriptState* script_state,
+                             uint32_t tag,
+                             ExceptionState& exception_state);
 
   // ScriptWrappable overrides
   void Trace(Visitor*) const override;
