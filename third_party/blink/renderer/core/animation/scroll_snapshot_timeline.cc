@@ -114,8 +114,18 @@ AnimationTimeDelta ScrollSnapshotTimeline::CalculateIntrinsicIterationDuration(
 
 TimelineRange ScrollSnapshotTimeline::GetTimelineRange() const {
   absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
-  return scroll_offsets.has_value() ? TimelineRange(scroll_offsets.value())
-                                    : TimelineRange();
+
+  if (!scroll_offsets.has_value()) {
+    return TimelineRange();
+  }
+
+  absl::optional<ScrollOffsets> view_offsets = GetResolvedViewOffsets();
+  // The subject_size is always zero for ScrollTimelines.
+  double subject_size = view_offsets.has_value()
+                            ? (view_offsets->end - view_offsets->start)
+                            : 0.0f;
+
+  return TimelineRange(scroll_offsets.value(), subject_size);
 }
 
 void ScrollSnapshotTimeline::ServiceAnimations(TimingUpdateReason reason) {

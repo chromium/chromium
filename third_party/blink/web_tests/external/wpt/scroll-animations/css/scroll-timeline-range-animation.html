@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>View timelines and animation attachment ranges</title>
+<title>Scroll timelines and animation attachment ranges</title>
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#named-timeline-range">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/#animation-range">
 <script src="/resources/testharness.js"></script>
@@ -32,16 +32,16 @@
 </main>
 
 <template id=template_without_scope>
-  <div id=scroller>
-    <div id=target class=timeline></div>
+  <div id=scroller class=timeline>
+    <div id=target></div>
   </div>
 </template>
 
 <template id=template_with_scope>
   <div id=scope>
     <div id=target></div>
-    <div id=scroller>
-      <div class=timeline></div>
+    <div id=scroller class=timeline>
+      <div></div>
     </div>
   </div>
 </template>
@@ -78,12 +78,13 @@
       let target = main.querySelector('#target');
       let timeline = main.querySelector('.timeline');
       let scope = main.querySelector('#scope');
+      let maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
       if (scope != null) {
         scope.style.timelineScope = '--t1';
       }
 
-      timeline.style.viewTimeline = '--t1';
+      timeline.style.scrollTimeline = '--t1';
       target.style.animation = 'anim auto linear';
       target.style.animationTimeline = '--t1';
       target.style.animationRangeStart = options.rangeStart;
@@ -104,10 +105,16 @@
 
       // Test before/after phases (need to clear the fill mode for that).
       target.style.animationFillMode = 'initial';
-      await assertValueAt(scroller, target,
-          { scrollTop: options.startOffset - 10, expected: -1 });
-      await assertValueAt(scroller, target,
-          { scrollTop: options.endOffset + 10, expected: -1 });
+      let before_scroll = options.startOffset - 10;
+      if (before_scroll >= 0) {
+        await assertValueAt(scroller, target,
+            { scrollTop: options.startOffset - 10, expected: -1 });
+      }
+      let after_scroll = options.startOffset + 10;
+      if (after_scroll <= scroller.maxmum) {
+        await assertValueAt(scroller, target,
+            { scrollTop: options.endOffset + 10, expected: -1 });
+      }
       // Check 50% again without fill mode.
       await assertValueAt(scroller, target,
           { scrollTop: (options.startOffset + options.endOffset) / 2, expected: 50 });
@@ -118,115 +125,58 @@
   test_animation_range({
     rangeStart: 'initial',
     rangeEnd: 'initial',
-    startOffset: 600,
-    endOffset: 900
+    startOffset: 0,
+    endOffset: 1500
   });
 
   test_animation_range({
-    rangeStart: 'cover 0%',
-    rangeEnd: 'cover 100%',
-    startOffset: 600,
-    endOffset: 900
+    rangeStart: '0%',
+    rangeEnd: '100%',
+    startOffset: 0,
+    endOffset: 1500
   });
 
   test_animation_range({
-    rangeStart: 'contain 0%',
-    rangeEnd: 'contain 100%',
-    startOffset: 700,
-    endOffset: 800
-  });
-
-
-  test_animation_range({
-    rangeStart: 'entry 0%',
-    rangeEnd: 'entry 100%',
-    startOffset: 600,
-    endOffset: 700
+    rangeStart: '10%',
+    rangeEnd: '100%',
+    startOffset: 150,
+    endOffset: 1500
   });
 
   test_animation_range({
-    rangeStart: 'exit 0%',
-    rangeEnd: 'exit 100%',
-    startOffset: 800,
-    endOffset: 900
+    rangeStart: '0%',
+    rangeEnd: '50%',
+    startOffset: 0,
+    endOffset: 750
   });
 
   test_animation_range({
-    rangeStart: 'contain -50%',
-    rangeEnd: 'entry 200%',
-    startOffset: 650,
-    endOffset: 800
+    rangeStart: '10%',
+    rangeEnd: '50%',
+    startOffset: 150,
+    endOffset: 750
   });
 
   test_animation_range({
-    rangeStart: 'entry 0%',
-    rangeEnd: 'exit 100%',
-    startOffset: 600,
-    endOffset: 900
+    rangeStart: '150px',
+    rangeEnd: '75em',
+    startOffset: 150,
+    endOffset: 750
   });
 
   test_animation_range({
-    rangeStart: 'cover 20px',
-    rangeEnd: 'cover 100px',
-    startOffset: 620,
-    endOffset: 700
-  });
-
-  test_animation_range({
-    rangeStart: 'contain 20px',
-    rangeEnd: 'contain 100px',
-    startOffset: 720,
-    endOffset: 800
-  });
-
-  test_animation_range({
-    rangeStart: 'entry 20px',
-    rangeEnd: 'entry 100px',
-    startOffset: 620,
-    endOffset: 700
-  });
-
-  test_animation_range({
-    rangeStart: 'entry-crossing 20px',
-    rangeEnd: 'entry-crossing 100px',
-    startOffset: 620,
-    endOffset: 700
-  });
-
-  test_animation_range({
-    rangeStart: 'exit 20px',
-    rangeEnd: 'exit 80px',
-    startOffset: 820,
-    endOffset: 880
-  });
-
-  test_animation_range({
-    rangeStart: 'exit-crossing 20px',
-    rangeEnd: 'exit-crossing 80px',
-    startOffset: 820,
-    endOffset: 880
-  });
-
-  test_animation_range({
-    rangeStart: 'contain 20px',
-    rangeEnd: 'contain calc(100px - 10%)',
-    startOffset: 720,
-    endOffset: 790
-  });
-
-  test_animation_range({
-    rangeStart: 'exit 2em',
-    rangeEnd: 'exit 8em',
-    startOffset: 820,
-    endOffset: 880
+    rangeStart: 'calc(1% + 135px)',
+    rangeEnd: 'calc(70em + 50px)',
+    startOffset: 150,
+    endOffset: 750
   });
 
   // Test animation-range via timeline-scope.
   test_animation_range({
-    rangeStart: 'exit 2em',
-    rangeEnd: 'exit 8em',
-    startOffset: 820,
-    endOffset: 880
+    rangeStart: 'calc(1% + 135px)',
+    rangeEnd: 'calc(70em + 50px)',
+    startOffset: 150,
+    endOffset: 750
   }, template_with_scope, '(scoped)');
 
 </script>

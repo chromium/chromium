@@ -237,18 +237,6 @@ ViewTimeline::ViewTimeline(Document* document,
                                                              axis,
                                                              inset)) {}
 
-TimelineRange ViewTimeline::GetTimelineRange() const {
-  absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
-  absl::optional<ScrollOffsets> view_offsets = GetResolvedViewOffsets();
-
-  if (!scroll_offsets.has_value() || !view_offsets.has_value()) {
-    return TimelineRange();
-  }
-
-  double subject_size = view_offsets->end - view_offsets->start;
-  return TimelineRange(scroll_offsets.value(), subject_size);
-}
-
 void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
                                     ScrollOrientation physical_orientation,
                                     TimelineState* state) const {

@@ -219,23 +219,14 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     // animation's start time. Need to compute a new value for
     // inherited_time_.
     double relative_offset;
-    if (timeline->IsViewTimeline()) {
-      TimelineRange timeline_range = timeline->GetTimelineRange();
-      // TODO(kevers): Support animation-range for a non-view scroll-timeline.
-      if (playback_rate_ >= 0) {
-        relative_offset =
-            range_start ? timeline_range.ToFractionalOffset(range_start.value())
-                        : 0;
-      } else {
-        relative_offset =
-            range_end ? timeline_range.ToFractionalOffset(range_end.value())
-                      : 1;
-      }
+    TimelineRange timeline_range = timeline->GetTimelineRange();
+    if (playback_rate_ >= 0) {
+      relative_offset =
+          range_start ? timeline_range.ToFractionalOffset(range_start.value())
+                      : 0;
     } else {
-      // A non-view scroll-timeline has its start time at 0 or end time.
-      // TODO(kevers): Update once non-view scroll-timeline support animation
-      // ranges.
-      relative_offset = playback_rate_ >= 0 ? 0 : 1;
+      relative_offset =
+          range_end ? timeline_range.ToFractionalOffset(range_end.value()) : 1;
     }
     if (timeline->CurrentTime()) {
       AnimationTimeDelta pending_start_time =

@@ -42,8 +42,6 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   CSSNumericValue* getCurrentTime(const String& rangeName) override;
 
-  TimelineRange GetTimelineRange() const override;
-
   // IDL API implementation.
   Element* subject() const;
 
