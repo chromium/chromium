@@ -19,7 +19,6 @@
 #import "components/sync/base/features.h"
 #import "components/sync/base/sync_prefs.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -31,10 +30,8 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
-#import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -434,75 +431,6 @@ id<GREYMatcher> EditDoneButton() {
   return SettingToolbarEditDoneButton();
 }
 
-// Returns the matcher for the Credential Provider Promo's subtitle.
-id<GREYMatcher> SubtitleMatcher() {
-  return grey_accessibilityID(
-      kConfirmationAlertSubtitleAccessibilityIdentifier);
-}
-
-// Returns the matcher for the Credential Provider Promo's primary action
-// button.
-id<GREYMatcher> PrimaryActionButtonMatcher() {
-  return grey_accessibilityID(
-      kConfirmationAlertPrimaryActionAccessibilityIdentifier);
-}
-
-// Returns the matcher for the Credential Provider Promo's secondary action
-// button.
-id<GREYMatcher> SecondaryActionButtonMatcher() {
-  return grey_accessibilityID(
-      kConfirmationAlertSecondaryActionAccessibilityIdentifier);
-}
-
-// Returns the matcher for the Credential Provider Promo's tertiary action
-// button.
-id<GREYMatcher> TertiaryActionButtonMatcher() {
-  return grey_accessibilityID(
-      kConfirmationAlertTertiaryActionAccessibilityIdentifier);
-}
-
-// Checks that the Credential Provider Promo subtitle text and buttons are
-// interactable.
-void CheckThatCredentialPromoElementsAreInteractable() {
-  [[EarlGrey selectElementWithMatcher:SubtitleMatcher()]
-      assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:PrimaryActionButtonMatcher()]
-      assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:SecondaryActionButtonMatcher()]
-      assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:TertiaryActionButtonMatcher()]
-      assertWithMatcher:grey_interactable()];
-}
-
-// Checks that the Credential Provider Promo appears and dismisses it.
-void CheckForAndDismissCredentialProviderPromo() {
-  // Check that the inital promo is visible.
-  id<GREYMatcher> initialTitleLabelMatcher = grey_text(
-      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE));
-  [[EarlGrey selectElementWithMatcher:initialTitleLabelMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  CheckThatCredentialPromoElementsAreInteractable();
-
-  // Tap the primary action button to display the `learn more` promo.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(PrimaryActionButtonMatcher(),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-
-  // Check that the `learn more` promo is visible.
-  id<GREYMatcher> learnMoreTitleLabelMatcher = grey_text(l10n_util::GetNSString(
-      IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE));
-  [[EarlGrey selectElementWithMatcher:learnMoreTitleLabelMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  CheckThatCredentialPromoElementsAreInteractable();
-
-  // Tap the secondary action button to dismiss the promo.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(SecondaryActionButtonMatcher(),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
-}
-
 }  // namespace
 
 // Various tests for the main Password Manager UI.
@@ -656,16 +584,6 @@ void CheckForAndDismissCredentialProviderPromo() {
         password_manager::features::kIOSPasswordCheckup);
   }
 
-  if ([self isRunningTest:@selector(testCopyPasswordMenuItem)] ||
-      [self isRunningTest:@selector(testCopyPasswordToast)]) {
-    config.additional_args.push_back(
-        std::string("--enable-features=CredentialProviderExtensionPromo:enable_"
-                    "promo_on_password_copied/true"));
-    // Without relaunch, the credential provider promo meets its impression
-    // limit and does not display in subsequent runs.
-    config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  }
-
   return config;
 }
 
@@ -725,9 +643,6 @@ void CheckForAndDismissCredentialProviderPromo() {
   // The tap checks the existence of the snackbar and also closes it.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
       performAction:grey_tap()];
-
-  // Dismiss the credential provider extension promo.
-  CheckForAndDismissCredentialProviderPromo();
 
   // Check the snackbar in case of failed reauthentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
@@ -1377,9 +1292,6 @@ void CheckForAndDismissCredentialProviderPromo() {
   // The tap checks the existence of the snackbar and also closes it.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
       performAction:grey_tap()];
-
-  // Dismiss the credential provider extension promo.
-  CheckForAndDismissCredentialProviderPromo();
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
