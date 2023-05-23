@@ -1216,6 +1216,13 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
           brp_config.use_dedicated_aligned_partition),
       brp_config.ref_count_size,
       allocator_shim::AlternateBucketDistribution(bucket_distribution));
+
+  const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
+  // As per description, extras are optional and are expected not to
+  // exceed (cookie + max(BRP ref-count)) == 16 + 16 == 32 bytes.
+  // 100 is a reasonable cap for this value.
+  UmaHistogramCounts100("Memory.PartitionAlloc.PartitionRoot.ExtrasSize",
+                        int(extras_size));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   // If BRP is not enabled, check if any of PCScan flags is enabled.

@@ -681,6 +681,16 @@ void ConfigurePartitions(
   }
 }
 
+// No synchronization provided: `PartitionRoot.flags` is only written
+// to in `PartitionRoot::Init()`.
+uint32_t GetMainPartitionRootExtrasSize() {
+#if PA_CONFIG(EXTRAS_REQUIRED)
+  return g_root.Get()->flags.extras_size;
+#else
+  return 0;
+#endif  // PA_CONFIG(EXTRAS_REQUIRED)
+}
+
 #if BUILDFLAG(USE_STARSCAN)
 void EnablePCScan(partition_alloc::internal::PCScan::InitConfig config) {
   partition_alloc::internal::base::PlatformThread::SetThreadNameHook(

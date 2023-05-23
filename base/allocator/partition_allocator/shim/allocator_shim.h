@@ -202,6 +202,8 @@ BASE_EXPORT void ConfigurePartitions(
     size_t ref_count_size,
     AlternateBucketDistribution use_alternate_bucket_distribution);
 
+BASE_EXPORT uint32_t GetMainPartitionRootExtrasSize();
+
 #if BUILDFLAG(USE_STARSCAN)
 BASE_EXPORT void EnablePCScan(partition_alloc::internal::PCScan::InitConfig);
 #endif
