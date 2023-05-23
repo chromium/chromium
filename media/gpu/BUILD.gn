@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//build/config/logging.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
@@ -70,6 +71,10 @@ component("gpu") {
   }
 
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
+  if (!use_runtime_vlog) {
+    # Enable VLOG(1) when using build time VLOG.
+    defines += [ "ENABLED_VLOG_LEVEL=1" ]
+  }
 
   sources = [
     "gpu_video_accelerator_util.cc",
