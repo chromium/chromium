@@ -745,7 +745,7 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
   ReportUserActionHistogram(user_action);
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
-  const std::string device_name = *settings.FindString(kSettingDeviceName);
+  std::string device_name = *settings.FindString(kSettingDeviceName);
 
   auto on_verdict =
       base::BindOnce(&PrintPreviewHandler::OnVerdictByEnterprisePolicy,

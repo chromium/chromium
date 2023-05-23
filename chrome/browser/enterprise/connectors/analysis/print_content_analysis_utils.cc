@@ -54,7 +54,7 @@ void ScanAndPrint(scoped_refptr<base::RefCountedMemory> data,
 
 void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
                             content::WebContents* initiator,
-                            const std::string& printer_name,
+                            std::string printer_name,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview) {
   ContentAnalysisDelegate::Data scanning_data;
@@ -67,7 +67,7 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
           printing::features::kEnablePrintScanAfterPreview) &&
       scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
     // Populate print metadata.
-    scanning_data.printer_name = printer_name;
+    scanning_data.printer_name = std::move(printer_name);
 
     // Hide the preview dialog so it doesn't cover the content analysis dialog
     // showing the status of the scanning.

@@ -26,7 +26,7 @@ namespace enterprise_connectors {
 // asynchronously.
 void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
                             content::WebContents* initiator,
-                            const std::string& printer_name,
+                            std::string printer_name,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview);
 
