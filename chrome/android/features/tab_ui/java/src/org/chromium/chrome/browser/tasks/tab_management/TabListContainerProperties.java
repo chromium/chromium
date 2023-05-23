@@ -46,7 +46,21 @@ class TabListContainerProperties {
     public static final PropertyModel.WritableIntPropertyKey MODE =
             new PropertyModel.WritableIntPropertyKey();
 
+    /**
+     * A property which is set to focus on the passed tab index for accessibility.
+     */
+    public static final PropertyModel.WritableIntPropertyKey FOCUS_TAB_INDEX_FOR_ACCESSIBILITY =
+            new PropertyModel.WritableIntPropertyKey();
+
+    /**
+     * A property which removes the accessibility focus on the passed tab index due to content
+     * change reasons.
+     */
+    public static final PropertyModel.WritableIntPropertyKey UNFOCUS_TAB_INDEX_FOR_ACCESSIBILITY =
+            new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_VISIBLE, IS_INCOGNITO,
             VISIBILITY_LISTENER, INITIAL_SCROLL_INDEX, ANIMATE_VISIBILITY_CHANGES, TOP_MARGIN,
-            BOTTOM_CONTROLS_HEIGHT, SHADOW_TOP_OFFSET, BOTTOM_PADDING, MODE};
+            BOTTOM_CONTROLS_HEIGHT, SHADOW_TOP_OFFSET, BOTTOM_PADDING, MODE,
+            FOCUS_TAB_INDEX_FOR_ACCESSIBILITY, UNFOCUS_TAB_INDEX_FOR_ACCESSIBILITY};
 }

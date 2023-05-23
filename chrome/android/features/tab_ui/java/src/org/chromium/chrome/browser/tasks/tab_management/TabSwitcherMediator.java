@@ -134,6 +134,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                                                            .getCurrentTabModelFilter(),
                             false, mShowTabsInMruOrder);
                     setInitialScrollIndexOffset();
+                    requestAccessibilityFocusOnCurrentTab();
                 }
 
                 @Override
@@ -184,6 +185,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private Context mContext;
     private SnackbarManager mSnackbarManager;
     private boolean mIsTransitionInProgress;
+    private boolean mIsTabSwitcherShowing;
 
     /**
      * Interface to delegate resetting the tab grid.
@@ -330,6 +332,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 if (clearIncognitoTabListForReauth()) return;
                 mResetHandler.resetWithTabList(currentTabModelFilter, false, mShowTabsInMruOrder);
                 setInitialScrollIndexOffset();
+                requestAccessibilityFocusOnCurrentTab();
             }
         };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
@@ -824,6 +827,12 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     @Override
     public void finishedShowing() {
+        mIsTabSwitcherShowing = true;
+
+        if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
+            requestAccessibilityFocusOnCurrentTab();
+        }
+
         for (TabSwitcherViewObserver observer : mObservers) {
             observer.finishedShowing();
         }
@@ -838,6 +847,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     @Override
     public void finishedHiding() {
+        mIsTabSwitcherShowing = false;
         for (TabSwitcherViewObserver observer : mObservers) {
             observer.finishedHiding();
         }
@@ -1071,6 +1081,34 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mPriceMessageService = priceMessageService;
     }
 
+    void requestAccessibilityFocusOnCurrentTab() {
+        if (!mIsTabSwitcherShowing || !mTabModelSelector.isTabStateInitialized()) {
+            return;
+        }
+
+        if (mTabModelSelector.isIncognitoSelected() && mIncognitoReauthController != null
+                && mIncognitoReauthController.isReauthPageShowing()) {
+            return;
+        }
+
+        mContainerViewModel.set(TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index());
+    }
+
+    void removeAccessibilityFocusFromCurrentTab() {
+        if (!mIsTabSwitcherShowing || !mTabModelSelector.isTabStateInitialized()) {
+            return;
+        }
+
+        if (!mTabModelSelector.isIncognitoSelected() || mIncognitoReauthController == null
+                || !mIncognitoReauthController.isReauthPageShowing()) {
+            return;
+        }
+
+        mContainerViewModel.set(TabListContainerProperties.UNFOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index());
+    }
+
     // GridCardOnClickListenerProvider implementation.
     @Override
     @Nullable
@@ -1169,6 +1207,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         if (mIncognitoReauthController != null
                 && mIncognitoReauthController.isIncognitoReauthPending()) {
             mResetHandler.resetWithTabList(null, false, mShowTabsInMruOrder);
+            removeAccessibilityFocusFromCurrentTab();
             return true;
         }
 
