@@ -224,7 +224,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
 }
 
 constexpr const char* BuildFlavor() {
-#if defined(NBEDUG)
+#if defined(NDEBUG)
   return "opt";
 #else
   return "debug";
