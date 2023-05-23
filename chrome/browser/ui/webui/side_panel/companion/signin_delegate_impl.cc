@@ -46,6 +46,10 @@ bool SigninDelegateImpl::IsSignedIn() {
 }
 
 void SigninDelegateImpl::StartSigninFlow() {
+  if (IsSignedIn()) {
+    return;
+  }
+
   DCHECK(AllowedSignin());
 
   // Show the promo here.

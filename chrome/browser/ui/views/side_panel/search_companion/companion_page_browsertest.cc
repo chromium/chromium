@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
@@ -748,6 +749,37 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ExpsPromoURLLoadsInNewTab) {
   EXPECT_TRUE(web_contents()->GetVisibleURL().spec().starts_with(
       kExpectedExpsPromoUrl));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SigninLoadsInNewTab) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Show sign-in promo, user accepts it.
+  CompanionScriptBuilder builder(MethodType::kOnPromoAction);
+  builder.promo_type = PromoType::kSignin;
+  builder.promo_action = PromoAction::kAccepted;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  // Verify that a new tab opens up to load the sign-in URL.
+  WaitForTabCount(2);
+  EXPECT_TRUE(web_contents()->GetVisibleURL().spec().starts_with(
+      "https://accounts.google.com/signin/chrome/sync"));
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, RegionSearchClick) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
