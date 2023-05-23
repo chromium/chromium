@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Animation current time and effect local time are updated after scroller content size changes.
+PASS Animation current time and effect local time are updated after scroller size changes.
+FAIL If scroll animation resizes its scroll timeline scroller, layout reruns once per frame. assert_approx_equals: expected 28.42105263157895 +/- 0.1 but got 60
+Harness: the test ran to completion.
+
