@@ -6348,4 +6348,81 @@ PhysicalOffset LayoutBox::AnchorScrollTranslationOffset() const {
   return PhysicalOffset();
 }
 
+const LayoutObject* LayoutBox::FindTargetAnchor(
+    const ScopedCSSName& anchor_name) const {
+  if (!IsOutOfFlowPositioned()) {
+    return nullptr;
+  }
+
+  // Go through the already built NGPhysicalAnchorQuery to avoid tree traversal.
+  // OOF elements are positioned against |css_container|, which can be different
+  // from |container_block| if |css_container| is a relatively-positioned
+  // inline. However, NGPhysicalAnchorQuery is always hosted by block-level
+  // objects and contains everything in the block. So when they are different,
+  // we need to double check if the result is in |css_container|.
+  const LayoutObject* css_container = Container();
+  const LayoutBlock* containing_block = css_container->IsLayoutBlock()
+                                            ? To<LayoutBlock>(css_container)
+                                            : css_container->ContainingBlock();
+  const LayoutObject* anchor = nullptr;
+  for (const NGPhysicalBoxFragment& fragment :
+       containing_block->PhysicalFragments()) {
+    if (const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery()) {
+      if (const LayoutObject* current =
+              anchor_query->AnchorLayoutObject(*this, &anchor_name)) {
+        if (!css_container->IsLayoutBlock() &&
+            !current->IsDescendantOf(css_container)) {
+          // TODO(crbug.com/1446442): This is wrong. We need to preserve
+          // relatively positioned anchor references, and then go through all
+          // the name-conflicting references to see if there's any in
+          // |css_container|.
+          continue;
+        }
+        if (!anchor ||
+            (anchor != current && anchor->IsBeforeInPreOrder(*current))) {
+          anchor = current;
+        }
+      }
+    }
+  }
+  return anchor;
+}
+
+const LayoutObject* LayoutBox::AcceptableImplicitAnchor() const {
+  if (!IsOutOfFlowPositioned()) {
+    return nullptr;
+  }
+  Element* element = DynamicTo<Element>(GetNode());
+  Element* anchor_element =
+      element ? element->ImplicitAnchorElement() : nullptr;
+  LayoutObject* anchor_layout_object =
+      anchor_element ? anchor_element->GetLayoutObject() : nullptr;
+  if (!anchor_layout_object) {
+    return nullptr;
+  }
+  // Go through the already built NGPhysicalAnchorQuery to avoid tree traversal.
+  // OOF elements are positioned against |css_container|, which can be different
+  // from |container_block| if |css_container| is a relatively-positioned
+  // inline. However, NGPhysicalAnchorQuery is always hosted by block-level
+  // objects and contains everything in the block. So when they are different,
+  // we need to double check if the result is in |css_container|.
+  const LayoutObject* css_container = Container();
+  const LayoutBlock* containing_block = css_container->IsLayoutBlock()
+                                            ? To<LayoutBlock>(css_container)
+                                            : css_container->ContainingBlock();
+  if (!css_container->IsLayoutBlock() &&
+      !anchor_layout_object->IsDescendantOf(css_container)) {
+    return nullptr;
+  }
+  for (const NGPhysicalBoxFragment& fragment :
+       containing_block->PhysicalFragments()) {
+    if (const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery()) {
+      if (anchor_query->AnchorReference(*this, anchor_layout_object)) {
+        return anchor_layout_object;
+      }
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace blink

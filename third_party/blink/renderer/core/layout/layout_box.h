@@ -1742,6 +1742,15 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // This should be called when the border-box size of this box is changed.
   void SizeChanged();
 
+  // Finds the target anchor element for the given name in the containing block.
+  // https://drafts.csswg.org/css-anchor-position-1/#target-anchor-element
+  const LayoutObject* FindTargetAnchor(const ScopedCSSName&) const;
+
+  // Returns this element's implicit anchor element if there is one and it is an
+  // acceptable anchor element.
+  // https://drafts.csswg.org/css-anchor-position-1/#ref-for-valdef-anchor-implicit
+  const LayoutObject* AcceptableImplicitAnchor() const;
+
  protected:
   ~LayoutBox() override;
 

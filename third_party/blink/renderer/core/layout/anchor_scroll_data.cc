@@ -25,32 +25,16 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!value)
     return nullptr;
 
-  const NGPhysicalAnchorQuery* anchor_query =
-      NGPhysicalAnchorQuery::GetFromLayoutResult(*layout_object);
-  if (!anchor_query)
-    return nullptr;
-
+  const LayoutBox* box = To<LayoutBox>(layout_object);
   const LayoutObject* anchor = nullptr;
   if (value->IsNamed()) {
-    anchor =
-        anchor_query->AnchorLayoutObject(*layout_object, &value->GetName());
+    anchor = box->FindTargetAnchor(value->GetName());
   } else if (value->IsDefault() && style.AnchorDefault()) {
-    anchor =
-        anchor_query->AnchorLayoutObject(*layout_object, style.AnchorDefault());
+    anchor = box->FindTargetAnchor(*style.AnchorDefault());
   } else {
     DCHECK(value->IsImplicit() ||
            (value->IsDefault() && !style.AnchorDefault()));
-    Element* element = DynamicTo<Element>(layout_object->GetNode());
-    Element* anchor_element =
-        element ? element->ImplicitAnchorElement() : nullptr;
-    LayoutObject* anchor_layout_object =
-        anchor_element ? anchor_element->GetLayoutObject() : nullptr;
-    if (anchor_layout_object) {
-      // Even with the implicit anchor element at hand, we still need to verify
-      // whether it's an acceptable anchor element.
-      anchor = anchor_query->AnchorLayoutObject(*layout_object,
-                                                anchor_layout_object);
-    }
+    anchor = box->AcceptableImplicitAnchor();
   }
 
   return anchor;
