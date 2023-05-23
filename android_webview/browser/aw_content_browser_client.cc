@@ -1126,4 +1126,13 @@ bool AwContentBrowserClient::IsWebAttributionReportingAllowed() {
   return false;  // WebView does not support web-only attribution.
 }
 
+bool AwContentBrowserClient::ShouldUseOsWebSourceAttributionReporting() {
+  // WebView should register sources as from the app instead of the web.
+  // Web registration APIs currently require a special registration
+  // from the app in Android for registering sources. The more common case
+  // for a webview is that the app does not have this registration,
+  // so we instead register attribution events against the embedding app.
+  return false;
+}
+
 }  // namespace android_webview

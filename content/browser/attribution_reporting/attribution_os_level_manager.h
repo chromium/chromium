@@ -74,6 +74,7 @@ class CONTENT_EXPORT AttributionOsLevelManager {
 
  protected:
   [[nodiscard]] static bool ShouldInitializeApiState();
+  [[nodiscard]] static bool ShouldUseOsWebSource();
 };
 
 class CONTENT_EXPORT NoOpAttributionOsLevelManager

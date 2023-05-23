@@ -122,12 +122,18 @@ void AttributionOsLevelManagerAndroid::Register(
   switch (registration.GetType()) {
     case attribution_reporting::mojom::OsRegistrationType::kSource:
       DCHECK(registration.input_event.has_value());
-      Java_AttributionOsLevelManager_registerAttributionSource(
-          env, jobj_, request_id, registration_url, top_level_origin,
-          is_debug_key_allowed, registration.input_event->input_event);
+      if (AttributionOsLevelManager::ShouldUseOsWebSource()) {
+        Java_AttributionOsLevelManager_registerWebAttributionSource(
+            env, jobj_, request_id, registration_url, top_level_origin,
+            is_debug_key_allowed, registration.input_event->input_event);
+      } else {
+        Java_AttributionOsLevelManager_registerAttributionSource(
+            env, jobj_, request_id, registration_url,
+            registration.input_event->input_event);
+      }
       break;
     case attribution_reporting::mojom::OsRegistrationType::kTrigger:
-      Java_AttributionOsLevelManager_registerAttributionTrigger(
+      Java_AttributionOsLevelManager_registerWebAttributionTrigger(
           env, jobj_, request_id, registration_url, top_level_origin,
           is_debug_key_allowed);
       break;

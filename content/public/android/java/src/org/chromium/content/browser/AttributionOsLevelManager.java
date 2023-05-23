@@ -89,8 +89,8 @@ public class AttributionOsLevelManager {
      * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
      */
     @CalledByNative
-    private void registerAttributionSource(int requestId, GURL registrationUrl, GURL topLevelOrigin,
-            boolean isDebugKeyAllowed, MotionEvent event) {
+    private void registerWebAttributionSource(int requestId, GURL registrationUrl,
+            GURL topLevelOrigin, boolean isDebugKeyAllowed, MotionEvent event) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             onRegistrationCompleted(requestId, /*success=*/false);
             return;
@@ -110,11 +110,31 @@ public class AttributionOsLevelManager {
     }
 
     /**
+     * Registers an attribution source with native, see `registerSourceAsync()`:
+     * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
+     */
+    @CalledByNative
+    private void registerAttributionSource(int requestId, GURL registrationUrl, MotionEvent event) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            onRegistrationCompleted(requestId, /*success=*/false);
+            return;
+        }
+        MeasurementManagerFutures mm = getManager();
+        if (mm == null) {
+            onRegistrationCompleted(requestId, /*success=*/false);
+            return;
+        }
+        ListenableFuture<?> future =
+                mm.registerSourceAsync(Uri.parse(registrationUrl.getSpec()), event);
+        addRegistrationFutureCallback(requestId, future);
+    }
+
+    /**
      * Registers a web attribution trigger with native, see `registerWebTriggerAsync()`:
      * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
      */
     @CalledByNative
-    private void registerAttributionTrigger(
+    private void registerWebAttributionTrigger(
             int requestId, GURL registrationUrl, GURL topLevelOrigin, boolean isDebugKeyAllowed) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             onRegistrationCompleted(requestId, /*success=*/false);
