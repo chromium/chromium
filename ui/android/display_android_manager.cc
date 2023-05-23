@@ -27,7 +27,7 @@ namespace {
 // Feature controlling whether or not HDR is enabled on Android.
 // TODO(https://crbug.com/1430768): Leave this as a kill switch until Android U
 // ships.
-BASE_FEATURE(kAndroidHDR, "AndroidHDR", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidHDR, "AndroidHDR", base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
