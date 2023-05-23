@@ -254,17 +254,6 @@ PrefModelAssociator::MergeDataAndStartSyncing(
                          &new_changes);
   }
 
-  for (const std::string& legacy_pref_name : legacy_model_type_preferences_) {
-    // Track preferences for which we have a local user-controlled value. That
-    // could be a value from last run, or a value just set by the initial sync.
-    // We don't call InitPrefAndAssociate because we don't want the initial sync
-    // to trigger outgoing changes -- these prefs are only tracked to send
-    // updates back to older clients.
-    if (user_prefs_->GetValue(legacy_pref_name, nullptr)) {
-      synced_preferences_.insert(legacy_pref_name);
-    }
-  }
-
   // Push updates to sync.
   absl::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, new_changes);
@@ -418,19 +407,8 @@ void PrefModelAssociator::RegisterPref(const std::string& name) {
   registered_preferences_.insert(name);
 }
 
-void PrefModelAssociator::RegisterPrefWithLegacyModelType(
-    const std::string& name) {
-  DCHECK(!base::Contains(legacy_model_type_preferences_, name));
-  DCHECK(!base::Contains(registered_preferences_, name));
-  legacy_model_type_preferences_.insert(name);
-}
-
 bool PrefModelAssociator::IsPrefRegistered(const std::string& name) const {
   return registered_preferences_.count(name) > 0;
-}
-
-bool PrefModelAssociator::IsLegacyModelTypePref(const std::string& name) const {
-  return legacy_model_type_preferences_.count(name) > 0;
 }
 
 void PrefModelAssociator::OnPrefValueChanged(const std::string& name) {
@@ -444,12 +422,10 @@ void PrefModelAssociator::OnPrefValueChanged(const std::string& name) {
     return;
   }
 
-  if (!IsPrefRegistered(name) && !IsLegacyModelTypePref(name)) {
+  if (!IsPrefRegistered(name)) {
     // We are not syncing this preference -- this also filters out synced
     // preferences of the wrong type (e.g. priority preference are handled by a
-    // separate associator). Legacy model type preferences are allowed to
-    // continue because we want to push updates to old clients using the
-    // old ModelType.
+    // separate associator).
     return;
   }
 
@@ -503,12 +479,6 @@ void PrefModelAssociator::NotifySyncedPrefObservers(const std::string& path,
                                                     bool from_sync) const {
   auto observer_iter = synced_pref_observers_.find(path);
   if (observer_iter == synced_pref_observers_.end()) {
-    return;
-  }
-  // Don't notify for prefs we are only observing to support old clients.
-  // The PrefModelAssociator for the new ModelType will notify.
-  if (IsLegacyModelTypePref(path)) {
-    DCHECK(!from_sync);
     return;
   }
   for (auto& observer : *observer_iter->second) {

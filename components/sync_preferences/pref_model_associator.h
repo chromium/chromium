@@ -102,9 +102,6 @@ class PrefModelAssociator : public syncer::SyncableService,
   // begins).
   void RegisterPref(const std::string& name);
 
-  // See |legacy_model_type_preferences_|.
-  void RegisterPrefWithLegacyModelType(const std::string& name);
-
   // Fills |sync_data| with a sync representation of the preference data
   // provided.
   // Exposed for testing.
@@ -114,10 +111,6 @@ class PrefModelAssociator : public syncer::SyncableService,
 
   // Returns true if the specified preference is registered for syncing.
   bool IsPrefRegistered(const std::string& name) const;
-
-  // See |legacy_model_type_preferences_|.
-  // Exposed for testing.
-  bool IsLegacyModelTypePref(const std::string& name) const;
 
   // Adds a SyncedPrefObserver to watch for changes to a specific pref.
   void AddSyncedPrefObserver(const std::string& name,
@@ -198,13 +191,6 @@ class PrefModelAssociator : public syncer::SyncableService,
   // synced. It determines whether a preference change should update an existing
   // sync node or create a new sync node.
   std::set<std::string> synced_preferences_;
-
-  // Preferences that have migrated to a new ModelType. They are included here
-  // so updates can be sent back to older clients with this old ModelType.
-  // Updates received from older clients will be ignored. The common case is
-  // migration from PREFERENCES to OS_PREFERENCES. This field can be removed
-  // after 06/2023 (see crbug.com/1255724).
-  std::set<std::string> legacy_model_type_preferences_;
 
   // Sync's handler for outgoing changes. Non-null between
   // MergeDataAndStartSyncing() and StopSyncing().
