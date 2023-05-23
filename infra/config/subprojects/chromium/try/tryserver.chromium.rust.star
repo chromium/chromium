@@ -62,8 +62,8 @@ try_.builder(
 )
 
 try_.builder(
-    name = "mac-rust-x64-rel",
-    mirrors = ["ci/mac-rust-x64-rel"],
+    name = "mac-rust-x64-dbg",
+    mirrors = ["ci/mac-rust-x64-dbg"],
     cores = None,
     os = os.MAC_ANY,
 )

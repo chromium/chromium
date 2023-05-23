@@ -69,13 +69,12 @@
       "use_remoteexec": true
     }
   },
-  "mac-rust-x64-rel": {
+  "mac-rust-x64-dbg": {
     "gn_args": {
-      "dcheck_always_on": true,
       "enable_all_rust_features": true,
       "enable_rust": true,
-      "is_component_build": false,
-      "is_debug": false,
+      "is_component_build": true,
+      "is_debug": true,
       "symbol_level": 1,
       "target_cpu": "x64",
       "use_remoteexec": true

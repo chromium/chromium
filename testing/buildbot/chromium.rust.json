@@ -663,7 +663,7 @@
       }
     ]
   },
-  "mac-rust-x64-rel": {
+  "mac-rust-x64-dbg": {
     "additional_compile_targets": [
       "gnrt_unittests",
       "mojo_rust",
