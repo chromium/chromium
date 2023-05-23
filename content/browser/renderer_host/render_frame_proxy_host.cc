@@ -365,18 +365,17 @@ void RenderFrameProxyHost::VisibilityChanged(
 }
 
 void RenderFrameProxyHost::UpdateOpener() {
-  // Another frame in this proxy's SiteInstance may reach the new opener by
+  // Another frame in this proxy's SiteInstanceGroup may reach the new opener by
   // first reaching this proxy and then referencing its window.opener.  Ensure
   // the new opener's proxy exists in this case. If this is already a proxy for
   // a frame in another BrowsingInstance in the same CoopRelatedGroup, we should
   // not add extra proxies, as these are not discoverable via window.opener
   // because property access is restricted.
-  bool is_coop_rp_proxy = frame_tree_node_->current_frame_host()
-                              ->GetSiteInstance()
-                              ->IsCoopRelatedSiteInstance(GetSiteInstance()) &&
-                          !frame_tree_node_->current_frame_host()
-                               ->GetSiteInstance()
-                               ->IsRelatedSiteInstance(GetSiteInstance());
+  SiteInstanceGroup* current_group =
+      frame_tree_node_->current_frame_host()->GetSiteInstance()->group();
+  bool is_coop_rp_proxy =
+      current_group->IsCoopRelatedSiteInstanceGroup(site_instance_group()) &&
+      !current_group->IsRelatedSiteInstanceGroup(site_instance_group());
   if (is_coop_rp_proxy) {
     return;
   }
