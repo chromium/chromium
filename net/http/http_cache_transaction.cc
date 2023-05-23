@@ -3946,19 +3946,17 @@ void HttpCache::Transaction::RecordHistograms() {
 
   bool did_send_request = !send_request_since_.is_null();
 
-  // TODO(ricea): Understand why this DCHECK is failing in the wild, fix it, and
-  // remove it. See https://crbug.com/1409150.
-  if (did_send_request) {
-    DCHECK_NE(cache_entry_status_, CacheEntryStatus::ENTRY_USED);
-  }
-  // This DCHECK() should not fire, because the one above should catch all the
-  // erroneous cases.
+  // It's not clear why `did_send_request` can be true when status is
+  // ENTRY_USED. See https://crbug.com/1409150.
+  // TODO(ricea): Maybe remove ENTRY_USED from the `did_send_request` true
+  // branch once that issue is resolved.
   DCHECK(
       (did_send_request &&
        (cache_entry_status_ == CacheEntryStatus::ENTRY_NOT_IN_CACHE ||
         cache_entry_status_ == CacheEntryStatus::ENTRY_VALIDATED ||
         cache_entry_status_ == CacheEntryStatus::ENTRY_UPDATED ||
-        cache_entry_status_ == CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE)) ||
+        cache_entry_status_ == CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE ||
+        cache_entry_status_ == CacheEntryStatus::ENTRY_USED)) ||
       (!did_send_request &&
        (cache_entry_status_ == CacheEntryStatus::ENTRY_USED ||
         cache_entry_status_ == CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE)));
