@@ -2334,6 +2334,12 @@ const char kEncryptedClientHelloEnabled[] = "ssl.ech_enabled";
 const char kInsecureHashesInTLSHandshakesEnabled[] =
     "ssl.insecure_hash_enabled";
 
+// If true, checks the X.509 keyUsage extension in TLS 1.2 for RSA
+// certificates that chain to a local trust anchor. If false, the checks are
+// disabled.
+const char kRSAKeyUsageForLocalAnchorsEnabled[] =
+    "ssl.rsa_key_usage_for_local_anchors_enabled";
+
 // Boolean that specifies whether the built-in asynchronous DNS client is used.
 const char kBuiltInDnsClientEnabled[] = "async_dns.enabled";
 

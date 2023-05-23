@@ -68,6 +68,7 @@ class SSLConfigServiceManager {
   BooleanPrefMember post_quantum_enabled_;
   BooleanPrefMember ech_enabled_;
   BooleanPrefMember insecure_hash_enabled_;
+  BooleanPrefMember rsa_key_usage_for_local_anchors_enabled_;
 
   // The cached list of disabled SSL cipher suites.
   std::vector<uint16_t> disabled_cipher_suites_;

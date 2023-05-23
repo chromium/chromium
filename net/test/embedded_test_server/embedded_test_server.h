@@ -25,6 +25,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/ocsp_revocation_status.h"
+#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/socket/ssl_server_socket.h"
@@ -310,6 +311,9 @@ class EmbeddedTestServer {
 
     // A list of IP addresses to include in the leaf subjectAltName extension.
     std::vector<net::IPAddress> ip_addresses;
+
+    // A list of key usages to include in the leaf keyUsage extension.
+    std::vector<KeyUsageBit> key_usages;
   };
 
   typedef base::RepeatingCallback<std::unique_ptr<HttpResponse>(

@@ -863,6 +863,7 @@ extern const char kHSTSPolicyBypassList[];
 extern const char kPostQuantumEnabled[];
 extern const char kEncryptedClientHelloEnabled[];
 extern const char kInsecureHashesInTLSHandshakesEnabled[];
+extern const char kRSAKeyUsageForLocalAnchorsEnabled[];
 
 extern const char kBuiltInDnsClientEnabled[];
 extern const char kDnsOverHttpsMode[];

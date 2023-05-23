@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "net/base/features.h"
+#include "net/ssl/ssl_config_service_defaults.h"
 
 namespace net {
 
@@ -20,10 +21,12 @@ bool SSLContextConfigsAreEqual(const net::SSLContextConfig& config1,
                                const net::SSLContextConfig& config2) {
   return std::tie(config1.version_min, config1.version_max,
                   config1.disabled_cipher_suites, config1.post_quantum_enabled,
-                  config1.ech_enabled, config1.insecure_hash_override) ==
+                  config1.ech_enabled, config1.insecure_hash_override,
+                  config1.rsa_key_usage_for_local_anchors_override) ==
          std::tie(config2.version_min, config2.version_max,
                   config2.disabled_cipher_suites, config2.post_quantum_enabled,
-                  config2.ech_enabled, config2.insecure_hash_override);
+                  config2.ech_enabled, config2.insecure_hash_override,
+                  config2.rsa_key_usage_for_local_anchors_override);
 }
 
 }  // namespace
