@@ -71,7 +71,6 @@ import java.util.Stack;
 class BookmarkManagerMediator
         implements BookmarkDelegate, TestingDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
     private static final String EMPTY_QUERY = null;
-    private static final long MICRO_CURRENCY_QUOTIENT = 1000000;
 
     private static boolean sPreventLoadingForTesting;
 
