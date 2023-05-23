@@ -15,6 +15,5 @@
 # Following tests were flaky. We disable them first until we have time to investigate.
 -All/HostedOrWebAppTest.CtrlClickLink/HostedApp
 -All/HostedOrWebAppTest.CtrlClickLink/WebApp
--AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
 -ContentSettingsTest.AllowCookiesForASessionUsingExceptions
 -CustomTabBarViewBrowserTest.BackToAppButtonIsNotVisibleInOutOfScopePopups
