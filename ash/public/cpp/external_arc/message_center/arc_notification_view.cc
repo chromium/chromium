@@ -57,7 +57,8 @@ ArcNotificationView::ArcNotificationView(
     : message_center::MessageView(notification),
       item_(item),
       content_view_(new ArcNotificationContentView(item_, notification, this)),
-      shown_in_popup_(shown_in_popup) {
+      shown_in_popup_(shown_in_popup),
+      is_group_child_(notification.group_child()){
   DCHECK_EQ(message_center::NOTIFICATION_TYPE_CUSTOM, notification.type());
   DCHECK_EQ(kArcNotificationCustomViewType, notification.custom_view_type());
 
@@ -119,6 +120,10 @@ void ArcNotificationView::UpdateCornerRadius(int top_radius,
 }
 
 void ArcNotificationView::UpdateBackgroundPainter() {
+  if (is_group_child_) {
+      SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+      return;
+  }
   SetBackground(views::CreateSolidBackground(
       shown_in_popup_ ? AshColorProvider::Get()->GetBaseLayerColor(
                             AshColorProvider::BaseLayerType::kTransparent80)

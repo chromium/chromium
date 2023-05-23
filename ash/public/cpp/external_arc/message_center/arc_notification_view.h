@@ -104,6 +104,8 @@ class ArcNotificationView : public message_center::MessageView,
 
   const bool shown_in_popup_;
 
+  const bool is_group_child_;
+
   std::unique_ptr<views::Painter> focus_painter_;
 };
 
