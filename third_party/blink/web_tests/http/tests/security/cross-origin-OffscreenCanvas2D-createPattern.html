@@ -3,6 +3,7 @@
 <body>
 <script src="/js-test-resources/js-test.js"></script>
 <script>
+jsTestIsAsync = true;
 description("The pattern created by OffscreenCanvas2D from cross-origin image must be tainted.");
 
 function shouldBeTainted(pattern) {
@@ -28,7 +29,8 @@ image.addEventListener('load', function() {
     var offscreenContext = offscreenCanvas.getContext("2d");
     var pat = offscreenContext.createPattern(image, "no-repeat");
     shouldBeTainted(pat);
- });
+    finishJSTest();
+});
 
 </script>
 </body>

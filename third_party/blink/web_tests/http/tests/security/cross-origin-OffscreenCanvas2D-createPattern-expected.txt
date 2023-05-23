@@ -2,8 +2,8 @@ The pattern created by OffscreenCanvas2D from cross-origin image must be tainted
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
+PASS ImageBitmap is tainted. Threw error: SecurityError: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': The canvas has been tainted by cross-origin data.
 PASS successfullyParsed is true
 
 TEST COMPLETE
 
-PASS ImageBitmap is tainted. Threw error: SecurityError: Failed to execute 'getImageData' on 'CanvasRenderingContext2D': The canvas has been tainted by cross-origin data.
