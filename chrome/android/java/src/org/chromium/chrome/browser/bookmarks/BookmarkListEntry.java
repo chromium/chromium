@@ -30,7 +30,7 @@ public final class BookmarkListEntry {
             ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER,
             ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK, ViewType.TAG_CHIP_LIST,
             ViewType.SHOPPING_FILTER, ViewType.IMPROVED_BOOKMARK_VISUAL,
-            ViewType.IMPROVED_BOOKMARK_COMPACT})
+            ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.SEARCH_BOX})
     public @interface ViewType {
         int INVALID = -1;
         int PERSONALIZED_SIGNIN_PROMO = 0;
@@ -45,6 +45,7 @@ public final class BookmarkListEntry {
         int SHOPPING_FILTER = 9;
         int IMPROVED_BOOKMARK_VISUAL = 10;
         int IMPROVED_BOOKMARK_COMPACT = 11;
+        int SEARCH_BOX = 12;
     }
 
     /** Contains data used by section header in bookmark UI. */

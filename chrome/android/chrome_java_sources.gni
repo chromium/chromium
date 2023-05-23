@@ -188,6 +188,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowMediator.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowProperties.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowViewBinder.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/BookmarkSearchBoxRow.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkTextInputLayout.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbar.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarCoordinator.java",

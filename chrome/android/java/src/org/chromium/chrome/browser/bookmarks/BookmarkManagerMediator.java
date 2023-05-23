@@ -812,6 +812,12 @@ class BookmarkManagerMediator
     private void setBookmarks(List<BookmarkListEntry> bookmarkListEntryList) {
         clearHighlight();
 
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            // TODO(https://crbug.com/1439583): Do this in a way that doesn't get overridden by
+            // the promo header.
+            updateOrAdd(0, buildSearchBoxRow());
+        }
+
         // Restore the header, if it exists, then update it.
         if (hasPromoHeader()) {
             updateOrAdd(0, buildPersonalizedPromoListItem());
@@ -823,7 +829,9 @@ class BookmarkManagerMediator
         // items in place so that the recycler view doesn't see everything being removed and added
         // back, but instead it sees items being changed.
         // TODO(https://crbug.com/1413463): Rework promo/header methods to simplify initial index.
-        int index = hasPromoHeader() ? 1 : 0;
+        int index =
+                hasPromoHeader() || BookmarkFeatures.isAndroidImprovedBookmarksEnabled() ? 1 : 0;
+
         for (BookmarkListEntry bookmarkListEntry : bookmarkListEntryList) {
             updateOrAdd(index++, buildBookmarkListItem(bookmarkListEntry));
         }
@@ -942,7 +950,7 @@ class BookmarkManagerMediator
     }
 
     private int getBookmarkItemStartIndex() {
-        return hasPromoHeader() ? 1 : 0;
+        return Math.max(0, firstIndexWithLocation(0, mModelList.size(), 1));
     }
 
     private int getBookmarkItemEndIndex() {
@@ -988,6 +996,11 @@ class BookmarkManagerMediator
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
         propertyModel.set(BookmarkManagerProperties.BOOKMARK_PROMO_HEADER, mPromoHeaderManager);
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
+    }
+
+    private ListItem buildSearchBoxRow() {
+        PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
+        return new ListItem(ViewType.SEARCH_BOX, propertyModel);
     }
 
     private ListItem buildBookmarkListItem(BookmarkListEntry bookmarkListEntry) {

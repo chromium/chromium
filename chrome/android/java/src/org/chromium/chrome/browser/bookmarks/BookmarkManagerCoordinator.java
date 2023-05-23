@@ -205,6 +205,8 @@ public class BookmarkManagerCoordinator
                 this::buildAndInitVisualImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
         dragReorderableRecyclerViewAdapter.registerType(ViewType.IMPROVED_BOOKMARK_COMPACT,
                 this::buildAndInitCompactImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
+        dragReorderableRecyclerViewAdapter.registerType(
+                ViewType.SEARCH_BOX, this::buildSearchBoxRow, ImprovedBookmarkRowViewBinder::bind);
 
         RecordUserAction.record("MobileBookmarkManagerOpen");
         if (!isDialogUi) {
@@ -358,6 +360,10 @@ public class BookmarkManagerCoordinator
         ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(), true);
         row.setSelectionDelegate(mSelectionDelegate);
         return row;
+    }
+
+    View buildSearchBoxRow(ViewGroup parent) {
+        return inflate(parent, org.chromium.chrome.R.layout.bookmark_search_box_row);
     }
 
     private static View inflate(ViewGroup parent, @LayoutRes int layoutId) {

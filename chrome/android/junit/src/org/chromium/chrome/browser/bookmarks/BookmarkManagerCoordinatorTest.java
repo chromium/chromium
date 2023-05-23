@@ -129,5 +129,6 @@ public class BookmarkManagerCoordinatorTest {
         assertNotNull(BookmarkManagerCoordinator.buildShoppingFilterView(parent));
         assertNotNull(mCoordinator.buildAndInitCompactImprovedBookmarkRow(parent));
         assertNotNull(mCoordinator.buildAndInitVisualImprovedBookmarkRow(parent));
+        assertNotNull(mCoordinator.buildSearchBoxRow(parent));
     }
 }

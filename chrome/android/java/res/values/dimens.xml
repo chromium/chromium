@@ -239,7 +239,7 @@ found in the LICENSE file.
     <!-- The size of displayed favicons for each row. -->
     <dimen name="improved_bookmark_favicon_display_size">24dp</dimen>
     <dimen name="improved_bookmark_icon_radius">24dp</dimen>
-
+    <dimen name="bookmark_search_hint_horizontal_padding">30dp</dimen>
 
     <!-- Bookmark visual refresh dimensions. -->
      <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>

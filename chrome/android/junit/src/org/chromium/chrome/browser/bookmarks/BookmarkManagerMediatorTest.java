@@ -540,7 +540,7 @@ public class BookmarkManagerMediatorTest {
     public void onPreferenceChanged_ViewPreferenceUpdated() {
         mMediator.openFolder(mFolderId1);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
-        assertEquals(ViewType.IMPROVED_BOOKMARK_VISUAL, mModelList.get(0).type);
+        assertEquals(ViewType.IMPROVED_BOOKMARK_VISUAL, mModelList.get(1).type);
     }
 
     @Test
@@ -548,9 +548,9 @@ public class BookmarkManagerMediatorTest {
     public void testBuildImprovedBookmarkRow() {
         finishLoading();
         mMediator.openFolder(mFolderId2);
-        assertEquals(1, mModelList.size());
+        assertEquals(2, mModelList.size());
 
-        ListItem item = mModelList.get(0);
+        ListItem item = mModelList.get(1);
         assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, item.type);
 
         PropertyModel model = item.model;
@@ -577,9 +577,9 @@ public class BookmarkManagerMediatorTest {
     public void testBuildImprovedBookmarkRow_ReadingList() {
         finishLoading();
         mMediator.openFolder(mReadingListFolderId);
-        assertEquals(3, mModelList.size());
+        assertEquals(4, mModelList.size());
 
-        ListItem item = mModelList.get(1);
+        ListItem item = mModelList.get(2);
         assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, item.type);
 
         PropertyModel model = item.model;
@@ -599,7 +599,7 @@ public class BookmarkManagerMediatorTest {
         finishLoading();
         mMediator.openFolder(mFolderId2);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
-        assertEquals(1, mModelList.size());
+        assertEquals(2, mModelList.size());
 
         ListItem item = mMediator.buildImprovedBookmarkRow(BookmarkListEntry.createBookmarkEntry(
                 mBookmarkItem21, null, mBookmarkUiPrefs.getBookmarkRowDisplayPref()));
@@ -645,9 +645,9 @@ public class BookmarkManagerMediatorTest {
 
         finishLoading();
         mMediator.openFolder(mFolderId2);
-        assertEquals(1, mModelList.size());
+        assertEquals(2, mModelList.size());
 
-        ListItem item = mModelList.get(0);
+        ListItem item = mModelList.get(1);
         assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, item.type);
 
         PropertyModel model = item.model;
@@ -660,9 +660,9 @@ public class BookmarkManagerMediatorTest {
     public void testBuildImprovedBookmarkRow_Folder() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
-        assertEquals(2, mModelList.size());
+        assertEquals(3, mModelList.size());
 
-        ListItem item = mModelList.get(0);
+        ListItem item = mModelList.get(1);
         assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, item.type);
 
         PropertyModel model = item.model;
@@ -691,9 +691,9 @@ public class BookmarkManagerMediatorTest {
         finishLoading();
         mMediator.openFolder(mFolderId1);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
-        assertEquals(2, mModelList.size());
+        assertEquals(3, mModelList.size());
 
-        ListItem item = mModelList.get(0);
+        ListItem item = mModelList.get(1);
         assertEquals(ViewType.IMPROVED_BOOKMARK_VISUAL, item.type);
 
         PropertyModel model = item.model;
@@ -721,9 +721,9 @@ public class BookmarkManagerMediatorTest {
     public void testBuildImprovedBookmarkRow_readingListFolder() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
-        assertEquals(2, mModelList.size());
+        assertEquals(3, mModelList.size());
 
-        ListItem item = mModelList.get(0);
+        ListItem item = mModelList.get(1);
         assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, item.type);
 
         PropertyModel model = item.model;
@@ -750,9 +750,9 @@ public class BookmarkManagerMediatorTest {
         finishLoading();
         mMediator.openFolder(mFolderId1);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
-        assertEquals(2, mModelList.size());
+        assertEquals(3, mModelList.size());
 
-        ListItem item = mModelList.get(0);
+        ListItem item = mModelList.get(1);
         assertEquals(ViewType.IMPROVED_BOOKMARK_VISUAL, item.type);
 
         PropertyModel model = item.model;
