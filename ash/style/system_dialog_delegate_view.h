@@ -107,8 +107,14 @@ class ASH_EXPORT SystemDialogDelegateView : public views::WidgetDelegateView {
   void SetAdditionalContentCrossAxisAlignment(views::LayoutAlignment alignment);
 
   // views::WidgetDelegateView:
+  gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
+  void OnWidgetInitialized() override;
+  void OnWorkAreaChanged() override;
+
+ protected:
+  virtual void UpdateDialogSize();
 
  private:
   class ButtonContainer;

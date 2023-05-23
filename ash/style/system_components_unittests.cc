@@ -2,20 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/style/checkbox_group.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/icon_switch.h"
 #include "ash/style/radio_button_group.h"
+#include "ash/style/system_dialog_delegate_view.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_util.h"
 #include "base/run_loop.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_test_api.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -258,6 +264,133 @@ TEST_F(SystemComponentsTest, CheckboxGroup) {
   EXPECT_FALSE(button_2->GetEnabled());
   EXPECT_FALSE(button_3->GetEnabled());
   EXPECT_FALSE(button_4->GetEnabled());
+}
+
+struct DialogTestParams {
+  ui::ModalType modal_type;
+  bool parent_to_root;
+};
+
+class SystemDialogTest : public SystemComponentsTest,
+                         public testing::WithParamInterface<DialogTestParams> {
+ public:
+  SystemDialogTest() = default;
+  SystemDialogTest(const SystemDialogTest&) = delete;
+  SystemDialogTest& operator=(const SystemDialogTest&) = delete;
+  ~SystemDialogTest() override = default;
+
+ protected:
+  // Create a dialog according to the give test parameters. Resize the host
+  // window with the given host size.
+  void CreateDialog(const DialogTestParams& params,
+                    const gfx::Size& host_size) {
+    // Clear existing dialog and host window instances.
+    dialog_.reset();
+    host_widget_.reset();
+
+    // Generate a new dialog delegate view.
+    auto dialog_view = views::Builder<SystemDialogDelegateView>()
+                           .SetIcon(kTestIcon)
+                           .SetTitleText(u"Title")
+                           .SetDescription(u"Dialog description.")
+                           .Build();
+
+    dialog_view->SetModalType(params.modal_type);
+
+    // Resize the display if the dialog is parented to the root window.
+    // Otherwise, create a host window with the given size.
+    if (params.parent_to_root) {
+      UpdateDisplay(host_size.ToString());
+    } else {
+      UpdateDisplay("1280x720");
+      host_widget_ =
+          CreateTestWidget(nullptr, desks_util::GetActiveDeskContainerId(),
+                           gfx::Rect(host_size), /*show=*/true);
+    }
+
+    // Create a dialog widget.
+    views::Widget::InitParams dialog_params;
+    dialog_params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+    dialog_params.bounds = gfx::Rect(dialog_view->GetPreferredSize());
+    dialog_params.delegate = dialog_view.release();
+    dialog_params.ownership =
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    dialog_params.parent = params.parent_to_root
+                               ? Shell::GetPrimaryRootWindow()
+                               : host_widget_->GetNativeWindow();
+    dialog_ = std::make_unique<views::Widget>(std::move(dialog_params));
+    dialog_->Show();
+  }
+
+  // Get the dialog size.
+  int GetDialogWidth() {
+    CHECK(dialog_);
+    return dialog_->GetWindowBoundsInScreen().size().width();
+  }
+
+ private:
+  std::unique_ptr<views::Widget> host_widget_;
+  std::unique_ptr<views::Widget> dialog_;
+};
+
+const DialogTestParams kSystemDialogTestParams[] = {
+    {ui::ModalType::MODAL_TYPE_NONE, /*parent_to_root=*/false},
+    {ui::ModalType::MODAL_TYPE_NONE, /*parent_to_root=*/true},
+    {ui::ModalType::MODAL_TYPE_WINDOW, /*parent_to_root=*/false},
+    {ui::ModalType::MODAL_TYPE_WINDOW, /*parent_to_root=*/true},
+    {ui::ModalType::MODAL_TYPE_CHILD, /*parent_to_root=*/false},
+    {ui::ModalType::MODAL_TYPE_CHILD, /*parent_to_root=*/true},
+    {ui::ModalType::MODAL_TYPE_SYSTEM, /*parent_to_root=*/false},
+    {ui::ModalType::MODAL_TYPE_SYSTEM, /*parent_to_root=*/true},
+};
+
+INSTANTIATE_TEST_SUITE_P(SystemDialogSize,
+                         SystemDialogTest,
+                         testing::ValuesIn(kSystemDialogTestParams));
+
+// Tests the dialog sizes with different sizes of host windows.
+TEST_P(SystemDialogTest, DialogResponsiveSize) {
+  DialogTestParams params = GetParam();
+
+  // When the width of the host window is no smaller than 672, the width of the
+  // dialog is 512.
+  CreateDialog(params, /*host_size=*/gfx::Size(1000, 600));
+  EXPECT_EQ(512, GetDialogWidth());
+
+  CreateDialog(params, /*host_size=*/gfx::Size(672, 600));
+  EXPECT_EQ(512, GetDialogWidth());
+
+  // When the width of the host window is less than 672 and no smaller than 520,
+  // the dialog has a padding of 80 on both sides.
+  CreateDialog(params, /*host_size=*/gfx::Size(671, 600));
+  EXPECT_EQ(511, GetDialogWidth());
+
+  CreateDialog(params, /*host_size=*/gfx::Size(520, 600));
+  EXPECT_EQ(360, GetDialogWidth());
+
+  // When the width of the host window is less than 520 and no smaller than 424,
+  // the width of the dialog is 359.
+  CreateDialog(params, /*host_size=*/gfx::Size(519, 600));
+  EXPECT_EQ(359, GetDialogWidth());
+
+  CreateDialog(params, /*host_size=*/gfx::Size(424, 600));
+  EXPECT_EQ(359, GetDialogWidth());
+
+  // When the width of the host window is less than 424 and no smaller than 400,
+  // the dialog has a padding of 32 on both sides.
+  CreateDialog(params, /*host_size=*/gfx::Size(423, 600));
+  EXPECT_EQ(359, GetDialogWidth());
+
+  CreateDialog(params, /*host_size=*/gfx::Size(400, 600));
+  EXPECT_EQ(336, GetDialogWidth());
+
+  // When the width of the host window is less than 400, the dialog of has
+  // minimum size of 296.
+  CreateDialog(params, /*host_size=*/gfx::Size(399, 600));
+  EXPECT_EQ(296, GetDialogWidth());
+
+  CreateDialog(params, /*host_size=*/gfx::Size(300, 600));
+  EXPECT_EQ(296, GetDialogWidth());
 }
 
 struct TabSliderTestParams {
