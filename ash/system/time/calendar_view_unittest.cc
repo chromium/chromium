@@ -2126,7 +2126,11 @@ TEST_F(CalendarViewAnimationTest, DontShowEventListDuringMonthAnimation) {
 // bubble.
 class CalendarViewWithMessageCenterTest : public AshTestBase {
  public:
-  CalendarViewWithMessageCenterTest() = default;
+  CalendarViewWithMessageCenterTest() {
+    // This test case is only valid without `kQsRevamp` enabled. Once the
+    // `kQsRevamp` feature flag is deleted, this test can be deleted.
+    scoped_feature_list_.InitAndDisableFeature(features::kQsRevamp);
+  }
   CalendarViewWithMessageCenterTest(const CalendarViewWithMessageCenterTest&) =
       delete;
   CalendarViewWithMessageCenterTest& operator=(
@@ -2192,6 +2196,9 @@ class CalendarViewWithMessageCenterTest : public AshTestBase {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
     generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests `Tab` / `Shift+Tab` navigation within two bubbles.
