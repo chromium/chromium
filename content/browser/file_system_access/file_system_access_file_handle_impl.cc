@@ -677,15 +677,13 @@ void FileSystemAccessFileHandleImpl::CreateClonedSwapFile(
   DCHECK(max_swap_files_ >= 0);
   DCHECK(CanUseCowSwapFile());
 
-  did_attempt_swap_file_cloning_for_testing_ = true;
-
   auto after_clone_callback = base::BindOnce(
       &FileSystemAccessFileHandleImpl::DidCloneSwapFile,
       weak_factory_.GetWeakPtr(), count, swap_url, auto_close, std::move(lock),
       std::move(swap_lock), std::move(callback));
 
   if (swap_file_cloning_will_fail_for_testing_) {
-    std::move(after_clone_callback).Run(base::File::Error::FILE_ERROR_FAILED);
+    std::move(after_clone_callback).Run(base::File::Error::FILE_ERROR_ABORT);
     return;
   }
 
@@ -706,6 +704,8 @@ void FileSystemAccessFileHandleImpl::DidCloneSwapFile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(CanUseCowSwapFile());
 
+  swap_file_clone_result_for_testing_ = result;
+
   if (result == base::File::FILE_ERROR_EXISTS) {
     // Cloning fails if the destination file exists. The file must have been
     // created between the FileExists check and the clone attempt. Attempt to
@@ -724,8 +724,6 @@ void FileSystemAccessFileHandleImpl::DidCloneSwapFile(
                            std::move(swap_lock), std::move(callback));
     return;
   }
-
-  did_create_cloned_swap_file_for_testing_ = true;
 
   std::move(callback).Run(
       file_system_access_error::Ok(),
