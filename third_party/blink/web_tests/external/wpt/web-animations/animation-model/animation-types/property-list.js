@@ -1172,6 +1172,12 @@ const gCSSProperties2 = {
       { type: 'discrete', options: [ [ 'auto', 'smooth' ] ] }
     ]
   },
+  'scrollbar-width': {
+    // https://drafts.csswg.org/css-scrollbars/#propdef-scrollbar-width
+    types: [
+      { type: 'discrete', options: [ [ 'auto', 'thin' ], [ 'auto', 'none' ], [ 'thin', 'none' ] ] }
+    ]
+  },
   'shape-outside': {
     // http://dev.w3.org/csswg/css-shapes/#propdef-shape-outside
     types: [

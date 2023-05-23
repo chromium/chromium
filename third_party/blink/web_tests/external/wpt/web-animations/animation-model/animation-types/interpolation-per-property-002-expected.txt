@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 340 tests; 329 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 350 tests; 339 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -161,6 +161,16 @@ PASS scroll-behavior (type: discrete) has testInterpolation function
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with linear easing
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with effect easing
 PASS scroll-behavior uses discrete animation when animating between "auto" and "smooth" with keyframe easing
+PASS scrollbar-width (type: discrete) has testInterpolation function
+PASS scrollbar-width uses discrete animation when animating between "auto" and "thin" with linear easing
+PASS scrollbar-width uses discrete animation when animating between "auto" and "thin" with effect easing
+PASS scrollbar-width uses discrete animation when animating between "auto" and "thin" with keyframe easing
+PASS scrollbar-width uses discrete animation when animating between "auto" and "none" with linear easing
+PASS scrollbar-width uses discrete animation when animating between "auto" and "none" with effect easing
+PASS scrollbar-width uses discrete animation when animating between "auto" and "none" with keyframe easing
+PASS scrollbar-width uses discrete animation when animating between "thin" and "none" with linear easing
+PASS scrollbar-width uses discrete animation when animating between "thin" and "none" with effect easing
+PASS scrollbar-width uses discrete animation when animating between "thin" and "none" with keyframe easing
 PASS shape-outside (type: discrete) has testInterpolation function
 PASS shape-outside uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with linear easing
 PASS shape-outside uses discrete animation when animating between "url("http://localhost/test-1")" and "url("http://localhost/test-2")" with effect easing
