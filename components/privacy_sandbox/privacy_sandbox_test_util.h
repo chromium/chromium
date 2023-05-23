@@ -61,6 +61,12 @@ class MockPrivacySandboxSettingsDelegate
     });
   }
 
+  void SetUpIsPrivacySandboxCurrentlyUnrestrictedResponse(bool unrestricted) {
+    ON_CALL(*this, IsPrivacySandboxCurrentlyUnrestricted).WillByDefault([=]() {
+      return unrestricted;
+    });
+  }
+
   void SetUpIsIncognitoProfileResponse(bool incognito) {
     ON_CALL(*this, IsIncognitoProfile).WillByDefault([=]() {
       return incognito;
@@ -81,6 +87,11 @@ class MockPrivacySandboxSettingsDelegate
   }
 
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
+  MOCK_METHOD(bool,
+              IsPrivacySandboxCurrentlyUnrestricted,
+              (),
+              (const, override));
+
   MOCK_METHOD(bool, IsIncognitoProfile, (), (const, override));
   MOCK_METHOD(bool, HasAppropriateTopicsConsent, (), (const, override));
   MOCK_METHOD(bool, IsSubjectToM1NoticeRestricted, (), (const, override));

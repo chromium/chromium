@@ -724,16 +724,17 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
     return;
   }
 
-  // Check for users waiting for graduation: If a user was ever reported as both
-  // restricted and unrestricted it means they are ready for graduation.
+  // Check for users waiting for graduation: If a user was ever reported as
+  // restricted and is currently unrestricted it means they are ready for
+  // graduation.
   const bool restricted_notice_acknowledged = pref_service_->GetBoolean(
       prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
   const bool user_reported_restricted =
       pref_service_->GetBoolean(prefs::kPrivacySandboxM1Restricted);
-  const bool user_reported_unrestricted =
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1Unrestricted);
+  const bool user_is_currently_unrestricted =
+      privacy_sandbox_settings_->IsPrivacySandboxCurrentlyUnrestricted();
 
-  if (user_reported_restricted && user_reported_unrestricted) {
+  if (user_reported_restricted && user_is_currently_unrestricted) {
     base::UmaHistogramEnumeration(
         privacy_sandbox_prompt_startup_histogram,
         restricted_notice_acknowledged

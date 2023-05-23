@@ -388,8 +388,12 @@ class PrivacySandboxService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(
       PrivacySandboxServiceM1RestrictedNoticePromptTest,
       RecordPrivacySandbox4StartupMetrics_PromptNotSuppressed);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceM1RestrictedNoticePromptTest,
-                           RecordPrivacySandbox4StartupMetrics_GraduationFlow);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted,
+      RecordPrivacySandbox4StartupMetrics_GraduationFlow);
+  FRIEND_TEST_ALL_PREFIXES(
+      PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyRestricted,
+      RecordPrivacySandbox4StartupMetrics_GraduationFlow);
 
   // Should be used only for tests when mocking the service.
   PrivacySandboxService();

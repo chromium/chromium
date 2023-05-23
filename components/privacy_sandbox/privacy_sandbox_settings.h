@@ -45,6 +45,11 @@ class PrivacySandboxSettings : public KeyedService {
     // return value over the life of the service.
     virtual bool IsPrivacySandboxRestricted() const = 0;
 
+    // Allows the delegate to query in real time if Privacy Sandbox is currently
+    // unrestricted. Unlike IsPrivacySandboxRestricted, does NOT
+    // restrict/unrestrict access to the Privacy Sandbox.
+    virtual bool IsPrivacySandboxCurrentlyUnrestricted() const = 0;
+
     // Whether the current profile is Incognito or not. For Incognito, the
     // privacy sandbox APIs are restricted.
     virtual bool IsIncognitoProfile() const = 0;
@@ -192,6 +197,12 @@ class PrivacySandboxSettings : public KeyedService {
   // delegate. Forwards directly to the corresponding delegate function.
   // Virtual to allow mocking in tests.
   virtual bool IsPrivacySandboxRestricted() const = 0;
+
+  // Returns whether the Privacy Sandbox is being unrestricted by the associated
+  // delegate. Forwards directly to the corresponding delegate function.
+  // Virtual to allow mocking in tests. Unlike IsPrivacySandboxRestricted
+  // this method always return the current restriction status.
+  virtual bool IsPrivacySandboxCurrentlyUnrestricted() const = 0;
 
   // Returns whether the privacy sandbox restricted notice should be shown,
   // based on account characteristics. Forwards to the delegate. Virtual for
