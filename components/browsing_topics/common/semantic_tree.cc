@@ -4,6 +4,7 @@
 
 #include "components/browsing_topics/common/semantic_tree.h"
 
+#include "base/check_op.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -418,10 +419,22 @@ bool IsAncestorTopic(Topic src, Topic target) {
   }
   return false;
 }
+
 }  // namespace
 
 SemanticTree::SemanticTree() = default;
 SemanticTree::~SemanticTree() = default;
+
+Topic SemanticTree::GetRandomTopic(int taxonomy_version,
+                                   uint64_t random_topic_index_decision) {
+  CHECK_EQ(taxonomy_version, 1);
+  size_t random_topic_index = random_topic_index_decision % kNumTopics;
+  return Topic(base::checked_cast<int>(random_topic_index + 1));
+}
+
+bool SemanticTree::IsTaxonomySupported(int taxonomy_version) {
+  return taxonomy_version == 1;
+}
 
 std::vector<Topic> SemanticTree::GetDescendantTopics(const Topic& topic) {
   std::vector<Topic> ret;

@@ -59,7 +59,6 @@ constexpr base::Time kTime1 =
 constexpr base::Time kTime2 =
     base::Time::FromDeltaSinceWindowsEpoch(base::Days(2));
 
-constexpr size_t kTaxonomySize = 349;
 constexpr int kTaxonomyVersion = 1;
 constexpr int64_t kModelVersion = 2;
 constexpr size_t kPaddedTopTopicsStartIndex = 5;
@@ -91,8 +90,8 @@ EpochTopics CreateTestEpochTopics(
   }
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
-                     kPaddedTopTopicsStartIndex, kTaxonomySize,
-                     kTaxonomyVersion, kModelVersion, calculation_time);
+                     kPaddedTopTopicsStartIndex, kTaxonomyVersion,
+                     kModelVersion, calculation_time);
 }
 
 class PortalActivationWaiter : public content::WebContentsObserver {

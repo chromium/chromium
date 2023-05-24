@@ -87,7 +87,6 @@ class BrowsingTopicsCalculator {
   void DeriveTopTopics(
       const std::map<HashedHost, size_t>& history_hosts_count,
       const std::map<HashedHost, std::set<Topic>>& host_topics_map,
-      size_t taxonomy_size,
       std::vector<Topic>& top_topics,
       size_t& padded_top_topics_start_index,
       size_t& history_topics_count);

@@ -17,6 +17,34 @@ class SemanticTreeUnittest : public testing::Test {
   SemanticTree semantic_tree_;
 };
 
+TEST_F(SemanticTreeUnittest, GetRandomTopic_ValidInput) {
+  Topic topic = semantic_tree_.GetRandomTopic(1, 3);
+  EXPECT_EQ(topic, Topic(4));
+}
+
+TEST_F(SemanticTreeUnittest, GetRandomTopic_ZeroSeedIsValid) {
+  Topic topic = semantic_tree_.GetRandomTopic(1, 0);
+  EXPECT_EQ(topic, Topic(1));
+}
+
+TEST_F(SemanticTreeUnittest, GetRandomTopic_SeedIsHigherThanTaxonomySize) {
+  Topic topic = semantic_tree_.GetRandomTopic(1, 400);
+  EXPECT_EQ(topic, Topic(52));
+}
+
+TEST_F(SemanticTreeUnittest, GetRandomTopic_InvalidTaxonomyVersion) {
+  EXPECT_CHECK_DEATH(semantic_tree_.GetRandomTopic(10, 400));
+}
+
+TEST_F(SemanticTreeUnittest, IsTaxonomySupported_ValidTaxonomyVersion) {
+  EXPECT_TRUE(semantic_tree_.IsTaxonomySupported(1));
+}
+
+TEST_F(SemanticTreeUnittest, IsTaxonomySupported_InvalidTaxonomyVersion) {
+  EXPECT_FALSE(semantic_tree_.IsTaxonomySupported(0));
+  EXPECT_FALSE(semantic_tree_.IsTaxonomySupported(100));
+}
+
 TEST_F(SemanticTreeUnittest, GetDescendantTopicsTopicNotInMap) {
   std::vector<Topic> topics = semantic_tree_.GetDescendantTopics(Topic(10000));
   EXPECT_TRUE(topics.empty());

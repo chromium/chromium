@@ -38,7 +38,6 @@ constexpr browsing_topics::HmacKey kZeroKey = {};
 constexpr browsing_topics::HmacKey kTestKey = {1};
 constexpr browsing_topics::HmacKey kTestKey2 = {2};
 
-constexpr size_t kTaxonomySize = 349;
 constexpr int kTaxonomyVersion = 1;
 constexpr int64_t kModelVersion = 2;
 constexpr size_t kPaddedTopTopicsStartIndex = 3;
@@ -57,8 +56,8 @@ EpochTopics CreateTestEpochTopics(base::Time calculation_time) {
       TopicAndDomains(Topic(5), {HashedDomain(1)}));
 
   EpochTopics epoch_topics(std::move(top_topics_and_observing_domains),
-                           kPaddedTopTopicsStartIndex, kTaxonomySize,
-                           kTaxonomyVersion, kModelVersion, calculation_time);
+                           kPaddedTopTopicsStartIndex, kTaxonomyVersion,
+                           kModelVersion, calculation_time);
 
   return epoch_topics;
 }

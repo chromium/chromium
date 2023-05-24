@@ -33,7 +33,6 @@ namespace browsing_topics {
 
 namespace {
 
-constexpr size_t kTaxonomySize = 349;
 constexpr int kTaxonomyVersion = 1;
 
 constexpr char kHost1[] = "www.foo1.com";
@@ -251,7 +250,6 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicsMetadata) {
 
   EpochTopics result1 = CalculateTopics();
   EXPECT_FALSE(result1.empty());
-  EXPECT_EQ(result1.taxonomy_size(), kTaxonomySize);
   EXPECT_EQ(result1.taxonomy_version(), kTaxonomyVersion);
   EXPECT_EQ(result1.model_version(), 1);
   EXPECT_EQ(result1.calculation_time(), begin_time);
@@ -268,7 +266,7 @@ TEST_F(BrowsingTopicsCalculatorTest, TopicsMetadata) {
 
   EpochTopics result2 = CalculateTopics();
   EXPECT_FALSE(result2.empty());
-  EXPECT_EQ(result2.taxonomy_size(), kTaxonomySize);
+
   EXPECT_EQ(result2.taxonomy_version(), kTaxonomyVersion);
   EXPECT_EQ(result2.model_version(), 50);
   EXPECT_EQ(result2.calculation_time(), begin_time + base::Seconds(2));

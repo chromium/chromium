@@ -22,10 +22,10 @@ const char kTopTopicsAndObservingDomainsNameKey[] =
     "top_topics_and_observing_domains";
 const char kPaddedTopTopicsStartIndexNameKey[] =
     "padded_top_topics_start_index";
-const char kTaxonomySizeNameKey[] = "taxonomy_size";
 const char kTaxonomyVersionNameKey[] = "taxonomy_version";
 const char kModelVersionNameKey[] = "model_version";
 const char kCalculationTimeNameKey[] = "calculation_time";
+// `taxonomy_size` is a deprecated key. Do not reuse.
 
 bool ShouldUseRandomTopic(uint64_t random_or_top_topic_decision_hash) {
   return base::checked_cast<int>(random_or_top_topic_decision_hash % 100) <
@@ -40,14 +40,12 @@ EpochTopics::EpochTopics(base::Time calculation_time)
 EpochTopics::EpochTopics(
     std::vector<TopicAndDomains> top_topics_and_observing_domains,
     size_t padded_top_topics_start_index,
-    size_t taxonomy_size,
     int taxonomy_version,
     int64_t model_version,
     base::Time calculation_time)
     : top_topics_and_observing_domains_(
           std::move(top_topics_and_observing_domains)),
       padded_top_topics_start_index_(padded_top_topics_start_index),
-      taxonomy_size_(taxonomy_size),
       taxonomy_version_(taxonomy_version),
       model_version_(model_version),
       calculation_time_(calculation_time) {
@@ -103,13 +101,6 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   size_t padded_top_topics_start_index =
       static_cast<size_t>(*padded_top_topics_start_index_value);
 
-  absl::optional<int> taxonomy_size_value =
-      dict_value.FindInt(kTaxonomySizeNameKey);
-  if (!taxonomy_size_value)
-    return EpochTopics(calculation_time);
-
-  size_t taxonomy_size = static_cast<size_t>(*taxonomy_size_value);
-
   absl::optional<int> taxonomy_version_value =
       dict_value.FindInt(kTaxonomyVersionNameKey);
   if (!taxonomy_version_value)
@@ -130,8 +121,8 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   int64_t model_version = *model_version_int64_value;
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
-                     padded_top_topics_start_index, taxonomy_size,
-                     taxonomy_version, model_version, calculation_time);
+                     padded_top_topics_start_index, taxonomy_version,
+                     model_version, calculation_time);
 }
 
 base::Value::Dict EpochTopics::ToDictValue() const {
@@ -147,8 +138,6 @@ base::Value::Dict EpochTopics::ToDictValue() const {
                   std::move(top_topics_and_observing_domains_list));
   result_dict.Set(kPaddedTopTopicsStartIndexNameKey,
                   base::checked_cast<int>(padded_top_topics_start_index_));
-  result_dict.Set(kTaxonomySizeNameKey,
-                  base::checked_cast<int>(taxonomy_size_));
   result_dict.Set(kTaxonomyVersionNameKey, taxonomy_version_);
   result_dict.Set(kModelVersionNameKey, base::Int64ToValue(model_version_));
   result_dict.Set(kCalculationTimeNameKey,
@@ -190,11 +179,8 @@ CandidateTopic EpochTopics::CandidateTopicForSite(
     uint64_t random_topic_index_decision =
         HashTopDomainForRandomTopicIndexDecision(hmac_key, calculation_time_,
                                                  top_domain);
-
-    size_t random_topic_index = random_topic_index_decision % taxonomy_size_;
-
-    Topic topic = Topic(base::checked_cast<int>(random_topic_index + 1));
-
+    Topic topic = SemanticTree().GetRandomTopic(taxonomy_version(),
+                                                random_topic_index_decision);
     return CandidateTopic::Create(topic, /*is_true_topic=*/false,
                                   should_be_filtered, taxonomy_version(),
                                   model_version());

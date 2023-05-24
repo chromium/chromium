@@ -23,7 +23,6 @@ class EpochTopics {
 
   EpochTopics(std::vector<TopicAndDomains> top_topics_and_observing_domains,
               size_t padded_top_topics_start_index,
-              size_t taxonomy_size,
               int taxonomy_version,
               int64_t model_version,
               base::Time calculation_time);
@@ -77,8 +76,6 @@ class EpochTopics {
     return padded_top_topics_start_index_;
   }
 
-  size_t taxonomy_size() const { return taxonomy_size_; }
-
   int taxonomy_version() const { return taxonomy_version_; }
 
   int64_t model_version() const { return model_version_; }
@@ -111,9 +108,6 @@ class EpochTopics {
   // `padded_top_topics_start_index_` will equal
   // `top_topics_and_observing_domains_.size()`.
   size_t padded_top_topics_start_index_ = 0;
-
-  // The size of the taxonomy applicable to this epoch's topics.
-  size_t taxonomy_size_ = 0;
 
   // The version of the taxonomy applicable to this epoch's topics.
   int taxonomy_version_ = 0;
