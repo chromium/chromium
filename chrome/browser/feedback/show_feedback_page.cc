@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #endif
@@ -221,9 +222,11 @@ void RequestFeedbackFlow(const GURL& page_url,
     include_bluetooth_logs = IsFromUserInteraction(source);
     show_questionnaire = IsFromUserInteraction(source);
   }
-  if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
-    // TODO(crbug.com/1407646): Include autofill metadata into CrOS new feedback
-    // tool.
+  // Disable a new feedback tool for kiosk, because SWAs are disabled there.
+  if (!chromeos::IsKioskSession() &&
+      base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
+    // TODO(crbug.com/1407646): Include autofill metadata into CrOS new
+    // feedback tool.
     ash::SystemAppLaunchParams params{};
     params.url = BuildFeedbackUrl(
         extra_diagnostics, description_template, description_placeholder_text,
