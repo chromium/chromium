@@ -708,8 +708,6 @@ def main():
       '-DCLANG_ENABLE_STATIC_ANALYZER=OFF',
       '-DCLANG_ENABLE_ARCMT=OFF',
       '-DBUG_REPORT_URL=' + BUG_REPORT_URL,
-      # Don't run Go bindings tests; PGO makes them confused.
-      '-DLLVM_INCLUDE_GO_TESTS=OFF',
       # See crbug.com/1126219: Use native symbolizer instead of DIA
       '-DLLVM_ENABLE_DIA_SDK=OFF',
       # Link all binaries with lld. Effectively passes -fuse-ld=lld to the
