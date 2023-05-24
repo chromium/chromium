@@ -31,6 +31,15 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_DOWNLOAD_ERROR_REBOOT_REQUIRED" desc="Error message shown when a OS reboot is required to install the Live Caption files.">
    Can't install speech files. Your device needs to be updated. Restart your device and try again.
   </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_CAPTION_SETTINGS" desc="Label for the link to the caption settings page.">
+   Caption settings
+  </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_TRANSLATE_SUBTITLE" desc="Subtitle for the live translate toggle control.">
+   Automatically translates captions
+  </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_TRANSLATE_TARGET_LANGUAGE_ACCNAME" desc="Accessible name for the target language selection combobox.">
+   Choose the language to translate the captions to
+  </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_DIALOG_NAME" desc="A11y name for the Global Media Controls dialog.">
    Global Media Controls
   </message>

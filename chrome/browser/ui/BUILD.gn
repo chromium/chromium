@@ -1213,6 +1213,8 @@ static_library("ui") {
       "global_media_controls/cast_media_notification_producer.h",
       "global_media_controls/cast_media_session_controller.cc",
       "global_media_controls/cast_media_session_controller.h",
+      "global_media_controls/live_translate_combobox_model.cc",
+      "global_media_controls/live_translate_combobox_model.h",
       "global_media_controls/media_item_ui_device_selector_delegate.h",
       "global_media_controls/media_item_ui_metrics.cc",
       "global_media_controls/media_item_ui_metrics.h",
