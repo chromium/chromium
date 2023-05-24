@@ -9,7 +9,7 @@ below:
 ### General Purpose Fragments
 
 #### archivist.shard.test-cml
-Runs an `archivist-without-attribution` with custom protocol routing for tests
+Runs an `archivist-for-embedding` with custom protocol routing for tests
 that want to intercept events written to a `LogSink` by a component.
 
 #### chromium_test_facet.shard.test-cml

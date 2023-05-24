@@ -11,7 +11,7 @@
 #include "base/fuchsia/scoped_service_publisher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// Runs an isolated archivist-without-attribution, publishing its
+// Runs an isolated archivist-for-embedding, publishing its
 // fuchsia_logger::LogSink into a given OutgoingDirectory, and providing access
 // to its fuchsia.logger.Log. Consumers of this class must use
 // `//build/config/fuchsia/test/archivist.shard.test-cml` in their component
