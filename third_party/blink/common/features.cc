@@ -147,9 +147,9 @@ BASE_FEATURE(kConversionMeasurement,
 // content.
 BASE_FEATURE(kExcludeLowEntropyImagesFromLCP,
              "ExcludeLowEntropyImagesFromLCP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<double> kMinimumEntropyForLCP{
-    &kExcludeLowEntropyImagesFromLCP, "min_bpp", 2};
+    &kExcludeLowEntropyImagesFromLCP, "min_bpp", 0.05};
 
 BASE_FEATURE(kGMSCoreEmoji, "GMSCoreEmoji", base::FEATURE_ENABLED_BY_DEFAULT);
 

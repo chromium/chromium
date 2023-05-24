@@ -109,11 +109,11 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
   const std::string window_origin =
       EvalJs(web_contents(), "window.origin").ExtractString();
   const std::string image_1_url_expected =
-      base::StrCat({window_origin, "/images/green-16x16.png"});
+      base::StrCat({window_origin, "/images/lcp-16x16.png"});
   const std::string image_2_url_expected =
-      base::StrCat({window_origin, "/images/blue96x96.png"});
+      base::StrCat({window_origin, "/images/lcp-96x96.png"});
   const std::string image_3_url_expected =
-      base::StrCat({window_origin, "/images/green-256x256.png"});
+      base::StrCat({window_origin, "/images/lcp-256x256.png"});
   const std::string expected_url[3] = {
       image_1_url_expected, image_2_url_expected, image_3_url_expected};
 
@@ -1001,7 +1001,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   Load("/lcp_breakdown_timings.html");
 
   // Load an image.
-  const std::string url1 = "/images/green-16x16.png";
+  const std::string url1 = "/images/lcp-16x16.png";
   const std::string element_id1 = "image";
   EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
                    content::JsReplace("addImage($1, $2)", url1, element_id1))
@@ -1016,7 +1016,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
   // The UKM recorded LCP should be that of the second image, which should be
   // larger than the LCP of first image.
 
-  const std::string url2 = "/images/green-256x256.png";
+  const std::string url2 = "/images/lcp-256x256.png";
   const std::string element_id2 = "larger_image";
 
   EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
