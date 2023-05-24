@@ -1907,3 +1907,19 @@ TEST_F(BlocklistedExtensionSyncServiceTest, SyncAllowedGreylistedExtension) {
   }
   processor()->changes().clear();
 }
+
+// Test that blocklisted extension cannot be installed/synchronized.
+TEST_F(BlocklistedExtensionSyncServiceTest, InstallBlocklistedExtension) {
+  const std::string extension_id = good_crx;
+  test_blocklist().SetBlocklistState(extension_id,
+                                     extensions::BLOCKLISTED_MALWARE, true);
+  ForceBlocklistUpdate();
+
+  InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
+
+  ASSERT_TRUE(registry()->GetInstalledExtension(extension_id));
+  EXPECT_FALSE(registry()->enabled_extensions().GetByID(extension_id));
+  EXPECT_TRUE(registry()->blocklisted_extensions().GetByID(extension_id));
+  EXPECT_EQ(0, ExtensionPrefs::Get(profile())->GetDisableReasons(extension_id));
+  EXPECT_TRUE(processor()->changes().empty());
+}
