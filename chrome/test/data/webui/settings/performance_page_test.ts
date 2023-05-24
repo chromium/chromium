@@ -385,9 +385,9 @@ suite('TabDiscardExceptionList', function() {
       dialog: TabDiscardExceptionAddDialogElement|
       TabDiscardExceptionEditDialogElement,
       input: string) {
-    const inputEvent = eventToPromise('input', dialog.$.input);
-    dialog.$.input.value = input;
-    dialog.$.input.dispatchEvent(new CustomEvent('input'));
+    const inputEvent = eventToPromise('input', dialog.$.input.$.input);
+    dialog.$.input.$.input.value = input;
+    dialog.$.input.$.input.dispatchEvent(new CustomEvent('input'));
     await inputEvent;
     dialog.$.actionButton.click();
     await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');
@@ -404,7 +404,7 @@ suite('TabDiscardExceptionList', function() {
     addDialog = getAddDialog();
     assertTrue(!!addDialog);
     assertTrue(addDialog.$.dialog.open);
-    assertEquals('', addDialog.$.input.value);
+    assertEquals('', addDialog.$.input.$.input.value);
     await inputDialog(addDialog, 'bar');
     assertExceptionListEquals(['foo', 'bar']);
   });
@@ -422,7 +422,7 @@ suite('TabDiscardExceptionList', function() {
     editDialog = getEditDialog();
     assertTrue(!!editDialog);
     assertTrue(editDialog.$.dialog.open);
-    assertEquals(entry.entry.site, editDialog.$.input.value);
+    assertEquals(entry.entry.site, editDialog.$.input.$.input.value);
     await inputDialog(editDialog, 'baz');
     assertExceptionListEquals(['foo', 'baz']);
   });
@@ -435,7 +435,7 @@ suite('TabDiscardExceptionList', function() {
 
     const dialog = getAddDialog();
     assertTrue(!!dialog);
-    assertEquals('', dialog.$.input.value);
+    assertEquals('', dialog.$.input.$.input.value);
   });
 
   test('testTabDiscardExceptionsListOverflow', async function() {
@@ -477,7 +477,7 @@ suite('TabDiscardExceptionList', function() {
     flush();
     const editDialog = getEditDialog();
     assertTrue(!!editDialog);
-    assertEquals(entry.entry.site, editDialog.$.input.value);
+    assertEquals(entry.entry.site, editDialog.$.input.$.input.value);
     await inputDialog(editDialog, 'foo');
     assertExceptionListEquals([...entries.slice(0, -1), 'foo']);
 

@@ -1,12 +1,10 @@
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
   <div slot="title">$i18n{editSiteTitle}</div>
   <div slot="body">
-    <cr-input id="input" label="$i18n{addSite}"
-        placeholder="example.com" value="{{rule}}"
-        on-input="validate" error-message="[[errorMessage]]"
-        invalid="[[inputInvalid]]" spellcheck="false" autofocus
-        aria-label$="$i18n{editSiteTitle}">
-    </cr-input>
+    <tab-discard-exception-edit-input id="input" prefs="{{prefs}}"
+        rule-to-edit="[[ruleToEdit]]"
+        submit-disabled="{{submitDisabled}}">
+    </tab-discard-exception-edit-input>
   </div>
   <div slot="button-container">
     <cr-button id="cancelButton" class="cancel-button"

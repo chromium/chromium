@@ -55,15 +55,15 @@ suite('TabDiscardExceptionsDialog', function() {
 
   function setupEditDialog() {
     dialog = document.createElement('tab-discard-exception-edit-dialog');
-    dialog.setRuleToEditForTesting(EXISTING_RULE);
     setupDialog();
+    dialog.setRuleToEditForTesting(EXISTING_RULE);
   }
 
   async function assertUserInputValidated(rule: string) {
     performanceBrowserProxy.reset();
     const trimmedRule = rule.trim();
-    dialog.$.input.value = rule;
-    dialog.$.input.dispatchEvent(
+    dialog.$.input.$.input.value = rule;
+    dialog.$.input.$.input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
     if (trimmedRule &&
         trimmedRule.length <= MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH) {
@@ -76,7 +76,7 @@ suite('TabDiscardExceptionsDialog', function() {
   async function testValidation() {
     await assertUserInputValidated('   ');
     assertFalse(
-        dialog.$.input.invalid,
+        dialog.$.input.$.input.invalid,
         'error mesasge should be hidden on empty input');
     assertTrue(
         dialog.$.actionButton.disabled,
@@ -85,14 +85,15 @@ suite('TabDiscardExceptionsDialog', function() {
     await assertUserInputValidated(
         'a'.repeat(MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH + 1));
     assertTrue(
-        dialog.$.input.invalid, 'error mesasge should be shown on long input');
+        dialog.$.input.$.input.invalid,
+        'error mesasge should be shown on long input');
     assertTrue(
         dialog.$.actionButton.disabled,
         'submit button should be disabled on long input');
 
     await assertUserInputValidated(VALID_RULE);
     assertFalse(
-        dialog.$.input.invalid,
+        dialog.$.input.$.input.invalid,
         'error mesasge should be hidden on valid input');
     assertFalse(
         dialog.$.actionButton.disabled,
@@ -101,7 +102,7 @@ suite('TabDiscardExceptionsDialog', function() {
     performanceBrowserProxy.setValidationResult(false);
     await assertUserInputValidated(INVALID_RULE);
     assertTrue(
-        dialog.$.input.invalid,
+        dialog.$.input.$.input.invalid,
         'error mesasge should be shown on invalid input');
     assertTrue(
         dialog.$.actionButton.disabled,
@@ -112,7 +113,8 @@ suite('TabDiscardExceptionsDialog', function() {
     setupAddDialog();
     assertTrue(dialog.$.dialog.open, 'dialog should be open initially');
     assertFalse(
-        dialog.$.input.invalid, 'error mesasge should be hidden initially');
+        dialog.$.input.$.input.invalid,
+        'error mesasge should be hidden initially');
     assertTrue(
         dialog.$.actionButton.disabled,
         'submit button should be disabled initially');
@@ -124,7 +126,8 @@ suite('TabDiscardExceptionsDialog', function() {
     setupEditDialog();
     assertTrue(dialog.$.dialog.open, 'dialog should be open initially');
     assertFalse(
-        dialog.$.input.invalid, 'error mesasge should be hidden initially');
+        dialog.$.input.$.input.invalid,
+        'error mesasge should be hidden initially');
     assertFalse(
         dialog.$.actionButton.disabled,
         'submit button should be enabled initially');
@@ -154,11 +157,8 @@ suite('TabDiscardExceptionsDialog', function() {
     await assertCancel();
   });
 
-  async function assertSubmit(
-      expectedRules: string[], validationResult = true) {
-    performanceBrowserProxy.setValidationResult(validationResult);
+  async function assertSubmit(expectedRules: string[]) {
     dialog.$.actionButton.click();
-    await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');
     await flushTasks();
 
     assertFalse(
@@ -182,13 +182,6 @@ suite('TabDiscardExceptionsDialog', function() {
     await assertSubmit([EXISTING_RULE]);
   });
 
-  test('testTabDiscardExceptionsAddDialogSubmitInvalid', async function() {
-    setupAddDialog();
-    await assertUserInputValidated(INVALID_RULE);
-    dialog.$.actionButton.disabled = false;
-    await assertSubmit([EXISTING_RULE], false);
-  });
-
   test('testTabDiscardExceptionsEditDialogSubmit', async function() {
     setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
@@ -204,12 +197,5 @@ suite('TabDiscardExceptionsDialog', function() {
     setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     await assertSubmit([VALID_RULE]);
-  });
-
-  test('testTabDiscardExceptionsEditDialogSubmitInvalid', async function() {
-    setupEditDialog();
-    await assertUserInputValidated(INVALID_RULE);
-    dialog.$.actionButton.disabled = false;
-    await assertSubmit([EXISTING_RULE], false);
   });
 });
