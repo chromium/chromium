@@ -154,7 +154,7 @@ using ReauthenticationEvent::kSuccess;
           initWithProfilePasswordStore:_profilePasswordStore
                   accountPasswordStore:_accountPasswordStore
                               delegate:self
-                                   URL:_URL];
+                                   URL:url::Origin::Create(_URL).GetURL()];
     }
   }
   return self;
