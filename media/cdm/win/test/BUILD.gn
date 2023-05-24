@@ -38,8 +38,6 @@ source_set("media_foundation_clear_key") {
     "media_foundation_clear_key_guids.h",
     "media_foundation_clear_key_input_trust_authority.cc",
     "media_foundation_clear_key_input_trust_authority.h",
-    "media_foundation_clear_key_output_policy.cc",
-    "media_foundation_clear_key_output_policy.h",
     "media_foundation_clear_key_session.cc",
     "media_foundation_clear_key_session.h",
     "media_foundation_clear_key_trusted_input.cc",
