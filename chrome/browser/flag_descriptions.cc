@@ -3078,19 +3078,6 @@ const char kSyncTrustedVaultPassphrasePromoDescription[] =
     "Enables promos for an experimental sync passphrase type, referred to as "
     "trusted vault.";
 
-const char kSyncInvalidationsName[] = "Use Sync standalone invalidations";
-const char kSyncInvalidationsDescription[] =
-    "If enabled, Sync will use standalone invalidations instead of topic based "
-    "invalidations (Wallet and Offer data types are enabled by a dedicated "
-    "flag).";
-
-const char kSyncInvalidationsWalletAndOfferName[] =
-    "Use Sync standalone invalidations for Wallet and Offer";
-const char kSyncInvalidationsWalletAndOfferDescription[] =
-    "If enabled, Sync will use standalone invalidations for Wallet and Offer "
-    "data types. Takes effect only when Sync standalone invalidations are "
-    "enabled.";
-
 const char kSystemKeyboardLockName[] = "Experimental system keyboard lock";
 const char kSystemKeyboardLockDescription[] =
     "Enables websites to use the keyboard.lock() API to intercept system "

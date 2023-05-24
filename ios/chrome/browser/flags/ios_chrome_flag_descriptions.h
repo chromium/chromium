@@ -839,15 +839,6 @@ extern const char kSynthesizedRestoreSessionDescription[];
 extern const char kSyncEnableHistoryDataTypeName[];
 extern const char kSyncEnableHistoryDataTypeDescription[];
 
-// Title and description for the flag to enable Sync standalone invalidations.
-extern const char kSyncInvalidationsName[];
-extern const char kSyncInvalidationsDescription[];
-
-// Title and description for the flag to enable Sync standalone invalidations
-// for the Wallet and Offer data types.
-extern const char kSyncInvalidationsWalletAndOfferName[];
-extern const char kSyncInvalidationsWalletAndOfferDescription[];
-
 // Title and description for the flag to enable TFLite for language detection.
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];

@@ -1750,12 +1750,6 @@ extern const char kSyncSandboxDescription[];
 extern const char kSyncTrustedVaultPassphrasePromoName[];
 extern const char kSyncTrustedVaultPassphrasePromoDescription[];
 
-extern const char kSyncInvalidationsName[];
-extern const char kSyncInvalidationsDescription[];
-
-extern const char kSyncInvalidationsWalletAndOfferName[];
-extern const char kSyncInvalidationsWalletAndOfferDescription[];
-
 extern const char kSystemProxyForSystemServicesName[];
 extern const char kSystemProxyForSystemServicesDescription[];
 

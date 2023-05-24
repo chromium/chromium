@@ -7179,16 +7179,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "sync-standalone-invalidations",
-    "owners": [ "treib", "rushans" ],
-    "expiry_milestone": 115
-  },
-  {
-    "name": "sync-standalone-invalidations-wallet-and-offer",
-    "owners": [ "treib", "rushans" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "synthesized-restore-session",
     "owners": [ "justincohen", "ajuma" ],
     "expiry_milestone": 120

@@ -945,19 +945,6 @@ const char kSyncEnableHistoryDataTypeName[] = "Enable History sync data type";
 const char kSyncEnableHistoryDataTypeDescription[] =
     "Enables the History sync data type instead of TypedURLs";
 
-const char kSyncInvalidationsName[] = "Use Sync standalone invalidations";
-const char kSyncInvalidationsDescription[] =
-    "If enabled, Sync will use standalone invalidations instead of topic based "
-    "invalidations (Wallet and Offer data types are enabled by a dedicated "
-    "flag).";
-
-const char kSyncInvalidationsWalletAndOfferName[] =
-    "Use Sync standalone invalidations for Wallet and Offer";
-const char kSyncInvalidationsWalletAndOfferDescription[] =
-    "If enabled, Sync will use standalone invalidations for Wallet and Offer "
-    "data types. Takes effect only when Sync standalone invalidations are "
-    "enabled.";
-
 const char kStartSurfaceName[] = "Start Surface";
 const char kStartSurfaceDescription[] =
     "Enable showing the Start Surface when launching Chrome via clicking the "

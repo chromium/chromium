@@ -8966,15 +8966,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kChromeWhatsNewUIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kChromeWhatsNewUI)},
 
-    {"sync-standalone-invalidations", flag_descriptions::kSyncInvalidationsName,
-     flag_descriptions::kSyncInvalidationsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(::syncer::kUseSyncInvalidations)},
-
-    {"sync-standalone-invalidations-wallet-and-offer",
-     flag_descriptions::kSyncInvalidationsWalletAndOfferName,
-     flag_descriptions::kSyncInvalidationsWalletAndOfferDescription, kOsAll,
-     FEATURE_VALUE_TYPE(::syncer::kUseSyncInvalidationsForWalletAndOffer)},
-
     {"debug-history-intervention-no-user-activation",
      flag_descriptions::kDebugHistoryInterventionNoUserActivationName,
      flag_descriptions::kDebugHistoryInterventionNoUserActivationDescription,
