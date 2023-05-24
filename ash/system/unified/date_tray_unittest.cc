@@ -32,6 +32,24 @@ constexpr char kUserEmail[] = "test_user@gmail.com";
 
 namespace ash {
 
+class ComboboxShownWaiter : public views::Combobox::Observer {
+ public:
+  ComboboxShownWaiter(views::Combobox* combobox) {
+    combobox_observation_.Observe(combobox);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  // Combobox::Observer:
+  void OnActivateMenu() override { run_loop_.Quit(); }
+
+  base::ScopedObservation<views::Combobox, views::Combobox::Observer>
+      combobox_observation_{this};
+
+  base::RunLoop run_loop_;
+};
+
 class DateTrayTest
     : public AshTestBase,
       public wm::ActivationChangeObserver,
@@ -188,7 +206,7 @@ TEST_P(DateTrayTest, InitialState) {
   EXPECT_FALSE(AreContentsViewShown());
 }
 
-TEST_P(DateTrayTest, DISABLED_ShowTasksComboModel) {
+TEST_P(DateTrayTest, ShowTasksComboModel) {
   LeftClickOn(GetDateTray());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsBubbleShown());
@@ -203,10 +221,12 @@ TEST_P(DateTrayTest, DISABLED_ShowTasksComboModel) {
                     ->GetTasksView()
                     ->task_list_combo_box_view()
                     ->GetVisible());
+
+    ComboboxShownWaiter waiter = ComboboxShownWaiter(
+        GetGlanceableTrayBubble()->GetTasksView()->task_list_combo_box_view());
     GestureTapOn(
         GetGlanceableTrayBubble()->GetTasksView()->task_list_combo_box_view());
-    PressAndReleaseKey(ui::VKEY_DOWN);
-    base::RunLoop().RunUntilIdle();
+    waiter.Wait();
     EXPECT_TRUE(GetGlanceableTrayBubble()->GetTasksView()->IsMenuRunning());
   }
 }

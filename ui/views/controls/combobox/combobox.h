@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/base/models/combobox_model.h"
@@ -20,6 +21,7 @@
 #include "ui/views/controls/prefix_delegate.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_observer.h"
 
 namespace gfx {
 class FontList;
@@ -46,6 +48,16 @@ class VIEWS_EXPORT Combobox : public View,
  public:
   METADATA_HEADER(Combobox);
 
+  class Observer : public base::CheckedObserver {
+   public:
+    // Invoked when activating the menu.
+    virtual void OnActivateMenu() {}
+
+   protected:
+    Observer() = default;
+    ~Observer() override = default;
+  };
+
   using MenuSelectionAtCallback = base::RepeatingCallback<bool(size_t index)>;
 
   static constexpr int kDefaultComboboxTextContext = style::CONTEXT_BUTTON;
@@ -66,6 +78,9 @@ class VIEWS_EXPORT Combobox : public View,
   Combobox(const Combobox&) = delete;
   Combobox& operator=(const Combobox&) = delete;
   ~Combobox() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   const gfx::FontList& GetFontList() const;
 
@@ -282,6 +297,8 @@ class VIEWS_EXPORT Combobox : public View,
   // menu items on the dropdown may be defined separately by
   // ComboboxMenuModel::GetLabelFontListAt.
   gfx::FontList font_list_;
+
+  base::ObserverList<Observer> observers_;
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};

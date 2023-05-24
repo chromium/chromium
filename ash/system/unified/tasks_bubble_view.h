@@ -63,7 +63,7 @@ class ASH_EXPORT TasksBubbleView : public views::FlexLayoutView {
 
   bool IsMenuRunning();
 
-  views::Combobox* task_list_combo_box_view() const {
+  views::Combobox* task_list_combo_box_view() {
     return task_list_combo_box_view_;
   }
 
