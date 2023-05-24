@@ -938,6 +938,9 @@ template("test") {
       if (use_cfi_diag) {
         executable_args += [ "--cfi-diag=1" ]
       }
+      if (fail_on_san_warnings) {
+        executable_args += [ "--fail-san=1" ]
+      }
 
       data += [ "//build/lacros/test_runner.py" ]
 
@@ -1015,6 +1018,9 @@ template("test") {
       }
       if (use_cfi_diag) {
         executable_args += [ "--cfi-diag=1" ]
+      }
+      if (fail_on_san_warnings) {
+        executable_args += [ "--fail-san=1" ]
       }
 
       if (use_rts) {
