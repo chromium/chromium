@@ -254,13 +254,11 @@ crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/i
 crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/image_bitmap_from_blob/* [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome passthrough ] conformance2/textures/image_bitmap_from_image_bitmap/* [ Skip ]
 
-# Failures on Lacros, skip as failures causes re-login which takes ~1 min
+# Extensions not available on Lacros, skip as failures causes re-login which takes ~1 min
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_OVR_multiview2 [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
-
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Skip ]
 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
@@ -273,25 +271,6 @@ crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
-
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/misc/shader-precision-format.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/buffers/uniform-buffers.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/array-as-return-value.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/matrix-row-major.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/tricky-loop-conditions.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/uninitialized-local-global-variables.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/misc/expando-loss-2.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/misc/uninitialized-test-2.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/programs/active-built-in-attribs.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/query/query.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/reading/read-pixels-pack-parameters.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/rendering/blitframebuffer-multisampled-readbuffer.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Skip ]
-crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/transform_feedback/transform_feedback.html [ Skip ]
 
 ###############################
 # Permanent Slow Expectations #
@@ -839,6 +818,31 @@ crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-
 
 # Failures on validating command decoder only; won't fix.
 crbug.com/angleproject/5038 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 no-passthrough target-cpu-64 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+
+#####################
+# Lacros failures #
+#####################
+
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
+
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/misc/shader-precision-format.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/buffers/uniform-buffers.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/array-as-return-value.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/matrix-row-major.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/glsl3/uninitialized-local-global-variables.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/misc/expando-loss-2.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/misc/uninitialized-test-2.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/programs/active-built-in-attribs.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/query/query.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/rendering/blitframebuffer-multisampled-readbuffer.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
+crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
 
 ##############################
 # Lacros-like Linux Failures #
