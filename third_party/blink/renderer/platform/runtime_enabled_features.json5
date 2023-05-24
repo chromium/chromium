@@ -2067,7 +2067,7 @@
     },
     {
       name: "LayoutFlexNewColumnAlgorithm",
-      status: "test",
+      status: "stable",
     },
     {
       name: "LayoutFlexNewRowAlgorithm",
