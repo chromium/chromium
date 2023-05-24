@@ -20,30 +20,9 @@
 
 namespace viz {
 
-// Returns the closest SkColorType for a given single planar `format`.
-//
-// NOTE: The formats BGRX_8888, BGR_565 and BGRA_1010102 return a SkColorType
-// with R/G channels reversed. This is because from GPU perspective, GL format
-// is always RGBA and there is no difference between RGBA/BGRA. Also, these
-// formats should not be used for software SkImages/SkSurfaces.
-VIZ_RESOURCE_FORMAT_EXPORT SkColorType
-ToClosestSkColorType(bool gpu_compositing, SharedImageFormat format);
-
-// Returns the closest SkColorType for a given `format` and `plane_index`. For
-// single planar formats (eg. RGBA) the plane_index must be zero and it's
-// equivalent to calling function above.
-VIZ_RESOURCE_FORMAT_EXPORT SkColorType
-ToClosestSkColorType(bool gpu_compositing,
-                     SharedImageFormat format,
-                     int plane_index);
-
 VIZ_RESOURCE_FORMAT_EXPORT int BitsPerPixel(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT ResourceFormat
 SkColorTypeToResourceFormat(SkColorType color_type);
-
-// Returns the single-plane SharedImageFormat corresponding to `color_type.`
-VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
-SkColorTypeToSinglePlaneSharedImageFormat(SkColorType color_type);
 
 // The following functions use unsigned int instead of GLenum, since including
 // third_party/khronos/GLES2/gl2.h causes redefinition errors as

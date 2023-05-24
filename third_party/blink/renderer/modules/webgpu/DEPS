@@ -2,7 +2,7 @@ include_rules = [
     "+cc/layers/texture_layer.h",
     "+cc/layers/texture_layer_client.h",
     "+cc/resources/cross_thread_shared_bitmap.h",
-    "+components/viz/common/resources/resource_format_utils.h",
+    "+components/viz/common/resources/shared_image_format_utils.h",
     "+gpu/command_buffer/common/mailbox.h",
     "+gpu/command_buffer/common/shared_image_usage.h",
     "+gpu/command_buffer/common/sync_token.h",
