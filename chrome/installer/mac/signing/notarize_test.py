@@ -8,8 +8,8 @@ import subprocess
 import unittest
 from unittest import mock
 
-from . import notarize, test_config
-from .model import CodeSignedProduct, NotarizationTool, Paths
+from signing import notarize, test_config
+from signing.model import CodeSignedProduct, NotarizationTool, Paths
 
 
 @mock.patch.multiple(

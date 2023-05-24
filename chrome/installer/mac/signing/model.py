@@ -11,7 +11,7 @@ import os.path
 import re
 import string
 
-from . import commands
+from signing import commands
 
 
 def _get_identity_hash(identity):

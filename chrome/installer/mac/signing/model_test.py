@@ -6,8 +6,8 @@ import os.path
 import unittest
 from unittest import mock
 
-from . import model
-from .test_config import TestConfig
+from signing import model
+from signing.test_config import TestConfig
 
 
 def _get_identity_hash(i):

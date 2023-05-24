@@ -5,7 +5,7 @@
 import unittest
 from unittest import mock
 
-from . import driver, model, test_config
+from signing import driver, model, test_config
 
 
 def _config_factory():

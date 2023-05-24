@@ -9,7 +9,7 @@ bundle that need to be signed, as well as providing utilities to sign them.
 import os.path
 import re
 
-from . import commands
+from signing import commands
 
 
 def _linker_signed_arm64_needs_force(path):

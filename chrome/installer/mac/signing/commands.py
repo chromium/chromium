@@ -13,7 +13,7 @@ import stat
 import subprocess
 import tempfile
 
-from . import logger
+from signing import logger
 
 
 def file_exists(path):

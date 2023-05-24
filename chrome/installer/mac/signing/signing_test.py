@@ -5,7 +5,7 @@
 import unittest
 from unittest import mock
 
-from . import model, signing, test_config
+from signing import model, signing, test_config
 
 
 @mock.patch('signing.commands.lenient_run_command_output')

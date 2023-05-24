@@ -13,7 +13,7 @@ import plistlib
 import subprocess
 import time
 
-from . import commands, logger, model
+from signing import commands, logger, model
 
 _LOG_FILE_URL = 'LogFileURL'
 

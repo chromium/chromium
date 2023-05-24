@@ -7,7 +7,7 @@ import unittest
 from unittest import mock
 from xml.etree import ElementTree
 
-from . import model, pipeline, test_config
+from signing import model, pipeline, test_config
 
 
 def _get_work_dir(*args, **kwargs):

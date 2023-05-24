@@ -8,8 +8,7 @@ The driver module provides the command line interface to the signing module.
 import argparse
 import os
 
-
-from . import config_factory, commands, logger, model, pipeline
+from signing import config_factory, commands, logger, model, pipeline
 
 
 def _create_config(config_args, development):

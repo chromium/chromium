@@ -5,7 +5,7 @@
 import unittest
 from unittest import mock
 
-from . import model, modification, test_config
+from signing import model, modification, test_config
 
 
 def plist_read(*args):
