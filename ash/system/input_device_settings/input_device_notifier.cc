@@ -211,7 +211,10 @@ void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::
 template <typename MojomDevicePtr, typename InputDeviceType>
 void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::
     OnBluetoothAdapterOrDeviceChanged(device::BluetoothDevice* device) {
-  RefreshDevices();
+  // Do nothing as OnBluetoothAdapterOrDeviceChanged is very noisy and causes
+  // updates to happen many times per second. We expect
+  // OnInputDeviceConfigurationChanged to include all devices including
+  // bluetooth devices, so refreshing devices here is unnecessary.
 }
 
 // Template specialization for retrieving the updated device lists for each
