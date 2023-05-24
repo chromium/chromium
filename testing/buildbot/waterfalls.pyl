@@ -1610,9 +1610,6 @@
         },
       },
       'linux-lacros-dbg': {
-        'mixins': [
-          'linux-bionic',
-        ],
         'additional_compile_targets': [
           'all',
         ],
