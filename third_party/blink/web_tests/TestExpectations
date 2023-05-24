@@ -2926,7 +2926,6 @@ crbug.com/626703 [ Win ] external/wpt/svg/pservers/reftests/pattern-opacity-01.s
 crbug.com/626703 external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/preload/modulepreload-as.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] external/wpt/preload/modulepreload.html [ Failure Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/access-reporting-post-message.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-overflow/scrollbar-gutter-002.html [ Failure ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
@@ -3014,7 +3013,6 @@ crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-row-style-change-trig
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-row-style-change-triggers-layout-inline-start.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/flex-row-style-change-triggers-layout-inline.html [ Failure ]
 crbug.com/626703 [ Linux ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
-crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-transitions/transition-events-with-document-change.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-animations/animation-canceled-by-parent-details-element-being-closed.html [ Timeout ]
@@ -3527,8 +3525,6 @@ crbug.com/1160916 [ Debug Mac13-arm64 ] virtual/threaded/external/wpt/css/css-ba
 crbug.com/1160916 [ Mac10.15 Release ] virtual/threaded/external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht [ Failure Pass ]
 crbug.com/1160916 [ Debug Mac13-arm64 ] external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht [ Failure Pass ]
 crbug.com/1160916 [ Mac10.15 Release ] external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht [ Failure Pass ]
-crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-bottom-right-radius-010.xht [ Failure Pass ]
-crbug.com/1160916 external/wpt/css/css-backgrounds/border-bottom-right-radius-010.xht [ Failure Pass ]
 crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Failure Pass ]
 crbug.com/1160916 external/wpt/css/css-backgrounds/border-radius-clip-001.html [ Failure Pass ]
 crbug.com/1160916 virtual/threaded/external/wpt/css/css-backgrounds/border-radius-clip-002.htm [ Failure Pass ]
@@ -6532,7 +6528,6 @@ crbug.com/1325514 http/tests/inspector-protocol/network/cookies-protocol-test.js
 crbug.com/1395549 webaudio/codec-tests/vorbis/vbr-96kbps-44khz.html [ Failure Pass ]
 crbug.com/1395551 webaudio/codec-tests/vorbis/vbr-70kbps-44khz.html [ Failure Pass ]
 crbug.com/1395552 webaudio/codec-tests/vorbis/vbr-128kbps-44khz.html [ Failure Pass ]
-crbug.com/1395450 http/tests/devtools/layers/layer-tree-model.js [ Failure Pass ]
 
 # Sheriff 2022-12-07
 crbug.com/1396185 accessibility/reach-and-scroll-overflow-div-without-mouse.html [ Pass Timeout ]
