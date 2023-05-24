@@ -1,0 +1,6 @@
+{
+  "name": "text",
+  "version": "2.0.15",
+  "main": "text.js",
+  "license": "MIT"
+}

@@ -1,0 +1,89 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "requirejs@^2.1.15",
+        "scope": null,
+        "escapedName": "requirejs",
+        "name": "requirejs",
+        "rawSpec": "^2.1.15",
+        "spec": ">=2.1.15 <3.0.0",
+        "type": "range"
+      },
+      "/Users/addyo/Desktop/Speedometer-a/resources/todomvc/dependency-examples/flight"
+    ]
+  ],
+  "_from": "requirejs@>=2.1.15 <3.0.0",
+  "_id": "requirejs@2.3.3",
+  "_inCache": true,
+  "_location": "/requirejs",
+  "_nodeVersion": "6.7.0",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/requirejs-2.3.3.tgz_1487524083275_0.3237284303177148"
+  },
+  "_npmUser": {
+    "name": "jrburke",
+    "email": "jrburke@gmail.com"
+  },
+  "_npmVersion": "3.10.3",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "requirejs@^2.1.15",
+    "scope": null,
+    "escapedName": "requirejs",
+    "name": "requirejs",
+    "rawSpec": "^2.1.15",
+    "spec": ">=2.1.15 <3.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/requirejs/-/requirejs-2.3.3.tgz",
+  "_shasum": "aa59fd3a0287eaf407959a138228044b5dd6a6a3",
+  "_shrinkwrap": null,
+  "_spec": "requirejs@^2.1.15",
+  "_where": "/Users/addyo/Desktop/Speedometer-a/resources/todomvc/dependency-examples/flight",
+  "author": {
+    "name": "James Burke",
+    "email": "jrburke@gmail.com",
+    "url": "http://github.com/jrburke"
+  },
+  "bin": {
+    "r.js": "./bin/r.js",
+    "r_js": "./bin/r.js"
+  },
+  "bugs": {
+    "url": "https://github.com/jrburke/r.js/issues"
+  },
+  "dependencies": {},
+  "description": "Node adapter for RequireJS, for loading AMD modules. Includes RequireJS optimizer",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "aa59fd3a0287eaf407959a138228044b5dd6a6a3",
+    "tarball": "https://registry.npmjs.org/requirejs/-/requirejs-2.3.3.tgz"
+  },
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "homepage": "http://github.com/jrburke/r.js",
+  "license": "MIT",
+  "main": "./bin/r.js",
+  "maintainers": [
+    {
+      "name": "jrburke",
+      "email": "jrburke@gmail.com"
+    }
+  ],
+  "name": "requirejs",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jrburke/r.js.git"
+  },
+  "scripts": {},
+  "version": "2.3.3"
+}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" data-framework="flight">
+    <head>
+        <meta charset="utf-8">
+        <title>Flight • Todo</title>
+        <link rel="stylesheet" href="node_modules/todomvc-common/base.css">
+        <link rel="stylesheet" href="node_modules/todomvc-app-css/index.css">
+    </head>
+    <body>
+        <section id="todoapp" class="todoapp">
+            <header id="header" class="header">
+                <h1>todos</h1>
+                <input id="new-todo" class="new-todo" placeholder="What needs to be done?" autofocus>
+            </header>
+            <section id="main" class="main">
+                <input id="toggle-all" class="toggle-all" type="checkbox">
+                <label for="toggle-all">Mark all as complete</label>
+                <ul id="todo-list" class="todo-list"></ul>
+            </section>
+            <footer id="footer" class="footer"></footer>
+        </section>
+        <footer id="info" class="info">
+            <p>Double-click to edit a todo</p>
+            <p>Speedometer version by Addy Osmani</p>
+            <p>Created by <a href="https://github.com/mkuklis">Michal Kuklis</a></p>
+            <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+        </footer>
+        <script data-main="app/js/main" src="node_modules/requirejs/require.js"></script>
+    </body>
+</html>

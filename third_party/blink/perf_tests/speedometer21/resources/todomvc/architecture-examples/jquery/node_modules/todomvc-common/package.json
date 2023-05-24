@@ -1,0 +1,54 @@
+{
+  "_from": "todomvc-common@^1.0.4",
+  "_id": "todomvc-common@1.0.4",
+  "_inBundle": false,
+  "_integrity": "sha512-AA0Z4exovEqubhbZCrzzn9roVT4zvOncS319p2zIc4CsNe5B9TLL7Sei1NIV6d+WrgR5rOi+y0I9Y6GE7xgNOw==",
+  "_location": "/todomvc-common",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "todomvc-common@^1.0.4",
+    "name": "todomvc-common",
+    "escapedName": "todomvc-common",
+    "rawSpec": "^1.0.4",
+    "saveSpec": null,
+    "fetchSpec": "^1.0.4"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/todomvc-common/-/todomvc-common-1.0.4.tgz",
+  "_shasum": "23099af886c2f0525bfd4537e078f12d0074309e",
+  "_spec": "todomvc-common@^1.0.4",
+  "_where": "/Users/mathiasb/projects/WebKit/PerformanceTests/Speedometer/resources/todomvc/architecture-examples/jquery",
+  "author": {
+    "name": "TasteJS"
+  },
+  "bugs": {
+    "url": "https://github.com/tastejs/todomvc-common/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Common TodoMVC utilities used by our apps",
+  "files": [
+    "base.js",
+    "base.css"
+  ],
+  "homepage": "https://github.com/tastejs/todomvc-common#readme",
+  "keywords": [
+    "todomvc",
+    "tastejs",
+    "util",
+    "utilities"
+  ],
+  "license": "MIT",
+  "main": "base.js",
+  "name": "todomvc-common",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tastejs/todomvc-common.git"
+  },
+  "style": "base.css",
+  "version": "1.0.4"
+}

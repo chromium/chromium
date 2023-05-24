@@ -131,6 +131,7 @@ class Speedometer20(_Speedometer2):
   """Speedometer2.0 benchmark.
   Explicitly named version."""
 
+  # TODO(cbruni): update source folder name to speedometer20 here.
   _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer')
 
   @classmethod
@@ -149,8 +150,7 @@ class Speedometer21(_Speedometer2):
   """Speedometer2.1 benchmark.
   Explicitly named version."""
 
-  #TODO(cbruni): update path once new version is checked in.
-  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer')
+  _SOURCE_DIR = os.path.join(_PERF_TEST_DIR, 'speedometer21')
 
   @classmethod
   def GetStoryClass(cls):

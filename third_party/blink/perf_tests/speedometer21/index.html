@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Speedometer 2.1</title>
+    <link rel="stylesheet" href="resources/main.css">
+    <script src="resources/main.js" defer></script>
+    <script src="resources/benchmark-runner.js" defer></script>
+    <script src="resources/benchmark-report.js" defer></script>
+    <script src="../resources/statistics.js" defer></script>
+    <script src="resources/tests.js" defer></script>
+</head>
+<body>
+<main>
+    <a id="logo-link" href="javascript:showHome()"><img id="logo" src="resources/logo.png"></a>
+
+    <section id="home" class="selected">
+        <p>
+            Speedometer is a browser benchmark that measures the responsiveness of Web applications.
+            It uses demo web applications to simulate user actions such as adding to-do items.
+        </p>
+        <p id="screen-size-warning"><strong>
+            Your browser window is too small. For most accurate results, please make the view port size at least 850px by 650px.<br>
+            It's currently <span id="screen-size"></span>.
+        </strong></p>
+        <div class="buttons">
+            <button onclick="startTest()">Start Test</button>
+        </div>
+        <p class="show-about"><a href="javascript:showAbout()">About Speedometer</a></p>
+    </section>
+
+    <section id="running">
+        <div id="testContainer"></div>
+        <div id="progress"><div id="progress-completed"></div></div>
+        <div id="info"></div>
+    </section>
+
+    <section id="summarized-results">
+        <h1>Runs / Minute</h1>
+        <div class="gauge"><div class="window"><div class="needle"></div></div></div>
+        <hr>
+        <div id="result-number"></div>
+        <div id="confidence-number"></div>
+        <div class="buttons">
+            <button onclick="startTest()">Test Again</button>
+            <button class="show-details" onclick="showResultDetails()">Details</button>
+        </div>
+    </section>
+
+    <section id="detailed-results">
+        <h1>Detailed Results</h1>
+        <table class="results-table"></table>
+        <table class="results-table"></table>
+        <div class="arithmetic-mean"><label>Arithmetic Mean:</label><span id="results-with-statistics"></span></div>
+        <div class="buttons">
+            <button onclick="startTest()">Test Again</button>
+            <button id="show-summary" onclick="showResultsSummary()">Summary</button>
+        </div>
+        <p class="show-about"><a href="javascript:showAbout()">About Speedometer</a></p>
+    </section>
+
+    <section id="about">
+        <h1>About Speedometer 2.1</h1>
+
+        <p>Speedometer tests a browser's Web app responsiveness by timing simulated user interactions.</p>
+
+        <p>
+            This benchmark simulates user actions for adding, completing, and removing to-do items using multiple examples in TodoMVC.
+            Each example in TodoMVC implements the same todo application using DOM APIs in different ways.
+            Some call DOM APIs directly from ECMAScript 5 (ES5), ECMASCript 2015 (ES6), ES6 transpiled to ES5, and Elm transpiled to ES5.
+            Others use one of eleven popular JavaScript frameworks: React, React with Redux, Ember.js, Backbone.js,
+            AngularJS, (new) Angular, Vue.js, jQuery, Preact, Inferno, and Flight.
+
+            Many of these frameworks are used on the most popular websites in the world, such as Facebook and Twitter.
+            The performance of these types of operations depends on the speed of the DOM APIs, the JavaScript engine,
+            CSS style resolution, layout, and other technologies.
+        </p>
+
+        <p>
+            Although user-driven actions like mouse movements and keyboard input cannot be accurately emulated in JavaScript,
+            Speedometer does its best to faithfully replay a typical workload within the demo applications.
+            To make the run time long enough to measure with the limited precision,
+            we synchronously execute a large number of the operations, such as adding one hundred to-do items.
+        </p>
+
+        <p>
+            Modern browser engines execute some work asynchronously as an optimization strategy to reduce the run time of synchronous operations.
+            While returning control back to JavaScript execution as soon as possible is worth pursuing,
+            the run time cost of such an asynchronous work should still be taken into a holistic measurement of web application performance.
+            In addition, some modern JavaScript frameworks such as Vue.js and Preact call into DOM APIs asynchronously as an optimization technique.
+            Speedometer approximates the run time of this asynchronous work in the UI thread with a zero-second timer
+            that is scheduled immediately after each execution of synchronous operations.
+        </p>
+
+        <p>
+            Speedometer does not attempt to measure concurrent asynchronous work that does not directly impact the UI thread,
+            which tends not to affect app responsiveness.
+        </p>
+
+        <p class="note">
+            <strong>Note:</strong> Speedometer should not be used as a way to compare the performance of different JavaScript frameworks
+            as work load differs greatly in each framework.
+        </p>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "requirejs-text@^2.0.12",
+        "scope": null,
+        "escapedName": "requirejs-text",
+        "name": "requirejs-text",
+        "rawSpec": "^2.0.12",
+        "spec": ">=2.0.12 <3.0.0",
+        "type": "range"
+      },
+      "/Users/addyo/Desktop/Speedometer-a/resources/todomvc/dependency-examples/flight"
+    ]
+  ],
+  "_from": "requirejs-text@>=2.0.12 <3.0.0",
+  "_id": "requirejs-text@2.0.15",
+  "_inCache": true,
+  "_location": "/requirejs-text",
+  "_nodeVersion": "7.2.1",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/requirejs-text-2.0.15.tgz_1482074109302_0.9860598086379468"
+  },
+  "_npmUser": {
+    "name": "cheston",
+    "email": "chestonlloyd@gmail.com"
+  },
+  "_npmVersion": "3.10.10",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "requirejs-text@^2.0.12",
+    "scope": null,
+    "escapedName": "requirejs-text",
+    "name": "requirejs-text",
+    "rawSpec": "^2.0.12",
+    "spec": ">=2.0.12 <3.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/requirejs-text/-/requirejs-text-2.0.15.tgz",
+  "_shasum": "13138733613fc4457b7e1247e8cb751df7aa5429",
+  "_shrinkwrap": null,
+  "_spec": "requirejs-text@^2.0.12",
+  "_where": "/Users/addyo/Desktop/Speedometer-a/resources/todomvc/dependency-examples/flight",
+  "bugs": {
+    "url": "https://github.com/requirejs/text/issues"
+  },
+  "categories": [
+    "Loader plugins"
+  ],
+  "dependencies": {},
+  "description": "An AMD loader plugin for loading text resources.",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "13138733613fc4457b7e1247e8cb751df7aa5429",
+    "tarball": "https://registry.npmjs.org/requirejs-text/-/requirejs-text-2.0.15.tgz"
+  },
+  "gitHead": "ca4b09e779b7300bebefd2b748643a6dcde971ef",
+  "github": "https://github.com/requirejs/text",
+  "homepage": "https://github.com/requirejs/text#readme",
+  "license": "MIT",
+  "main": "text.js",
+  "maintainers": [
+    {
+      "name": "cheston",
+      "email": "chestonlloyd@gmail.com"
+    }
+  ],
+  "name": "requirejs-text",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/requirejs/text.git"
+  },
+  "scripts": {},
+  "version": "2.0.15",
+  "volo": {
+    "url": "https://raw.github.com/requirejs/text/{version}/text.js"
+  }
+}

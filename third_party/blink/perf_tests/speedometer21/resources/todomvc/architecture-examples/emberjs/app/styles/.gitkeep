@@ -1,0 +1,2 @@
+# This file ensures the `app/styles` directory is included in the repository.
+# Without that directory present, the Ember TodoMVC example fails to build.
