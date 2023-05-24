@@ -14316,6 +14316,9 @@
                 },
                 {
                     "name": "NoTurbofan_20230227",
+                    "enable_features": [
+                        "V8SlowHistogramsNoTurbofan"
+                    ],
                     "disable_features": [
                         "V8Turbofan"
                     ]
