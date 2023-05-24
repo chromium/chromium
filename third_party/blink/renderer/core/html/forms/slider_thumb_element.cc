@@ -374,12 +374,13 @@ void SliderContainerElement::HandleTouchEvent(TouchEvent* event) {
 
   if (touches->length() == 1) {
     if (event->type() == event_type_names::kTouchstart) {
-      start_point_ = touches->item(0)->AbsoluteLocation();
+      start_point_ = touches->item(0)->AbsoluteLocation().ToLayoutPoint();
       sliding_direction_ = Direction::kNoMove;
       touch_started_ = true;
-      thumb->SetPositionFromPoint(touches->item(0)->AbsoluteLocation());
+      thumb->SetPositionFromPoint(start_point_);
     } else if (touch_started_) {
-      LayoutPoint current_point = touches->item(0)->AbsoluteLocation();
+      LayoutPoint current_point =
+          touches->item(0)->AbsoluteLocation().ToLayoutPoint();
       if (sliding_direction_ == Direction::kNoMove) {
         // Still needs to update the direction.
         sliding_direction_ = GetDirection(current_point, start_point_);
@@ -388,7 +389,7 @@ void SliderContainerElement::HandleTouchEvent(TouchEvent* event) {
       // sliding_direction_ has been updated, so check whether it's okay to
       // slide again.
       if (CanSlide()) {
-        thumb->SetPositionFromPoint(touches->item(0)->AbsoluteLocation());
+        thumb->SetPositionFromPoint(current_point);
         event->SetDefaultHandled();
       }
     }
