@@ -139,5 +139,10 @@ const char kHideWebStoreIcon[] = "hide_web_store_icon";
 // 2 - Forced. All pages/sessions are forced into Incognito.
 const char kIncognitoModeAvailability[] = "incognito.mode_availability";
 
+// A boolean indicating whether the new behavior for beforeunload show cancel
+// dialog if event.preventDefault() gets called is in effect.
+const char kBeforeunloadEventCancelByPreventDefaultEnabled[] =
+    "policy.beforeunload_event_cancel_by_prevent_default_enabled";
+
 }  // namespace policy_prefs
 }  // namespace policy

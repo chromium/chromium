@@ -1657,6 +1657,10 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       policy::policy_prefs::kSendMouseEventsDisabledFormControlsEnabled, true);
   registry->RegisterBooleanPref(prefs::kDataUrlInSvgUseEnabled, false);
 
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kBeforeunloadEventCancelByPreventDefaultEnabled,
+      true);
+
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
 #endif

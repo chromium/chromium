@@ -468,6 +468,7 @@
     {
       name: "BeforeunloadEventCancelByPreventDefault",
       status: "experimental",
+      public: true,
     },
     {
       name: "BidiCaretAffinity",

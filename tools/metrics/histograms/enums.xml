@@ -32925,6 +32925,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1108" label="PdfUseSkiaRendererEnabled"/>
   <int value="1109" label="DataUrlInSvgUseEnabled"/>
   <int value="1110" label="RSAKeyUsageForLocalAnchorsEnabled"/>
+  <int value="1111" label="BeforeunloadEventCancelByPreventDefaultEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

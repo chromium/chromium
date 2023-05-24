@@ -1898,6 +1898,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kGoogleSearchSidePanelEnabled,
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+  { key::kBeforeunloadEventCancelByPreventDefaultEnabled,
+    policy_prefs::kBeforeunloadEventCancelByPreventDefaultEnabled,
+    base::Value::Type::BOOLEAN},
 };
 // clang-format on
 
