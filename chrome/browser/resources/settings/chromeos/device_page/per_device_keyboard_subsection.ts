@@ -213,7 +213,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
             'remapKeyboardKeysRowSubLabel', numRemappedModifierKeys);
   }
 
-  private onRemapKeyboardKeysTap(): void {
+  private onRemapKeyboardKeysClick(): void {
     const url = new URLSearchParams(
         'keyboardId=' + encodeURIComponent(this.keyboard.id));
 

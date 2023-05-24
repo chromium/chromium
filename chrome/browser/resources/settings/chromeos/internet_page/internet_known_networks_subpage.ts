@@ -378,7 +378,7 @@ class SettingsInternetKnownNetworksPageElement extends
     event.stopPropagation();
   }
 
-  private onSubscriptionListItemTap_(
+  private onSubscriptionListItemClick_(
       event: DomRepeatEvent<PasspointSubscription>): void {
     const showPasspointEvent = new CustomEvent(
         'show-passpoint-detail',
@@ -394,7 +394,7 @@ class SettingsInternetKnownNetworksPageElement extends
     event.stopPropagation();
   }
 
-  private onSubscriptionMenuButtonTap_(
+  private onSubscriptionMenuButtonClick_(
       event: DomRepeatEvent<PasspointSubscription>): void {
     const button = event.target as HTMLButtonElement;
     this.selectedSubscriptionId_ = event.model.item.id;
@@ -409,7 +409,7 @@ class SettingsInternetKnownNetworksPageElement extends
         this.getSubscriptionDisplayName_(subscription));
   }
 
-  private async onSubscriptionForgetTap_(): Promise<void> {
+  private async onSubscriptionForgetClick_(): Promise<void> {
     this.$.subscriptionDotsMenu.close();
     this.selectedSubscriptionId_ = '';
     const response = await this.passpointService_.deletePasspointSubscription(

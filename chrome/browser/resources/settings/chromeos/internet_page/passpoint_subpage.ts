@@ -190,7 +190,7 @@ export class SettingsPasspointSubpageElement extends PasspointListenerMixin
         this.shadowRoot!.querySelector<HTMLDialogElement>('#removalDialog'));
   }
 
-  private onForgetTap_(): void {
+  private onForgetClick_(): void {
     this.showForgetDialog_ = true;
   }
 
