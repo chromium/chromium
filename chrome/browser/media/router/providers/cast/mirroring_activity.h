@@ -147,7 +147,6 @@ class MirroringActivity : public CastActivity,
   // Starts the mirroring service via the Ui thread. Can only be called on the
   // Ui thread.
   void StartOnUiThread(
-      base::WeakPtr<mirroring::MirroringServiceHost> host,
       mirroring::mojom::SessionParametersPtr session_params,
       mojo::PendingRemote<mirroring::mojom::SessionObserver> observer,
       mojo::PendingRemote<mirroring::mojom::CastMessageChannel>

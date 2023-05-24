@@ -346,7 +346,10 @@ void MirroringActivity::LogErrorMessage(const std::string& message) {
 
 void MirroringActivity::OnSourceChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
-  DCHECK(host_);
+  if (!host_) {
+    return;
+  }
+
   absl::optional<int> frame_tree_node_id = host_->GetTabSourceId();
   if (!source_changed_callback_ || !frame_tree_node_id ||
       frame_tree_node_id == frame_tree_node_id_) {
@@ -572,26 +575,23 @@ void MirroringActivity::StartSession(const std::string& destination_id,
   // If this fails, it's probably because CreateMojoBindings() hasn't been
   // called.
   DCHECK(channel_to_service_receiver_);
-  DCHECK(host_);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&MirroringActivity::StartOnUiThread,
-                     weak_ptr_factory_.GetWeakPtr(), host_->GetWeakPtr(),
-                     SessionParameters::New(
-                         session_type, cast_data_.ip_endpoint.address(),
-                         cast_data_.model_name, sink_.sink().name(),
-                         destination_id, message_handler_->source_id(),
-                         cast_source->target_playout_delay(),
-                         route().media_source().IsRemotePlaybackSource(),
-                         ShouldForceLetterboxing(cast_data_.model_name),
-                         enable_rtcp_reporting),
-                     std::move(observer_remote), std::move(channel_remote),
-                     std::move(channel_to_service_receiver_),
-                     route_.media_sink_name()));
+      base::BindOnce(
+          &MirroringActivity::StartOnUiThread, weak_ptr_factory_.GetWeakPtr(),
+          SessionParameters::New(
+              session_type, cast_data_.ip_endpoint.address(),
+              cast_data_.model_name, sink_.sink().name(), destination_id,
+              message_handler_->source_id(),
+              cast_source->target_playout_delay(),
+              route().media_source().IsRemotePlaybackSource(),
+              ShouldForceLetterboxing(cast_data_.model_name),
+              enable_rtcp_reporting),
+          std::move(observer_remote), std::move(channel_remote),
+          std::move(channel_to_service_receiver_), route_.media_sink_name()));
 }
 
 void MirroringActivity::StartOnUiThread(
-    base::WeakPtr<mirroring::MirroringServiceHost> host,
     mirroring::mojom::SessionParametersPtr session_params,
     mojo::PendingRemote<mirroring::mojom::SessionObserver> observer,
     mojo::PendingRemote<mirroring::mojom::CastMessageChannel> outbound_channel,
@@ -600,13 +600,13 @@ void MirroringActivity::StartOnUiThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!host) {
+  if (!host_) {
     return;
   }
 
-  host->Start(std::move(session_params), std::move(observer),
-              std::move(outbound_channel), std::move(inbound_channel),
-              sink_name);
+  host_->Start(std::move(session_params), std::move(observer),
+               std::move(outbound_channel), std::move(inbound_channel),
+               sink_name);
 }
 
 void MirroringActivity::StopMirroring() {
