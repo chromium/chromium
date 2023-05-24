@@ -194,6 +194,9 @@ class SystemNotificationManager {
       file_manager::io_task::IOTaskController* io_task_controller);
 
  private:
+  // Handles clicks on the DriveFS bulk-pinning error notification.
+  void HandleBulkPinningNotificationClick(absl::optional<int> button_index);
+
   // Make notification for DriveFS bulk-pinning error.
   NotificationPtr MakeBulkPinningErrorNotification(const Event& event);
 

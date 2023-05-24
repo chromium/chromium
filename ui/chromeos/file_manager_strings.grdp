@@ -838,6 +838,9 @@
   <message name="IDS_FILE_BROWSER_SEARCH_TEXT_LABEL" desc="Search text field label.">
     Search
   </message>
+  <message name="IDS_FILE_BROWSER_SETTINGS_LABEL" translateable="false" desc="Settings label">
+    Settings
+  </message>
   <message name="IDS_FILE_BROWSER_SEARCH_CLEAR_LABEL" desc="Label to clear search text field">
     Clear
   </message>

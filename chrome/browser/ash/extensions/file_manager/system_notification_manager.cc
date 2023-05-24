@@ -39,6 +39,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 namespace {
 
@@ -505,6 +506,24 @@ void SystemNotificationManager::HandleDeviceEvent(
   }
 }
 
+static const char kBulkPinningNotificationId[] = "drive-bulk-pinning-error";
+
+void SystemNotificationManager::HandleBulkPinningNotificationClick(
+    absl::optional<int> button_index) {
+  if (button_index.has_value()) {
+    VLOG(1) << "Click on button #" << *button_index;
+    if (*button_index == 1) {
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile_, chromeos::settings::mojom::kGoogleDriveSubpagePath);
+    }
+  } else {
+    VLOG(1) << "Click on notification";
+  }
+
+  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                         kBulkPinningNotificationId);
+}
+
 NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
     const Event& event) {
   // Parse the event args as a bulk-pinning progress struct.
@@ -528,9 +547,27 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
 
   // Not enough space for bulk-pinning.
   VLOG(1) << "Creating bulk-pinning error notification";
-  return CreateNotification(
-      "drive-bulk-pinning-error", IDS_FILE_BROWSER_DRIVE_SYNC_ERROR_TITLE,
-      IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION);
+
+  // Create notification.
+  NotificationPtr notification = CreateSystemNotification(
+      kBulkPinningNotificationId,
+      GetStringUTF16(IDS_FILE_BROWSER_DRIVE_SYNC_ERROR_TITLE),
+      GetStringUTF16(
+          IDS_FILE_BROWSER_BULK_PINNING_NOT_ENOUGH_SPACE_NOTIFICATION),
+      MakeRefCounted<HandleNotificationClickDelegate>(BindRepeating(
+          &SystemNotificationManager::HandleBulkPinningNotificationClick,
+          weak_ptr_factory_.GetWeakPtr())));
+
+  // Add buttons to the notification.
+  std::vector<ButtonInfo> buttons;
+  buttons.reserve(2);
+  ButtonInfo& dismiss_button =
+      buttons.emplace_back(GetStringUTF16(IDS_FILE_BROWSER_DISMISS_LABEL));
+  dismiss_button.type = message_center::ButtonType::DISMISS;
+  buttons.emplace_back(GetStringUTF16(IDS_FILE_BROWSER_SETTINGS_LABEL));
+  notification->set_buttons(std::move(buttons));
+
+  return notification;
 }
 
 NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
