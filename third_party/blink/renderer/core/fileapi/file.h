@@ -38,7 +38,6 @@
 
 namespace blink {
 
-class ExceptionState;
 class FilePropertyBag;
 class FileMetadata;
 class FormControlState;
@@ -192,16 +191,12 @@ class CORE_EXPORT File final : public Blob {
 
   File* Clone(const String& name = String()) const;
 
+  // This method calls CaptureSnapshotIfNeeded, and thus can involve synchronous
+  // IPC and file operations.
   uint64_t size() const override;
-  Blob* slice(int64_t start,
-              int64_t end,
-              const String& content_type,
-              ExceptionState&) const override;
 
   bool IsFile() const override { return true; }
   bool HasBackingFile() const override { return has_backing_file_; }
-
-  void AppendTo(BlobData&) const override;
 
   const String& GetPath() const {
 #if DCHECK_IS_ON()
@@ -213,14 +208,20 @@ class CORE_EXPORT File final : public Blob {
 
   // Getter for the lastModified IDL attribute,
   // http://dev.w3.org/2006/webapi/FileAPI/#file-attrs
+  // This method calls CaptureSnapshotIfNeeded, and thus can involve synchronous
+  // IPC and file operations.
   int64_t lastModified() const;
 
   // Getter for the lastModifiedDate IDL attribute,
   // http://www.w3.org/TR/FileAPI/#dfn-lastModifiedDate
+  // This method calls CaptureSnapshotIfNeeded, and thus can involve synchronous
+  // IPC and file operations.
   ScriptValue lastModifiedDate(ScriptState* script_state) const;
 
   // Returns File's last modified time.
   // If the modification time isn't known, the current time is returned.
+  // This method calls CaptureSnapshotIfNeeded, and thus can involve synchronous
+  // IPC and file operations.
   base::Time LastModifiedTime() const;
 
   // Similar to |LastModifiedTime()|, except this returns absl::nullopt rather

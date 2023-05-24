@@ -344,28 +344,6 @@ uint64_t File::size() const {
   return 0;
 }
 
-Blob* File::slice(int64_t start,
-                  int64_t end,
-                  const String& content_type,
-                  ExceptionState& exception_state) const {
-  if (!has_backing_file_)
-    return Blob::slice(start, end, content_type, exception_state);
-
-  // FIXME: Calling size triggers capturing a snapshot, if we don't have one
-  // already. This involves synchronous file operation. We need to figure out
-  // how to make it asynchronous (or make sure snapshot state is always passed
-  // in when creating a File instance).
-  ClampSliceOffsets(size(), start, end);
-
-  uint64_t length = end - start;
-  auto blob_data = std::make_unique<BlobData>();
-  blob_data->SetContentType(NormalizeType(content_type));
-  DCHECK(!path_.empty());
-  blob_data->AppendFile(path_, start, length, snapshot_modification_time_);
-  return MakeGarbageCollected<Blob>(
-      BlobDataHandle::Create(std::move(blob_data), length));
-}
-
 void File::CaptureSnapshotIfNeeded() const {
   if (HasValidSnapshotMetadata() && snapshot_modification_time_)
     return;
@@ -375,19 +353,6 @@ void File::CaptureSnapshotIfNeeded() const {
                                            &snapshot_modification_time_)) {
     snapshot_size_ = snapshot_size;
   }
-}
-
-void File::AppendTo(BlobData& blob_data) const {
-  if (!has_backing_file_) {
-    Blob::AppendTo(blob_data);
-    return;
-  }
-
-  // FIXME: This involves synchronous file operation. We need to figure out how
-  // to make it asynchronous.
-  CaptureSnapshotIfNeeded();
-  DCHECK(!path_.empty());
-  blob_data.AppendFile(path_, 0, *snapshot_size_, snapshot_modification_time_);
 }
 
 bool File::HasSameSource(const File& other) const {
