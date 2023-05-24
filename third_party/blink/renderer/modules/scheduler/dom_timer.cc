@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/frame/page_dismissal_scope.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/scheduler/scheduled_action.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -136,43 +135,22 @@ class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
   int timer_nesting_level_ = 0;
 };
 
-bool IsAllowed(ExecutionContext& execution_context,
-               bool is_eval,
-               const String& source) {
-  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    if (!window->GetFrame()) {
-      return false;
-    }
-    if (is_eval && !window->GetContentSecurityPolicy()->AllowEval(
-                       ReportingDisposition::kReport,
-                       ContentSecurityPolicy::kWillNotThrowException, source)) {
-      return false;
-    }
-    if (PageDismissalScope::IsActive()) {
-      UseCounter::Count(execution_context,
-                        window->document()->ProcessingBeforeUnload()
-                            ? WebFeature::kTimerInstallFromBeforeUnload
-                            : WebFeature::kTimerInstallFromUnload);
-    }
-    return true;
+bool IsAllowed(ExecutionContext& context, bool is_eval, const String& source) {
+  if (context.IsContextDestroyed()) {
+    return false;
   }
-  if (auto* worker_global_scope =
-          DynamicTo<WorkerGlobalScope>(execution_context)) {
-    if (!worker_global_scope->ScriptController()) {
-      return false;
-    }
-    ContentSecurityPolicy* policy =
-        worker_global_scope->GetContentSecurityPolicy();
-    if (is_eval && policy &&
-        !policy->AllowEval(ReportingDisposition::kReport,
-                           ContentSecurityPolicy::kWillNotThrowException,
-                           source)) {
-      return false;
-    }
-    return true;
+  if (is_eval && !context.GetContentSecurityPolicy()->AllowEval(
+                     ReportingDisposition::kReport,
+                     ContentSecurityPolicy::kWillNotThrowException, source)) {
+    return false;
   }
-  NOTREACHED();
-  return false;
+  if (auto* window = DynamicTo<LocalDOMWindow>(context);
+      window && PageDismissalScope::IsActive()) {
+    UseCounter::Count(window, window->document()->ProcessingBeforeUnload()
+                                  ? WebFeature::kTimerInstallFromBeforeUnload
+                                  : WebFeature::kTimerInstallFromUnload);
+  }
+  return true;
 }
 
 }  // namespace
