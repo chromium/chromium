@@ -630,27 +630,28 @@ void WebApp::AddInstallURLToManagementExternalConfigMap(
     GURL install_url) {
   DCHECK_NE(type, WebAppManagement::Type::kSync);
   DCHECK(install_url.is_valid());
-  management_to_external_config_map_[type].install_urls.emplace(install_url);
+  management_to_external_config_map_[type].install_urls.emplace(
+      std::move(install_url));
 }
 
 void WebApp::AddPolicyIdToManagementExternalConfigMap(
     WebAppManagement::Type type,
-    const std::string& policy_id) {
+    std::string policy_id) {
   DCHECK_NE(type, WebAppManagement::Type::kSync);
   DCHECK(!policy_id.empty());
   management_to_external_config_map_[type].additional_policy_ids.emplace(
-      policy_id);
+      std::move(policy_id));
 }
 
 void WebApp::AddExternalSourceInformation(WebAppManagement::Type type,
                                           GURL install_url,
                                           bool is_placeholder) {
-  AddInstallURLToManagementExternalConfigMap(type, install_url);
+  AddInstallURLToManagementExternalConfigMap(type, std::move(install_url));
   AddPlaceholderInfoToManagementExternalConfigMap(type, is_placeholder);
 }
 
 bool WebApp::RemoveInstallUrlForSource(WebAppManagement::Type type,
-                                       GURL install_url) {
+                                       const GURL& install_url) {
   if (!management_to_external_config_map_.count(type))
     return false;
 

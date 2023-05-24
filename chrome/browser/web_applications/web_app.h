@@ -455,7 +455,7 @@ class WebApp {
   // This adds a policy_id per management type (source) for the
   // ExternalConfigMap.
   void AddPolicyIdToManagementExternalConfigMap(WebAppManagement::Type type,
-                                                const std::string& policy_id);
+                                                std::string policy_id);
 
   // Encapsulate the addition of install_url and is_placeholder information
   // for cases where both need to be added.
@@ -463,7 +463,8 @@ class WebApp {
                                     GURL install_url,
                                     bool is_placeholder);
 
-  bool RemoveInstallUrlForSource(WebAppManagement::Type type, GURL install_url);
+  bool RemoveInstallUrlForSource(WebAppManagement::Type type,
+                                 const GURL& install_url);
 
   // Only used on Mac, determines if the toolbar should be permanently shown
   // when in fullscreen.

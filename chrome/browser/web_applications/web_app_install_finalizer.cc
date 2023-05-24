@@ -688,18 +688,18 @@ void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
     WebAppManagement::Type source,
     bool is_placeholder,
     GURL install_url,
-    const std::vector<std::string>& additional_policy_ids) {
+    std::vector<std::string> additional_policy_ids) {
   DCHECK(!(source == WebAppManagement::Type::kSync && is_placeholder));
   if (source != WebAppManagement::Type::kSync) {
     web_app.AddPlaceholderInfoToManagementExternalConfigMap(source,
                                                             is_placeholder);
     if (install_url.is_valid()) {
-      web_app.AddInstallURLToManagementExternalConfigMap(source, install_url);
+      web_app.AddInstallURLToManagementExternalConfigMap(
+          source, std::move(install_url));
     }
-    if (!additional_policy_ids.empty()) {
-      for (const auto& policy_id : additional_policy_ids) {
-        web_app.AddPolicyIdToManagementExternalConfigMap(source, policy_id);
-      }
+    for (const auto& policy_id : additional_policy_ids) {
+      web_app.AddPolicyIdToManagementExternalConfigMap(source,
+                                                       std::move(policy_id));
     }
   }
 }

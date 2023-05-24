@@ -168,7 +168,7 @@ class WebAppInstallFinalizer {
       WebAppManagement::Type source,
       bool is_placeholder,
       GURL install_url,
-      const std::vector<std::string>& additional_policy_ids);
+      std::vector<std::string> additional_policy_ids);
 
   // Used to schedule a WebAppUninstallCommand. The |external_install_source|
   // field is only required for external app uninstalls to verify OS
