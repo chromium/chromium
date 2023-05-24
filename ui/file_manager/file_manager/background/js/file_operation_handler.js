@@ -84,8 +84,10 @@ export class FileOperationHandler {
         item.sourceMessage = event.sourceName;
         item.destinationMessage = event.destinationName;
         item.state = ProgressItemState.SCANNING;
-        item.progressMax = event.totalBytes;
-        item.progressValue = event.bytesTransferred;
+        // For scanning, the progress is the percentage of scanned items out of
+        // the total count.
+        item.progressMax = event.itemCount;
+        item.progressValue = event.sourcesScanned;
         item.remainingTime = event.remainingSeconds;
         break;
       case chrome.fileManagerPrivate.IOTaskState.PAUSED:

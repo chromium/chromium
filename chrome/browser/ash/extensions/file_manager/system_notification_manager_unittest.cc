@@ -1314,7 +1314,8 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
   status.state = file_manager::io_task::State::kScanning;
   status.type = file_manager::io_task::OperationType::kCopy;
   status.total_bytes = 100;
-  status.bytes_transferred = 0;
+  status.bytes_transferred = 123;
+  status.sources_scanned = 1;
   status.sources.emplace_back(CreateTestFile("volume/src_file.txt"),
                               absl::nullopt);
   status.SetDestinationFolder(CreateTestFile("volume/dest_dir/"));

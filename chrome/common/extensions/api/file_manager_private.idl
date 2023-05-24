@@ -1161,6 +1161,14 @@ dictionary ProgressStatus {
   // The estimate time to finish the operation.
   double remainingSeconds;
 
+  // Number of sources scanned. Only used when in SCANNING state.
+  // When scanning files, the progress is roughly the percentage of the
+  // number of scanned items out of the total items. This isn't always
+  // accurate, e.g. when uploading entire folders or because some items
+  // are not scanned at all. The goal is to show the user that some
+  // progress is happening.
+  long sourcesScanned;
+
   // Whether notifications should be shown on progress status.
   boolean showNotification;
 

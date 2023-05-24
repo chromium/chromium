@@ -534,8 +534,8 @@ chrome.fileManagerPrivate.ResultingTasks;
  *   isArbitrarySyncFolder: (boolean|undefined),
  *   syncStatus: (!chrome.fileManagerPrivate.SyncStatus|undefined),
  *   progress: (number|undefined),
- *   shortcut: (boolean|undefined),
- *   syncCompletedTime: (number|undefined)
+ *   syncCompletedTime: (number|undefined),
+ *   shortcut: (boolean|undefined)
  * }}
  */
 chrome.fileManagerPrivate.EntryProperties;
@@ -933,6 +933,7 @@ chrome.fileManagerPrivate.ResumeParams;
  *   totalBytes: number,
  *   taskId: number,
  *   remainingSeconds: number,
+ *   sourcesScanned: number,
  *   showNotification: boolean,
  *   errorName: string,
  *   pauseParams: (!chrome.fileManagerPrivate.PauseParams|undefined),
@@ -1018,7 +1019,7 @@ chrome.fileManagerPrivate.executeTask = function(descriptor, entries, callback) 
  * of MIME types and URLs may contain duplicates. Additionally, the list of MIME
  * types can be empty. |descriptor| The unique identifier of task to mark as
  * default. |entries| Array of selected entries to extract path extensions from.
-\ * |mimeTypes| Array of selected file MIME types. |callback|
+ * |mimeTypes| Array of selected file MIME types. |callback|
  * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor
  * @param {!Array<Entry>} entries
  * @param {!Array<string>} mimeTypes

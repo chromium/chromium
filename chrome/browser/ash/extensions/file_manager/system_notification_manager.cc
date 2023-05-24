@@ -1193,10 +1193,10 @@ SystemNotificationManager::MakeDataProtectionPolicyProgressNotification(
   // TODO(b/279435843): Replace with translation strings.
   std::u16string message =
       u"Checking files with your organization's security policies.";
-  // TODO(b/282130948): Set progress value.
+  int progress = status.sources_scanned * 100.0 / status.sources.size();
   return CreateIOTaskProgressNotification(status.task_id, notification_id,
                                           app_name_, message, /*paused=*/false,
-                                          /*progress=*/0);
+                                          progress);
 }
 
 void SystemNotificationManager::ShowDataProtectionPolicyDialog(

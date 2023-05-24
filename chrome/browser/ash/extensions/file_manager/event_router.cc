@@ -1255,6 +1255,7 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   event_status.type = GetIOTaskType(status.type);
   event_status.state = GetIOTaskState(status.state);
   event_status.policy_error = GetPolicyErrorType(status.policy_error);
+  event_status.sources_scanned = status.sources_scanned;
   event_status.destination_volume_id = status.GetDestinationVolumeId();
   event_status.show_notification = status.show_notification;
 

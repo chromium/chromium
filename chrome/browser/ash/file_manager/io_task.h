@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_IO_TASK_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_IO_TASK_H_
 
+#include <cstddef>
 #include <vector>
 
 #include "base/files/file.h"
@@ -257,6 +258,14 @@ class ProgressStatus {
 
   // The estimate time to finish the operation.
   double remaining_seconds = 0;
+
+  // Number of `sources` scanned - must be <= `sources.size()`. Only used when
+  // in kScanning `state`. When scanning files, the progress is roughly the
+  // percentage of the number of scanned items out of the total items. This
+  // isn't always accurate, e.g. when uploading entire folders or because some
+  // items are not scanned at all. The goal is to show the user that some
+  // progress is happening.
+  size_t sources_scanned = 0;
 
   // Whether notifications should be shown on progress status.
   bool show_notification = true;
