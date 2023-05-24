@@ -26,11 +26,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace ash {
-namespace disks {
+namespace ash::disks {
 class DiskMountManager;
-}  // namespace disks
-}  // namespace ash
+}  // namespace ash::disks
 
 namespace drive {
 class DriveNotificationManager;

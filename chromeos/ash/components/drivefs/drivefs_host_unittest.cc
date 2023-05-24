@@ -225,6 +225,7 @@ class MockDriveFsHostObserver : public DriveFsHostObserver {
               OnFilesChanged,
               (const std::vector<mojom::FileChange>& changes));
   MOCK_METHOD(void, OnError, (const mojom::DriveError& error));
+  MOCK_METHOD(void, OnItemProgress, (const mojom::ProgressEvent& event));
 };
 
 class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {

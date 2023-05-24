@@ -228,6 +228,7 @@ class DriveFsSessionForTest : public DriveFsSession {
                       const std::vector<std::string>& scopes,
                       GetAccessTokenCallback callback) override {}
   void OnSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {}
+  void OnItemProgress(mojom::ProgressEventPtr item_progress) override {}
   void OnFilesChanged(std::vector<mojom::FileChangePtr> changes) override {}
   void OnError(mojom::DriveErrorPtr error) override {}
   void OnTeamDrivesListReady(

@@ -46,7 +46,8 @@ using IndividualFileTransferStatus =
 class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
                            public drive::DriveIntegrationServiceObserver {
  public:
-  explicit DriveFsEventRouter(SystemNotificationManager* notification_manager);
+  DriveFsEventRouter(Profile* profile,
+                     SystemNotificationManager* notification_manager);
   DriveFsEventRouter(const DriveFsEventRouter&) = delete;
   ~DriveFsEventRouter() override;
 
@@ -66,6 +67,8 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
   // suppress and restore these notifications.
   void SuppressNotificationsForFilePath(const base::FilePath& path);
   void RestoreNotificationsForFilePath(const base::FilePath& path);
+
+  drivefs::SyncState GetDriveSyncStateForPath(const base::FilePath& drive_path);
 
  protected:
   SystemNotificationManager* system_notification_manager() {
@@ -97,6 +100,7 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
   void OnFilesChanged(
       const std::vector<drivefs::mojom::FileChange>& changes) override;
   void OnError(const drivefs::mojom::DriveError& error) override;
+  void OnItemProgress(const drivefs::mojom::ProgressEvent& event) override;
 
   // DriveIntegrationServiceObserver:
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
@@ -157,6 +161,9 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
   // Set of paths for which Drive transfer events are ignored.
   std::set<base::FilePath> ignored_file_paths_;
   base::OnceCallback<void(drivefs::mojom::DialogResult)> dialog_callback_;
+
+  std::map<std::string, drivefs::SyncState> path_to_sync_state_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<DriveFsEventRouter> weak_ptr_factory_{this};
 };

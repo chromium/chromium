@@ -363,7 +363,7 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
       Profile* profile,
       const std::map<base::FilePath, std::unique_ptr<FileWatcher>>*
           file_watchers)
-      : DriveFsEventRouter(notification_manager),
+      : DriveFsEventRouter(profile, notification_manager),
         profile_(profile),
         file_watchers_(file_watchers) {}
 
@@ -1428,6 +1428,11 @@ void EventRouter::OnMountableGuestsChanged() {
       extensions::events::FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS,
       file_manager_private::OnMountableGuestsChanged::kEventName,
       file_manager_private::OnMountableGuestsChanged::Create(guests));
+}
+
+drivefs::SyncState EventRouter::GetDriveSyncStateForPath(
+    const base::FilePath& drive_path) {
+  return drivefs_event_router_->GetDriveSyncStateForPath(drive_path);
 }
 
 }  // namespace file_manager

@@ -11,6 +11,7 @@ namespace drivefs {
 namespace mojom {
 class DriveError;
 class FileChange;
+class ProgressEvent;
 class SyncingStatus;
 }  // namespace mojom
 
@@ -26,6 +27,7 @@ class DriveFsHostObserver {
   }
   virtual void OnFilesChanged(const std::vector<mojom::FileChange>& changes) {}
   virtual void OnError(const mojom::DriveError& error) {}
+  virtual void OnItemProgress(const mojom::ProgressEvent& event) {}
 
  protected:
   virtual ~DriveFsHostObserver() = default;

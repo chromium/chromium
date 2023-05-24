@@ -3383,7 +3383,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "isInlineSyncStatusProgressEventsEnabled") {
-    *output = options.enable_inline_sync_status_progress_events ? "true" : "false";
+    *output =
+        options.enable_inline_sync_status_progress_events ? "true" : "false";
     return;
   }
 

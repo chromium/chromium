@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
@@ -45,8 +46,9 @@ file_manager_private::DriveConfirmDialogType ConvertDialogReasonType(
 }  // namespace
 
 DriveFsEventRouter::DriveFsEventRouter(
+    Profile* profile,
     SystemNotificationManager* notification_manager)
-    : notification_manager_(notification_manager) {}
+    : notification_manager_(notification_manager), profile_(profile) {}
 DriveFsEventRouter::~DriveFsEventRouter() = default;
 
 DriveFsEventRouter::SyncingStatusState::SyncingStatusState() = default;
@@ -74,6 +76,8 @@ void DriveFsEventRouter::OnUnmounted() {
     BroadcastTransferEvent(kTransferEvent, sync_status);
     BroadcastTransferEvent(kPinEvent, pin_status);
   }
+
+  path_to_sync_state_.clear();
 
   dialog_callback_.Reset();
 }
@@ -145,6 +149,66 @@ void DriveFsEventRouter::OnSyncingStatusUpdate(
       transfer_items, kTransferEvent, kTransferEventName, sync_status_state_);
   BroadcastAggregateTransferEventForItems(pin_items, kPinEvent, kPinEventName,
                                           pin_status_state_);
+}
+
+void DriveFsEventRouter::OnItemProgress(
+    const drivefs::mojom::ProgressEvent& event) {
+  if (!ash::features::IsInlineSyncStatusProgressEventsEnabled()) {
+    return;
+  }
+  const std::string path = event.path;
+
+  drivefs::SyncStatus status;
+  if (event.progress == 0) {
+    status = drivefs::SyncStatus::kQueued;
+  } else if (event.progress == 100) {
+    status = drivefs::SyncStatus::kCompleted;
+  } else {
+    status = drivefs::SyncStatus::kInProgress;
+  }
+
+  std::vector<const drivefs::SyncState> filtered_states;
+
+  filtered_states.emplace_back(
+      drivefs::SyncState{status, static_cast<float>(event.progress) / 100.0f,
+                         base::FilePath(path)});
+
+  if (status == drivefs::SyncStatus::kCompleted) {
+    const auto previous_state_iter = path_to_sync_state_.find(path);
+    const bool was_tracked = previous_state_iter != path_to_sync_state_.end();
+    if (was_tracked) {
+      // Stop tracking completed events but push it to subscribers.
+      path_to_sync_state_.erase(previous_state_iter);
+    } else {
+      // If path wasn't tracked in the first place, don't report its completed
+      // event to subscribers.
+      return;
+    }
+  } else {
+    path_to_sync_state_[path] = filtered_states.back();
+  }
+
+  std::vector<IndividualFileTransferStatus> statuses;
+  std::vector<base::FilePath> paths;
+
+  for (const auto& sync_state : filtered_states) {
+    IndividualFileTransferStatus individual_status;
+    individual_status.sync_status = ConvertSyncStatus(sync_state.status);
+    individual_status.progress = sync_state.progress;
+    statuses.emplace_back(std::move(individual_status));
+    paths.emplace_back(sync_state.path);
+  }
+
+  for (const GURL& url : GetEventListenerURLs(kIndividualTransferEventName)) {
+    const auto file_urls = ConvertPathsToFileSystemUrls(paths, url);
+    for (size_t i = 0; i < file_urls.size(); i++) {
+      statuses[i].file_url = file_urls[i].spec();
+    }
+    // Note: Inline Sync Statuses don't need to differentiate between transfer
+    // and pin events because they do not display aggregate progress separately
+    // for each of those two categories.
+    BroadcastIndividualTransfersEvent(kTransferEvent, statuses);
+  }
 }
 
 void DriveFsEventRouter::BroadcastAggregateTransferEventForItems(
@@ -416,6 +480,18 @@ void DriveFsEventRouter::BroadcastOnDirectoryChangedEvent(
   BroadcastEvent(extensions::events::FILE_MANAGER_PRIVATE_ON_DIRECTORY_CHANGED,
                  file_manager_private::OnDirectoryChanged::kEventName,
                  file_manager_private::OnDirectoryChanged::Create(event));
+}
+
+drivefs::SyncState DriveFsEventRouter::GetDriveSyncStateForPath(
+    const base::FilePath& drive_path) {
+  if (!ash::features::IsInlineSyncStatusProgressEventsEnabled()) {
+    return drivefs::SyncState::CreateNotFound(drive_path);
+  }
+  const auto it = path_to_sync_state_.find(drive_path.AsUTF8Unsafe());
+  if (it == path_to_sync_state_.end()) {
+    return drivefs::SyncState::CreateNotFound(drive_path);
+  }
+  return it->second;
 }
 
 }  // namespace file_manager
