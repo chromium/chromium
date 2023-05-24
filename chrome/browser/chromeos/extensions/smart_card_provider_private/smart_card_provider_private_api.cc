@@ -475,7 +475,7 @@ void SmartCardProviderPrivateAPI::SendDisconnect(
     device::mojom::SmartCardDisposition disposition,
     DisconnectCallback callback) {
   auto process_result =
-      base::BindOnce(&SmartCardProviderPrivateAPI::ProcessDisconnectResult,
+      base::BindOnce(&SmartCardProviderPrivateAPI::ProcessPlainResult,
                      weak_ptr_factory_.GetWeakPtr());
 
   DispatchEventWithTimeout(
@@ -681,12 +681,13 @@ void SmartCardProviderPrivateAPI::ProcessGetStatusChangeResult(
       .Run(std::move(status_change_result));
 }
 
-void SmartCardProviderPrivateAPI::ProcessCancelResult(
+void SmartCardProviderPrivateAPI::ProcessPlainResult(
     ResultArgs result_args,
     SmartCardResultPtr result,
     SmartCardCallback callback) {
-  CHECK(std::holds_alternative<CancelCallback>(callback));
-  std::move(std::get<CancelCallback>(callback)).Run(std::move(result));
+  CHECK(std::holds_alternative<std::monostate>(result_args));
+  CHECK(std::holds_alternative<PlainCallback>(callback));
+  std::move(std::get<PlainCallback>(callback)).Run(std::move(result));
 }
 
 device::mojom::SmartCardConnectResultPtr
@@ -770,14 +771,6 @@ void SmartCardProviderPrivateAPI::RunNextRequestForContext(
   auto task = std::move(context_data.task_queue.front());
   context_data.task_queue.pop();
   std::move(task).Run();
-}
-
-void SmartCardProviderPrivateAPI::ProcessDisconnectResult(
-    ResultArgs result_args,
-    device::mojom::SmartCardResultPtr result,
-    SmartCardCallback callback) {
-  CHECK(std::holds_alternative<DisconnectCallback>(callback));
-  std::move(std::get<DisconnectCallback>(callback)).Run(std::move(result));
 }
 
 void SmartCardProviderPrivateAPI::ProcessDataResult(
@@ -967,7 +960,7 @@ void SmartCardProviderPrivateAPI::Cancel(CancelCallback callback) {
   CHECK(!scard_context.is_null());
 
   auto process_result =
-      base::BindOnce(&SmartCardProviderPrivateAPI::ProcessCancelResult,
+      base::BindOnce(&SmartCardProviderPrivateAPI::ProcessPlainResult,
                      weak_ptr_factory_.GetWeakPtr());
 
   DispatchEventWithTimeout(
@@ -1220,13 +1213,7 @@ REPORT_RESULT_FUNCTION_IMPL(
     ProviderResultCodeToSmartCardResult(params->result_code))
 
 REPORT_RESULT_FUNCTION_IMPL(
-    Cancel,
-    ReportResult,
-    std::monostate(),
-    ProviderResultCodeToSmartCardResult(params->result_code))
-
-REPORT_RESULT_FUNCTION_IMPL(
-    Disconnect,
+    Plain,
     ReportResult,
     std::monostate(),
     ProviderResultCodeToSmartCardResult(params->result_code))

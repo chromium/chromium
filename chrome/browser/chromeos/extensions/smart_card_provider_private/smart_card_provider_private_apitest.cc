@@ -676,12 +676,12 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Disconnect) {
 
       function disconnect(requestId, scardHandle, disposition) {
         if (scardHandle !== validHandle || disposition != "UNPOWER_CARD") {
-          chrome.smartCardProviderPrivate.reportDisconnectResult(requestId,
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
             "INVALID_PARAMETER");
           return;
         }
         validHandle = 0;
-        chrome.smartCardProviderPrivate.reportDisconnectResult(requestId,
+        chrome.smartCardProviderPrivate.reportPlainResult(requestId,
           "SUCCESS");
       }
     )"});
@@ -746,12 +746,12 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
 
       function disconnect(requestId, scardHandle, disposition) {
         if (scardHandle !== validHandle) {
-          chrome.smartCardProviderPrivate.reportDisconnectResult(requestId,
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
             "INVALID_HANDLE");
           return;
         }
         validHandle = 0;
-        chrome.smartCardProviderPrivate.reportDisconnectResult(requestId,
+        chrome.smartCardProviderPrivate.reportPlainResult(requestId,
           "SUCCESS");
         chrome.test.notifyPass();
       }
@@ -779,12 +779,12 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Cancel) {
 
       function cancel(requestId, scardContext) {
         if (scardContext != 123) {
-          chrome.smartCardProviderPrivate.reportCancelResult(requestId,
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
               readerStates, "INVALID_PARAMETER");
           return;
         }
 
-        chrome.smartCardProviderPrivate.reportCancelResult(requestId,
+        chrome.smartCardProviderPrivate.reportPlainResult(requestId,
             "SUCCESS");
       }
       )"});
