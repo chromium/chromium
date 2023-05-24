@@ -2332,7 +2332,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
       }));
   // If there are still install sources, the app might not be fully uninstalled,
   // so this will listen for the removal of the policy install source.
-  provider()->install_finalizer().SetRemoveManagementTypeCallbackForTesting(
+  observer.SetWebAppSourceRemovedDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (policy_app->id == app_id) {
           run_loop.Quit();
@@ -3865,14 +3865,14 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(Profile* profile,
       }));
   // If there are still install sources, the app might not be fully uninstalled,
   // so this will listen for the removal of the policy install source.
-  WebAppProvider* provider = WebAppProvider::GetForTest(profile);
-  provider->install_finalizer().SetRemoveManagementTypeCallbackForTesting(
+  observer.SetWebAppSourceRemovedDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (id == app_id) {
           run_loop.Quit();
         }
       }));
 
+  WebAppProvider* provider = WebAppProvider::GetForTest(profile);
   const WebApp* web_app = provider->registrar_unsafe().GetAppById(id);
   ASSERT_TRUE(web_app);
 

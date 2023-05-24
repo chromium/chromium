@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -424,7 +425,8 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
       }),
       profile());
 
-  command->SetRemoveManagementTypeCallbackForTesting(
+  WebAppInstallManagerObserverAdapter observer(profile());
+  observer.SetWebAppSourceRemovedDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         // The policy source will be removed and WebAppOsUninstallation is
         // registered.
@@ -433,6 +435,7 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
                          .GetAppById(app_id)
                          ->IsPolicyInstalledApp());
       }));
+
   provider()->command_manager().ScheduleCommand(std::move(command));
   run_loop.Run();
 }

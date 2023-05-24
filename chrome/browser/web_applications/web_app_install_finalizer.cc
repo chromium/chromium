@@ -395,11 +395,6 @@ void WebAppInstallFinalizer::Shutdown() {
   started_ = false;
 }
 
-void WebAppInstallFinalizer::SetRemoveManagementTypeCallbackForTesting(
-    base::RepeatingCallback<void(const AppId&)> callback) {
-  management_type_removed_callback_for_testing_ = std::move(callback);
-}
-
 void WebAppInstallFinalizer::SetSubsystems(
     WebAppInstallManager* install_manager,
     WebAppRegistrar* registrar,
@@ -717,11 +712,6 @@ void WebAppInstallFinalizer::ScheduleUninstallCommand(
   auto uninstall_command = std::make_unique<WebAppUninstallCommand>(
       app_id, external_install_source, uninstall_source, std::move(callback),
       profile_);
-
-  if (management_type_removed_callback_for_testing_) {
-    uninstall_command->SetRemoveManagementTypeCallbackForTesting(  // IN-TEST
-        management_type_removed_callback_for_testing_);
-  }
 
   command_manager_->ScheduleCommand(std::move(uninstall_command));
 }

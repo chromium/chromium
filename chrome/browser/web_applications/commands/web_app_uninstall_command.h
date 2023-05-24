@@ -80,9 +80,6 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
   const LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;
 
-  void SetRemoveManagementTypeCallbackForTesting(
-      RemoveManagementTypeCallback callback);
-
  private:
   // Used to store information needed for uninstalling an app with app_id.
   struct UninstallInfo {
@@ -128,7 +125,6 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
   bool all_uninstalled_queued_ = false;
 
   UninstallWebAppCallback callback_;
-  RemoveManagementTypeCallback management_type_removed_callback_for_testing_;
 
   raw_ptr<PrefService> profile_prefs_;
 

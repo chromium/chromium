@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -157,11 +158,6 @@ base::Value WebAppUninstallCommand::ToDebugValue() const {
   return base::Value(std::move(uninstall_info));
 }
 
-void WebAppUninstallCommand::SetRemoveManagementTypeCallbackForTesting(
-    RemoveManagementTypeCallback callback) {
-  management_type_removed_callback_for_testing_ = std::move(callback);
-}
-
 WebAppUninstallCommand::UninstallInfo::UninstallInfo(
     AppId app_id,
     absl::optional<WebAppManagement::Type> management_type_or_all,
@@ -258,8 +254,7 @@ void WebAppUninstallCommand::RemoveManagementTypeAfterOsUninstallRegistration(
     }
   }
 
-  if (management_type_removed_callback_for_testing_)
-    std::move(management_type_removed_callback_for_testing_).Run(app_id);
+  lock_->install_manager().NotifyWebAppSourceRemovedForTesting(app_id);
 
   // Registering an OS uninstall is also an "uninstall", so the
   // state is updated for the command.

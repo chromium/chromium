@@ -241,11 +241,6 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
     ++num_reparent_tab_calls_;
   }
 
-  void SetRemoveManagementTypeCallbackForTesting(
-      base::RepeatingCallback<void(const AppId&)>) override {
-    NOTIMPLEMENTED();
-  }
-
  private:
   raw_ptr<WebAppRegistrarMutable> registrar_ = nullptr;
 
