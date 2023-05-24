@@ -50,10 +50,7 @@ config("skia_config") {
     "SK_DISABLE_LEGACY_SKSURFACE_METHODS",
     "SK_DISABLE_LEGACY_GRAPHITE_IMAGE_FACTORIES",
     "SK_DISABLE_LEGACY_GRAPHITE_IMAGE_METHODS",
-
-    # Cannot turn this on until PDFium rolls into Chrome
-    # https://pdfium-review.googlesource.com/c/pdfium/+/107410
-    #"SK_DISABLE_LEGACY_SKSURFACE_FACTORIES",
+    "SK_DISABLE_LEGACY_SKSURFACE_FACTORIES",
   ]
 
   include_dirs = [ "//third_party/skia" ]
@@ -594,6 +591,12 @@ component("skia") {
     ]
     public += skia_pdf_public
     sources += skia_pdf_sources
+    if (use_blink) {
+      # Blink includes Skia's JPEG decoder
+      sources += skia_pdf_jpeginfo_lib
+    } else {
+      sources += skia_pdf_jpeginfo_none
+    }
   } else {
     sources += [ "//third_party/skia/src/pdf/SkDocument_PDF_None.cpp" ]
   }
