@@ -2333,7 +2333,8 @@ CSSValue* ConsumeCounterContent(CSSParserTokenRange args,
     // allow it for backward compatibility.
     // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
     if (args.Peek().Id() == CSSValueID::kNone) {
-      list_style = MakeGarbageCollected<CSSCustomIdentValue>("none");
+      list_style =
+          MakeGarbageCollected<CSSCustomIdentValue>(AtomicString("none"));
       args.ConsumeIncludingWhitespace();
     } else {
       list_style = css_parsing_utils::ConsumeCounterStyleName(args, context);

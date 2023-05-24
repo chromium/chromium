@@ -768,7 +768,7 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder) {
 
   builder.SetTextShadow(ComputedStyleInitialValues::InitialTextShadow());
   builder.SetBoxShadow(ComputedStyleInitialValues::InitialBoxShadow());
-  builder.SetColorScheme({"light", "dark"});
+  builder.SetColorScheme({AtomicString("light"), AtomicString("dark")});
   if (builder.ShouldForceColor(builder.AccentColor())) {
     builder.SetAccentColor(ComputedStyleInitialValues::InitialAccentColor());
   }

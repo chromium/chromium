@@ -172,7 +172,7 @@ const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
     if (const MediaQueryExpNode* query =
             ConsumeFeatureQuery(block, offsets, StyleFeatureSet())) {
       context_.Count(WebFeature::kCSSStyleContainerQuery);
-      return MediaQueryExpNode::Function(query, "style");
+      return MediaQueryExpNode::Function(query, AtomicString("style"));
     }
   }
   range = original_range;

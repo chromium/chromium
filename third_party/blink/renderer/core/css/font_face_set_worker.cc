@@ -85,8 +85,8 @@ bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
 
   FontFamily font_family;
   font_family.SetFamily(
-      FontFaceSet::kDefaultFontFamily,
-      FontFamily::InferredTypeFor(FontFaceSet::kDefaultFontFamily));
+      FontFaceSet::DefaultFontFamily(),
+      FontFamily::InferredTypeFor(FontFaceSet::DefaultFontFamily()));
 
   FontDescription default_font_description;
   default_font_description.SetFamily(font_family);

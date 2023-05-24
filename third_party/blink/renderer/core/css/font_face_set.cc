@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 #include "third_party/blink/renderer/core/css/font_face_set_load_event.h"
+#include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -14,7 +15,11 @@
 namespace blink {
 
 const int FontFaceSet::kDefaultFontSize = 10;
-const char FontFaceSet::kDefaultFontFamily[] = "sans-serif";
+
+// static
+const AtomicString& FontFaceSet::DefaultFontFamily() {
+  return font_family_names::kSansSerif;
+}
 
 void FontFaceSet::HandlePendingEventsAndPromisesSoon() {
   if (!pending_task_queued_) {

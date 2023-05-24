@@ -82,7 +82,7 @@ AtomicString CreateVisionDeficiencyFilterUrl(
           "\"/>");
     case VisionDeficiency::kNoVisionDeficiency:
       NOTREACHED();
-      return "";
+      return g_empty_atom;
   }
 }
 

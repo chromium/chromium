@@ -70,41 +70,41 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
     const FeatureContext* feature_context) {
   switch (variable) {
     case UADefinedVariable::kSafeAreaInsetTop:
-      return "safe-area-inset-top";
+      return AtomicString("safe-area-inset-top");
     case UADefinedVariable::kSafeAreaInsetLeft:
-      return "safe-area-inset-left";
+      return AtomicString("safe-area-inset-left");
     case UADefinedVariable::kSafeAreaInsetBottom:
-      return "safe-area-inset-bottom";
+      return AtomicString("safe-area-inset-bottom");
     case UADefinedVariable::kSafeAreaInsetRight:
-      return "safe-area-inset-right";
+      return AtomicString("safe-area-inset-right");
     case UADefinedVariable::kKeyboardInsetTop:
-      return "keyboard-inset-top";
+      return AtomicString("keyboard-inset-top");
     case UADefinedVariable::kKeyboardInsetLeft:
-      return "keyboard-inset-left";
+      return AtomicString("keyboard-inset-left");
     case UADefinedVariable::kKeyboardInsetBottom:
-      return "keyboard-inset-bottom";
+      return AtomicString("keyboard-inset-bottom");
     case UADefinedVariable::kKeyboardInsetRight:
-      return "keyboard-inset-right";
+      return AtomicString("keyboard-inset-right");
     case UADefinedVariable::kKeyboardInsetWidth:
-      return "keyboard-inset-width";
+      return AtomicString("keyboard-inset-width");
     case UADefinedVariable::kKeyboardInsetHeight:
-      return "keyboard-inset-height";
+      return AtomicString("keyboard-inset-height");
     case UADefinedVariable::kTitlebarAreaX:
       DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
           feature_context));
-      return "titlebar-area-x";
+      return AtomicString("titlebar-area-x");
     case UADefinedVariable::kTitlebarAreaY:
       DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
           feature_context));
-      return "titlebar-area-y";
+      return AtomicString("titlebar-area-y");
     case UADefinedVariable::kTitlebarAreaWidth:
       DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
           feature_context));
-      return "titlebar-area-width";
+      return AtomicString("titlebar-area-width");
     case UADefinedVariable::kTitlebarAreaHeight:
       DCHECK(RuntimeEnabledFeatures::WebAppWindowControlsOverlayEnabled(
           feature_context));
-      return "titlebar-area-height";
+      return AtomicString("titlebar-area-height");
     default:
       break;
   }
@@ -118,22 +118,22 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
   switch (variable) {
     case UADefinedTwoDimensionalVariable::kViewportSegmentTop:
       DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
-      return "viewport-segment-top";
+      return AtomicString("viewport-segment-top");
     case UADefinedTwoDimensionalVariable::kViewportSegmentRight:
       DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
-      return "viewport-segment-right";
+      return AtomicString("viewport-segment-right");
     case UADefinedTwoDimensionalVariable::kViewportSegmentBottom:
       DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
-      return "viewport-segment-bottom";
+      return AtomicString("viewport-segment-bottom");
     case UADefinedTwoDimensionalVariable::kViewportSegmentLeft:
       DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
-      return "viewport-segment-left";
+      return AtomicString("viewport-segment-left");
     case UADefinedTwoDimensionalVariable::kViewportSegmentWidth:
       DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
-      return "viewport-segment-width";
+      return AtomicString("viewport-segment-width");
     case UADefinedTwoDimensionalVariable::kViewportSegmentHeight:
       DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
-      return "viewport-segment-height";
+      return AtomicString("viewport-segment-height");
     default:
       break;
   }

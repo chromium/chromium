@@ -676,8 +676,9 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeRelativeSelector(
 
   CSSSelector selector;
   selector.SetMatch(CSSSelector::kPseudoClass);
-  selector.UpdatePseudoType("-internal-relative-anchor", *context_,
-                            false /*has_arguments*/, context_->Mode());
+  selector.UpdatePseudoType(AtomicString("-internal-relative-anchor"),
+                            *context_, false /*has_arguments*/,
+                            context_->Mode());
   DCHECK_EQ(selector.GetPseudoType(), CSSSelector::kPseudoRelativeAnchor);
   output_.push_back(selector);
 
@@ -737,7 +738,7 @@ static CSSSelector CreateImplicitAnchor(
     return CSSSelector(parent_rule_for_nesting, /*is_implicit=*/true);
   }
   DCHECK_EQ(nesting_type, CSSNestingType::kScope);
-  return CSSSelector("scope", /*is_implicit=*/true);
+  return CSSSelector(AtomicString("scope"), /*is_implicit=*/true);
 }
 
 // Within @scope, each compound that contains either :scope or '&' is prepended

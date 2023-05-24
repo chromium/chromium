@@ -44,8 +44,7 @@ String CascadeLayer::ToStringForTesting() const {
 void CascadeLayer::ToStringInternal(StringBuilder& result,
                                     const String& prefix) const {
   for (const auto& sub_layer : direct_sub_layers_) {
-    AtomicString name =
-        sub_layer->name_.length() ? sub_layer->name_ : "(anonymous)";
+    String name = sub_layer->name_.length() ? sub_layer->name_ : "(anonymous)";
     if (result.length()) {
       result.Append(",");
     }

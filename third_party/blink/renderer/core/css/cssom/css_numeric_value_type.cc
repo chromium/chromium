@@ -96,7 +96,7 @@ CSSNumericValueType::BaseType UnitTypeToBaseType(
 
 }  // namespace
 
-AtomicString CSSNumericValueType::BaseTypeToString(BaseType base_type) {
+String CSSNumericValueType::BaseTypeToString(BaseType base_type) {
   switch (base_type) {
     case BaseType::kLength:
       return "length";
