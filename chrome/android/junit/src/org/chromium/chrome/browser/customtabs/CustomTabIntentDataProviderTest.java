@@ -19,8 +19,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_START;
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT;
-import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
 import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
 
 import android.app.Activity;
@@ -428,31 +426,6 @@ public class CustomTabIntentDataProviderTest {
                 new CustomTabIntentDataProvider(new Intent(), mContext, COLOR_SCHEME_LIGHT);
         assertEquals("Should return ..SLIDE_IN_FROM_SIDE for the default slide-in behavior",
                 ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE, dataProvider.getSideSheetSlideInBehavior());
-
-        // Default
-        Intent intent = new Intent().putExtra(
-                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR,
-                ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT);
-        dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals("Should return ..SLIDE_IN_FROM_SIDE", ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
-                dataProvider.getSideSheetSlideInBehavior());
-
-        // Bottom
-        intent = new Intent().putExtra(
-                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR,
-                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM);
-        dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals("Should return ..SLIDE_IN_FROM_BOTTOM",
-                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM,
-                dataProvider.getSideSheetSlideInBehavior());
-
-        // Side
-        intent = new Intent().putExtra(
-                CustomTabIntentDataProvider.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR,
-                ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE);
-        dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
-        assertEquals("Should return ..SLIDE_IN_FROM_SIDE", ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE,
-                dataProvider.getSideSheetSlideInBehavior());
     }
 
     @Test

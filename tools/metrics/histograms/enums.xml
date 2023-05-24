@@ -24781,7 +24781,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="51"
       label="Side sheet animation EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR"/>
   <int value="52"
-      label="Side sheet animation
+      label="Rounded corners position
              EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION"/>
 </enum>
 

@@ -115,13 +115,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_POSITION";
 
     /**
-     * Extra that defines the behavior of the opening animation of the side sheet.
-     * It is set to {@link #ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE} by default.
-     */
-    public static final String EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR =
-            "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR";
-
-    /**
      * Extra used to keep the caller alive. Its value is an Intent.
      */
     public static final String EXTRA_KEEP_ALIVE = "android.support.customtabs.extra.KEEP_ALIVE";
@@ -1024,9 +1017,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (IntentUtils.safeHasExtra(intent, EXTRA_ACTIVITY_SIDE_SHEET_POSITION)) {
             featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_POSITION);
         }
-        if (IntentUtils.safeHasExtra(intent, EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR)) {
-            featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR);
-        }
     }
 
     @Override
@@ -1408,12 +1398,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public int getSideSheetSlideInBehavior() {
-        @ActivitySideSheetSlideInBehavior
-        int slideInBehavior = IntentUtils.safeGetIntExtra(mIntent,
-                EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT);
-        return slideInBehavior == ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT
-                ? ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE
-                : slideInBehavior;
+        return ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE;
     }
 
     @Override
