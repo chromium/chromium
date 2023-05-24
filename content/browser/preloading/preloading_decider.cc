@@ -189,6 +189,9 @@ void PreloadingDecider::RemoveStandbyCandidate(
   auto it = no_vary_search_hint_on_standby_candidates_.find(key_no_vary_search);
   if (it != no_vary_search_hint_on_standby_candidates_.end()) {
     it->second.erase(key);
+    if (it->second.empty()) {
+      no_vary_search_hint_on_standby_candidates_.erase(it);
+    }
   }
   on_standby_candidates_.erase(key);
 }
