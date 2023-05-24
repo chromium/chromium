@@ -213,8 +213,8 @@ WebDatabase::State ConvertWalletAddressesAndUpdateWalletCards(
   std::vector<std::unique_ptr<AutofillProfile>> local_profiles;
   std::vector<std::unique_ptr<AutofillProfile>> server_profiles;
   std::vector<std::unique_ptr<CreditCard>> server_cards;
-  if (!table->GetAutofillProfiles(&local_profiles,
-                                  AutofillProfile::Source::kLocalOrSyncable) ||
+  if (!table->GetAutofillProfiles(AutofillProfile::Source::kLocalOrSyncable,
+                                  &local_profiles) ||
       !table->GetServerProfiles(&server_profiles) ||
       !table->GetServerCreditCards(&server_cards)) {
     return WebDatabase::COMMIT_NOT_NEEDED;

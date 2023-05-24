@@ -167,7 +167,7 @@ void AutofillProfileSyncBridge::GetData(StorageKeyList storage_keys,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::vector<std::unique_ptr<AutofillProfile>> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
-          &entries, AutofillProfile::Source::kLocalOrSyncable)) {
+          AutofillProfile::Source::kLocalOrSyncable, &entries)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
     return;
@@ -190,7 +190,7 @@ void AutofillProfileSyncBridge::GetAllDataForDebugging(DataCallback callback) {
 
   std::vector<std::unique_ptr<AutofillProfile>> entries;
   if (!GetAutofillTable()->GetAutofillProfiles(
-          &entries, AutofillProfile::Source::kLocalOrSyncable)) {
+          AutofillProfile::Source::kLocalOrSyncable, &entries)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load entries from table."});
     return;

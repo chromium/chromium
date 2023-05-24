@@ -3578,7 +3578,7 @@ TEST_P(SaveImportedProfileTest, SaveImportedProfile) {
   // Get the set of profiles persisted in the db.
   std::vector<std::unique_ptr<AutofillProfile>> db_profiles;
   profile_autofill_table_->GetAutofillProfiles(
-      &db_profiles, AutofillProfile::Source::kLocalOrSyncable);
+      AutofillProfile::Source::kLocalOrSyncable, &db_profiles);
 
   // Expect the profiles held in-memory by PersonalDataManager and the db
   // profiles to be the same.
@@ -4964,7 +4964,7 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   // Expect that a profile is stored in the profile autofill table.
   profile_autofill_table_->GetAutofillProfiles(
-      &profiles, AutofillProfile::Source::kLocalOrSyncable);
+      AutofillProfile::Source::kLocalOrSyncable, &profiles);
   EXPECT_EQ(1U, profiles.size());
   EXPECT_EQ(profile, *profiles[0]);
 }

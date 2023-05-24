@@ -1599,8 +1599,8 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
 }
 
 bool AutofillTable::GetAutofillProfiles(
-    std::vector<std::unique_ptr<AutofillProfile>>* profiles,
-    AutofillProfile::Source profile_source) const {
+    AutofillProfile::Source profile_source,
+    std::vector<std::unique_ptr<AutofillProfile>>* profiles) const {
   CHECK(profiles);
   profiles->clear();
 

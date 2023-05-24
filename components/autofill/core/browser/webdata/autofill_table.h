@@ -618,8 +618,8 @@ class AutofillTable : public WebDatabaseTable,
   // The `profile_source` specifies if profiles from the legacy or the remote
   // backend should be retrieved.
   virtual bool GetAutofillProfiles(
-      std::vector<std::unique_ptr<AutofillProfile>>* profiles,
-      AutofillProfile::Source profile_source) const;
+      AutofillProfile::Source profile_source,
+      std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
   virtual bool GetServerProfiles(
       std::vector<std::unique_ptr<AutofillProfile>>* profiles) const;
 

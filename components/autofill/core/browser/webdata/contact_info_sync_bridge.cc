@@ -290,7 +290,7 @@ ContactInfoSyncBridge::GetDataAndFilter(
     base::RepeatingCallback<bool(const std::string&)> filter) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   if (!GetAutofillTable()->GetAutofillProfiles(
-          &profiles, AutofillProfile::Source::kAccount)) {
+          AutofillProfile::Source::kAccount, &profiles)) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to load profiles from table."});
     return nullptr;

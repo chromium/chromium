@@ -996,11 +996,11 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
   EXPECT_TRUE(
       table_->RemoveAutofillProfile(home_profile.guid(), profile_source()));
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  EXPECT_TRUE(table_->GetAutofillProfiles(&profiles, profile_source()));
+  EXPECT_TRUE(table_->GetAutofillProfiles(profile_source(), &profiles));
   EXPECT_TRUE(profiles.empty());
 }
 
-// Tests that `GetAutofillProfiles(profiles, source)` cleares `profiles` and
+// Tests that `GetAutofillProfiles(source, profiles)` clears `profiles` and
 // only returns profiles from the correct `source`.
 // Not part of the `AutofillTableProfileTest` fixture, as it doesn't benefit
 // from parameterization on the `profile_source()`.
@@ -1012,10 +1012,10 @@ TEST_F(AutofillTableTest, GetAutofillProfiles) {
 
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   EXPECT_TRUE(table_->GetAutofillProfiles(
-      &profiles, AutofillProfile::Source::kLocalOrSyncable));
+      AutofillProfile::Source::kLocalOrSyncable, &profiles));
   EXPECT_THAT(profiles, ElementsAre(testing::Pointee(local_profile)));
-  EXPECT_TRUE(table_->GetAutofillProfiles(&profiles,
-                                          AutofillProfile::Source::kAccount));
+  EXPECT_TRUE(table_->GetAutofillProfiles(AutofillProfile::Source::kAccount,
+                                          &profiles));
   EXPECT_THAT(profiles, ElementsAre(testing::Pointee(account_profile)));
 }
 
@@ -1031,7 +1031,7 @@ TEST_P(AutofillTableProfileTest, RemoveAllAutofillProfiles) {
 
   // Expect that the profiles from `profile_source()` are gone.
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  ASSERT_TRUE(table_->GetAutofillProfiles(&profiles, profile_source()));
+  ASSERT_TRUE(table_->GetAutofillProfiles(profile_source(), &profiles));
   EXPECT_TRUE(profiles.empty());
 
   // Expect that the profile from the opposite source remains.
@@ -1039,7 +1039,7 @@ TEST_P(AutofillTableProfileTest, RemoveAllAutofillProfiles) {
       profile_source() == AutofillProfile::Source::kAccount
           ? AutofillProfile::Source::kLocalOrSyncable
           : AutofillProfile::Source::kAccount;
-  ASSERT_TRUE(table_->GetAutofillProfiles(&profiles, other_source));
+  ASSERT_TRUE(table_->GetAutofillProfiles(other_source, &profiles));
   EXPECT_EQ(profiles.size(), 1u);
 }
 
