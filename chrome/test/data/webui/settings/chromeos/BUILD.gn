@@ -44,7 +44,6 @@ build_webui_tests("build") {
     "fake_system_display.js",
     "fake_user_action_recorder.js",
     "fake_users_private.js",
-    "hotspot_config_dialog_tests.js",
     "hotspot_subpage_tests.js",
     "input_page_test.js",
     "internet_config_test.js",
@@ -159,6 +158,7 @@ build_webui_tests("build") {
     "guest_os/test_guest_os_browser_proxy.ts",
 
     "internet_page/cellular_setup_dialog_test.ts",
+    "internet_page/hotspot_config_dialog_test.ts",
     "internet_page/hotspot_summary_item_test.ts",
     "internet_page/internet_detail_subpage_tests.js",
     "internet_page/network_summary_item_test.ts",

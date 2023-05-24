@@ -312,11 +312,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
  [
-   'HotspotConfigDialog',
-   'hotspot_config_dialog_tests.js',
-   {enabled: ['ash::features::kHotspot']},
- ],
- [
    'HotspotSubpage',
    'hotspot_subpage_tests.js',
    {enabled: ['ash::features::kHotspot']},
@@ -343,6 +338,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'InternetPageCellularSetupDialog',
    'internet_page/cellular_setup_dialog_test.js'
+ ],
+ [
+   'InternetPageHotspotConfigDialog',
+   'internet_page/hotspot_config_dialog_test.js',
+   {enabled: ['ash::features::kHotspot']},
  ],
  [
    'InternetPageHotspotSummaryItem',

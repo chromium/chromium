@@ -21,7 +21,7 @@ import {castExists} from '../assert_extras.js';
 
 import {getTemplate} from './hotspot_config_dialog.html.js';
 
-enum WiFiSecurityType {
+export enum WiFiSecurityType {
   WPA2 = 'WPA2',
   WPA3 = 'WPA3',
   WPA2WPA3 = 'WPA2WPA3',
