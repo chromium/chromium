@@ -258,6 +258,8 @@ bool AAudioStreamWrapper::Stop() {
 
 base::TimeDelta AAudioStreamWrapper::GetOutputDelay(
     base::TimeTicks delay_timestamp) {
+  CHECK_EQ(stream_type_, AAudioStreamWrapper::StreamType::kOutput);
+
   // Get the time that a known audio frame was presented for playing.
   int64_t existing_frame_index;
   int64_t existing_frame_pts;
@@ -283,6 +285,35 @@ base::TimeDelta AAudioStreamWrapper::GetOutputDelay(
   // we may end up with negative values here.
   return std::max(base::TimeDelta(),
                   next_frame_pts - (delay_timestamp - base::TimeTicks()));
+}
+
+base::TimeTicks AAudioStreamWrapper::GetCaptureTimestamp() {
+  CHECK_EQ(stream_type_, AAudioStreamWrapper::StreamType::kInput);
+
+  // Get the time that at which the last known audio frame was captured.
+  int64_t hw_capture_frame_index;
+  int64_t hw_capture_frame_pts;
+  auto result =
+      AAudioStream_getTimestamp(aaudio_stream_, CLOCK_MONOTONIC,
+                                &hw_capture_frame_index, &hw_capture_frame_pts);
+
+  if (result != AAUDIO_OK) {
+    DLOG(ERROR) << "Failed to get audio latency, result: "
+                << AAudio_convertResultToText(result);
+    return base::TimeTicks();
+  }
+
+  // Calculate the number of frames between our captured frame (the microphone
+  // write head) and the current read index.
+  const int64_t frame_index_delta =
+      hw_capture_frame_index - AAudioStream_getFramesRead(aaudio_stream_);
+
+  // Calculate the time at which the current frame (at the stream read head) was
+  // captured.
+  const base::TimeDelta current_frame_pts = base::Nanoseconds(
+      hw_capture_frame_pts - frame_index_delta * ns_per_frame_);
+
+  return current_frame_pts + base::TimeTicks();
 }
 
 aaudio_data_callback_result_t AAudioStreamWrapper::OnAudioDataRequested(
