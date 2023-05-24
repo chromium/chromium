@@ -15,8 +15,15 @@ namespace internal {
 
 // Exposed for tests.
 extern const char kHistogramPrefixMultiTabLoading[];
+extern const char kHistogramPrefixMultiTabLoading1OrMore[];
 extern const char kHistogramPrefixMultiTabLoading2OrMore[];
 extern const char kHistogramPrefixMultiTabLoading5OrMore[];
+extern const char kHistogramPrefixMultiTabLoading0[];
+extern const char kHistogramPrefixMultiTabLoading1[];
+extern const char kHistogramPrefixMultiTabLoading2[];
+extern const char kHistogramPrefixMultiTabLoading3[];
+extern const char kHistogramPrefixMultiTabLoading4[];
+extern const char kHistogramPrefixMultiTabLoading5[];
 
 }  // namespace internal
 
@@ -61,6 +68,13 @@ class MultiTabLoadingPageLoadMetricsObserver
       content::NavigationHandle* navigation_handle);
 
  private:
+  void OnComplete(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+  FlushMetricsOnAppEnterBackground(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void RecordTimingHistograms();
+
   int num_loading_tabs_when_started_;
 };
 

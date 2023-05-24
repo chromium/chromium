@@ -3152,10 +3152,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.Clients.DocWrite.Block.ParseTiming.ParseBlockedOnScriptLoad"/>
   <affected-histogram
-      name="PageLoad.Clients.MultiTabLoading.DocumentTiming.NavigationToDOMContentLoadedEventFired"/>
-  <affected-histogram
-      name="PageLoad.Clients.MultiTabLoading.DocumentTiming.NavigationToLoadEventFired"/>
-  <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart"/>
@@ -3276,27 +3272,6 @@ chromium-metrics-reviews@google.com.
              page"/>
   <affected-histogram
       name="PageLoad.Clients.LoadingPredictor2.PaintTiming.NavigationToFirstContentfulPaint"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PageLoadMetricsClientsMultiTabLoading" separator="."
-    ordering="prefix">
-  <suffix name="Clients.MultiTabLoading"
-      label="PageLoadMetrics for page loads that started while there are
-             other loading tabs."/>
-  <suffix name="Clients.MultiTabLoading.2OrMore"
-      label="PageLoadMetrics for page loads that started while there are 2 or
-             more other loading tabs."/>
-  <suffix name="Clients.MultiTabLoading.5OrMore"
-      label="PageLoadMetrics for page loads that started while there are 5 or
-             more other loading tabs."/>
-  <affected-histogram
-      name="PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired"/>
-  <affected-histogram
-      name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
-  <affected-histogram
-      name="PageLoad.PaintTiming.ForegroundToFirstContentfulPaint"/>
-  <affected-histogram
-      name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsNoScriptPreview" separator="."
