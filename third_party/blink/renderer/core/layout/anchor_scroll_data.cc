@@ -175,7 +175,7 @@ void AnchorScrollData::UpdateSnapshot() {
       InvalidatePaint();
       return;
     case SnapshotDiff::kScrollersOrFallbackPosition:
-      InvalidateLayout();
+      InvalidateLayoutAndPaint();
       return;
   }
 }
@@ -200,7 +200,7 @@ bool AnchorScrollData::ValidateSnapshot() {
       // offset-only diff only needs paint update.
       return true;
     case SnapshotDiff::kScrollersOrFallbackPosition:
-      InvalidateLayout();
+      InvalidateLayoutAndPaint();
       return false;
   }
 }
@@ -210,20 +210,17 @@ bool AnchorScrollData::ShouldScheduleNextService() {
          TakeAndCompareSnapshot(false /*update*/) != SnapshotDiff::kNone;
 }
 
-void AnchorScrollData::InvalidateLayout() {
+void AnchorScrollData::InvalidateLayoutAndPaint() {
   DCHECK(IsActive());
   DCHECK(owner_->GetLayoutObject());
   owner_->GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
       layout_invalidation_reason::kAnchorPositioning);
+  owner_->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
 }
 
 void AnchorScrollData::InvalidatePaint() {
   DCHECK(IsActive());
   DCHECK(owner_->GetLayoutObject());
-  // TODO(crbug.com/1309178): This causes a main frame commit, which is
-  // unnecessary when there's offset-only changes and compositor has already
-  // adjusted the element correctly. Try to avoid that. See also
-  // crbug.com/1378705 as sticky position has the same issue.
   owner_->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
 }
 
