@@ -1040,7 +1040,7 @@
   {
     "name": "chrome-refresh-2023",
     "owners":["chrome-views@google.com"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "chrome-root-store-enabled",
