@@ -1896,9 +1896,14 @@ TEST_F(UkmPageLoadMetricsObserverTest, LayoutInstability) {
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
-  NavigateAndCommit(GURL(kTestUrl1));
+  auto url = GURL(kTestUrl1);
+  NavigateAndCommit(url);
 
-  tester()->SimulateSoftNavigationCountUpdate(1);
+  auto soft_navigation_metrics =
+      page_load_metrics::mojom::SoftNavigationMetrics(
+          1, base::Milliseconds(12), "00000-00000-00000-00000");
+
+  tester()->SimulateSoftNavigationCountUpdate(soft_navigation_metrics);
 
   // Simulate closing the tab.
   DeleteContents();

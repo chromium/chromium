@@ -112,7 +112,7 @@ class FakePageTimingSender : public PageTimingSender {
         const mojom::InputTimingPtr& input_timing,
         const absl::optional<blink::SubresourceLoadMetrics>&
             subresource_load_metrics,
-        uint32_t soft_navigation_count);
+        const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics);
 
    private:
     std::vector<mojom::PageLoadTimingPtr> expected_timings_;
@@ -142,16 +142,17 @@ class FakePageTimingSender : public PageTimingSender {
 
   ~FakePageTimingSender() override;
 
-  void SendTiming(const mojom::PageLoadTimingPtr& timing,
-                  const mojom::FrameMetadataPtr& metadata,
-                  const std::vector<blink::UseCounterFeature>& new_features,
-                  std::vector<mojom::ResourceDataUpdatePtr> resources,
-                  const mojom::FrameRenderDataUpdate& render_data,
-                  const mojom::CpuTimingPtr& cpu_timing,
-                  mojom::InputTimingPtr new_input_timing,
-                  const absl::optional<blink::SubresourceLoadMetrics>&
-                      subresource_load_metrics,
-                  uint32_t soft_navigation_count) override;
+  void SendTiming(
+      const mojom::PageLoadTimingPtr& timing,
+      const mojom::FrameMetadataPtr& metadata,
+      const std::vector<blink::UseCounterFeature>& new_features,
+      std::vector<mojom::ResourceDataUpdatePtr> resources,
+      const mojom::FrameRenderDataUpdate& render_data,
+      const mojom::CpuTimingPtr& cpu_timing,
+      mojom::InputTimingPtr new_input_timing,
+      const absl::optional<blink::SubresourceLoadMetrics>&
+          subresource_load_metrics,
+      const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics) override;
 
   void SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion shared_memory) override;
