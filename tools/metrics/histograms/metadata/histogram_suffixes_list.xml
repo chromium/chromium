@@ -5856,13 +5856,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Webapp.InstallResult"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="WebFontFamily" separator="_">
-  <suffix name="opensans" label="Open Sans font"/>
-  <suffix name="others" label="Fonts other than Roboto and Open Sans"/>
-  <suffix name="roboto" label="Roboto font"/>
-  <affected-histogram name="WebFont.HttpCacheStatus"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebMediaPlayerImplTypes" separator=".">
   <suffix name="EME"
       label="For Encrypted Media Extensions (EME) based playbacks."/>

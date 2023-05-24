@@ -57,7 +57,6 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
-#include "net/http/webfonts_histogram.h"
 #include "net/log/net_log_event_type.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
@@ -3856,10 +3855,6 @@ void HttpCache::Transaction::SyncCacheEntryStatusToResponse() {
 void HttpCache::Transaction::RecordHistograms() {
   DCHECK(!recorded_histograms_);
   recorded_histograms_ = true;
-
-  web_fonts_histogram::MaybeRecordCacheStatus(
-      cache_entry_status_,
-      HttpCache::GetResourceURLFromHttpCacheKey(cache_key_));
 
   if (CacheEntryStatus::ENTRY_UNDEFINED == cache_entry_status_)
     return;

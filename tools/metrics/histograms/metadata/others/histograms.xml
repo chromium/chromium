@@ -14433,16 +14433,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram base="true" name="WebFont.HttpCacheStatus" enum="HttpCachePattern"
-    expires_after="2021-11-08">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>shivanisha@chromium.org</owner>
-  <summary>
-    For each http cache transaction for a font in Google Fonts, record the cache
-    status.
-  </summary>
-</histogram>
-
 <histogram name="WebFont.LoadLimitOnDiskCacheMiss" enum="WebFontLoadLimitState"
     expires_after="2021-03-21">
   <obsolete>
