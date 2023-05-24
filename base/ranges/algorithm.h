@@ -16,6 +16,7 @@
 #include "base/cxx20_is_constant_evaluated.h"
 #include "base/functional/identity.h"
 #include "base/functional/invoke.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/functional.h"
 #include "base/ranges/ranges.h"
 
@@ -108,9 +109,15 @@ class BinaryPredicateProjector {
   }
 
  private:
-  Pred& pred_;
-  Proj1& proj1_;
-  Proj2& proj2_;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION Pred& pred_;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION Proj1& proj1_;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION Proj2& proj2_;
 };
 
 // Small wrappers around BinaryPredicateProjector to make the calling side more

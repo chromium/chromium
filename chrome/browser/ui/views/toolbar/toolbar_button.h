@@ -228,8 +228,12 @@ class ToolbarButton : public views::LabelButton,
   };
 
   struct VectorIcons {
-    const gfx::VectorIcon& icon;
-    const gfx::VectorIcon& touch_icon;
+    // This field is not a raw_ref<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION const gfx::VectorIcon& icon;
+    // This field is not a raw_ref<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION const gfx::VectorIcon& touch_icon;
   };
 
   void TouchUiChanged();

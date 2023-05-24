@@ -6,6 +6,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "url/scheme_host_port.h"
@@ -61,7 +62,9 @@ struct IsEnclosedBy {
   bool operator() (const std::string& x) const {
     return IsEnclosingPath(path, x);
   }
-  const std::string& path;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const std::string& path;
 };
 
 }  // namespace

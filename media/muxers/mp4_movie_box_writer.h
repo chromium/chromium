@@ -5,6 +5,7 @@
 #ifndef MEDIA_MUXERS_MP4_MOVIE_BOX_WRITER_H_
 #define MEDIA_MUXERS_MP4_MOVIE_BOX_WRITER_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/sequence_checker.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/fourccs.h"
@@ -30,6 +31,8 @@ class Mp4MuxerContext;
     SEQUENCE_CHECKER(sequence_checker_);                 \
   }
 
+// |box_| field is not a raw_ref<> because it was filtered by the rewriter
+// for: #macro
 #define DECLARE_MP4_BOX_WRITER_CLASS(class_name, box_type)           \
   class MEDIA_EXPORT class_name : public Mp4BoxWriter {              \
    public:                                                           \
@@ -40,7 +43,7 @@ class Mp4MuxerContext;
     void Write(BoxByteStream& writer) override;                      \
                                                                      \
    private:                                                          \
-    const box_type& box_;                                            \
+    RAW_PTR_EXCLUSION const box_type& box_;                          \
     SEQUENCE_CHECKER(sequence_checker_);                             \
   }
 

@@ -155,7 +155,9 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     ~TargetedEvent();
 
     const AXNodeID node_id;
-    const EventParams& event_params;
+    // This field is not a raw_ref<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION const EventParams& event_params;
   };
 
   class AX_EXPORT Iterator {

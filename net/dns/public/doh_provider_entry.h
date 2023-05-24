@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
@@ -65,7 +66,9 @@ struct NET_EXPORT DohProviderEntry {
   };
 
   std::string provider;
-  const base::Feature& feature;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const base::Feature& feature;
   // A provider_id_for_histogram is required for entries that are intended to
   // be visible in the UI.
   absl::optional<DohProviderIdForHistogram> provider_id_for_histogram;

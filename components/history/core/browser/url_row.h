@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "components/query_parser/snippet.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -110,7 +111,9 @@ class URLRow {
     }
 
    private:
-    const GURL& url_;
+    // This field is not a raw_ref<> because it was filtered by the rewriter
+    // for: #constexpr-ctor-field-initializer
+    RAW_PTR_EXCLUSION const GURL& url_;
   };
 
  protected:
