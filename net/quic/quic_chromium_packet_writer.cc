@@ -125,7 +125,8 @@ quic::WriteResult QuicChromiumPacketWriter::WritePacket(
     size_t buf_len,
     const quic::QuicIpAddress& self_address,
     const quic::QuicSocketAddress& peer_address,
-    quic::PerPacketOptions* /*options*/) {
+    quic::PerPacketOptions* /*options*/,
+    const quic::QuicPacketWriterParams& /*params*/) {
   CHECK(!IsWriteBlocked());
   SetPacket(buffer, buf_len);
   return WritePacketToSocketImpl();
@@ -260,6 +261,10 @@ bool QuicChromiumPacketWriter::SupportsReleaseTime() const {
 }
 
 bool QuicChromiumPacketWriter::IsBatchMode() const {
+  return false;
+}
+
+bool QuicChromiumPacketWriter::SupportsEcn() const {
   return false;
 }
 
