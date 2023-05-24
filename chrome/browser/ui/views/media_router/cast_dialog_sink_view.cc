@@ -192,6 +192,10 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
 void CastDialogSinkView::RequestFocus() {
   if (cast_sink_button_) {
     cast_sink_button_->RequestFocus();
+  } else if (freeze_button_) {
+    freeze_button_->RequestFocus();
+  } else if (stop_button_) {
+    stop_button_->RequestFocus();
   }
 }
 
