@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.D
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_TITLE;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.FOOTER_MESSAGE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.SHOW_REQUIRED_INDICATOR;
 
 import android.content.Context;
 import android.os.Handler;
@@ -592,6 +593,7 @@ public class AddressEditor {
                 .with(FOOTER_MESSAGE, getSourceNoticeText())
                 .with(DELETE_CONFIRMATION_TITLE, getDeleteConfirmationTitle())
                 .with(DELETE_CONFIRMATION_TEXT, getDeleteConfirmationText())
+                .with(SHOW_REQUIRED_INDICATOR, false)
                 .with(EDITOR_FIELDS,
                         buildEditorFieldList(AutofillAddress.getCountryCode(mProfileToEdit),
                                 mProfileToEdit.getLanguageCode()))

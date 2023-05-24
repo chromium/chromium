@@ -77,8 +77,7 @@ public class SaveUpdateAddressProfilePrompt {
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
 
-        mEditorDialog = new EditorDialog(
-                activity, /*deleteRunnable=*/null, browserProfile, /*requiredIndicator=*/false);
+        mEditorDialog = new EditorDialog(activity, /*deleteRunnable=*/null, browserProfile);
         mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
         AddressEditor.Delegate delegate = new AddressEditor.Delegate() {
             @Override

@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.D
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.FOOTER_MESSAGE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.SHOW_REQUIRED_INDICATOR;
 
 import android.app.Activity;
 
@@ -260,11 +261,12 @@ public class AddressEditorTest {
         Assert.assertEquals(hasLengthCounter, field.hasLengthCounter());
     }
 
-    private static void checkUiStringsHaveExpectedValues(PropertyModel editorModel,
+    private static void checkModelHasExpectedValues(PropertyModel editorModel,
             String expectedDeleteTitle, String expectedDeleteText,
             @Nullable String expectedSourceNotice) {
         Assert.assertNotNull(editorModel);
 
+        Assert.assertFalse(editorModel.get(SHOW_REQUIRED_INDICATOR));
         Assert.assertEquals(expectedDeleteTitle, editorModel.get(DELETE_CONFIRMATION_TITLE));
         Assert.assertEquals(expectedDeleteText, editorModel.get(DELETE_CONFIRMATION_TEXT));
         Assert.assertEquals(expectedSourceNotice, editorModel.get(FOOTER_MESSAGE));
@@ -365,7 +367,7 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_local_address_source_notice);
         final String sourceNotice = null;
 
-        checkUiStringsHaveExpectedValues(
+        checkModelHasExpectedValues(
                 mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
@@ -389,7 +391,7 @@ public class AddressEditorTest {
                         .getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
-        checkUiStringsHaveExpectedValues(
+        checkModelHasExpectedValues(
                 mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
@@ -409,7 +411,7 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_local_address_source_notice);
         final String sourceNotice = null;
 
-        checkUiStringsHaveExpectedValues(
+        checkModelHasExpectedValues(
                 mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
@@ -433,7 +435,7 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_sync_address_source_notice);
         final String sourceNotice = null;
 
-        checkUiStringsHaveExpectedValues(
+        checkModelHasExpectedValues(
                 mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
@@ -453,7 +455,7 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_local_address_source_notice);
         final String sourceNotice = null;
 
-        checkUiStringsHaveExpectedValues(
+        checkModelHasExpectedValues(
                 mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
@@ -477,7 +479,7 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_sync_address_source_notice);
         final String sourceNotice = null;
 
-        checkUiStringsHaveExpectedValues(
+        checkModelHasExpectedValues(
                 mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
@@ -502,7 +504,7 @@ public class AddressEditorTest {
                         .getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
-        checkUiStringsHaveExpectedValues(
+        checkModelHasExpectedValues(
                 mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
@@ -530,7 +532,7 @@ public class AddressEditorTest {
                         .getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
-        checkUiStringsHaveExpectedValues(
+        checkModelHasExpectedValues(
                 mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
@@ -554,7 +556,7 @@ public class AddressEditorTest {
                         .getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
-        checkUiStringsHaveExpectedValues(
+        checkModelHasExpectedValues(
                 mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
@@ -578,7 +580,7 @@ public class AddressEditorTest {
                         .getString(R.string.autofill_address_already_saved_in_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
-        checkUiStringsHaveExpectedValues(
+        checkModelHasExpectedValues(
                 mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 

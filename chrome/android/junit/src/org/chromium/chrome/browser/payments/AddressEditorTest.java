@@ -21,15 +21,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TEXT;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TITLE;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
-import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.FOOTER_MESSAGE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.SHOW_REQUIRED_INDICATOR;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -215,16 +212,6 @@ public class AddressEditorTest {
         assertEquals(hasLengthCounter, field.hasLengthCounter());
     }
 
-    private static void checkUiStringsHaveExpectedValues(PropertyModel editorModel,
-            String expectedDeleteTitle, String expectedDeleteText,
-            @Nullable String expectedSourceNotice) {
-        assertNotNull(editorModel);
-
-        assertEquals(expectedDeleteTitle, editorModel.get(DELETE_CONFIRMATION_TITLE));
-        assertEquals(expectedDeleteText, editorModel.get(DELETE_CONFIRMATION_TEXT));
-        assertEquals(expectedSourceNotice, editorModel.get(FOOTER_MESSAGE));
-    }
-
     private void validateShownFields(PropertyModel editorModel, AutofillProfile profile) {
         assertNotNull(editorModel);
         List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -282,6 +269,24 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
                 /*isRequired=*/true, /*isFullLine=*/true,
                 /*hasLengthCounter=*/false);
+    }
+
+    @Test
+    @SmallTest
+    public void validateRequiredFieldIndicator() {
+        setUpAddressUiComponents(new ArrayList(), /*countryCode=*/"US");
+        mAddressEditor = new AddressEditor(/*saveToDisk=*/false);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        doAnswer(unused -> {
+            mAddressEditor.onSubKeysReceived(null, null);
+            return null;
+        })
+                .when(mPersonalDataManager)
+                .getRegionSubKeys(anyString(), any());
+        mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
+
+        assertNotNull(mPropertyModelCapture.getValue());
+        assertTrue(mPropertyModelCapture.getValue().get(SHOW_REQUIRED_INDICATOR));
     }
 
     @Test

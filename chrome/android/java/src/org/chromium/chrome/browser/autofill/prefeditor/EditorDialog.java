@@ -103,7 +103,6 @@ public class EditorDialog
     private final List<Spinner> mDropdownFields;
     private final InputFilter mCardNumberInputFilter;
     private final TextWatcher mCardNumberFormatter;
-    private final boolean mHasRequiredIndicator;
 
     @Nullable
     private TextWatcher mPhoneFormatter;
@@ -130,26 +129,13 @@ public class EditorDialog
     private AlertDialog mConfirmationDialog;
 
     /**
-     * Builds the editor dialog with the required indicator enabled.
-     *
-     * @param activity          The activity on top of which the UI should be displayed.
-     * @param deleteRunnable    The runnable that when called will delete the profile.
-     * @param profile           The current profile that creates EditorDialog.
-     */
-    public EditorDialog(Activity activity, Runnable deleteRunnable, Profile profile) {
-        this(activity, deleteRunnable, profile, true);
-    }
-
-    /**
      * Builds the editor dialog.
      *
      * @param activity             The activity on top of which the UI should be displayed.
      * @param deleteRunnable       The runnable that when called will delete the profile.
      * @param profile              The current profile that creates EditorDialog.
-     * @param hasRequiredIndicator Whether the required (*) indicator is visible.
      */
-    public EditorDialog(Activity activity, Runnable deleteRunnable, Profile profile,
-            boolean requiredIndicator) {
+    public EditorDialog(Activity activity, Runnable deleteRunnable, Profile profile) {
         super(activity, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         // Sets transparent background for animating content view.
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -201,7 +187,6 @@ public class EditorDialog
         mCardNumberFormatter = new CreditCardNumberFormattingTextWatcher();
         mDeleteRunnable = deleteRunnable;
         mProfile = profile;
-        mHasRequiredIndicator = requiredIndicator;
     }
 
     /**
@@ -422,7 +407,7 @@ public class EditorDialog
 
         TextView requiredFieldsNotice = mLayout.findViewById(R.id.required_fields_notice);
         int requiredFieldsNoticeVisibility = View.GONE;
-        if (mHasRequiredIndicator) {
+        if (mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR)) {
             for (int i = 0; i < mFieldViews.size(); i++) {
                 if (mFieldViews.get(i).isRequired()) {
                     requiredFieldsNoticeVisibility = View.VISIBLE;
@@ -561,8 +546,9 @@ public class EditorDialog
                     if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
                 }
             };
-            EditorDropdownField dropdownView = new EditorDropdownField(
-                    mActivity, parent, fieldModel, prepareEditorRunnable, mHasRequiredIndicator);
+            EditorDropdownField dropdownView =
+                    new EditorDropdownField(mActivity, parent, fieldModel, prepareEditorRunnable,
+                            mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
             mFieldViews.add(dropdownView);
             mDropdownFields.add(dropdownView.getDropdown());
 
@@ -595,9 +581,9 @@ public class EditorDialog
                 formatter = mPhoneFormatter;
             }
 
-            EditorTextField inputLayout =
-                    new EditorTextField(mActivity, fieldModel, mEditorActionListener, filter,
-                            formatter, /* focusAndShowKeyboard= */ false, mHasRequiredIndicator);
+            EditorTextField inputLayout = new EditorTextField(mActivity, fieldModel,
+                    mEditorActionListener, filter, formatter, /* focusAndShowKeyboard= */ false,
+                    mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
             mFieldViews.add(inputLayout);
 
             EditText input = inputLayout.getEditText();

@@ -247,7 +247,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             }
         };
 
-        return new EditorDialog(getActivity(), runnable, mProfile, false);
+        return new EditorDialog(getActivity(), runnable, mProfile);
     }
 
     @Nullable

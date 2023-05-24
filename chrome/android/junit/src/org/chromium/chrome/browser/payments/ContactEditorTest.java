@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.SHOW_REQUIRED_INDICATOR;
 
 import android.app.Activity;
 
@@ -95,6 +96,20 @@ public class ContactEditorTest {
         assertTrue(field.isRequired());
         assertTrue(field.isFullLine());
         assertFalse(field.hasLengthCounter());
+    }
+
+    @Test
+    @SmallTest
+    public void validateRequiredFieldIndicator() {
+        ContactEditor editor = new ContactEditor(/*requestPayerName=*/true,
+                /*requestPayerPhone=*/false,
+                /*requestPayerEmail=*/false,
+                /*saveToDisk=*/false);
+        editor.setEditorDialog(mEditorDialog);
+        editor.edit(null, unused -> {});
+
+        assertNotNull(mPropertyModelCapture.getValue());
+        assertTrue(mPropertyModelCapture.getValue().get(SHOW_REQUIRED_INDICATOR));
     }
 
     @Test

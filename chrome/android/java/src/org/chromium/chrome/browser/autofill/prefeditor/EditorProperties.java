@@ -24,6 +24,8 @@ public class EditorProperties {
             new PropertyModel.ReadableObjectPropertyKey<>("delete_confirmation_title");
     public static final PropertyModel.ReadableObjectPropertyKey<String> DELETE_CONFIRMATION_TEXT =
             new PropertyModel.ReadableObjectPropertyKey<>("delete_confirmation_text");
+    public static final PropertyModel.ReadableBooleanPropertyKey SHOW_REQUIRED_INDICATOR =
+            new PropertyModel.ReadableBooleanPropertyKey("show_required_indicator");
 
     public static final PropertyModel
             .WritableObjectPropertyKey<List<EditorFieldModel>> EDITOR_FIELDS =
@@ -35,8 +37,8 @@ public class EditorProperties {
             new PropertyModel.ReadableObjectPropertyKey<>("cancel_callback");
 
     public static final PropertyKey[] ALL_KEYS = {EDITOR_TITLE, CUSTOM_DONE_BUTTON_TEXT,
-            FOOTER_MESSAGE, DELETE_CONFIRMATION_TITLE, DELETE_CONFIRMATION_TEXT, EDITOR_FIELDS,
-            DONE_RUNNABLE, CANCEL_RUNNABLE};
+            FOOTER_MESSAGE, DELETE_CONFIRMATION_TITLE, DELETE_CONFIRMATION_TEXT,
+            SHOW_REQUIRED_INDICATOR, EDITOR_FIELDS, DONE_RUNNABLE, CANCEL_RUNNABLE};
 
     private EditorProperties() {}
 }

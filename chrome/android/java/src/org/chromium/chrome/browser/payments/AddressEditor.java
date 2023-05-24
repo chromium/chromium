@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.C
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.SHOW_REQUIRED_INDICATOR;
 
 import android.app.ProgressDialog;
 import android.os.Handler;
@@ -279,6 +280,7 @@ public class AddressEditor
 
         mEditorModel = new PropertyModel.Builder(ALL_KEYS)
                                .with(EDITOR_TITLE, editTitle)
+                               .with(SHOW_REQUIRED_INDICATOR, true)
                                .with(EDITOR_FIELDS, new ArrayList())
                                .with(DONE_RUNNABLE, onDone)
                                .with(CANCEL_RUNNABLE, onCancel)

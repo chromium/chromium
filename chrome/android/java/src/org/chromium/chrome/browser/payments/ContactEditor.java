@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.C
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.SHOW_REQUIRED_INDICATOR;
 
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
@@ -279,6 +280,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
 
         PropertyModel editorModel = new PropertyModel.Builder(ALL_KEYS)
                                             .with(EDITOR_TITLE, editorTitle)
+                                            .with(SHOW_REQUIRED_INDICATOR, true)
                                             .with(EDITOR_FIELDS, editorFields)
                                             .with(DONE_RUNNABLE, onDone)
                                             .with(CANCEL_RUNNABLE, onCancel)
