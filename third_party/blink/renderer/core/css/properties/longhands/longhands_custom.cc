@@ -3389,6 +3389,10 @@ const CSSValue* FontPalette::CSSValueFromComputedStyleInternal(
     case blink::FontPalette::kCustomPalette:
       return MakeGarbageCollected<CSSCustomIdentValue>(
           palette->GetPaletteValuesName());
+    case blink::FontPalette::kInterpolablePalette:
+      DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+      return MakeGarbageCollected<CSSCustomIdentValue>(
+          AtomicString(palette->ToString()));
     default:
       NOTREACHED();
   }

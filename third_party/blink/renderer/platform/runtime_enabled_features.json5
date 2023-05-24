@@ -1764,6 +1764,10 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      name: "FontPaletteAnimation",
+      base_feature: "none",
+    },
+    {
       name: "FontSrcLocalMatching",
       base_feature: "none",
       // No status, as the web platform runtime enabled feature is controlled by
