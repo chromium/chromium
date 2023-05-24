@@ -145,7 +145,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
       this.$.drawerTemplate.if = true;
     });
 
-    this.addEventListener('cr-toolbar-menu-tap', this.onMenuButtonTap_);
+    this.addEventListener('cr-toolbar-menu-click', this.onMenuButtonClick_);
   }
 
   override currentRouteChanged(route: Route): void {
@@ -180,7 +180,7 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
     }
   }
 
-  private onMenuButtonTap_() {
+  private onMenuButtonClick_() {
     this.$.drawer.toggle();
   }
 

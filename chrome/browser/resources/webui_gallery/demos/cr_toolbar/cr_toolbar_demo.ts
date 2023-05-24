@@ -47,7 +47,7 @@ class CrToolbarDemoElement extends PolymerElement {
   private showSearch_: boolean = true;
   private showSlottedContent_: boolean = false;
 
-  private onMenuTap_() {
+  private onMenuClick_() {
     this.push('log_', 'Menu tapped.');
   }
 
