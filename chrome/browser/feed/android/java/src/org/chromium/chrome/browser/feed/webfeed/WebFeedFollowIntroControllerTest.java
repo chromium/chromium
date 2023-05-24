@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
@@ -174,10 +175,13 @@ public final class WebFeedFollowIntroControllerTest {
                 mTabSupplier, new View(mActivity), mFeedLauncher, mDialogManager, mSnackbarManager);
         mEmptyTabObserver = mWebFeedFollowIntroController.getEmptyTabObserverForTesting();
         mWebFeedFollowIntroController.setClockForTesting(mClock);
+        // TextBubble is impossible to show in a junit.
+        TextBubble.setSkipShowCheckForTesting(true);
     }
 
     @After
     public void tearDown() {
+        TextBubble.setSkipShowCheckForTesting(false);
         TrackerFactory.setTrackerForTests(null);
     }
 
