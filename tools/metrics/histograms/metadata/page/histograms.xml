@@ -30,6 +30,18 @@ chromium-metrics-reviews@google.com.
   <variant name="5000ms"/>
 </variants>
 
+<variants name="PagePrerenderTriggerType">
+<!-- Should be kept in sync with variants PrerenderTriggerType in
+  tools/metrics/histograms/metadata/navigation/histograms.xml.
+-->
+
+  <variant name=".Embedder_BookmarkBar"/>
+  <variant name=".Embedder_DefaultSearchEngine"/>
+  <variant name=".Embedder_DirectURLInput"/>
+  <variant name=".SpeculationRule"/>
+  <variant name=".SpeculationRuleFromIsolatedWorld"/>
+</variants>
+
 <variants name="PrivacySandboxAdsApi">
   <variant name="AttributionReporting"/>
   <variant name="FencedFrames"/>
@@ -40,6 +52,11 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="RequestDestination">
+<!-- Should be kept in sync with variants BlinkRequestDestination in
+  tools/metrics/histograms/metadata/blink/histograms.xml and NetworkRequestDestination
+  in tools/metrics/histograms/metadata/network/histograms.xml.
+-->
+
   <variant name="audio"/>
   <variant name="audioworklet"/>
   <variant name="document"/>
@@ -966,11 +983,7 @@ chromium-metrics-reviews@google.com.
     prerendered and were later activated. Note that prerendered page loads are
     excluded from PageLoad.InteractiveTiming.FirstInputDelay4.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -984,11 +997,7 @@ chromium-metrics-reviews@google.com.
     page loads are excluded from
     PageLoad.LayoutInstability.CumulativeShiftScore.MainFrame.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -1001,11 +1010,7 @@ chromium-metrics-reviews@google.com.
     were prerendered and were later activated. Note that prerendered page loads
     are excluded from PageLoad.LayoutInstability.CumulativeShiftScore.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -1019,11 +1024,7 @@ chromium-metrics-reviews@google.com.
     prerendered page loads are excluded from
     PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -1037,11 +1038,7 @@ chromium-metrics-reviews@google.com.
     attribute of PerformanceNavigationTiming. Recorded when a prerendered page
     is activated.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -1056,11 +1053,7 @@ chromium-metrics-reviews@google.com.
     loads are excluded from
     PageLoad.PaintTiming.NavigationToFirstContentfulPaint.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -1074,11 +1067,7 @@ chromium-metrics-reviews@google.com.
     activation navigation start. Note that prerendered page loads are excluded
     from PageLoad.PaintTiming.NavigationToFirstPaint.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -1093,11 +1082,7 @@ chromium-metrics-reviews@google.com.
     loads are excluded from
     PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram
@@ -2529,11 +2514,7 @@ chromium-metrics-reviews@google.com.
     This metric is used to monitor whether preload cache intercepting logic
     causes extra page loading errors.
   </summary>
-<!-- PrerenderTriggerType variant is defined in
-  tools/metrics/histograms/metadata/navigation/histograms.xml.
--->
-
-  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+  <token key="PrerenderTriggerType" variants="PagePrerenderTriggerType"/>
 </histogram>
 
 <histogram name="PageLoad.Internal.Prerender2.Event"

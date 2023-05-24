@@ -73,24 +73,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Video" summary="The context menu was shown for a video"/>
 </variants>
 
-<variants name="DIPSCookieMode">
-  <variant name=".Block3PC"
-      summary="in a NON-off-the-record profile, with third-party cookies
-               blocked"/>
-  <variant name=".OffTheRecord"
-      summary="in an off-the-record profile, with third-party cookies enabled"/>
-  <variant name=".OffTheRecord_Block3PC"
-      summary="in an off-the-record profile, with third-party cookies blocked"/>
-  <variant name=".Standard"
-      summary="in a NON-off-the-record profile, with third-party cookies
-               enabled"/>
-</variants>
-
-<variants name="DIPSRedirectType">
-  <variant name="Client" summary="client-side"/>
-  <variant name="Server" summary="server-side"/>
-</variants>
-
 <variants name="GridTabSwitcherMessageTypes">
   <variant name="PriceAlertsMessageCard"
       summary="the promo message for price notifications"/>
@@ -147,27 +129,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".JourneysSidePanel" summary="from Journeys inside Side Panel"/>
   <variant name=".NtpQuests" summary="from the Quests module on the NTP"/>
   <variant name=".NtpRealbox" summary="from the realbox on the NTP"/>
-</variants>
-
-<variants name="ProcessName">
-  <variant name="BrowserProcess" summary=""/>
-  <variant name="GPUProcess" summary=""/>
-  <variant name="NetworkProcess" summary=""/>
-  <variant name="PluginProcess" summary=""/>
-  <variant name="PPAPIFlashProcess" summary="">
-    <obsolete>
-      Ported over from previous suffix based definition where it was removed on
-      2021-03 now that support for Flash has been removed.
-    </obsolete>
-  </variant>
-  <variant name="PPAPIProcess" summary=""/>
-  <variant name="RendererExtensionEventProcess" summary=""/>
-  <variant name="RendererExtensionPersistentProcess" summary=""/>
-  <variant name="RendererProcess" summary=""/>
-<!-- "Total" variant used to exist but was folded into the histogram names and could not be made obsolete. -->
-
-  <variant name="UtilityProcess" summary=""/>
-  <variant name="WorkerProcess" summary=""/>
 </variants>
 
 <variants name="VoiceIntentTargetVariant">

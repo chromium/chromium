@@ -22,6 +22,36 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SettingsAllPermissionTypes">
+<!-- Should be kept in sync with variants AllPermissionTypes in
+  tools/metrics/histograms/metadata/permissions/histograms.xml.
+-->
+
+  <variant name="AR"/>
+  <variant name="AudioAndVideoCapture"/>
+  <variant name="AudioCapture"/>
+  <variant name="CameraPanTiltZoom"/>
+  <variant name="ClipboardReadWrite"/>
+  <variant name="Geolocation"/>
+  <variant name="IdleDetection"/>
+  <variant name="LocalFonts"/>
+  <variant name="MidiSysEx"/>
+  <variant name="MultipleDownload"/>
+  <variant name="Nfc"/>
+  <variant name="Notifications"/>
+  <variant name="PaymentHandler"/>
+  <variant name="ProtectedMedia"/>
+  <variant name="Quota"/>
+  <variant name="RegisterProtocolHandler"/>
+  <variant name="SecurityKeyAttestation"/>
+  <variant name="StorageAccess"/>
+  <variant name="TopLevelStorageAccess"/>
+  <variant name="U2fApiRequest"/>
+  <variant name="VideoCapture"/>
+  <variant name="VR"/>
+  <variant name="WindowPlacement"/>
+</variants>
+
 <histogram name="Settings.AdvancedSpellcheck.OnStartup" enum="BooleanEnabled"
     expires_after="2023-05-07">
   <obsolete>
@@ -664,7 +694,7 @@ chromium-metrics-reviews@google.com.
     a permission that was previously revoked by the unused site permission
     module of SafetyCheck.
   </summary>
-  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="PermissionType" variants="SettingsAllPermissionTypes"/>
   <token key="SourceUI">
     <variant name="Prompt"/>
     <variant name="Settings"/>

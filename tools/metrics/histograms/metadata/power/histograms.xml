@@ -65,6 +65,27 @@ chromium-metrics-reviews@google.com.
       summary="every sample recorded after the first one"/>
 </variants>
 
+<variants name="ProcessName">
+  <variant name="BrowserProcess" summary=""/>
+  <variant name="GPUProcess" summary=""/>
+  <variant name="NetworkProcess" summary=""/>
+  <variant name="PluginProcess" summary=""/>
+  <variant name="PPAPIFlashProcess" summary="">
+    <obsolete>
+      Ported over from previous suffix based definition where it was removed on
+      2021-03 now that support for Flash has been removed.
+    </obsolete>
+  </variant>
+  <variant name="PPAPIProcess" summary=""/>
+  <variant name="RendererExtensionEventProcess" summary=""/>
+  <variant name="RendererExtensionPersistentProcess" summary=""/>
+  <variant name="RendererProcess" summary=""/>
+<!-- "Total" variant used to exist but was folded into the histogram names and could not be made obsolete. -->
+
+  <variant name="UtilityProcess" summary=""/>
+  <variant name="WorkerProcess" summary=""/>
+</variants>
+
 <variants name="UsageScenario">
 <!--
   Variants describing the usage scenario for a time interval. Consider updating

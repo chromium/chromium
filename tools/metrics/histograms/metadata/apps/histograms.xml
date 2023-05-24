@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AppDisplayModes">
+<!-- Should be kept in sync with variants DisplayModes in
+  tools/metrics/histograms/metadata/ash/histograms.xml.
+-->
+
+  <variant name="ClamshellMode" summary="Clamshell mode"/>
+  <variant name="TabletMode" summary="Tablet mode"/>
+</variants>
+
 <variants name="AppType">
   <variant name="Arc" summary="Android apps"/>
   <variant name="Borealis" summary="Borealis apps"/>
@@ -1218,7 +1227,7 @@ chromium-metrics-reviews@google.com.
     sort nudge shows initially in tablet (or clamshell), then the discovery
     duration is reported using the histogram for tablet (or clamshell).
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram name="Apps.AppList.SortOrderOnSessionStart.{TabletOrClamshell}"
@@ -1229,7 +1238,7 @@ chromium-metrics-reviews@google.com.
     The app list sort order preserved in the pref service. Triggered when the
     pref service for the new session is ready.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
@@ -2223,7 +2232,7 @@ chromium-metrics-reviews@google.com.
     The events that reset the app list pref sort order. Triggered when the pref
     sort order is reset.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
@@ -2236,7 +2245,7 @@ chromium-metrics-reviews@google.com.
     smoothness of this animation. 100% represents the ideally smooth 60 frames
     per second.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram name="Apps.Launcher.InstallAppFromLinkResult"
@@ -2270,7 +2279,7 @@ chromium-metrics-reviews@google.com.
     The user-set sort order of the productivity launcher. Triggered when the
     launcher is set with a new order.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
@@ -2283,7 +2292,7 @@ chromium-metrics-reviews@google.com.
     smoothness of this animation. 100% represents the ideally smooth 60 frames
     per second.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
+  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram name="Apps.LockScreen.AppsProfile.Creation.Duration" units="ms"

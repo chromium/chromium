@@ -29,6 +29,37 @@ chromium-metrics-reviews@google.com.
       summary="Byte size of WebP images that fall into this category."/>
 </variants>
 
+<variants name="BlinkRequestDestination">
+<!-- Should be kept in sync with variants RequestDestination in
+  tools/metrics/histograms/metadata/page/histograms.xml and NetworkRequestDestination
+  in tools/metrics/histograms/metadata/network/histograms.xml.
+-->
+
+  <variant name="audio"/>
+  <variant name="audioworklet"/>
+  <variant name="document"/>
+  <variant name="embed"/>
+  <variant name="empty"/>
+  <variant name="fencedframe"/>
+  <variant name="font"/>
+  <variant name="frame"/>
+  <variant name="iframe"/>
+  <variant name="image"/>
+  <variant name="manifest"/>
+  <variant name="object"/>
+  <variant name="paintworklet"/>
+  <variant name="report"/>
+  <variant name="script"/>
+  <variant name="serviceworker"/>
+  <variant name="sharedworker"/>
+  <variant name="style"/>
+  <variant name="track"/>
+  <variant name="video"/>
+  <variant name="webbundle"/>
+  <variant name="worker"/>
+  <variant name="xslt"/>
+</variants>
+
 <variants name="BlinkVisibleLoadTimeSuffixes">
   <variant name="" summary="Aggregated across all connection types"/>
   <variant name=".2G" summary="2G effective connection type"/>
@@ -2413,7 +2444,7 @@ chromium-metrics-reviews@google.com.
     same process isolation policies. Recorded when ResourceFetcher fetches a
     resource from network. This histogram is for `{Destination}` destination.
   </summary>
-  <token key="Destination" variants="RequestDestination"/>
+  <token key="Destination" variants="BlinkRequestDestination"/>
 </histogram>
 
 <histogram

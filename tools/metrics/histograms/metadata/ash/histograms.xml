@@ -46,6 +46,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="DisplayModes">
+<!-- Should be kept in sync with variants AppDisplayModes in
+  tools/metrics/histograms/metadata/apps/histograms.xml.
+-->
+
   <variant name="ClamshellMode" summary="Clamshell mode"/>
   <variant name="TabletMode" summary="Tablet mode"/>
 </variants>
