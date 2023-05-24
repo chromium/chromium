@@ -252,7 +252,7 @@ TEST_F(ArcIdleManagerTest, TestThrottleInstance) {
 
 // Tests that ArcIdleManager records the screen off time metric correctly.
 TEST_F(ArcIdleManagerTest, TestScreenOffTimerMetrics) {
-  // When no one blocks, it should enable idle (screen off);
+  // When no one blocks, it should enable idle (screen off).
 
   on_battery_observer()->SetActive(false);
   display_power_observer()->SetActive(false);
@@ -277,7 +277,7 @@ TEST_F(ArcIdleManagerTest, TestScreenOffTimerMetrics) {
       "Arc.IdleManager.ScreenOffTime",
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 
-  // Fake a disconnection (aking to crash of SystemServer)
+  // Fake a disconnection (akin to a crash of SystemServer)
   arc_idle_manager()->OnConnectionClosed();
   // we are NOT throttled, shouldn't see any change
 
@@ -285,17 +285,17 @@ TEST_F(ArcIdleManagerTest, TestScreenOffTimerMetrics) {
       "Arc.IdleManager.ScreenOffTime",
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 
-  // Sate change while we are not watching.
+  // State change while we are not watching.
   on_battery_observer()->SetActive(false);
 
-  // Fake system server coming back
+  // Fake systemserver coming back
   arc_idle_manager()->OnConnectionReady();
 
   histogram_tester.ExpectUniqueTimeSample(
       "Arc.IdleManager.ScreenOffTime",
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 
-  // Again, fake a disconnection (aking to crash of SystemServer)
+  // Again, fake a disconnection (akin to a crash of SystemServer)
   arc_idle_manager()->OnConnectionClosed();
 
   // This time, we should see a counter bump, as disconnection happened
