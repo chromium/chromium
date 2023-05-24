@@ -192,12 +192,11 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
   }
 
   void GetStats(RTCStatsReportCallback callback,
-                const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
                 bool is_track_stats_deprecation_trial_enabled) {
     signaling_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&RTCRtpReceiverInternal::GetStatsOnSignalingThread, this,
-                       std::move(callback), exposed_group_ids,
+                       std::move(callback),
                        is_track_stats_deprecation_trial_enabled));
   }
 
@@ -230,13 +229,12 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
 
   void GetStatsOnSignalingThread(
       RTCStatsReportCallback callback,
-      const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
       bool is_track_stats_deprecation_trial_enabled) {
     native_peer_connection_->GetStats(
         rtc::scoped_refptr<webrtc::RtpReceiverInterface>(
             webrtc_receiver_.get()),
         CreateRTCStatsCollectorCallback(
-            main_task_runner_, std::move(callback), exposed_group_ids,
+            main_task_runner_, std::move(callback),
             is_track_stats_deprecation_trial_enabled));
   }
 
@@ -340,9 +338,8 @@ Vector<std::unique_ptr<RTCRtpSource>> RTCRtpReceiverImpl::GetSources() {
 
 void RTCRtpReceiverImpl::GetStats(
     RTCStatsReportCallback callback,
-    const Vector<webrtc::NonStandardGroupId>& exposed_group_ids,
     bool is_track_stats_deprecation_trial_enabled) {
-  internal_->GetStats(std::move(callback), exposed_group_ids,
+  internal_->GetStats(std::move(callback),
                       is_track_stats_deprecation_trial_enabled);
 }
 

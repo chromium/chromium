@@ -216,13 +216,9 @@ class WebRtcTestBase : public InProcessBrowserTest {
   void GenerateAndCloneCertificate(content::WebContents* tab,
                                    const std::string& keygen_algorithm) const;
 
-  std::vector<std::string> VerifyStatsGeneratedPromise(
-      content::WebContents* tab) const;
   scoped_refptr<content::TestStatsReportDictionary> GetStatsReportDictionary(
       content::WebContents* tab) const;
   double MeasureGetStatsPerformance(content::WebContents* tab) const;
-  std::vector<std::string> GetMandatoryStatsTypes(
-      content::WebContents* tab) const;
 
   // Change the default audio/video codec in the offer SDP.
   void SetDefaultAudioCodec(content::WebContents* tab,

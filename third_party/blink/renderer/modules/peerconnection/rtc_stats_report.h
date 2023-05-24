@@ -16,11 +16,6 @@
 
 namespace blink {
 
-// Returns the group ids for non-standardized members which should be exposed
-// based on what Origin Trials are running.
-Vector<webrtc::NonStandardGroupId> GetExposedGroupIds(
-    const ScriptState* script_state);
-
 // https://w3c.github.io/webrtc-pc/#rtcstatsreport-object
 class RTCStatsReport final : public ScriptWrappable,
                              public Maplike<RTCStatsReport> {
@@ -47,7 +42,6 @@ class RTCStatsReport final : public ScriptWrappable,
                       ExceptionState&);
 
   std::unique_ptr<RTCStatsReportPlatform> report_;
-  const bool use_web_idl_;
 };
 
 }  // namespace blink

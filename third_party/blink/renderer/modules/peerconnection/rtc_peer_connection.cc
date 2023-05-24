@@ -1750,7 +1750,6 @@ ScriptPromise RTCPeerConnection::PromiseBasedGetStats(
           RuntimeEnabledFeatures::RTCLegacyTrackStatsEnabled(context);
       peer_handler_->GetStats(WTF::BindOnce(WebRTCStatsReportCallbackResolver,
                                             WrapPersistent(resolver)),
-                              GetExposedGroupIds(script_state),
                               is_track_stats_deprecation_trial_enabled);
     }
     return promise;

@@ -392,8 +392,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE,
                     "When enabled, the following ads APIs will be available: Attribution Reporting,"
                             + "FLEDGE, Topics."),
-            Flag.baseFeature(BlinkFeatures.WEB_RTC_STATS_REPORT_IDL,
-                    "Backs the WebRTC stats report object with generated objects defined in IDL"),
             Flag.baseFeature(BlinkFeatures.RENDER_BLOCKING_FONTS,
                     "When enabled, blocks rendering on font preloads to reduce CLS. "
                             + "See go/critical-font-analysis"),

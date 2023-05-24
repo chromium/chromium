@@ -104,7 +104,6 @@ void FakeRTCRtpSenderImpl::SetParameters(
 
 void FakeRTCRtpSenderImpl::GetStats(
     RTCStatsReportCallback,
-    const Vector<webrtc::NonStandardGroupId>&,
     bool is_track_stats_deprecation_trial_enabled) {
   NOTIMPLEMENTED();
 }
@@ -167,7 +166,6 @@ Vector<std::unique_ptr<RTCRtpSource>> FakeRTCRtpReceiverImpl::GetSources() {
 
 void FakeRTCRtpReceiverImpl::GetStats(
     RTCStatsReportCallback,
-    const Vector<webrtc::NonStandardGroupId>&,
     bool is_track_stats_deprecation_trial_enabled) {
   NOTIMPLEMENTED();
 }

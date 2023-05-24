@@ -149,7 +149,6 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
                      absl::optional<webrtc::DegradationPreference>,
                      blink::RTCVoidRequest*) override;
   void GetStats(RTCStatsReportCallback,
-                const Vector<webrtc::NonStandardGroupId>&,
                 bool is_track_stats_deprecation_trial_enabled) override;
   void SetStreams(const Vector<String>& stream_ids) override;
   RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer()

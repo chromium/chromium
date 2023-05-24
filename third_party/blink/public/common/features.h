@@ -1027,9 +1027,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // See https://crbug.com/1393246.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExtendScriptResourceLifetime);
 
-// Use WebIDL instead of iteration to populate RTCStatsReport.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcStatsReportIdl);
-
 // Makes preloaded fonts render-blocking up to the limits below.
 // See https://crbug.com/1412861
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderBlockingFonts);

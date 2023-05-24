@@ -76,87 +76,6 @@ bool ExposeHardwareCapabilityStats(ScriptState* script_state) {
   return window && IsCapturing(window);
 }
 
-v8::Local<v8::Object> RTCStatsToV8Object(ScriptState* script_state,
-                                         const RTCStatsWrapper* stats) {
-  V8ObjectBuilder builder(script_state);
-
-  builder.AddString("id", stats->Id());
-  builder.AddNumber("timestamp", stats->TimestampMs());
-  builder.AddString("type", stats->GetType());
-
-  const bool expose_hardware_caps = ExposeHardwareCapabilityStats(script_state);
-
-  for (size_t i = 0; i < stats->MembersCount(); ++i) {
-    std::unique_ptr<RTCStatsMember> member = stats->GetMember(i);
-    if (!member->IsDefined() ||
-        (!expose_hardware_caps &&
-         member->Restriction() ==
-             RTCStatsMember::ExposureRestriction::kHardwareCapability)) {
-      continue;
-    }
-    String name = member->GetName();
-    switch (member->GetType()) {
-      case webrtc::RTCStatsMemberInterface::kBool:
-        builder.AddBoolean(name, member->ValueBool());
-        break;
-      case webrtc::RTCStatsMemberInterface::kInt32:
-        builder.AddNumber(name, static_cast<double>(member->ValueInt32()));
-        break;
-      case webrtc::RTCStatsMemberInterface::kUint32:
-        builder.AddNumber(name, static_cast<double>(member->ValueUint32()));
-        break;
-      case webrtc::RTCStatsMemberInterface::kInt64:
-        builder.AddNumber(name, static_cast<double>(member->ValueInt64()));
-        break;
-      case webrtc::RTCStatsMemberInterface::kUint64:
-        builder.AddNumber(name, static_cast<double>(member->ValueUint64()));
-        break;
-      case webrtc::RTCStatsMemberInterface::kDouble:
-        builder.AddNumber(name, member->ValueDouble());
-        break;
-      case webrtc::RTCStatsMemberInterface::kString:
-        builder.AddString(name, member->ValueString());
-        break;
-      case webrtc::RTCStatsMemberInterface::kSequenceBool: {
-        builder.Add(name, member->ValueSequenceBool());
-        break;
-      }
-      case webrtc::RTCStatsMemberInterface::kSequenceInt32:
-        builder.Add(name, member->ValueSequenceInt32());
-        break;
-      case webrtc::RTCStatsMemberInterface::kSequenceUint32:
-        builder.Add(name, member->ValueSequenceUint32());
-        break;
-      case webrtc::RTCStatsMemberInterface::kSequenceInt64:
-        builder.Add(name, member->ValueSequenceInt64());
-        break;
-      case webrtc::RTCStatsMemberInterface::kSequenceUint64:
-        builder.Add(name, member->ValueSequenceUint64());
-        break;
-      case webrtc::RTCStatsMemberInterface::kSequenceDouble:
-        builder.Add(name, member->ValueSequenceDouble());
-        break;
-      case webrtc::RTCStatsMemberInterface::kSequenceString:
-        builder.Add(name, member->ValueSequenceString());
-        break;
-      case webrtc::RTCStatsMemberInterface::kMapStringUint64:
-        builder.Add(
-            name, HashMapToValue(script_state, member->ValueMapStringUint64()));
-        break;
-      case webrtc::RTCStatsMemberInterface::kMapStringDouble:
-        builder.Add(
-            name, HashMapToValue(script_state, member->ValueMapStringDouble()));
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
-  v8::Local<v8::Object> v8_object = builder.V8Value();
-  CHECK(!v8_object.IsEmpty());
-  return v8_object;
-}
-
 RTCCodecStats* ToV8Stat(ScriptState* script_state,
                         const webrtc::RTCCodecStats& webrtc_stat) {
   RTCCodecStats* v8_codec =
@@ -1240,25 +1159,14 @@ class RTCStatsReportIterationSource final
     : public PairSyncIterable<RTCStatsReport>::IterationSource {
  public:
   explicit RTCStatsReportIterationSource(
-      std::unique_ptr<RTCStatsReportPlatform> report,
-      bool use_web_idl)
-      : report_(std::move(report)), use_web_idl_(use_web_idl) {}
+      std::unique_ptr<RTCStatsReportPlatform> report)
+      : report_(std::move(report)) {}
 
   bool FetchNextItem(ScriptState* script_state,
                      String& key,
                      ScriptValue& value,
                      ExceptionState& exception_state) override {
-    if (use_web_idl_) {
-      return FetchNextItemIdl(script_state, key, value, exception_state);
-    }
-    std::unique_ptr<RTCStatsWrapper> stats = report_->Next();
-    if (!stats) {
-      return false;
-    }
-    key = stats->Id();
-    value = ScriptValue(script_state->GetIsolate(),
-                        RTCStatsToV8Object(script_state, stats.get()));
-    return true;
+    return FetchNextItemIdl(script_state, key, value, exception_state);
   }
 
   bool FetchNextItemIdl(ScriptState* script_state,
@@ -1289,32 +1197,12 @@ class RTCStatsReportIterationSource final
 
  private:
   std::unique_ptr<RTCStatsReportPlatform> report_;
-  const bool use_web_idl_;
 };
 
 }  // namespace
 
-Vector<webrtc::NonStandardGroupId> GetExposedGroupIds(
-    const ScriptState* script_state) {
-  const ExecutionContext* context = ExecutionContext::From(script_state);
-  DCHECK(context->IsContextThread());
-  Vector<webrtc::NonStandardGroupId> enabled_origin_trials;
-  if (RuntimeEnabledFeatures::RtcAudioJitterBufferMaxPacketsEnabled(context)) {
-    enabled_origin_trials.emplace_back(
-        webrtc::NonStandardGroupId::kRtcAudioJitterBufferMaxPackets);
-  }
-  if (RuntimeEnabledFeatures::RTCStatsRelativePacketArrivalDelayEnabled(
-          context)) {
-    enabled_origin_trials.emplace_back(
-        webrtc::NonStandardGroupId::kRtcStatsRelativePacketArrivalDelay);
-  }
-  return enabled_origin_trials;
-}
-
 RTCStatsReport::RTCStatsReport(std::unique_ptr<RTCStatsReportPlatform> report)
-    : report_(std::move(report)),
-      use_web_idl_(
-          base::FeatureList::IsEnabled(features::kWebRtcStatsReportIdl)) {}
+    : report_(std::move(report)) {}
 
 uint32_t RTCStatsReport::size() const {
   return base::saturated_cast<uint32_t>(report_->Size());
@@ -1323,7 +1211,7 @@ uint32_t RTCStatsReport::size() const {
 PairSyncIterable<RTCStatsReport>::IterationSource*
 RTCStatsReport::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<RTCStatsReportIterationSource>(
-      report_->CopyHandle(), use_web_idl_);
+      report_->CopyHandle());
 }
 
 bool RTCStatsReport::GetMapEntryIdl(ScriptState* script_state,
@@ -1350,16 +1238,7 @@ bool RTCStatsReport::GetMapEntry(ScriptState* script_state,
                                  const String& key,
                                  ScriptValue& value,
                                  ExceptionState& exception_state) {
-  if (use_web_idl_) {
-    return GetMapEntryIdl(script_state, key, value, exception_state);
-  }
-  std::unique_ptr<RTCStatsWrapper> stats = report_->GetStats(key);
-  if (!stats) {
-    return false;
-  }
-  value = ScriptValue(script_state->GetIsolate(),
-                      RTCStatsToV8Object(script_state, stats.get()));
-  return true;
+  return GetMapEntryIdl(script_state, key, value, exception_state);
 }
 
 }  // namespace blink

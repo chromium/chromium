@@ -134,7 +134,6 @@ class MODULES_EXPORT RTCRtpReceiverImpl : public RTCRtpReceiverPlatform {
   Vector<String> StreamIds() const override;
   Vector<std::unique_ptr<RTCRtpSource>> GetSources() override;
   void GetStats(RTCStatsReportCallback,
-                const Vector<webrtc::NonStandardGroupId>&,
                 bool is_track_stats_deprecation_trial_enabled) override;
   std::unique_ptr<webrtc::RtpParameters> GetParameters() const override;
   void SetJitterBufferMinimumDelay(

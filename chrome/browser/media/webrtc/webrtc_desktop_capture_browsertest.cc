@@ -301,7 +301,6 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
     SetupPeerconnectionWithLocalStream(first_tab);
     SetupPeerconnectionWithLocalStream(second_tab);
     NegotiateCall(first_tab, second_tab);
-    VerifyStatsGeneratedPromise(second_tab);
     DetectVideoAndHangUp(first_tab, second_tab);
   }
 
