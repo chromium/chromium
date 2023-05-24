@@ -8,13 +8,16 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/common/chrome_switches.h"
 
 namespace enterprise_idle {
 
 namespace {
 
+constexpr base::TimeDelta kTestDialogTimeout = base::Seconds(5);
 constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
 
 }  // namespace
@@ -42,12 +45,16 @@ base::CallbackListSubscription DialogManager::ShowDialog(
     return subscription;
   }
 
-  dialog_ = IdleDialog::Show(
-      kDialogTimeout, threshold, ActionsToActionSet(action_types),
-      base::BindOnce(&DialogManager::OnDialogDismissedByUser,
-                     base::Unretained(this)));
+  base::TimeDelta timeout = base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                switches::kSimulateIdleTimeout)
+                                ? kTestDialogTimeout
+                                : kDialogTimeout;
+  dialog_ =
+      IdleDialog::Show(timeout, threshold, ActionsToActionSet(action_types),
+                       base::BindOnce(&DialogManager::OnDialogDismissedByUser,
+                                      base::Unretained(this)));
   dialog_timer_.Start(
-      FROM_HERE, kDialogTimeout,
+      FROM_HERE, timeout,
       base::BindOnce(&DialogManager::OnDialogExpired, base::Unretained(this)));
   return subscription;
 }

@@ -39,6 +39,8 @@ class IdleService : public KeyedService,
   void OnIdleStateChange(
       const ui::IdlePollingService::State& polled_state) override;
 
+  base::TimeDelta GetTimeout() const;
+
  private:
   // Called when the IdleTimeout policy changes, via the
   // "idle_profile_close_timeout" pref it's mapped to.

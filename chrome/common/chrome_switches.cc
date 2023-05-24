@@ -528,6 +528,10 @@ const char kSimulateOutdatedNoAU[] = "simulate-outdated-no-au";
 // Simulates an update being available.
 const char kSimulateUpgrade[] = "simulate-upgrade";
 
+// Sets the IdleTimeout policy to a very short value (shorter than normally
+// possible) for testing purposes.
+const char kSimulateIdleTimeout[] = "simulate-idle-timeout";
+
 // Specifies the maximum SSL/TLS version ("tls1.2" or "tls1.3").
 const char kSSLVersionMax[] = "ssl-version-max";
 

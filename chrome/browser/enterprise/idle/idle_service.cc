@@ -6,10 +6,12 @@
 
 #include <algorithm>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/idle/idle.h"
@@ -98,8 +100,7 @@ IdleService::IdleService(Profile* profile)
 IdleService::~IdleService() = default;
 
 void IdleService::OnIdleTimeoutPrefChanged() {
-  base::TimeDelta timeout =
-      profile_->GetPrefs()->GetTimeDelta(prefs::kIdleTimeout);
+  base::TimeDelta timeout = GetTimeout();
   if (timeout.is_positive()) {
     // `is_idle_` will auto-update in 1 second, no need to set it here.
     idle_threshold_ = timeout;
@@ -114,6 +115,13 @@ void IdleService::OnIdleTimeoutPrefChanged() {
     polling_service_observation_.Reset();
     browser_observer_->StopObserving();
   }
+}
+
+base::TimeDelta IdleService::GetTimeout() const {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kSimulateIdleTimeout)
+             ? base::Seconds(5)
+             : profile_->GetPrefs()->GetTimeDelta(prefs::kIdleTimeout);
 }
 
 void IdleService::OnIdleStateChange(
