@@ -226,9 +226,11 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   self.dragDropHandler.dragDataSource = self;
   self.tableView.dragDelegate = self.dragDropHandler;
   self.tableView.dragInteractionEnabled = true;
+  self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
   // In case the sign-in promo visibility is changed before the first layout,
   // we need to refresh the empty view margin after the layout is done, to apply
   // the correct top margin value according to the promo view's height.
@@ -1139,7 +1141,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self loadItems];
   [self.audience readingListHasItems:YES];
   self.tableView.alwaysBounceVertical = YES;
-  self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
   [self removeEmptyTableView];
 }
 
@@ -1160,7 +1161,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
   self.tableView.alwaysBounceVertical = NO;
-  self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
   [self.audience readingListHasItems:NO];
   [self updateEmptyViewTopMargin];
 }
