@@ -120,6 +120,16 @@ void SearchCompanionSidePanelCoordinator::OnTabStripModelChanged(
           ->CreateAndRegisterEntry();
     }
   }
+  if (selection.active_tab_changed()) {
+    MaybeUpdatePinnedButtonEnabledState();
+  }
+}
+
+void SearchCompanionSidePanelCoordinator::TabChangedAt(
+    content::WebContents* contents,
+    int index,
+    TabChangeType change_type) {
+  MaybeUpdatePinnedButtonEnabledState();
 }
 
 void SearchCompanionSidePanelCoordinator::
@@ -170,6 +180,21 @@ void SearchCompanionSidePanelCoordinator::
     container->RemovePinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion);
     browser_->tab_strip_model()->RemoveObserver(this);
     DeregisterEntriesForExistingWebContents(browser_->tab_strip_model());
+  }
+}
+
+void SearchCompanionSidePanelCoordinator::
+    MaybeUpdatePinnedButtonEnabledState() {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  if (!browser_view) {
+    return;
+  }
+  SidePanelToolbarContainer* container =
+      browser_view->toolbar()->side_panel_container();
+  if (container->IsPinned(SidePanelEntry::Id::kSearchCompanion)) {
+    bool enabled = companion::IsCompanionAvailableForCurrentActiveTab(browser_);
+    container->GetPinnedButtonForId(SidePanelEntry::Id::kSearchCompanion)
+        .SetEnabled(enabled);
   }
 }
 

@@ -213,7 +213,7 @@ std::vector<std::string> GetDistillableURLs() {
 
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
     : browser_view_(browser_view), distillable_urls_(GetDistillableURLs()) {
-  combobox_model_ = std::make_unique<SidePanelComboboxModel>();
+  combobox_model_ = std::make_unique<SidePanelComboboxModel>(browser_view_);
 
   auto global_registry = std::make_unique<SidePanelRegistry>();
   global_registry_ = global_registry.get();

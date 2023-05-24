@@ -17,6 +17,10 @@ namespace companion {
 // Returns true if the companion feature is enabled.
 bool IsCompanionFeatureEnabled();
 
+// Returns true if the companion entry points should be enabled for the state of
+// the current active tab.
+bool IsCompanionAvailableForCurrentActiveTab(const Browser* browser);
+
 // Returns true if the companion policy is enabled. The policy can change
 // dynamically, so callers should not cache the returned results.
 bool IsCompanionFeatureEnabledByPolicy(PrefService* pref_service);
