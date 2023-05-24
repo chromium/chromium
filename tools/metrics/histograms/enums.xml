@@ -55948,14 +55948,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="Invalid display classification"/>
 </enum>
 
-<enum name="KidsExternalFetcherStatus">
-  <int value="0" label="NoError"/>
-  <int value="1" label="AuthError"/>
-  <int value="2" label="HttpStatusOrNetError"/>
-  <int value="3" label="ParseError"/>
-  <int value="4" label="DataError"/>
-</enum>
-
 <enum name="KidsManagementURLCheckerResponseStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Network Error"/>
@@ -100237,6 +100229,14 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Parent Canceled"/>
   <int value="3" label="Failed"/>
   <int value="4" label="No Parent Error"/>
+</enum>
+
+<enum name="SupervisedUserProtoFetcherStatus">
+  <int value="0" label="NoError"/>
+  <int value="1" label="AuthError"/>
+  <int value="2" label="HttpStatusOrNetError"/>
+  <int value="3" label="ParseError"/>
+  <int value="4" label="DataError"/>
 </enum>
 
 <enum name="SupervisedUserSafetyFilterResult">

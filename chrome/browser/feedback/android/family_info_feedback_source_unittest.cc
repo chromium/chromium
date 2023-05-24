@@ -22,9 +22,9 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/test/test_support_jni_headers/FamilyInfoFeedbackSourceTestBridge_jni.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "content/public/test/browser_task_environment.h"
@@ -230,7 +230,7 @@ class FamilyInfoFeedbackSourceTest
   void OnGetFamilyMembersFailure(
       base::WeakPtr<FamilyInfoFeedbackSource> feedback_source) {
     feedback_source->OnFailure(
-        KidsExternalFetcherStatus::GoogleServiceAuthError(
+        supervised_user::ProtoFetcherStatus::GoogleServiceAuthError(
             GoogleServiceAuthError(
                 GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS)));
   }

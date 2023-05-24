@@ -23,8 +23,8 @@
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/signin/public/base/avatar_icon_util.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -259,7 +259,7 @@ void EduAccountLoginHandler::FetchReAuthProofTokenForParent(
 }
 
 void EduAccountLoginHandler::OnListFamilyMembersResponse(
-    KidsExternalFetcherStatus status,
+    supervised_user::ProtoFetcherStatus status,
     std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
         response) {
   if (!status.IsOk()) {
@@ -296,7 +296,7 @@ void EduAccountLoginHandler::OnListFamilyMembersSuccess(
 }
 
 void EduAccountLoginHandler::OnListFamilyMembersFailure(
-    KidsExternalFetcherStatus status) {
+    supervised_user::ProtoFetcherStatus status) {
   list_family_members_fetcher_.reset();
   RejectJavascriptCallback(base::Value(get_parents_callback_id_),
                            base::Value::List());

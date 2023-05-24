@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_ACCESS_TOKEN_FETCHER_H_
-#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_ACCESS_TOKEN_FETCHER_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_API_ACCESS_TOKEN_FETCHER_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_API_ACCESS_TOKEN_FETCHER_H_
 
 #include <memory>
 
@@ -17,9 +17,11 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
+namespace supervised_user {
+
 // Responsible for initialising the access token workflow. Executes the
 // consuming callback when the fetch is done, and then becomes disposable.
-class KidsAccessTokenFetcher {
+class ApiAccessTokenFetcher {
  public:
   // For convenience, the interface of signin::PrimaryAccountAccessTokenFetcher
   // is wrapped into one value, so the decision how to handle errors is up to
@@ -27,12 +29,12 @@ class KidsAccessTokenFetcher {
   using Consumer = base::OnceCallback<void(
       base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>)>;
   // Non copyable.
-  KidsAccessTokenFetcher() = delete;
-  explicit KidsAccessTokenFetcher(signin::IdentityManager& identity_manager,
-                                  Consumer consumer);
-  KidsAccessTokenFetcher(const KidsAccessTokenFetcher&) = delete;
-  KidsAccessTokenFetcher& operator=(const KidsAccessTokenFetcher&) = delete;
-  ~KidsAccessTokenFetcher();
+  ApiAccessTokenFetcher() = delete;
+  explicit ApiAccessTokenFetcher(signin::IdentityManager& identity_manager,
+                                 Consumer consumer);
+  ApiAccessTokenFetcher(const ApiAccessTokenFetcher&) = delete;
+  ApiAccessTokenFetcher& operator=(const ApiAccessTokenFetcher&) = delete;
+  ~ApiAccessTokenFetcher();
 
  private:
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
@@ -43,4 +45,6 @@ class KidsAccessTokenFetcher {
       primary_account_access_token_fetcher_;
 };
 
-#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_ACCESS_TOKEN_FETCHER_H_
+}  // namespace supervised_user
+
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_API_ACCESS_TOKEN_FETCHER_H_

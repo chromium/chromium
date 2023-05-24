@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/kids_external_fetcher_config.h"
+#include "components/supervised_user/core/browser/fetcher_config.h"
 
 #include <string>
 

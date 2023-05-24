@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/kids_access_token_fetcher.h"
+#include "components/supervised_user/core/browser/api_access_token_fetcher.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -18,6 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace supervised_user {
 namespace {
 
 using ::base::BindOnce;
@@ -33,14 +34,14 @@ using ::signin::ConsentLevel;
 using ::signin::IdentityTestEnvironment;
 using ::testing::Test;
 
-class KidsAccessTokenFetcherTest : public Test {
+class ApiAccessTokenFetcherTest : public Test {
  protected:
   // A pinhole class that allows to verify the fetch result.
   class Receiver {
    public:
     using FetchResultType = expected<AccessTokenInfo, GoogleServiceAuthError>;
     // The closure is safe to use if `this` pointer outlives its ::Run.
-    KidsAccessTokenFetcher::Consumer Receive() {
+    ApiAccessTokenFetcher::Consumer Receive() {
       return BindOnce(&Receiver::Set, Unretained(this));
     }
 
@@ -55,12 +56,12 @@ class KidsAccessTokenFetcherTest : public Test {
   IdentityTestEnvironment identity_test_env_;
 };
 
-TEST_F(KidsAccessTokenFetcherTest, ReadToken) {
+TEST_F(ApiAccessTokenFetcherTest, ReadToken) {
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "bob@example.com", ConsentLevel::kSignin);
   Receiver receiver;
-  KidsAccessTokenFetcher service(*identity_test_env_.identity_manager(),
-                                 receiver.Receive());
+  ApiAccessTokenFetcher service(*identity_test_env_.identity_manager(),
+                                receiver.Receive());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "expected_access_token", Time::Max());
@@ -68,12 +69,12 @@ TEST_F(KidsAccessTokenFetcherTest, ReadToken) {
   EXPECT_EQ(receiver.Get().value().token, "expected_access_token");
 }
 
-TEST_F(KidsAccessTokenFetcherTest, AuthError) {
+TEST_F(ApiAccessTokenFetcherTest, AuthError) {
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "bob@example.com", ConsentLevel::kSignin);
   Receiver receiver;
-  KidsAccessTokenFetcher service(*identity_test_env_.identity_manager(),
-                                 receiver.Receive());
+  ApiAccessTokenFetcher service(*identity_test_env_.identity_manager(),
+                                receiver.Receive());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(
@@ -84,3 +85,4 @@ TEST_F(KidsAccessTokenFetcherTest, AuthError) {
 }
 
 }  // namespace
+}  // namespace supervised_user

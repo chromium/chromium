@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 
 #include <memory>
 #include <string>
@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/fetcher_config_test_utils.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
@@ -25,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace supervised_user {
 namespace {
 
 using ::base::BindOnce;
@@ -36,16 +37,13 @@ using ::network::GetUploadData;
 using ::network::TestURLLoaderFactory;
 using ::signin::ConsentLevel;
 using ::signin::IdentityTestEnvironment;
-using ::supervised_user::FetcherConfig;
-using ::supervised_user::FetcherTestConfigBuilder;
 using ::testing::Test;
 
-// Tests the Kids External API fetchers functionality.
-class KidsExternalFetcherTest : public Test {
+// Tests the kidsmanagement/v1 proto client.
+class ProtoFetcherTest : public Test {
  protected:
   FetcherConfig test_fetcher_config_ =
-      FetcherTestConfigBuilder::FromConfig(
-          supervised_user::kListFamilyMembersConfig)
+      FetcherTestConfigBuilder::FromConfig(kListFamilyMembersConfig)
           .WithServiceEndpoint("http://example.com")
           .Build();
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -53,15 +51,15 @@ class KidsExternalFetcherTest : public Test {
   IdentityTestEnvironment identity_test_env_;
 };
 
-template <typename Request, typename Response>
+template <typename Response>
 class Receiver {
  public:
-  const base::expected<std::unique_ptr<Response>, KidsExternalFetcherStatus>&
+  const base::expected<std::unique_ptr<Response>, ProtoFetcherStatus>&
   GetResult() const {
     return result_;
   }
 
-  void Receive(KidsExternalFetcherStatus fetch_status,
+  void Receive(ProtoFetcherStatus fetch_status,
                std::unique_ptr<Response> response) {
     if (!fetch_status.IsOk()) {
       result_ = base::unexpected(fetch_status);
@@ -71,20 +69,19 @@ class Receiver {
   }
 
  private:
-  base::expected<std::unique_ptr<Response>, KidsExternalFetcherStatus> result_;
+  base::expected<std::unique_ptr<Response>, ProtoFetcherStatus> result_;
 };
 
-TEST_F(KidsExternalFetcherTest, AcceptsRequests) {
+TEST_F(ProtoFetcherTest, AcceptsRequests) {
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
-  Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
+  Receiver<ListFamilyMembersResponse> receiver;
   ListFamilyMembersResponse response;
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      BindOnce(&Receiver<ListFamilyMembersRequest,
-                         ListFamilyMembersResponse>::Receive,
+      BindOnce(&Receiver<ListFamilyMembersResponse>::Receive,
                base::Unretained(&receiver)),
       test_fetcher_config_);
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -102,16 +99,15 @@ TEST_F(KidsExternalFetcherTest, AcceptsRequests) {
   ASSERT_TRUE(receiver.GetResult().has_value());
 }
 
-TEST_F(KidsExternalFetcherTest, NoAccessToken) {
+TEST_F(ProtoFetcherTest, NoAccessToken) {
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
-  Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
+  Receiver<ListFamilyMembersResponse> receiver;
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      BindOnce(&Receiver<ListFamilyMembersRequest,
-                         ListFamilyMembersResponse>::Receive,
+      BindOnce(&Receiver<ListFamilyMembersResponse>::Receive,
                base::Unretained(&receiver)),
       test_fetcher_config_);
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
@@ -120,21 +116,20 @@ TEST_F(KidsExternalFetcherTest, NoAccessToken) {
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   EXPECT_EQ(receiver.GetResult().error().state(),
-            KidsExternalFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR);
+            ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR);
   EXPECT_EQ(receiver.GetResult().error().google_service_auth_error().state(),
             GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
 }
 
-TEST_F(KidsExternalFetcherTest, HandlesMalformedResponse) {
+TEST_F(ProtoFetcherTest, HandlesMalformedResponse) {
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
-  Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
+  Receiver<ListFamilyMembersResponse> receiver;
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      BindOnce(&Receiver<ListFamilyMembersRequest,
-                         ListFamilyMembersResponse>::Receive,
+      BindOnce(&Receiver<ListFamilyMembersResponse>::Receive,
                base::Unretained(&receiver)),
       test_fetcher_config_);
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -152,21 +147,20 @@ TEST_F(KidsExternalFetcherTest, HandlesMalformedResponse) {
       pending_request->request.url.spec(), malformed_value);
   EXPECT_FALSE(receiver.GetResult().has_value());
   EXPECT_EQ(receiver.GetResult().error().state(),
-            KidsExternalFetcherStatus::State::INVALID_RESPONSE);
+            ProtoFetcherStatus::State::INVALID_RESPONSE);
 }
 
 // crbug/1444165: Do not use StringPrintf with StringPiece, c-strings are
 // expected.
-TEST_F(KidsExternalFetcherTest, CreatesToken) {
+TEST_F(ProtoFetcherTest, CreatesToken) {
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
-  Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
+  Receiver<ListFamilyMembersResponse> receiver;
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      BindOnce(&Receiver<ListFamilyMembersRequest,
-                         ListFamilyMembersResponse>::Receive,
+      BindOnce(&Receiver<ListFamilyMembersResponse>::Receive,
                base::Unretained(&receiver)),
       test_fetcher_config_);
 
@@ -185,16 +179,15 @@ TEST_F(KidsExternalFetcherTest, CreatesToken) {
   EXPECT_EQ(authorization_header, "Bearer token");
 }
 
-TEST_F(KidsExternalFetcherTest, HandlesServerError) {
+TEST_F(ProtoFetcherTest, HandlesServerError) {
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "bob@gmail.com", ConsentLevel::kSignin);
-  Receiver<ListFamilyMembersRequest, ListFamilyMembersResponse> receiver;
+  Receiver<ListFamilyMembersResponse> receiver;
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      BindOnce(&Receiver<ListFamilyMembersRequest,
-                         ListFamilyMembersResponse>::Receive,
+      BindOnce(&Receiver<ListFamilyMembersResponse>::Receive,
                base::Unretained(&receiver)),
       test_fetcher_config_);
 
@@ -213,10 +206,11 @@ TEST_F(KidsExternalFetcherTest, HandlesServerError) {
       net::HTTP_BAD_REQUEST);
   EXPECT_FALSE(receiver.GetResult().has_value());
   EXPECT_EQ(receiver.GetResult().error().state(),
-            KidsExternalFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
-  EXPECT_EQ(receiver.GetResult().error().http_status_or_net_error(),
-            KidsExternalFetcherStatus::HttpStatusOrNetErrorType(
-                net::HTTP_BAD_REQUEST));
+            ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
+  EXPECT_EQ(
+      receiver.GetResult().error().http_status_or_net_error(),
+      ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_BAD_REQUEST));
 }
 
 }  // namespace
+}  // namespace supervised_user

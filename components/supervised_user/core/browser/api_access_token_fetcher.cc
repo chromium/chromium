@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/kids_access_token_fetcher.h"
+#include "components/supervised_user/core/browser/api_access_token_fetcher.h"
 
 #include <memory>
 #include <utility>
@@ -18,6 +18,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
+namespace supervised_user {
 namespace {
 
 base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
@@ -31,7 +32,7 @@ ToSingleReturnValue(GoogleServiceAuthError error,
 
 }  // namespace
 
-KidsAccessTokenFetcher::KidsAccessTokenFetcher(
+ApiAccessTokenFetcher::ApiAccessTokenFetcher(
     signin::IdentityManager& identity_manager,
     Consumer consumer)
     : consumer_(std::move(consumer)) {
@@ -40,21 +41,22 @@ KidsAccessTokenFetcher::KidsAccessTokenFetcher(
   primary_account_access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           "family_info_fetcher", &identity_manager, Scopes(),
-          base::BindOnce(&KidsAccessTokenFetcher::OnAccessTokenFetchComplete,
+          base::BindOnce(&ApiAccessTokenFetcher::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
           signin::ConsentLevel::kSignin);
 }
-KidsAccessTokenFetcher::~KidsAccessTokenFetcher() = default;
+ApiAccessTokenFetcher::~ApiAccessTokenFetcher() = default;
 
-void KidsAccessTokenFetcher::OnAccessTokenFetchComplete(
+void ApiAccessTokenFetcher::OnAccessTokenFetchComplete(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   std::move(consumer_).Run(ToSingleReturnValue(error, access_token_info));
 }
 
-const OAuth2AccessTokenManager::ScopeSet& KidsAccessTokenFetcher::Scopes() {
+const OAuth2AccessTokenManager::ScopeSet& ApiAccessTokenFetcher::Scopes() {
   static auto nonce = base::NoDestructor<OAuth2AccessTokenManager::ScopeSet>{
       {GaiaConstants::kKidFamilyReadonlyOAuth2Scope}};
   return *nonce;
 }
+}  // namespace supervised_user

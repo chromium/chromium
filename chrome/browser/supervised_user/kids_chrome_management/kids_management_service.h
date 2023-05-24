@@ -25,8 +25,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/browser_context.h"
 #include "net/base/backoff_entry.h"
@@ -87,11 +87,10 @@ class KidsManagementService : public KeyedService,
   void AddChildStatusReceivedCallback(base::OnceClosure callback);
 
  private:
-  using ListFamilyMembersFetcher =
-      KidsExternalFetcher<kids_chrome_management::ListFamilyMembersRequest,
-                          kids_chrome_management::ListFamilyMembersResponse>;
+  using ListFamilyMembersFetcher = supervised_user::ProtoFetcher<
+      kids_chrome_management::ListFamilyMembersResponse>;
   void ConsumeListFamilyMembers(
-      KidsExternalFetcherStatus status,
+      supervised_user::ProtoFetcherStatus status,
       std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
           response);
 

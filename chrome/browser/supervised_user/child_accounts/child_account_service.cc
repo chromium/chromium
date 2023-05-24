@@ -29,9 +29,9 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
@@ -230,7 +230,7 @@ void ChildAccountService::OnExtendedAccountInfoRemoved(
 }
 
 void ChildAccountService::OnResponse(
-    KidsExternalFetcherStatus status,
+    supervised_user::ProtoFetcherStatus status,
     std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
         response) {
   if (!status.IsOk()) {
@@ -339,8 +339,9 @@ void ChildAccountService::OnSuccess(
   ScheduleNextFamilyInfoUpdate(kUpdateInterval);
 }
 
-void ChildAccountService::OnFailure(KidsExternalFetcherStatus error) {
-  DLOG(WARNING) << "ListFamilyMembers failed with status " << error.ToString();
+void ChildAccountService::OnFailure(
+    supervised_user::ProtoFetcherStatus status) {
+  DLOG(WARNING) << "ListFamilyMembers failed with status " << status.ToString();
   family_fetch_backoff_.InformOfRequest(false);
   ScheduleNextFamilyInfoUpdate(family_fetch_backoff_.GetTimeUntilRelease());
 }

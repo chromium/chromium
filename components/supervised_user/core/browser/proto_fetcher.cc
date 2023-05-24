@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 
 #include <memory>
 #include <string>
@@ -21,9 +21,9 @@
 #include "base/types/expected.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/kids_access_token_fetcher.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher_config.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher_requests.h"
+#include "components/supervised_user/core/browser/api_access_token_fetcher.h"
+#include "components/supervised_user/core/browser/fetcher_config.h"
+#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
@@ -31,8 +31,10 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 
+namespace supervised_user {
 namespace {
 // Controls the retry count of the simple url loader.
 const int kNumFamilyInfoFetcherRetries = 1;
@@ -81,14 +83,26 @@ int HttpStatusOrNetError(const network::SimpleURLLoader& loader) {
 std::string CreateAuthorizationHeader(
     const signin::AccessTokenInfo& access_token_info) {
   // Do not use StringPiece with StringPrintf, see crbug/1444165
-  return base::StrCat(
-      {supervised_user::kAuthorizationHeader, " ", access_token_info.token});
+  return base::StrCat({kAuthorizationHeader, " ", access_token_info.token});
+}
+
+// Determines the response type. See go/system-parameters to see list of
+// possible One Platform system params.
+constexpr base::StringPiece kSystemParameters("alt=proto");
+
+// Creates a requests for kids management api which is independent from the
+// current profile (doesn't take Profile* parameter). It also adds query
+// parameter that configures the remote endpoint to respond with a protocol
+// buffer message.
+GURL CreateRequestUrl(const FetcherConfig& config) {
+  return GURL(config.service_endpoint)
+      .Resolve(base::StrCat({config.service_path, "?", kSystemParameters}));
 }
 
 // TODO(b/276898959): Support payload for POST requests.
 std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
     const signin::AccessTokenInfo access_token_info,
-    const supervised_user::FetcherConfig& fetcher_config,
+    const FetcherConfig& fetcher_config,
     const GURL& url) {
   std::unique_ptr<ResourceRequest> resource_request =
       std::make_unique<ResourceRequest>();
@@ -110,20 +124,21 @@ std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
 // A fetcher with underlying network::SharedURLLoaderFactory.
 // Internally, it's a two-phase process: first the access token is fetched, and
 // if applicable, the remote service is called and the response is processed.
-template <typename Request, typename Response>
-class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
+template <typename Response>
+class FetcherImpl final : public ProtoFetcher<Response> {
  private:
-  using Callback = typename KidsExternalFetcher<Request, Response>::Callback;
+  using Callback = typename ProtoFetcher<Response>::Callback;
 
  public:
   FetcherImpl() = delete;
   explicit FetcherImpl(
       IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const supervised_user::FetcherConfig& fetcher_config,
+      const google::protobuf::MessageLite& request,
+      const FetcherConfig& fetcher_config,
       Callback callback)
-      : config_(fetcher_config) {
-    access_token_fetcher_ = std::make_unique<KidsAccessTokenFetcher>(
+      : payload_(request.SerializeAsString()), config_(fetcher_config) {
+    access_token_fetcher_ = std::make_unique<ApiAccessTokenFetcher>(
         identity_manager,
         BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
                  url_loader_factory,
@@ -136,8 +151,7 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
   FetcherImpl& operator=(const FetcherImpl&) = delete;
 
  private:
-  void RecordStabilityMetrics(TimeDelta latency,
-                              KidsExternalFetcherStatus status) {
+  void RecordStabilityMetrics(TimeDelta latency, ProtoFetcherStatus status) {
     UmaHistogramEnumeration(GetMetricKey("Status"), status.state());
     UmaHistogramTimes(GetMetricKey("Latency"), latency);
     UmaHistogramTimes(GetMetricKey("Latency", status.ToMetricEnumLabel()),
@@ -146,14 +160,13 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
 
   void WrapCallbackWithMetrics(Callback callback,
                                TimeTicks start_time,
-                               KidsExternalFetcherStatus status,
+                               ProtoFetcherStatus status,
                                std::unique_ptr<Response> response) {
     TimeDelta latency = TimeTicks::Now() - start_time;
     RecordStabilityMetrics(latency, status);
 
     // Record additional metrics for various failures.
-    if (status.state() ==
-        KidsExternalFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR) {
+    if (status.state() == ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR) {
       UmaHistogramSparse(GetMetricKey("HttpStatusOrNetError"),
                          status.http_status_or_net_error().value());
     }
@@ -187,16 +200,14 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
 
     if (!access_token.has_value()) {
       std::move(callback_with_metrics)
-          .Run(KidsExternalFetcherStatus::GoogleServiceAuthError(
-                   access_token.error()),
+          .Run(ProtoFetcherStatus::GoogleServiceAuthError(access_token.error()),
                std::make_unique<Response>());
       return;
     }
 
     // TODO(b/276898959): add optional payload for POST requests.
     simple_url_loader_ = InitializeSimpleUrlLoader(
-        access_token.value(), config_,
-        supervised_user::CreateRequestUrl<Request>(config_));
+        access_token.value(), config_, CreateRequestUrl(config_));
 
     simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(),
@@ -212,7 +223,7 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
                                  std::unique_ptr<std::string> response_body) {
     if (!IsLoadingSuccessful(*simple_url_loader_) ||
         !HasHttpOkResponse(*simple_url_loader_)) {
-      std::move(callback).Run(KidsExternalFetcherStatus::HttpStatusOrNetError(
+      std::move(callback).Run(ProtoFetcherStatus::HttpStatusOrNetError(
                                   HttpStatusOrNetError(*simple_url_loader_)),
                               nullptr);
       return;
@@ -220,71 +231,69 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
 
     std::unique_ptr<Response> response = std::make_unique<Response>();
     if (!response->ParseFromString(*response_body)) {
-      std::move(callback).Run(KidsExternalFetcherStatus::InvalidResponse(),
-                              nullptr);
+      std::move(callback).Run(ProtoFetcherStatus::InvalidResponse(), nullptr);
       return;
     }
 
-    CHECK(response) << "KidsExternalFetcherStatus::Ok implies non-empty "
-                       "response (which is always a valid message).";
-    std::move(callback).Run(std::move(KidsExternalFetcherStatus::Ok()),
+    CHECK(response) << "ProtoFetcherStatus::Ok implies non-empty response "
+                       "(which is always a valid message).";
+    std::move(callback).Run(std::move(ProtoFetcherStatus::Ok()),
                             std::move(response));
   }
 
-  std::unique_ptr<KidsAccessTokenFetcher> access_token_fetcher_;
+  std::unique_ptr<ApiAccessTokenFetcher> access_token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-  const supervised_user::FetcherConfig config_;
+  const std::string payload_;
+  const FetcherConfig config_;
 };
 }  // namespace
 
 // Main constructor, referenced by the rest.
-KidsExternalFetcherStatus::KidsExternalFetcherStatus(
+ProtoFetcherStatus::ProtoFetcherStatus(
     State state,
     class GoogleServiceAuthError google_service_auth_error)
     : state_(state), google_service_auth_error_(google_service_auth_error) {}
-KidsExternalFetcherStatus::~KidsExternalFetcherStatus() = default;
+ProtoFetcherStatus::~ProtoFetcherStatus() = default;
 
-KidsExternalFetcherStatus::KidsExternalFetcherStatus(State state)
-    : state_(state) {
+ProtoFetcherStatus::ProtoFetcherStatus(State state) : state_(state) {
   DCHECK(state != State::GOOGLE_SERVICE_AUTH_ERROR);
 }
-KidsExternalFetcherStatus::KidsExternalFetcherStatus(
+ProtoFetcherStatus::ProtoFetcherStatus(
     HttpStatusOrNetErrorType http_status_or_net_error)
     : state_(State::HTTP_STATUS_OR_NET_ERROR),
       http_status_or_net_error_(http_status_or_net_error) {}
-KidsExternalFetcherStatus::KidsExternalFetcherStatus(
+ProtoFetcherStatus::ProtoFetcherStatus(
     class GoogleServiceAuthError google_service_auth_error)
-    : KidsExternalFetcherStatus(GOOGLE_SERVICE_AUTH_ERROR,
-                                google_service_auth_error) {}
-
-KidsExternalFetcherStatus::KidsExternalFetcherStatus(
-    const KidsExternalFetcherStatus& other) = default;
-KidsExternalFetcherStatus& KidsExternalFetcherStatus::operator=(
-    const KidsExternalFetcherStatus& other) = default;
-
-KidsExternalFetcherStatus KidsExternalFetcherStatus::Ok() {
-  return KidsExternalFetcherStatus(State::OK);
+    : ProtoFetcherStatus(GOOGLE_SERVICE_AUTH_ERROR, google_service_auth_error) {
 }
-KidsExternalFetcherStatus KidsExternalFetcherStatus::GoogleServiceAuthError(
+
+ProtoFetcherStatus::ProtoFetcherStatus(const ProtoFetcherStatus& other) =
+    default;
+ProtoFetcherStatus& ProtoFetcherStatus::operator=(
+    const ProtoFetcherStatus& other) = default;
+
+ProtoFetcherStatus ProtoFetcherStatus::Ok() {
+  return ProtoFetcherStatus(State::OK);
+}
+ProtoFetcherStatus ProtoFetcherStatus::GoogleServiceAuthError(
     class GoogleServiceAuthError error) {
-  return KidsExternalFetcherStatus(error);
+  return ProtoFetcherStatus(error);
 }
-KidsExternalFetcherStatus KidsExternalFetcherStatus::HttpStatusOrNetError(
+ProtoFetcherStatus ProtoFetcherStatus::HttpStatusOrNetError(
     int http_status_or_net_error) {
-  return KidsExternalFetcherStatus(
-      HttpStatusOrNetErrorType(http_status_or_net_error));
+  return ProtoFetcherStatus(HttpStatusOrNetErrorType(http_status_or_net_error));
 }
-KidsExternalFetcherStatus KidsExternalFetcherStatus::InvalidResponse() {
-  return KidsExternalFetcherStatus(State::INVALID_RESPONSE);
+ProtoFetcherStatus ProtoFetcherStatus::InvalidResponse() {
+  return ProtoFetcherStatus(State::INVALID_RESPONSE);
 }
-KidsExternalFetcherStatus KidsExternalFetcherStatus::DataError() {
-  return KidsExternalFetcherStatus(State::DATA_ERROR);
+ProtoFetcherStatus ProtoFetcherStatus::DataError() {
+  return ProtoFetcherStatus(State::DATA_ERROR);
 }
 
-bool KidsExternalFetcherStatus::IsOk() const {
+bool ProtoFetcherStatus::IsOk() const {
   return state_ == State::OK;
 }
-bool KidsExternalFetcherStatus::IsTransientError() const {
+bool ProtoFetcherStatus::IsTransientError() const {
   if (state_ == State::HTTP_STATUS_OR_NET_ERROR) {
     return true;
   }
@@ -293,7 +302,7 @@ bool KidsExternalFetcherStatus::IsTransientError() const {
   }
   return false;
 }
-bool KidsExternalFetcherStatus::IsPersistentError() const {
+bool ProtoFetcherStatus::IsPersistentError() const {
   if (state_ == State::INVALID_RESPONSE) {
     return true;
   }
@@ -306,71 +315,70 @@ bool KidsExternalFetcherStatus::IsPersistentError() const {
   return false;
 }
 
-std::string KidsExternalFetcherStatus::ToString() const {
+std::string ProtoFetcherStatus::ToString() const {
   switch (state_) {
-    case KidsExternalFetcherStatus::OK:
-      return "KidsExternalFetcherStatus::OK";
-    case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
-      return base::StrCat(
-          {"KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR: ",
-           google_service_auth_error().ToString()});
-    case KidsExternalFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
+    case ProtoFetcherStatus::OK:
+      return "ProtoFetcherStatus::OK";
+    case ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
+      return base::StrCat({"ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR: ",
+                           google_service_auth_error().ToString()});
+    case ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
       return base::StringPrintf(
-          "KidsExternalFetcherStatus::HTTP_STATUS_OR_NET_ERROR: %d",
+          "ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR: %d",
           http_status_or_net_error_.value());
-    case KidsExternalFetcherStatus::INVALID_RESPONSE:
-      return "KidsExternalFetcherStatus::INVALID_RESPONSE";
-    case KidsExternalFetcherStatus::DATA_ERROR:
-      return "KidsExternalFetcherStatus::DATA_ERROR";
+    case ProtoFetcherStatus::INVALID_RESPONSE:
+      return "ProtoFetcherStatus::INVALID_RESPONSE";
+    case ProtoFetcherStatus::DATA_ERROR:
+      return "ProtoFetcherStatus::DATA_ERROR";
   }
 }
 
 // The returned value must match one of the labels in
-// chromium/src/tools/metrics/histograms/enums.xml://enum[@name='KidsExternalFetcherStatus'],
+// chromium/src/tools/metrics/histograms/enums.xml://enum[@name='ProtoFetcherStatus'],
 // and should be reflected in tokens in histogram defined for this fetcher.
 // See example at
 // tools/metrics/histograms/metadata/signin/histograms.xml://histogram[@name='Signin.ListFamilyMembersRequest.{Status}.*']
-std::string KidsExternalFetcherStatus::ToMetricEnumLabel() const {
+std::string ProtoFetcherStatus::ToMetricEnumLabel() const {
   switch (state_) {
-    case KidsExternalFetcherStatus::OK:
+    case ProtoFetcherStatus::OK:
       return "NoError";
-    case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
+    case ProtoFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
       return "AuthError";
-    case KidsExternalFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
+    case ProtoFetcherStatus::HTTP_STATUS_OR_NET_ERROR:
       return "HttpStatusOrNetError";
-    case KidsExternalFetcherStatus::INVALID_RESPONSE:
+    case ProtoFetcherStatus::INVALID_RESPONSE:
       return "ParseError";
-    case KidsExternalFetcherStatus::DATA_ERROR:
+    case ProtoFetcherStatus::DATA_ERROR:
       return "DataError";
   }
 }
 
-KidsExternalFetcherStatus::State KidsExternalFetcherStatus::state() const {
+ProtoFetcherStatus::State ProtoFetcherStatus::state() const {
   return state_;
 }
-KidsExternalFetcherStatus::HttpStatusOrNetErrorType
-KidsExternalFetcherStatus::http_status_or_net_error() const {
+ProtoFetcherStatus::HttpStatusOrNetErrorType
+ProtoFetcherStatus::http_status_or_net_error() const {
   return http_status_or_net_error_;
 }
 
-const GoogleServiceAuthError&
-KidsExternalFetcherStatus::google_service_auth_error() const {
+const GoogleServiceAuthError& ProtoFetcherStatus::google_service_auth_error()
+    const {
   return google_service_auth_error_;
 }
 
 // Fetcher factories.
-std::unique_ptr<
-    KidsExternalFetcher<kids_chrome_management::ListFamilyMembersRequest,
-                        kids_chrome_management::ListFamilyMembersResponse>>
+std::unique_ptr<ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>>
 FetchListFamilyMembers(
     IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    KidsExternalFetcher<
-        kids_chrome_management::ListFamilyMembersRequest,
-        kids_chrome_management::ListFamilyMembersResponse>::Callback callback,
-    const supervised_user::FetcherConfig& config) {
+    ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>::Callback
+        callback,
+    const FetcherConfig& config) {
   return std::make_unique<
-      FetcherImpl<kids_chrome_management::ListFamilyMembersRequest,
-                  kids_chrome_management::ListFamilyMembersResponse>>(
-      identity_manager, url_loader_factory, config, std::move(callback));
+      FetcherImpl<kids_chrome_management::ListFamilyMembersResponse>>(
+      identity_manager, url_loader_factory,
+      kids_chrome_management::ListFamilyMembersRequest(), config,
+      std::move(callback));
 }
+
+}  // namespace supervised_user

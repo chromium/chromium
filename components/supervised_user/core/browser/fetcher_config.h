@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_EXTERNAL_FETCHER_CONFIG_H_
-#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_EXTERNAL_FETCHER_CONFIG_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FETCHER_CONFIG_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FETCHER_CONFIG_H_
 
 #include <string>
 
@@ -19,7 +19,7 @@ namespace annotations {
 net::NetworkTrafficAnnotationTag ListFamilyMembersTag();
 }  // namespace annotations
 
-// Configuration bundle for the KidsExternalFetcher.
+// Configuration bundle for the ProtoFetcher.
 struct FetcherConfig {
   // TODO(b/276898959): add kPost option.
   enum class Method { kGet };
@@ -52,4 +52,4 @@ constexpr FetcherConfig kListFamilyMembersConfig{
 };
 }  // namespace supervised_user
 
-#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_EXTERNAL_FETCHER_CONFIG_H_
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FETCHER_CONFIG_H_

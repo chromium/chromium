@@ -19,8 +19,8 @@
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
@@ -118,12 +118,12 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
 
   // ListFamilyMembers fetch handlers.
   void OnListFamilyMembersResponse(
-      KidsExternalFetcherStatus status,
+      supervised_user::ProtoFetcherStatus status,
       std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
           response);
   void OnListFamilyMembersSuccess(
       const kids_chrome_management::ListFamilyMembersResponse& response);
-  void OnListFamilyMembersFailure(KidsExternalFetcherStatus status);
+  void OnListFamilyMembersFailure(supervised_user::ProtoFetcherStatus status);
 
   // ProfileImageFetcher callback
   void OnParentProfileImagesFetched(
@@ -153,9 +153,8 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
   // Reference to NetworkStateInformer that handles changes in network
   // state.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
-  std::unique_ptr<
-      KidsExternalFetcher<kids_chrome_management::ListFamilyMembersRequest,
-                          kids_chrome_management::ListFamilyMembersResponse>>
+  std::unique_ptr<supervised_user::ProtoFetcher<
+      kids_chrome_management::ListFamilyMembersResponse>>
       list_family_members_fetcher_;
 
   std::unique_ptr<ProfileImageFetcher> profile_image_fetcher_;

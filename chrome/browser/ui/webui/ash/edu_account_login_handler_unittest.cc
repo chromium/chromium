@@ -19,8 +19,8 @@
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "content/public/test/test_web_ui.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -275,7 +275,8 @@ TEST_F(EduAccountLoginHandlerTest, HandleGetParentsFailure) {
 
   // Simulate failed fetching of family members.
   handler()->OnListFamilyMembersFailure(
-      KidsExternalFetcherStatus::HttpStatusOrNetError(net::ERR_IO_PENDING));
+      supervised_user::ProtoFetcherStatus::HttpStatusOrNetError(
+          net::ERR_IO_PENDING));
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   VerifyJavascriptCallbackResolved(data, callback_id, /*success=*/false);
 

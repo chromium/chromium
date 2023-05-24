@@ -18,8 +18,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "net/base/backoff_entry.h"
@@ -114,14 +114,14 @@ class ChildAccountService
 
   // Handles all responses from ListFamilyMembers service.
   void OnResponse(
-      KidsExternalFetcherStatus status,
+      supervised_user::ProtoFetcherStatus status,
       std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
           response);
 
   void OnSuccess(
       const kids_chrome_management::ListFamilyMembersResponse& response);
   // Handles failed responses and schedules next fetch.
-  void OnFailure(KidsExternalFetcherStatus status);
+  void OnFailure(supervised_user::ProtoFetcherStatus status);
 
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(
@@ -150,9 +150,8 @@ class ChildAccountService
 
   bool active_{false};
 
-  std::unique_ptr<
-      KidsExternalFetcher<kids_chrome_management::ListFamilyMembersRequest,
-                          kids_chrome_management::ListFamilyMembersResponse>>
+  std::unique_ptr<supervised_user::ProtoFetcher<
+      kids_chrome_management::ListFamilyMembersResponse>>
       list_family_members_fetcher_;
   // If fetching the family info fails, retry with exponential backoff.
   base::OneShotTimer family_fetch_timer_;

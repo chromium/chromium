@@ -5,7 +5,7 @@
 #include "components/supervised_user/core/browser/fetcher_config_test_utils.h"
 
 #include "base/logging.h"
-#include "components/supervised_user/core/browser/kids_external_fetcher_config.h"
+#include "components/supervised_user/core/browser/fetcher_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
