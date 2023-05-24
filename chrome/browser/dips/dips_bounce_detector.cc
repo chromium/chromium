@@ -393,7 +393,7 @@ void DIPSWebContentsObserver::HandleRedirectChain(
       std::move(redirects), std::move(chain),
       base::BindRepeating(
           &DIPSWebContentsObserver::IncrementPageSpecificBounceCount,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
 }
 
 void DIPSWebContentsObserver::IncrementPageSpecificBounceCount(
