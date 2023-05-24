@@ -6,6 +6,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
@@ -106,6 +108,43 @@ TEST_F(WaylandEventSourceTest, CheckPointerButtonHandling) {
   EXPECT_FALSE(pointer_delegate_->IsPointerButtonPressed(EF_LEFT_MOUSE_BUTTON));
   EXPECT_FALSE(
       pointer_delegate_->IsPointerButtonPressed(EF_RIGHT_MOUSE_BUTTON));
+}
+
+TEST_F(WaylandEventSourceTest, TouchDoesNotAffectCursor) {
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    wl_seat_send_capabilities(
+        server->seat()->resource(),
+        WL_SEAT_CAPABILITY_TOUCH | WL_SEAT_CAPABILITY_POINTER);
+  });
+  ASSERT_TRUE(connection_->seat()->touch());
+  ASSERT_TRUE(connection_->seat()->pointer());
+
+  MockWaylandPlatformWindowDelegate delegate;
+  auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
+                                               kDefaultBounds, &delegate);
+
+  gfx::Point cursor_position =
+      connection_->wayland_cursor_position()->GetCursorSurfacePoint();
+
+  EXPECT_CALL(delegate, DispatchEvent(_)).Times(1);
+
+  PostToServerAndWait(
+      [cursor_position, surface_id = window1->root_surface()->get_surface_id()](
+          wl::TestWaylandServerThread* server) {
+        auto* const surface =
+            server->GetObject<wl::MockSurface>(surface_id)->resource();
+        auto* const touch = server->seat()->touch()->resource();
+
+        wl_touch_send_down(touch, server->GetNextSerial(),
+                           server->GetNextTime(), surface, /*id=*/0,
+                           wl_fixed_from_int(cursor_position.x() + 1),
+                           wl_fixed_from_int(cursor_position.y() + 1));
+
+        wl_touch_send_frame(touch);
+      });
+
+  ASSERT_EQ(connection_->wayland_cursor_position()->GetCursorSurfacePoint(),
+            cursor_position);
 }
 
 // Verify WaylandEventSource properly manages its internal state as pointer

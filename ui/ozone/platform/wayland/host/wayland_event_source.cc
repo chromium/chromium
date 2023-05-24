@@ -527,7 +527,7 @@ void WaylandEventSource::SetTargetAndDispatchEvent(Event* event,
   if (event->IsLocatedEvent()) {
     SetRootLocation(event->AsLocatedEvent());
     auto* cursor_position = connection_->wayland_cursor_position();
-    if (cursor_position) {
+    if (event->IsMouseEvent() && cursor_position) {
       cursor_position->OnCursorPositionChanged(
           GetLocationInScreen(event->AsLocatedEvent()));
     }
