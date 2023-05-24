@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/html_table_row_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -78,6 +79,9 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -2141,19 +2145,17 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
     }
   }
 
-  // Once we have reached the threshold number of roles that forces a data
-  // table, invalidate the AXTable if it was previously a layout table, so that
-  // its subtree recomputes roles.
-  if (IsA<HTMLTableRowElement>(node)) {
-    if (auto* table_element =
-            Traversal<HTMLTableElement>::FirstAncestor(*node)) {
-      if (table_element->rows()->length() >=
-          AXObjectCacheImpl::kDataTableHeuristicMinRows) {
-        if (AXObject* ax_table = Get(table_element)) {
-          if (ax_table->RoleValue() == ax::mojom::blink::Role::kLayoutTable)
-            HandleRoleChangeWithCleanLayout(table_element);
-        }
+  // Check if a row or cell's table changed to or from a data table.
+  if (IsA<HTMLTableRowElement>(node) || IsA<HTMLTableCellElement>(node)) {
+    Element* parent = node->parentElement();
+    while (parent) {
+      if (DynamicTo<HTMLTableElement>(parent)) {
+        break;
       }
+      parent = parent->parentElement();
+    }
+    if (parent) {
+      UpdateTableRoleWithCleanLayout(parent);
     }
   }
 }
