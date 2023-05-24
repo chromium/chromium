@@ -156,9 +156,11 @@ SkSurface* SkiaOutputDeviceDawn::BeginPaint(
       /*plane_index=*/0, /*mipmapped=*/false, /*root_surface=*/true);
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
   texture_info.getDawnTextureInfo(&dawn_texture_info);
+
+  wgpu::TextureView texture_view = swap_chain_.GetCurrentTextureView();
   skgpu::graphite::BackendTexture backend_texture(
       SkISize::Make(size_.width(), size_.height()), dawn_texture_info,
-      swap_chain_.GetCurrentTextureView().Get());
+      texture_view.Get());
 
   SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
   sk_surface_ = SkSurfaces::WrapBackendTexture(
