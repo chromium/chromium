@@ -4,14 +4,16 @@
 
 #include "ui/gl/child_window_win.h"
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/threading/thread.h"
+#include "base/threading/thread_checker.h"
 #include "base/win/wrapped_window_proc.h"
 #include "ui/gfx/win/hwnd_util.h"
 #include "ui/gfx/win/window_impl.h"
@@ -109,19 +111,55 @@ void CreateWindowsOnThread(base::WaitableEvent* event,
   event->Signal();
 }
 
-// This runs on the main thread after the window was destroyed on window owner
-// thread.
-void DestroyThread(std::unique_ptr<base::Thread> thread) {
-  thread->Stop();
-}
-
 // This runs on the window owner thread.
 void DestroyWindowsOnThread(HWND child_window, HWND hidden_popup_window) {
   DestroyWindow(child_window);
   HiddenPopupWindow::Destroy(hidden_popup_window);
 }
 
+THREAD_CHECKER(thread_checker_);
+
 }  // namespace
+
+class ChildWindowWin::ChildWindowThread
+    : public base::RefCounted<ChildWindowThread> {
+ public:
+  // Returns the singleton instance of the thread.
+  static scoped_refptr<ChildWindowThread> GetInstance() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    static base::WeakPtr<ChildWindowThread> weak_instance;
+
+    auto instance = base::WrapRefCounted(weak_instance.get());
+    if (!instance) {
+      instance = base::WrapRefCounted(new ChildWindowThread);
+      weak_instance = instance->weak_ptr_factory_.GetWeakPtr();
+    }
+
+    return instance;
+  }
+
+  scoped_refptr<base::TaskRunner> task_runner() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return thread_.task_runner();
+  }
+
+ private:
+  friend class base::RefCounted<ChildWindowThread>;
+
+  ChildWindowThread() : thread_("Window owner thread") {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    base::Thread::Options options(base::MessagePumpType::UI, 0);
+    thread_.StartWithOptions(std::move(options));
+  }
+
+  ~ChildWindowThread() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    thread_.Stop();
+  }
+
+  base::Thread thread_;
+  base::WeakPtrFactory<ChildWindowThread> weak_ptr_factory_{this};
+};
 
 ChildWindowWin::ChildWindowWin() = default;
 
@@ -129,9 +167,7 @@ void ChildWindowWin::Initialize() {
   if (window_)
     return;
 
-  thread_ = std::make_unique<base::Thread>("Window owner thread");
-  base::Thread::Options options(base::MessagePumpType::UI, 0);
-  thread_->StartWithOptions(std::move(options));
+  thread_ = ChildWindowThread::GetInstance();
 
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -149,7 +185,7 @@ ChildWindowWin::~ChildWindowWin() {
         FROM_HERE,
         base::BindOnce(&DestroyWindowsOnThread, window_,
                        initial_parent_window_),
-        base::BindOnce(&DestroyThread, std::move(thread_)));
+        base::DoNothingWithBoundArgs(std::move(thread_)));
   }
 }
 
