@@ -13,10 +13,10 @@ namespace media {
 
 // static
 scoped_refptr<ScreenObserverDelegate> ScreenObserverDelegate::Create(
-    DisplayRotationObserver* observer,
+    base::WeakPtr<DisplayRotationObserver> observer,
     scoped_refptr<base::SingleThreadTaskRunner> display_task_runner) {
   auto delegate = base::WrapRefCounted(
-      new ScreenObserverDelegate(observer, display_task_runner));
+      new ScreenObserverDelegate(std::move(observer), display_task_runner));
   display_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&ScreenObserverDelegate::AddObserverOnDisplayThread,
@@ -25,9 +25,9 @@ scoped_refptr<ScreenObserverDelegate> ScreenObserverDelegate::Create(
 }
 
 ScreenObserverDelegate::ScreenObserverDelegate(
-    DisplayRotationObserver* observer,
+    base::WeakPtr<DisplayRotationObserver> observer,
     scoped_refptr<base::SingleThreadTaskRunner> display_task_runner)
-    : observer_(observer),
+    : observer_(std::move(observer)),
       display_task_runner_(std::move(display_task_runner)),
       delegate_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
 }

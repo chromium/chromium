@@ -27,7 +27,7 @@ class ScreenObserverDelegate
       public base::RefCountedThreadSafe<ScreenObserverDelegate> {
  public:
   static scoped_refptr<ScreenObserverDelegate> Create(
-      DisplayRotationObserver* observer,
+      base::WeakPtr<DisplayRotationObserver> observer,
       scoped_refptr<base::SingleThreadTaskRunner> display_task_runner);
 
   ScreenObserverDelegate() = delete;
@@ -42,7 +42,7 @@ class ScreenObserverDelegate
   friend class base::RefCountedThreadSafe<ScreenObserverDelegate>;
 
   ScreenObserverDelegate(
-      DisplayRotationObserver* observer,
+      base::WeakPtr<DisplayRotationObserver> observer,
       scoped_refptr<base::SingleThreadTaskRunner> display_task_runner);
   ~ScreenObserverDelegate() override;
 
@@ -57,7 +57,7 @@ class ScreenObserverDelegate
   void SendDisplayRotation(const display::Display& display);
   void SendDisplayRotationOnCaptureThread(const display::Display& display);
 
-  raw_ptr<DisplayRotationObserver, ExperimentalAsh> observer_;
+  base::WeakPtr<DisplayRotationObserver> observer_;
 
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 
