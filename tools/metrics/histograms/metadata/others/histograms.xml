@@ -9210,10 +9210,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PendingBeaconHost.Action" enum="PendingBeaconHostAction"
-    expires_after="M112">
+    expires_after="M115">
   <owner>mych@chromium.org</owner>
   <owner>pending-beacon-experiment@chromium.org</owner>
   <summary>
+    Warning: this histogram was expired from M113 to M115; data may be missing.
+
     The type of PendingBeacon-related action that the browser has performed.
 
     This is only recorded when the PendingBeacon API is called to create, send,
@@ -9224,10 +9226,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PendingBeaconHost.BatchAction"
-    enum="PendingBeaconHostBatchAction" expires_after="M112">
+    enum="PendingBeaconHostBatchAction" expires_after="M115">
   <owner>mych@chromium.org</owner>
   <owner>pending-beacon-experiment@chromium.org</owner>
   <summary>
+    Warning: this histogram was expired from M113 to M115; data may be missing.
+
     The type of batch PendingBeacon-related action that the browser has
     performed. A batch action means the browser is about to batch process all
     queued pending beacon requests at once.
