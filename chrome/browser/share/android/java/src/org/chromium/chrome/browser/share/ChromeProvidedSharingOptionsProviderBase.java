@@ -121,7 +121,6 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
 
         mOrderedFirstPartyOptions = new ArrayList<>();
-        initializeFirstPartyOptionsInOrder();
     }
 
     /**
@@ -249,9 +248,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
 
     /**
      * Creates all enabled {@link FirstPartyOption}s and adds them to {@code
-     * mOrderedFirstPartyOptions} in the order they should appear.
+     * mOrderedFirstPartyOptions} in the order they should appear. This has to be called by child
+     * classes before the provider can function
      */
-    private void initializeFirstPartyOptionsInOrder() {
+    protected void initializeFirstPartyOptionsInOrder() {
         // Only show a limited first party share selection for automotive
         if (BuildInfo.getInstance().isAutomotive) {
             mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
@@ -260,7 +260,6 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             return;
         }
         if (usePolishedActionOrderedList()) {
-            mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
             maybeAddCopyFirstPartyOption();
             maybeAddLongScreenshotFirstPartyOption();
             maybeAddPrintFirstPartyOption();
@@ -272,7 +271,6 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             maybeAddLongScreenshotFirstPartyOption();
             // Always show the copy link option as some entries does not offer the change for copy
             // (e.g. feed card)
-            mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
             maybeAddCopyFirstPartyOption();
             maybeAddSendTabToSelfFirstPartyOption();
             maybeAddQrCodeFirstPartyOption();
@@ -326,8 +324,9 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     protected void maybeAddCopyFirstPartyOption() {
+        mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyGifFirstPartyOption());
-        mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
+        mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption(true));
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyTextFirstPartyOption());
     }
@@ -375,19 +374,27 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .build();
     }
 
-    private FirstPartyOption createCopyImageFirstPartyOption() {
-        return new FirstPartyOptionBuilder(ContentType.IMAGE, ContentType.IMAGE_AND_LINK)
-                .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_image)
-                .setFeatureNameForMetrics(USER_ACTION_COPY_IMAGE_SELECTED)
-                .setDetailedContentTypesToDisableFor(DetailedContentType.GIF)
-                .setOnClickCallback((view) -> {
-                    Uri imageUri = mShareParams.getImageUriToShare();
-                    if (imageUri != null) {
-                        Clipboard.getInstance().setImageUri(imageUri);
-                        Toast.makeText(mActivity, R.string.image_copied, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .build();
+    /**
+     * @param excludeGif Whether exclude the GIF copy from copy image action.
+     * @return The copy first party option.
+     */
+    protected FirstPartyOption createCopyImageFirstPartyOption(boolean excludeGif) {
+        FirstPartyOptionBuilder builder =
+                new FirstPartyOptionBuilder(ContentType.IMAGE, ContentType.IMAGE_AND_LINK)
+                        .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_image)
+                        .setFeatureNameForMetrics(USER_ACTION_COPY_IMAGE_SELECTED)
+                        .setOnClickCallback((view) -> {
+                            Uri imageUri = mShareParams.getImageUriToShare();
+                            if (imageUri != null) {
+                                Clipboard.getInstance().setImageUri(imageUri);
+                                Toast.makeText(mActivity, R.string.image_copied, Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        });
+        if (excludeGif) {
+            builder.setDetailedContentTypesToDisableFor(DetailedContentType.GIF);
+        }
+        return builder.build();
     }
 
     private FirstPartyOption createCopyFirstPartyOption() {

@@ -147,7 +147,8 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         }
 
         // If an URL is not provided along with the image, use the content URL if it is provided.
-        if (chromeShareExtras.isImage() && params.getUrl().isEmpty()) {
+        if (chromeShareExtras.isImage() && params.getUrl().isEmpty()
+                && (chromeShareExtras.getDetailedContentType() != DetailedContentType.WEB_SHARE)) {
             params.setUrl(chromeShareExtras.getContentUrl().getSpec());
         }
 

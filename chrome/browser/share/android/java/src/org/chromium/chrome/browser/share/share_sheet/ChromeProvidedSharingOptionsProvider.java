@@ -96,6 +96,8 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
         mImageEditorModuleProvider = imageEditorModuleProvider;
         mLinkGenerationStatusForMetrics = linkGenerationStatusForMetrics;
         mLinkToggleMetricsDetails = linkToggleMetricsDetails;
+
+        initializeFirstPartyOptionsInOrder();
     }
 
     /**

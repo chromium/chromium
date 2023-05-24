@@ -84,6 +84,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -216,7 +217,7 @@ public class AndroidShareSheetControllerUnitTest {
         Assert.assertNotNull("Custom action is empty.",
                 intent.getParcelableArrayExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS));
 
-        assertCustomActions(intent, R.string.sharing_copy_url, R.string.sharing_long_screenshot,
+        assertCustomActions(intent, R.string.sharing_long_screenshot,
                 R.string.print_share_activity_title, R.string.sharing_send_tab_to_self,
                 R.string.qr_code_share_icon_label);
     }
@@ -331,8 +332,8 @@ public class AndroidShareSheetControllerUnitTest {
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_send_tab_to_self,
-                R.string.qr_code_share_icon_label);
+        assertCustomActions(
+                intent, R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
     }
 
     @Test
@@ -415,7 +416,7 @@ public class AndroidShareSheetControllerUnitTest {
                 "\"highlight\"\n " + JUnitTestGURLs.TEXT_FRAGMENT_URL,
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
 
-        assertCustomActions(chooserIntent, R.string.sharing_copy, R.string.sharing_send_tab_to_self,
+        assertCustomActions(chooserIntent, R.string.sharing_send_tab_to_self,
                 R.string.qr_code_share_icon_label);
 
         // Toggle the modify action again, link is removed from text.
@@ -425,7 +426,7 @@ public class AndroidShareSheetControllerUnitTest {
         Assert.assertEquals("Text being shared is different.", "highlight",
                 shareIntent2.getStringExtra(Intent.EXTRA_TEXT));
 
-        assertCustomActions(chooserIntent2, R.string.sharing_copy_text);
+        assertCustomActions(chooserIntent2);
 
         // Toggle the modify action again, link is reattached with the text.
         runModifyActionFromChooserIntent(chooserIntent2);
@@ -467,8 +468,7 @@ public class AndroidShareSheetControllerUnitTest {
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
         Assert.assertNull("Modify action should be null when generating link to text failed.",
                 chooserIntent.getParcelableExtra(INTENT_EXTRA_CHOOSER_MODIFY_SHARE_ACTION));
-
-        assertCustomActions(chooserIntent, R.string.sharing_copy_text);
+        assertCustomActions(chooserIntent);
     }
 
     @Test
@@ -492,8 +492,8 @@ public class AndroidShareSheetControllerUnitTest {
         mController.showShareSheet(params, chromeShareExtras, 1L);
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
-        assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_send_tab_to_self,
-                R.string.qr_code_share_icon_label);
+        assertCustomActions(
+                intent, R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
         chooseCustomAction(intent, R.string.qr_code_share_icon_label);
 
         Assert.assertEquals("Image source URL should be used for QR Code.",
@@ -521,8 +521,60 @@ public class AndroidShareSheetControllerUnitTest {
 
         // No download option here.
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        assertCustomActions(
+                intent, R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
+    }
+
+    @Test
+    @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class})
+    public void webShareImageLink() throws CanceledException {
+        Uri testImageUri = Uri.parse("content://test.image.uri/image.png");
+        ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setText("text")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .setSingleImageUri(testImageUri)
+                                     .setFileContentType("image/png")
+                                     .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.WEB_SHARE)
+                        .build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_send_tab_to_self,
                 R.string.qr_code_share_icon_label);
+
+        Intent shareIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
+        Assert.assertEquals("Sharing text should be the URL.", JUnitTestGURLs.EXAMPLE_URL,
+                shareIntent.getStringExtra(Intent.EXTRA_TEXT));
+
+        // Attempt to do the copy image action.
+        // TODO(crbug/1448355): Set up a real temp image and verify the URI is correct.
+        chooseCustomAction(intent, R.string.sharing_copy_image);
+        Assert.assertTrue("Clipboard cannot paste.", Clipboard.getInstance().canPaste());
+    }
+
+    @Test
+    @Config(shadows = {ShadowBuildCompatForU.class, ShadowChooserActionHelper.class})
+    public void webShareImageOnly() {
+        Uri testImageUri = Uri.parse("content://test.image.uri");
+        ShareParams params = new ShareParams.Builder(mWindow, "title", "")
+                                     .setText("text")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .setSingleImageUri(testImageUri)
+                                     .setFileContentType("image/png")
+                                     .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.WEB_SHARE)
+                        .build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_send_tab_to_self);
+
+        Intent shareIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
+        Assert.assertNull(
+                "Sharing text should be empty.", shareIntent.getStringExtra(Intent.EXTRA_TEXT));
     }
 
     private void setFaviconToFetchForTest(Bitmap favicon) {
@@ -546,6 +598,12 @@ public class AndroidShareSheetControllerUnitTest {
     private void assertCustomActions(Intent chooserIntent, Integer... expectedStringRes) {
         Parcelable[] actions =
                 chooserIntent.getParcelableArrayExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS);
+        if (expectedStringRes.length == 0) {
+            Assert.assertTrue(
+                    "No custom actions are expected.", actions == null || actions.length == 0);
+            return;
+        }
+
         StringBuilder actualStringBuilder = new StringBuilder();
         for (Parcelable action : actions) {
             String name = ((Bundle) action).getString(KEY_CHOOSER_ACTION_NAME);

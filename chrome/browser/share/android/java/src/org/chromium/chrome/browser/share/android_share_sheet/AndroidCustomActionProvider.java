@@ -47,6 +47,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
             "SharingHubAndroid.AndroidShareHighlightText.WithLink";
     private static final String USER_ACTION_SHARE_HIGHLIGHT_TEXT_WITHOUT_LINK =
             "SharingHubAndroid.AndroidShareHighlightText.WithoutLink";
+
     private static final String USER_ACTION_LONG_SCREENSHOT_NO_EDITOR_SELECTED =
             "SharingHubAndroid.LongScreenshotSelected.NoEditor";
     private static final Integer MAX_ACTION_SUPPORTED = 5;
@@ -90,6 +91,8 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                 deviceLockActivityLauncher);
         mChromeShareExtras = chromeShareExtras;
         mLinkToTextCoordinator = linkToTextCoordinator;
+
+        initializeFirstPartyOptionsInOrder();
         initCustomActions(shareParams, chromeShareExtras, isMultiWindow);
     }
 
@@ -118,6 +121,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
         // getLinkToTextSuccessful is only populated when an link is generated for share.
         if (mShareParams.getLinkToTextSuccessful() != null && mShareParams.getLinkToTextSuccessful()
+                && mChromeShareExtras != null
                 && mChromeShareExtras.getDetailedContentType()
                         == ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT) {
             FirstPartyOption option = TextUtils.isEmpty(mShareParams.getUrl())
@@ -174,6 +178,15 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
     @Override
     protected void maybeAddDownloadImageFirstPartyOption() {}
+
+    @Override
+    protected void maybeAddCopyFirstPartyOption() {
+        // For Android's share sheet, only use copy image
+        if (mChromeShareExtras != null
+                && mChromeShareExtras.getDetailedContentType() == DetailedContentType.WEB_SHARE) {
+            mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption(false));
+        }
+    }
 
     private FirstPartyOption createShareHighlightTextWithLink() {
         return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
