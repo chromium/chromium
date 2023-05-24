@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.provider.ContactsContract;
 
+import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ContextUtils;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.content_public.browser.Impression;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
@@ -200,11 +202,13 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
-    public void onOpenInNewTab(GURL url, Referrer referrer, boolean navigateToTab) {
+    public void onOpenInNewTab(
+            GURL url, Referrer referrer, boolean navigateToTab, @Nullable Impression impression) {
         RecordUserAction.record("MobileNewTabOpened");
         RecordUserAction.record("LinkOpenedInNewTab");
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
+        loadUrlParams.setImpression(impression);
         mTabModelSelector.openNewTab(loadUrlParams,
                 navigateToTab ? TabLaunchType.FROM_LONGPRESS_FOREGROUND
                               : TabLaunchType.FROM_LONGPRESS_BACKGROUND,

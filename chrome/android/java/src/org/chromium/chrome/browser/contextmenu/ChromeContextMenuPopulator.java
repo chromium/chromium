@@ -459,8 +459,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     public boolean onItemSelected(int itemId) {
         if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
-            mItemDelegate.onOpenInNewTab(
-                    mParams.getUrl(), mParams.getReferrer(), /*navigateToTab=*/false);
+            mItemDelegate.onOpenInNewTab(mParams.getUrl(), mParams.getReferrer(),
+                    /*navigateToTab=*/false, mParams.getImpression());
         } else if (itemId == R.id.contextmenu_open_in_new_tab_in_group) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB_IN_GROUP);
             mItemDelegate.onOpenInNewTabInGroup(mParams.getUrl(), mParams.getReferrer());
@@ -617,7 +617,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_learn_more) {
             recordContextMenuSelection(ContextMenuUma.Action.LEARN_MORE);
             mItemDelegate.onOpenInNewTab(new GURL(LinkToTextHelper.SHARED_HIGHLIGHTING_SUPPORT_URL),
-                    mParams.getReferrer(), /*navigateToTab=*/true);
+                    mParams.getReferrer(), /*navigateToTab=*/true, /*attributionSrcToken*/ null);
         } else {
             assert false;
         }

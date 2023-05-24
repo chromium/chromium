@@ -262,6 +262,7 @@ generate_jni("context_menu_jni_headers") {
 
 android_library("context_menu_java") {
   deps = [
+    "//base:base_java",
     "//base:jni_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

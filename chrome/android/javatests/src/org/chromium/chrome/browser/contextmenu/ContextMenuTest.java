@@ -905,7 +905,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
                 ContextMenuHelper.createForTesting(0, tab.getWebContents());
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL("http://example.com/"),
                 GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "", null, false, 0, 0,
-                MenuSourceType.MENU_SOURCE_TOUCH, /*getOpenedFromHighlight*/ true);
+                MenuSourceType.MENU_SOURCE_TOUCH, /*getOpenedFromHighlight=*/true,
+                /*impression=*/null);
         ContextMenuPopulatorFactory populatorFactory = new ChromeContextMenuPopulatorFactory(
                 mItemDelegate,
                 ()

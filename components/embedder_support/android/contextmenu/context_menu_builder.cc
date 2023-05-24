@@ -6,7 +6,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/unguessable_token_android.h"
+#include "base/unguessable_token.h"
 #include "components/embedder_support/android/context_menu_jni_headers/ContextMenuParams_jni.h"
+#include "content/public/browser/android/impression_android.h"
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "url/android/gurl_android.h"
@@ -16,7 +19,9 @@ using base::android::ConvertUTF16ToJavaString;
 namespace context_menu {
 
 base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
-    const content::ContextMenuParams& params) {
+    const content::ContextMenuParams& params,
+    int initiator_process_id,
+    absl::optional<base::UnguessableToken> initiator_frame_token) {
   GURL sanitizedReferrer =
       (params.frame_url.is_empty() ? params.page_url : params.frame_url)
           .GetAsReferrer();
@@ -25,6 +30,14 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
   JNIEnv* env = base::android::AttachCurrentThread();
   std::u16string title_text =
       (params.title_text.empty() ? params.alt_text : params.title_text);
+
+  base::android::ScopedJavaLocalRef<jobject> impression;
+  if (initiator_frame_token && params.impression) {
+    impression = content::CreateJavaImpression(
+        env, params.impression->attribution_src_token.value(),
+        initiator_frame_token.value(), initiator_process_id,
+        params.impression->runtime_features);
+  }
 
   return base::android::ScopedJavaGlobalRef<jobject>(
       Java_ContextMenuParams_create(
@@ -38,7 +51,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
           ConvertUTF16ToJavaString(env, title_text),
           url::GURLAndroid::FromNativeGURL(env, sanitizedReferrer),
           static_cast<int>(params.referrer_policy), can_save, params.x,
-          params.y, params.source_type, params.opened_from_highlight));
+          params.y, params.source_type, params.opened_from_highlight,
+          impression));
 }
 
 content::ContextMenuParams* ContextMenuParamsFromJavaObject(

@@ -182,7 +182,7 @@ public class ChromeContextMenuPopulatorTest {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
                 new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
-                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
 
         int[] expected = {R.id.contextmenu_copy_link_address, R.id.contextmenu_copy_link_text};
 
@@ -225,7 +225,7 @@ public class ChromeContextMenuPopulatorTest {
     public void testHttpLinkWithPreviewTabEnabled() {
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
                 new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
-                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
 
         FirstRunStatus.setFirstRunFlowComplete(true);
 
@@ -260,7 +260,7 @@ public class ChromeContextMenuPopulatorTest {
         GURL mailto = new GURL("mailto:fake@email.com");
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL), mailto, "MAIL!",
                 GURL.emptyGURL(), new GURL(PAGE_URL), "", null, false, 0, 0,
-                MenuSourceType.MENU_SOURCE_TOUCH, false);
+                MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
 
         int[] expected = {R.id.contextmenu_copy};
 
@@ -299,7 +299,7 @@ public class ChromeContextMenuPopulatorTest {
         GURL tel = new GURL("tel:0048221234567");
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL), tel, "PHONE!",
                 GURL.emptyGURL(), new GURL(PAGE_URL), "", null, false, 0, 0,
-                MenuSourceType.MENU_SOURCE_TOUCH, false);
+                MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
 
         int[] expected = {R.id.contextmenu_copy};
 
@@ -342,7 +342,7 @@ public class ChromeContextMenuPopulatorTest {
         GURL url = new GURL(sourceUrl.getSpec() + "I_love_mouse_video.avi");
         ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.VIDEO,
                 new GURL(PAGE_URL), url, "VIDEO!", GURL.emptyGURL(), sourceUrl, "", null, true, 0,
-                0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+                0, MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
 
         int[] expectedTab1 = {R.id.contextmenu_copy_link_address, R.id.contextmenu_copy_link_text};
 
@@ -388,7 +388,8 @@ public class ChromeContextMenuPopulatorTest {
         FirstRunStatus.setFirstRunFlowComplete(false);
         ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 new GURL(PAGE_URL), GURL.emptyGURL(), "", GURL.emptyGURL(), new GURL(IMAGE_SRC_URL),
-                IMAGE_TITLE_TEXT, null, true, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+                IMAGE_TITLE_TEXT, null, true, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false,
+                /*impression=*/null);
 
         int[] expected = null;
         checkMenuOptions(expected);
@@ -427,7 +428,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
                 new GURL(PAGE_URL), new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(),
                 new GURL(IMAGE_SRC_URL), IMAGE_TITLE_TEXT, null, true, 0, 0,
-                MenuSourceType.MENU_SOURCE_TOUCH, false);
+                MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
 
         int[] expected = {R.id.contextmenu_copy_link_address};
 
@@ -477,7 +478,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
                 new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
-                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
 
         // HTTP scheme should include read later context menu item.
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -505,7 +506,7 @@ public class ChromeContextMenuPopulatorTest {
         // Non-http scheme should not include read later context menu item.
         params = new ContextMenuParams(0, 0, new GURL("chrome://flags"), new GURL(LINK_URL),
                 LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false, 0, 0,
-                MenuSourceType.MENU_SOURCE_TOUCH, false);
+                MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected4 = {R.id.contextmenu_open_in_new_tab_in_group,
                 R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
@@ -522,7 +523,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
                 new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
-                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
 
         when(mItemDelegate.isIncognito()).thenReturn(true);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -541,7 +542,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
                 new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
-                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
 
         when(mItemDelegate.isOpenInOtherWindowSupported()).thenReturn(true);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -562,7 +563,7 @@ public class ChromeContextMenuPopulatorTest {
 
         ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
                 new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), GURL.emptyGURL(), "", null, false,
-                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+                0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
 
         when(mItemDelegate.canEnterMultiWindowMode()).thenReturn(true);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -581,9 +582,10 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     public void testGetLensIntentParams() {
         when(mItemDelegate.isIncognito()).thenReturn(true);
-        ContextMenuParams params = new ContextMenuParams(0, 0, new GURL(PAGE_URL),
-                new GURL(LINK_URL), LINK_TEXT, GURL.emptyGURL(), new GURL(IMAGE_SRC_URL),
-                IMAGE_TITLE_TEXT, null, false, 0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
+        ContextMenuParams params =
+                new ContextMenuParams(0, 0, new GURL(PAGE_URL), new GURL(LINK_URL), LINK_TEXT,
+                        GURL.emptyGURL(), new GURL(IMAGE_SRC_URL), IMAGE_TITLE_TEXT, null, false, 0,
+                        0, MenuSourceType.MENU_SOURCE_TOUCH, false, /*impression=*/null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
 
         LensIntentParams lensIntentParams = mPopulator.getLensIntentParams(
@@ -613,7 +615,8 @@ public class ChromeContextMenuPopulatorTest {
                 /*unfilteredLinkUrl=*/GURL.emptyGURL(), /*srcUrl=*/GURL.emptyGURL(),
                 /*titleText=*/"", /*referrer=*/null, /*canSaveMedia=*/false,
                 /*triggeringTouchXDp=*/0, /*triggeringTouchXDp=*/0,
-                MenuSourceType.MENU_SOURCE_TOUCH, /*openedFromHighlight=*/true);
+                MenuSourceType.MENU_SOURCE_TOUCH, /*openedFromHighlight=*/true,
+                /*impression=*/null);
 
         // In normal mode, there should be three options: share, remove and learn more.
         int[] normal_expected = {R.id.contextmenu_share_highlight,

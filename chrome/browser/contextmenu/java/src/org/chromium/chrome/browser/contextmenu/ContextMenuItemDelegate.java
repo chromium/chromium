@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.contextmenu;
 import android.net.Uri;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
+import org.chromium.content_public.browser.Impression;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.url.GURL;
@@ -83,8 +85,10 @@ public interface ContextMenuItemDelegate {
      * the current {@link Tab}.
      * @param url The URL to open.
      * @param navigateToTab Whether or not to navigate to the new tab.
+     * @param impression The attribution impression to associate with the navigation.
      */
-    void onOpenInNewTab(GURL url, Referrer referrer, boolean navigateToTab);
+    void onOpenInNewTab(
+            GURL url, Referrer referrer, boolean navigateToTab, @Nullable Impression impression);
 
     /**
      * Called when {@code url} should be opened in a new tab in the same group as the current
