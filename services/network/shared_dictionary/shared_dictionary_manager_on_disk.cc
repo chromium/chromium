@@ -118,4 +118,12 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
   std::move(callback).Run(std::move(info));
 }
 
+void SharedDictionaryManagerOnDisk::UpdateDictionaryLastUsedTime(
+    net::SharedDictionaryInfo& info) {
+  info.set_last_used_time(base::Time::Now());
+  CHECK(info.primary_key_in_database());
+  metadata_store_.UpdateDictionaryLastUsedTime(*info.primary_key_in_database(),
+                                               info.last_used_time());
+}
+
 }  // namespace network

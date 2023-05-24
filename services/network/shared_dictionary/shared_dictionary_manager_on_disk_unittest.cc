@@ -127,8 +127,10 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
     CHECK(sql::test::CorruptSizeInHeader(database_path_));
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
  private:
-  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir tmp_directory_;
   base::FilePath database_path_;
   base::FilePath cache_directory_path_;
@@ -354,6 +356,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
                           dict2->size()));
     // Releasing `dict1`, `dict2`, `storage` and `manager`.
   }
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
 
   // The dictionaries must be available after recreating `manager`.
   std::unique_ptr<SharedDictionaryManager> manager =
@@ -362,7 +366,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
 
-  FlushCacheTasks();
+  // RunUntilIdle() to load from the database.
+  task_environment_.RunUntilIdle();
 
   const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
   ASSERT_EQ(1u, dictionary_map.size());
@@ -504,6 +509,71 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
     // TODO(crbug.com/1413922): Implement a garbage collection logic to remove
     // the entry in the disk cache when its database entry is unavailable.
   }
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, LastUsedTime) {
+  net::SharedDictionaryStorageIsolationKey isolation_key(
+      url::Origin::Create(kUrl), kSite);
+  base::Time last_used_time_after_second_get_dict;
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    // Write the test data to the dictionary.
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"),
+                    "testfile*", kTestData1);
+    FlushCacheTasks();
+
+    const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
+    ASSERT_EQ(1u, dictionary_map.size());
+    ASSERT_EQ(1u, dictionary_map.begin()->second.size());
+
+    base::Time initial_last_used_time =
+        dictionary_map.begin()->second.begin()->second.last_used_time();
+
+    // Move the clock forward by 1 second.
+    task_environment_.FastForwardBy(base::Seconds(1));
+
+    std::unique_ptr<SharedDictionary> dict1 =
+        storage->GetDictionary(GURL("https://origin.test/testfile?1"));
+    base::Time last_used_time_after_first_get_dict =
+        dictionary_map.begin()->second.begin()->second.last_used_time();
+
+    // Move the clock forward by 1 second.
+    task_environment_.FastForwardBy(base::Seconds(1));
+
+    std::unique_ptr<SharedDictionary> dict2 =
+        storage->GetDictionary(GURL("https://origin.test/testfile?2"));
+    last_used_time_after_second_get_dict =
+        dictionary_map.begin()->second.begin()->second.last_used_time();
+    EXPECT_NE(initial_last_used_time, last_used_time_after_first_get_dict);
+    EXPECT_NE(last_used_time_after_first_get_dict,
+              last_used_time_after_second_get_dict);
+    // Releasing `dict1`, `dict2`, `storage` and `manager`.
+  }
+  // FlushCacheTasks() to finish the persistence operation.
+  FlushCacheTasks();
+
+  // Move the clock forward by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+
+  // The last_used_time data must be available after recreating `manager`.
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  // RunUntilIdle() to load from the database.
+  task_environment_.RunUntilIdle();
+
+  const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
+  ASSERT_EQ(1u, dictionary_map.size());
+  ASSERT_EQ(1u, dictionary_map.begin()->second.size());
+  EXPECT_EQ(last_used_time_after_second_get_dict,
+            dictionary_map.begin()->second.begin()->second.last_used_time());
 }
 
 }  // namespace network

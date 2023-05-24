@@ -93,11 +93,14 @@ std::unique_ptr<SharedDictionary> SharedDictionaryStorageOnDisk::GetDictionary(
   if (!manager_) {
     return nullptr;
   }
-  const net::SharedDictionaryInfo* info =
+  net::SharedDictionaryInfo* info =
       GetMatchingDictionaryFromDictionaryInfoMap(dictionary_info_map_, url);
   if (!info) {
     return nullptr;
   }
+
+  manager_->UpdateDictionaryLastUsedTime(*info);
+
   auto it = dictionaries_.find(info->disk_cache_key_token());
   if (it != dictionaries_.end()) {
     CHECK_EQ(info->size(), it->second->size());

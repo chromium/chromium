@@ -70,6 +70,8 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
       const std::string& match,
       base::OnceCallback<void(net::SharedDictionaryInfo)> callback);
 
+  void UpdateDictionaryLastUsedTime(net::SharedDictionaryInfo& info);
+
  private:
   void OnDictionaryWrittenInDiskCache(
       const net::SharedDictionaryStorageIsolationKey& isolation_key,

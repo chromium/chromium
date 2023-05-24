@@ -81,8 +81,9 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void GetAllDictionaries(
       base::OnceCallback<void(DictionaryMapOrError)> callback);
   void ClearAllDictionaries(base::OnceCallback<void(Error)> callback);
+  void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
+                                    base::Time last_used_time);
 
-  // TODO(crbug.com/1413922): Add a method to update `last_used_time`.
   // TODO(crbug.com/1413922): Add a method for the garbage collection logic of
   // SharedDictionaryDiskCache by using `disk_cache_key_token`.
   // TODO(crbug.com/1413922): Add a method for the clearing expired dictionary

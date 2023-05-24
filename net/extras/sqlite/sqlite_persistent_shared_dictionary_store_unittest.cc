@@ -50,11 +50,12 @@ SharedDictionaryStorageIsolationKey CreateIsolationKey(
                          : net::SchemefulSite(GURL(frame_origin_str)));
 }
 
-class SQLitePersistentSharedDictionaryStoreTest
-    : public TestWithTaskEnvironment {
+class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
+                                                  public WithTaskEnvironment {
  public:
   SQLitePersistentSharedDictionaryStoreTest()
-      : isolation_key_(CreateIsolationKey("https://origin.test/")),
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        isolation_key_(CreateIsolationKey("https://origin.test/")),
         dictionary_info_(
             GURL("https://origin.test/dict"),
             /*response_time=*/base::Time::Now() - base::Seconds(10),
@@ -765,6 +766,55 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       }));
   store_.reset();
   RunUntilIdle();
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       UpdateDictionaryLastUsedTime) {
+  CreateStore();
+  auto register_dictionary_result =
+      RegisterDictionary(isolation_key_, dictionary_info_);
+
+  std::vector<SharedDictionaryInfo> dicts1 = GetDictionaries(isolation_key_);
+  ASSERT_EQ(1u, dicts1.size());
+
+  // Move the clock forward by 1 second.
+  FastForwardBy(base::Seconds(1));
+
+  std::vector<SharedDictionaryInfo> dicts2 = GetDictionaries(isolation_key_);
+  ASSERT_EQ(1u, dicts2.size());
+
+  EXPECT_EQ(dicts1[0].last_used_time(), dicts2[0].last_used_time());
+
+  // Move the clock forward by 1 second.
+  FastForwardBy(base::Seconds(1));
+  base::Time updated_last_used_time = base::Time::Now();
+  store_->UpdateDictionaryLastUsedTime(
+      *register_dictionary_result.primary_key_in_database,
+      updated_last_used_time);
+
+  std::vector<SharedDictionaryInfo> dicts3 = GetDictionaries(isolation_key_);
+  ASSERT_EQ(1u, dicts3.size());
+  EXPECT_EQ(updated_last_used_time, dicts3[0].last_used_time());
+}
+
+TEST_F(SQLitePersistentSharedDictionaryStoreTest,
+       MassiveUpdateDictionaryLastUsedTime) {
+  CreateStore();
+  auto register_dictionary_result =
+      RegisterDictionary(isolation_key_, dictionary_info_);
+  base::Time updated_last_used_time;
+  for (size_t i = 0; i < 1000; ++i) {
+    // Move the clock forward by 10 millisecond.
+    FastForwardBy(base::Milliseconds(10));
+    updated_last_used_time = base::Time::Now();
+    store_->UpdateDictionaryLastUsedTime(
+        *register_dictionary_result.primary_key_in_database,
+        updated_last_used_time);
+  }
+
+  std::vector<SharedDictionaryInfo> dicts3 = GetDictionaries(isolation_key_);
+  ASSERT_EQ(1u, dicts3.size());
+  EXPECT_EQ(updated_last_used_time, dicts3[0].last_used_time());
 }
 
 }  // namespace net

@@ -187,6 +187,9 @@ class SQLitePersistentSharedDictionaryStore::Backend
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(ClearAllDictionaries)
 #undef DEFINE_CROSS_SEQUENCE_CALL_METHOD
 
+  void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
+                                    base::Time last_used_time);
+
  private:
   ~Backend() override = default;
 
@@ -221,6 +224,18 @@ class SQLitePersistentSharedDictionaryStore::Backend
   bool CreateDatabaseSchema() override;
   absl::optional<int> DoMigrateDatabaseSchema() override;
   void DoCommit() override;
+
+  // Commits the last used time update.
+  Error CommitDictionaryLastUsedTimeUpdate(int64_t primary_key_in_database,
+                                           base::Time last_used_time);
+
+  // Total number of pending last used time update operations (may not match the
+  // size of `pending_last_used_time_updates_`, due to operation coalescing).
+  size_t num_pending_ GUARDED_BY(lock_) = 0;
+  std::map<int64_t, base::Time> pending_last_used_time_updates_
+      GUARDED_BY(lock_);
+  // Protects `num_pending_`, and `pending_last_used_time_updates_`.
+  mutable base::Lock lock_;
 };
 
 bool SQLitePersistentSharedDictionaryStore::Backend::CreateDatabaseSchema() {
@@ -244,10 +259,49 @@ SQLitePersistentSharedDictionaryStore::Backend::DoMigrateDatabaseSchema() {
 }
 
 void SQLitePersistentSharedDictionaryStore::Backend::DoCommit() {
-  // Currently we don't batch queries because RegisterDictionary() is not
-  // expected to be called so frequently.
-  // TODO(crbug.com/1413922): Consider using batching when we implement a method
-  // for updating `last_used_time`.
+  std::map<int64_t, base::Time> pending_last_used_time_updates;
+  {
+    base::AutoLock locked(lock_);
+    pending_last_used_time_updates_.swap(pending_last_used_time_updates);
+    num_pending_ = 0;
+  }
+  if (!db() || pending_last_used_time_updates.empty()) {
+    return;
+  }
+
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return;
+  }
+  for (const auto& it : pending_last_used_time_updates) {
+    if (CommitDictionaryLastUsedTimeUpdate(it.first, it.second) != Error::kOk) {
+      return;
+    }
+  }
+  transaction.Commit();
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::
+    CommitDictionaryLastUsedTimeUpdate(int64_t primary_key_in_database,
+                                       base::Time last_used_time) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  if (!InitializeDatabase()) {
+    return Error::kFailedToInitializeDatabase;
+  }
+  static constexpr char kQuery[] =
+      "UPDATE dictionaries SET last_used_time=? WHERE id=?";
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return Error::kInvalidSql;
+  }
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindTime(0, last_used_time);
+  statement.BindInt64(1, primary_key_in_database);
+  if (!statement.Run()) {
+    return Error::kFailedToExecuteSql;
+  }
+  return Error::kOk;
 }
 
 base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
@@ -365,6 +419,9 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
   if (!InitializeDatabase()) {
     return base::unexpected(Error::kFailedToInitializeDatabase);
   }
+
+  // Commit `pending_last_used_time_updates_`.
+  DoCommit();
 
   static constexpr char kQuery[] =
       // clang-format off
@@ -525,6 +582,34 @@ SQLitePersistentSharedDictionaryStore::Backend::ClearAllDictionariesImpl() {
   return Error::kOk;
 }
 
+void SQLitePersistentSharedDictionaryStore::Backend::
+    UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
+                                 base::Time last_used_time) {
+  CHECK(client_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(!background_task_runner()->RunsTasksInCurrentSequence());
+  size_t num_pending;
+  {
+    base::AutoLock locked(lock_);
+    pending_last_used_time_updates_[primary_key_in_database] = last_used_time;
+    num_pending = ++num_pending_;
+  }
+  // Commit every 30 seconds.
+  static const int kCommitIntervalMs = 30 * 1000;
+  // Commit right away if we have more than 100 operations.
+  static const size_t kCommitAfterBatchSize = 100;
+  if (num_pending == 1) {
+    // We've gotten our first entry for this batch, fire off the timer.
+    if (!background_task_runner()->PostDelayedTask(
+            FROM_HERE, base::BindOnce(&Backend::Commit, this),
+            base::Milliseconds(kCommitIntervalMs))) {
+      NOTREACHED() << "background_task_runner_ is not running.";
+    }
+  } else if (num_pending >= kCommitAfterBatchSize) {
+    // We've reached a big enough batch, fire off a commit now.
+    PostBackgroundTask(FROM_HERE, base::BindOnce(&Backend::Commit, this));
+  }
+}
+
 bool SQLitePersistentSharedDictionaryStore::Backend::
     GetExistingDictionarySizeAndDiskCacheKeyToken(
         const SharedDictionaryStorageIsolationKey& isolation_key,
@@ -639,6 +724,14 @@ void SQLitePersistentSharedDictionaryStore::ClearAllDictionaries(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->ClearAllDictionaries(
       WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)));
+}
+
+void SQLitePersistentSharedDictionaryStore::UpdateDictionaryLastUsedTime(
+    int64_t primary_key_in_database,
+    base::Time last_used_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->UpdateDictionaryLastUsedTime(primary_key_in_database,
+                                         last_used_time);
 }
 
 base::WeakPtr<SQLitePersistentSharedDictionaryStore>

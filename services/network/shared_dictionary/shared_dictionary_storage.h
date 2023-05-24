@@ -64,21 +64,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
 // SharedDictionaryStorageOnDisk are using different class for
 // DictionaryInfoType.
 template <class DictionaryInfoType>
-const DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
-    const std::map<url::SchemeHostPort,
-                   std::map<std::string, DictionaryInfoType>>&
+DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
+    std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfoType>>&
         dictionary_info_map,
     const GURL& url) {
   auto it = dictionary_info_map.find(url::SchemeHostPort(url));
   if (it == dictionary_info_map.end()) {
     return nullptr;
   }
-  const DictionaryInfoType* info = nullptr;
+  DictionaryInfoType* info = nullptr;
   size_t mached_path_size = 0;
   // TODO(crbug.com/1413922): If there are multiple matching dictionaries, this
   // method currently returns the dictionary with the longest path pattern. But
   // we should have a detailed description about `best-matching` in the spec.
-  for (const auto& item : it->second) {
+  for (auto& item : it->second) {
     // TODO(crbug.com/1413922): base::MatchPattern() is treating '?' in the
     // pattern as an wildcard. We need to introduce a new flag in
     // base::MatchPattern() to treat '?' as a normal character.
