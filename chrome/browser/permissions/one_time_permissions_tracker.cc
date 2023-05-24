@@ -13,11 +13,9 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "content/public/browser/visibility.h"
 #include "url/gurl.h"
-
-constexpr auto kBackgroundExpirationDuration = base::Minutes(5);
-constexpr auto kMediaExpirationDuration = kBackgroundExpirationDuration;
 
 OneTimePermissionsTracker::OneTimePermissionsTracker() = default;
 OneTimePermissionsTracker::~OneTimePermissionsTracker() = default;
@@ -52,7 +50,8 @@ void OneTimePermissionsTracker::WebContentsBackgrounded(
       // When all undiscarded tabs which point to the origin are in the
       // background, the timer should be reset.
       origin_tracker_[origin].background_expiration_timer->Start(
-          FROM_HERE, kBackgroundExpirationDuration,
+          FROM_HERE,
+          permissions::feature_params::kOneTimePermissionTimeout.Get(),
           base::BindOnce(
               &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
               weak_factory_.GetWeakPtr(), origin));
@@ -103,7 +102,8 @@ void OneTimePermissionsTracker::StartContentSpecificExpirationTimer(
   origin_tracker_[origin]
       .content_setting_specific_expiration_timer_map[content_setting]
       ->Start(
-          FROM_HERE, kMediaExpirationDuration,
+          FROM_HERE,
+          permissions::feature_params::kOneTimePermissionTimeout.Get(),
           base::BindOnce(notify_callback, weak_factory_.GetWeakPtr(), origin));
 }
 
