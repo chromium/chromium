@@ -7,16 +7,14 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_typography.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/chromeos/styles/cros_styles.h"
-#include "ui/color/color_id.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -75,9 +73,7 @@ SharesheetTargetButton::SharesheetTargetButton(
 
   auto* label = label_view->AddChildView(std::make_unique<views::Label>(
       display_name, CONTEXT_SHARESHEET_BUBBLE_BODY, STYLE_SHARESHEET));
-  auto secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
-  label->SetEnabledColor(secondary_text_color);
+  label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
   SetLabelProperties(label);
 
   std::u16string accessible_name = display_name;
@@ -87,7 +83,7 @@ SharesheetTargetButton::SharesheetTargetButton(
         label_view->AddChildView(std::make_unique<views::Label>(
             secondary_display_name, CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY,
             STYLE_SHARESHEET));
-    secondary_label->SetEnabledColor(secondary_text_color);
+    secondary_label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
     SetLabelProperties(secondary_label);
     accessible_name =
         base::StrCat({display_name, u" ", secondary_display_name});
@@ -112,19 +108,23 @@ void SharesheetTargetButton::OnThemeChanged() {
 
   if (!vector_icon_)
     return;
-  auto* color_provider = ash::AshColorProvider::Get();
-  const auto icon_color = color_provider->GetContentLayerColor(
-      ash::AshColorProvider::ContentLayerType::kIconColorProminent);
+
+  // TODO(b/284175205): Convert this to an ImageModel after Jelly launches.
+  auto* color_provider = GetColorProvider();
+  SkColor icon_color = color_provider->GetColor(
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
+          : cros_tokens::kIconColorProminent);
+  SkColor circle_color = color_provider->GetColor(
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimaryContainer)
+          : cros_tokens::kBgColorElevation1);
+
   gfx::ImageSkia icon = gfx::CreateVectorIcon(
       *vector_icon_, ::sharesheet::kIconSize / 2, icon_color);
   gfx::ImageSkia circle_icon =
       gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-          ::sharesheet::kIconSize / 2,
-          cros_styles::ResolveColor(
-              cros_styles::ColorName::kBgColorElevation1,
-              ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled(),
-              /*use_debug_colors=*/false),
-          icon);
+          ::sharesheet::kIconSize / 2, circle_color, icon);
 
   // TODO(crbug.com/1184414): Replace hard-coded values when shadow styles
   // are implemented.
