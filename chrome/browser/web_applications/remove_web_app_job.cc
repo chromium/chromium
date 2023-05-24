@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/web_app_uninstall_job.h"
+#include "chrome/browser/web_applications/remove_web_app_job.h"
 
 #include <memory>
 
@@ -33,9 +33,9 @@
 
 namespace web_app {
 
-WebAppUninstallJob::~WebAppUninstallJob() = default;
+RemoveWebAppJob::~RemoveWebAppJob() = default;
 
-std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::Start(
+std::unique_ptr<RemoveWebAppJob> RemoveWebAppJob::Start(
     webapps::WebappUninstallSource uninstall_source,
     AppId app_id,
     WithAppResources& resources,
@@ -43,9 +43,9 @@ std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::Start(
     UninstallCallback callback) {
   CHECK(resources.registrar().GetAppById(app_id));
 
-  auto job = base::WrapUnique(new WebAppUninstallJob(
+  auto job = base::WrapUnique(new RemoveWebAppJob(
       uninstall_source, app_id, resources, profile, std::move(callback)));
-  base::WeakPtr<WebAppUninstallJob> job_weak_ptr =
+  base::WeakPtr<RemoveWebAppJob> job_weak_ptr =
       job->weak_ptr_factory_.GetWeakPtr();
 
   resources.install_manager().NotifyWebAppWillBeUninstalled(app_id);
@@ -62,7 +62,7 @@ std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::Start(
   }
 
   auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&WebAppUninstallJob::OnOsHooksUninstalled, job_weak_ptr));
+      base::BindOnce(&RemoveWebAppJob::OnOsHooksUninstalled, job_weak_ptr));
 
   // TODO(crbug.com/1401125): Remove UninstallAllOsHooks() once OS integration
   // sub managers have been implemented.
@@ -76,11 +76,11 @@ std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::Start(
   // not after the `Synchronize` call completes.
   resources.icon_manager().DeleteData(
       app_id,
-      base::BindOnce(&WebAppUninstallJob::OnIconDataDeleted, job_weak_ptr));
+      base::BindOnce(&RemoveWebAppJob::OnIconDataDeleted, job_weak_ptr));
 
   resources.translation_manager().DeleteTranslations(
-      app_id, base::BindOnce(&WebAppUninstallJob::OnTranslationDataDeleted,
-                             job_weak_ptr));
+      app_id,
+      base::BindOnce(&RemoveWebAppJob::OnTranslationDataDeleted, job_weak_ptr));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (ResolveExperimentalWebAppIsolationFeature() ==
@@ -98,7 +98,7 @@ std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::Start(
             ->GetDeleteProfileHelper()
             .MaybeScheduleProfileForDeletion(
                 app_profile_path,
-                base::BindOnce(&WebAppUninstallJob::OnWebAppProfileDeleted,
+                base::BindOnce(&RemoveWebAppJob::OnWebAppProfileDeleted,
                                job_weak_ptr),
                 ProfileMetrics::ProfileDelete::DELETE_PROFILE_USER_MANAGER);
       } else {
@@ -111,7 +111,7 @@ std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::Start(
   return job;
 }
 
-WebAppUninstallJob::WebAppUninstallJob(
+RemoveWebAppJob::RemoveWebAppJob(
     webapps::WebappUninstallSource uninstall_source,
     AppId app_id,
     WithAppResources& resources,
@@ -123,7 +123,7 @@ WebAppUninstallJob::WebAppUninstallJob(
       profile_(profile),
       callback_(std::move(callback)) {}
 
-void WebAppUninstallJob::OnOsHooksUninstalled(OsHooksErrors errors) {
+void RemoveWebAppJob::OnOsHooksUninstalled(OsHooksErrors errors) {
   CHECK(!done_);
   CHECK(!hooks_uninstalled_);
   hooks_uninstalled_ = true;
@@ -132,7 +132,7 @@ void WebAppUninstallJob::OnOsHooksUninstalled(OsHooksErrors errors) {
   MaybeFinishUninstall();
 }
 
-void WebAppUninstallJob::OnIconDataDeleted(bool success) {
+void RemoveWebAppJob::OnIconDataDeleted(bool success) {
   CHECK(!done_);
   CHECK(!app_data_deleted_);
   app_data_deleted_ = true;
@@ -141,7 +141,7 @@ void WebAppUninstallJob::OnIconDataDeleted(bool success) {
   MaybeFinishUninstall();
 }
 
-void WebAppUninstallJob::OnTranslationDataDeleted(bool success) {
+void RemoveWebAppJob::OnTranslationDataDeleted(bool success) {
   CHECK(!done_);
   CHECK(!translation_data_deleted_);
   translation_data_deleted_ = true;
@@ -149,7 +149,7 @@ void WebAppUninstallJob::OnTranslationDataDeleted(bool success) {
   MaybeFinishUninstall();
 }
 
-void WebAppUninstallJob::OnWebAppProfileDeleted(Profile* profile) {
+void RemoveWebAppJob::OnWebAppProfileDeleted(Profile* profile) {
   CHECK(!done_);
   CHECK(pending_app_profile_deletion_);
   // This must be an isolated web app profile rather than the WebAppProvider
@@ -159,7 +159,7 @@ void WebAppUninstallJob::OnWebAppProfileDeleted(Profile* profile) {
   MaybeFinishUninstall();
 }
 
-void WebAppUninstallJob::MaybeFinishUninstall() {
+void RemoveWebAppJob::MaybeFinishUninstall() {
   CHECK(!done_);
   if (!hooks_uninstalled_ || !app_data_deleted_ || !translation_data_deleted_ ||
       pending_app_profile_deletion_) {

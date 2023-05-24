@@ -32,7 +32,7 @@ namespace web_app {
 class AllAppsLock;
 class AllAppsLockDescription;
 class LockDescription;
-class WebAppUninstallJob;
+class RemoveWebAppJob;
 
 // This command is used to uninstall a web_app. Once started, this command will:
 // 1. Start maintaining a queue of all app_ids that need to be uninstalled.
@@ -51,11 +51,11 @@ class WebAppUninstallJob;
 //     `ExternallyManagedAppManager::SynchronizeInstalledApps()` for more info.
 //     c. If the app being uninstalled is a parent app with multiple sub apps,
 //     all sub app IDs are queued onto the overall uninstallation queue.
-// 3. For all other use-cases, a WebAppUninstallJob is initialized and kicked
+// 3. For all other use-cases, a RemoveWebAppJob is initialized and kicked
 //    off per app_id. The job is owned by the command, and the command keeps
 //    track of all currently running jobs.
 // 4. The command ends only when both of the conditions below are successful:
-//    a. All running WebAppUninstallJobs have been completed.
+//    a. All running RemoveWebAppJobs have been completed.
 //    b. The queue that was keeping track of app_ids that needed to be
 //    uninstalled is empty.
 class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
@@ -118,7 +118,7 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
   const AppId app_id_;
   base::circular_deque<UninstallInfo> queued_uninstalls_;
   base::flat_map<AppId, webapps::UninstallResultCode> uninstall_results_;
-  base::flat_map<AppId, std::unique_ptr<WebAppUninstallJob>>
+  base::flat_map<AppId, std::unique_ptr<RemoveWebAppJob>>
       apps_pending_uninstall_;
   base::Value::Dict debug_log_;
   bool all_uninstalled_queued_ = false;

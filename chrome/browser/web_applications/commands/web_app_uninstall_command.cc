@@ -14,6 +14,7 @@
 #include "base/strings/to_string.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/remove_web_app_job.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_uninstall_job.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
@@ -208,7 +208,7 @@ void WebAppUninstallCommand::Uninstall(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   QueueSubAppsForUninstallIfAny(app_id);
-  apps_pending_uninstall_[app_id] = WebAppUninstallJob::Start(
+  apps_pending_uninstall_[app_id] = RemoveWebAppJob::Start(
       uninstall_source, app_id, *lock_, profile_.get(),
       base::BindOnce(&WebAppUninstallCommand::OnSingleUninstallComplete,
                      weak_factory_.GetWeakPtr(), app_id, uninstall_source));

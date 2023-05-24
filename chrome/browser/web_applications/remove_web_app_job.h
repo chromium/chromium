@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_UNINSTALL_JOB_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_UNINSTALL_JOB_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_REMOVE_WEB_APP_JOB_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_REMOVE_WEB_APP_JOB_H_
 
 #include <memory>
 
@@ -31,25 +31,25 @@ class WithAppResources;
 // Extra invariants:
 // * There is never more than one uninstall task operating on the same app at
 //   the same time.
-class WebAppUninstallJob {
+class RemoveWebAppJob {
  public:
   using UninstallCallback = base::OnceCallback<void(bool success)>;
 
-  static std::unique_ptr<WebAppUninstallJob> Start(
+  static std::unique_ptr<RemoveWebAppJob> Start(
       webapps::WebappUninstallSource uninstall_source,
       AppId app_id,
       WithAppResources& resources,
       Profile& profile,
       UninstallCallback callback);
 
-  ~WebAppUninstallJob();
+  ~RemoveWebAppJob();
 
  private:
-  WebAppUninstallJob(webapps::WebappUninstallSource uninstall_source,
-                     AppId app_id,
-                     WithAppResources& resources,
-                     Profile& profile,
-                     UninstallCallback callback);
+  RemoveWebAppJob(webapps::WebappUninstallSource uninstall_source,
+                  AppId app_id,
+                  WithAppResources& resources,
+                  Profile& profile,
+                  UninstallCallback callback);
 
   void OnOsHooksUninstalled(OsHooksErrors errors);
   void OnIconDataDeleted(bool success);
@@ -59,7 +59,7 @@ class WebAppUninstallJob {
 
   webapps::WebappUninstallSource uninstall_source_;
   AppId app_id_;
-  // The WebAppUninstallJob is kicked off by the WebAppUninstallCommand
+  // The RemoveWebAppJob is kicked off by the WebAppUninstallCommand
   // and is constructed and destructed well within the lifetime of the
   // Uninstall command. This ensures that this class is guaranteed to be
   // destructed before any of the WebAppProvider systems shut down.
@@ -75,9 +75,9 @@ class WebAppUninstallJob {
   bool errors_ = false;
   bool done_ = false;
 
-  base::WeakPtrFactory<WebAppUninstallJob> weak_ptr_factory_{this};
+  base::WeakPtrFactory<RemoveWebAppJob> weak_ptr_factory_{this};
 };
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_UNINSTALL_JOB_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_REMOVE_WEB_APP_JOB_H_
