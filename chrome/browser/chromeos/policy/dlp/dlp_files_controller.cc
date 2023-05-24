@@ -158,7 +158,7 @@ void DlpFilesController::RequestCopyAccess(
 
   ::dlp::RequestFileAccessRequest file_access_request;
   file_access_request.add_files_paths(source_file.path().value());
-  file_access_request.set_destination_component(component_proto);
+  file_access_request.set_destination_url(destination.path().DirName().value());
 
   if (component_proto == ::dlp::SYSTEM) {
     // We allow internal copy, we still have to get the scopedFS
@@ -174,9 +174,6 @@ void DlpFilesController::RequestCopyAccess(
     }
     return;
   }
-
-  // TODO(http://b/262223235) check for the actual component.
-  file_access_request.set_destination_component(::dlp::SYSTEM);
 
   chromeos::DlpClient::Get()->RequestFileAccess(
       file_access_request,
