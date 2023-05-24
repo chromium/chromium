@@ -6,6 +6,10 @@
 
 #include "media/mojo/common/media_type_converters.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_VAAPI)
+#include "media/gpu/vaapi/vaapi_wrapper.h"
+#endif
+
 namespace media {
 
 namespace {
@@ -192,9 +196,12 @@ void StableVideoDecoderService::Initialize(
     std::move(callback).Run(DecoderStatus::Codes::kFailedToCreateDecoder,
                             /*needs_bitstream_conversion=*/false,
                             /*max_decode_requests=*/1,
-                            VideoDecoderType::kUnknown);
+                            VideoDecoderType::kUnknown,
+                            /*needs_transcryption=*/false);
     return;
   }
+
+  bool needs_transcryption = false;
 
   // The |config| should have been validated at deserialization time.
   DCHECK(config.IsValidConfig());
@@ -205,7 +212,8 @@ void StableVideoDecoderService::Initialize(
         std::move(callback).Run(DecoderStatus::Codes::kMissingCDM,
                                 /*needs_bitstream_conversion=*/false,
                                 /*max_decode_requests=*/1,
-                                VideoDecoderType::kUnknown);
+                                VideoDecoderType::kUnknown,
+                                /*needs_transcryption=*/false);
         return;
       }
       remote_cdm_context_ = base::WrapRefCounted(
@@ -213,11 +221,16 @@ void StableVideoDecoderService::Initialize(
       cdm_id_ = cdm_service_context_->RegisterRemoteCdmContext(
           remote_cdm_context_.get());
     }
+#if BUILDFLAG(USE_VAAPI)
+    needs_transcryption = (VaapiWrapper::GetImplementationType() ==
+                           VAImplementation::kMesaGallium);
+#endif
 #else
     std::move(callback).Run(DecoderStatus::Codes::kUnsupportedConfig,
                             /*needs_bitstream_conversion=*/false,
                             /*max_decode_requests=*/1,
-                            VideoDecoderType::kUnknown);
+                            VideoDecoderType::kUnknown,
+                            /*needs_transcryption=*/false);
     return;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
@@ -225,8 +238,28 @@ void StableVideoDecoderService::Initialize(
   // Even though this is in-process, we still need to pass a |cdm_id_|
   // instead of a media::CdmContext* since this goes through Mojo IPC. This is
   // why we need to register with the |cdm_service_context_| above.
-  dst_video_decoder_remote_->Initialize(config, low_delay, cdm_id_,
-                                        std::move(callback));
+  //
+  // Note: base::Unretained() is safe because *|this| fully owns
+  // |dst_video_decoder_remote_|, so the response callback will never run beyond
+  // the lifetime of *|this|.
+  dst_video_decoder_remote_->Initialize(
+      config, low_delay, cdm_id_,
+      base::BindOnce(&StableVideoDecoderService::OnInitializeDone,
+                     base::Unretained(this), std::move(callback),
+                     needs_transcryption));
+}
+
+void StableVideoDecoderService::OnInitializeDone(
+    InitializeCallback init_cb,
+    bool needs_transcryption,
+    const DecoderStatus& status,
+    bool needs_bitstream_conversion,
+    int32_t max_decode_requests,
+    VideoDecoderType decoder_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(init_cb).Run(status, needs_bitstream_conversion,
+                         max_decode_requests, decoder_type,
+                         needs_transcryption);
 }
 
 void StableVideoDecoderService::Decode(
