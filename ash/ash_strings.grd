@@ -3662,7 +3662,7 @@ Connect your device to power.
         Show list of available input methods
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_SHORTCUT_VIEWER" desc="Label for accelerator action - Open Keyboard shortcuts app.">
-        Open Keyboard shortcuts app
+        Open Key Shortcuts app
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_STYLUS_TOOLS" desc="Label for accelerator action - Show stylus tools.">
         Show stylus tools
@@ -5947,7 +5947,7 @@ Here are some things you can try to get started.
 
       <!-- Shortcut Customization App -->
       <message name="IDS_ASH_SHORTCUT_CUSTOMIZATION_APP_TITLE" desc="The title of the keyboard shortcuts system web app. Keyboard shortcuts lets users to customize their system shortcuts.">
-        Keyboard shortcuts
+        Key Shortcuts
       </message>
 
       <message name="IDS_ASH_SHIMLESS_RMA_APP_TITLE" translateable="false" desc="The title of shimless RMA flow SWA. Shimless RMA guides repair technicians through step-by-step repair flow.">
