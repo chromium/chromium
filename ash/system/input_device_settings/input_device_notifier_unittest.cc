@@ -533,6 +533,11 @@ TEST_F(InputDeviceMouseNotifierTest, BluetoothMouseTest) {
   ui::DeviceDataManagerTestApi()
       .NotifyObserversMouseDeviceConfigurationChanged();
   ASSERT_EQ(2u, devices_to_add_.size());
+
+  // Needed to reset the `bluetooth_adapter_`.
+  ON_CALL(*bluetooth_adapter_, GetDevices)
+      .WillByDefault(
+          testing::Return(std::vector<const device::BluetoothDevice*>()));
 }
 
 }  // namespace ash
