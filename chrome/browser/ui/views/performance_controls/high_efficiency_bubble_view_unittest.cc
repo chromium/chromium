@@ -310,7 +310,7 @@ TEST_F(HighEfficiencyBubbleViewMemorySavingsImprovementsTest,
 
   ClickPageActionChip();
 
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
+  views::Label* label = GetDialogLabel<views::Label>(
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
   EXPECT_EQ(
       label->GetText().find(ui::FormatBytes(kMemorySavingsKilobytes * 1024)),

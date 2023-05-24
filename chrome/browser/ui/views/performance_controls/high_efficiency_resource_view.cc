@@ -35,6 +35,23 @@ constexpr int kTickStrokeWidth = 2;
 constexpr int kBucketCount = 4;
 constexpr double kBucketWidthDegrees = 180 / kBucketCount;
 
+// Enum to represent memory savings quartiles.
+enum MemorySavingsQuartile {
+  kLow = 0,
+  kMedium = 1,
+  kHigh = 2,
+  kVeryHigh = 3,
+  kMaxValue = kVeryHigh,
+};
+
+// Each element represents the label for the chart when memory savings are in
+// the quartile represented by `MemorySavingsQuartile`.
+constexpr int kQuartilesLabels[] = {
+    IDS_HIGH_EFFICIENCY_DIALOG_SMALL_SAVINGS_LABEL,
+    IDS_HIGH_EFFICIENCY_DIALOG_MEDIUM_SAVINGS_LABEL,
+    IDS_HIGH_EFFICIENCY_DIALOG_LARGE_SAVINGS_LABEL,
+    IDS_HIGH_EFFICIENCY_DIALOG_VERY_LARGE_SAVINGS_LABEL};
+
 // Returns which of the four quartiles of memory savings this number falls into.
 // The lowest memory usage quartile (0-24th percentile) returns 0 and the
 // highest quartile (75-99 percentile) returns 3.
@@ -42,17 +59,17 @@ int GetMemorySavingsQuartile(const int memory_savings_bytes) {
   if (memory_savings_bytes <
       performance_manager::features::kHighEfficiencyChartPmf25PercentileBytes
           .Get()) {
-    return 0;
+    return MemorySavingsQuartile::kLow;
   } else if (memory_savings_bytes <
              performance_manager::features::
                  kHighEfficiencyChartPmf50PercentileBytes.Get()) {
-    return 1;
+    return MemorySavingsQuartile::kMedium;
   } else if (memory_savings_bytes <
              performance_manager::features::
                  kHighEfficiencyChartPmf75PercentileBytes.Get()) {
-    return 2;
+    return MemorySavingsQuartile::kHigh;
   } else {
-    return 3;
+    return MemorySavingsQuartile::kVeryHigh;
   }
 }
 
@@ -169,6 +186,7 @@ HighEfficiencyResourceView::HighEfficiencyResourceView(
       IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_ACCNAME, {formatted_savings}));
 
   AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_LABEL),
+      l10n_util::GetStringUTF16(
+          kQuartilesLabels[GetMemorySavingsQuartile(memory_savings_bytes)]),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
 }
