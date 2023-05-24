@@ -242,6 +242,11 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_icon_radius">24dp</dimen>
     <dimen name="bookmark_search_hint_horizontal_padding">30dp</dimen>
 
+    <!-- Improved bookamrk save flow properties-->
+    <dimen name="improved_bookmark_save_flow_outer_radius">8dp</dimen>
+    <dimen name="improved_bookmark_save_flow_inner_radius">4dp</dimen>
+    <dimen name="improved_bookmark_save_flow_image_size">75dp</dimen>
+
     <!-- Bookmark visual refresh dimensions. -->
      <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>
      <dimen name="bookmark_refresh_circular_monogram_text_size">18dp</dimen>

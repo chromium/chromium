@@ -21,14 +21,11 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
-import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** ViewBinder for the bookmarks save flow. */
-public class BookmarkSaveFlowViewBinder
-        implements ViewBinder<PropertyModel, ViewLookupCachingFrameLayout, PropertyKey> {
+public class BookmarkSaveFlowViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
     @Override
-    public void bind(
-            PropertyModel model, ViewLookupCachingFrameLayout view, PropertyKey propertyKey) {
+    public void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == BookmarkSaveFlowProperties.EDIT_ONCLICK_LISTENER) {
             view.findViewById(R.id.bookmark_edit)
                     .setOnClickListener(

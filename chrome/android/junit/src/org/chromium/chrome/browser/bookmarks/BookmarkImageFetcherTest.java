@@ -208,7 +208,6 @@ public class BookmarkImageFetcherTest {
         mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
                 mBookmarkItem1, mDrawableCallback);
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
-        // There shouldn't be any interaction with large icon bridge since an image was found.
         verify(mLargeIconBridge).getLargeIconForUrl(any(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
@@ -220,6 +219,19 @@ public class BookmarkImageFetcherTest {
         verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
         // There shouldn't be any interaction with large icon bridge since an image was found.
         verify(mLargeIconBridge).getLargeIconForUrl(any(), anyInt(), any());
+
+        assertNotNull(mDrawableCaptor.getValue());
+    }
+
+    @Test
+    public void testFetchImageUrlWithFallbacks() {
+        mBookmarkImageFetcher.fetchImageUrlWithFallbacks(
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), mBookmarkItem1,
+                mDrawableCallback);
+        verify(mDrawableCallback).onResult(mDrawableCaptor.capture());
+        verify(mImageFetcher, times(1)).fetchImage(any(), any());
+        // There shouldn't be any interaction with large icon bridge since an image was found.
+        verify(mLargeIconBridge, times(0)).getLargeIconForUrl(any(), anyInt(), any());
 
         assertNotNull(mDrawableCaptor.getValue());
     }

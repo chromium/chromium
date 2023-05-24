@@ -18,6 +18,7 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.url.GURL;
 
 import java.util.Iterator;
 
@@ -98,7 +99,7 @@ public class BookmarkImageFetcher {
     }
 
     /**
-     * Fetches a favicon for the given bookmarkid.
+     * Fetches a favicon for the given bookmark.
      * @param item The bookmark to fetch the image for.
      * @param callback The callback to receive the favicon.
      */
@@ -111,26 +112,45 @@ public class BookmarkImageFetcher {
                 });
     }
 
-    private void fetchImageForBookmark(BookmarkItem item, Callback<Drawable> callback) {
-        final Callback<Bitmap> bookmarkImageCallback = (image) -> {
-            if (image == null) {
-                callback.onResult(null);
+    /**
+     * Fetch the given URL and fallback to {@link #fetchImageForBookmarkWithFaviconFallback}.
+     * @param url The url to fetch the image for.
+     * @param item The item to fallback on if the url fetch fails.
+     * @param callback The callback to receive the favicon.
+     */
+    public void fetchImageUrlWithFallbacks(
+            GURL url, BookmarkItem item, Callback<Drawable> callback) {
+        fetchImageUrl(url, drawable -> {
+            if (drawable == null) {
+                fetchImageForBookmarkWithFaviconFallback(item, callback);
             } else {
-                callback.onResult(new BitmapDrawable(mContext.getResources(), image));
+                callback.onResult(drawable);
             }
-        };
+        });
+    }
 
+    private void fetchImageForBookmark(BookmarkItem item, Callback<Drawable> callback) {
         mBookmarkModel.getImageUrlForBookmark(item.getUrl(), (imageUrl) -> {
             if (imageUrl == null) {
                 callback.onResult(null);
                 return;
             }
 
-            mImageFetcher.fetchImage(
-                    ImageFetcher.Params.create(imageUrl, ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME,
-                            mImageSize, mImageSize),
-                    bookmarkImageCallback);
+            fetchImageUrl(imageUrl, callback);
         });
+    }
+
+    private void fetchImageUrl(GURL url, Callback<Drawable> callback) {
+        mImageFetcher.fetchImage(
+                ImageFetcher.Params.create(
+                        url, ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME, mImageSize, mImageSize),
+                (image) -> {
+                    if (image == null) {
+                        callback.onResult(null);
+                    } else {
+                        callback.onResult(new BitmapDrawable(mContext.getResources(), image));
+                    }
+                });
     }
 
     private void fetchFirstTwoImagesForFolderImpl(Iterator<BookmarkId> childIdIterator,
