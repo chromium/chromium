@@ -32,7 +32,7 @@ sys.path.append(
 
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
-RUST_REVISION = '2a8221dbdfd180a2d56d4b0089f4f3952d8c2bcd'
+RUST_REVISION = 'f3d597b31c0f101a02c230798afa31a36bdacbc6'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-10-15.
