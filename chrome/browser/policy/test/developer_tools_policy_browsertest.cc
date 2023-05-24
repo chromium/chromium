@@ -203,14 +203,11 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
       DevToolsWindow::GetInstanceForInspectedWebContents(contents);
   EXPECT_TRUE(devtools_window);
 
-  // Disable devtools via policy.
-  PolicyMap policies;
-  policies.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(2 /* DeveloperToolsDisallowed */), nullptr);
   content::WebContentsDestroyedWatcher close_observer(
       DevToolsWindowTesting::Get(devtools_window)->main_web_contents());
-  UpdateProviderPolicy(policies);
+  // Disable devtools via policy.
+  UpdateProviderPolicy(
+      MakeDeveloperToolsAvailabilityMap(2 /* DeveloperToolsDisallowed */));
   // wait for devtools close
   close_observer.Wait();
   // The existing devtools window should have closed.
@@ -260,11 +257,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest,
   // DeveloperToolsAvailability policy.
 
   // Disable devtools via policy.
-  PolicyMap policies;
-  policies.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(2 /* DeveloperToolsDisallowed */), nullptr);
-  UpdateProviderPolicy(policies);
+  UpdateProviderPolicy(
+      MakeDeveloperToolsAvailabilityMap(2 /* DeveloperToolsDisallowed */));
   // Verify that it's not possible to ViewSource.
   EXPECT_FALSE(chrome::ExecuteCommand(browser(), IDC_VIEW_SOURCE));
 }
@@ -315,11 +309,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
                                              true);
 
   // Disable devtools via policy.
-  PolicyMap policies;
-  policies.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(2 /*DeveloperToolsDisallowed*/), nullptr);
-  UpdateProviderPolicy(policies);
+  UpdateProviderPolicy(
+      MakeDeveloperToolsAvailabilityMap(2 /* DeveloperToolsDisallowed */));
 
   // Expect devcontrols to be hidden now...
   WaitForExtensionsDevModeControlsVisibility(contents, dev_controls_accessor_js,
