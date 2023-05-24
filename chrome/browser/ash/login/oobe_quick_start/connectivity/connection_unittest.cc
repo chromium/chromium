@@ -75,6 +75,10 @@ constexpr std::array<uint8_t, 32> kSecondarySharedSecret = {
 constexpr std::array<uint8_t, 6> kRandomSessionId = {0x6b, 0xb3, 0x85,
                                                      0x27, 0xbb, 0x28};
 
+// 12 random bytes to use as the nonce.
+constexpr std::array<uint8_t, 12> kNonce = {0x60, 0x3e, 0x87, 0x69, 0xa3, 0x55,
+                                            0xd3, 0x49, 0xbd, 0x0a, 0x63, 0xed};
+
 constexpr base::TimeDelta kNotifySourceOfUpdateResponseTimeout =
     base::Seconds(3);
 
@@ -451,10 +455,28 @@ TEST_F(ConnectionTest, TestDisconnectsWithoutCloseIssueUnknownError) {
 }
 
 TEST_F(ConnectionTest, InitiateHandshake) {
-  connection_->InitiateHandshake(kAuthToken, base::DoNothing());
+  base::test::TestFuture<bool> future;
+  connection_->InitiateHandshake(kAuthToken, future.GetCallback());
+  EXPECT_TRUE(handshake::VerifyHandshakeMessage(
+      fake_nearby_connection_->GetWrittenData(), kAuthToken, kSharedSecret,
+      handshake::DeviceRole::kTarget));
 
-  // TODO(b/234655072): Test that the correct info is written to the
-  // NearbyConnection once handshake parsing is implemented.
+  std::vector<uint8_t> response = handshake::BuildHandshakeMessage(
+      kAuthToken, kSharedSecret, kNonce, handshake::DeviceRole::kSource);
+  fake_nearby_connection_->AppendReadableData(response);
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ConnectionTest, InitiateHandshake_BadResponse) {
+  base::test::TestFuture<bool> future;
+  connection_->InitiateHandshake(kAuthToken, future.GetCallback());
+  std::vector<uint8_t> written_payload =
+      fake_nearby_connection_->GetWrittenData();
+
+  // Simulate the source device sending back the same message it received from
+  // the target device. Should fail because it uses the wrong role.
+  fake_nearby_connection_->AppendReadableData(written_payload);
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(ConnectionTest, TestUserVerificationRequested_ReturnsResult) {

@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/proto/aes_gcm_authentication_message.pb.h"
+#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "crypto/aead.h"
 #include "crypto/random.h"
 
@@ -25,6 +26,64 @@ std::vector<uint8_t> EncryptPayload(
   return aead.Seal(
       std::vector<uint8_t>(payload_bytes.begin(), payload_bytes.end()), nonce,
       /*additional_data=*/base::span<uint8_t>());
+}
+
+absl::optional<std::vector<uint8_t>> DecryptPayload(
+    base::span<const uint8_t> payload,
+    base::span<const uint8_t> secret,
+    base::span<const uint8_t> nonce) {
+  crypto::Aead aead(crypto::Aead::AES_256_GCM);
+  aead.Init(secret);
+  return aead.Open(payload, nonce,
+                   /*additional_data=*/base::span<uint8_t>());
+}
+
+absl::optional<proto::V1Message> ParseAuthMessage(
+    base::span<const uint8_t> auth_message_bytes) {
+  proto::AesGcmAuthenticationMessage auth_message;
+  if (!auth_message.ParseFromString(
+          std::string(auth_message_bytes.begin(), auth_message_bytes.end()))) {
+    QS_LOG(ERROR) << "Failed to parse AesGcmAuthenticationMessage.";
+    return absl::nullopt;
+  }
+  if (!auth_message.has_version() || auth_message.version() != 1 ||
+      !auth_message.has_v1()) {
+    QS_LOG(ERROR) << "AesGcmAuthenticationMessage has unknown version.";
+    return absl::nullopt;
+  }
+  const proto::V1Message& v1_message = auth_message.v1();
+  if (!v1_message.has_nonce()) {
+    QS_LOG(ERROR) << "AesGcmAuthenticationMessage missing nonce.";
+    return absl::nullopt;
+  }
+  if (v1_message.nonce().size() != 12u) {
+    QS_LOG(ERROR) << "Nonce has bad length. Should be 12 bytes.";
+    return absl::nullopt;
+  }
+  if (!v1_message.has_payload()) {
+    QS_LOG(ERROR) << "AesGcmAuthenticationMessage missing payload.";
+    return absl::nullopt;
+  }
+  return v1_message;
+}
+
+absl::optional<proto::V1Message::AuthenticationPayload> ParseAuthPayload(
+    base::span<const uint8_t> bytes) {
+  proto::V1Message::AuthenticationPayload auth_payload;
+  if (!auth_payload.ParseFromString(std::string(bytes.begin(), bytes.end()))) {
+    QS_LOG(ERROR) << "Failed to parse AuthenticationPayload.";
+    return absl::nullopt;
+  }
+  if (!auth_payload.has_role()) {
+    QS_LOG(ERROR) << "AuthenticationPayload missing role.";
+    return absl::nullopt;
+  }
+
+  if (!auth_payload.has_auth_string()) {
+    QS_LOG(ERROR) << "AuthenticationPayload missing auth_string.";
+    return absl::nullopt;
+  }
+  return auth_payload;
 }
 
 }  // namespace
@@ -60,6 +119,48 @@ std::vector<uint8_t> BuildHandshakeMessage(
 
   return std::vector<uint8_t>(auth_message_serialized.begin(),
                               auth_message_serialized.end());
+}
+
+bool VerifyHandshakeMessage(base::span<const uint8_t> auth_message_bytes,
+                            const std::string& auth_token,
+                            std::array<uint8_t, 32> secret,
+                            DeviceRole role) {
+  absl::optional<proto::V1Message> v1_message =
+      ParseAuthMessage(auth_message_bytes);
+  if (!v1_message) {
+    return false;
+  }
+
+  absl::optional<std::vector<uint8_t>> decrypted_bytes =
+      DecryptPayload(std::vector<uint8_t>(v1_message->payload().begin(),
+                                          v1_message->payload().end()),
+                     secret,
+                     std::vector<uint8_t>(v1_message->nonce().begin(),
+                                          v1_message->nonce().end()));
+  if (!decrypted_bytes) {
+    QS_LOG(ERROR) << "Auth payload failed to decrypt.";
+    return false;
+  }
+
+  absl::optional<proto::V1Message::AuthenticationPayload> auth_payload =
+      ParseAuthPayload(*decrypted_bytes);
+  if (!auth_payload) {
+    return false;
+  }
+
+  if (auth_payload->role() != static_cast<int32_t>(role)) {
+    QS_LOG(ERROR) << "AuthenticationPayload role does not match expected role ("
+                  << (role == DeviceRole::kSource ? "Source" : "Target")
+                  << ").";
+    return false;
+  }
+
+  if (auth_payload->auth_string() != auth_token) {
+    QS_LOG(ERROR)
+        << "AuthenticationPayload auth_string does not match auth token.";
+    return false;
+  }
+  return true;
 }
 
 }  // namespace ash::quick_start::handshake
