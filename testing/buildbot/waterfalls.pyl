@@ -3443,6 +3443,9 @@
           'xcode_14_main',
           'xctest',
         ],
+        'test_suites': {
+          'isolated_scripts': 'ios15_beta_simulator_tests'
+        },
       },
       'ios15-sdk-simulator': {
         'additional_compile_targets': [
