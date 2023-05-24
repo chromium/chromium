@@ -96,9 +96,8 @@ namespace {
 const char kBackForwardCachePageWithFormStorableHistogramName[] =
     "BackForwardCache.PageWithForm.Storable";
 
-bool IsDataOrAbout(const GURL& url) {
-  return url.IsAboutSrcdoc() || url.IsAboutBlank() ||
-         url.scheme() == url::kDataScheme;
+bool IsAbout(const GURL& url) {
+  return url.IsAboutSrcdoc() || url.IsAboutBlank();
 }
 
 // Helper function to determine whether a navigation from `current_rfh` to
@@ -3002,7 +3001,9 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
   // skip the IsSuitableForUrlInfo() check. Note that it's impossible to
   // have a sandboxed parent but unsandboxed child.
   bool is_data_or_about_and_not_sandboxed =
-      IsDataOrAbout(dest_url_info.url) && !dest_url_info.is_sandboxed;
+      (dest_url_info.url.SchemeIs(url::kDataScheme) ||
+       IsAbout(dest_url_info.url)) &&
+      !dest_url_info.is_sandboxed;
   if (is_data_or_about_and_not_sandboxed)
     return true;
 
@@ -3122,8 +3123,10 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // We use the source SiteInstance in case of data URLs, about:srcdoc pages and
   // about:blank pages because the content is then controlled and/or scriptable
   // by the initiator and therefore needs to stay in the `source_instance`.
-  if (!IsDataOrAbout(dest_url_info.url))
+  if (!dest_url_info.url.SchemeIs(url::kDataScheme) &&
+      !IsAbout(dest_url_info.url)) {
     return false;
+  }
 
   // If `dest_url_info` is sandboxed, then we can't assign it to a SiteInstance
   // that isn't sandboxed. But if the `source_instance` is also sandboxed, then
