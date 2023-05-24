@@ -540,13 +540,6 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     const ContainerQuery* container_query =
         container_query_seeker.Seek(rule_data.GetPosition());
     if (container_query) {
-      if (container_query->Selector().SelectsSizeContainers()) {
-        result_.SetDependsOnSizeContainerQueries();
-      }
-      if (container_query->Selector().SelectsStyleContainers()) {
-        result_.SetDependsOnStyleContainerQueries();
-      }
-
       // If we are matching pseudo elements like a ::before rule when computing
       // the styles of the originating element, we don't know whether the
       // container will be the originating element or not. There is not enough
@@ -573,6 +566,24 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
             result_.SetConditionallyAffectsAnimations();
           }
           continue;
+        }
+      } else {
+        // We are skipping container query matching for pseudo element selectors
+        // when not actually matching style for the pseudo element itself. Still
+        // we need to keep track of size/style query dependencies since query
+        // changes may cause pseudo elements to start being generated.
+        bool selects_size = false;
+        bool selects_style = false;
+        for (const ContainerQuery* current = container_query; current;
+             current = current->Parent()) {
+          selects_size |= current->Selector().SelectsSizeContainers();
+          selects_style |= current->Selector().SelectsStyleContainers();
+        }
+        if (selects_size) {
+          result_.SetDependsOnSizeContainerQueries();
+        }
+        if (selects_style) {
+          result_.SetDependsOnStyleContainerQueries();
         }
       }
     }

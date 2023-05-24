@@ -132,6 +132,13 @@ bool ContainerQueryEvaluator::EvalAndAdd(
     return false;
   }
 
+  if (selects_size) {
+    match_result.SetDependsOnSizeContainerQueries();
+  }
+  if (selects_style) {
+    match_result.SetDependsOnStyleContainerQueries();
+  }
+
   Element* starting_element =
       selects_size ? context.container : style_container_candidate;
   Element* container = CachedContainer(starting_element, query.Selector(),
