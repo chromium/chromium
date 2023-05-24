@@ -812,9 +812,9 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
         buttonConfiguration.baseForegroundColor =
             [UIColor colorNamed:kBlueColor];
         buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-            kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
+            kCompactHorizontalStyle.kButtonTitleVerticalContentInset + 3,
             kCompactHorizontalStyle.kButtonTitleHorizontalContentInset,
-            kCompactHorizontalStyle.kButtonTitleVerticalContentInset,
+            kCompactHorizontalStyle.kButtonTitleVerticalContentInset + 3,
             kCompactHorizontalStyle.kButtonTitleHorizontalContentInset);
         self.primaryButton.configuration = buttonConfiguration;
       } else {
