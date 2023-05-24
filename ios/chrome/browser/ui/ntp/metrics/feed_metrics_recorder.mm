@@ -47,6 +47,10 @@ using feed::FeedUserActionType;
 @property(nonatomic, assign) BOOL goodVisitReportedDiscover;
 @property(nonatomic, assign) BOOL goodVisitReportedFollowing;
 
+// Tracking property to avoid duplicate recordings of the Activity Buckets
+// metric.
+@property(nonatomic, assign) NSDate* activityBucketLastReportedDate;
+
 // Tracks whether user has engaged with the latest refreshed content. The term
 // "engaged" is defined by its usage in this file. For example, it may be
 // similar to `engagedSimpleReportedDiscover`.
@@ -194,6 +198,7 @@ using feed::FeedUserActionType;
     // Total time spent in feed metrics.
     self.timeSpentInFeed =
         base::Seconds([defaults doubleForKey:kTimeSpentInFeedAggregateKey]);
+    [self computeActivityBuckets];
     [self recordTimeSpentInFeedIfDayIsDone];
 
     self.previousTimeInFeedForGoodVisitSession =
@@ -887,6 +892,117 @@ using feed::FeedUserActionType;
   }
 }
 
+// Logs engagement daily for the Activity Buckets Calculation.
+- (void)logDailyActivity {
+  NSDate* now = [NSDate date];
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+  // Check if the array is initialized.
+  NSMutableArray<NSDate*>* lastReportedArray = [[defaults
+      arrayForKey:kActivityBucketLastReportedDateArrayKey] mutableCopy];
+  if (!lastReportedArray) {
+    // Initialized before (could be empty).
+    lastReportedArray = [NSMutableArray new];
+  }
+
+  // Adds a daily entry to the `lastReportedArray` array
+  // only once when the user engages.
+  if ([now timeIntervalSinceDate:[lastReportedArray lastObject]] >=
+          (24 * 60 * 60) ||
+      lastReportedArray.count == 0) {
+    [lastReportedArray addObject:now];
+    [defaults setObject:lastReportedArray
+                 forKey:kActivityBucketLastReportedDateArrayKey];
+  }
+}
+
+// Calculates the amount of dates the user has been active for the past 28 days.
+- (void)computeActivityBuckets {
+  NSDate* now = [NSDate date];
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+  NSDate* lastActivityBucketReported = base::mac::ObjCCast<NSDate>(
+      [defaults objectForKey:kActivityBucketLastReportedDateKey]);
+  // If the `lastActivityBucketReported` does not exist, set it to now to
+  // prevent the first day from logging a metric.
+  if (!lastActivityBucketReported) {
+    lastActivityBucketReported = now;
+    [defaults setObject:lastActivityBucketReported
+                 forKey:kActivityBucketLastReportedDateKey];
+  }
+
+  // Check if the last time the activity was reported is more than 24 hrs ago,
+  // and return for performance.
+  if ([now timeIntervalSinceDate:lastActivityBucketReported] < (24 * 60 * 60)) {
+    return;
+  }
+
+  // Retrieve activity bucket from storage.
+  FeedActivityBucket activityBucket =
+      (FeedActivityBucket)[defaults integerForKey:kActivityBucketKey];
+
+  // Calculate activity buckets.
+  // Check if the array is initialized.
+  NSMutableArray<NSDate*>* lastReportedArray = [[defaults
+      arrayForKey:kActivityBucketLastReportedDateArrayKey] mutableCopy];
+  if (!lastReportedArray) {
+    // Initialized before (could be empty).
+    lastReportedArray = [NSMutableArray new];
+  }
+
+  // Check for dates > 28 days and remove older items.
+  NSMutableIndexSet* toDelete = [[NSMutableIndexSet alloc] init];
+  for (NSUInteger i = 0; i < lastReportedArray.count; i++) {
+    if ([now timeIntervalSinceDate:[lastReportedArray objectAtIndex:i]] /
+            (24 * 60 * 60) >
+        kRangeForActivityBucketsInDays) {
+      [toDelete addIndex:i];
+    } else {
+      break;
+    }
+  }
+
+  // The count should never be < 1 for `lastReportedArray` when toDelete > 0 to
+  // prevent a crash / out of bounds errors.
+  if (toDelete.count > 0) {
+    CHECK(lastReportedArray.count >= 1);
+    [lastReportedArray removeObjectsAtIndexes:toDelete];
+  }
+  [defaults setObject:lastReportedArray
+               forKey:kActivityBucketLastReportedDateArrayKey];
+
+  // Check how many items in array.
+  NSUInteger datesActive = lastReportedArray.count;
+  switch (datesActive) {
+    case 0:
+      activityBucket = FeedActivityBucket::kNoActivity;
+      break;
+    case 1 ... 7:
+      activityBucket = FeedActivityBucket::kLowActivity;
+      break;
+    case 8 ... 15:
+      activityBucket = FeedActivityBucket::kMediumActivity;
+      break;
+    case 16 ... 28:
+      activityBucket = FeedActivityBucket::kHighActivity;
+      break;
+    default:
+      // This should never be reached, as dates should never be > 28 days.
+      CHECK(NO);
+      break;
+  }
+  [defaults setInteger:(int)activityBucket forKey:kActivityBucketKey];
+
+  // Activity Buckets Daily Run.
+  [self recordActivityBuckets:activityBucket];
+  [defaults setObject:now forKey:kActivityBucketLastReportedDateKey];
+}
+
+// Records the engagement buckets.
+- (void)recordActivityBuckets:(FeedActivityBucket)activityBucket {
+  UMA_HISTOGRAM_ENUMERATION(kAllFeedsActivityBucketsHistogram, activityBucket);
+}
+
 // Records Feed engagement.
 - (void)recordEngagement:(int)scrollDistance interacted:(BOOL)interacted {
   scrollDistance = abs(scrollDistance);
@@ -1054,6 +1170,9 @@ using feed::FeedUserActionType;
     // such as the top-of-feed signin promo.
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     [defaults setBool:YES forKey:kEngagedWithFeedKey];
+
+    // Log engagement for Activity Buckets.
+    [self logDailyActivity];
 
     UMA_HISTOGRAM_ENUMERATION(kAllFeedsEngagementTypeHistogram,
                               FeedEngagementType::kFeedEngaged);

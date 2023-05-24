@@ -1994,6 +1994,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.{FeedType}.Activity"
+    enum="FeedActivityBucket" expires_after="2023-11-24">
+  <owner>guiperez@google.com</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Tracks user activity buckets with {FeedType}. Each bucket composed of the
+    user's activity level. Logs the for the first time 1 day after the metric is
+    active (only on first time use), then logs an activity bucket after at least
+    24hrs from the last log have elapsed. When the &quot;Engaged&quot; metric is
+    triggered we log one more day of activity during the past 28 days.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="the For-You feed"/>
+    <variant name="Feed.AllFeeds" summary="All Feeds combined"/>
+    <variant name="Feed.WebFeed" summary="the Following/Web Feed"/>
+  </token>
+</histogram>
+
 <histogram name="ContentSuggestions.{FeedType}.CardIndexOnSwitch" units="index"
     expires_after="2023-04-21">
   <owner>adamta@google.com</owner>

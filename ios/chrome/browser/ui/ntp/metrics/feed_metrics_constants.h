@@ -31,6 +31,9 @@ extern const int kMinutesBetweenSessions;
 // The max amount of cards in the Discover Feed.
 extern const int kMaxCardsInFeed;
 
+// The number of days for the Activity Buckets calculations.
+extern const int kRangeForActivityBucketsInDays;
+
 // Stores the time when the user visits an article on the feed.
 extern NSString* const kArticleVisitTimestampKey;
 // Stores the time elapsed on the feed when the user leaves.
@@ -47,6 +50,12 @@ extern NSString* const kLastInteractionTimeForFollowingGoodVisits;
 extern NSString* const kLastDayTimeInFeedReportedKey;
 // Stores the time spent on the feed for a day.
 extern NSString* const kTimeSpentInFeedAggregateKey;
+// Stores the last time the activity bucket was reported.
+extern NSString* const kActivityBucketLastReportedDateKey;
+// Stores the last 28 days of activity bucket reported days.
+extern NSString* const kActivityBucketLastReportedDateArrayKey;
+// Stores the latest activity bucket the user was on.
+extern NSString* const kActivityBucketKey;
 
 #pragma mark - Enums
 
@@ -208,6 +217,21 @@ enum class FeedSortType {
   kMaxValue = kSortedByLatest,
 };
 
+// TODO(crbug.com/1447234): Clean up the kError enum.
+// The values for the Feed Activity Buckets metric.
+enum class FeedActivityBucket {
+  // No activity bucket for users active 0/28 days.
+  kNoActivity = 0,
+  // Low activity bucket for users active 1-7/28 days.
+  kLowActivity = 1,
+  // Medium activity bucket for users active 8-15/28 days.
+  kMediumActivity = 2,
+  // High activity bucket for users active 16+/28 days.
+  kHighActivity = 3,
+  // Highest enumerator. Recommended by Histogram metrics best practices.
+  kMaxValue = kHighActivity,
+};
+
 #pragma mark - Histograms
 
 // Histogram name for the Time Spent in Feed.
@@ -222,6 +246,9 @@ extern const char kDiscoverFeedUserActionCommandHistogram[];
 extern const char kDiscoverFeedEngagementTypeHistogram[];
 extern const char kFollowingFeedEngagementTypeHistogram[];
 extern const char kAllFeedsEngagementTypeHistogram[];
+
+// Histogram name for the feed activity bucket metric.
+extern const char kAllFeedsActivityBucketsHistogram[];
 
 // Histogram name for a Discover feed card shown at index.
 extern const char kDiscoverFeedCardShownAtIndex[];
