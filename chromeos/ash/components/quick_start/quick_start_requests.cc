@@ -164,7 +164,7 @@ std::vector<uint8_t> CBOREncodeGetAssertionRequest(const cbor::Value& request) {
   // Encode the CtapGetAssertionRequest into cbor bytes vector.
   absl::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(request);
-  DCHECK(cbor_bytes);
+  CHECK(cbor_bytes);
   std::vector<uint8_t> request_bytes = std::move(*cbor_bytes);
   // Add the command byte to the beginning of this now fully encoded cbor bytes
   // vector.
@@ -175,7 +175,7 @@ std::vector<uint8_t> CBOREncodeGetAssertionRequest(const cbor::Value& request) {
 
 std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
     int32_t session_id,
-    std::string& shared_secret) {
+    const base::span<uint8_t, 32> shared_secret) {
   std::unique_ptr<QuickStartMessage> message =
       std::make_unique<QuickStartMessage>(
           QuickStartMessageType::kQuickStartPayload);

@@ -118,16 +118,12 @@ void Connection::RequestWifiCredentials(
 void Connection::NotifySourceOfUpdate(int32_t session_id,
                                       NotifySourceOfUpdateCallback callback) {
   // Send message to source that target device will perform an update.
-  // TODO(b/234655072): Cleanup BuildNotifySourceOfUpdateMessage plumbing to
-  // pass in session_id as a base::span<uint8_t,32> and avoid copying twice.
-  std::string shared_secret_str(secondary_shared_secret_.begin(),
-                                secondary_shared_secret_.end());
-
   response_timeout_timer_.Start(FROM_HERE, kNotifySourceOfUpdateResponseTimeout,
                                 base::BindOnce(&Connection::OnResponseTimeout,
                                                weak_ptr_factory_.GetWeakPtr()));
   SendMessage(
-      requests::BuildNotifySourceOfUpdateMessage(session_id, shared_secret_str),
+      requests::BuildNotifySourceOfUpdateMessage(session_id,
+                                                 secondary_shared_secret_),
       base::BindOnce(&Connection::OnNotifySourceOfUpdateResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
