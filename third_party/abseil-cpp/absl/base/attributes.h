@@ -685,6 +685,28 @@
 #define ABSL_DEPRECATED(message)
 #endif
 
+// When deprecating Abseil code, it is sometimes necessary to turn off the
+// warning within Abseil, until the deprecated code is actually removed. The
+// deprecated code can be surrounded with these directives to acheive that
+// result.
+//
+// class ABSL_DEPRECATED("Use Bar instead") Foo;
+//
+// ABSL_INTERNAL_DISABLE_DEPRECATED_DECLARATION_WARNING
+// Baz ComputeBazFromFoo(Foo f);
+// ABSL_INTERNAL_RESTORE_DEPRECATED_DECLARATION_WARNING
+#if defined(__GNUC__) || defined(__clang__)
+// Clang also supports these GCC pragmas.
+#define ABSL_INTERNAL_DISABLE_DEPRECATED_DECLARATION_WARNING \
+  _Pragma("GCC diagnostic push")             \
+  _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#define ABSL_INTERNAL_RESTORE_DEPRECATED_DECLARATION_WARNING \
+  _Pragma("GCC diagnostic pop")
+#else
+#define ABSL_INTERNAL_DISABLE_DEPRECATED_DECLARATION_WARNING
+#define ABSL_INTERNAL_RESTORE_DEPRECATED_DECLARATION_WARNING
+#endif  // __GNUC__
+
 // ABSL_CONST_INIT
 //
 // A variable declaration annotated with the `ABSL_CONST_INIT` attribute will

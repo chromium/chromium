@@ -18,4 +18,4 @@
 #define ABSL_TEST_LOG LOG
 
 #include "gtest/gtest.h"
-#include "absl/log/log_basic_test_impl.h"
+#include "absl/log/log_basic_test_impl.inc"

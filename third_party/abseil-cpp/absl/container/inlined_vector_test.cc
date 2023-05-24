@@ -31,12 +31,12 @@
 #include "gtest/gtest.h"
 #include "absl/base/attributes.h"
 #include "absl/base/internal/exception_testing.h"
-#include "absl/base/internal/raw_logging.h"
 #include "absl/base/macros.h"
 #include "absl/base/options.h"
 #include "absl/container/internal/counting_allocator.h"
 #include "absl/container/internal/test_instance_tracker.h"
 #include "absl/hash/hash_testing.h"
+#include "absl/log/check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/str_cat.h"
 
@@ -103,13 +103,13 @@ class RefCounted {
   }
 
   void Ref() const {
-    ABSL_RAW_CHECK(count_ != nullptr, "");
+    CHECK_NE(count_, nullptr);
     ++(*count_);
   }
 
   void Unref() const {
     --(*count_);
-    ABSL_RAW_CHECK(*count_ >= 0, "");
+    CHECK_GE(*count_, 0);
   }
 
   int value_;

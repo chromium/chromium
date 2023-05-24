@@ -30,10 +30,11 @@
 #include "gtest/gtest.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
-#include "absl/base/internal/raw_logging.h"
 #include "absl/base/macros.h"
 #include "absl/container/fixed_array.h"
 #include "absl/hash/hash.h"
+#include "absl/log/check.h"
+#include "absl/log/log.h"
 #include "absl/random/random.h"
 #include "absl/strings/cord_test_helpers.h"
 #include "absl/strings/cordz_test_helpers.h"
@@ -210,9 +211,8 @@ class CordTestPeer {
   }
 
   static Cord MakeSubstring(Cord src, size_t offset, size_t length) {
-    ABSL_RAW_CHECK(src.contents_.is_tree(), "Can not be inlined");
-    ABSL_RAW_CHECK(src.ExpectedChecksum() == absl::nullopt,
-                   "Can not be hardened");
+    CHECK(src.contents_.is_tree()) << "Can not be inlined";
+    CHECK(!src.ExpectedChecksum().has_value()) << "Can not be hardened";
     Cord cord;
     auto* tree = cord_internal::SkipCrcNode(src.contents_.tree());
     auto* rep = CordRepSubstring::Create(CordRep::Ref(tree), offset, length);
@@ -374,7 +374,7 @@ TEST_P(CordTest, GigabyteCordFromExternal) {
   for (int i = 0; i < 1024; ++i) {
     c.Append(from);
   }
-  ABSL_RAW_LOG(INFO, "Made a Cord with %zu bytes!", c.size());
+  LOG(INFO) << "Made a Cord with " << c.size() << " bytes!";
   // Note: on a 32-bit build, this comes out to   2,818,048,000 bytes.
   // Note: on a 64-bit build, this comes out to 171,932,385,280 bytes.
 }
@@ -1247,15 +1247,15 @@ absl::Cord BigCord(size_t len, char v) {
 // Splice block into cord.
 absl::Cord SpliceCord(const absl::Cord& blob, int64_t offset,
                       const absl::Cord& block) {
-  ABSL_RAW_CHECK(offset >= 0, "");
-  ABSL_RAW_CHECK(offset + block.size() <= blob.size(), "");
+  CHECK_GE(offset, 0);
+  CHECK_LE(static_cast<size_t>(offset) + block.size(), blob.size());
   absl::Cord result(blob);
   result.RemoveSuffix(blob.size() - offset);
   result.Append(block);
   absl::Cord suffix(blob);
   suffix.RemovePrefix(offset + block.size());
   result.Append(suffix);
-  ABSL_RAW_CHECK(blob.size() == result.size(), "");
+  CHECK_EQ(blob.size(), result.size());
   return result;
 }
 
@@ -1855,7 +1855,7 @@ TEST(CordTest, CordMemoryUsageBTree) {
   // windows DLL, we may have ODR like effects on the flag, meaning the DLL
   // code will run with the picked up default.
   if (!absl::CordTestPeer::Tree(cord1)->IsBtree()) {
-    ABSL_RAW_LOG(WARNING, "Cord library code not respecting btree flag");
+    LOG(WARNING) << "Cord library code not respecting btree flag";
     return;
   }
 
@@ -1940,8 +1940,7 @@ TEST_P(CordTest, DiabolicalGrowth) {
   std::string value;
   absl::CopyCordToString(cord, &value);
   EXPECT_EQ(value, expected);
-  ABSL_RAW_LOG(INFO, "Diabolical size allocated = %zu",
-               cord.EstimatedMemoryUsage());
+  LOG(INFO) << "Diabolical size allocated = " << cord.EstimatedMemoryUsage();
 }
 
 // The following tests check support for >4GB cords in 64-bit binaries, and

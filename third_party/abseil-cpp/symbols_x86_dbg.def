@@ -1012,6 +1012,7 @@ EXPORTS
     ??$countl_zero@I@absl@@YAHI@Z
     ??$countl_zero@_K@absl@@YAH_K@Z
     ??$countr_zero@I@absl@@YAHI@Z
+    ??$countr_zero@_K@absl@@YAH_K@Z
     ??$destroy@PAPBVImpl@time_zone@cctz@time_internal@absl@@XX@?$allocator_traits@V?$allocator@PAPBVImpl@time_zone@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@SAXAAV?$allocator@PAPBVImpl@time_zone@cctz@time_internal@absl@@@12@PAPAPBVImpl@time_zone@cctz@time_internal@absl@@@Z
     ??$destroy@PAUCordRep@cord_internal@absl@@XX@?$allocator_traits@V?$allocator@PAUCordRep@cord_internal@absl@@@__Cr@std@@@__Cr@std@@SAXAAV?$allocator@PAUCordRep@cord_internal@absl@@@12@PAPAUCordRep@cord_internal@absl@@@Z
     ??$destroy@PAUPrefixCrc@CrcCordState@crc_internal@absl@@XX@?$allocator_traits@V?$allocator@PAUPrefixCrc@CrcCordState@crc_internal@absl@@@__Cr@std@@@__Cr@std@@SAXAAV?$allocator@PAUPrefixCrc@CrcCordState@crc_internal@absl@@@12@PAPAUPrefixCrc@CrcCordState@crc_internal@absl@@@Z
@@ -2513,6 +2514,8 @@ EXPORTS
     ?FromChrono@absl@@YA?AVDuration@1@ABV?$duration@_JV?$ratio@$00$0PECEA@@__Cr@std@@@chrono@__Cr@std@@@Z
     ?FromChrono@absl@@YA?AVTime@1@ABV?$time_point@Vsystem_clock@chrono@__Cr@std@@V?$duration@_JV?$ratio@$00$0PECEA@@__Cr@std@@@234@@chrono@__Cr@std@@@Z
     ?FromCivil@absl@@YA?AVTime@1@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@1@VTimeZone@1@@Z
+    ?FromHost16@little_endian@absl@@YAGG@Z
+    ?FromHost32@little_endian@absl@@YAII@Z
     ?FromHost64@little_endian@absl@@YA_K_K@Z
     ?FromInt64@time_internal@absl@@YA?AVDuration@2@_JV?$ratio@$0DM@$00@__Cr@std@@@Z
     ?FromInt64@time_internal@absl@@YA?AVDuration@2@_JV?$ratio@$0OBA@$00@__Cr@std@@@Z
@@ -3140,6 +3143,9 @@ EXPORTS
     ?StatusMessageAsCStr@absl@@YAPBDABVStatus@1@@Z
     ?StderrThreshold@absl@@YA?AW4LogSeverityAtLeast@1@XZ
     ?SteadyClockNow@KernelTimeout@synchronization_internal@absl@@CA_JXZ
+    ?Store16@little_endian@absl@@YAXPAXG@Z
+    ?Store32@little_endian@absl@@YAXPAXI@Z
+    ?Store64@little_endian@absl@@YAXPAX_K@Z
     ?Store@?$AtomicHook@P6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@absl@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@ABVCord@2@@Z@base_internal@absl@@QAEXP6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@3@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@ABVCord@3@@Z@Z
     ?Store@?$AtomicHook@P6AXPBDH000@Z@base_internal@absl@@QAEXP6AXPBDH000@Z@Z
     ?Store@?$AtomicHook@P6AXPBDPBX@Z@base_internal@absl@@QAEXP6AXPBDPBX@Z@Z
@@ -3287,6 +3293,9 @@ EXPORTS
     ?UnalignedLoad16@base_internal@absl@@YAGPBX@Z
     ?UnalignedLoad32@base_internal@absl@@YAIPBX@Z
     ?UnalignedLoad64@base_internal@absl@@YA_KPBX@Z
+    ?UnalignedStore16@base_internal@absl@@YAXPAXG@Z
+    ?UnalignedStore32@base_internal@absl@@YAXPAXI@Z
+    ?UnalignedStore64@base_internal@absl@@YAXPAX_K@Z
     ?UnauthenticatedError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?UnavailableError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?UnextendByZeroes@CRC32@crc_internal@absl@@UBEXPAII@Z

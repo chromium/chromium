@@ -911,19 +911,19 @@ TEST(MakeTime, TimePointResolution) {
   const time_zone utc = utc_time_zone();
   const time_point<chrono::nanoseconds> tp_ns =
       convert(civil_second(2015, 1, 2, 3, 4, 5), utc);
-  EXPECT_EQ("04:05", format("%M:%E*S", tp_ns, utc));
+  EXPECT_EQ("04:05", absl::time_internal::cctz::format("%M:%E*S", tp_ns, utc));
   const time_point<chrono::microseconds> tp_us =
       convert(civil_second(2015, 1, 2, 3, 4, 5), utc);
-  EXPECT_EQ("04:05", format("%M:%E*S", tp_us, utc));
+  EXPECT_EQ("04:05", absl::time_internal::cctz::format("%M:%E*S", tp_us, utc));
   const time_point<chrono::milliseconds> tp_ms =
       convert(civil_second(2015, 1, 2, 3, 4, 5), utc);
-  EXPECT_EQ("04:05", format("%M:%E*S", tp_ms, utc));
+  EXPECT_EQ("04:05", absl::time_internal::cctz::format("%M:%E*S", tp_ms, utc));
   const time_point<chrono::seconds> tp_s =
       convert(civil_second(2015, 1, 2, 3, 4, 5), utc);
-  EXPECT_EQ("04:05", format("%M:%E*S", tp_s, utc));
+  EXPECT_EQ("04:05", absl::time_internal::cctz::format("%M:%E*S", tp_s, utc));
   const time_point<absl::time_internal::cctz::seconds> tp_s64 =
       convert(civil_second(2015, 1, 2, 3, 4, 5), utc);
-  EXPECT_EQ("04:05", format("%M:%E*S", tp_s64, utc));
+  EXPECT_EQ("04:05", absl::time_internal::cctz::format("%M:%E*S", tp_s64, utc));
 
   // These next two require chrono::time_point_cast because the conversion
   // from a resolution of seconds (the return value of convert()) to a
@@ -931,10 +931,10 @@ TEST(MakeTime, TimePointResolution) {
   const time_point<chrono::minutes> tp_m =
       chrono::time_point_cast<chrono::minutes>(
           convert(civil_second(2015, 1, 2, 3, 4, 5), utc));
-  EXPECT_EQ("04:00", format("%M:%E*S", tp_m, utc));
+  EXPECT_EQ("04:00", absl::time_internal::cctz::format("%M:%E*S", tp_m, utc));
   const time_point<chrono::hours> tp_h = chrono::time_point_cast<chrono::hours>(
       convert(civil_second(2015, 1, 2, 3, 4, 5), utc));
-  EXPECT_EQ("00:00", format("%M:%E*S", tp_h, utc));
+  EXPECT_EQ("00:00", absl::time_internal::cctz::format("%M:%E*S", tp_h, utc));
 }
 
 TEST(MakeTime, Normalization) {
@@ -960,9 +960,11 @@ TEST(MakeTime, SysSecondsLimits) {
 
   // Approach the maximal time_point<cctz::seconds> value from below.
   tp = convert(civil_second(292277026596, 12, 4, 15, 30, 6), utc);
-  EXPECT_EQ("292277026596-12-04T15:30:06+00:00", format(RFC3339, tp, utc));
+  EXPECT_EQ("292277026596-12-04T15:30:06+00:00",
+            absl::time_internal::cctz::format(RFC3339, tp, utc));
   tp = convert(civil_second(292277026596, 12, 4, 15, 30, 7), utc);
-  EXPECT_EQ("292277026596-12-04T15:30:07+00:00", format(RFC3339, tp, utc));
+  EXPECT_EQ("292277026596-12-04T15:30:07+00:00",
+            absl::time_internal::cctz::format(RFC3339, tp, utc));
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::max(), tp);
   tp = convert(civil_second(292277026596, 12, 4, 15, 30, 8), utc);
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::max(), tp);
@@ -971,7 +973,8 @@ TEST(MakeTime, SysSecondsLimits) {
 
   // Checks that we can also get the maximal value for a far-east zone.
   tp = convert(civil_second(292277026596, 12, 5, 5, 30, 7), east);
-  EXPECT_EQ("292277026596-12-05T05:30:07+14:00", format(RFC3339, tp, east));
+  EXPECT_EQ("292277026596-12-05T05:30:07+14:00",
+            absl::time_internal::cctz::format(RFC3339, tp, east));
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::max(), tp);
   tp = convert(civil_second(292277026596, 12, 5, 5, 30, 8), east);
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::max(), tp);
@@ -980,7 +983,8 @@ TEST(MakeTime, SysSecondsLimits) {
 
   // Checks that we can also get the maximal value for a far-west zone.
   tp = convert(civil_second(292277026596, 12, 4, 1, 30, 7), west);
-  EXPECT_EQ("292277026596-12-04T01:30:07-14:00", format(RFC3339, tp, west));
+  EXPECT_EQ("292277026596-12-04T01:30:07-14:00",
+            absl::time_internal::cctz::format(RFC3339, tp, west));
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::max(), tp);
   tp = convert(civil_second(292277026596, 12, 4, 7, 30, 8), west);
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::max(), tp);
@@ -989,9 +993,11 @@ TEST(MakeTime, SysSecondsLimits) {
 
   // Approach the minimal time_point<cctz::seconds> value from above.
   tp = convert(civil_second(-292277022657, 1, 27, 8, 29, 53), utc);
-  EXPECT_EQ("-292277022657-01-27T08:29:53+00:00", format(RFC3339, tp, utc));
+  EXPECT_EQ("-292277022657-01-27T08:29:53+00:00",
+            absl::time_internal::cctz::format(RFC3339, tp, utc));
   tp = convert(civil_second(-292277022657, 1, 27, 8, 29, 52), utc);
-  EXPECT_EQ("-292277022657-01-27T08:29:52+00:00", format(RFC3339, tp, utc));
+  EXPECT_EQ("-292277022657-01-27T08:29:52+00:00",
+            absl::time_internal::cctz::format(RFC3339, tp, utc));
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::min(), tp);
   tp = convert(civil_second(-292277022657, 1, 27, 8, 29, 51), utc);
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::min(), tp);
@@ -1000,7 +1006,8 @@ TEST(MakeTime, SysSecondsLimits) {
 
   // Checks that we can also get the minimal value for a far-east zone.
   tp = convert(civil_second(-292277022657, 1, 27, 22, 29, 52), east);
-  EXPECT_EQ("-292277022657-01-27T22:29:52+14:00", format(RFC3339, tp, east));
+  EXPECT_EQ("-292277022657-01-27T22:29:52+14:00",
+            absl::time_internal::cctz::format(RFC3339, tp, east));
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::min(), tp);
   tp = convert(civil_second(-292277022657, 1, 27, 22, 29, 51), east);
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::min(), tp);
@@ -1009,7 +1016,8 @@ TEST(MakeTime, SysSecondsLimits) {
 
   // Checks that we can also get the minimal value for a far-west zone.
   tp = convert(civil_second(-292277022657, 1, 26, 18, 29, 52), west);
-  EXPECT_EQ("-292277022657-01-26T18:29:52-14:00", format(RFC3339, tp, west));
+  EXPECT_EQ("-292277022657-01-26T18:29:52-14:00",
+            absl::time_internal::cctz::format(RFC3339, tp, west));
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::min(), tp);
   tp = convert(civil_second(-292277022657, 1, 26, 18, 29, 51), west);
   EXPECT_EQ(time_point<absl::time_internal::cctz::seconds>::min(), tp);
@@ -1029,14 +1037,16 @@ TEST(MakeTime, SysSecondsLimits) {
 #if defined(__FreeBSD__) || defined(__OpenBSD__)
     // The BSD gmtime_r() fails on extreme positive tm_year values.
 #else
-    EXPECT_EQ("2147485547-12-31T23:59:59+00:00", format(RFC3339, tp, cut));
+    EXPECT_EQ("2147485547-12-31T23:59:59+00:00",
+              absl::time_internal::cctz::format(RFC3339, tp, cut));
 #endif
     const year_t min_tm_year = year_t{std::numeric_limits<int>::min()} + 1900;
     tp = convert(civil_second(min_tm_year, 1, 1, 0, 0, 0), cut);
 #if defined(__Fuchsia__)
     // Fuchsia's gmtime_r() fails on extreme negative values (fxbug.dev/78527).
 #else
-    EXPECT_EQ("-2147481748-01-01T00:00:00+00:00", format(RFC3339, tp, cut));
+    EXPECT_EQ("-2147481748-01-01T00:00:00+00:00",
+              absl::time_internal::cctz::format(RFC3339, tp, cut));
 #endif
 #endif
   }

@@ -96,7 +96,7 @@ absl_test("optional_test") {
   deps = [
     ":optional",
     "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/log",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/strings",
   ]

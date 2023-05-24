@@ -1504,6 +1504,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       True,
       (
           r'^base/win/scoped_winrt_initializer\.cc$',
+          r'^third_party/abseil-cpp/absl/.*',
       ),
     ),
     BanRule(

@@ -289,7 +289,7 @@ cc_library(
         "no_test_ios",
         "no_test_wasm",
     ],
-    textual_hdrs = ["check_test_impl.h"],
+    textual_hdrs = ["check_test_impl.inc"],
     visibility = ["//visibility:private"],
     deps = [
         "//absl/base:config",
@@ -373,7 +373,7 @@ cc_library(
     testonly = True,
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
-    textual_hdrs = ["log_basic_test_impl.h"],
+    textual_hdrs = ["log_basic_test_impl.inc"],
     visibility = ["//visibility:private"],
     deps = [
         "//absl/base",
@@ -459,7 +459,6 @@ cc_test(
         ":log_sink_registry",
         ":scoped_mock_log",
         "//absl/base:core_headers",
-        "//absl/base:raw_logging_internal",
         "//absl/log/internal:test_actions",
         "//absl/log/internal:test_helpers",
         "//absl/log/internal:test_matchers",

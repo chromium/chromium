@@ -52,6 +52,22 @@ absl_source_set("counting_allocator") {
   visibility = [ ":*" ]
 }
 
+absl_test("inlined_vector_test") {
+  sources = [ "inlined_vector_test.cc" ]
+  deps = [
+    ":counting_allocator",
+    ":inlined_vector",
+    ":test_instance_tracker",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:exception_testing",
+    "//third_party/abseil-cpp/absl/hash:hash_testing",
+    "//third_party/abseil-cpp/absl/log:check",
+    "//third_party/abseil-cpp/absl/memory",
+    "//third_party/abseil-cpp/absl/strings",
+  ]
+}
+
 absl_source_set("test_instance_tracker") {
   testonly = true
   sources = [ "internal/test_instance_tracker.cc" ]
@@ -401,22 +417,6 @@ absl_source_set("btree_test_common") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:cord",
     "//third_party/abseil-cpp/absl/time",
-  ]
-}
-
-absl_test("inlined_vector_test") {
-  sources = [ "inlined_vector_test.cc" ]
-  deps = [
-    ":counting_allocator",
-    ":inlined_vector",
-    ":test_instance_tracker",
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/base:exception_testing",
-    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
-    "//third_party/abseil-cpp/absl/hash:hash_testing",
-    "//third_party/abseil-cpp/absl/memory",
-    "//third_party/abseil-cpp/absl/strings",
   ]
 }
 

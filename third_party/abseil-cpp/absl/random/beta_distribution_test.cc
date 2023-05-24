@@ -28,7 +28,7 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "absl/base/internal/raw_logging.h"
+#include "absl/log/log.h"
 #include "absl/numeric/internal/representation.h"
 #include "absl/random/internal/chi_square.h"
 #include "absl/random/internal/distribution_test_util.h"
@@ -107,8 +107,8 @@ TYPED_TEST(BetaDistributionInterfaceTest, SerializeTest) {
   };
   for (TypeParam alpha : kValues) {
     for (TypeParam beta : kValues) {
-      ABSL_INTERNAL_LOG(
-          INFO, absl::StrFormat("Smoke test for Beta(%a, %a)", alpha, beta));
+      LOG(INFO) << absl::StreamFormat("Smoke test for Beta(%a, %a)", alpha,
+                                      beta);
 
       param_type param(alpha, beta);
       absl::beta_distribution<TypeParam> before(alpha, beta);
@@ -327,15 +327,13 @@ bool BetaDistributionTest::SingleZTestOnMeanAndVariance(double p,
       absl::random_internal::Near("z", z_mean, 0.0, max_err) &&
       absl::random_internal::Near("z_variance", z_variance, 0.0, max_err);
   if (!pass) {
-    ABSL_INTERNAL_LOG(
-        INFO,
-        absl::StrFormat(
-            "Beta(%f, %f), "
-            "mean: sample %f, expect %f, which is %f stddevs away, "
-            "variance: sample %f, expect %f, which is %f stddevs away.",
-            alpha_, beta_, m.mean, Mean(),
-            std::abs(m.mean - Mean()) / mean_stddev, m.variance, Variance(),
-            std::abs(m.variance - Variance()) / variance_stddev));
+    LOG(INFO) << "Beta(" << alpha_ << ", " << beta_ << "), mean: sample "
+              << m.mean << ", expect " << Mean() << ", which is "
+              << std::abs(m.mean - Mean()) / mean_stddev
+              << " stddevs away, variance: sample " << m.variance << ", expect "
+              << Variance() << ", which is "
+              << std::abs(m.variance - Variance()) / variance_stddev
+              << " stddevs away.";
   }
   return pass;
 }
@@ -396,18 +394,15 @@ bool BetaDistributionTest::SingleChiSquaredTest(double p, size_t samples,
   const bool pass =
       (absl::random_internal::ChiSquarePValue(chi_square, dof) >= p);
   if (!pass) {
-    for (int i = 0; i < cutoffs.size(); i++) {
-      ABSL_INTERNAL_LOG(
-          INFO, absl::StrFormat("cutoff[%d] = %f, actual count %d, expected %d",
-                                i, cutoffs[i], counts[i],
-                                static_cast<int>(expected[i])));
+    for (size_t i = 0; i < cutoffs.size(); i++) {
+      LOG(INFO) << "cutoff[" << i << "] = " << cutoffs[i] << ", actual count "
+                << counts[i] << ", expected " << static_cast<int>(expected[i]);
     }
 
-    ABSL_INTERNAL_LOG(
-        INFO, absl::StrFormat(
-                  "Beta(%f, %f) %s %f, p = %f", alpha_, beta_,
-                  absl::random_internal::kChiSquared, chi_square,
-                  absl::random_internal::ChiSquarePValue(chi_square, dof)));
+    LOG(INFO) << "Beta(" << alpha_ << ", " << beta_ << ") "
+              << absl::random_internal::kChiSquared << " " << chi_square
+              << ", p = "
+              << absl::random_internal::ChiSquarePValue(chi_square, dof);
   }
   return pass;
 }

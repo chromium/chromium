@@ -94,7 +94,7 @@ TEST_P(BasicLogTest, Info) {
     EXPECT_CALL(
         test_sink,
         Send(AllOf(SourceFilename(Eq(__FILE__)),
-                   SourceBasename(Eq("log_basic_test_impl.h")),
+                   SourceBasename(Eq("log_basic_test_impl.inc")),
                    SourceLine(Eq(log_line)), Prefix(IsTrue()),
                    LogSeverity(Eq(absl::LogSeverity::kInfo)),
                    TimestampInMatchWindow(),
@@ -123,7 +123,7 @@ TEST_P(BasicLogTest, Warning) {
     EXPECT_CALL(
         test_sink,
         Send(AllOf(SourceFilename(Eq(__FILE__)),
-                   SourceBasename(Eq("log_basic_test_impl.h")),
+                   SourceBasename(Eq("log_basic_test_impl.inc")),
                    SourceLine(Eq(log_line)), Prefix(IsTrue()),
                    LogSeverity(Eq(absl::LogSeverity::kWarning)),
                    TimestampInMatchWindow(),
@@ -152,7 +152,7 @@ TEST_P(BasicLogTest, Error) {
     EXPECT_CALL(
         test_sink,
         Send(AllOf(SourceFilename(Eq(__FILE__)),
-                   SourceBasename(Eq("log_basic_test_impl.h")),
+                   SourceBasename(Eq("log_basic_test_impl.inc")),
                    SourceLine(Eq(log_line)), Prefix(IsTrue()),
                    LogSeverity(Eq(absl::LogSeverity::kError)),
                    TimestampInMatchWindow(),
@@ -203,7 +203,7 @@ TEST_P(BasicLogDeathTest, Fatal) {
           EXPECT_CALL(
               test_sink,
               Send(AllOf(SourceFilename(Eq(__FILE__)),
-                         SourceBasename(Eq("log_basic_test_impl.h")),
+                         SourceBasename(Eq("log_basic_test_impl.inc")),
                          SourceLine(Eq(log_line)), Prefix(IsTrue()),
                          LogSeverity(Eq(absl::LogSeverity::kFatal)),
                          TimestampInMatchWindow(),
@@ -219,7 +219,7 @@ TEST_P(BasicLogDeathTest, Fatal) {
           EXPECT_CALL(
               test_sink,
               Send(AllOf(SourceFilename(Eq(__FILE__)),
-                         SourceBasename(Eq("log_basic_test_impl.h")),
+                         SourceBasename(Eq("log_basic_test_impl.inc")),
                          SourceLine(Eq(log_line)), Prefix(IsTrue()),
                          LogSeverity(Eq(absl::LogSeverity::kFatal)),
                          TimestampInMatchWindow(),
@@ -257,7 +257,7 @@ TEST_P(BasicLogDeathTest, QFatal) {
           EXPECT_CALL(
               test_sink,
               Send(AllOf(SourceFilename(Eq(__FILE__)),
-                         SourceBasename(Eq("log_basic_test_impl.h")),
+                         SourceBasename(Eq("log_basic_test_impl.inc")),
                          SourceLine(Eq(log_line)), Prefix(IsTrue()),
                          LogSeverity(Eq(absl::LogSeverity::kFatal)),
                          TimestampInMatchWindow(),
@@ -293,7 +293,7 @@ TEST_P(BasicLogTest, Level) {
       EXPECT_CALL(
           test_sink,
           Send(AllOf(SourceFilename(Eq(__FILE__)),
-                     SourceBasename(Eq("log_basic_test_impl.h")),
+                     SourceBasename(Eq("log_basic_test_impl.inc")),
                      SourceLine(Eq(log_line)), Prefix(IsTrue()),
                      LogSeverity(Eq(severity)), TimestampInMatchWindow(),
                      ThreadID(Eq(absl::base_internal::GetTID())),
@@ -336,7 +336,7 @@ TEST_P(BasicLogDeathTest, Level) {
           EXPECT_CALL(
               test_sink,
               Send(AllOf(SourceFilename(Eq(__FILE__)),
-                         SourceBasename(Eq("log_basic_test_impl.h")),
+                         SourceBasename(Eq("log_basic_test_impl.inc")),
                          SourceLine(Eq(log_line)), Prefix(IsTrue()),
                          LogSeverity(Eq(absl::LogSeverity::kFatal)),
                          TimestampInMatchWindow(),
@@ -351,7 +351,7 @@ TEST_P(BasicLogDeathTest, Level) {
           EXPECT_CALL(
               test_sink,
               Send(AllOf(SourceFilename(Eq(__FILE__)),
-                         SourceBasename(Eq("log_basic_test_impl.h")),
+                         SourceBasename(Eq("log_basic_test_impl.inc")),
                          SourceLine(Eq(log_line)), Prefix(IsTrue()),
                          LogSeverity(Eq(absl::LogSeverity::kFatal)),
                          TimestampInMatchWindow(),

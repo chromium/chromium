@@ -16,12 +16,12 @@
 
 #include <vector>
 
-#include "absl/base/internal/raw_logging.h"
 #include "absl/container/internal/hash_generator_testing.h"
 #include "absl/container/internal/unordered_set_constructor_test.h"
 #include "absl/container/internal/unordered_set_lookup_test.h"
 #include "absl/container/internal/unordered_set_members_test.h"
 #include "absl/container/internal/unordered_set_modifiers_test.h"
+#include "absl/log/check.h"
 #include "absl/memory/memory.h"
 #include "absl/strings/string_view.h"
 
@@ -42,8 +42,8 @@ struct BeforeMain {
   BeforeMain() {
     absl::flat_hash_set<int> x;
     x.insert(1);
-    ABSL_RAW_CHECK(!x.contains(0), "x should not contain 0");
-    ABSL_RAW_CHECK(x.contains(1), "x should contain 1");
+    CHECK(!x.contains(0)) << "x should not contain 0";
+    CHECK(x.contains(1)) << "x should contain 1";
   }
 };
 const BeforeMain before_main;

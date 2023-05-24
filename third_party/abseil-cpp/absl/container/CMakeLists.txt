@@ -221,16 +221,16 @@ absl_cc_test(
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
-    absl::counting_allocator
-    absl::inlined_vector
-    absl::test_instance_tracker
+    absl::check
     absl::config
     absl::core_headers
+    absl::counting_allocator
     absl::exception_testing
     absl::hash_testing
+    absl::inlined_vector
     absl::memory
-    absl::raw_logging_internal
     absl::strings
+    absl::test_instance_tracker
     GTest::gmock_main
 )
 
@@ -300,14 +300,14 @@ absl_cc_test(
   COPTS
     ${ABSL_TEST_COPTS}
   DEPS
+    absl::any
+    absl::check
     absl::flat_hash_map
     absl::hash_generator_testing
     absl::unordered_map_constructor_test
     absl::unordered_map_lookup_test
     absl::unordered_map_members_test
     absl::unordered_map_modifiers_test
-    absl::any
-    absl::raw_logging_internal
     GTest::gmock_main
 )
 
@@ -337,15 +337,15 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
     "-DUNORDERED_SET_CXX17"
   DEPS
+    absl::check
     absl::flat_hash_set
     absl::hash_generator_testing
+    absl::memory
+    absl::strings
     absl::unordered_set_constructor_test
     absl::unordered_set_lookup_test
     absl::unordered_set_members_test
     absl::unordered_set_modifiers_test
-    absl::memory
-    absl::raw_logging_internal
-    absl::strings
     GTest::gmock_main
 )
 
@@ -742,7 +742,6 @@ absl_cc_test(
     absl::log
     absl::prefetch
     absl::raw_hash_set
-    absl::raw_logging_internal
     absl::strings
     GTest::gmock_main
 )
@@ -788,9 +787,9 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::layout
+    absl::check
     absl::config
     absl::core_headers
-    absl::raw_logging_internal
     absl::span
     GTest::gmock_main
 )

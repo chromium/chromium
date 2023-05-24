@@ -23,7 +23,7 @@
 
 #include "gtest/gtest.h"
 #include "absl/base/config.h"
-#include "absl/base/internal/raw_logging.h"
+#include "absl/log/log.h"
 #include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
 
@@ -1542,8 +1542,7 @@ TEST(optionalTest, Hash) {
 struct MoveMeNoThrow {
   MoveMeNoThrow() : x(0) {}
   [[noreturn]] MoveMeNoThrow(const MoveMeNoThrow& other) : x(other.x) {
-    ABSL_RAW_LOG(FATAL, "Should not be called.");
-    abort();
+    LOG(FATAL) << "Should not be called.";
   }
   MoveMeNoThrow(MoveMeNoThrow&& other) noexcept : x(other.x) {}
   int x;

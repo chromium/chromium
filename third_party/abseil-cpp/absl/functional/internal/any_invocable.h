@@ -135,8 +135,16 @@ void InvokeR(F&& f, P&&... args) {
 template <class ReturnType, class F, class... P,
           absl::enable_if_t<!std::is_void<ReturnType>::value, int> = 0>
 ReturnType InvokeR(F&& f, P&&... args) {
+  // GCC 12 has a false-positive -Wmaybe-uninitialized warning here.
+#if ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(12, 0)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
   return absl::base_internal::invoke(std::forward<F>(f),
                                      std::forward<P>(args)...);
+#if ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(12, 0)
+#pragma GCC diagnostic pop
+#endif
 }
 
 //
@@ -197,7 +205,7 @@ union TypeErasedState {
 template <class T>
 T& ObjectInLocalStorage(TypeErasedState* const state) {
   // We launder here because the storage may be reused with the same type.
-#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
+#if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606L
   return *std::launder(reinterpret_cast<T*>(&state->storage));
 #elif ABSL_HAVE_BUILTIN(__builtin_launder)
   return *__builtin_launder(reinterpret_cast<T*>(&state->storage));

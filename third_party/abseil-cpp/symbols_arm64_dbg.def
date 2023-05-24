@@ -1015,6 +1015,7 @@ EXPORTS
     ??$copy@PEBVFormatArgImpl@str_format_internal@absl@@PEAV123@@__Cr@std@@YAPEAVFormatArgImpl@str_format_internal@absl@@PEBV234@0PEAV234@@Z
     ??$copy@V?$__deque_iterator@UPrefixCrc@CrcCordState@crc_internal@absl@@PEBU1234@AEBU1234@PEBQEBU1234@_J$0A@@__Cr@std@@V?$__deque_iterator@UPrefixCrc@CrcCordState@crc_internal@absl@@PEAU1234@AEAU1234@PEAPEAU1234@_J$0A@@23@@__Cr@std@@YA?AV?$__deque_iterator@UPrefixCrc@CrcCordState@crc_internal@absl@@PEAU1234@AEAU1234@PEAPEAU1234@_J$0A@@01@V?$__deque_iterator@UPrefixCrc@CrcCordState@crc_internal@absl@@PEBU1234@AEBU1234@PEBQEBU1234@_J$0A@@01@0V201@@Z
     ??$countl_zero@_K@absl@@YAH_K@Z
+    ??$countr_zero@I@absl@@YAHI@Z
     ??$countr_zero@_K@absl@@YAH_K@Z
     ??$destroy@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@XX@?$allocator_traits@V?$allocator@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@__Cr@std@@@__Cr@std@@SAXAEAV?$allocator@PEAPEBVImpl@time_zone@cctz@time_internal@absl@@@12@PEAPEAPEBVImpl@time_zone@cctz@time_internal@absl@@@Z
     ??$destroy@PEAUCordRep@cord_internal@absl@@XX@?$allocator_traits@V?$allocator@PEAUCordRep@cord_internal@absl@@@__Cr@std@@@__Cr@std@@SAXAEAV?$allocator@PEAUCordRep@cord_internal@absl@@@12@PEAPEAUCordRep@cord_internal@absl@@@Z
@@ -2523,6 +2524,8 @@ EXPORTS
     ?FromChrono@absl@@YA?AVDuration@1@AEBV?$duration@_JV?$ratio@$00$0PECEA@@__Cr@std@@@chrono@__Cr@std@@@Z
     ?FromChrono@absl@@YA?AVTime@1@AEBV?$time_point@Vsystem_clock@chrono@__Cr@std@@V?$duration@_JV?$ratio@$00$0PECEA@@__Cr@std@@@234@@chrono@__Cr@std@@@Z
     ?FromCivil@absl@@YA?AVTime@1@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@1@VTimeZone@1@@Z
+    ?FromHost16@little_endian@absl@@YAGG@Z
+    ?FromHost32@little_endian@absl@@YAII@Z
     ?FromHost64@little_endian@absl@@YA_K_K@Z
     ?FromInt64@time_internal@absl@@YA?AVDuration@2@_JV?$ratio@$0DM@$00@__Cr@std@@@Z
     ?FromInt64@time_internal@absl@@YA?AVDuration@2@_JV?$ratio@$0OBA@$00@__Cr@std@@@Z
@@ -3150,6 +3153,8 @@ EXPORTS
     ?StatusMessageAsCStr@absl@@YAPEBDAEBVStatus@1@@Z
     ?StderrThreshold@absl@@YA?AW4LogSeverityAtLeast@1@XZ
     ?SteadyClockNow@KernelTimeout@synchronization_internal@absl@@CA_JXZ
+    ?Store16@little_endian@absl@@YAXPEAXG@Z
+    ?Store32@little_endian@absl@@YAXPEAXI@Z
     ?Store64@little_endian@absl@@YAXPEAX_K@Z
     ?Store@?$AtomicHook@P6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@absl@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@AEBVCord@2@@Z@base_internal@absl@@QEAAXP6A?AV?$optional@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@3@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@AEBVCord@3@@Z@Z
     ?Store@?$AtomicHook@P6AXPEBDH000@Z@base_internal@absl@@QEAAXP6AXPEBDH000@Z@Z
@@ -3298,6 +3303,8 @@ EXPORTS
     ?UnalignedLoad16@base_internal@absl@@YAGPEBX@Z
     ?UnalignedLoad32@base_internal@absl@@YAIPEBX@Z
     ?UnalignedLoad64@base_internal@absl@@YA_KPEBX@Z
+    ?UnalignedStore16@base_internal@absl@@YAXPEAXG@Z
+    ?UnalignedStore32@base_internal@absl@@YAXPEAXI@Z
     ?UnalignedStore64@base_internal@absl@@YAXPEAX_K@Z
     ?UnauthenticatedError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?UnavailableError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z

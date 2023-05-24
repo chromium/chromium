@@ -18,8 +18,8 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/const_init.h"
-#include "absl/base/internal/raw_logging.h"
 #include "absl/base/thread_annotations.h"
+#include "absl/log/check.h"
 #include "absl/synchronization/mutex.h"
 #include "absl/synchronization/notification.h"
 
@@ -35,20 +35,20 @@ namespace {
 // Thread two waits on 'notification', then sets 'state' inside the 'mutex',
 // signalling the change via 'condvar'.
 //
-// These tests use ABSL_RAW_CHECK to validate invariants, rather than EXPECT or
-// ASSERT from gUnit, because we need to invoke them during global destructors,
-// when gUnit teardown would have already begun.
+// These tests use CHECK to validate invariants, rather than EXPECT or ASSERT
+// from gUnit, because we need to invoke them during global destructors, when
+// gUnit teardown would have already begun.
 void ThreadOne(absl::Mutex* mutex, absl::CondVar* condvar,
                absl::Notification* notification, bool* state) {
   // Test that the notification is in a valid initial state.
-  ABSL_RAW_CHECK(!notification->HasBeenNotified(), "invalid Notification");
-  ABSL_RAW_CHECK(*state == false, "*state not initialized");
+  CHECK(!notification->HasBeenNotified()) << "invalid Notification";
+  CHECK(!*state) << "*state not initialized";
 
   {
     absl::MutexLock lock(mutex);
 
     notification->Notify();
-    ABSL_RAW_CHECK(notification->HasBeenNotified(), "invalid Notification");
+    CHECK(notification->HasBeenNotified()) << "invalid Notification";
 
     while (*state == false) {
       condvar->Wait(mutex);
@@ -58,11 +58,11 @@ void ThreadOne(absl::Mutex* mutex, absl::CondVar* condvar,
 
 void ThreadTwo(absl::Mutex* mutex, absl::CondVar* condvar,
                absl::Notification* notification, bool* state) {
-  ABSL_RAW_CHECK(*state == false, "*state not initialized");
+  CHECK(!*state) << "*state not initialized";
 
   // Wake thread one
   notification->WaitForNotification();
-  ABSL_RAW_CHECK(notification->HasBeenNotified(), "invalid Notification");
+  CHECK(notification->HasBeenNotified()) << "invalid Notification";
   {
     absl::MutexLock lock(mutex);
     *state = true;
