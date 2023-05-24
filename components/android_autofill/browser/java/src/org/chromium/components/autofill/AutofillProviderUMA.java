@@ -95,6 +95,22 @@ public class AutofillProviderUMA {
     private static final long MAX_TIME_MILLIS = TimeUnit.SECONDS.toMillis(2);
     private static final int NUM_OF_BUCKETS = 50;
 
+    // The package name of the autofill provider.
+    // To add a new provider, add a String for the provider's package name and an int equal to
+    // AUTOFILL_PROVIDER_MAX for the provider then increment AUTOFILL_PROVIDER_MAX.
+    // Make sure to update tools/metrics/histograms/enums.xml with the new entry. Lastly, add a case
+    // to the switch statement in logCurrentProvider for that provider.
+    private static final String UMA_AUTOFILL_PROVIDER = "Autofill.WebView.Provider.PackageName";
+    private static final int AUTOFILL_PROVIDER_UNKNOWN = 0;
+    private static final String AWG_PACKAGE_NAME = "com.google.android.gms";
+    private static final int AUTOFILL_PROVIDER_AWG = 1;
+    private static final String SAMSUNG_PASS_PACKAGE_NAME =
+            "com.samsung.android.samsungpassautofill";
+    private static final int AUTOFILL_PROVIDER_SAMSUNG_PASS = 2;
+    private static final String LASTPASS_PACKAGE_NAME = "com.lastpass.lpandroid";
+    private static final int AUTOFILL_PROVIDER_LAST_PASS = 3;
+    private static final int AUTOFILL_PROVIDER_MAX = 4;
+
     private static void recordTimesHistogram(String name, long durationMillis) {
         RecordHistogram.recordCustomTimesHistogram(
                 name, durationMillis, MIN_TIME_MILLIS, MAX_TIME_MILLIS, NUM_OF_BUCKETS);
@@ -332,6 +348,28 @@ public class AutofillProviderUMA {
      */
     public void onServerTypeAvailable(FormData formData, boolean afterSessionStarted) {
         mRecorder.onServerTypeAvailable(formData, afterSessionStarted);
+    }
+
+    static void logCurrentProvider(String packageName) {
+        switch (packageName) {
+            case AWG_PACKAGE_NAME:
+                recordUmaAutofillProvider(AUTOFILL_PROVIDER_AWG);
+                break;
+            case SAMSUNG_PASS_PACKAGE_NAME:
+                recordUmaAutofillProvider(AUTOFILL_PROVIDER_SAMSUNG_PASS);
+                break;
+            case LASTPASS_PACKAGE_NAME:
+                recordUmaAutofillProvider(AUTOFILL_PROVIDER_LAST_PASS);
+                break;
+            default:
+                recordUmaAutofillProvider(AUTOFILL_PROVIDER_UNKNOWN);
+                break;
+        }
+    }
+
+    private static void recordUmaAutofillProvider(int autofillProvider) {
+        RecordHistogram.recordEnumeratedHistogram(
+                UMA_AUTOFILL_PROVIDER, autofillProvider, AUTOFILL_PROVIDER_MAX);
     }
 
     private void recordSession() {
