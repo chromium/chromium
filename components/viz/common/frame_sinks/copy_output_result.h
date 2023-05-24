@@ -8,7 +8,7 @@
 #include <array>
 #include <vector>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/viz_common_export.h"
@@ -313,9 +313,7 @@ class VIZ_COMMON_EXPORT CopyOutputResult::ScopedSkBitmap {
   friend class CopyOutputResult;
   explicit ScopedSkBitmap(const CopyOutputResult* result);
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION const CopyOutputResult* result_ = nullptr;
+  raw_ptr<const CopyOutputResult> result_ = nullptr;
 
   THREAD_CHECKER(thread_checker_);
 };

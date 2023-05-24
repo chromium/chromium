@@ -11,7 +11,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
 class GURL;
@@ -57,9 +57,7 @@ class SafeBrowsingApiHandlerBridge {
   // reputation from GmsCore.
   jlong next_callback_id_ = 0;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION UrlCheckInterceptor* interceptor_for_testing_ = nullptr;
+  raw_ptr<UrlCheckInterceptor> interceptor_for_testing_ = nullptr;
 };
 
 // Interface allowing simplified interception of calls to
