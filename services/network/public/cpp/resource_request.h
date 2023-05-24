@@ -202,6 +202,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       mojom::AttributionReportingEligibility::kUnset;
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features;
+  bool shared_dictionary_writer_enabled = false;
 };
 
 // This does not accept |kDefault| referrer policy.

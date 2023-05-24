@@ -394,6 +394,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.attribution_reporting_runtime_features;
   }
+  static bool shared_dictionary_writer_enabled(
+      const network::ResourceRequest& request) {
+    return request.shared_dictionary_writer_enabled;
+  }
 
   static bool Read(network::mojom::URLRequestDataView data,
                    network::ResourceRequest* out);

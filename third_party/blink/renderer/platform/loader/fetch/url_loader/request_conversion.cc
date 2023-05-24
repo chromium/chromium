@@ -412,6 +412,8 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
 
   dest->attribution_reporting_runtime_features =
       src.GetAttributionReportingRuntimeFeatures();
+
+  dest->shared_dictionary_writer_enabled = src.SharedDictionaryWriterEnabled();
 }
 
 }  // namespace blink

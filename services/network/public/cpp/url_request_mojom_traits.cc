@@ -230,6 +230,8 @@ bool StructTraits<
   out->attribution_reporting_support = data.attribution_reporting_support();
   out->attribution_reporting_eligibility =
       data.attribution_reporting_eligibility();
+  out->shared_dictionary_writer_enabled =
+      data.shared_dictionary_writer_enabled();
   return true;
 }
 

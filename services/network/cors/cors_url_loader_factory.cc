@@ -215,7 +215,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
     DCHECK_EQ(mojom::kBrowserProcessId, process_id_);
   }
 
-  if (context_->GetSharedDictionaryManager()) {
+  if (context_->GetSharedDictionaryManager() && client_security_state_ &&
+      client_security_state_->is_web_secure_context) {
     absl::optional<net::SharedDictionaryStorageIsolationKey> isolation_key =
         net::SharedDictionaryStorageIsolationKey::MaybeCreate(
             params->isolation_info);
