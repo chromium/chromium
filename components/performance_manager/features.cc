@@ -126,6 +126,10 @@ const base::FeatureParam<int> kDiscardedTabTreatmentOption{
     &kDiscardedTabTreatment, "discard_tab_treatment_option",
     static_cast<int>(DiscardTabTreatmentOptions::kFadeFullsizedFavicon)};
 
+const base::FeatureParam<int> kMemoryUsageInHovercardsHighThresholdBytes{
+    &kMemoryUsageInHovercards,
+    "memory_usage_in_hovercards_high_threshold_bytes", 800 * 1024 * 1024};
+
 BASE_FEATURE(kUseDeviceBatterySaverChromeOS,
              "UseDeviceBatterySaverChromeOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
