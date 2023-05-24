@@ -711,7 +711,7 @@ void WebAppInstallFinalizer::ScheduleUninstallCommand(
     UninstallWebAppCallback callback) {
   auto uninstall_command = std::make_unique<WebAppUninstallCommand>(
       app_id, external_install_source, uninstall_source, std::move(callback),
-      profile_);
+      *profile_);
 
   command_manager_->ScheduleCommand(std::move(uninstall_command));
 }

@@ -436,7 +436,7 @@ void WebAppCommandScheduler::Uninstall(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<WebAppUninstallCommand>(
           app_id, external_install_source, uninstall_source,
-          std::move(callback), &profile_.get()),
+          std::move(callback), profile_.get()),
       location);
 }
 

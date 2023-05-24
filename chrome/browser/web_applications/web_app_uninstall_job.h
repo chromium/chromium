@@ -8,32 +8,21 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "url/origin.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/files/file_path.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-class PrefService;
 
 namespace webapps {
 enum class UninstallResultCode;
 enum class WebappUninstallSource;
 }  // namespace webapps
 
+class Profile;
+
 namespace web_app {
 
-class OsIntegrationManager;
-class WebAppIconManager;
-class WebAppInstallManager;
-class WebAppRegistrar;
-class WebAppSyncBridge;
-class WebAppTranslationManager;
+class WithAppResources;
 
 // Uninstalls a given web app by:
 // 1) Unregistering OS hooks.
@@ -44,82 +33,47 @@ class WebAppTranslationManager;
 //   the same time.
 class WebAppUninstallJob {
  public:
-  using UninstallCallback =
-      base::OnceCallback<void(webapps::UninstallResultCode)>;
+  using UninstallCallback = base::OnceCallback<void(bool success)>;
 
-  // static
-  static std::unique_ptr<WebAppUninstallJob> CreateAndStart(
-      const AppId& app_id,
-      const url::Origin& app_origin,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      const absl::optional<base::FilePath>& app_profile_path,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      UninstallCallback callback,
-      OsIntegrationManager& os_integration_manager,
-      WebAppSyncBridge& sync_bridge,
-      WebAppIconManager& icon_manager,
-      WebAppRegistrar& registrar,
-      WebAppInstallManager& install_manager,
-      WebAppTranslationManager& translation_manager,
-      PrefService& profile_prefs,
-      webapps::WebappUninstallSource uninstall_source);
+  static std::unique_ptr<WebAppUninstallJob> Start(
+      webapps::WebappUninstallSource uninstall_source,
+      AppId app_id,
+      WithAppResources& resources,
+      Profile& profile,
+      UninstallCallback callback);
 
   ~WebAppUninstallJob();
 
  private:
-  WebAppUninstallJob(const AppId& app_id,
-                     const url::Origin& app_origin,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                     const absl::optional<base::FilePath>& app_profile_path,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-                     UninstallCallback callback,
-                     OsIntegrationManager& os_integration_manager,
-                     WebAppSyncBridge& sync_bridge,
-                     WebAppIconManager& icon_manager,
-                     WebAppRegistrar& registrar,
-                     WebAppInstallManager& install_manager,
-                     WebAppTranslationManager& translation_manager,
-                     PrefService& profile_prefs,
-                     webapps::WebappUninstallSource uninstall_source);
+  WebAppUninstallJob(webapps::WebappUninstallSource uninstall_source,
+                     AppId app_id,
+                     WithAppResources& resources,
+                     Profile& profile,
+                     UninstallCallback callback);
 
-  // The given `app_id` must correspond to an app in the `registrar`.
-  // This modifies the app to set `is_uninstalling()` to true, and delete the
-  // app from the registry after uninstallation is complete.
-  void Start(const url::Origin& app_origin,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             const absl::optional<base::FilePath>& app_profile_path,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-             OsIntegrationManager& os_integration_manager,
-             WebAppIconManager& icon_manager,
-             WebAppTranslationManager& translation_manager,
-             PrefService& profile_prefs);
   void OnOsHooksUninstalled(OsHooksErrors errors);
   void OnIconDataDeleted(bool success);
   void OnTranslationDataDeleted(bool success);
+  void OnWebAppProfileDeleted(Profile* profile);
   void MaybeFinishUninstall();
 
-  enum class State {
-    kNotStarted = 0,
-    kPendingDataDeletion = 1,
-    kDone = 2,
-  } state_ = State::kNotStarted;
-
+  webapps::WebappUninstallSource uninstall_source_;
   AppId app_id_;
-  UninstallCallback callback_;
-
   // The WebAppUninstallJob is kicked off by the WebAppUninstallCommand
   // and is constructed and destructed well within the lifetime of the
   // Uninstall command. This ensures that this class is guaranteed to be
   // destructed before any of the WebAppProvider systems shut down.
-  raw_ptr<WebAppRegistrar> registrar_;
-  raw_ptr<WebAppSyncBridge> sync_bridge_;
-  raw_ptr<WebAppInstallManager> install_manager_;
+  raw_ref<WithAppResources> resources_;
+  // `this` is owned by `profile_`.
+  raw_ref<Profile> profile_;
+  UninstallCallback callback_;
 
-  webapps::WebappUninstallSource uninstall_source_;
   bool app_data_deleted_ = false;
   bool translation_data_deleted_ = false;
   bool hooks_uninstalled_ = false;
+  bool pending_app_profile_deletion_ = false;
   bool errors_ = false;
+  bool done_ = false;
 
   base::WeakPtrFactory<WebAppUninstallJob> weak_ptr_factory_{this};
 };

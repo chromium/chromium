@@ -21,7 +21,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
-class PrefService;
 
 namespace webapps {
 enum class UninstallResultCode;
@@ -71,7 +70,7 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
       absl::optional<WebAppManagement::Type> management_type_or_all,
       webapps::WebappUninstallSource uninstall_source,
       UninstallWebAppCallback callback,
-      Profile* profile);
+      Profile& profile);
   ~WebAppUninstallCommand() override;
 
   // WebAppCommandTemplate<AllAppsLock>:
@@ -110,7 +109,7 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
       OsHooksErrors os_hooks_errors);
   void OnSingleUninstallComplete(const AppId& app_id,
                                  webapps::WebappUninstallSource source,
-                                 webapps::UninstallResultCode code);
+                                 bool success);
   void MaybeFinishUninstallAndDestruct();
 
   std::unique_ptr<AllAppsLockDescription> lock_description_;
@@ -126,7 +125,8 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
 
   UninstallWebAppCallback callback_;
 
-  raw_ptr<PrefService> profile_prefs_;
+  // `this` is owned by `profile_`.
+  raw_ref<Profile> profile_;
 
   base::WeakPtrFactory<WebAppUninstallCommand> weak_factory_{this};
 };

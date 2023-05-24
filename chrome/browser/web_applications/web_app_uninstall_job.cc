@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -32,136 +33,99 @@
 
 namespace web_app {
 
-// static
-std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::CreateAndStart(
-    const AppId& app_id,
-    const url::Origin& app_origin,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    const absl::optional<base::FilePath>& app_profile_path,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    UninstallCallback callback,
-    OsIntegrationManager& os_integration_manager,
-    WebAppSyncBridge& sync_bridge,
-    WebAppIconManager& icon_manager,
-    WebAppRegistrar& registrar,
-    WebAppInstallManager& install_manager,
-    WebAppTranslationManager& translation_manager,
-    PrefService& profile_prefs,
-    webapps::WebappUninstallSource uninstall_source) {
-  return base::WrapUnique(new WebAppUninstallJob(
-      app_id, app_origin,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      app_profile_path,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      std::move(callback), os_integration_manager, sync_bridge, icon_manager,
-      registrar, install_manager, translation_manager, profile_prefs,
-      uninstall_source));
-}
-
-WebAppUninstallJob::WebAppUninstallJob(
-    const AppId& app_id,
-    const url::Origin& app_origin,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    const absl::optional<base::FilePath>& app_profile_path,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    UninstallCallback callback,
-    OsIntegrationManager& os_integration_manager,
-    WebAppSyncBridge& sync_bridge,
-    WebAppIconManager& icon_manager,
-    WebAppRegistrar& registrar,
-    WebAppInstallManager& install_manager,
-    WebAppTranslationManager& translation_manager,
-    PrefService& profile_prefs,
-    webapps::WebappUninstallSource uninstall_source)
-    : app_id_(app_id),
-      callback_(std::move(callback)),
-      registrar_(&registrar),
-      sync_bridge_(&sync_bridge),
-      install_manager_(&install_manager),
-      uninstall_source_(uninstall_source) {
-  Start(app_origin,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        app_profile_path,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-        os_integration_manager, icon_manager, translation_manager,
-        profile_prefs);
-}
-
 WebAppUninstallJob::~WebAppUninstallJob() = default;
 
-void WebAppUninstallJob::Start(
-    const url::Origin& app_origin,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    const absl::optional<base::FilePath>& app_profile_path,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    OsIntegrationManager& os_integration_manager,
-    WebAppIconManager& icon_manager,
-    WebAppTranslationManager& translation_manager,
-    PrefService& profile_prefs) {
-  DCHECK(install_manager_);
+std::unique_ptr<WebAppUninstallJob> WebAppUninstallJob::Start(
+    webapps::WebappUninstallSource uninstall_source,
+    AppId app_id,
+    WithAppResources& resources,
+    Profile& profile,
+    UninstallCallback callback) {
+  CHECK(resources.registrar().GetAppById(app_id));
 
-  DCHECK(state_ == State::kNotStarted);
-  state_ = State::kPendingDataDeletion;
+  auto job = base::WrapUnique(new WebAppUninstallJob(
+      uninstall_source, app_id, resources, profile, std::move(callback)));
+  base::WeakPtr<WebAppUninstallJob> job_weak_ptr =
+      job->weak_ptr_factory_.GetWeakPtr();
 
-  install_manager_->NotifyWebAppWillBeUninstalled(app_id_);
+  resources.install_manager().NotifyWebAppWillBeUninstalled(app_id);
 
-  // Note: It is supported to re-start an uninstall on startup, so
-  // `is_uninstalling()` is not checked. It is a class invariant that there can
-  // never be more than one uninstall task operating on the same web app at the
-  // same time.
   {
-    ScopedRegistryUpdate update(sync_bridge_);
-    WebApp* app = update->UpdateApp(app_id_);
-    DCHECK(app);
+    // Note: It is supported to re-start an uninstall on startup, so
+    // `is_uninstalling()` is not checked. It is a class invariant that there
+    // can never be more than one uninstall task operating on the same web app
+    // at the same time.
+    ScopedRegistryUpdate update(&resources.sync_bridge());
+    WebApp* app = update->UpdateApp(app_id);
+    CHECK(app);
     app->SetIsUninstalling(true);
   }
 
   auto synchronize_barrier = OsIntegrationManager::GetBarrierForSynchronize(
-      base::BindOnce(&WebAppUninstallJob::OnOsHooksUninstalled,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&WebAppUninstallJob::OnOsHooksUninstalled, job_weak_ptr));
 
   // TODO(crbug.com/1401125): Remove UninstallAllOsHooks() once OS integration
   // sub managers have been implemented.
-  os_integration_manager.UninstallAllOsHooks(app_id_, synchronize_barrier);
-  os_integration_manager.Synchronize(
-      app_id_, base::BindOnce(synchronize_barrier, OsHooksErrors()));
+  resources.os_integration_manager().UninstallAllOsHooks(app_id,
+                                                         synchronize_barrier);
+  resources.os_integration_manager().Synchronize(
+      app_id, base::BindOnce(synchronize_barrier, OsHooksErrors()));
 
   // While sometimes `Synchronize` needs to read icon data, for the uninstall
   // case it never needs to be read. Thus, it is safe to schedule this now and
   // not after the `Synchronize` call completes.
-  icon_manager.DeleteData(app_id_,
-                          base::BindOnce(&WebAppUninstallJob::OnIconDataDeleted,
-                                         weak_ptr_factory_.GetWeakPtr()));
+  resources.icon_manager().DeleteData(
+      app_id,
+      base::BindOnce(&WebAppUninstallJob::OnIconDataDeleted, job_weak_ptr));
 
-  translation_manager.DeleteTranslations(
-      app_id_, base::BindOnce(&WebAppUninstallJob::OnTranslationDataDeleted,
-                              weak_ptr_factory_.GetWeakPtr()));
+  resources.translation_manager().DeleteTranslations(
+      app_id, base::BindOnce(&WebAppUninstallJob::OnTranslationDataDeleted,
+                             job_weak_ptr));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (ResolveExperimentalWebAppIsolationFeature() ==
-          ExperimentalWebAppIsolationMode::kProfile &&
-      app_profile_path.has_value()) {
-    CHECK(Profile::IsWebAppProfilePath(app_profile_path.value()));
-    auto* profile_manager = g_browser_process->profile_manager();
-
-    // Check whether the profile exists or not before removing it.
-    if (profile_manager->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(app_profile_path.value())) {
-      g_browser_process->profile_manager()
-          ->GetDeleteProfileHelper()
-          .MaybeScheduleProfileForDeletion(
-              app_profile_path.value(), base::DoNothing(),
-              ProfileMetrics::ProfileDelete::DELETE_PROFILE_USER_MANAGER);
-    } else {
-      LOG(ERROR) << "cannot find web app profile at "
-                 << app_profile_path.value();
+      ExperimentalWebAppIsolationMode::kProfile) {
+    const WebApp& app = *resources.registrar().GetAppById(app_id);
+    if (app.chromeos_data() && app.chromeos_data()->app_profile_path) {
+      const base::FilePath& app_profile_path =
+          app.chromeos_data()->app_profile_path.value();
+      CHECK(Profile::IsWebAppProfilePath(app_profile_path));
+      if (g_browser_process->profile_manager()
+              ->GetProfileAttributesStorage()
+              .GetProfileAttributesWithPath(app_profile_path)) {
+        job->pending_app_profile_deletion_ = true;
+        g_browser_process->profile_manager()
+            ->GetDeleteProfileHelper()
+            .MaybeScheduleProfileForDeletion(
+                app_profile_path,
+                base::BindOnce(&WebAppUninstallJob::OnWebAppProfileDeleted,
+                               job_weak_ptr),
+                ProfileMetrics::ProfileDelete::DELETE_PROFILE_USER_MANAGER);
+      } else {
+        LOG(ERROR) << "cannot find web app profile at " << app_profile_path;
+      }
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  return job;
 }
 
+WebAppUninstallJob::WebAppUninstallJob(
+    webapps::WebappUninstallSource uninstall_source,
+    AppId app_id,
+    WithAppResources& resources,
+    Profile& profile,
+    UninstallCallback callback)
+    : uninstall_source_(uninstall_source),
+      app_id_(app_id),
+      resources_(resources),
+      profile_(profile),
+      callback_(std::move(callback)) {}
+
 void WebAppUninstallJob::OnOsHooksUninstalled(OsHooksErrors errors) {
-  DCHECK(state_ == State::kPendingDataDeletion);
+  CHECK(!done_);
+  CHECK(!hooks_uninstalled_);
   hooks_uninstalled_ = true;
   base::UmaHistogramBoolean("WebApp.Uninstall.OsHookSuccess", errors.none());
   errors_ = errors_ || errors.any();
@@ -169,7 +133,8 @@ void WebAppUninstallJob::OnOsHooksUninstalled(OsHooksErrors errors) {
 }
 
 void WebAppUninstallJob::OnIconDataDeleted(bool success) {
-  DCHECK(state_ == State::kPendingDataDeletion);
+  CHECK(!done_);
+  CHECK(!app_data_deleted_);
   app_data_deleted_ = true;
   base::UmaHistogramBoolean("WebApp.Uninstall.IconDataSuccess", success);
   errors_ = errors_ || !success;
@@ -177,28 +142,40 @@ void WebAppUninstallJob::OnIconDataDeleted(bool success) {
 }
 
 void WebAppUninstallJob::OnTranslationDataDeleted(bool success) {
-  DCHECK(state_ == State::kPendingDataDeletion);
+  CHECK(!done_);
+  CHECK(!translation_data_deleted_);
   translation_data_deleted_ = true;
   errors_ = errors_ || !success;
   MaybeFinishUninstall();
 }
 
+void WebAppUninstallJob::OnWebAppProfileDeleted(Profile* profile) {
+  CHECK(!done_);
+  CHECK(pending_app_profile_deletion_);
+  // This must be an isolated web app profile rather than the WebAppProvider
+  // profile.
+  CHECK_NE(&profile_.get(), profile);
+  pending_app_profile_deletion_ = false;
+  MaybeFinishUninstall();
+}
+
 void WebAppUninstallJob::MaybeFinishUninstall() {
-  DCHECK(state_ == State::kPendingDataDeletion);
-  if (!hooks_uninstalled_ || !app_data_deleted_ || !translation_data_deleted_) {
+  CHECK(!done_);
+  if (!hooks_uninstalled_ || !app_data_deleted_ || !translation_data_deleted_ ||
+      pending_app_profile_deletion_) {
     return;
   }
-  state_ = State::kDone;
+  done_ = true;
 
   base::UmaHistogramBoolean("WebApp.Uninstall.Result", !errors_);
   {
-    DCHECK_NE(registrar_->GetAppById(app_id_), nullptr);
-    ScopedRegistryUpdate update(sync_bridge_);
+    CHECK_NE(resources_->registrar().GetAppById(app_id_), nullptr);
+    ScopedRegistryUpdate update(&resources_->sync_bridge());
     update->DeleteApp(app_id_);
   }
-  install_manager_->NotifyWebAppUninstalled(app_id_, uninstall_source_);
-  std::move(callback_).Run(errors_ ? webapps::UninstallResultCode::kError
-                                   : webapps::UninstallResultCode::kSuccess);
+  resources_->install_manager().NotifyWebAppUninstalled(app_id_,
+                                                        uninstall_source_);
+  std::move(callback_).Run(!errors_);
 }
 
 }  // namespace web_app
