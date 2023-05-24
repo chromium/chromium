@@ -7215,10 +7215,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcWindowPredictorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(full_restore::features::kArcWindowPredictor)},
 
-    {"full-restore-for-lacros", flag_descriptions::kFullRestoreForLacrosName,
-     flag_descriptions::kFullRestoreForLacrosDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(full_restore::features::kFullRestoreForLacros)},
-
     {"use-fake-device-for-media-stream",
      flag_descriptions::kUseFakeDeviceForMediaStreamName,
      flag_descriptions::kUseFakeDeviceForMediaStreamDescription, kOsCrOS,

@@ -3413,9 +3413,6 @@ extern const char kFrameThrottleFps20[];
 extern const char kFrameThrottleFps25[];
 extern const char kFrameThrottleFps30[];
 
-extern const char kFullRestoreForLacrosName[];
-extern const char kFullRestoreForLacrosDescription[];
-
 extern const char kFuseBoxDebugName[];
 extern const char kFuseBoxDebugDescription[];
 

@@ -4227,11 +4227,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "full-restore-for-lacros",
-    "owners": [ "dominickn", "nancylingwang", "sammiequon", "xdai" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "fullscreen-popup-windows",
     "owners": [ "btriebw", "msw" ],
     "expiry_milestone": 120
