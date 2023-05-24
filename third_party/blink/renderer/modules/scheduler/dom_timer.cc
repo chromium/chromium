@@ -24,20 +24,27 @@
  *
  */
 
-#include "third_party/blink/renderer/core/frame/dom_timer.h"
+#include "third_party/blink/renderer/modules/scheduler/dom_timer.h"
 
 #include "base/numerics/clamped_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/page_dismissal_scope.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/modules/scheduler/scheduled_action.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
+#include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 
 namespace blink {
 
@@ -129,14 +136,123 @@ class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
   int timer_nesting_level_ = 0;
 };
 
+bool IsAllowed(ExecutionContext& execution_context,
+               bool is_eval,
+               const String& source) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    if (!window->GetFrame()) {
+      return false;
+    }
+    if (is_eval && !window->GetContentSecurityPolicy()->AllowEval(
+                       ReportingDisposition::kReport,
+                       ContentSecurityPolicy::kWillNotThrowException, source)) {
+      return false;
+    }
+    if (PageDismissalScope::IsActive()) {
+      UseCounter::Count(execution_context,
+                        window->document()->ProcessingBeforeUnload()
+                            ? WebFeature::kTimerInstallFromBeforeUnload
+                            : WebFeature::kTimerInstallFromUnload);
+    }
+    return true;
+  }
+  if (auto* worker_global_scope =
+          DynamicTo<WorkerGlobalScope>(execution_context)) {
+    if (!worker_global_scope->ScriptController()) {
+      return false;
+    }
+    ContentSecurityPolicy* policy =
+        worker_global_scope->GetContentSecurityPolicy();
+    if (is_eval && policy &&
+        !policy->AllowEval(ReportingDisposition::kReport,
+                           ContentSecurityPolicy::kWillNotThrowException,
+                           source)) {
+      return false;
+    }
+    return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
 }  // namespace
 
-int DOMTimer::Install(ExecutionContext& context,
-                      ScheduledAction* action,
-                      base::TimeDelta timeout,
-                      bool single_shot) {
-  return MakeGarbageCollected<DOMTimer>(context, action, timeout, single_shot)
+int DOMTimer::setTimeout(ScriptState* script_state,
+                         ExecutionContext& context,
+                         V8Function* handler,
+                         int timeout,
+                         const HeapVector<ScriptValue>& arguments) {
+  if (!IsAllowed(context, false, g_empty_string)) {
+    return 0;
+  }
+  auto* action = MakeGarbageCollected<ScheduledAction>(script_state, context,
+                                                       handler, arguments);
+  return MakeGarbageCollected<DOMTimer>(context, action,
+                                        base::Milliseconds(timeout), true)
       ->timeout_id_;
+}
+
+int DOMTimer::setTimeout(ScriptState* script_state,
+                         ExecutionContext& context,
+                         const String& handler,
+                         int timeout,
+                         const HeapVector<ScriptValue>&) {
+  if (!IsAllowed(context, true, handler)) {
+    return 0;
+  }
+  // Don't allow setting timeouts to run empty functions.  Was historically a
+  // performance issue.
+  if (handler.empty()) {
+    return 0;
+  }
+  auto* action =
+      MakeGarbageCollected<ScheduledAction>(script_state, context, handler);
+  return MakeGarbageCollected<DOMTimer>(context, action,
+                                        base::Milliseconds(timeout), true)
+      ->timeout_id_;
+}
+
+int DOMTimer::setInterval(ScriptState* script_state,
+                          ExecutionContext& context,
+                          V8Function* handler,
+                          int timeout,
+                          const HeapVector<ScriptValue>& arguments) {
+  if (!IsAllowed(context, false, g_empty_string)) {
+    return 0;
+  }
+  auto* action = MakeGarbageCollected<ScheduledAction>(script_state, context,
+                                                       handler, arguments);
+  return MakeGarbageCollected<DOMTimer>(context, action,
+                                        base::Milliseconds(timeout), false)
+      ->timeout_id_;
+}
+
+int DOMTimer::setInterval(ScriptState* script_state,
+                          ExecutionContext& context,
+                          const String& handler,
+                          int timeout,
+                          const HeapVector<ScriptValue>&) {
+  if (!IsAllowed(context, true, handler)) {
+    return 0;
+  }
+  // Don't allow setting timeouts to run empty functions.  Was historically a
+  // performance issue.
+  if (handler.empty()) {
+    return 0;
+  }
+  auto* action =
+      MakeGarbageCollected<ScheduledAction>(script_state, context, handler);
+  return MakeGarbageCollected<DOMTimer>(context, action,
+                                        base::Milliseconds(timeout), false)
+      ->timeout_id_;
+}
+
+void DOMTimer::clearTimeout(ExecutionContext& context, int timeout_id) {
+  RemoveByID(context, timeout_id);
+}
+
+void DOMTimer::clearInterval(ExecutionContext& context, int timeout_id) {
+  RemoveByID(context, timeout_id);
 }
 
 void DOMTimer::RemoveByID(ExecutionContext& context, int timeout_id) {
@@ -163,8 +279,9 @@ DOMTimer::DOMTimer(ExecutionContext& context,
   DCHECK_GT(timeout_id_, 0);
 
   // Step 10:
-  if (timeout.is_negative())
+  if (timeout.is_negative()) {
     timeout = base::TimeDelta();
+  }
 
   // Steps 12 and 13:
   // Note: The implementation increments the nesting level before using it to
@@ -185,8 +302,9 @@ DOMTimer::DOMTimer(ExecutionContext& context,
                  (scheduler::IsAlignWakeUpsDisabledForProcess() &&
                   timeout < kMaxHighResolutionInterval);
 
-  if (nesting_level_ >= max_nesting_level && timeout < kMinimumInterval)
+  if (nesting_level_ >= max_nesting_level && timeout < kMinimumInterval) {
     timeout = kMinimumInterval;
+  }
 
   // Select TaskType based on nesting level.
   TaskType task_type;
@@ -202,13 +320,15 @@ DOMTimer::DOMTimer(ExecutionContext& context,
 
   // Clamping up to 1ms for historical reasons crbug.com/402694.
   // Removing clamp for single_shot behind a feature flag.
-  if (!single_shot || !blink::features::IsSetTimeoutWithoutClampEnabled())
+  if (!single_shot || !blink::features::IsSetTimeoutWithoutClampEnabled()) {
     timeout = std::max(timeout, base::Milliseconds(1));
+  }
 
-  if (single_shot)
+  if (single_shot) {
     StartOneShot(timeout, FROM_HERE, precise);
-  else
+  } else {
     StartRepeating(timeout, FROM_HERE, precise);
+  }
 
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "TimerInstall", inspector_timer_install_event::Data, &context,
@@ -225,8 +345,9 @@ void DOMTimer::Dispose() {
 }
 
 void DOMTimer::Stop() {
-  if (!action_)
+  if (!action_) {
     return;
+  }
 
   async_task_context_.Cancel();
   const bool is_interval = !RepeatInterval().is_zero();
@@ -236,8 +357,9 @@ void DOMTimer::Stop() {
   // Need to release JS objects potentially protected by ScheduledAction
   // because they can form circular references back to the ExecutionContext
   // which will cause a memory leak.
-  if (action_)
+  if (action_) {
     action_->Dispose();
+  }
   action_ = nullptr;
   TimerBase::Stop();
 }
@@ -318,8 +440,9 @@ void DOMTimer::Fired() {
 
   // ExecutionContext might be already gone when we executed action->execute().
   ExecutionContext* execution_context = GetExecutionContext();
-  if (!execution_context)
+  if (!execution_context) {
     return;
+  }
 
   DOMTimerCoordinator::From(*execution_context).SetTimerNestingLevel(0);
   // Eagerly unregister as ExecutionContext observer.

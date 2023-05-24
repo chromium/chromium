@@ -26,18 +26,17 @@
  */
 
 // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
+// https://html.spec.whatwg.org/C/#timers
 [
+    ImplementedAs=DOMTimer,
     LegacyTreatAsPartialInterface,
     Exposed=(Window,Worker)
-] interface mixin WindowOrWorkerGlobalScope {
-    [CallWith=ScriptState] void reportError(any e);
-
-    // base64 utility methods
-    [RaisesException] DOMString btoa(DOMString btoa);
-    [RaisesException] DOMString atob(DOMString atob);
-    readonly attribute boolean crossOriginIsolated;
-    [RuntimeEnabled=CoepReflection]
-        readonly attribute DOMString crossOriginEmbedderPolicy;
-
-    [RaisesException, CallWith=ScriptState] any structuredClone(any value, optional StructuredSerializeOptions options = {});
+] partial interface mixin WindowOrWorkerGlobalScope {
+    // https://html.spec.whatwg.org/C/webappapis.html#windoworworkerglobalscope-mixin
+    [CallWith=ScriptState, RuntimeCallStatsCounter=WindowSetTimeout] long setTimeout(Function handler, optional long timeout = 0, any... arguments);
+    [CallWith=ScriptState] long setTimeout(ScriptString handler, optional long timeout = 0, any... arguments);
+    void clearTimeout(optional long handle = 0);
+    [CallWith=ScriptState] long setInterval(Function handler, optional long timeout = 0, any... arguments);
+    [CallWith=ScriptState] long setInterval(ScriptString handler, optional long timeout = 0, any... arguments);
+    void clearInterval(optional long handle = 0);
 };

@@ -74,8 +74,6 @@ blink_core_sources_bindings =
                     "core/v8/remote_window_proxy.h",
                     "core/v8/retained_object_info.h",
                     "core/v8/sanitize_script_errors.h",
-                    "core/v8/scheduled_action.cc",
-                    "core/v8/scheduled_action.h",
                     "core/v8/script_cache_consumer.cc",
                     "core/v8/script_cache_consumer.h",
                     "core/v8/script_cache_consumer_client.h",

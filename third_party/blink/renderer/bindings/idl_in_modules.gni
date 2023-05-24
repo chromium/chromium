@@ -672,6 +672,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/scheduler/task_priority_change_event_init.idl",
           "//third_party/blink/renderer/modules/scheduler/task_signal.idl",
           "//third_party/blink/renderer/modules/scheduler/task_signal_any_init.idl",
+          "//third_party/blink/renderer/modules/scheduler/window_or_worker_global_scope_timers.idl",
           "//third_party/blink/renderer/modules/scheduler/window_or_worker_scheduler.idl",
           "//third_party/blink/renderer/modules/screen_details/screen_detailed.idl",
           "//third_party/blink/renderer/modules/screen_details/screen_details.idl",

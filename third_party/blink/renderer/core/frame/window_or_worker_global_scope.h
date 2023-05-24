@@ -35,10 +35,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -46,7 +44,6 @@ class ExceptionState;
 class StructuredSerializeOptions;
 class ScriptState;
 class ScriptValue;
-class V8Function;
 
 class CORE_EXPORT WindowOrWorkerGlobalScope {
   STATIC_ONLY(WindowOrWorkerGlobalScope);
@@ -60,29 +57,6 @@ class CORE_EXPORT WindowOrWorkerGlobalScope {
   static String atob(ExecutionContext&,
                      const String& encoded_string,
                      ExceptionState&);
-
-  static int setTimeout(ScriptState*,
-                        ExecutionContext&,
-                        V8Function* handler,
-                        int timeout,
-                        const HeapVector<ScriptValue>& arguments);
-  static int setTimeout(ScriptState*,
-                        ExecutionContext&,
-                        const String& handler,
-                        int timeout,
-                        const HeapVector<ScriptValue>&);
-  static int setInterval(ScriptState*,
-                         ExecutionContext&,
-                         V8Function* handler,
-                         int timeout,
-                         const HeapVector<ScriptValue>&);
-  static int setInterval(ScriptState*,
-                         ExecutionContext&,
-                         const String& handler,
-                         int timeout,
-                         const HeapVector<ScriptValue>&);
-  static void clearTimeout(ExecutionContext&, int timeout_id);
-  static void clearInterval(ExecutionContext&, int timeout_id);
 
   static bool crossOriginIsolated(const ExecutionContext&);
   static String crossOriginEmbedderPolicy(const ExecutionContext&);

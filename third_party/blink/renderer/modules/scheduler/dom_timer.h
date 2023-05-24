@@ -24,37 +24,57 @@
  *
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DOM_TIMER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DOM_TIMER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TIMER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TIMER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class ExecutionContext;
 class ScheduledAction;
+class ScriptState;
+class ScriptValue;
+class V8Function;
 
-class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
-                                   public ExecutionContextLifecycleObserver,
-                                   public TimerBase,
-                                   public NameClient {
+class MODULES_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
+                                      public ExecutionContextLifecycleObserver,
+                                      public TimerBase,
+                                      public NameClient {
   USING_PRE_FINALIZER(DOMTimer, Dispose);
 
  public:
-  // Creates a new timer owned by the ExecutionContext, starts it and returns
-  // its ID.
-  static int Install(ExecutionContext&,
-                     ScheduledAction*,
-                     base::TimeDelta timeout,
-                     bool single_shot);
-  static void RemoveByID(ExecutionContext&, int timeout_id);
+  static int setTimeout(ScriptState*,
+                        ExecutionContext&,
+                        V8Function* handler,
+                        int timeout,
+                        const HeapVector<ScriptValue>& arguments);
+  static int setTimeout(ScriptState*,
+                        ExecutionContext&,
+                        const String& handler,
+                        int timeout,
+                        const HeapVector<ScriptValue>&);
+  static int setInterval(ScriptState*,
+                         ExecutionContext&,
+                         V8Function* handler,
+                         int timeout,
+                         const HeapVector<ScriptValue>&);
+  static int setInterval(ScriptState*,
+                         ExecutionContext&,
+                         const String& handler,
+                         int timeout,
+                         const HeapVector<ScriptValue>&);
+  static void clearTimeout(ExecutionContext&, int timeout_id);
+  static void clearInterval(ExecutionContext&, int timeout_id);
 
   DOMTimer(ExecutionContext&,
            ScheduledAction*,
@@ -77,6 +97,7 @@ class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
   void Stop() override;
 
  private:
+  static void RemoveByID(ExecutionContext&, int timeout_id);
   void Fired() override;
 
   // Increments the nesting level, clamping at the maximum value that can be
@@ -92,4 +113,4 @@ class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DOM_TIMER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_DOM_TIMER_H_

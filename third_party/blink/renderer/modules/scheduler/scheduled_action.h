@@ -28,8 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCHEDULED_ACTION_H_
-#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCHEDULED_ACTION_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_SCHEDULED_ACTION_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_SCHEDULED_ACTION_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
@@ -50,7 +50,6 @@ class V8Function;
 
 class ScheduledAction final : public GarbageCollected<ScheduledAction>,
                               public NameClient {
-
  public:
   ScheduledAction(ScriptState*,
                   ExecutionContext& target,
@@ -85,4 +84,4 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCHEDULED_ACTION_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SCHEDULER_SCHEDULED_ACTION_H_
