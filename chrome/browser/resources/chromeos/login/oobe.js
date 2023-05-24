@@ -69,6 +69,13 @@ function initializeOobe() {
     // loading oobe.html and here.
     startColorChangeUpdater();
     refreshColorCss();
+
+    // TODO(b/268463435): Move include directly to the oobe.html after Jelly
+    // flag will be enabled by default.
+    const fontLink = document.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href = 'chrome://theme/typography.css';
+    document.head.appendChild(fontLink);
   }
 
   // Initialize the on-screen debugger if present.
