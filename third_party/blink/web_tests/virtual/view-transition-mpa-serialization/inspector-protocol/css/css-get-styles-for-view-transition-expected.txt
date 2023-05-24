@@ -1,0 +1,3606 @@
+The test verifies functionality of querying style information for view-transition pseudo elements
+{
+    id : <number>
+    result : {
+        cssKeyframesRules : [
+        ]
+        cssPositionFallbackRules : [
+        ]
+        inherited : [
+        ]
+        inheritedPseudoElements : [
+        ]
+        inlineStyle : {
+            cssProperties : [
+            ]
+            cssText : 
+            range : {
+                endColumn : 0
+                endLine : 0
+                startColumn : 0
+                startLine : 0
+            }
+            shorthandEntries : [
+            ]
+            styleSheetId : <string>
+        }
+        matchedCSSRules : [
+            [0] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html
+                            }
+                        ]
+                        text : html
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : display
+                                value : block
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 0
+                                }
+                                text : :root
+                            }
+                        ]
+                        text : :root
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : view-transition-name
+                                value : root
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+        ]
+        parentLayoutNodeId : 1
+        pseudoElements : [
+            [0] : {
+                matches : [
+                    [0] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition
+                                    }
+                                ]
+                                text : html::view-transition
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : fixed
+                                    }
+                                    [1] : {
+                                        name : top
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : right
+                                        value : 0px
+                                    }
+                                    [3] : {
+                                        name : bottom
+                                        value : 0px
+                                    }
+                                    [4] : {
+                                        name : left
+                                        value : 0px
+                                    }
+                                ]
+                                shorthandEntries : [
+                                    [0] : {
+                                        name : inset
+                                        value : 0px
+                                    }
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                ]
+                pseudoType : view-transition
+            }
+            [1] : {
+                matches : [
+                    [0] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : html::view-transition-group()
+                                    }
+                                ]
+                                text : html::view-transition-group()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : absolute
+                                    }
+                                    [1] : {
+                                        name : top
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : left
+                                        value : 0px
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : html::view-transition-group()
+                                    }
+                                ]
+                                text : html::view-transition-group()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-duration
+                                        value : 0.25s
+                                    }
+                                    [1] : {
+                                        name : animation-fill-mode
+                                        value : both
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition-group(root)
+                                    }
+                                ]
+                                text : html::view-transition-group(root)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : right
+                                        value : 0px
+                                    }
+                                    [1] : {
+                                        name : bottom
+                                        value : 0px
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                ]
+                pseudoIdentifier : root
+                pseudoType : view-transition-group
+            }
+            [2] : {
+                matches : [
+                    [0] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : html::view-transition-group()
+                                    }
+                                ]
+                                text : html::view-transition-group()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : absolute
+                                    }
+                                    [1] : {
+                                        name : top
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : left
+                                        value : 0px
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : html::view-transition-group()
+                                    }
+                                ]
+                                text : html::view-transition-group()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-duration
+                                        value : 0.25s
+                                    }
+                                    [1] : {
+                                        name : animation-fill-mode
+                                        value : both
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition-group(shared)
+                                    }
+                                ]
+                                text : html::view-transition-group(shared)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : width
+                                        value : 100px
+                                    }
+                                    [1] : {
+                                        name : height
+                                        value : 100px
+                                    }
+                                    [2] : {
+                                        name : transform
+                                        value : matrix(1, 0, 0, 1, 8, 8)
+                                    }
+                                    [3] : {
+                                        name : writing-mode
+                                        value : horizontal-tb
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [3] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition-group(shared)
+                                    }
+                                ]
+                                text : html::view-transition-group(shared)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-name
+                                        value : -ua-view-transition-group-anim-shared
+                                    }
+                                    [1] : {
+                                        name : animation-timing-function
+                                        value : ease
+                                    }
+                                    [2] : {
+                                        name : animation-delay
+                                        value : 0s
+                                    }
+                                    [3] : {
+                                        name : animation-iteration-count
+                                        value : 1
+                                    }
+                                    [4] : {
+                                        name : animation-direction
+                                        value : normal
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                ]
+                pseudoIdentifier : shared
+                pseudoType : view-transition-group
+            }
+            [3] : {
+                matches : [
+                    [0] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-image-pair()
+                                    }
+                                ]
+                                text : ::view-transition-image-pair()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : absolute
+                                    }
+                                    [1] : {
+                                        name : top
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : right
+                                        value : 0px
+                                    }
+                                    [3] : {
+                                        name : bottom
+                                        value : 0px
+                                    }
+                                    [4] : {
+                                        name : left
+                                        value : 0px
+                                    }
+                                ]
+                                shorthandEntries : [
+                                    [0] : {
+                                        name : inset
+                                        value : 0px
+                                    }
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : html::view-transition-image-pair()
+                                    }
+                                ]
+                                text : html::view-transition-image-pair()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [1] : {
+                                        name : animation-fill-mode
+                                        value : inherit
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition-image-pair(root)
+                                    }
+                                ]
+                                text : html::view-transition-image-pair(root)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : isolation
+                                        value : isolate
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                ]
+                pseudoIdentifier : root
+                pseudoType : view-transition-image-pair
+            }
+            [4] : {
+                matches : [
+                    [0] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-image-pair()
+                                    }
+                                ]
+                                text : ::view-transition-image-pair()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : absolute
+                                    }
+                                    [1] : {
+                                        name : top
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : right
+                                        value : 0px
+                                    }
+                                    [3] : {
+                                        name : bottom
+                                        value : 0px
+                                    }
+                                    [4] : {
+                                        name : left
+                                        value : 0px
+                                    }
+                                ]
+                                shorthandEntries : [
+                                    [0] : {
+                                        name : inset
+                                        value : 0px
+                                    }
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : html::view-transition-image-pair()
+                                    }
+                                ]
+                                text : html::view-transition-image-pair()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [1] : {
+                                        name : animation-fill-mode
+                                        value : inherit
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition-image-pair(shared)
+                                    }
+                                ]
+                                text : html::view-transition-image-pair(shared)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : isolation
+                                        value : isolate
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                ]
+                pseudoIdentifier : shared
+                pseudoType : view-transition-image-pair
+            }
+            [5] : {
+                matches : [
+                    [0] : {
+                        matchingSelectors : [
+                            [0] : 1
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-new()
+                                    }
+                                    [1] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-old()
+                                    }
+                                ]
+                                text : ::view-transition-new(), ::view-transition-old()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : absolute
+                                    }
+                                    [1] : {
+                                        name : inset-block-start
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : inline-size
+                                        value : 100%
+                                    }
+                                    [3] : {
+                                        name : block-size
+                                        value : auto
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : html::view-transition-old()
+                                    }
+                                ]
+                                text : html::view-transition-old()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-name
+                                        value : -ua-view-transition-fade-out
+                                    }
+                                    [1] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [2] : {
+                                        name : animation-fill-mode
+                                        value : inherit
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition-old(root)
+                                    }
+                                ]
+                                text : html::view-transition-old(root)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : mix-blend-mode
+                                        value : plus-lighter
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [3] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : regular
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        range : {
+                                            endColumn : 25
+                                            endLine : 0
+                                            startColumn : 1
+                                            startLine : 0
+                                        }
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-old(*)
+                                    }
+                                ]
+                                text : ::view-transition-old()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        disabled : false
+                                        implicit : false
+                                        longhandProperties : [
+                                            [0] : {
+                                                name : background-image
+                                                value : initial
+                                            }
+                                            [1] : {
+                                                name : background-position-x
+                                                value : initial
+                                            }
+                                            [2] : {
+                                                name : background-position-y
+                                                value : initial
+                                            }
+                                            [3] : {
+                                                name : background-size
+                                                value : initial
+                                            }
+                                            [4] : {
+                                                name : background-repeat-x
+                                                value : initial
+                                            }
+                                            [5] : {
+                                                name : background-repeat-y
+                                                value : initial
+                                            }
+                                            [6] : {
+                                                name : background-attachment
+                                                value : initial
+                                            }
+                                            [7] : {
+                                                name : background-origin
+                                                value : initial
+                                            }
+                                            [8] : {
+                                                name : background-clip
+                                                value : initial
+                                            }
+                                            [9] : {
+                                                name : background-color
+                                                value : red
+                                            }
+                                        ]
+                                        name : background
+                                        range : {
+                                            endColumn : 43
+                                            endLine : 0
+                                            startColumn : 27
+                                            startLine : 0
+                                        }
+                                        text : background: red;
+                                        value : red
+                                    }
+                                    [1] : {
+                                        name : background-image
+                                        value : initial
+                                    }
+                                    [2] : {
+                                        name : background-position-x
+                                        value : initial
+                                    }
+                                    [3] : {
+                                        name : background-position-y
+                                        value : initial
+                                    }
+                                    [4] : {
+                                        name : background-size
+                                        value : initial
+                                    }
+                                    [5] : {
+                                        name : background-repeat-x
+                                        value : initial
+                                    }
+                                    [6] : {
+                                        name : background-repeat-y
+                                        value : initial
+                                    }
+                                    [7] : {
+                                        name : background-attachment
+                                        value : initial
+                                    }
+                                    [8] : {
+                                        name : background-origin
+                                        value : initial
+                                    }
+                                    [9] : {
+                                        name : background-clip
+                                        value : initial
+                                    }
+                                    [10] : {
+                                        name : background-color
+                                        value : red
+                                    }
+                                ]
+                                cssText : background: red;
+                                range : {
+                                    endColumn : 43
+                                    endLine : 0
+                                    startColumn : 27
+                                    startLine : 0
+                                }
+                                shorthandEntries : [
+                                    [0] : {
+                                        name : background
+                                        value : red
+                                    }
+                                ]
+                                styleSheetId : <string>
+                            }
+                            styleSheetId : <string>
+                            supports : [
+                            ]
+                        }
+                    }
+                ]
+                pseudoIdentifier : root
+                pseudoType : view-transition-old
+            }
+            [6] : {
+                matches : [
+                    [0] : {
+                        matchingSelectors : [
+                            [0] : 1
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-new()
+                                    }
+                                    [1] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-old()
+                                    }
+                                ]
+                                text : ::view-transition-new(), ::view-transition-old()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : absolute
+                                    }
+                                    [1] : {
+                                        name : inset-block-start
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : inline-size
+                                        value : 100%
+                                    }
+                                    [3] : {
+                                        name : block-size
+                                        value : auto
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : html::view-transition-old()
+                                    }
+                                ]
+                                text : html::view-transition-old()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-name
+                                        value : -ua-view-transition-fade-out
+                                    }
+                                    [1] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [2] : {
+                                        name : animation-fill-mode
+                                        value : inherit
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition-old(shared)
+                                    }
+                                ]
+                                text : html::view-transition-old(shared)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : mix-blend-mode
+                                        value : plus-lighter
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [3] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : regular
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        range : {
+                                            endColumn : 25
+                                            endLine : 0
+                                            startColumn : 1
+                                            startLine : 0
+                                        }
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-old(*)
+                                    }
+                                ]
+                                text : ::view-transition-old()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        disabled : false
+                                        implicit : false
+                                        longhandProperties : [
+                                            [0] : {
+                                                name : background-image
+                                                value : initial
+                                            }
+                                            [1] : {
+                                                name : background-position-x
+                                                value : initial
+                                            }
+                                            [2] : {
+                                                name : background-position-y
+                                                value : initial
+                                            }
+                                            [3] : {
+                                                name : background-size
+                                                value : initial
+                                            }
+                                            [4] : {
+                                                name : background-repeat-x
+                                                value : initial
+                                            }
+                                            [5] : {
+                                                name : background-repeat-y
+                                                value : initial
+                                            }
+                                            [6] : {
+                                                name : background-attachment
+                                                value : initial
+                                            }
+                                            [7] : {
+                                                name : background-origin
+                                                value : initial
+                                            }
+                                            [8] : {
+                                                name : background-clip
+                                                value : initial
+                                            }
+                                            [9] : {
+                                                name : background-color
+                                                value : red
+                                            }
+                                        ]
+                                        name : background
+                                        range : {
+                                            endColumn : 43
+                                            endLine : 0
+                                            startColumn : 27
+                                            startLine : 0
+                                        }
+                                        text : background: red;
+                                        value : red
+                                    }
+                                    [1] : {
+                                        name : background-image
+                                        value : initial
+                                    }
+                                    [2] : {
+                                        name : background-position-x
+                                        value : initial
+                                    }
+                                    [3] : {
+                                        name : background-position-y
+                                        value : initial
+                                    }
+                                    [4] : {
+                                        name : background-size
+                                        value : initial
+                                    }
+                                    [5] : {
+                                        name : background-repeat-x
+                                        value : initial
+                                    }
+                                    [6] : {
+                                        name : background-repeat-y
+                                        value : initial
+                                    }
+                                    [7] : {
+                                        name : background-attachment
+                                        value : initial
+                                    }
+                                    [8] : {
+                                        name : background-origin
+                                        value : initial
+                                    }
+                                    [9] : {
+                                        name : background-clip
+                                        value : initial
+                                    }
+                                    [10] : {
+                                        name : background-color
+                                        value : red
+                                    }
+                                ]
+                                cssText : background: red;
+                                range : {
+                                    endColumn : 43
+                                    endLine : 0
+                                    startColumn : 27
+                                    startLine : 0
+                                }
+                                shorthandEntries : [
+                                    [0] : {
+                                        name : background
+                                        value : red
+                                    }
+                                ]
+                                styleSheetId : <string>
+                            }
+                            styleSheetId : <string>
+                            supports : [
+                            ]
+                        }
+                    }
+                ]
+                pseudoIdentifier : shared
+                pseudoType : view-transition-old
+            }
+            [7] : {
+                matches : [
+                    [0] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-new()
+                                    }
+                                    [1] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-old()
+                                    }
+                                ]
+                                text : ::view-transition-new(), ::view-transition-old()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : absolute
+                                    }
+                                    [1] : {
+                                        name : inset-block-start
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : inline-size
+                                        value : 100%
+                                    }
+                                    [3] : {
+                                        name : block-size
+                                        value : auto
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : html::view-transition-new()
+                                    }
+                                ]
+                                text : html::view-transition-new()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-name
+                                        value : -ua-view-transition-fade-in
+                                    }
+                                    [1] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [2] : {
+                                        name : animation-fill-mode
+                                        value : inherit
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition-new(root)
+                                    }
+                                ]
+                                text : html::view-transition-new(root)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : mix-blend-mode
+                                        value : plus-lighter
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                ]
+                pseudoIdentifier : root
+                pseudoType : view-transition-new
+            }
+            [8] : {
+                matches : [
+                    [0] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-new()
+                                    }
+                                    [1] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 0
+                                        }
+                                        text : ::view-transition-old()
+                                    }
+                                ]
+                                text : ::view-transition-new(), ::view-transition-old()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : position
+                                        value : absolute
+                                    }
+                                    [1] : {
+                                        name : inset-block-start
+                                        value : 0px
+                                    }
+                                    [2] : {
+                                        name : inline-size
+                                        value : 100%
+                                    }
+                                    [3] : {
+                                        name : block-size
+                                        value : auto
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [1] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 0
+                                            c : 1
+                                        }
+                                        text : html::view-transition-new()
+                                    }
+                                ]
+                                text : html::view-transition-new()
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : animation-name
+                                        value : -ua-view-transition-fade-in
+                                    }
+                                    [1] : {
+                                        name : animation-duration
+                                        value : inherit
+                                    }
+                                    [2] : {
+                                        name : animation-fill-mode
+                                        value : inherit
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [2] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : user-agent
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 1
+                                        }
+                                        text : html::view-transition-new(shared)
+                                    }
+                                ]
+                                text : html::view-transition-new(shared)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        name : mix-blend-mode
+                                        value : plus-lighter
+                                    }
+                                ]
+                                shorthandEntries : [
+                                ]
+                            }
+                            supports : [
+                            ]
+                        }
+                    }
+                    [3] : {
+                        matchingSelectors : [
+                            [0] : 0
+                        ]
+                        rule : {
+                            containerQueries : [
+                            ]
+                            layers : [
+                            ]
+                            media : [
+                            ]
+                            origin : regular
+                            scopes : [
+                            ]
+                            selectorList : {
+                                selectors : [
+                                    [0] : {
+                                        range : {
+                                            endColumn : 30
+                                            endLine : 0
+                                            startColumn : 1
+                                            startLine : 0
+                                        }
+                                        specificity : {
+                                            a : 0
+                                            b : 1
+                                            c : 0
+                                        }
+                                        text : ::view-transition-new(shared)
+                                    }
+                                ]
+                                text : ::view-transition-new(shared)
+                            }
+                            style : {
+                                cssProperties : [
+                                    [0] : {
+                                        disabled : false
+                                        implicit : false
+                                        name : animation-duration
+                                        range : {
+                                            endColumn : 57
+                                            endLine : 0
+                                            startColumn : 32
+                                            startLine : 0
+                                        }
+                                        text : animation-duration: 300s;
+                                        value : 300s
+                                    }
+                                    [1] : {
+                                        name : animation-duration
+                                        value : 300s
+                                    }
+                                ]
+                                cssText : animation-duration: 300s;
+                                range : {
+                                    endColumn : 57
+                                    endLine : 0
+                                    startColumn : 32
+                                    startLine : 0
+                                }
+                                shorthandEntries : [
+                                ]
+                                styleSheetId : <string>
+                            }
+                            styleSheetId : <string>
+                            supports : [
+                            ]
+                        }
+                    }
+                ]
+                pseudoIdentifier : shared
+                pseudoType : view-transition-new
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Dumping styles for : ::view-transition with id undefined{
+    id : <number>
+    result : {
+        inherited : [
+        ]
+        matchedCSSRules : [
+            [0] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition
+                            }
+                        ]
+                        text : html::view-transition
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : position
+                                value : fixed
+                            }
+                            [1] : {
+                                name : top
+                                value : 0px
+                            }
+                            [2] : {
+                                name : right
+                                value : 0px
+                            }
+                            [3] : {
+                                name : bottom
+                                value : 0px
+                            }
+                            [4] : {
+                                name : left
+                                value : 0px
+                            }
+                        ]
+                        shorthandEntries : [
+                            [0] : {
+                                name : inset
+                                value : 0px
+                            }
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Dumping styles for : ::view-transition-group with id root{
+    id : <number>
+    result : {
+        inherited : [
+        ]
+        matchedCSSRules : [
+            [0] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html::view-transition-group()
+                            }
+                        ]
+                        text : html::view-transition-group()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : position
+                                value : absolute
+                            }
+                            [1] : {
+                                name : top
+                                value : 0px
+                            }
+                            [2] : {
+                                name : left
+                                value : 0px
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html::view-transition-group()
+                            }
+                        ]
+                        text : html::view-transition-group()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-duration
+                                value : 0.25s
+                            }
+                            [1] : {
+                                name : animation-fill-mode
+                                value : both
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition-group(root)
+                            }
+                        ]
+                        text : html::view-transition-group(root)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : right
+                                value : 0px
+                            }
+                            [1] : {
+                                name : bottom
+                                value : 0px
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Dumping styles for : ::view-transition-image-pair with id root{
+    id : <number>
+    result : {
+        inherited : [
+        ]
+        matchedCSSRules : [
+            [0] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-image-pair()
+                            }
+                        ]
+                        text : ::view-transition-image-pair()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : position
+                                value : absolute
+                            }
+                            [1] : {
+                                name : top
+                                value : 0px
+                            }
+                            [2] : {
+                                name : right
+                                value : 0px
+                            }
+                            [3] : {
+                                name : bottom
+                                value : 0px
+                            }
+                            [4] : {
+                                name : left
+                                value : 0px
+                            }
+                        ]
+                        shorthandEntries : [
+                            [0] : {
+                                name : inset
+                                value : 0px
+                            }
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html::view-transition-image-pair()
+                            }
+                        ]
+                        text : html::view-transition-image-pair()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [1] : {
+                                name : animation-fill-mode
+                                value : inherit
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition-image-pair(root)
+                            }
+                        ]
+                        text : html::view-transition-image-pair(root)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : isolation
+                                value : isolate
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Dumping styles for : ::view-transition-old with id root{
+    id : <number>
+    result : {
+        inherited : [
+        ]
+        matchedCSSRules : [
+            [0] : {
+                matchingSelectors : [
+                    [0] : 1
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-new()
+                            }
+                            [1] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-old()
+                            }
+                        ]
+                        text : ::view-transition-new(), ::view-transition-old()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : position
+                                value : absolute
+                            }
+                            [1] : {
+                                name : inset-block-start
+                                value : 0px
+                            }
+                            [2] : {
+                                name : inline-size
+                                value : 100%
+                            }
+                            [3] : {
+                                name : block-size
+                                value : auto
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html::view-transition-old()
+                            }
+                        ]
+                        text : html::view-transition-old()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-name
+                                value : -ua-view-transition-fade-out
+                            }
+                            [1] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [2] : {
+                                name : animation-fill-mode
+                                value : inherit
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition-old(root)
+                            }
+                        ]
+                        text : html::view-transition-old(root)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : mix-blend-mode
+                                value : plus-lighter
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [3] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : regular
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                range : {
+                                    endColumn : 25
+                                    endLine : 0
+                                    startColumn : 1
+                                    startLine : 0
+                                }
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-old(*)
+                            }
+                        ]
+                        text : ::view-transition-old()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                disabled : false
+                                implicit : false
+                                longhandProperties : [
+                                    [0] : {
+                                        name : background-image
+                                        value : initial
+                                    }
+                                    [1] : {
+                                        name : background-position-x
+                                        value : initial
+                                    }
+                                    [2] : {
+                                        name : background-position-y
+                                        value : initial
+                                    }
+                                    [3] : {
+                                        name : background-size
+                                        value : initial
+                                    }
+                                    [4] : {
+                                        name : background-repeat-x
+                                        value : initial
+                                    }
+                                    [5] : {
+                                        name : background-repeat-y
+                                        value : initial
+                                    }
+                                    [6] : {
+                                        name : background-attachment
+                                        value : initial
+                                    }
+                                    [7] : {
+                                        name : background-origin
+                                        value : initial
+                                    }
+                                    [8] : {
+                                        name : background-clip
+                                        value : initial
+                                    }
+                                    [9] : {
+                                        name : background-color
+                                        value : red
+                                    }
+                                ]
+                                name : background
+                                range : {
+                                    endColumn : 43
+                                    endLine : 0
+                                    startColumn : 27
+                                    startLine : 0
+                                }
+                                text : background: red;
+                                value : red
+                            }
+                            [1] : {
+                                name : background-image
+                                value : initial
+                            }
+                            [2] : {
+                                name : background-position-x
+                                value : initial
+                            }
+                            [3] : {
+                                name : background-position-y
+                                value : initial
+                            }
+                            [4] : {
+                                name : background-size
+                                value : initial
+                            }
+                            [5] : {
+                                name : background-repeat-x
+                                value : initial
+                            }
+                            [6] : {
+                                name : background-repeat-y
+                                value : initial
+                            }
+                            [7] : {
+                                name : background-attachment
+                                value : initial
+                            }
+                            [8] : {
+                                name : background-origin
+                                value : initial
+                            }
+                            [9] : {
+                                name : background-clip
+                                value : initial
+                            }
+                            [10] : {
+                                name : background-color
+                                value : red
+                            }
+                        ]
+                        cssText : background: red;
+                        range : {
+                            endColumn : 43
+                            endLine : 0
+                            startColumn : 27
+                            startLine : 0
+                        }
+                        shorthandEntries : [
+                            [0] : {
+                                name : background
+                                value : red
+                            }
+                        ]
+                        styleSheetId : <string>
+                    }
+                    styleSheetId : <string>
+                    supports : [
+                    ]
+                }
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Dumping styles for : ::view-transition-new with id root{
+    id : <number>
+    result : {
+        inherited : [
+        ]
+        matchedCSSRules : [
+            [0] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-new()
+                            }
+                            [1] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-old()
+                            }
+                        ]
+                        text : ::view-transition-new(), ::view-transition-old()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : position
+                                value : absolute
+                            }
+                            [1] : {
+                                name : inset-block-start
+                                value : 0px
+                            }
+                            [2] : {
+                                name : inline-size
+                                value : 100%
+                            }
+                            [3] : {
+                                name : block-size
+                                value : auto
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html::view-transition-new()
+                            }
+                        ]
+                        text : html::view-transition-new()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-name
+                                value : -ua-view-transition-fade-in
+                            }
+                            [1] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [2] : {
+                                name : animation-fill-mode
+                                value : inherit
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition-new(root)
+                            }
+                        ]
+                        text : html::view-transition-new(root)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : mix-blend-mode
+                                value : plus-lighter
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Dumping styles for : ::view-transition-group with id shared{
+    id : <number>
+    result : {
+        inherited : [
+        ]
+        matchedCSSRules : [
+            [0] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html::view-transition-group()
+                            }
+                        ]
+                        text : html::view-transition-group()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : position
+                                value : absolute
+                            }
+                            [1] : {
+                                name : top
+                                value : 0px
+                            }
+                            [2] : {
+                                name : left
+                                value : 0px
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html::view-transition-group()
+                            }
+                        ]
+                        text : html::view-transition-group()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-duration
+                                value : 0.25s
+                            }
+                            [1] : {
+                                name : animation-fill-mode
+                                value : both
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition-group(shared)
+                            }
+                        ]
+                        text : html::view-transition-group(shared)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : width
+                                value : 100px
+                            }
+                            [1] : {
+                                name : height
+                                value : 100px
+                            }
+                            [2] : {
+                                name : transform
+                                value : matrix(1, 0, 0, 1, 8, 8)
+                            }
+                            [3] : {
+                                name : writing-mode
+                                value : horizontal-tb
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [3] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition-group(shared)
+                            }
+                        ]
+                        text : html::view-transition-group(shared)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-name
+                                value : -ua-view-transition-group-anim-shared
+                            }
+                            [1] : {
+                                name : animation-timing-function
+                                value : ease
+                            }
+                            [2] : {
+                                name : animation-delay
+                                value : 0s
+                            }
+                            [3] : {
+                                name : animation-iteration-count
+                                value : 1
+                            }
+                            [4] : {
+                                name : animation-direction
+                                value : normal
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Dumping styles for : ::view-transition-image-pair with id shared{
+    id : <number>
+    result : {
+        inherited : [
+        ]
+        matchedCSSRules : [
+            [0] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-image-pair()
+                            }
+                        ]
+                        text : ::view-transition-image-pair()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : position
+                                value : absolute
+                            }
+                            [1] : {
+                                name : top
+                                value : 0px
+                            }
+                            [2] : {
+                                name : right
+                                value : 0px
+                            }
+                            [3] : {
+                                name : bottom
+                                value : 0px
+                            }
+                            [4] : {
+                                name : left
+                                value : 0px
+                            }
+                        ]
+                        shorthandEntries : [
+                            [0] : {
+                                name : inset
+                                value : 0px
+                            }
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html::view-transition-image-pair()
+                            }
+                        ]
+                        text : html::view-transition-image-pair()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [1] : {
+                                name : animation-fill-mode
+                                value : inherit
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition-image-pair(shared)
+                            }
+                        ]
+                        text : html::view-transition-image-pair(shared)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : isolation
+                                value : isolate
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Dumping styles for : ::view-transition-old with id shared{
+    id : <number>
+    result : {
+        inherited : [
+        ]
+        matchedCSSRules : [
+            [0] : {
+                matchingSelectors : [
+                    [0] : 1
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-new()
+                            }
+                            [1] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-old()
+                            }
+                        ]
+                        text : ::view-transition-new(), ::view-transition-old()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : position
+                                value : absolute
+                            }
+                            [1] : {
+                                name : inset-block-start
+                                value : 0px
+                            }
+                            [2] : {
+                                name : inline-size
+                                value : 100%
+                            }
+                            [3] : {
+                                name : block-size
+                                value : auto
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html::view-transition-old()
+                            }
+                        ]
+                        text : html::view-transition-old()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-name
+                                value : -ua-view-transition-fade-out
+                            }
+                            [1] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [2] : {
+                                name : animation-fill-mode
+                                value : inherit
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition-old(shared)
+                            }
+                        ]
+                        text : html::view-transition-old(shared)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : mix-blend-mode
+                                value : plus-lighter
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [3] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : regular
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                range : {
+                                    endColumn : 25
+                                    endLine : 0
+                                    startColumn : 1
+                                    startLine : 0
+                                }
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-old(*)
+                            }
+                        ]
+                        text : ::view-transition-old()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                disabled : false
+                                implicit : false
+                                longhandProperties : [
+                                    [0] : {
+                                        name : background-image
+                                        value : initial
+                                    }
+                                    [1] : {
+                                        name : background-position-x
+                                        value : initial
+                                    }
+                                    [2] : {
+                                        name : background-position-y
+                                        value : initial
+                                    }
+                                    [3] : {
+                                        name : background-size
+                                        value : initial
+                                    }
+                                    [4] : {
+                                        name : background-repeat-x
+                                        value : initial
+                                    }
+                                    [5] : {
+                                        name : background-repeat-y
+                                        value : initial
+                                    }
+                                    [6] : {
+                                        name : background-attachment
+                                        value : initial
+                                    }
+                                    [7] : {
+                                        name : background-origin
+                                        value : initial
+                                    }
+                                    [8] : {
+                                        name : background-clip
+                                        value : initial
+                                    }
+                                    [9] : {
+                                        name : background-color
+                                        value : red
+                                    }
+                                ]
+                                name : background
+                                range : {
+                                    endColumn : 43
+                                    endLine : 0
+                                    startColumn : 27
+                                    startLine : 0
+                                }
+                                text : background: red;
+                                value : red
+                            }
+                            [1] : {
+                                name : background-image
+                                value : initial
+                            }
+                            [2] : {
+                                name : background-position-x
+                                value : initial
+                            }
+                            [3] : {
+                                name : background-position-y
+                                value : initial
+                            }
+                            [4] : {
+                                name : background-size
+                                value : initial
+                            }
+                            [5] : {
+                                name : background-repeat-x
+                                value : initial
+                            }
+                            [6] : {
+                                name : background-repeat-y
+                                value : initial
+                            }
+                            [7] : {
+                                name : background-attachment
+                                value : initial
+                            }
+                            [8] : {
+                                name : background-origin
+                                value : initial
+                            }
+                            [9] : {
+                                name : background-clip
+                                value : initial
+                            }
+                            [10] : {
+                                name : background-color
+                                value : red
+                            }
+                        ]
+                        cssText : background: red;
+                        range : {
+                            endColumn : 43
+                            endLine : 0
+                            startColumn : 27
+                            startLine : 0
+                        }
+                        shorthandEntries : [
+                            [0] : {
+                                name : background
+                                value : red
+                            }
+                        ]
+                        styleSheetId : <string>
+                    }
+                    styleSheetId : <string>
+                    supports : [
+                    ]
+                }
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Dumping styles for : ::view-transition-new with id shared{
+    id : <number>
+    result : {
+        inherited : [
+        ]
+        matchedCSSRules : [
+            [0] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-new()
+                            }
+                            [1] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 0
+                                }
+                                text : ::view-transition-old()
+                            }
+                        ]
+                        text : ::view-transition-new(), ::view-transition-old()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : position
+                                value : absolute
+                            }
+                            [1] : {
+                                name : inset-block-start
+                                value : 0px
+                            }
+                            [2] : {
+                                name : inline-size
+                                value : 100%
+                            }
+                            [3] : {
+                                name : block-size
+                                value : auto
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [1] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 0
+                                    c : 1
+                                }
+                                text : html::view-transition-new()
+                            }
+                        ]
+                        text : html::view-transition-new()
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : animation-name
+                                value : -ua-view-transition-fade-in
+                            }
+                            [1] : {
+                                name : animation-duration
+                                value : inherit
+                            }
+                            [2] : {
+                                name : animation-fill-mode
+                                value : inherit
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [2] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : user-agent
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 1
+                                }
+                                text : html::view-transition-new(shared)
+                            }
+                        ]
+                        text : html::view-transition-new(shared)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                name : mix-blend-mode
+                                value : plus-lighter
+                            }
+                        ]
+                        shorthandEntries : [
+                        ]
+                    }
+                    supports : [
+                    ]
+                }
+            }
+            [3] : {
+                matchingSelectors : [
+                    [0] : 0
+                ]
+                rule : {
+                    containerQueries : [
+                    ]
+                    layers : [
+                    ]
+                    media : [
+                    ]
+                    origin : regular
+                    scopes : [
+                    ]
+                    selectorList : {
+                        selectors : [
+                            [0] : {
+                                range : {
+                                    endColumn : 30
+                                    endLine : 0
+                                    startColumn : 1
+                                    startLine : 0
+                                }
+                                specificity : {
+                                    a : 0
+                                    b : 1
+                                    c : 0
+                                }
+                                text : ::view-transition-new(shared)
+                            }
+                        ]
+                        text : ::view-transition-new(shared)
+                    }
+                    style : {
+                        cssProperties : [
+                            [0] : {
+                                disabled : false
+                                implicit : false
+                                name : animation-duration
+                                range : {
+                                    endColumn : 57
+                                    endLine : 0
+                                    startColumn : 32
+                                    startLine : 0
+                                }
+                                text : animation-duration: 300s;
+                                value : 300s
+                            }
+                            [1] : {
+                                name : animation-duration
+                                value : 300s
+                            }
+                        ]
+                        cssText : animation-duration: 300s;
+                        range : {
+                            endColumn : 57
+                            endLine : 0
+                            startColumn : 32
+                            startLine : 0
+                        }
+                        shorthandEntries : [
+                        ]
+                        styleSheetId : <string>
+                    }
+                    styleSheetId : <string>
+                    supports : [
+                    ]
+                }
+            }
+        ]
+    }
+    sessionId : <string>
+}
+
