@@ -318,6 +318,12 @@ BASE_FEATURE(kVmBroadcastPreNotifyANR,
              "ArcVmBroadcastPreAnrHandling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls experimental key to enable ghost window when launch app under ARCVM
+// swap out state.
+BASE_FEATURE(kVmmSwapoutGhostWindow,
+             "ArcVmmSwapoutGhostWindow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls experimental key to enable Vmm swap for ARCVM by keyboard shortcut.
 BASE_FEATURE(kVmmSwapKeyboardShortcut,
              "ArcvmSwapoutKeyboardShortcut",

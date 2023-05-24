@@ -165,6 +165,15 @@ void ArcVmmManager::SetSwapState(SwapState state) {
   }
 }
 
+bool ArcVmmManager::IsSwapped() const {
+  // Currently ArcVmmManager assume after set vmm swap enabled, the system
+  // under the "swapped" state.
+  // In the future, is should be replaced by real swap state from the concierge,
+  // because only the memory swapped and has been written to the disk can be
+  // assumed as "swapped".
+  return last_swap_state_ != SwapState::DISABLE;
+}
+
 void ArcVmmManager::OnConnectionReady() {
   arc_connected_ = true;
 }

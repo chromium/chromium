@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/notification/arc_management_transition_notification.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -234,6 +235,12 @@ bool IsFixupWindowEnabled() {
 
 bool IsInstantResponseOpenEnabled() {
   return base::FeatureList::IsEnabled(arc::kInstantResponseWindowOpen);
+}
+
+bool IsArcVmAndSwappedOut(content::BrowserContext* context) {
+  return IsArcVmEnabled() &&
+         base::FeatureList::IsEnabled(arc::kVmmSwapoutGhostWindow) &&
+         ArcVmmManager::GetForBrowserContext(context)->IsSwapped();
 }
 
 }  // namespace
@@ -437,6 +444,18 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     launch_intent_to_send->extras[kRequestStartTimeParamKey] =
         base::NumberToString(
             (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds());
+  } else if (IsArcVmAndSwappedOut(context) &&
+             !WindowPredictor::GetInstance()->IsAppPendingLaunch(profile,
+                                                                 app_id)) {
+    // Assume this condition branch will never be triggered in ARCVM launch (ARC
+    // booting) stage. It should be trigger after ARCVM idle for a while.
+    if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
+            profile, app_id, *app_info, launch_intent_to_send, event_flags,
+            GhostWindowType::kAppLaunch, window_info)) {
+      return true;
+    }
+    VLOG(2) << "Failed to launch ghost window for swapped state, fallback to "
+               "launch directly.";
   } else if (IsInstantResponseOpenEnabled() &&
              !WindowPredictor::GetInstance()->IsAppPendingLaunch(profile,
                                                                  app_id)) {
