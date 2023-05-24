@@ -410,7 +410,6 @@ struct less<raw_ref<T, Traits>> {
   }
 };
 
-#if defined(_LIBCPP_VERSION)
 // Specialize std::pointer_traits. The latter is required to obtain the
 // underlying raw pointer in the std::to_address(pointer) overload.
 // Implementing the pointer_traits is the standard blessed way to customize
@@ -439,7 +438,6 @@ struct pointer_traits<::raw_ref<T, Traits>> {
     return &(p.get());
   }
 };
-#endif  // defined(_LIBCPP_VERSION)
 
 }  // namespace std
 
