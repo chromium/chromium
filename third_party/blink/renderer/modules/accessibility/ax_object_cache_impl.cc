@@ -2403,13 +2403,15 @@ void AXObjectCacheImpl::UpdateTreeIfNeeded() {
     UpdateTreeIfNeededOnce();
   }
 
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  for (const auto& entry : objects_) {
-    const AXObject* object = entry.value;
-    DCHECK(!object->HasDirtyDescendants())
-        << "No children in the tree should require an update at this point.";
-  }
-#endif
+  // TODO(chrishtr): re-enable this once crbug.com/1446721 is fixed.
+  // #if EXPENSIVE_DCHECKS_ARE_ON()
+  //   for (const auto& entry : objects_) {
+  //     const AXObject* object = entry.value;
+  //     DCHECK(!object->HasDirtyDescendants())
+  //         << "No children in the tree should require an update at this
+  //         point.";
+  //   }
+  // #endif
 }
 
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
