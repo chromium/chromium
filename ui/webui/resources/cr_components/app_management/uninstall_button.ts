@@ -50,6 +50,7 @@ export class AppManamentUninstallButtonElement extends PolymerElement {
       case InstallReason.kUnknown:
       case InstallReason.kOem:
       case InstallReason.kDefault:
+      case InstallReason.kSubApp:
       case InstallReason.kSync:
       case InstallReason.kUser:
       case InstallReason.kSubApp:

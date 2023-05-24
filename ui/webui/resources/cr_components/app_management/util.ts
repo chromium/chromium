@@ -17,21 +17,29 @@ import {isBoolValue, isPermissionEnabled, isTriStateValue} from './permission_ut
 interface AppManagementPageState {
   apps: Record<string, App>;
   selectedAppId: string|null;
+  // Maps all apps to their parent's app ID. Apps without a parent are
+  // not listed in this map.
+  subAppToParentAppId: Record<string, string>;
 }
 
 export function createEmptyState(): AppManagementPageState {
   return {
     apps: {},
     selectedAppId: null,
+    subAppToParentAppId: {},
   };
 }
 
-export function createInitialState(apps: App[]): AppManagementPageState {
+export function createInitialState(
+    apps: App[],
+    subAppToParentAppId: {[key: string]: string}): AppManagementPageState {
   const initialState = createEmptyState();
 
   for (const app of apps) {
     initialState.apps[app.id] = app;
   }
+
+  initialState.subAppToParentAppId = subAppToParentAppId;
 
   return initialState;
 }
@@ -79,6 +87,19 @@ export function getPermission(
 export function getSelectedApp(state: AppManagementPageState): App|null {
   const selectedAppId = state.selectedAppId;
   return selectedAppId ? state.apps[selectedAppId] : null;
+}
+
+/**
+ * Returns a list of all apps whose parent's app ID matches the selected app.
+ */
+export function getSubAppsOfSelectedApp(state: AppManagementPageState): App[] {
+  const selectedAppId = state.selectedAppId;
+  const result = selectedAppId ?
+      Object.values(state.apps)
+          .filter(
+              (app) => state.subAppToParentAppId[app.id] === selectedAppId) :
+      [];
+  return result;
 }
 
 /**

@@ -61,6 +61,7 @@ import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.
 import './os_apps_page/app_management_page/pwa_detail_view.js';
 import './os_apps_page/app_management_page/app_management_cros_shared_style.css.js';
 import './os_apps_page/app_management_page/app_management_cros_shared_vars.css.js';
+import './os_apps_page/app_management_page/sub_apps_item.js';
 import './os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.js';
 import './os_apps_page/app_management_page/supported_links_dialog.js';
 import './os_apps_page/app_management_page/supported_links_item.js';
@@ -162,7 +163,7 @@ export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from './os_abou
 export {DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.js';
 export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_util.js';
 export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
-export {addApp, changeApp, removeApp, updateSelectedAppId} from './os_apps_page/app_management_page/actions.js';
+export {addApp, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentAppId} from './os_apps_page/app_management_page/actions.js';
 export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
 export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
 export {reduceAction, updateApps} from './os_apps_page/app_management_page/reducers.js';

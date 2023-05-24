@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/office_web_app/office_web_app.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -97,6 +98,15 @@ void WebAppProviderBridgeLacros::GetSubAppIds(const web_app::AppId& app_id,
                      std::move(callback)));
 }
 
+void WebAppProviderBridgeLacros::GetSubAppToParentMap(
+    GetSubAppToParentMapCallback callback) {
+  g_browser_process->profile_manager()->LoadProfileByPath(
+      ProfileManager::GetPrimaryUserProfilePath(),
+      /*incognito=*/false,
+      base::BindOnce(&WebAppProviderBridgeLacros::GetSubAppToParentMapImpl,
+                     std::move(callback)));
+}
+
 // static
 void WebAppProviderBridgeLacros::WebAppInstalledInArcImpl(
     mojom::ArcWebAppInstallInfoPtr arc_install_info,
@@ -180,6 +190,22 @@ void WebAppProviderBridgeLacros::GetSubAppIdsImpl(const web_app::AppId& app_id,
           },
           app_id)
           .Then(std::move(callback)));
+}
+
+// static
+void WebAppProviderBridgeLacros::GetSubAppToParentMapImpl(
+    GetSubAppToParentMapCallback callback,
+    Profile* profile) {
+  CHECK(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+
+  provider->scheduler().ScheduleCallbackWithLock<web_app::AllAppsLock>(
+      "WebAppProviderBridgeLacros::GetSubAppToParentMap",
+      std::make_unique<web_app::AllAppsLockDescription>(),
+      base::BindOnce([](web_app::AllAppsLock& lock) {
+        return lock.registrar().GetSubAppToParentMap();
+      }).Then(std::move(callback)));
 }
 
 }  // namespace crosapi

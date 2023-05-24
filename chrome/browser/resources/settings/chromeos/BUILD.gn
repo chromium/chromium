@@ -197,6 +197,7 @@ build_webui("build") {
     "os_apps_page/app_management_page/pwa_detail_view.ts",
     "os_apps_page/app_management_page/read_only_permission_item.ts",
     "os_apps_page/app_management_page/resize_lock_item.ts",
+    "os_apps_page/app_management_page/sub_apps_item.ts",
     "os_apps_page/app_management_page/supported_links_dialog.ts",
     "os_apps_page/app_management_page/supported_links_item.ts",
     "os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.ts",

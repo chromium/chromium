@@ -281,6 +281,11 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Gets the IDs for all sub-apps of parent app with id |parent_app_id|.
   std::vector<AppId> GetAllSubAppIds(const AppId& parent_app_id) const;
 
+  // Maps all app IDs to their parent apps' IDs. Maps that do not have a parent
+  // are omitted. This query should only be called with an AllAppsLock since all
+  // apps are queried for their parent.
+  base::flat_map<AppId, AppId> GetSubAppToParentMap() const;
+
   // Returns the "scope" field from the app manifest, or infers a scope from the
   // "start_url" field if unavailable. Returns an invalid GURL iff the |app_id|
   // does not refer to an installed web app.

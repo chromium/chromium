@@ -171,6 +171,11 @@ export class FakePageHandler implements PageHandlerInterface {
     assertNotReached();
   }
 
+  async getSubAppToParentMap():
+      Promise<{subAppToParentMap: {[key: string]: string}}> {
+    return {subAppToParentMap: {}};
+  }
+
   async getExtensionAppPermissionMessages(_appId: string):
       Promise<{messages: ExtensionAppPermissionMessage[]}> {
     return {messages: []};

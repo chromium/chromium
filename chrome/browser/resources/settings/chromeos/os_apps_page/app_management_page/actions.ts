@@ -30,8 +30,14 @@ export type UpdateSelectedAppIdAction = Action&{
   value: string | null,
 };
 
-export type AppManagementActions =
-    AddAppAction|ChangeAppAction|RemoveAppAction|UpdateSelectedAppIdAction;
+export type UpdateSubAppToParentAppIdAction = Action&{
+  name: 'update-sub-app-to-parent-app-id',
+  subApp: string,
+  parent: string | null,
+};
+
+export type AppManagementActions = AddAppAction|ChangeAppAction|RemoveAppAction|
+    UpdateSelectedAppIdAction|UpdateSubAppToParentAppIdAction;
 
 export function addApp(app: App): AddAppAction {
   return {
@@ -59,5 +65,14 @@ export function updateSelectedAppId(appId: string|
   return {
     name: 'update-selected-app-id',
     value: appId,
+  };
+}
+
+export function updateSubAppToParentAppId(
+    appId: string, parentAppId: string|null): UpdateSubAppToParentAppIdAction {
+  return {
+    name: 'update-sub-app-to-parent-app-id',
+    subApp: appId,
+    parent: parentAppId,
   };
 }

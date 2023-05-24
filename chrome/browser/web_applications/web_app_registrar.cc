@@ -1165,6 +1165,18 @@ std::vector<AppId> WebAppRegistrar::GetAllSubAppIds(
   return sub_app_ids;
 }
 
+base::flat_map<AppId, AppId> WebAppRegistrar::GetSubAppToParentMap() const {
+  base::flat_map<AppId, AppId> parent_app_ids;
+
+  for (const WebApp& app : GetApps()) {
+    if (app.parent_app_id().has_value()) {
+      parent_app_ids[app.app_id()] = *app.parent_app_id();
+    }
+  }
+
+  return parent_app_ids;
+}
+
 ValueWithPolicy<RunOnOsLoginMode> WebAppRegistrar::GetAppRunOnOsLoginMode(
     const AppId& app_id) const {
   RunOnOsLoginPolicy login_policy =

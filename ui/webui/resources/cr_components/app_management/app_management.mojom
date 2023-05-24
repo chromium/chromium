@@ -177,6 +177,9 @@ interface PageHandler {
   GetApps() => (array<App> apps);
   // Returns null if the app is not found.
   GetApp(string app_id) => (App? app);
+  // Maps app IDs to their parent apps' app ID. The return value omits apps
+  // that do not have a parent.
+  GetSubAppToParentMap() => (map<string, string> sub_app_to_parent_map);
   GetExtensionAppPermissionMessages(string app_id) =>
       (array<ExtensionAppPermissionMessage> messages);
   // Pins or unpins for an app identified with `app_id`.

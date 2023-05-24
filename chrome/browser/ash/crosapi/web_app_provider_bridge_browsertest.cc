@@ -1,6 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "ash_requires_lacros_browsertestbase.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
@@ -17,6 +18,13 @@ namespace {
 class WebAppProviderBridgeBrowserTest
     : public AshRequiresLacrosBrowserTestBase {
  protected:
+  void SetUp() override {
+    if (!HasLacrosArgument()) {
+      GTEST_SKIP() << "Skipping test class because Lacros is not enabled";
+    }
+    AshRequiresLacrosBrowserTestBase::SetUp();
+  }
+
   web_app::AppId InstallWebApp(const std::string& start_url,
                                apps::WindowMode mode) {
     crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
@@ -43,10 +51,6 @@ class WebAppProviderBridgeBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppProviderBridgeBrowserTest, GetSubAppIds) {
-  if (!HasLacrosArgument()) {
-    return;
-  }
-
   web_app::AppId parent_app_id =
       InstallWebApp("https://www.parent-app.com", apps::WindowMode::kWindow);
   web_app::AppId sub_app_id_1 =
@@ -74,6 +78,40 @@ IN_PROC_BROWSER_TEST_F(WebAppProviderBridgeBrowserTest, GetSubAppIds) {
   base::flat_set<web_app::AppId> results_set{get_sub_apps_future.Get()};
   EXPECT_EQ(2u, results_set.size());
   EXPECT_EQ(results_set, expected);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppProviderBridgeBrowserTest, GetSubAppToParentMap) {
+  web_app::AppId parent_app_id =
+      InstallWebApp("https://www.parent-app.com", apps::WindowMode::kWindow);
+  web_app::AppId sub_app_id_1 =
+      InstallSubApp(parent_app_id, "https://www.parent-app.com/sub-app-1");
+  web_app::AppId sub_app_id_2 =
+      InstallSubApp(parent_app_id, "https://www.parent-app.com/sub-app-2");
+  // This app should not appear at all in the result map.
+  web_app::AppId unrelated_app_id =
+      InstallWebApp("https://www.unrelated-app.com", apps::WindowMode::kWindow);
+
+  base::flat_map<web_app::AppId, web_app::AppId> expected;
+  expected[sub_app_id_1] = parent_app_id;
+  expected[sub_app_id_2] = parent_app_id;
+
+  crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
+      crosapi::CrosapiManager::Get()
+          ->crosapi_ash()
+          ->web_app_service_ash()
+          ->GetWebAppProviderBridge();
+  ASSERT_TRUE(web_app_provider_bridge);
+
+  base::test::TestFuture<const base::flat_map<web_app::AppId, web_app::AppId>&>
+      get_sub_apps_to_parent_map_future;
+
+  web_app_provider_bridge->GetSubAppToParentMap(
+      get_sub_apps_to_parent_map_future.GetCallback());
+
+  base::flat_map<web_app::AppId, web_app::AppId> results{
+      get_sub_apps_to_parent_map_future.Get()};
+  EXPECT_EQ(2u, results.size());
+  EXPECT_EQ(results, expected);
 }
 }  // namespace
 }  // namespace crosapi

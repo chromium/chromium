@@ -29,6 +29,10 @@ export class FakePageHandler implements PageHandlerInterface {
     return Promise.resolve({app: this.app_});
   }
 
+  getSubAppToParentMap() {
+    return Promise.resolve({subAppToParentMap: {}});
+  }
+
   getExtensionAppPermissionMessages(_appId: string) {
     return Promise.resolve({messages: []});
   }
