@@ -1397,16 +1397,16 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     }
   }
 
+  if (!had_gesture_scrolls) {
+    return;
+  }
+
   TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",
               [events_metrics = std::cref(events_metrics_), fling_input_count,
                normal_input_count](perfetto::EventContext& ctx) {
                 TraceScrollJankMetrics(events_metrics, fling_input_count,
                                        normal_input_count, ctx);
               });
-
-  if (!had_gesture_scrolls) {
-    return;
-  }
 
   const auto end_timestamp = viz_breakdown_.presentation_feedback.timestamp;
   if (global_trackers_.predictor_jank_tracker) {
