@@ -315,6 +315,9 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2975121486251958312">Kun inkognitomodus er tilgjengelig</translation>
 <translation id="2982481275546140226">Slett data</translation>
 <translation id="298306318844797842">Legg til betalingsmåte …</translation>
+<translation id="2988274366244053197">Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
+
+Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Åpne i ny fane</translation>
 <translation id="3020183492814296499">Snarveier</translation>
 <translation id="3037605927509011580">Æsj!</translation>
@@ -381,6 +384,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3471148582064653480">Synkroniser passordene dine, loggen din med mer.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{For {COUNT} nettsted eller app}other{for {COUNT} nettsteder og apper}}</translation>
 <translation id="3474624961160222204">Fortsett som <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Få tilgang til passordene dine i andre apper.</translation>
 <translation id="3478058380795961209">Utløpsmåned</translation>
 <translation id="3482959374254649722">Fanene dine synkroniseres …</translation>
 <translation id="3484946776651937681">Åpne i Nedlastinger</translation>
@@ -652,6 +656,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318298563956633672">Du sporer allerede dette produktet.</translation>
+<translation id="5325595483440111327">Se nettleserloggen.</translation>
 <translation id="5339316356165661760">Slå på synkronisering</translation>
 <translation id="536067926684072644">Vis bokmerker</translation>
 <translation id="5360976571138293719">For flere innstillinger knyttet til personvern, sikkerhet og datainnsamling, se <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>

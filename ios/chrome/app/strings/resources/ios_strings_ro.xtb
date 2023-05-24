@@ -315,6 +315,9 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2975121486251958312">Este disponibil numai modul incognito</translation>
 <translation id="2982481275546140226">Șterge datele</translation>
 <translation id="298306318844797842">Adaugă o metodă de plată...</translation>
+<translation id="2988274366244053197">Metodele de plată și adresele din Google Pay nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.
+
+Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Deschide într-o filă nouă</translation>
 <translation id="3020183492814296499">Comenzi rapide</translation>
 <translation id="3037605927509011580">Of, nu mai merge!</translation>
@@ -381,6 +384,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3471148582064653480">Sincronizează parolele, istoricul și alte date.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pentru {COUNT} site sau o aplicație}few{pentru {COUNT} site-uri și aplicații}other{pentru {COUNT} de site-uri și aplicații}}</translation>
 <translation id="3474624961160222204">Continuă ca <ph name="NAME" /></translation>
+<translation id="3476450923187944815">Accesează-ți parolele în alte aplicații.</translation>
 <translation id="3478058380795961209">Lună expirare</translation>
 <translation id="3482959374254649722">Se sincronizează filele...</translation>
 <translation id="3484946776651937681">Deschide în Descărcări</translation>
@@ -652,6 +656,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5300589172476337783">Afișează</translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5318298563956633672">Urmărești deja acest produs.</translation>
+<translation id="5325595483440111327">Afișează istoricul de navigare</translation>
 <translation id="5339316356165661760">Activează sincronizarea</translation>
 <translation id="536067926684072644">Afișează marcajele</translation>
 <translation id="5360976571138293719">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" />.</translation>

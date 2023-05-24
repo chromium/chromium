@@ -4110,7 +4110,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4554591392113183336">Harici uzantı, mevcut bir uzantıyla aynı veya daha eski sürümde.</translation>
 <translation id="4555769855065597957">Gölge</translation>
 <translation id="4555863373929230635">Şifreleri Google Hesabınıza kaydetmek için oturum açın ve senkronizasyonu etkinleştirin.</translation>
-<translation id="4556194354084985730">Kayıtlı şifrelerinizle sitelerde ve uygulamalarda kolayca oturum açın. Bu özellik kapalıyken oturum açmadan önce doğrulama istenir.</translation>
 <translation id="4558426062282641716">Otomatik başlatma izni istendi</translation>
 <translation id="4559617833001311418">Bu site hareket veya ışık sensörlerinize erişiyor.</translation>
 <translation id="4560728518401799797"><ph name="FOLDER_TITLE" /> yer işareti için diğer seçenekler</translation>
@@ -7552,7 +7551,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7637272932128132922">Bellek Tasarrufu, bu sekme etkin değilken bellekte diğer görevler için yer açtı. Bunu istediğiniz zaman <ph name="SETTINGS_LINK" /> bölümünde değiştirebilirsiniz.</translation>
 <translation id="7637593984496473097">Yeterli disk alanı yok</translation>
 <translation id="7639914187072011620">Sunucudan SAML yönlendirme URL'si alınamadı</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" />, kaydettiğiniz şifrelerle uygun sitelerde otomatik olarak oturum açmanızı sağlar.</translation>
 <translation id="7641513591566880111">Yeni profil adı</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> eklendi</translation>
 <translation id="7642778300616172920">Hassas içeriği gizle</translation>

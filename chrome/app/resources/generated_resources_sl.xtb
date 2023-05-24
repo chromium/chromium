@@ -4131,7 +4131,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4554591392113183336">Zunanja razširitev je iste ali starejše različice kot trenutna.</translation>
 <translation id="4555769855065597957">Senca</translation>
 <translation id="4555863373929230635">Če želite shraniti gesla v račun Google, se prijavite in vklopite sinhronizacijo.</translation>
-<translation id="4556194354084985730">Na spletnih mestih in v aplikacijah se zlahka prijavite s shranjenimi gesli. Če je možnost izklopljena, boste morali potrditi, preden se prijavite.</translation>
 <translation id="4558426062282641716">Zahtevano je dovoljenje za samodejni zagon</translation>
 <translation id="4559617833001311418">To spletno mesto dostopa do tipal gibanja ali svetlobe.</translation>
 <translation id="4560728518401799797">Več možnosti za zaznamek <ph name="FOLDER_TITLE" /></translation>
@@ -7581,7 +7580,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7637272932128132922">Ko je bil ta zavihek neaktiven, je varčevanje s pomnilnikom sprostilo pomnilnik za druga opravila. To lahko kadar koli spremenite tu: <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Premalo prostora na disku.</translation>
 <translation id="7639914187072011620">URL-ja za preusmeritev za prijavo SAML ni bilo mogoče pridobiti iz strežnika.</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> vas z gesli, ki ste jih shranili, samodejno prijavi v ustrezna spletna mesta.</translation>
 <translation id="7641513591566880111">Ime novega profila</translation>
 <translation id="764178579712141045">Oseba <ph name="USER_EMAIL" /> je dodana</translation>
 <translation id="7642778300616172920">Skrij občutljivo vsebino</translation>

@@ -4096,7 +4096,6 @@
 <translation id="4554591392113183336">外部扩展程序的版本与现有版本相同或更低。</translation>
 <translation id="4555769855065597957">阴影</translation>
 <translation id="4555863373929230635">若想将密码保存到您的 Google 帐号中，请登录帐号并开启同步功能。</translation>
-<translation id="4556194354084985730">使用您已保存的密码轻松登录网站和应用。该功能处于关闭状态时，系统会在您登录到相应网站或应用之前询问您。</translation>
 <translation id="4558426062282641716">已请求获取自动启动权限</translation>
 <translation id="4559617833001311418">此网站正在使用您的动态传感器或光传感器。</translation>
 <translation id="4561893854334016293">近期未更改过任何权限</translation>
@@ -7521,7 +7520,6 @@
 <translation id="7637272932128132922">当此标签页处于闲置状态时，省内存模式会释放一些内存以用于执行其他任务。您随时可在<ph name="SETTINGS_LINK" />中更改此设置。</translation>
 <translation id="7637593984496473097">磁盘空间不足</translation>
 <translation id="7639914187072011620">未能从服务器中提取 SAML 重定向网址</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> 会使用您保存的密码让您自动登录到符合条件的网站。</translation>
 <translation id="7641513591566880111">新配置文件名称</translation>
 <translation id="764178579712141045">已添加 <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">隐藏敏感内容</translation>

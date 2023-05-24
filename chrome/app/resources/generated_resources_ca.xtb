@@ -4111,7 +4111,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4554591392113183336">L'extensió externa té la mateixa versió, o una d'anterior, en comparació amb l'existent.</translation>
 <translation id="4555769855065597957">Ombra</translation>
 <translation id="4555863373929230635">Per desar les contrasenyes al teu Compte de Google, inicia-hi la sessió i activa la sincronització.</translation>
-<translation id="4556194354084985730">Inicia fàcilment la sessió en aplicacions i llocs web amb les teves contrasenyes desades. Quan aquesta opció estigui desactivada, se't demanarà la confirmació abans d'iniciar la sessió.</translation>
 <translation id="4558426062282641716">S'ha sol·licitat permís per iniciar-se automàticament</translation>
 <translation id="4559617833001311418">Aquest lloc web està accedint als teus sensors de llum i moviment.</translation>
 <translation id="4560728518401799797">Més opcions per a l'adreça d'interès <ph name="FOLDER_TITLE" /></translation>
@@ -7552,7 +7551,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7637272932128132922">Mentre aquesta pestanya estava inactiva, Estalvi de memòria ha alliberat memòria per a altres tasques. Pots canviar-ho en qualsevol moment a <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">No hi ha prou espai de disc</translation>
 <translation id="7639914187072011620">L'URL de redirecció de SAML no s'ha pogut recuperar del servidor</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> us inicia la sessió automàticament als llocs que compleixen els requisits amb les contrasenyes que heu desat.</translation>
 <translation id="7641513591566880111">Nom nou del perfil</translation>
 <translation id="764178579712141045">S'ha afegit <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Amaga el contingut sensible</translation>

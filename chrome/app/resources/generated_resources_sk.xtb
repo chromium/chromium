@@ -4114,7 +4114,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4554591392113183336">Verzia externého rozšírenia je rovnaká alebo nižšia ako existujúca verzia</translation>
 <translation id="4555769855065597957">Tieň</translation>
 <translation id="4555863373929230635">Ak chcete ukladať heslá do svojho účtu Google, prihláste sa a zapnite synchronizáciu.</translation>
-<translation id="4556194354084985730">Uloženými heslami sa môžete jednoducho prihlasovať na weboch a v aplikáciách. Keď je táto možnosť vypnutá, pred prihlásením sa zobrazí výzva.</translation>
 <translation id="4558426062282641716">Požaduje sa povolenie na automatické spustenie</translation>
 <translation id="4559617833001311418">Tento web má prístup k senzorom pohybu alebo svetla.</translation>
 <translation id="4560728518401799797">Ďalšie možnosti pre záložku <ph name="FOLDER_TITLE" /></translation>
@@ -7559,7 +7558,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7637272932128132922">Keď bola táto karta neaktívna, šetrič pamäte uvoľnil pamäť iným úlohám. Toto správanie môžete kedykoľvek zmeniť v sekcii <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Na disku nie je dostatok miesta</translation>
 <translation id="7639914187072011620">Presmerovanie SAML sa nepodarilo načítať zo servera</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> vás automaticky prihlási na vhodných weboch pomocou hesiel, ktoré ste si uložili.</translation>
 <translation id="7641513591566880111">Názov nového profilu</translation>
 <translation id="764178579712141045">Bol pridaný používateľ <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Skryť citlivý obsah</translation>
@@ -8180,7 +8178,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8154790740888707867">Žiadny súbor</translation>
 <translation id="8154912474061769055">Funkcie na mnohých weboch nemusia fungovať</translation>
 <translation id="815491593104042026">Ojoj! Overenie zlyhalo, pretože bolo nakonfigurované tak, aby použilo nezabezpečenú webovú adresu (<ph name="BLOCKED_URL" />). Kontaktuje svojho správcu.</translation>
-<translation id="8155676038687609779">{COUNT,plural, =0{Neboli zistené žiadne prelomené heslá}=1{{COUNT} prelomené heslo}few{{COUNT} prelomené heslá}many{{COUNT} compromised passwords}other{{COUNT} prelomených hesiel}}</translation>
+<translation id="8155676038687609779">{COUNT,plural, =0{Nenašli sa žiadne odhalené heslá}=1{{COUNT} odhalené heslo}few{{COUNT} odhalené heslá}many{{COUNT} compromised passwords}other{{COUNT} odhalených hesiel}}</translation>
 <translation id="8157248655669507702">Ak chcete nainštalovať profil eSIM, zapnite mobilné dáta</translation>
 <translation id="8157704005178149728">Nastavuje sa dohľad</translation>
 <translation id="8158117992543756526">Toto zariadenie prestalo v období <ph name="MONTH_AND_YEAR" /> dostávať automatické aktualizácie softvéru a zabezpečenia. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>

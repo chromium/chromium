@@ -4115,7 +4115,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4554591392113183336">Tashqi kengaytma versiyasi joriysidan yangi emas.</translation>
 <translation id="4555769855065597957">Soya</translation>
 <translation id="4555863373929230635">Parollar Google hisobida saqlanishi uchun sinxronizatsiyani yoqing.</translation>
-<translation id="4556194354084985730">Saqlangan parollar yordamida sayt va ilovalarga oson kiring. Funksiya oʻchiq boʻlsa, hisobga kirishdan avval soʻraladi.</translation>
 <translation id="4558426062282641716">Avtomatik ishga tushirishga ruxsat zarur</translation>
 <translation id="4559617833001311418">Bu sahifa uchun harakat yoki yorug‘lik sensorlardan foydalanishga ruxsat berildi.</translation>
 <translation id="4560728518401799797"><ph name="FOLDER_TITLE" /> bukmarki uchun boshqa parametrlar</translation>
@@ -7557,7 +7556,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7637272932128132922">Bu varaq nofaol boʻlganida Xotirani tejash funksiyasi boshqa vazifalar uchun xotirani boʻshatadi. Buni istalgan vaqtda <ph name="SETTINGS_LINK" /> orqali oʻzgartirish mumkin.</translation>
 <translation id="7637593984496473097">Diskda yetarlicha joy mavjud emas</translation>
 <translation id="7639914187072011620">Serverdan kelgan URL yoʻnaltiruvi SAML protokoli orqali fetch qilinmadi</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> kerakli ilova va saytlarga saqlangan parollaringiz orqali avtomatik kirish imkonini beradi.</translation>
 <translation id="7641513591566880111">Yangi profil nomi</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> kiritildi</translation>
 <translation id="7642778300616172920">Maxfiy axborotlar berkitilsin</translation>

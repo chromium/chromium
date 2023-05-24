@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Skrivebord</translation>
 <translation id="1018219910092211213">Kan ikke foreta DNS-oppslag</translation>
 <translation id="1018656279737460067">Avbrutt</translation>
+<translation id="1020274983236703756">Eksklusivt <ph name="PRODUCT_NAME" />-innhold er tilgjengelig nå</translation>
 <translation id="1022433422498218992">Generelle kontroller</translation>
 <translation id="1022628058306505708">Jordflyt</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråder, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3226657629376379887">Handlingsmeny for layout</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
+<translation id="3248223063252096240">Kun på <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
 <translation id="3275729367986477355">Brukerbilde</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediger filen}other{Rediger filene}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Personvernskjerm av/på</translation>
 <translation id="3639846061339007994">øvre</translation>
 <translation id="3651050199673793219">Velg en temperaturenhet</translation>
+<translation id="3663574643422533538">Velg grafikk som kun finnes på <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
 <translation id="370665806235115550">Laster inn ...</translation>
 <translation id="3708186454126126312">Tidligere tilkoblet</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Velg albumet <ph name="TITLE" /> med <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-styreflate</translation>
+<translation id="4113067922640381334">Nå har du tilgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunner<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Mørk modus</translation>
 <translation id="4130035430755296270">Hold markøren i ro for å se flere oppsettsalternativer</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Ikke initialisert</translation>
 <translation id="8593058461203131755">sett medieinnhold på pause</translation>
 <translation id="8620617069779373398">Status for roaming</translation>
+<translation id="8626489604350149811">Flere handlinger for <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lys lilla</translation>
 <translation id="8651481478098336970">kutt lyden</translation>
 <translation id="8655295600908251630">Kanal</translation>

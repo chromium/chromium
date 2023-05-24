@@ -57,6 +57,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1258753120186372309">Logo commémoratif de Google : <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1266864766717917324">Partage impossible du contenu suivant : <ph name="CONTENT_TYPE" /></translation>
+<translation id="1269129608791067105">Vous trouverez votre historique ici</translation>
 <translation id="1273937721055267968">Bloquer <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Toucher pour développer</translation>
 <translation id="1291207594882862231">Effacer l'historique, les témoins, les données de site, le cache…</translation>
@@ -852,6 +853,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5665379678064389456">Créer un événement dans <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome ne peut pas vérifier la présence de mises à jour</translation>
 <translation id="5686790454216892815">Nom de fichier trop long</translation>
+<translation id="569435661099256888">Vous pouvez voir les pages que vous avez visitées ou les effacer de votre historique</translation>
 <translation id="569536719314091526">Utilisez le bouton Plus d'options pour traduire cette page vers n'importe quelle langue</translation>
 <translation id="5696597120588531049">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires</translation>
 <translation id="570347048394355941">Passer à l'onglet</translation>

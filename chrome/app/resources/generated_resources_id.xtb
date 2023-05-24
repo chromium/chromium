@@ -4128,7 +4128,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4554591392113183336">Versi ekstensi eksternal sama atau lebih rendah dibandingkan yang sudah ada.</translation>
 <translation id="4555769855065597957">Bayangan</translation>
 <translation id="4555863373929230635">Untuk menyimpan sandi ke Akun Google Anda, login dan aktifkan sinkronisasi.</translation>
-<translation id="4556194354084985730">Login dengan mudah ke situs dan aplikasi menggunakan sandi yang telah Anda simpan. Jika dinonaktifkan, Anda akan dimintai konfirmasi sebelum login.</translation>
 <translation id="4558426062282641716">Diminta izin peluncuran otomatis</translation>
 <translation id="4559617833001311418">Situs ini mengakses sensor gerakan atau sensor cahaya Anda.</translation>
 <translation id="4560728518401799797">Opsi lainnya untuk bookmark <ph name="FOLDER_TITLE" /></translation>
@@ -7569,7 +7568,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7637272932128132922">Saat tab ini tidak aktif, Penghemat Memori akan membebaskan memori untuk tugas lain. Anda dapat mengubahnya kapan saja di <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Ruang disk tidak cukup</translation>
 <translation id="7639914187072011620">Gagal mengambil URL alihan SAML dari server</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> otomatis memasukkan Anda ke situs yang memenuhi syarat menggunakan sandi tersimpan.</translation>
 <translation id="7641513591566880111">Nama profil baru</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> ditambahkan</translation>
 <translation id="7642778300616172920">Sembunyikan konten sensitif</translation>

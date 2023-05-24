@@ -4114,7 +4114,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4554591392113183336">Ārējā paplašinājuma versija ir tāda pati vai vecāka nekā pašreizējā paplašinājuma versija.</translation>
 <translation id="4555769855065597957">Ēna</translation>
 <translation id="4555863373929230635">Lai saglabātu paroles savā Google kontā, pierakstieties un ieslēdziet sinhronizāciju.</translation>
-<translation id="4556194354084985730">Ērti pierakstieties vietnēs un lietotnēs, izmantojot saglabātās paroles. Ja šī funkcija ir izslēgta, jums tiks lūgts apstiprinājums pirms pierakstīšanās.</translation>
 <translation id="4558426062282641716">Pieprasīta automātiskās palaišanas atļauja</translation>
 <translation id="4559617833001311418">Šī vietne var piekļūt jūsu kustību vai gaismas sensoriem.</translation>
 <translation id="4560728518401799797">Vairāk opciju grāmatzīmei “<ph name="FOLDER_TITLE" />”</translation>
@@ -7557,7 +7556,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7637272932128132922">Kamēr šī cilne nebija aktīva, funkcija Atmiņas taupīšana atbrīvoja atmiņu citiem uzdevumiem. Varat šo opciju jebkurā laikā mainīt sadaļā <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Diskā nepietiek vietas.</translation>
 <translation id="7639914187072011620">Neizdevās izgūt SAML novirzīšanas URL no servera.</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> automātiski pierakstās piemērotajās vietnēs, izmantojot jūsu saglabātās paroles.</translation>
 <translation id="7641513591566880111">Jauns profila nosaukums</translation>
 <translation id="764178579712141045">Lietotājs <ph name="USER_EMAIL" /> ir pievienots</translation>
 <translation id="7642778300616172920">Paslēpt sensitīvu saturu</translation>

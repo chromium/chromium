@@ -202,6 +202,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1166212789817575481">Tabs rechts schließen</translation>
 <translation id="1166583374608765787">Namensaktualisierung prüfen</translation>
 <translation id="1166596238782048887">„<ph name="TAB_TITLE" />“ gehört zum Desktop „<ph name="DESK_TITLE" />“</translation>
+<translation id="1167262726334064738">Es mit einem neuen Passwort versuchen</translation>
 <translation id="1168020859489941584">Wird in <ph name="TIME_REMAINING" /> geöffnet...</translation>
 <translation id="116896278675803795">Sprache automatisch an ausgewählte Inhalte anpassen</translation>
 <translation id="1169266963600477608">Spielsteuerung</translation>
@@ -902,6 +903,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="177336675152937177">Daten aus gehosteten Apps</translation>
 <translation id="1776712937009046120">Nutzer hinzufügen</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
+<translation id="177814385589420211">Suchtaste gedrückt halten, um zwischen Funktionstasten und Tasten der obersten Reihe zu wechseln</translation>
 <translation id="1778457539567749232">Als ungelesen markieren</translation>
 <translation id="1778991607452011493">Fehlerbehebungsprotokolle senden (empfohlen)</translation>
 <translation id="1779441632304440041">Schwache Passwörter sind einfach zu erraten. Erstelle deshalb am besten starke Passwörter.</translation>
@@ -1343,6 +1345,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2142582065325732898">Aktiviere die <ph name="LINK1_BEGIN" />Chrome-Synchronisierung<ph name="LINK1_END" />, um die zuletzt geöffneten Chrome-Tabs zu sehen. <ph name="LINK2_BEGIN" />Weitere Informationen<ph name="LINK2_END" /></translation>
 <translation id="2143765403545170146">Symbolleiste im Vollbildmodus immer einblenden</translation>
 <translation id="2143778271340628265">Manuelle Proxy-Konfiguration</translation>
+<translation id="2143808295261240440">Empfohlenes Passwort verwenden</translation>
 <translation id="2143915448548023856">Display-Einstellungen</translation>
 <translation id="2144536955299248197">Zertifikats-Viewer: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Android-App-Entwicklung in Linux</translation>
@@ -2327,6 +2330,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2963151496262057773">Das folgende Plug-in reagiert nicht: <ph name="PLUGIN_NAME" />. Möchtest du es anhalten?</translation>
 <translation id="2964193600955408481">WLAN deaktivieren</translation>
 <translation id="2964245677645334031">Nearby Share-Sichtbarkeit</translation>
+<translation id="2966705348606485669">Weitere Optionen für den Lesezeichenordner „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="2966937470348689686">Android-Einstellungen verwalten</translation>
 <translation id="2967926928600500959">Für URLs, die mit diesen Regeln übereinstimmen, wird beim Öffnen ein bestimmter Browser erzwungen.</translation>
 <translation id="2972581237482394796">&amp;Wiederholen</translation>
@@ -2616,6 +2620,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3244294424315804309">Töne weiterhin stummschalten</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netzwerkfehler</translation>
 <translation id="3248902735035392926">Sicherheit ist wichtig. Nimm dir einen Moment Zeit, um deine <ph name="BEGIN_LINK" />Erweiterungen zu prüfen<ph name="END_LINK" /></translation>
+<translation id="3249323165366527554">Du kannst dich schneller registrieren und anmelden, wenn du dein Passwort für <ph name="EMAIL" /> automatisch in <ph name="GOOGLE_PASSWORD_MANAGER" /> speichern lässt.</translation>
 <translation id="3251714896659475029"><ph name="SUPERVISED_USER_NAME" /> erlauben, Google Assistant mit „Hey Google“ zu aktivieren</translation>
 <translation id="3251759466064201842">&lt;Gehört nicht zum Zertifikat&gt;</translation>
 <translation id="325238099842880997">Grundregeln für den Umgang mit digitalen Medien aufstellen, um Kindern zu helfen, sich beim Spielen, Surfen und ihren Schulaufgaben zurechtzufinden</translation>
@@ -4104,9 +4109,9 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4554591392113183336">Die Version der externen Erweiterung ist identisch mit der vorhandenen Version oder niedriger als diese.</translation>
 <translation id="4555769855065597957">Schatten</translation>
 <translation id="4555863373929230635">Melde dich an und aktiviere die Synchronisierung, um Passwörter in deinem Google-Konto zu speichern.</translation>
-<translation id="4556194354084985730">Du kannst dich mit deinen gespeicherten Passwörtern ganz einfach auf Websites und in Apps anmelden. Wenn diese Option deaktiviert ist, musst du dein Passwort bei der Anmeldung selbst eingeben.</translation>
 <translation id="4558426062282641716">Berechtigung zum automatischen Start angefordert</translation>
 <translation id="4559617833001311418">Diese Website greift auf meine Bewegungs- oder Lichtsensoren zu.</translation>
+<translation id="4560728518401799797">Weitere Optionen für das Lesezeichen „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="4561893854334016293">Keine vor Kurzem geänderten Berechtigungen</translation>
 <translation id="4562155214028662640">Fingerabdruck hinzufügen</translation>
 <translation id="4563210852471260509">Anfängliche Eingabesprache ist Chinesisch.</translation>
@@ -4391,6 +4396,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4819323978093861656">{0,plural, =0{Wird jetzt geschlossen.}=1{Wird geschlossen in: 1 Sekunde}other{Wird geschlossen in: # Sekunden}}</translation>
 <translation id="4819607494758673676">Google Assistant-Benachrichtigungen</translation>
 <translation id="4820236583224459650">Als aktives Ticket festlegen</translation>
+<translation id="4820795723433418303">Funktionstasten als Tasten der obersten Reihe verwenden</translation>
 <translation id="4821935166599369261">&amp;Profilerstellung aktiviert</translation>
 <translation id="4823484602432206655">Nutzer- und Geräteeinstellungen lesen und ändern</translation>
 <translation id="4824037980212326045">Linux-Sicherung und ‑Wiederherstellung</translation>
@@ -4522,6 +4528,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4925320384394644410">Hier werden deine Ports angezeigt</translation>
 <translation id="49265687513387605">Der Bildschirm kann nicht gestreamt werden. Überprüfe, ob du die Aufforderung zum Teilen deines Bildschirms bestätigt hast.</translation>
 <translation id="4927753642311223124">Du hast keine Benachrichtigungen.</translation>
+<translation id="4928629450964837566">Sichereres Passwort verwenden</translation>
 <translation id="4929386379796360314">Druckziele</translation>
 <translation id="4930447554870711875">Entwickler</translation>
 <translation id="4930714375720679147">Aktivieren</translation>
@@ -4604,6 +4611,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5010886807652684893">Visuelle Ansicht</translation>
 <translation id="5015344424288992913">Proxy auflösen...</translation>
 <translation id="5016491575926936899">Du kannst SMS von deinem Computer senden, deine Internetverbindung teilen, auf Unterhaltungsbenachrichtigungen antworten und dein <ph name="DEVICE_TYPE" /> mit deinem Smartphone entsperren.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="5016983299133677671">Es mit einem neuen Passwort versuchen</translation>
 <translation id="5017643436812738274">Du kannst dich mit einem Textcursor auf den Seiten bewegen. Drücke die Tastenkombination Strg + Suchtaste + 7, um die Tastaturnavigation zu deaktivieren.</translation>
 <translation id="5018207570537526145">Erweiterungs-Website öffnen</translation>
 <translation id="5018526990965779848">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Du kannst uns helfen, Android zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google nützlich, beispielsweise Android-Entwickler. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert.</translation>
@@ -4672,6 +4680,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5078638979202084724">Alle Tabs als Lesezeichen speichern</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
 <translation id="5079010647467150187">Integriertes VPN hinzufügen…</translation>
+<translation id="5079699784114005398">Wenn du diese Einstellung aktivierst, sind deine Apps auf allen ChromeOS-Geräten verfügbar, nachdem du dich mit deinem Google-Konto angemeldet hast. Über den Chrome-Browser installierte Web-Apps werden synchronisiert, auch wenn die Browsersynchronisierung deaktiviert ist.</translation>
 <translation id="508059534790499809">Kerberos-Ticket aktualisieren</translation>
 <translation id="5081960376148623587">Festlegen, ob Seiten vorab geladen werden sollen</translation>
 <translation id="5084328598860513926">Bereitstellung wurde unterbrochen. Bitte noch einmal versuchen oder an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
@@ -4747,6 +4756,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5145464978649806571">Wenn du dich von deinem Gerät entfernst, wird der Bildschirm automatisch gesperrt. Wenn du dich vor deinem Gerät befindest, bleibt er länger aktiv. Wenn du keinen Sperrbildschirm verwendest, wird dein Gerät stattdessen in den Ruhemodus versetzt.</translation>
 <translation id="514575469079499857">IP-Adresse zur Standortbestimmung verwenden (Standardeinstellung)</translation>
 <translation id="5146896637028965135">Systemstimme</translation>
+<translation id="5147992672778369947">Empfohlenes Passwort verwenden</translation>
 <translation id="5148277445782867161">Der Standortdienst von Google greift auf Quellen wie WLANs, Mobilfunknetze und Sensoren zurück, um den Gerätestandort besser einschätzen zu können.</translation>
 <translation id="5150254825601720210">SSL-Servername für Netscape-Zertifikat</translation>
 <translation id="5151354047782775295">Gib Speicherplatz frei oder ausgewählte Daten werden automatisch gelöscht</translation>
@@ -5033,6 +5043,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5414566801737831689">Die Symbole der von dir besuchten Websites lesen</translation>
 <translation id="5414836363063783498">Überprüfung...</translation>
 <translation id="5417312524372586921">Browserdesigns</translation>
+<translation id="5417353542809767994">Schnell ein starkes Passwort verwenden</translation>
 <translation id="541737483547792035">Anzeige vergrößern</translation>
 <translation id="5419405654816502573">Voice Match</translation>
 <translation id="5420274697768050645">Für zusätzliche Sicherheit beim Entsperren des Geräts nach dem Passwort fragen</translation>
@@ -5153,6 +5164,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518949581554491184">Mit Android-Smartphone einrichten</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519900055135507385">Mit einem starken Passwort ist dieses Konto besser geschützt. Das Passwort wird für <ph name="EMAIL" /> im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
 <translation id="5521078259930077036">Ist das deine erwartete Startseite?</translation>
 <translation id="5522156646677899028">Diese Erweiterung enthält eine schwere Sicherheitslücke.</translation>
 <translation id="5522403133543437426">In der Adressleiste verwendete Suchmaschine.</translation>
@@ -5767,6 +5779,7 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="6070311415473175157">Wähle einen Bildbereich für die Suche aus</translation>
 <translation id="6071181508177083058">Passwort bestätigen</translation>
 <translation id="6071576563962215370">Das System konnte die Attributsperre für die Geräteinstallationszeit nicht vornehmen.</translation>
+<translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> Arbeitsspeicher gespart</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> ist auf diesem Gerät nicht zulässig. Wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
 <translation id="6073903501322152803">Bedienungshilfen hinzufügen</translation>
@@ -5814,6 +5827,7 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="6104068876731806426">Google Konten</translation>
 <translation id="6104311680260824317">Das Gerät konnte der Domain nicht beitreten. Der Server bietet keine Unterstützung für die angegebenen Kerberos-Verschlüsselungstypen. Unter "Weitere Optionen" findest du die Verschlüsselungseinstellungen.</translation>
 <translation id="6104796831253957966">Druckerwarteschlange voll</translation>
+<translation id="6104929924898022309">Mit der Suchtaste kannst du das Verhalten der Funktionstasten ändern</translation>
 <translation id="6106167152849320869">Wenn du im vorherigen Schritt festgelegt hast, dass auch die Diagnose- und Nutzungsdaten gesendet werden, werden diese für installierte Apps erhoben.</translation>
 <translation id="6111972606040028426">Google Assistant aktivieren</translation>
 <translation id="6112294629795967147">Zum Anpassen der Größe tippen</translation>
@@ -5955,6 +5969,7 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="6234108445915742946">Neue Nutzungsbedingungen für Chrome ab dem 31. März</translation>
 <translation id="6234474535228214774">Installation ausstehend</translation>
 <translation id="6235208551686043831">Die Gerätekamera wurde aktiviert. Bitte halte deinen eSIM-QR-Code in die Kamera.</translation>
+<translation id="6237297174664969437">In den Chrome-Einstellungen kannst du jederzeit festlegen, welche Browserdaten synchronisiert werden sollen. In den <ph name="LINK_BEGIN" />Geräteeinstellungen<ph name="LINK_END" /> kannst du die Synchronisierung von Web-Apps steuern, die über den Chrome-Browser installiert werden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="6237474966939441970">Notizen-App für Eingabestift</translation>
 <translation id="623755660902014047">Lesemodus</translation>
 <translation id="6238767809035845642">Text, der über ein anderes Gerät geteilt wurde</translation>
@@ -6287,6 +6302,7 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="6537613839935722475">Der Name darf aus Buchstaben, Ziffern und Bindestrichen (-) bestehen</translation>
 <translation id="6538098297809675636">Fehler bei Codeerkennung</translation>
 <translation id="653920215766444089">Suche nach Zeigegerät läuft</translation>
+<translation id="6539674013849300372">Mit einem starken Passwort bist du online besser geschützt. Es wird für <ph name="EMAIL" /> im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
 <translation id="653983593749614101">Wird fortgesetzt…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Hinweis:<ph name="END_BOLD" /> Aktiviere diese Option nur dann, wenn du dazu aufgefordert wurdest und dir sicher bist, dass es unbedenklich ist. Die Datenerfassung kann die Leistung verringern.</translation>
 <translation id="6541638731489116978">Diese Website darf nicht auf deine Bewegungssensoren zugreifen.</translation>
@@ -6481,6 +6497,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="671226373742585927">Klicke auf die Schaltfläche „X“, um die Seitenleiste zu schließen</translation>
 <translation id="6712943853047024245">Du hast bereits ein Passwort zu diesem Nutzernamen für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="6713233729292711163">Arbeitsprofil hinzufügen</translation>
+<translation id="6713441551032149301">Launcher-Taste gedrückt halten, um zwischen Funktionstasten und Tasten der obersten Reihe zu wechseln</translation>
 <translation id="6713668088933662563">Für diese Sprachen nie eine Übersetzung anbieten</translation>
 <translation id="6715803357256707211">Bei der Installation deiner Linux-Anwendung ist ein Fehler aufgetreten. Klicke auf die Benachrichtigung, um Details zu sehen.</translation>
 <translation id="671619610707606484">Dadurch werden <ph name="TOTAL_USAGE" /> an von Websites gespeicherten Daten gelöscht</translation>
@@ -6602,6 +6619,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6811034713472274749">Seitenansicht bereit</translation>
 <translation id="6811151703183939603">Fest</translation>
 <translation id="6811332638216701903">DHCP-Hostname</translation>
+<translation id="6811792477922751991">Mit der Launcher-Taste kannst du das Verhalten von Funktionstasten ändern</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kann nicht als Root ausgeführt werden.</translation>
 <translation id="6812841287760418429">Änderungen beibehalten</translation>
 <translation id="6813907279658683733">Gesamter Bildschirm</translation>
@@ -7529,7 +7547,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7637272932128132922">Während dieser Tab inaktiv war, hat der Arbeitsspeicher-Sparmodus Arbeitsspeicher für andere Aufgaben freigegeben. Du kannst diese Einstellung jederzeit unter <ph name="SETTINGS_LINK" /> ändern.</translation>
 <translation id="7637593984496473097">Nicht genügend Festplattenspeicher</translation>
 <translation id="7639914187072011620">Die SAML-Weiterleitungs-URL konnte nicht vom Server abgerufen werden</translation>
-<translation id="764017888128728">Mit <ph name="PASSWORD_MANAGER_BRAND" /> wirst du mit deinen gespeicherten Passwörtern automatisch auf allen entsprechenden Websites angemeldet.</translation>
 <translation id="7641513591566880111">Neuer Profilname</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> hinzugefügt</translation>
 <translation id="7642778300616172920">Vertrauliche Inhalte ausblenden</translation>
@@ -7795,6 +7812,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7851720427268294554">IPP-Parser</translation>
 <translation id="78526636422538552">Option zum Hinzufügen weiterer Google-Konten ist deaktiviert</translation>
 <translation id="7853747251428735">Weitere Too&amp;ls</translation>
+<translation id="7853999103056713222">Sichereres Passwort verwenden</translation>
 <translation id="7855678561139483478">Tab in ein neues Fenster verschieben</translation>
 <translation id="7857004848504343806">Dein Computer enthält ein Sicherheitsmodul, über das viele wichtige Sicherheitsfunktionen in Chrome OS Flex implementiert werden. Weitere Informationen dazu findest du in der Chromebook-Hilfe unter https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Textvorschläge</translation>
@@ -8349,6 +8367,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8325413836429495820">Dürfen nicht auf meine Zwischenablage zugreifen</translation>
 <translation id="8326478304147373412">PKCS #7, Zertifikatkette</translation>
 <translation id="8327386430364625757">Mathematische Schriftart</translation>
+<translation id="8327538105740918488">Du kannst das Passwort jederzeit ändern. Es wird für <ph name="EMAIL" /> im <ph name="GOOGLE_PASSWORD_MANAGER" /> gespeichert.</translation>
 <translation id="8327676037044516220">Berechtigungen und Inhaltseinstellungen</translation>
 <translation id="8330617762701840933">Die Liste mit Websites, die zum alternativen Browser weiterleiten.</translation>
 <translation id="8330689128072902965">Kontakte in der Nähe können Inhalte mit dir teilen. Zum Ändern klicken.</translation>
@@ -8494,6 +8513,7 @@ Wenn du keine Signale freigibst, wird das Profil geschlossen.</translation>
 <translation id="8449836157089738489">Alle in neuer Tabgruppe öffnen</translation>
 <translation id="8451512073679317615">Assistant</translation>
 <translation id="845702320058262034">Verbindung nicht möglich. Kontrolliere, ob Bluetooth auf deinem Smartphone aktiviert ist.</translation>
+<translation id="8457251154056341970">Auf dieser Seite werden keine <ph name="MODULE_NAME" /> mehr angezeigt</translation>
 <translation id="8457451314607652708">Lesezeichen importieren</translation>
 <translation id="8458341576712814616">Kürzel</translation>
 <translation id="8458627787104127436">Alle (<ph name="URL_COUNT" />) in neuem Fenster öffnen</translation>
@@ -8566,6 +8586,7 @@ Wenn du keine Signale freigibst, wird das Profil geschlossen.</translation>
 <translation id="8514955299594277296">Websites nicht erlauben, Daten auf deinem Gerät zu speichern (nicht empfohlen)</translation>
 <translation id="8517759303731677493">Bearbeiten…</translation>
 <translation id="8519895319663397036">Import der Passwörter nicht möglich. Die Dateigröße sollte kleiner als 150 KB sein.</translation>
+<translation id="851991974800416566">Schnell ein starkes Passwort verwenden</translation>
 <translation id="8523493869875972733">Änderungen beibehalten</translation>
 <translation id="8523849605371521713">Per Richtlinie hinzugefügt</translation>
 <translation id="8524783101666974011">Karten in deinem Google-Konto speichern</translation>
@@ -8723,6 +8744,7 @@ Wenn du keine Signale freigibst, wird das Profil geschlossen.</translation>
 <translation id="8665110742939124773">Du hast einen falschen Zugriffscode eingegeben. Versuche es noch einmal.</translation>
 <translation id="8665180165765946056">Sicherung abgeschlossen</translation>
 <translation id="866611985033792019">Diesem Zertifikat zur Identifizierung von E-Mail-Nutzern vertrauen</translation>
+<translation id="8666268818656583275">Die F-Tasten haben jetzt das gleiche Verhalten wie Tasten der oberen Reihe</translation>
 <translation id="8666321716757704924">Berechtigungen wieder zugelassen für <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">Informationen zu browserbasierter personalisierter Werbung</translation>
 <translation id="8667261224612332309">Du hast Passwörter, die verbessert werden können</translation>
@@ -9403,6 +9425,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="950307215746360464">Einrichtungsassistent</translation>
 <translation id="951991426597076286">Ablehnen</translation>
 <translation id="952471655966876828">Gerät wird automatisch verbunden, wenn es eingeschaltet oder verwendet wird</translation>
+<translation id="952880932803612259">Apps, Websites und Systemdiensten erlauben, deinen Standort zu verwenden. Dazu kann der Standortdienst Quellen wie WLANs, Mobilfunknetze und Sensoren nutzen.</translation>
 <translation id="953434574221655299">Darf Informationen zu deiner aktiven Nutzung dieses Geräts abrufen</translation>
 <translation id="956500788634395331">Du bist vor potenziell schädlichen Erweiterungen geschützt</translation>
 <translation id="957179356621191750">6-Punkt</translation>

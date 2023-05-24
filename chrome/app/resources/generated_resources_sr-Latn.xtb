@@ -520,7 +520,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1448779317883494811">Alatka za četkice</translation>
 <translation id="1449191289887455076">Ponovo pritisnite <ph name="CURRENTKEY" /> da biste potvrdili dodelu i <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Veb-stranica, jedna datoteka</translation>
-<translation id="1452803302401719440">Podešavanja koja je roditelj izabrao sada te bolje štite onlajn</translation>
 <translation id="1453561711872398978">Šalji <ph name="BEGIN_LINK" />evidencije o otklanjanju grešaka<ph name="END_LINK" /> (preporučeno)</translation>
 <translation id="1454223536435069390">S&amp;nimi ekran</translation>
 <translation id="145432137617179457">Jezici za proveru pravopisa</translation>
@@ -4127,7 +4126,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4554591392113183336">Verzija spoljnog dodatka je ista ili starija od postojećeg.</translation>
 <translation id="4555769855065597957">Novi profil</translation>
 <translation id="4555863373929230635">Da biste sačuvali lozinke na Google nalogu, prijavite se i uključite sinhronizaciju.</translation>
-<translation id="4556194354084985730">Lako se prijavljujte na sajtove i u aplikacije pomoću sačuvanih lozinki. Kada je ovo isključeno, prikazivaće vam se upit pre prijavljivanja.</translation>
 <translation id="4558426062282641716">Traži se dozvola za automatsko pokretanje</translation>
 <translation id="4559617833001311418">Ovaj sajt pristupa senzorima za pokret ili svetlo.</translation>
 <translation id="4560728518401799797">Još opcija za obeleživač (<ph name="FOLDER_TITLE" />)</translation>
@@ -6102,7 +6100,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6315170314923504164">Glas</translation>
 <translation id="6315493146179903667">Premesti sve napred</translation>
 <translation id="6316432269411143858">Sadržaj uslova za Google Chrome OS</translation>
-<translation id="6316723751983724988">Novo: Ovde se primenjuju Family Link opcije za Chrome</translation>
 <translation id="6317369057005134371">Čeka se prozor aplikacije...</translation>
 <translation id="6318125393809743217">Uvrsti datoteku policies.json uz konfiguracije smernica.</translation>
 <translation id="6318407754858604988">Preuzimanje je započeto</translation>
@@ -7593,7 +7590,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7637272932128132922">Dok je ova kartica bila neaktivna, Ušteda memorije je oslobodila memoriju za druge zadatke. Ovo možete da promenite u bilo kom trenutku u <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Nema dovoljno prostora na disku</translation>
 <translation id="7639914187072011620">Preuzimanje SAML URL-a za preusmeravanje sa servera nije uspelo</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> vas automatski prijavljuje na sajtove koji ispunjavaju uslove pomoću lozinki koje ste sačuvali.</translation>
 <translation id="7641513591566880111">Nov naziv profila</translation>
 <translation id="764178579712141045">Dodato: <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Sakrij osetljiv sadržaj</translation>

@@ -4128,7 +4128,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4554591392113183336">Det externa tillägget har samma eller lägre version än det som redan finns.</translation>
 <translation id="4555769855065597957">Skugga</translation>
 <translation id="4555863373929230635">Logga in och aktivera synkronisering om du vill spara lösenord i Google-kontot.</translation>
-<translation id="4556194354084985730">Logga enkelt in på webbplatser och i appar med lösenord du har sparat. När funktionen är inaktiverad måste du bekräfta varje gång du loggar in.</translation>
 <translation id="4558426062282641716">Autostartbehörighet har begärts</translation>
 <translation id="4559617833001311418">Den här webbplatsen använder enhetens rörelse- eller ljussensor.</translation>
 <translation id="4560728518401799797">Fler alternativ för bokmärke i <ph name="FOLDER_TITLE" /></translation>
@@ -7570,7 +7569,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7637272932128132922">När den här fliken var inaktiv frigjorde minnessparläget minne för andra uppgifter. Du kan ändra det här när som helst i <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Det finns inte tillräckligt med utrymme på hårddisken</translation>
 <translation id="7639914187072011620">Det gick inte att hämta SAML-omdirigeringsadressen från servern</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> loggar automatiskt in på godkända webbplatser med de lösenord du sparat.</translation>
 <translation id="7641513591566880111">Nytt profilnamn</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> har lagts till</translation>
 <translation id="7642778300616172920">Dölj känsligt innehåll</translation>

@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Site Google</translation>
 <translation id="1853795129690976061">Linux are acces la acest dosar</translation>
 <translation id="1864756863218646478">Fișierul nu a putut fi găsit.</translation>
+<translation id="1877377730633446520">Aceasta va folosi aproximativ <ph name="REQUIRED_SPACE" />. Momentan ai <ph name="FREE_SPACE" /> la dispoziție.</translation>
 <translation id="1884013283844450420">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectează-te</translation>
 <translation id="1920670151694390848">Malayalam, transliterație</translation>
 <translation id="1920798810075583923">Pepene verde</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Extinde panourile cu feedback privind fișierele</translation>
 <translation id="1995337122023280937">Accesează locația fișierului</translation>
 <translation id="2001796770603320721">Gestionează în Drive</translation>
+<translation id="2004942826429452291">Fișierele se vor stoca în cloud și pe acest Chromebook.</translation>
 <translation id="2009067268969781306">Formatarea unității va șterge toate datele stocate pe unitate. Această acțiune nu poate fi anulată.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Rusă</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Setările dispozitivului</translation>
 <translation id="2084809735218147718">Gesticulează „Mulțumesc” în limbajul semnelor</translation>
 <translation id="2088690981887365033">Rețea VPN</translation>
+<translation id="2089751716171649322">Accesează cu ușurință fișierele din Google Drive când ești offline</translation>
 <translation id="2111134541987263231">activează <ph name="BEGIN_BOLD" />Permite în modul incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> articole vor fi șterse și nu vei putea să le restabilești.</translation>
 <translation id="2122305276694332719">Conectarea automată la o rețea ascunsă permite altora să îți vadă dispozitivul și unele setări pentru rețea, așadar nu este recomandată.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Nu acum</translation>
 <translation id="3486821258960016770">Mongolă</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erori.</translation>
+<translation id="3501954296166022751">Fișierele din Google Drive sunt disponibile offline</translation>
 <translation id="3509680540198371098">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="3511705761158917664">Se pregătește sincronizarea pentru <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
 <translation id="3522708245912499433">Portugheză</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5500122897333236901">Islandeză</translation>
 <translation id="5508696409934741614">Puncte</translation>
+<translation id="5519161320735100193">Setări Google Drive</translation>
 <translation id="5522908512596376669">Lista de fișiere s-a modificat la afișare listă.</translation>
 <translation id="5524517123096967210">Fișierul nu a putut fi citit.</translation>
 <translation id="5533102081734025921">Imagine <ph name="IMAGE_TYPE" /></translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7806708061868529807">Ebraică</translation>
 <translation id="78104721049218340">Tastatură thailandeză Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Eroare la configurarea rețelei</translation>
 <translation id="7839804798877833423">Preluarea acestor fișiere va utiliza aproximativ <ph name="FILE_SIZE" /> din datele mobile.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatarea partiției va șterge toate datele stocate pe partiție. Această acțiune nu poate fi anulată.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Fișierele din Contul meu Drive se vor sincroniza automat cu Chromebookul, ca să le poți accesa fără conexiune la internet.</translation>
 <translation id="7925247922861151263">Verificarea AAA nu a reușit</translation>
 <translation id="7925686952655276919">Nu utilizați date mobile pentru sincronizare</translation>
 <translation id="7928710562641958568">Scoateți dispozitivul</translation>
+<translation id="7933875256234974853">Se pregătește sincronizarea fișierelor din Drive...</translation>
 <translation id="7943385054491506837">S.U.A. Colemak</translation>
 <translation id="7953739707111622108">Acest dispozitiv nu poate fi deschis deoarece sistemul său de fișiere nu a fost recunoscut.</translation>
 <translation id="7969525169268594403">Slovenă</translation>
 <translation id="7972920761225148017">Franceză (Elveția)</translation>
 <translation id="7973962044839454485">Autentificarea PPP nu a reușit, din cauza unui nume de utilizator sau a unei parole greșite</translation>
 <translation id="7980421588063892270">Engleză (S.U.A.) cu tastatură Colemak</translation>
+<translation id="7985008041109611710">Se sincronizează <ph name="NUMBER_OF_FILES_SYNCING" /> fișiere</translation>
 <translation id="8000066093800657092">Nicio rețea</translation>
 <translation id="8008366997883261463">Terier</translation>
 <translation id="8028993641010258682">Dimensiune</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">Instalarea a început.</translation>
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="9219908252191632183">Peisaj lunar</translation>
+<translation id="937795003075802289">Se sincronizează un fișier</translation>
 <translation id="938470336146445890">Instalează un certificat de utilizator.</translation>
 <translation id="939736085109172342">Dosar nou</translation>
 <translation id="943972244133411984">Modificat de</translation>

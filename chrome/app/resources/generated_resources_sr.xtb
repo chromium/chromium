@@ -520,7 +520,6 @@
 <translation id="1448779317883494811">Алатка за четкице</translation>
 <translation id="1449191289887455076">Поново притисните <ph name="CURRENTKEY" /> да бисте потврдили доделу и <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Веб-страница, једна датотека</translation>
-<translation id="1452803302401719440">Подешавања која је родитељ изабрао сада те боље штите онлајн</translation>
 <translation id="1453561711872398978">Шаљи <ph name="BEGIN_LINK" />евиденције о отклањању грешака<ph name="END_LINK" /> (препоручено)</translation>
 <translation id="1454223536435069390">С&amp;ними екран</translation>
 <translation id="145432137617179457">Језици за проверу правописа</translation>
@@ -4127,7 +4126,6 @@
 <translation id="4554591392113183336">Верзија спољног додатка је иста или старија од постојећег.</translation>
 <translation id="4555769855065597957">Нови профил</translation>
 <translation id="4555863373929230635">Да бисте сачували лозинке на Google налогу, пријавите се и укључите синхронизацију.</translation>
-<translation id="4556194354084985730">Лако се пријављујте на сајтове и у апликације помоћу сачуваних лозинки. Када је ово искључено, приказиваће вам се упит пре пријављивања.</translation>
 <translation id="4558426062282641716">Тражи се дозвола за аутоматско покретање</translation>
 <translation id="4559617833001311418">Овај сајт приступа сензорима за покрет или светло.</translation>
 <translation id="4560728518401799797">Још опција за обележивач (<ph name="FOLDER_TITLE" />)</translation>
@@ -6102,7 +6100,6 @@
 <translation id="6315170314923504164">Глас</translation>
 <translation id="6315493146179903667">Премести све напред</translation>
 <translation id="6316432269411143858">Садржај услова за Google Chrome ОС</translation>
-<translation id="6316723751983724988">Ново: Овде се примењују Family Link опције за Chrome</translation>
 <translation id="6317369057005134371">Чека се прозор апликације...</translation>
 <translation id="6318125393809743217">Уврсти датотеку policies.json уз конфигурације смерница.</translation>
 <translation id="6318407754858604988">Преузимање је започето</translation>
@@ -7593,7 +7590,6 @@
 <translation id="7637272932128132922">Док је ова картица била неактивна, Уштеда меморије је ослободила меморију за друге задатке. Ово можете да промените у било ком тренутку у <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Нема довољно простора на диску</translation>
 <translation id="7639914187072011620">Преузимање SAML URL-а за преусмеравање са сервера није успело</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> вас аутоматски пријављује на сајтове који испуњавају услове помоћу лозинки које сте сачували.</translation>
 <translation id="7641513591566880111">Нов назив профила</translation>
 <translation id="764178579712141045">Додато: <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Сакриј осетљив садржај</translation>

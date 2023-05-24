@@ -4128,7 +4128,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4554591392113183336">Tiện ích bên ngoài có cùng phiên bản hoặc phiên bản thấp hơn so với tiện ích hiện có.</translation>
 <translation id="4555769855065597957">Bóng</translation>
 <translation id="4555863373929230635">Để lưu mật khẩu vào Tài khoản Google của bạn, hãy đăng nhập và bật tính năng đồng bộ hóa.</translation>
-<translation id="4556194354084985730">Dễ dàng đăng nhập vào các trang web và ứng dụng bằng mật khẩu bạn đã lưu. Khi tắt tính năng này, bạn sẽ được yêu cầu xác nhận trước khi đăng nhập.</translation>
 <translation id="4558426062282641716">Đã yêu cầu quyền tự động chạy</translation>
 <translation id="4559617833001311418">Trang web này đang sử dụng cảm biến chuyển động hoặc ánh sáng của thiết bị.</translation>
 <translation id="4560728518401799797">Tuỳ chọn khác cho dấu trang <ph name="FOLDER_TITLE" /></translation>
@@ -7570,7 +7569,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7637272932128132922">Mặc dù thẻ này không hoạt động nhưng Trình tiết kiệm bộ nhớ đã giải phóng bộ nhớ cho các tác vụ khác. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Không đủ dung lượng ổ đĩa</translation>
 <translation id="7639914187072011620">Không tải được URL chuyển hướng SAML từ máy chủ</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> tự động đăng nhập bạn vào các trang web đủ điều kiện bằng mật khẩu bạn đã lưu.</translation>
 <translation id="7641513591566880111">Tên hồ sơ mới</translation>
 <translation id="764178579712141045">Đã thêm <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ẩn nội dung nhạy cảm</translation>

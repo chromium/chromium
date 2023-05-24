@@ -4110,7 +4110,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4554591392113183336">Shtesa e jashtme është në të njëjtin version ose më të ulët në krahasim me ekzistuesin.</translation>
 <translation id="4555769855065597957">Hije</translation>
 <translation id="4555863373929230635">Për të ruajtur fjalëkalimet në "Llogarinë tënde të Google", identifikohu dhe aktivizo sinkronizimin.</translation>
-<translation id="4556194354084985730">Identifikohu me lehtësi në sajte dhe aplikacione me fjalëkalimet e tua të ruajtura. Kur është e çaktivizuar, do të pyetesh përpara identifikimit.</translation>
 <translation id="4558426062282641716">Kërkohet leje për nisjen automatike</translation>
 <translation id="4559617833001311418">Ky sajt ka qasje te sensorët e lëvizjes ose të dritës.</translation>
 <translation id="4560728518401799797">Opsione të tjera për faqeshënuesin "<ph name="FOLDER_TITLE" />"</translation>
@@ -7552,7 +7551,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7637272932128132922">Kur kjo skedë ishte joaktive, "Kursyesi i memories" liroi memorien për detyra të tjera. Këtë mund ta ndryshosh në çdo kohë te "<ph name="SETTINGS_LINK" />".</translation>
 <translation id="7637593984496473097">Nuk ka hapësirë të mjaftueshme në disk</translation>
 <translation id="7639914187072011620">Nuk mundi të merrte URL e ridrejtimit SAML nga serveri</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> të identifikon automatikisht te sajtet e përshtatshme me fjalëkalimet që ke ruajtur.</translation>
 <translation id="7641513591566880111">Emri i profilit të ri</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> u shtua</translation>
 <translation id="7642778300616172920">Fshih përmbajtjen delikate</translation>

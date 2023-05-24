@@ -4112,7 +4112,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4554591392113183336">La versión de la extensión externa es igual o anterior a la actual.</translation>
 <translation id="4555769855065597957">Sombra</translation>
 <translation id="4555863373929230635">Para guardar contraseñas en tu cuenta de Google, inicia sesión y activa la sincronización.</translation>
-<translation id="4556194354084985730">Inicia sesión fácilmente en sitios y aplicaciones con tus contraseñas guardadas. Si desactivas esta opción, se te pedirá la contraseña para poder iniciar sesión.</translation>
 <translation id="4558426062282641716">Solicitud de permiso de inicio automático</translation>
 <translation id="4559617833001311418">Este sitio web tiene acceso a tus sensores de luz o movimiento.</translation>
 <translation id="4560728518401799797">Más opciones del marcador <ph name="FOLDER_TITLE" /></translation>
@@ -7554,7 +7553,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7637272932128132922">Mientras esta pestaña estaba inactiva, Ahorro de memoria ha liberado memoria para otras tareas. Puedes cambiar esta opción en cualquier momento en <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">No hay suficiente espacio en disco</translation>
 <translation id="7639914187072011620">No se ha podido obtener del servidor la URL de redirección basada en SAML</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> inicia sesión automáticamente en los sitios en los que se pueda iniciar sesión con las contraseñas que hayas guardado.</translation>
 <translation id="7641513591566880111">Nombre de perfil nuevo</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> añadido</translation>
 <translation id="7642778300616172920">Ocultar contenido sensible</translation>

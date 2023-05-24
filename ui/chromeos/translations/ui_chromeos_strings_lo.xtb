@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">ເວັບໄຊ Google</translation>
 <translation id="1853795129690976061">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Linux</translation>
 <translation id="1864756863218646478">ບໍ່​ສາ​ມາດພົບໄຟລ​໌ໄດ້​.</translation>
+<translation id="1877377730633446520">ສິ່ງອາດຈະໃຊ້ປະມານ <ph name="REQUIRED_SPACE" />. ປັດຈຸບັນທ່ານມີ <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ເຊື່ອມຕໍ່</translation>
 <translation id="1920670151694390848">ການແປທັບສັບພາສາມາລາຢາລຳ</translation>
 <translation id="1920798810075583923">ໝາກ​ໂມ</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">ຂະຫຍາຍແຜງຄຳຕິຊົມໄຟລ໌</translation>
 <translation id="1995337122023280937">ໄປຫາສະຖານທີ່ຂອງໄຟລ໌</translation>
 <translation id="2001796770603320721">ຈັດການໃນ Drive</translation>
+<translation id="2004942826429452291">ໄຟລ໌ຈະຖືກເກັບໄວ້ໃນຄລາວ ແລະ ຢູ່ Chromebook ນີ້.</translation>
 <translation id="2009067268969781306">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="2025955442973426285">ພາສາທິກຣິນຢາ</translation>
 <translation id="2037845485764049925">ພາສາຣັດເຊຍ</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">ການຕັ້ງຄ່າອຸປະກອນ</translation>
 <translation id="2084809735218147718">ຄົນຂຽນຄຳວ່າຂອບໃຈ</translation>
 <translation id="2088690981887365033">ເຄືອຂ່າຍ VPN</translation>
+<translation id="2089751716171649322">ເຂົ້າເຖິງໄຟລ໌ Google Drive ຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍເມື່ອທ່ານອອບລາຍ</translation>
 <translation id="2111134541987263231">ເປີດ <ph name="BEGIN_BOLD" />ອະນຸຍາດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ລາຍການຈະຖືກລຶບອອກ ແລະ ທ່ານຈະບໍ່ສາມາດກູ້ຄືນພວກມັນໄດ້.</translation>
 <translation id="2122305276694332719">ການເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍທີ່ເຊື່ອງໄວ້ໂດຍອັດຕະໂນມັດອະນຸຍາດໃຫ້ຄົນອື່ນເຫັນອຸປະກອນຂອງທ່ານ ແລະ ບາງການຕັ້ງຄ່າເຄືອຂ່າຍ ແລະ ບໍ່ແນະນຳໃຫ້ເຊື່ອມຕໍ່.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">ບໍ່ແມ່ນດຽວນີ້</translation>
 <translation id="3486821258960016770">ພາສາມອງໂກລຽນ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ຄວາມ​ຜິດ​ພາດ​.</translation>
+<translation id="3501954296166022751">ໄຟລ໌ Google Drive ຂອງທ່ານສາມາດໃຊ້ໄດ້ອອບລາຍ</translation>
 <translation id="3509680540198371098">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
 <translation id="3511705761158917664">ກຳລັງກະກຽມຊິ້ງຂໍ້ມູນ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
 <translation id="3522708245912499433">ພາສາປັອກຕຸຍການ</translation>
@@ -572,6 +576,7 @@
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
 <translation id="5500122897333236901">ພາສາ​ໄອ​ແລນ​ດິກ</translation>
 <translation id="5508696409934741614">ຈຸດ</translation>
+<translation id="5519161320735100193">ການຕັ້ງຄ່າ Google Drive</translation>
 <translation id="5522908512596376669">ລາຍການໄຟລ໌ໄດ້ປ່ຽນເປັນມຸມມອງລາຍການແລ້ວ.</translation>
 <translation id="5524517123096967210">ບໍ່​ສາ​ມາດ​ອ່ານໄຟລ​໌​ນີ້ໄດ້​.</translation>
 <translation id="5533102081734025921">ຮູບ <ph name="IMAGE_TYPE" /></translation>
@@ -864,6 +869,7 @@
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
 <translation id="7806708061868529807">ພາສາຮີບຣິວ</translation>
 <translation id="78104721049218340">ພາສາໄທທີ່ໃຊ້ແປ້ນພິມເກດມະນີ</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">ມີຄວາມຜິດພາດໃນການກຳນົດຄ່າເຄືອຂ່າຍ</translation>
 <translation id="7839804798877833423">ການໄປເອົາໄຟລ​໌​ເຫຼົ່າ​ນີ້​ຈະ​ໃຊ້​ຂໍ້ມູນມືຖືປະ​ມານ <ph name="FILE_SIZE" />.</translation>
@@ -876,15 +882,18 @@
 <translation id="7903984238293908205">ຄາຕາຄານະ</translation>
 <translation id="7908793776359722643">ການຟໍແມັດຫ້ອງຂໍ້ມູນຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ. ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">ໄຟລ໌ຂອງທ່ານໃນ My Drive ຈະຊິງກັບ Chromebook ຂອງທ່ານໂດຍອັດຕະໂນມັດ ເພື່ອໃຫ້ທ່ານສາມາດເຂົ້າເຖິງພວກມັນໄດ້ໂດຍບໍ່ຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="7925247922861151263">ກວດເບິ່ງ AAA ບໍ່ສໍາເລັດ</translation>
 <translation id="7925686952655276919">ຢ່າໃຊ້ຂໍ້ມູນມືຖືສໍາລັບການຊິງຄ໌</translation>
 <translation id="7928710562641958568">ບີບອຸ​ປະ​ກອນອອກ</translation>
+<translation id="7933875256234974853">ກຳລັງກະກຽມຊິ້ງຂໍ້ມູນໄຟລ໌ Drive...</translation>
 <translation id="7943385054491506837">Colemak ສະຫະລັດ</translation>
 <translation id="7953739707111622108">ບໍ່ສາມາດເປີດອຸປະກອນນີ້ໄດ້ ເພາະວ່າລະບົບໄຟລ໌ຂອງມັນບໍ່ຖືກຮັບຮູ້.</translation>
 <translation id="7969525169268594403">ພາສາສະໂລວາເນຍ</translation>
 <translation id="7972920761225148017">ພາສາຝຣັ່ງ (ສະວິດເຊີແລນ)</translation>
 <translation id="7973962044839454485">ການຮັບຮອງ PPP ບໍ່ສໍາເລັດ ເນື່ອງຈາກຊື່ຜູ້ໃຊ້ ແລະລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7980421588063892270">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Colemak</translation>
+<translation id="7985008041109611710">ກໍາລັງຊິງ <ph name="NUMBER_OF_FILES_SYNCING" /> ໄຟລ໌</translation>
 <translation id="8000066093800657092">ບໍ່​ມີເຄືອ​ຂ່າຍ​</translation>
 <translation id="8008366997883261463">ໝາ</translation>
 <translation id="8028993641010258682">ຂະ​ຫນາດ</translation>
@@ -1039,6 +1048,7 @@
 <translation id="9213073329713032541">ເລີ່ມການຕິດຕັ້ງສຳເລັດແລ້ວ.</translation>
 <translation id="9219103736887031265">ຮູບ</translation>
 <translation id="9219908252191632183">ພາບພື້ນຜິວດວງເດືອນ</translation>
+<translation id="937795003075802289">ກຳລັງຊິ້ງ 1 ໄຟລ໌</translation>
 <translation id="938470336146445890">ກະລຸນາຕິດຕັ້ງໃບຢັ້ງຢືນຜູ້ໃຊ້.</translation>
 <translation id="939736085109172342">ໂຟລເດີ​ໃຫມ່</translation>
 <translation id="943972244133411984">ແກ້ໄຂໂດຍ</translation>

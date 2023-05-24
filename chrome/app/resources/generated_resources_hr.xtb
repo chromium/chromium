@@ -4115,7 +4115,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4554591392113183336">Vanjsko proširenje iste je ili starije verzije u odnosu na postojeću.</translation>
 <translation id="4555769855065597957">Sjena</translation>
 <translation id="4555863373929230635">Da biste spremili zaporke na svoj Google račun, prijavite se i uključite sinkronizaciju.</translation>
-<translation id="4556194354084985730">Jednostavno se prijavite na web-lokacije i u aplikacije pomoću spremljenih zaporki. Kad je ta opcija isključena, prikazat će se upit prije prijave.</translation>
 <translation id="4558426062282641716">Zatraženo je dopuštenje za automatsko pokretanje</translation>
 <translation id="4559617833001311418">Ova web-lokacija pristupa vašim senzorima pokreta ili svjetla.</translation>
 <translation id="4560728518401799797">Više opcija za oznaku <ph name="FOLDER_TITLE" /></translation>
@@ -6096,6 +6095,7 @@ Možete je poslati Googleu da biste provjerili je li nesigurna. Pregled obično 
 <translation id="6343003829431264373">Samo parne stranice</translation>
 <translation id="6344170822609224263">pristupiti popisu mrežnih veza</translation>
 <translation id="6344576354370880196">Spremljeni pisači</translation>
+<translation id="6344608411615208519"><ph name="BEGIN_LINK" />Preglednikom upravlja<ph name="END_LINK" /> tvoj roditelj</translation>
 <translation id="6345418402353744910">Vaše korisničko ime i zaporka potrebni su za proxy <ph name="PROXY" /> kako bi administrator mogao konfigurirati vašu mrežu</translation>
 <translation id="6345878117466430440">Označi kao pročitano</translation>
 <translation id="6347010704471250799">Prikaži obavijest</translation>
@@ -7558,7 +7558,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7637272932128132922">Dok je ova kartica bila neaktivna, štednja memorije oslobodila je memoriju za druge zadatke. To uvijek možete promijeniti u odjeljku <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Nema dovoljno prostora na disku</translation>
 <translation id="7639914187072011620">Dohvaćanje SAML preusmjeravanja s poslužitelja nije uspjelo</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> može upotrijebiti spremljene zaporke kako bi vas automatski prijavio na web-lokacije koje ispunjavaju uvjete.</translation>
 <translation id="7641513591566880111">Novi naziv profila</translation>
 <translation id="764178579712141045">Dodano: <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Sakrij osjetljiv sadržaj</translation>
@@ -7625,6 +7624,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7684212569183643648">Instalirao vaš administrator</translation>
 <translation id="7684559058815332124">Posjeti stranicu za prijavu na obaveznom portalu za autentifikaciju</translation>
 <translation id="7684718995427157417">Da biste izrađivali i testirali aplikacije, omogućite Android Debug Bridge (ADB). Napominjemo da se time omogućuje instaliranje Android aplikacija koje Google nije potvrdio i da je za onemogućivanje potrebno vraćanje na tvorničke postavke.</translation>
+<translation id="7684913007876670600">Da biste prikazali pojednostavljeni prikaz stranice, otvorite bočnu ploču i odaberite Način čitanja</translation>
 <translation id="7685049629764448582">Memorija JavaScripta</translation>
 <translation id="7685087414635069102">Potreban je PIN</translation>
 <translation id="7686086654630106285">Više o oglasima koje predlaže web-lokacija</translation>

@@ -4107,7 +4107,6 @@
 <translation id="4554591392113183336">התוסף החיצוני הוא מגרסה זהה או קודמת לזו של התוסף הקיים.</translation>
 <translation id="4555769855065597957">צל</translation>
 <translation id="4555863373929230635">‏כדי לשמור סיסמאות בחשבון Google, יש להיכנס ולהפעיל את הסנכרון.</translation>
-<translation id="4556194354084985730">קל להיכנס לאתרים ולאפליקציות באמצעות הסיסמאות השמורות. כשההגדרה מושבתת, תוצג לך בקשה לבחור סיסמה לפני הכניסה לחשבון.</translation>
 <translation id="4558426062282641716">התבקשה הרשאה להפעלה אוטומטית</translation>
 <translation id="4559617833001311418">האתר הזה ניגש לחיישני התנועה או התאורה שלך.</translation>
 <translation id="4560728518401799797">אפשרויות נוספות לסימנייה <ph name="FOLDER_TITLE" /></translation>
@@ -7538,7 +7537,6 @@
 <translation id="7637272932128132922">בזמן שהכרטיסייה לא הייתה פעילה, במסגרת מצב החיסכון בזיכרון התפנה זיכרון בשביל משימות אחרות. תמיד אפשר לשנות זאת ב<ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">אין מספיק נפח אחסון בדיסק</translation>
 <translation id="7639914187072011620">‏נכשל הניסיון לאחזר את ההפניה האוטומטית אל SAML מהשרת</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> מכניס אותך באופן אוטומטי לאתרים כשירים באמצעות סיסמאות ששמרת.</translation>
 <translation id="7641513591566880111">השם של הפרופיל החדש</translation>
 <translation id="764178579712141045">הוספת את <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">הסתרה של תוכן רגיש</translation>

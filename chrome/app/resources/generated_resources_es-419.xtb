@@ -4109,7 +4109,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4554591392113183336">La versión de la extensión externa es igual o anterior a la actual.</translation>
 <translation id="4555769855065597957">Sombra</translation>
 <translation id="4555863373929230635">Para guardar contraseñas en tu Cuenta de Google, accede a ella y activa la sincronización.</translation>
-<translation id="4556194354084985730">Accede fácilmente a sitios y apps con tus contraseñas guardadas. Si desactivas esta función, se te solicitará confirmación antes de acceder.</translation>
 <translation id="4558426062282641716">Solicitud de permiso de inicio automático</translation>
 <translation id="4559617833001311418">Este sitio puede acceder a los sensores de movimiento o luz.</translation>
 <translation id="4560728518401799797">Más opciones para los favoritos de <ph name="FOLDER_TITLE" /></translation>
@@ -7551,7 +7550,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7637272932128132922">Mientras esta pestaña estaba inactiva, el Ahorro de memoria liberó memoria para otras tareas. Puedes cambiar este parámetro cuando lo desees en <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">No hay espacio suficiente en el disco</translation>
 <translation id="7639914187072011620">No se pudo obtener la URL de redireccionamiento para SAML del servidor.</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> te permite acceder automáticamente a los sitios aptos con las contraseñas que guardaste.</translation>
 <translation id="7641513591566880111">Nuevo nombre del perfil</translation>
 <translation id="764178579712141045">Se agregó <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ocultar contenido confidencial</translation>

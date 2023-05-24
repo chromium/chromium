@@ -4118,7 +4118,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4554591392113183336">Välise laienduse versioon on sama või vanem mis olemasoleval.</translation>
 <translation id="4555769855065597957">Vari</translation>
 <translation id="4555863373929230635">Paroolide salvestamiseks oma Google'i kontole logige sisse ja lülitage sünkroonimine sisse.</translation>
-<translation id="4556194354084985730">Salvestatud paroolide abil saate saitidele ja rakendustesse hõlpsasti sisse logida. Kui see on välja lülitatud, küsitakse teilt enne sisselogimist parooli.</translation>
 <translation id="4558426062282641716">Automaatse käivitamise loa taotlus</translation>
 <translation id="4559617833001311418">Saidil on juurdepääs teie liikumis- või valgusanduritele.</translation>
 <translation id="4560728518401799797">Rohkem valikuid kausta <ph name="FOLDER_TITLE" /> järjehoidja jaoks</translation>
@@ -7560,7 +7559,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7637272932128132922">Ajal, mil see vaheleht oli inaktiivne, vabastas mälusäästja mälu muude toimingute jaoks. Seda saab alati muuta jaotises <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Pole piisavalt kettaruumi</translation>
 <translation id="7639914187072011620">Serverist ei õnnestunud SAML-i ümbersuunamise URL-i tuua</translation>
-<translation id="764017888128728">Teenus <ph name="PASSWORD_MANAGER_BRAND" /> logib teid salvestatud paroolidega automaatselt sisse sobilikele saitidele.</translation>
 <translation id="7641513591566880111">Profiili uus nimi</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> lisati</translation>
 <translation id="7642778300616172920">Peida tundlik sisu</translation>
