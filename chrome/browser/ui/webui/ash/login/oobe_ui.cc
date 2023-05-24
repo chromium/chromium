@@ -777,8 +777,11 @@ void OobeUI::OnBackdropLoaded() {
 }
 
 bool OobeUI::IsJSReady(base::OnceClosure display_is_ready_callback) {
-  if (!ready_)
+  if (!ready_) {
     ready_callbacks_.AddUnsafe(std::move(display_is_ready_callback));
+    return ready_;
+  }
+  std::move(display_is_ready_callback).Run();
   return ready_;
 }
 
