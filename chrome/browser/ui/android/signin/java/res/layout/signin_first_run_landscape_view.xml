@@ -22,67 +22,83 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         android:src="@drawable/fre_product_logo" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="60dp"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/fre_logo"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <ScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="24dp"
-            android:paddingBottom="12dp"
-            android:orientation="vertical">
+            android:layout_above="@id/fre_footer_viewgroup"
+            android:layout_toEndOf="@id/fre_logo"
+            android:layout_marginEnd="60dp"
+            android:layout_centerVertical="true"
+            android:fadeScrollbars="false"
+            android:fillViewport="true">
 
-            <TextView
-                android:id="@+id/title"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:lineSpacingMultiplier="1.2"
-                android:gravity="start"
-                android:text="@string/fre_welcome"
-                android:textAppearance="@style/TextAppearance.Headline.Primary" />
+                android:paddingStart="24dp"
+                android:paddingBottom="12dp"
+                android:orientation="vertical">
 
-            <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:paddingTop="8dp"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-                android:visibility="gone"
-                app:leading="@dimen/text_size_medium_leading" />
-
-            <FrameLayout
-                android:id="@+id/fre_browser_managed_by"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
-
-                <include
-                    layout="@layout/fre_tos_privacy_disclaimer"
-                    android:id="@+id/privacy_disclaimer"
+                <TextView
+                    android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="start" />
+                    android:lineSpacingMultiplier="1.2"
+                    android:gravity="start"
+                    android:text="@string/fre_welcome"
+                    android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-            </FrameLayout>
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:paddingTop="8dp"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                    android:visibility="gone"
+                    app:leading="@dimen/text_size_medium_leading" />
 
-            <ProgressBar
-                android:id="@+id/fre_native_and_policy_load_progress_spinner"
-                style="@style/Widget.AppCompat.ProgressBar"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="50dp"
-                android:layout_gravity="center_horizontal"
-                android:alpha="0.0" />
-        </LinearLayout>
+                <FrameLayout
+                    android:id="@+id/fre_browser_managed_by"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp">
 
-        <include layout="@layout/signin_first_run_bottom_group_view" />
+                    <include
+                        layout="@layout/fre_tos_privacy_disclaimer"
+                        android:id="@+id/privacy_disclaimer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start" />
+
+                </FrameLayout>
+
+                <ProgressBar
+                    android:id="@+id/fre_native_and_policy_load_progress_spinner"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:alpha="0.0" />
+
+
+                <include layout="@layout/signin_first_run_bottom_group_view" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    <!-- The footer is hidden during native and policy load. The FrameLayout
+         acts as an anchor point for the ScrollView above so it can properly
+         calculate it's height. -->
+    <FrameLayout
+        android:id="@+id/fre_footer_viewgroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/fre_logo"
+        android:layout_alignParentBottom="true">
 
         <org.chromium.ui.widget.TextViewWithClickableSpans
             android:id="@+id/signin_fre_footer"
@@ -95,7 +111,7 @@ found in the LICENSE file.
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             android:text="@string/signin_fre_footer"
             app:leading="@dimen/text_size_small_leading" />
-    </LinearLayout>
+    </FrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
