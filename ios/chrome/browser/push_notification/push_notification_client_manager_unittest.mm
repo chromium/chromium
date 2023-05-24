@@ -125,6 +125,6 @@ TEST_F(PushNotificationClientManagerTest,
 TEST_F(PushNotificationClientManagerTest, BrowserReady) {
   GenerateClients(manager, 1);
   EXPECT_FALSE(GetClient(manager, 0)->IsBrowserReady());
-  manager->OnBrowserReady();
+  manager->OnSceneActiveForegroundBrowserReady();
   EXPECT_TRUE(GetClient(manager, 0)->IsBrowserReady());
 }

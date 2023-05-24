@@ -40,7 +40,7 @@ void TestPushNotificationClient::SetBackgroundFetchResult(
   fetch_result_ = result;
 }
 
-void TestPushNotificationClient::OnBrowserReady() {
+void TestPushNotificationClient::OnSceneActiveForegroundBrowserReady() {
   is_browser_ready_ = true;
 }
 

@@ -85,6 +85,11 @@ typedef NS_ENUM(NSUInteger, InitStage) {
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage;
 
+// Called when Scene with activation level SceneActivationLevelForegroundActive
+// is available.
+- (void)appState:(AppState*)appState
+    sceneDidBecomeActive:(SceneState*)sceneState;
+
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_APP_STATE_OBSERVER_H_

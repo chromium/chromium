@@ -59,7 +59,7 @@ class MockOptimizationGuidePushNotificationClient
   }
   void HandleNotificationInteraction(
       UNNotificationResponse* notification) override {}
-  void OnBrowserReady() override {}
+  void OnSceneActiveForegroundBrowserReady() override {}
 };
 
 class OptimizationGuidePushNotificationClientTest : public PlatformTest {

@@ -614,6 +614,7 @@ NSString* const kStartupAttemptReset = @"StartupAttemptReset";
   if (level >= SceneActivationLevelForegroundActive) {
     sceneState.presentingModalOverlay =
         (self.uiBlockerTarget != nil) && (self.uiBlockerTarget != sceneState);
+    [self.observers appState:self sceneDidBecomeActive:sceneState];
   }
   crash_keys::SetForegroundScenesCount([self foregroundScenes].count);
 }

@@ -71,8 +71,13 @@ class PushNotificationClientManager {
   static std::string PushNotificationClientIdToString(
       PushNotificationClientId client_id);
 
-  // Signals to client manager that a browser is ready.
-  void OnBrowserReady();
+  // Signals to client manager that a browser with scene level
+  // SceneActivationLevelForegroundActive is ready. Without this
+  // URL opening code driven by push notifications may not be able to
+  // access a browser appropriate for opening a URL (active & scene
+  // level SceneActivationLevelForegroundActive) resulting in the URL
+  // not being opened.
+  void OnSceneActiveForegroundBrowserReady();
 
  private:
   using ClientMap = std::unordered_map<PushNotificationClientId,
