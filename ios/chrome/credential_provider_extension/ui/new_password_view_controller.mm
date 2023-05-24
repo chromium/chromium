@@ -6,6 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
+#import "components/password_manager/core/common/password_manager_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/constants.h"
@@ -32,8 +33,6 @@ const CGFloat kTableViewTopSpace = 14;
 
 // Minimal amount of characters in password note to display the warning.
 const int kMinNoteCharAmountForWarning = 901;
-// Maximal amount of characters that a password note can contain.
-const int kMaxNoteCharAmount = 1000;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPassword,
@@ -295,7 +294,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)textViewDidChangeInCell:(PasswordNoteCell*)cell {
   self.noteText = cell.textView.text;
   int noteLength = cell.textView.text.length;
-  BOOL noteValid = noteLength <= kMaxNoteCharAmount;
+  BOOL noteValid =
+      noteLength <= password_manager::constants::kMaxPasswordNoteLength;
   [cell setValid:noteValid];
   [self updateSaveButtonState];
 
@@ -362,7 +362,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   if (IsPasswordNotesWithBackupEnabled()) {
     self.navigationItem.rightBarButtonItem.enabled =
         self.passwordText.length > 0 &&
-        self.noteText.length <= kMaxNoteCharAmount;
+        self.noteText.length <=
+            password_manager::constants::kMaxPasswordNoteLength;
   } else {
     self.navigationItem.rightBarButtonItem.enabled =
         self.passwordCell.textField.text.length > 0;

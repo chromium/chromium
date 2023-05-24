@@ -10,7 +10,6 @@ static_library("common") {
   sources = [
     "credential_manager_types.cc",
     "credential_manager_types.h",
-    "password_manager_constants.h",
     "password_manager_pref_names.cc",
     "password_manager_pref_names.h",
     "password_manager_ui.h",
@@ -29,7 +28,14 @@ static_library("common") {
     "//url",
   ]
 
-  public_deps = [ ":features" ]
+  public_deps = [
+    ":constants",
+    ":features",
+  ]
+}
+
+source_set("constants") {
+  sources = [ "password_manager_constants.h" ]
 }
 
 source_set("features") {

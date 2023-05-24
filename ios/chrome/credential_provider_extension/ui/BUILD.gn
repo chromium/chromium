@@ -51,6 +51,7 @@ source_set("ui") {
     ":utils",
     "//base",
     "//components/password_manager/core/browser:password_generator",
+    "//components/password_manager/core/common:constants",
     "//ios/chrome/common:constants",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:client",
