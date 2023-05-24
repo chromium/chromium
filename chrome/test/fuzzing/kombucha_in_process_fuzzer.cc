@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/in_process_fuzzer.h"
@@ -26,10 +28,11 @@ class KombuchaInProcessFuzzer
   void SetUpOnMainThread() override;
   int Fuzz(const uint8_t* data, size_t size) override;
   static std::unique_ptr<net::test_server::HttpResponse> HandleHTTPRequest(
-      std::string response_body,
+      base::WeakPtr<KombuchaInProcessFuzzer> fuzzer_weak,
       const net::test_server::HttpRequest& request);
 
   std::string current_fuzz_case_;
+  base::WeakPtrFactory<KombuchaInProcessFuzzer> weak_ptr_factory_{this};
 };
 
 REGISTER_IN_PROCESS_FUZZER(KombuchaInProcessFuzzer)
@@ -38,18 +41,35 @@ void KombuchaInProcessFuzzer::SetUpOnMainThread() {
   InteractiveBrowserTestT::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   embedded_test_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &KombuchaInProcessFuzzer::HandleHTTPRequest, current_fuzz_case_));
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&KombuchaInProcessFuzzer::HandleHTTPRequest,
+                          weak_ptr_factory_.GetWeakPtr()));
   ASSERT_TRUE(embedded_test_server()->Start());
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
 KombuchaInProcessFuzzer::HandleHTTPRequest(
-    std::string response_body,
+    base::WeakPtr<KombuchaInProcessFuzzer> fuzzer_weak,
     const net::test_server::HttpRequest& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> response;
   response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_content_type("text/html");
+  std::string response_body = "";
+  // We are running on the embedded test server's thread. We want to
+  // ask the fuzzer thread for the latest HTML payload, but there's a
+  // risk of UaF if it's being destroyed. We use a weak pointer, but
+  // we have to dereference that on the originating thread.
+  base::RunLoop run_loop;
+  base::RepeatingCallback<void()> get_payload_lambda =
+      base::BindLambdaForTesting([&]() {
+        KombuchaInProcessFuzzer* fuzzer = fuzzer_weak.get();
+        if (fuzzer) {
+          response_body = fuzzer->current_fuzz_case_;
+        }
+        run_loop.Quit();
+      });
+  content::GetUIThreadTaskRunner()->PostTask(FROM_HERE, get_payload_lambda);
+  run_loop.Run();
   response->set_content(response_body);
   response->set_code(net::HTTP_OK);
   return response;
