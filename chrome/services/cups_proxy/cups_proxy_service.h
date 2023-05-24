@@ -20,6 +20,10 @@ class ProxyManager;
 // This service lives in the browser process and is managed by the
 // CupsProxyServiceManager. It bootstraps/maintains a mojom connection with the
 // CupsProxyDaemon.
+//
+// Note: There is no method granting a service handle since beyond creation,
+// this service's only client is the daemon, who's connection is managed
+// internally.
 class CupsProxyService {
  public:
   CupsProxyService(const CupsProxyService&) = delete;
@@ -28,13 +32,8 @@ class CupsProxyService {
   // Spawns the global service instance.
   static void Spawn(std::unique_ptr<CupsProxyServiceDelegate> delegate);
 
-  // Gets the global service instance. May be null.
-  static CupsProxyService* GetInstance();
-
-  // Destroys the global service instance.
-  static void Shutdown();
-
  private:
+  friend base::NoDestructor<CupsProxyService>;
   CupsProxyService();
   ~CupsProxyService();
 
