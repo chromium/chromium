@@ -283,27 +283,17 @@ WebContents* OpenApplicationTab(Profile* profile,
   return contents;
 }
 
-WebContents* OpenEnabledApplication(Profile* profile,
-                                    apps::AppLaunchParams&& params) {
-  const Extension* extension = GetExtension(profile, params);
-  if (!extension) {
-    return nullptr;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile()) {
-    return nullptr;
-  }
-#endif
-
+WebContents* OpenEnabledApplicationHelper(Profile* profile,
+                                          const apps::AppLaunchParams& params,
+                                          const Extension& extension) {
   WebContents* tab = nullptr;
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
-  prefs->SetActiveBit(extension->id(), true);
+  prefs->SetActiveBit(extension.id(), true);
   bool supports_web_file_handlers =
       extensions::WebFileHandlers::SupportsWebFileHandlers(
-          extension->manifest_version());
+          extension.manifest_version());
 
-  if (CanLaunchViaEvent(extension) && !supports_web_file_handlers) {
+  if (CanLaunchViaEvent(&extension) && !supports_web_file_handlers) {
     // When launching an app with a command line, there might be a file path to
     // work with that command line, so
     // LaunchPlatformAppWithCommandLineAndLaunchId should be called to handle
@@ -314,17 +304,17 @@ WebContents* OpenEnabledApplication(Profile* profile,
     if (params.command_line.GetArgs().empty() && !params.launch_files.empty()) {
       if (params.intent && params.intent->activity_name) {
         apps::LaunchPlatformAppWithFileHandler(
-            profile, extension, params.intent->activity_name.value(),
+            profile, &extension, params.intent->activity_name.value(),
             params.launch_files);
       } else {
-        apps::LaunchPlatformAppWithFilePaths(profile, extension,
+        apps::LaunchPlatformAppWithFilePaths(profile, &extension,
                                              params.launch_files);
       }
       return nullptr;
     }
 
     apps::LaunchPlatformAppWithCommandLineAndLaunchId(
-        profile, extension, params.launch_id, params.command_line,
+        profile, &extension, params.launch_id, params.command_line,
         params.current_directory,
         apps::GetAppLaunchSource(params.launch_source));
     return nullptr;
@@ -337,14 +327,14 @@ WebContents* OpenEnabledApplication(Profile* profile,
   if (supports_web_file_handlers && params.intent->activity_name.has_value()) {
     // `params.intent->activity_name` is actually the `action` url set in the
     // manifest of the extension.
-    url = extension->GetResourceURL(params.intent->activity_name.value());
+    url = extension.GetResourceURL(params.intent->activity_name.value());
   } else {
-    url = UrlForExtension(extension, profile, params);
+    url = UrlForExtension(&extension, profile, params);
   }
 
   // Record v1 app launch. Platform app launch is recorded when dispatching
   // the onLaunched event.
-  prefs->SetLastLaunchTime(extension->id(), base::Time::Now());
+  prefs->SetLastLaunchTime(extension.id(), base::Time::Now());
 
   switch (params.container) {
     case apps::LaunchContainer::kLaunchContainerNone: {
@@ -366,17 +356,97 @@ WebContents* OpenEnabledApplication(Profile* profile,
   }
 
   if (supports_web_file_handlers) {
-    extensions::EnqueueLaunchParamsInWebContents(tab, *extension, url,
+    extensions::EnqueueLaunchParamsInWebContents(tab, extension, url,
                                                  params.launch_files);
   }
 
   return tab;
 }
 
+// Launch an application if `launch_type` is `multiple_clients`. First find a
+// matching handler for the intent. Return `web_contents` if a launch occurred.
+WebContents* MaybeOpenApplicationForLaunchTypeMultipleClients(
+    const extensions::api::file_handlers::FileHandler& handler,
+    const apps::AppLaunchParams& params,
+    Profile* profile,
+    const Extension& extension) {
+  // Find the matching file_handler definition based on the handler action.
+  if (handler.action != params.intent->activity_name) {
+    return nullptr;
+  }
+
+  // Determine if this is single-client (default) or multiple-clients.
+  if (handler.launch_type != "multiple-clients") {
+    return nullptr;
+  }
+
+  // Open a new window with a tab for each file being opened.
+  WebContents* web_contents = nullptr;
+  for (const auto& file : params.launch_files) {
+    std::vector<base::FilePath> files({file});
+
+    // Clone intent to clone params.
+    apps::IntentPtr intent =
+        std::make_unique<apps::Intent>(params.intent->action);
+    intent->mime_type = params.intent->mime_type;
+    intent->url = params.intent->url;
+    intent->activity_name = params.intent->activity_name;
+    apps::AppLaunchParams file_params(params.app_id, params.container,
+                                      params.disposition, params.launch_source,
+                                      params.display_id, files, intent);
+
+    // Return the last web_contents to the caller. The web_contents is
+    // only currently used for Arc and therefore WFH doesn't need any of them.
+    // This code path can only be reached by Web File Handlers, not Arc.
+    web_contents =
+        OpenEnabledApplicationHelper(profile, file_params, extension);
+  }
+  return web_contents;
+}
+
+WebContents* OpenEnabledApplication(Profile* profile,
+                                    const apps::AppLaunchParams& params) {
+  const Extension* extension = GetExtension(profile, params);
+  if (!extension) {
+    return nullptr;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile()) {
+    return nullptr;
+  }
+#endif
+
+  // Support for multiple-clients in Web File Handlers. Launch if this is a
+  // multi-client launch. Otherwise fallback to `OpenEnabledApplicationHelper`.
+  if (extensions::WebFileHandlers::SupportsWebFileHandlers(
+          extension->manifest_version())) {
+    auto* handlers = extensions::WebFileHandlers::GetFileHandlers(*extension);
+    if (!handlers) {
+      return nullptr;
+    }
+
+    // Find a matching manifest file handler action for the intent. If there's a
+    // match, return early with the last web_contents opened.
+    WebContents* web_contents = nullptr;
+    for (const auto& handler : *handlers) {
+      web_contents = MaybeOpenApplicationForLaunchTypeMultipleClients(
+          handler, params, profile, *extension);
+      if (web_contents) {
+        return web_contents;
+      }
+    }
+  }
+
+  // This is the default case. Alternatively, Web File Handlers could also reach
+  // this point if they have a single-client launch_type, which is the default.
+  return OpenEnabledApplicationHelper(profile, params, *extension);
+}
+
 }  // namespace
 
 WebContents* OpenApplication(Profile* profile, apps::AppLaunchParams&& params) {
-  return OpenEnabledApplication(profile, std::move(params));
+  return OpenEnabledApplication(profile, params);
 }
 
 Browser* CreateApplicationWindow(Profile* profile,

@@ -303,6 +303,17 @@ TEST_F(WebFileHandlersTest, GeneralErrors) {
           }])",
           "Invalid value for 'file_handlers[0]'. `action` must "
           "start with a forward slash.",
+      },
+      {
+          "Error if `launch_type` multiple-clients is singular.",
+          R"([{
+            "name":"test",
+            "action":"/path",
+            "accept": {"text/csv": ".csv"},
+            "launch_type": "multiple-client"
+          }])",
+          "Invalid value for 'file_handlers[0]'. `launch_type` must have a "
+          "valid value.",
       }};
 
   for (const auto& test_case : test_cases) {
