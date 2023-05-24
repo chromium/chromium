@@ -1,0 +1,2 @@
+# Args common to ALL arm (32bit) builds.
+target_cpu = "arm"

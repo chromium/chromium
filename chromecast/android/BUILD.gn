@@ -57,7 +57,7 @@ shared_library("libcast_shell_android") {
 
   deps = [
     ":common_apk_deps",
-    "//chromecast:cast_shell_lib",
+    "//chromecast/cast_core:core_runtime_lib_simple",
   ]
 }
 
@@ -72,7 +72,7 @@ shared_library("libcast_browser_android") {
 
   deps = [
     ":common_apk_deps",
-    "//chromecast:cast_shell_lib_simple",
+    "//chromecast/cast_core:core_runtime_lib_simple",
     "//components/module_installer/android:native",
   ]
 }

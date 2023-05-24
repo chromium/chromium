@@ -1,0 +1,10 @@
+# Args common to ALL Android builds.
+is_cast_android = true
+is_clang = true
+is_component_build = false
+symbol_level = 1  # This is a workaround to facilitate APKs >4GB
+target_os = "android"
+
+enable_playready = false
+device_user_agent_suffix = "DeviceType/AndroidTV"
+use_chromecast_cdms = false
