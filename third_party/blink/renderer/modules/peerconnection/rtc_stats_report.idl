@@ -19,8 +19,6 @@ enum RTCStatsType {
   "media-playout",
   "peer-connection",
   "data-channel",
-  "stream",
-  "track",
   "transport",
   "candidate-pair",
   "local-candidate",
@@ -58,7 +56,6 @@ dictionary RTCRtpStreamStats : RTCStats {
   DOMString           transportId;
   DOMString           codecId;
   // Non-standard and obsolete stats.
-  DOMString trackId;
   DOMString mediaType;
 };
 
@@ -360,64 +357,4 @@ enum RTCNetworkType {
   "wimax",
   "vpn",
   "unknown"
-};
-
-// ----- Obsolete Stats -----
-
-// https://w3c.github.io/webrtc-stats/#obsolete-rtcmediastreamstats-members
-// TODO(https://crbug.com/1374215): Delete when "track" and "stream" have been unshipped.
-dictionary RTCMediaStreamStats : RTCStats {
-  DOMString streamIdentifier;
-  sequence<DOMString> trackIds;
-};
-
-// https://w3c.github.io/webrtc-stats/#obsolete-rtcmediastreamtrackstats-members
-// TODO(https://crbug.com/1374215): Delete when "track" and "stream" have been unshipped.
-dictionary RTCMediaStreamTrackStats : RTCStats {
-  DOMString           trackIdentifier;
-  boolean             ended;
-  required DOMString  kind;
-  // Not implemented: RTCPriorityType priority;
-  boolean             remoteSource;
-  // Not implemented: DOMHighResTimeStamp estimatedPlayoutTimestamp;
-  double              jitterBufferDelay;
-  unsigned long long  jitterBufferEmittedCount;
-
-  // Audio-only, send and receive side.
-  double              audioLevel;
-  double              totalAudioEnergy;
-  double              totalSamplesDuration;
-
-  // Audio-only, send side.
-  double              echoReturnLoss;
-  double              echoReturnLossEnhancement;
-
-  // Audio-only, receive side.
-  unsigned long long  totalSamplesReceived;
-  unsigned long long  concealedSamples;
-  unsigned long long  silentConcealedSamples;
-  unsigned long long  concealmentEvents;
-  unsigned long long  insertedSamplesForDeceleration;
-  unsigned long long  removedSamplesForAcceleration;
-
-  // Video-only, send and receive side.
-  unsigned long       frameWidth;
-  unsigned long       frameHeight;
-  // Not implemented: double framesPerSecond;
-
-  // Video-only, send side.
-  // Not implemented: unsigned long keyFramesSent;
-  // Not implemented: unsigned long framesCaptured;
-  unsigned long       framesSent;
-  unsigned long       hugeFramesSent;
-
-  // Video-only, receive side.
-  // Not implemented: unsigned long keyFramesReceived;
-  unsigned long       framesReceived;
-  unsigned long       framesDecoded;
-  unsigned long       framesDropped;
-
-  // Non-standard and obsolete stats.
-  DOMString mediaSourceId;
-  boolean detached;
 };
