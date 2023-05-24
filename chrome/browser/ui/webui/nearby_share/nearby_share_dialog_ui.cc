@@ -117,6 +117,10 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
 
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   SetAttachmentFromQueryParameter(url);
+
+  html_source->AddBoolean(
+      "isSelfShareEnabled",
+      base::FeatureList::IsEnabled(features::kNearbySharingSelfShareUI));
 }
 
 NearbyShareDialogUI::~NearbyShareDialogUI() = default;
