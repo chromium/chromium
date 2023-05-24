@@ -272,6 +272,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "PasswordManager::IsAutomaticSavePromptAvailable";
     case SavePasswordProgressLogger::STRING_NO_PROVISIONAL_SAVE_MANAGER:
       return "No provisional save manager";
+    case SavePasswordProgressLogger::STRING_ANOTHER_MANAGER_WAS_SUBMITTED:
+      return "Another form manager was submitted";
     case SavePasswordProgressLogger::STRING_NUMBER_OF_VISIBLE_FORMS:
       return "Number of visible forms";
     case SavePasswordProgressLogger::STRING_PASSWORD_FORM_REAPPEARED:
