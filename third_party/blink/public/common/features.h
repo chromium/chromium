@@ -558,9 +558,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSystemColorChooser);
 // Disables forced frame updates for web tests. Used by web test runner only.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoForcedFrameUpdatesForWebTests);
 
-// If enabled, the client hints cache will be loaded on browser restarts.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDurableClientHintsCache);
-
 // A parameter for kReduceUserAgentMinorVersion;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kUserAgentFrozenBuildVersion;

@@ -1649,11 +1649,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, ClientHintsClearSession) {
       ->GetSettingsForOneType(ContentSettingsType::CLIENT_HINTS,
                               &host_settings);
 
-  EXPECT_EQ(
-      base::FeatureList::IsEnabled(blink::features::kDurableClientHintsCache)
-          ? 1u
-          : 0u,
-      host_settings.size());
+  EXPECT_EQ(1u, host_settings.size());
 
   SetClientHintExpectationsOnMainFrame(false);
   SetClientHintExpectationsOnSubresources(false);

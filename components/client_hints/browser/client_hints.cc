@@ -196,17 +196,12 @@ void ClientHints::PersistClientHints(
   client_hints_dictionary.Set(kClientHintsSettingKey,
                               std::move(client_hints_list));
 
-  const auto session_model =
-      base::FeatureList::IsEnabled(blink::features::kDurableClientHintsCache)
-          ? content_settings::SessionModel::Durable
-          : content_settings::SessionModel::UserSession;
-
   // TODO(tbansal): crbug.com/735518. Disable updates to client hints settings
   // when cookies are disabled for |primary_origin|.
   settings_map_->SetWebsiteSettingDefaultScope(
       primary_url, GURL(), ContentSettingsType::CLIENT_HINTS,
       base::Value(std::move(client_hints_dictionary)),
-      {base::Time(), session_model});
+      {base::Time(), content_settings::SessionModel::Durable});
   network::LogClientHintsPersistenceMetrics(persistence_started,
                                             client_hints.size());
 }
