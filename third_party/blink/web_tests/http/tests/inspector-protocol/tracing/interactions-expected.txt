@@ -36,4 +36,19 @@ Object: {
 	tid: number
 	ts: number
 }
+Got EventDispatch event
+Object: {
+	args: {
+		data: {
+			type: string
+		}
+	}
+	cat: string
+	dur: number
+	name: string
+	ph: string
+	pid: number
+	tid: number
+	ts: number
+}
 

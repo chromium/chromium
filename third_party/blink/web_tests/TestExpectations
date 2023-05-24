@@ -4065,7 +4065,6 @@ crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Failure Timeout 
 
 # Sheriff 2019-02-22
 crbug.com/934636 http/tests/security/cross-origin-indexeddb-allowed.html [ Crash Pass ]
-crbug.com/934818 http/tests/devtools/tracing/decode-resize.js [ Failure Pass ]
 
 # Sheriff 2019-02-28
 
