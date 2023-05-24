@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -61,8 +62,9 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return CreateSharedImage(mailbox, std::move(handle), ToBufferFormat(format),
+                           gfx::BufferPlane::DEFAULT, size, color_space,
+                           surface_origin, alpha_type, usage, debug_label);
 }
 
 std::unique_ptr<SharedImageBacking>
