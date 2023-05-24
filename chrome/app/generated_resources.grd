@@ -10025,6 +10025,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           desc="Button text for the QR Code generator's download button.">
         Download
       </message>
+      <message name="IDS_BROWSER_SHARING_QR_CODE_DIALOG_COPY_BUTTON_LABEL"
+          desc="Button text for the QR Code generator's copy button.">
+        Copy
+      </message>
       <message name="IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_TOO_LONG"
           desc="Error message displayed when a URL exceeds the limit for which we can generate a QR Code.">
         Use <ph name="CHARACTER_LIMIT">$1<ex>300</ex></ph> characters or fewer

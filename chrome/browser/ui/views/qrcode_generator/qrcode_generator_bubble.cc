@@ -30,6 +30,7 @@
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
@@ -181,6 +182,7 @@ void QRCodeGeneratorBubble::DisplayPlaceholderImage() {
 }
 
 void QRCodeGeneratorBubble::DisplayError(mojom::QRCodeGeneratorError error) {
+  copy_button_->SetEnabled(false);
   download_button_->SetEnabled(false);
   if (error == mojom::QRCodeGeneratorError::INPUT_TOO_LONG) {
     ShrinkAndHideDisplay(center_error_label_);
@@ -196,11 +198,12 @@ void QRCodeGeneratorBubble::DisplayError(mojom::QRCodeGeneratorError error) {
   center_error_label_->SetVisible(true);
 }
 
-void QRCodeGeneratorBubble::HideErrors(bool enable_download_button) {
+void QRCodeGeneratorBubble::HideErrors(bool enable_button) {
   ShrinkAndHideDisplay(center_error_label_);
   bottom_error_label_->SetVisible(false);
   bottom_error_label_->GetViewAccessibility().OverrideIsIgnored(true);
-  download_button_->SetEnabled(enable_download_button);
+  copy_button_->SetEnabled(enable_button);
+  download_button_->SetEnabled(enable_button);
 }
 
 void QRCodeGeneratorBubble::ShrinkAndHideDisplay(views::View* view) {
@@ -305,6 +308,9 @@ void QRCodeGeneratorBubble::Init() {
       AddChildView(std::make_unique<views::BoxLayoutView>());
   button_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+  button_container->SetBetweenChildSpacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
 
   // "More info" tooltip; looks like (i).
   auto tooltip_icon = std::make_unique<views::TooltipIcon>(
@@ -319,6 +325,15 @@ void QRCodeGeneratorBubble::Init() {
 
   auto* flex = button_container->AddChildView(std::make_unique<views::View>());
   button_container->SetFlexForView(flex, 1);
+
+  // Copy button.
+  copy_button_ =
+      button_container->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(&QRCodeGeneratorBubble::CopyButtonPressed,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_BROWSER_SHARING_QR_CODE_DIALOG_COPY_BUTTON_LABEL)));
+  copy_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
   // Download button.
   download_button_ =
@@ -419,12 +434,22 @@ void QRCodeGeneratorBubble::SetQRCodeServiceForTesting(
   qrcode_service_override_ = std::move(qrcode_service_override);
 }
 
-void QRCodeGeneratorBubble::DownloadButtonPressed() {
+const SkBitmap QRCodeGeneratorBubble::GetBitmap() {
   const gfx::ImageSkia& image_ref = qr_code_image_->GetImage();
   // Returns closest scaling to parameter (1.0).
   // Should be exact since we generated the bitmap.
   const gfx::ImageSkiaRep& image_rep = image_ref.GetRepresentation(1.0f);
-  const SkBitmap& bitmap = image_rep.GetBitmap();
+  return image_rep.GetBitmap();
+}
+
+// Copy image to system clipboard.
+void QRCodeGeneratorBubble::CopyButtonPressed() {
+  const SkBitmap& bitmap = GetBitmap();
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteImage(bitmap);
+}
+
+void QRCodeGeneratorBubble::DownloadButtonPressed() {
+  const SkBitmap& bitmap = GetBitmap();
   const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);

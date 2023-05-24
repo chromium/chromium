@@ -114,6 +114,10 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   bool HandleMouseEvent(views::Textfield* sender,
                         const ui::MouseEvent& mouse_event) override;
 
+  const SkBitmap GetBitmap();
+
+  void CopyButtonPressed();
+
   void DownloadButtonPressed();
 
   void BackButtonPressed();
@@ -146,6 +150,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   // Pointers to view widgets; weak.
   raw_ptr<views::ImageView, DanglingUntriaged> qr_code_image_ = nullptr;
   raw_ptr<views::Textfield, DanglingUntriaged> textfield_url_ = nullptr;
+  raw_ptr<views::LabelButton, DanglingUntriaged> copy_button_ = nullptr;
   raw_ptr<views::LabelButton, DanglingUntriaged> download_button_ = nullptr;
   raw_ptr<views::TooltipIcon, DanglingUntriaged> tooltip_icon_ = nullptr;
   raw_ptr<views::Label, DanglingUntriaged> center_error_label_ = nullptr;
