@@ -41,7 +41,6 @@ class SequencedTaskRunner;
 namespace policy {
 
 class DeviceCloudPolicyStoreAsh;
-class DMTokenStorage;
 class EnrollmentStatus;
 class ServerBackedStateKeysBroker;
 class SigningService;
@@ -212,7 +211,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   std::unique_ptr<CloudPolicyClient> client_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   std::unique_ptr<DeviceAccountInitializer> device_account_initializer_;
-  std::unique_ptr<DMTokenStorage> dm_token_storage_;
 
   EnrollmentConfig enrollment_config_;
   DMAuth dm_auth_;

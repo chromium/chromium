@@ -83,7 +83,6 @@ class FakeDeviceAttributes : public DeviceAttributes {
   std::string fake_enterprise_enrollment_domain_;
   std::string fake_enterprise_domain_manager_;
   std::string fake_sso_profile_;
-  std::string fake_realm_;
   std::string fake_device_asset_id_;
   std::string fake_device_serial_number_;
   std::string fake_machine_name_;
