@@ -318,7 +318,7 @@ BASE_FEATURE(kPrefetchFollowsNormalCacheSemantics,
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kKerberosInBrowserRedirect,
              "KerberosInBrowserRedirect",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // A flag to use asynchronous session creation for new QUIC sessions.
