@@ -5733,6 +5733,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_QUICK_DELETE_SNACKBAR_MESSAGE" desc="Text inside the snackbar which is shown once the user confirms deletion via the 'Delete last 15 minutes' option present inside the three dots menu.">
         Deleted
       </message>
+
+      <!-- Password generation bottom sheet -->
+      <message name="IDS_PASSWORD_GENERATION_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string read when the bottom sheet is opened. It describes that the bottom sheet proposes a generated password to be automatically filled into the sign up form and saved to the Password Manager.">
+        Strong password suggested. Keyboard hidden.
+      </message>
+      <message name="IDS_PASSWORD_GENERATION_BOTTOM_SHEET_CLOSED" desc="Accessibility string read when the password generation bottom sheet is closed.">
+        Password suggestion is closed.
+      </message>
     </messages>
   </release>
 </grit>

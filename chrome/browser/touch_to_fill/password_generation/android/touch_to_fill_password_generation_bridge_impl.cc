@@ -32,7 +32,6 @@ bool TouchToFillPasswordGenerationBridgeImpl::Show(
       base::android::AttachCurrentThread(),
       web_contents->GetNativeView()->GetWindowAndroid()->GetJavaObject()));
 
-  Java_TouchToFillPasswordGenerationBridge_show(
+  return Java_TouchToFillPasswordGenerationBridge_show(
       base::android::AttachCurrentThread(), java_object_);
-  return true;
 }
