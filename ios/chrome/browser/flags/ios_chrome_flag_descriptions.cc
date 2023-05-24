@@ -364,6 +364,10 @@ const char kEnableFollowManagementInstantReloadName[] =
 const char kEnableFollowManagementInstantReloadDescription[] =
     "Enable follow management page instant reloading when being opened.";
 
+const char kEnableFollowUIUpdateName[] = "Enable the Follow UI Update";
+const char kEnableFollowUIUpdateDescription[] =
+    "Enable Follow UI Update for the Feed.";
+
 const char kPasswordsGroupingName[] =
     "Enable password grouping for the Password Manager";
 const char kPasswordsGroupingDescription[] =

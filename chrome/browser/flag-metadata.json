@@ -2530,6 +2530,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "enable-follow-ui-update",
+    "owners": [ "sczs", "adamta", "guiperez" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "enable-force-dark",
     "owners": [ "beverloo", "pdr" ],
     "expiry_milestone": 123

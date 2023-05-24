@@ -56,6 +56,9 @@ BASE_DECLARE_FEATURE(kIOSSetUpList);
 // Feature flag to disable Discover-controlled foregrounding refreshes.
 BASE_DECLARE_FEATURE(kFeedDisableHotStartRefresh);
 
+// Feature flag to enable the Follow UI update.
+BASE_DECLARE_FEATURE(kEnableFollowUIUpdate);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];
@@ -240,5 +243,8 @@ bool IsIOSSetUpListEnabled();
 
 // Whether Discover-controlled foregrounding refreshes are disabled.
 bool IsFeedHotStartRefreshDisabled();
+
+// YES when Follow UI Update is enabled.
+bool IsFollowUIUpdateEnabled();
 
 #endif  // IOS_CHROME_BROWSER_NTP_FEATURES_H_

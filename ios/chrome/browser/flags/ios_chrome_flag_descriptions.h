@@ -277,6 +277,10 @@ extern const char kEnableFollowIPHExpParamsDescription[];
 extern const char kEnableFollowManagementInstantReloadName[];
 extern const char kEnableFollowManagementInstantReloadDescription[];
 
+// Title and description for the flag to enable the Follow UI Updates.
+extern const char kEnableFollowUIUpdateName[];
+extern const char kEnableFollowUIUpdateDescription[];
+
 // Title and description for the flag to enable kEditPasswordsInSettings flag on
 // iOS.
 extern const char kEditPasswordsInSettingsName[];
