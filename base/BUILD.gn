@@ -205,6 +205,18 @@ buildflag_header("message_pump_buildflags") {
   flags = [ "ENABLE_MESSAGE_PUMP_EPOLL=$enable_message_pump_epoll" ]
 }
 
+if (is_apple) {
+  # TODO(https://crbug.com/1280317): Merge back into the `base` target once all
+  # .mm files are ARCed.
+  source_set("base_arc") {
+    sources = [
+      "apple/owned_objc.h",
+      "apple/owned_objc.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+}
+
 # Base and everything it depends on should be a static library rather than
 # a source set. Base is more of a "library" in the classic sense in that many
 # small parts of it are used in many different contexts. This combined with a
@@ -2092,6 +2104,7 @@ component("base") {
       "time/time_mac.mm",
     ]
     frameworks += [ "Security.framework" ]
+    public_deps += [ ":base_arc" ]
   }
 
   # Linux.

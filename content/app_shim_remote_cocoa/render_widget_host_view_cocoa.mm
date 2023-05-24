@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/apple/owned_objc.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #import "base/mac/foundation_util.h"
@@ -956,7 +957,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // Don't cancel child popups; the key events are probably what's triggering
   // the popup in the first place.
 
-  NativeWebKeyboardEvent event(theEvent);
+  NativeWebKeyboardEvent event((base::apple::OwnedNSEvent(theEvent)));
   ui::LatencyInfo latency_info;
   if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
       event.GetType() == blink::WebInputEvent::Type::kChar) {

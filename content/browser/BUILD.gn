@@ -2622,6 +2622,7 @@ source_set("browser") {
     ]
     deps += [
       ":mac_helpers",
+      "//base:base_arc",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",
       "//components/remote_cocoa/common:mojo",
@@ -2642,6 +2643,7 @@ source_set("browser") {
   } else if (is_ios) {
     sources += [
       "child_process_launcher_helper_ios.cc",
+      "devtools/protocol/native_input_event_builder_ios.mm",
       "renderer_host/browser_compositor_ios.h",
       "renderer_host/browser_compositor_ios.mm",
       "renderer_host/delegated_frame_host_client_ios.cc",

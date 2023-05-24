@@ -13,14 +13,16 @@ namespace views {
 bool UnhandledKeyboardEventHandler::HandleNativeKeyboardEvent(
     const content::NativeWebKeyboardEvent& event,
     FocusManager* focus_manager) {
-  if (event.skip_in_browser)
+  if (event.skip_in_browser) {
     return false;
+  }
 
-  auto os_event = event.os_event;
-  auto* host = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
-      [os_event window]);
-  if (host)
-    return host->RedispatchKeyEvent(os_event);
+  NSEvent* ns_event = event.os_event.Get();
+  auto* host =
+      views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(ns_event.window);
+  if (host) {
+    return host->RedispatchKeyEvent(ns_event);
+  }
   return false;
 }
 

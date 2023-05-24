@@ -108,7 +108,7 @@ class RenderWidgetHostNSViewBridgeOwner
             std::vector<std::unique_ptr<blink::WebInputEvent>>{},
             std::vector<std::unique_ptr<blink::WebInputEvent>>{}, latency_info);
     std::vector<uint8_t> native_event_data =
-        ui::EventToData(key_event.os_event);
+        ui::EventToData(key_event.os_event.Get());
     host_->ForwardKeyboardEventWithCommands(
         std::move(input_event), native_event_data, key_event.skip_in_browser,
         std::move(edit_commands));

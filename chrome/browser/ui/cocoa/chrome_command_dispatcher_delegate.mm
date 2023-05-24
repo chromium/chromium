@@ -4,6 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 
+#include "base/apple/owned_objc.h"
 #include "base/check.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
@@ -43,7 +44,8 @@
   // when the focused view is not a RenderWidgetHostView, which is why this
   // logic is necessary. Duplicating the logic adds a bit of redundant work,
   // but doesn't cause problems.
-  content::NativeWebKeyboardEvent keyboard_event(event);
+  content::NativeWebKeyboardEvent keyboard_event(
+      (base::apple::OwnedNSEvent(event)));
   ui::Accelerator accelerator =
       ui::GetAcceleratorFromNativeWebKeyboardEvent(keyboard_event);
   auto* bridge =
@@ -110,7 +112,7 @@
   bool will_execute = false;
   const bool kIsBeforeFirstResponder = true;
 
-  // See if this command will excute on the window bridge side.
+  // See if this command will execute on the window bridge side.
   bridge->host()->WillExecuteCommand(result.chrome_command,
                                      WindowOpenDisposition::CURRENT_TAB,
                                      kIsBeforeFirstResponder, &will_execute);

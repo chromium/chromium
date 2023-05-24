@@ -20,6 +20,7 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -370,8 +371,9 @@ void WebDialogView::SetContentsBounds(WebContents* source,
 // they're all browser-specific. (This may change in the future.)
 bool WebDialogView::HandleKeyboardEvent(content::WebContents* source,
                                         const NativeWebKeyboardEvent& event) {
-  if (!event.os_event)
+  if (!gfx::IsNativeEventValid(event.os_event)) {
     return false;
+  }
 
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());

@@ -13,9 +13,17 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
-#elif BUILDFLAG(IS_MAC)
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+#include "base/apple/owned_objc.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
 #include <string>
-#elif BUILDFLAG(IS_WIN)
+#endif
+
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -39,6 +47,10 @@
 // The name 'View' here meshes with macOS where the UI elements are called
 // 'views' and with our Chrome UI code where the elements are also called
 // 'views'.
+//
+// TODO(https://crbug.com/1443009): Both gfx::NativeEvent and ui::PlatformEvent
+// are typedefs for native event types on different platforms, but they're
+// slightly different and used in different places. They should be merged.
 
 #if defined(USE_AURA)
 namespace aura {
@@ -59,13 +71,11 @@ struct IAccessible;
 #elif BUILDFLAG(IS_IOS)
 #ifdef __OBJC__
 struct objc_object;
-@class UIEvent;
 @class UIImage;
 @class UIView;
 @class UIWindow;
 @class UITextField;
 #else
-class UIEvent;
 class UIImage;
 class UIView;
 class UIWindow;
@@ -74,7 +84,6 @@ class UITextField;
 #elif BUILDFLAG(IS_MAC)
 #ifdef __OBJC__
 @class NSCursor;
-@class NSEvent;
 @class NSImage;
 @class NSView;
 @class NSWindow;
@@ -82,7 +91,6 @@ class UITextField;
 #else
 struct objc_object;
 class NSCursor;
-class NSEvent;
 class NSImage;
 class NSView;
 class NSWindow;
@@ -121,12 +129,12 @@ constexpr NativeWindow kNullNativeWindow = nullptr;
 using NativeCursor = void*;
 using NativeView = UIView*;
 using NativeWindow = UIWindow*;
-using NativeEvent = UIEvent*;
+using NativeEvent = base::apple::OwnedUIEvent;
 constexpr NativeView kNullNativeView = nullptr;
 constexpr NativeWindow kNullNativeWindow = nullptr;
 #elif BUILDFLAG(IS_MAC)
 using NativeCursor = NSCursor*;
-using NativeEvent = NSEvent*;
+using NativeEvent = base::apple::OwnedNSEvent;
 // NativeViews and NativeWindows on macOS are not necessarily in the same
 // process as the NSViews and NSWindows that they represent. Require an explicit
 // function call (GetNativeNSView or GetNativeNSWindow) to retrieve the
@@ -231,12 +239,15 @@ using UnimplementedNativeViewAccessible =
 using NativeViewAccessible = UnimplementedNativeViewAccessible*;
 #endif
 
+// Returns if the event is valid.
+GFX_EXPORT bool IsNativeEventValid(const NativeEvent& event);
+
 // A constant value to indicate that gfx::NativeCursor refers to no cursor.
 #if defined(USE_AURA)
 const ui::mojom::CursorType kNullCursor =
     static_cast<ui::mojom::CursorType>(-1);
 #else
-const gfx::NativeCursor kNullCursor = static_cast<gfx::NativeCursor>(nullptr);
+const NativeCursor kNullCursor = static_cast<NativeCursor>(nullptr);
 #endif
 
 // Note: for test_shell we're packing a pointer into the NativeViewId. So, if
