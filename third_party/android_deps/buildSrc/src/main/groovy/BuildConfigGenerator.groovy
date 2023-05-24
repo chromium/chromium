@@ -642,10 +642,6 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         switch (dependencyId) {
-            case 'androidx_privacysandbox_ads_ads_adservices':
-                sb.append('  # https://crbug.com/1448095\n')
-                sb.append('  mergeable_android_manifets = [ "0_privacysandbox_AndroidManifest.xml" ]\n')
-                break
             case 'androidx_annotation_annotation_jvm':
                 sb.append('  # https://crbug.com/989505\n')
                 sb.append('  jar_excluded_patterns = [ "META-INF/proguard/*" ]\n')
