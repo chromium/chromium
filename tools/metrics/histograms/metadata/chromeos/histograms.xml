@@ -1414,8 +1414,11 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<!-- This histogram was expired for about three weeks from 2023-05-01 to
+2023-05-25. -->
+
 <histogram name="ChromeOS.IioService.SensorClientConcurrent" units="clients"
-    expires_after="2023-05-01">
+    expires_after="2024-05-01">
   <owner>chenghaoyang@chromium.org</owner>
   <owner>chromeos-sensors-eng@google.com</owner>
   <summary>
@@ -1425,8 +1428,11 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<!-- This histogram was expired for about three weeks from 2023-05-01 to
+2023-05-25. -->
+
 <histogram name="ChromeOS.IioService.SensorObserver" units="observers"
-    expires_after="2023-05-01">
+    expires_after="2024-05-01">
   <owner>chenghaoyang@chromium.org</owner>
   <owner>chromeos-sensors-eng@google.com</owner>
   <summary>
@@ -1436,8 +1442,11 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<!-- This histogram was expired for about three weeks from 2023-05-01 to
+2023-05-25. -->
+
 <histogram name="ChromeOS.IioService.SensorObserverOpen" units="observers"
-    expires_after="2023-05-01">
+    expires_after="2024-05-01">
   <owner>chenghaoyang@chromium.org</owner>
   <owner>chromeos-sensors-eng@google.com</owner>
   <summary>
@@ -1447,8 +1456,11 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<!-- This histogram was expired for about three weeks from 2023-05-01 to
+2023-05-25. -->
+
 <histogram name="ChromeOS.IioService.SensorUsage.{Frequency}Hz"
-    enum="ChromeOSIioServiceSensorUsage" expires_after="2023-05-01">
+    enum="ChromeOSIioServiceSensorUsage" expires_after="2024-05-01">
   <owner>chenghaoyang@chromium.org</owner>
   <owner>chromeos-sensors-eng@google.com</owner>
   <summary>
