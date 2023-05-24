@@ -3583,9 +3583,6 @@ extern const char kPcieBillboardNotificationDescription[];
 extern const char kPerformantSplitViewResizing[];
 extern const char kPerformantSplitViewResizingDescription[];
 
-extern const char kPersonalizationJellyName[];
-extern const char kPersonalizationJellyDescription[];
-
 extern const char kPhoneHubCallNotificationName[];
 extern const char kPhoneHubCallNotificationDescription[];
 

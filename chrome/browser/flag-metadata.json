@@ -6168,11 +6168,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "personalization-jelly",
-    "owners": ["assistive-eng@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "phone-hub-nudge",
     "owners": [
       "jennserrano@google.com",

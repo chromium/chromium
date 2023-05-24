@@ -1752,11 +1752,6 @@ BASE_FEATURE(kPcieBillboardNotification,
 // currently active desk.
 BASE_FEATURE(kPerDeskShelf, "PerDeskShelf", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Jelly features in Personalization App.
-BASE_FEATURE(kPersonalizationJelly,
-             "PersonalizationJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within ChromeOS.
 BASE_FEATURE(kPhoneHub, "PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3314,8 +3309,7 @@ bool IsPerDeskShelfEnabled() {
 }
 
 bool IsPersonalizationJellyEnabled() {
-  return base::FeatureList::IsEnabled(kPersonalizationJelly) &&
-         chromeos::features::IsJellyEnabled();
+  return chromeos::features::IsJellyEnabled();
 }
 
 bool IsPhoneHubCameraRollEnabled() {

@@ -525,10 +525,7 @@ class PersonalizationAppDynamicColorEnabledBrowserTest extends
   /** @override */
   get featureList() {
     return {
-      enabled: [
-        'ash::features::kPersonalizationJelly',
-        'chromeos::features::kJelly',
-      ],
+      enabled: ['chromeos::features::kJelly'],
     };
   }
 }

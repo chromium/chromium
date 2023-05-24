@@ -5064,11 +5064,6 @@ const char kAlwaysEnableHdcpDefault[] = "Default";
 const char kAlwaysEnableHdcpType0[] = "Type 0";
 const char kAlwaysEnableHdcpType1[] = "Type 1";
 
-const char kPersonalizationJellyName[] = "Jelly design for Personalization App";
-const char kPersonalizationJellyDescription[] =
-    "Feature to enable the Jelly design in Personalization App. Requires "
-    "jelly-colors flag to be enabled.";
-
 const char kAmbientModeThrottleAnimationName[] =
     "Throttle the frame rate of Lottie animations in ambient mode";
 const char kAmbientModeThrottleAnimationDescription[] =
