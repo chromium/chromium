@@ -78,7 +78,8 @@ class ExtensionGarbageCollector : public KeyedService,
 
   static void GarbageCollectExtensionsOnFileThread(
       const base::FilePath& install_directory,
-      const std::multimap<std::string, base::FilePath>& extension_paths);
+      const std::multimap<std::string, base::FilePath>& extension_paths,
+      bool unpacked);
 
   // The BrowserContext associated with the GarbageCollector.
   raw_ptr<content::BrowserContext> context_;

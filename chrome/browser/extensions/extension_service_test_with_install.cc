@@ -330,10 +330,13 @@ void ExtensionServiceTestWithInstall::UpdateExtension(
 }
 
 void ExtensionServiceTestWithInstall::UninstallExtension(
-    const std::string& id) {
+    const std::string& id,
+    UninstallExtensionFileDeleteType delete_type) {
   // Verify that the extension is installed.
-  ASSERT_TRUE(registry()->GetExtensionById(id, ExtensionRegistry::EVERYTHING));
-  base::FilePath extension_path = extensions_install_dir().AppendASCII(id);
+  const Extension* extension =
+      registry()->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
+  ASSERT_TRUE(extension);
+  base::FilePath extension_path = base::FilePath(extension->path());
   EXPECT_TRUE(base::PathExists(extension_path));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(prefs->GetInstalledExtensionInfo(id));
@@ -353,10 +356,19 @@ void ExtensionServiceTestWithInstall::UninstallExtension(
   // The extension should not be in the service anymore.
   EXPECT_FALSE(registry()->GetInstalledExtension(extension_id));
   EXPECT_FALSE(prefs->GetInstalledExtensionInfo(extension_id));
-  content::RunAllTasksUntilIdle();
+  task_environment()->RunUntilIdle();
 
-  // The directory should be gone.
-  EXPECT_FALSE(base::PathExists(extension_path));
+  switch (delete_type) {
+    case kDeleteAllVersions:
+      EXPECT_FALSE(base::PathExists(extension_path.DirName()));
+      break;
+    case kDeletePath:
+      EXPECT_FALSE(base::PathExists(extension_path));
+      break;
+    case kDoNotDelete:
+      EXPECT_TRUE(base::PathExists(extension_path));
+      break;
+  }
 }
 
 void ExtensionServiceTestWithInstall::TerminateExtension(

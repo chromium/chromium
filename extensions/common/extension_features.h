@@ -95,6 +95,8 @@ BASE_DECLARE_FEATURE(kWebviewTagMPArchBehavior);
 // See the guidance at the top of this file.
 ///////////////////////////////////////////////////////////////////////////////
 
+BASE_DECLARE_FEATURE(kExtensionsZipFileInstalledInProfileDir);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_
