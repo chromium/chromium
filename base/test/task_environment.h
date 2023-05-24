@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_types.h"
 #include "base/run_loop.h"
@@ -504,9 +504,7 @@ class TaskEnvironment {
 #endif
 
   // Owned by the ThreadPoolInstance.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION TestTaskTracker* task_tracker_ = nullptr;
+  raw_ptr<TestTaskTracker> task_tracker_ = nullptr;
 
   // Ensures destruction of lazy TaskRunners when this is destroyed.
   std::unique_ptr<base::internal::ScopedLazyTaskRunnerListForTesting>
