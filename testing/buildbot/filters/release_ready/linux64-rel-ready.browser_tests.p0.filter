@@ -1,0 +1,26 @@
+# TODO(crbug.com/1433395) Reword below requirement once green
+# release is in production.
+# This filter is for the P0 tests of Green Release, which must run
+# and pass for the commit to create release tag.
+#
+# As of 23Q2, green release is still under development and below
+# tests are picked up for experiments. Eventually, tests added
+# here should:
+# 1 complete in a reasonable time with little flakiness
+# 2 map to a release outage or P0 issue
+# 3 have clear ownership and SLO committed by the owners
+AccessibilityLabelsBrowserTest.NewWebContents
+AutofillCounterTest.CreditCards
+ExtensionTabsTest.GetWindow
+StartupBrowserCreatorTest.LaunchMultipleLockedProfiles
+StartupBrowserCreatorTest.OpenAppUrlShortcut
+StartupBrowserCreatorTest.OpenURLsPopup
+StartupBrowserCreatorTest.RestoreWithNoStartupWindow
+StartupBrowserCreatorTest.StartupURLsForTwoProfiles
+StartupBrowserCreatorTest.StartupURLsOnNewWindow
+StartupBrowserCreatorTest.UpdateWithTwoProfiles
+
+# Tests added for crbug.com/1424368:
+All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettingsPrintableArea/0
+All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettingsPrintableArea/1
+All/SystemAccessProcessPrintBrowserTest.UpdatePrintSettingsPrintableArea/2
