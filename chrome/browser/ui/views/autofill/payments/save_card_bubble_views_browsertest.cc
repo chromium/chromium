@@ -96,9 +96,7 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #endif
 
@@ -195,11 +193,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
     embedded_test_server()->StartAcceptingConnections();
 
     ASSERT_TRUE(SetupClients());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Install the Settings App.
-    ash::SystemWebAppManager::GetForTest(GetProfile(0))
-        ->InstallSystemAppsForTesting();
-#endif
 
     // It's important to use the blank tab here and not some arbitrary page.
     // This causes the RenderFrameHost to stay the same when navigating to the

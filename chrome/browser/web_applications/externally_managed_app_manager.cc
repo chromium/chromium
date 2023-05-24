@@ -662,6 +662,7 @@ void ExternallyManagedAppManager::ContinueOrCompleteSynchronization(
   if (request.remaining_install_requests > 0)
     return;
 
+  CHECK(request.callback);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(request.callback),
                                 std::move(request.install_results),
