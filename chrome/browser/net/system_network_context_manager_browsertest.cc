@@ -43,6 +43,7 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
@@ -219,13 +220,13 @@ class SystemNetworkContextManagerWithCustomProxyConfigBrowserTest
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     SystemNetworkContextManagerBrowsertest::SetUpDefaultCommandLine(
         command_line);
-    command_line->AppendSwitchASCII(switches::kIPAnonymizationProxyServer,
-                                    "testproxy:80");
     command_line->AppendSwitchASCII(
-        switches::kIPAnonymizationProxyAllowList,
+        network::switches::kIPAnonymizationProxyServer, "testproxy:80");
+    command_line->AppendSwitchASCII(
+        network::switches::kIPAnonymizationProxyAllowList,
         "a.test, foo.a.test, foo.test, b.test:1234");
-    command_line->AppendSwitchASCII(switches::kIPAnonymizationProxyPassword,
-                                    "value");
+    command_line->AppendSwitchASCII(
+        network::switches::kIPAnonymizationProxyPassword, "value");
   }
 };
 

@@ -795,7 +795,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
   // If a custom proxy for IP protection is specified by either command line
   // switch or Finch experiment flag, set the proxy rules
-  if (command_line.HasSwitch(::switches::kIPAnonymizationProxyServer) ||
+  if (command_line.HasSwitch(network::switches::kIPAnonymizationProxyServer) ||
       base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
     auto proxy_config = network::mojom::CustomProxyConfig::New();
     proxy_config->rules.type =
@@ -803,9 +803,9 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
     // Command line input takes precedence over flag configuration
     std::string ip_protection_proxy_server =
-        command_line.HasSwitch(::switches::kIPAnonymizationProxyServer)
+        command_line.HasSwitch(network::switches::kIPAnonymizationProxyServer)
             ? command_line.GetSwitchValueASCII(
-                  ::switches::kIPAnonymizationProxyServer)
+                  network::switches::kIPAnonymizationProxyServer)
             : net::features::kIpPrivacyProxyServer.Get();
 
     proxy_config->rules.ParseFromString(ip_protection_proxy_server);
@@ -813,9 +813,9 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     // Get allowlist hosts, command line input takes precedence over flag
     // configuration
     std::string ip_protection_proxy_allow_list =
-        command_line.HasSwitch(::switches::kIPAnonymizationProxyServer)
+        command_line.HasSwitch(network::switches::kIPAnonymizationProxyServer)
             ? command_line.GetSwitchValueASCII(
-                  ::switches::kIPAnonymizationProxyAllowList)
+                  network::switches::kIPAnonymizationProxyAllowList)
             : net::features::kIpPrivacyProxyAllowlist.Get();
 
     proxy_config->rules.reverse_bypass = true;
@@ -828,7 +828,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     proxy_config->connect_tunnel_headers.SetHeader(
         kIPAnonymizationProxyPassword,
         command_line.GetSwitchValueASCII(
-            ::switches::kIPAnonymizationProxyPassword));
+            network::switches::kIPAnonymizationProxyPassword));
 
     // Set initial custom proxy configuration
     network_context_params->initial_custom_proxy_config =
