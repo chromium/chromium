@@ -137,7 +137,13 @@ public abstract class CronetEngine {
          * <p>{@hide}
          */
         public Builder(ICronetEngineBuilder builderDelegate) {
-            mBuilderDelegate = builderDelegate;
+            if (builderDelegate instanceof ExperimentalOptionsTranslatingCronetEngineBuilder) {
+                // Already wrapped at the top level, no need to do it again
+                mBuilderDelegate = builderDelegate;
+            } else {
+                mBuilderDelegate =
+                        new ExperimentalOptionsTranslatingCronetEngineBuilder(builderDelegate);
+            }
         }
 
         /**
