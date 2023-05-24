@@ -35,11 +35,7 @@ class PolicyLoggerTest : public PlatformTest {
 #elif BUILDFLAG(IS_IOS)
     scoped_feature_list_.InitWithFeatureState(
         policy::features::kPolicyLogsPageIOS, true);
-#else
-    scoped_feature_list_.InitWithFeatureState(
-        policy::features::kPolicyLogsPageDesktop, true);
 #endif
-    policy::PolicyLogger::GetInstance()->ResetLoggerTaskRunnerForTest();
   }
 
   ~PolicyLoggerTest() override = default;
@@ -112,9 +108,6 @@ TEST(PolicyLoggerDisabledTest, PolicyLoggingDisabled) {
 #elif BUILDFLAG(IS_IOS)
   scoped_feature_list_.InitWithFeatureState(
       policy::features::kPolicyLogsPageIOS, false);
-#else
-  scoped_feature_list_.InitWithFeatureState(
-      policy::features::kPolicyLogsPageDesktop, false);
 #endif
 
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();

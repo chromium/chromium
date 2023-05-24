@@ -44,10 +44,6 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyMergeMultiSource);
 POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyLogsPageIOS);
 #endif  // BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_IOS) || !BUILDFLAG(IS_ANDROID)
-POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyLogsPageDesktop);
-#endif  // !BUILDFLAG(IS_IOS) || !!BUILDFLAG(IS_ANDROID)
-
 }  // namespace features
 }  // namespace policy
 

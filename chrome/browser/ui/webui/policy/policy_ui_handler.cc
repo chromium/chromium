@@ -55,7 +55,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/policy_details.h"
-#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_scheduler.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
@@ -73,6 +72,10 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/policy/core/common/policy_logger.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -177,10 +180,12 @@ void PolicyUIHandler::RegisterMessages() {
       base::BindRepeating(&PolicyUIHandler::HandleCopyPoliciesJson,
                           base::Unretained(this)));
 
+#if BUILDFLAG(IS_ANDROID)
   web_ui()->RegisterMessageCallback(
       "getPolicyLogs",
       base::BindRepeating(&PolicyUIHandler::HandleGetPolicyLogs,
                           base::Unretained(this)));
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
@@ -292,12 +297,14 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
   scw.WriteText(base::UTF8ToUTF16(policies_json));
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
   DCHECK(policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
   AllowJavascript();
   ResolveJavascriptCallback(args[0],
                             policy::PolicyLogger::GetInstance()->GetAsList());
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {

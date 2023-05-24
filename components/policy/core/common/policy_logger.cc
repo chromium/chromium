@@ -168,38 +168,13 @@ base::Value::Dict PolicyLogger::Log::GetAsDict() const {
   return log_dict;
 }
 
-PolicyLogger::PolicyLogger() {
-  if (base::SequencedTaskRunner::HasCurrentDefault()) {
-    logging_sequence_ = base::SequencedTaskRunner::GetCurrentDefault();
-  }
-}
+PolicyLogger::PolicyLogger() = default;
 
 PolicyLogger::~PolicyLogger() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
 }
 
 void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
-  if (IsPolicyLoggingEnabled()) {
-    // Skip logging for tests with no task environments.
-    if (!logging_sequence_) {
-      return;
-    }
-
-    // Add the log from the sequence that created the logger if it is not being
-    // added on the same sequence now.
-    if (logging_sequence_ != base::SequencedTaskRunner::GetCurrentDefault()) {
-      logging_sequence_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&PolicyLogger::AddLogImpl, weak_factory_.GetWeakPtr(),
-                         std::move(new_log)));
-      return;
-    }
-
-    AddLogImpl(std::move(new_log));
-  }
-}
-
-void PolicyLogger::AddLogImpl(PolicyLogger::Log&& new_log) {
   if (IsPolicyLoggingEnabled()) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(logs_list_sequence_checker_);
     logs_.emplace_back(std::move(new_log));
@@ -224,7 +199,7 @@ void PolicyLogger::DeleteOldLogs() {
 }
 
 void PolicyLogger::ScheduleOldLogsDeletion() {
-  logging_sequence_->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PolicyLogger::DeleteOldLogs, weak_factory_.GetWeakPtr()),
       kTimeToLive);
@@ -246,14 +221,7 @@ bool PolicyLogger::IsPolicyLoggingEnabled() const {
 #elif BUILDFLAG(IS_IOS)
   return base::FeatureList::IsEnabled(policy::features::kPolicyLogsPageIOS);
 #else
-  // Check that FeatureList is available as a protection against early startup
-  // crashes. Some policy providers are initialized very early even before
-  // base::FeatureList is available, but when policies are finally applied, the
-  // feature stack is fully initialized. The instance check ensures that the
-  // final decision is delayed until all features are initialized, without any
-  // other downstream effect.
-  return base::FeatureList::GetInstance() &&
-         base::FeatureList::IsEnabled(policy::features::kPolicyLogsPageDesktop);
+  return false;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -273,7 +241,4 @@ void PolicyLogger::ResetLoggerAfterTest() {
   is_log_deletion_enabled_ = false;
 }
 
-void PolicyLogger::ResetLoggerTaskRunnerForTest() {
-  logging_sequence_ = base::SequencedTaskRunner::GetCurrentDefault();
-}
 }  // namespace policy
