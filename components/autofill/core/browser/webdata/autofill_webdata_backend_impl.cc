@@ -734,13 +734,4 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveOriginURLsModifiedBetween(
   return WebDatabase::COMMIT_NEEDED;
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::RemoveOrphanAutofillTableRows(
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (AutofillTable::FromWebDatabase(db)->RemoveOrphanAutofillTableRows()) {
-    return WebDatabase::COMMIT_NEEDED;
-  }
-  return WebDatabase::COMMIT_NOT_NEEDED;
-}
-
 }  // namespace autofill

@@ -374,13 +374,6 @@ void AutofillWebDataService::RemoveOriginURLsModifiedBetween(
           autofill_backend_, delete_begin, delete_end));
 }
 
-void AutofillWebDataService::RemoveOrphanAutofillTableRows() {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::RemoveOrphanAutofillTableRows,
-                     autofill_backend_));
-}
-
 void AutofillWebDataService::AddObserver(
     AutofillWebDataServiceObserverOnDBSequence* observer) {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());

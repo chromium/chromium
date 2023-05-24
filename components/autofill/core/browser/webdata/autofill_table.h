@@ -798,13 +798,6 @@ class AutofillTable : public WebDatabaseTable,
       const sync_pb::ModelTypeState& model_type_state) override;
   bool ClearModelTypeState(syncer::ModelType model_type) override;
 
-  // Removes the orphan rows in the autofill_profile_names,
-  // autofill_profile_emails and autofill_profile_phones table that were not
-  // removed in the previous implementation of
-  // RemoveAutofillDataModifiedBetween(see crbug.com/836737).
-  // TODO(crbug.com/1443393): Remove, since the tables are no longer used.
-  bool RemoveOrphanAutofillTableRows() { return true; }
-
   // Table migration functions. NB: These do not and should not rely on other
   // functions in this class. The implementation of a function such as
   // GetCreditCard may change over time, but MigrateToVersionXX should never

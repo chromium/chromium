@@ -93,10 +93,6 @@ class PersonalDataManagerCleaner {
   // Applies various fixes and cleanups on autofill credit cards.
   void ApplyCardFixesAndCleanups();
 
-  // Runs the routine that removes the orphan rows in the autofill tables if
-  // it's never been done.
-  void RemoveOrphanAutofillTableRows();
-
   // Removes settings-inaccessible profiles values from all profiles stored in
   // the |personal_data_manager_|.
   void RemoveInaccessibleProfileValues();

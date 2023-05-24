@@ -105,9 +105,6 @@ void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {
 }
 
 void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
-  // One-time fix, otherwise NOP.
-  RemoveOrphanAutofillTableRows();
-
   // Once per major version, otherwise NOP.
   ApplyDedupingRoutine();
 
@@ -124,22 +121,6 @@ void PersonalDataManagerCleaner::ApplyCardFixesAndCleanups() {
 
   // Ran everytime it is called.
   ClearCreditCardNonSettingsOrigins();
-}
-
-void PersonalDataManagerCleaner::RemoveOrphanAutofillTableRows() {
-  // Don't run if the fix has already been applied.
-  if (pref_service_->GetBoolean(prefs::kAutofillOrphanRowsRemoved))
-    return;
-
-  scoped_refptr<AutofillWebDataService> local_db =
-      personal_data_manager_->GetLocalDatabase();
-  if (!local_db)
-    return;
-
-  local_db->RemoveOrphanAutofillTableRows();
-
-  // Set the pref so that this fix is never run again.
-  pref_service_->SetBoolean(prefs::kAutofillOrphanRowsRemoved, true);
 }
 
 void PersonalDataManagerCleaner::RemoveInaccessibleProfileValues() {

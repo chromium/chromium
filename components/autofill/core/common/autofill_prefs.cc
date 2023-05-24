@@ -153,7 +153,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kAutofillLastVersionDisusedCreditCardsDeleted, 0);
   registry->RegisterIntegerPref(prefs::kAutocompleteLastVersionRetentionPolicy,
                                 0);
-  registry->RegisterBooleanPref(prefs::kAutofillOrphanRowsRemoved, false);
   registry->RegisterStringPref(prefs::kAutofillUploadEncodingSeed, "");
   registry->RegisterDictionaryPref(prefs::kAutofillUploadEvents);
   registry->RegisterTimePref(prefs::kAutofillUploadEventsLastResetTimestamp,
@@ -170,11 +169,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kAutofillEnabledDeprecated, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kAutofillOrphanRowsRemoved, false);
 }
 
 void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
   // Added 09/2022.
   pref_service->ClearPref(prefs::kAutofillEnabledDeprecated);
+  // Added 05/2023.
+  pref_service->ClearPref(prefs::kAutofillOrphanRowsRemoved);
 }
 
 bool IsAutocompleteEnabled(const PrefService* prefs) {
