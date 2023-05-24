@@ -55,8 +55,6 @@
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
-#include "components/file_access/scoped_file_access.h"
-#include "components/file_access/scoped_file_access_copy.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -154,83 +152,6 @@ std::vector<absl::optional<ino64_t>> GetFilesInodes(
     inodes.push_back(GetInodeValue(file.path()));
   }
   return inodes;
-}
-
-// Maps |file_path| to data_controls::Component if possible.
-absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
-    Profile* profile,
-    const base::FilePath file_path) {
-  if (base::FilePath(file_manager::util::GetAndroidFilesPath())
-          .IsParent(file_path)) {
-    return data_controls::Component::kArc;
-  }
-
-  if (base::FilePath(file_manager::util::kRemovableMediaPath)
-          .IsParent(file_path)) {
-    return data_controls::Component::kUsb;
-  }
-
-  drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  if (integration_service && integration_service->is_enabled() &&
-      integration_service->GetMountPointPath().IsParent(file_path)) {
-    return data_controls::Component::kDrive;
-  }
-
-  if (ash::cloud_upload::CloudUploadDialog::IsODFSMounted(profile)) {
-    auto* service = ash::file_system_provider::Service::Get(profile);
-    auto provider_id =
-        ash::file_system_provider::ProviderId::CreateFromExtensionId(
-            file_manager::file_tasks::GetODFSExtensionId(profile));
-    auto one_drive_file_systems =
-        service->GetProvidedFileSystemInfoList(provider_id);
-    CHECK(one_drive_file_systems.size() == 1);
-
-    if (one_drive_file_systems[0].mount_path().IsParent(file_path)) {
-      return data_controls::Component::kOneDrive;
-    }
-  }
-
-  base::FilePath linux_files =
-      file_manager::util::GetCrostiniMountDirectory(profile);
-  if (linux_files == file_path || linux_files.IsParent(file_path)) {
-    return data_controls::Component::kCrostini;
-  }
-
-  return {};
-}
-
-// Gets the component out of |destination| if possible.
-absl::optional<data_controls::Component> MaybeGetComponent(
-    Profile* profile,
-    const DlpFileDestination& destination) {
-  if (destination.component().has_value()) {
-    return destination.component();
-  }
-  DCHECK(destination.url_or_path().has_value());
-  return MapFilePathtoPolicyComponent(
-      profile, base::FilePath(*destination.url_or_path()));
-}
-
-// Maps |component| to ::dlp::DlpComponent.
-::dlp::DlpComponent MapPolicyComponentToProto(
-    data_controls::Component component) {
-  switch (component) {
-    case data_controls::Component::kUnknownComponent:
-      return ::dlp::DlpComponent::UNKNOWN_COMPONENT;
-    case data_controls::Component::kArc:
-      return ::dlp::DlpComponent::ARC;
-    case data_controls::Component::kCrostini:
-      return ::dlp::DlpComponent::CROSTINI;
-    case data_controls::Component::kPluginVm:
-      return ::dlp::DlpComponent::PLUGIN_VM;
-    case data_controls::Component::kUsb:
-      return ::dlp::DlpComponent::USB;
-    case data_controls::Component::kDrive:
-      return ::dlp::DlpComponent::GOOGLE_DRIVE;
-    case data_controls::Component::kOneDrive:
-      return ::dlp::DlpComponent::MICROSOFT_ONEDRIVE;
-  }
 }
 
 // Returns |g_file_system_context_for_testing| if set, otherwise
@@ -373,94 +294,6 @@ class RootsRecursionDelegate {
 
   base::WeakPtrFactory<RootsRecursionDelegate> weak_ptr_factory_{this};
 };
-
-// This callback is used when we copy a file within the internal filesystem
-// (Downloads / MyFiles). It is called after the source URL of the source file
-// is retrieved. It creates a callback `delayed_add_file` and requests the
-// ScopedFileAccess for the copy operation. To this access token the
-// `delayed_add_file` callback is added so it is called after the copy operation
-// finishes.
-void GotFilesSourcesOfCopy(
-    storage::FileSystemURL destination,
-    ::dlp::RequestFileAccessRequest file_access_request,
-    base::OnceCallback<void(std::unique_ptr<file_access::ScopedFileAccess>)>
-        result_callback,
-    std::vector<DlpFilesControllerAsh::DlpFileMetadata> metadata) {
-  if (metadata.size() == 0) {
-    std::move(result_callback)
-        .Run(std::make_unique<file_access::ScopedFileAccess>(
-            file_access::ScopedFileAccess::Allowed()));
-    return;
-  }
-  DCHECK(metadata.size() == 1);
-  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
-    std::move(result_callback)
-        .Run(std::make_unique<file_access::ScopedFileAccess>(
-            file_access::ScopedFileAccess::Allowed()));
-    return;
-  }
-
-  if (metadata[0].source_url.empty()) {
-    std::move(result_callback)
-        .Run(std::make_unique<file_access::ScopedFileAccess>(
-            file_access::ScopedFileAccess::Allowed()));
-    return;
-  }
-
-  ::dlp::AddFileRequest add_request;
-  add_request.set_file_path(destination.path().value());
-  add_request.set_source_url(metadata[0].source_url);
-
-  // The callback will be invoked with the destruction of the
-  // ScopedFileAccessCopy object
-  base::OnceCallback<void()> delayed_add_file = base::BindPostTask(
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
-      base::BindOnce(
-          [](::dlp::AddFileRequest&& add_request) {
-            // TODO(https://crbug.com/1368497): we might want to use the
-            // callback for error handling.
-            chromeos::DlpClient::Get()->AddFile(add_request, base::DoNothing());
-          },
-          std::move(add_request)));
-
-  chromeos::DlpClient::RequestFileAccessCallback add_file_callback =
-      base::BindOnce(
-          [](base::OnceCallback<void(
-                 std::unique_ptr<file_access::ScopedFileAccess>)>
-                 result_callback,
-             base::OnceCallback<void()> delayed_add_file,
-             const ::dlp::RequestFileAccessResponse response,
-             base::ScopedFD fd) {
-            std::move(result_callback)
-                .Run(std::make_unique<file_access::ScopedFileAccessCopy>(
-                    response.allowed(), base::ScopedFD(),
-                    std::move(delayed_add_file)));
-          },
-          std::move(result_callback), std::move(delayed_add_file));
-
-  chromeos::DlpClient::Get()->RequestFileAccess(file_access_request,
-                                                std::move(add_file_callback));
-}
-
-::dlp::DlpComponent MapPolicyToProtoComponent(
-    data_controls::Component component) {
-  switch (component) {
-    case data_controls::Component::kUnknownComponent:
-      return ::dlp::DlpComponent::UNKNOWN_COMPONENT;
-    case data_controls::Component::kArc:
-      return ::dlp::DlpComponent::ARC;
-    case data_controls::Component::kCrostini:
-      return ::dlp::DlpComponent::CROSTINI;
-    case data_controls::Component::kPluginVm:
-      return ::dlp::DlpComponent::PLUGIN_VM;
-    case data_controls::Component::kUsb:
-      return ::dlp::DlpComponent::USB;
-    case data_controls::Component::kDrive:
-      return ::dlp::DlpComponent::GOOGLE_DRIVE;
-    case data_controls::Component::kOneDrive:
-      return ::dlp::DlpComponent::MICROSOFT_ONEDRIVE;
-  }
-}
 
 // Returns an instance of NotificationDisplayService for the primary profile.
 NotificationDisplayService* GetNotificationDisplayService() {
@@ -649,73 +482,6 @@ void DlpFilesControllerAsh::CheckIfTransferAllowed(
     CheckIfTransferAllowedCallback result_callback) {
   // TODO(b/281043020): Add Implementation.
   std::move(result_callback).Run(/*blocked_entries=*/{});
-}
-
-void DlpFilesControllerAsh::RequestCopyAccess(
-    const storage::FileSystemURL& source_file,
-    const storage::FileSystemURL& destination,
-    base::OnceCallback<void(std::unique_ptr<file_access::ScopedFileAccess>)>
-        result_callback) {
-  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
-    std::move(result_callback)
-        .Run(std::make_unique<file_access::ScopedFileAccess>(
-            file_access::ScopedFileAccess::Allowed()));
-    return;
-  }
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-
-  absl::optional<data_controls::Component> dst_component =
-      MapFilePathtoPolicyComponent(profile, destination.path());
-  absl::optional<data_controls::Component> src_component =
-      MapFilePathtoPolicyComponent(profile, source_file.path());
-  ::dlp::DlpComponent component_proto;
-  if (!src_component.has_value()) {
-    src_component = data_controls::Component::kUnknownComponent;
-  }
-  if (dst_component.has_value()) {
-    component_proto = MapPolicyToProtoComponent(dst_component.value());
-  } else {
-    // Treat non external as system. We want to allow the operation and system
-    // is allowed always
-    component_proto = ::dlp::SYSTEM;
-  }
-
-  // Copy from external is not limited by DLP.
-  if (src_component != data_controls::Component::kUnknownComponent) {
-    std::move(result_callback)
-        .Run(std::make_unique<file_access::ScopedFileAccess>(
-            file_access::ScopedFileAccess::Allowed()));
-    return;
-  }
-
-  ::dlp::RequestFileAccessRequest file_access_request;
-  file_access_request.add_files_paths(source_file.path().value());
-  file_access_request.set_destination_component(component_proto);
-
-  if (component_proto == ::dlp::SYSTEM) {
-    // We allow internal copy, we still have to get the scopedFS
-    // and we might need to copy the source URL information.
-    GetDlpMetadata(
-        {source_file}, /*destination=*/absl::nullopt,
-        base::BindOnce(&GotFilesSourcesOfCopy, destination, file_access_request,
-                       std::move(result_callback)));
-    return;
-  }
-
-  // TODO(http://b/262223235) check for the actual component.
-  file_access_request.set_destination_component(::dlp::SYSTEM);
-
-  chromeos::DlpClient::Get()->RequestFileAccess(
-      file_access_request,
-      base::BindOnce(
-          [](base::OnceCallback<void(
-                 std::unique_ptr<file_access::ScopedFileAccess>)> callback,
-             ::dlp::RequestFileAccessResponse res, base::ScopedFD fd) {
-            std::move(callback).Run(
-                std::make_unique<file_access::ScopedFileAccess>(res.allowed(),
-                                                                std::move(fd)));
-          },
-          std::move(result_callback)));
 }
 
 void DlpFilesControllerAsh::GetDlpMetadata(
@@ -1173,6 +939,51 @@ base::WeakPtr<views::Widget> DlpFilesControllerAsh::GetWarnDialogForTesting() {
   return warn_dialog_widget_;
 }
 
+// Maps |file_path| to data_controls::Component if possible.
+absl::optional<data_controls::Component>
+DlpFilesControllerAsh::MapFilePathtoPolicyComponent(
+    Profile* profile,
+    const base::FilePath& file_path) {
+  if (base::FilePath(file_manager::util::GetAndroidFilesPath())
+          .IsParent(file_path)) {
+    return data_controls::Component::kArc;
+  }
+
+  if (base::FilePath(file_manager::util::kRemovableMediaPath)
+          .IsParent(file_path)) {
+    return data_controls::Component::kUsb;
+  }
+
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  if (integration_service && integration_service->is_enabled() &&
+      integration_service->GetMountPointPath().IsParent(file_path)) {
+    return data_controls::Component::kDrive;
+  }
+
+  if (ash::cloud_upload::CloudUploadDialog::IsODFSMounted(profile)) {
+    auto* service = ash::file_system_provider::Service::Get(profile);
+    auto provider_id =
+        ash::file_system_provider::ProviderId::CreateFromExtensionId(
+            file_manager::file_tasks::GetODFSExtensionId(profile));
+    auto one_drive_file_systems =
+        service->GetProvidedFileSystemInfoList(provider_id);
+    CHECK(one_drive_file_systems.size() == 1);
+
+    if (one_drive_file_systems[0].mount_path().IsParent(file_path)) {
+      return data_controls::Component::kOneDrive;
+    }
+  }
+
+  base::FilePath linux_files =
+      file_manager::util::GetCrostiniMountDirectory(profile);
+  if (linux_files == file_path || linux_files.IsParent(file_path)) {
+    return data_controls::Component::kCrostini;
+  }
+
+  return {};
+}
+
 void DlpFilesControllerAsh::OnDlpWarnDialogReply(
     std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>>
         files_levels,
@@ -1524,6 +1335,18 @@ void DlpFilesControllerAsh::ContinueCheckIfDropAllowed(
                      std::move(result_callback));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(return_drop_allowed_cb));
+}
+
+absl::optional<data_controls::Component>
+DlpFilesControllerAsh::MaybeGetComponent(
+    Profile* profile,
+    const DlpFileDestination& destination) {
+  if (destination.component().has_value()) {
+    return destination.component();
+  }
+  DCHECK(destination.url_or_path().has_value());
+  return MapFilePathtoPolicyComponent(
+      profile, base::FilePath(*destination.url_or_path()));
 }
 
 }  // namespace policy

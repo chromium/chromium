@@ -369,6 +369,8 @@ source_set("chromeos") {
       "policy/dlp/dlp_browser_helper_lacros.h",
       "policy/dlp/dlp_content_manager_lacros.cc",
       "policy/dlp/dlp_content_manager_lacros.h",
+      "policy/dlp/dlp_files_controller_lacros.cc",
+      "policy/dlp/dlp_files_controller_lacros.h",
       "reporting/device_reporting_settings_lacros.cc",
       "reporting/device_reporting_settings_lacros.h",
       "reporting/metric_reporting_manager_lacros.cc",
@@ -465,6 +467,7 @@ source_set("unit_tests") {
     "policy/dlp/dlp_copy_or_move_hook_delegate_unittest.cc",
     "policy/dlp/dlp_drag_drop_notifier_unittest.cc",
     "policy/dlp/dlp_file_access_copy_or_move_delegate_factory_unittest.cc",
+    "policy/dlp/dlp_files_controller_unittest.cc",
     "policy/dlp/dlp_reporting_manager_unittest.cc",
     "policy/dlp/dlp_rules_manager_impl_unittest.cc",
     "policy/dlp/dlp_scoped_file_access_delegate_unittest.cc",
@@ -488,6 +491,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/enterprise/data_controls:data_controls",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sharing/proto",
@@ -524,6 +528,7 @@ source_set("unit_tests") {
     "//extensions/common",
     "//extensions/common:common_constants",
     "//storage/browser",
+    "//storage/browser:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
@@ -598,6 +603,7 @@ source_set("unit_tests") {
 
   if (is_chromeos_lacros) {
     sources += [
+      "policy/dlp/dlp_files_controller_lacros_unittest.cc",
       "reporting/device_reporting_settings_lacros_unittest.cc",
       "reporting/metric_reporting_manager_lacros_unittest.cc",
     ]

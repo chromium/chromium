@@ -11,13 +11,13 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
-#include "components/file_access/scoped_file_access_copy.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -88,30 +88,6 @@ class DlpFilesControllerAsh : public DlpFilesController {
     std::vector<std::string> urls;
     // List of components for which the restriction is enforced.
     std::vector<data_controls::Component> components;
-  };
-
-  // FileDaemonInfo represents file info used for communication with the DLP
-  // daemon.
-  struct FileDaemonInfo {
-    FileDaemonInfo() = delete;
-    FileDaemonInfo(ino64_t inode,
-                   const base::FilePath& path,
-                   const std::string& source_url);
-
-    friend bool operator==(const FileDaemonInfo& a, const FileDaemonInfo& b) {
-      return a.inode == b.inode && a.path == b.path &&
-             a.source_url == b.source_url;
-    }
-    friend bool operator!=(const FileDaemonInfo& a, const FileDaemonInfo& b) {
-      return !(a == b);
-    }
-
-    // File inode.
-    ino64_t inode;
-    // File path.
-    base::FilePath path;
-    // Source URL from which the file was downloaded.
-    GURL source_url;
   };
 
   using GetDisallowedTransfersCallback =
@@ -208,14 +184,6 @@ class DlpFilesControllerAsh : public DlpFilesController {
   // Returns whether a dlp policy matches for the `file`.
   bool IsDlpPolicyMatched(const FileDaemonInfo& file);
 
-  // Requests ScopedFileAccess for |source| for the operation to copy from
-  // |source| to |destination|.
-  virtual void RequestCopyAccess(
-      const storage::FileSystemURL& source,
-      const storage::FileSystemURL& destination,
-      base::OnceCallback<void(std::unique_ptr<file_access::ScopedFileAccess>)>
-          result_callback);
-
   // Checks whether dropping `dropped_files` to `data_dst` is allowed.
   virtual void CheckIfDropAllowed(
       const std::vector<ui::FileInfo>& dropped_files,
@@ -231,6 +199,15 @@ class DlpFilesControllerAsh : public DlpFilesController {
       storage::FileSystemContext* file_system_context);
 
   base::WeakPtr<views::Widget> GetWarnDialogForTesting();
+
+ protected:
+  absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
+      Profile* profile,
+      const base::FilePath& file_path) override;
+
+  // TODO(b/284122497): Cleanup friend for testing.
+  FRIEND_TEST_ALL_PREFIXES(DlpFilesControllerAshComponentsTest,
+                           MapFilePathtoPolicyComponentTest);
 
  private:
   // Called back from warning dialog. Passes blocked files sources along
@@ -304,6 +281,11 @@ class DlpFilesControllerAsh : public DlpFilesController {
       const DlpFileDestination& destination,
       CheckIfDlpAllowedCallback result_callback,
       std::vector<storage::FileSystemURL> dropped_files);
+
+  // Gets the component out of |destination| if possible.
+  absl::optional<data_controls::Component> MaybeGetComponent(
+      Profile* profile,
+      const DlpFileDestination& destination);
 
   // Is used for creating and showing the warning dialog.
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;

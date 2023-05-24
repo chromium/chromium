@@ -18,10 +18,13 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_checker.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_copy.h"
@@ -38,20 +41,21 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
+#endif
 
 namespace policy {
 namespace {
 
 constexpr char kEmailId[] = "test@example.com";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kGaiaId[] = "12345";
-
+#endif
 }  // namespace
 
-class MockController : public DlpFilesControllerAsh {
+class MockController : public DlpFilesController {
  public:
   explicit MockController(const DlpRulesManager& rules_manager)
-      : DlpFilesControllerAsh(rules_manager) {}
+      : DlpFilesController(rules_manager) {}
   MOCK_METHOD(void,
               RequestCopyAccess,
               (const storage::FileSystemURL&,
@@ -59,25 +63,36 @@ class MockController : public DlpFilesControllerAsh {
                base::OnceCallback<
                    void(std::unique_ptr<file_access::ScopedFileAccess>)>),
               (override));
+
+  MOCK_METHOD(absl::optional<data_controls::Component>,
+              MapFilePathtoPolicyComponent,
+              (Profile * profile, const base::FilePath& file_path),
+              (override));
 };
 
 class DlpCopyOrMoveHookDelegateTest : public testing::Test {
  public:
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_profile_ = std::make_unique<TestingProfile>();
+    profile_ = scoped_profile_.get();
     AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
     profile_->SetIsNewProfile(true);
     user_manager::User* user =
         user_manager_->AddUserWithAffiliationAndTypeAndProfile(
             account_id, /*is_affiliated=*/false,
-            user_manager::USER_TYPE_REGULAR, profile_.get());
+            user_manager::USER_TYPE_REGULAR, profile_);
     user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                 /*browser_restart=*/false,
                                 /*is_child=*/false);
     user_manager_->SimulateUserProfileLoad(account_id);
+#else
+    ASSERT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile(kEmailId, true);
+#endif
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        profile_.get(),
+        profile_,
         base::BindRepeating(&DlpCopyOrMoveHookDelegateTest::SetDlpRulesManager,
                             base::Unretained(this)));
     ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
@@ -110,12 +125,17 @@ class DlpCopyOrMoveHookDelegateTest : public testing::Test {
       storage::FileSystemURL::CreateForTest(GURL("destination"));
   std::unique_ptr<MockDlpRulesManager> scoped_manager;
 
-  std::unique_ptr<TestingProfile> profile_;
+  TestingProfile* profile_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<TestingProfile> scoped_profile_;
   raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_{
       new ash::FakeChromeUserManager()};
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_{
       std::make_unique<user_manager::ScopedUserManager>(
           base::WrapUnique(user_manager_.get()))};
+#else
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+#endif
   std::unique_ptr<MockController> controller_;
 };
 
@@ -227,7 +247,7 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileAllowHookDestruct) {
 
 TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileNoManager) {
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      profile_.get(),
+      profile_,
       base::BindRepeating(
           [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
             return nullptr;
@@ -268,5 +288,3 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileNoController) {
 }
 
 }  // namespace policy
-
-#endif

@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller_lacros.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
@@ -659,7 +660,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   src_conditions_.clear();
   dst_conditions_.clear();
   rules_id_metadata_mapping_.clear();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   files_controller_ = nullptr;
 #endif
 
@@ -813,6 +814,10 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (!files_controller_) {
         files_controller_ = std::make_unique<DlpFilesControllerAsh>(*this);
+      }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      if (!files_controller_) {
+        files_controller_ = std::make_unique<DlpFilesControllerLacros>(*this);
       }
 #endif
     } else if (chromeos::DlpClient::Get() &&

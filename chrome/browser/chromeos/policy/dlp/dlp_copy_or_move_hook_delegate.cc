@@ -17,7 +17,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "components/file_access/scoped_file_access.h"
@@ -29,7 +29,6 @@
 namespace policy {
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void GotAccess(base::WeakPtr<DlpCopyOrMoveHookDelegate> hook_delegate,
                const storage::FileSystemURL& source,
                const storage::FileSystemURL& destination,
@@ -51,7 +50,6 @@ void GotAccess(base::WeakPtr<DlpCopyOrMoveHookDelegate> hook_delegate,
     std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
   }
 }
-#endif
 
 void RequestCopyAccess(base::WeakPtr<DlpCopyOrMoveHookDelegate> hook_delegate,
                        const storage::FileSystemURL& source,
@@ -59,18 +57,14 @@ void RequestCopyAccess(base::WeakPtr<DlpCopyOrMoveHookDelegate> hook_delegate,
                        DlpCopyOrMoveHookDelegate::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-// TODO(http://b/259183766): We might need to consider the lacros case,
-// too.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   DlpRulesManager* dlp_rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!dlp_rules_manager) {
     std::move(callback).Run(base::File::FILE_OK);
     return;
   }
-  DlpFilesControllerAsh* dlp_files_controller =
-      static_cast<DlpFilesControllerAsh*>(
-          dlp_rules_manager->GetDlpFilesController());
+  DlpFilesController* dlp_files_controller =
+      dlp_rules_manager->GetDlpFilesController();
   if (!dlp_files_controller) {
     std::move(callback).Run(base::File::FILE_OK);
     return;
@@ -79,9 +73,6 @@ void RequestCopyAccess(base::WeakPtr<DlpCopyOrMoveHookDelegate> hook_delegate,
       source, destination,
       base::BindOnce(&policy::GotAccess, hook_delegate, source, destination,
                      std::move(callback)));
-#else
-  NOTREACHED();
-#endif
 }
 
 }  // namespace
