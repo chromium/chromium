@@ -55,11 +55,11 @@ export class CertificatePasswordDecryptionDialogElement extends
     this.$.dialog.showModal();
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onOkTap_() {
+  private onOkClick_() {
     CertificatesBrowserProxyImpl.getInstance()
         .importPersonalCertificatePasswordSelected(this.password_)
         .then(

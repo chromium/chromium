@@ -84,11 +84,11 @@ export class CaTrustEditDialogElement extends CaTrustEditDialogElementBase {
     }
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onOkTap_() {
+  private onOkClick_() {
     this.$.spinner.active = true;
 
     const whenDone = (this.model as CertificateSubnode).id ?

@@ -147,12 +147,12 @@ export class CertificateListElement extends CertificateListElementBase {
     }));
   }
 
-  private onImportTap_(e: Event) {
+  private onImportClick_(e: Event) {
     this.handleImport_(false, e.target as HTMLElement);
   }
 
   // <if expr="is_chromeos">
-  private onImportAndBindTap_(e: Event) {
+  private onImportAndBindClick_(e: Event) {
     this.handleImport_(true, e.target as HTMLElement);
   }
   // </if>

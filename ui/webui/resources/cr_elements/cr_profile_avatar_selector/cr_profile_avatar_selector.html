@@ -94,7 +94,7 @@
             "avatar-container [[getSelectedClass_(item, selectedAvatar)]]">
           <cr-button id="[[getAvatarId_(index)]]" aria-label="[[item.label]]"
               tabindex$="[[getTabIndex_(index, item, tabFocusableAvatar_)]]"
-              class="avatar" on-click="onAvatarTap_" role="radio"
+              class="avatar" on-click="onAvatarClick_" role="radio"
               style$="background-image: [[getIconImageSet_(item.url)]]"
               aria-checked$="[[getCheckedAttribute_(item, selectedAvatar)]]">
           </cr-button>

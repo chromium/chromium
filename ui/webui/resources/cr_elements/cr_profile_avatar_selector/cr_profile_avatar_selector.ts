@@ -124,7 +124,7 @@ export class CrProfileAvatarSelectorElement extends PolymerElement {
     return getImage(iconUrl);
   }
 
-  private onAvatarTap_(e: DomRepeatEvent<AvatarIcon>) {
+  private onAvatarClick_(e: DomRepeatEvent<AvatarIcon>) {
     // |selectedAvatar| is set to pass back selection to the owner of this
     // component.
     this.selectedAvatar = e.model.item;
