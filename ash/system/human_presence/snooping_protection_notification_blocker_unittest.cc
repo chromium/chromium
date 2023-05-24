@@ -194,7 +194,7 @@ class SnoopingProtectionNotificationBlockerTest : public AshTestBase {
               {"SnoopingProtection_positive_score_threshold", "0"},
               {"SnoopingProtection_negative_score_threshold", "0"},
           }}},
-        {ash::features::kQuickDim});
+        {ash::features::kQuickDim, ash::features::kQsRevamp});
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kHasHps);
   }

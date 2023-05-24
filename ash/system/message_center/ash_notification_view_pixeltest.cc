@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/models/image_model.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
@@ -211,14 +212,23 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
 
 class ScreenCaptureNotificationPixelTest
     : public AshNotificationViewPixelTestBase,
-      public testing::WithParamInterface<DisplayType> {
+      public testing::WithParamInterface<
+          std::tuple<bool /*IsQsRevampEnabled()*/, DisplayType>> {
  public:
   // AshNotificationViewPixelTestBase:
   void SetUp() override {
+    std::vector<base::test::FeatureRef> features = {features::kQsRevamp,
+                                                    chromeos::features::kJelly};
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    (std::get<0>(GetParam()) ? enabled_features : disabled_features)
+        .swap(features);
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
     AshNotificationViewPixelTestBase::SetUp();
 
     // Change the display size depending on the test param.
-    switch (GetParam()) {
+    switch (GetDisplayType()) {
       case DisplayType::kNormal:
         break;
       case DisplayType::kUltraWidth:
@@ -243,16 +253,23 @@ class ScreenCaptureNotificationPixelTest
     AshNotificationViewPixelTestBase::TearDown();
   }
 
+  bool IsQsRevampEnabled() const { return std::get<0>(GetParam()); }
+
+  const DisplayType& GetDisplayType() const { return std::get<1>(GetParam()); }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<aura::Window> window1_;
   std::unique_ptr<aura::Window> window2_;
 };
 
-INSTANTIATE_TEST_SUITE_P(DisplaySize,
-                         ScreenCaptureNotificationPixelTest,
-                         testing::ValuesIn({DisplayType::kNormal,
-                                            DisplayType::kUltraWidth,
-                                            DisplayType::kUltraHeight}));
+INSTANTIATE_TEST_SUITE_P(
+    DisplaySize,
+    ScreenCaptureNotificationPixelTest,
+    testing::Combine(/*IsQsRevampEnabled()=*/testing::Bool(),
+                     testing::ValuesIn({DisplayType::kNormal,
+                                        DisplayType::kUltraWidth,
+                                        DisplayType::kUltraHeight})));
 
 // Verifies the notification popup of a full screenshot.
 TEST_P(ScreenCaptureNotificationPixelTest, VerifyPopup) {
@@ -270,7 +287,7 @@ TEST_P(ScreenCaptureNotificationPixelTest, VerifyPopup) {
   // Get the notification view.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"screen_capture_popup_notification_",
-                    GetDisplayTypeName(GetParam())}),
+                    GetDisplayTypeName(GetDisplayType())}),
       /*revision_number=*/1,
       test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
