@@ -2788,9 +2788,6 @@ extern const char kMediaFoundationClearDescription[];
 extern const char kRawAudioCaptureName[];
 extern const char kRawAudioCaptureDescription[];
 
-extern const char kFakeAudioCaptureTimestamps[];
-extern const char kFakeAudioCaptureTimestampsDescription[];
-
 extern const char kRunVideoCaptureServiceInBrowserProcessName[];
 extern const char kRunVideoCaptureServiceInBrowserProcessDescription[];
 

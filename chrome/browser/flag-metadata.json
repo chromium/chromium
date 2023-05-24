@@ -3825,11 +3825,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "fake-audio-capture-timestamps",
-    "owners": [ "henrika@google.com", "video-cmi-mpp@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "fast-checkout",
     "owners": [ "vizcay@google.com", "bwolfgang@google.com", "jkeitel@google.com" ],
     "expiry_milestone": 118

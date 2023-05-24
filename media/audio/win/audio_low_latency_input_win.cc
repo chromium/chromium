@@ -56,6 +56,11 @@ constexpr char kUwpDeviceIdPrefix[] = "\\\\?\\SWD#MMDEVAPI#";
 
 constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0;
 
+// Max allowed absolute difference between a QPC-based timestamp and a default
+// base::TimeTicks::Now() timestamp before switching to fake audio timestamps.
+constexpr base::TimeDelta kMaxAbsTimeDiffBeforeSwithingToFakeTimestamps =
+    base::Milliseconds(500);
+
 // Converts a COM error into a human-readable string.
 std::string ErrorToString(HRESULT hresult) {
   return CoreAudioUtil::ErrorToString(hresult);
@@ -412,13 +417,6 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
       // stats when the stream is closed.
       GetAudioCaptureEffects(uwp_device_id);
     }
-  }
-
-  use_fake_audio_capture_timestamps_ =
-      base::FeatureList::IsEnabled(media::kUseFakeAudioCaptureTimestamps);
-  if (use_fake_audio_capture_timestamps_) {
-    SendLogMessage("%s => (WARNING: capture timestamps will be fake)",
-                   __func__);
   }
 
   // Obtain an IAudioClient interface which enables us to create and initialize
@@ -864,6 +862,30 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
                  << " => (ERROR: IAudioCaptureClient::GetBuffer=["
                  << ErrorToString(hr).c_str() << "])";
       return;
+    }
+
+    // Check if QPC-based timestamps provided by IAudioCaptureClient::GetBuffer
+    // can be used for audio timestamps or not. If not, base::TimeTicks::Now()
+    // will be used instead to generate the timestamps (called "fake" here). In
+    // the majority of cases, fake timestamps will not be utilized and the
+    // difference in `delta_time` below will be about the same size as the
+    // native buffer size (e.g. 10 msec).
+    // http://crbug.com/1439283 for details why this check is needed.
+    if (!use_fake_audio_capture_timestamps_.has_value()) {
+      base::TimeDelta delta_time =
+          base::TimeTicks::Now() -
+          base::TimeTicks::FromQPCValue(capture_time_100ns);
+      use_fake_audio_capture_timestamps_ =
+          (delta_time.magnitude() >
+           kMaxAbsTimeDiffBeforeSwithingToFakeTimestamps);
+      if (use_fake_audio_capture_timestamps_) {
+        SendLogMessage("%s => (WARNING: capture timestamps will be fake)",
+                       __func__);
+      }
+      TRACE_EVENT_INSTANT1("audio", "Audio Timestamps",
+                           TRACE_EVENT_SCOPE_THREAD,
+                           "use_fake_audio_capture_timestamps",
+                           use_fake_audio_capture_timestamps_.value());
     }
 
     // The data in the packet is not correlated with the previous packet's
