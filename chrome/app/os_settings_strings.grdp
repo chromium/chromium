@@ -1130,6 +1130,9 @@
   <message name="IDS_SETTINGS_STICKY_KEYS_DESCRIPTION" desc="Label for checkbox which enables sticky keys, with an explanation of the term 'sticky keys'.">
     Press one key at a time for keyboard shortcuts instead of holding keys down at the same time
   </message>
+  <message name="IDS_SETTINGS_STICKY_KEYS_DISABLED_BY_CHROMEVOX_TOOLTIP" desc="Tooltip text which explains that the Sticky keys feature cannot be enabled when ChromeVox is on. Shown next to the disabled Sticky keys toggle when ChromeVox has been enabled.">
+    Sticky keys is not available when ChromeVox is on
+  </message>
   <message name="IDS_SETTINGS_CHROMEVOX_LABEL" desc="Label for checkbox which enables ChromeVox, with a description of what ChromeVox is.">
     ChromeVox
   </message>
@@ -1530,6 +1533,9 @@ Use Ctrl + Alt + Brightness down to zoom out.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_FOCUS_HIGHLIGHT_DESCRIPTION_SUBTEXT" desc="In the settings tab, the subtext next to the checkbox to highlight the focused object to make it easier to see.">
     Item is highlighted when you move focus. Press tab or select an item to change focus.
+  </message>
+    <message name="IDS_SETTINGS_FOCUS_HIGHLIGHT_DISABLED_BY_CHROMEVOX_TOOLTIP" desc="Tooltip text which explains that the 'Highlight the item with keyboard focus' feature cannot be enabled when ChromeVox is on. Shown next to the disabled 'Highlight the item with keyboard focus' toggle when ChromeVox has been enabled.">
+    Highlight the item with keyboard focus is not available when ChromeVox is on
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_TITLE" desc="In the settings tab, the text next to the checkbox to enable an option to hold a key and click to speak any on-screen text out loud.">
     Select-to-speak

@@ -349,10 +349,7 @@ void AccessibilityDetailedView::AddEnabledFeatures(views::View* container) {
       controller->cursor_highlight().enabled()) {
     highlight_mouse_cursor_top_view_ = AddHighlightMouseCursorView(container);
   }
-  // Focus highlighting can't be on when spoken feedback is on because
-  // ChromeVox does its own focus highlighting.
-  if (!controller->spoken_feedback().enabled() &&
-      controller->IsFocusHighlightSettingVisibleInTray() &&
+  if (controller->IsFocusHighlightSettingVisibleInTray() &&
       controller->focus_highlight().enabled()) {
     highlight_keyboard_focus_top_view_ =
         AddHighlightKeyboardFocusView(container);
@@ -438,10 +435,8 @@ void AccessibilityDetailedView::AddAllFeatures(views::View* container) {
   if (controller->IsCursorHighlightSettingVisibleInTray()) {
     highlight_mouse_cursor_view_ = AddHighlightMouseCursorView(container);
   }
-  // Focus highlighting can't be on when spoken feedback is on because
-  // ChromeVox does its own focus highlighting.
-  if (!controller->spoken_feedback().enabled() &&
-      controller->IsFocusHighlightSettingVisibleInTray()) {
+
+  if (controller->IsFocusHighlightSettingVisibleInTray()) {
     highlight_keyboard_focus_view_ = AddHighlightKeyboardFocusView(container);
   }
 

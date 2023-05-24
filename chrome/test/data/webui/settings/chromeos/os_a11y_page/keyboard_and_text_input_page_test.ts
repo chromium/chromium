@@ -244,22 +244,26 @@ suite('<settings-keyboard-and-text-input-page>', () => {
     {
       id: 'stickyKeysToggle',
       prefKey: 'settings.a11y.sticky_keys_enabled',
+      cvoxTooltipId: 'stickyKeysDisabledTooltip',
     },
     {
       id: 'focusHighlightToggle',
       prefKey: 'settings.a11y.focus_highlight',
+      cvoxTooltipId: 'focusHighlightDisabledTooltip',
     },
     {
       id: 'caretHighlightToggle',
       prefKey: 'settings.a11y.caret_highlight',
+      cvoxTooltipId: '',
     },
     {
       id: 'caretBrowsingToggle',
       prefKey: 'settings.a11y.caretbrowsing.enabled',
+      cvoxTooltipId: '',
     },
   ];
 
-  settingsToggleButtons.forEach(({id, prefKey}) => {
+  settingsToggleButtons.forEach(({id, prefKey, cvoxTooltipId}) => {
     test(`Accessibility toggle button syncs to prefs: ${id}`, async () => {
       await initPage();
       // Find the toggle and ensure that it's:
@@ -279,6 +283,27 @@ suite('<settings-keyboard-and-text-input-page>', () => {
       assertTrue(toggle.checked);
       pref = page.getPref(prefKey);
       assertTrue(pref.value);
+
+      if (cvoxTooltipId === '') {
+        return;
+      }
+
+      const disabledTooltipIcon =
+          page.shadowRoot!.querySelector(`#${cvoxTooltipId}`);
+      assert(disabledTooltipIcon);
+      assertFalse(isVisible(disabledTooltipIcon));
+
+      // Turn on ChromeVox.
+      page.setPrefValue('settings.accessibility', true);
+      assertTrue(toggle.disabled);
+      assertTrue(isVisible(disabledTooltipIcon));
+      assertFalse(toggle.checked);
+
+      // Turn off ChromeVox again.
+      page.setPrefValue('settings.accessibility', false);
+      assertFalse(toggle.disabled);
+      assertFalse(isVisible(disabledTooltipIcon));
+      assertTrue(toggle.checked);
     });
   });
 });
