@@ -16,7 +16,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -353,9 +352,7 @@ class OpenURLsPopupObserver : public BrowserListObserver {
 
   void OnBrowserRemoved(Browser* browser) override {}
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION Browser* added_browser_ = nullptr;
+  raw_ptr<Browser> added_browser_ = nullptr;
 };
 
 // Test that when there is a popup as the active browser any requests to

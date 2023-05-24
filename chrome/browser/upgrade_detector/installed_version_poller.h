@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -93,9 +93,7 @@ class InstalledVersionPoller {
                           InstalledAndCriticalVersion installed_version);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION BuildState* const build_state_;
+  raw_ptr<BuildState> const build_state_;
   const GetInstalledVersionCallback get_installed_version_;
   base::OneShotTimer timer_;
 
