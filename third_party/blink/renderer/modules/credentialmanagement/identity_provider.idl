@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 [
-    SecureContext,
     RuntimeEnabled=FedCmUserInfo
 ] dictionary IdentityUserInfo {
   USVString email;
