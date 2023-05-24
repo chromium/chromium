@@ -213,6 +213,28 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 #endif
 }
 
+// Verifies that the incognito window frame is always the right color.
+IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
+                       IncognitoIsCorrectColor) {
+  // Set the color that's expected to be ignored.
+  auto* theme = ui::NativeTheme::GetInstanceForNativeUi();
+  theme->set_user_color(gfx::kGoogleBlue400);
+  theme->NotifyOnNativeThemeUpdated();
+
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+
+  BrowserView* view = BrowserView::GetBrowserViewForBrowser(incognito_browser);
+  BrowserFrame* frame = view->frame();
+  BrowserNonClientFrameView* frame_view = frame->GetFrameView();
+
+  // Checking the exact color is brittle but there's no better way to ensure
+  // that it's not overridden by accident.
+  EXPECT_EQ(gfx::kGoogleGrey900,
+            frame_view->GetFrameColor(BrowserFrameActiveState::kActive));
+
+  incognito_browser->window()->Close();
+}
+
 // Checks that the title bar for hosted app windows is hidden when in fullscreen
 // for tab mode.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
