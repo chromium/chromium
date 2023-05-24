@@ -141,19 +141,34 @@ String DeferredImageDecoder::FilenameExtension() const {
 }
 
 sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator A %d %s",
+      complete_frame_content_id_, FilenameExtension().Utf8().c_str());
   if (frame_generator_ && frame_generator_->DecodeFailed())
     return nullptr;
+
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator B %d",
+      invalid_image_);
 
   if (invalid_image_ || frame_data_.empty())
     return nullptr;
 
   DCHECK(frame_generator_);
   const SkISize& decoded_size = frame_generator_->GetFullSize();
+
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator C %d %d",
+      decoded_size.width(), decoded_size.height());
+
   DCHECK_GT(decoded_size.width(), 0);
   DCHECK_GT(decoded_size.height(), 0);
 
   scoped_refptr<SegmentReader> segment_reader =
       parkable_image_->MakeROSnapshot();
+
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator D");
 
   SkImageInfo info =
       SkImageInfo::MakeN32(decoded_size.width(), decoded_size.height(),
@@ -166,6 +181,9 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
     frames[i].complete = frame_data_[i].is_received_;
     frames[i].duration = FrameDurationAtIndex(i);
   }
+
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator E");
 
   // Report UMA about whether incremental decoding is done for JPEG/WebP images.
   const String image_type = FilenameExtension();
@@ -192,11 +210,17 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
   image_metadata_->all_data_received_prior_to_decode =
       !incremental_decode_needed_.value();
 
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator F");
+
   auto generator = DecodingImageGenerator::Create(
       frame_generator_, info, std::move(segment_reader), std::move(frames),
       complete_frame_content_id_, all_data_received_, can_yuv_decode_,
       *image_metadata_);
   first_decoding_generator_created_ = true;
+
+  recordreplay::Assert(
+      "[RUN-1975-2036] DeferredImageDecoder::CreateGenerator G");
 
   return generator;
 }

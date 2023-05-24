@@ -120,10 +120,18 @@ PaintImage BitmapImage::PaintImageForTesting() {
 }
 
 PaintImage BitmapImage::CreatePaintImage() {
+  recordreplay::Assert("[RUN-1975-2036] BitmapImage::CreatePaintImage A %u %d",
+                       reset_animation_sequence_id_, !!decoder_);
   sk_sp<PaintImageGenerator> generator =
       decoder_ ? decoder_->CreateGenerator() : nullptr;
+
+  recordreplay::Assert("[RUN-1975-2036] BitmapImage::CreatePaintImage B");
+
   if (!generator)
     return PaintImage();
+
+  recordreplay::Assert("[RUN-1975-2036] BitmapImage::CreatePaintImage C %d",
+                       all_data_received_);
 
   auto completion_state = all_data_received_
                               ? PaintImage::CompletionState::DONE
@@ -137,6 +145,8 @@ PaintImage BitmapImage::CreatePaintImage() {
           .set_completion_state(completion_state)
           .set_reset_animation_sequence_id(reset_animation_sequence_id_);
 
+  recordreplay::Assert("[RUN-1975-2036] BitmapImage::CreatePaintImage D %d",
+                       all_data_received_);
   return builder.TakePaintImage();
 }
 

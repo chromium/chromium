@@ -302,7 +302,7 @@ PaintResult PaintLayerPainter::PaintChildren(
     GraphicsContext& context,
     PaintFlags paint_flags) {
   PaintResult result = kFullyPainted;
-  recordreplay::Assert("[RUN-1974-2008] PaintLayerPainter::PaintChildren A");
+  recordreplay::Assert("[RUN-1975-2008] PaintLayerPainter::PaintChildren A");
   if (!paint_layer_.HasSelfPaintingLayerDescendant())
     return result;
 
@@ -312,7 +312,7 @@ PaintResult PaintLayerPainter::PaintChildren(
   PaintLayerPaintOrderIterator iterator(&paint_layer_, children_to_visit);
   while (PaintLayer* child = iterator.Next()) {
     recordreplay::Assert(
-        "[RUN-1974-2008] PaintLayerPainter::PaintChildren B %d %d",
+        "[RUN-1975-2008] PaintLayerPainter::PaintChildren B %d %d",
         child->OwnerNodeId(), child->EnclosingNode()->RecordReplayId());
     if (child->IsReplacedNormalFlowStacking())
       continue;
@@ -337,7 +337,7 @@ PaintResult PaintLayerPainter::PaintChildren(
     }
   }
   recordreplay::Assert(
-      "[RUN-1974-2008] PaintLayerPainter::PaintChildren C");
+      "[RUN-1975-2008] PaintLayerPainter::PaintChildren C");
 
   return result;
 }

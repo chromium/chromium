@@ -4,6 +4,8 @@
 
 #include "cc/paint/paint_image_builder.h"
 
+#include "base/record_replay.h"
+
 namespace cc {
 
 // static
@@ -77,6 +79,9 @@ PaintImage PaintImageBuilder::TakePaintImage() {
       DCHECK_GT(frame.duration, base::TimeDelta());
   }
 #endif
+
+  recordreplay::Assert("[RUN-1975-2036] PaintImageBuilder::TakePaintImage %d",
+                       !!paint_image_.cached_sk_image_);
 
   // We may already have a cached_sk_image_ if this builder was created with a
   // copy.
