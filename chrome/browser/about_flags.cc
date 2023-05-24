@@ -7603,6 +7603,10 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"use-client-gmb-interface", flag_descriptions::kUseClientGmbInterfaceName,
+     flag_descriptions::kUseClientGmbInterfaceDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kUseClientGmbInterface)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"use-toast-manager", flag_descriptions::kUseToastManagerName,
      flag_descriptions::kUseToastManagerDescription, kOsAndroid,

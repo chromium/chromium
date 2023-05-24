@@ -376,6 +376,13 @@ BASE_FEATURE(kUseGpuSchedulerDfs,
              "UseGpuSchedulerDfs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use the ClientGmb interface to create GpuMemoryBuffers. This is supposed to
+// reduce number of IPCs happening while creating GpuMemoryBuffers by allowing
+// Renderers to do IPC directly to GPU process.
+BASE_FEATURE(kUseClientGmbInterface,
+             "UseClientGmbInterface",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable YUV<->RGB conversion for video clients through passthrough command
 // decoder.
 BASE_FEATURE(kPassthroughYuvRgbConversion,

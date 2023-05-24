@@ -168,6 +168,9 @@ extern const char kForceGpuMainThreadToNormalPriorityDrDcDescription[];
 
 extern const char kEnableDrDcVulkanName[];
 
+extern const char kUseClientGmbInterfaceName[];
+extern const char kUseClientGmbInterfaceDescription[];
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kWebFilterInterstitialRefreshName[];
 extern const char kWebFilterInterstitialRefreshDescription[];

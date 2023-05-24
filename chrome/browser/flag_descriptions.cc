@@ -243,6 +243,13 @@ const char kForceGpuMainThreadToNormalPriorityDrDcDescription[] =
     "hence have higher thread priority than GPU main. Note that this flag will "
     "be a no-op when DrDc is disabled.";
 
+const char kUseClientGmbInterfaceName[] =
+    "Use ClientGmb interface to create GpuMemoryBuffers.";
+const char kUseClientGmbInterfaceDescription[] =
+    " Use new ClientGmb interface to create GpuMemoryBuffers when enabled."
+    " This is expected to reduce number of IPCs happening while creating "
+    " GpuMemoryBuffers.";
+
 const char kTextBasedAudioDescriptionName[] = "Enable audio descriptions.";
 const char kTextBasedAudioDescriptionDescription[] =
     "When enabled, HTML5 video elements with a 'descriptions' WebVTT track "

@@ -61085,6 +61085,7 @@ from previous Chrome versions.
   <int value="-899393472" label="enable-new-app-menu-icon"/>
   <int value="-899334103" label="disable-fast-text-autosizing"/>
   <int value="-899265865" label="DismissNtpPromos:disabled"/>
+  <int value="-898653891" label="UseClientGmbInterface:disabled"/>
   <int value="-898594349" label="ash-enable-stable-overview-order"/>
   <int value="-898499262" label="ImprovedA2HS:enabled"/>
   <int value="-898005938" label="disable-pinch-virtual-viewport"/>
@@ -63867,6 +63868,7 @@ from previous Chrome versions.
   <int value="588333474" label="OfflineIndicator:disabled"/>
   <int value="589394614" label="OmniboxSuggestionButtonRow:enabled"/>
   <int value="589924262" label="CryptAuthV2DeviceActivityStatus:enabled"/>
+  <int value="591007879" label="UseClientGmbInterface:enabled"/>
   <int value="592050831" label="disable-slimming-paint"/>
   <int value="593707592" label="disable-network-portal-notification"/>
   <int value="594756372" label="MyFilesVolume:disabled"/>
