@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
@@ -103,9 +102,7 @@ class FakeDownloadDisplay : public DownloadDisplay {
   bool is_active_ = false;
   bool detail_shown_ = false;
   bool is_fullscreen_ = false;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION DownloadDisplayController* controller_ = nullptr;
+  raw_ptr<DownloadDisplayController> controller_ = nullptr;
 };
 
 // TODO(chlily): Pull this and the very similar class in
