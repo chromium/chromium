@@ -501,6 +501,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   //    ApplyMinimumDimensions(x).height >= x.height
   void ApplyMinimumDimensions(MenuItemDimensions* dims) const;
 
+  // Returns the earliest horizontal position where content may appear.
+  int GetContentStart() const;
+
   // Get the horizontal position at which to draw the menu item's label.
   int GetLabelStartForThisItem() const;
 

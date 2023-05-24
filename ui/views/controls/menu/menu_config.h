@@ -153,9 +153,6 @@ struct VIEWS_EXPORT MenuConfig {
   // Whether the keyboard accelerators are visible.
   bool show_accelerators = true;
 
-  // True if icon to label padding is always added with or without icon.
-  bool always_use_icon_to_label_padding = false;
-
   // True if submenu arrow and shortcut right edge should be aligned.
   bool align_arrow_and_shortcut = false;
 
