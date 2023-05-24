@@ -189,6 +189,26 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
 
     return std::move(test_image_backing);
   }
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      std::string debug_label,
+      gfx::GpuMemoryBufferHandle handle) override {
+    auto test_image_backing = std::make_unique<TestImageBacking>(
+        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+        0);
+
+    // If the backing is not cleared, SkiaImageRepresentation errors out
+    // when trying to create the scoped read access.
+    test_image_backing->SetCleared();
+
+    return std::move(test_image_backing);
+  }
   bool IsSupported(uint32_t usage,
                    viz::SharedImageFormat format,
                    const gfx::Size& size,
