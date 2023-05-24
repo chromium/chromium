@@ -1238,9 +1238,9 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.Prerender.ActivationCommitDeferTime" units="ms"
-    expires_after="2023-06-04">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
+    expires_after="2023-11-23">
+  <owner>nhiroki@chromium.org</owner>
+  <owner>chrome-prerendering@chromium.org</owner>
   <summary>
     Measures time a PrerenderCommitDeferringCondition defers activation waiting
     to commit an ongoing mainframe prerender navigation. Logged every time a
