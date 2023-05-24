@@ -928,6 +928,11 @@ void SafeBrowsingNavigationObserverManager::RemoveSafeBrowsingAllowlistDomains(
     ReferrerChain* out_referrer_chain) {
   bool is_url_removed_by_policy = false;
   for (ReferrerChainEntry& entry : *out_referrer_chain) {
+    // entry can be empty if it is removed in
+    // MaybeRemoveNonUserGestureReferrerEntries.
+    if (!entry.has_url()) {
+      continue;
+    }
     if (IsURLAllowlistedByPolicy(GURL(entry.url()), *pref_service_)) {
       entry.clear_url();
       is_url_removed_by_policy = true;

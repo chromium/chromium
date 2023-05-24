@@ -3755,6 +3755,8 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
                            std::vector<GURL>(),  // server redirects
                            ReferrerChainEntry::UNDEFINED,
                            referrer_chain.Get(1));
+  // The is_url_removed_by_policy field should not be set on empty entry.
+  EXPECT_FALSE(referrer_chain.Get(1).has_is_url_removed_by_policy());
   VerifyReferrerChainEntry(
       redirect_url,                           // url
       GURL(),                                 // main_frame_url
