@@ -18,6 +18,7 @@ from typing import (
     NamedTuple,
     Optional,
     Set,
+    Tuple,
     TypedDict,
 )
 from urllib.parse import urlsplit
@@ -85,14 +86,13 @@ class WPTResult(Result):
         super().__init__(*args, **kwargs)
         self.messages = []
         self._test_section = wptnode.DataNode(_test_basename(self.name))
-        self.has_expected_fail = False
 
     def _add_expected_status(self, section: wptnode.DataNode, status: str):
         expectation = wptnode.KeyValueNode('expected')
         expectation.append(wptnode.ValueNode(status))
         section.append(expectation)
 
-    def _maybe_set_statuses(self, actual: str, unexpected: bool):
+    def _maybe_set_statuses(self, status: str, expected: Set[str]):
         """Set this result's actual/expected statuses.
 
         A `testharness.js` test may have subtests with their own statuses and
@@ -105,12 +105,29 @@ class WPTResult(Result):
         latest status. The order tiebreaker ensures a test-level status
         overrides a subtest-level status when they have the same priority.
         """
-        priority = (self._status_priority.index(actual), unexpected)
+        unexpected = status not in expected
+        actual = self._wptrunner_to_chromium_statuses[status]
+        expected = {
+            self._wptrunner_to_chromium_statuses[status]
+            for status in expected
+        }
+        # Converting wptrunner to ResultDB statuses is lossy, so it's possible
+        # for the wptrunner result to be unexpected, but ResultDB status
+        # `actual` maps to a member of `expected`. Removing the common status
+        # forces `typ` to report this test result as unexpected.
+        if unexpected:
+            expected.discard(actual)
         # pylint: disable=access-member-before-definition
         # `actual` and `unexpected` are set in `Result`'s constructor.
-        if priority > (self._status_priority.index(
-                self.actual), self.unexpected):
-            self.actual, self.unexpected = actual, unexpected
+        priority = self._result_priority(actual, unexpected)
+        if priority >= self._result_priority(self.actual, self.unexpected):
+            self.actual, self.expected = actual, expected
+            self.unexpected = unexpected
+
+    def _result_priority(self, status: str,
+                         unexpected: bool) -> Tuple[bool, bool, int]:
+        incomplete = status in {ResultType.Timeout, ResultType.Crash}
+        return (incomplete, unexpected, self._status_priority.index(status))
 
     def update_from_subtest(self,
                             subtest: str,
@@ -123,21 +140,12 @@ class WPTResult(Result):
         self._add_expected_status(subtest_section, status)
         self._test_section.append(subtest_section)
 
+        # Any result against a subtest not expected to run is considered an
+        # unexpected pass (and therefore won't cause a build failure).
+        if status != 'NOTRUN' and 'NOTRUN' in expected:
+            status = 'PASS'
         # Tentatively promote "interesting" statuses to the test level.
-        # Rules for promoting subtest status to test level:
-        #     Any result against 'NOTRUN' is an unexpected pass.
-        #     'NOTRUN' against other expected results is an unexpected failure.
-        #     Expected results only come from test level expectations
-        #     Only promote subtest status when run unexpected.
-        #     Exception: report expected failure if all subtest failures are expected.
-        unexpected = status not in expected
-        actual = (ResultType.Pass if 'NOTRUN' in expected else
-                  self._wptrunner_to_chromium_statuses[status])
-        self.has_expected_fail = (self.has_expected_fail
-                                  or actual == ResultType.Failure
-                                  and not unexpected)
-        if unexpected:
-            self._maybe_set_statuses(actual, unexpected)
+        self._maybe_set_statuses(status, expected)
 
     def update_from_test(self,
                          status: str,
@@ -146,21 +154,7 @@ class WPTResult(Result):
         if message:
             self.messages.insert(0, 'Harness: %s\n' % message)
         self._add_expected_status(self._test_section, status)
-
-        unexpected = status not in expected
-        actual = self._wptrunner_to_chromium_statuses[status]
-        self.expected = {
-            self._wptrunner_to_chromium_statuses[status]
-            for status in expected
-        }
-        self._maybe_set_statuses(actual, unexpected)
-
-        # Report expected failure instead of expected pass when there are
-        # expected subtest failures.
-        if (self.actual == ResultType.Pass and not self.unexpected
-                and self.has_expected_fail):
-            self.actual = ResultType.Failure
-            self.expected = {ResultType.Failure}
+        self._maybe_set_statuses(status, expected)
 
     @property
     def actual_metadata(self):
