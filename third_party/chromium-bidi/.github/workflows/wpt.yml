@@ -7,6 +7,20 @@ on:
   pull_request:
   push:
     branches: 'main'
+  workflow_dispatch:
+    inputs:
+      # TODO(#361): Use.
+      auto-commit:
+        description: Whether to auto-commit WPT expectations
+        default: false
+        required: false
+        type: boolean
+      # TODO(#361): Use.
+      verbose:
+        description: Whether to enable verbose logging
+        default: false
+        required: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
