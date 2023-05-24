@@ -5219,6 +5219,7 @@ if (is_chromeos_lacros) {
       "//ui/gfx/codec",
       "//ui/ozone",
       "//ui/platform_window",
+      "//ui/strings:ui_strings_grit",
     ]
 
     if (use_cups) {

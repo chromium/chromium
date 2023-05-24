@@ -5,8 +5,11 @@
 #include "chrome/browser/lacros/views_text_services_context_menu_lacros.h"
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/lacros/clipboard_history_lacros.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -49,8 +52,23 @@ ViewsTextServicesContextMenuLacros::ViewsTextServicesContextMenuLacros(
     return;
 
   const size_t target_index = paste_index.value() + 1;
-  menu->InsertItemAt(target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,
-                     l10n_util::GetStringUTF16(IDS_APP_SHOW_CLIPBOARD_HISTORY));
+
+  // If the clipboard history refresh feature is enabled, insert a submenu of
+  // clipboard history descriptors; otherwise, insert a menu option to trigger
+  // the clipboard history menu.
+  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
+    submenu_model_ = chromeos::clipboard_history::ClipboardHistorySubmenuModel::
+        CreateClipboardHistorySubmenuModel(
+            crosapi::mojom::ClipboardHistoryControllerShowSource::
+                kTextfieldContextMenu);
+    menu->InsertSubMenuWithStringIdAt(
+        target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,
+        IDS_APP_SHOW_CLIPBOARD_HISTORY, submenu_model_.get());
+  } else {
+    menu->InsertItemAt(
+        target_index, IDS_APP_SHOW_CLIPBOARD_HISTORY,
+        l10n_util::GetStringUTF16(IDS_APP_SHOW_CLIPBOARD_HISTORY));
+  }
 }
 
 ViewsTextServicesContextMenuLacros::~ViewsTextServicesContextMenuLacros() =
@@ -79,8 +97,12 @@ bool ViewsTextServicesContextMenuLacros::IsCommandIdChecked(
 bool ViewsTextServicesContextMenuLacros::IsCommandIdEnabled(
     int command_id) const {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
+    // If the clipboard history refresh feature is enabled, enable the clipboard
+    // history command id if there are clipboard history item descriptors.
     return IsClipboardHistoryLacrosServiceAvailable() &&
-           !IsClipboardHistoryEmpty();
+           (chromeos::features::IsClipboardHistoryRefreshEnabled()
+                ? !ClipboardHistoryLacros::Get()->cached_descriptors().empty()
+                : !IsClipboardHistoryEmpty());
   }
 
   return ViewsTextServicesContextMenuBase::IsCommandIdEnabled(command_id);

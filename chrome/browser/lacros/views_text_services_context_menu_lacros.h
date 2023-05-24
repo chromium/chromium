@@ -5,7 +5,13 @@
 #ifndef CHROME_BROWSER_LACROS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_LACROS_H_
 #define CHROME_BROWSER_LACROS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_LACROS_H_
 
+#include <memory>
+
 #include "ui/views/controls/views_text_services_context_menu_base.h"
+
+namespace chromeos::clipboard_history {
+class ClipboardHistorySubmenuModel;
+}  // namespace chromeos::clipboard_history
 
 namespace ui {
 class SimpleMenuModel;
@@ -38,6 +44,11 @@ class ViewsTextServicesContextMenuLacros
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   bool SupportsCommand(int command_id) const override;
+
+  // A submenu model to contain clipboard history item descriptors. Used only if
+  // the clipboard history refresh feature is enabled.
+  std::unique_ptr<chromeos::clipboard_history::ClipboardHistorySubmenuModel>
+      submenu_model_;
 };
 
 }  // namespace crosapi

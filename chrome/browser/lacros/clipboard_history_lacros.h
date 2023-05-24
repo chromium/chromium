@@ -10,6 +10,8 @@
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+class ClipboardHistoryRefreshLacrosTest;
+
 namespace crosapi {
 
 // The Lacros implementation of `mojom::ClipboardHistoryClient`. A singleton
@@ -30,6 +32,8 @@ class ClipboardHistoryLacros : public mojom::ClipboardHistoryClient {
   }
 
  private:
+  friend ClipboardHistoryRefreshLacrosTest;
+
   // mojom::ClipboardHistoryClient:
   void SetClipboardHistoryItemDescriptors(
       std::vector<mojom::ClipboardHistoryItemDescriptorPtr> descriptor_ptrs)
