@@ -29,13 +29,15 @@ KioskTroubleshootingControllerAsh::~KioskTroubleshootingControllerAsh() {
 
 bool KioskTroubleshootingControllerAsh::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
-  // Do not process any accelerators if troubleshooting tools are disabled.
-  if (!AreKioskTroubleshootingToolsEnabled()) {
+  auto it = accelerators_with_actions_.find(accelerator);
+  if (it == accelerators_with_actions_.end()) {
     return false;
   }
 
-  auto it = accelerators_with_actions_.find(accelerator);
-  DCHECK(it != accelerators_with_actions_.end());
+  // Block registered accelerators if the troubleshooting tools are disabled.
+  if (!AreKioskTroubleshootingToolsEnabled()) {
+    return true;
+  }
 
   switch (it->second) {
     case TroubleshootingAcceleratorAction::NEW_WINDOW:
@@ -53,13 +55,16 @@ bool KioskTroubleshootingControllerAsh::AcceleratorPressed(
     case TroubleshootingAcceleratorAction::OPEN_FEEDBACK_PAGE:
       accelerators::OpenFeedbackPage();
       return true;
+    case TroubleshootingAcceleratorAction::TOGGLE_OVERVIEW:
+      accelerators::ToggleOverview();
+      return true;
   }
 
   return false;
 }
 
 bool KioskTroubleshootingControllerAsh::CanHandleAccelerators() const {
-  return AreKioskTroubleshootingToolsEnabled();
+  return true;
 }
 
 void KioskTroubleshootingControllerAsh::RegisterTroubleshootingAccelerators() {
@@ -87,6 +92,10 @@ void KioskTroubleshootingControllerAsh::RegisterTroubleshootingAccelerators() {
   accelerators_with_actions_.insert(
       {ui::Accelerator(ui::VKEY_I, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN),
        TroubleshootingAcceleratorAction::OPEN_FEEDBACK_PAGE});
+  // F5
+  accelerators_with_actions_.insert(
+      {ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE),
+       TroubleshootingAcceleratorAction::TOGGLE_OVERVIEW});
   Shell::Get()->accelerator_controller()->Register(GetAllAccelerators(), this);
 }
 

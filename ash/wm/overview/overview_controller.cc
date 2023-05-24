@@ -484,8 +484,7 @@ bool OverviewController::CanEnterOverview() {
   return session_controller->GetSessionState() ==
              session_manager::SessionState::ACTIVE &&
          !Shell::IsSystemModalWindowOpen() &&
-         !Shell::Get()->screen_pinning_controller()->IsPinned() &&
-         !session_controller->IsRunningInAppMode();
+         !Shell::Get()->screen_pinning_controller()->IsPinned();
 }
 
 bool OverviewController::CanEndOverview(OverviewEnterExitType type) {
