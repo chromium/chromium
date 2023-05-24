@@ -5941,12 +5941,14 @@ chromium-metrics-reviews@google.com.
   <suffix name="Find" label=""/>
   <suffix name="HelpPage" label=""/>
   <suffix name="ImportSettings" label=""/>
+  <suffix name="InstallPwa" label=""/>
   <suffix name="ManageExtensions" label=""/>
   <suffix name="NewIncognitoWindow" label=""/>
   <suffix name="NewTab" label=""/>
   <suffix name="NewWindow" label=""/>
   <suffix name="OpenBookmark" label=""/>
   <suffix name="OpenInChrome" label=""/>
+  <suffix name="OpenInPwaWindow" label=""/>
   <suffix name="OpenRecentTab" label=""/>
   <suffix name="PasswordManager" label=""/>
   <suffix name="Paste" label=""/>

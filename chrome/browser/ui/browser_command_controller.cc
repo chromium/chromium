@@ -121,10 +121,6 @@
 
 using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
-using content::NavigationController;
-using content::NavigationEntry;
-using content::WebContents;
-
 namespace chrome {
 
 namespace {
@@ -1179,7 +1175,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_USE_SYSTEM_TITLE_BAR,
                                         use_system_title_bar);
 #endif
-  command_updater_.UpdateCommandEnabled(IDC_OPEN_IN_PWA_WINDOW, true);
+  command_updater_.UpdateCommandEnabled(IDC_OPEN_IN_PWA_WINDOW,
+                                        web_app::CanPopOutWebApp(profile()));
 
   // Page-related commands
   command_updater_.UpdateCommandEnabled(IDC_MANAGE_PASSWORDS_FOR_PAGE, true);
@@ -1198,11 +1195,13 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_OPEN_FILE, CanOpenFile(browser_));
   UpdateCommandsForDevTools();
   command_updater_.UpdateCommandEnabled(IDC_TASK_MANAGER, CanOpenTaskManager());
+  command_updater_.UpdateCommandEnabled(IDC_PROFILE_MENU_IN_APP_MENU, true);
   command_updater_.UpdateCommandEnabled(
       IDC_SHOW_HISTORY, (!guest_session && !profile()->IsSystemProfile()));
   command_updater_.UpdateCommandEnabled(IDC_SHOW_DOWNLOADS, true);
   command_updater_.UpdateCommandEnabled(IDC_FIND_AND_EDIT_MENU, true);
-  command_updater_.UpdateCommandEnabled(IDC_PROFILE_MENU_IN_APP_MENU, true);
+  command_updater_.UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF, false);
+  command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR, false);
   command_updater_.UpdateCommandEnabled(IDC_PASSWORDS_AND_AUTOFILL_MENU,
                                         !guest_session);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_PASSWORD_MANAGER,
@@ -1255,7 +1254,7 @@ void BrowserCommandController::InitCommandState() {
   const bool is_web_app_or_custom_tab = IsWebAppOrCustomTab();
   const bool enable_copy_url =
       is_web_app_or_custom_tab ||
-      sharing_hub::SharingHubOmniboxEnabled(browser_->profile());
+      !sharing_hub::SharingIsDisabledByPolicy(browser_->profile());
   command_updater_.UpdateCommandEnabled(IDC_COPY_URL, enable_copy_url);
   command_updater_.UpdateCommandEnabled(IDC_WEB_APP_SETTINGS,
                                         is_web_app_or_custom_tab);
@@ -1424,7 +1423,7 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   if (is_locked_fullscreen_)
     return;
 
-  WebContents* current_web_contents =
+  content::WebContents* current_web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   if (!current_web_contents)  // May be NULL during tab restore.
     return;
@@ -1466,10 +1465,11 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_.UpdateCommandEnabled(IDC_INSTALL_PWA, can_create_web_app);
   command_updater_.UpdateCommandEnabled(IDC_CREATE_SHORTCUT,
                                         can_create_web_app);
-  // Note that additional logic in AppMenuModel::Build() controls the presence
-  // of this command.
-  command_updater_.UpdateCommandEnabled(IDC_OPEN_IN_PWA_WINDOW,
-                                        web_app::CanPopOutWebApp(profile()));
+
+  command_updater_.UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF,
+                                        CanSendTabToSelf(browser_));
+  command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR,
+                                        CanGenerateQrCode(browser_));
 
   bool is_isolated_app = current_web_contents->GetPrimaryMainFrame()
                              ->GetWebExposedIsolationLevel() >=
@@ -1494,7 +1494,8 @@ void BrowserCommandController::UpdateCommandsForTabState() {
 }
 
 void BrowserCommandController::UpdateCommandsForZoomState() {
-  WebContents* contents = browser_->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
   if (!contents)
     return;
   command_updater_.UpdateCommandEnabled(IDC_ZOOM_PLUS, CanZoomIn(contents));
@@ -1628,14 +1629,12 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   command_updater_.UpdateCommandEnabled(IDC_CHROME_TIPS, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_CHROME_WHATS_NEW, show_main_ui);
 #endif
-  command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
                                         show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHARING_HUB, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHARING_HUB_SCREENSHOT,
                                         show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_APP_MENU, show_main_ui);
-  command_updater_.UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_MANAGEMENT_PAGE, true);
   command_updater_.UpdateCommandEnabled(IDC_FOLLOW, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_UNFOLLOW, show_main_ui);

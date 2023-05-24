@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -140,8 +141,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionsMenuModel,
 
 namespace {
 
-constexpr size_t kMaxAppNameLength = 30;
-
 // Conditionally return the update app menu item title based on upgrade detector
 // state.
 std::u16string GetUpgradeDialogMenuItemName() {
@@ -170,17 +169,43 @@ std::u16string GetLacrosDataMigrationMenuItemName() {
 
 // Returns the appropriate menu label for the IDC_INSTALL_PWA command if
 // available.
-absl::optional<std::u16string> GetInstallPWAAppMenuItemName(Browser* browser) {
-  WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents)
-    return absl::nullopt;
-  std::u16string app_name =
+std::u16string GetInstallPWALabel(const Browser* browser) {
+  // There may be no active web contents in tests.
+  auto* const web_contents = browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return std::u16string();
+  }
+
+  const std::u16string app_name =
       webapps::AppBannerManager::GetInstallableWebAppName(web_contents);
-  if (app_name.empty())
-    return absl::nullopt;
-  return l10n_util::GetStringFUTF16(IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
-                                    ui::EscapeMenuLabelAmpersands(app_name));
+  return app_name.empty() ? app_name
+                          : l10n_util::GetStringFUTF16(
+                                IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
+                                ui::EscapeMenuLabelAmpersands(app_name));
+}
+
+// Returns the appropriate menu label for the IDC_OPEN_IN_PWA_WINDOW command if
+// available.
+std::u16string GetOpenPWALabel(const Browser* browser) {
+  absl::optional<web_app::AppId> app_id =
+      web_app::GetWebAppForActiveTab(browser);
+  if (!app_id.has_value()) {
+    return std::u16string();
+  }
+
+  // Only show this menu item for apps that open in an app window.
+  const auto* const provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
+  if (provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) ==
+      web_app::mojom::UserDisplayMode::kBrowser) {
+    return std::u16string();
+  }
+
+  const std::u16string short_name =
+      base::UTF8ToUTF16(provider->registrar_unsafe().GetAppShortName(*app_id));
+  return l10n_util::GetStringFUTF16(
+      IDS_OPEN_IN_APP_WINDOW, ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
+                                  short_name, 30, gfx::CHARACTER_BREAK)));
 }
 
 bool IsPasswordManagerPage(const GURL& url) {
@@ -572,7 +597,6 @@ bool AppMenuModel::IsItemForCommandIdDynamic(int command_id) const {
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
          command_id == IDC_LACROS_DATA_MIGRATION ||
 #endif
-         (command_id == IDC_INSTALL_PWA && !features::IsChromeRefresh2023()) ||
          command_id == IDC_UPGRADE_DIALOG;
 }
 
@@ -598,8 +622,6 @@ std::u16string AppMenuModel::GetLabelForCommandId(int command_id) const {
     case IDC_LACROS_DATA_MIGRATION:
       return GetLacrosDataMigrationMenuItemName();
 #endif
-    case IDC_INSTALL_PWA:
-      return GetInstallPWAAppMenuItemName(browser_).value();
     case IDC_UPGRADE_DIALOG:
       DCHECK(browser_defaults::kShowUpgradeMenuItem);
       return GetUpgradeDialogMenuItemName();
@@ -814,6 +836,20 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       if (!uma_action_recorded_)
         UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.Paste", delta);
       LogMenuAction(MENU_ACTION_PASTE);
+      break;
+
+    case IDC_INSTALL_PWA:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.InstallPwa", delta);
+      }
+      LogMenuAction(MENU_ACTION_INSTALL_PWA);
+      break;
+    case IDC_OPEN_IN_PWA_WINDOW:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenInPwaWindow",
+                                   delta);
+      }
+      LogMenuAction(MENU_ACTION_OPEN_IN_PWA_WINDOW);
       break;
 
     // Tools menu.
@@ -1257,9 +1293,7 @@ void AppMenuModel::Build() {
     // TODO(josephjoopark): Update translate string with StringId when
     // finalized.
     AddItem(IDC_TRANSLATE_PAGE, u"Google Translate");
-  }
 
-  if (features::IsChromeRefresh2023()) {
     sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(this));
     AddSubMenuWithStringId(IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,
                            sub_menus_.back().get());
@@ -1267,30 +1301,18 @@ void AppMenuModel::Build() {
     AddItemWithStringId(IDC_FIND, IDS_FIND);
   }
 
-  if (absl::optional<std::u16string> name =
-          GetInstallPWAAppMenuItemName(browser_)) {
-    AddItem(IDC_INSTALL_PWA, *name);
+  if (std::u16string install_item = GetInstallPWALabel(browser_);
+      !install_item.empty()) {
+    AddItem(IDC_INSTALL_PWA, install_item);
     if (features::IsChromeRefresh2023()) {
       SetCommandIcon(this, IDC_INSTALL_PWA, kInstallDesktopChromeRefreshIcon);
     }
-  } else if (absl::optional<web_app::AppId> app_id =
-                 web_app::GetWebAppForActiveTab(browser_)) {
-    auto* provider =
-        web_app::WebAppProvider::GetForLocalAppsUnchecked(browser_->profile());
-    // Only applies to apps that open in an app window.
-    if (provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) !=
-        web_app::mojom::UserDisplayMode::kBrowser) {
-      const std::u16string short_name = base::UTF8ToUTF16(
-          provider->registrar_unsafe().GetAppShortName(*app_id));
-      const std::u16string truncated_name = gfx::TruncateString(
-          short_name, kMaxAppNameLength, gfx::CHARACTER_BREAK);
-      AddItem(
-          IDC_OPEN_IN_PWA_WINDOW,
-          l10n_util::GetStringFUTF16(IDS_OPEN_IN_APP_WINDOW, truncated_name));
-      if (features::IsChromeRefresh2023()) {
-        SetCommandIcon(this, IDC_OPEN_IN_PWA_WINDOW,
-                       kDesktopWindowsChromeRefreshIcon);
-      }
+  } else if (std::u16string open_item = GetOpenPWALabel(browser_);
+             !open_item.empty()) {
+    AddItem(IDC_OPEN_IN_PWA_WINDOW, open_item);
+    if (features::IsChromeRefresh2023()) {
+      SetCommandIcon(this, IDC_OPEN_IN_PWA_WINDOW,
+                     kDesktopWindowsChromeRefreshIcon);
     }
   }
 

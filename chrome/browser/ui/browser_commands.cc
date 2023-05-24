@@ -43,11 +43,13 @@
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_base.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
@@ -1447,10 +1449,25 @@ void ManagePasswordsForPage(Browser* browser) {
       ->ShowManagePasswordsBubble(!controller->IsAutomaticallyOpeningBubble());
 }
 
+bool CanSendTabToSelf(const Browser* browser) {
+  return send_tab_to_self::ShouldDisplayEntryPoint(
+      browser->tab_strip_model()->GetActiveWebContents());
+}
+
 void SendTabToSelfFromPageAction(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   send_tab_to_self::ShowBubble(web_contents);
+}
+
+bool CanGenerateQrCode(const Browser* browser) {
+  return !sharing_hub::SharingIsDisabledByPolicy(browser->profile()) &&
+         qrcode_generator::QRCodeGeneratorBubbleController::
+             IsGeneratorAvailable(browser->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetController()
+                                      .GetLastCommittedEntry()
+                                      ->GetURL());
 }
 
 void GenerateQRCodeFromPageAction(Browser* browser) {
