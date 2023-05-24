@@ -128,7 +128,7 @@ class MediaNotificationViewAshImplTest : public views::ViewsTestBase {
   views::Button* GetButtonForAction(MediaSessionAction action) const {
     auto buttons = media_control_buttons();
     const auto i = base::ranges::find(buttons, static_cast<int>(action),
-                                      &views::Button::tag);
+                                      &views::View::GetID);
     return (i == buttons.end()) ? nullptr : *i;
   }
 

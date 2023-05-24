@@ -82,9 +82,10 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
  private:
   friend class MediaNotificationViewAshImplTest;
 
-  MediaButton* CreateMediaButton(
-      views::View* parent,
-      media_session::mojom::MediaSessionAction action);
+  MediaButton* CreateMediaButton(views::View* parent,
+                                 int button_id,
+                                 const gfx::VectorIcon& vector_icon,
+                                 int tooltip_text_id);
 
   void UpdateActionButtonsVisibility();
 
@@ -124,6 +125,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
 
   raw_ptr<MediaSquigglyProgressView> squiggly_progress_view_ = nullptr;
   raw_ptr<MediaButton> play_pause_button_ = nullptr;
+  raw_ptr<MediaButton> start_casting_button_ = nullptr;
   raw_ptr<MediaButton> picture_in_picture_button_ = nullptr;
 };
 
