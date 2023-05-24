@@ -162,31 +162,27 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
 
 TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestSignin) {
   // Signin
-
-  ScreensaverImagesPolicyHandler handler =
-      ScreensaverImagesPolicyHandler::Create(
-          Shell::Get()->session_controller()->GetSigninScreenPrefService());
+  auto handler = ScreensaverImagesPolicyHandler::Create(
+      Shell::Get()->session_controller()->GetSigninScreenPrefService());
   // Verify that the policy handler detected the new user and created a new
   // image downloader instance.
-  EXPECT_TRUE(GetPrivateImageDownloader(handler));
+  EXPECT_TRUE(GetPrivateImageDownloader(*handler));
   VerifyPrivateImageDownloaderDownloadFolder(
-      handler, temp_dir_.GetPath().AppendASCII(kSigninDirectoryName));
+      *handler, temp_dir_.GetPath().AppendASCII(kSigninDirectoryName));
 }
 TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestUser) {
   // User
-
   RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
                             user_manager::USER_TYPE_REGULAR);
   auto handler = ScreensaverImagesPolicyHandler::Create(active_prefs());
   // Verify that the policy handler detected the new user and created a new
   // image downloader instance.
-  EXPECT_TRUE(GetPrivateImageDownloader(handler));
+  EXPECT_TRUE(GetPrivateImageDownloader(*handler));
   VerifyPrivateImageDownloaderDownloadFolder(
-      handler, temp_dir_.GetPath().AppendASCII(kCacheDirectoryName));
+      *handler, temp_dir_.GetPath().AppendASCII(kCacheDirectoryName));
 }
 TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestManagedGuest) {
   // Managed Guest
-
   GetSessionControllerClient()->RequestSignOut();
   RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail),
                             user_manager::USER_TYPE_PUBLIC_ACCOUNT);
@@ -194,9 +190,9 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, FactoryFunctionTestManagedGuest) {
       Shell::Get()->session_controller()->GetActivePrefService());
   // Verify that the policy handler detected the new user and created a new
   // image downloader instance.
-  EXPECT_TRUE(GetPrivateImageDownloader(handler));
+  EXPECT_TRUE(GetPrivateImageDownloader(*handler));
   VerifyPrivateImageDownloaderDownloadFolder(
-      handler, temp_dir_.GetPath().AppendASCII(kManagedGuestDirectoryName));
+      *handler, temp_dir_.GetPath().AppendASCII(kManagedGuestDirectoryName));
 }
 
 class ScreensaverImagesPolicyHandlerForAnySessionTest

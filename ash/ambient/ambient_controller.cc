@@ -15,6 +15,7 @@
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ambient_video_ui_launcher.h"
+#include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
@@ -455,6 +456,9 @@ void AmbientController::OnActiveUserPrefServiceChanged(
   }
 
   if (managed_screensaver_flag_enabled) {
+    screensaver_images_policy_handler_ =
+        ScreensaverImagesPolicyHandler::Create(pref_service);
+
     pref_change_registrar_->Add(
         ambient::prefs::kAmbientModeManagedScreensaverEnabled,
         base::BindRepeating(&AmbientController::OnEnabledPrefChanged,
@@ -471,6 +475,9 @@ void AmbientController::OnSigninScreenPrefServiceInitialized(
   if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
     return;
   }
+
+  screensaver_images_policy_handler_ =
+      ScreensaverImagesPolicyHandler::Create(pref_service);
 
   CHECK(!sign_in_pref_change_registrar_);
   CHECK(!pref_change_registrar_);
@@ -1341,7 +1348,7 @@ void AmbientController::CreateUiLauncher() {
 
   if (IsAmbientModeManagedScreensaverEnabled()) {
     ambient_ui_launcher_ = std::make_unique<AmbientManagedSlideshowUiLauncher>(
-        &delegate_, GetActivePrefService());
+        &delegate_, screensaver_images_policy_handler_.get());
   } else if (GetCurrentUiSettings().theme() == AmbientTheme::kVideo) {
     ambient_ui_launcher_ = std::make_unique<AmbientVideoUiLauncher>(
         GetPrimaryUserPrefService(), &delegate_);

@@ -26,8 +26,9 @@ class AmbientManagedSlideshowUiLauncher
       public AmbientManagedPhotoController::Observer,
       public SessionObserver {
  public:
-  AmbientManagedSlideshowUiLauncher(AmbientViewDelegateImpl* delegate,
-                                    PrefService* active_pref_service);
+  AmbientManagedSlideshowUiLauncher(
+      AmbientViewDelegateImpl* delegate,
+      ScreensaverImagesPolicyHandler* policy_handler);
   AmbientManagedSlideshowUiLauncher(const AmbientManagedSlideshowUiLauncher&) =
       delete;
   AmbientManagedSlideshowUiLauncher& operator=(
@@ -66,7 +67,8 @@ class AmbientManagedSlideshowUiLauncher
       ambient_backend_model_observer_{this};
   ScopedSessionObserver session_observer_{this};
 
-  ScreensaverImagesPolicyHandler screensaver_images_policy_handler_;
+  const raw_ptr<ScreensaverImagesPolicyHandler>
+      screensaver_images_policy_handler_;
 
   base::WeakPtrFactory<AmbientManagedSlideshowUiLauncher> weak_factory_{this};
 };
