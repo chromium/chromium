@@ -14055,6 +14055,27 @@
             ]
         }
     ],
+    "V8CompileHints3": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "ProduceCompileHints"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProduceCompileHints"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8ConcurrentSparkplug": [
         {
             "platforms": [
