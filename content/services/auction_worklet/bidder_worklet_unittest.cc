@@ -515,12 +515,15 @@ class BidderWorkletTest : public testing::Test {
 
   // Runs reportWin() on an already loaded worklet,  verifies the return
   // value and invokes `done_closure` when done. Expects something else to
-  // spin the event loop.
+  // spin the event loop. If `expected_reporting_latency_timeout` is true,
+  // the timeout will be (extremely loosely) compared against normal script
+  // timeout.
   void RunReportWinExpectingResultAsync(
       mojom::BidderWorklet* bidder_worklet,
       const absl::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
       PrivateAggregationRequests expected_pa_requests,
+      bool expected_reporting_latency_timeout,
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
     bidder_worklet->ReportWin(
@@ -540,21 +543,29 @@ class BidderWorkletTest : public testing::Test {
             [](const absl::optional<GURL>& expected_report_url,
                const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
                PrivateAggregationRequests expected_pa_requests,
+               bool expected_reporting_latency_timeout,
                const std::vector<std::string>& expected_errors,
                base::OnceClosure done_closure,
                const absl::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
+               base::TimeDelta reporting_latency,
                const std::vector<std::string>& errors) {
               EXPECT_EQ(expected_report_url, report_url);
               EXPECT_EQ(expected_errors, errors);
               EXPECT_EQ(expected_ad_beacon_map, ad_beacon_map);
               EXPECT_EQ(expected_pa_requests, pa_requests);
+              if (expected_reporting_latency_timeout) {
+                // We only know that about the time of the timeout should have
+                // elapsed, and there may also be some thread skew.
+                EXPECT_GE(reporting_latency,
+                          AuctionV8Helper::kScriptTimeout * 0.9);
+              }
               std::move(done_closure).Run();
             },
             expected_report_url, expected_ad_beacon_map,
-            std::move(expected_pa_requests), expected_errors,
-            std::move(done_closure)));
+            std::move(expected_pa_requests), expected_reporting_latency_timeout,
+            expected_errors, std::move(done_closure)));
   }
 
   // Loads and runs a reportWin() with the provided return line, expecting the
@@ -570,10 +581,11 @@ class BidderWorkletTest : public testing::Test {
     ASSERT_TRUE(bidder_worklet);
 
     base::RunLoop run_loop;
-    RunReportWinExpectingResultAsync(bidder_worklet.get(), expected_report_url,
-                                     expected_ad_beacon_map,
-                                     std::move(expected_pa_requests),
-                                     expected_errors, run_loop.QuitClosure());
+    RunReportWinExpectingResultAsync(
+        bidder_worklet.get(), expected_report_url, expected_ad_beacon_map,
+        std::move(expected_pa_requests),
+        /*expected_reporting_latency_timeout=*/false, expected_errors,
+        run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -3546,6 +3558,7 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
           [&run_loop](const absl::optional<GURL>& report_url,
                       const base::flat_map<std::string, GURL>& ad_beacon_map,
                       PrivateAggregationRequests pa_requests,
+                      base::TimeDelta reporting_latency,
                       const std::vector<std::string>& errors) {
             run_loop.Quit();
           }));
@@ -3578,6 +3591,7 @@ TEST_F(BidderWorkletTest, WasmReportWin2) {
       bidder_worklet.get(), GURL("https://foo.test"),
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false,
       /*expected_errors=*/{},
       base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
   task_environment_.RunUntilIdle();
@@ -4809,6 +4823,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
       base::BindOnce([](const absl::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,
                         PrivateAggregationRequests pa_requests,
+                        base::TimeDelta reporting_latency,
                         const std::vector<std::string>& errors) {
         ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
       }));
@@ -4861,6 +4876,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
                   const absl::optional<GURL>& report_url,
                   const base::flat_map<std::string, GURL>& ad_beacon_map,
                   PrivateAggregationRequests pa_requests,
+                  base::TimeDelta reporting_latency,
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ(GURL(base::StringPrintf("https://foo.test/%zu", i)),
                           report_url);
@@ -4910,6 +4926,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
             [](const absl::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
+               base::TimeDelta reporting_latency,
                const std::vector<std::string>& errors) {
               ADD_FAILURE() << "Callback should not be invoked.";
             }));
@@ -5002,9 +5019,10 @@ TEST_F(BidderWorkletTest, ReportWinLoadCompletionOrder) {
     mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
     url_loader_factory_.ClearResponses();
     auto run_loop = std::make_unique<base::RunLoop>();
-    RunReportWinExpectingResultAsync(bidder_worklet.get(),
-                                     GURL("https://foo.test/"), {}, {}, {},
-                                     run_loop->QuitClosure());
+    RunReportWinExpectingResultAsync(
+        bidder_worklet.get(), GURL("https://foo.test/"), {}, {},
+        /*expected_reporting_latency_timeout=*/false, {},
+        run_loop->QuitClosure());
     for (size_t i = 0; i < std::size(kResponses); ++i) {
       SCOPED_TRACE(i);
       const Response& response =
@@ -5285,6 +5303,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
             [&run_loop](const absl::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,
                         PrivateAggregationRequests pa_requests,
+                        base::TimeDelta reporting_latency,
                         const std::vector<std::string>& errors) {
               EXPECT_EQ(GURL("https://23.test/"), report_url);
               EXPECT_TRUE(errors.empty());
@@ -5717,8 +5736,9 @@ TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
 
   // Now ask for reporting. This should hit the other breakpoint.
   base::RunLoop run_loop;
-  RunReportWinExpectingResultAsync(worklet.get(), GURL("https://foo.test/"), {},
-                                   {}, {}, run_loop.QuitClosure());
+  RunReportWinExpectingResultAsync(
+      worklet.get(), GURL("https://foo.test/"), {}, {},
+      /*expected_reporting_latency_timeout=*/false, {}, run_loop.QuitClosure());
 
   TestDevToolsAgentClient::Event breakpoint_hit2 =
       debug.WaitForMethodNotification("Debugger.paused");
@@ -6044,6 +6064,7 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
       base::BindOnce([](const absl::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,
                         PrivateAggregationRequests pa_requests,
+                        base::TimeDelta reporting_latency,
                         const std::vector<std::string>& errors) {
         ADD_FAILURE() << "Callback should not be invoked.";
       }));
@@ -7719,14 +7740,14 @@ TEST_F(BidderWorkletTest, AsyncFinalizeGenerateBid2) {
   EXPECT_THAT(bid_errors_, testing::ElementsAre());
 }
 
-class GenerateBidLatenciesTest : public BidderWorkletTest {
+class BidderWorkletLatenciesTest : public BidderWorkletTest {
  public:
   // We use MockTime to control the reported latencies.
-  GenerateBidLatenciesTest()
+  BidderWorkletLatenciesTest()
       : BidderWorkletTest(TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
-TEST_F(GenerateBidLatenciesTest, GenerateBidLatenciesAreReturned) {
+TEST_F(BidderWorkletLatenciesTest, GenerateBidLatenciesAreReturned) {
   interest_group_trusted_bidding_signals_url_ =
       GURL("https://url.test/trustedsignals");
   interest_group_trusted_bidding_signals_keys_ = {"1"};
@@ -7786,6 +7807,27 @@ TEST_F(GenerateBidLatenciesTest, GenerateBidLatenciesAreReturned) {
   EXPECT_EQ(
       base::Milliseconds(250),
       *generate_bid_dependency_latencies_->trusted_bidding_signals_latency);
+}
+
+TEST_F(BidderWorkletTest, ReportWinLatency) {
+  // We use an infinite loop since we have some notion of how long a timeout
+  // should take.
+  AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
+                        CreateReportWinScript("while (true) {}"));
+
+  mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+
+  base::RunLoop run_loop;
+  RunReportWinExpectingResultAsync(
+      bidder_worklet.get(),
+      /*expected_report_url=*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/true,
+      /*expected_errors=*/
+      {"https://url.test/ execution of `reportWin` timed out."},
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 // The sequence when GenerateBidClient gets destroyed w/o getting to

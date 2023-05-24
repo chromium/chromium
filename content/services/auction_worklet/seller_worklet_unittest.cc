@@ -118,6 +118,8 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
       const absl::optional<GURL>& debug_loss_report_url,
       const absl::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta scoring_latency,
+      base::TimeDelta trusted_signals_fetch_latency,
       const std::vector<std::string>& errors)>;
 
   explicit TestScoreAdClient(ScoreAdCompleteCallback score_ad_complete_callback)
@@ -145,13 +147,16 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
                          const absl::optional<GURL>& debug_loss_report_url,
                          const absl::optional<GURL>& debug_win_report_url,
                          PrivateAggregationRequests pa_requests,
+                         base::TimeDelta scoring_latency,
+                         base::TimeDelta trusted_signals_fetch_latency,
                          const std::vector<std::string>& errors) override {
     std::move(score_ad_complete_callback_)
         .Run(score, reject_reason,
              std::move(component_auction_modified_bid_params),
              std::move(bid_in_seller_currency),
              std::move(scoring_signals_data_version), debug_loss_report_url,
-             debug_win_report_url, std::move(pa_requests), errors);
+             debug_win_report_url, std::move(pa_requests), scoring_latency,
+             trusted_signals_fetch_latency, errors);
   }
 
   static ScoreAdCompleteCallback ScoreAdNeverInvokedCallback() {
@@ -164,6 +169,8 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
            const absl::optional<GURL>& debug_loss_report_url,
            const absl::optional<GURL>& debug_win_report_url,
            PrivateAggregationRequests pa_requests,
+           base::TimeDelta scoring_latency,
+           base::TimeDelta trusted_signals_fetch_latency,
            const std::vector<std::string>& errors) {
           ADD_FAILURE() << "Callback should not be invoked";
         });
@@ -299,6 +306,8 @@ class SellerWorkletTest : public testing::Test {
         expected_data_version, expected_debug_loss_report_url,
         expected_debug_win_report_url, expected_reject_reason,
         std::move(expected_pa_requests), expected_bid_in_seller_currency,
+        /*expected_score_ad_timeout=*/false,
+        /*expected_signals_fetch_latency=*/absl::nullopt,
         run_loop.QuitClosure());
     task_environment_.FastForwardBy(expected_duration - kTinyTime);
     EXPECT_FALSE(run_loop.AnyQuitCalled());
@@ -349,6 +358,8 @@ class SellerWorkletTest : public testing::Test {
       mojom::RejectReason expected_reject_reason,
       PrivateAggregationRequests expected_pa_requests,
       absl::optional<double> expected_bid_in_seller_currency,
+      bool expected_score_ad_timeout,
+      absl::optional<base::TimeDelta> expected_signals_fetch_latency,
       base::OnceClosure done_closure) {
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
@@ -368,6 +379,8 @@ class SellerWorkletTest : public testing::Test {
                const absl::optional<GURL>& expected_debug_win_report_url,
                PrivateAggregationRequests expected_pa_requests,
                absl::optional<double> expected_bid_in_seller_currency,
+               absl::optional<base::TimeDelta> expected_score_ad_timeout,
+               absl::optional<base::TimeDelta> expected_signals_fetch_latency,
                std::vector<std::string> expected_errors,
                base::OnceClosure done_closure, double score,
                mojom::RejectReason reject_reason,
@@ -378,6 +391,8 @@ class SellerWorkletTest : public testing::Test {
                const absl::optional<GURL>& debug_loss_report_url,
                const absl::optional<GURL>& debug_win_report_url,
                PrivateAggregationRequests pa_requests,
+               base::TimeDelta scoring_latency,
+               base::TimeDelta trusted_signals_fetch_latency,
                const std::vector<std::string>& errors) {
               EXPECT_EQ(expected_score, score);
               EXPECT_EQ(static_cast<int>(expected_reject_reason),
@@ -403,6 +418,12 @@ class SellerWorkletTest : public testing::Test {
               EXPECT_EQ(expected_bid_in_seller_currency,
                         bid_in_seller_currency);
               EXPECT_EQ(expected_pa_requests, pa_requests);
+              if (expected_score_ad_timeout) {
+                // We only know that about the time of the timeout should have
+                // elapsed, and there may also be some thread skew.
+                EXPECT_GE(scoring_latency,
+                          expected_score_ad_timeout.value() * 0.9);
+              }
               EXPECT_EQ(expected_errors, errors);
               std::move(done_closure).Run();
             },
@@ -410,7 +431,12 @@ class SellerWorkletTest : public testing::Test {
             std::move(expected_component_auction_modified_bid_params),
             expected_data_version, expected_debug_loss_report_url,
             expected_debug_win_report_url, std::move(expected_pa_requests),
-            expected_bid_in_seller_currency, expected_errors,
+            expected_bid_in_seller_currency,
+            expected_score_ad_timeout
+                ? absl::make_optional(
+                      seller_timeout_.value_or(AuctionV8Helper::kScriptTimeout))
+                : absl::nullopt,
+            expected_signals_fetch_latency, expected_errors,
             std::move(done_closure))));
   }
 
@@ -452,6 +478,8 @@ class SellerWorkletTest : public testing::Test {
         expected_data_version, expected_debug_loss_report_url,
         expected_debug_win_report_url, expected_reject_reason,
         std::move(expected_pa_requests), expected_bid_in_seller_currency,
+        /*expected_score_ad_timeout=*/false,
+        /*expected_signals_fetch_latency=*/absl::nullopt,
         run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -532,6 +560,7 @@ class SellerWorkletTest : public testing::Test {
       const absl::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
       PrivateAggregationRequests expected_pa_requests,
+      bool expected_reporting_latency_timeout,
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
     seller_worklet->ReportResult(
@@ -553,12 +582,14 @@ class SellerWorkletTest : public testing::Test {
                const absl::optional<GURL>& expected_report_url,
                const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
                PrivateAggregationRequests expected_pa_requests,
+               bool expected_reporting_latency_timeout,
                const std::vector<std::string>& expected_errors,
                base::OnceClosure done_closure,
                const absl::optional<std::string>& signals_for_winner,
                const absl::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
+               base::TimeDelta reporting_latency,
                const std::vector<std::string>& errors) {
               if (signals_for_winner && expected_signals_for_winner) {
                 // If neither is null, used fancy base::Value comparison, which
@@ -573,12 +604,19 @@ class SellerWorkletTest : public testing::Test {
               EXPECT_EQ(expected_report_url, report_url);
               EXPECT_EQ(expected_ad_beacon_map, ad_beacon_map);
               EXPECT_EQ(expected_pa_requests, pa_requests);
+              if (expected_reporting_latency_timeout) {
+                // We only know that about the time of the timeout should have
+                // elapsed, and there may also be some thread skew.
+                EXPECT_GE(reporting_latency,
+                          AuctionV8Helper::kScriptTimeout * 0.9);
+              }
               EXPECT_EQ(expected_errors, errors);
               std::move(done_closure).Run();
             },
             expected_signals_for_winner, expected_report_url,
             expected_ad_beacon_map, std::move(expected_pa_requests),
-            expected_errors, std::move(done_closure)));
+            expected_reporting_latency_timeout, expected_errors,
+            std::move(done_closure)));
   }
 
   void RunReportResultExpectingCallbackNeverInvoked(
@@ -602,6 +640,7 @@ class SellerWorkletTest : public testing::Test {
                const absl::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
+               base::TimeDelta reporting_latency,
                const std::vector<std::string>& errors) {
               ADD_FAILURE() << "This should not be invoked";
             }));
@@ -623,7 +662,8 @@ class SellerWorkletTest : public testing::Test {
     RunReportResultExpectingResultAsync(
         seller_worklet.get(), expected_signals_for_winner, expected_report_url,
         expected_ad_beacon_map, std::move(expected_pa_requests),
-        expected_errors, run_loop.QuitClosure());
+        /*expected_reporting_latency_timeout=*/false, expected_errors,
+        run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -1597,6 +1637,38 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
       /*expected_data_version=*/5);
 }
 
+TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsLatency) {
+  const base::TimeDelta kDelay = base::Milliseconds(135);
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+  // Trusted scoring signals URL without any component ads.
+  const GURL kNoComponentSignalsUrl = GURL(
+      "https://url.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript(/*raw_return_value=*/"1", ""));
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(
+      seller_worklet.get(), /*expected_score=*/1,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/1,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_score_ad_timeout=*/false,
+      /*expected_signals_fetch_latency=*/kDelay, run_loop.QuitClosure());
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(kDelay);
+  AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
+                           kTrustedScoringSignalsResponse, /*data_version=*/1);
+  run_loop.Run();
+}
+
 TEST_F(SellerWorkletTest, ScoreAdDataVersion) {
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
@@ -1654,6 +1726,8 @@ TEST_F(SellerWorkletTest, ScoreAdParallelBeforeLoadComplete) {
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
                              /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_score_ad_timeout=*/false,
+                             /*expected_signals_fetch_latency=*/absl::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets)
@@ -1699,6 +1773,8 @@ TEST_F(SellerWorkletTest, ScoreAdParallelAfterLoadComplete) {
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
                              /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_score_ad_timeout=*/false,
+                             /*expected_signals_fetch_latency=*/absl::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets)
@@ -1766,6 +1842,8 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsNotBatched) {
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
                              /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_score_ad_timeout=*/false,
+                             /*expected_signals_fetch_latency=*/absl::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets)
@@ -1836,6 +1914,8 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched1) {
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
                              /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_score_ad_timeout=*/false,
+                             /*expected_signals_fetch_latency=*/absl::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets)
@@ -1897,6 +1977,8 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched2) {
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
                              /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_score_ad_timeout=*/false,
+                             /*expected_signals_fetch_latency=*/absl::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets)
@@ -1967,6 +2049,8 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
                              /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_score_ad_timeout=*/false,
+                             /*expected_signals_fetch_latency=*/absl::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets)
@@ -2065,6 +2149,8 @@ TEST_F(SellerWorkletTest, ScoreAdLoadCompletionOrder) {
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
                              /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_score_ad_timeout=*/false,
+                             /*expected_signals_fetch_latency=*/absl::nullopt,
                              run_loop->QuitClosure());
     for (size_t i = 0; i < std::size(kResponses); ++i) {
       SCOPED_TRACE(i);
@@ -2165,6 +2251,8 @@ if (auctionSignalsJson !== '{"worklet":2}') {
                            mojom::RejectReason::kNotAvailable,
                            /*expected_pa_requests=*/{},
                            /*expected_bid_in_seller_currency=*/absl::nullopt,
+                           /*expected_score_ad_timeout=*/false,
+                           /*expected_signals_fetch_latency=*/absl::nullopt,
                            run_loop->QuitClosure());
   run_loop->Run();
 
@@ -2179,6 +2267,8 @@ if (auctionSignalsJson !== '{"worklet":2}') {
                            mojom::RejectReason::kNotAvailable,
                            /*expected_pa_requests=*/{},
                            /*expected_bid_in_seller_currency=*/absl::nullopt,
+                           /*expected_score_ad_timeout=*/false,
+                           /*expected_signals_fetch_latency=*/absl::nullopt,
                            run_loop->QuitClosure());
   run_loop->Run();
 }
@@ -2210,6 +2300,7 @@ TEST_F(SellerWorkletTest, ReportResultParallel) {
           GURL("https://" + base::NumberToString(bid_)),
           /*expected_ad_beacon_map=*/{},
           /*expected_pa_requests=*/{},
+          /*expected_reporting_latency_timeout=*/false,
           /*expected_errors=*/{},
           base::BindLambdaForTesting([&run_loop, &num_report_result_calls]() {
             ++num_report_result_calls;
@@ -2997,6 +3088,7 @@ TEST_F(SellerWorkletTest, ReportResultLoadCompletionOrder) {
     RunReportResultExpectingResultAsync(
         seller_worklet.get(), "1", GURL("https://foo.test/"),
         /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_reporting_latency_timeout=*/false,
         /*expected_errors=*/{}, run_loop->QuitClosure());
     for (size_t i = 0; i < std::size(kResponses); ++i) {
       SCOPED_TRACE(i);
@@ -3069,6 +3161,8 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
                           const absl::optional<GURL>& debug_loss_report_url,
                           const absl::optional<GURL>& debug_win_report_url,
                           PrivateAggregationRequests pa_requests,
+                          base::TimeDelta scoring_latency,
+                          base::TimeDelta trusted_signals_fetch_latency,
                           const std::vector<std::string>& errors) {
                 EXPECT_EQ(2, score);
                 EXPECT_FALSE(scoring_signals_data_version.has_value());
@@ -3101,6 +3195,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
                   const absl::optional<GURL>& report_url,
                   const base::flat_map<std::string, GURL>& ad_beacon_map,
                   PrivateAggregationRequests pa_requests,
+                  base::TimeDelta reporting_latency,
                   const std::vector<std::string>& errors) {
                 EXPECT_EQ("2", signals_for_winner);
                 EXPECT_TRUE(errors.empty());
@@ -3161,6 +3256,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
                         const absl::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,
                         PrivateAggregationRequests pa_requests,
+                        base::TimeDelta reporting_latency,
                         const std::vector<std::string>& errors) {
         ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
       }));
@@ -3183,17 +3279,18 @@ TEST_F(SellerWorkletTest, PauseOnStart) {
   // Queue a ScoreAd() call, which should not happen immediately since loading
   // is paused.
   base::RunLoop run_loop;
-  RunScoreAdOnWorkletAsync(worklet.get(), /*expected_score=*/10,
-                           /*expected_errors=*/{},
-                           mojom::ComponentAuctionModifiedBidParamsPtr(),
-                           /*expected_data_version=*/absl::nullopt,
-                           /*expected_debug_loss_report_url=*/absl::nullopt,
-                           /*expected_debug_win_report_url=*/absl::nullopt,
-                           /*expected_reject_reason=*/
-                           mojom::RejectReason::kNotAvailable,
-                           /*expected_pa_requests=*/{},
-                           /*expected_bid_in_seller_currency=*/absl::nullopt,
-                           run_loop.QuitClosure());
+  RunScoreAdOnWorkletAsync(
+      worklet.get(), /*expected_score=*/10,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_reject_reason=*/
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_score_ad_timeout=*/false,
+      /*expected_signals_fetch_latency=*/absl::nullopt, run_loop.QuitClosure());
 
   // Give it a chance to fetch.
   task_environment_.RunUntilIdle();
@@ -3279,6 +3376,8 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
                            mojom::RejectReason::kNotAvailable,
                            /*expected_pa_requests=*/{},
                            /*expected_bid_in_seller_currency=*/absl::nullopt,
+                           /*expected_score_ad_timeout=*/false,
+                           /*expected_signals_fetch_latency=*/absl::nullopt,
                            run_loop1.QuitClosure());
 
   decision_logic_url_ = kUrl2;
@@ -3296,6 +3395,8 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
                            mojom::RejectReason::kNotAvailable,
                            /*expected_pa_requests=*/{},
                            /*expected_bid_in_seller_currency=*/absl::nullopt,
+                           /*expected_score_ad_timeout=*/false,
+                           /*expected_signals_fetch_latency=*/absl::nullopt,
                            run_loop2.QuitClosure());
 
   int id1 = worklet_impl1->context_group_id_for_testing();
@@ -3420,6 +3521,8 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
                            mojom::RejectReason::kNotAvailable,
                            /*expected_pa_requests=*/{},
                            /*expected_bid_in_seller_currency=*/absl::nullopt,
+                           /*expected_score_ad_timeout=*/false,
+                           /*expected_signals_fetch_latency=*/absl::nullopt,
                            run_loop1.QuitClosure());
 
   decision_logic_url_ = GURL(kUrl2);
@@ -3436,6 +3539,8 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
                            mojom::RejectReason::kNotAvailable,
                            /*expected_pa_requests=*/{},
                            /*expected_bid_in_seller_currency=*/absl::nullopt,
+                           /*expected_score_ad_timeout=*/false,
+                           /*expected_signals_fetch_latency=*/absl::nullopt,
                            run_loop2.QuitClosure());
 
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent1, agent2;
@@ -3578,17 +3683,18 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
   decision_logic_url_ = GURL(kUrl);
   auto worklet = CreateWorklet(/*pause_for_debugger_on_start=*/true);
   base::RunLoop run_loop;
-  RunScoreAdOnWorkletAsync(worklet.get(), /*expected_score=*/1.0,
-                           /*expected_errors=*/{},
-                           mojom::ComponentAuctionModifiedBidParamsPtr(),
-                           /*expected_data_version=*/absl::nullopt,
-                           /*expected_debug_loss_report_url=*/absl::nullopt,
-                           /*expected_debug_win_report_url=*/absl::nullopt,
-                           /*expected_reject_reason=*/
-                           mojom::RejectReason::kNotAvailable,
-                           /*expected_pa_requests=*/{},
-                           /*expected_bid_in_seller_currency=*/absl::nullopt,
-                           run_loop.QuitClosure());
+  RunScoreAdOnWorkletAsync(
+      worklet.get(), /*expected_score=*/1.0,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_reject_reason=*/
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_score_ad_timeout=*/false,
+      /*expected_signals_fetch_latency=*/absl::nullopt, run_loop.QuitClosure());
 
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
   worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver());
@@ -3642,6 +3748,7 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
   RunReportResultExpectingResultAsync(
       worklet.get(), "1", GURL("https://foo.test/"),
       /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/false,
       /*expected_errors=*/{}, run_loop2.QuitClosure());
   TestDevToolsAgentClient::Event breakpoint_hit2 =
       debug.WaitForMethodNotification("Debugger.paused");
@@ -3670,6 +3777,8 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
                            mojom::RejectReason::kNotAvailable,
                            /*expected_pa_requests=*/{},
                            /*expected_bid_in_seller_currency=*/absl::nullopt,
+                           /*expected_score_ad_timeout=*/false,
+                           /*expected_signals_fetch_latency=*/absl::nullopt,
                            run_loop3.QuitClosure());
 
   TestDevToolsAgentClient::Event breakpoint_hit3 =
@@ -3736,7 +3845,9 @@ TEST_F(SellerWorkletTest, UnloadWhilePaused) {
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt, base::BindOnce([]() {
+      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_score_ad_timeout=*/false,
+      /*expected_signals_fetch_latency=*/absl::nullopt, base::BindOnce([]() {
         ADD_FAILURE() << "scoreAd shouldn't actually get to finish.";
       }));
 
@@ -4089,9 +4200,26 @@ class SellerWorkletRealTimeTest : public SellerWorkletTest {
 // `scoreAd` should time out due to AuctionV8Helper's default script timeout (50
 // ms).
 TEST_F(SellerWorkletRealTimeTest, ScoreAdTimedOut) {
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript(/*raw_return_value=*/"", R"(while (1))"), 0,
-      {"https://url.test/ execution of `scoreAd` timed out."});
+  AddJavascriptResponse(
+      &url_loader_factory_, decision_logic_url_,
+      CreateScoreAdScript(/*raw_return_value=*/"", R"(while (1))"));
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(
+      seller_worklet.get(), /*expected_score=*/0,
+      /*expected_errors=*/
+      {"https://url.test/ execution of `scoreAd` timed out."},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_score_ad_timeout=*/true,
+      /*expected_signals_fetch_latency=*/absl::nullopt, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {
@@ -4111,9 +4239,48 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {
   task_environment_.RunUntilIdle();
 
   seller_timeout_ = base::Milliseconds(20);
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript(/*raw_return_value=*/"", R"(while (1))"), 0,
-      {"https://url.test/ execution of `scoreAd` timed out."});
+  AddJavascriptResponse(
+      &url_loader_factory_, decision_logic_url_,
+      CreateScoreAdScript(/*raw_return_value=*/"", R"(while (1))"));
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(
+      seller_worklet.get(), /*expected_score=*/0,
+      /*expected_errors=*/
+      {"https://url.test/ execution of `scoreAd` timed out."},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_score_ad_timeout=*/true,
+      /*expected_signals_fetch_latency=*/absl::nullopt, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+TEST_F(SellerWorkletRealTimeTest, ReportResultLatency) {
+  // We use an infinite loop since we have some notion of how long a timeout
+  // should take.
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateReportToScript("1", "while (true) {}"));
+
+  mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+
+  base::RunLoop run_loop;
+  RunReportResultExpectingResultAsync(
+      seller_worklet.get(),
+      /*expected_signals_for_winner=*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/true,
+      /*expected_errors=*/
+      {"https://url.test/ execution of `reportResult` timed out."},
+      run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 class SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest
@@ -4374,6 +4541,8 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
                         const absl::optional<GURL>& debug_loss_report_url,
                         const absl::optional<GURL>& debug_win_report_url,
                         PrivateAggregationRequests pa_requests,
+                        base::TimeDelta scoring_latency,
+                        base::TimeDelta trusted_signals_fetch_latency,
                         const std::vector<std::string>& errors) {
               if (score == 1) {
                 EXPECT_TRUE(debug_loss_report_url.has_value());

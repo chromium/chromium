@@ -804,6 +804,8 @@ class CONTENT_EXPORT InterestGroupAuction
       const absl::optional<GURL>& debug_loss_report_url,
       const absl::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta scoring_latency,
+      base::TimeDelta trusted_signals_fetch_latency,
       const std::vector<std::string>& errors) override;
 
   PrivateAggregationPhase seller_phase() const {

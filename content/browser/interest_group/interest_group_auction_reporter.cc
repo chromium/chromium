@@ -315,7 +315,8 @@ void InterestGroupAuctionReporter::OnSellerWorkletFatalError(
                                /*signals_for_winner=*/absl::nullopt,
                                /*seller_report_url=*/absl::nullopt,
                                /*seller_ad_beacon_map=*/{},
-                               /*pa_requests=*/{}, errors);
+                               /*pa_requests=*/{},
+                               /*reporting_latency=*/base::TimeDelta(), errors);
 }
 
 void InterestGroupAuctionReporter::OnSellerWorkletReceived(
@@ -422,6 +423,7 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     const absl::optional<GURL>& seller_report_url,
     const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
     PrivateAggregationRequests pa_requests,
+    base::TimeDelta reporting_latency,
     const std::vector<std::string>& errors) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "seller_worklet_report_result",
                                   seller_info->trace_id);
@@ -436,6 +438,8 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
   log_private_aggregation_requests_callback_.Run(pa_requests);
 
   const url::Origin& seller = seller_info->auction_config->seller;
+  PrivateAggregationTimings timings;
+  timings.script_run_time = reporting_latency;
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
     // reportResult() only gets executed for seller when there was an auction
@@ -446,7 +450,7 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     absl::optional<PrivateAggregationRequestWithEventType> converted_request =
         FillInPrivateAggregationRequest(
             std::move(request), winning_bid, highest_scoring_other_bid,
-            /*reject_reason=*/absl::nullopt, PrivateAggregationTimings(),
+            /*reject_reason=*/absl::nullopt, timings,
             /*is_winner=*/true);
 
     // Only private aggregation requests with reserved event types are kept for
@@ -675,7 +679,8 @@ void InterestGroupAuctionReporter::OnBidderWorkletFatalError(
                             /*highest_scoring_other_bid=*/0.0,
                             /*bidder_report_url=*/absl::nullopt,
                             /*bidder_ad_beacon_map=*/{},
-                            /*pa_requests=*/{}, errors);
+                            /*pa_requests=*/{},
+                            /*reporting_latency=*/base::TimeDelta(), errors);
 }
 
 void InterestGroupAuctionReporter::OnBidderReportWinComplete(
@@ -684,6 +689,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
     const absl::optional<GURL>& bidder_report_url,
     const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
     PrivateAggregationRequests pa_requests,
+    base::TimeDelta reporting_latency,
     const std::vector<std::string>& errors) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "bidder_worklet_report_win",
                                   top_level_seller_winning_bid_info_.trace_id);
@@ -702,6 +708,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
 
   const url::Origin& bidder =
       winning_bid_info_.storage_interest_group->interest_group.owner;
+  PrivateAggregationTimings timings;
+  timings.script_run_time = reporting_latency;
   for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
        pa_requests) {
     // Only winner's reportWin() gets executed, so is_winner is true, which
@@ -712,7 +720,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
         FillInPrivateAggregationRequest(
             std::move(request), winning_bid,
             /*highest_scoring_other_bid=*/highest_scoring_other_bid,
-            /*reject_reason=*/absl::nullopt, PrivateAggregationTimings(),
+            /*reject_reason=*/absl::nullopt, timings,
             /*is_winner=*/true);
 
     if (converted_request.has_value()) {

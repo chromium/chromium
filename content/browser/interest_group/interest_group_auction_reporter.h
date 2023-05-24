@@ -322,6 +322,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       const absl::optional<GURL>& seller_report_url,
       const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta reporting_latency,
       const std::vector<std::string>& errors);
 
   // Starts request for a bidder worklet. Invokes OnBidderWorkletReceived() on
@@ -347,6 +348,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       const absl::optional<GURL>& bidder_report_url,
       const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
       PrivateAggregationRequests pa_requests,
+      base::TimeDelta reporting_latency,
       const std::vector<std::string>& errors);
 
   // Sets `reporting_complete_` to true an invokes MaybeCompleteCallback().
