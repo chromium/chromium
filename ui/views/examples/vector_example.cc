@@ -4,6 +4,7 @@
 
 #include "ui/views/examples/vector_example.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -209,10 +210,17 @@ class VectorIconGallery : public View, public TextfieldController {
       base::ScopedAllowBlockingForTesting allow_blocking;
       base::FileEnumerator file_iter(path, false, base::FileEnumerator::FILES,
                                      FILE_PATH_LITERAL("*.icon"));
-      base::FilePath file = file_iter.Next();
+      std::vector<base::FilePath> files;
+      for (base::FilePath input_file = file_iter.Next(); !input_file.empty();
+           input_file = file_iter.Next()) {
+        files.push_back(input_file);
+      }
+      std::sort(files.begin(), files.end());
 
-      while (!file.empty() && count < max) {
-        count++;
+      for (base::FilePath file : files) {
+        if (count++ >= max) {
+          break;
+        }
         std::string file_content;
         base::ReadFileToString(file, &file_content);
 
