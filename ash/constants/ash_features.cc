@@ -2148,12 +2148,25 @@ BASE_FEATURE(kSmartLockUIRevamp,
              "SmartLockUIRevamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the consumer and enterprise support for provisioning eSIM profiles
+// using Subscription Manager Discovery Service (SM-DS). This flag is a no-op
+// unless the SmdsSupportEuiccUpload and SmdsDbusMigration flags are enabled.
+// These additional flags are required since the functionality they impelemnt is
+// required by this flag, such as:
+//  - Using the newly added RefreshSmdxProfiles API.
+//  - Tracking when an eSIM profile has already been installed for a
+//    policy-defined cellular network.
 BASE_FEATURE(kSmdsSupport, "SmdsSupport", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables tracking when a policy-defined cellular network configured to use
+// SM-DS has already been applied and an eSIM profile for the network was
+// installed.
 BASE_FEATURE(kSmdsSupportEuiccUpload,
              "SmdsSupportEuiccUpload",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the usage of DBus APIs that improve the stability around performing
+// SM-DS scans.
 BASE_FEATURE(kSmdsDbusMigration,
              "SmdsDbusMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3496,13 +3509,12 @@ bool IsShimlessRMADiagnosticPageEnabled() {
 
 bool IsSmdsSupportEnabled() {
   return base::FeatureList::IsEnabled(kSmdsDbusMigration) &&
-         base::FeatureList::IsEnabled(kSmdsSupport);
+         base::FeatureList::IsEnabled(kSmdsSupport) &&
+         base::FeatureList::IsEnabled(kSmdsSupportEuiccUpload);
 }
 
 bool IsSmdsSupportEuiccUploadEnabled() {
-  return base::FeatureList::IsEnabled(kSmdsDbusMigration) &&
-         base::FeatureList::IsEnabled(kSmdsSupport) &&
-         base::FeatureList::IsEnabled(kSmdsSupportEuiccUpload);
+  return base::FeatureList::IsEnabled(kSmdsSupportEuiccUpload);
 }
 
 bool IsSmdsDbusMigrationEnabled() {
