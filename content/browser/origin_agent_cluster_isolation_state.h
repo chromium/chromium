@@ -41,6 +41,8 @@ class CONTENT_EXPORT OriginAgentClusterIsolationState {
     return requires_origin_keyed_process_;
   }
 
+  bool operator==(const OriginAgentClusterIsolationState&) const = default;
+
  private:
   OriginAgentClusterIsolationState(bool is_origin_agent_cluster,
                                    bool requires_origin_keyed_process)
