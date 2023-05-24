@@ -22,8 +22,10 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -45,6 +47,8 @@ constexpr char kVideoConferenceTrayUseWhileDisabledNudgeId[] =
 
 // The cool down duration for speak-on-mute detection notification in seconds.
 constexpr int KSpeakOnMuteNotificationCoolDownDuration = 60;
+
+constexpr auto kRepeatedShowTimerInterval = base::Milliseconds(100);
 
 VideoConferenceTrayController* g_controller_instance = nullptr;
 
@@ -69,7 +73,12 @@ VideoConferenceTray* GetVcTrayInActiveWindow() {
 
 }  // namespace
 
-VideoConferenceTrayController::VideoConferenceTrayController() {
+VideoConferenceTrayController::VideoConferenceTrayController()
+    : repeated_shows_timer_(
+          FROM_HERE,
+          kRepeatedShowTimerInterval,
+          this,
+          &VideoConferenceTrayController::RecordRepeatedShows) {
   DCHECK(!g_controller_instance);
   g_controller_instance = this;
 }
@@ -310,6 +319,12 @@ void VideoConferenceTrayController::UpdateWithMediaState(
 
   if (new_tray_target_visibility && !old_tray_target_visibility) {
     effects_manager_.RecordInitialStates();
+
+    // Keeps increment the count to track the number of times the view flickers.
+    // When the delay of `kRepeatedShowTimerInterval` has reached, record that
+    // count.
+    ++count_repeated_shows_;
+    repeated_shows_timer_.Reset();
   }
 
   if (state_.has_media_app != old_state.has_media_app) {
@@ -466,6 +481,19 @@ void VideoConferenceTrayController::UpdateShelfAutoHide(MediaApps media_apps) {
             disable_shelf_autohide_locks.clear();
           },
           std::ref(disable_shelf_autohide_locks_)));
+}
+
+void VideoConferenceTrayController::RecordRepeatedShows() {
+  // Note that we also record the metric when `count_repeated_shows_` is one
+  // even though this is not a bad signal. This is because we want to record
+  // proper shows so we can analyze the repeated shows in context.
+  if (count_repeated_shows_ == 0) {
+    return;
+  }
+
+  base::UmaHistogramCounts100("Ash.VideoConference.NumberOfRepeatedShows",
+                              count_repeated_shows_);
+  count_repeated_shows_ = 0;
 }
 
 }  // namespace ash

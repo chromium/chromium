@@ -6459,6 +6459,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.VideoConference.NumberOfRepeatedShows" units="shows"
+    expires_after="2024-03-16">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the number of times that the video conference tray repeatedly shows
+    per 100ms. Emitted when the sequence of consecutive shows in the video
+    conference tray has finished.
+  </summary>
+</histogram>
+
 <histogram name="Ash.VideoConference.ReturnToApp.Click"
     enum="VideoConferenceAppType" expires_after="2024-03-16">
   <owner>leandre@google.com</owner>

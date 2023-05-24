@@ -16,6 +16,7 @@
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
@@ -31,6 +32,9 @@ constexpr char kVideoConferenceTraySpeakOnMuteDetectedNudgeId[] =
 
 constexpr char kVideoConferenceTrayUseWhileDisabledNudgeId[] =
     "video_conference_tray_nudge_ids.use_while_disabled";
+
+constexpr char kRepeatedShowsHistogramName[] =
+    "Ash.VideoConference.NumberOfRepeatedShows";
 
 bool IsNudgeShown(const std::string& id) {
   return Shell::Get()->anchored_nudge_manager()->IsNudgeShown(id);
@@ -48,7 +52,8 @@ views::View* GetNudgeAnchorView(const std::string& id) {
 
 class VideoConferenceTrayControllerTest : public AshTestBase {
  public:
-  VideoConferenceTrayControllerTest() = default;
+  VideoConferenceTrayControllerTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   VideoConferenceTrayControllerTest(const VideoConferenceTrayControllerTest&) =
       delete;
   VideoConferenceTrayControllerTest& operator=(
@@ -340,6 +345,59 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
   // cool down timer.
   controller()->OnSpeakOnMuteDetected();
   EXPECT_TRUE(IsNudgeShown(nudge_id));
+}
+
+TEST_F(VideoConferenceTrayControllerTest, RecordRepeatedShows) {
+  // Set up 2 displays. Note that only one instance should be recorded for the
+  // primary display when there are repeated shows.
+  UpdateDisplay("100x200,300x400");
+
+  base::HistogramTester histograms;
+
+  auto flicker_vc_tray = [](int number_of_flicker,
+                            FakeVideoConferenceTrayController* controller,
+                            base::test::TaskEnvironment* task_environment) {
+    // Makes the view flicker (show then hide) for `number_of_flicker` of times.
+    for (auto i = 0; i < number_of_flicker; i++) {
+      VideoConferenceMediaState state;
+      state.has_media_app = true;
+      controller->UpdateWithMediaState(state);
+
+      state.has_media_app = false;
+      controller->UpdateWithMediaState(state);
+
+      task_environment->FastForwardBy(base::Milliseconds(80));
+    }
+    task_environment->FastForwardBy(base::Milliseconds(100));
+  };
+
+  int expected_sample = 6;
+  flicker_vc_tray(expected_sample, controller(), task_environment());
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, expected_sample, 1);
+
+  // Makes one more flickering after 100ms. This flicker should not count
+  // towards the previous ones, but this will be counted in a bucket for 1 show.
+  VideoConferenceMediaState state;
+  state.has_media_app = true;
+  controller()->UpdateWithMediaState(state);
+
+  state.has_media_app = false;
+  controller()->UpdateWithMediaState(state);
+  task_environment()->FastForwardBy(base::Milliseconds(100));
+
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, expected_sample + 1,
+                               0);
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 1, 1);
+
+  // Make sure it works again.
+  flicker_vc_tray(8, controller(), task_environment());
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 8, 1);
+
+  flicker_vc_tray(2, controller(), task_environment());
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 2, 1);
+
+  flicker_vc_tray(1, controller(), task_environment());
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 1, 2);
 }
 
 }  // namespace ash

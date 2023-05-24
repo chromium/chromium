@@ -11,6 +11,7 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -167,6 +168,9 @@ class ASH_EXPORT VideoConferenceTrayController
   // of active `MediaApp`'s to force the shelf to show or hide.
   void UpdateShelfAutoHide(MediaApps apps);
 
+  // Records repeated shows metric when the timer is stop.
+  void RecordRepeatedShows();
+
   // The number of capturing apps, fetched from `VideoConferenceManagerAsh`.
   int capturing_apps_ = 0;
 
@@ -209,6 +213,10 @@ class ASH_EXPORT VideoConferenceTrayController
   // which is after VideoConferenceTrayController.
   raw_ptr<VideoConferenceManagerBase> video_conference_manager_ = nullptr;
   bool initialized_ = false;
+
+  // Used to record metrics of repeated shows per 100 ms.
+  int count_repeated_shows_ = 0;
+  base::DelayTimer repeated_shows_timer_;
 
   base::WeakPtrFactory<VideoConferenceTrayController> weak_ptr_factory_{this};
 };
