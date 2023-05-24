@@ -19,13 +19,13 @@ struct InactiveTabsButton: View {
     @Published var count: Int?
   }
   @ObservedObject var state: State
-  @Environment(\.sizeCategory) var sizeCategory
+  @Environment(\.dynamicTypeSize) var typeSize
 
   var body: some View {
     Button {
       state.action?()
     } label: {
-      if sizeCategory < .accessibilityMedium {
+      if typeSize < .accessibility1 {
         regularLayout()
       } else {
         xxlLayout()
