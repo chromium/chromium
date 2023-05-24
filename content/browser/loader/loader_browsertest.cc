@@ -765,7 +765,7 @@ class RequestDataBrowserTest : public ContentBrowserTest {
   std::unique_ptr<URLLoaderInterceptor> interceptor_;
 };
 
-IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, DISABLED_Basic) {
+IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, Basic) {
   GURL top_url(embedded_test_server()->GetURL("/page_with_subresources.html"));
   url::Origin top_origin = url::Origin::Create(top_url);
 

@@ -5454,6 +5454,8 @@ data/empty-treat-as-public-address.html.mock-http-headers
 data/empty.html
 data/empty404.html
 data/empty404.html.mock-http-headers
+data/empty-script.js
+data/empty-style.css
 data/event-latency-animation.html
 data/fedcm/accounts_endpoint.json
 data/fedcm/client_metadata_endpoint.json
@@ -5902,6 +5904,7 @@ data/icon-with-two-entries.ico
 data/iframe_clipped.html
 data/iframe_out_of_view.html
 data/image.jpg
+data/image-inline.png
 data/indexeddb/blobs_use_quota.html
 data/indexeddb/blocked_explicit_commit.html
 data/indexeddb/blocked_explicit_commit.js
