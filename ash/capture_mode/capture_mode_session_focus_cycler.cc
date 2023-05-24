@@ -757,11 +757,14 @@ CaptureModeSessionFocusCycler::GetCurrentGroupList() const {
 bool CaptureModeSessionFocusCycler::IsGroupAvailable(FocusGroup group) const {
   switch (group) {
     case FocusGroup::kNone:
-    case FocusGroup::kTypeSource:
     case FocusGroup::kSettingsClose:
     case FocusGroup::kPendingSettings:
     case FocusGroup::kPendingRecordingType:
       return true;
+    case FocusGroup::kTypeSource: {
+      CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
+      return bar_view->GetCaptureTypeView() && bar_view->GetCaptureSourceView();
+    }
     case FocusGroup::kSelection:
     case FocusGroup::kCaptureButton: {
       // The selection UI and capture button are focusable only when it is
@@ -806,9 +809,7 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       CaptureModeBarView* bar_view = session_->capture_mode_bar_view_;
       CaptureModeTypeView* type_view = bar_view->GetCaptureTypeView();
       CaptureModeSourceView* source_view = bar_view->GetCaptureSourceView();
-      if (!type_view || !source_view) {
-        break;
-      }
+      CHECK(type_view && source_view);
       for (auto* button :
            {type_view->image_toggle_button(), type_view->video_toggle_button(),
             source_view->fullscreen_toggle_button(),
