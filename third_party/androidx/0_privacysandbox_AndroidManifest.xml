@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.chromium.privacysandbox.overrides">
+
+    <!-- Library needed for androidx.privacysandbox.ads:ads-adservices to work on Android R & S,
+      which we do not currently support. Removing out of caution to prevent the library from
+      slowing down renderer process start-up.
+      https://crbug.com/1448095
+    -->
+    <application>
+      <uses-library android:name="android.ext.adservices" tools:node="remove" />
+    </application>
+</manifest>
