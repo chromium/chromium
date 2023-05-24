@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -108,7 +109,8 @@ class PresentationRequestNotificationItem final
   gfx::ImageSkia artwork_image_;
   gfx::ImageSkia favicon_image_;
 
-  const mojo::Remote<global_media_controls::mojom::DevicePickerProvider>&
+  const raw_ref<
+      const mojo::Remote<global_media_controls::mojom::DevicePickerProvider>>
       provider_;
 
   base::WeakPtrFactory<PresentationRequestNotificationItem> weak_ptr_factory_{

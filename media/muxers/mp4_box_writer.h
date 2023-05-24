@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/sequence_checker.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/fourccs.h"
@@ -46,10 +47,10 @@ class MEDIA_EXPORT Mp4BoxWriter {
   void AddChildBox(std::unique_ptr<Mp4BoxWriter> box_writer);
 
   // Get the Mp4MuxerContext object.
-  const Mp4MuxerContext& context() const { return context_; }
+  const Mp4MuxerContext& context() const { return *context_; }
 
  private:
-  const Mp4MuxerContext& context_;
+  const raw_ref<const Mp4MuxerContext> context_;
   std::vector<std::unique_ptr<Mp4BoxWriter>> child_boxes_;
   SEQUENCE_CHECKER(sequence_checker_);
 };

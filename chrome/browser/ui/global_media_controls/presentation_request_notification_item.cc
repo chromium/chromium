@@ -80,8 +80,8 @@ PresentationRequestNotificationItem::PresentationRequestNotificationItem(
 }
 
 PresentationRequestNotificationItem::~PresentationRequestNotificationItem() {
-  if (provider_.is_bound()) {
-    provider_->HideItem();
+  if (provider_->is_bound()) {
+    (*provider_)->HideItem();
   }
 }
 
@@ -154,7 +154,7 @@ void PresentationRequestNotificationItem::SetMediaSessionForTest(
 }
 
 void PresentationRequestNotificationItem::UpdatePickerWithMetadata() {
-  if (!provider_.is_bound()) {
+  if (!provider_->is_bound()) {
     return;
   }
   // If we have metadata from the media session, use that.
@@ -174,16 +174,16 @@ void PresentationRequestNotificationItem::UpdatePickerWithMetadata() {
   if (web_contents && data.artist.empty()) {
     data.artist = web_contents->GetTitle();
   }
-  provider_->OnMetadataChanged(data);
+  (*provider_)->OnMetadataChanged(data);
 }
 
 void PresentationRequestNotificationItem::UpdatePickerWithImages() {
-  if (!provider_.is_bound()) {
+  if (!provider_->is_bound()) {
     return;
   }
-  provider_->OnArtworkImageChanged(artwork_image_);
+  (*provider_)->OnArtworkImageChanged(artwork_image_);
   if (!favicon_image_.isNull()) {
-    provider_->OnFaviconImageChanged(favicon_image_);
+    (*provider_)->OnFaviconImageChanged(favicon_image_);
     return;
   }
   // Otherwise, get one ourselves.
@@ -192,12 +192,12 @@ void PresentationRequestNotificationItem::UpdatePickerWithImages() {
     favicon::FaviconDriver* favicon_driver =
         favicon::ContentFaviconDriver::FromWebContents(web_contents);
     if (favicon_driver) {
-      provider_->OnFaviconImageChanged(
-          favicon_driver->GetFavicon().AsImageSkia());
+      (*provider_)
+          ->OnFaviconImageChanged(favicon_driver->GetFavicon().AsImageSkia());
       return;
     }
   }
-  provider_->OnFaviconImageChanged(gfx::ImageSkia());
+  (*provider_)->OnFaviconImageChanged(gfx::ImageSkia());
 }
 
 void PresentationRequestNotificationItem::OnArtworkBitmap(

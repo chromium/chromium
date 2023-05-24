@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -4805,83 +4806,83 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
 
   struct TestCase {
     const std::string update_contents;
-    const blink::InterestGroup& expected_group;
+    const raw_ref<const blink::InterestGroup> expected_group;
   } kTestCases[] = {
       // ***
       // ads renderURL
       // ***
       {R"("ads": [{"renderUrl": "https://example.com/render"}])",
-       updated_interest_group_ads},
+       raw_ref(updated_interest_group_ads)},
       {R"("ads": [{"renderUrl": "https://example.com/render",
                  "renderURL": "https://example.com/render"}])",
-       updated_interest_group_ads},
+       raw_ref(updated_interest_group_ads)},
       {R"("ads": [{"renderUrl": "https://example.com/render",
                  "renderURL": "https://example.com/render2"}])",
-       initial_interest_group},
-      {R"("ads": [{}])", initial_interest_group},
+       raw_ref(initial_interest_group)},
+      {R"("ads": [{}])", raw_ref(initial_interest_group)},
       // ***
       // adComponents renderURL
       // ***
       {R"("adComponents": [{"renderUrl": "https://example.com/render"}])",
-       updated_interest_group_ad_components},
+       raw_ref(updated_interest_group_ad_components)},
       {R"("adComponents": [{"renderUrl": "https://example.com/render",
                  "renderURL": "https://example.com/render"}])",
-       updated_interest_group_ad_components},
+       raw_ref(updated_interest_group_ad_components)},
       {R"("adComponents": [{"renderUrl": "https://example.com/render",
                  "renderURL": "https://example.com/render2"}])",
-       initial_interest_group},
-      {R"("adComponents": [{}])", initial_interest_group},
+       raw_ref(initial_interest_group)},
+      {R"("adComponents": [{}])", raw_ref(initial_interest_group)},
       // ***
       // biddingLogicURL
       // ***
       {base::StringPrintf(R"("biddingLogicUrl": "%s/bidding.js")",
                           kOriginStringA),
-       updated_interest_group_bidding_logic_url},
+       raw_ref(updated_interest_group_bidding_logic_url)},
       {base::StringPrintf(R"("biddingLogicURL": "%s/bidding.js")",
                           kOriginStringA),
-       updated_interest_group_bidding_logic_url},
+       raw_ref(updated_interest_group_bidding_logic_url)},
       {base::StringPrintf(R"("biddingLogicUrl": "%s/bidding.js",)"
                           R"("biddingLogicURL": "%s/bidding.js")",
                           kOriginStringA, kOriginStringA),
-       updated_interest_group_bidding_logic_url},
+       raw_ref(updated_interest_group_bidding_logic_url)},
       {base::StringPrintf(R"("biddingLogicUrl": "%s/bidding.js",)"
                           R"("biddingLogicURL": "%s/bidding2.js")",
                           kOriginStringA, kOriginStringA),
-       initial_interest_group},
+       raw_ref(initial_interest_group)},
       // ***
       // biddingWasmHelperURL
       // ***
       {base::StringPrintf(R"("biddingWasmHelperUrl": "%s/bidding.wasm")",
                           kOriginStringA),
-       updated_interest_group_bidding_wasm_helper_url},
+       raw_ref(updated_interest_group_bidding_wasm_helper_url)},
       {base::StringPrintf(R"("biddingWasmHelperURL": "%s/bidding.wasm")",
                           kOriginStringA),
-       updated_interest_group_bidding_wasm_helper_url},
+       raw_ref(updated_interest_group_bidding_wasm_helper_url)},
       {base::StringPrintf(R"("biddingWasmHelperUrl": "%s/bidding.wasm",)"
                           R"("biddingWasmHelperURL": "%s/bidding.wasm")",
                           kOriginStringA, kOriginStringA),
-       updated_interest_group_bidding_wasm_helper_url},
+       raw_ref(updated_interest_group_bidding_wasm_helper_url)},
       {base::StringPrintf(R"("biddingWasmHelperUrl": "%s/bidding.wasm",)"
                           R"("biddingWasmHelperURL": "%s/bidding2.wasm")",
                           kOriginStringA, kOriginStringA),
-       initial_interest_group},
+       raw_ref(initial_interest_group)},
       // ***
       // trustedBiddingSignalsURL
       // ***
       {base::StringPrintf(R"("trustedBiddingSignalsUrl": "%s/signals.json")",
                           kOriginStringA),
-       updated_interest_group_trusted_bidding_signals_url},
+       raw_ref(updated_interest_group_trusted_bidding_signals_url)},
       {base::StringPrintf(R"("trustedBiddingSignalsURL": "%s/signals.json")",
                           kOriginStringA),
-       updated_interest_group_trusted_bidding_signals_url},
+       raw_ref(updated_interest_group_trusted_bidding_signals_url)},
       {base::StringPrintf(R"("trustedBiddingSignalsUrl": "%s/signals.json",)"
                           R"("trustedBiddingSignalsURL": "%s/signals.json")",
                           kOriginStringA, kOriginStringA),
-       updated_interest_group_trusted_bidding_signals_url},
+       raw_ref(updated_interest_group_trusted_bidding_signals_url)},
       {base::StringPrintf(R"("trustedBiddingSignalsUrl": "%s/signals.json",)"
                           R"("trustedBiddingSignalsURL": "%s/signals2.json")",
                           kOriginStringA, kOriginStringA),
-       initial_interest_group},
+       raw_ref(initial_interest_group)},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -4900,7 +4901,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
         GetInterestGroupsForOwner(kOriginA);
     ASSERT_EQ(groups.size(), 1u);
     EXPECT_TRUE(
-        groups[0].interest_group.IsEqualForTesting(test_case.expected_group));
+        groups[0].interest_group.IsEqualForTesting(*test_case.expected_group));
 
     // Reset for the next iteration.
     JoinInterestGroupAndFlush(initial_interest_group);

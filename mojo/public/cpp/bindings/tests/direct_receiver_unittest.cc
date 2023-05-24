@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -164,7 +165,7 @@ class ServiceRunner {
     base::RunLoop wait_loop;
     service_.AsyncCall(&ServiceImpl::GetReceiverPortal)
         .Then(base::BindLambdaForTesting([&](IpczHandle portal) {
-          test_.WaitForDirectRemoteLink(portal);
+          test_->WaitForDirectRemoteLink(portal);
           wait_loop.Quit();
         }));
     wait_loop.Run();
@@ -177,7 +178,7 @@ class ServiceRunner {
   }
 
  private:
-  DirectReceiverTest& test_;
+  const raw_ref<DirectReceiverTest> test_;
   base::Thread impl_thread_{"Impl Thread"};
   base::SequenceBound<ServiceImpl> service_;
 };
