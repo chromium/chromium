@@ -37,6 +37,10 @@ TEST_F('NewTabPageAppTest', 'OgbThemingRemoveScrimTrue', function() {
   runMochaSuite('NewTabPageAppTest ogb theming removeScrim is true');
 });
 
+TEST_F('NewTabPageAppTest', 'OgbScrim', function() {
+  runMochaSuite('NewTabPageAppTest ogb scrim');
+});
+
 TEST_F('NewTabPageAppTest', 'Theming', function() {
   runMochaSuite('NewTabPageAppTest theming');
 });
