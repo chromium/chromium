@@ -170,7 +170,7 @@ export class PowerBookmarkRowElement extends PolymerElement {
     }
     event.preventDefault();
     event.stopPropagation();
-    if (this.hasCheckbox) {
+    if (this.hasCheckbox && !this.checkboxDisabled) {
       // Clicking the row should trigger a checkbox click rather than a
       // standard row click.
       const checkbox =
