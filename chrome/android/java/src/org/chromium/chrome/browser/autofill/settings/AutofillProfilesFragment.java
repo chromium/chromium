@@ -35,10 +35,12 @@ import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.UserSelectableType;
 
 /**
@@ -149,7 +151,6 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         });
         getPreferenceScreen().addPreference(autofillSwitch);
 
-        final boolean addressesNotSyncedWithSyncOn = addressesNotSyncedWithSyncOn();
         for (AutofillProfile profile : PersonalDataManager.getInstance().getProfilesForSettings()) {
             assert profile.getIsLocal();
             // Add a preference for the profile.
@@ -157,7 +158,7 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             pref.setTitle(profile.getFullName());
             pref.setSummary(profile.getLabel());
             pref.setKey(pref.getTitle().toString()); // For testing.
-            if (addressesNotSyncedWithSyncOn && profile.getSource() != Source.ACCOUNT) {
+            if (shouldShowLocalProfileIcon(profile)) {
                 // Conditionally set local profile icon for address profiles that are neither
                 // synced, nor saved in the account.
                 pref.setWidgetLayoutResource(R.layout.autofill_local_profile_icon);
@@ -262,10 +263,17 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
         return new AutofillAddress(getActivity(), profile);
     }
 
-    private boolean addressesNotSyncedWithSyncOn() {
+    private boolean shouldShowLocalProfileIcon(AutofillProfile profile) {
+        if (!IdentityServicesProvider.get().getIdentityManager(mProfile).hasPrimaryAccount(
+                    ConsentLevel.SIGNIN)) {
+            return false;
+        }
+        if (profile.getSource() == Source.ACCOUNT) {
+            return false;
+        }
         SyncService syncService = SyncService.get();
-        return syncService != null && syncService.isSyncFeatureEnabled()
-                && !syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
+        return syncService == null || !syncService.isSyncFeatureEnabled()
+                || !syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
     }
 
     private Context getStyledContext() {
