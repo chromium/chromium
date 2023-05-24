@@ -10035,12 +10035,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPowerBookmarksSidePanel)},
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"policy-logs-page-desktop", flag_descriptions::kPolicyLogsPageDesktopName,
-     flag_descriptions::kPolicyLogsPageDesktopDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(policy::features::kPolicyLogsPageDesktop)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"gallery-app-pdf-edit-notification",
      flag_descriptions::kGalleryAppPdfEditNotificationName,

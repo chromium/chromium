@@ -859,13 +859,6 @@ const char kDisallowDocWrittenScriptsUiDescription[] =
     "Disallows fetches for third-party parser-blocking scripts inserted into "
     "the main frame via document.write.";
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kPolicyLogsPageDesktopName[] = "Policy Logs Page on Desktop";
-const char kPolicyLogsPageDesktopDescription[] =
-    "Enable the new chrome://policy/logs page containing logs for debugging "
-    "policy related issues on desktop.";
-#endif  //! BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kDisallowManagedProfileSignoutName[] =
     "Disallow managed profile signout";
@@ -3996,7 +3989,7 @@ const char kPasswordsInCredManDescription[] =
 
 const char kPolicyLogsPageAndroidName[] = "Policy Logs Page on Android";
 const char kPolicyLogsPageAndroidDescription[] =
-    "Enable the new chrome://policy/logs page containing logs for debugging "
+    "Enable the new chrome://policy-logs page containing logs for debugging "
     "policy related issues on Android.";
 
 const char kQueryTilesName[] = "Show query tiles";

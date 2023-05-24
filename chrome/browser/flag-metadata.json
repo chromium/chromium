@@ -6188,11 +6188,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "policy-logs-page-desktop",
-    "owners": [ "esalma", "ftirelo" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "policy-logs-page-ios",
     "owners": [ "esalma", "ftirelo" ],
     "expiry_milestone": 122
