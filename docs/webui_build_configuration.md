@@ -317,9 +317,8 @@ if (optimize_webui) {
 ### **minify_js**
 ```
 This rule is used to minify Javascript files to reduce build size.
-Also generates a manifest file to |target_gen_dir| named
-minify_js_manifest.json. This can be used alongside bundle_js(), if
-bundling and minifying is desired.
+This can be used alongside bundle_js(), if bundling and minifying is
+desired.
 ```
 
 #### **Arguments**
@@ -327,6 +326,9 @@ bundling and minifying is desired.
 in_folder: The location of the input files to be minified.
 in_files: The list of JS files to minify with respect to the |in_folder|.
 out_folder: The location where minified files will be outputted.
+out_manifest: The location to write the manifest file of all files
+              outputted by minify_js(). Defaults to
+              $target_gen_dir/${target_name}_manifest.json.
 deps: Targets generating any files being minified.
 ```
 

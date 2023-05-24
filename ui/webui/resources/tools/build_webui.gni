@@ -453,7 +453,8 @@ template("build_webui") {
 
     if (optimize) {
       deps += [ ":build_min_js" ]
-      manifest_files += [ "$target_gen_dir/minify_js_manifest.json" ]
+      manifest_files += filter_include(get_target_outputs(":build_min_js"),
+                                       [ "*_manifest.json" ])
       if (bundle) {
         resource_path_rewrites = []
         foreach(f, invoker.optimize_webui_in_files) {
