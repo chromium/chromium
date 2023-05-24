@@ -210,7 +210,7 @@ output to the file `log.txt`:
 Running:
 
 ```sh
-npm test
+npm run unit
 ```
 
 ### E2E tests
@@ -232,7 +232,9 @@ The E2E tests require BiDi server running on the same host. By default, tests
 try to connect to the port `8080`. The server can be run from the project root:
 
 ```sh
-npm run e2e
+npm run e2e  # alias to to e2e-headless
+npm run e2e-headful
+npm run e2e-headless
 ```
 
 Use the `PORT` environment variable to connect to another port:
@@ -335,38 +337,13 @@ npm run build --watch
 #### 3. Run
 
 ```sh
-./wpt/wpt run \
-  --webdriver-binary runBiDiServer.sh \
-  --binary "$BROWSER_BIN" \
-  --manifest wpt/MANIFEST.json \
-  --metadata wpt-metadata/mapper/headless \
-  chromium \
-  webdriver/tests/bidi/
+npm run wpt -- webdriver/tests/bidi/
 ```
 
 ### Update WPT expectations if needed
 
-#### 1. Run WPT tests with custom `log-wptreport`:
-
 ```sh
-./wpt/wpt run \
-  --webdriver-binary runBiDiServer.sh \
-  --binary "$BROWSER_BIN" \
-  --manifest wpt/MANIFEST.json \
-  --metadata wpt-metadata/mapper/headless \
-  --log-wptreport wptreport.json \
-  chromium \
-  webdriver/tests/bidi/
-```
-
-#### 2. Update expectations based on the previous test run:
-
-```sh
-./wpt/wpt update-expectations \
-  --product chromium \
-  --manifest wpt/MANIFEST.json \
-  --metadata wpt-metadata/mapper/headless \
-  wptreport.json
+UPDATE_EXPECTATIONS=true npm run wpt -- webdriver/tests/bidi/
 ```
 
 ## How does it work?
@@ -388,6 +365,12 @@ The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To 
 new command, add it to `_processCommand`, write and call processor for it.
 
 ### Publish new `npm` release
+
+1. Dry-run
+
+   ```sh
+   npm publish --dry-run
+   ```
 
 1. Open a PR bumping the chromium-bidi version number in `package.json` for review:
 

@@ -112,7 +112,7 @@ jobs:
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
           xvfb-run --auto-servernum
-          ./runWPT.sh webdriver/tests/bidi/
+          npm run wpt -- webdriver/tests/bidi/
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: false
@@ -122,7 +122,7 @@ jobs:
         if: matrix.head == 'headless' && matrix.kind == 'mapper'
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: ./runWPT.sh webdriver/tests/bidi/
+        run: npm run wpt -- webdriver/tests/bidi/
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: true
@@ -132,7 +132,7 @@ jobs:
         if: matrix.head == 'headless' && matrix.kind == 'chromedriver'
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: ./runWPT.sh webdriver/tests/bidi/
+        run: npm run wpt -- webdriver/tests/bidi/
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: true

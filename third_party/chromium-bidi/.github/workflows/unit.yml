@@ -28,7 +28,7 @@ jobs:
       - name: Verify mapper size
         run: du -sh lib/iife/mapperTab.js
       - name: Run unit tests
-        run: npm test
+        run: npm run unit
 
 env:
   FORCE_COLOR: 3

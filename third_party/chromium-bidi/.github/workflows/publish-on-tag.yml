@@ -26,7 +26,7 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r tests/requirements.txt
       - name: Test
-        run: npm test
+        run: npm run unit
       - name: Publish
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN}}
