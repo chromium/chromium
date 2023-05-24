@@ -468,10 +468,15 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(size_), color_type_,
                           kPremul_SkAlphaType, sk_color_space_);
+    // Surfaceless output devices allocate shared image behind the scenes. On
+    // the GPU thread this is treated same as regular IOSurfaces for the
+    // purpose of creating Graphite TextureInfo i.e. it will have CopySrc and
+    // CopyDst usage. So don't treat it like a root surface which generally
+    // won't have or support those usages.
+    const bool is_root_surface = !capabilities_.supports_surfaceless;
     skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
         dependency_->gr_context_type(), format_, /*plane_index=*/0,
-        /*mipmapped=*/false,
-        /*root_surface=*/!capabilities_.supports_surfaceless);
+        /*mipmapped=*/false, is_root_surface);
     CHECK(texture_info.isValid());
     current_paint_.emplace(graphite_recorder_, image_info, texture_info);
   } else {
