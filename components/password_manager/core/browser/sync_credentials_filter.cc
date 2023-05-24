@@ -12,6 +12,8 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -65,17 +67,19 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
                                 primary_account.email);
   }
 
-  // The browser is signed-out and the web just signed-in. On desktop, this
-  // immediately leads to browser sign-in, so don't offer saving.
-  // TODO(crbug.com/1446361): The above is false if the user disabled browser
-  // sign-in. Return true then. Currently these users can't save Gaia passwords.
-
+// The browser is signed-out and the web just signed-in.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // On desktop, this normally leads to immediate browser sign-in, in which case
+  // we shouldn't offer saving. One exception is if browser sign-in is disabled.
+  return !client_->GetPrefs()->GetBoolean(prefs::kSigninAllowed);
+#else
   // On mobile, sign-in via the web page doesn't lead to browser sign-in, so
   // offer saving.
   // (Navigating to the Gaia web page opens Chrome UI which must be accepted to
   // perform browser+web sign-in. The code path here is only hit if that UI was
   // suppressed/ dismissed and the user interacted directly with the page.)
-  return BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS);
+  return true;
+#endif
 }
 
 bool SyncCredentialsFilter::ShouldSaveGaiaPasswordHash(

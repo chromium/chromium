@@ -33,6 +33,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
@@ -85,14 +87,12 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
       password_manager::PasswordManagerDriver*) override {
     return &webauthn_credentials_delegate_;
   }
+  TestingPrefServiceSimple* GetPrefs() const override { return prefs_.get(); }
+  bool IsOffTheRecord() const override { return is_incognito_; }
 
   void set_last_committed_entry_url(base::StringPiece url_spec) {
     last_committed_origin_ = url::Origin::Create(GURL(url_spec));
   }
-
-  PrefService* GetPrefs() const override { return prefs_.get(); }
-
-  bool IsOffTheRecord() const override { return is_incognito_; }
 
   void SetIsOffTheRecord(bool is_incognito) { is_incognito_ = is_incognito; }
 
@@ -117,7 +117,7 @@ class CredentialsFilterTest : public SyncUsernameTestBase,
   // Flag for creating a PasswordFormManager, deciding its IsNewLogin() value.
   enum class LoginState { NEW, EXISTING };
 
-  CredentialsFilterTest() : pending_(SimpleGaiaForm("user@gmail.com")) {
+  CredentialsFilterTest() {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{features::kPasswordReuseDetectionEnabled,
@@ -130,6 +130,8 @@ class CredentialsFilterTest : public SyncUsernameTestBase,
     }
 
     client_ = std::make_unique<FakePasswordManagerClient>(identity_manager());
+    signin::IdentityManager::RegisterProfilePrefs(
+        client_->GetPrefs()->registry());
     form_manager_ = std::make_unique<PasswordFormManager>(
         client_.get(), driver_.AsWeakPtr(), pending_.form_data, &fetcher_,
         std::make_unique<PasswordSaveManagerImpl>(
@@ -162,7 +164,7 @@ class CredentialsFilterTest : public SyncUsernameTestBase,
 
   std::unique_ptr<FakePasswordManagerClient> client_;
   StubPasswordManagerDriver driver_;
-  PasswordForm pending_;
+  PasswordForm pending_ = SimpleGaiaForm("user@gmail.com");
   FakeFormFetcher fetcher_;
   std::unique_ptr<PasswordFormManager> form_manager_;
 
@@ -277,6 +279,11 @@ TEST_P(CredentialsFilterTest, ShouldSave_SyncCredential_NotSyncingPasswords) {
     EXPECT_FALSE(filter_->ShouldSave(form));
   else
     EXPECT_TRUE(filter_->ShouldSave(form));
+}
+
+TEST_P(CredentialsFilterTest, ShouldSaveIfBrowserSigninDisabled) {
+  client_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  EXPECT_TRUE(filter_->ShouldSave(SimpleGaiaForm("user@gmail.com")));
 }
 
 TEST_P(CredentialsFilterTest, ShouldSaveGaiaPasswordHash) {
