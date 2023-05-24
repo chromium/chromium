@@ -14,7 +14,6 @@
 namespace autofill {
 
 enum class IbanBubbleType;
-enum class MandatoryReauthBubbleType;
 
 class TestAutofillBubble final : public AutofillBubbleBase {
   void Hide() override {}
@@ -76,8 +75,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   AutofillBubbleBase* ShowMandatoryReauthBubble(
       content::WebContents* web_contents,
       MandatoryReauthBubbleController* controller,
-      bool is_user_gesture,
-      MandatoryReauthBubbleType bubble_type) override;
+      bool is_user_gesture) override;
   void OnPasswordSaved() override;
 
  private:
