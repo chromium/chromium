@@ -4261,6 +4261,7 @@ if (!is_android) {
         "../browser/speech/speech_recognition_recognizer_client_impl_browsertest.cc",
         "../browser/support_tool/ash/ui_hierarchy_data_collector_browsertest.cc",
         "../browser/ui/ash/accelerator_commands_browsertest.cc",
+        "../browser/ui/ash/ambient/managed_screensaver_browsertest.cc",
         "../browser/ui/ash/app_list/app_list_with_recent_apps_browsertest.cc",
         "../browser/ui/ash/app_list/apps_grid_drag_browsertest.cc",
         "../browser/ui/ash/arc_open_url_delegate_impl_browsertest.cc",
