@@ -81,6 +81,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x046d, 0xb024},  // Logitech G604 Lightspeed Gaming Mouse (Bluetooth)
     {0x046d, 0xb503},  // Logitech Spotlight Presentation Remote (Bluetooth)
     {0x046d, 0xb505},  // Logitech R500 (Bluetooth)
+    {0x046d, 0xc08b},  // Logitech G502 Hero
     {0x046d, 0xc093},  // Logitech M500s
     {0x046d, 0xc534},  // Logitech M170
     {0x046d, 0xc53e},  // Logitech Spotlight Presentation Remote (USB dongle)
