@@ -403,6 +403,7 @@ class BookmarkManagerMediator
         mIsDestroyed = true;
         mBookmarkModel.removeObserver(mBookmarkModelObserver);
 
+        mBookmarkImageFetcher.destroy();
         mLargeIconBridge.destroy();
         PartnerBookmarksReader.removeFaviconUpdateObserver(this);
 

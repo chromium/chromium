@@ -428,6 +428,8 @@ public class BookmarkManagerMediatorTest {
         mMediator.onDestroy();
         verify(mBookmarkUiObserver).onDestroy();
         verify(mBookmarkUndoController).destroy();
+        verify(mBookmarkImageFetcher).destroy();
+        verify(mLargeIconBridge).destroy();
     }
 
     @Test

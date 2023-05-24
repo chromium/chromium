@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -29,6 +30,7 @@ public class BookmarkImageFetcher {
     private final ImageFetcher mImageFetcher;
     private final LargeIconBridge mLargeIconBridge;
     private final int mFaviconFetchSize;
+    private final CallbackController mCallbackController = new CallbackController();
 
     private RoundedIconGenerator mRoundedIconGenerator;
     private int mImageSize;
@@ -55,6 +57,11 @@ public class BookmarkImageFetcher {
         mRoundedIconGenerator = roundedIconGenerator;
         mImageSize = imageSize;
         mFaviconSize = faviconSize;
+    }
+
+    /** Destroys this object. */
+    public void destroy() {
+        mCallbackController.destroy();
     }
 
     /**
@@ -89,13 +96,13 @@ public class BookmarkImageFetcher {
      */
     public void fetchImageForBookmarkWithFaviconFallback(
             BookmarkItem item, Callback<Drawable> callback) {
-        fetchImageForBookmark(item, drawable -> {
+        fetchImageForBookmark(item, mCallbackController.makeCancelable(drawable -> {
             if (drawable == null) {
                 fetchFaviconForBookmark(item, callback);
             } else {
                 callback.onResult(drawable);
             }
-        });
+        }));
     }
 
     /**
@@ -130,14 +137,27 @@ public class BookmarkImageFetcher {
     }
 
     private void fetchImageForBookmark(BookmarkItem item, Callback<Drawable> callback) {
-        mBookmarkModel.getImageUrlForBookmark(item.getUrl(), (imageUrl) -> {
-            if (imageUrl == null) {
-                callback.onResult(null);
-                return;
-            }
+        final Callback<Bitmap> bookmarkImageCallback =
+                mCallbackController.makeCancelable((image) -> {
+                    if (image == null) {
+                        callback.onResult(null);
+                    } else {
+                        callback.onResult(new BitmapDrawable(mContext.getResources(), image));
+                    }
+                });
 
-            fetchImageUrl(imageUrl, callback);
-        });
+        mBookmarkModel.getImageUrlForBookmark(
+                item.getUrl(), mCallbackController.makeCancelable((imageUrl) -> {
+                    if (imageUrl == null) {
+                        callback.onResult(null);
+                        return;
+                    }
+
+                    mImageFetcher.fetchImage(ImageFetcher.Params.create(imageUrl,
+                                                     ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME,
+                                                     mImageSize, mImageSize),
+                            bookmarkImageCallback);
+                }));
     }
 
     private void fetchImageUrl(GURL url, Callback<Drawable> callback) {
@@ -172,7 +192,7 @@ public class BookmarkImageFetcher {
             return;
         }
 
-        fetchImageForBookmark(item, drawable -> {
+        fetchImageForBookmark(item, mCallbackController.makeCancelable(drawable -> {
             Drawable newFirstDrawable = firstDrawable;
             Drawable newSecondDrawable = secondDrawable;
             if (newFirstDrawable == null) {
@@ -182,6 +202,6 @@ public class BookmarkImageFetcher {
             }
             fetchFirstTwoImagesForFolderImpl(
                     childIdIterator, newFirstDrawable, newSecondDrawable, callback);
-        });
+        }));
     }
 }
