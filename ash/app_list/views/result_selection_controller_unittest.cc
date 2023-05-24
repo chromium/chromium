@@ -139,6 +139,11 @@ class TestContainer : public SearchResultContainerView {
 
  private:
   int DoUpdate() override { return search_result_views_.size(); }
+  void UpdateResultsVisibility(bool force_hide) override {}
+  views::View* GetTitleLabel() override { return nullptr; }
+  std::vector<views::View*> GetViewsToAnimate() override {
+    return std::vector<views::View*>();
+  }
 
   std::map<std::string, std::unique_ptr<TestSearchResult>> results_;
   std::vector<std::unique_ptr<TestResultView>> search_result_views_;

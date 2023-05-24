@@ -4,9 +4,27 @@
 
 #include "ash/app_list/views/search_result_container_view.h"
 
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/animation/animation_builder.h"
+#include "ui/views/controls/label.h"
+
+namespace {
+
+constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(100);
+constexpr base::TimeDelta kIdentityTranslationDuration =
+    base::Milliseconds(200);
+constexpr base::TimeDelta kFastFadeInDuration = base::Milliseconds(0);
+
+// Show animations for search result views and titles have a translation
+// distance of 'kAnimatedOffsetMultiplier' * i where i is the position of the
+// view in the 'AppListSearchView'.
+constexpr int kAnimatedOffsetMultiplier = 4;
+
+}  // namespace
 
 namespace ash {
 
@@ -64,8 +82,64 @@ void SearchResultContainerView::ResetAndHide() {
 absl::optional<SearchResultContainerView::ResultsAnimationInfo>
 SearchResultContainerView::ScheduleResultAnimations(
     const ResultsAnimationInfo& aggregate_animation_info) {
-  NOTREACHED();
-  return absl::nullopt;
+  // Collect current container animation info.
+  ResultsAnimationInfo current_animation_info;
+
+  if (num_results() < 1 || !enabled_) {
+    UpdateResultsVisibility(/*force_hide=*/true);
+    return current_animation_info;
+  }
+
+  // All views should be animated if
+  // *   the container is being shown, or
+  // *   any of the result views that precede the container in the search UI are
+  //     animating, or
+  // *   if the first animating result view is in a preceding container.
+  bool force_animation =
+      !GetVisible() || aggregate_animation_info.animating_views > 0 ||
+      aggregate_animation_info.first_animated_result_view_index <=
+          aggregate_animation_info.total_result_views;
+
+  UpdateResultsVisibility(/*force_hide=*/false);
+  current_animation_info.use_short_animations =
+      aggregate_animation_info.use_short_animations;
+
+  auto schedule_animation =
+      [&current_animation_info,
+       &aggregate_animation_info](views::View* animated_view) {
+        ShowViewWithAnimation(animated_view,
+                              current_animation_info.total_views +
+                                  aggregate_animation_info.total_views,
+                              current_animation_info.use_short_animations);
+        ++current_animation_info.animating_views;
+      };
+
+  views::View* title_label = GetTitleLabel();
+  if (title_label && title_label->GetVisible()) {
+    if (force_animation) {
+      schedule_animation(title_label);
+    }
+    ++current_animation_info.total_views;
+  }
+
+  for (auto* result_view : GetViewsToAnimate()) {
+    // Checks whether the index of the current result view is greater than
+    // or equal to the index of the first result view that should be animated.
+    // Force animations if true.
+    if (aggregate_animation_info.total_result_views +
+            current_animation_info.total_result_views >=
+        aggregate_animation_info.first_animated_result_view_index) {
+      force_animation = true;
+    }
+    if (force_animation) {
+      schedule_animation(result_view);
+    }
+
+    ++current_animation_info.total_views;
+    ++current_animation_info.total_result_views;
+  }
+
+  return current_animation_info;
 }
 
 void SearchResultContainerView::AppendShownResultMetadata(
@@ -74,7 +148,22 @@ void SearchResultContainerView::AppendShownResultMetadata(
 }
 
 bool SearchResultContainerView::HasAnimatingChildView() {
-  NOTREACHED();
+  auto is_animating = [](views::View* view) {
+    return (view->GetVisible() && view->layer() &&
+            view->layer()->GetAnimator() &&
+            view->layer()->GetAnimator()->is_animating());
+  };
+
+  if (is_animating(GetTitleLabel())) {
+    return true;
+  }
+
+  for (auto* result_view : GetViewsToAnimate()) {
+    if (is_animating(result_view)) {
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -137,6 +226,48 @@ bool SearchResultContainerView::RunScheduledUpdateForTest() {
     return false;
   Update();
   return true;
+}
+
+// static
+void SearchResultContainerView::ShowViewWithAnimation(
+    views::View* result_view,
+    int position,
+    bool use_short_animations) {
+  DCHECK(result_view->layer()->GetAnimator());
+
+  // Abort any in-progress layer animation.
+  result_view->layer()->GetAnimator()->AbortAllAnimations();
+
+  // Animation spec:
+  //
+  // Y Position: Down (offset) → End position
+  // offset: position * kAnimatedOffsetMultiplier px
+  // Duration: 200ms
+  // Ease: (0.00, 0.00, 0.20, 1.00)
+
+  // Opacity: 0% -> 100%
+  // Duration: 100 ms
+  // Ease: Linear
+
+  gfx::Transform translate_down;
+  translate_down.Translate(0, position * kAnimatedOffsetMultiplier);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetOpacity(result_view, 0.0f)
+      .SetTransform(result_view, translate_down)
+      .Then()
+      .SetOpacity(result_view, 1.0f, gfx::Tween::LINEAR)
+      .SetDuration(use_short_animations ? kFastFadeInDuration : kFadeInDuration)
+      .At(base::TimeDelta())
+      .SetDuration(
+          use_short_animations
+              ? app_list_features::DynamicSearchUpdateAnimationDuration()
+              : kIdentityTranslationDuration)
+      .SetTransform(result_view, gfx::Transform(),
+                    gfx::Tween::LINEAR_OUT_SLOW_IN);
 }
 
 void SearchResultContainerView::ScheduleUpdate() {

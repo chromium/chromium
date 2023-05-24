@@ -75,7 +75,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
       AppListViewDelegate* view_delegate,
       SearchResultPageDialogController* dialog_controller,
       SearchResultView::SearchResultViewType search_result_view_type,
-      bool animates_result_updates,
       absl::optional<size_t> productivity_launcher_index);
 
   SearchResultListView(const SearchResultListView&) = delete;
@@ -99,18 +98,8 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // Overridden from SearchResultContainerView:
   SearchResultView* GetResultViewAt(size_t index) override;
-  absl::optional<ResultsAnimationInfo> ScheduleResultAnimations(
-      const ResultsAnimationInfo& aggregate_animation_info) override;
   void AppendShownResultMetadata(
       std::vector<SearchResultAimationMetadata>* result_metadata_) override;
-  bool HasAnimatingChildView() override;
-
-  // Fades the view in and animates a vertical transform based on the view's
-  // position in the overall search container view. Returns whether fast
-  // animations were used.
-  void ShowViewWithAnimation(views::View* view,
-                             int position,
-                             bool use_short_animations);
 
   // Gets all the SearchResultListTypes that should be used when categorical
   // search is enabled.
@@ -129,6 +118,9 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   // Overridden from SearchResultContainerView:
   void OnSelectedResultChanged() override;
   int DoUpdate() override;
+  void UpdateResultsVisibility(bool force_hide) override;
+  views::View* GetTitleLabel() override;
+  std::vector<views::View*> GetViewsToAnimate() override;
 
   // Overridden from views::View:
   void Layout() override;
@@ -152,11 +144,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   bool FilterSearchResultsByCategory(const SearchResult::Category& category,
                                      const SearchResult& result) const;
 
-  // Whether the result updates will be animated. If set,
-  // `ScheduleResultAnimations()` is expected to be called whenever list of
-  // results shown in the list changes.
-  const bool animates_result_updates_;
-
   raw_ptr<views::View, ExperimentalAsh> results_container_;
 
   std::vector<SearchResultView*> search_result_views_;  // Not owned.
@@ -172,12 +159,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   // Not set if productivity_launcher is disabled or if the position of the
   // category is const as for kBestMatch.
   const absl::optional<size_t> productivity_launcher_index_;
-
-  // A search result list view may be disabled if there are fewer search result
-  // categories than there are search result list views in the
-  // 'productivity_launcher_search_view_'. A disabled view does not query the
-  // search model.
-  bool enabled_ = true;
 
   const SearchResultView::SearchResultViewType search_result_view_type_;
 
