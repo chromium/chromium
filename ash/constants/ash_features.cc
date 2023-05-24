@@ -2164,7 +2164,7 @@ BASE_FEATURE(kSmdsSupportEuiccUpload,
 // SM-DS scans.
 BASE_FEATURE(kSmdsDbusMigration,
              "SmdsDbusMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the snap group feature is enabled or not.
 BASE_FEATURE(kSnapGroup, "SnapGroup", base::FEATURE_DISABLED_BY_DEFAULT);
