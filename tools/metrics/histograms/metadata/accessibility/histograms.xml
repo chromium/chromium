@@ -1872,6 +1872,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.ScreenAI.LoadLibraryResult"
     enum="ScreenAILoadLibraryResult" expires_after="2023-11-30">
+  <obsolete>
+    Deprecated in May 2023 and replaced with several boolean histograms for
+    different functionality initialization of the library. See
+    Accessibility.ScreenAI.*.Initialized
+  </obsolete>
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1924,6 +1929,22 @@ chromium-metrics-reviews@google.com.
     It's being emitted whenever getting annotations from ScreenAI visual
     annotator.
   </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.{Step}.Initialized"
+    enum="BooleanSuccess" expires_after="2024-05-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if initialization of {Step} in Screen AI service was successful or
+    not.
+  </summary>
+  <token key="Step">
+    <variant name="Library" summary="library general functionalities"/>
+    <variant name="MainContentExtraction"
+        summary="Main Content Extraction functionality"/>
+    <variant name="OCR" summary="OCR functionality"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.VTTContainsStyleBlock" enum="BooleanEnabled"
