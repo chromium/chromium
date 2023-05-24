@@ -492,7 +492,7 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate)
     : SimpleMenuModel(delegate) {
   AddItemWithStringIdAndIcon(
-      IDC_SHOW_PASSWORD_MANAGER, IDS_PASSWORD_MANAGER_SUBMENU_OPTION,
+      IDC_SHOW_PASSWORD_MANAGER, IDS_VIEW_PASSWORDS,
       ui::ImageModel::FromVectorIcon(kKeyChromeRefreshIcon, ui::kColorMenuIcon,
                                      kDefaultIconSize));
   AddItemWithStringIdAndIcon(

@@ -1186,10 +1186,7 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_FIND_AND_EDIT_MENU" desc="The text label of the Find and edit sub menu item">
             &amp;Find and edit
           </message>
-          <message name="IDS_PASSWORD_MANAGER_SUBMENU_OPTION" desc="The text label of the password manager for the passwords and autofill submenu">
-            &amp;Google Password Manager
-          </message>
-            <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="The text label of the payment method for the passwords and autofill submenu">
+          <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="The text label of the payment method for the passwords and autofill submenu">
             &amp;Payment methods
           </message>
           <message name="IDS_SAVE_PAGE" desc="The text label of the Save Page As menu item">
@@ -1229,7 +1226,7 @@ are declared in tools/grit/grit_rule.gni.
             Copy &amp;URL
           </message>
           <message name="IDS_OPEN_IN_APP_WINDOW" desc="The text label of the menu item for moving the current tab to a standalone app window">
-            Open in <ph name="APP">$1<ex>Gmail App</ex></ph>
+            &amp;Open in <ph name="APP">$1<ex>Gmail App</ex></ph>
           </message>
           <message name="IDS_MOVE_TAB_TO_NEW_WINDOW" desc="The text label of the Move Tab to Window menu item.">
             Move tab to new window
@@ -1287,9 +1284,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_FIND_AND_EDIT_MENU" desc="In Title Case: The text label of the Find and edit sub menu item">
             &amp;Find and Edit
           </message>
-          <message name="IDS_PASSWORD_MANAGER_SUBMENU_OPTION" desc="In Title Case: The text label of the password manager for the passwords and autofill submenu">
-            &amp;Google Password Manager
-          </message>
           <message name="IDS_PAYMENT_METHOD_SUBMENU_OPTION" desc="In Title Case: The text label of the payment method for the passwords and autofill submenu">
             &amp;Payment Methods
           </message>
@@ -1330,7 +1324,7 @@ are declared in tools/grit/grit_rule.gni.
             Copy &amp;URL
           </message>
           <message name="IDS_OPEN_IN_APP_WINDOW" desc="In Title Case: The text label of the menu item for moving the current tab to a standalone app window">
-            Open in <ph name="APP">$1<ex>Gmail App</ex></ph>
+            &amp;Open in <ph name="APP">$1<ex>Gmail App</ex></ph>
           </message>
           <message name="IDS_MOVE_TAB_TO_NEW_WINDOW" desc="In Title Case: The text label of the Move Tab to New Window menu item.">
             Move Tab to New Window
@@ -1542,7 +1536,7 @@ are declared in tools/grit/grit_rule.gni.
           Performance
         </message>
         <message name="IDS_SETTINGS" desc="The text label of the Settings menu item">
-          &amp;Settings
+          Settin&amp;gs
         </message>
         <message name="IDS_OPTIONS" desc="The text label of the Options menu item">
           &amp;Options
@@ -3127,24 +3121,24 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
       <!-- "Create application shortcuts" menu item -->
       <if expr="use_titlecase">
         <message name="IDS_ADD_TO_OS_LAUNCH_SURFACE" desc="In Title Case: Menu text for adding a bookmark app shortcut to the operating system.">
-          Create Shortcut...
+          Create &amp;Shortcut...
         </message>
       </if>
       <if expr="not use_titlecase">
         <message name="IDS_ADD_TO_OS_LAUNCH_SURFACE" desc="Menu text for adding a bookmark app shortcut to the operating system.">
-          Create shortcut...
+          Create &amp;shortcut...
         </message>
       </if>
 
       <!-- "Install web app" menu item -->
       <if expr="use_titlecase">
         <message name="IDS_INSTALL_TO_OS_LAUNCH_SURFACE" desc="In Title Case: Menu text for installing a web app to the operating system.">
-          Install <ph name="APP">$1<ex>Gmail</ex></ph>...
+          &amp;Install <ph name="APP">$1<ex>Gmail</ex></ph>...
         </message>
       </if>
       <if expr="not use_titlecase">
         <message name="IDS_INSTALL_TO_OS_LAUNCH_SURFACE" desc="Menu text for installing a web app to the operating system.">
-          Install <ph name="APP">$1<ex>Gmail</ex></ph>...
+          &amp;Install <ph name="APP">$1<ex>Gmail</ex></ph>...
         </message>
       </if>
 
@@ -9941,12 +9935,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <if expr="use_titlecase">
         <then>
           <message name="IDS_MENU_SEND_TAB_TO_SELF" desc="In Title Case: The label of a menu entry to share the current tab to other devices">
-            Send to Your Devices
+            Send to Your &amp;Devices
           </message>
         </then>
         <else>
           <message name="IDS_MENU_SEND_TAB_TO_SELF" desc="The label of a menu entry to share the current tab to other devices">
-            Send to your devices
+            Send to your &amp;devices
           </message>
         </else>
       </if>

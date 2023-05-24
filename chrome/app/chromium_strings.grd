@@ -827,7 +827,7 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <message name="IDS_VIEW_PASSWORDS" desc="Item in the app menu which shows Password Manager page">
-        Password Manager
+        P&amp;assword Manager
       </message>
 
       <!-- Chrome sign-in page -->

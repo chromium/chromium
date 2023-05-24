@@ -1878,7 +1878,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InstallToShelfContainsAppName) {
   EXPECT_TRUE(app_menu_model->GetModelAndIndexForCommandId(IDC_INSTALL_PWA,
                                                            &model, &index));
   EXPECT_EQ(app_menu_model.get(), model);
-  EXPECT_EQ(model->GetLabelAt(index), u"Install Manifest test app…");
+  const std::u16string label = model->GetLabelAt(index);
+  EXPECT_NE(std::u16string::npos, label.find(u"Manifest test"));
 }
 
 // Check that no assertions are hit when showing a permission request bubble.
