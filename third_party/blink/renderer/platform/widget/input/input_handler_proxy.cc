@@ -209,6 +209,61 @@ bool IsGestureScrollOrPinch(WebInputEvent::Type type) {
   }
 }
 
+// The net effect of this class is to postpone invoking the callback for an
+// event until a subsequent generated event is finished processing. The callback
+// will be invoked with the disposition of the original event.
+class DelayedCallback {
+ public:
+  // base::Unretained because the callback will be invoked during processing of
+  // the original input event, which will happen before the synthetic gesture
+  // event (which owns this object) is processed.
+  explicit DelayedCallback(EventWithCallback* event_with_callback)
+      : callback_(base::BindOnce(&DelayedCallback::RecordEventDisposition,
+                                 base::Unretained(this))) {
+    event_with_callback->SwapCallback(callback_);
+  }
+
+  ~DelayedCallback() = default;
+
+  // base::Owned because the synthetic gesture event owns this object until it
+  // runs its callback, after which time this object should be freed.
+  InputHandlerProxy::EventDispositionCallback DerivedCallback() {
+    return base::BindOnce(&DelayedCallback::Invoke, base::Owned(this));
+  }
+
+ private:
+  // Will be called when the original input event is finished processing.
+  void RecordEventDisposition(
+      InputHandlerProxy::EventDisposition disposition,
+      std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll_params,
+      const blink::WebInputEventAttribution& attribution,
+      std::unique_ptr<cc::EventMetrics> metrics,
+      mojom::blink::ScrollResultDataPtr scroll_result) {
+    DCHECK(!callback_.is_null());
+    DCHECK(closure_.is_null());
+    closure_ =
+        base::BindOnce(std::move(callback_), disposition, std::move(event),
+                       std::move(overscroll_params), attribution,
+                       std::move(metrics), std::move(scroll_result));
+  }
+
+  // Will be called when the synthetic gesture event is finished processing.
+  void Invoke(InputHandlerProxy::EventDisposition,
+              std::unique_ptr<blink::WebCoalescedInputEvent>,
+              std::unique_ptr<InputHandlerProxy::DidOverscrollParams>,
+              const blink::WebInputEventAttribution&,
+              std::unique_ptr<cc::EventMetrics>,
+              mojom::blink::ScrollResultDataPtr) {
+    DCHECK(callback_.is_null());
+    DCHECK(!closure_.is_null());
+    std::move(closure_).Run();
+  }
+
+  InputHandlerProxy::EventDispositionCallback callback_;
+  base::OnceClosure closure_;
+};
+
 }  // namespace
 
 InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
@@ -572,7 +627,8 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
     const cc::InputHandlerPointerResult& pointer_result,
     const ui::LatencyInfo& latency_info,
     const base::TimeTicks original_timestamp,
-    const cc::EventMetrics* original_metrics) {
+    const cc::EventMetrics* original_metrics,
+    InputHandlerProxy::EventDispositionCallback callback) {
   gfx::Vector2dF scroll_delta = pointer_result.scroll_delta;
 
   std::unique_ptr<WebGestureEvent> synthetic_gesture_event =
@@ -641,7 +697,7 @@ void InputHandlerProxy::InjectScrollbarGestureScroll(
   auto gesture_event_with_callback_update = std::make_unique<EventWithCallback>(
       std::make_unique<WebCoalescedInputEvent>(
           std::move(synthetic_gesture_event), scrollbar_latency_info),
-      original_timestamp, base::DoNothing(), std::move(metrics));
+      original_timestamp, std::move(callback), std::move(metrics));
 
   bool needs_animate_input = compositor_event_queue_->empty();
   compositor_event_queue_->Queue(std::move(gesture_event_with_callback_update),
@@ -1664,16 +1720,18 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerDown(
   InjectScrollbarGestureScroll(
       WebInputEvent::Type::kGestureScrollBegin, position, pointer_result,
       event_with_callback->latency_info(),
-      event_with_callback->event().TimeStamp(), event_with_callback->metrics());
+      event_with_callback->event().TimeStamp(), event_with_callback->metrics(),
+      base::DoNothing());
 
   // Don't need to inject GSU if the scroll offset is zero (this can be the case
   // where mouse down occurs on the thumb).
   if (!pointer_result.scroll_delta.IsZero()) {
-    InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollUpdate,
-                                 position, pointer_result,
-                                 event_with_callback->latency_info(),
-                                 event_with_callback->event().TimeStamp(),
-                                 event_with_callback->metrics());
+    auto* delayed_callback = new DelayedCallback(event_with_callback);
+    InjectScrollbarGestureScroll(
+        WebInputEvent::Type::kGestureScrollUpdate, position, pointer_result,
+        event_with_callback->latency_info(),
+        event_with_callback->event().TimeStamp(),
+        event_with_callback->metrics(), delayed_callback->DerivedCallback());
   }
 
   if (event_with_callback) {
@@ -1695,11 +1753,11 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerMove(
     // right-click context menu).
     auto mouseup_result = input_handler_->MouseUp(position);
     if (mouseup_result.type == cc::PointerResultType::kScrollbarScroll) {
-      InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollEnd,
-                                   position, mouseup_result,
-                                   event_with_callback->latency_info(),
-                                   event_with_callback->event().TimeStamp(),
-                                   event_with_callback->metrics());
+      InjectScrollbarGestureScroll(
+          WebInputEvent::Type::kGestureScrollEnd, position, mouseup_result,
+          event_with_callback->latency_info(),
+          event_with_callback->event().TimeStamp(),
+          event_with_callback->metrics(), base::DoNothing());
     }
   }
 
@@ -1709,11 +1767,12 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerMove(
     // Generate a GSU event and add it to the CompositorThreadEventQueue if
     // delta is non zero.
     if (!pointer_result.scroll_delta.IsZero()) {
-      InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollUpdate,
-                                   position, pointer_result,
-                                   event_with_callback->latency_info(),
-                                   event_with_callback->event().TimeStamp(),
-                                   event_with_callback->metrics());
+      auto* delayed_callback = new DelayedCallback(event_with_callback);
+      InjectScrollbarGestureScroll(
+          WebInputEvent::Type::kGestureScrollUpdate, position, pointer_result,
+          event_with_callback->latency_info(),
+          event_with_callback->event().TimeStamp(),
+          event_with_callback->metrics(), delayed_callback->DerivedCallback());
     }
     if (event_with_callback) {
       event_with_callback->SetScrollbarManipulationHandledOnCompositorThread();
@@ -1729,11 +1788,11 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerUp(
       input_handler_->MouseUp(position);
   if (pointer_result.type == cc::PointerResultType::kScrollbarScroll) {
     // Generate a GSE and add it to the CompositorThreadEventQueue.
-    InjectScrollbarGestureScroll(WebInputEvent::Type::kGestureScrollEnd,
-                                 position, pointer_result,
-                                 event_with_callback->latency_info(),
-                                 event_with_callback->event().TimeStamp(),
-                                 event_with_callback->metrics());
+    InjectScrollbarGestureScroll(
+        WebInputEvent::Type::kGestureScrollEnd, position, pointer_result,
+        event_with_callback->latency_info(),
+        event_with_callback->event().TimeStamp(),
+        event_with_callback->metrics(), base::DoNothing());
     if (event_with_callback) {
       event_with_callback->SetScrollbarManipulationHandledOnCompositorThread();
     }

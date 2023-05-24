@@ -563,13 +563,23 @@ class InputHandlerProxyEventQueueTest : public testing::Test {
             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void HandleMouseEvent(WebInputEvent::Type type, int x = 0, int y = 0) {
+  void HandleMouseEvent(WebInputEvent::Type type,
+                        InputHandlerProxy::EventDispositionCallback callback,
+                        int x = 0,
+                        int y = 0) {
     WebMouseEvent mouse_event(type, WebInputEvent::kNoModifiers,
                               WebInputEvent::GetStaticTimeStampForTests());
-
     mouse_event.SetPositionInWidget(gfx::PointF(x, y));
     mouse_event.button = WebMouseEvent::Button::kLeft;
-    HandleInputEventWithLatencyInfo(&input_handler_proxy_, mouse_event);
+    std::unique_ptr<WebCoalescedInputEvent> scoped_input_event =
+        std::make_unique<WebCoalescedInputEvent>(mouse_event,
+                                                 ui::LatencyInfo());
+    input_handler_proxy_.HandleInputEventWithLatencyInfo(
+        std::move(scoped_input_event), nullptr, std::move(callback));
+  }
+
+  void HandleMouseEvent(WebInputEvent::Type type, int x = 0, int y = 0) {
+    HandleMouseEvent(type, base::DoNothing(), x, y);
   }
 
   void DidHandleInputEventAndOverscroll(
@@ -2575,9 +2585,9 @@ TEST(SynchronousInputHandlerProxyTest, SetOffset) {
 
 TEST_F(InputHandlerProxyEventQueueTest,
        MouseEventOnScrollbarInitiatesGestureScroll) {
-  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(1);
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(2);
   EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_))
-      .Times(2)
+      .Times(4)
       .WillRepeatedly(testing::Return(cc::ElementId()));
 
   // Test mousedown on the scrollbar. Expect to get GSB and GSU.
@@ -2588,7 +2598,28 @@ TEST_F(InputHandlerProxyEventQueueTest,
       .WillOnce(testing::Return(pointer_down_result.type));
   EXPECT_CALL(mock_input_handler_, MouseDown(_, _))
       .WillOnce(testing::Return(pointer_down_result));
-  HandleMouseEvent(WebInputEvent::Type::kMouseDown);
+  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
+      .WillOnce(testing::Return(kImplThreadScrollState));
+  EXPECT_CALL(mock_input_handler_, RecordScrollBegin(_, _)).Times(1);
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(1);
+  bool pointer_down_callback_ran = false;
+  HandleMouseEvent(
+      WebInputEvent::Type::kMouseDown,
+      base::BindLambdaForTesting(
+          [&pointer_down_callback_ran](
+              InputHandlerProxy::EventDisposition disposition,
+              std::unique_ptr<blink::WebCoalescedInputEvent> event,
+              std::unique_ptr<InputHandlerProxy::DidOverscrollParams>
+                  overscroll,
+              const WebInputEventAttribution& attribution,
+              std::unique_ptr<cc::EventMetrics> metrics,
+              mojom::blink::ScrollResultDataPtr scroll_result_data) {
+            pointer_down_callback_ran = true;
+          }));
+
+  // The callback should not be called until GSB and GSU have been handled.
+  EXPECT_FALSE(pointer_down_callback_ran);
+
   EXPECT_EQ(2ul, event_queue().size());
   EXPECT_EQ(event_queue()[0]->event().GetType(),
             WebInputEvent::Type::kGestureScrollBegin);
@@ -2596,14 +2627,21 @@ TEST_F(InputHandlerProxyEventQueueTest,
                   .data.scroll_begin.synthetic);
   EXPECT_EQ(event_queue()[1]->event().GetType(),
             WebInputEvent::Type::kGestureScrollUpdate);
+
+  DeliverInputForBeginFrame();
+
+  // The callback should have been called after the GSU was processed.
+  EXPECT_EQ(0ul, event_queue().size());
+  EXPECT_TRUE(pointer_down_callback_ran);
+
   cc::InputHandlerPointerResult pointer_up_result;
   pointer_up_result.type = cc::PointerResultType::kScrollbarScroll;
   EXPECT_CALL(mock_input_handler_, MouseUp(_))
       .WillOnce(testing::Return(pointer_up_result));
   // Test mouseup on the scrollbar. Expect to get GSE.
   HandleMouseEvent(WebInputEvent::Type::kMouseUp);
-  EXPECT_EQ(3ul, event_queue().size());
-  EXPECT_EQ(event_queue()[2]->event().GetType(),
+  EXPECT_EQ(1ul, event_queue().size());
+  EXPECT_EQ(event_queue()[0]->event().GetType(),
             WebInputEvent::Type::kGestureScrollEnd);
 }
 

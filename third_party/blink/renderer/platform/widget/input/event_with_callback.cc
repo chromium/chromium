@@ -150,6 +150,12 @@ std::unique_ptr<cc::EventMetrics> EventWithCallback::TakeMetrics() {
   return std::move(first->metrics_);
 }
 
+void EventWithCallback::SwapCallback(
+    InputHandlerProxy::EventDispositionCallback& new_callback) {
+  DCHECK(original_events_.size());
+  std::swap(original_events_.front().callback_, new_callback);
+}
+
 void EventWithCallback::WillStartProcessingForMetrics() {
   DCHECK(metrics());
   for (auto& original_event : original_events_) {
