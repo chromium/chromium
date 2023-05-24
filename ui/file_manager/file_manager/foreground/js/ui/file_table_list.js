@@ -1065,7 +1065,7 @@ filelist.updateInlineStatus = (li, metadata) => {
     case chrome.fileManagerPrivate.SyncStatus.IN_PROGRESS:
       inlineStatus.setAttribute(
           'aria-label',
-          `${str('IN_PROGRESS_LABEL')} - ${(progress * 100).toFixed(0)}%`);
+          strf('IN_PROGRESS_PERCENTAGE_LABEL', (progress * 100).toFixed(0)));
       break;
     case chrome.fileManagerPrivate.SyncStatus.NOT_FOUND:
       // Files can have a sync status of "not_found" even though they
