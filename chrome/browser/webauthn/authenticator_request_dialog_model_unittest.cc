@@ -1233,3 +1233,56 @@ TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone) {
   EXPECT_EQ(model.current_step(), Step::kCableActivate);
   EXPECT_EQ(model.selected_phone_name(), "phone");
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(AuthenticatorRequestDialogModelTest, BluetoothPermissionPrompt) {
+  // When BLE permission is denied on macOS, we should jump to the sheet that
+  // explains that if the user tries to use a linked phone or tries to show the
+  // QR code.
+  for (const bool ble_access_denied : {false, true}) {
+    for (const bool click_specific_phone : {false, true}) {
+      SCOPED_TRACE(::testing::Message()
+                   << "ble_access_denied=" << ble_access_denied);
+      SCOPED_TRACE(::testing::Message()
+                   << "click_specific_phone=" << click_specific_phone);
+
+      AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
+      std::vector<AuthenticatorRequestDialogModel::PairedPhone> phones(
+          {{"phone", /*contact_id=*/0, /*public_key_x962=*/{{0}}}});
+      model.set_cable_transport_info(/*extension_is_v2=*/absl::nullopt,
+                                     std::move(phones), base::DoNothing(),
+                                     absl::nullopt);
+      TransportAvailabilityInfo transports_info;
+      transports_info.is_ble_powered = true;
+      transports_info.ble_access_denied = ble_access_denied;
+      transports_info.request_type = device::FidoRequestType::kGetAssertion;
+      transports_info.available_transports = {
+          AuthenticatorTransport::kHybrid,
+          AuthenticatorTransport::kUsbHumanInterfaceDevice};
+      model.StartFlow(std::move(transports_info),
+                      /*is_conditional_mediation=*/false);
+
+      base::ranges::find_if(
+          model.mechanisms(),
+          [click_specific_phone](const auto& m) -> bool {
+            if (click_specific_phone) {
+              return absl::holds_alternative<
+                  AuthenticatorRequestDialogModel::Mechanism::Phone>(m.type);
+            } else {
+              return absl::holds_alternative<
+                  AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
+            }
+          })
+          ->callback.Run();
+
+      if (ble_access_denied) {
+        EXPECT_EQ(model.current_step(), Step::kBlePermissionMac);
+      } else if (click_specific_phone) {
+        EXPECT_EQ(model.current_step(), Step::kCableActivate);
+      } else {
+        EXPECT_EQ(model.current_step(), Step::kCableV2QRCode);
+      }
+    }
+  }
+}
+#endif
