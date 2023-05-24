@@ -4,6 +4,15 @@
 
 package org.chromium.chrome.browser.autofill.prefeditor;
 
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TEXT;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TITLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.FOOTER_MESSAGE;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -59,6 +68,7 @@ import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +108,7 @@ public class EditorDialog
     @Nullable
     private TextWatcher mPhoneFormatter;
     private View mLayout;
-    private EditorModel mEditorModel;
+    private PropertyModel mEditorModel;
     private Button mDoneButton;
     private boolean mFormWasValid;
     private boolean mShouldTriggerDoneCallbackBeforeCloseAnimation;
@@ -228,7 +238,7 @@ public class EditorDialog
         toolbar.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(toolbar.getContext()));
         toolbar.setTitleTextAppearance(
                 toolbar.getContext(), R.style.TextAppearance_Headline_Primary);
-        toolbar.setTitle(mEditorModel.getTitle());
+        toolbar.setTitle(mEditorModel.get(EDITOR_TITLE));
         toolbar.setShowDeleteMenuItem(mDeleteRunnable != null);
 
         // Show the help article when the help icon is clicked on, or delete
@@ -237,10 +247,10 @@ public class EditorDialog
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.delete_menu_id) {
-                    if (mEditorModel.getDeleteConfirmationTitle() != null
-                            || mEditorModel.getDeleteConfirmationText() != null) {
-                        handleDeleteWithConfirmation(mEditorModel.getDeleteConfirmationTitle(),
-                                mEditorModel.getDeleteConfirmationText());
+                    if (mEditorModel.get(DELETE_CONFIRMATION_TITLE) != null
+                            || mEditorModel.get(DELETE_CONFIRMATION_TEXT) != null) {
+                        handleDeleteWithConfirmation(mEditorModel.get(DELETE_CONFIRMATION_TITLE),
+                                mEditorModel.get(DELETE_CONFIRMATION_TEXT));
                     } else {
                         handleDelete();
                     }
@@ -332,7 +342,7 @@ public class EditorDialog
         if (view.getId() == R.id.editor_dialog_done_button) {
             if (validateForm()) {
                 if (mShouldTriggerDoneCallbackBeforeCloseAnimation && mEditorModel != null) {
-                    mEditorModel.done();
+                    mEditorModel.get(DONE_RUNNABLE).run();
                     mEditorModel = null;
                 }
                 mFormWasValid = true;
@@ -384,10 +394,10 @@ public class EditorDialog
         mIsDismissed = true;
         if (mEditorModel != null) {
             if (mFormWasValid) {
-                mEditorModel.done();
+                mEditorModel.get(DONE_RUNNABLE).run();
                 mFormWasValid = false;
             } else {
-                mEditorModel.cancel();
+                mEditorModel.get(CANCEL_RUNNABLE).run();
             }
             mEditorModel = null;
         }
@@ -398,8 +408,8 @@ public class EditorDialog
         mDoneButton = (Button) mLayout.findViewById(R.id.button_primary);
         mDoneButton.setId(R.id.editor_dialog_done_button);
         mDoneButton.setOnClickListener(this);
-        if (mEditorModel.getCustomDoneButtonText() != null) {
-            mDoneButton.setText(mEditorModel.getCustomDoneButtonText());
+        if (mEditorModel.get(CUSTOM_DONE_BUTTON_TEXT) != null) {
+            mDoneButton.setText(mEditorModel.get(CUSTOM_DONE_BUTTON_TEXT));
         }
 
         Button cancelButton = (Button) mLayout.findViewById(R.id.button_secondary);
@@ -423,7 +433,7 @@ public class EditorDialog
         requiredFieldsNotice.setVisibility(requiredFieldsNoticeVisibility);
 
         TextView footerMessage = mLayout.findViewById(R.id.footer_message);
-        String footerMessageText = mEditorModel.getFooterMessageText();
+        String footerMessageText = mEditorModel.get(FOOTER_MESSAGE);
         if (footerMessageText != null) {
             footerMessage.setText(footerMessageText);
             footerMessage.setVisibility(View.VISIBLE);
@@ -433,7 +443,7 @@ public class EditorDialog
     }
 
     /**
-     * Create the visual representation of the EditorModel.
+     * Create the visual representation of the PropertyModel defined by {@link EditorProperties}.
      *
      * This would be more optimal as a RelativeLayout, but because it's dynamically generated, it's
      * much more human-parsable with inefficient LinearLayouts for half-width controls sharing rows.
@@ -450,15 +460,16 @@ public class EditorDialog
         mDropdownFields.clear();
 
         // Add Views for each of the {@link EditorFields}.
-        for (int i = 0; i < mEditorModel.getFields().size(); i++) {
-            EditorFieldModel fieldModel = mEditorModel.getFields().get(i);
+        List<EditorFieldModel> fields = mEditorModel.get(EDITOR_FIELDS);
+        for (int i = 0; i < fields.size(); i++) {
+            EditorFieldModel fieldModel = fields.get(i);
             EditorFieldModel nextFieldModel = null;
 
-            boolean isLastField = i == mEditorModel.getFields().size() - 1;
+            boolean isLastField = i == fields.size() - 1;
             boolean useFullLine = fieldModel.isFullLine();
             if (!isLastField && !useFullLine) {
                 // If the next field isn't full, stretch it out.
-                nextFieldModel = mEditorModel.getFields().get(i + 1);
+                nextFieldModel = fields.get(i + 1);
                 if (nextFieldModel.isFullLine()) useFullLine = true;
             }
 
@@ -612,7 +623,7 @@ public class EditorDialog
      *
      * @param editorModel The description of the editor user interface to display.
      */
-    public void show(EditorModel editorModel) {
+    public void show(PropertyModel editorModel) {
         // If an asynchronous task calls show, while the activity is already finishing, return.
         if (mActivity.isFinishing()) return;
 

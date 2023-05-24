@@ -18,6 +18,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CUSTOM_DONE_BUTTON_TEXT;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TEXT;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TITLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.FOOTER_MESSAGE;
+
 import android.app.Activity;
 
 import androidx.annotation.Nullable;
@@ -44,7 +52,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.Source;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -61,6 +68,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -140,7 +148,7 @@ public class AddressEditorTest {
     private AddressEditor.Delegate mDelegate;
 
     @Captor
-    private ArgumentCaptor<EditorModel> mEditorModelCapture;
+    private ArgumentCaptor<PropertyModel> mPropertyModelCapture;
     @Captor
     private ArgumentCaptor<AutofillAddress> mAddressCapture;
 
@@ -190,7 +198,7 @@ public class AddressEditorTest {
 
         when(mEditorDialog.getContext()).thenReturn(mActivity);
         when(mEditorDialog.getProfile()).thenReturn(mProfile);
-        doNothing().when(mEditorDialog).show(mEditorModelCapture.capture());
+        doNothing().when(mEditorDialog).show(mPropertyModelCapture.capture());
     }
 
     @After
@@ -252,27 +260,27 @@ public class AddressEditorTest {
         Assert.assertEquals(hasLengthCounter, field.hasLengthCounter());
     }
 
-    private static void checkUiStringsHaveExpectedValues(EditorModel editorModel,
+    private static void checkUiStringsHaveExpectedValues(PropertyModel editorModel,
             String expectedDeleteTitle, String expectedDeleteText,
             @Nullable String expectedSourceNotice) {
         Assert.assertNotNull(editorModel);
 
-        Assert.assertEquals(expectedDeleteTitle, editorModel.getDeleteConfirmationTitle());
-        Assert.assertEquals(expectedDeleteText, editorModel.getDeleteConfirmationText());
-        Assert.assertEquals(expectedSourceNotice, editorModel.getFooterMessageText());
+        Assert.assertEquals(expectedDeleteTitle, editorModel.get(DELETE_CONFIRMATION_TITLE));
+        Assert.assertEquals(expectedDeleteText, editorModel.get(DELETE_CONFIRMATION_TEXT));
+        Assert.assertEquals(expectedSourceNotice, editorModel.get(FOOTER_MESSAGE));
     }
 
     private void validateShownFields(
-            EditorModel editorModel, AutofillProfile profile, boolean shouldMarkFieldsRequired) {
+            PropertyModel editorModel, AutofillProfile profile, boolean shouldMarkFieldsRequired) {
         validateShownFields(editorModel, profile, shouldMarkFieldsRequired,
                 /*shouldMarkFieldsRequiredWhenAddressFieldEmpty=*/false);
     }
 
-    private void validateShownFields(EditorModel editorModel, AutofillProfile profile,
+    private void validateShownFields(PropertyModel editorModel, AutofillProfile profile,
             boolean shouldMarkFieldsRequired,
             boolean shouldMarkFieldsRequiredWhenAddressFieldEmpty) {
         Assert.assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - honorific field.
         // editorFields[2] - full name field.
@@ -336,10 +344,10 @@ public class AddressEditorTest {
         mAddressEditor.setCustomDoneButtonText("Custom done");
         mAddressEditor.showEditorDialog();
 
-        EditorModel editorModel = mEditorModelCapture.getValue();
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
         Assert.assertNotNull(editorModel);
 
-        Assert.assertEquals("Custom done", editorModel.getCustomDoneButtonText());
+        Assert.assertEquals("Custom done", editorModel.get(CUSTOM_DONE_BUTTON_TEXT));
     }
 
     @Test
@@ -358,7 +366,7 @@ public class AddressEditorTest {
         final String sourceNotice = null;
 
         checkUiStringsHaveExpectedValues(
-                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -382,7 +390,7 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
-                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -402,7 +410,7 @@ public class AddressEditorTest {
         final String sourceNotice = null;
 
         checkUiStringsHaveExpectedValues(
-                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -426,7 +434,7 @@ public class AddressEditorTest {
         final String sourceNotice = null;
 
         checkUiStringsHaveExpectedValues(
-                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -446,7 +454,7 @@ public class AddressEditorTest {
         final String sourceNotice = null;
 
         checkUiStringsHaveExpectedValues(
-                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -470,7 +478,7 @@ public class AddressEditorTest {
         final String sourceNotice = null;
 
         checkUiStringsHaveExpectedValues(
-                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -495,7 +503,7 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
-                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -523,7 +531,7 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
-                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -547,7 +555,7 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
-                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -571,7 +579,7 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
-                mEditorModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -587,8 +595,8 @@ public class AddressEditorTest {
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor.showEditorDialog();
 
-        Assert.assertNotNull(mEditorModelCapture.getValue());
-        List<EditorFieldModel> editorFields = mEditorModelCapture.getValue().getFields();
+        Assert.assertNotNull(mPropertyModelCapture.getValue());
+        List<EditorFieldModel> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
         // editorFields[0] - country dropdown.
@@ -628,8 +636,8 @@ public class AddressEditorTest {
         setUpAddressUiComponents(new ArrayList());
         mAddressEditor.showEditorDialog();
 
-        Assert.assertNotNull(mEditorModelCapture.getValue());
-        List<EditorFieldModel> editorFields = mEditorModelCapture.getValue().getFields();
+        Assert.assertNotNull(mPropertyModelCapture.getValue());
+        List<EditorFieldModel> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend:
         // editorFields[0] - country dropdown.
@@ -651,7 +659,7 @@ public class AddressEditorTest {
                 /*isMigrationToAccount=*/false);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(mEditorModelCapture.getValue(), AutofillProfile.builder().build(),
+        validateShownFields(mPropertyModelCapture.getValue(), AutofillProfile.builder().build(),
                 /*shouldMarkFieldsRequired=*/false);
     }
 
@@ -665,7 +673,7 @@ public class AddressEditorTest {
                 /*isMigrationToAccount=*/false);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(mEditorModelCapture.getValue(), AutofillProfile.builder().build(),
+        validateShownFields(mPropertyModelCapture.getValue(), AutofillProfile.builder().build(),
                 /*shouldMarkFieldsRequired=*/true,
                 /*shouldMarkFieldsRequiredWhenAddressFieldEmpty=*/true);
     }
@@ -680,8 +688,8 @@ public class AddressEditorTest {
                 /*isMigrationToAccount=*/false);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(
-                mEditorModelCapture.getValue(), sLocalProfile, /*shouldMarkFieldsRequired=*/false);
+        validateShownFields(mPropertyModelCapture.getValue(), sLocalProfile,
+                /*shouldMarkFieldsRequired=*/false);
     }
 
     @Test
@@ -694,8 +702,8 @@ public class AddressEditorTest {
                 /*isMigrationToAccount=*/false);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(
-                mEditorModelCapture.getValue(), sLocalProfile, /*shouldMarkFieldsRequired=*/false);
+        validateShownFields(mPropertyModelCapture.getValue(), sLocalProfile,
+                /*shouldMarkFieldsRequired=*/false);
     }
 
     @Test
@@ -709,7 +717,7 @@ public class AddressEditorTest {
 
         mAddressEditor.showEditorDialog();
         validateShownFields(
-                mEditorModelCapture.getValue(), sLocalProfile, /*shouldMarkFieldsRequired=*/true);
+                mPropertyModelCapture.getValue(), sLocalProfile, /*shouldMarkFieldsRequired=*/true);
     }
 
     @Test
@@ -722,8 +730,8 @@ public class AddressEditorTest {
                 /*isMigrationToAccount=*/false);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(
-                mEditorModelCapture.getValue(), sAccountProfile, /*shouldMarkFieldsRequired=*/true);
+        validateShownFields(mPropertyModelCapture.getValue(), sAccountProfile,
+                /*shouldMarkFieldsRequired=*/true);
     }
 
     @Test
@@ -736,8 +744,8 @@ public class AddressEditorTest {
                 /*isMigrationToAccount=*/false);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(
-                mEditorModelCapture.getValue(), sAccountProfile, /*shouldMarkFieldsRequired=*/true);
+        validateShownFields(mPropertyModelCapture.getValue(), sAccountProfile,
+                /*shouldMarkFieldsRequired=*/true);
     }
 
     @Test
@@ -755,8 +763,8 @@ public class AddressEditorTest {
                 "DE");
         mAddressEditor.showEditorDialog();
 
-        Assert.assertNotNull(mEditorModelCapture.getValue());
-        List<EditorFieldModel> editorFields = mEditorModelCapture.getValue().getFields();
+        Assert.assertNotNull(mPropertyModelCapture.getValue());
+        List<EditorFieldModel> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
 
         // editorFields[0] - country dropdown.
         // editorFields[1] - sorting code field.
@@ -801,9 +809,9 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor.showEditorDialog();
 
-        EditorModel editorModel = mEditorModelCapture.getValue();
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
         Assert.assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
 
         // Set values of the required fields.
@@ -812,7 +820,7 @@ public class AddressEditorTest {
         editorFields.get(5).setValue("Dependent locality");
         editorFields.get(8).setValue("Postal code");
         editorFields.get(9).setValue("Street address");
-        editorModel.done();
+        editorModel.get(DONE_RUNNABLE).run();
 
         verify(mDelegate, times(1)).onDone(mAddressCapture.capture());
         verify(mDelegate, times(0)).onCancel();
@@ -832,16 +840,16 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor.showEditorDialog();
 
-        EditorModel editorModel = mEditorModelCapture.getValue();
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
         Assert.assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
 
         // Verify behaviour only on the relevant subset of fields.
         editorFields.get(1).setValue("New honorific prefix");
         editorFields.get(2).setValue("New Name");
         editorFields.get(3).setValue("New admin area");
-        editorModel.cancel();
+        editorModel.get(CANCEL_RUNNABLE).run();
 
         verify(mDelegate, times(0)).onDone(any());
         verify(mDelegate, times(1)).onCancel();
@@ -858,16 +866,16 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor.showEditorDialog();
 
-        Assert.assertNotNull(mEditorModelCapture.getValue());
-        EditorModel editorModel = mEditorModelCapture.getValue();
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        Assert.assertNotNull(mPropertyModelCapture.getValue());
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
 
         // Verify behaviour only on the relevant subset of fields.
         editorFields.get(4).setValue("New locality");
         editorFields.get(5).setValue("New dependent locality");
         editorFields.get(6).setValue("New organization");
-        editorModel.done();
+        editorModel.get(DONE_RUNNABLE).run();
 
         verify(mDelegate, times(1)).onDone(mAddressCapture.capture());
         verify(mDelegate, times(0)).onCancel();
@@ -891,9 +899,9 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS.subList(0, 3));
         mAddressEditor.showEditorDialog();
 
-        EditorModel editorModel = mEditorModelCapture.getValue();
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
         Assert.assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - honorific prefix field.
         // editorFields[2] - full name field.
@@ -904,7 +912,7 @@ public class AddressEditorTest {
         // editorFields[7] - nickname field.
         Assert.assertEquals(8, editorFields.size());
 
-        editorModel.done();
+        editorModel.get(DONE_RUNNABLE).run();
         verify(mDelegate, times(1)).onDone(mAddressCapture.capture());
         verify(mDelegate, times(0)).onCancel();
 
@@ -930,9 +938,9 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, "CU");
         mAddressEditor.showEditorDialog();
 
-        EditorModel editorModel = mEditorModelCapture.getValue();
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
         Assert.assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
 
         EditorFieldModel countryDropdown = editorFields.get(0);
@@ -944,7 +952,7 @@ public class AddressEditorTest {
         editorFields.get(5).setValue("Dependent locality");
         editorFields.get(8).setValue("Postal code");
         editorFields.get(9).setValue("Street address");
-        editorModel.done();
+        editorModel.get(DONE_RUNNABLE).run();
 
         verify(mDelegate, times(1)).onDone(mAddressCapture.capture());
         verify(mDelegate, times(0)).onCancel();
@@ -965,9 +973,9 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor.showEditorDialog();
 
-        EditorModel editorModel = mEditorModelCapture.getValue();
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
         Assert.assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
 
         assertThat(editorFields.get(0).getDropdownKeys(), containsInAnyOrder("US", "DE"));
@@ -985,9 +993,9 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor.showEditorDialog();
 
-        EditorModel editorModel = mEditorModelCapture.getValue();
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
         Assert.assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
 
         assertThat(editorFields.get(0).getDropdownKeys(), containsInAnyOrder("US", "DE"));
@@ -1004,9 +1012,9 @@ public class AddressEditorTest {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor.showEditorDialog();
 
-        EditorModel editorModel = mEditorModelCapture.getValue();
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
         Assert.assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
 
         assertThat(editorFields.get(0).getDropdownKeys(), containsInAnyOrder("US", "DE"));

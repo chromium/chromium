@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.payments;
 
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_TITLE;
+
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -17,12 +23,14 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
 import org.chromium.payments.mojom.PayerErrors;
+import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -210,28 +218,29 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                         EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, contact.getPayerEmail())
                 : null;
 
-        EditorModel editor = new EditorModel(toEdit == null
+        final String editorTitle = toEdit == null
                 ? mContext.getString(R.string.payments_add_contact_details_label)
-                : toEdit.getEditTitle());
+                : toEdit.getEditTitle();
 
+        List<EditorFieldModel> editorFields = new ArrayList<>();
         if (nameField != null) {
             nameField.setCustomErrorMessage(mPayerErrors != null ? mPayerErrors.name : null);
-            editor.addField(nameField);
+            editorFields.add(nameField);
         }
         if (phoneField != null) {
             phoneField.setCustomErrorMessage(mPayerErrors != null ? mPayerErrors.phone : null);
-            editor.addField(phoneField);
+            editorFields.add(phoneField);
         }
         if (emailField != null) {
             emailField.setCustomErrorMessage(mPayerErrors != null ? mPayerErrors.email : null);
-            editor.addField(emailField);
+            editorFields.add(emailField);
         }
 
         // If the user clicks [Cancel], send |toEdit| contact back to the caller, which was the
         // original state (could be null, a complete contact, a partial contact).
-        editor.setCancelCallback(cancelCallback.bind(toEdit));
+        Runnable onCancel = cancelCallback.bind(toEdit);
 
-        editor.setDoneCallback(() -> {
+        Runnable onDone = () -> {
             String name = null;
             String phone = null;
             String email = null;
@@ -266,9 +275,16 @@ public class ContactEditor extends EditorBase<AutofillContact> {
             profile.setIsLocal(true);
             contact.completeContact(profile.getGUID(), name, phone, email);
             doneCallback.onResult(contact);
-        });
+        };
 
-        mEditorDialog.show(editor);
+        PropertyModel editorModel = new PropertyModel.Builder(ALL_KEYS)
+                                            .with(EDITOR_TITLE, editorTitle)
+                                            .with(EDITOR_FIELDS, editorFields)
+                                            .with(DONE_RUNNABLE, onDone)
+                                            .with(CANCEL_RUNNABLE, onCancel)
+                                            .build();
+
+        mEditorDialog.show(editorModel);
         if (mPayerErrors != null) mEditorDialog.validateForm();
     }
 

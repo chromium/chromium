@@ -20,6 +20,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.CANCEL_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TEXT;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DELETE_CONFIRMATION_TITLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.DONE_RUNNABLE;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.EDITOR_FIELDS;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorProperties.FOOTER_MESSAGE;
+
 import android.app.Activity;
 
 import androidx.annotation.Nullable;
@@ -45,7 +52,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
@@ -54,6 +60,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel;
 import org.chromium.components.autofill.prefeditor.EditorFieldModel.DropdownKeyValue;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +122,7 @@ public class AddressEditorTest {
     private Callback<AutofillAddress> mCancelCallback;
 
     @Captor
-    private ArgumentCaptor<EditorModel> mEditorModelCapture;
+    private ArgumentCaptor<PropertyModel> mPropertyModelCapture;
     @Captor
     private ArgumentCaptor<AutofillAddress> mAddressCapture;
 
@@ -150,7 +157,7 @@ public class AddressEditorTest {
         setUpSupportedCountries(mSupportedCountries);
 
         when(mEditorDialog.getContext()).thenReturn(mActivity);
-        doNothing().when(mEditorDialog).show(mEditorModelCapture.capture());
+        doNothing().when(mEditorDialog).show(mPropertyModelCapture.capture());
     }
 
     @After
@@ -208,19 +215,19 @@ public class AddressEditorTest {
         assertEquals(hasLengthCounter, field.hasLengthCounter());
     }
 
-    private static void checkUiStringsHaveExpectedValues(EditorModel editorModel,
+    private static void checkUiStringsHaveExpectedValues(PropertyModel editorModel,
             String expectedDeleteTitle, String expectedDeleteText,
             @Nullable String expectedSourceNotice) {
         assertNotNull(editorModel);
 
-        assertEquals(expectedDeleteTitle, editorModel.getDeleteConfirmationTitle());
-        assertEquals(expectedDeleteText, editorModel.getDeleteConfirmationText());
-        assertEquals(expectedSourceNotice, editorModel.getFooterMessageText());
+        assertEquals(expectedDeleteTitle, editorModel.get(DELETE_CONFIRMATION_TITLE));
+        assertEquals(expectedDeleteText, editorModel.get(DELETE_CONFIRMATION_TEXT));
+        assertEquals(expectedSourceNotice, editorModel.get(FOOTER_MESSAGE));
     }
 
-    private void validateShownFields(EditorModel editorModel, AutofillProfile profile) {
+    private void validateShownFields(PropertyModel editorModel, AutofillProfile profile) {
         assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - full name field.
         // editorFields[2] - admin area field.
@@ -291,8 +298,8 @@ public class AddressEditorTest {
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
-        assertNotNull(mEditorModelCapture.getValue());
-        List<EditorFieldModel> editorFields = mEditorModelCapture.getValue().getFields();
+        assertNotNull(mPropertyModelCapture.getValue());
+        List<EditorFieldModel> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
         // editorFields[0] - country dropdown.
@@ -335,8 +342,8 @@ public class AddressEditorTest {
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
-        assertNotNull(mEditorModelCapture.getValue());
-        List<EditorFieldModel> editorFields = mEditorModelCapture.getValue().getFields();
+        assertNotNull(mPropertyModelCapture.getValue());
+        List<EditorFieldModel> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
         // editorFields[0] - country dropdown.
@@ -371,7 +378,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(null, unused -> {});
 
-        validateShownFields(mEditorModelCapture.getValue(), AutofillProfile.builder().build());
+        validateShownFields(mPropertyModelCapture.getValue(), AutofillProfile.builder().build());
     }
 
     @Test
@@ -388,7 +395,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
-        validateShownFields(mEditorModelCapture.getValue(), sProfile);
+        validateShownFields(mPropertyModelCapture.getValue(), sProfile);
     }
 
     @Test
@@ -412,8 +419,8 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(null, unused -> {});
 
-        assertNotNull(mEditorModelCapture.getValue());
-        List<EditorFieldModel> editorFields = mEditorModelCapture.getValue().getFields();
+        assertNotNull(mPropertyModelCapture.getValue());
+        List<EditorFieldModel> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
 
         // editorFields[0] - country dropdown.
         // editorFields[1] - sorting code field.
@@ -455,16 +462,16 @@ public class AddressEditorTest {
         mAddressEditor.edit(new AutofillAddress(mActivity, new AutofillProfile(sProfile)),
                 mDoneCallback, mCancelCallback);
 
-        EditorModel editorModel = mEditorModelCapture.getValue();
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
         assertNotNull(editorModel);
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(10, editorFields.size());
 
         // Verify behaviour only on the relevant subset of fields.
         editorFields.get(1).setValue("New Name");
         editorFields.get(2).setValue("New admin area");
         editorFields.get(3).setValue("New locality");
-        editorModel.cancel();
+        editorModel.get(CANCEL_RUNNABLE).run();
 
         verify(mDoneCallback, times(0)).onResult(any());
         verify(mCancelCallback, times(1)).onResult(any());
@@ -485,16 +492,16 @@ public class AddressEditorTest {
         mAddressEditor.edit(new AutofillAddress(mActivity, new AutofillProfile(sProfile)),
                 mDoneCallback, mCancelCallback);
 
-        assertNotNull(mEditorModelCapture.getValue());
-        EditorModel editorModel = mEditorModelCapture.getValue();
-        List<EditorFieldModel> editorFields = editorModel.getFields();
+        assertNotNull(mPropertyModelCapture.getValue());
+        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        List<EditorFieldModel> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(10, editorFields.size());
 
         // Verify behaviour only on the relevant subset of fields.
         editorFields.get(3).setValue("New locality");
         editorFields.get(4).setValue("New dependent locality");
         editorFields.get(5).setValue("New organization");
-        editorModel.done();
+        editorModel.get(DONE_RUNNABLE).run();
 
         verify(mDoneCallback, times(1)).onResult(mAddressCapture.capture());
         verify(mCancelCallback, times(0)).onResult(any());
