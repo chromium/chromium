@@ -1045,10 +1045,15 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
         ephemeral_state_.creds_, std::back_inserter(credentials),
         [](const auto& credential) {
           return password_manager::PasskeyCredential(
-              ToPasswordManagerSource(credential.source), credential.rp_id,
-              credential.cred_id, credential.user.id,
-              credential.user.name.value_or(""),
-              credential.user.display_name.value_or(""));
+              ToPasswordManagerSource(credential.source),
+              password_manager::PasskeyCredential::RpId(credential.rp_id),
+              password_manager::PasskeyCredential::CredentialId(
+                  credential.cred_id),
+              password_manager::PasskeyCredential::UserId(credential.user.id),
+              password_manager::PasskeyCredential::Username(
+                  credential.user.name.value_or("")),
+              password_manager::PasskeyCredential::DisplayName(
+                  credential.user.display_name.value_or("")));
         });
     ReportConditionalUiPasskeyCount(credentials.size());
     ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)

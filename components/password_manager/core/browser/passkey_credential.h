@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/types/strong_alias.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -28,15 +30,22 @@ class PasskeyCredential {
     kOther,
   };
 
+  using RpId = base::StrongAlias<class RpIdTag, std::string>;
+  using CredentialId =
+      base::StrongAlias<class CredentialIdTag, std::vector<uint8_t>>;
+  using UserId = base::StrongAlias<class UserIdTag, std::vector<uint8_t>>;
+  using Username = base::StrongAlias<class UsernameTag, std::string>;
+  using DisplayName = base::StrongAlias<class DisplayNameTag, std::string>;
+
   static std::vector<PasskeyCredential> FromCredentialSpecifics(
       base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys);
 
   PasskeyCredential(Source source,
-                    std::string rp_id,
-                    std::vector<uint8_t> credential_id,
-                    std::vector<uint8_t> user_id,
-                    std::string username = "",
-                    std::string display_name = "");
+                    RpId rp_id,
+                    CredentialId credential_id,
+                    UserId user_id,
+                    Username username = Username(""),
+                    DisplayName display_name = DisplayName(""));
   ~PasskeyCredential();
 
   PasskeyCredential(const PasskeyCredential&);

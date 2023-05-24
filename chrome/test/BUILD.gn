@@ -8697,6 +8697,8 @@ test("unit_tests") {
       "../browser/policy/developer_tools_policy_handler_unittest.cc",
       "../browser/profiles/guest_mode_policy_handler_unittest.cc",
     ]
+
+    deps += [ "//components/webauthn/core/browser:test_support" ]
   }
 
   if (use_gio) {

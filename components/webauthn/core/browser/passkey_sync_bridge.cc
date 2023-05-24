@@ -228,7 +228,7 @@ std::string PasskeySyncBridge::AddNewPasskeyForTesting(
   return sync_id;
 }
 
-bool PasskeySyncBridge::DeletePasskeyForTesting(std::string sync_id) {
+bool PasskeySyncBridge::DeletePasskeyForTesting(const std::string& sync_id) {
   auto it = data_.find(sync_id);
   if (it == data_.end()) {
     return false;

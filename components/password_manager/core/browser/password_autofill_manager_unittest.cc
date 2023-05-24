@@ -2086,7 +2086,10 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   const std::string kNameUtf8 = "nadeshiko@example.com";
   const std::u16string kName = u"nadeshiko@example.com";
   PasskeyCredential passkey(PasskeyCredential::Source::kAndroidPhone,
-                            "example.com", kId, /*user_id=*/{}, kNameUtf8);
+                            PasskeyCredential::RpId("example.com"),
+                            PasskeyCredential::CredentialId(kId),
+                            PasskeyCredential::UserId(),
+                            PasskeyCredential::Username(kNameUtf8));
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
   absl::optional<std::vector<PasskeyCredential>> passkey_list =
@@ -2198,10 +2201,12 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
   password_autofill_manager_->OnAddPasswordFillData(data);
 
   // Enable WebAuthn autofill to return a credential.
-  PasskeyCredential passkey(PasskeyCredential::Source::kAndroidPhone,
-                            "rpid.com",
-                            /*credential_id=*/{1, 2, 3, 4},
-                            /*user_id=*/{1, 2, 3, 4}, "nadeshiko@example.com");
+  PasskeyCredential passkey(
+      PasskeyCredential::Source::kAndroidPhone,
+      PasskeyCredential::RpId("rpid.com"),
+      PasskeyCredential::CredentialId({1, 2, 3, 4}),
+      PasskeyCredential::UserId({1, 2, 3, 4}),
+      PasskeyCredential::Username("nadeshiko@example.com"));
   absl::optional<std::vector<PasskeyCredential>> passkeys =
       std::vector{std::move(passkey)};
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)

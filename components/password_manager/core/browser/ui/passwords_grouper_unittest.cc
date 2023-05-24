@@ -31,9 +31,13 @@ namespace {
 PasskeyCredential CreatePasskey(std::string rp_id,
                                 std::string username = "username",
                                 std::string display_name = "display_name") {
-  return PasskeyCredential(PasskeyCredential::Source::kAndroidPhone,
-                           std::move(rp_id), {1, 2, 3, 4}, {5, 6, 7, 8},
-                           std::move(username), std::move(display_name));
+  return PasskeyCredential(
+      PasskeyCredential::Source::kAndroidPhone,
+      PasskeyCredential::RpId(std::move(rp_id)),
+      PasskeyCredential::CredentialId({1, 2, 3, 4}),
+      PasskeyCredential::UserId({5, 6, 7, 8}),
+      PasskeyCredential::Username(std::move(username)),
+      PasskeyCredential::DisplayName(std::move(display_name)));
 }
 
 PasswordForm CreateForm(std::string signon_realm,

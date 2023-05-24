@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -53,6 +54,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
@@ -257,6 +259,16 @@ void MaybeShowProfileSwitchIPH(Profile* profile) {
 #endif
 }
 
+// Returns a passkey model instance if the feature is enabled.
+PasskeyModel* MaybeGetPasskeyModel(Profile* profile) {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManagerPasskeys) &&
+      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
+    return PasskeyModelFactory::GetInstance()->GetForProfile(profile);
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -270,7 +282,8 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
               ServiceAccessType::EXPLICIT_ACCESS),
           AccountPasswordStoreFactory::GetForProfile(
               profile,
-              ServiceAccessType::EXPLICIT_ACCESS)),
+              ServiceAccessType::EXPLICIT_ACCESS),
+          MaybeGetPasskeyModel(profile)),
       password_manager_porter_(std::make_unique<PasswordManagerPorter>(
           profile,
           &saved_passwords_presenter_,
@@ -1049,8 +1062,12 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
           return domainInfo;
         });
   }
+  entry.is_passkey = credential.is_passkey;
   entry.urls = extensions::CreateUrlCollectionFromCredential(credential);
   entry.username = base::UTF16ToUTF8(credential.username);
+  if (credential.is_passkey) {
+    entry.display_name = base::UTF16ToUTF8(credential.user_display_name);
+  }
   entry.stored_in = extensions::StoreSetFromCredential(credential);
   entry.is_android_credential = password_manager::IsValidAndroidFacetURI(
       credential.GetFirstSignonRealm());

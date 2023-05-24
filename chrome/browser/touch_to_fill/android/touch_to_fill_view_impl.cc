@@ -69,10 +69,12 @@ PasskeyCredential ConvertJavaWebAuthnCredential(
 
   return PasskeyCredential(
       PasskeyCredential::Source::kAndroidPhone,
-      ConvertJavaStringToUTF8(Java_WebAuthnCredential_getRpId(env, credential)),
-      std::move(credential_id), std::move(user_id),
-      ConvertJavaStringToUTF8(
-          Java_WebAuthnCredential_getUsername(env, credential)));
+      PasskeyCredential::RpId(ConvertJavaStringToUTF8(
+          Java_WebAuthnCredential_getRpId(env, credential))),
+      PasskeyCredential::CredentialId(std::move(credential_id)),
+      PasskeyCredential::UserId(std::move(user_id)),
+      PasskeyCredential::Username(ConvertJavaStringToUTF8(
+          Java_WebAuthnCredential_getUsername(env, credential))));
 }
 
 }  // namespace

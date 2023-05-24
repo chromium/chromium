@@ -152,7 +152,7 @@ class FakeCancellingSelectFileDialog : public ui::SelectFileDialog {
 class FakeCancellingSelectFileDialogFactory
     : public ui::SelectFileDialogFactory {
  public:
-  FakeCancellingSelectFileDialogFactory() {}
+  FakeCancellingSelectFileDialogFactory() = default;
 
   TestSelectFileDialogFactory& operator=(const TestSelectFileDialogFactory&) =
       delete;

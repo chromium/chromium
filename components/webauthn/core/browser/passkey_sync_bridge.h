@@ -55,7 +55,7 @@ class PasskeySyncBridge : public syncer::ModelTypeSyncBridge,
       const override;
   std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) override;
-  bool DeletePasskeyForTesting(std::string sync_id) override;
+  bool DeletePasskeyForTesting(const std::string& sync_id) override;
 
  private:
   void OnCreateStore(const absl::optional<syncer::ModelError>& error,

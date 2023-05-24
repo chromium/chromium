@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "chrome/common/extensions/api/passwords_private.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -42,6 +43,9 @@ api::passwords_private::UrlCollection CreateUrlCollectionFromGURL(
 
 extensions::api::passwords_private::PasswordStoreSet StoreSetFromCredential(
     const CredentialUIEntry& credential) {
+  if (credential.is_passkey) {
+    return extensions::api::passwords_private::PASSWORD_STORE_SET_ACCOUNT;
+  }
   if (credential.stored_in.contains(Store::kAccountStore) &&
       credential.stored_in.contains(Store::kProfileStore)) {
     return extensions::api::passwords_private::

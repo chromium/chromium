@@ -121,7 +121,9 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
 }
 
 CredentialUIEntry::CredentialUIEntry(const PasskeyCredential& passkey)
-    : is_passkey(true), username(base::UTF8ToUTF16(passkey.username())) {
+    : is_passkey(true),
+      username(base::UTF8ToUTF16(passkey.username())),
+      user_display_name(base::UTF8ToUTF16(passkey.display_name())) {
   CredentialFacet facet;
   facet.url = RPIDToURL(passkey.rp_id());
   facet.signon_realm = facet.url.possibly_invalid_spec();

@@ -701,9 +701,12 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
   MockTouchToFillView* weak_view = mock_view.get();
   touch_to_fill_controller().set_view(std::move(mock_view));
 
-  PasskeyCredential credential(PasskeyCredential::Source::kAndroidPhone,
-                               "example.com", {1, 2, 3, 4}, {5, 6, 7, 8},
-                               "alice@example.com");
+  PasskeyCredential credential(
+      PasskeyCredential::Source::kAndroidPhone,
+      PasskeyCredential::RpId("example.com"),
+      PasskeyCredential::CredentialId({1, 2, 3, 4}),
+      PasskeyCredential::UserId({5, 6, 7, 8}),
+      PasskeyCredential::Username("alice@example.com"));
   std::vector<PasskeyCredential> credentials({credential});
 
   EXPECT_CALL(*weak_view,

@@ -45,7 +45,7 @@ class PasskeyModel : public KeyedService {
       const = 0;
   virtual std::string AddNewPasskeyForTesting(
       sync_pb::WebauthnCredentialSpecifics passkey) = 0;
-  virtual bool DeletePasskeyForTesting(std::string sync_id) = 0;
+  virtual bool DeletePasskeyForTesting(const std::string& sync_id) = 0;
 };
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_

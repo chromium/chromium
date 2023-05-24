@@ -74,16 +74,23 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics) {
           credential1_shadow,
       });
 
-  ASSERT_THAT(credentials,
-              testing::UnorderedElementsAre(
-                  PasskeyCredential(PasskeyCredential::Source::kAndroidPhone,
-                                    kRpId, ToUint8Vector(kCredentialIdShadow),
-                                    ToUint8Vector(kUserId1), kUserName1,
-                                    kUserDisplayName1),
-                  PasskeyCredential(PasskeyCredential::Source::kAndroidPhone,
-                                    kRpId, ToUint8Vector(kCredentialId2),
-                                    ToUint8Vector(kUserId2), kUserName2,
-                                    kUserDisplayName2)));
+  ASSERT_THAT(
+      credentials,
+      testing::UnorderedElementsAre(
+          PasskeyCredential(PasskeyCredential::Source::kAndroidPhone,
+                            PasskeyCredential::RpId(kRpId),
+                            PasskeyCredential::CredentialId(
+                                ToUint8Vector(kCredentialIdShadow)),
+                            PasskeyCredential::UserId(ToUint8Vector(kUserId1)),
+                            PasskeyCredential::Username(kUserName1),
+                            PasskeyCredential::DisplayName(kUserDisplayName1)),
+          PasskeyCredential(
+              PasskeyCredential::Source::kAndroidPhone,
+              PasskeyCredential::RpId(kRpId),
+              PasskeyCredential::CredentialId(ToUint8Vector(kCredentialId2)),
+              PasskeyCredential::UserId(ToUint8Vector(kUserId2)),
+              PasskeyCredential::Username(kUserName2),
+              PasskeyCredential::DisplayName(kUserDisplayName2))));
 }
 
 TEST_F(PasskeyCredentialTest, FromCredentialSpecifics_EmptyOptionalFields) {
@@ -96,8 +103,12 @@ TEST_F(PasskeyCredentialTest, FromCredentialSpecifics_EmptyOptionalFields) {
   ASSERT_THAT(
       PasskeyCredential::FromCredentialSpecifics(std::vector{credential}),
       testing::UnorderedElementsAre(PasskeyCredential(
-          PasskeyCredential::Source::kAndroidPhone, kRpId,
-          ToUint8Vector(kCredentialId1), ToUint8Vector(kUserId1), "", "")));
+          PasskeyCredential::Source::kAndroidPhone,
+          PasskeyCredential::RpId(kRpId),
+          PasskeyCredential::CredentialId(ToUint8Vector(kCredentialId1)),
+          PasskeyCredential::UserId(ToUint8Vector(kUserId1)),
+          PasskeyCredential::Username(""),
+          PasskeyCredential::DisplayName(""))));
 }
 
 }  // namespace password_manager

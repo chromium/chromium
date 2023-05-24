@@ -307,6 +307,13 @@ BASE_FEATURE(kPasswordGenerationPreviewOnHover,
              "PasswordGenerationPreviewOnHover",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Show, update, and delete GPM passkeys on the Chrome Password Manager.
+BASE_FEATURE(kPasswordManagerPasskeys,
+             "PasswordManagerPasskeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 
 // The string version to use for the save/update password prompts when the user
