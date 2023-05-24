@@ -845,16 +845,6 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
 ////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
 
-// Constructor
-AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
-    AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction() =
-        default;
-
-// Destructor
-AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
-    ~AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction() =
-        default;
-
 ExtensionFunction::ResponseAction
 AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -865,16 +855,17 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
     return RespondNow(Error(kErrorDeviceAuthUnavailable));
   }
 
-  // If `device_authenticator_` is not available, then don't do anything.
-  device_authenticator_ = client->GetDeviceAuthenticator();
-  if (!device_authenticator_) {
+  // If `device_authenticator` is not available, then don't do anything.
+  scoped_refptr<device_reauth::DeviceAuthenticator> device_authenticator =
+      client->GetDeviceAuthenticator();
+  if (!device_authenticator) {
     return RespondNow(Error(kErrorDeviceAuthUnavailable));
   }
 
-  base::OnceClosure on_reauth_completed = base::BindOnce(
-      &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
-          OnReauthCompleted,
-      this);
+  // `device_authenticator` is a scoped_refptr, so we need to keep it alive
+  // until the callback that uses it is complete.
+  base::OnceClosure bind_device_authenticator =
+      base::DoNothingWithBoundArgs(device_authenticator);
   const std::u16string message =
       l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT);
 
@@ -882,12 +873,12 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
   // asynchronously. The pref value directly correlates to the mandatory auth
   // toggle.
   autofill_util::AuthenticateUser(
-      device_authenticator_, message,
+      device_authenticator, message,
       base::BindOnce(
           &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
               UpdateMandatoryAuthTogglePref,
           this)
-          .Then(std::move(on_reauth_completed)));
+          .Then(base::IgnoreArgs(std::move(bind_device_authenticator))));
   base::RecordAction(base::UserMetricsAction(
       "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
   return RespondNow(NoArguments());
@@ -910,11 +901,6 @@ void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
         "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
   }
 #endif
-}
-
-void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
-    OnReauthCompleted() {
-  device_authenticator_.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
