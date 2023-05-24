@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-[RuntimeEnabled=FedCmSelectiveDisclosure]
 dictionary IdentityClaimRequirement {
   // Controls the optionality of the attribute.
   // NOTE: "required" is a reserved WebIDL keyword, so we prefix it with

@@ -4,7 +4,6 @@
 
 // https://w3c.github.io/clipboard-apis/#clipboard-interface
 
-[RuntimeEnabled=ClipboardUnsanitizedContent]
 dictionary ClipboardUnsanitizedFormats {
   sequence<DOMString> unsanitized;
 };

@@ -30,7 +30,7 @@ enum AudioContextLatencyCategory {
     "playback"
 };
 
-[RuntimeEnabled=AudioContextSetSinkId] dictionary AudioSinkOptions {
+dictionary AudioSinkOptions {
   required AudioSinkType type;
 };
 

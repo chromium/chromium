@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 // https://github.com/WICG/ScrollToTextFragment
-[
-    RuntimeEnabled=TextFragmentAPI
-] enum DirectiveType { "text" };
+enum DirectiveType { "text" };
 
 [
     Exposed=Window,
