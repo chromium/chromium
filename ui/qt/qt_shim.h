@@ -42,6 +42,10 @@ class QtShim : public QObject, public QtInterface {
  private slots:
   void FontChanged(const QFont& font);
   void PaletteChanged(const QPalette& palette);
+  void ScreenAdded(QScreen* screen);
+  void ScreenRemoved(QScreen* screen);
+  void LogicalDotsPerInchChanged(qreal dpi);
+  void PhysicalDotsPerInchChanged(qreal dpi);
 
  private:
   QImage DrawHeaderImpl(int width,
