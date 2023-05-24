@@ -4660,6 +4660,37 @@ TEST_F(CaptureModeTest, CaptureModeDefaultBehavior) {
   expected_behavior();
 }
 
+// Tests that the capture mode session can be started with the keyboard shortcut
+// 'Ctrl + Shift + Overview' with `kImage` as the default type and `kRegion` as
+// the default source. And the screen recording can be ended with the keyboard
+// shortcut 'Search + Shift + X'.
+TEST_F(CaptureModeTest, KeyboardShortcutTest) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kKeyboardShortcut, 0);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                                      ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  auto* controller = CaptureModeController::Get();
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_EQ(controller->type(), CaptureModeType::kImage);
+  EXPECT_EQ(controller->source(), CaptureModeSource::kRegion);
+  controller->SetType(CaptureModeType::kVideo);
+  controller->SetSource(CaptureModeSource::kFullscreen);
+
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  event_generator->PressAndReleaseKey(ui::VKEY_X,
+                                      ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(controller->is_recording_in_progress());
+  histogram_tester.ExpectBucketCount(
+      kEndRecordingReasonInClamshellHistogramName,
+      EndRecordingReason::kKeyboardShortcut, 1);
+}
+
 namespace {
 
 // -----------------------------------------------------------------------------

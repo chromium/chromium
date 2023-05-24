@@ -85,6 +85,8 @@ ASH_EXPORT bool CanScreenshot(bool take_screenshot);
 
 ASH_EXPORT bool CanShowStylusTools();
 
+ASH_EXPORT bool CanStopScreenRecording();
+
 ASH_EXPORT bool CanSwapPrimaryDisplay();
 
 ASH_EXPORT bool CanToggleCalendar();
@@ -283,6 +285,9 @@ ASH_EXPORT void ShowStylusTools();
 
 // Brings up task manager.
 ASH_EXPORT void ShowTaskManager();
+
+// Stops the capture mode recording.
+ASH_EXPORT void StopScreenRecording();
 
 // Puts device in sleep mode(suspend).
 ASH_EXPORT void Suspend();

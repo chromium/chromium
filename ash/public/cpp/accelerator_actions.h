@@ -107,6 +107,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(ShowStylusTools)                             \
   ACCELERATOR_ACTION_ENTRY(ShowTaskManager)                             \
   ACCELERATOR_ACTION_ENTRY(StartAssistant)                              \
+  ACCELERATOR_ACTION_ENTRY(StopScreenRecording)                         \
   ACCELERATOR_ACTION_ENTRY(Suspend)                                     \
   ACCELERATOR_ACTION_ENTRY(SwapPrimaryDisplay)                          \
   /* Switch to another IME depending on the accelerator. */             \

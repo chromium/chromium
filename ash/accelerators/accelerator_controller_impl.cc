@@ -736,6 +736,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return accelerators::CanShowStylusTools();
     case AcceleratorAction::kStartAssistant:
       return true;
+    case AcceleratorAction::kStopScreenRecording:
+      return accelerators::CanStopScreenRecording();
     case AcceleratorAction::kSwapPrimaryDisplay:
       return accelerators::CanSwapPrimaryDisplay();
     case AcceleratorAction::kSwitchIme:
@@ -1254,6 +1256,9 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kSwapPrimaryDisplay:
       base::RecordAction(UserMetricsAction("Accel_Swap_Primary_Display"));
       accelerators::ShiftPrimaryDisplay();
+      break;
+    case AcceleratorAction::kStopScreenRecording:
+      accelerators::StopScreenRecording();
       break;
     case AcceleratorAction::kSwitchIme:
       HandleSwitchIme(accelerator);

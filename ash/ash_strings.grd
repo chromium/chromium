@@ -3655,6 +3655,9 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_EMOJI_PICKER" desc="Label for accelerator action - Open Emoji Picker.">
         Open Emoji Picker
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_STOP_SCREEN_RECORDING" desc="Label for accelerator action - Stop screen recording.">
+        Stop screen recording
+      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_IME_MENU_BUBBLE" desc="Label for accelerator action - Show list of available input methods.">
         Show list of available input methods
       </message>

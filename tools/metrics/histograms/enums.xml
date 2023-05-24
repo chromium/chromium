@@ -31206,6 +31206,7 @@ Called by update_document_policy_enum.py.-->
   <int value="17" label="Projector transcription error"/>
   <int value="18" label="Low DriveFS free space quota"/>
   <int value="19" label="Video encoder does not support reconfiguration"/>
+  <int value="20" label="Stop screen recording keyboard shortcut"/>
 </enum>
 
 <enum name="EnhancedBookmarkViewMode">

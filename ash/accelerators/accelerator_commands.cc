@@ -586,6 +586,10 @@ bool CanShowStylusTools() {
   return GetPaletteTray()->ShouldShowPalette();
 }
 
+bool CanStopScreenRecording() {
+  return CaptureModeController::Get()->is_recording_in_progress();
+}
+
 bool CanSwapPrimaryDisplay() {
   return display::Screen::GetScreen()->GetNumDisplays() > 1;
 }
@@ -1139,6 +1143,12 @@ void ShowStylusTools() {
 
 void ShowTaskManager() {
   NewWindowDelegate::GetInstance()->ShowTaskManager();
+}
+
+void StopScreenRecording() {
+  CaptureModeController* controller = CaptureModeController::Get();
+  CHECK(controller->is_recording_in_progress());
+  controller->EndVideoRecording(EndRecordingReason::kKeyboardShortcut);
 }
 
 void Suspend() {

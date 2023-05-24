@@ -214,6 +214,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ShowStylusTools"/>
     <variant name="ShowTaskManager"/>
     <variant name="StartAssistant"/>
+    <variant name="StopScreenRecording"/>
     <variant name="Suspend"/>
     <variant name="SwapPrimaryDisplay"/>
     <variant name="SwitchIme"/>
