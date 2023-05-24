@@ -26,7 +26,6 @@ dictionary PrivateAttributionHelperInfo {
   DOMString publicKey;
 };
 
-[Serializable]
 dictionary PrivateAttributionNetwork {
   unsigned long id;
 

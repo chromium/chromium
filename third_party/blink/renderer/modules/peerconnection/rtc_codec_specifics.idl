@@ -5,7 +5,6 @@
 // TODO(https://crbug.com/webrtc/14709): Support more codecs.
 typedef RTCCodecSpecificsVP8 RTCCodecSpecifics;
 
-[Serializable]
 dictionary RTCCodecSpecificsVP8 {
     boolean nonReference;
     short pictureId;

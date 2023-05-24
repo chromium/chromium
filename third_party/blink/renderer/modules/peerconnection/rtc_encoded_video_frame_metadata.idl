@@ -19,7 +19,6 @@ enum RTCDecodeTargetIndication {
     "required",
 };
 
-[Serializable]
 dictionary RTCEncodedVideoFrameMetadata {
     // Encoding related metadata
     long long frameId;
