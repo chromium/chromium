@@ -6,7 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GR_CACHE_CONTROLLER_H_
 
 #include "base/cancelable_callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/gpu_gles2_export.h"
 
@@ -48,9 +48,7 @@ class GPU_GLES2_EXPORT GrCacheController {
   // cache.
   uint64_t current_idle_id_ = 0u;
   base::CancelableOnceClosure purge_gr_cache_cb_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION SharedContextState* context_state_;
+  raw_ptr<SharedContextState> context_state_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
