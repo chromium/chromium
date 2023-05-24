@@ -1364,9 +1364,10 @@ void TaskQueueImpl::ResetThrottler() {
 void TaskQueueImpl::UpdateWakeUp(LazyNow* lazy_now) {
   absl::optional<WakeUp> wake_up = GetNextDesiredWakeUp();
 
-  recordreplay::Assert("[RUN-548] TaskQueueImpl::UpdateWakeUp %ld %ld",
-                       wake_up.has_value() ? wake_up->time.ToInternalValue() : 0,
-                       wake_up.has_value() ? wake_up->leeway.ToInternalValue() : 0);
+  if (!recordreplay::AreEventsDisallowed())
+    recordreplay::Assert("[RUN-548] TaskQueueImpl::UpdateWakeUp %ld %ld",
+                         wake_up.has_value() ? wake_up->time.ToInternalValue() : 0,
+                         wake_up.has_value() ? wake_up->leeway.ToInternalValue() : 0);
 
   if (main_thread_only().throttler && IsQueueEnabled()) {
     // GetNextAllowedWakeUp() may return a non-null wake_up even if |wake_up| is
