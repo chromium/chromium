@@ -3777,7 +3777,8 @@
           "--num-retries=3",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter",
+          "--flag-specific=chrome-for-testing"
         ],
         "check_flakiness_for_new_tests": false,
         "isolate_name": "blink_web_tests",

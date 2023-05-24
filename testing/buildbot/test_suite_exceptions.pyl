@@ -550,8 +550,9 @@
       },
       'linux-rel-cft': {
         "args": [
-          "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
-	  '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
+          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
+          '--flag-specific=chrome-for-testing',
         ],
         'swarming': {
           'shards': 8,
@@ -621,7 +622,7 @@
         'args': [
           '--target',
           'Release_x64',
-	  '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
         ],
         'swarming': {
           "shards": 12,
