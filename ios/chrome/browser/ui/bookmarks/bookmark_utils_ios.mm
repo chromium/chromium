@@ -362,7 +362,8 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
     const GURL& url,
     const bookmarks::BookmarkNode* folder,
     int position,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* local_or_syncable_model,
+    bookmarks::BookmarkModel* account_model,
     ChromeBrowserState* browser_state) {
   std::u16string titleString = base::SysNSStringToUTF16(title);
 
@@ -371,9 +372,11 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
   [wrapper startGroupingActions];
 
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
-  const bookmarks::BookmarkNode* node = bookmark_model->AddNewURL(
+  bookmarks::BookmarkModel* folder_model =
+      GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);
+  const bookmarks::BookmarkNode* node = folder_model->AddNewURL(
       folder, folder->children().size(), titleString, url);
-  bookmark_model->Move(node, folder, position);
+  folder_model->Move(node, folder, position);
 
   [wrapper stopGroupingActions];
   [wrapper resetUndoManagerChanged];

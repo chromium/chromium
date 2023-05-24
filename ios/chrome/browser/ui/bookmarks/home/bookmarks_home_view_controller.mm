@@ -2591,7 +2591,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
           bookmark_utils_ios::CreateBookmarkAtPositionWithUndoToast(
               base::SysUTF8ToNSString(URL.spec()), URL,
               self.displayedFolderNode, index, _profileBookmarkModel.get(),
-              self.browserState)];
+              _accountBookmarkModel.get(), self.browserState)];
 }
 
 @end
