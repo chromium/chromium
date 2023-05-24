@@ -11,6 +11,7 @@
 namespace bookmarks {
 
 BASE_DECLARE_FEATURE(kEnableBookmarksAccountStorage);
+BASE_DECLARE_FEATURE(kRollbackBookmarksAccountStorage);
 
 }  // namespace bookmarks
 

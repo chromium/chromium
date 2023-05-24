@@ -374,6 +374,11 @@ class BookmarkModel final : public BookmarkUndoProvider,
     return weak_factory_.GetWeakPtr();
   }
 
+  // Attempts to delete the account storage file in case the account storage
+  // support was rolled back. If the account storage support wasn't enabled -
+  // this is a no-op. Deletion is done asynchronously on a background thread.
+  static void WipeAccountStorageForRollback(const base::FilePath& profile_path);
+
  private:
   friend class BookmarkCodecTest;
   friend class BookmarkModelFaviconTest;
