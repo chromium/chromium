@@ -38,8 +38,8 @@
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
-#include "third_party/blink/renderer/platform/fonts/opentype/open_type_cpal_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/variable_axes_names.h"
+#include "third_party/blink/renderer/platform/fonts/palette_interpolation.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_decoder.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -228,55 +228,27 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     SkFontArguments font_args;
     SkFontArguments::Palette sk_palette{0, nullptr, 0};
 
+    Vector<FontPalette::FontPaletteOverride> color_overrides;
     absl::optional<uint16_t> palette_index = absl::nullopt;
-
-    if (palette->GetPaletteNameKind() == FontPalette::kLightPalette ||
-        palette->GetPaletteNameKind() == FontPalette::kDarkPalette) {
-      OpenTypeCpalLookup::PaletteUse palette_use =
-          palette->GetPaletteNameKind() == FontPalette::kLightPalette
-              ? OpenTypeCpalLookup::kUsableWithLightBackground
-              : OpenTypeCpalLookup::kUsableWithDarkBackground;
-      palette_index =
-          OpenTypeCpalLookup::FirstThemedPalette(base_typeface_, palette_use);
-    } else if (palette->IsCustomPalette()) {
-      FontPalette::BasePaletteValue base_palette_index =
-          palette->GetBasePalette();
-
-      switch (base_palette_index.type) {
-        case FontPalette::kNoBasePalette: {
-          palette_index = 0;
-          break;
-        }
-        case FontPalette::kDarkBasePalette: {
-          OpenTypeCpalLookup::PaletteUse palette_use =
-              OpenTypeCpalLookup::kUsableWithDarkBackground;
-          palette_index = OpenTypeCpalLookup::FirstThemedPalette(base_typeface_,
-                                                                 palette_use);
-          break;
-        }
-        case FontPalette::kLightBasePalette: {
-          OpenTypeCpalLookup::PaletteUse palette_use =
-              OpenTypeCpalLookup::kUsableWithLightBackground;
-          palette_index = OpenTypeCpalLookup::FirstThemedPalette(base_typeface_,
-                                                                 palette_use);
-          break;
-        }
-        case FontPalette::kIndexBasePalette: {
-          palette_index = base_palette_index.index;
-          break;
-        }
-      }
+    PaletteInterpolation palette_interpolation(base_typeface_);
+    if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled() &&
+        palette->IsInterpolablePalette()) {
+      color_overrides =
+          palette_interpolation.ComputeInterpolableFontPalette(palette);
+      palette_index = 0;
+    } else {
+      color_overrides = *palette->GetColorOverrides();
+      palette_index = palette_interpolation.RetrievePaletteIndex(palette);
     }
 
     if (palette_index.has_value()) {
       sk_palette.index = *palette_index;
 
-      auto* color_overrides = palette->GetColorOverrides();
-      if (color_overrides && color_overrides->size()) {
+      if (color_overrides.size()) {
         sk_palette.overrides =
             reinterpret_cast<const SkFontArguments::Palette::Override*>(
-                color_overrides->data());
-        sk_palette.overrideCount = color_overrides->size();
+                color_overrides.data());
+        sk_palette.overrideCount = color_overrides.size();
       }
 
       font_args.setPalette(sk_palette);
@@ -287,7 +259,6 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
       return_typeface = palette_typeface;
     }
   }
-
   return FontPlatformData(std::move(return_typeface), std::string(), size,
                           synthetic_bold && !base_typeface_->isBold(),
                           synthetic_italic && !base_typeface_->isItalic(),
