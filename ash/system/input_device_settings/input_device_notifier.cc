@@ -33,7 +33,7 @@ DeviceId ExtractDeviceIdFromInputDevice(const ui::InputDevice& device) {
 template <class DeviceMojomPtr>
 bool IsDeviceASuspectedImposter(BluetoothDevicesObserver* bluetooth_observer,
                                 const ui::InputDevice& device) {
-  return device.suspected_imposter;
+  return false;
 }
 
 template <>
@@ -97,7 +97,7 @@ bool IsDeviceASuspectedImposter<mojom::MousePtr>(
     return true;
   }
 
-  return device.suspected_imposter;
+  return false;
 }
 
 template <typename T>
