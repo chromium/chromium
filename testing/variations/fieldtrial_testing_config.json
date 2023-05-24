@@ -14055,6 +14055,25 @@
             ]
         }
     ],
+    "UsernameFirstFlowHonorAutocomplete": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UsernameFirstFlowHonorAutocomplete"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8CompileHints3": [
         {
             "platforms": [
