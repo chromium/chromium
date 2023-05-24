@@ -70,7 +70,8 @@ class WebAppInstallManager {
   bool error_log_updated_ = false;
   bool error_log_writing_in_progress_ = false;
 
-  base::ObserverList<WebAppInstallManagerObserver> observers_;
+  base::ObserverList<WebAppInstallManagerObserver, /*check_empty=*/true>
+      observers_;
 
   base::WeakPtrFactory<WebAppInstallManager> weak_ptr_factory_{this};
 };
