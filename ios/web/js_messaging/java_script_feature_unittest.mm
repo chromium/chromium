@@ -121,45 +121,6 @@ TEST_F(JavaScriptFeatureTest, CreateFeature) {
               feature_scripts[0].GetScriptString());
 }
 
-// Tests creating a JavaScriptFeature with replacements dictionary.
-TEST_F(JavaScriptFeatureTest, CreateFeatureWithPlaceholder) {
-  auto document_end_injection_time =
-      web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd;
-  auto target_frames_all =
-      web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames;
-
-  NSString* placeholder = @"$(PLUGIN_NOT_SUPPORTED_TEXT)";
-  NSString* replacement = @"TEST_PLACEHOLDER_VALUE";
-
-  const web::JavaScriptFeature::FeatureScript feature_script =
-      web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-          "plugin_placeholder", document_end_injection_time, target_frames_all,
-          web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
-              kReinjectOnDocumentRecreation,
-          base::BindRepeating(^NSDictionary<NSString*, NSString*>*() {
-            return @{placeholder : replacement};
-          }));
-
-  auto any_content_world = web::ContentWorld::kIsolatedWorld;
-  web::JavaScriptFeature feature(any_content_world, {feature_script});
-
-  EXPECT_EQ(any_content_world, feature.GetSupportedContentWorld());
-  EXPECT_EQ(0ul, feature.GetDependentFeatures().size());
-  auto feature_scripts = feature.GetScripts();
-  ASSERT_EQ(1ul, feature_scripts.size());
-  NSString* original_script = web::GetPageScript(@"plugin_placeholder");
-  NSString* final_script = feature_scripts[0].GetScriptString();
-
-  EXPECT_NSEQ(feature_script.GetScriptString(), final_script);
-  NSRange placeholder_range = [original_script rangeOfString:placeholder
-                                                     options:NSLiteralSearch];
-  EXPECT_TRUE(placeholder_range.location != NSNotFound);
-  EXPECT_FALSE([final_script containsString:placeholder]);
-  NSRange replacement_range = [final_script rangeOfString:replacement
-                                                  options:NSLiteralSearch];
-  EXPECT_EQ(placeholder_range.location, replacement_range.location);
-}
-
 // Tests creating a JavaScriptFeature which relies on a dependent feature.
 TEST_F(JavaScriptFeatureTest, CreateFeatureWithDependentFeature) {
   auto document_start_injection_time =

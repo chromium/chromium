@@ -229,10 +229,6 @@ bool ChromeWebClient::IsAppSpecificURL(const GURL& url) const {
   return url.SchemeIs(kChromeUIScheme);
 }
 
-std::u16string ChromeWebClient::GetPluginNotSupportedText() const {
-  return l10n_util::GetStringUTF16(IDS_PLUGIN_NOT_SUPPORTED);
-}
-
 std::string ChromeWebClient::GetUserAgent(web::UserAgentType type) const {
   // The user agent should not be requested for app-specific URLs.
   DCHECK_NE(type, web::UserAgentType::NONE);

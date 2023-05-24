@@ -115,10 +115,6 @@ NSString* WebViewWebClient::GetDocumentStartScriptForMainFrame(
   return provider.GetScript();
 }
 
-std::u16string WebViewWebClient::GetPluginNotSupportedText() const {
-  return l10n_util::GetStringUTF16(IDS_PLUGIN_NOT_SUPPORTED);
-}
-
 void WebViewWebClient::PrepareErrorPage(
     web::WebState* web_state,
     const GURL& url,

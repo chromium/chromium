@@ -34,7 +34,6 @@ class WebViewWebClient : public web::WebClient {
       web::BrowserState* browser_state) const override;
   NSString* GetDocumentStartScriptForMainFrame(
       web::BrowserState* browser_state) const override;
-  std::u16string GetPluginNotSupportedText() const override;
   void PrepareErrorPage(web::WebState* web_state,
                         const GURL& url,
                         NSError* error,

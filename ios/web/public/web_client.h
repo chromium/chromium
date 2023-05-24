@@ -85,9 +85,6 @@ class WebClient {
   // browser would return true for "chrome://about" URL.
   virtual bool IsAppSpecificURL(const GURL& url) const;
 
-  // Returns text to be displayed for an unsupported plugin.
-  virtual std::u16string GetPluginNotSupportedText() const;
-
   // Returns the user agent string for the specified type.
   virtual std::string GetUserAgent(UserAgentType type) const;
 

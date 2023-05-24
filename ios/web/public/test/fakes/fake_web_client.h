@@ -33,10 +33,6 @@ class FakeWebClient : public web::WebClient {
 
   std::string GetUserAgent(UserAgentType type) const override;
 
-  // Returns `plugin_not_supported_text_` as the text to be displayed for an
-  // unsupported plugin.
-  std::u16string GetPluginNotSupportedText() const override;
-
   base::RefCountedMemory* GetDataResourceBytes(int id) const override;
 
   std::vector<JavaScriptFeature*> GetJavaScriptFeatures(

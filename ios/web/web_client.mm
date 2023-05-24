@@ -45,10 +45,6 @@ bool WebClient::IsAppSpecificURL(const GURL& url) const {
   return false;
 }
 
-std::u16string WebClient::GetPluginNotSupportedText() const {
-  return std::u16string();
-}
-
 std::string WebClient::GetUserAgent(UserAgentType type) const {
   return std::string();
 }
