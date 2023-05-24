@@ -335,6 +335,7 @@ std::string TranslateXKB2Extension(const std::string& src) {
 }
 
 void OobeLocalizationTest::RunLocalizationTest() {
+  WaitForOobeUI();
   const std::string expected_locale(GetParam()->expected_locale);
   const std::string expected_keyboard_layout(
       GetParam()->expected_keyboard_layout);
