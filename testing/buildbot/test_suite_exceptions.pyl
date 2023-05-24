@@ -643,6 +643,15 @@
           'hard_timeout': 2400,
         },
       },
+      'win11-arm64-blink-rel': {
+        'swarming': {
+          'hard_timeout': 2400,
+        },
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+      },
       'win11-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
@@ -974,6 +983,15 @@
           'shards': 9,
           'hard_timeout': 2400,
         },
+      },
+      'win11-arm64-blink-rel': {
+        'swarming': {
+          'hard_timeout': 2400,
+        },
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
       },
       'win11-blink-rel': {
         'swarming': {
