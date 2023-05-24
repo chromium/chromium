@@ -8451,6 +8451,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
         You can now give your browser a new look at any time.
       </message>
 
+      <!-- Password Manager Tutorial Strings -->
+      <message name="IDS_TUTORIAL_PASSWORD_MANAGER_OPEN_APP_MENU" desc="The description of the 'open add menu' step in password manager tutorial">
+        Click the Chrome menu
+      </message>
+      <message name="IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_PASSWORD_MANAGER" desc="The description of the 'click password manager' step in password manager tutorial">
+        Click “Google Password Manager”
+      </message>
+      <message name="IDS_TUTORIAL_PASSWORD_MANAGER_SELECT_SETTINGS" desc="The description of the 'select settings' step in password manager tutorial">
+        Click “Settings”
+      </message>
+      <message name="IDS_TUTORIAL_PASSWORD_MANAGER_ADD_SHORTCUT" desc="The description of the 'add shortcut' step in password manager tutorial">
+        Click “Add Shortcut”
+      </message>
+      <message name="IDS_TUTORIAL_PASSWORD_MANAGER_SUCCESS_BODY" desc="The description of the body text in the 'success' step in password manager tutorial">
+        Use your shortcut to quickly get to the Google Password Manager. You can move your shortcut to your computer's home screen or app launcher.
+      </message>
+
       <!-- Browser Hung Plugin Detector -->
       <if expr="is_win">
         <message name="IDS_BROWSER_HANGMONITOR" desc="A plugin on a page has hung">
