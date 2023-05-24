@@ -7,7 +7,6 @@
 
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
-#include "ui/views/controls/button/toggle_button.h"
 
 // An interface that provides callbacks to the extensions menu pages.
 class ExtensionsMenuHandler {
@@ -24,6 +23,9 @@ class ExtensionsMenuHandler {
 
   // Closes the currently-showing extensions menu, if it exists.
   virtual void CloseBubble() = 0;
+
+  // Updates the user site setting whether toggle `is_on`.
+  virtual void OnSiteSettingsToggleButtonPressed(bool is_on) = 0;
 
   // Updates the user site access for `extension_id` to `site_access`.
   virtual void OnSiteAccessSelected(

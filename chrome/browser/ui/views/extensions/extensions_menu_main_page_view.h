@@ -92,8 +92,6 @@ class ExtensionsMenuMainPageView : public views::View {
   // if existent.
   void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id);
 
-  void OnToggleButtonPressed();
-
   // Accessors used by tests:
   // Returns the currently-showing menu items.
   views::ToggleButton* GetSiteSettingsToggleForTesting() {

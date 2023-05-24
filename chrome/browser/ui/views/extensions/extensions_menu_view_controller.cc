@@ -326,6 +326,21 @@ void ExtensionsMenuViewController::OnSiteAccessSelected(
                                GetActiveWebContents(), site_access);
 }
 
+void ExtensionsMenuViewController::OnSiteSettingsToggleButtonPressed(
+    bool is_on) {
+  const url::Origin& origin =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  PermissionsManager::UserSiteSetting site_setting =
+      is_on ? PermissionsManager::UserSiteSetting::kCustomizeByExtension
+            : PermissionsManager::UserSiteSetting::kBlockAllExtensions;
+
+  PermissionsManager::Get(browser_->profile())
+      ->UpdateUserSiteSetting(origin, site_setting);
+
+  // TODO(crbug.com/1390952): Show reload message in menu if any extension needs
+  // a page refresh for the update to take effect.
+}
+
 void ExtensionsMenuViewController::OnExtensionToggleSelected(
     extensions::ExtensionId extension_id,
     bool is_on) {

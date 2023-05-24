@@ -44,6 +44,7 @@ class ExtensionsMenuViewController
   void OpenMainPage() override;
   void OpenSitePermissionsPage(extensions::ExtensionId extension_id) override;
   void CloseBubble() override;
+  void OnSiteSettingsToggleButtonPressed(bool is_on) override;
   void OnSiteAccessSelected(
       extensions::ExtensionId extension_id,
       extensions::PermissionsManager::UserSiteAccess site_access) override;

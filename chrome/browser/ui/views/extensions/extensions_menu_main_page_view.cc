@@ -54,8 +54,6 @@
 
 namespace {
 
-using PermissionsManager = extensions::PermissionsManager;
-
 // Updates the `toggle_button` text based on its state.
 std::u16string GetSiteSettingToggleText(bool is_on) {
   int label_id = is_on ? IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP
@@ -380,8 +378,15 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                   views::Builder<views::ToggleButton>()
                       .CopyAddressTo(&site_settings_toggle_)
                       .SetCallback(base::BindRepeating(
-                          &ExtensionsMenuMainPageView::OnToggleButtonPressed,
-                          base::Unretained(this))),
+                          [](views::ToggleButton* toggle_button,
+                             base::RepeatingCallback<void(bool)> callback) {
+                            callback.Run(toggle_button->GetIsOn());
+                          },
+                          site_settings_toggle_,
+                          base::BindRepeating(
+                              &ExtensionsMenuHandler::
+                                  OnSiteSettingsToggleButtonPressed,
+                              base::Unretained(menu_handler)))),
                   // Close button.
                   views::Builder<views::Button>(
                       views::BubbleFrameView::CreateCloseButton(
@@ -443,21 +448,6 @@ void ExtensionsMenuMainPageView::RemoveMenuItem(
     const ToolbarActionsModel::ActionId& action_id) {
   views::View* item = GetMenuItem(menu_items_, action_id);
   menu_items_->RemoveChildViewT(item);
-}
-
-void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
-  const url::Origin& origin =
-      GetActiveWebContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  PermissionsManager::UserSiteSetting site_setting =
-      site_settings_toggle_->GetIsOn()
-          ? PermissionsManager::UserSiteSetting::kCustomizeByExtension
-          : PermissionsManager::UserSiteSetting::kBlockAllExtensions;
-
-  PermissionsManager::Get(browser_->profile())
-      ->UpdateUserSiteSetting(origin, site_setting);
-
-  // TODO(crbug.com/1390952): Show reload message in menu if any extension needs
-  // a page refresh for the update to take effect.
 }
 
 void ExtensionsMenuMainPageView::UpdateSubheader(
