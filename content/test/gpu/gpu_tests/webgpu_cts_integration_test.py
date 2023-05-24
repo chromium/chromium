@@ -94,12 +94,6 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._query = None
     self._run_in_worker = False
 
-    if WebGpuCtsIntegrationTest._slow_tests is None:
-      with open(SLOW_TESTS_FILE, 'r') as f:
-        expectations = expectations_parser.TestExpectations()
-        expectations.parse_tagged_list(f.read(), f.name)
-        WebGpuCtsIntegrationTest._slow_tests = expectations
-
   # Only perform the pre/post test cleanup every X tests instead of every test
   # to reduce overhead.
   def ShouldPerformMinidumpCleanupOnSetUp(self) -> bool:
@@ -198,6 +192,15 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return set()
 
   @classmethod
+  def _GetSlowTests(cls):
+    if WebGpuCtsIntegrationTest._slow_tests is None:
+      with open(SLOW_TESTS_FILE, 'r') as f:
+        expectations = expectations_parser.TestExpectations()
+        expectations.parse_tagged_list(f.read(), f.name)
+        WebGpuCtsIntegrationTest._slow_tests = expectations
+    return WebGpuCtsIntegrationTest._slow_tests
+
+  @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
     super(WebGpuCtsIntegrationTest, cls).AddCommandlineArgs(parser)
     parser.add_option('--override-timeout',
@@ -223,6 +226,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def StartBrowser(cls) -> None:
     cls._page_loaded = False
     super(WebGpuCtsIntegrationTest, cls).StartBrowser()
+    # Set up the slow tests expectations' tags to match the test runner
+    # expectations' tags
+    WebGpuCtsIntegrationTest._GetSlowTests().set_tags(
+        cls.child.expectations.tags)
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -531,7 +538,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # We access the expectations directly instead of using
     # self.GetExpectationsForTest since we need the raw results, but that method
     # only returns the parsed results and whether the test should be retried.
-    expectation = WebGpuCtsIntegrationTest._slow_tests.expectations_for(
+    expectation = WebGpuCtsIntegrationTest._GetSlowTests().expectations_for(
         TestNameFromInputs(self._query, self._run_in_worker))
     return 'Slow' in expectation.raw_results
 
