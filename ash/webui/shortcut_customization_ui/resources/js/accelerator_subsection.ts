@@ -11,7 +11,7 @@ import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_subsection.html.js';
 import {AcceleratorCategory, AcceleratorInfo, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo} from './shortcut_types.js';
-import {compareAcceleratorInfos, getSubcategoryNameStringId, isCategoryLocked, isCustomizationDisabled} from './shortcut_utils.js';
+import {compareAcceleratorInfos, getSubcategoryNameStringId, isCustomizationDisabled} from './shortcut_utils.js';
 
 /**
  * This interface is used to hold all the data needed by an
@@ -154,7 +154,10 @@ export class AcceleratorSubsectionElement extends
   // Show lock icon next to subcategory if customization is enabled and the
   // category is locked.
   private shouldShowLockIcon(): boolean {
-    return !isCustomizationDisabled() && isCategoryLocked(this.category);
+    if (isCustomizationDisabled()) {
+      return false;
+    }
+    return this.lookupManager.isCategoryLocked(this.category);
   }
 }
 

@@ -19,7 +19,7 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCategoryLocked, isCustomizationDisabled, isFunctionKey} from './shortcut_utils.js';
+import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -130,6 +130,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   source: AcceleratorSource;
   sourceIsLocked: boolean;
   showEditIcon: boolean;
+  categoryIsLocked: boolean;
   protected pendingAcceleratorInfo: StandardAcceleratorInfo;
   private modifiers: string[];
   private acceleratorOnHold: string;
@@ -137,6 +138,13 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    this.categoryIsLocked = this.lookupManager.isCategoryLocked(
+        this.lookupManager.getAcceleratorCategory(this.source, this.action));
+  }
 
   private getModifiers(): string[] {
     return getModifiersForAcceleratorInfo(this.acceleratorInfo);
@@ -451,25 +459,22 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private shouldShowLockIcon(): boolean {
     // Do not show lock icon in each row if customization is disabled or its
     // category is locked.
-    if (isCustomizationDisabled() ||
-        isCategoryLocked(this.lookupManager.getAcceleratorCategory(
-            this.source, this.action))) {
+    if (isCustomizationDisabled() || this.categoryIsLocked) {
       return false;
     }
-
+    // Show lock icon if accelerator is locked.
     return (this.acceleratorInfo && this.acceleratorInfo.locked) ||
         this.sourceIsLocked;
   }
 
   private shouldShowEditIcon(): boolean {
-    // Do not show edit icon in each row if customization is disabled, category
-    // is locked, or the row is displayed in edit-dialog.
+    // Do not show edit icon in each row if customization is disabled, the row
+    // is displayed in edit-dialog(!showEditIcon) or category is locked.
     if (isCustomizationDisabled() || !this.showEditIcon ||
-        isCategoryLocked(this.lookupManager.getAcceleratorCategory(
-            this.source, this.action))) {
+        this.categoryIsLocked) {
       return false;
     }
-
+    // Show edit icon if accelerator is not locked.
     return !(this.acceleratorInfo && this.acceleratorInfo.locked) &&
         !this.sourceIsLocked;
   }

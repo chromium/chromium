@@ -14,7 +14,6 @@ import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customiza
 import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js/input_key.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {AcceleratorSource, LayoutStyle, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {isCategoryLocked} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {TextAcceleratorElement} from 'chrome://shortcut-customization/js/text_accelerator.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -173,9 +172,10 @@ suite('textAcceleratorTest', function() {
         // replicate getCategory() logic.
         const category = manager!.getAcceleratorCategory(
             layoutInfo.source, layoutInfo.action);
+        const categoryIsUnlocked = !manager!.isCategoryLocked(category);
         // replicate shouldShowLockIcon() logic.
         const expectLockIconVisible =
-            scenario.customizationEnabled && !isCategoryLocked(category);
+            scenario.customizationEnabled && categoryIsUnlocked;
         testCases.push({
           ...scenario,
           layoutInfo: layoutInfo,

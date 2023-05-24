@@ -24,9 +24,6 @@ suite('acceleratorSubsectionTest', function() {
     manager = AcceleratorLookupManager.getInstance();
     manager!.setAcceleratorLookup(fakeAcceleratorConfig);
     manager!.setAcceleratorLayoutLookup(fakeLayoutInfo);
-
-    sectionElement = document.createElement('accelerator-subsection');
-    document.body.appendChild(sectionElement);
   });
 
   teardown(() => {
@@ -37,9 +34,19 @@ suite('acceleratorSubsectionTest', function() {
     sectionElement = null;
   });
 
+  async function initAcceleratorSubsectionElement(
+      category: AcceleratorCategory) {
+    sectionElement = document.createElement('accelerator-subsection');
+    sectionElement.category = category;
+    document.body.appendChild(sectionElement);
+    return flushTasks();
+  }
+
   // TODO(jimmyxgong): Update this test after retrieving accelerators is
   // implemented for a subsection.
   test('LoadsBasicSection', async () => {
+    await initAcceleratorSubsectionElement(
+        AcceleratorCategory.kWindowsAndDesks);
     const acceleratorInfo1 = createUserAcceleratorInfo(
         Modifier.CONTROL | Modifier.SHIFT,
         /*key=*/ 71,
@@ -76,9 +83,10 @@ suite('acceleratorSubsectionTest', function() {
   });
 
   test('LoadCategoryAndConfirmDescriptions', async () => {
+    await initAcceleratorSubsectionElement(
+        AcceleratorCategory.kWindowsAndDesks);
     const expectedTitle = 'test title';
     sectionElement!.title = expectedTitle;
-    sectionElement!.category = AcceleratorCategory.kWindowsAndDesks;
     sectionElement!.subcategory = AcceleratorSubcategory.kWindows;
 
     await flushTasks();
@@ -105,9 +113,9 @@ suite('acceleratorSubsectionTest', function() {
   });
 
   test('SkipAddingRowWhenCertainKeysAreUnavailable', async () => {
+    await initAcceleratorSubsectionElement(AcceleratorCategory.kGeneral);
     const expectedTitle = 'test title';
     sectionElement!.title = expectedTitle;
-    sectionElement!.category = AcceleratorCategory.kGeneral;
     sectionElement!.subcategory = AcceleratorSubcategory.kApps;
 
     await flushTasks();
@@ -133,9 +141,9 @@ suite('acceleratorSubsectionTest', function() {
   });
 
   test('RemoveAcceleratorWhenCertainKeysAreUnavailable', async () => {
+    await initAcceleratorSubsectionElement(AcceleratorCategory.kGeneral);
     const expectedTitle = 'test title';
     sectionElement!.title = expectedTitle;
-    sectionElement!.category = AcceleratorCategory.kGeneral;
     sectionElement!.subcategory = AcceleratorSubcategory.kGeneralControls;
 
     await flushTasks();
