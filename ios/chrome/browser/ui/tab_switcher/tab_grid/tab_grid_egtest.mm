@@ -2534,7 +2534,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that once an account is signed in, the syncing spinner is eventually
 // dismissed: https://crbug.com/1422634.
-- (void)testSyncSpinnerDismissedInRecentlyClosedTabs {
+// TODO(crbug.com/1448618): Disabled due to causing lots of flake.
+- (void)DISABLED_testSyncSpinnerDismissedInRecentlyClosedTabs {
   // Sign-in with fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
