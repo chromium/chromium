@@ -32,7 +32,6 @@ FakeConnection::FakeConnection(
     : Connection(nearby_connection,
                  session_context,
                  std::move(quick_start_decoder),
-                 std::make_unique<Connection::NonceGenerator>(),
                  std::move(on_connection_closed),
                  std::move(on_connection_authenticated)) {}
 

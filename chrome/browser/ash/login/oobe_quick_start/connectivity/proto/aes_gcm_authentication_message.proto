@@ -3,7 +3,7 @@
 
 syntax = "proto2";
 
-package quick_start.proto;
+package ash.quick_start.proto;
 
 option optimize_for = LITE_RUNTIME;
 
