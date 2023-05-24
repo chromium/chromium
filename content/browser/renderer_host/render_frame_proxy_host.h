@@ -137,9 +137,11 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   // Each RenderFrameProxyHost belongs to a SiteInstanceGroup, where it is a
   // placeholder for a frame in a different SiteInstanceGroup.
-  // TODO(crbug.com/1195535): Remove GetSiteInstance() in favor of
+  // TODO(crbug.com/1195535): Remove GetSiteInstanceDeprecated() in favor of
   // site_instance_group().
-  SiteInstanceImpl* GetSiteInstance() const { return site_instance_.get(); }
+  SiteInstanceImpl* GetSiteInstanceDeprecated() const {
+    return site_instance_deprecated_.get();
+  }
   SiteInstanceGroup* site_instance_group() const {
     return site_instance_group_.get();
   }
@@ -326,14 +328,14 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   // The SiteInstance this proxy is associated with.
   // TODO(crbug.com/1195535): Remove this in favor of site_instance_group_.
-  scoped_refptr<SiteInstanceImpl> site_instance_;
+  scoped_refptr<SiteInstanceImpl> site_instance_deprecated_;
 
   // The SiteInstanceGroup this RenderFrameProxyHost belongs to, where it is a
   // placeholder for a frame in a different SiteInstanceGroup.
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
 
   // The renderer process this RenderFrameProxyHost is associated with. It is
-  // equivalent to the result of site_instance_->GetProcess(), but that
+  // equivalent to the result of site_instance_group_->GetProcess(), but that
   // method has the side effect of creating the process if it doesn't exist.
   // Cache a pointer to avoid unnecessary process creation.
   raw_ptr<RenderProcessHost> process_;

@@ -266,7 +266,7 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
     std::vector<SiteInstance*> site_instances;
     for (const auto& proxy_pair :
          node->render_manager()->GetAllProxyHostsForTesting()) {
-      site_instances.push_back(proxy_pair.second->GetSiteInstance());
+      site_instances.push_back(proxy_pair.second->GetSiteInstanceDeprecated());
     }
     std::sort(site_instances.begin(), site_instances.end(),
               [](SiteInstance* lhs, SiteInstance* rhs) {
@@ -358,7 +358,7 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
       std::vector<std::string> sorted_proxy_hosts;
       for (const auto& proxy_pair : proxy_host_map) {
         sorted_proxy_hosts.push_back(
-            GetName(proxy_pair.second->GetSiteInstance()));
+            GetName(proxy_pair.second->GetSiteInstanceDeprecated()));
       }
       std::sort(sorted_proxy_hosts.begin(), sorted_proxy_hosts.end());
       for (std::string& proxy_name : sorted_proxy_hosts) {
