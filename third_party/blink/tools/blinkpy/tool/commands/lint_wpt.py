@@ -164,8 +164,9 @@ class MetadataBadValue(MetadataRule):
         'PRECONDITION_FAILED',
         'TIMEOUT',
         'CRASH',
+        'ERROR',
     }
-    harness_statuses = common_test_statuses | {'OK', 'ERROR'}
+    harness_statuses = common_test_statuses | {'OK'}
     # Statuses for tests without subtests.
     test_statuses = common_test_statuses | {'PASS', 'FAIL'}
     implementation_statuses = {'implementing', 'not-implementing', 'default'}

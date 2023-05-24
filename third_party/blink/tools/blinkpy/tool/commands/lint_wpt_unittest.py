@@ -195,6 +195,16 @@ class LintWPTTest(LoggingTestCase):
             """, 'variant.html.ini')
         self.assertEqual(errors, [])
 
+    def test_allow_reftest_error(self):
+        errors = self._check_metadata(
+            """\
+            [reftest.html]
+              # ERROR indicates a failure mode in the harness, whereas FAIL
+              # indicates a product issue.
+              expected: [FAIL, ERROR]
+            """, 'reftest.html.ini')
+        self.assertEqual(errors, [])
+
     def test_valid_dir_metadata(self):
         errors = self._check_metadata(
             """\
@@ -361,7 +371,7 @@ class LintWPTTest(LoggingTestCase):
     def test_reftest_metadata_bad_values(self):
         errors = self._check_metadata("""\
             [reftest.html]
-              expected: ERROR
+              expected: OK
               fuzzy: [0-1:0-2, reftest-ref.html:20;200-300, @False]
               implementation-status: [implementing]
             """)
@@ -370,7 +380,7 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(name, 'META-BAD-VALUE')
         self.assertEqual(path, 'reftest.html.ini')
         self.assertEqual(description,
-                         "Test key 'expected' has invalid value 'ERROR'")
+                         "Test key 'expected' has invalid value 'OK'")
         name, description, path, _ = fuzzy_error1
         self.assertEqual(name, 'META-BAD-VALUE')
         self.assertEqual(path, 'reftest.html.ini')
