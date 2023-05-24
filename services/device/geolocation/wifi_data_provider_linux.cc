@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -252,9 +251,9 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
       if (!base::HexStringToBytes(mac, &mac_bytes) || mac_bytes.size() != 6) {
         LOG(WARNING) << "Can't parse mac address (found " << mac_bytes.size()
                      << " bytes) so using raw string: " << mac;
-        access_point_data.mac_address = base::UTF8ToUTF16(mac);
+        access_point_data.mac_address = mac;
       } else {
-        access_point_data.mac_address = MacAddressAsString16(&mac_bytes[0]);
+        access_point_data.mac_address = MacAddressAsString(&mac_bytes[0]);
       }
     }
 

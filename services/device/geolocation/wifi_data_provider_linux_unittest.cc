@@ -10,7 +10,6 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -216,8 +215,7 @@ TEST_F(GeolocationWifiDataProviderLinuxTest, GetAccessPointData) {
 
   // Check the contents of the access point data.
   // The expected values come from CreateAccessPointProxyResponse() above.
-  EXPECT_EQ("00-11-22-33-44-55",
-            base::UTF16ToUTF8(access_point_data.mac_address));
+  EXPECT_EQ("00-11-22-33-44-55", access_point_data.mac_address);
   EXPECT_EQ(-50, access_point_data.radio_signal_strength);
   EXPECT_EQ(4, access_point_data.channel);
 }

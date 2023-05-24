@@ -20,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/load_flags.h"
@@ -285,11 +284,11 @@ void AddWifiData(const WifiData& wifi_data,
 
   base::Value::List wifi_access_point_list;
   for (auto* ap_data : access_points_by_signal_strength) {
-    base::Value::Dict wifi_dict;
-    auto macAddress = base::UTF16ToUTF8(ap_data->mac_address);
-    if (macAddress.empty())
+    if (ap_data->mac_address.empty()) {
       continue;
-    AddString("macAddress", macAddress, wifi_dict);
+    }
+    base::Value::Dict wifi_dict;
+    AddString("macAddress", ap_data->mac_address, wifi_dict);
     AddInteger("signalStrength", ap_data->radio_signal_strength, wifi_dict);
     AddInteger("age", age_milliseconds, wifi_dict);
     AddInteger("channel", ap_data->channel, wifi_dict);

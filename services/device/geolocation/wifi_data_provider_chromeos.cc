@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -77,7 +76,7 @@ absl::optional<WifiData> GetWifiData() {
   WifiData wifi_data;
   for (const auto& access_point : access_points) {
     AccessPointData ap_data;
-    ap_data.mac_address = base::ASCIIToUTF16(access_point.mac_address);
+    ap_data.mac_address = access_point.mac_address;
     ap_data.radio_signal_strength = access_point.signal_strength;
     ap_data.channel = access_point.channel;
     ap_data.signal_to_noise = access_point.signal_to_noise;

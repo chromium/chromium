@@ -16,8 +16,8 @@ struct AccessPointData {
   AccessPointData();
   ~AccessPointData();
 
-  // MAC address, formatted as per MacAddressAsString16.
-  std::u16string mac_address;
+  // MAC address, formatted as per MacAddressAsString.
+  std::string mac_address;
   int radio_signal_strength;  // Measured in dBm
   int channel;
   int signal_to_noise;  // Ratio in dB

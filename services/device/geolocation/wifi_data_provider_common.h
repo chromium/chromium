@@ -18,7 +18,7 @@
 namespace device {
 
 // Converts a MAC address stored as an array of uint8_t to a string.
-std::u16string MacAddressAsString16(const uint8_t mac_as_int[6]);
+std::string MacAddressAsString(const uint8_t mac_as_int[6]);
 
 // Base class to promote code sharing between platform specific wifi data
 // providers. It's optional for specific platforms to derive this, but if they

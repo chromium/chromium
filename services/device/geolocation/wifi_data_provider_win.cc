@@ -55,7 +55,7 @@ typedef DWORD(WINAPI* WlanCloseHandleFunction)(HANDLE hClientHandle,
 AccessPointData GetNetworkData(const WLAN_BSS_ENTRY& bss_entry) {
   AccessPointData access_point_data;
   // Currently we get only MAC address and signal strength.
-  access_point_data.mac_address = MacAddressAsString16(bss_entry.dot11Bssid);
+  access_point_data.mac_address = MacAddressAsString(bss_entry.dot11Bssid);
   access_point_data.radio_signal_strength = bss_entry.lRssi;
 
   // TODO(steveblock): Is it possible to get the following?

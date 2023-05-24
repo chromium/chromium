@@ -60,7 +60,7 @@ bool CoreWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
         AccessPointData access_point_data;
         // -[CWNetwork bssid] uses colons to separate the components of the MAC
         // address, but AccessPointData requires they be separated with a dash.
-        access_point_data.mac_address = base::SysNSStringToUTF16([network.bssid
+        access_point_data.mac_address = base::SysNSStringToUTF8([network.bssid
             stringByReplacingOccurrencesOfString:@":"
                                       withString:@"-"]);
         access_point_data.radio_signal_strength = network.rssiValue;
