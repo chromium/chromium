@@ -80,7 +80,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -214,6 +213,7 @@ class QualifiedName;
 class Range;
 class RenderBlockingResourceManager;
 class ResizeObserver;
+class Resource;
 class ResourceFetcher;
 class RootScrollerController;
 class SVGDocumentExtensions;
