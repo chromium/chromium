@@ -1460,7 +1460,7 @@
   {
     "name": "diagnostics-app-jelly",
     "owners": [
-      "//ash/webui/diagnostics_ui/OWNERS"
+      "//ash/webui/diagnostics_ui/OWNERS", "cros-peripherals@google.com"
     ],
     "expiry_milestone": 122
   },
