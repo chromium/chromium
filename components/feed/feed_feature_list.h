@@ -154,6 +154,9 @@ BASE_DECLARE_FEATURE(kFeedSignedOutViewDemotion);
 // Feature that enables dynamic colors in the feed.
 BASE_DECLARE_FEATURE(kFeedDynamicColors);
 
+// Feature that enables UI update for Follow.
+BASE_DECLARE_FEATURE(kFeedFollowUiUpdate);
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_
