@@ -30,7 +30,7 @@ import {openMainPage} from './util.js';
 const AppManagementAppDetailViewElementBase =
     AppManagementStoreMixin(RouteObserverMixin(PolymerElement));
 
-class AppManagementAppDetailViewElement extends
+export class AppManagementAppDetailViewElement extends
     AppManagementAppDetailViewElementBase {
   static get is() {
     return 'app-management-app-detail-view';

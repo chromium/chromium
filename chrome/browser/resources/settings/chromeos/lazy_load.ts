@@ -36,6 +36,7 @@ import './os_a11y_page/switch_access_subpage.js';
 import './os_a11y_page/text_to_speech_subpage.js';
 import './os_a11y_page/tts_voice_subpage.js';
 import './os_about_page/detailed_build_info_subpage.js';
+import './os_apps_page/app_management_page/app_detail_view.js';
 import './os_search_page/google_assistant_subpage.js';
 import './os_search_page/search_subpage.js';
 import './os_people_page/account_manager_subpage.js';
@@ -138,6 +139,7 @@ export {SettingsSwitchAccessActionAssignmentDialogElement} from './os_a11y_page/
 export {SwitchAccessCommand} from './os_a11y_page/switch_access_constants.js';
 export {PdfOcrUserSelection, SettingsTextToSpeechSubpageElement} from './os_a11y_page/text_to_speech_subpage.js';
 export {SettingsTtsVoiceSubpageElement} from './os_a11y_page/tts_voice_subpage.js';
+export {AppManagementAppDetailViewElement} from './os_apps_page/app_management_page/app_detail_view.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
 export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';

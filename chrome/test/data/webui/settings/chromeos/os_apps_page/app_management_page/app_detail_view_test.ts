@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import 'chrome://os-settings/lazy_load.js';
 
+import {AppManagementAppDetailViewElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
-import {setupFakeHandler, replaceStore, replaceBody} from './test_util.js';
-import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import {replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 
 suite('<app-management-app-detail-view>', () => {
-  let appDetailView;
-  let fakeHandler;
-  let arcApp;
+  let appDetailView: AppManagementAppDetailViewElement;
+  let fakeHandler: FakePageHandler;
+  let arcApp: App;
 
   setup(async () => {
     fakeHandler = setupFakeHandler();
@@ -33,11 +37,11 @@ suite('<app-management-app-detail-view>', () => {
   test('Change selected app', async () => {
     assertEquals(
         AppManagementStore.getInstance().data.selectedAppId,
-        appDetailView.app_.id);
-    assertEquals(arcApp.id, appDetailView.app_.id);
-    assertTrue(!!appDetailView.shadowRoot.querySelector(
+        appDetailView.get('app_').id);
+    assertEquals(arcApp.id, appDetailView.get('app_').id);
+    assertTrue(!!appDetailView.shadowRoot!.querySelector(
         'app-management-arc-detail-view'));
-    assertFalse(!!appDetailView.shadowRoot.querySelector(
+    assertNull(appDetailView.shadowRoot!.querySelector(
         'app-management-pwa-detail-view'));
     const pwaOptions = {type: AppType.kWeb};
     // Add an second pwa app, and make it the currently selected app.
@@ -47,11 +51,11 @@ suite('<app-management-app-detail-view>', () => {
 
     assertEquals(
         AppManagementStore.getInstance().data.selectedAppId,
-        appDetailView.app_.id);
-    assertEquals(pwaApp.id, appDetailView.app_.id);
-    assertFalse(!!appDetailView.shadowRoot.querySelector(
+        appDetailView.get('app_').id);
+    assertEquals(pwaApp.id, appDetailView.get('app_').id);
+    assertNull(appDetailView.shadowRoot!.querySelector(
         'app-management-arc-detail-view'));
-    assertTrue(!!appDetailView.shadowRoot.querySelector(
+    assertTrue(!!appDetailView.shadowRoot!.querySelector(
         'app-management-pwa-detail-view'));
   });
 });
