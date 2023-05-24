@@ -9830,6 +9830,12 @@
                         "CCTResizableSideSheet",
                         "CCTResizableSideSheetDiscoverFeedSettings"
                     ]
+                },
+                {
+                    "name": "Enabled_20230523",
+                    "enable_features": [
+                        "CCTResizableSideSheet"
+                    ]
                 }
             ]
         }
