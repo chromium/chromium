@@ -6,6 +6,7 @@
 #define MEDIA_BASE_ENCRYPTION_PATTERN_H_
 
 #include <stdint.h>
+#include <ostream>
 
 #include "media/base/media_export.h"
 
@@ -44,6 +45,11 @@ class MEDIA_EXPORT EncryptionPattern {
   uint32_t crypt_byte_block_ = 0;  // Count of the encrypted blocks.
   uint32_t skip_byte_block_ = 0;   // Count of the unencrypted blocks.
 };
+
+// For logging use only.
+MEDIA_EXPORT std::ostream& operator<<(
+    std::ostream& os,
+    const EncryptionPattern& encryption_pattern);
 
 }  // namespace media
 

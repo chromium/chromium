@@ -124,6 +124,38 @@ HRESULT AddEncryptAttributes(const DecryptConfig& decrypt_config,
   } else if (decrypt_config.encryption_scheme() == EncryptionScheme::kCbcs) {
     mf_protection_scheme = MFSampleEncryptionProtectionScheme::
         MF_SAMPLE_ENCRYPTION_PROTECTION_SCHEME_AES_CBC;
+
+    if (decrypt_config.HasPattern()) {
+      DVLOG(3) << __func__ << ": encryption_pattern="
+               << decrypt_config.encryption_pattern().value();
+
+      // Invalid if crypt == 0 and skip >= 0.
+      CHECK(!(decrypt_config.encryption_pattern()->crypt_byte_block() == 0 &&
+              decrypt_config.encryption_pattern()->skip_byte_block() > 0));
+
+      // Crypt and skip byte blocks for the sample-based protection pattern need
+      // be set if the protection scheme is `cbcs`. No need to set for 10:0,
+      // 1:0, or 0:0 patterns since Media Foundation Media Engine treats them as
+      // `cbc1` always but it won't reset IV between subsamples (which means IV
+      // to be restored to the constant IV after each subsample). Trying to set
+      // crypt to non-zero and skip to 0 will cause an error:
+      // - If either of these attributes are not present or have a value of 0,
+      // the sample is `cbc1`. See
+      // https://learn.microsoft.com/en-us/windows/win32/medfound/mfsampleextension-encryption-cryptbyteblock
+      // and
+      // https://learn.microsoft.com/en-us/windows/win32/medfound/mfsampleextension-encryption-skipbyteblock
+      // - If `cBlocksStripeEncrypted` is 0, `cBlocksStripeClear` must be also
+      // 0. See
+      // https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/d3d10umddi/ns-d3d10umddi-d3dwddm2_4ddi_video_decoder_buffer_desc
+      if (decrypt_config.encryption_pattern()->skip_byte_block() > 0) {
+        RETURN_IF_FAILED(mf_sample->SetUINT32(
+            MFSampleExtension_Encryption_CryptByteBlock,
+            decrypt_config.encryption_pattern()->crypt_byte_block()));
+        RETURN_IF_FAILED(mf_sample->SetUINT32(
+            MFSampleExtension_Encryption_SkipByteBlock,
+            decrypt_config.encryption_pattern()->skip_byte_block()));
+      }
+    }
   } else {
     NOTREACHED() << "Unexpected encryption scheme";
     return MF_E_UNEXPECTED;
@@ -344,7 +376,7 @@ HRESULT GenerateSampleFromDecoderBuffer(
     RETURN_IF_FAILED(mf_sample->SetUINT32(MFSampleExtension_CleanPoint, 1));
   }
 
-  DVLOG(3) << __func__ << "buffer->duration()=" << buffer->duration()
+  DVLOG(3) << __func__ << ": buffer->duration()=" << buffer->duration()
            << ", buffer->timestamp()=" << buffer->timestamp();
   MFTIME sample_duration = TimeDeltaToMfTime(buffer->duration());
   RETURN_IF_FAILED(mf_sample->SetSampleDuration(sample_duration));
@@ -442,7 +474,7 @@ HRESULT CreateDecryptConfigFromSample(
       uint32_t subsample_count =
           subsample_mappings_size / sizeof(MediaFoundationSubsampleEntry);
       for (uint32_t i = 0; i < subsample_count; ++i) {
-        DVLOG(3) << __func__ << "subsample_mappings[" << i
+        DVLOG(3) << __func__ << ": subsample_mappings[" << i
                  << "].clear_bytes=" << subsample_mappings[i].clear_bytes
                  << ", cipher_bytes=" << subsample_mappings[i].cipher_bytes;
         subsamples.emplace_back(subsample_mappings[i].clear_bytes,
@@ -454,7 +486,7 @@ HRESULT CreateDecryptConfigFromSample(
   // Key ID
   const auto key_id_string = GetStringFromGUID(key_id);
   const auto iv_string = std::string(iv.get(), iv.get() + iv_length);
-  DVLOG(3) << __func__ << "key_id_string=" << key_id_string
+  DVLOG(3) << __func__ << ": key_id_string=" << key_id_string
            << ", iv_string=" << iv_string
            << ", iv_string.size()=" << iv_string.size();
 
@@ -462,8 +494,24 @@ HRESULT CreateDecryptConfigFromSample(
     *decrypt_config =
         DecryptConfig::CreateCencConfig(key_id_string, iv_string, subsamples);
   } else {
+    EncryptionPattern encryption_pattern;
+
+    // Try to get crypt and skip byte blocks for pattern encryption. Use the
+    // values only if both `MFSampleExtension_Encryption_CryptByteBlock` and
+    // `MFSampleExtension_Encryption_SkipByteBlock` are present. Otherwise,
+    // assume both are zeros.
+    UINT32 crypt_byte_block = 0;
+    UINT32 skip_byte_block = 0;
+    if (SUCCEEDED(mf_sample->GetUINT32(
+            MFSampleExtension_Encryption_CryptByteBlock, &crypt_byte_block)) &&
+        SUCCEEDED(mf_sample->GetUINT32(
+            MFSampleExtension_Encryption_SkipByteBlock, &skip_byte_block))) {
+      encryption_pattern = EncryptionPattern(crypt_byte_block, skip_byte_block);
+    }
+
+    DVLOG(3) << __func__ << ": encryption_pattern=" << encryption_pattern;
     *decrypt_config = DecryptConfig::CreateCbcsConfig(
-        key_id_string, iv_string, subsamples, EncryptionPattern());
+        key_id_string, iv_string, subsamples, encryption_pattern);
   }
 
   return S_OK;
