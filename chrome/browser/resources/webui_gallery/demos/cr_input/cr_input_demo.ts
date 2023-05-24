@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_input/cr_input.js';
-import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/cr_elements/cr_textarea/cr_textarea.js';
 
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -35,6 +36,7 @@ class CrInputDemoElement extends PolymerElement {
       pinValue_: String,
       searchValue_: String,
       textValue_: String,
+      textareaValue_: String,
     };
   }
 
@@ -43,6 +45,7 @@ class CrInputDemoElement extends PolymerElement {
   private pinValue_: string;
   private searchValue_: string;
   private textValue_: string;
+  private textareaValue_: string;
 
   private onClearSearchClick_() {
     this.searchValue_ = '';

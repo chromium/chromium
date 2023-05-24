@@ -73,6 +73,13 @@
     overflow-x: hidden;
     overflow-y: auto;
   }
+
+  :host-context([chrome-refresh-2023]) textarea {
+    /* Ensures content sits above the hover layer. */
+    position: relative;
+    z-index: 1;
+  }
+
 </style>
 <div id="label" class="cr-form-field-label" hidden="[[!label]]"
     aria-hidden="true">
@@ -85,12 +92,14 @@
   <!-- The textarea is limited to |rows| height. If the content exceeds the
        bounds, it scrolls by default unless autogrow is set. No space or
        comments are allowed before the closing tag. -->
+  <div id="hover-layer"></div>
   <textarea id="input" autofocus="[[autofocus]]" rows="[[rows]]"
       value="{{value::input}}" aria-label$="[[label]]"
       on-focus="onInputFocusChange_" on-blur="onInputFocusChange_"
       on-change="onInputChange_" disabled="[[disabled]]"
       maxlength$="[[maxlength]]" readonly$="[[readonly]]"
       required$="[[required]]"></textarea>
+  <div id="underline-base"></div>
   <div id="underline"></div>
 </div>
 <div id="footerContainer" class="cr-row">

@@ -99,7 +99,7 @@
         z-index: 0;
       }
 
-      :host-context([chrome-refresh-2023]):host(:not([readonly]))
+      :host-context([chrome-refresh-2023]):host(:not([readonly]):not([disabled]))
           #input-container:hover #hover-layer {
         display: block;
       }
