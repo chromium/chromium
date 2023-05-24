@@ -575,6 +575,14 @@ TEST_F(
         }
       }
 
+      setup(async () => {
+        // Reset to default state before each test to reduce dependencies.
+        setDynamicColorToggle(/* checkedState= */ true);
+        const colorSchemeButtons =
+            Array.from(getColorSchemeSelector().querySelectorAll('cr-button'));
+        colorSchemeButtons[0].click();
+      });
+
       suite('dynamic color', () => {
         test('shows dynamic color options', () => {
           assertTrue(!!getDynamicColorToggle());
