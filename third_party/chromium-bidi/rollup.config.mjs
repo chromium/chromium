@@ -25,9 +25,14 @@ export default {
     file: 'lib/iife/mapperTab.js',
     sourcemap: true,
     format: 'iife',
-    globals: {
-      crypto: 'crypto',
-    },
   },
-  plugins: [nodeResolve(), commonjs(), terser()],
+  plugins: [
+    nodeResolve(),
+    commonjs({
+      // `crypto` is only imported in the uuid polyfill for Node versions
+      // without webcrypto exposes globally.
+      ignore: ['crypto'],
+    }),
+    terser(),
+  ],
 };

@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import crypto from 'crypto';
 
 /**
  * Generates a random v4 UUID, as specified in RFC4122.
@@ -27,12 +26,26 @@ import crypto from 'crypto';
 export function uuidv4(): `${string}-${string}-${string}-${string}-${string}` {
   // Available only in secure contexts
   // https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
-  if (crypto.randomUUID) {
-    return crypto.randomUUID();
+  if ('crypto' in globalThis && 'randomUUID' in globalThis.crypto) {
+    // Node with
+    // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
+    // secure browser context.
+    return globalThis.crypto.randomUUID();
   }
 
   const randomValues = new Uint8Array(16);
-  crypto.getRandomValues(randomValues);
+
+  if ('crypto' in globalThis && 'getRandomValues' in globalThis.crypto) {
+    // Node with
+    // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
+    // browser.
+    globalThis.crypto.getRandomValues(randomValues);
+  } else {
+    // Node without
+    // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    require('crypto').webcrypto.getRandomValues(randomValues);
+  }
 
   // Set version (4) and variant (RFC4122) bits.
   randomValues[6] = (randomValues[6]! & 0x0f) | 0x40;
