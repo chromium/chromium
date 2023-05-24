@@ -399,6 +399,9 @@ class TastTest(RemoteTest):
         # inside as an RDB 'artifact'. (This could include system logs, screen
         # shots, etc.)
         artifacts = self.get_artifacts(test['outDir'])
+        html_artifact = debug_link
+        if result == base_test_result.ResultType.SKIP:
+          html_artifact = 'Test was skipped because: ' + test['skipReason']
         self._rdb_client.Post(
             test['name'],
             result,
@@ -407,7 +410,7 @@ class TastTest(RemoteTest):
             None,
             artifacts=artifacts,
             failure_reason=primary_error_message,
-            html_artifact=debug_link)
+            html_artifact=html_artifact)
 
     if self._rdb_client and self._logs_dir:
       # Attach artifacts from the device that don't apply to a single test.
