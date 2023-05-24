@@ -1735,9 +1735,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledPolicy_CacheSize3_20230328",
+                    "name": "EnabledPolicy_CacheSize6_20230525",
                     "params": {
-                        "cache_size": "3",
+                        "cache_size": "6",
                         "foreground_cache_size": "0"
                     },
                     "enable_features": [
