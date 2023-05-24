@@ -155,6 +155,8 @@ std::string GetDataCollectorName(
       return "ChromeOS Virtual Keyboard";
     case support_tool::CHROMEOS_NETWORK_HEALTH:
       return "ChromeOS Network Health";
+    case support_tool::PERFORMANCE:
+      return "Performance and Battery State";
     default:
       return "Error: Undefined";
   }
