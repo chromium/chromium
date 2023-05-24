@@ -55,6 +55,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/display/display_switches.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -919,8 +920,10 @@ class BookmarkBarViewTest7 : public BookmarkBarViewDragTestBase {
     const views::View* target_view = drop_submenu->GetMenuItemAt(0);
     SetStopDraggingView(target_view);
 
-    // Drag to the top of the target view.
-    gfx::Point target(target_view->width() / 2, 0);
+    // Drag to the top of the target view. Use 2 instead of 0 for target.y
+    // so that the mouse event will be in the target view for device scale
+    // factors other than 1.0.
+    gfx::Point target(target_view->width() / 2, 2);
     views::View::ConvertPointToScreen(target_view, &target);
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
