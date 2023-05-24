@@ -44,10 +44,12 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
@@ -110,6 +112,125 @@ constexpr base::TimeDelta kQuickAppFadeOutDuration = base::Milliseconds(100);
 
 }  // namespace
 
+class HomeButton::ButtonImageView : public views::View {
+ public:
+  explicit ButtonImageView(HomeButtonController* button_controller)
+      : button_controller_(button_controller) {
+    SetCanProcessEventsWithinSubtree(false);
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    UpdateBackground();
+  }
+
+  ButtonImageView(const ButtonImageView&) = delete;
+  ButtonImageView& operator=(const ButtonImageView&) = delete;
+
+  ~ButtonImageView() override = default;
+
+  // views::View:
+  void OnPaint(gfx::Canvas* canvas) override {
+    views::View::OnPaint(canvas);
+
+    gfx::PointF circle_center(gfx::Rect(size()).CenterPoint());
+
+    const bool is_assistant_available =
+        button_controller_->IsAssistantAvailable();
+    // Paint a white ring as the foreground for the app list circle. The
+    // ceil/dsf math assures that the ring draws sharply and is centered at all
+    // scale factors.
+    const float ring_outer_radius_dp = is_assistant_available ? 8.0f : 7.0f;
+    const float ring_thickness_dp = is_assistant_available ? 1.0f : 1.5f;
+    {
+      gfx::ScopedCanvas scoped_canvas(canvas);
+      const float dsf = canvas->UndoDeviceScaleFactor();
+      circle_center.Scale(dsf);
+      cc::PaintFlags fg_flags;
+      fg_flags.setAntiAlias(true);
+      fg_flags.setStyle(cc::PaintFlags::kStroke_Style);
+      fg_flags.setColor(GetColorProvider()->GetColor(
+          chromeos::features::IsJellyEnabled()
+              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+              : kColorAshButtonIconColor));
+
+      if (is_assistant_available) {
+        // active: 100% alpha, inactive: 54% alpha
+        fg_flags.setAlphaf(button_controller_->IsAssistantVisible()
+                               ? kAssistantVisibleAlpha / 255.0f
+                               : kAssistantInvisibleAlpha / 255.0f);
+      }
+
+      const float thickness = std::ceil(ring_thickness_dp * dsf);
+      const float radius =
+          std::ceil(ring_outer_radius_dp * dsf) - thickness / 2;
+      fg_flags.setStrokeWidth(thickness);
+      // Make sure the center of the circle lands on pixel centers.
+      canvas->DrawCircle(circle_center, radius, fg_flags);
+
+      if (is_assistant_available) {
+        fg_flags.setAlphaf(1.0f);
+        const float kCircleRadiusDp = 5.f;
+        fg_flags.setStyle(cc::PaintFlags::kFill_Style);
+        canvas->DrawCircle(circle_center, std::ceil(kCircleRadiusDp * dsf),
+                           fg_flags);
+      }
+    }
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    if (!chromeos::features::IsJellyEnabled()) {
+      UpdateBackground();
+    }
+    SchedulePaint();
+  }
+
+  // Updates the button image view for the new shelf config.
+  void UpdateForShelfConfigChange() {
+    layer()->SetBackgroundBlur(
+        ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
+    UpdateBackground();
+  }
+
+ private:
+  // Updates the view background to match the current shelf config.
+  void UpdateBackground() {
+    auto* const shelf_config = ShelfConfig::Get();
+
+    if (shelf_config->in_tablet_mode() && shelf_config->is_in_app()) {
+      SetBackground(nullptr);
+      SetBorder(nullptr);
+      return;
+    }
+
+    const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+    if (!is_jelly_enabled) {
+      if (GetWidget()) {
+        SetBackground(views::CreateRoundedRectBackground(
+            shelf_config->GetShelfControlButtonColor(GetWidget()),
+            shelf_config->control_border_radius()));
+      }
+    } else {
+      const ui::ColorId color_id = shelf_config->in_tablet_mode()
+                                       ? cros_tokens::kCrosSysSystemBaseElevated
+                                       : cros_tokens::kCrosSysSystemOnBase;
+      SetBackground(views::CreateThemedRoundedRectBackground(
+          color_id, shelf_config->control_border_radius()));
+    }
+
+    if (shelf_config->in_tablet_mode() && !shelf_config->is_in_app()) {
+      SetBorder(std::make_unique<views::HighlightBorder>(
+          shelf_config->control_border_radius(),
+          is_jelly_enabled
+              ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+              : views::HighlightBorder::Type::kHighlightBorder2));
+    } else {
+      SetBorder(nullptr);
+    }
+  }
+
+  HomeButtonController* const button_controller_;
+};
+
 // static
 const char HomeButton::kViewClassName[] = "ash/HomeButton";
 
@@ -142,6 +263,10 @@ HomeButton::HomeButton(Shelf* shelf)
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   layer()->SetName("shelf/Homebutton");
 
+  // Added at 0 index to ensure it's painted below focus ring view.
+  button_image_view_ =
+      AddChildViewAt(std::make_unique<ButtonImageView>(&controller_), 0);
+
   if (features::IsHomeButtonWithTextEnabled() &&
       !features::IsHomeButtonQuickAppAccessEnabled()) {
     // Directly shows the nudge label if the text-in-shelf feature is enabled.
@@ -163,23 +288,35 @@ HomeButton::HomeButton(Shelf* shelf)
     SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
     SetProperty(views::kElementIdentifierKey, kHomeButtonElementId);
   }
+  ShelfConfig::Get()->AddObserver(this);
 }
 
-HomeButton::~HomeButton() = default;
+HomeButton::~HomeButton() {
+  ShelfConfig::Get()->RemoveObserver(this);
+}
 
 gfx::Size HomeButton::CalculatePreferredSize() const {
+  const gfx::Size control_button_size =
+      ShelfControlButton::CalculatePreferredSize();
+
   // Take the preferred size of the expandable container into consideration when
   // it is visible. Note that the button width is already included in the label
   // width.
   if (expandable_container_ && expandable_container_->GetVisible()) {
-    return expandable_container_->GetPreferredSize();
+    const gfx::Size container_size = expandable_container_->GetPreferredSize();
+    return gfx::Size(
+        std::max(control_button_size.width(), container_size.width()),
+        std::max(control_button_size.height(), container_size.height()));
   }
 
-  return ShelfControlButton::CalculatePreferredSize();
+  return control_button_size;
 }
 
 void HomeButton::Layout() {
   ShelfControlButton::Layout();
+
+  button_image_view_->SetBoundsRect(
+      gfx::Rect(ShelfControlButton::CalculatePreferredSize()));
 
   if (expandable_container_) {
     if (shelf_->IsHorizontalAlignment()) {
@@ -281,8 +418,19 @@ void HomeButton::ButtonPressed(views::Button* sender,
   }
 }
 
+void HomeButton::OnShelfConfigUpdated() {
+  const float radius = ShelfConfig::Get()->control_border_radius();
+  layer()->SetRoundedCornerRadius({radius, radius, radius, radius});
+  button_image_view_->UpdateForShelfConfigChange();
+}
+
 void HomeButton::OnAssistantAvailabilityChanged() {
-  SchedulePaint();
+  // `button_image_view_` may not be set during `HomeButton` construction -
+  // `button_image_view_` is created after `controller_`, which can end up
+  // calling this method in response to registering assistant state observer.
+  if (button_image_view_) {
+    button_image_view_->SchedulePaint();
+  }
 }
 
 bool HomeButton::IsShowingAppList() const {
@@ -414,53 +562,6 @@ void HomeButton::RemoveNudgeAnimationObserverForTest(
   observers_.RemoveObserver(observer);
 }
 
-void HomeButton::PaintButtonContents(gfx::Canvas* canvas) {
-  gfx::PointF circle_center(gfx::Rect(size()).CenterPoint());
-
-  // Paint a white ring as the foreground for the app list circle. The ceil/dsf
-  // math assures that the ring draws sharply and is centered at all scale
-  // factors.
-  float ring_outer_radius_dp = 7.f;
-  float ring_thickness_dp = 1.5f;
-  if (controller_.IsAssistantAvailable()) {
-    ring_outer_radius_dp = 8.f;
-    ring_thickness_dp = 1.f;
-  }
-  {
-    gfx::ScopedCanvas scoped_canvas(canvas);
-    const float dsf = canvas->UndoDeviceScaleFactor();
-    circle_center.Scale(dsf);
-    cc::PaintFlags fg_flags;
-    fg_flags.setAntiAlias(true);
-    fg_flags.setStyle(cc::PaintFlags::kStroke_Style);
-    fg_flags.setColor(GetColorProvider()->GetColor(
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-            : kColorAshButtonIconColor));
-
-    if (controller_.IsAssistantAvailable()) {
-      // active: 100% alpha, inactive: 54% alpha
-      fg_flags.setAlphaf(controller_.IsAssistantVisible()
-                             ? kAssistantVisibleAlpha / 255.0f
-                             : kAssistantInvisibleAlpha / 255.0f);
-    }
-
-    const float thickness = std::ceil(ring_thickness_dp * dsf);
-    const float radius = std::ceil(ring_outer_radius_dp * dsf) - thickness / 2;
-    fg_flags.setStrokeWidth(thickness);
-    // Make sure the center of the circle lands on pixel centers.
-    canvas->DrawCircle(circle_center, radius, fg_flags);
-
-    if (controller_.IsAssistantAvailable()) {
-      fg_flags.setAlphaf(1.0f);
-      const float kCircleRadiusDp = 5.f;
-      fg_flags.setStyle(cc::PaintFlags::kFill_Style);
-      canvas->DrawCircle(circle_center, std::ceil(kCircleRadiusDp * dsf),
-                         fg_flags);
-    }
-  }
-}
-
 void HomeButton::OnThemeChanged() {
   ShelfControlButton::OnThemeChanged();
   if (ripple_layer_delegate_) {
@@ -478,14 +579,15 @@ void HomeButton::OnThemeChanged() {
               AshColorProvider::ContentLayerType::kTextColorPrimary));
     }
   }
-  SchedulePaint();
 }
 
 void HomeButton::CreateExpandableContainer() {
   const int home_button_width =
       ShelfControlButton::CalculatePreferredSize().width();
 
-  expandable_container_ = AddChildView(std::make_unique<views::View>());
+  // Add container at 0 index so it's stacked under other views (e.g.
+  // `button_image_view_`, and focus ring).
+  expandable_container_ = AddChildViewAt(std::make_unique<views::View>(), 0);
   expandable_container_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   expandable_container_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);

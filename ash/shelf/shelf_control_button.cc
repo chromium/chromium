@@ -85,17 +85,4 @@ void ShelfControlButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetNameChecked(GetAccessibleName());
 }
 
-void ShelfControlButton::PaintButtonContents(gfx::Canvas* canvas) {
-  PaintBackground(canvas, GetContentsBounds());
-}
-
-void ShelfControlButton::PaintBackground(gfx::Canvas* canvas,
-                                         const gfx::Rect& bounds) {
-  cc::PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setColor(ShelfConfig::Get()->GetShelfControlButtonColor(GetWidget()));
-  canvas->DrawRoundRect(bounds, ShelfConfig::Get()->control_border_radius(),
-                        flags);
-}
-
 }  // namespace ash

@@ -409,7 +409,7 @@ TEST_F(HomeButtonWithQuickAppAccess, QuickAppButtonAnimation) {
   EXPECT_FALSE(quick_app_button->layer()->GetAnimator()->is_animating());
 
   const int quick_app_margin = 8;
-  EXPECT_EQ(home_button()->width() + quick_app_margin,
+  EXPECT_EQ(ShelfConfig::Get()->control_size() + quick_app_margin,
             quick_app_button->bounds().x());
   EXPECT_EQ(0, quick_app_button->bounds().y());
 
