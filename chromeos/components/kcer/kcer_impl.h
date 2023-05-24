@@ -114,6 +114,10 @@ class KcerImpl : public Kcer {
           callback,
       base::expected<absl::optional<Token>, Error> find_key_result);
 
+  void RemoveKeyAndCertsWithToken(
+      StatusCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
   void DoesPrivateKeyExistWithToken(
       DoesKeyExistCallback callback,
       base::expected<absl::optional<Token>, Error> find_key_result);
