@@ -460,7 +460,7 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread* watchdog_thread,
   sandbox_options.accelerated_video_encode_enabled =
       !gpu_prefs.disable_accelerated_video_encode;
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // Video decoding of many video streams can use thousands of FDs as well as
   // Exo clients like Lacros.
   // See https://crbug.com/1417237
