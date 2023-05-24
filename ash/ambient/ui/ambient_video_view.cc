@@ -71,8 +71,10 @@ AmbientVideoView::AmbientVideoView(base::StringPiece video_file,
 }
 
 AmbientVideoView::~AmbientVideoView() {
-  ambient::RecordAmbientModeVideoSmoothness(
-      ash_web_view_.get(), AmbientUiSettings(AmbientTheme::kVideo, video_));
+  AmbientUiSettings ui_settings(AmbientTheme::kVideo, video_);
+  ambient::RecordAmbientModeVideoSessionStatus(ash_web_view_.get(),
+                                               ui_settings);
+  ambient::RecordAmbientModeVideoSmoothness(ash_web_view_.get(), ui_settings);
 }
 
 }  // namespace ash

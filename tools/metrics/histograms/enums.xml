@@ -1869,6 +1869,12 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="In Session Idle"/>
 </enum>
 
+<enum name="AmbientVideoSessionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Loading"/>
+</enum>
+
 <enum name="AMDDeviceId">
   <int value="5592" label="0x15D8, Picasso"/>
   <int value="5597"

@@ -508,6 +508,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.AmbientMode.VideoPlaybackStatus.{Settings}"
+    enum="AmbientVideoSessionStatus" expires_after="2023-12-01">
+  <owner>esum@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Emitted at the end of each ambient mode session that renders {Settings}.
+    Only applies to ambient video themes. Tracks whether video playback started
+    successfully in each ambient video session. Ideally, there are nothing but
+    success and loading statuses being recorded (the latter should be rare
+    because it means the user killed the session right as the video was being
+    loaded).
+  </summary>
+  <token key="Settings" variants="AmbientUiSettings"/>
+</histogram>
+
 <histogram name="Ash.AmbientMode.VideoSmoothness.{Settings}" units="%"
     expires_after="2023-12-01">
   <owner>esum@google.com</owner>

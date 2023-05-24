@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -25,6 +26,20 @@ class AshWebView;
 enum class AmbientUiMode;
 
 namespace ambient {
+
+// These values are persisted to UMA logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AmbientVideoSessionStatus {
+  // Confirmed playback started successfully.
+  kSuccess = 0,
+  // Confirmed playback failed with a hard error.
+  kFailed = 1,
+  // User terminated ambient session while video was still loading. Unknown
+  // whether playback would have ultimately succeeded or not. This should be
+  // rare.
+  kLoading = 2,
+  kMaxValue = kLoading,
+};
 
 // Duration after which ambient mode is considered to have failed to start.
 // See summary in histograms.xml for why 15 seconds is used.
@@ -55,6 +70,14 @@ ASH_EXPORT void RecordAmbientModePhotoOrientationMatch(
 
 ASH_EXPORT void RecordAmbientModeStartupTime(
     base::TimeDelta startup_time,
+    const AmbientUiSettings& ui_settings);
+
+ASH_EXPORT void GetAmbientModeVideoSessionStatus(
+    AshWebView* web_view,
+    base::OnceCallback<void(AmbientVideoSessionStatus)> completion_cb);
+
+ASH_EXPORT void RecordAmbientModeVideoSessionStatus(
+    AshWebView* web_view,
     const AmbientUiSettings& ui_settings);
 
 ASH_EXPORT void RecordAmbientModeVideoSmoothness(
