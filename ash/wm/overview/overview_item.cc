@@ -235,13 +235,6 @@ void OverviewItem::RevertHideForSavedDeskLibrary(bool animate) {
 
   // `item_widget_` may be null during shutdown if the window is minimized.
   if (item_widget_) {
-    // When a template is being launched, this overview item will be hidden
-    // first so that the library widget fade out animation can take place. Once
-    // the fade out animation is done, the hide will be reverted. Here we need
-    // to make sure header and shadow are sync'ed with the item window.
-    UpdateHeaderLayout(OVERVIEW_ANIMATION_NONE);
-    UpdateRoundedCornersAndShadow();
-
     PerformFadeInLayer(item_widget_->GetLayer(), animate);
   }
 
@@ -397,11 +390,8 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   // header.
   if (!transform_window_.IsMinimized()) {
     SetItemBounds(target_bounds, new_animation_type, is_first_update);
-    // Update header only when the overview item window is visible.
-    if (GetWindow()->IsVisible()) {
-      UpdateHeaderLayout(is_first_update ? OVERVIEW_ANIMATION_NONE
-                                         : new_animation_type);
-    }
+    UpdateHeaderLayout(is_first_update ? OVERVIEW_ANIMATION_NONE
+                                       : new_animation_type);
     return;
   }
 
