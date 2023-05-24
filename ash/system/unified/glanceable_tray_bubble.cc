@@ -24,7 +24,7 @@ GlanceableTrayBubble::GlanceableTrayBubble(DateTray* tray) : tray_(tray) {
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = tray_->shelf()->GetSystemTrayAnchorRect();
   // TODO(b:277268122): Update with glanceable spec.
-  init_params.insets = GetTrayBubbleInsets();
+  init_params.insets = GetTrayBubbleInsets(tray_->GetBubbleWindowContainer());
   init_params.close_on_deactivate = false;
   init_params.reroute_event_handler = true;
   init_params.translucent = true;

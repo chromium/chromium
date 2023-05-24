@@ -13,6 +13,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
 
+namespace aura {
+class Window;
+}
+
 namespace views {
 class Label;
 }
@@ -40,12 +44,13 @@ void SetupConnectingScrollListItem(HoverHighlightView* view);
 // Add `subtext` with warning color to `view`.
 void SetWarningSubText(HoverHighlightView* view, std::u16string subtext);
 
-// Returns the insets above the shelf for positioning the quick settings bubble.
-gfx::Insets GetTrayBubbleInsets();
+// Returns the insets above the shelf for the display containing `window` for
+// positioning the quick settings bubble.
+gfx::Insets GetTrayBubbleInsets(aura::Window* window);
 
 // Calculates the height compensations in tablet mode based on whether the
-// hotseat is shown.
-int GetBubbleInsetHotseatCompensation();
+// hotseat for the display containing `window` is shown.
+int GetBubbleInsetHotseatCompensation(aura::Window* window);
 
 // Returns the separation above the shelf for positioning secondary tray
 // bubbles. (Palette Tray, IME Tray).
@@ -54,9 +59,9 @@ gfx::Insets GetSecondaryBubbleInsets();
 // Gets the InkDrop insets based on `ink_drop_style`.
 gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style);
 
-// Gets the maximum height possible for a tray bubble based on the available
-// screen space.
-int CalculateMaxTrayBubbleHeight();
+// Gets the maximum height possible for a tray bubble that would be shown in the
+// display containing `window` based on that display's available screen space.
+int CalculateMaxTrayBubbleHeight(aura::Window* window);
 
 }  // namespace ash
 

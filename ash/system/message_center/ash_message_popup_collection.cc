@@ -107,7 +107,7 @@ int AshMessagePopupCollection::GetPopupOriginX(
 }
 
 int AshMessagePopupCollection::GetBaseline() const {
-  gfx::Insets tray_bubble_insets = GetTrayBubbleInsets();
+  gfx::Insets tray_bubble_insets = GetTrayBubbleInsets(shelf_->GetWindow());
   int hotseat_height =
       shelf_->hotseat_widget()->state() == HotseatState::kExtended
           ? shelf_->hotseat_widget()->GetHotseatSize()

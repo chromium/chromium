@@ -24,7 +24,7 @@ void GlanceableTrayBubbleView::UpdateBubble() {
     tasks_bubble_view_ = AddChildView(std::make_unique<TasksBubbleView>());
   }
 
-  int max_height = CalculateMaxTrayBubbleHeight();
+  int max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
   SetMaxHeight(max_height);
   ChangeAnchorAlignment(shelf_->alignment());
   ChangeAnchorRect(shelf_->GetSystemTrayAnchorRect());

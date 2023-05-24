@@ -432,7 +432,7 @@ std::unique_ptr<TrayBubbleView> MediaTray::CreateTrayBubbleView() {
   init_params.anchor_view = nullptr;
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = GetAnchorBoundsInScreen();
-  init_params.insets = GetTrayBubbleInsets();
+  init_params.insets = GetTrayBubbleInsets(GetBubbleWindowContainer());
   init_params.shelf_alignment = shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;

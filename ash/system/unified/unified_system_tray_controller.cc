@@ -927,12 +927,17 @@ bool UnifiedSystemTrayController::IsMessageCenterCollapseRequired() const {
     return false;
   }
 
+  if (!bubble_) {
+    return false;
+  }
+
   // Note: This calculaton should be the same as
   // UnifiedMessageCenterBubble::CalculateAvailableHeight().
-  return (bubble_ && CalculateMaxTrayBubbleHeight() -
-                             unified_view_->GetExpandedSystemTrayHeight() -
-                             kUnifiedMessageCenterBubbleSpacing <
-                         kMessageCenterCollapseThreshold);
+  auto available_height = CalculateMaxTrayBubbleHeight(
+      bubble_->GetTray()->GetBubbleWindowContainer());
+  available_height -= unified_view_->GetExpandedSystemTrayHeight();
+  available_height -= kUnifiedMessageCenterBubbleSpacing;
+  return available_height < kMessageCenterCollapseThreshold;
 }
 
 base::TimeDelta UnifiedSystemTrayController::GetAnimationDurationForReporting()

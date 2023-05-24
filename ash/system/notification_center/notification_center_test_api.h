@@ -133,7 +133,13 @@ class NotificationCenterTestApi {
   // and created when the notification center tray is shown.
   NotificationCenterBubble* GetBubble();
 
-  // Returns the top level view for the notification center.
+  // Returns the notification center's top level view associated with the
+  // provided id, or nullptr if there is no such view associated with the id.
+  NotificationCenterView* GetNotificationCenterViewOnDisplay(
+      int64_t display_id);
+
+  // Returns the notification center's top level view associated with the
+  // primary display.
   NotificationCenterView* GetNotificationCenterView();
 
   // Returns the parent view for all notification views.

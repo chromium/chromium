@@ -429,7 +429,8 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect =
       holding_space_tray->shelf()->GetSystemTrayAnchorRect();
-  init_params.insets = GetTrayBubbleInsets();
+  init_params.insets =
+      GetTrayBubbleInsets(holding_space_tray_->GetBubbleWindowContainer());
   init_params.shelf_alignment = holding_space_tray->shelf()->alignment();
   init_params.preferred_width = kHoldingSpaceBubbleWidth;
   init_params.close_on_deactivate = true;
@@ -542,7 +543,8 @@ int HoldingSpaceTrayBubble::CalculateTopLevelBubbleMaxHeight() const {
   const int free_space_height_above_anchor =
       bottom - work_area->user_work_area_bounds().y();
 
-  const gfx::Insets insets = GetTrayBubbleInsets();
+  const gfx::Insets insets =
+      GetTrayBubbleInsets(holding_space_tray_->GetBubbleWindowContainer());
   const int bubble_vertical_margin = insets.top() + insets.bottom();
 
   return free_space_height_above_anchor - bubble_vertical_margin;

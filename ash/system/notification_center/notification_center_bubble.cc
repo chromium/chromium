@@ -28,7 +28,8 @@ NotificationCenterBubble::NotificationCenterBubble(
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect =
       notification_center_tray_->shelf()->GetSystemTrayAnchorRect();
-  init_params.insets = GetTrayBubbleInsets();
+  init_params.insets = GetTrayBubbleInsets(
+      notification_center_tray_->GetBubbleWindowContainer());
   init_params.shelf_alignment = notification_center_tray_->shelf()->alignment();
   init_params.preferred_width = kTrayMenuWidth;
   init_params.close_on_deactivate = true;
@@ -37,7 +38,8 @@ NotificationCenterBubble::NotificationCenterBubble(
 
   // Create and customize bubble view.
   auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
-  bubble_view->SetMaxHeight(CalculateMaxTrayBubbleHeight());
+  bubble_view->SetMaxHeight(CalculateMaxTrayBubbleHeight(
+      notification_center_tray_->GetBubbleWindowContainer()));
 
   notification_center_view_ =
       bubble_view->AddChildView(std::make_unique<NotificationCenterView>());
@@ -67,7 +69,8 @@ views::Widget* NotificationCenterBubble::GetBubbleWidget() {
 
 void NotificationCenterBubble::UpdateBubbleBounds() {
   auto* bubble_view = GetBubbleView();
-  bubble_view->SetMaxHeight(CalculateMaxTrayBubbleHeight());
+  bubble_view->SetMaxHeight(CalculateMaxTrayBubbleHeight(
+      notification_center_tray_->GetBubbleWindowContainer()));
   bubble_view->ChangeAnchorRect(
       notification_center_tray_->shelf()->GetSystemTrayAnchorRect());
 }

@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -72,12 +74,28 @@ class UnifiedMessageCenterBubbleTest : public AshTestBase {
         ->ResetBounds();
   }
 
+  UnifiedSystemTray* GetSecondaryUnifiedSystemTray() {
+    return Shell::Get()
+        ->GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id())
+        ->shelf()
+        ->status_area_widget()
+        ->unified_system_tray();
+  }
+
   UnifiedMessageCenterBubble* GetMessageCenterBubble() {
     return GetPrimaryUnifiedSystemTray()->message_center_bubble();
   }
 
+  UnifiedMessageCenterBubble* GetSecondaryMessageCenterBubble() {
+    return GetSecondaryUnifiedSystemTray()->message_center_bubble();
+  }
+
   UnifiedSystemTrayBubble* GetSystemTrayBubble() {
     return GetPrimaryUnifiedSystemTray()->bubble();
+  }
+
+  UnifiedSystemTrayBubble* GetSecondarySystemTrayBubble() {
+    return GetSecondaryUnifiedSystemTray()->bubble();
   }
 
   int MessageCenterSeparationHeight() {
@@ -400,6 +418,75 @@ TEST_F(UnifiedMessageCenterBubbleTest, HandleAccelerators) {
   WaitForAnimation();
   EXPECT_EQ(nullptr,
             GetPrimaryUnifiedSystemTray()->GetFocusManager()->GetFocusedView());
+}
+
+class UnifiedMessageCenterBubbleMultiDisplayTest
+    : public UnifiedMessageCenterBubbleTest,
+      public testing::WithParamInterface<
+          std::tuple</* Primary display height */ int,
+                     /* Secondary display height */ int>> {
+ public:
+  UnifiedMessageCenterBubbleMultiDisplayTest() = default;
+  UnifiedMessageCenterBubbleMultiDisplayTest(
+      const UnifiedMessageCenterBubbleMultiDisplayTest&) = delete;
+  UnifiedMessageCenterBubbleMultiDisplayTest& operator=(
+      const UnifiedMessageCenterBubbleMultiDisplayTest&) = delete;
+  ~UnifiedMessageCenterBubbleMultiDisplayTest() override = default;
+
+ protected:
+  int GetPrimaryDisplayHeight() { return std::get<0>(GetParam()); }
+  int GetSecondaryDisplayHeight() { return std::get<1>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(DisplayHeight,
+                         UnifiedMessageCenterBubbleMultiDisplayTest,
+                         testing::Values(
+                             // Short primary display, tall secondary display
+                             std::make_tuple(600, 1600),
+                             // Tall primary display, short secondary display
+                             std::make_tuple(1600, 600),
+                             // Same primary and secondary display heights
+                             std::make_tuple(600, 600)));
+
+// Tests that the bounds of `UnifiedMessageCenterBubble` are constrained
+// according to the dimensions of the display it is being shown on.
+TEST_P(UnifiedMessageCenterBubbleMultiDisplayTest, BubbleBounds) {
+  UpdateDisplay("800x" + base::NumberToString(GetPrimaryDisplayHeight()) +
+                ",800x" + base::NumberToString(GetSecondaryDisplayHeight()));
+
+  // Add a large number of notifications to overflow the scroll view in the
+  // `UnifiedMessageCenterBubble`.
+  for (int i = 0; i < 100; i++) {
+    AddNotification();
+  }
+
+  // Show the primary display's `UnifiedMessageCenterBubble`.
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+
+  // The height of the primary display's `UnifiedMessageCenterBubble` should
+  // not exceed the primary display's height.
+  const int bubble1_height =
+      GetMessageCenterBubble()->GetBoundsInScreen().height();
+  EXPECT_LT(bubble1_height, GetPrimaryDisplayHeight());
+
+  // The primary display's `UnifiedMessageCenterBubble` should be positioned
+  // above the primary display's system tray bubble.
+  EXPECT_LT(GetMessageCenterBubble()->GetBoundsInScreen().bottom(),
+            GetSystemTrayBubble()->GetBoundsInScreen().y());
+
+  // Show the secondary display's `UnifiedMessageCenterBubble`.
+  GetSecondaryUnifiedSystemTray()->ShowBubble();
+
+  // The height of the secondary display's `UnifiedMessageCenterBubble` should
+  // not exceed the secondary display's height.
+  const int bubble2_height =
+      GetSecondaryMessageCenterBubble()->GetBoundsInScreen().height();
+  EXPECT_LT(bubble2_height, GetSecondaryDisplayHeight());
+
+  // The secondary display's `UnifiedMessageCenterBubble` should be positioned
+  // above the secondary display's system tray bubble.
+  EXPECT_LT(GetSecondaryMessageCenterBubble()->GetBoundsInScreen().bottom(),
+            GetSecondarySystemTrayBubble()->GetBoundsInScreen().y());
 }
 
 }  // namespace ash

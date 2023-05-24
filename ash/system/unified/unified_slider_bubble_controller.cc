@@ -307,7 +307,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   init_params.anchor_view = nullptr;
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = tray_->shelf()->GetSystemTrayAnchorRect();
-  init_params.insets = GetTrayBubbleInsets();
+  init_params.insets = GetTrayBubbleInsets(tray_->GetBubbleWindowContainer());
   init_params.translucent = true;
   if (features::IsQsRevampEnabled()) {
     init_params.corner_radius = kQsToastCornerRadius;

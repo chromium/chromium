@@ -199,10 +199,15 @@ NotificationCenterBubble* NotificationCenterTestApi::GetBubble() {
   return notification_center_tray_->bubble_.get();
 }
 
-NotificationCenterView* NotificationCenterTestApi::GetNotificationCenterView() {
+NotificationCenterView*
+NotificationCenterTestApi::GetNotificationCenterViewOnDisplay(
+    int64_t display_id) {
+  if (!Shell::Get()->GetRootWindowControllerWithDisplayId(display_id)) {
+    return nullptr;
+  }
   auto* status_area_widget =
       Shell::Get()
-          ->GetRootWindowControllerWithDisplayId(primary_display_id_)
+          ->GetRootWindowControllerWithDisplayId(display_id)
           ->shelf()
           ->status_area_widget();
   return features::IsQsRevampEnabled()
@@ -211,6 +216,10 @@ NotificationCenterView* NotificationCenterTestApi::GetNotificationCenterView() {
              : status_area_widget->unified_system_tray()
                    ->message_center_bubble()
                    ->notification_center_view();
+}
+
+NotificationCenterView* NotificationCenterTestApi::GetNotificationCenterView() {
+  return GetNotificationCenterViewOnDisplay(primary_display_id_);
 }
 
 NotificationListView* NotificationCenterTestApi::GetNotificationListView() {

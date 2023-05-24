@@ -692,7 +692,7 @@ void EcheTray::InitBubble(
       kShellWindowId_AlwaysOnTopContainer);
   init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
   init_params.anchor_rect = GetAnchor();
-  init_params.insets = GetTrayBubbleInsets();
+  init_params.insets = GetTrayBubbleInsets(GetBubbleWindowContainer());
   init_params.shelf_alignment = shelf()->alignment();
   const gfx::Size eche_size = CalculateSizeForEche();
   init_params.preferred_width = eche_size.width();

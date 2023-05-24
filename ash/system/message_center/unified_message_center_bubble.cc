@@ -173,7 +173,8 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
   // enlarges the layer bounds and this can break ARC notification rounded
   // corners. Apply the offset to the anchor rect.
   gfx::Rect anchor_rect = tray_->shelf()->GetSystemTrayAnchorRect();
-  gfx::Insets tray_bubble_insets = GetTrayBubbleInsets();
+  gfx::Insets tray_bubble_insets =
+      GetTrayBubbleInsets(tray_->GetBubbleWindowContainer());
 
   int offset;
   switch (tray_->shelf()->alignment()) {
@@ -321,9 +322,10 @@ int UnifiedMessageCenterBubble::CalculateAvailableHeight() {
   if (!tray_->bubble())
     return 0;
 
-  return CalculateMaxTrayBubbleHeight() -
+  auto* window_container = tray_->GetBubbleWindowContainer();
+  return CalculateMaxTrayBubbleHeight(window_container) -
          tray_->bubble()->GetCurrentTrayHeight() -
-         GetBubbleInsetHotseatCompensation() -
+         GetBubbleInsetHotseatCompensation(window_container) -
          kUnifiedMessageCenterBubbleSpacing;
 }
 

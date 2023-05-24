@@ -38,8 +38,8 @@ views::BubbleBorder::Arrow GetArrow(ShelfAlignment alignment) {
   return views::BubbleBorder::Arrow::NONE;
 }
 
-gfx::Insets GetBubbleInsets() {
-  gfx::Insets insets = GetTrayBubbleInsets();
+gfx::Insets GetBubbleInsets(aura::Window* window) {
+  gfx::Insets insets = GetTrayBubbleInsets(window);
   insets.set_bottom(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL));
   return insets;
@@ -75,7 +75,8 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
 
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
-  bubble_border->set_insets(GetBubbleInsets());
+  bubble_border->set_insets(
+      GetBubbleInsets(anchor_widget()->GetNativeWindow()->GetRootWindow()));
   bubble_border->SetCornerRadius(
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));
