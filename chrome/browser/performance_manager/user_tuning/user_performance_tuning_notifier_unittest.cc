@@ -4,7 +4,25 @@
 
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 
+#include <memory>
+#include <utility>
+#include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/task_traits.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/performance_controls/resource_usage_tab_helper.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "components/performance_manager/test_support/test_harness_helper.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "url/gurl.h"
 
 namespace performance_manager::user_tuning {
 
@@ -113,6 +131,94 @@ TEST_F(UserPerformanceTuningNotifierTest, TestMemoryAvailableTriggered) {
   SystemNodeImpl::FromNode(graph()->GetSystemNode())
       ->OnProcessMemoryMetricsAvailable();
   EXPECT_EQ(2, receiver_->memory_refreshed_count_);
+}
+
+class UserPerformanceTuningNotifierWithWebContentsTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  class TestReceiverWithCallback
+      : public UserPerformanceTuningNotifier::Receiver {
+   public:
+    ~TestReceiverWithCallback() override = default;
+
+    void NotifyTabCountThresholdReached() override {}
+
+    void NotifyMemoryThresholdReached() override {}
+
+    void NotifyMemoryMetricsRefreshed() override {
+      if (metrics_refreshed_callback_) {
+        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+            ->PostTask(FROM_HERE, std::move(metrics_refreshed_callback_));
+      }
+    }
+
+    void SetMemoryMetricsRefreshedCallback(
+        base::OnceClosure metrics_refreshed_callback) {
+      metrics_refreshed_callback_ = std::move(metrics_refreshed_callback);
+    }
+
+    base::OnceClosure metrics_refreshed_callback_;
+  };
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    pm_helper_.SetUp();
+
+    base::RunLoop run_loop;
+    auto receiver = std::make_unique<TestReceiverWithCallback>();
+    receiver_ = receiver.get();
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
+          graph->PassToGraph(std::make_unique<ProcessMetricsDecorator>());
+          auto notifier = std::make_unique<UserPerformanceTuningNotifier>(
+              std::move(receiver), /*memory_theshold_kb=*/10,
+              /*tab_count_threshold=*/2);
+          graph->PassToGraph(std::move(notifier));
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  void TearDown() override {
+    pm_helper_.TearDown();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  PerformanceManagerTestHarnessHelper pm_helper_;
+  raw_ptr<TestReceiverWithCallback> receiver_;
+};
+
+TEST_F(UserPerformanceTuningNotifierWithWebContentsTest,
+       TestWritingMemoryUsageToTabHelper) {
+  // Enable memory usage in hovercards
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      performance_manager::features::kMemoryUsageInHovercards);
+
+  // Set the memory metrics refreshed callback ahead of navigation.
+  base::RunLoop run_loop;
+  receiver_->SetMemoryMetricsRefreshedCallback(run_loop.QuitClosure());
+
+  // Trigger a navigation so frames are set up.
+  SetContents(CreateTestWebContents());
+  ResourceUsageTabHelper::CreateForWebContents(web_contents());
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://www.example.com/"));
+
+  // Set active memory usage on the frame and process memory metrics.
+  PerformanceManager::CallOnGraph(
+      FROM_HERE, base::BindLambdaForTesting([&](Graph* graph) {
+        for (const FrameNode* node : graph->GetAllFrameNodes()) {
+          FrameNodeImpl::FromNode(node)->SetPrivateFootprintKbEstimate(11);
+        }
+        SystemNodeImpl::FromNode(graph->GetSystemNode())
+            ->OnProcessMemoryMetricsAvailable();
+      }));
+  run_loop.Run();
+
+  // Memory usage should be written to the tab helper.
+  auto* tab_helper = ResourceUsageTabHelper::FromWebContents(web_contents());
+  EXPECT_EQ(tab_helper->GetMemoryUsageInBytes(), 11u * 1024);
 }
 
 }  // namespace performance_manager::user_tuning
