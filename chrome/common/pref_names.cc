@@ -1133,6 +1133,18 @@ const char kHatsOsSettingsSearchSurveyCycleEndTs[] =
 // Search survey.
 const char kHatsOsSettingsSearchSurveyIsSelected[] =
     "hats_os_settings_search_is_selected";
+
+// A dictionary storing the string representation of
+// chromeos::settings::mojom::Setting IDs for the unique OS Settings changed.
+// Implicitly stores the total count of the unique OS Settings changed by each
+// user per device.
+// Key:string = the int equivalent of the Settings enum
+//      chromeos::settings::mojom::Setting casted to string. Need to cast to
+//      string since the keys in a dictionary can only be strings.
+// Value:int = constant number 1. It signifies whether that particular Settings
+//      has been used by the user during the device's lifetime.
+const char kTotalUniqueOsSettingsChanged[] =
+    "settings.total_unique_os_settings_changed";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -5,11 +5,18 @@
 #include "chrome/browser/ui/webui/settings/ash/search/per_session_settings_user_action_tracker.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using chromeos::settings::mojom::Setting;
+
 namespace ash::settings {
+
+constexpr char kProfileName[] = "user@gmail.com";
 
 class PerSessionSettingsUserActionTrackerTest : public testing::Test {
  protected:
@@ -17,18 +24,34 @@ class PerSessionSettingsUserActionTrackerTest : public testing::Test {
   ~PerSessionSettingsUserActionTrackerTest() override = default;
 
   void SetUp() override {
-    tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>();
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
+    test_pref_service_ = testing_profile_->GetPrefs();
+    tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>(
+        test_pref_service_);
   }
 
   void TearDown() override {
     if (tracker_) {
       tracker_.reset();
     }
+    profile_manager_->DeleteTestingProfile(kProfileName);
+    testing_profile_ = nullptr;
+    profile_manager_.reset();
   }
 
-  base::test::TaskEnvironment task_environment_{
+  std::string SettingAsIntString(Setting setting) {
+    return base::NumberToString(static_cast<int>(setting));
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
+  TestingProfile* testing_profile_;
+  raw_ptr<PrefService> test_pref_service_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<PerSessionSettingsUserActionTracker> tracker_;
 };
 
@@ -198,13 +221,13 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestEndSessionWithBlur) {
 }
 
 TEST_F(PerSessionSettingsUserActionTrackerTest, TestUniqueChangedSettings) {
-  std::set<chromeos::settings::mojom::Setting> expected_set;
+  std::set<std::string> expected_set;
 
   // Flip the WiFi toggle in Settings, this is a unique Setting that is changing
   // so the number of unique settings that have been changed increases by 1 for
   // a total of 1
-  tracker_->RecordSettingChange(chromeos::settings::mojom::Setting::kWifiOnOff);
-  expected_set = {chromeos::settings::mojom::Setting::kWifiOnOff};
+  tracker_->RecordSettingChange(Setting::kWifiOnOff);
+  expected_set = {SettingAsIntString(Setting::kWifiOnOff)};
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
   // Destruct tracker_ to trigger recording the data to the histogram.
@@ -216,7 +239,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestUniqueChangedSettings) {
 
   // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
   // Settings page.
-  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>();
+  tracker_ =
+      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
 
   // test that the set has been destructed and cleared appropriately
   expected_set = {};
@@ -225,11 +249,10 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestUniqueChangedSettings) {
   // Flip the Do Not Disturb and WiFi toggles in Settings, this is a unique
   // Setting that is changing so the number of unique settings that have been
   // changed increases by 1 for a total of 2
-  tracker_->RecordSettingChange(
-      chromeos::settings::mojom::Setting::kDoNotDisturbOnOff);
-  tracker_->RecordSettingChange(chromeos::settings::mojom::Setting::kWifiOnOff);
-  expected_set = {chromeos::settings::mojom::Setting::kDoNotDisturbOnOff,
-                  chromeos::settings::mojom::Setting::kWifiOnOff};
+  tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
+  tracker_->RecordSettingChange(Setting::kWifiOnOff);
+  expected_set = {SettingAsIntString(Setting::kDoNotDisturbOnOff),
+                  SettingAsIntString(Setting::kWifiOnOff)};
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
   // Destruct tracker_ to trigger recording the data to the histogram.
@@ -241,17 +264,16 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestUniqueChangedSettings) {
 
   // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
   // Settings page.
-  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>();
+  tracker_ =
+      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
 
   // Flip the Do Not Disturb and WiFi toggles. Flip Do Not Disturb toggle again
   // in Settings, this is not a unique Setting that is changing so the number of
   // unique settings that have been changed does not increase. The bucket sample
   // 2 should now have 2 counts.
-  tracker_->RecordSettingChange(
-      chromeos::settings::mojom::Setting::kDoNotDisturbOnOff);
-  tracker_->RecordSettingChange(chromeos::settings::mojom::Setting::kWifiOnOff);
-  tracker_->RecordSettingChange(
-      chromeos::settings::mojom::Setting::kDoNotDisturbOnOff);
+  tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
+  tracker_->RecordSettingChange(Setting::kWifiOnOff);
+  tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
   // expected_set will not change
   EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
 
@@ -267,6 +289,81 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestUniqueChangedSettings) {
   histogram_tester_.ExpectBucketCount(
       "ChromeOS.Settings.NumUniqueSettingsChanged.PerSession",
       /*sample=*/1,
+      /*count=*/1);
+}
+
+TEST_F(PerSessionSettingsUserActionTrackerTest,
+       TestTotalUniqueChangedSettings) {
+  std::set<std::string> expected_set;
+
+  // Flip the WiFi toggle in Settings, this is a unique Setting that is changing
+  // so the number of unique settings that have been changed increases by 1 for
+  // a total of 1
+  tracker_->RecordSettingChange(Setting::kWifiOnOff);
+  expected_set = {SettingAsIntString(Setting::kWifiOnOff)};
+  EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+      /*sample=*/1,
+      /*count=*/1);
+
+  // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
+  // Settings page.
+  tracker_ =
+      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+
+  // test that the set has been destructed and cleared appropriately
+  expected_set = {};
+  EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
+
+  // Flip the Do Not Disturb and WiFi toggles in Settings, this is a unique
+  // Setting that is changing so the number of unique settings that have been
+  // changed increases by 1 for a total of 2
+  tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
+  tracker_->RecordSettingChange(Setting::kWifiOnOff);
+  expected_set = {SettingAsIntString(Setting::kDoNotDisturbOnOff),
+                  SettingAsIntString(Setting::kWifiOnOff)};
+  EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+      /*sample=*/1,
+      /*count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+      /*sample=*/2,
+      /*count=*/1);
+
+  // Create a new PerSessionSettingsUserActionTracker to imitate a newly opened
+  // Settings page.
+  tracker_ =
+      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
+
+  // Flip the Do Not Disturb and WiFi toggles. Flip Do Not Disturb toggle again
+  // in Settings, this is not a unique Setting that is changing so the number of
+  // unique settings that have been changed does not increase. The bucket sample
+  // 2 should now have 2 counts.
+  tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
+  tracker_->RecordSettingChange(Setting::kWifiOnOff);
+  tracker_->RecordSettingChange(Setting::kDoNotDisturbOnOff);
+  // expected_set will not change
+  EXPECT_EQ(expected_set, tracker_->GetChangedSettingsForTesting());
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+      /*sample=*/1,
+      /*count=*/1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime",
+      /*sample=*/2,
       /*count=*/1);
 }
 
@@ -340,7 +437,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Create a new tracker, focus on page, wait for another 22 seconds to
   // pass.
-  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>();
+  tracker_ =
+      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
   tracker_->RecordPageFocus();
   task_environment_.FastForwardBy(base::Seconds(22));
 
@@ -355,7 +453,8 @@ TEST_F(PerSessionSettingsUserActionTrackerTest,
 
   // Create a new tracker, focus on page, this time wait for 3 seconds to
   // pass.
-  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>();
+  tracker_ =
+      std::make_unique<PerSessionSettingsUserActionTracker>(test_pref_service_);
   tracker_->RecordPageFocus();
   task_environment_.FastForwardBy(base::Seconds(3));
 

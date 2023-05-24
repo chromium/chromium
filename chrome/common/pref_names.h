@@ -358,6 +358,7 @@ extern const char kUpdateRequiredWarningPeriod[];
 extern const char kSystemProxyUserTrafficHostAndPort[];
 extern const char kEduCoexistenceArcMigrationCompleted[];
 extern const char kSharedStorage[];
+extern const char kTotalUniqueOsSettingsChanged[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kDeskAPIThirdPartyAccessEnabled[];

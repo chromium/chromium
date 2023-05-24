@@ -593,6 +593,8 @@ void Preferences::RegisterProfilePrefs(
                                 false);
 
   registry->RegisterBooleanPref(prefs::kShowDisplaySizeScreenEnabled, true);
+
+  registry->RegisterDictionaryPref(::prefs::kTotalUniqueOsSettingsChanged);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
