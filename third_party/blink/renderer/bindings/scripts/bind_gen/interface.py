@@ -2031,7 +2031,6 @@ def make_constant_callback_def(cg_context, function_name):
 
     logging_nodes = SequenceNode([
         make_report_deprecate_as(cg_context),
-        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
     ])
@@ -2129,6 +2128,7 @@ def make_constructor_function_def(cg_context, function_name):
 
     body.extend([
         make_report_deprecate_as(cg_context),
+        make_report_high_entropy(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
         EmptyNode(),
@@ -2154,6 +2154,10 @@ def make_constructor_function_def(cg_context, function_name):
               "${return_value}->AssociateWithWrapper(${isolate}, "
               "${class_name}::GetWrapperTypeInfo(), ${v8_receiver});"))
         body.append(T("bindings::V8SetReturnValue(${info}, v8_wrapper);"))
+
+    body.extend([
+        make_report_high_entropy_direct(cg_context),
+    ])
 
     return func_def
 
