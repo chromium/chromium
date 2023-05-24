@@ -1582,7 +1582,7 @@
       },
       'linux-cfm-rel': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'linux_cfm_gtests',
