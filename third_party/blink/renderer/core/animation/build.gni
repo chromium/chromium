@@ -21,6 +21,7 @@ blink_core_tests_animation = [
   "document_timeline_test.cc",
   "effect_input_test.cc",
   "effect_stack_test.cc",
+  "interpolable_font_palette_test.cc",
   "interpolable_value_test.cc",
   "interpolation_effect_test.cc",
   "inert_effect_test.cc",
