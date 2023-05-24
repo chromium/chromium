@@ -1,0 +1,97 @@
+<!--
+  Copyright (C) 2015-2018 Apple Inc. All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
+  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+    <title>MotionMark</title>
+
+    <link rel="stylesheet" href="resources/runner/motionmark.css">
+
+    <script src="resources/strings.js" defer></script>
+    <script src="resources/extensions.js" defer></script>
+    <script src="resources/statistics.js" defer></script>
+
+    <script src="resources/runner/tests.js" charset="utf-8" defer></script>
+    <script src="resources/runner/motionmark.js" defer></script>
+
+    <script src="resources/runner/benchmark-runner.js" defer></script>
+
+    <script>
+        window.addEventListener("load", function() {
+            // Start the fade in animation.
+            document.body.classList.add("images-loaded");
+        });
+    </script>
+</head>
+<body class="showing-intro">
+    <main>
+        <section id="intro" class="selected">
+            <div class="logo">
+              <svg><use xlink:href="resources/runner/logo.svg#root" /></svg>
+              <div>version <span class="version"></span></div>
+            </div>
+            <div class="body">
+                <p>MotionMark is a graphics benchmark that measures a browser’s capability to animate complex scenes at a target frame rate.</p>
+
+                <p><a href="about.html">More details</a> about the benchmark are available. Bigger scores are better.</p>
+                <p>For accurate results, please take your browser window full screen, or rotate your device to landscape orientation.</p>
+                <p class="portrait-orientation-check"><b>Please rotate your device.</b></p>
+                <button class="landscape-orientation-check" onclick="benchmarkController.startBenchmark()">Run Benchmark</button>
+            </div>
+        </section>
+
+        <section id="test-container" class="frame-container"></section>
+
+        <section id="results">
+            <div class="logo">
+              <svg><use xlink:href="resources/runner/logo.svg#root" /></svg>
+              <div>version <span class="version"></span></div>
+            </div>
+            <div class="body">
+                <div class="score-container">
+                    <div class="score"></div>
+                    <div class="confidence"></div>
+                    <div class="detail">
+                        <span class="small">on a small screen (phone)</span>
+                        <span class="medium">on a medium screen (laptop, tablet)</span>
+                        <span class="large">on a large screen (desktop)</span>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <div>
+                        <table id="results-score"></table>
+                        <table id="results-data"></table>
+                    </div>
+                    <table id="results-header"></table>
+                </div>
+                <button onclick="benchmarkController.startBenchmark()">Test Again</button>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

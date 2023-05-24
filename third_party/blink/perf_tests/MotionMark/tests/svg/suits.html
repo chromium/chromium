@@ -1,0 +1,68 @@
+<!--
+  Copyright (C) 2018 Apple Inc. All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
+  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../resources/stage.css">
+    <style type="text/css">
+        #stage {
+            background-color: #fdd;
+        }
+    </style>
+</head>
+<body>
+    <svg id="stage">
+        <defs id="gradients">
+            <linearGradient id="default-gradient">
+                <stop offset="0%"/>
+                <stop offset="100%"/>
+            </linearGradient>
+        </defs>
+        <defs id="shapes">
+            <clipPath id="shape-1" class="shape heart" clipPathUnits="objectBoundingBox">
+                <path d="M0.5,0.214 C0.466,0.164 0.369,0.09 0.267,0.092 C0.137,0.093 -0,0.186 -0,0.345 C-0,0.659 0.395,0.655 0.5,0.938 C0.605,0.655 1,0.659 1,0.345 C1,0.186 0.863,0.093 0.733,0.092 C0.631,0.09 0.534,0.164 0.5,0.214 z"/>
+            </clipPath>
+            <clipPath id="shape-2" class="shape club" clipPathUnits="objectBoundingBox">
+                <path d="M0.5,0.018 C0.62,0.018 0.718,0.115 0.718,0.235 C0.718,0.31 0.679,0.377 0.618,0.418 C0.657,0.393 0.703,0.382 0.749,0.381 C0.869,0.381 0.967,0.468 0.967,0.588 C0.967,0.709 0.869,0.806 0.749,0.806 C0.664,0.805 0.578,0.756 0.542,0.677 C0.538,0.799 0.605,0.918 0.708,0.982 C0.593,0.941 0.407,0.941 0.292,0.982 C0.397,0.917 0.461,0.799 0.459,0.676 C0.422,0.756 0.337,0.804 0.251,0.806 C0.131,0.806 0.033,0.709 0.033,0.588 C0.033,0.468 0.131,0.381 0.251,0.381 C0.298,0.38 0.342,0.395 0.382,0.418 C0.319,0.378 0.284,0.309 0.282,0.235 C0.282,0.115 0.38,0.018 0.5,0.018 z"/>
+            </clipPath>
+            <clipPath id="shape-3" class="shape spade" clipPathUnits="objectBoundingBox">
+                <path d="M0.301,0.982 C0.374,0.941 0.469,0.804 0.469,0.72 C0.374,0.857 0.039,0.825 0.049,0.563 C0.059,0.28 0.406,0.269 0.5,0.018 C0.594,0.269 0.941,0.28 0.951,0.563 C0.961,0.825 0.626,0.857 0.531,0.72 C0.531,0.804 0.626,0.941 0.699,0.982 C0.584,0.941 0.416,0.941 0.301,0.982"/>
+            </clipPath>
+            <clipPath id="shape-4" class="shape diamond" clipPathUnits="objectBoundingBox">
+                <path d="M0.495,0 C0.424,0.153 0.199,0.439 0.128,0.5 C0.199,0.561 0.424,0.847 0.495,1 C0.566,0.847 0.791,0.561 0.862,0.5 C0.791,0.439 0.566,0.153 0.495,0 z"/>
+            </clipPath>
+        </defs>
+    </svg>
+    <script src="../../resources/strings.js"></script>
+    <script src="../../resources/extensions.js"></script>
+    <script src="../../resources/statistics.js"></script>
+    <script src="../resources/math.js"></script>
+    <script src="../resources/main.js"></script>
+    <script src="../master/resources/particles.js"></script> <!-- nocheck -->
+    <script src="../master/resources/suits.js"></script> <!-- nocheck -->
+    <script src="suits.js"></script>
+</body>
+</html>
