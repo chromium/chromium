@@ -325,11 +325,8 @@ absl::optional<std::string> GetIframeOriginForDisplay(
     const url::Origin& top_frame_origin,
     const url::Origin& iframe_origin,
     CompleteRequestWithErrorCallback callback) {
-  // TODO(crbug.com/1418719): Replace exclude_iframe based on client metadata
-  // response.
-  bool exclude_iframe = net::registry_controlled_domains::SameDomainOrHost(
-      top_frame_origin, iframe_origin,
-      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  // TOOD(crbug.com/1448566): clean up the logic to allow 3 domains.
+  bool exclude_iframe = true;
   absl::optional<std::string> iframe_for_display = absl::nullopt;
 
   if (!exclude_iframe) {
