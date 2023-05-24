@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Unit tests for printing.py."""
 
+import argparse
 import optparse
 import sys
 import unittest
@@ -41,14 +42,14 @@ from six import StringIO
 
 
 def get_options(args):
-    print_options = printing.print_options()
-    option_parser = optparse.OptionParser(option_list=print_options)
-    return option_parser.parse_args(args)
+    parser = argparse.ArgumentParser()
+    printing.add_print_options_group(parser)
+    return optparse.Values(vars(parser.parse_args(args)))
 
 
 class TestUtilityFunctions(unittest.TestCase):
     def test_print_options(self):
-        options, _ = get_options([])
+        options = get_options([])
         self.assertIsNotNone(options)
 
 
@@ -90,9 +91,7 @@ class Testprinter(unittest.TestCase):
 
     def get_printer(self, args=None):
         args = args or []
-        printing_options = printing.print_options()
-        option_parser = optparse.OptionParser(option_list=printing_options)
-        options, args = option_parser.parse_args(args)
+        options = get_options(args)
         host = MockHost()
         self._port = host.port_factory.get('test', options)
 

@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Package that handles non-debug, non-file output for run_web_tests.py."""
 
+import argparse
 import logging
 import math
 import optparse
@@ -39,39 +40,30 @@ from blinkpy.tool import grammar
 NUM_SLOW_TESTS_TO_LOG = 10
 
 
-def print_options():
-    return [
-        optparse.make_option(
-            '--debug-rwt-logging',
-            action='store_true',
-            default=False,
-            help=
-            'print timestamps and debug information for run_web_tests.py itself'
-        ),
-        optparse.make_option(
-            '--details',
-            action='store_true',
-            default=False,
-            help='print detailed results for every test'),
-        optparse.make_option(
-            '-q',
-            '--quiet',
-            action='store_true',
-            default=False,
-            help='run quietly (errors, warnings, and progress only)'),
-        optparse.make_option(
-            '--timing',
-            action='store_true',
-            default=False,
-            help='display test times (summary plus per-test w/ --verbose)'),
-        optparse.make_option(
-            '-v',
-            '--verbose',
-            action='store_true',
-            default=False,
-            help='print a summarized result for every test (one line per test)'
-        ),
-    ]
+def add_print_options_group(parser: argparse.ArgumentParser):
+    group = parser.add_argument_group('Printing Options')
+    group.add_argument('--debug-rwt-logging',
+                       action='store_true',
+                       help=('print timestamps and debug information '
+                             'for run_web_tests.py itself'))
+    group.add_argument('--details',
+                       action='store_true',
+                       help='print detailed results for every test')
+    group.add_argument(
+        '-q',
+        '--quiet',
+        action='store_true',
+        help='run quietly (errors, warnings, and progress only)')
+    group.add_argument(
+        '--timing',
+        action='store_true',
+        help='display test times (summary plus per-test w/ --verbose)')
+    group.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help='print a summarized result for every test (one line per test)')
+    return group
 
 
 class Printer(object):

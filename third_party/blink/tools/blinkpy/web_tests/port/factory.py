@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """Factory method to retrieve the appropriate port implementation."""
 
+import argparse
 import fnmatch
 import optparse
 import re
@@ -181,6 +182,49 @@ def wpt_options():
             help=('Do not update the web-platform-tests '
                   'MANIFEST.json unless it does not exist.')),
     ]
+
+
+# TODO(crbug.com/1431070): Remove the `*_options` methods above once all tools
+# use `argparse`.
+
+
+def add_platform_options_group(parser: argparse.ArgumentParser):
+    group = parser.add_argument_group('Platform Options')
+    group.add_argument('--platform', help='Platform to use (e.g., "mac-lion")')
+    return group
+
+
+def add_configuration_options_group(parser: argparse.ArgumentParser):
+    group = parser.add_argument_group('Configuration Options')
+    group.add_argument(
+        '-t',
+        '--target',
+        help='Specify the target build subdirectory under //out')
+    group.add_argument('--debug',
+                       action='store_const',
+                       const='Debug',
+                       dest='configuration',
+                       help='Set the configuration to Debug')
+    group.add_argument('--release',
+                       action='store_const',
+                       const='Release',
+                       dest='configuration',
+                       help='Set the configuration to Release')
+    group.add_argument('--no-xvfb',
+                       action='store_false',
+                       dest='use_xvfb',
+                       help='Do not run tests with Xvfb')
+    return group
+
+
+def add_wpt_options_group(parser: argparse.ArgumentParser):
+    group = parser.add_argument_group('web-platform-tests (WPT) Options')
+    group.add_argument('--no-manifest-update',
+                       dest='manifest_update',
+                       action='store_false',
+                       help=('Do not update the web-platform-tests '
+                             'MANIFEST.json unless it does not exist.'))
+    return group
 
 
 def _builder_options(builder_name):
