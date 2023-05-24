@@ -77,6 +77,11 @@ void FakeConnection::SendAccountTransferAssertionInfo(
   std::move(request_account_transfer_assertion_callback_).Run(assertion_info);
 }
 
+void FakeConnection::HandleHandshakeResult(bool success) {
+  CHECK(handshake_success_callback_);
+  std::move(handshake_success_callback_).Run(success);
+}
+
 bool FakeConnection::WasHandshakeInitiated() {
   return handshake_initiated_;
 }

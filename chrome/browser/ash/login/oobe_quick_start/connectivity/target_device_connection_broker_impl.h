@@ -107,6 +107,8 @@ class TargetDeviceConnectionBrokerImpl
       NearbyConnectionsManager::ConnectionsStatus status);
   const Connection::SessionContext BuildConnectionSessionContext() const;
 
+  void OnHandshakeCompleted(bool success);
+
   // A 4-digit decimal pin code derived from the connection's authentication
   // token for the pin authentication flow.
   std::string pin_;

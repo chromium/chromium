@@ -750,8 +750,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, DerivePin) {
   EXPECT_EQ(kAuthenticationTokenPin, DerivePin());
 }
 
-TEST_F(TargetDeviceConnectionBrokerImplTest,
-       HandshakeInitiatedOnConnectionAccepted) {
+TEST_F(TargetDeviceConnectionBrokerImplTest, Handshake_Success) {
   FinishFetchingBluetoothAdapter();
   connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
                                        /* use_pin_authentication= */ false,
@@ -769,6 +768,34 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
 
   ASSERT_TRUE(connection());
   EXPECT_TRUE(connection()->WasHandshakeInitiated());
+  EXPECT_FALSE(connection_lifecycle_listener_.connection_authenticated_);
+
+  connection()->HandleHandshakeResult(/*success=*/true);
+  EXPECT_TRUE(connection_lifecycle_listener_.connection_authenticated_);
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest, Handshake_Failed) {
+  FinishFetchingBluetoothAdapter();
+  connection_broker_->StartAdvertising(&connection_lifecycle_listener_,
+                                       /* use_pin_authentication= */ false,
+                                       base::DoNothing());
+  EXPECT_FALSE(connection_lifecycle_listener_.qr_code_data_);
+  NearbyConnectionsManager::IncomingConnectionListener*
+      incoming_connection_listener =
+          fake_nearby_connections_manager_.GetAdvertisingListener();
+  ASSERT_TRUE(incoming_connection_listener);
+  incoming_connection_listener->OnIncomingConnectionInitiated(
+      kEndpointId, std::vector<uint8_t>());
+  ASSERT_TRUE(connection_lifecycle_listener_.qr_code_data_);
+  incoming_connection_listener->OnIncomingConnectionAccepted(
+      kEndpointId, std::vector<uint8_t>(), &fake_nearby_connection_);
+
+  ASSERT_TRUE(connection());
+  EXPECT_TRUE(connection()->WasHandshakeInitiated());
+  EXPECT_FALSE(connection_lifecycle_listener_.connection_authenticated_);
+
+  connection()->HandleHandshakeResult(/*success=*/false);
+  EXPECT_FALSE(connection_lifecycle_listener_.connection_authenticated_);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
