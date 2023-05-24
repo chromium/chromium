@@ -289,25 +289,16 @@ constexpr base::FeatureParam<bool> kPrivateAggregationApiEnabledInFledge{
     &kPrivateAggregationApi, "enabled_in_fledge",
     /*default_value=*/true};
 
-// Selectively allows the FLEDGE-specific extensions to be disabled.
+// Selectively allows the Protected Audience-specific extensions to be disabled.
 constexpr base::FeatureParam<bool>
     kPrivateAggregationApiFledgeExtensionsEnabled{&kPrivateAggregationApi,
                                                   "fledge_extensions_enabled",
-                                                  /*default_value=*/false};
+                                                  /*default_value=*/true};
 
 // Maximum budget allowed to be claimed per-origin per-day per-API. See
 // `content::PrivateAggregationBudgeter` for more detail.
 constexpr base::FeatureParam<int> kPrivateAggregationApiMaxBudgetPerScope{
     &kPrivateAggregationApi, "max_budget_per_scope", /*default_value=*/65536};
-
-// Has the same effect as enabling
-// kPrivateAggregationApiFledgeExtensionsEnabled. This is intended as a
-// convenience for local testing only.
-// TODO(alexmt): Remove when kPrivateAggregationApiFledgeExtensionsEnabled is
-// enabled by default.
-BASE_FEATURE(kPrivateAggregationApiFledgeExtensionsLocalTestingOverride,
-             "PrivateAggregationApiFledgeExtensionsLocalTestingOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the shared storage API. Note that enabling this feature does not
 // automatically expose this API to the web, it only allows the element to be

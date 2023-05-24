@@ -6753,9 +6753,7 @@ class AdAuctionServiceImplPrivateAggregationEnabledTest
     : public AdAuctionServiceImplTest {
  public:
   AdAuctionServiceImplPrivateAggregationEnabledTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrivateAggregationApi,
-        {{"fledge_extensions_enabled", "true"}});
+    feature_list_.InitAndEnableFeature(blink::features::kPrivateAggregationApi);
   }
 
  protected:
