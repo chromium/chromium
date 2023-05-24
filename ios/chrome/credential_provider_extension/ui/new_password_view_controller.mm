@@ -6,6 +6,8 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/common/password_manager_constants.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
@@ -301,10 +303,19 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   // Notify that the character limit has been reached via VoiceOver.
   if (!noteValid) {
+    NSString* tooLongNoteLocalizedString = NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_TOO_LONG_NOTE",
+        @"Warning about the character limit for password notes");
+    NSString* characterLimitString =
+        base::SysUTF16ToNSString(base::NumberToString16(
+            password_manager::constants::kMaxPasswordNoteLength));
     UIAccessibilityPostNotification(
         UIAccessibilityAnnouncementNotification,
-        NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_TOO_LONG_NOTE",
-                          @"Notes can save up to 1000 characters."));
+        NSLocalizedString(
+            [tooLongNoteLocalizedString
+                stringByReplacingOccurrencesOfString:@"$1"
+                                          withString:characterLimitString],
+            @"Warning about the character limit for password notes."));
   }
 
   // Update note footer based on note's length.
@@ -429,8 +440,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (NSString*)noteFooterText {
   if (self.isNoteFooterShown) {
-    return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_TOO_LONG_NOTE",
-                             @"Notes can save up to 1000 characters.");
+    NSString* tooLongNoteLocalizedString = NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_TOO_LONG_NOTE",
+        @"Warning about the character limit for password notes");
+    NSString* characterLimitString =
+        base::SysUTF16ToNSString(base::NumberToString16(
+            password_manager::constants::kMaxPasswordNoteLength));
+    return [tooLongNoteLocalizedString
+        stringByReplacingOccurrencesOfString:@"$1"
+                                  withString:characterLimitString];
   }
 
   return @"";
