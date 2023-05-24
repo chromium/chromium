@@ -1755,21 +1755,6 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
                 << data.script_url() << "' and/or the storage key's origin '"
                 << key.origin() << "' are invalid or have mismatching origins.";
     // TODO(crbug.com/1423325): remove the code when the reason is clarified.
-    if (scope_url.DeprecatedGetOriginAsURL() !=
-        script_url.DeprecatedGetOriginAsURL()) {
-      GURL scope_origin = scope_url.DeprecatedGetOriginAsURL();
-      GURL script_origin = script_url.DeprecatedGetOriginAsURL();
-      base::debug::Alias(&scope_origin);
-      base::debug::Alias(&script_origin);
-      base::debug::DumpWithoutCrashing();
-    }
-    if (key.origin() != url::Origin::Create(scope_url)) {
-      url::Origin key_origin = key.origin();
-      url::Origin scope_origin = url::Origin::Create(scope_url);
-      base::debug::Alias(&key_origin);
-      base::debug::Alias(&scope_origin);
-      base::debug::DumpWithoutCrashing();
-    }
     base::debug::DumpWithoutCrashing();
     return Status::kErrorCorrupted;
   }
