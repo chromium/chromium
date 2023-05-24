@@ -86,7 +86,9 @@
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor_switches.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 
@@ -370,6 +372,16 @@ void BrowserTestBase::SetUp() {
   if (!enable_pixel_output_ && !use_software_compositing_)
     command_line->AppendSwitch(switches::kDisableGLDrawingForTests);
 #endif
+
+  // Disable animations when verifying pixel output, as they make tests flaky.
+  if (command_line->HasSwitch(switches::kVerifyPixels)) {
+    disable_layer_animations_ =
+        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    disable_rich_animations_ =
+        gfx::AnimationTestApi::SetRichAnimationRenderMode(
+            gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  }
 
   bool use_software_gl = true;
 

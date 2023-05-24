@@ -24,6 +24,7 @@
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#include "content/public/common/content_switches.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
@@ -107,8 +108,9 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
     const std::string& screenshot_name) {
 #ifdef SUPPORTS_PIXEL_TEST
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "browser-ui-tests-verify-pixels"))
+          switches::kVerifyPixels)) {
     return ui::test::ActionResult::kNotAttempted;
+  }
 
   // Disable and hide cursor to prvent any interference with the
   // screenshots.

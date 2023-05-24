@@ -24,19 +24,13 @@ void TestInfoBar::PreShow() {
 bool TestInfoBar::VerifyUi() {
   absl::optional<InfoBars> infobars = GetNewInfoBars();
   if (!infobars || infobars->empty()) {
-    ADD_FAILURE() << "No new infobars were displayed.";
     return false;
   }
 
-  bool expected_infobars_found =
-      base::ranges::equal(*infobars, expected_identifiers_, std::equal_to<>(),
-                          [](infobars::InfoBar* infobar) {
-                            return infobar->delegate()->GetIdentifier();
-                          });
-  if (!expected_infobars_found)
-    ADD_FAILURE() << "Found unexpected infobars.";
-
-  return expected_infobars_found;
+  return base::ranges::equal(*infobars, expected_identifiers_, {},
+                             [](infobars::InfoBar* infobar) {
+                               return infobar->delegate()->GetIdentifier();
+                             });
 }
 
 void TestInfoBar::WaitForUserDismissal() {
@@ -80,8 +74,9 @@ absl::optional<TestInfoBar::InfoBars> TestInfoBar::GetNewInfoBars() const {
   const InfoBars& infobars = infobar_manager->infobars_;
   if ((infobars.size() < starting_infobars_.size()) ||
       !std::equal(starting_infobars_.begin(), starting_infobars_.end(),
-                  infobars.begin()))
+                  infobars.begin())) {
     return absl::nullopt;
+  }
   return InfoBars(std::next(infobars.begin(), starting_infobars_.size()),
                   infobars.end());
 }

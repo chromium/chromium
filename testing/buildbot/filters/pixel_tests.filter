@@ -39,6 +39,7 @@ HatsBubbleTest.*
 HomeButtonUiTest.*
 HungRendererDialogViewBrowserTest.*
 ImportLockDialogViewBrowserTest.*
+InfoBarUiTest.*
 InlineLoginHelperBrowserTest.InvokeUi_*
 IntentPickerDialogTest.*
 IntentPickerDialogGridViewTest.*

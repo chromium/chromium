@@ -839,6 +839,9 @@ const char kUtilitySubType[] = "utility-sub-type";
 // In debug builds, asserts that the stream of input events is valid.
 const char kValidateInputEventStream[] = "validate-input-event-stream";
 
+// Causes tests to attempt to verify pixel output.
+const char kVerifyPixels[] = "browser-ui-tests-verify-pixels";
+
 // Will add kWaitForDebugger to every child processes. If a value is passed, it
 // will be used as a filter to determine if the child process should have the
 // kWaitForDebugger flag passed on or not.

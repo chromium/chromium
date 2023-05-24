@@ -48,7 +48,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/gfx/animation/animation.h"
-#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
@@ -690,9 +689,6 @@ class HighEfficiencyFaviconTreatmentTest
         {{"discard_tab_treatment_option", base::NumberToString(static_cast<int>(
                                               GetParam().treatment_option))}});
 
-    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
-        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-
     HighEfficiencyInteractiveTest::SetUp();
   }
 
@@ -706,8 +702,6 @@ class HighEfficiencyFaviconTreatmentTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
 };
 
 IN_PROC_BROWSER_TEST_P(HighEfficiencyFaviconTreatmentTest,
@@ -765,16 +759,11 @@ class HighEfficiencyMemorySavingsReportingImprovementsTest
     scoped_feature_list_.InitAndEnableFeature(
         performance_manager::features::kMemorySavingsReportingImprovements);
 
-    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
-        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-
     HighEfficiencyInteractiveTest::SetUp();
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
 };
 
 // The high efficiency chip dialog renders a gauge style visualization that

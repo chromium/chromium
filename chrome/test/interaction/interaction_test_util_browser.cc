@@ -21,6 +21,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "content/public/common/content_switches.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/test/ui_controls.h"
@@ -244,7 +245,7 @@ ui::test::ActionResult InteractionTestUtilBrowser::CompareScreenshot(
   // line, which is checked by TestBrowserUi before attempting any screen
   // capture; otherwise screenshotting is a silent no-op.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "browser-ui-tests-verify-pixels")) {
+          switches::kVerifyPixels)) {
     LOG(WARNING)
         << "Cannot take screenshot: pixel test command line not set. This is "
            "normal for non-pixel-test jobs such as vanilla browser_tests.";

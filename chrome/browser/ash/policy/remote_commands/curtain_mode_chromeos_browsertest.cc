@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "remoting/host/curtain_mode_chromeos.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +36,7 @@ enum class ColorScheme {
 
 bool ArePixelTestsEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      "browser-ui-tests-verify-pixels");
+      switches::kVerifyPixels);
 }
 
 std::string GetScreenshotName(ColorScheme color_scheme) {

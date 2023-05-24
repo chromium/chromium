@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
@@ -24,7 +25,7 @@ namespace {
 
 bool IsPixelTestEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      "browser-ui-tests-verify-pixels");
+      switches::kVerifyPixels);
 }
 
 // Helper class to wait until contents finish loading, either on failure or

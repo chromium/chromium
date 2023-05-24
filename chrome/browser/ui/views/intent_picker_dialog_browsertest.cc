@@ -25,7 +25,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/widget/widget_utils.h"
@@ -39,9 +38,6 @@ class IntentPickerDialogTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
-        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-
     std::vector<apps::IntentPickerAppInfo> app_info;
     const auto add_entry = [&app_info](const std::string& str) {
       auto icon_size = apps::GetIntentPickerBubbleIconSize();
@@ -70,9 +66,6 @@ class IntentPickerDialogTest : public DialogBrowserTest {
         ->toolbar_button_provider()
         ->GetPageActionIconView(PageActionIconType::kIntentPicker);
   }
-
-  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
-      animation_mode_reset_;
 };
 
 #if BUILDFLAG(IS_MAC)
