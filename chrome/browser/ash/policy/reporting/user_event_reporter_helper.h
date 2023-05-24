@@ -39,6 +39,11 @@ class UserEventReporterHelper {
       delete;
   virtual ~UserEventReporterHelper();
 
+  // DEPRECATED: please use ReportingUserTracker::ShouldReport() by passing
+  // its instance from DeviceCloudPolicyManagerAsh.
+  // TODO(b/267685577): Remove this.
+  virtual bool ShouldReportUser(const std::string& user_email) const;
+
   // Returns whether the provided reporting policy is set.
   // Must be called on UI task runner (returned by valid_task_runner() below).
   virtual bool ReportingEnabled(const std::string& policy_path) const;

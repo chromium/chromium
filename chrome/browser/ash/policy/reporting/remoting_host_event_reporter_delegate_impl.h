@@ -15,18 +15,16 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "remoting/host/chromeos/host_event_reporter_impl.h"
 
-namespace policy {
-class ReportingUserTracker;
-}  // namespace policy
-
 namespace remoting {
 
 // Production implementation of CRD event reporter for remoting host.
 class HostEventReporterDelegateImpl : public HostEventReporterImpl::Delegate {
  public:
-  HostEventReporterDelegateImpl(
-      std::unique_ptr<::reporting::UserEventReporterHelper> user_event_helper,
-      policy::ReportingUserTracker* reporting_user_tracker);
+  explicit HostEventReporterDelegateImpl(
+      std::unique_ptr<::reporting::UserEventReporterHelper> user_event_helper =
+          std::make_unique<::reporting::UserEventReporterHelper>(
+              ::reporting::Destination::CRD_EVENTS,
+              ::reporting::EventType::kUser));
 
   HostEventReporterDelegateImpl(const HostEventReporterDelegateImpl& other) =
       delete;

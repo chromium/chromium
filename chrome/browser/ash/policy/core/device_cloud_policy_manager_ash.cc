@@ -292,14 +292,10 @@ void DeviceCloudPolicyManagerAsh::OnUserManagerCreated(
 
 void DeviceCloudPolicyManagerAsh::OnUserManagerWillBeDestroyed(
     user_manager::UserManager* user_manager) {
-  // Several instances internally hold the reference to the
+  // DeviceStatusCollector internally holds the reference to the
   // ReportingUserTracker instance, so should be released via Shutdown()
   // before this is reached.
   DCHECK(!status_uploader_);
-  DCHECK(!login_logout_reporter_);
-  DCHECK(!user_added_removed_reporter_);
-  DCHECK(!lock_unlock_reporter_);
-
   reporting_user_tracker_.reset();
   user_manager_observation_.Reset();
 }
@@ -387,18 +383,17 @@ void DeviceCloudPolicyManagerAsh::CreateManagedSessionServiceAndReporters() {
 
   managed_session_service_ = std::make_unique<ManagedSessionService>();
   login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
-      reporting_user_tracker_.get(), managed_session_service_.get());
+      managed_session_service_.get());
 
   user_added_removed_reporter_ = ::reporting::UserAddedRemovedReporter::Create(
-      std::move(users_to_be_removed_), reporting_user_tracker_.get(),
-      managed_session_service_.get());
+      std::move(users_to_be_removed_), managed_session_service_.get());
   for (const auto& [user_email, reason] : removed_users_) {
     user_added_removed_reporter_->ProcessRemovedUser(user_email, reason);
   }
   removed_users_.clear();
 
   lock_unlock_reporter_ = ash::reporting::LockUnlockReporter::Create(
-      reporting_user_tracker_.get(), managed_session_service_.get());
+      managed_session_service_.get());
 }
 
 }  // namespace policy
