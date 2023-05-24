@@ -3112,18 +3112,31 @@ void QuicChromiumClientSession::MaybeStartProbing(
 void QuicChromiumClientSession::CreateContextForMultiPortPath(
     std::unique_ptr<quic::MultiPortPathContextObserver> context_observer) {
   if (!connection()->connection_migration_use_new_cid()) {
+    context_observer->OnMultiPortPathContextAvailable(nullptr);
     return;
   }
 
   // Create and configure socket on default network
   std::unique_ptr<DatagramClientSocket> probing_socket =
       stream_factory_->CreateSocket(net_log_.net_log(), net_log_.source());
-  if (stream_factory_->ConfigureSocket(
-          probing_socket.get(), ToIPEndPoint(peer_address()), default_network_,
-          session_key_.socket_tag()) != OK) {
-    return;
-  }
+  DatagramClientSocket* probing_socket_ptr = probing_socket.get();
+  CompletionOnceCallback configure_callback = base::BindOnce(
+      &QuicChromiumClientSession::FinishCreateContextForMultiPortPath,
+      weak_factory_.GetWeakPtr(), std::move(context_observer),
+      std::move(probing_socket));
+  stream_factory_->ConnectAndConfigureSocket(
+      std::move(configure_callback), probing_socket_ptr,
+      ToIPEndPoint(peer_address()), default_network_,
+      session_key_.socket_tag());
+}
 
+void QuicChromiumClientSession::FinishCreateContextForMultiPortPath(
+    std::unique_ptr<quic::MultiPortPathContextObserver> context_observer,
+    std::unique_ptr<DatagramClientSocket> probing_socket,
+    int rv) {
+  if (rv != OK) {
+    context_observer->OnMultiPortPathContextAvailable(nullptr);
+  }
   // Create new packet writer and reader on the probing socket.
   auto probing_writer = std::make_unique<QuicChromiumPacketWriter>(
       probing_socket.get(), task_runner_);

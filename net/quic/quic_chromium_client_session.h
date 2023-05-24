@@ -768,6 +768,13 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   base::StringPiece GetAcceptChViaAlps(
       const url::SchemeHostPort& scheme_host_port) const override;
 
+  // Helper for CreateContextForMultiPortPath. Gets the result of
+  // ConnectAndConfigureSocket and uses it to create the multiport path context.
+  void FinishCreateContextForMultiPortPath(
+      std::unique_ptr<quic::MultiPortPathContextObserver> context_observer,
+      std::unique_ptr<DatagramClientSocket> probing_socket,
+      int rv);
+
   // Performs a crypto handshake with the server.
   int CryptoConnect(CompletionOnceCallback callback);
 
