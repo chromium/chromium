@@ -25,14 +25,16 @@
 
 @end
 
-// Handles interaction with the inactive tabs view controller.
+// Handles interaction for Inactive Tabs.
 //
 // This coordinator lifetime starts when the regular tab grid is started, and
-// stops only when the regular tab grid is stopped. `start` creates the relevant
-// objects (VC, mediator, etc.), but doesn't show the VC. Call `show`/`hide` to
-// display/hide the inactive tabs grid. By having this coordinator alive, the
-// mediator can react to "Close All" signals, and the VC can be re-shown as is
-// (i.e. same scroll position).
+// stops only when the regular tab grid is stopped. `start` creates the mediator
+// but not the VC. By having this coordinator and its mediator always alive, the
+// mediator can react to "Close All" signals even when the Inactive Tabs UI is
+// not shown.
+// The VC (i.e. Inactive Tabs UI) is created and shown when calling `show`, and
+// hidden and destroyed when calling `hide`. This can be called multiple times.
+// TODO(crbug.com/1448025): Keep the scrolling position between showings.
 @interface InactiveTabsCoordinator : ChromeCoordinator
 
 // The GridCommands receiver handling "Close All"-related commands.

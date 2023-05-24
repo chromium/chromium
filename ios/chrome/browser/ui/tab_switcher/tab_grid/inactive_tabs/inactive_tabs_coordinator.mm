@@ -184,6 +184,30 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 - (void)start {
   [super start];
 
+  // Create the mediator.
+  SessionRestorationBrowserAgent* sessionRestorationBrowserAgent =
+      SessionRestorationBrowserAgent::FromBrowser(self.browser);
+  SnapshotBrowserAgent* snapshotBrowserAgent =
+      SnapshotBrowserAgent::FromBrowser(self.browser);
+  sessions::TabRestoreService* tabRestoreService =
+      IOSChromeTabRestoreServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
+  self.mediator = [[InactiveTabsMediator alloc]
+         initWithWebStateList:self.browser->GetWebStateList()
+                  prefService:GetApplicationContext()->GetLocalState()
+      sessionRestorationAgent:sessionRestorationBrowserAgent
+                snapshotAgent:snapshotBrowserAgent
+            tabRestoreService:tabRestoreService];
+}
+
+- (void)show {
+  if (self.showing) {
+    return;
+  }
+  self.showing = YES;
+  base::RecordAction(base::UserMetricsAction("MobileInactiveTabGridEntered"));
+
   // Create the view controller.
   self.viewController = [[InactiveTabsViewController alloc] init];
   self.viewController.delegate = self;
@@ -196,32 +220,9 @@ NSString* const kInactiveTabsUserEducationShownOnce =
   edgeSwipeRecognizer.edges = UIRectEdgeLeft;
   [self.viewController.view addGestureRecognizer:edgeSwipeRecognizer];
 
-  // Create the mediator.
-  SessionRestorationBrowserAgent* sessionRestorationBrowserAgent =
-      SessionRestorationBrowserAgent::FromBrowser(self.browser);
-  SnapshotBrowserAgent* snapshotBrowserAgent =
-      SnapshotBrowserAgent::FromBrowser(self.browser);
-  sessions::TabRestoreService* tabRestoreService =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-
-  self.mediator = [[InactiveTabsMediator alloc]
-             initWithConsumer:self.viewController.gridViewController
-                 webStateList:self.browser->GetWebStateList()
-                  prefService:GetApplicationContext()->GetLocalState()
-      sessionRestorationAgent:sessionRestorationBrowserAgent
-                snapshotAgent:snapshotBrowserAgent
-            tabRestoreService:tabRestoreService];
+  self.mediator.consumer = self.viewController.gridViewController;
 
   self.viewController.gridViewController.menuProvider = _menuProvider;
-}
-
-- (void)show {
-  if (self.showing) {
-    return;
-  }
-  self.showing = YES;
-  base::RecordAction(base::UserMetricsAction("MobileInactiveTabGridEntered"));
 
   // Add the Inactive Tabs view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;
@@ -614,6 +615,8 @@ NSString* const kInactiveTabsUserEducationShownOnce =
         [self.baseViewSnapshot removeFromSuperview];
         self.baseViewSnapshot = nil;
         self.showing = NO;
+        self.mediator.consumer = nil;
+        self.viewController = nil;
       }];
 }
 

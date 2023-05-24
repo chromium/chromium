@@ -24,22 +24,24 @@ class TabRestoreService;
 // interactions.
 @interface InactiveTabsMediator : NSObject <GridCommands>
 
+// `consumer` receives `webStateList` and Inactive Tabs info updates.
+@property(nonatomic, weak) id<TabCollectionConsumer, InactiveTabsInfoConsumer>
+    consumer;
+
 // Initializer with:
-// `consumer` as the receiver of `webStateList` updates.
-// `prefService` the preference service from the application context.
-// `sessionRestorationAgent` the session restoration browser agent from the
-// inactive browser. `snapshotAgent` the snapshot browser agent from the
-// inactive browser. `tabRestoreService` the service that holds the recently
-// closed tabs.
-- (instancetype)initWithConsumer:
-                    (id<TabCollectionConsumer, InactiveTabsInfoConsumer>)
-                        consumer
-                    webStateList:(WebStateList*)webStateList
-                     prefService:(PrefService*)prefService
-         sessionRestorationAgent:
-             (SessionRestorationBrowserAgent*)sessionRestorationAgent
-                   snapshotAgent:(SnapshotBrowserAgent*)snapshotAgent
-               tabRestoreService:(sessions::TabRestoreService*)tabRestoreService
+// - `webStateList`: the list of tabs to observe.
+// - `prefService`: the preference service from the application context.
+// - `sessionRestorationAgent`: the session restoration browser agent from the
+//     inactive browser.
+// - `snapshotAgent`: the snapshot browser agent from the inactive browser.
+// - `tabRestoreService`: the service that holds the recently closed tabs.
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                         prefService:(PrefService*)prefService
+             sessionRestorationAgent:
+                 (SessionRestorationBrowserAgent*)sessionRestorationAgent
+                       snapshotAgent:(SnapshotBrowserAgent*)snapshotAgent
+                   tabRestoreService:
+                       (sessions::TabRestoreService*)tabRestoreService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
