@@ -350,6 +350,14 @@ bool AreStringTokenEquivalent(const std::u16string& one,
   return AreSortedTokensEqual(TokenizeValue(one), TokenizeValue(other));
 }
 
+bool AreStringTokenCompatible(const std::u16string& first,
+                              const std::u16string& second) {
+  SortedTokenComparisonResult result =
+      CompareSortedTokens(TokenizeValue(NormalizeValue(first)),
+                          TokenizeValue(NormalizeValue(second)));
+  return result.status == MATCH || result.status == SUBSET;
+}
+
 SortedTokenComparisonResult CompareSortedTokens(
     const std::vector<AddressToken>& first,
     const std::vector<AddressToken>& second) {

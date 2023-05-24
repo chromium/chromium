@@ -530,8 +530,8 @@ class AddressComponent {
   // of the subcomponents. Returns true on success and is allowed to fail.
   bool ParseValueAndAssignSubcomponentsByRegularExpressions();
 
-  // This method verifies that the `value` is compatible with all the node's
-  // anestors.
+  // This method verifies that the `value` is token compatible with this node
+  // and all the node's ancestors.
   bool IsValueCompatibleWithAncestors(const std::u16string& value) const;
 
   // The unstructured value of this component.

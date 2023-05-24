@@ -1811,46 +1811,11 @@ TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
 }
 
 TEST(AutofillStructuredAddressAddressComponent,
-     IsValueCompatibleWithAncestorsNonCompatible) {
-  AddressNode address;
-  AddressComponentTestValues test_values = {
-      {.type = ADDRESS_HOME_STREET_ADDRESS,
-       .value = "Flat 42, Floor 7, Tagore Road Hostel, 13, Hitech City Rd",
-       .status = VerificationStatus::kObserved},
-      {.type = ADDRESS_HOME_FLOOR,
-       .value = "Floor 7",
-       .status = VerificationStatus::kObserved},
-      {.type = ADDRESS_HOME_APT_NUM,
-       .value = "Flat 42",
-       .status = VerificationStatus::kObserved}};
-
-  AddressComponentTestValues expectation = {
-      {.type = ADDRESS_HOME_STREET_ADDRESS,
-       .value = "Flat 42, Floor 7, Tagore Road Hostel, 13, Hitech City Rd",
-       .status = VerificationStatus::kObserved},
-      // Note that subpremise can not be parsed into "Floor 7 Flat 42" as this
-      // would not be compatible with ADDRESS_HOME_STREET_ADDRESS.
-      {.type = ADDRESS_HOME_SUBPREMISE,
-       .value = "",
-       .status = VerificationStatus::kNoStatus},
-      {.type = ADDRESS_HOME_FLOOR,
-       .value = "Floor 7",
-       .status = VerificationStatus::kObserved},
-      {.type = ADDRESS_HOME_APT_NUM,
-       .value = "Flat 42",
-       .status = VerificationStatus::kObserved}};
-
-  SetTestValues(&address, test_values);
-  address.CompleteFullTree();
-  VerifyTestValues(&address, expectation);
-}
-
-TEST(AutofillStructuredAddressAddressComponent,
      IsValueCompatibleWithAncestorsCompatible) {
   AddressNode address;
   AddressComponentTestValues test_values = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
-       .value = "Floor 7 Flat 42, Tagore Road Hostel, 13, Hitech City Rd",
+       .value = "Flat 42, Floor 7, Tagore Road Hostel, 13, Hitech City Rd",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_FLOOR,
        .value = "Floor 7",
@@ -1861,7 +1826,7 @@ TEST(AutofillStructuredAddressAddressComponent,
 
   AddressComponentTestValues expectation = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
-       .value = "Floor 7 Flat 42, Tagore Road Hostel, 13, Hitech City Rd",
+       .value = "Flat 42, Floor 7, Tagore Road Hostel, 13, Hitech City Rd",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_SUBPREMISE,
        .value = "Floor 7 Flat 42",

@@ -288,6 +288,11 @@ bool AreSortedTokensEqual(const std::vector<AddressToken>& first,
 bool AreStringTokenEquivalent(const std::u16string& one,
                               const std::u16string& other);
 
+// Returns true if all tokens from the first string are contained in the set of
+// tokens from the second string.
+bool AreStringTokenCompatible(const std::u16string& first,
+                              const std::u16string& second);
+
 // Returns a sorted vector containing the tokens of |value| after |value| was
 // canonicalized. |value| is tokenized by splitting it by white spaces and
 // commas.

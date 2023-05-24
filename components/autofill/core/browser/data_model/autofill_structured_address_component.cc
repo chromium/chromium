@@ -502,10 +502,10 @@ bool AddressComponent::AllDescendantsAreEmpty() const {
 
 bool AddressComponent::IsValueCompatibleWithAncestors(
     const std::u16string& value) const {
-  bool is_node_compatible =
-      GetValue().empty() || (GetValue().find(value) != std::string::npos);
-  return is_node_compatible &&
-         (!parent_ || parent_->IsValueCompatibleWithAncestors(value));
+  if (!GetValue().empty()) {
+    return AreStringTokenCompatible(value, GetValue());
+  }
+  return (!parent_ || parent_->IsValueCompatibleWithAncestors(value));
 }
 
 bool AddressComponent::IsStructureValid() const {
@@ -518,7 +518,7 @@ bool AddressComponent::IsStructureValid() const {
   // information in the components is contained in the unstructured
   // representation.
   return base::ranges::all_of(Subcomponents(), [this](const auto* c) {
-    return GetValue().find(c->GetValue()) != std::u16string::npos;
+    return AreStringTokenCompatible(c->GetValue(), GetValue());
   });
 }
 
