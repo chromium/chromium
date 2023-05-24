@@ -134,6 +134,10 @@
     Finalizing...
   </message>
 
+  <message name="IDS_GETTING_DEVICE_READY" desc="Message that the system is getting the device ready" translateable="false">
+    Getting the device ready...
+  </message>
+
   <!-- Cellular Setup UI Strings -->
   <message name="IDS_CELLULAR_SETUP_BACK_LABEL" desc="Label for button to go to previous screen during cellular setup">
     Back

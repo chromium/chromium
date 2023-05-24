@@ -21,6 +21,7 @@ void AutoEnrollmentCheckScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("autoEnrollmentCheckMessage",
                IDS_AUTO_ENROLLMENT_CHECK_SCREEN_MESSAGE);
+  builder->Add("gettingDeviceReadyTitle", IDS_GETTING_DEVICE_READY);
 }
 
 }  // namespace ash

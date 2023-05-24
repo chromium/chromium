@@ -17,6 +17,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/system/timezone_util.h"
@@ -358,6 +359,9 @@ void UpdateScreen::UpdateInfoChanged(
     case update_engine::Operation::FINALIZING:
       if (view_)
         view_->SetUpdateState(UpdateView::UIState::kUpdateInProgress);
+      // set that critcial update applied in OOBE.
+      g_browser_process->local_state()->SetBoolean(prefs::kOobeCriticalUpdate,
+                                                   true);
       SetUpdateStatusMessage(update_info.better_update_progress,
                              update_info.total_time_left);
       // Make sure that VERIFYING and FINALIZING stages are recorded correctly.
@@ -528,7 +532,7 @@ bool UpdateScreen::CheckIfOptOutIsEnabled() {
     return false;
   auto country = system::GetCountryCodeFromTimezoneIfAvailable(
       g_browser_process->local_state()->GetString(
-          prefs::kSigninScreenTimezone));
+          ::prefs::kSigninScreenTimezone));
   if (!country.has_value()) {
     return false;
   }

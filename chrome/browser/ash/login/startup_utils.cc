@@ -104,6 +104,7 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
   registry->RegisterBooleanPref(prefs::kOobeGuestMetricsEnabled, false);
   registry->RegisterBooleanPref(prefs::kOobeGuestAcceptedTos, false);
+  registry->RegisterBooleanPref(prefs::kOobeCriticalUpdate, false);
   if (switches::IsRevenBranding()) {
     registry->RegisterBooleanPref(prefs::kOobeRevenUpdatedToFlex, false);
   }

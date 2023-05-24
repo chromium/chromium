@@ -122,6 +122,8 @@ void UpdateScreenHandler::DeclareLocalizedValues(
   builder->Add("slideUnselectedButtonLabel",
                IDS_UPDATE_UNSELECTED_BUTTON_LABEL);
 
+  builder->Add("gettingDeviceReadyTitle", IDS_GETTING_DEVICE_READY);
+
   builder->Add("updateOverCellularPromptTitle",
                IDS_UPDATE_OVER_CELLULAR_PROMPT_TITLE);
   builder->Add("updateOverCellularPromptMessage",

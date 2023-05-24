@@ -139,6 +139,9 @@ const char kOobeRevenUpdatedToFlex[] = "OobeRevenUpdatedToFlex";
 const char kOobeLocaleChangedOnWelcomeScreen[] =
     "OobeLocaleChangedOnWelcomeScreen";
 
+// A boolean pref indicate if the critical update in OOBE applied.
+const char kOobeCriticalUpdate[] = "OobeCriticalUpdate";
+
 // A string pref containing url parameter name which can be used on SAML IdP web
 // page to autofill the username field.
 const char kUrlParameterToAutofillSAMLUsername[] =

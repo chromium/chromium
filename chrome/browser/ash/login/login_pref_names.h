@@ -13,6 +13,7 @@ extern const char kOobeComplete[];
 extern const char kOobeOnboardingTime[];
 extern const char kOobeMarketingOptInScreenFinished[];
 extern const char kOobeMarketingOptInChoice[];
+extern const char kOobeCriticalUpdate[];
 // TODO(https://crbug.com/1322394): deprecate this pref once update from
 // CloudReady won't be available anymore.
 extern const char kOobeRevenUpdatedToFlex[];

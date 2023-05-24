@@ -317,6 +317,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isDisplaySizeEnabled",
                      features::IsOobeDisplaySizeEnabled());
 
+  source->AddBoolean("isOobeSoftwareUpdateEnabled",
+                     features::IsOobeSoftwareUpdateEnabled());
+
   // Configure shared resources
   AddProductLogoResources(source);
   if (ash::features::IsOobeSimonEnabled()) {
