@@ -141,6 +141,13 @@ void MetricsRenderFrameObserver::DidObserveLoadingBehavior(
     page_timing_metrics_sender_->DidObserveLoadingBehavior(behavior);
 }
 
+void MetricsRenderFrameObserver::DidObserveJavaScriptFrameworks(
+    const blink::JavaScriptFrameworkDetectionResult& result) {
+  if (page_timing_metrics_sender_) {
+    page_timing_metrics_sender_->DidObserveJavaScriptFrameworks(result);
+  }
+}
+
 void MetricsRenderFrameObserver::DidObserveSubresourceLoad(
     const blink::SubresourceLoadMetrics& subresource_load_metrics) {
   if (page_timing_metrics_sender_)

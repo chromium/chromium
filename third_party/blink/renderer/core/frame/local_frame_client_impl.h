@@ -156,6 +156,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
                                  UserInteractionType interaction_type) override;
   void DidChangeCpuTiming(base::TimeDelta) override;
   void DidObserveLoadingBehavior(LoadingBehaviorFlag) override;
+  void DidObserveJavaScriptFrameworks(
+      const JavaScriptFrameworkDetectionResult&) override;
   void DidObserveSubresourceLoad(
       const SubresourceLoadMetrics& subresource_load_metrics) override;
   void DidObserveNewFeatureUsage(const UseCounterFeature&) override;

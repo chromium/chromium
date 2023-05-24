@@ -110,6 +110,7 @@ mojom("mojom_platform") {
     "loader/code_cache.mojom",
     "loader/content_security_notifier.mojom",
     "loader/fetch_client_settings_object.mojom",
+    "loader/javascript_framework_detection.mojom",
     "loader/keep_alive_handle.mojom",
     "loader/keep_alive_handle_factory.mojom",
     "loader/mixed_content.mojom",
@@ -533,6 +534,15 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/frame/frame_owner_element_type_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.JavaScriptFrameworkDetectionResult"
+          cpp = "::blink::JavaScriptFrameworkDetectionResult"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/loader/javascript_framework_detection_mojom_traits.h" ]
     },
     {
       types = [

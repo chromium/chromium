@@ -43,6 +43,7 @@ class WebSecurityOrigin;
 class WebString;
 class WebURLRequest;
 class WebWorkerFetchContext;
+struct JavaScriptFrameworkDetectionResult;
 }  // namespace blink
 
 namespace gfx {
@@ -212,6 +213,11 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // Notification when the renderer uses a particular code path during a page
   // load. This is used for metrics collection.
   virtual void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) {}
+
+  // Notification when the renderer performed framework detection during a page
+  // load. This is used for metrics collection.
+  virtual void DidObserveJavaScriptFrameworks(
+      const blink::JavaScriptFrameworkDetectionResult&) {}
 
   // Notification when the renderer uses subresources.
   // It is called when there is a subresouce load. The reported values via

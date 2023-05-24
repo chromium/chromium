@@ -210,6 +210,7 @@ source_set("headers") {
     "link_to_text/link_to_text_mojom_traits.h",
     "loader/http_body_element_type.h",
     "loader/inter_process_time_ticks_converter.h",
+    "loader/javascript_framework_detection.h",
     "loader/loader_constants.h",
     "loader/loading_behavior_flag.h",
     "loader/mime_sniffing_throttle.h",

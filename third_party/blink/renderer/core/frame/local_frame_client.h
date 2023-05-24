@@ -116,6 +116,7 @@ class URLLoader;
 class ResourceLoadInfoNotifierWrapper;
 enum class SyncCondition;
 struct Impression;
+struct JavaScriptFrameworkDetectionResult;
 struct MobileFriendliness;
 
 namespace scheduler {
@@ -220,6 +221,10 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   // Will be called when a particular loading code path has been used. This
   // propogates renderer loading behavior to the browser process for histograms.
   virtual void DidObserveLoadingBehavior(LoadingBehaviorFlag) {}
+
+  // propagates framework detection info to the browser process for histograms.
+  virtual void DidObserveJavaScriptFrameworks(
+      const JavaScriptFrameworkDetectionResult&) {}
 
   // Will be called when a sub resource load happens.
   virtual void DidObserveSubresourceLoad(

@@ -1013,6 +1013,8 @@ void PageLoadTracker::OnMainFrameMetadataChanged() {
   for (const auto& observer : observers_) {
     observer->OnLoadingBehaviorObserved(nullptr,
                                         GetMainFrameMetadata().behavior_flags);
+    observer->OnJavaScriptFrameworksObserved(
+        nullptr, GetMainFrameMetadata().framework_detection_result);
   }
 }
 

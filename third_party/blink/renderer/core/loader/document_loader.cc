@@ -763,6 +763,14 @@ void DocumentLoader::DidObserveLoadingBehavior(LoadingBehaviorFlag behavior) {
   }
 }
 
+void DocumentLoader::DidObserveJavaScriptFrameworks(
+    const JavaScriptFrameworkDetectionResult& result) {
+  if (frame_) {
+    DCHECK_GE(state_, kCommitted);
+    GetLocalFrameClient().DidObserveJavaScriptFrameworks(result);
+  }
+}
+
 // static
 WebHistoryCommitType LoadTypeToCommitType(WebFrameLoadType type) {
   switch (type) {

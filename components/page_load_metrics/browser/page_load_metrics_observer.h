@@ -24,6 +24,10 @@
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "url/gurl.h"
 
+namespace blink {
+struct JavaScriptFrameworkDetectionResult;
+}  // namespace blink
+
 namespace page_load_metrics {
 
 // Information related to whether an associated action, such as a navigation or
@@ -182,6 +186,9 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnFirstInputInPage(const mojom::PageLoadTiming& timing) override {}
   void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
                                  int behavior_flags) override {}
+  void OnJavaScriptFrameworksObserved(
+      content::RenderFrameHost* rfh,
+      const blink::JavaScriptFrameworkDetectionResult&) override {}
   void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& features) override {}

@@ -22,6 +22,10 @@
 
 #include "url/gurl.h"
 
+namespace blink {
+struct JavaScriptFrameworkDetectionResult;
+}  // namespace blink
+
 namespace content {
 class NavigationHandle;
 class RenderFrameHost;
@@ -415,6 +419,10 @@ class PageLoadMetricsObserverInterface {
   // frame.
   virtual void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
                                          int behavior_flags) = 0;
+
+  virtual void OnJavaScriptFrameworksObserved(
+      content::RenderFrameHost* rfh,
+      const blink::JavaScriptFrameworkDetectionResult&) = 0;
 
   // Invoked when new use counter features are observed across all frames.
   virtual void OnFeaturesUsageObserved(

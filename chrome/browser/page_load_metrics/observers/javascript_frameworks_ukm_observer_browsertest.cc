@@ -27,8 +27,6 @@
 
 namespace {
 
-using UkmEntry = ukm::builders::JavascriptFrameworkPageLoad;
-
 constexpr char kGatsbyJsPageLoad[] = "GatsbyPageLoad";
 constexpr char kNextJsPageLoad[] = "NextJSPageLoad";
 constexpr char kNuxtJsPageLoad[] = "NuxtJSPageLoad";
@@ -45,7 +43,7 @@ constexpr char kShopifyPageLoad[] = "ShopifyPageLoad";
 constexpr char kSquarespacePageLoad[] = "SquarespacePageLoad";
 constexpr char kWixPageLoad[] = "WixPageLoad";
 constexpr char kWordPressPageLoad[] = "WordPressPageLoad";
-const std::vector<const char*> all_frameworks = {
+const std::vector<base::StringPiece> all_frameworks = {
     kGatsbyJsPageLoad,  kNextJsPageLoad,      kNuxtJsPageLoad,
     kSapperPageLoad,    kVuePressPageLoad,    kAngularPageLoad,
     kPreactPageLoad,    kReactPageLoad,       kSveltePageLoad,
@@ -79,11 +77,13 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
     https_test_server_->ServeFilesFromSourceDirectory("chrome/test/data");
     ASSERT_TRUE(https_test_server_->Start());
   }
-  void ExpectMetricValueForUrl(const GURL& url,
-                               const char* metric_name,
-                               const int expected_value) {
-    for (auto* entry :
-         test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName)) {
+  void ExpectMetricValueForUrl(
+      const GURL& url,
+      base::StringPiece metric_name,
+      const int expected_value,
+      base::StringPiece entry_name =
+          ukm::builders::JavascriptFrameworkPageLoad::kEntryName) {
+    for (auto* entry : test_ukm_recorder_->GetEntriesByName(entry_name)) {
       auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
       if (source && source->url() == url) {
         test_ukm_recorder_->EntryHasMetric(entry, metric_name);
@@ -92,12 +92,14 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
       }
     }
   }
-  void ExpectMetricCountForUrl(const GURL& url,
-                               const char* metric_name,
-                               const int expected_count) {
+  void ExpectMetricCountForUrl(
+      const GURL& url,
+      base::StringPiece metric_name,
+      const int expected_count,
+      base::StringPiece entry_name =
+          ukm::builders::JavascriptFrameworkPageLoad::kEntryName) {
     int count = 0;
-    for (auto* entry :
-         test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName)) {
+    for (auto* entry : test_ukm_recorder_->GetEntriesByName(entry_name)) {
       auto* source = test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
       if (source && source->url() == url &&
           test_ukm_recorder_->EntryHasMetric(entry, metric_name)) {
@@ -118,7 +120,7 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void RunSingleFrameworkDetectionTest(const std::string& test_url,
-                                       const char* framework_name) {
+                                       base::StringPiece framework_name) {
     page_load_metrics::PageLoadMetricsTestWaiter waiter(
         browser()->tab_strip_model()->GetActiveWebContents());
     waiter.AddPageExpectation(
@@ -129,6 +131,46 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
     waiter.Wait();
     CloseAllTabs();
     RunFrameworkDetection(all_frameworks, framework_name, url);
+  }
+
+  void RunSingleFrameworkVersionDetectionTest(
+      const std::string& test_url,
+      base::StringPiece framework,
+      absl::optional<std::pair<int, int>> expected_version) {
+    page_load_metrics::PageLoadMetricsTestWaiter waiter(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    waiter.AddPageExpectation(
+        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+    StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
+    GURL url = https_test_server()->GetURL(test_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    waiter.Wait();
+    CloseAllTabs();
+    ExpectMetricCountForUrl(
+        url, framework, expected_version.has_value() ? 1 : 0,
+        ukm::builders::Blink_JavaScriptFramework_Versions::kEntryName);
+    if (expected_version.has_value()) {
+      ExpectMetricValueForUrl(
+          url, framework,
+          ((expected_version.value().first & 0xff) << 8) |
+              (expected_version.value().second & 0xff),
+          ukm::builders::Blink_JavaScriptFramework_Versions::kEntryName);
+    }
+  }
+
+  void RunNoFrameworkVersionNotDetectedTest(const std::string& test_url) {
+    page_load_metrics::PageLoadMetricsTestWaiter waiter(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    waiter.AddPageExpectation(
+        page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+    StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
+    GURL url = https_test_server()->GetURL(test_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    waiter.Wait();
+    CloseAllTabs();
+    auto entries = test_ukm_recorder_->GetEntriesByName(
+        ukm::builders::Blink_JavaScriptFramework_Versions::kEntryName);
+    EXPECT_TRUE(entries.empty());
   }
 
   void RunSingleFrameworkDetectionTestForFencedFrames(
@@ -153,22 +195,23 @@ class JavascriptFrameworksUkmObserverBrowserTest : public InProcessBrowserTest {
     CloseAllTabs();
 
     // No frameworks should be detected.
-    for (const char* framework : all_frameworks) {
+    for (base::StringPiece framework : all_frameworks) {
       ExpectMetricCountForUrl(mainframe_url, framework, 1);
       ExpectMetricValueForUrl(mainframe_url, framework, false);
     }
   }
 
  private:
-  void RunFrameworkDetection(const std::vector<const char*>& frameworks,
-                             const char* framework_name,
+  void RunFrameworkDetection(const std::vector<base::StringPiece>& frameworks,
+                             base::StringPiece framework_name,
                              const GURL& url) {
-    for (const char* framework : frameworks) {
+    for (base::StringPiece framework : frameworks) {
       ExpectMetricCountForUrl(url, framework, 1);
-      if (std::strcmp(framework, framework_name) == 0)
+      if (framework.compare(framework_name) == 0) {
         ExpectMetricValueForUrl(url, framework, true);
-      else
+      } else {
         ExpectMetricValueForUrl(url, framework, false);
+      }
     }
   }
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
@@ -187,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   waiter.Wait();
   CloseAllTabs();
-  for (const char* framework : all_frameworks) {
+  for (base::StringPiece framework : all_frameworks) {
     ExpectMetricCountForUrl(url, framework, 1);
     ExpectMetricValueForUrl(url, framework, false);
   }
@@ -236,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
   waiter.Wait();
   CloseAllTabs();
   struct {
-    const char* name;
+    base::StringPiece name;
     const bool in_page;
   } expected_frameworks[] = {{kGatsbyJsPageLoad, true},
                              {kNextJsPageLoad, true},
@@ -361,4 +404,66 @@ IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
                        NoFrameworksDetectedInFencedFrame) {
   RunSingleFrameworkDetectionTestForFencedFrames(
       "/page_load_metrics/gatsby_page.html");
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       AngularVersionDetected) {
+  RunSingleFrameworkVersionDetectionTest(
+      "/page_load_metrics/framework-version-detection/angular.html",
+      "AngularVersion", std::make_pair(14, 0));
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       AngularClampedVersionDetected) {
+  RunSingleFrameworkVersionDetectionTest(
+      "/page_load_metrics/framework-version-detection/angular-clamped.html",
+      "AngularVersion", std::make_pair(300, 4000));
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       DrupalVersionDetected) {
+  RunSingleFrameworkVersionDetectionTest(
+      "/page_load_metrics/framework-version-detection/drupal.html",
+      "DrupalVersion", std::make_pair(7, 0));
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       NextJSVersionDetected) {
+  RunSingleFrameworkVersionDetectionTest(
+      "/page_load_metrics/framework-version-detection/nextjs.html",
+      "NextJSVersion", std::make_pair(13, 3));
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       Vue2VersionDetected) {
+  RunSingleFrameworkVersionDetectionTest(
+      "/page_load_metrics/framework-version-detection/vue2.html", "VueVersion",
+      std::make_pair(2, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       Vue3VersionDetected) {
+  RunSingleFrameworkVersionDetectionTest(
+      "/page_load_metrics/framework-version-detection/vue3.html", "VueVersion",
+      std::make_pair(3, 0));
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       WordPressVersionDetected) {
+  RunSingleFrameworkVersionDetectionTest(
+      "/page_load_metrics/framework-version-detection/wordpress.html",
+      "WordPressVersion", std::make_pair(6, 2));
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       NoFrameworkVersionDetected) {
+  RunNoFrameworkVersionNotDetectedTest(
+      "/page_load_metrics/framework-version-detection/not-detected.html");
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptFrameworksUkmObserverBrowserTest,
+                       NoFrameworkVersionDetectedBadValues) {
+  RunNoFrameworkVersionNotDetectedTest(
+      "/page_load_metrics/framework-version-detection/"
+      "not-detected-bad-values.html");
 }

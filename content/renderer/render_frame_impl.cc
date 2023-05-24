@@ -4354,6 +4354,13 @@ void RenderFrameImpl::DidObserveLoadingBehavior(
     observer.DidObserveLoadingBehavior(behavior);
 }
 
+void RenderFrameImpl::DidObserveJavaScriptFrameworks(
+    const blink::JavaScriptFrameworkDetectionResult& result) {
+  for (auto& observer : observers_) {
+    observer.DidObserveJavaScriptFrameworks(result);
+  }
+}
+
 void RenderFrameImpl::DidObserveSubresourceLoad(
     const blink::SubresourceLoadMetrics& subresource_load_metrics) {
   for (auto& observer : observers_)

@@ -138,6 +138,7 @@ class WebURLResponse;
 class WebView;
 struct FramePolicy;
 struct Impression;
+struct JavaScriptFrameworkDetectionResult;
 struct WebConsoleMessage;
 struct ContextMenuData;
 struct WebPictureInPictureWindowOptions;
@@ -577,6 +578,11 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Blink exhibited a certain loading behavior that the browser process will
   // use for segregated histograms.
   virtual void DidObserveLoadingBehavior(LoadingBehaviorFlag) {}
+
+  // Blink detected a JavaScript framework that the browser process will use for
+  // UKM.
+  virtual void DidObserveJavaScriptFrameworks(
+      const JavaScriptFrameworkDetectionResult&) {}
 
   // A subresource load is observed.
   // It is called when there is a subresouce load. The reported values via

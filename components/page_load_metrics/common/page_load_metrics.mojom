@@ -7,6 +7,8 @@ module page_load_metrics.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import
+  "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
@@ -228,6 +230,9 @@ struct FrameMetadata {
   // is only populated for the main frame, for the first time
   // each rectangle is initially computed and for any subsequent changes.
   map<int32, gfx.mojom.Rect> main_frame_image_ad_rects;
+
+  // Detected versions of JavaScript frameworks in the page.
+  blink.mojom.JavaScriptFrameworkDetectionResult framework_detection_result;
 };
 
 struct SubresourceLoadMetrics {
