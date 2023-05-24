@@ -8,7 +8,10 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_chromeos_ash)
 
 mojom("mojom") {
-  sources = [ "google_drive_handler.mojom" ]
+  sources = [
+    "google_drive_handler.mojom",
+    "one_drive_handler.mojom",
+  ]
 
   webui_module_path = "/"
   use_typescript_sources = true
