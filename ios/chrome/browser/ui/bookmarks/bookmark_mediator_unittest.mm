@@ -81,7 +81,7 @@ class BookmarkMediatorUnitTest
     sync_setup_service_ = std::make_unique<FakeSyncSetupService>(sync_service_);
 
     mediator_ = [[BookmarkMediator alloc]
-        initWithWithProfileBookmarkModel:profile_bookmark_model_
+        initWithWithProfileBookmarkModel:local_or_syncable_bookmark_model_
                     accountBookmarkModel:nullptr
                                    prefs:chrome_browser_state_->GetPrefs()
                    authenticationService:authentication_service_
