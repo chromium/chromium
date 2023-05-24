@@ -50,6 +50,8 @@
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #endif
 
+#include "base/record_replay.h"
+
 namespace base {
 
 void InitThreading();
@@ -386,8 +388,14 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
 #if BUILDFLAG(IS_NACL)
   NOTIMPLEMENTED();
 #else
+
+  recordreplay::Assert("[RUN-1967-2038] SetCurrentThreadTypeImpl A %d %d",
+                       thread_type, (int)pump_type_hint);
   if (internal::SetCurrentThreadTypeForPlatform(thread_type, pump_type_hint))
     return;
+
+  recordreplay::Assert("[RUN-1967-2038] SetCurrentThreadTypeImpl B %d %d",
+                       thread_type, (int)pump_type_hint);
 
   // setpriority(2) should change the whole thread group's (i.e. process)
   // priority. However, as stated in the bugs section of
