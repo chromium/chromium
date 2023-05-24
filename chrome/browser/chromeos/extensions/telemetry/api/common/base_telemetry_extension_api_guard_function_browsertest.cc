@@ -15,7 +15,6 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/content_mock_cert_verifier.h"
 #include "extensions/common/extension_features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
@@ -524,6 +523,7 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
 
   // BaseTelemetryExtensionBrowserTest:
   void SetUp() override {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     ASSERT_TRUE(https_server_.InitializeAndListen());
 
     BaseTelemetryExtensionBrowserTest::SetUp();
@@ -535,15 +535,12 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     command_line->AppendSwitchASCII(
         chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
         pwa_page_url());
-    mock_cert_verifier_.SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
     // Skip BaseTelemetryExtensionBrowserTest::SetUpOnMainThread() as it sets up
     // a FakeApiGuardDelegate instance.
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
-
-    mock_cert_verifier()->set_default_result(net::OK);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Must be initialized before dealing with UserManager.
@@ -559,8 +556,9 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     // changes will be disabled afterwards.
     host_resolver()->AddRule("*", "127.0.0.1");
   }
-  void TearDownOnMainThread() override {
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  void TearDownOnMainThread() override {
     // Explicitly removing the user is required; otherwise ProfileHelper keeps
     // a dangling pointer to the User.
     // TODO(b/208629291): Consider removing all users from ProfileHelper in the
@@ -568,28 +566,8 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
     GetFakeUserManager()->RemoveUserFromList(
         GetFakeUserManager()->GetActiveUser()->GetAccountId());
     user_manager_enabler_.reset();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-    ASSERT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
-
-    BaseTelemetryExtensionBrowserTest::TearDownOnMainThread();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    BaseTelemetryExtensionBrowserTest::SetUpInProcessBrowserTestFixture();
-
-    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
-
-    BaseTelemetryExtensionBrowserTest::TearDownInProcessBrowserTestFixture();
-  }
-
-  content::ContentMockCertVerifier::CertVerifier* mock_cert_verifier() {
-    return mock_cert_verifier_.mock_cert_verifier();
-  }
 
  protected:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -617,7 +595,6 @@ class TelemetryExtensionApiGuardRealDelegateBrowserTest
 
   FakeHardwareInfoDelegate::Factory fake_hardware_info_delegate_factory_;
   net::EmbeddedTestServer https_server_;
-  content::ContentMockCertVerifier mock_cert_verifier_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
