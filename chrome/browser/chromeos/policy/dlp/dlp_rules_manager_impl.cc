@@ -550,7 +550,7 @@ DlpRulesManagerImpl::GetAggregatedComponents(const GURL& source,
          restriction == Restriction::kFiles);
 
   std::map<Level, std::set<data_controls::Component>> result;
-  for (data_controls::Component component : components) {
+  for (data_controls::Component component : data_controls::kAllComponents) {
     std::string out_source_pattern;
     Level level = IsRestrictedComponent(source, component, restriction,
                                         &out_source_pattern, nullptr);

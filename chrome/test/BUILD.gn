@@ -9444,6 +9444,10 @@ test("unit_tests") {
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
   }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    deps += [ "../browser/enterprise/data_controls:unit_tests" ]
+  }
 }
 
 static_library("test_support_unit") {

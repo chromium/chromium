@@ -890,7 +890,7 @@ TEST_F(DlpRulesManagerImplTest, GetAggregatedComponents_NoMatch) {
   auto result = dlp_rules_manager_.GetAggregatedComponents(
       GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard);
   std::map<DlpRulesManager::Level, std::set<data_controls::Component>> expected;
-  for (auto component : DlpRulesManager::components) {
+  for (auto component : data_controls::kAllComponents) {
     expected[DlpRulesManager::Level::kAllow].insert(component);
   }
 
