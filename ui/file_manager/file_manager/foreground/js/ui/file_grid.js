@@ -745,20 +745,19 @@ export class FileGrid extends Grid {
       listItem = /** @type {!FileGrid.Item} */ (listItem);
       this.decorateThumbnailBox_(listItem, entry);
       this.updateSharedStatus_(listItem, entry);
-      const {availableOffline, pinned} =
-          this.metadataModel_.getCache(
-              [entry], ['availableOffline', 'pinned'])[0] ||
+      const metadata = this.metadataModel_.getCache(
+                           [entry],
+                           [
+                             'availableOffline',
+                             'pinned',
+                             'syncStatus',
+                             'progress',
+                           ])[0] ||
           {};
-      const inlineStatus = listItem.querySelector('.inline-status');
-      // Clear the inline status' aria label and set it to "in progress",
-      // "queued", or "available offline" with the respective order of
-      // precedence if applicable.
-      inlineStatus.removeAttribute('aria-label');
-      listItem.classList.toggle('dim-offline', availableOffline === false);
-      listItem.classList.toggle('pinned', pinned);
-      inlineStatus.setAttribute(
-          'aria-label', pinned ? str('OFFLINE_COLUMN_LABEL') : '');
-      this.updateInlineSyncStatus_(listItem, entry);
+      listItem.classList.toggle(
+          'dim-offline', metadata.availableOffline === false);
+      listItem.classList.toggle('pinned', metadata.pinned);
+      filelist.updateInlineStatus(listItem, metadata);
       listItem.toggleAttribute(
           'disabled',
           filelist.isDlpBlocked(
@@ -811,11 +810,18 @@ export class FileGrid extends Grid {
     const bottom = li.ownerDocument.createElement('div');
     bottom.className = 'thumbnail-bottom';
 
-    const {contentMimeType, availableOffline, pinned, canPin} =
-        this.metadataModel_.getCache(
-            [entry],
-            ['contentMimeType', 'availableOffline', 'pinned', 'canPin'])[0] ||
+    const metadata = this.metadataModel_.getCache(
+                         [entry],
+                         [
+                           'contentMimeType',
+                           'availableOffline',
+                           'pinned',
+                           'canPin',
+                           'syncStatus',
+                           'progress',
+                         ])[0] ||
         {};
+    const {contentMimeType, availableOffline, pinned, canPin} = metadata;
 
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const detailIcon = filelist.renderFileTypeIcon(
@@ -870,7 +876,7 @@ export class FileGrid extends Grid {
       this.decorateThumbnailBox_(assertInstanceof(li, HTMLLIElement), entry);
     }
     this.updateSharedStatus_(li, entry);
-    this.updateInlineSyncStatus_(li, entry);
+    filelist.updateInlineStatus(li, metadata);
   }
 
   /**
@@ -930,52 +936,6 @@ export class FileGrid extends Grid {
     if (icon) {
       icon.classList.toggle('shared', shared);
     }
-  }
-
-  /**
-   * Update sync status icon for file or directory entry.
-   * @param {!HTMLLIElement} li The grid item.
-   * @param {!Entry} entry File entry for the grid item.
-   * @private
-   */
-  updateInlineSyncStatus_(li, entry) {
-    if (!util.isInlineSyncStatusEnabled()) {
-      return;
-    }
-
-    const metadata =
-        this.metadataModel_.getCache([entry], ['syncStatus', 'progress'])[0];
-
-    if (!metadata) {
-      return;
-    }
-
-    const {syncStatus} = metadata;
-    let progress = metadata.progress ?? 0;
-    const inlineStatus = li.querySelector('.inline-status');
-
-    if (!syncStatus || !inlineStatus) {
-      return;
-    }
-
-    switch (syncStatus) {
-      case chrome.fileManagerPrivate.SyncStatus.QUEUED:
-      case chrome.fileManagerPrivate.SyncStatus.ERROR:
-        progress = 0;
-        inlineStatus.setAttribute('aria-label', str('QUEUED_LABEL'));
-        break;
-      case chrome.fileManagerPrivate.SyncStatus.IN_PROGRESS:
-        inlineStatus.setAttribute(
-            'aria-label',
-            `${str('IN_PROGRESS_LABEL')} - ${(progress * 100).toFixed(0)}%`);
-        break;
-      default:
-        break;
-    }
-
-    li.setAttribute('data-sync-status', syncStatus);
-    inlineStatus.querySelector('.progress')
-        .setAttribute('progress', progress.toFixed(2));
   }
 
   /**

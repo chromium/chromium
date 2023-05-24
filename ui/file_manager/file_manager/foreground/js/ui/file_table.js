@@ -1033,6 +1033,7 @@ export class FileTable extends Table {
                   'pinned',
                   'syncStatus',
                   'progress',
+                  'syncCompletedTime',
                   'shortcut',
                   'canPin',
                 ])[0],
