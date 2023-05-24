@@ -76,7 +76,7 @@ export class XfBulkPinningDialog extends XfBase {
       this.requiredBytes_ = bpp.requiredSpaceBytes;
       this.$readyFooter_.innerText = strf(
           'BULK_PINNING_SPACE', util.bytesToString(this.requiredBytes_),
-          util.bytesToString(this.freeBytes_ - this.requiredBytes_));
+          util.bytesToString(this.freeBytes_));
     }
 
     if (bpp.stage === this.stage_) {
