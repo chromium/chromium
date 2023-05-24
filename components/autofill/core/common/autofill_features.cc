@@ -224,7 +224,7 @@ BASE_FEATURE(kAutofillEnableDependentLocalityParsing,
 // Controls if Autofill emits form issues to devtools.
 BASE_FEATURE(kAutofillEnableDevtoolsIssues,
              "AutofillEnableDevtoolsIssues",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a couple of improvements to credit card expiration date handling:
 // - The autocomplete attribute values are rationalized with format strings
