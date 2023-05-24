@@ -537,7 +537,8 @@
       },
       'linux-code-coverage': {
         'args': [
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',
+          '--additional-driver-flag=--no-sandbox',
+          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%9m.profraw',
         ],
         'swarming': {
           'shards': 8,
@@ -881,11 +882,9 @@
       },
       'linux-code-coverage': {
         'args': [
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',
+          '--additional-driver-flag=--no-sandbox',
+          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%9m.profraw',
         ],
-        'swarming': {
-          'shards': 12,
-        },
       },
       'linux-layout-tests-edit-ng': {
         'args': [
@@ -3226,7 +3225,8 @@
       },
       'linux-code-coverage': {
         'args': [
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',
+          '--additional-driver-flag=--no-sandbox',
+          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%9m.profraw',
         ],
         'swarming': {
           'shards': 20,
