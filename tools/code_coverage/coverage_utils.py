@@ -451,6 +451,9 @@ class CoverageReportPostProcessor(object):
     totals_coverage_summary = CoverageSummary()
 
     for file_path in per_file_coverage_summary:
+      if not os.path.isfile(self._MapToLocal(file_path)):
+        logging.warning('%s is not a file.', file_path)
+        continue
       totals_coverage_summary.AddSummary(per_file_coverage_summary[file_path])
       html_generator.AddLinkToAnotherReport(
           self.GetCoverageHtmlReportPathForFile(file_path),
