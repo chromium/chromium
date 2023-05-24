@@ -7472,8 +7472,8 @@
   },
   {
     "name": "use-dmsaa-for-tiles",
-    "owners": [ "vasilyt" ],
-    "expiry_milestone": 115
+    "owners": [ "vasilyt", "vikassoni" ],
+    "expiry_milestone": 125
   },
   {
     "name": "use-dns-https-svcb-alpn",
