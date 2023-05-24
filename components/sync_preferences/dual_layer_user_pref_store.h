@@ -120,8 +120,8 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
 
   bool IsInitializationSuccessful() const;
 
-  // Returns whether the pref with the given `key` is registered as syncable.
-  bool IsPrefKeySyncable(const std::string& key) const;
+  // Returns whether the pref with the given `key` should be synced.
+  bool ShouldSyncPref(const std::string& key) const;
 
   // Returns whether the pref with the given `key` is mergeable.
   // TODO(crbug.com/1416479): This does not cover prefs with custom merge logic
