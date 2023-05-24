@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "content/browser/serial/serial_test_utils.h"
 #include "content/public/common/content_client.h"
@@ -15,6 +16,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -22,6 +24,7 @@
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/serial/serial.mojom-blink.h"
 #include "url/origin.h"
 
 namespace content {
@@ -30,6 +33,7 @@ namespace {
 
 using ::base::test::TestFuture;
 using ::testing::_;
+using ::testing::Invoke;
 using ::testing::Return;
 
 const char kTestUrl[] = "https://www.google.com";
@@ -99,6 +103,83 @@ class SerialTest : public RenderViewHostImplTestHarness {
 };
 
 }  // namespace
+
+TEST_F(SerialTest, GetPortsForAllDeviceTypes) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  mojo::Remote<blink::mojom::SerialService> service;
+  contents()->GetPrimaryMainFrame()->BindSerialService(
+      service.BindNewPipeAndPassReceiver());
+
+  MockSerialServiceClient client;
+  service->SetClient(client.BindNewPipeAndPassRemote());
+  service.FlushForTesting();
+
+  // Platform Serial port
+  auto platform_token = base::UnguessableToken::Create();
+  auto platform_port_info = device::mojom::SerialPortInfo::New();
+  platform_port_info->token = platform_token;
+  port_manager()->AddPort(std::move(platform_port_info));
+
+  // USB Serial port
+  auto usb_token = base::UnguessableToken::Create();
+  auto usb_port_info = device::mojom::SerialPortInfo::New();
+  usb_port_info->token = usb_token;
+  usb_port_info->has_vendor_id = true;
+  usb_port_info->vendor_id = 0x1111;
+  usb_port_info->has_product_id = true;
+  usb_port_info->product_id = 0x2222;
+  port_manager()->AddPort(std::move(usb_port_info));
+
+  // Bluetooth Serial port
+  const device::BluetoothUUID kServiceClassId(
+      "ac822b69-d7e9-4bab-8fa6-ce40c87e1ac4");
+  auto bluetooth_token = base::UnguessableToken::Create();
+  auto bluetooth_port_info = device::mojom::SerialPortInfo::New();
+  bluetooth_port_info->token = bluetooth_token;
+  bluetooth_port_info->bluetooth_service_class_id = kServiceClassId;
+  port_manager()->AddPort(std::move(bluetooth_port_info));
+
+  EXPECT_CALL(delegate(), HasPortPermission(_, _))
+      .Times(3)
+      .WillRepeatedly(Return(true));
+  TestFuture<std::vector<blink::mojom::SerialPortInfoPtr>> future;
+  service->GetPorts(future.GetCallback());
+
+  auto ports = future.Take();
+  // Assert as we need to access all three ports.
+  ASSERT_EQ(ports.size(), 3u);
+  // Ports are not in any particular order so we will loop through and check
+  // according to the token.
+  bool has_platform = false;
+  bool has_usb = false;
+  bool has_bluetooth = false;
+  for (const auto& port : ports) {
+    if (port->token == platform_token) {
+      has_platform = true;
+      EXPECT_EQ(port->has_usb_vendor_id, false);
+      EXPECT_EQ(port->has_usb_product_id, false);
+      EXPECT_FALSE(port->bluetooth_service_class_id.has_value());
+    } else if (port->token == usb_token) {
+      has_usb = true;
+      EXPECT_EQ(port->has_usb_vendor_id, true);
+      EXPECT_EQ(port->usb_vendor_id, 0x1111);
+      EXPECT_EQ(port->has_usb_product_id, true);
+      EXPECT_EQ(port->usb_product_id, 0x2222);
+      EXPECT_FALSE(port->bluetooth_service_class_id.has_value());
+    } else if (port->token == bluetooth_token) {
+      has_bluetooth = true;
+      EXPECT_EQ(port->has_usb_vendor_id, false);
+      EXPECT_EQ(port->has_usb_product_id, false);
+      EXPECT_EQ(port->bluetooth_service_class_id, kServiceClassId);
+    } else {
+      ADD_FAILURE() << "Unexpected port token: " << port->token;
+    }
+  }
+  EXPECT_TRUE(has_platform);
+  EXPECT_TRUE(has_usb);
+  EXPECT_TRUE(has_bluetooth);
+}
 
 TEST_F(SerialTest, OpenAndClosePort) {
   NavigateAndCommit(GURL(kTestUrl));

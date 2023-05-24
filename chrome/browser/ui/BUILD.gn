@@ -736,6 +736,7 @@ static_library("ui") {
     "//printing/buildflags",
     "//rlz/buildflags",
     "//services/device/public/cpp:device_features",
+    "//services/device/public/cpp/bluetooth",
     "//services/device/public/cpp/geolocation",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/mojom",

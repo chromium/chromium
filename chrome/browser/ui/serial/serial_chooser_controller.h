@@ -31,12 +31,15 @@ class SerialChooserController final
   SerialChooserController(
       content::RenderFrameHost* render_frame_host,
       std::vector<blink::mojom::SerialPortFilterPtr> filters,
+      std::vector<::device::BluetoothUUID> allowed_bluetooth_service_class_ids,
       content::SerialChooser::Callback callback);
 
   SerialChooserController(const SerialChooserController&) = delete;
   SerialChooserController& operator=(const SerialChooserController&) = delete;
 
   ~SerialChooserController() override;
+
+  const device::mojom::SerialPortInfo& GetPortForTest(size_t index) const;
 
   // permissions::ChooserController:
   bool ShouldShowHelpButton() const override;
@@ -64,8 +67,10 @@ class SerialChooserController final
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message) const;
   void RunCallback(device::mojom::SerialPortInfoPtr port);
+  bool DisplayServiceClassId(const device::mojom::SerialPortInfo& port) const;
 
   std::vector<blink::mojom::SerialPortFilterPtr> filters_;
+  std::vector<::device::BluetoothUUID> allowed_bluetooth_service_class_ids_;
   content::SerialChooser::Callback callback_;
   content::WeakDocumentPtr initiator_document_;
   url::Origin origin_;

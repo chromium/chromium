@@ -19,4 +19,26 @@ blink_modules_sources("serial") {
     "serial_port_underlying_source.cc",
     "serial_port_underlying_source.h",
   ]
+  deps = [ "//third_party/blink/renderer/modules/bluetooth" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "serial_unittest.cc" ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
 }

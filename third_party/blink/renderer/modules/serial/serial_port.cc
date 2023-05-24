@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_input_signals.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_output_signals.h"
@@ -127,6 +128,12 @@ SerialPortInfo* SerialPort::getInfo() {
     info->setUsbVendorId(info_->usb_vendor_id);
   if (info_->has_usb_product_id)
     info->setUsbProductId(info_->usb_product_id);
+  if (RuntimeEnabledFeatures::WebSerialBluetoothEnabled() &&
+      info_->bluetooth_service_class_id) {
+    info->setBluetoothServiceClassId(
+        MakeGarbageCollected<V8UnionStringOrUnsignedLong>(
+            info_->bluetooth_service_class_id->uuid));
+  }
   return info;
 }
 

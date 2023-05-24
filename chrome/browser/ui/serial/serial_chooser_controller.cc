@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -21,15 +22,61 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
+#include "services/device/public/mojom/serial.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+using ::device::mojom::SerialPortType;
+
+bool FilterMatchesPort(const blink::mojom::SerialPortFilter& filter,
+                       const device::mojom::SerialPortInfo& port) {
+  if (filter.bluetooth_service_class_id) {
+    if (!port.bluetooth_service_class_id) {
+      return false;
+    }
+    return device::BluetoothUUID(*port.bluetooth_service_class_id) ==
+           device::BluetoothUUID(*filter.bluetooth_service_class_id);
+  }
+  if (!filter.has_vendor_id) {
+    return true;
+  }
+  if (!port.has_vendor_id || port.vendor_id != filter.vendor_id) {
+    return false;
+  }
+  if (!filter.has_product_id) {
+    return true;
+  }
+  return port.has_product_id && port.product_id == filter.product_id;
+}
+
+bool BluetoothPortIsAllowed(
+    const std::vector<::device::BluetoothUUID>& allowed_ids,
+    const device::mojom::SerialPortInfo& port) {
+  if (!port.bluetooth_service_class_id) {
+    return true;
+  }
+  // Serial Port Profile is allowed by default.
+  if (*port.bluetooth_service_class_id == device::GetSerialPortProfileUUID()) {
+    return true;
+  }
+  return base::Contains(allowed_ids, port.bluetooth_service_class_id.value());
+}
+
+}  // namespace
 
 SerialChooserController::SerialChooserController(
     content::RenderFrameHost* render_frame_host,
     std::vector<blink::mojom::SerialPortFilterPtr> filters,
+    std::vector<::device::BluetoothUUID> allowed_bluetooth_service_class_ids,
     content::SerialChooser::Callback callback)
     : ChooserController(CreateChooserTitle(render_frame_host,
                                            IDS_SERIAL_PORT_CHOOSER_PROMPT)),
       filters_(std::move(filters)),
+      allowed_bluetooth_service_class_ids_(
+          std::move(allowed_bluetooth_service_class_ids)),
       callback_(std::move(callback)),
       initiator_document_(render_frame_host->GetWeakDocumentPtr()) {
   origin_ = render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
@@ -48,6 +95,12 @@ SerialChooserController::SerialChooserController(
 SerialChooserController::~SerialChooserController() {
   if (callback_)
     RunCallback(/*port=*/nullptr);
+}
+
+const device::mojom::SerialPortInfo& SerialChooserController::GetPortForTest(
+    size_t index) const {
+  CHECK_LT(index, ports_.size());
+  return *ports_[index];
 }
 
 bool SerialChooserController::ShouldShowHelpButton() const {
@@ -73,6 +126,22 @@ size_t SerialChooserController::NumOptions() const {
   return ports_.size();
 }
 
+// Does the Bluetooth service class ID need to be displayed along with the
+// display name for the provided `port`? The goal is to display the shortest
+// name necessary to identify the port. When two (or more) ports from the same
+// device are selected, the service class ID is added to disambiguate the two
+// ports.
+bool SerialChooserController::DisplayServiceClassId(
+    const device::mojom::SerialPortInfo& port) const {
+  CHECK_EQ(port.type, device::mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM);
+  return base::ranges::any_of(
+      ports_, [&port](const device::mojom::SerialPortInfoPtr& p) {
+        return p->token != port.token &&
+               p->type == SerialPortType::BLUETOOTH_CLASSIC_RFCOMM &&
+               p->path == port.path;
+      });
+}
+
 std::u16string SerialChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, ports_.size());
   const device::mojom::SerialPortInfo& port = *ports_[index];
@@ -82,13 +151,27 @@ std::u16string SerialChooserController::GetOption(size_t index) const {
   // serial port and to differentiate between ports with similar display names.
   std::u16string display_path = port.path.BaseName().LossyDisplayName();
 
-  if (port.display_name && !port.display_name->empty()) {
-    return l10n_util::GetStringFUTF16(IDS_SERIAL_PORT_CHOOSER_NAME_WITH_PATH,
-                                      base::UTF8ToUTF16(*port.display_name),
+  if (!port.display_name || port.display_name->empty()) {
+    return l10n_util::GetStringFUTF16(IDS_SERIAL_PORT_CHOOSER_PATH_ONLY,
                                       display_path);
   }
 
-  return l10n_util::GetStringFUTF16(IDS_SERIAL_PORT_CHOOSER_PATH_ONLY,
+  if (port.type == device::mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM) {
+    if (DisplayServiceClassId(port)) {
+      // Using UUID in place of path is identical for translation purposes
+      // so using IDS_SERIAL_PORT_CHOOSER_NAME_WITH_PATH is ok.
+      device::BluetoothUUID device_uuid(*port.bluetooth_service_class_id);
+      return l10n_util::GetStringFUTF16(
+          IDS_SERIAL_PORT_CHOOSER_NAME_WITH_PATH,
+          base::UTF8ToUTF16(*port.display_name),
+          base::UTF8ToUTF16(device_uuid.canonical_value()));
+    }
+    return l10n_util::GetStringFUTF16(IDS_SERIAL_PORT_CHOOSER_PATH_ONLY,
+                                      base::UTF8ToUTF16(*port.display_name));
+  }
+
+  return l10n_util::GetStringFUTF16(IDS_SERIAL_PORT_CHOOSER_NAME_WITH_PATH,
+                                    base::UTF8ToUTF16(*port.display_name),
                                     display_path);
 }
 
@@ -178,6 +261,7 @@ void SerialChooserController::OnGetDevices(
 
 bool SerialChooserController::DisplayDevice(
     const device::mojom::SerialPortInfo& port) const {
+  // TODO(b/276945831): Extend this to include protected Bluetooth services.
   if (SerialBlocklist::Get().IsExcluded(port)) {
     DCHECK(port.has_vendor_id && port.has_product_id);
     AddMessageToConsole(
@@ -192,19 +276,15 @@ bool SerialChooserController::DisplayDevice(
     return false;
   }
 
-  if (filters_.empty())
-    return true;
+  if (filters_.empty()) {
+    return BluetoothPortIsAllowed(allowed_bluetooth_service_class_ids_, port);
+  }
 
   for (const auto& filter : filters_) {
-    if (filter->has_vendor_id &&
-        (!port.has_vendor_id || filter->vendor_id != port.vendor_id)) {
-      continue;
+    if (FilterMatchesPort(*filter, port) &&
+        BluetoothPortIsAllowed(allowed_bluetooth_service_class_ids_, port)) {
+      return true;
     }
-    if (filter->has_product_id &&
-        (!port.has_product_id || filter->product_id != port.product_id)) {
-      continue;
-    }
-    return true;
   }
 
   return false;

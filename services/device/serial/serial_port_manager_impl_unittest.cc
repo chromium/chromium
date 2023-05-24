@@ -381,7 +381,8 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
         .WillOnce(Invoke([&](mojom::SerialPortInfoPtr port) {
           EXPECT_EQ(port1_token, port->token);
           EXPECT_EQ(port->path, base::FilePath::FromASCII(kDeviceAddress));
-          EXPECT_EQ(mojom::DeviceType::SPP_DEVICE, port->type);
+          EXPECT_EQ(mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM,
+                    port->type);
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -401,7 +402,8 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
         .WillOnce(Invoke([&](mojom::SerialPortInfoPtr port) {
           EXPECT_NE(port1_token, port->token);
           EXPECT_EQ(port->path, base::FilePath::FromASCII(kDeviceAddress));
-          EXPECT_EQ(mojom::DeviceType::SPP_DEVICE, port->type);
+          EXPECT_EQ(mojom::SerialPortType::BLUETOOTH_CLASSIC_RFCOMM,
+                    port->type);
           run_loop.Quit();
         }));
     run_loop.Run();

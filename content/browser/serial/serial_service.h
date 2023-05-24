@@ -41,6 +41,8 @@ class SerialService : public blink::mojom::SerialService,
       mojo::PendingRemote<blink::mojom::SerialServiceClient> client) override;
   void GetPorts(GetPortsCallback callback) override;
   void RequestPort(std::vector<blink::mojom::SerialPortFilterPtr> filters,
+                   const std::vector<::device::BluetoothUUID>&
+                       allowed_bluetooth_service_class_ids,
                    RequestPortCallback callback) override;
   void OpenPort(const base::UnguessableToken& token,
                 device::mojom::SerialConnectionOptionsPtr options,

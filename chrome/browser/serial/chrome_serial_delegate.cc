@@ -31,10 +31,13 @@ ChromeSerialDelegate::~ChromeSerialDelegate() = default;
 std::unique_ptr<content::SerialChooser> ChromeSerialDelegate::RunChooser(
     content::RenderFrameHost* frame,
     std::vector<blink::mojom::SerialPortFilterPtr> filters,
+    std::vector<device::BluetoothUUID> allowed_bluetooth_service_class_ids,
     content::SerialChooser::Callback callback) {
   return std::make_unique<SerialChooser>(chrome::ShowDeviceChooserDialog(
       frame, std::make_unique<SerialChooserController>(
-                 frame, std::move(filters), std::move(callback))));
+                 frame, std::move(filters),
+                 std::move(allowed_bluetooth_service_class_ids),
+                 std::move(callback))));
 }
 
 bool ChromeSerialDelegate::CanRequestPortPermission(

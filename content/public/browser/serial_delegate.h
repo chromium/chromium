@@ -44,6 +44,7 @@ class CONTENT_EXPORT SerialDelegate {
   virtual std::unique_ptr<SerialChooser> RunChooser(
       RenderFrameHost* frame,
       std::vector<blink::mojom::SerialPortFilterPtr> filters,
+      std::vector<device::BluetoothUUID> allowed_bluetooth_service_class_ids,
       SerialChooser::Callback callback) = 0;
 
   // Returns whether |frame| has permission to request access to a port.

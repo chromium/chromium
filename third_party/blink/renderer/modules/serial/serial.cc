@@ -10,6 +10,7 @@
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/serial/serial.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_port_filter.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/modules/bluetooth/bluetooth_uuid.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -151,6 +153,53 @@ ScriptPromise Serial::getPorts(ScriptState* script_state,
   return resolver->Promise();
 }
 
+// static
+mojom::blink::SerialPortFilterPtr Serial::CreateMojoFilter(
+    const SerialPortFilter* filter,
+    ExceptionState& exception_state) {
+  auto mojo_filter = mojom::blink::SerialPortFilter::New();
+
+  if (filter->hasBluetoothServiceClassId()) {
+    if (filter->hasUsbVendorId() || filter->hasUsbProductId()) {
+      exception_state.ThrowTypeError(
+          "A filter cannot specify both bluetoothServiceClassId and "
+          "usbVendorId or usbProductId.");
+      return nullptr;
+    }
+    mojo_filter->bluetooth_service_class_id =
+        ::bluetooth::mojom::blink::UUID::New(
+            GetBluetoothUUIDFromV8Value(filter->bluetoothServiceClassId()));
+    if (mojo_filter->bluetooth_service_class_id->uuid.empty()) {
+      exception_state.ThrowTypeError(
+          "Invalid Bluetooth service class ID filter value.");
+      return nullptr;
+    }
+    return mojo_filter;
+  }
+
+  mojo_filter->has_product_id = filter->hasUsbProductId();
+  mojo_filter->has_vendor_id = filter->hasUsbVendorId();
+  if (mojo_filter->has_product_id) {
+    if (!mojo_filter->has_vendor_id) {
+      exception_state.ThrowTypeError(
+          "A filter containing a usbProductId must also specify a "
+          "usbVendorId.");
+      return nullptr;
+    }
+    mojo_filter->product_id = filter->usbProductId();
+  }
+
+  if (mojo_filter->has_vendor_id) {
+    mojo_filter->vendor_id = filter->usbVendorId();
+  } else {
+    exception_state.ThrowTypeError(
+        "A filter must provide a property to filter by.");
+    return nullptr;
+  }
+
+  return mojo_filter;
+}
+
 ScriptPromise Serial::requestPort(ScriptState* script_state,
                                   const SerialPortRequestOptions* options,
                                   ExceptionState& exception_state) {
@@ -168,29 +217,24 @@ ScriptPromise Serial::requestPort(ScriptState* script_state,
   Vector<mojom::blink::SerialPortFilterPtr> filters;
   if (options && options->hasFilters()) {
     for (const auto& filter : options->filters()) {
-      auto mojo_filter = mojom::blink::SerialPortFilter::New();
-
-      mojo_filter->has_vendor_id = filter->hasUsbVendorId();
-      if (mojo_filter->has_vendor_id) {
-        mojo_filter->vendor_id = filter->usbVendorId();
-      } else {
-        exception_state.ThrowTypeError(
-            "A filter must provide a property to filter by.");
+      auto mojo_filter = CreateMojoFilter(filter, exception_state);
+      if (!mojo_filter) {
+        CHECK(exception_state.HadException());
         return ScriptPromise();
       }
 
-      mojo_filter->has_product_id = filter->hasUsbProductId();
-      if (mojo_filter->has_product_id) {
-        if (!mojo_filter->has_vendor_id) {
-          exception_state.ThrowTypeError(
-              "A filter containing a usbProductId must also specify a "
-              "usbVendorId.");
-          return ScriptPromise();
-        }
-        mojo_filter->product_id = filter->usbProductId();
-      }
-
+      CHECK(!exception_state.HadException());
       filters.push_back(std::move(mojo_filter));
+    }
+  }
+
+  Vector<::bluetooth::mojom::blink::UUIDPtr>
+      allowed_bluetooth_service_class_ids;
+  if (options && options->hasAllowedBluetoothServiceClassIds()) {
+    for (const auto& id : options->allowedBluetoothServiceClassIds()) {
+      allowed_bluetooth_service_class_ids.push_back(
+          ::bluetooth::mojom::blink::UUID::New(
+              GetBluetoothUUIDFromV8Value(id)));
     }
   }
 
@@ -200,6 +244,7 @@ ScriptPromise Serial::requestPort(ScriptState* script_state,
 
   EnsureServiceConnection();
   service_->RequestPort(std::move(filters),
+                        std::move(allowed_bluetooth_service_class_ids),
                         resolver->WrapCallbackInScriptScope(WTF::BindOnce(
                             &Serial::OnRequestPort, WrapPersistent(this))));
 

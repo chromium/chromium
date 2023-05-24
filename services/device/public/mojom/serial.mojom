@@ -4,6 +4,7 @@
 
 module device.mojom;
 
+import "device/bluetooth/public/mojom/uuid.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
@@ -11,9 +12,8 @@ struct SerialPortInfo {
   mojo_base.mojom.UnguessableToken token;
   mojo_base.mojom.FilePath path;
 
-  // This member is used to identify whether the SerialPortInfo object is
-  // converted from a Bluetooth serial device.
-  DeviceType type = PLATFORM_SERIAL;
+  // The backend implementation for the serial port.
+  SerialPortType type = PLATFORM_SERIAL;
 
   // On macOS a serial device may have two paths, one for the call-out device
   // and one for the dial-in device. The call-out device is preferred. If
@@ -35,8 +35,14 @@ struct SerialPortInfo {
   uint16 product_id;
   bool has_product_id = false;
 
+  // The Bluetooth service class ID of the port if the port is from a Bluetooth
+  // device. It is a 128-bit canonical UUID.
+  bluetooth.mojom.UUID? bluetooth_service_class_id;
+
   // A string suitable for display to the user for describing this device. May
   // be, for example, the USB device product name string.
+  // If no display_name is provided, the path will be displayed to the user
+  // instead.
   string? display_name;
 
   // The USB device serial number.
@@ -95,11 +101,11 @@ enum SerialPortFlushMode {
   kTransmit,
 };
 
-enum DeviceType {
-  // The SerialPortInfo object is created from a serial device.
+enum SerialPortType {
+  // The serial port is implemented using the platform's serial device API.
   PLATFORM_SERIAL,
-  // The SerialPortInfo object is created from a Bluetooth SPP device.
-  SPP_DEVICE,
+  // The serial port is implemented using the Bluetooth classic RFCOMM protocol.
+  BLUETOOTH_CLASSIC_RFCOMM,
 };
 
 struct SerialConnectionOptions {

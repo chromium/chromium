@@ -436,6 +436,7 @@ source_set("unit_tests") {
     "animationworklet/worklet_animation_test.cc",
     "background_fetch/background_fetch_icon_loader_test.cc",
     "background_fetch/background_fetch_manager_test.cc",
+    "bluetooth/bluetooth_uuid_unittest.cc",
     "broadcastchannel/broadcast_channel_unittest.cc",
     "cache_storage/cache_test.cc",
     "canvas/canvas2d/base_rendering_context_2d_test.cc",
@@ -714,7 +715,10 @@ source_set("unit_tests") {
   # current_os="linux" and target_os="android". Using target_os is necessary as
   # we need to compile in the same way as would happen when current_os="android".
   if (target_os != "android") {
-    deps += [ "//third_party/blink/renderer/modules/direct_sockets:unit_tests" ]
+    deps += [
+      "//third_party/blink/renderer/modules/direct_sockets:unit_tests",
+      "//third_party/blink/renderer/modules/serial:unit_tests",
+    ]
   }
 
   data_deps = [

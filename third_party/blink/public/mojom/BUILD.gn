@@ -275,6 +275,7 @@ mojom("mojom_platform") {
     "//components/payments/mojom",
     "//components/schema_org/common:mojom",
     "//components/services/filesystem/public/mojom",
+    "//device/bluetooth/public/mojom",
     "//mojo/public/mojom/base",
     "//services/device/public/mojom",
     "//services/network/public/mojom",

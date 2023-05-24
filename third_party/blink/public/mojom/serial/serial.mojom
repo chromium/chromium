@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "device/bluetooth/public/mojom/uuid.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/device/public/mojom/serial.mojom";
 
@@ -16,6 +17,9 @@ struct SerialPortInfo {
   bool has_usb_vendor_id = false;
   uint16 usb_product_id;
   bool has_usb_product_id = false;
+
+  // Bluetooth service class UUID if the port is from a Bluetooth device.
+  bluetooth.mojom.UUID? bluetooth_service_class_id;
 };
 
 struct SerialPortFilter {
@@ -24,6 +28,9 @@ struct SerialPortFilter {
   bool has_vendor_id;
   uint16 product_id;
   bool has_product_id;
+
+  // Bluetooth service class UUID.
+  bluetooth.mojom.UUID? bluetooth_service_class_id;
 };
 
 // This interface must be provided by the browser process in order for the
@@ -37,7 +44,9 @@ interface SerialService {
   GetPorts() => (array<SerialPortInfo> ports);
 
   // Requests permission to access a port.
-  RequestPort(array<SerialPortFilter> filters) => (SerialPortInfo? port);
+  RequestPort(array<SerialPortFilter> filters,
+              array<bluetooth.mojom.UUID> allowed_bluetooth_service_class_ids)
+      => (SerialPortInfo? port);
 
   // Opens the port represented by |token| using |options| and returns a
   // connection to it in |port|.

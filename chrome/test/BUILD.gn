@@ -7631,6 +7631,7 @@ test("unit_tests") {
       "//components/user_notes:features",
       "//components/user_notes/browser",
       "//components/user_notes/interfaces",
+      "//services/device/public/cpp/bluetooth",
       "//services/metrics/public/cpp:ukm_builders",
       "//services/network:test_support",
       "//third_party/libaddressinput",
