@@ -1261,17 +1261,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form1, password_form2}).Wait());
 }
 
-// Flakily failing on Mac: https://crbug.com/1447428
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown \
-  DISABLED_ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown
-#else
-#define MAYBE_ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown \
-  ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown
-#endif
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithWebApiTest,
-    MAYBE_ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown) {
+    ShoudRecordTrustedVaultErrorShownOnStartupWhenErrorShown) {
   // 4 days is an arbitrary value between 3 days and 7 days to allow testing
   // histogram suffixes.
   const base::Time migration_time = base::Time::Now() - base::Days(4);
@@ -1292,7 +1284,12 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  ASSERT_TRUE(SetupSync());
+  // TODO(crbug.com/1448448): SetupSync(WAIT_FOR_COMMITS_TO_COMPLETE) (e.g. with
+  // default argument) causes test flakiness here due to unrelated issue in
+  // SharingService. From this test perspective it doesn't matter whether to use
+  // WAIT_FOR_COMMITS_TO_COMPLETE or WAIT_FOR_SYNC_SETUP_TO_COMPLETE, but it
+  // would be nice to use default argument once the issue is resolved.
+  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
 
   ASSERT_TRUE(GetSyncService(0)
                   ->GetUserSettings()
