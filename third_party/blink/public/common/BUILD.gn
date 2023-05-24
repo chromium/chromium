@@ -299,6 +299,7 @@ source_set("headers") {
     "security/security_style.h",
     "security_context/insecure_request_policy.h",
     "service_worker/service_worker_loader_helpers.h",
+    "service_worker/service_worker_router_rule.h",
     "service_worker/service_worker_scope_match.h",
     "service_worker/service_worker_status_code.h",
     "service_worker/service_worker_subresource_load_metrics.h",
