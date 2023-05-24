@@ -1553,10 +1553,11 @@ bool AutofillTable::RemoveAutofillProfile(
 
 bool AutofillTable::RemoveAllAutofillProfiles(
     AutofillProfile::Source profile_source) {
-  DCHECK(profile_source == AutofillProfile::Source::kAccount);
   sql::Transaction transaction(db_);
-  return transaction.Begin() && Delete(db_, kContactInfoTable) &&
-         Delete(db_, kContactInfoTypeTokensTable) && transaction.Commit();
+  return transaction.Begin() &&
+         Delete(db_, GetProfileMetadataTable(profile_source)) &&
+         Delete(db_, GetProfileTypeTokensTable(profile_source)) &&
+         transaction.Commit();
 }
 
 std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
@@ -2666,7 +2667,7 @@ bool AutofillTable::ClearAllLocalData() {
   if (!transaction.Begin())
     return false;  // Some error, nothing was changed.
 
-  ClearAutofillProfiles();
+  RemoveAllAutofillProfiles(AutofillProfile::Source::kLocalOrSyncable);
   bool changed = db_->GetLastChangeCount() > 0;
   ClearCreditCards();
   changed |= db_->GetLastChangeCount() > 0;
@@ -2780,11 +2781,6 @@ bool AutofillTable::RemoveOriginURLsModifiedBetween(
   }
 
   return true;
-}
-
-bool AutofillTable::ClearAutofillProfiles() {
-  return Delete(db_, kLocalAddressesTable) &&
-         Delete(db_, kLocalAddressesTypeTokensTable);
 }
 
 bool AutofillTable::ClearCreditCards() {

@@ -604,9 +604,7 @@ class AutofillTable : public WebDatabaseTable,
   virtual bool RemoveAutofillProfile(const std::string& guid,
                                      AutofillProfile::Source profile_source);
 
-  // Removes all profiles from the given `profile_source`. Currently this is
-  // only supported for kAccount profiles, since they are cleared when the Sync
-  // data types gets disabled.
+  // Removes all profiles from the given `profile_source`.
   bool RemoveAllAutofillProfiles(AutofillProfile::Source profile_source);
 
   // Retrieves a profile with guid `guid` from `kAutofillProfilesTable` or
@@ -771,10 +769,6 @@ class AutofillTable : public WebDatabaseTable,
   // rows were successfully updated and false on a database error.
   bool RemoveOriginURLsModifiedBetween(const base::Time& delete_begin,
                                        const base::Time& delete_end);
-
-  // Clear all local profiles.
-  // TODO(crbug.com/1443393): Rename function.
-  bool ClearAutofillProfiles();
 
   // Clear all credit cards.
   bool ClearCreditCards();

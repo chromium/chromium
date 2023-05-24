@@ -1019,18 +1019,28 @@ TEST_F(AutofillTableTest, GetAutofillProfiles) {
   EXPECT_THAT(profiles, ElementsAre(testing::Pointee(account_profile)));
 }
 
-// Tests that `RemoveAllAutofillProfiles()` cleares all kAccount profiles.
-TEST_F(AutofillTableTest, RemoveAllAutofillProfiles_kAccount) {
-  EXPECT_TRUE(table_->AddAutofillProfile(
+// Tests that `RemoveAllAutofillProfiles()` clears all profiles of the given
+// source.
+TEST_P(AutofillTableProfileTest, RemoveAllAutofillProfiles) {
+  ASSERT_TRUE(table_->AddAutofillProfile(
+      AutofillProfile(AutofillProfile::Source::kLocalOrSyncable)));
+  ASSERT_TRUE(table_->AddAutofillProfile(
       AutofillProfile(AutofillProfile::Source::kAccount)));
 
-  EXPECT_TRUE(
-      table_->RemoveAllAutofillProfiles(AutofillProfile::Source::kAccount));
+  EXPECT_TRUE(table_->RemoveAllAutofillProfiles(profile_source()));
 
+  // Expect that the profiles from `profile_source()` are gone.
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
-  EXPECT_TRUE(table_->GetAutofillProfiles(&profiles,
-                                          AutofillProfile::Source::kAccount));
+  ASSERT_TRUE(table_->GetAutofillProfiles(&profiles, profile_source()));
   EXPECT_TRUE(profiles.empty());
+
+  // Expect that the profile from the opposite source remains.
+  const auto other_source =
+      profile_source() == AutofillProfile::Source::kAccount
+          ? AutofillProfile::Source::kLocalOrSyncable
+          : AutofillProfile::Source::kAccount;
+  ASSERT_TRUE(table_->GetAutofillProfiles(&profiles, other_source));
+  EXPECT_EQ(profiles.size(), 1u);
 }
 
 TEST_F(AutofillTableTest, IBAN) {
