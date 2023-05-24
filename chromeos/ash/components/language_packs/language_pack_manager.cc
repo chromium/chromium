@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/language/language_packs/language_pack_manager.h"
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -15,7 +15,7 @@
 #include "base/no_destructor.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/ash/components/language/language_packs/language_packs_util.h"
+#include "chromeos/ash/components/language_packs/language_packs_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 

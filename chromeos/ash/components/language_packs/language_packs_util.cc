@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/language/language_packs/language_packs_util.h"
+#include "chromeos/ash/components/language_packs/language_packs_util.h"
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"

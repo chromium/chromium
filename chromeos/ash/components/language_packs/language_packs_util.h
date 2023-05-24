@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_
-#define CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_
+#define CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_
 
 #include <string>
 
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
-#include "chromeos/ash/components/language/language_packs/language_pack_manager.h"
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
 
 namespace ash::language_packs {
 
@@ -41,4 +41,4 @@ bool IsOobe();
 
 }  // namespace ash::language_packs
 
-#endif  // CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_
