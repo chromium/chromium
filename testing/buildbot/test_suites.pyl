@@ -4036,6 +4036,7 @@
         'tast_expr': '("group:mainline" && ("dep:lacros_stable" || "dep:lacros") && !informational)',
         'timeout_sec': 10800,
         'test_level_retries': 2,
+        'shards': 2,
         'mixins': [
           'has_native_resultdb_integration',
         ],
