@@ -734,6 +734,10 @@ def main():
         # Cargo depends on OpenSSL.
         AddOpenSSLToEnv(args.build_mac_arm)
 
+    if sys.platform == 'win32':
+        # Use curl to prime Windows's root cert store (crbug.com/1448442).
+        RunCommand(['curl', '-I', 'https://static.rust-lang.org'])
+
     xpy = XPy(zlib_path, libxml2_dirs, args.build_mac_arm, args.gcc_toolchain,
               args.verbose)
 
