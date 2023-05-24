@@ -36,7 +36,7 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(WebRtcUnshipDeprecatedStats);
 // value anymore and blink is allowed to use webrtc classes directly.
 class PLATFORM_EXPORT RTCStatsReportPlatform {
  public:
-  RTCStatsReportPlatform(
+  explicit RTCStatsReportPlatform(
       const scoped_refptr<const webrtc::RTCStatsReport>& stats_report);
   virtual ~RTCStatsReportPlatform();
 
