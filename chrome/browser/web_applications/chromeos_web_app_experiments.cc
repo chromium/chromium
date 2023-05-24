@@ -30,24 +30,28 @@ constexpr const char* kMicrosoftOfficeWebAppExperimentScopeExtensions[] = {
 const char kOneDriveBusinessDomain[] = "sharepoint.com";
 
 struct FallbackPageThemeColor {
-  const char* page_url_piece;
+  std::vector<std::string> page_url_pieces;
   SkColor page_theme_color;
 };
 
-constexpr FallbackPageThemeColor
-    kMicrosoftOfficeWebAppExperimentFallbackPageThemeColors[] = {
-        // Word theme color.
-        {.page_url_piece = "file%2cdocx",
-         .page_theme_color = SkColorSetRGB(0x18, 0x5A, 0xBD)},
+const std::vector<FallbackPageThemeColor>&
+GetMicrosoftOfficeWebAppExperimentFallbackPageThemeColors() {
+  static base::NoDestructor<std::vector<FallbackPageThemeColor>>
+      page_theme_colours({
+          // Word theme color.
+          {.page_url_pieces = {"file%2cdocx", "app=Word"},
+           .page_theme_color = SkColorSetRGB(0x18, 0x5A, 0xBD)},
 
-        // Excel theme color.
-        {.page_url_piece = "file%2cxlsx",
-         .page_theme_color = SkColorSetRGB(0x10, 0x7C, 0x41)},
+          // Excel theme color.
+          {.page_url_pieces = {"file%2cxlsx", "app=Excel"},
+           .page_theme_color = SkColorSetRGB(0x10, 0x7C, 0x41)},
 
-        // PowerPoint theme color.
-        {.page_url_piece = "file%2cpptx",
-         .page_theme_color = SkColorSetRGB(0xC4, 0x3E, 0x1C)},
-};
+          // PowerPoint theme color.
+          {.page_url_pieces = {"file%2cpptx", "app=PowerPoint"},
+           .page_theme_color = SkColorSetRGB(0xC4, 0x3E, 0x1C)},
+      });
+  return *page_theme_colours;
+}
 
 bool g_always_enabled_for_testing = false;
 
@@ -116,9 +120,13 @@ absl::optional<SkColor> ChromeOsWebAppExperiments::GetFallbackPageThemeColor(
     return absl::nullopt;
 
   for (const FallbackPageThemeColor& fallback_theme_color :
-       kMicrosoftOfficeWebAppExperimentFallbackPageThemeColors) {
-    if (base::Contains(url.spec(), fallback_theme_color.page_url_piece))
-      return fallback_theme_color.page_theme_color;
+       GetMicrosoftOfficeWebAppExperimentFallbackPageThemeColors()) {
+    for (const std::string& page_url_piece :
+         fallback_theme_color.page_url_pieces) {
+      if (base::Contains(url.spec(), page_url_piece)) {
+        return fallback_theme_color.page_theme_color;
+      }
+    }
   }
 
   return absl::nullopt;
