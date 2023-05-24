@@ -194,6 +194,9 @@ bool IsAutofillableInputElement(const blink::WebInputElement& element);
 // {Text, Radiobutton, Checkbox, Select, TextArea}.
 bool IsAutofillableElement(const blink::WebFormControlElement& element);
 
+// Returns true iff `element` has a "webauthn" autocomplete attribute.
+bool IsWebauthnTaggedElement(const blink::WebFormControlElement& element);
+
 // Returns true if |element| can be edited (enabled and not read only).
 bool IsElementEditable(const blink::WebInputElement& element);
 

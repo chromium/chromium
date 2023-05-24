@@ -153,6 +153,7 @@ enum FocusedFieldType {
   kFillableTextArea,
   kFillableSearchField,
   kFillableNonSearchField,
+  kFillableWebauthnTaggedField,
   kFillableUsernameField,
   kFillablePasswordField,
 };

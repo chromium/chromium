@@ -395,6 +395,7 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
     // If there are suggestions, show on usual form fields.
     case FocusedFieldType::kFillablePasswordField:
     case FocusedFieldType::kFillableUsernameField:
+    case FocusedFieldType::kFillableWebauthnTaggedField:
     case FocusedFieldType::kFillableNonSearchField:
       return !available_sources_.empty();
 

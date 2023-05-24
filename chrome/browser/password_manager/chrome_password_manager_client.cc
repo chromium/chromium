@@ -341,7 +341,7 @@ void ChromePasswordManagerClient::FocusedInputChanged(
 #if BUILDFLAG(IS_ANDROID)
   ManualFillingController::GetOrCreate(web_contents())
       ->NotifyFocusedInputChanged(focused_field_id, focused_field_type);
-  GetOrCreatePasswordAccessory()->UpdateCredManReentryUi();
+  GetOrCreatePasswordAccessory()->UpdateCredManReentryUi(focused_field_type);
 
   password_manager::ContentPasswordManagerDriver* content_driver =
       static_cast<password_manager::ContentPasswordManagerDriver*>(driver);

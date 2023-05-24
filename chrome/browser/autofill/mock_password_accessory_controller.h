@@ -39,7 +39,9 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
               (autofill::password_generation::PasswordGenerationType),
               (override));
   MOCK_METHOD(void, DidNavigateMainFrame, ());
-  MOCK_METHOD(void, UpdateCredManReentryUi, ());
+  MOCK_METHOD(void,
+              UpdateCredManReentryUi,
+              (autofill::mojom::FocusedFieldType));
   MOCK_METHOD(void,
               RegisterFillingSourceObserver,
               (FillingSourceObserver),

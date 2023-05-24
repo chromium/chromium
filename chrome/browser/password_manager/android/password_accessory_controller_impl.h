@@ -65,7 +65,8 @@ class PasswordAccessoryControllerImpl
       bool is_manual_generation_available) override;
   void OnGenerationRequested(
       autofill::password_generation::PasswordGenerationType type) override;
-  void UpdateCredManReentryUi() override;
+  void UpdateCredManReentryUi(
+      autofill::mojom::FocusedFieldType focused_field_type) override;
 
   // Like |CreateForWebContents|, it creates the controller and attaches it to
   // the given |web_contents|. Upon creation, a |credential_cache| is required

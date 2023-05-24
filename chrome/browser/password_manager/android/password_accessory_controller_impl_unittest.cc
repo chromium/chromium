@@ -1028,7 +1028,8 @@ TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
                   ShouldShowAction(true),
                   autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY));
 
-  controller()->UpdateCredManReentryUi();
+  controller()->UpdateCredManReentryUi(
+      autofill::mojom::FocusedFieldType::kFillableUsernameField);
 }
 
 TEST_F(PasswordAccessoryControllerTest, HideCredManReentryWithoutResult) {
@@ -1046,7 +1047,27 @@ TEST_F(PasswordAccessoryControllerTest, HideCredManReentryWithoutResult) {
                   ShouldShowAction(false),
                   autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY));
 
-  controller()->UpdateCredManReentryUi();
+  controller()->UpdateCredManReentryUi(
+      autofill::mojom::FocusedFieldType::kFillableUsernameField);
+}
+
+TEST_F(PasswordAccessoryControllerTest, HideCredManReentryOnNonSignInField) {
+  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
+    return;
+  }
+  base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
+  CreateSheetController();
+  cred_man_delegate()->OnCredManConditionalRequestPending(
+      /*render_frame_host=*/nullptr, /*has_results=*/true,
+      base::RepeatingClosure());
+
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(false),
+                  autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY));
+
+  controller()->UpdateCredManReentryUi(
+      autofill::mojom::FocusedFieldType::kFillableNonSearchField);
 }
 
 TEST_F(PasswordAccessoryControllerTest, SuppressCredManReentryWithoutFeature) {
@@ -1058,10 +1079,14 @@ TEST_F(PasswordAccessoryControllerTest, SuppressCredManReentryWithoutFeature) {
               OnAccessoryActionAvailabilityChanged)
       .Times(0);
 
-  controller()->UpdateCredManReentryUi();
+  controller()->UpdateCredManReentryUi(
+      autofill::mojom::FocusedFieldType::kFillableUsernameField);
 }
 
 TEST_F(PasswordAccessoryControllerTest, OnCredManConditionalUiRequested) {
+  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
+    return;
+  }
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
   base::MockRepeatingClosure cred_man_callback;

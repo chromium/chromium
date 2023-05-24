@@ -31,6 +31,7 @@
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -270,6 +271,9 @@ FocusedFieldType AutofillAgent::FocusStateNotifier::GetFieldType(
   }
   if (agent_.password_autofill_agent_->IsUsernameInputField(input_element)) {
     return FocusedFieldType::kFillableUsernameField;
+  }
+  if (form_util::IsWebauthnTaggedElement(node)) {
+    return FocusedFieldType::kFillableWebauthnTaggedField;
   }
   return FocusedFieldType::kFillableNonSearchField;
 }

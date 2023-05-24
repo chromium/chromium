@@ -2056,6 +2056,12 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
           base::FeatureList::IsEnabled(features::kAutofillEnableSelectMenu));
 }
 
+bool IsWebauthnTaggedElement(const WebFormControlElement& element) {
+  const absl::optional<AutocompleteParsingResult> parsing_result =
+      ParseAutocompleteAttribute(GetAutocompleteAttribute(element));
+  return parsing_result.has_value() && parsing_result->webauthn;
+}
+
 bool IsElementEditable(const WebInputElement& element) {
   return element.IsEnabled() && !element.IsReadOnly();
 }

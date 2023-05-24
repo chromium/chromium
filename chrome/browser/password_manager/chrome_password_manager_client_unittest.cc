@@ -272,7 +272,10 @@ class MockPasswordAccessoryControllerImpl
               RefreshSuggestionsForField,
               (autofill::mojom::FocusedFieldType, bool),
               (override));
-  MOCK_METHOD(void, UpdateCredManReentryUi, (), (override));
+  MOCK_METHOD(void,
+              UpdateCredManReentryUi,
+              (autofill::mojom::FocusedFieldType),
+              (override));
 };
 
 #endif
