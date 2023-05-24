@@ -4139,6 +4139,21 @@
       supports_incremental_style: true,
     },
     {
+      // TODO: This should be interpolable: true
+      name: "scrollbar-color",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      name_for_methods: "ScrollbarColor",
+      type_name: "absl::optional<StyleScrollbarColor>",
+      converter: "ConvertScrollbarColor",
+      keywords: ["auto"],
+      field_group: "*",
+      field_template: "external",
+      default_value: "absl::optional<StyleScrollbarColor>()",
+      include_paths: ["third_party/blink/renderer/core/style/style_scrollbar_color.h"],
+      runtime_flag: "ScrollbarColor",
+    },
+    {
       name: "scrollbar-gutter",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: false,

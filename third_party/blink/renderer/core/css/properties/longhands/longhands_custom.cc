@@ -6814,6 +6814,53 @@ const CSSValue* Scale::CSSValueFromComputedStyleInternal(
   return list;
 }
 
+// https://www.w3.org/TR/css-scrollbars/
+// auto | <color>{2}
+const CSSValue* ScrollbarColor::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  DCHECK(RuntimeEnabledFeatures::ScrollbarColorEnabled());
+
+  CSSValueID id = range.Peek().Id();
+  if (id == CSSValueID::kAuto) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
+
+  CSSValue* thumb_color = css_parsing_utils::ConsumeColor(range, context);
+  if (!thumb_color) {
+    return nullptr;
+  }
+
+  CSSValue* track_color = css_parsing_utils::ConsumeColor(range, context);
+  if (!track_color) {
+    return nullptr;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*thumb_color);
+  list->Append(*track_color);
+  return list;
+}
+
+const CSSValue* ScrollbarColor::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  absl::optional<StyleScrollbarColor> scrollbar_color = style.ScrollbarColor();
+  if (scrollbar_color == absl::nullopt) {
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*ComputedStyleUtils::CurrentColorOrValidColor(
+      style, scrollbar_color.value().GetThumbColor(),
+      CSSValuePhase::kComputedValue));
+  list->Append(*ComputedStyleUtils::CurrentColorOrValidColor(
+      style, scrollbar_color.value().GetTrackColor(),
+      CSSValuePhase::kComputedValue));
+  return list;
+}
+
 // https://www.w3.org/TR/css-overflow-4
 // auto | stable && both-edges?
 const CSSValue* ScrollbarGutter::ParseSingleValue(

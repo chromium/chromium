@@ -321,6 +321,7 @@ scroll-start-y: auto
 scroll-timeline-attachment: local
 scroll-timeline-axis: block
 scroll-timeline-name: none
+scrollbar-color: auto
 scrollbar-gutter: auto
 scrollbar-width: auto
 shape-image-threshold: 0

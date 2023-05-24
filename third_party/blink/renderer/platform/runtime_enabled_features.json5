@@ -3073,6 +3073,10 @@
       base_feature: "none",
     },
     {
+      name: "ScrollbarColor",
+      status: "experimental",
+    },
+    {
       name: "ScrollbarWidth",
       status: "experimental",
       base_feature: "none",

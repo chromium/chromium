@@ -68416,6 +68416,7 @@ Called by update_use_counter_css.py.-->
   <int value="760" label="scroll-start-target-y"/>
   <int value="761" label="scroll-start-target"/>
   <int value="762" label="timeline-scope"/>
+  <int value="763" label="scrollbar-color"/>
 </enum>
 
 <enum name="MappedEditingCommands">

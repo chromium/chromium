@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/style/font_size_style.h"
 #include "third_party/blink/renderer/core/style/style_cached_data.h"
 #include "third_party/blink/renderer/core/style/style_highlight_data.h"
+#include "third_party/blink/renderer/core/style/style_scrollbar_color.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_box.h"

@@ -401,6 +401,7 @@ scrollTimeline
 scrollTimelineAttachment
 scrollTimelineAxis
 scrollTimelineName
+scrollbarColor
 scrollbarGutter
 scrollbarWidth
 setProperty

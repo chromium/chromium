@@ -332,6 +332,10 @@ class StyleBuilderConverter {
   static RubyPosition ConvertRubyPosition(StyleResolverState& state,
                                           const CSSValue& value);
 
+  static absl::optional<StyleScrollbarColor> ConvertScrollbarColor(
+      StyleResolverState& state,
+      const CSSValue& value);
+
   static ScrollbarGutter ConvertScrollbarGutter(StyleResolverState& state,
                                                 const CSSValue& value);
 

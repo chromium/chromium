@@ -2777,6 +2777,23 @@ RubyPosition StyleBuilderConverter::ConvertRubyPosition(
   return RubyPosition::kBefore;
 }
 
+absl::optional<StyleScrollbarColor>
+StyleBuilderConverter::ConvertScrollbarColor(StyleResolverState& state,
+                                             const CSSValue& value) {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto) {
+    return absl::nullopt;
+  }
+
+  const CSSValueList& list = To<CSSValueList>(value);
+  DCHECK_GE(list.length(), 1u);
+  DCHECK_LE(list.length(), 2u);
+  const StyleColor thumb_color = ConvertStyleColor(state, list.First());
+  const StyleColor track_color = ConvertStyleColor(state, list.Last());
+
+  return StyleScrollbarColor(thumb_color, track_color);
+}
+
 ScrollbarGutter StyleBuilderConverter::ConvertScrollbarGutter(
     StyleResolverState& state,
     const CSSValue& value) {
