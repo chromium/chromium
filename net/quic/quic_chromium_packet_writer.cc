@@ -231,6 +231,8 @@ void QuicChromiumPacketWriter::OnWriteComplete(int rv) {
     delegate_->OnWriteError(rv);
   else if (!force_write_blocked_)
     delegate_->OnWriteUnblocked();
+
+  socket_->SetDontClose(false);
 }
 
 bool QuicChromiumPacketWriter::MaybeRetryAfterWriteError(int rv) {
@@ -248,6 +250,7 @@ bool QuicChromiumPacketWriter::MaybeRetryAfterWriteError(int rv) {
                      weak_factory_.GetWeakPtr()));
   retry_count_++;
   write_in_progress_ = true;
+  socket_->SetDontClose(true);
   return true;
 }
 
