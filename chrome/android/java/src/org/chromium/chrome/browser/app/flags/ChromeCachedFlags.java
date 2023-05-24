@@ -109,6 +109,7 @@ public class ChromeCachedFlags {
                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY, TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
                 TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO,
                 TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR,
+                TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE,
                 TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                 TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO,
                 TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED,

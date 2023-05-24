@@ -71,6 +71,13 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_REDESIGN,
                     TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM, false);
 
+    // Field trial parameter for disabling button style for tab strip redesign. This includes
+    // disabling NTB anchor and button bg style.
+    private static final String TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM = "disable_btn_style";
+    public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_REDESIGN,
+                    TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM, false);
+
     private static boolean sTabSelectionEditorLongPressEntryEnabled;
 
     /**
@@ -85,6 +92,13 @@ public class TabUiFeatureUtilities {
      */
     public static boolean isTabStripNtbAnchorDisabled() {
         return TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.getValue();
+    }
+
+    /**
+     * @return Whether button style for tab strip redesign is disabled.
+     */
+    public static boolean isTabStripButtonStyleDisabled() {
+        return TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE.getValue();
     }
 
     /**

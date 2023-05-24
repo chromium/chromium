@@ -103,7 +103,7 @@ public class TabStripSceneLayerTest {
     private void initializeTest() {
         mTabStripSceneLayer = new TabStripSceneLayer(mContext);
         when(mTabStripSceneMock.init(
-                     mTabStripSceneLayer, ChromeFeatureList.sTabStripRedesign.isEnabled()))
+                     mTabStripSceneLayer, ChromeFeatureList.sTabStripRedesign.isEnabled(), false))
                 .thenReturn(1L);
         mModelSelectorButton = new TintedCompositorButton(
                 mContext, 36.f, 36.f, mCompositorOnClickHandler, R.drawable.ic_new_tab_button);
