@@ -175,7 +175,6 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   void AddedToWidget() override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
-  void OnThemeChanged() override;
   gfx::Insets GetInsets() const override;
   void UpdateBackgroundColor() override;
 

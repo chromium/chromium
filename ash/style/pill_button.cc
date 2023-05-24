@@ -212,15 +212,6 @@ int PillButton::GetHeightForWidth(int width) const {
   return GetButtonHeight(type_);
 }
 
-void PillButton::OnThemeChanged() {
-  // If the button is not added to a widget, we don't have to update the color.
-  if (!GetWidget())
-    return;
-
-  views::LabelButton::OnThemeChanged();
-  UpdateTextColor();
-}
-
 gfx::Insets PillButton::GetInsets() const {
   const int vertical_spacing = (GetButtonHeight(type_) - kIconSize) / 2;
   const int icon_padding = IsIconPillButton(type_)
@@ -364,11 +355,7 @@ void PillButton::UpdateTextColor() {
   if (!GetWidget())
     return;
 
-  // TODO(b:272787322): When LabelButton is able to use color ID, directly
-  // use color ID for default text color.
-  auto* color_provider = GetColorProvider();
-  SetTextColor(views::Button::STATE_DISABLED,
-               color_provider->GetColor(cros_tokens::kCrosSysDisabled));
+  SetTextColorId(views::Button::STATE_DISABLED, cros_tokens::kCrosSysDisabled);
 
   // If custom text color is set, use it to set text color.
   if (text_color_) {
@@ -380,8 +367,7 @@ void PillButton::UpdateTextColor() {
   // color.
   auto default_color_id = GetDefaultButtonTextIconColorId(type_);
   DCHECK(default_color_id);
-  SetEnabledTextColors(color_provider->GetColor(
-      text_color_id_.value_or(default_color_id.value())));
+  SetEnabledTextColorIds(text_color_id_.value_or(default_color_id.value()));
 }
 
 void PillButton::UpdateIconColor() {
