@@ -194,7 +194,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
     manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
         file_system_context_, chrome_blob_context_,
         /*permission_context=*/nullptr,
-        /*off_the_record=*/false);
+        /*off_the_record=*/is_incognito);
 
     handle_ = std::make_unique<FileSystemAccessFileHandleImpl>(
         manager_.get(),
