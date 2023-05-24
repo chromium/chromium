@@ -875,8 +875,24 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  CHECK_EQ(handle.type, gfx::ANDROID_HARDWARE_BUFFER);
+  if (!ValidateUsage(usage, size, format)) {
+    return nullptr;
+  }
+
+  auto estimated_size = format.MaybeEstimatedSizeInBytes(size);
+  if (!estimated_size) {
+    LOG(ERROR) << "Failed to calculate SharedImage size";
+    return nullptr;
+  }
+
+  auto backing = std::make_unique<AHardwareBufferImageBacking>(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      std::move(handle.android_hardware_buffer), estimated_size.value(), false,
+      base::ScopedFD(), dawn_procs_, use_passthrough_);
+
+  backing->SetCleared();
+  return backing;
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -891,34 +907,14 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label) {
-  // TODO(vasilyt): support SHARED_MEMORY_BUFFER?
-  if (handle.type != gfx::ANDROID_HARDWARE_BUFFER) {
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
   if (plane != gfx::BufferPlane::DEFAULT) {
     LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane);
     return nullptr;
   }
 
-  auto si_format = viz::GetSharedImageFormat(buffer_format);
-  if (!ValidateUsage(usage, size, si_format)) {
-    return nullptr;
-  }
-
-  auto estimated_size = si_format.MaybeEstimatedSizeInBytes(size);
-  if (!estimated_size) {
-    LOG(ERROR) << "Failed to calculate SharedImage size";
-    return nullptr;
-  }
-
-  auto backing = std::make_unique<AHardwareBufferImageBacking>(
-      mailbox, si_format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(handle.android_hardware_buffer), estimated_size.value(), false,
-      base::ScopedFD(), dawn_procs_, use_passthrough_);
-
-  backing->SetCleared();
-  return backing;
+  return CreateSharedImage(mailbox, viz::GetSharedImageFormat(buffer_format),
+                           size, color_space, surface_origin, alpha_type, usage,
+                           debug_label, std::move(handle));
 }
 
 }  // namespace gpu
