@@ -230,6 +230,8 @@ static_library("browser") {
     "psl_matching_helper.cc",
     "psl_matching_helper.h",
     "reauth_purpose.h",
+    "sharing_invitations.cc",
+    "sharing_invitations.h",
     "smart_bubble_stats_store.h",
     "sql_table_builder.cc",
     "sql_table_builder.h",
