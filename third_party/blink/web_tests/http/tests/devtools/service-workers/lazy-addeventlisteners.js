@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
+import {ApplicationTestRunner} from 'application_test_runner';
+
 function wait_for_message(number_of_messages) {
   return new Promise(resolve => {
     ConsoleTestRunner.waitForConsoleMessages(number_of_messages, () => {
@@ -13,8 +17,8 @@ function wait_for_message(number_of_messages) {
 (async function() {
   TestRunner.addResult(
       `Tests that a warning is shown in the console if addEventListener is called after initial evaluation of the service worker script.\n`);
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console');
+  await TestRunner.loadLegacyModule('console');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
   await TestRunner.showPanel('resources');

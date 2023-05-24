@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
+import {ApplicationTestRunner} from 'application_test_runner';
+
 function wait_for_message(number_of_messages) {
   return new Promise(resolve => {
     ConsoleTestRunner.waitForConsoleMessages(number_of_messages, () => {
@@ -14,8 +18,6 @@ function wait_for_message(number_of_messages) {
   TestRunner.addResult(
       `Tests that a warning is shown in the console if addEventListener adds an empty fetch handler.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadTestModule('application_test_runner');
   // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
   await TestRunner.showPanel('resources');
