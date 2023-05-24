@@ -1867,6 +1867,16 @@ _CONFIG = [
             'shared_highlighting::kFragmentTextBackgroundColorARGB',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/events/keyboard_event.h',
+            'third_party/blink/renderer/core/events/keyboard_event.cc',
+        ],
+        'allowed': [
+            'base::StringPiece16',
+            'base::i18n::UTF16CharIterator',
+        ]
+    }
 ]
 
 
