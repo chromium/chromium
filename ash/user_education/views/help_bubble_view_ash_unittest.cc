@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/views/help_bubble_view_ash_test_base.h"
 #include "ash/wm/window_util.h"
@@ -70,6 +71,23 @@ std::vector<gfx::Point> GetPerimeterPoints(const gfx::Rect& rect) {
 }
 
 }  // namespace
+
+// HelpBubbleViewAshTest -------------------------------------------------------
+
+// Base class for tests of `HelpBubbleViewAsh`.
+using HelpBubbleViewAshTest = HelpBubbleViewAshTestBase;
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that help bubbles are contained within the correct parent window.
+TEST_F(HelpBubbleViewAshTest, ParentWindow) {
+  auto* const help_bubble_view = CreateHelpBubbleView(HelpBubbleStyle::kDialog);
+  EXPECT_TRUE(help_bubble_view->anchor_widget()
+                  ->GetNativeWindow()
+                  ->GetRootWindow()
+                  ->GetChildById(kShellWindowId_HelpBubbleContainer)
+                  ->Contains(help_bubble_view->GetWidget()->GetNativeWindow()));
+}
 
 // HelpBubbleViewAshStyleTest --------------------------------------------------
 

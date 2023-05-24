@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_types.h"
@@ -24,6 +25,7 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/aura/window.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -629,6 +631,9 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_close_on_deactivate(false);
   set_focus_traversable_from_anchor_view(false);
+  set_parent_window(
+      anchor_widget()->GetNativeWindow()->GetRootWindow()->GetChildById(
+          kShellWindowId_HelpBubbleContainer));
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
