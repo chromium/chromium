@@ -736,8 +736,9 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
           ("[1/1] blank -> a.test/title1.html (None) -> d.test/title1.html")));
 }
 
+// TODO(crrev/1448453): flaky test.
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       DiscardPrerenderedPageCookieServerAccess) {
+                       DISABLED_DiscardPrerenderedPageCookieServerAccess) {
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
 
