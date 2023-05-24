@@ -3816,6 +3816,8 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="Shelf Button With Shift"/>
   <int value="6" label="Assistant Entry Point"/>
   <int value="7" label="Scroll from the shelf"/>
+  <int value="8" label="Browser"/>
+  <int value="9" label="Welcome Tour"/>
 </enum>
 
 <enum name="AppListSortOrder">

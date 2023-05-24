@@ -36,6 +36,7 @@ std::string GetAppListOpenMethod(ash::AppListShowSource source) {
     case ash::AppListShowSource::kTabletMode:
     case ash::AppListShowSource::kAssistantEntryPoint:
     case ash::AppListShowSource::kBrowser:
+    case ash::AppListShowSource::kWelcomeTour:
       return "Others";
   }
 }

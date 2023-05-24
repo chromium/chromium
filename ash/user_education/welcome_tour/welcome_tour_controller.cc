@@ -4,6 +4,8 @@
 
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -18,6 +20,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
@@ -29,10 +32,14 @@ WelcomeTourController* g_instance = nullptr;
 
 // Helpers ---------------------------------------------------------------------
 
+int64_t GetPrimaryDisplayId() {
+  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+}
+
 views::View* GetMatchingViewInPrimaryRootWindow(
     ui::ElementIdentifier element_id) {
-  return user_education_util::GetMatchingViewInRootWindow(
-      display::Screen::GetScreen()->GetPrimaryDisplay().id(), element_id);
+  return user_education_util::GetMatchingViewInRootWindow(GetPrimaryDisplayId(),
+                                                          element_id);
 }
 
 views::TrackedElementViews* GetMatchingElementInPrimaryRootWindow(
@@ -152,7 +159,11 @@ WelcomeTourController::GetTutorialDescriptions() {
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(user_education_util::CreateExtendedProperties(
               HelpBubbleId::kWelcomeTourHomeButton))
-          .AddDefaultNextButton());
+          .AddCustomNextButton(base::BindRepeating([](ui::TrackedElement*) {
+            Shell::Get()->app_list_controller()->Show(
+                GetPrimaryDisplayId(), AppListShowSource::kWelcomeTour,
+                ui::EventTimeForNow(), /*should_record_metrics=*/true);
+          })));
 
   // Step 4: Search box.
   tutorial_description.steps.emplace_back(
@@ -160,7 +171,8 @@ WelcomeTourController::GetTutorialDescriptions() {
           .SetBubbleBodyText(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT)
           .SetExtendedProperties(user_education_util::CreateExtendedProperties(
               HelpBubbleId::kWelcomeTourSearchBox))
-          .AddDefaultNextButton());
+          .AddDefaultNextButton()
+          .InAnyContext());
 
   // Step 5: Settings app.
   tutorial_description.steps.emplace_back(

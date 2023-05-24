@@ -182,6 +182,7 @@ std::string GetAppListOpenMethod(AppListShowSource source) {
     case AppListShowSource::kTabletMode:
     case AppListShowSource::kAssistantEntryPoint:
     case AppListShowSource::kBrowser:
+    case AppListShowSource::kWelcomeTour:
       return "Others";
   }
   NOTREACHED();

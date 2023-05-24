@@ -98,10 +98,13 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
 IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
   RunTestSequence(
       // Step 1: Shelf.
-      WaitForHelpBubble(),
-      CheckHelpBubbleBodyText(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT),
-      CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
-      PressHelpBubbleDefaultButton(),
+      InMatchingViewInPrimaryRootWindowContext(
+          ash::kShelfViewElementId,
+          Steps(WaitForHelpBubble(),
+                CheckHelpBubbleBodyText(
+                    IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT),
+                CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+                PressHelpBubbleDefaultButton())),
 
       // Step 2: Status area.
       InMatchingViewInPrimaryRootWindowContext(
@@ -119,10 +122,17 @@ IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
                 CheckHelpBubbleBodyText(
                     IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT),
                 CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
+                PressHelpBubbleDefaultButton())),
+
+      // Step 4: Search box.
+      InAnyContext(
+          Steps(WaitForHelpBubble(),
+                CheckHelpBubbleBodyText(
+                    IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT),
+                CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_NEXT_BUTTON),
                 PressHelpBubbleDefaultButton()))
 
       // TODO(http://b:275616974): Implement after registering views.
-      // Step 4: Search box.
       // Step 5: Settings app.
       // Step 6: Explore app.
   );
