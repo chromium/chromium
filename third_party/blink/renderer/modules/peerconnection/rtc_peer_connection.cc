@@ -1746,11 +1746,8 @@ ScriptPromise RTCPeerConnection::PromiseBasedGetStats(
       // while leaving the associated promise pending as specified.
       resolver->Detach();
     } else {
-      bool is_track_stats_deprecation_trial_enabled =
-          RuntimeEnabledFeatures::RTCLegacyTrackStatsEnabled(context);
       peer_handler_->GetStats(WTF::BindOnce(WebRTCStatsReportCallbackResolver,
-                                            WrapPersistent(resolver)),
-                              is_track_stats_deprecation_trial_enabled);
+                                            WrapPersistent(resolver)));
     }
     return promise;
   }

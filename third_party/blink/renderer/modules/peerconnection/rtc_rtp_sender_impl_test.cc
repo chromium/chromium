@@ -124,7 +124,7 @@ class RTCRtpSenderImplTest : public ::testing::Test {
   scoped_refptr<blink::TestWebRTCStatsReportObtainer> CallGetStats() {
     scoped_refptr<blink::TestWebRTCStatsReportObtainer> obtainer =
         base::MakeRefCounted<TestWebRTCStatsReportObtainer>();
-    sender_->GetStats(obtainer->GetStatsCallbackWrapper(), false);
+    sender_->GetStats(obtainer->GetStatsCallbackWrapper());
     return obtainer;
   }
 
