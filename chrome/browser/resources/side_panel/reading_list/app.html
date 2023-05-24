@@ -1,4 +1,4 @@
-<style include="mwb-element-shared-style cr-hidden-style">
+<style include="mwb-element-shared-style cr-hidden-style sp-shared-style">
   #content {
     display: flex;
     flex-direction: column;
@@ -37,6 +37,10 @@
   #readingListList {
     max-height: none;
     overflow: auto;
+  }
+
+  :host-context([chrome-refresh-2023]) #readingListList {
+    padding-block-start: var(--sp-body-padding);
   }
 
   :host-context(html:not([chrome-refresh-2023])) #currentPageActionButton {
@@ -82,10 +86,9 @@
       heading="$i18n{emptyStateHeader}"
       body="[[getEmptyStateSubheaderText_()]]">
   </sp-empty-state>
-  <div id="readingListList">
-    <iron-selector id="selector" on-keydown="onItemKeyDown_"
-        attr-for-selected="data-url" selectable="reading-list-item">
-      <sp-heading hidden="[[!unreadItems_.length]]" compact hide-back-button>
+  <div id="readingListList" class="sp-scroller" on-keydown="onItemKeyDown_">
+    <div class="sp-card" hidden="[[!unreadItems_.length]]">
+      <sp-heading compact hide-back-button>
         <h2 slot="heading">$i18n{unreadHeader}</h2>
       </sp-heading>
       <template id="unreadItemsList" is="dom-repeat" items="[[unreadItems_]]">
@@ -94,9 +97,12 @@
             data="[[item]]" button-ripples="[[buttonRipples]]">
         </reading-list-item>
       </template>
-      <div class="hr" hidden$="[[!shouldShowHr_(unreadItems_, readItems_)]]">
-      </div>
-      <sp-heading compact hidden="[[!readItems_.length]]" hide-back-button>
+    </div>
+    <div class="hr sp-cards-separator"
+        hidden$="[[!shouldShowHr_(unreadItems_, readItems_)]]">
+    </div>
+    <div class="sp-card" hidden="[[!readItems_.length]]">
+      <sp-heading compact hide-back-button>
         <h2 slot="heading">$i18n{readHeader}</h2>
       </sp-heading>
       <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
@@ -105,7 +111,7 @@
             data="[[item]]" button-ripples="[[buttonRipples]]">
         </reading-list-item>
       </template>
-    </iron-selector>
+    </div>
   </div>
   <sp-footer pinned="[[!isReadingListEmpty_(unreadItems_, readItems_)]]">
     <cr-button id="currentPageActionButton" class="floating-button"

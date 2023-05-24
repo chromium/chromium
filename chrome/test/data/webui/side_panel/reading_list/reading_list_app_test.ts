@@ -211,24 +211,23 @@ suite('ReadingListAppTest', () => {
       'https://www.bing.com',
       'https://www.yahoo.com',
     ];
-    const selector = readingListApp.shadowRoot!.querySelector('iron-selector')!;
 
     // Select first item.
-    selector.selected =
+    readingListApp.selected =
         readingListApp.shadowRoot!.querySelector(
                                       'reading-list-item')!.dataset['url']!;
 
-    keyDownOn(selector, 0, [], 'ArrowUp');
-    assertEquals(urls[3], selector.selected);
+    keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowUp');
+    assertEquals(urls[3], readingListApp.selected);
 
-    keyDownOn(selector, 0, [], 'ArrowDown');
-    assertEquals(urls[0], selector.selected);
+    keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowDown');
+    assertEquals(urls[0], readingListApp.selected);
 
-    keyDownOn(selector, 0, [], 'ArrowDown');
-    assertEquals(urls[1], selector.selected);
+    keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowDown');
+    assertEquals(urls[1], readingListApp.selected);
 
-    keyDownOn(selector, 0, [], 'ArrowUp');
-    assertEquals(urls[0], selector.selected);
+    keyDownOn(readingListApp.$.readingListList, 0, [], 'ArrowUp');
+    assertEquals(urls[0], readingListApp.selected);
   });
 
   test(
