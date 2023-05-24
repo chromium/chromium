@@ -673,12 +673,6 @@ void HelpBubbleView::OnTimeout() {
   GetWidget()->Close();
 }
 
-bool HelpBubbleView::OnMousePressed(const ui::MouseEvent& event) {
-  base::RecordAction(
-      base::UserMetricsAction("InProductHelp.Promos.BubbleClicked"));
-  return false;
-}
-
 std::u16string HelpBubbleView::GetAccessibleWindowTitle() const {
   std::u16string result = accessible_name_;
 

@@ -679,12 +679,6 @@ void HelpBubbleViewAsh::OnAnchorBoundsChanged() {
   UpdateRoundedCorners();
 }
 
-bool HelpBubbleViewAsh::OnMousePressed(const ui::MouseEvent& event) {
-  base::RecordAction(
-      base::UserMetricsAction("InProductHelp.Promos.BubbleClicked"));
-  return false;
-}
-
 std::u16string HelpBubbleViewAsh::GetAccessibleWindowTitle() const {
   std::u16string result = accessible_name_;
 

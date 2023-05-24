@@ -10198,13 +10198,6 @@ should be able to be added at any place in this file.
   <description>The user tapped outside the in-product help bubble.</description>
 </action>
 
-<action name="InProductHelp.Promos.BubbleClicked">
-  <owner>collinbaker@chromium.org</owner>
-  <description>
-    The user clicked on an in-product help promo bubble.
-  </description>
-</action>
-
 <action name="InProductHelp.ShouldTriggerHelpUI.IPH" not_user_triggered="true">
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
