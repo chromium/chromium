@@ -15,6 +15,7 @@ TestOverlayPresentationContext::TestOverlayPresentationContext(Browser* browser)
           browser,
           OverlayModality::kTesting,
           [[TestOverlayRequestCoordinatorFactory alloc]
-              initWithBrowser:browser]) {}
+              initWithBrowser:browser
+                     modality:OverlayModality::kTesting]) {}
 
 TestOverlayPresentationContext::~TestOverlayPresentationContext() = default;
