@@ -583,12 +583,12 @@ void AddAutofillProfileDetailsFromStatement(sql::Statement& s,
   profile->set_profile_label(s.ColumnString(index++));
 }
 
-void BindEncryptedCardToColumn(sql::Statement* s,
-                               int column_index,
-                               const std::u16string& number,
-                               const AutofillTableEncryptor& encryptor) {
+void BindEncryptedValueToColumn(sql::Statement* s,
+                                int column_index,
+                                const std::u16string& value,
+                                const AutofillTableEncryptor& encryptor) {
   std::string encrypted_data;
-  encryptor.EncryptString16(number, &encrypted_data);
+  encryptor.EncryptString16(value, &encrypted_data);
   s->BindBlob(column_index, encrypted_data);
 }
 
@@ -604,7 +604,7 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
                                CREDIT_CARD_EXP_4_DIGIT_YEAR}) {
     s->BindString16(index++, Truncate(credit_card.GetRawInfo(type)));
   }
-  BindEncryptedCardToColumn(
+  BindEncryptedValueToColumn(
       s, index++, credit_card.GetRawInfo(CREDIT_CARD_NUMBER), encryptor);
 
   s->BindInt64(index++, credit_card.use_count());
@@ -653,16 +653,17 @@ std::unique_ptr<VirtualCardUsageData> GetVirtualCardUsageDataFromStatement(
       url::Origin::Create(GURL(merchant_domain)));
 }
 
-std::u16string UnencryptedCardFromColumn(
+std::u16string UnencryptValueFromColumn(
     sql::Statement& s,
     int column_index,
     const AutofillTableEncryptor& encryptor) {
-  std::u16string credit_card_number;
-  std::string encrypted_number;
-  s.ColumnBlobAsString(column_index, &encrypted_number);
-  if (!encrypted_number.empty())
-    encryptor.DecryptString16(encrypted_number, &credit_card_number);
-  return credit_card_number;
+  std::u16string value;
+  std::string encrypted_value;
+  s.ColumnBlobAsString(column_index, &encrypted_value);
+  if (!encrypted_value.empty()) {
+    encryptor.DecryptString16(encrypted_value, &value);
+  }
+  return value;
 }
 
 std::unique_ptr<CreditCard> CreditCardFromStatement(
@@ -679,7 +680,7 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
     credit_card->SetRawInfo(type, s.ColumnString16(index++));
   }
   credit_card->SetRawInfo(CREDIT_CARD_NUMBER,
-                          UnencryptedCardFromColumn(s, index++, encryptor));
+                          UnencryptValueFromColumn(s, index++, encryptor));
   credit_card->set_use_count(s.ColumnInt64(index++));
   credit_card->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
   credit_card->set_modification_date(
@@ -2015,7 +2016,7 @@ bool AutofillTable::GetServerCreditCards(
     // If the card_number_encrypted field is nonempty, we can assume this card
     // is a full card, otherwise it's masked.
     std::u16string full_card_number =
-        UnencryptedCardFromColumn(s, index++, *autofill_table_encryptor_);
+        UnencryptValueFromColumn(s, index++, *autofill_table_encryptor_);
     std::u16string last_four = s.ColumnString16(index++);
     CreditCard::RecordType record_type = full_card_number.empty()
                                              ? CreditCard::MASKED_SERVER_CARD
