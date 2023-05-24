@@ -211,4 +211,26 @@ TEST_F(GameDashboardCaptureModeTest, NotificationView) {
   EXPECT_FALSE(GetPreviewNotification());
 }
 
+// Tests that the camera preview widget shows up when starting the game
+// dashboard initiated capture mode session for the first time.
+TEST_F(GameDashboardCaptureModeTest, CameraPreviewWidgetTest) {
+  AddDefaultCamera();
+  auto* camera_controller = CaptureModeController::Get()->camera_controller();
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+
+  auto* controller = StartGameCaptureModeSession();
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+  EXPECT_TRUE(camera_controller->should_show_preview());
+  GetEventGenerator()->MoveMouseToCenterOf(game_window());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(camera_controller->should_show_preview());
+  EXPECT_TRUE(camera_controller->camera_preview_widget());
+
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  EXPECT_FALSE(camera_controller->should_show_preview());
+  EXPECT_FALSE(camera_controller->camera_preview_widget());
+}
+
 }  // namespace ash

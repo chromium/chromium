@@ -527,15 +527,16 @@ void CaptureModeSession::Initialize() {
 
   UpdateFloatingPanelBoundsIfNeeded();
 
-  // call `OnCaptureTypeChanged` after capture bar's initialization is done
-  // instead of in the initialization of the capture mode type view, since
-  // `OnCaptureTypeChanged` may trigger `ShowCaptureToast` which depends on the
-  // capture bar.
-  // Also please note we should call `OnCaptureTypeChanged` in
+  // `OnCaptureTypeChanged()` should be called after the initialization of the
+  // capture bar rather than in that of the capture mode type view, since
+  // `OnCaptureTypeChanged()` may trigger `ShowCaptureToast()` which has
+  // dependencies on the capture bar.
+  // Also please note we should call `OnCaptureTypeChanged()` in
   // `CaptureModeBarView` instead of `CaptureModeSession`, since this is during
   // the initialization of the capture session, the type change is not triggered
   // by the user.
   capture_mode_bar_view_->OnCaptureTypeChanged(controller_->type());
+  MaybeUpdateSelfieCamInSessionVisibility();
   MaybeCreateUserNudge();
 
   if (active_behavior_->ShouldAutoSelectFirstCamera()) {
@@ -700,6 +701,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
   capture_mode_bar_view_->OnCaptureTypeChanged(new_type);
+  MaybeUpdateSelfieCamInSessionVisibility();
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
@@ -1607,6 +1609,22 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
   if (user_nudge_controller_)
     user_nudge_controller_->Reposition();
   capture_toast_controller_.MaybeRepositionCaptureToast();
+}
+
+void CaptureModeSession::MaybeUpdateSelfieCamInSessionVisibility() {
+  auto* camera_controller = controller_->camera_controller();
+  CHECK(camera_controller);
+
+  // Set the value to true for `SetShouldShowPreview` when the capture type is
+  // `kVideo` with no video recording in progress.
+  // Don't trigger `SetShouldShowPreview` if there's a video recording in
+  // progress, since the capture type is restricted to `kImage` at this use case
+  // and we don't want to affect the camera preview for the in_progress video
+  // recording.
+  if (!controller_->is_recording_in_progress()) {
+    camera_controller->SetShouldShowPreview(controller_->type() ==
+                                            CaptureModeType::kVideo);
+  }
 }
 
 void CaptureModeSession::MaybeCreateUserNudge() {

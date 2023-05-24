@@ -7,7 +7,10 @@
 
 #include <string>
 
+#include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/public/cpp/test/mock_projector_client.h"
 #include "base/memory/raw_ptr.h"
@@ -48,9 +51,16 @@ class IconButton;
 class CaptureModeController;
 class CaptureModeBarView;
 
+// Fake camera info used for testing.
+constexpr char kDefaultCameraDeviceId[] = "/dev/videoX";
+constexpr char kDefaultCameraModelId[] = "0def:c000";
+
 // Starts the capture mode session with given `source` and `type`.
 CaptureModeController* StartCaptureSession(CaptureModeSource source,
                                            CaptureModeType type);
+
+// Returns the test delegate of `CaptureModeController`.
+TestCaptureModeDelegate* GetTestDelegate();
 
 void ClickOnView(const views::View* view,
                  ui::test::EventGenerator* event_generator);
@@ -152,6 +162,16 @@ const message_center::Notification* GetPreviewNotification();
 // Clicks on the area in the notification specified by the `button_index`.
 void ClickOnNotification(absl::optional<int> button_index);
 
+// Test util APIs to simulate the camera adding and removing operations.
+void AddFakeCamera(
+    const std::string& device_id,
+    const std::string& display_name,
+    const std::string& model_id,
+    media::VideoFacingMode camera_facing_mode = media::MEDIA_VIDEO_FACING_NONE);
+void RemoveFakeCamera(const std::string& device_id);
+void AddDefaultCamera();
+void RemoveDefaultCamera();
+
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-
 // related features in its constructor, so test fixtures that use this should
@@ -216,6 +236,37 @@ class CaptureNotificationWaiter : public message_center::MessageCenterObserver {
 
  private:
   base::RunLoop run_loop_;
+};
+
+// Defines a waiter for the camera devices change notifications.
+class CameraDevicesChangeWaiter : public CaptureModeCameraController::Observer {
+ public:
+  CameraDevicesChangeWaiter();
+  CameraDevicesChangeWaiter(const CameraDevicesChangeWaiter&) = delete;
+  CameraDevicesChangeWaiter& operator=(const CameraDevicesChangeWaiter&) =
+      delete;
+  ~CameraDevicesChangeWaiter() override;
+
+  int camera_change_event_count() const { return camera_change_event_count_; }
+  int selected_camera_change_event_count() const {
+    return selected_camera_change_event_count_;
+  }
+
+  void Wait();
+
+  // CaptureModeCameraController::Observer:
+  void OnAvailableCamerasChanged(const CameraInfoList& cameras) override;
+  void OnSelectedCameraChanged(const CameraId& camera_id) override;
+
+ private:
+  base::RunLoop loop_;
+
+  // Tracks the number of times the observer call `OnAvailableCamerasChanged()`
+  // was triggered.
+  int camera_change_event_count_ = 0;
+
+  // Tracks the number of times `OnSelectedCameraChanged()` was triggered.
+  int selected_camera_change_event_count_ = 0;
 };
 
 }  // namespace ash

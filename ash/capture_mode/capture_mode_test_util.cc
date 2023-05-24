@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
+#include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/projector/projector_controller.h"
@@ -47,6 +48,7 @@ namespace ash {
 namespace {
 
 constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
+constexpr char kDefaultCameraDisplayName[] = "Default Cam";
 
 // Dispatch the simulated virtual key event to the WindowEventDispatcher.
 void DispatchVKEvent(ui::test::EventGenerator* event_generator,
@@ -75,6 +77,11 @@ CaptureModeController* StartCaptureSession(CaptureModeSource source,
   controller->Start(CaptureModeEntryType::kQuickSettings);
   CHECK(controller->IsActive());
   return controller;
+}
+
+TestCaptureModeDelegate* GetTestDelegate() {
+  return static_cast<TestCaptureModeDelegate*>(
+      CaptureModeController::Get()->delegate_for_testing());
 }
 
 void ClickOnView(const views::View* view,
@@ -356,6 +363,31 @@ void ClickOnNotification(absl::optional<int> button_index) {
   notification->delegate()->Click(button_index, absl::nullopt);
 }
 
+void AddFakeCamera(const std::string& device_id,
+                   const std::string& display_name,
+                   const std::string& model_id,
+                   media::VideoFacingMode camera_facing_mode) {
+  CameraDevicesChangeWaiter waiter;
+  GetTestDelegate()->video_source_provider()->AddFakeCamera(
+      device_id, display_name, model_id, camera_facing_mode);
+  waiter.Wait();
+}
+
+void RemoveFakeCamera(const std::string& device_id) {
+  CameraDevicesChangeWaiter waiter;
+  GetTestDelegate()->video_source_provider()->RemoveFakeCamera(device_id);
+  waiter.Wait();
+}
+
+void AddDefaultCamera() {
+  AddFakeCamera(kDefaultCameraDeviceId, kDefaultCameraDisplayName,
+                kDefaultCameraModelId);
+}
+
+void RemoveDefaultCamera() {
+  RemoveFakeCamera(kDefaultCameraDeviceId);
+}
+
 // -----------------------------------------------------------------------------
 // ProjectorCaptureModeIntegrationHelper:
 
@@ -443,6 +475,32 @@ void CaptureNotificationWaiter::OnNotificationAdded(
   if (notification_id == kScreenCaptureNotificationId) {
     run_loop_.Quit();
   }
+}
+
+// -----------------------------------------------------------------------------
+// CameraDevicesChangeWaiter:
+
+CameraDevicesChangeWaiter::CameraDevicesChangeWaiter() {
+  CaptureModeController::Get()->camera_controller()->AddObserver(this);
+}
+
+CameraDevicesChangeWaiter::~CameraDevicesChangeWaiter() {
+  CaptureModeController::Get()->camera_controller()->RemoveObserver(this);
+}
+
+void CameraDevicesChangeWaiter::Wait() {
+  loop_.Run();
+}
+
+void CameraDevicesChangeWaiter::OnAvailableCamerasChanged(
+    const CameraInfoList& cameras) {
+  ++camera_change_event_count_;
+  loop_.Quit();
+}
+
+void CameraDevicesChangeWaiter::OnSelectedCameraChanged(
+    const CameraId& camera_id) {
+  ++selected_camera_change_event_count_;
 }
 
 }  // namespace ash

@@ -76,10 +76,6 @@ namespace ash {
 
 namespace {
 
-constexpr char kDefaultCameraDeviceId[] = "/dev/videoX";
-constexpr char kDefaultCameraDisplayName[] = "Default Cam";
-constexpr char kDefaultCameraModelId[] = "0def:c000";
-
 // The app ID used for the capture mode camera and microphone recording privacy
 // indicators.
 constexpr char kCaptureModePrivacyIndicatorId[] = "system-capture-mode";
@@ -90,11 +86,6 @@ constexpr char kCaptureModePrivacyIndicatorId[] = "system-capture-mode";
 // of whether the recording type drop down button is visible or not.
 constexpr int kMinRegionLengthForCameraToIntersectLabelButton =
     capture_mode::kMinCaptureSurfaceShortSideLengthForVisibleCamera + 20;
-
-TestCaptureModeDelegate* GetTestDelegate() {
-  return static_cast<TestCaptureModeDelegate*>(
-      CaptureModeController::Get()->delegate_for_testing());
-}
 
 CaptureModeCameraController* GetCameraController() {
   return CaptureModeController::Get()->camera_controller();
@@ -123,45 +114,6 @@ bool IsWindowStackedRightBelow(aura::Window* window, aura::Window* sibling) {
       base::ranges::find(children, sibling) - children.begin();
   return sibling_index > 0 && children[sibling_index - 1] == window;
 }
-
-// Defines a waiter for the camera devices change notifications.
-class CameraDevicesChangeWaiter : public CaptureModeCameraController::Observer {
- public:
-  CameraDevicesChangeWaiter() { GetCameraController()->AddObserver(this); }
-  CameraDevicesChangeWaiter(const CameraDevicesChangeWaiter&) = delete;
-  CameraDevicesChangeWaiter& operator=(const CameraDevicesChangeWaiter&) =
-      delete;
-  ~CameraDevicesChangeWaiter() override {
-    GetCameraController()->RemoveObserver(this);
-  }
-
-  int camera_change_event_count() const { return camera_change_event_count_; }
-  int selected_camera_change_event_count() const {
-    return selected_camera_change_event_count_;
-  }
-
-  void Wait() { loop_.Run(); }
-
-  // CaptureModeCameraController::Observer:
-  void OnAvailableCamerasChanged(const CameraInfoList& cameras) override {
-    ++camera_change_event_count_;
-    loop_.Quit();
-  }
-
-  void OnSelectedCameraChanged(const CameraId& camera_id) override {
-    ++selected_camera_change_event_count_;
-  }
-
- private:
-  base::RunLoop loop_;
-
-  // Tracks the number of times the observer call `OnAvailableCamerasChanged()`
-  // was triggered.
-  int camera_change_event_count_ = 0;
-
-  // Tracks the number of times `OnSelectedCameraChanged()` was triggered.
-  int selected_camera_change_event_count_ = 0;
-};
 
 gfx::Rect GetTooSmallToFitCameraRegion() {
   return {100, 100,
@@ -210,30 +162,6 @@ class CaptureModeCameraTest : public AshTestBase {
     WaitForRecordingToStart();
     EXPECT_TRUE(controller->is_recording_in_progress());
   }
-
-  void AddFakeCamera(const std::string& device_id,
-                     const std::string& display_name,
-                     const std::string& model_id,
-                     media::VideoFacingMode camera_facing_mode =
-                         media::MEDIA_VIDEO_FACING_NONE) {
-    CameraDevicesChangeWaiter waiter;
-    GetTestDelegate()->video_source_provider()->AddFakeCamera(
-        device_id, display_name, model_id, camera_facing_mode);
-    waiter.Wait();
-  }
-
-  void RemoveFakeCamera(const std::string& device_id) {
-    CameraDevicesChangeWaiter waiter;
-    GetTestDelegate()->video_source_provider()->RemoveFakeCamera(device_id);
-    waiter.Wait();
-  }
-
-  void AddDefaultCamera() {
-    AddFakeCamera(kDefaultCameraDeviceId, kDefaultCameraDisplayName,
-                  kDefaultCameraModelId);
-  }
-
-  void RemoveDefaultCamera() { RemoveFakeCamera(kDefaultCameraDeviceId); }
 
   // Adds the default camera, sets it as the selected camera, then removes it,
   // which triggers the camera disconnection grace period. Returns a pointer to

@@ -301,6 +301,10 @@ class ASH_EXPORT CaptureModeSession
   // `current_root_` is different`.
   void RefreshBarWidgetBounds();
 
+  // Triggers a selfie camera visibility update during capture mode session on
+  // capture mode type changed.
+  void MaybeUpdateSelfieCamInSessionVisibility();
+
   // If possible, this recreates and shows the nudge that alerts the user about
   // the new folder selection settings. The nudge will be created on top of the
   // the settings button on the capture mode bar.
