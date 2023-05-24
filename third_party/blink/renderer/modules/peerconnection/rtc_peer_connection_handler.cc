@@ -490,11 +490,13 @@ using RTCStatsReportCallbackInternal =
 void GetRTCStatsOnSignalingThread(
     const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
     rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
-    RTCStatsReportCallbackInternal callback) {
+    RTCStatsReportCallbackInternal callback,
+    bool is_track_stats_deprecation_trial_enabled) {
   TRACE_EVENT0("webrtc", "GetRTCStatsOnSignalingThread");
   native_peer_connection->GetStats(
       CreateRTCStatsCollectorCallback(
-          main_thread, ConvertToBaseOnceCallback(std::move(callback)))
+          main_thread, ConvertToBaseOnceCallback(std::move(callback)),
+          is_track_stats_deprecation_trial_enabled)
           .get());
 }
 
@@ -1641,13 +1643,16 @@ void RTCPeerConnectionHandler::GetStats(
                           level, observer, std::move(selector)));
 }
 
-void RTCPeerConnectionHandler::GetStats(RTCStatsReportCallback callback) {
+void RTCPeerConnectionHandler::GetStats(
+    RTCStatsReportCallback callback,
+    bool is_track_stats_deprecation_trial_enabled) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   PostCrossThreadTask(
       *signaling_thread().get(), FROM_HERE,
       CrossThreadBindOnce(&GetRTCStatsOnSignalingThread, task_runner_,
                           native_peer_connection_,
-                          CrossThreadBindOnce(std::move(callback))));
+                          CrossThreadBindOnce(std::move(callback)),
+                          is_track_stats_deprecation_trial_enabled));
 }
 
 webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>

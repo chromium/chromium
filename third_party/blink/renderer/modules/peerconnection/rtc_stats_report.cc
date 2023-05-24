@@ -104,7 +104,8 @@ RTCCodecStats* ToV8Stat(ScriptState* script_state,
 RTCInboundRtpStreamStats* ToV8Stat(
     ScriptState* script_state,
     const webrtc::RTCInboundRtpStreamStats& webrtc_stat,
-    bool expose_hardware_caps) {
+    bool expose_hardware_caps,
+    bool unship_deprecated_stats) {
   RTCInboundRtpStreamStats* v8_stat =
       MakeGarbageCollected<RTCInboundRtpStreamStats>(
           script_state->GetIsolate());
@@ -122,6 +123,9 @@ RTCInboundRtpStreamStats* ToV8Stat(
   }
   if (webrtc_stat.codec_id.is_defined()) {
     v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
+  }
+  if (!unship_deprecated_stats && webrtc_stat.track_id.is_defined()) {
+    v8_stat->setTrackId(String::FromUTF8(*webrtc_stat.track_id));
   }
   // RTCReceivedRtpStreamStats
   if (webrtc_stat.packets_lost.is_defined()) {
@@ -310,7 +314,8 @@ RTCInboundRtpStreamStats* ToV8Stat(
 
 RTCRemoteInboundRtpStreamStats* ToV8Stat(
     ScriptState* script_state,
-    const webrtc::RTCRemoteInboundRtpStreamStats& webrtc_stat) {
+    const webrtc::RTCRemoteInboundRtpStreamStats& webrtc_stat,
+    bool unship_deprecated_stats) {
   RTCRemoteInboundRtpStreamStats* v8_stat =
       MakeGarbageCollected<RTCRemoteInboundRtpStreamStats>(
           script_state->GetIsolate());
@@ -328,6 +333,10 @@ RTCRemoteInboundRtpStreamStats* ToV8Stat(
   }
   if (webrtc_stat.codec_id.is_defined()) {
     v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
+  }
+  // RTCRtpStreamStats legacy stats
+  if (!unship_deprecated_stats && webrtc_stat.track_id.is_defined()) {
+    v8_stat->setTrackId(String::FromUTF8(*webrtc_stat.track_id));
   }
   // RTCReceivedRtpStreamStats
   if (webrtc_stat.packets_lost.is_defined()) {
@@ -359,7 +368,8 @@ RTCRemoteInboundRtpStreamStats* ToV8Stat(
 RTCOutboundRtpStreamStats* ToV8Stat(
     ScriptState* script_state,
     const webrtc::RTCOutboundRtpStreamStats& webrtc_stat,
-    bool expose_hardware_caps) {
+    bool expose_hardware_caps,
+    bool unship_deprecated_stats) {
   RTCOutboundRtpStreamStats* v8_stat =
       MakeGarbageCollected<RTCOutboundRtpStreamStats>(
           script_state->GetIsolate());
@@ -377,6 +387,10 @@ RTCOutboundRtpStreamStats* ToV8Stat(
   }
   if (webrtc_stat.codec_id.is_defined()) {
     v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
+  }
+  // RTCRtpStreamStats legacy stats
+  if (!unship_deprecated_stats && webrtc_stat.track_id.is_defined()) {
+    v8_stat->setTrackId(String::FromUTF8(*webrtc_stat.track_id));
   }
   // RTCSentRtpStreamStats
   if (webrtc_stat.packets_sent.is_defined()) {
@@ -494,7 +508,8 @@ RTCOutboundRtpStreamStats* ToV8Stat(
 
 RTCRemoteOutboundRtpStreamStats* ToV8Stat(
     ScriptState* script_state,
-    const webrtc::RTCRemoteOutboundRtpStreamStats& webrtc_stat) {
+    const webrtc::RTCRemoteOutboundRtpStreamStats& webrtc_stat,
+    bool unship_deprecated_stats) {
   RTCRemoteOutboundRtpStreamStats* v8_stat =
       MakeGarbageCollected<RTCRemoteOutboundRtpStreamStats>(
           script_state->GetIsolate());
@@ -512,6 +527,10 @@ RTCRemoteOutboundRtpStreamStats* ToV8Stat(
   }
   if (webrtc_stat.codec_id.is_defined()) {
     v8_stat->setCodecId(String::FromUTF8(*webrtc_stat.codec_id));
+  }
+  // RTCRtpStreamStats legacy stats
+  if (!unship_deprecated_stats && webrtc_stat.track_id.is_defined()) {
+    v8_stat->setTrackId(String::FromUTF8(*webrtc_stat.track_id));
   }
   // RTCSendRtpStreamStats
   if (webrtc_stat.packets_sent.is_defined()) {
@@ -924,26 +943,153 @@ RTCCertificateStats* ToV8Stat(ScriptState* script_state,
   return v8_stat;
 }
 
+// https://w3c.github.io/webrtc-stats/#obsolete-rtcmediastreamstats-members
+// TODO(https://crbug.com/1374215): Delete when "track" and "stream" have been
+// unshipped.
+RTCMediaStreamStats* ToV8Stat(
+    ScriptState* script_state,
+    const webrtc::DEPRECATED_RTCMediaStreamStats& webrtc_stat) {
+  RTCMediaStreamStats* v8_stat =
+      MakeGarbageCollected<RTCMediaStreamStats>(script_state->GetIsolate());
+  if (webrtc_stat.stream_identifier.is_defined()) {
+    v8_stat->setStreamIdentifier(
+        String::FromUTF8(*webrtc_stat.stream_identifier));
+  }
+  if (webrtc_stat.track_ids.is_defined()) {
+    Vector<String> track_ids;
+    for (const std::string& track_id : *webrtc_stat.track_ids) {
+      track_ids.emplace_back(String::FromUTF8(track_id));
+    }
+    v8_stat->setTrackIds(std::move(track_ids));
+  }
+  return v8_stat;
+}
+
+// https://w3c.github.io/webrtc-stats/#obsolete-rtcmediastreamtrackstats-members
+// TODO(https://crbug.com/1374215): Delete when "track" and "stream" have been
+// unshipped.
+RTCMediaStreamTrackStats* ToV8Stat(
+    ScriptState* script_state,
+    const webrtc::DEPRECATED_RTCMediaStreamTrackStats& webrtc_stat) {
+  RTCMediaStreamTrackStats* v8_stat =
+      MakeGarbageCollected<RTCMediaStreamTrackStats>(
+          script_state->GetIsolate());
+  if (webrtc_stat.track_identifier.is_defined()) {
+    v8_stat->setTrackIdentifier(
+        String::FromUTF8(*webrtc_stat.track_identifier));
+  }
+  if (webrtc_stat.ended.is_defined()) {
+    v8_stat->setEnded(*webrtc_stat.ended);
+  }
+  if (webrtc_stat.kind.is_defined()) {
+    v8_stat->setKind(String::FromUTF8(*webrtc_stat.kind));
+  }
+  if (webrtc_stat.remote_source.is_defined()) {
+    v8_stat->setRemoteSource(*webrtc_stat.remote_source);
+  }
+  if (webrtc_stat.jitter_buffer_delay.is_defined()) {
+    v8_stat->setJitterBufferDelay(*webrtc_stat.jitter_buffer_delay);
+  }
+  if (webrtc_stat.jitter_buffer_emitted_count.is_defined()) {
+    v8_stat->setJitterBufferEmittedCount(
+        *webrtc_stat.jitter_buffer_emitted_count);
+  }
+  // Audio-only, send and receive side.
+  if (webrtc_stat.audio_level.is_defined()) {
+    v8_stat->setAudioLevel(*webrtc_stat.audio_level);
+  }
+  if (webrtc_stat.total_audio_energy.is_defined()) {
+    v8_stat->setTotalAudioEnergy(*webrtc_stat.total_audio_energy);
+  }
+  if (webrtc_stat.total_samples_duration.is_defined()) {
+    v8_stat->setTotalSamplesDuration(*webrtc_stat.total_samples_duration);
+  }
+  // Audio-only, send side.
+  if (webrtc_stat.echo_return_loss.is_defined()) {
+    v8_stat->setEchoReturnLoss(*webrtc_stat.echo_return_loss);
+  }
+  if (webrtc_stat.echo_return_loss_enhancement.is_defined()) {
+    v8_stat->setEchoReturnLossEnhancement(
+        *webrtc_stat.echo_return_loss_enhancement);
+  }
+  // Audio-only, receive side.
+  if (webrtc_stat.total_samples_received.is_defined()) {
+    v8_stat->setTotalSamplesReceived(*webrtc_stat.total_samples_received);
+  }
+  if (webrtc_stat.concealed_samples.is_defined()) {
+    v8_stat->setConcealedSamples(*webrtc_stat.concealed_samples);
+  }
+  if (webrtc_stat.silent_concealed_samples.is_defined()) {
+    v8_stat->setSilentConcealedSamples(*webrtc_stat.silent_concealed_samples);
+  }
+  if (webrtc_stat.concealment_events.is_defined()) {
+    v8_stat->setConcealmentEvents(*webrtc_stat.concealment_events);
+  }
+  if (webrtc_stat.inserted_samples_for_deceleration.is_defined()) {
+    v8_stat->setInsertedSamplesForDeceleration(
+        *webrtc_stat.inserted_samples_for_deceleration);
+  }
+  if (webrtc_stat.removed_samples_for_acceleration.is_defined()) {
+    v8_stat->setRemovedSamplesForAcceleration(
+        *webrtc_stat.removed_samples_for_acceleration);
+  }
+  // Video-only, send and receive side.
+  if (webrtc_stat.frame_width.is_defined()) {
+    v8_stat->setFrameWidth(*webrtc_stat.frame_width);
+  }
+  if (webrtc_stat.frame_height.is_defined()) {
+    v8_stat->setFrameHeight(*webrtc_stat.frame_height);
+  }
+  // Video-only, send side.
+  if (webrtc_stat.frames_sent.is_defined()) {
+    v8_stat->setFramesSent(*webrtc_stat.frames_sent);
+  }
+  if (webrtc_stat.huge_frames_sent.is_defined()) {
+    v8_stat->setHugeFramesSent(*webrtc_stat.huge_frames_sent);
+  }
+  // Video-only, receive side.
+  if (webrtc_stat.frames_received.is_defined()) {
+    v8_stat->setFramesReceived(*webrtc_stat.frames_received);
+  }
+  if (webrtc_stat.frames_decoded.is_defined()) {
+    v8_stat->setFramesDecoded(*webrtc_stat.frames_decoded);
+  }
+  if (webrtc_stat.frames_dropped.is_defined()) {
+    v8_stat->setFramesDropped(*webrtc_stat.frames_dropped);
+  }
+  // Non-standard and obsolete stats.
+  if (webrtc_stat.media_source_id.is_defined()) {
+    v8_stat->setMediaSourceId(String::FromUTF8(*webrtc_stat.media_source_id));
+  }
+  if (webrtc_stat.detached.is_defined()) {
+    v8_stat->setDetached(*webrtc_stat.detached);
+  }
+  return v8_stat;
+}
+
 RTCStats* RTCStatsToIDL(ScriptState* script_state,
                         const webrtc::RTCStats& stat,
-                        bool expose_hardware_caps) {
+                        bool expose_hardware_caps,
+                        bool unship_deprecated_stats) {
   RTCStats* v8_stats = nullptr;
   if (strcmp(stat.type(), "codec") == 0) {
     v8_stats = ToV8Stat(script_state, stat.cast_to<webrtc::RTCCodecStats>());
   } else if (strcmp(stat.type(), "inbound-rtp") == 0) {
     v8_stats =
         ToV8Stat(script_state, stat.cast_to<webrtc::RTCInboundRtpStreamStats>(),
-                 expose_hardware_caps);
+                 expose_hardware_caps, unship_deprecated_stats);
   } else if (strcmp(stat.type(), "outbound-rtp") == 0) {
     v8_stats = ToV8Stat(script_state,
                         stat.cast_to<webrtc::RTCOutboundRtpStreamStats>(),
-                        expose_hardware_caps);
+                        expose_hardware_caps, unship_deprecated_stats);
   } else if (strcmp(stat.type(), "remote-inbound-rtp") == 0) {
     v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCRemoteInboundRtpStreamStats>());
+                        stat.cast_to<webrtc::RTCRemoteInboundRtpStreamStats>(),
+                        unship_deprecated_stats);
   } else if (strcmp(stat.type(), "remote-outbound-rtp") == 0) {
-    v8_stats = ToV8Stat(
-        script_state, stat.cast_to<webrtc::RTCRemoteOutboundRtpStreamStats>());
+    v8_stats = ToV8Stat(script_state,
+                        stat.cast_to<webrtc::RTCRemoteOutboundRtpStreamStats>(),
+                        unship_deprecated_stats);
   } else if (strcmp(stat.type(), "media-source") == 0) {
     // Type media-source indicates a parent type. The actual stats are based on
     // the kind.
@@ -970,6 +1116,19 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
   } else if (strcmp(stat.type(), "data-channel") == 0) {
     v8_stats =
         ToV8Stat(script_state, stat.cast_to<webrtc::RTCDataChannelStats>());
+  } else if (strcmp(stat.type(), "stream") == 0) {
+    if (unship_deprecated_stats) {
+      return nullptr;
+    }
+    v8_stats = ToV8Stat(script_state,
+                        stat.cast_to<webrtc::DEPRECATED_RTCMediaStreamStats>());
+  } else if (strcmp(stat.type(), "track") == 0) {
+    if (unship_deprecated_stats) {
+      return nullptr;
+    }
+    v8_stats =
+        ToV8Stat(script_state,
+                 stat.cast_to<webrtc::DEPRECATED_RTCMediaStreamTrackStats>());
   } else if (strcmp(stat.type(), "transport") == 0) {
     v8_stats =
         ToV8Stat(script_state, stat.cast_to<webrtc::RTCTransportStats>());
@@ -1020,7 +1179,8 @@ class RTCStatsReportIterationSource final
     RTCStats* v8_stat = nullptr;
     // Loop until a stat can be converted.
     while (rtc_stats) {
-      v8_stat = RTCStatsToIDL(script_state, *rtc_stats, expose_hardware_caps);
+      v8_stat = RTCStatsToIDL(script_state, *rtc_stats, expose_hardware_caps,
+                              report_->unship_deprecated_stats());
       if (v8_stat) {
         break;
       }
@@ -1064,7 +1224,8 @@ bool RTCStatsReport::GetMapEntryIdl(ScriptState* script_state,
   }
 
   RTCStats* v8_stats = RTCStatsToIDL(
-      script_state, *stats, ExposeHardwareCapabilityStats(script_state));
+      script_state, *stats, ExposeHardwareCapabilityStats(script_state),
+      report_->unship_deprecated_stats());
   if (!v8_stats) {
     return false;
   }

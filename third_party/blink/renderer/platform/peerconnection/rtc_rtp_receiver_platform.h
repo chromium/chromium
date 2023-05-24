@@ -45,7 +45,8 @@ class PLATFORM_EXPORT RTCRtpReceiverPlatform {
   // If called from any other thread than the WebRTC worker thread, this causes
   // a block-invoke by the PROXY.
   virtual Vector<std::unique_ptr<RTCRtpSource>> GetSources() = 0;
-  virtual void GetStats(RTCStatsReportCallback) = 0;
+  virtual void GetStats(RTCStatsReportCallback,
+                        bool is_track_stats_deprecation_trial_enabled) = 0;
   virtual std::unique_ptr<webrtc::RtpParameters> GetParameters() const = 0;
   virtual void SetJitterBufferMinimumDelay(
       absl::optional<double> delay_seconds) = 0;

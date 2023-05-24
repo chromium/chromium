@@ -26,22 +26,32 @@
 
 namespace blink {
 
+// TODO(https://crbug.com/webrtc/14175): When "track" stats no longer exist in
+// the lower layer, delete all the filtering mechanisms gated by this flag since
+// that filtering will become a NO-OP when "track" no longer exists.
+BASE_FEATURE(WebRtcUnshipDeprecatedStats,
+             "WebRtcUnshipDeprecatedStats",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
-// TODO(https://crbug.com/webrtc/14175): When "track" stats no longer exist in
-// the lower layer, checking for "DEPRECATED_" is no longer needed.
-bool ShouldExposeStatsObject(const webrtc::RTCStats& stats) {
+bool ShouldExposeStatsObject(const webrtc::RTCStats& stats,
+                             bool unship_deprecated_stats) {
+  if (!unship_deprecated_stats)
+    return true;
   // !starts_with()
   return stats.id().rfind("DEPRECATED_", 0) != 0;
 }
 
 size_t CountExposedStatsObjects(
-    const scoped_refptr<const webrtc::RTCStatsReport>& stats_report) {
+    const scoped_refptr<const webrtc::RTCStatsReport>& stats_report,
+    bool unship_deprecated_stats) {
+  if (!unship_deprecated_stats)
+    return stats_report->size();
   size_t count = 0u;
   for (const auto& stats : *stats_report) {
-    if (ShouldExposeStatsObject(stats)) {
+    if (ShouldExposeStatsObject(stats, unship_deprecated_stats))
       ++count;
-    }
   }
   return count;
 }
@@ -49,11 +59,17 @@ size_t CountExposedStatsObjects(
 }  // namespace
 
 RTCStatsReportPlatform::RTCStatsReportPlatform(
-    const scoped_refptr<const webrtc::RTCStatsReport>& stats_report)
-    : stats_report_(stats_report),
+    const scoped_refptr<const webrtc::RTCStatsReport>& stats_report,
+    bool is_track_stats_deprecation_trial_enabled)
+    : is_track_stats_deprecation_trial_enabled_(
+          is_track_stats_deprecation_trial_enabled),
+      unship_deprecated_stats_(
+          base::FeatureList::IsEnabled(WebRtcUnshipDeprecatedStats) &&
+          !is_track_stats_deprecation_trial_enabled_),
+      stats_report_(stats_report),
       it_(stats_report_->begin()),
       end_(stats_report_->end()),
-      size_(CountExposedStatsObjects(stats_report)) {
+      size_(CountExposedStatsObjects(stats_report, unship_deprecated_stats_)) {
   DCHECK(stats_report_);
 }
 
@@ -61,7 +77,8 @@ RTCStatsReportPlatform::~RTCStatsReportPlatform() {}
 
 std::unique_ptr<RTCStatsReportPlatform> RTCStatsReportPlatform::CopyHandle()
     const {
-  return std::make_unique<RTCStatsReportPlatform>(stats_report_);
+  return std::make_unique<RTCStatsReportPlatform>(
+      stats_report_, is_track_stats_deprecation_trial_enabled_);
 }
 
 const webrtc::RTCStats* RTCStatsReportPlatform::NextStats() {
@@ -80,16 +97,22 @@ size_t RTCStatsReportPlatform::Size() const {
 rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>
 CreateRTCStatsCollectorCallback(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
-    RTCStatsReportCallback callback) {
+    RTCStatsReportCallback callback,
+    bool is_track_stats_deprecation_trial_enabled) {
   return rtc::scoped_refptr<RTCStatsCollectorCallbackImpl>(
       new rtc::RefCountedObject<RTCStatsCollectorCallbackImpl>(
-          std::move(main_thread), std::move(callback)));
+          std::move(main_thread), std::move(callback),
+          is_track_stats_deprecation_trial_enabled));
 }
 
 RTCStatsCollectorCallbackImpl::RTCStatsCollectorCallbackImpl(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
-    RTCStatsReportCallback callback)
-    : main_thread_(std::move(main_thread)), callback_(std::move(callback)) {}
+    RTCStatsReportCallback callback,
+    bool is_track_stats_deprecation_trial_enabled)
+    : main_thread_(std::move(main_thread)),
+      callback_(std::move(callback)),
+      is_track_stats_deprecation_trial_enabled_(
+          is_track_stats_deprecation_trial_enabled) {}
 
 RTCStatsCollectorCallbackImpl::~RTCStatsCollectorCallbackImpl() {
   DCHECK(!callback_);
@@ -111,7 +134,8 @@ void RTCStatsCollectorCallbackImpl::OnStatsDeliveredOnMainThread(
   DCHECK(callback_);
   // Make sure the callback is destroyed in the main thread as well.
   std::move(callback_).Run(std::make_unique<RTCStatsReportPlatform>(
-      base::WrapRefCounted(report.get())));
+      base::WrapRefCounted(report.get()),
+      is_track_stats_deprecation_trial_enabled_));
 }
 
 }  // namespace blink

@@ -302,12 +302,14 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
                             CrossThreadBindOnce(std::move(callback))));
   }
 
-  void GetStats(RTCStatsReportCallback callback) {
+  void GetStats(RTCStatsReportCallback callback,
+                bool is_track_stats_deprecation_trial_enabled) {
     PostCrossThreadTask(
         *signaling_task_runner_.get(), FROM_HERE,
         CrossThreadBindOnce(
             &RTCRtpSenderImpl::RTCRtpSenderInternal::GetStatsOnSignalingThread,
-            WrapRefCounted(this), CrossThreadBindOnce(std::move(callback))));
+            WrapRefCounted(this), CrossThreadBindOnce(std::move(callback)),
+            is_track_stats_deprecation_trial_enabled));
   }
 
   bool RemoveFromPeerConnection(webrtc::PeerConnectionInterface* pc) {
@@ -379,11 +381,14 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
   using RTCStatsReportCallbackInternal =
       CrossThreadOnceFunction<void(std::unique_ptr<RTCStatsReportPlatform>)>;
 
-  void GetStatsOnSignalingThread(RTCStatsReportCallbackInternal callback) {
+  void GetStatsOnSignalingThread(
+      RTCStatsReportCallbackInternal callback,
+      bool is_track_stats_deprecation_trial_enabled) {
     native_peer_connection_->GetStats(
         rtc::scoped_refptr<webrtc::RtpSenderInterface>(webrtc_sender_.get()),
         CreateRTCStatsCollectorCallback(
-            main_task_runner_, ConvertToBaseOnceCallback(std::move(callback))));
+            main_task_runner_, ConvertToBaseOnceCallback(std::move(callback)),
+            is_track_stats_deprecation_trial_enabled));
   }
 
   void SetParametersOnSignalingThread(
@@ -531,8 +536,10 @@ void RTCRtpSenderImpl::SetParameters(
       WTF::BindOnce(&OnSetParametersCompleted, WrapPersistent(request)));
 }
 
-void RTCRtpSenderImpl::GetStats(RTCStatsReportCallback callback) {
-  internal_->GetStats(std::move(callback));
+void RTCRtpSenderImpl::GetStats(RTCStatsReportCallback callback,
+                                bool is_track_stats_deprecation_trial_enabled) {
+  internal_->GetStats(std::move(callback),
+                      is_track_stats_deprecation_trial_enabled);
 }
 
 void RTCRtpSenderImpl::SetStreams(const Vector<String>& stream_ids) {

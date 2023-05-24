@@ -37,7 +37,8 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(WebRtcUnshipDeprecatedStats);
 class PLATFORM_EXPORT RTCStatsReportPlatform {
  public:
   RTCStatsReportPlatform(
-      const scoped_refptr<const webrtc::RTCStatsReport>& stats_report);
+      const scoped_refptr<const webrtc::RTCStatsReport>& stats_report,
+      bool is_track_stats_deprecation_trial_enabled);
   virtual ~RTCStatsReportPlatform();
 
   // Creates a new report object that is a handle to the same underlying stats
@@ -46,12 +47,15 @@ class PLATFORM_EXPORT RTCStatsReportPlatform {
   std::unique_ptr<RTCStatsReportPlatform> CopyHandle() const;
 
   const webrtc::RTCStatsReport& stats_report() const { return *stats_report_; }
+  bool unship_deprecated_stats() const { return unship_deprecated_stats_; }
   const webrtc::RTCStats* NextStats();
 
   // The number of stats objects.
   size_t Size() const;
 
  private:
+  const bool is_track_stats_deprecation_trial_enabled_;
+  const bool unship_deprecated_stats_;
   const scoped_refptr<const webrtc::RTCStatsReport> stats_report_;
   webrtc::RTCStatsReport::ConstIterator it_;
   const webrtc::RTCStatsReport::ConstIterator end_;
@@ -66,7 +70,8 @@ PLATFORM_EXPORT
 rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>
 CreateRTCStatsCollectorCallback(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
-    RTCStatsReportCallback callback);
+    RTCStatsReportCallback callback,
+    bool is_track_stats_deprecation_trial_enabled);
 
 // A stats collector callback.
 // It is invoked on the WebRTC signaling thread and will post a task to invoke
@@ -81,7 +86,8 @@ class PLATFORM_EXPORT RTCStatsCollectorCallbackImpl
  protected:
   RTCStatsCollectorCallbackImpl(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread,
-      RTCStatsReportCallback callback);
+      RTCStatsReportCallback callback,
+      bool is_track_stats_deprecation_trial_enabled);
   ~RTCStatsCollectorCallbackImpl() override;
 
   void OnStatsDeliveredOnMainThread(
@@ -89,6 +95,7 @@ class PLATFORM_EXPORT RTCStatsCollectorCallbackImpl
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   RTCStatsReportCallback callback_;
+  bool is_track_stats_deprecation_trial_enabled_;
 };
 
 }  // namespace blink

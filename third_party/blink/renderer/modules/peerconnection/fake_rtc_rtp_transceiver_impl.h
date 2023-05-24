@@ -49,7 +49,8 @@ class FakeRTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   void SetParameters(Vector<webrtc::RtpEncodingParameters>,
                      absl::optional<webrtc::DegradationPreference>,
                      blink::RTCVoidRequest*) override;
-  void GetStats(RTCStatsReportCallback) override;
+  void GetStats(RTCStatsReportCallback,
+                bool is_track_stats_deprecation_trial_enabled) override;
   void SetStreams(const Vector<String>& stream_ids) override;
 
  private:
@@ -75,7 +76,8 @@ class FakeRTCRtpReceiverImpl : public RTCRtpReceiverPlatform {
   MediaStreamComponent* Track() const override;
   Vector<String> StreamIds() const override;
   Vector<std::unique_ptr<RTCRtpSource>> GetSources() override;
-  void GetStats(RTCStatsReportCallback) override;
+  void GetStats(RTCStatsReportCallback,
+                bool is_track_stats_deprecation_trial_enabled) override;
   std::unique_ptr<webrtc::RtpParameters> GetParameters() const override;
   void SetJitterBufferMinimumDelay(
       absl::optional<double> delay_seconds) override;

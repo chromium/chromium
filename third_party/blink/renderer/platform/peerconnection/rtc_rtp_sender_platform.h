@@ -53,7 +53,8 @@ class PLATFORM_EXPORT RTCRtpSenderPlatform {
   virtual void SetParameters(Vector<webrtc::RtpEncodingParameters>,
                              absl::optional<webrtc::DegradationPreference>,
                              RTCVoidRequest*) = 0;
-  virtual void GetStats(RTCStatsReportCallback) = 0;
+  virtual void GetStats(RTCStatsReportCallback,
+                        bool is_track_stats_deprecation_trial_enabled) = 0;
   virtual void SetStreams(const Vector<String>& stream_ids) = 0;
   virtual RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer()
       const {

@@ -102,7 +102,9 @@ void FakeRTCRtpSenderImpl::SetParameters(
   NOTIMPLEMENTED();
 }
 
-void FakeRTCRtpSenderImpl::GetStats(RTCStatsReportCallback) {
+void FakeRTCRtpSenderImpl::GetStats(
+    RTCStatsReportCallback,
+    bool is_track_stats_deprecation_trial_enabled) {
   NOTIMPLEMENTED();
 }
 
@@ -162,7 +164,9 @@ Vector<std::unique_ptr<RTCRtpSource>> FakeRTCRtpReceiverImpl::GetSources() {
   return {};
 }
 
-void FakeRTCRtpReceiverImpl::GetStats(RTCStatsReportCallback) {
+void FakeRTCRtpReceiverImpl::GetStats(
+    RTCStatsReportCallback,
+    bool is_track_stats_deprecation_trial_enabled) {
   NOTIMPLEMENTED();
 }
 

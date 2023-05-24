@@ -80,7 +80,8 @@ class MockRTCPeerConnectionHandlerPlatform : public RTCPeerConnectionHandler {
   void AddIceCandidate(RTCVoidRequest*, RTCIceCandidatePlatform*) override;
   void RestartIce() override;
   void GetStats(RTCStatsRequest*) override;
-  void GetStats(RTCStatsReportCallback) override;
+  void GetStats(RTCStatsReportCallback,
+                bool is_track_stats_deprecation_trial_enabled) override;
   webrtc::RTCErrorOr<std::unique_ptr<RTCRtpTransceiverPlatform>>
   AddTransceiverWithTrack(MediaStreamComponent*,
                           const webrtc::RtpTransceiverInit&) override;

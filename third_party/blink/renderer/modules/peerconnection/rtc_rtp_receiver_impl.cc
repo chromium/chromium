@@ -191,11 +191,13 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
     return sources;
   }
 
-  void GetStats(RTCStatsReportCallback callback) {
+  void GetStats(RTCStatsReportCallback callback,
+                bool is_track_stats_deprecation_trial_enabled) {
     signaling_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&RTCRtpReceiverInternal::GetStatsOnSignalingThread, this,
-                       std::move(callback)));
+                       std::move(callback),
+                       is_track_stats_deprecation_trial_enabled));
   }
 
   std::unique_ptr<webrtc::RtpParameters> GetParameters() {
@@ -225,12 +227,15 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
     DCHECK(main_task_runner_->BelongsToCurrentThread());
   }
 
-  void GetStatsOnSignalingThread(RTCStatsReportCallback callback) {
+  void GetStatsOnSignalingThread(
+      RTCStatsReportCallback callback,
+      bool is_track_stats_deprecation_trial_enabled) {
     native_peer_connection_->GetStats(
         rtc::scoped_refptr<webrtc::RtpReceiverInterface>(
             webrtc_receiver_.get()),
-        CreateRTCStatsCollectorCallback(main_task_runner_,
-                                        std::move(callback)));
+        CreateRTCStatsCollectorCallback(
+            main_task_runner_, std::move(callback),
+            is_track_stats_deprecation_trial_enabled));
   }
 
   const rtc::scoped_refptr<webrtc::PeerConnectionInterface>
@@ -331,8 +336,11 @@ Vector<std::unique_ptr<RTCRtpSource>> RTCRtpReceiverImpl::GetSources() {
   return internal_->GetSources();
 }
 
-void RTCRtpReceiverImpl::GetStats(RTCStatsReportCallback callback) {
-  internal_->GetStats(std::move(callback));
+void RTCRtpReceiverImpl::GetStats(
+    RTCStatsReportCallback callback,
+    bool is_track_stats_deprecation_trial_enabled) {
+  internal_->GetStats(std::move(callback),
+                      is_track_stats_deprecation_trial_enabled);
 }
 
 std::unique_ptr<webrtc::RtpParameters> RTCRtpReceiverImpl::GetParameters()
