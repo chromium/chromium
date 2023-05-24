@@ -218,6 +218,10 @@ export class XfCloudPanel extends XfBase {
 
 function getCSS() {
   return css`
+    cr-action-menu {
+      --cr-menu-border-radius: 20px;
+    }
+
     :host {
       position: absolute;
       right: 0px;
