@@ -964,7 +964,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1831848493690504725">Nelze se spojit s Googlem prostřednictvím připojené sítě. Zkuste vybrat jinou síť nebo zkontrolovat nastavení sítě či proxy serveru (pokud ho používáte).</translation>
 <translation id="1832459821645506983">Ano, souhlasím</translation>
 <translation id="1832511806131704864">Změna telefonu aktualizována</translation>
-<translation id="1832848789136765277">Aby bylo zajištěno, že budete mít vždy přístup k synchronizovaným datům, ověřte svou totožnost</translation>
+<translation id="1832848789136765277">Aby bylo zajištěno, že budete mít vždy přístup k synchronizovaným datům, ověřte svoji totožnost</translation>
 <translation id="1834503245783133039">Stažení se nezdařilo: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Upgradování Linuxu</translation>
 <translation id="1835612721186505600">Povolit přístup pro aplikace a weby s oprávněním k fotoaparátu</translation>
@@ -2529,7 +2529,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Poznámka<ph name="END_BOLD" />: K osobním výsledkům uživatele <ph name="SUPERVISED_USER_NAME" /> může získat přístup někdo s podobným hlasem nebo nahrávkou jeho hlasu.</translation>
 <translation id="3217843140356091325">Vytvořit zástupce?</translation>
 <translation id="321834671654278338">Odinstalační program Linuxu</translation>
-<translation id="3220943972464248773">Pokud chcete synchronizovat hesla, ověřte svou totožnost</translation>
+<translation id="3220943972464248773">Pokud chcete synchronizovat hesla, ověřte svoji totožnost</translation>
 <translation id="3222066309010235055">Předběžně vykreslit: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Připojit k síti <ph name="USB_VM_NAME" /></translation>
 <translation id="3223531857777746191">Tlačítko Resetovat</translation>
@@ -4076,7 +4076,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4617270414136722281">Možnosti rozšíření</translation>
 <translation id="4617880081511131945">Nelze navázat spojení</translation>
 <translation id="4618195822946934889">URL smí obsahovat pouze znaky ASCII</translation>
-<translation id="4619564267100705184">Ověřte svou totožnost</translation>
+<translation id="4619564267100705184">Ověřte svoji totožnost</translation>
 <translation id="4619615317237390068">Karty z ostatních zařízení</translation>
 <translation id="4620809267248568679">Toto nastavení bylo vynuceno rozšířením.</translation>
 <translation id="4622051949285931942">Vypnout automatické aktualizace?</translation>
@@ -5944,7 +5944,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6361850914223837199">Podrobnosti o chybě:</translation>
 <translation id="6362853299801475928">&amp;Oznámení problému...</translation>
 <translation id="6363786367719063276">Zobrazit protokoly</translation>
-<translation id="6363990818884053551">Pokud chcete zahájit synchronizaci, ověřte svou totožnost</translation>
+<translation id="6363990818884053551">Pokud chcete zahájit synchronizaci, ověřte svoji totožnost</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Přidání rodiny a přátel</translation>
 <translation id="6367097275976877956">Chcete aktivovat čtečku ChromeVox, integrovanou čtečku obrazovky pro ChromeOS? Pokud ano, stiskněte mezerník.</translation>
@@ -6486,7 +6486,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6840214587087739194">Adresa byla smazána</translation>
 <translation id="6841143363521180029">Zašifrováno</translation>
 <translation id="6841186874966388268">Chyby</translation>
-<translation id="6842136130964845393">Aby bylo zajištěno, že budete mít vždy přístup k uloženým heslům, ověřte svou totožnost</translation>
+<translation id="6842136130964845393">Aby bylo zajištěno, že budete mít vždy přístup k uloženým heslům, ověřte svoji totožnost</translation>
 <translation id="6842749380892715807">Seznamy webů ve formátu XML byly staženy naposledy v <ph name="LAST_DATE_DOWNLOAD" />.</translation>
 <translation id="6842868554183332230">Weby obvykle zjišťují, zda své zařízení používáte aktivně, aby mohly nastavit vaši dostupnost v chatovacích aplikacích</translation>
 <translation id="6843264316370513305">Ladění sítě</translation>
@@ -7698,7 +7698,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7942349550061667556">Červená</translation>
 <translation id="7943368935008348579">Stahování souborů PDF</translation>
 <translation id="7943837619101191061">Přidat umístění...</translation>
-<translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši identitu</translation>
+<translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši totožnost</translation>
 <translation id="7945031593909029181">Rozšíření <ph name="CHROME_EXTENSION_NAME" /> žádá o připojení</translation>
 <translation id="7945703887991230167">Preferovaný hlas</translation>
 <translation id="7946586320617670168">Původ musí být zabezpečený</translation>
