@@ -208,7 +208,7 @@ bool IsConsistencyNewAccountInterfaceEnabled() {
 
 BASE_FEATURE(kAddToHomeScreen,
              "AddToHomeScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kAddToHomeScreenDisableIncognitoParam[] =
     "AddToHomeScreenDisableIncognitoParam";
@@ -221,7 +221,7 @@ bool ShouldAddToHomeScreen(bool in_incognito) {
     return true;
   }
   return !base::GetFieldTrialParamByFeatureAsBool(
-      kAddToHomeScreen, kAddToHomeScreenDisableIncognitoParam, false);
+      kAddToHomeScreen, kAddToHomeScreenDisableIncognitoParam, true);
 }
 
 BASE_FEATURE(kNewNTPOmniboxLayout,
