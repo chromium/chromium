@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_BUILDER_H_
 
+#include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_auto_pad.h"
@@ -95,7 +96,8 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   // given input sizes, filter sizes, padding, strides, dilations and output
   // padding. Return the calculated output sizes in double precision floating
   // point number if no errors.
-  static absl::optional<Size2D> ValidateAndCalculateConvTranspose2dOutputSizes(
+  static base::expected<Size2D, String>
+  ValidateAndCalculateConvTranspose2dOutputSizes(
       const uint32_t input_height,
       const uint32_t input_width,
       const uint32_t filter_height,
@@ -104,8 +106,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
       const Vector<uint32_t>& strides,
       const Vector<uint32_t>& dilations,
       const Vector<uint32_t>& output_padding,
-      const V8MLAutoPad auto_pad,
-      String& error_message);
+      const V8MLAutoPad auto_pad);
 
   // ml_graph_builder.idl
   MLOperand* input(String name,

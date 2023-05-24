@@ -9,42 +9,35 @@
 
 namespace webnn {
 
-absl::optional<size_t> ValidateAndCalculateElementsNumber(
-    base::span<const uint32_t> dimensions,
-    std::string& error_message) {
+base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
+    base::span<const uint32_t> dimensions) {
   if (dimensions.empty()) {
-    error_message = "The dimensions is empty.";
-    return absl::nullopt;
+    return base::unexpected("The dimensions is empty.");
   }
   base::CheckedNumeric<size_t> checked_number_of_elements = 1;
   for (auto& d : dimensions) {
     if (d == 0) {
-      error_message = "All dimensions should be positive.";
-      return absl::nullopt;
+      return base::unexpected("All dimensions should be positive.");
     }
     checked_number_of_elements *= d;
   }
   if (!checked_number_of_elements.IsValid()) {
-    error_message = "The number of elements is too large.";
-    return absl::nullopt;
+    return base::unexpected("The number of elements is too large.");
   }
   return checked_number_of_elements.ValueOrDie();
 }
 
-absl::optional<size_t> ValidateAndCalculateByteLength(
+base::expected<size_t, std::string> ValidateAndCalculateByteLength(
     size_t type_bytes,
-    base::span<const uint32_t> dimensions,
-    std::string& error_message) {
-  absl::optional<size_t> elements_num =
-      ValidateAndCalculateElementsNumber(dimensions, error_message);
-  if (!elements_num) {
-    return absl::nullopt;
+    base::span<const uint32_t> dimensions) {
+  auto elements_num_result = ValidateAndCalculateElementsNumber(dimensions);
+  if (!elements_num_result.has_value()) {
+    return elements_num_result;
   }
   auto checked_byte_length =
-      base::MakeCheckedNum<size_t>(elements_num.value()) * type_bytes;
+      base::MakeCheckedNum<size_t>(elements_num_result.value()) * type_bytes;
   if (!checked_byte_length.IsValid()) {
-    error_message = "The byte length is too large.";
-    return absl::nullopt;
+    return base::unexpected("The byte length is too large.");
   }
   return checked_byte_length.ValueOrDie();
 }

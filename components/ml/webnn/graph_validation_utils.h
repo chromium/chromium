@@ -8,18 +8,17 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webnn {
 
-absl::optional<size_t> ValidateAndCalculateElementsNumber(
-    base::span<const uint32_t> dimensions,
-    std::string& error_message);
+base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
+    base::span<const uint32_t> dimensions);
 
-absl::optional<size_t> ValidateAndCalculateByteLength(
+base::expected<size_t, std::string> ValidateAndCalculateByteLength(
     size_t type_bytes,
-    base::span<const uint32_t> dimensions,
-    std::string& error_message);
+    base::span<const uint32_t> dimensions);
 
 // Broadcast the input shapes and return the output shape.
 // If bidirectional is true, its behavior follows the numpy-broadcasting-rule:

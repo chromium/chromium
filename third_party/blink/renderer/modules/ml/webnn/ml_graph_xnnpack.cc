@@ -997,8 +997,8 @@ xnn_status DefineXnnNodeForConvTranspose2d(
             options->getPaddingOr({0, 0, 0, 0}), {stride_height, stride_width},
             {dilation_height, dilation_width},
             // Calculate the output sizes without output padding.
-            {0u, 0u}, options->autoPad(), error_message);
-    CHECK(calculated_output_sizes);
+            {0u, 0u}, options->autoPad());
+    CHECK(calculated_output_sizes.has_value());
     CHECK_GE(output_height, calculated_output_sizes->height);
     output_padding_height = output_height - calculated_output_sizes->height;
     CHECK_GE(output_width, calculated_output_sizes->width);
