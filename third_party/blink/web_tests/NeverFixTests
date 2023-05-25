@@ -197,9 +197,6 @@ external/wpt/css/CSS2/linebox/inline-formatting-context-002.xht [ Skip ]
 [ Linux ] external/wpt/css/CSS2/linebox/inline-formatting-context-007.xht [ Skip ]
 [ Win ] external/wpt/css/CSS2/linebox/inline-formatting-context-007.xht [ Skip ]
 
-# CSS allows justification (text-align: justify) to hang trailing preserved spaces.
-external/wpt/css/CSS2/text/text-align-white-space-003.xht [ Skip ]
-
 # CSS2 tests that require files in different directories.
 external/wpt/css/CSS2/normal-flow/blocks-017.xht [ Skip ]
 
