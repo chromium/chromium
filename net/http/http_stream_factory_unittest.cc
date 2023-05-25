@@ -3449,14 +3449,9 @@ class ProcessAlternativeServicesTest : public TestWithTaskEnvironment {
     session_context_.quic_context = &quic_context_;
   }
 
- protected:
-  HttpNetworkSessionParams session_params_;
-  HttpNetworkSessionContext session_context_;
-  std::unique_ptr<HttpNetworkSession> session_;
-  HttpServerProperties http_server_properties_;
-  QuicContext quic_context_;
-
  private:
+  // Parameters passed in the NetworkSessionContext must outlive the
+  // HttpNetworkSession.
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_ =
       ConfiguredProxyResolutionService::CreateDirect();
   SSLConfigServiceDefaults ssl_config_service_;
@@ -3465,6 +3460,14 @@ class ProcessAlternativeServicesTest : public TestWithTaskEnvironment {
   MockCertVerifier cert_verifier_;
   TransportSecurityState transport_security_state_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
+
+ protected:
+  HttpServerProperties http_server_properties_;
+  QuicContext quic_context_;
+  HttpNetworkSessionParams session_params_;
+  HttpNetworkSessionContext session_context_;
+  std::unique_ptr<HttpNetworkSession> session_;
+
 };
 
 TEST_F(ProcessAlternativeServicesTest, ProcessEmptyAltSvc) {
