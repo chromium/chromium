@@ -468,45 +468,45 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
   return IsFeatureEnabledForOriginImpl(feature, origin, opt_in_features);
 }
 
-// Implements Permissions Policy 9.7: Define an inherited policy for feature in
-// browsing context and 9.8: Define an inherited policy for feature in container
-// at origin.
+// Implements Permissions Policy 9.7: Define an inherited policy for
+// feature in container at origin.
+// Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20230322/
 bool PermissionsPolicy::InheritedValueForFeature(
     const PermissionsPolicy* parent_policy,
     std::pair<mojom::PermissionsPolicyFeature, PermissionsPolicyFeatureDefault>
         feature,
     const ParsedPermissionsPolicy& container_policy) const {
-  // 9.7 2: Otherwise [If context is not a nested browsing context,] return
-  // "Enabled".
+  // 9.7 1: If container is null, return "Enabled".
   if (!parent_policy)
     return true;
 
-  // 9.8 2: If feature was inherited and (if declared) the allowlist for the
-  // feature does not match the parent's origin, then return "Disabled".
+  // 9.7 2: If the result of executing Is feature enabled in document for origin
+  // on feature, container’s node document, and container’s node document's
+  // origin is "Disabled", return "Disabled".
   if (!parent_policy->GetFeatureValueForOrigin(feature.first,
                                                parent_policy->origin_))
     return false;
 
-  // 9.8 3: If feature was inherited and (if declared) the allowlist for the
+  // 9.7 3: If feature was inherited and (if declared) the allowlist for the
   // feature does not match origin, then return "Disabled".
   if (!parent_policy->GetFeatureValueForOrigin(feature.first, origin_))
     return false;
 
   for (const auto& decl : container_policy) {
     if (decl.feature == feature.first) {
-      // 9.8 5.1: If the allowlist for feature in container policy matches
+      // 9.7 5.1: If the allowlist for feature in container policy matches
       // origin, return "Enabled".
-      // 9.8 5.2: Otherwise return "Disabled".
+      // 9.7 5.2: Otherwise return "Disabled".
       return AllowlistFromDeclaration(decl).Contains(origin_);
     }
   }
-  // 9.8 6: If feature’s default allowlist is *, return "Enabled".
+  // 9.7 6: If feature’s default allowlist is *, return "Enabled".
   if (feature.second == PermissionsPolicyFeatureDefault::EnableForAll)
     return true;
 
-  // 9.8 7: If feature’s default allowlist is 'self', and origin is same origin
+  // 9.7 7: If feature’s default allowlist is 'self', and origin is same origin
   // with container’s node document’s origin, return "Enabled".
-  // 9.8 8: Otherwise return "Disabled".
+  // 9.7 8: Otherwise return "Disabled".
   return origin_.IsSameOriginWith(parent_policy->origin_);
 }
 
