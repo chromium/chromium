@@ -20,6 +20,7 @@
 #include "chrome/updater/app/server/posix/mojom/updater_service_internal.mojom.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/ipc/ipc_names.h"
+#include "chrome/updater/ipc/update_service_dialer.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
@@ -43,25 +44,11 @@ constexpr base::TimeDelta kConnectionTimeout = base::Minutes(10);
 
 // Connect to the server.
 // `retries` is 0 for the first try, 1 for the first retry, etc.
-mojo::PlatformChannelEndpoint ConnectMojo(UpdaterScope scope, int retries) {
-  if (retries == 1) {
-    // Launch a server process.
-    absl::optional<base::FilePath> updater = GetUpdaterExecutablePath(scope);
-    if (updater) {
-      base::CommandLine command(*updater);
-      command.AppendSwitch(kServerSwitch);
-      command.AppendSwitchASCII(kServerServiceSwitch,
-                                kServerUpdateServiceInternalSwitchValue);
-      if (scope == UpdaterScope::kSystem) {
-        command.AppendSwitch(kSystemSwitch);
-      }
-      command.AppendSwitch(kEnableLoggingSwitch);
-      command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                kLoggingModuleSwitchValue);
-      base::LaunchProcess(command, {});
-    }
+absl::optional<mojo::PlatformChannelEndpoint> ConnectMojo(UpdaterScope scope,
+                                                          int retries) {
+  if (retries == 1 && !DialUpdateInternalService(scope)) {
+    return absl::nullopt;
   }
-
   return named_mojo_ipc_server::ConnectToServer(
       GetUpdateServiceInternalServerName(scope));
 }
@@ -79,9 +66,17 @@ void Connect(
     return;
   }
 
-  mojo::PlatformChannelEndpoint endpoint = ConnectMojo(scope, tries);
+  absl::optional<mojo::PlatformChannelEndpoint> endpoint =
+      ConnectMojo(scope, tries);
 
-  if (endpoint.is_valid()) {
+  if (!endpoint) {
+    VLOG(1) << "Failed to connect to UpdateService remote. "
+               "No updater exists.";
+    std::move(connected_callback).Run(absl::nullopt);
+    return;
+  }
+
+  if (endpoint->is_valid()) {
     std::move(connected_callback).Run(std::move(endpoint));
     return;
   }

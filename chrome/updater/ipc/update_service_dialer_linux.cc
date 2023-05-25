@@ -11,8 +11,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/process/launch.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -45,6 +48,23 @@ bool DialUpdateService(UpdaterScope scope) {
     }
   }
 
+  return true;
+}
+
+bool DialUpdateInternalService(UpdaterScope scope) {
+  absl::optional<base::FilePath> updater = GetUpdaterExecutablePath(scope);
+  if (updater) {
+    base::CommandLine command(*updater);
+    command.AppendSwitch(kServerSwitch);
+    command.AppendSwitchASCII(kServerServiceSwitch,
+                              kServerUpdateServiceInternalSwitchValue);
+    if (scope == UpdaterScope::kSystem) {
+      command.AppendSwitch(kSystemSwitch);
+    }
+    command.AppendSwitch(kEnableLoggingSwitch);
+    command.AppendSwitchASCII(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
+    base::LaunchProcess(command, {});
+  }
   return true;
 }
 

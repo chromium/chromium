@@ -15,18 +15,34 @@
 
 namespace updater {
 
+namespace {
+
 // Start the update service by running the launcher directly.
-bool DialUpdateService(UpdaterScope scope) {
+bool DialUpdateService(UpdaterScope scope, bool internal) {
   absl::optional<base::FilePath> updater = GetUpdateServiceLauncherPath(scope);
   if (updater) {
     if (!base::PathExists(*updater)) {
       // If there's no updater present, abandon dialing.
       return false;
     }
-    base::LaunchProcess(base::CommandLine(*updater), {});
+    base::CommandLine command_line(*updater);
+    if (internal) {
+      command_line.AppendSwitch("--internal");
+    }
+    base::LaunchProcess(command_line, {});
   }
 
   return true;
+}
+
+}  // namespace
+
+bool DialUpdateService(UpdaterScope scope) {
+  return DialUpdateService(scope, false);
+}
+
+bool DialUpdateInternalService(UpdaterScope scope) {
+  return DialUpdateService(scope, true);
 }
 
 }  // namespace updater
