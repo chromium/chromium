@@ -31,9 +31,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.chromium.components.autofill.R;
 import org.chromium.ui.text.EmptyTextWatcher;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** Handles validation and display of one field from the {@link EditorFieldModel}. */
 // TODO(b/173103628): Re-enable this
 //@VisibleForTesting
@@ -54,9 +51,8 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
     private boolean mHasFocusedAtLeastOnce;
 
     public EditorTextField(Context context, final EditorFieldModel fieldModel,
-            OnEditorActionListener actionListener, @Nullable InputFilter filter,
-            @Nullable TextWatcher formatter, boolean focusAndShowKeyboard,
-            boolean hasRequiredIndicator) {
+            OnEditorActionListener actionListener, @Nullable TextWatcher formatter,
+            boolean focusAndShowKeyboard, boolean hasRequiredIndicator) {
         super(context);
         assert fieldModel.getInputTypeHint() != EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN;
         mEditorFieldModel = fieldModel;
@@ -162,32 +158,19 @@ public class EditorTextField extends FrameLayout implements EditorFieldView {
             mInput.setThreshold(0);
         }
 
-        List<InputFilter> filters = new ArrayList<>();
-        if (filter != null) filters.add(filter);
         if (mEditorFieldModel.hasLengthCounter()) {
             // Limit input length for field and counter.
-            filters.add(new InputFilter.LengthFilter(mEditorFieldModel.getLengthCounterLimit()));
+            mInput.setFilters(new InputFilter[] {
+                    new InputFilter.LengthFilter(mEditorFieldModel.getLengthCounterLimit())});
             mInputLayout.setCounterMaxLength(mEditorFieldModel.getLengthCounterLimit());
         }
-        InputFilter[] filtersArr = new InputFilter[filters.size()];
-        filters.toArray(filtersArr);
-        mInput.setFilters(filtersArr);
+
         if (formatter != null) {
             mInput.addTextChangedListener(formatter);
             formatter.afterTextChanged(mInput.getText());
         }
 
         switch (fieldModel.getInputTypeHint()) {
-            case EditorFieldModel.INPUT_TYPE_HINT_CREDIT_CARD:
-            // Intentionally fall through.
-            //
-            // There's no keyboard that allows numbers, spaces, and "-" only, so use the phone
-            // keyboard instead. The phone keyboard has more symbols than necessary. A filter
-            // should be used to prevent input of phone number symbols that are not relevant for
-            // credit card numbers, e.g., "+", "*", and "#".
-            //
-            // The number keyboard is not suitable, because it filters out everything except
-            // digits.
             case EditorFieldModel.INPUT_TYPE_HINT_PHONE:
                 // Show the keyboard with numbers and phone-related symbols.
                 mInput.setInputType(InputType.TYPE_CLASS_PHONE);

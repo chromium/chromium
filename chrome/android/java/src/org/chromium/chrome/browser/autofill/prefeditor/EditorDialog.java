@@ -23,8 +23,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -48,7 +46,6 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.autofill.settings.CreditCardNumberFormattingTextWatcher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -70,11 +67,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * The editor dialog. Can be used for editing contact information, shipping address,
- * billing address, and credit cards.
+ * billing address.
  *
  * TODO(https://crbug.com/799905): Move payment specific functionality to separate class.
  */
@@ -99,8 +95,6 @@ public class EditorDialog
     private final List<EditorFieldView> mFieldViews;
     private final List<EditText> mEditableTextFields;
     private final List<Spinner> mDropdownFields;
-    private final InputFilter mCardNumberInputFilter;
-    private final TextWatcher mCardNumberFormatter;
 
     @Nullable
     private TextWatcher mPhoneFormatter;
@@ -111,8 +105,6 @@ public class EditorDialog
     private boolean mShouldTriggerDoneCallbackBeforeCloseAnimation;
     private ViewGroup mDataView;
     private View mFooter;
-    @Nullable
-    private TextView mCardInput;
     @Nullable
     private TextView mPhoneInput;
 
@@ -164,25 +156,6 @@ public class EditorDialog
         mEditableTextFields = new ArrayList<>();
         mDropdownFields = new ArrayList<>();
 
-        final Pattern cardNumberPattern = Pattern.compile("^[\\d- ]*$");
-        mCardNumberInputFilter = new InputFilter() {
-            @Override
-            public CharSequence filter(
-                    CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-                // Accept deletions.
-                if (start == end) return null;
-
-                // Accept digits, "-", and spaces.
-                if (cardNumberPattern.matcher(source.subSequence(start, end)).matches()) {
-                    return null;
-                }
-
-                // Reject everything else.
-                return "";
-            }
-        };
-
-        mCardNumberFormatter = new CreditCardNumberFormattingTextWatcher();
         mDeleteRunnable = deleteRunnable;
         mProfile = profile;
     }
@@ -384,7 +357,7 @@ public class EditorDialog
             }
             mEditorModel = null;
         }
-        removeTextChangedListenersAndInputFilters();
+        removeTextChangedListeners();
     }
 
     private void prepareButtons() {
@@ -435,7 +408,7 @@ public class EditorDialog
         assert mEditorModel != null;
 
         // Ensure the layout is empty.
-        removeTextChangedListenersAndInputFilters();
+        removeTextChangedListeners();
         mDataView = (ViewGroup) mLayout.findViewById(R.id.contents);
         mDataView.removeAllViews();
         mFieldViews.clear();
@@ -511,13 +484,7 @@ public class EditorDialog
         }
     }
 
-    private void removeTextChangedListenersAndInputFilters() {
-        if (mCardInput != null) {
-            mCardInput.removeTextChangedListener(mCardNumberFormatter);
-            mCardInput.setFilters(new InputFilter[0]); // Null is not allowed.
-            mCardInput = null;
-        }
-
+    private void removeTextChangedListeners() {
         if (mPhoneInput != null) {
             mPhoneInput.removeTextChangedListener(mPhoneFormatter);
             mPhoneInput = null;
@@ -548,29 +515,22 @@ public class EditorDialog
 
             childView = dropdownView.getLayout();
         } else {
-            InputFilter filter = null;
             TextWatcher formatter = null;
-            if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_CREDIT_CARD) {
-                filter = mCardNumberInputFilter;
-                formatter = mCardNumberFormatter;
-            } else if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_PHONE) {
+            if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_PHONE) {
                 mPhoneFormatter = fieldModel.getFormatter();
                 assert mPhoneFormatter != null;
                 formatter = mPhoneFormatter;
             }
 
             EditorTextField inputLayout = new EditorTextField(mActivity, fieldModel,
-                    mEditorActionListener, filter, formatter, /* focusAndShowKeyboard= */ false,
+                    mEditorActionListener, formatter, /* focusAndShowKeyboard= */ false,
                     mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
             mFieldViews.add(inputLayout);
 
             EditText input = inputLayout.getEditText();
             mEditableTextFields.add(input);
 
-            if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_CREDIT_CARD) {
-                assert mCardInput == null;
-                mCardInput = input;
-            } else if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_PHONE) {
+            if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_PHONE) {
                 assert mPhoneInput == null;
                 mPhoneInput = input;
             }

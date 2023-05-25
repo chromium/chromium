@@ -92,24 +92,21 @@ public class EditorFieldModel {
     /** Indicates an alpha-numeric value, e.g., postal code or sorting code. */
     public static final int INPUT_TYPE_HINT_ALPHA_NUMERIC = 6;
 
-    /** Indicates a credit card input. */
-    public static final int INPUT_TYPE_HINT_CREDIT_CARD = 7;
-
     /** Indicates a numeric field. */
-    public static final int INPUT_TYPE_HINT_NUMERIC = 8;
+    public static final int INPUT_TYPE_HINT_NUMERIC = 7;
 
     /** Indicates a password input. */
-    public static final int INPUT_TYPE_HINT_PASSWORD = 9;
+    public static final int INPUT_TYPE_HINT_PASSWORD = 8;
 
     /** Indicates a numeric pin input. */
-    public static final int INPUT_TYPE_HINT_NUMERIC_PIN = 10;
+    public static final int INPUT_TYPE_HINT_NUMERIC_PIN = 9;
 
-    private static final int INPUT_TYPE_HINT_MAX_TEXT_INPUT_EXCLUSIVE = 11;
+    private static final int INPUT_TYPE_HINT_MAX_TEXT_INPUT_EXCLUSIVE = 10;
 
     /** Indicates a dropdown. */
-    public static final int INPUT_TYPE_HINT_DROPDOWN = 12;
+    public static final int INPUT_TYPE_HINT_DROPDOWN = 11;
 
-    private static final int INPUT_TYPE_HINT_MAX_EXCLUSIVE = 13;
+    private static final int INPUT_TYPE_HINT_MAX_EXCLUSIVE = 12;
 
     /* Indicates that the length counter is disabled. */
     public static final int LENGTH_COUNTER_LIMIT_NONE = 0;
