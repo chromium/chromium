@@ -3,57 +3,57 @@ Tests asynchronous call stacks for Web SQL.
 Set timer for test function.
 Captured call stacks in no particular order:
 Call stack:
-    0) onCreateTableSQLTransactionCallback (async-callstack-web-sql.js:45)
-    [SQLTransaction]
-    0) openDB (async-callstack-web-sql.js:33)
-    [setTimeout]
-    0) testFunction (async-callstack-web-sql.js:15)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Call stack:
-    0) onDropTable (async-callstack-web-sql.js:53)
-    [SQLStatement]
     0) onCreateTableSQLTransactionCallback (async-callstack-web-sql.js:48)
     [SQLTransaction]
-    0) openDB (async-callstack-web-sql.js:33)
+    0) openDB (async-callstack-web-sql.js:36)
     [setTimeout]
-    0) testFunction (async-callstack-web-sql.js:15)
+    0) testFunction (async-callstack-web-sql.js:18)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) onSuccess (async-callstack-web-sql.js:20)
+    0) onDropTable (async-callstack-web-sql.js:56)
     [SQLStatement]
-    0) onCreateTableSQLTransactionCallback (async-callstack-web-sql.js:46)
+    0) onCreateTableSQLTransactionCallback (async-callstack-web-sql.js:51)
     [SQLTransaction]
-    0) openDB (async-callstack-web-sql.js:33)
+    0) openDB (async-callstack-web-sql.js:36)
     [setTimeout]
-    0) testFunction (async-callstack-web-sql.js:15)
+    0) testFunction (async-callstack-web-sql.js:18)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) onSuccess (async-callstack-web-sql.js:20)
+    0) onSuccess (async-callstack-web-sql.js:23)
     [SQLStatement]
-    0) onCreateTableSQLTransactionCallback (async-callstack-web-sql.js:47)
+    0) onCreateTableSQLTransactionCallback (async-callstack-web-sql.js:49)
     [SQLTransaction]
-    0) openDB (async-callstack-web-sql.js:33)
+    0) openDB (async-callstack-web-sql.js:36)
     [setTimeout]
-    0) testFunction (async-callstack-web-sql.js:15)
+    0) testFunction (async-callstack-web-sql.js:18)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Call stack:
-    0) onSuccess (async-callstack-web-sql.js:20)
+    0) onSuccess (async-callstack-web-sql.js:23)
+    [SQLStatement]
+    0) onCreateTableSQLTransactionCallback (async-callstack-web-sql.js:50)
     [SQLTransaction]
-    0) openDB (async-callstack-web-sql.js:33)
+    0) openDB (async-callstack-web-sql.js:36)
     [setTimeout]
-    0) testFunction (async-callstack-web-sql.js:15)
+    0) testFunction (async-callstack-web-sql.js:18)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Call stack:
+    0) onSuccess (async-callstack-web-sql.js:23)
+    [SQLTransaction]
+    0) openDB (async-callstack-web-sql.js:36)
+    [setTimeout]
+    0) testFunction (async-callstack-web-sql.js:18)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
