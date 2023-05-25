@@ -19,14 +19,6 @@ BASE_FEATURE(kInvalidateTokenFeature,
              "GCMTokenInvalidAfterDays",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGCMIncludeAccountTokensInCheckinRequest,
-             "GCMIncludeAccountTokensInCheckinRequest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kGCMReportAccountTokenChanges,
-             "GCMReportAccountTokenChanges",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const char kParamNameTokenInvalidationPeriodDays[] =
     "token_invalidation_period";
 // A token invalidation period of 0 means the feature is disabled, and the
