@@ -28,7 +28,7 @@
 #
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
-from typing import Any, List, Mapping, MutableMapping, Optional, Tuple
+from typing import Any, List, Mapping, MutableMapping, Optional, Set, Tuple
 
 import re
 import collections
@@ -88,7 +88,10 @@ def _unroll(text: str) -> str:
     f = {b: 3};
     """
     patterns = []  # type: List[Tuple[str, List[str]]]
-    while match := re.search(r'<([^>]+)>', text):
+    while True:
+        match = re.search(r'<([^>]+)>', text)
+        if not match:
+            break
         key = f'@unroll_pattern_{len(patterns)}'
         values = text[match.start(1):match.end(1)]
         text = text[:match.start(0)] + key + text[match.end(0):]
@@ -239,7 +242,7 @@ class TestType(str, enum.Enum):
     WORKER = 'worker'
 
 
-def _get_enabled_test_types(test: Mapping[str, Any]) -> set[TestType]:
+def _get_enabled_test_types(test: Mapping[str, Any]) -> Set[TestType]:
     return {TestType(t.lower()) for t in test.get('canvasType', TestType)}
 
 
@@ -267,7 +270,7 @@ def _get_canvas_size(test: Mapping[str, Any]):
 def _write_reference_test(test: Mapping[str, Any],
                           jinja_env: jinja2.Environment,
                           template_params: MutableMapping[str, Any],
-                          enabled_tests: set[TestType],
+                          enabled_tests: Set[TestType],
                           canvas_path: str, offscreen_path: str):
     name = template_params["name"]
     js_ref = test.get('reference')
@@ -277,7 +280,8 @@ def _write_reference_test(test: Mapping[str, Any],
             f'Test {name} is invalid, "reference" and "html_reference" can\'t '
             'both be specified at the same time.')
 
-    ref_params = template_params | {'code': js_ref or html_ref}
+    ref_params = template_params.copy()
+    ref_params.update({'code': js_ref or html_ref})
     ref_template_name = 'reftest_element.html' if js_ref else 'reftest.html'
     if TestType.HTML_CANVAS in enabled_tests:
         pathlib.Path(f'{canvas_path}-expected.html').write_text(
@@ -288,10 +292,11 @@ def _write_reference_test(test: Mapping[str, Any],
             jinja_env.get_template(ref_template_name).render(ref_params),
             'utf-8')
 
-    params = template_params | {
+    params = template_params.copy()
+    params.update({
         'ref_link': f'{name}-expected.html',
         'fuzzy': test.get('fuzzy')
-    }
+    })
     if TestType.HTML_CANVAS in enabled_tests:
         pathlib.Path(f'{canvas_path}.html').write_text(
             jinja_env.get_template("reftest_element.html").render(params),
@@ -308,7 +313,7 @@ def _write_reference_test(test: Mapping[str, Any],
 
 def _write_testharness_test(jinja_env: jinja2.Environment,
                             template_params: MutableMapping[str, Any],
-                            enabled_tests: set[TestType],
+                            enabled_tests: Set[TestType],
                             canvas_path: str,
                             offscreen_path: str):
     # Create test cases for canvas and offscreencanvas.
@@ -332,7 +337,7 @@ def _write_testharness_test(jinja_env: jinja2.Environment,
 
 
 def _generate_test(test: Mapping[str, Any], jinja_env: jinja2.Environment,
-                   sub_dir: str, enabled_tests: set[TestType],
+                   sub_dir: str, enabled_tests: Set[TestType],
                    html_canvas_cfg: TestConfig,
                    offscreen_canvas_cfg: TestConfig) -> None:
     name = test['name']
