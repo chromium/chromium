@@ -35,7 +35,7 @@ BASE_FEATURE(kJourneysLabels,
 
 BASE_FEATURE(kJourneysImages,
              "JourneysImages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kJourneysImagesCover{
     &kJourneysImages, "JourneysImagesCover", true};

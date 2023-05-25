@@ -9587,26 +9587,6 @@
             ]
         }
     ],
-    "PageImageService": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Journeys_Suggest_SalientImages",
-                    "enable_features": [
-                        "ImageServiceOptimizationGuideSalientImages",
-                        "ImageServiceSuggestPoweredImages",
-                        "JourneysImages"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageInfoAboutThisSiteImprovedBottomSheet": [
         {
             "platforms": [

@@ -82,9 +82,8 @@ struct Config {
 
   // The `kJourneysImages` feature and child params.
 
-  // Whether to attempt to provide images for eligible Journeys (so far just
-  // a proof of concept implementation for Entities only).
-  bool images = false;
+  // Whether to attempt to provide images for eligible Journeys.
+  bool images = true;
 
   // Whether the image covers the whole icon container.
   bool images_cover = true;
