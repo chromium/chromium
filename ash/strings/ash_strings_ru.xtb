@@ -428,7 +428,7 @@
 <translation id="29859347674873492">Открыть справку в приложении "Возможности"</translation>
 <translation id="2992327365391326550">Кнопка микрофона на устройстве отключена</translation>
 <translation id="2996462380875591307">Закрепленная лупа включена. Чтобы отключить ее, нажмите Ctrl + Поиск + D.</translation>
-<translation id="3000461861112256445">Монофонический звук</translation>
+<translation id="3000461861112256445">Монофо­нический звук</translation>
 <translation id="3009178788565917040">Выход</translation>
 <translation id="3009958530611748826">Выберите папку для сохранения</translation>
 <translation id="301282384882049174">Доступ предоставлен администратором.</translation>
@@ -1198,6 +1198,7 @@
 <translation id="6452181791372256707">Отклонить</translation>
 <translation id="6453179446719226835">Язык изменен</translation>
 <translation id="6459472438155181876">Расширение экрана на <ph name="DISPLAY_NAME" /></translation>
+<translation id="6464094930452079790">изображения</translation>
 <translation id="6477681113376365978">Не удалось скачать файл</translation>
 <translation id="6482559668224714696">Полноэкранная лупа</translation>
 <translation id="6483727822843292440">Показать окна, начиная с наименее используемого</translation>

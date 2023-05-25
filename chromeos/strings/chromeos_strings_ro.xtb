@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Desktopuri</translation>
 <translation id="1018219910092211213">Nu se poate rezolva solicitarea DNS</translation>
 <translation id="1018656279737460067">Anulat</translation>
+<translation id="1020274983236703756">Sunt disponibile elemente <ph name="PRODUCT_NAME" /> exclusive</translation>
 <translation id="1022433422498218992">Comenzi generale</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Se caută scanere</translation>
 <translation id="3226657629376379887">Meniu de acțiuni pentru aspect</translation>
 <translation id="3246869037381808805">Sarcinile de printare mai vechi de o zi vor fi eliminate</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> exclusiv</translation>
 <translation id="3268178239013324452">Nereușită – Ușă deschisă</translation>
 <translation id="3275729367986477355">Imagine avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editează fișierul}few{Editează fișierele}other{Editează fișierele}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Activarea / dezactivarea ecranului de confidențialitate</translation>
 <translation id="3639846061339007994">sus</translation>
 <translation id="3651050199673793219">Selectează o unitate de temperatură</translation>
+<translation id="3663574643422533538">Selectează opera de artă exclusivă <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Testul <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Se încarcă…</translation>
 <translation id="3708186454126126312">Conectat anterior</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2 / WPA3</translation>
 <translation id="4110686435123617899">Selectează albumul <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
+<translation id="4113067922640381334">Acum ai acces la noi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagini de fundal<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Modul întunecat</translation>
 <translation id="4130035430755296270">Plasează cursorul pentru mai multe opțiuni de aspect</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Neinițializată</translation>
 <translation id="8593058461203131755">întrerupe conținutul media</translation>
 <translation id="8620617069779373398">Stare roaming</translation>
+<translation id="8626489604350149811">Mai multe acțiuni pentru <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Mov deschis</translation>
 <translation id="8651481478098336970">dezactivează sunetul</translation>
 <translation id="8655295600908251630">Canal</translation>

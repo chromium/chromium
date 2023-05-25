@@ -750,6 +750,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Não é possível criar um link para o realce.</translation>
 <translation id="5965679971710331625">Tem sessão iniciada</translation>
+<translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
 <translation id="5979837087407522202">Pesquisar palavras-passe</translation>
 <translation id="5981230843984570095">Fechar todos os inativos</translation>
 <translation id="5982717868370722439">Adicionar dados existentes a <ph name="USER_EMAIL" />.</translation>
@@ -919,6 +920,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="681368974849482173">Item criado</translation>
 <translation id="6822587385560699678">Quando esta opção está ativada, as palavras-passe são guardadas na conta <ph name="ACCOUNT" />. Quando esta opção está desativada, as palavras-passe são guardadas apenas neste dispositivo.</translation>
 <translation id="6831043979455480757">Traduzir</translation>
+<translation id="6839843088069935119">{count,plural, =1{Marcador guardado em "{title}". Só é guardado neste dispositivo.}other{Marcadores guardados em "{title}". Só são guardados neste dispositivo.}}</translation>
 <translation id="6842136130964845393">Para se certificar de que pode sempre aceder às suas palavras-passe guardadas, valide a sua identidade</translation>
 <translation id="6851516051005285358">Pedir site para computador</translation>
 <translation id="6852222216891664518">Fechar separador fixo</translation>
@@ -997,6 +999,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7435356471928173109">Desativada pelo seu administrador.</translation>
 <translation id="7438481509621345350">Vão ser apresentadas notícias de <ph name="CHANNEL_NAME" /> quando abrir um novo separador.</translation>
 <translation id="7446583256109515732">Separador desafixado</translation>
+<translation id="7451023311965289370">{count,plural, =1{Marcador guardado em "{title}"}other{Marcadores guardados em "{title}"}}</translation>
 <translation id="7454057999980797137">Distrito/concelho</translation>
 <translation id="7459628154744868585">A Proteção melhorada está ativada</translation>
 <translation id="746684838091935575">3. Selecione o Chrome.</translation>

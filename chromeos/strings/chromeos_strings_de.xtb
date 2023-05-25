@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Dunkles Design deaktivieren</translation>
 <translation id="1807246157184219062">Hell</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
+<translation id="1836553715834333258">Systemfarbe</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
+<translation id="1840474674287087346">Desktopfarbe</translation>
 <translation id="1851218745569890714">Videokonferenz</translation>
 <translation id="1852934301711881861">Chrome OS Flex installieren</translation>
 <translation id="1856388568474281774">Abwärtspfeil</translation>
@@ -418,6 +420,7 @@
 <translation id="4454245904991689773">Speichern unter</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Das nicht standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
+<translation id="4500966230243561393">Farbe der Benutzeroberfläche</translation>
 <translation id="4503223151711056411">Linkspfeil</translation>
 <translation id="4507392511610824664">Helligkeit erhöhen</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -496,6 +499,7 @@
 <translation id="500920857929044050">Test beenden</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Wenn der Bildschirm inaktiv ist, kannst du dir Fotos, die Zeit sowie Wetter- und Medieninformationen anzeigen lassen.</translation>
+<translation id="5035083460461104704">Designfarbe</translation>
 <translation id="5038292761217083259">Mehrfarbige Tastatur</translation>
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5049856988445523908">SIM-Karte gesperrt (<ph name="LOCK_TYPE" />)</translation>
@@ -539,7 +543,7 @@
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
 <translation id="5376354385557966694">Automatischer heller Modus</translation>
 <translation id="5378184552853359930">IP-Typ</translation>
-<translation id="5389159777326897627">Hintergrund &amp; Stil</translation>
+<translation id="5389159777326897627">Hintergrund und Stil</translation>
 <translation id="5389224261615877010">Regenbogen</translation>
 <translation id="5400907029458559844">Das Gerät wird verbunden.</translation>
 <translation id="5401938042319910061">Alle Abläufe ausführen</translation>
@@ -811,6 +815,7 @@
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7620771111601174153">Weitere Informationen in der Hilfe</translation>
 <translation id="763165478673169849">Zuletzt zurückgesetzt</translation>
+<translation id="7633068090678117093">Hintergrundbild</translation>
 <translation id="7648838807254605802">Hohe HTTPS-Latenz</translation>
 <translation id="765159867434478292">Unterteilen</translation>
 <translation id="7656388927906093505">Das Gerät ist eine Maus.</translation>
@@ -976,6 +981,7 @@
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Drahtlos</translation>
 <translation id="8936793075252196307">IP-Adresse des Clients</translation>
+<translation id="8944651180182756621">Launcher-Farbe</translation>
 <translation id="894617464444543719">Das Gerät ist ein Smartphone.</translation>
 <translation id="8957423540740801332">Rechts</translation>
 <translation id="8968751544471797276">Ladestrom</translation>
@@ -1009,6 +1015,7 @@
 <translation id="9149391708638971077">Speichertest ausführen</translation>
 <translation id="9161276708550942948">Leerzeichen</translation>
 <translation id="9173638680043580060">Nur noch wenige Sekunden</translation>
+<translation id="9174334653006917325">UI-Farbe</translation>
 <translation id="917720651393141712">Testen</translation>
 <translation id="9188992814426075118">Die Tastatur kann automatisch an den Hintergrund angepasst werden</translation>
 <translation id="9189000703457422362">Über automatisch erkannte APNs kann keine Verbindung zu diesem Netzwerk hergestellt werden. Wende dich für weitere Informationen an deinen Mobilfunkanbieter.</translation>

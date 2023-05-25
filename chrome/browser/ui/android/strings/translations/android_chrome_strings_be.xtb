@@ -17,6 +17,7 @@
 <translation id="1100066534610197918">У новай укладцы ў групе</translation>
 <translation id="1103142993930332957">Ці не маглі б вы дапамагчы палепшыць Chrome?</translation>
 <translation id="1105960400813249514">Здымак экрана</translation>
+<translation id="1108214977745280468">Праглядзець статыстыку старонкі</translation>
 <translation id="1108938384783527433">Сінхранізацыя гісторыі</translation>
 <translation id="1110914759170138831">Вылучаны тэкст быў скарочаны</translation>
 <translation id="1111673857033749125">Тут з'явяцца закладкі, захаваныя на вашых іншых прыладах.</translation>
@@ -66,6 +67,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – адпраўлена з прылады <ph name="DEVICE_NAME" /></translation>
 <translation id="1311657260431405215">Гэты QR-код не з'яўляецца URL-адрасам: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="131655401280401879">Ваша захаваная інфармацыя будзе выдалена, калі вы выдаліце блакіроўку профілю пазней.</translation>
 <translation id="1320912611264252795">Укладка захоўвання закладкі разгорнута на ўвесь экран</translation>
 <translation id="1327257854815634930">Гісторыя навігацыі адкрыта</translation>
 <translation id="1331212799747679585">Немагчыма абнавіць Chrome. Дадатковыя параметры</translation>
@@ -179,6 +181,7 @@
 <translation id="1995884366040846621">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць ваша імя, адрас электроннай пошты і відарыс профілю з гэтым сайтам. Азнаёмцеся з <ph name="BEGIN_LINK1" />палітыкай прыватнасці<ph name="END_LINK1" /> сайта.</translation>
 <translation id="200114059308480249">Дадаваць кантэкст у пошукавыя запыты Google?</translation>
 <translation id="2009341475524975924">Для ацэнкі эфектыўнасці рэкламнай аб'явы сайты могуць абагульваць адзін з адным даныя пэўных тыпаў (напрыклад, пра час сутак, калі вам паказвалася пэўная аб'ява).</translation>
+<translation id="201060170519281460">Блакіроўка профілю забяспечвае бяспеку вашай інфармацыі ў аўтамабілі, у тым ліку сінхранізаваныя паролі, плацяжы і іншае.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="2021896219286479412">Кіраванне сайтам на ўвесь экран</translation>
 <translation id="2038563949887743358">Уключыць запытванне версіі для настольнага камп'ютара</translation>
@@ -256,6 +259,7 @@
 <translation id="250020030759455918">Вы ўбачыце, ці выкананы ўваход на сайт <ph name="SITE_NAME" />, гісторыю праглядаў і даныя сайтаў у Chrome</translation>
 <translation id="2510106555128151389">Ідзе ўсталяванне праграмы "<ph name="WEBAPK_NAME" />"...</translation>
 <translation id="2513403576141822879">Дадатковыя налады прыватнасці, бяспекі і збору даных глядзіце ў раздзеле <ph name="BEGIN_LINK" />Сінхранізацыя і сэрвісы Google<ph name="END_LINK" /></translation>
+<translation id="2517113738956581680">Поўнаразмерны аркуш</translation>
 <translation id="2517472476991765520">Пошук</translation>
 <translation id="2523184218357549926">Адпраўка URL-адрасоў наведаных вамі старонак у Google</translation>
 <translation id="2527209463677295330">Дадаючы больш тэксту са старонкі, можна атрымліваць лепшыя вынікі</translation>
@@ -280,6 +284,7 @@
 Прыватныя токены стану павышаюць узровень прыватнасці ў інтэрнэце. З іх дапамогай нельга ідэнтыфікаваць вашу асобу.</translation>
 <translation id="2581165646603367611">Пры гэтым ачысціцца кэш, будуць выдалены файлы cookie і іншыя даныя сайтаў, якія Chrome не лічыць важнымі.</translation>
 <translation id="2587052924345400782">Даступная навейшая версія</translation>
+<translation id="2589302627584222634">Стварыць блакіроўку профілю</translation>
 <translation id="2593272815202181319">Монашырынны</translation>
 <translation id="2603212228005142861">Каб задаваць налады, увайдзіце ва ўліковы запіс</translation>
 <translation id="260403163289591229">Вы падпісаны</translation>
@@ -541,6 +546,7 @@
 <translation id="4035877632587724847">Не дазваляць</translation>
 <translation id="4036177530563778041">Працягвайце з таго месца, дзе спыніліся</translation>
 <translation id="4042941173059740150">Працягвайце выкарыстоўваць сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />" для доступу да вэб-сайта <ph name="SITE_ETLD_PLUS_ONE" /></translation>
+<translation id="4044708993631234325">Ніжні аркуш</translation>
 <translation id="4045764304651014138">Даныя пра выкарыстанне</translation>
 <translation id="405399507749852140">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі</translation>
 <translation id="4056223980640387499">Сепія</translation>
@@ -842,6 +848,7 @@
 <translation id="564667659802381754">Дапаможнік па прыватнасці <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">За апошнія 7 дзён</translation>
 <translation id="5655963694829536461">Шукаць у спампоўках</translation>
+<translation id="5657871969392618475">Ваша інфармацыя абаронена з дапамогай блакіроўкі профілю</translation>
 <translation id="5659593005791499971">Адрас электроннай пошты</translation>
 <translation id="5665379678064389456">Стварыце падзею ў праграме <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Браўзеру Chrome не ўдаецца праверыць наяўнасць абнаўленняў</translation>
@@ -904,6 +911,7 @@
 <translation id="5964869237734432770">Не атр. апісанні відарысаў</translation>
 <translation id="5966233851250124270">Chrome запомніць ваш выбар</translation>
 <translation id="5979084224081478209">Праверыць паролі</translation>
+<translation id="5985186846584605773">Стварыць блакіроўку профілю для аўтамабіля</translation>
 <translation id="5995726099713306770">Спампаваць старонку зноў?</translation>
 <translation id="6000066717592683814">Пакінуць Google</translation>
 <translation id="6000203700195075278">Падпісацца зноў</translation>
@@ -1132,6 +1140,7 @@
 <translation id="7088681679121566888">Chrome не патрабуе абнаўлення</translation>
 <translation id="7105047059074518658">Увайдзіце, каб вам было прасцей выкарыстоўваць браўзер на розных прыладах</translation>
 <translation id="7106762743910369165">Вашым браўзерам кіруе арганізацыя</translation>
+<translation id="7116420572655804716">Каб сінхранізаваць вашу інфармацыю і захаваць вашы даныя ў аўтамабілі, стварыце блакіроўку профілю ў наладах бяспекі. Вам трэба будзе ўводзіць код або пароль кожны раз, калі вы садзіцеся ў аўтамабіль.</translation>
 <translation id="7116588989735740310">Каб вяртацца на сайты, якія вы наведвалі на іншых прыладах, сінхранізуйце свае ўкладкі і гісторыю</translation>
 <translation id="7130504491556983216">Інтарэсы будуць з'яўляцца тут па меры прагляду вамі вэб-старонак</translation>
 <translation id="7138678301420049075">Іншыя</translation>
@@ -1351,6 +1360,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашы прылады<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Узнавіць</translation>
 <translation id="8209050860603202033">Адкрыць відарыс</translation>
+<translation id="8215740705341534369">Бакавая панэль</translation>
 <translation id="8218622182176210845">Кіраваць уліковым запісам</translation>
 <translation id="8221401890884589479">Вы можаце блакіраваць непажаданыя сайты. Chrome таксама аўтаматычна выдаляе сайты са спіса, унесеныя ў яго больш чым за 30 дзён таму. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Меню карткі стужкі</translation>
@@ -1551,6 +1561,7 @@
 <translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="938850635132480979">Памылка: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Увядзіце фразу-пароль</translation>
+<translation id="950679278154734362">Каб сінхранізаваць вашу інфармацыю і захаваць вашы даныя ў аўтамабілі, стварыце блакіроўку профілю. Вам трэба будзе ўводзіць код або пароль кожны раз, калі вы садзіцеся ў аўтамабіль.</translation>
 <translation id="95817756606698420">Для пошуку ў Кітаі Chrome можа выкарыстоўваць <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Гэта можна змяніць у <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
 <translation id="962979164594783469">Усталяваць гэту праграму</translation>
 <translation id="96681097142096641">Адкрыць спрошчаны выгляд старонкі?</translation>

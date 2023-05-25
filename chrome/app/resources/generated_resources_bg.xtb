@@ -4125,7 +4125,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4554591392113183336">Версията на външното разширение е същата или по-стара в сравнение със съществуващата.</translation>
 <translation id="4555769855065597957">Сянка</translation>
 <translation id="4555863373929230635">За да запазвате пароли в профила си в Google, влезте в него и включете синхронизирането.</translation>
-<translation id="4556194354084985730">Лесно влизайте в сайтовете и приложенията посредством запазените от вас пароли. Когато тази функция е изключена, ще ви попитаме, преди да влезете в профила си.</translation>
 <translation id="4558426062282641716">Изисква се разрешение за автоматично стартиране</translation>
 <translation id="4559617833001311418">Този сайт осъществява достъп до сензорите ви за движение или светлина.</translation>
 <translation id="4560728518401799797">Още опции за „<ph name="FOLDER_TITLE" />“</translation>
@@ -7568,7 +7567,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7637272932128132922">Докато този раздел бе неактивен, режимът „Икономия на памет“ освободи памет за други задачи. Можете да промените това по всяко време от <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Няма достатъчно място на диска</translation>
 <translation id="7639914187072011620">Извличането от сървъра на URL адреса за пренасочване на SAML не бе успешно</translation>
-<translation id="764017888128728">С помощта на <ph name="PASSWORD_MANAGER_BRAND" /> автоматично влизате в отговарящи на условията сайтове с паролите, които сте запазили.</translation>
 <translation id="7641513591566880111">Име на новия профил</translation>
 <translation id="764178579712141045">Добавихте <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Скриване на поверителното съдържание</translation>

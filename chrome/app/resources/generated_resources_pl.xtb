@@ -4099,7 +4099,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4554591392113183336">Wersja rozszerzenia zewnętrznego jest starsza lub taka sama jak wersja obecna.</translation>
 <translation id="4555769855065597957">Cień</translation>
 <translation id="4555863373929230635">Aby zapisywać hasła na swoim koncie Google, zaloguj się i włącz synchronizację.</translation>
-<translation id="4556194354084985730">Łatwo loguj się na stronach i w aplikacjach przy użyciu zapisanych haseł. Jeśli wyłączysz tę funkcję, przed zalogowaniem się zobaczysz prośbę o podanie hasła.</translation>
 <translation id="4558426062282641716">Przesłano prośbę o pozwolenie na automatyczne uruchamianie</translation>
 <translation id="4559617833001311418">Ta witryna ma dostęp do czujników ruchu lub oświetlenia.</translation>
 <translation id="4560728518401799797">Więcej opcji zakładki <ph name="FOLDER_TITLE" /></translation>
@@ -7541,7 +7540,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7637272932128132922">Gdy ta karta była nieaktywna, funkcja Oszczędzanie pamięci zwolniła pamięć na inne zadania. Możesz to zmienić w dowolnym momencie, klikając <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Za mało miejsca na dysku</translation>
 <translation id="7639914187072011620">Nie udało się pobrać przekierowania SAML z serwera</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> automatycznie loguje Cię w odpowiednich witrynach przy użyciu zapisanych wcześniej haseł.</translation>
 <translation id="7641513591566880111">Nowa nazwa profilu</translation>
 <translation id="764178579712141045">Dodano użytkownika <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ukryj informacje poufne</translation>

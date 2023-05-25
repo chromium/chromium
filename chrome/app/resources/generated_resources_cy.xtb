@@ -4131,7 +4131,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4554591392113183336">Mae'r estyniad allanol ar yr un fersiwn neu'r fersiwn is o'i gymharu â'r un bresennol.</translation>
 <translation id="4555769855065597957">Cysgod</translation>
 <translation id="4555863373929230635">I gadw cyfrineiriau i'ch Cyfrif Google, mewngofnodwch a throwch gysoni ymlaen.</translation>
-<translation id="4556194354084985730">Mewngofnodi i wefannau ac apiau yn haws gyda'ch cyfrineiriau sydd wedi'u cadw. Pan fydd wedi'i ddiffodd, gofynnir i chi gadarnhau cyn mewngofnodi.</translation>
 <translation id="4558426062282641716">Gofynnwyd am y caniatâd i awto-lansio</translation>
 <translation id="4559617833001311418">Mae'r wefan hon yn cyrchu eich synwyryddion symudiad neu olau.</translation>
 <translation id="4560728518401799797">Rhagor o opsiynau ar gyfer nod tudalen <ph name="FOLDER_TITLE" /></translation>
@@ -7581,7 +7580,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7637272932128132922">Tra bod y tab hwn yn anweithredol, rhyddhaodd yr Arbedwr Cof gof ar gyfer tasgau eraill. Gallwch newid hyn unrhyw bryd yn y <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Nid oes digon o le ar y disg</translation>
 <translation id="7639914187072011620">Methwyd â nôl yr URL ailgyfeirio SAML o'r gweinydd</translation>
-<translation id="764017888128728">Mae <ph name="PASSWORD_MANAGER_BRAND" /> yn eich mewngofnodi'n awtomatig i wefannau cymwys gyda chyfrineiriau y gwnaethoch eu cadw.</translation>
 <translation id="7641513591566880111">Enw proffil newydd</translation>
 <translation id="764178579712141045">Cafodd <ph name="USER_EMAIL" /> ei ychwanegu</translation>
 <translation id="7642778300616172920">Cuddio cynnwys sensitif</translation>

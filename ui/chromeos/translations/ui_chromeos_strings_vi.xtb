@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Trang web Google</translation>
 <translation id="1853795129690976061">Thư mục này được chia sẻ với Linux</translation>
 <translation id="1864756863218646478">Không thể tìm thấy tệp.</translation>
+<translation id="1877377730633446520">Tính năng này sẽ sử dụng khoảng <ph name="REQUIRED_SPACE" />. Bạn hiện có <ph name="FREE_SPACE" />.</translation>
 <translation id="1884013283844450420">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kết nối</translation>
 <translation id="1920670151694390848">Tiếng Malayalam (chuyển tự)</translation>
 <translation id="1920798810075583923">Dưa hấu</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Mở rộng bảng dữ liệu phản hồi về tệp</translation>
 <translation id="1995337122023280937">Chuyển đến vị trí tệp</translation>
 <translation id="2001796770603320721">Quản lý trong Drive</translation>
+<translation id="2004942826429452291">Các tệp sẽ được lưu trữ trên đám mây và trên Chromebook này.</translation>
 <translation id="2009067268969781306">Thao tác định dạng ổ sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đó. Bạn không thể hủy thao tác này sau khi đã thực hiện.</translation>
 <translation id="2025955442973426285">Tiếng Tigrinya</translation>
 <translation id="2037845485764049925">Tiếng Nga</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Cài đặt thiết bị</translation>
 <translation id="2084809735218147718">Ra hiệu cảm ơn</translation>
 <translation id="2088690981887365033">Mạng riêng ảo (VPN)</translation>
+<translation id="2089751716171649322">Dễ dàng truy cập các tệp trên Google Drive khi bạn không kết nối mạng</translation>
 <translation id="2111134541987263231">Bật tuỳ chọn <ph name="BEGIN_BOLD" />Cho phép ở chế độ ẩn danh<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> mục sẽ bị xoá và không thể khôi phục.</translation>
 <translation id="2122305276694332719">Việc tự động kết nối vào một mạng ẩn sẽ cho phép những người khác nhìn thấy thiết bị và một số tùy chọn cài đặt mạng của bạn. Bạn không nên bật tùy chọn này.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Để sau</translation>
 <translation id="3486821258960016770">Tiếng Mông Cổ</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> lỗi.</translation>
+<translation id="3501954296166022751">Bạn có thể xem các tệp trên Google Drive khi không có mạng</translation>
 <translation id="3509680540198371098">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="3511705761158917664">Đang chuẩn bị đồng bộ hoá <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="3522708245912499433">Tiếng Bồ Đào Nha</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">Chọn tất cả</translation>
 <translation id="5500122897333236901">Tiếng Ai-xơ-len</translation>
 <translation id="5508696409934741614">Dấu chấm</translation>
+<translation id="5519161320735100193">Cài đặt Google Drive</translation>
 <translation id="5522908512596376669">Danh sách tệp đã thay đổi thành chế độ xem danh sách.</translation>
 <translation id="5524517123096967210">Không thể đọc tệp.</translation>
 <translation id="5533102081734025921">Hình ảnh <ph name="IMAGE_TYPE" /></translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7806708061868529807">Tiếng Do Thái</translation>
 <translation id="78104721049218340">Tiếng Thái bằng bàn phím Kedmanee</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Lỗi khi định cấu hình mạng</translation>
 <translation id="7839804798877833423">Tìm nạp các tệp này sẽ sử dụng khoảng <ph name="FILE_SIZE" /> dữ liệu di động.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Thao tác định dạng một phân vùng sẽ xóa toàn bộ dữ liệu lưu trữ trên phân vùng đó. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Các tệp trong Drive của tôi sẽ tự động đồng bộ hoá với Chromebook để bạn có thể truy cập các tệp này mà không cần kết nối Internet.</translation>
 <translation id="7925247922861151263">Không thể kiểm tra AAA</translation>
 <translation id="7925686952655276919">Không sử dụng dữ liệu di động để đồng bộ hóa</translation>
 <translation id="7928710562641958568">Tháo thiết bị</translation>
+<translation id="7933875256234974853">Đang chuẩn bị đồng bộ hoá các tệp trên Drive...</translation>
 <translation id="7943385054491506837">Colemak Hoa Kỳ</translation>
 <translation id="7953739707111622108">Thiết bị này không thể mở được vì hệ thống tệp của thiết bị không được nhận dạng.</translation>
 <translation id="7969525169268594403">Tiếng Sloven</translation>
 <translation id="7972920761225148017">Tiếng Pháp (Thụy Sĩ)</translation>
 <translation id="7973962044839454485">Xác thực PPP không thành công do tên người dùng hoặc mật khẩu không đúng</translation>
 <translation id="7980421588063892270">Tiếng Anh (Mỹ) bằng bàn phím Colemak</translation>
+<translation id="7985008041109611710">Đang đồng bộ hoá <ph name="NUMBER_OF_FILES_SYNCING" /> tệp</translation>
 <translation id="8000066093800657092">Không có mạng nào</translation>
 <translation id="8008366997883261463">Chó</translation>
 <translation id="8028993641010258682">Kích thước</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">Đã bắt đầu thành công quá trình cài đặt.</translation>
 <translation id="9219103736887031265">Hình ảnh</translation>
 <translation id="9219908252191632183">Hình lưỡi liềm</translation>
+<translation id="937795003075802289">Đang đồng bộ hoá 1 tệp</translation>
 <translation id="938470336146445890">Vui lòng cài đặt chứng chỉ người dùng.</translation>
 <translation id="939736085109172342">Thư mục mới</translation>
 <translation id="943972244133411984">Người sửa đổi:</translation>

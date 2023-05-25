@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Адключыць цёмную тэму</translation>
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="1827738518074806965">Мастацкая галерэя</translation>
+<translation id="1836553715834333258">Колер сістэмы</translation>
 <translation id="1838374766361614909">Ачысціць поле пошуку</translation>
+<translation id="1840474674287087346">Колер працоўнага стала</translation>
 <translation id="1851218745569890714">Відэаканферэнцыі</translation>
 <translation id="1852934301711881861">Усталяваць Chrome OS Flex</translation>
 <translation id="1856388568474281774">Стрэлка ўніз</translation>
@@ -418,6 +420,7 @@
 <translation id="4454245904991689773">Сканіраваць у</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не ўдалося праверыць сувязь з нестандартным сеткавым шлюзам</translation>
+<translation id="4500966230243561393">Колер інтэрфейсу</translation>
 <translation id="4503223151711056411">Стрэлка ўлева</translation>
 <translation id="4507392511610824664">павялічыць яркасць</translation>
 <translation id="4511264077854731334">Партал</translation>
@@ -496,6 +499,7 @@
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Паказваць фота, час, надвор'е і інфармацыю пра медыяфайлы, калі экран неактыўны.</translation>
+<translation id="5035083460461104704">Колер тэмы</translation>
 <translation id="5038292761217083259">рознакаляровая падсветка клавіятуры</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5049856988445523908">SIM-карта заблакіравана (<ph name="LOCK_TYPE" />)</translation>
@@ -811,6 +815,7 @@
 <translation id="7618774594543487847">Нейтральны</translation>
 <translation id="7620771111601174153">Атрымаць больш інфармацыі ў Даведачным цэнтры</translation>
 <translation id="763165478673169849">Час апошняга скіду</translation>
+<translation id="7633068090678117093">Фонавы відарыс</translation>
 <translation id="7648838807254605802">Вялікая затрымка HTTPS</translation>
 <translation id="765159867434478292">Падзелены</translation>
 <translation id="7656388927906093505">Гэта мыш.</translation>
@@ -976,6 +981,7 @@
 <translation id="8930521118335213258">Вузел</translation>
 <translation id="8930622219860340959">Бесправадныя сеткі</translation>
 <translation id="8936793075252196307">IP-адрас кліента</translation>
+<translation id="8944651180182756621">Колер панэлі запуску</translation>
 <translation id="894617464444543719">Гэта тэлефон.</translation>
 <translation id="8957423540740801332">справа</translation>
 <translation id="8968751544471797276">Хуткасць зарадкі</translation>
@@ -1009,6 +1015,7 @@
 <translation id="9149391708638971077">Выканаць праверку памяці</translation>
 <translation id="9161276708550942948">прабел</translation>
 <translation id="9173638680043580060">Застаецца менш за хвіліну</translation>
+<translation id="9174334653006917325">Колер карыстальніцкага інтэрфейсу</translation>
 <translation id="917720651393141712">Праверыць</translation>
 <translation id="9188992814426075118">Падсветка клавіятуры можа аўтаматычна падбірацца пад колер шпалер</translation>
 <translation id="9189000703457422362">Не ўдалося падключыцца да гэтай сеткі з выкарыстаннем аўтаматычна распазнаных APN. Па дадатковую інфармацыю звяртайцеся да аператара мабільнай сувязі.</translation>

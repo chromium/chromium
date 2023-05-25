@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">停用深色主题</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1827738518074806965">画廊</translation>
+<translation id="1836553715834333258">系统颜色</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
+<translation id="1840474674287087346">桌面颜色</translation>
 <translation id="1851218745569890714">视频会议</translation>
 <translation id="1852934301711881861">安装 ChromeOS Flex</translation>
 <translation id="1856388568474281774">向下</translation>
@@ -418,6 +420,7 @@
 <translation id="4454245904991689773">将扫描的文件保存至</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4483049906298469269">未能对非默认网关执行 ping 操作</translation>
+<translation id="4500966230243561393">界面颜色</translation>
 <translation id="4503223151711056411">向左</translation>
 <translation id="4507392511610824664">调高亮度</translation>
 <translation id="4511264077854731334">门户网站</translation>
@@ -496,6 +499,7 @@
 <translation id="500920857929044050">停止测试</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">当您的屏幕处于空闲状态时，显示照片、时间、天气和媒体信息。</translation>
+<translation id="5035083460461104704">主题颜色</translation>
 <translation id="5038292761217083259">键盘多色</translation>
 <translation id="5039804452771397117">允许</translation>
 <translation id="5049856988445523908">SIM 卡已锁定 (<ph name="LOCK_TYPE" />)</translation>
@@ -811,6 +815,7 @@
 <translation id="7618774594543487847">中性</translation>
 <translation id="7620771111601174153">在帮助中心内了解详情</translation>
 <translation id="763165478673169849">上次重置时间</translation>
+<translation id="7633068090678117093">背景图片</translation>
 <translation id="7648838807254605802">HTTPS 延迟较高</translation>
 <translation id="765159867434478292">拆分</translation>
 <translation id="7656388927906093505">设备类型是鼠标。</translation>
@@ -976,6 +981,7 @@
 <translation id="8930521118335213258">对等节点</translation>
 <translation id="8930622219860340959">无线</translation>
 <translation id="8936793075252196307">客户端 IP 地址</translation>
+<translation id="8944651180182756621">启动器颜色</translation>
 <translation id="894617464444543719">设备类型是手机。</translation>
 <translation id="8957423540740801332">向右</translation>
 <translation id="8968751544471797276">充电速率</translation>
@@ -1009,6 +1015,7 @@
 <translation id="9149391708638971077">运行内存测试</translation>
 <translation id="9161276708550942948">空格键</translation>
 <translation id="9173638680043580060">还剩不到 1 分钟</translation>
+<translation id="9174334653006917325">界面颜色</translation>
 <translation id="917720651393141712">测试</translation>
 <translation id="9188992814426075118">键盘可自动与您的壁纸匹配</translation>
 <translation id="9189000703457422362">无法使用自动检测到的 APN 连接到此网络。如需了解详情，请与您的移动运营商联系。</translation>

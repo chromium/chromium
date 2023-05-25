@@ -1133,6 +1133,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3740319564441798148">Transportes terrestres de longo curso</translation>
 <translation id="3743765582345153106">Validar sempre quando usar o preenchimento automático</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
+<translation id="3744212718085287312">Torná-lo mais seguro com um cartão virtual da próxima vez?</translation>
 <translation id="3744286742364977428">Os ficheiros que transfere são enviados para o Google Cloud ou para terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso e podem ser armazenados com base nas políticas da empresa.</translation>
 <translation id="3744899669254331632">Não pode visitar <ph name="SITE" /> neste momento, porque o Website enviou credenciais baralhadas que o Chromium não consegue processar. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
 <translation id="3748148204939282805">Os atacantes em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> podem levá-lo a tomar medidas perigosas, como instalar software ou revelar as suas informações pessoais (por exemplo, palavras-passe, números de telefone ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1852,6 +1853,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5471337644440862957">Filmes de comédia</translation>
 <translation id="5481076368049295676">Este conteúdo pode tentar instalar software perigoso no dispositivo que rouba ou elimina as suas informações. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Adicionar endereço válido</translation>
+<translation id="5483838506518938965">O processo está concluído</translation>
 <translation id="5485973315555778056">Computador da nuvem</translation>
 <translation id="5487426985799386720">Alimentação e bebidas</translation>
 <translation id="5490432419156082418">Moradas e Mais</translation>

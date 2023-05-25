@@ -426,6 +426,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3290249595466894471">Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats</translation>
 <translation id="3293181007446299124">Your browsing history is kept private on your device and reports are sent with a delay to protect your identity</translation>
 <translation id="3303414029551471755">Proceed to download the content?</translation>
+<translation id="3305130791745726624">Send to devices</translation>
 <translation id="3305795716056605962">Translate pages from the More Options button</translation>
 <translation id="3319664549618064419">Switch to desktop site for a better view of this site</translation>
 <translation id="3334729583274622784">Change file extension?</translation>
@@ -1174,6 +1175,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7304072650267745798">Your Android device may include a similar setting. If this setting is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
 <translation id="7304873321153398381">Offline. Chrome can’t check your passwords.</translation>
 <translation id="7313188324932846546">Tap to set up sync</translation>
+<translation id="7324354302972299151">Send a 'Do Not Track' request</translation>
 <translation id="7332075081379534664">Sign-in succeeded</translation>
 <translation id="7333232495927792353">Sync to get the most relevant content from Google</translation>
 <translation id="7339898014177206373">New window</translation>
@@ -1360,6 +1362,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Resume</translation>
 <translation id="8209050860603202033">Open image</translation>
+<translation id="8210770465353466621">You'll find your tabs here</translation>
 <translation id="8215740705341534369">Side sheet</translation>
 <translation id="8218622182176210845">Manage your account</translation>
 <translation id="8221401890884589479">You can block sites that you don't want. Chrome also auto-deletes sites that are older than 30 days from the list. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>

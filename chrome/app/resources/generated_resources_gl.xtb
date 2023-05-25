@@ -4111,7 +4111,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4554591392113183336">A extensión externa ten a mesma versión ou unha inferior en comparación coa existente.</translation>
 <translation id="4555769855065597957">Sombra</translation>
 <translation id="4555863373929230635">Para gardar os contrasinais na túa Conta de Google, inicia sesión e activa a sincronización.</translation>
-<translation id="4556194354084985730">Inicia sesión de forma sinxela en sitios e aplicacións cos contrasinais que tes gardados. Se desactivas esta opción, pediráseche que metas o contrasinal antes de iniciar sesión.</translation>
 <translation id="4558426062282641716">Solicitouse permiso de inicio automático</translation>
 <translation id="4559617833001311418">Este sitio está accedendo aos teus sensores de movemento ou luz.</translation>
 <translation id="4560728518401799797">Máis opcións para o marcador <ph name="FOLDER_TITLE" /></translation>
@@ -7550,7 +7549,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7637272932128132922">Mentres esta pestana estaba inactiva, Aforro de memoria liberou memoria para outras tarefas. Podes cambiar esta opción cando queiras en <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Non queda espazo suficiente no disco</translation>
 <translation id="7639914187072011620">Non se puido obter do servidor o URL de redirección da SAML</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> inicia sesión automaticamente nos sitios aptos cos contrasinais que gardaches.</translation>
 <translation id="7641513591566880111">Novo nome de perfil</translation>
 <translation id="764178579712141045">Engadiuse a <ph name="USER_EMAIL" /></translation>
 <translation id="7642778300616172920">Ocultar contido confidencial</translation>

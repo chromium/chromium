@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Google site</translation>
 <translation id="1853795129690976061">This folder is shared with Linux</translation>
 <translation id="1864756863218646478">The file could not be found.</translation>
+<translation id="1877377730633446520">This will use about <ph name="REQUIRED_SPACE" />. You currently have <ph name="FREE_SPACE" /> available.</translation>
 <translation id="1884013283844450420">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, connect</translation>
 <translation id="1920670151694390848">Malayalam transliteration</translation>
 <translation id="1920798810075583923">Watermelon</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Expand files feedback panels</translation>
 <translation id="1995337122023280937">Go to file location</translation>
 <translation id="2001796770603320721">Manage in Drive</translation>
+<translation id="2004942826429452291">Files will be stored in the cloud and on this Chromebook.</translation>
 <translation id="2009067268969781306">Formatting a drive will delete all data stored on it. This action cannot be undone.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Russian</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Device settings</translation>
 <translation id="2084809735218147718">Signing thank you</translation>
 <translation id="2088690981887365033">VPN network</translation>
+<translation id="2089751716171649322">Easily access your Google Drive files when you’re offline</translation>
 <translation id="2111134541987263231">Turn on <ph name="BEGIN_BOLD" />Allow in Incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> items will be deleted and you won't be able to restore them.</translation>
 <translation id="2122305276694332719">Automatically connecting to a hidden network allows others to see your device and some network settings, and is not recommended.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Not now</translation>
 <translation id="3486821258960016770">Mongolian</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
+<translation id="3501954296166022751">Your Google Drive files are available offline</translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3511705761158917664">Preparing to sync <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="3522708245912499433">Portuguese</translation>
@@ -573,6 +577,7 @@
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5500122897333236901">Icelandic</translation>
 <translation id="5508696409934741614">Dots</translation>
+<translation id="5519161320735100193">Google Drive settings</translation>
 <translation id="5522908512596376669">File list has changed to list view.</translation>
 <translation id="5524517123096967210">The file could not be read.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> image</translation>
@@ -865,6 +870,7 @@
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebrew</translation>
 <translation id="78104721049218340">Thai with Kedmanee keyboard</translation>
+<translation id="7814857791038398352">Microsoft® OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Error configuring network</translation>
 <translation id="7839804798877833423">Fetching these files will use approximately <ph name="FILE_SIZE" /> of mobile data.</translation>
@@ -877,15 +883,18 @@
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatting a partition will erase all data stored on it. This action cannot be undone.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">Your files in My Drive will sync to your Chromebook automatically so you can access them without an Internet connection.</translation>
 <translation id="7925247922861151263">AAA check failed</translation>
 <translation id="7925686952655276919">Do not use mobile data for sync</translation>
 <translation id="7928710562641958568">Eject device</translation>
+<translation id="7933875256234974853">Preparing to sync Drive files...</translation>
 <translation id="7943385054491506837">US Colemak</translation>
 <translation id="7953739707111622108">This device cannot be opened because its file system was not recognised.</translation>
 <translation id="7969525169268594403">Slovenian</translation>
 <translation id="7972920761225148017">French (Switzerland)</translation>
 <translation id="7973962044839454485">PPP authentication failed due to an incorrect username or password</translation>
 <translation id="7980421588063892270">English (US) with Colemak keyboard</translation>
+<translation id="7985008041109611710">Syncing <ph name="NUMBER_OF_FILES_SYNCING" /> file(s)</translation>
 <translation id="8000066093800657092">No network</translation>
 <translation id="8008366997883261463">Jack Russell Terrier</translation>
 <translation id="8028993641010258682">Size</translation>
@@ -1040,6 +1049,7 @@
 <translation id="9213073329713032541">Installation successfully started.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="937795003075802289">[=1]Syncing 1 file</translation>
 <translation id="938470336146445890">Please install a user certificate.</translation>
 <translation id="939736085109172342">New folder</translation>
 <translation id="943972244133411984">Modified by</translation>

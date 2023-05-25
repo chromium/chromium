@@ -1133,6 +1133,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3740319564441798148">Autobus i željeznica za velike udaljenosti</translation>
 <translation id="3743765582345153106">Uvijek potvrdi prilikom korištenja automatskog popunjavanja</translation>
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
+<translation id="3744212718085287312">Želite li sljedeći put biti sigurniji uz virtualnu karticu?</translation>
 <translation id="3744286742364977428">Fajlovi koje preuzmete se šalju u Google oblak ili trećim stranama na analizu. Naprimjer, mogu se skenirati radi otkrivanja postojanja osjetljivih podataka ili zlonamjernog softvera i mogu se pohranjivati na osnovu pravila kompanije.</translation>
 <translation id="3744899669254331632">Trenutno ne možete posjetiti <ph name="SITE" /> jer je ova web lokacija poslala kodirane akreditive koje Chromium ne može obraditi. Greške i napadi na mreži su obično privremeni, pa će ova web lokacija vjerovatno raditi kasnije.</translation>
 <translation id="3748148204939282805">Napadači na web lokaciju <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogu vas prevarom navesti da uradite nešto opasno kao što je instaliranje softvera ili otkrivanje ličnih informacija (naprimjer lozinki, brojeva telefona ili kreditnih kartica). <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1852,6 +1853,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5471337644440862957">Komedije</translation>
 <translation id="5481076368049295676">Ovaj sadržaj može pokušati instalirati opasan softver na vaš uređaj koji krade ili briše vaše informacije. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Dodajte važeću adresu</translation>
+<translation id="5483838506518938965">Spremni ste za rad</translation>
 <translation id="5485973315555778056">Mašina u oblaku</translation>
 <translation id="5487426985799386720">Hrana i piće</translation>
 <translation id="5490432419156082418">Adrese i još mnogo toga</translation>

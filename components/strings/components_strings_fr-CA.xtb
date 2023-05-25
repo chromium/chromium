@@ -1096,6 +1096,7 @@
 <translation id="3658742229777143148">Révision</translation>
 <translation id="3664782872746246217">Mots clés :</translation>
 <translation id="3667704023705708645">Capital de risque</translation>
+<translation id="3671117652518853176">Lorsqu'elle est désactivée, il peut vous être demandé occasionnellement de vérifier pour des raisons de sécurité</translation>
 <translation id="3671540257457995106">Autoriser le redimensionnement?</translation>
 <translation id="3672568546897166916">Erreur à <ph name="ERROR_PATH" /> : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Troisième rouleau</translation>
@@ -1130,6 +1131,7 @@
 <translation id="3736520371357197498">Si vous comprenez les risques pour votre sécurité, vous pouvez <ph name="BEGIN_LINK" />visiter ce site dangereux<ph name="END_LINK" /> avant que les programmes dangereux aient été supprimés.</translation>
 <translation id="3738166223076830879">Votre navigateur est géré par votre administrateur.</translation>
 <translation id="3740319564441798148">Bus et train longue distance</translation>
+<translation id="3743765582345153106">Toujours vérifier lors de l'utilisation de la saisie automatique</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3744286742364977428">Les fichiers que vous téléchargez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils peuvent être analysés à la recherche de données confidentielles ou de logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise.</translation>
 <translation id="3744899669254331632">Vous ne pas présentement consulter le site <ph name="SITE" />, car il a renvoyé des authentifiants brouillés que Chromium ne peut pas traiter. Les erreurs et attaques réseau étant généralement temporaires, cette page sera peut-être à nouveau accessible plus tard.</translation>
@@ -1735,6 +1737,7 @@
 <translation id="5171045022955879922">Effectuez une recherche ou entrez une adresse URL</translation>
 <translation id="5172758083709347301">Machine</translation>
 <translation id="5177076414499237632">En savoir plus sur la source et le sujet de cette page</translation>
+<translation id="5179490652562926740">Paramètres de vérification des paiements enregistrés</translation>
 <translation id="5179510805599951267">Cette page n'est pas rédigée en <ph name="ORIGINAL_LANGUAGE" />? Signaler l'erreur.</translation>
 <translation id="518639307526414276">Aliments et accessoires pour animaux</translation>
 <translation id="5190072300954988691">Accès à l'appareil photo et au microphone non autorisé</translation>
@@ -1849,6 +1852,7 @@
 <translation id="5471337644440862957">Comédies</translation>
 <translation id="5481076368049295676">Ce contenu pourrait tenter d'installer des logiciels dangereux sur votre appareil afin de voler ou de supprimer vos données. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Ajouter une adresse valide</translation>
+<translation id="5483838506518938965">Tout est prêt</translation>
 <translation id="5485973315555778056">Appareil infonuagique</translation>
 <translation id="5487426985799386720">Nourriture et boissons</translation>
 <translation id="5490432419156082418">Adresses et plus</translation>

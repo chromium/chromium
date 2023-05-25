@@ -315,6 +315,9 @@
 <translation id="2975121486251958312">ફક્ત છૂપો મોડ ઉપલબ્ધ છે</translation>
 <translation id="2982481275546140226">ડેટા સાફ કરો</translation>
 <translation id="298306318844797842">ચુકવણીની પદ્ધતિ ઉમેરો…</translation>
+<translation id="2988274366244053197">Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
+
+તમારો પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં અથવા તેમાં સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ છો અથવા આ સેટિંગ બદલવા માંગો છો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chrome ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">નવા ટૅબમાં ખોલો</translation>
 <translation id="3020183492814296499">શૉર્ટકટ</translation>
 <translation id="3037605927509011580">અરર કંઇક ભુલ થઇ!</translation>
@@ -381,6 +384,7 @@
 <translation id="3471148582064653480">તમારા પાસવર્ડ, ઇતિહાસ અને બીજું ઘણું સિંક કરો.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} સાઇટ અથવા ઍપ માટે}one{{COUNT} સાઇટ અથવા ઍપ માટે}other{{COUNT} સાઇટ અથવા ઍપ માટે}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> તરીકે ચાલુ રાખો</translation>
+<translation id="3476450923187944815">અન્ય ઍપમાંથી પણ તમારા પાસવર્ડ ઍક્સેસ કરો.</translation>
 <translation id="3478058380795961209">સમય સમાપ્તિ મહિનો</translation>
 <translation id="3482959374254649722">તમારા ટેબ્સને સમન્વયિત કરી રહ્યું છે...</translation>
 <translation id="3484946776651937681">ડાઉનલોડ ફોલ્ડરમાં ખોલો</translation>
@@ -652,6 +656,7 @@
 <translation id="5300589172476337783">બતાવો</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318298563956633672">તમે આ પ્રોડક્ટને પહેલેથી જ ટ્રૅક કરી રહ્યાં છો.</translation>
+<translation id="5325595483440111327">બ્રાઉઝિંગ ઇતિહાસ જુઓ.</translation>
 <translation id="5339316356165661760">સિંક કરવાનું ચાલુ કરો</translation>
 <translation id="536067926684072644">બુકમાર્ક બતાવો</translation>
 <translation id="5360976571138293719">પ્રાઇવસી, સુરક્ષા અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> જુઓ.</translation>

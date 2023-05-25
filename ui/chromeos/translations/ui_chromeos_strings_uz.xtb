@@ -108,6 +108,7 @@
 <translation id="1838709767668011582">Google sayti</translation>
 <translation id="1853795129690976061">Bu jild Linuxga ulashilgan</translation>
 <translation id="1864756863218646478">Fayl topilmadi.</translation>
+<translation id="1877377730633446520">Bu taxminan <ph name="REQUIRED_SPACE" /> joy oladi. Sizda hozir <ph name="FREE_SPACE" /> boʻsh.</translation>
 <translation id="1884013283844450420">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish</translation>
 <translation id="1920670151694390848">Malayalam tili transliteratsiyasi</translation>
 <translation id="1920798810075583923">Tarvuz</translation>
@@ -119,6 +120,7 @@
 <translation id="1972984168337863910">Fayllar holat panelini yoyish</translation>
 <translation id="1995337122023280937">Fayl joylashuviga kirish</translation>
 <translation id="2001796770603320721">Google Drive orqali ochish</translation>
+<translation id="2004942826429452291">Fayllar bulut omborida va shu Chromebook xotirasida saqlanadi.</translation>
 <translation id="2009067268969781306">Xotira formatlansa, undagi barcha maʼlumotlar oʻchib ketadi. Bu amal bekor qilinmaydi.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2037845485764049925">Rus</translation>
@@ -129,6 +131,7 @@
 <translation id="2084108471225856927">Qurilma sozlamalari</translation>
 <translation id="2084809735218147718">Rahmat deb yozish</translation>
 <translation id="2088690981887365033">VPN tarmoq</translation>
+<translation id="2089751716171649322">Google Drive fayllarini oflaynda ham oson oching</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Inkognito rejimidan foydalanishga ruxsat berish<ph name="END_BOLD" /> parametrini yoqing</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> ta element oʻchib ketadi va qayta tiklanmaydi.</translation>
 <translation id="2122305276694332719">Yashirin tarmoqlarga avtomatik ulanish tavsiya etilmaydi, chunki qurilmangiz va tarmoq sozlamalaringiz boshqalarga koʻrinishi mumkin.</translation>
@@ -297,6 +300,7 @@
 <translation id="3479552764303398839">Hozir emas</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> ta xatolik.</translation>
+<translation id="3501954296166022751">Google Drive fayllarini oflayn ochish mumkin</translation>
 <translation id="3509680540198371098">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Batafsil</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ta element sinxronlashga tayyorlanmoqda...</translation>
 <translation id="3522708245912499433">Portugal tili</translation>
@@ -572,6 +576,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5494920125229734069">Hammasini tanlash</translation>
 <translation id="5500122897333236901">Island tili</translation>
 <translation id="5508696409934741614">Nuqtalar</translation>
+<translation id="5519161320735100193">Google Drive sozlamalari</translation>
 <translation id="5522908512596376669">Fayllar roʻyxati uchun saralash shakli almashdi.</translation>
 <translation id="5524517123096967210">Faylni o‘qib bo‘lmadi.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> rasm</translation>
@@ -864,6 +869,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7806708061868529807">Ivrit</translation>
 <translation id="78104721049218340">Tay (Kedmanee klaviaturasi)</translation>
+<translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Tarmoqni sozlashda xatolik yuz berdi</translation>
 <translation id="7839804798877833423">Bu fayllarni yuklashga taxminan <ph name="FILE_SIZE" /> mobil trafik sarf bo‘ladi.</translation>
@@ -876,15 +882,18 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Disk boʻlimi formatlansa, undagi barcha axborotlar tozlanaladi. Bu amal bekor qilinmaydi.</translation>
 <translation id="7911118814695487383">Linux</translation>
+<translation id="7920501309908018401">My Drive jildidagi fayllar Chromebook qurilmangizga avtomatik sinxronlanadi va ularni internetsiz ham ochish mumkin.</translation>
 <translation id="7925247922861151263">AAA tekshirilmadi</translation>
 <translation id="7925686952655276919">Sinxronlash uchun mobil internetdan foydalanmang</translation>
 <translation id="7928710562641958568">Qurilmani chiqarib olish</translation>
+<translation id="7933875256234974853">Drive fayllari sinxronlashga tayyorlanmoqda...</translation>
 <translation id="7943385054491506837">AQSH Colemak</translation>
 <translation id="7953739707111622108">Qurilmani ochib bo‘lmadi, chunki undagi fayl tizimi aniqlanmadi.</translation>
 <translation id="7969525169268594403">Slovan Tili</translation>
 <translation id="7972920761225148017">Fransuz (Shveytsariya)</translation>
 <translation id="7973962044839454485">PPP haqiqiyligini tekshirib bo‘lmadi: foydalanuvchi nomi yoki parol noto‘g‘ri</translation>
 <translation id="7980421588063892270">Ingliz (AQSH) va Colemak klaviaturasi</translation>
+<translation id="7985008041109611710"><ph name="NUMBER_OF_FILES_SYNCING" /> ta fayl sinxronlanmoqda</translation>
 <translation id="8000066093800657092">Tarmoq topilmadi</translation>
 <translation id="8008366997883261463">It</translation>
 <translation id="8028993641010258682">Hajm</translation>
@@ -1039,6 +1048,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9213073329713032541">O‘rnatish muvaffaqiyatli boshlandi.</translation>
 <translation id="9219103736887031265">Rasmlar</translation>
 <translation id="9219908252191632183">Oy</translation>
+<translation id="937795003075802289">1 ta fayl sinxronlanmoqda</translation>
 <translation id="938470336146445890">Foydalanuvchi sertifikatini o‘rnating.</translation>
 <translation id="939736085109172342">Yangi jild</translation>
 <translation id="943972244133411984">Tahrirlovchi</translation>

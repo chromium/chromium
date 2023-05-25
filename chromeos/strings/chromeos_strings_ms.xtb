@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Meja</translation>
 <translation id="1018219910092211213">Tidak dapat menyelesaikan DNS</translation>
 <translation id="1018656279737460067">Dibatalkan</translation>
+<translation id="1020274983236703756">Aset <ph name="PRODUCT_NAME" /> eksklusif kini tersedia</translation>
 <translation id="1022433422498218992">Kawalan Umum</translation>
 <translation id="1022628058306505708">Aliran Bumi</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> urutan, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Mencari pengimbas</translation>
 <translation id="3226657629376379887">Menu tindakan reka letak</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
+<translation id="3248223063252096240"><ph name="PRODUCT_NAME" /> eksklusif</translation>
 <translation id="3268178239013324452">Gagal - Pintu terbuka</translation>
 <translation id="3275729367986477355">Imej avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit fail}other{Edit fail}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Togol skrin privasi</translation>
 <translation id="3639846061339007994">atas</translation>
 <translation id="3651050199673793219">Pilih unit suhu</translation>
+<translation id="3663574643422533538">Pilih kerja seni eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuatkan...</translation>
 <translation id="3708186454126126312">Disambungkan sebelum ini</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Pad sentuh USB</translation>
+<translation id="4113067922640381334">Kini anda boleh mengakses <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />hiasan latar<ph name="END_LINK_WALLPAPER_SUBPAGE" /> baharu</translation>
 <translation id="4117637339509843559">Mod gelap</translation>
 <translation id="4130035430755296270">Teruskan menuding untuk mendapatkan lagi pilihan reka letak</translation>
 <translation id="4131410914670010031">Hitam putih</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Tidak diasalkan</translation>
 <translation id="8593058461203131755">jeda media</translation>
 <translation id="8620617069779373398">Status perayauan</translation>
+<translation id="8626489604350149811">Lagi tindakan untuk <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ungu muda</translation>
 <translation id="8651481478098336970">redam kelantangan</translation>
 <translation id="8655295600908251630">Saluran</translation>

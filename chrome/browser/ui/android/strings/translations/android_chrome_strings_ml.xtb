@@ -17,6 +17,7 @@
 <translation id="1100066534610197918">ഗ്രൂപ്പിലെ പുതിയ ടാബിൽ തുറക്കൂ</translation>
 <translation id="1103142993930332957">Chrome മെച്ചപ്പെടുത്താൻ സഹായിക്കണോ?</translation>
 <translation id="1105960400813249514">സ്‌ക്രീൻ ക്യാപ്‌ചർ</translation>
+<translation id="1108214977745280468">പേജ് ഉൾക്കാഴ്ചകൾ കാണുക</translation>
 <translation id="1108938384783527433">ചരിത്രം സമന്വയിപ്പിക്കൽ</translation>
 <translation id="1110914759170138831">ഹെെലെെറ്റ് ഹ്വസ്വമാക്കി</translation>
 <translation id="1111673857033749125">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ സംരക്ഷിച്ച ബുക്ക്‌മാർക്കുകൾ ഇവിടെ ദൃശ്യമാകും.</translation>
@@ -66,6 +67,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-ൽ നിന്ന് അയച്ചത്</translation>
 <translation id="1311657260431405215">ഈ QR കോഡ് ഒരു URL അല്ല: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="131655401280401879">പിന്നീട് പ്രൊഫൈൽ ലോക്ക് നീക്കം ചെയ്താൽ നിങ്ങളുടെ സംരക്ഷിച്ച വിവരങ്ങൾ മായ്‌ക്കും.</translation>
 <translation id="1320912611264252795">ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കൽ ഫ്ലോ ഫോൾഡറുകൾ മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="1327257854815634930">നാവിഗേഷൻ ചരിത്രം തുറന്നിരിക്കുന്നു</translation>
 <translation id="1331212799747679585">Chrome അപ്‌ഡേറ്റ് ചെയ്യാനാവില്ല. കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
@@ -179,6 +181,7 @@
 <translation id="1995884366040846621">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയം<ph name="END_LINK1" /> കാണുക.</translation>
 <translation id="200114059308480249">Google തിരയലുകളിൽ ചുറ്റുമുള്ള ടെക്സ്റ്റ് ഉൾപ്പെടുത്തണോ?</translation>
 <translation id="2009341475524975924">ഒരു പരസ്യത്തിന്റെ പ്രകടനം അളക്കാൻ, ഒരു പരസ്യം നിങ്ങളെ കാണിച്ച സമയം പോലുള്ള പരിമിതമായ ഡാറ്റാ തരങ്ങൾ മാത്രമേ സൈറ്റുകൾക്കിടയിൽ പങ്കിടാനാകൂ.</translation>
+<translation id="201060170519281460">നിങ്ങളുടെ പ്രൊഫൈൽ ലോക്ക്, സമന്വയിപ്പിച്ച പാസ്‌വേഡുകളും പേയ്‌മെന്റുകളും മറ്റും ഉൾപ്പെടെയുള്ള വിവരങ്ങൾ കാറിൽ സുരക്ഷിതമാക്കുന്നു.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ഫയല്‍}other{# ഫയലുകൾ}}</translation>
 <translation id="2021896219286479412">പൂർണ്ണ സ്ക്രീൻ സൈറ്റ് നിയന്ത്രണങ്ങൾ</translation>
 <translation id="2038563949887743358">'ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക' ഓണാക്കുക</translation>
@@ -256,6 +259,7 @@
 <translation id="250020030759455918">നിങ്ങളുടെ <ph name="SITE_NAME" /> സൈൻ ഇൻ നില, ബ്രൗസിംഗ് ഡാറ്റ, സൈറ്റ് ഡാറ്റ എന്നിവ Chrome-ൽ കാണാം</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ഇൻസ്റ്റാൾ ചെയ്യുന്നു...</translation>
 <translation id="2513403576141822879">സ്വകാര്യത, സുരക്ഷ, ഡാറ്റാ ശേഖരണം എന്നിവയുമായി ബന്ധപ്പെട്ട കൂടുതൽ ക്രമീകരണത്തിന്, <ph name="BEGIN_LINK" />സമന്വയവും Google സേവനങ്ങളും<ph name="END_LINK" /> കാണുക</translation>
+<translation id="2517113738956581680">പൂർണ്ണ വലുപ്പ ഷീറ്റ്</translation>
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="2523184218357549926">Google-ൽ നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കൾ അയയ്ക്കുന്നു</translation>
 <translation id="2527209463677295330">പേജിലുള്ള കൂടുതൽ ടെക്സ്റ്റ് ഉൾപ്പെടുത്തുന്നതിലൂടെ നിങ്ങൾക്ക് മെച്ചപ്പെട്ട ഫലങ്ങൾ ലഭിച്ചേക്കാം</translation>
@@ -280,6 +284,7 @@
 പ്രൈവറ്റ് സ്റ്റേറ്റ് ടോക്കണുകൾ വെബിലെ സ്വകാര്യത വർദ്ധിപ്പിക്കുന്നു, നിങ്ങൾ ആരാണെന്ന് തിരിച്ചറിയാൻ അവ ഉപയോഗിക്കാനാകില്ല.</translation>
 <translation id="2581165646603367611">ഇത്, Chrome പ്രധാനമായി കണക്കാക്കാത്ത സൈറ്റുകളുടെ കുക്കികളും കാഷെയും മറ്റ് വിവരങ്ങളും മായ്‌ക്കും.</translation>
 <translation id="2587052924345400782">ഏറ്റവും പുതിയ പതിപ്പ് ലഭ്യമാണ്</translation>
+<translation id="2589302627584222634">പ്രൊഫൈല്‍ ലോക്ക് സൃഷ്ടിക്കുക</translation>
 <translation id="2593272815202181319">മോണോസ്പെ‌യ്‌സ്</translation>
 <translation id="2603212228005142861">മുൻഗണനകൾ മാനേജ് ചെയ്യാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="260403163289591229">ഫോളോ ചെയ്യുന്നത്</translation>
@@ -541,6 +546,7 @@
 <translation id="4035877632587724847">അനുവദിക്കരുത്</translation>
 <translation id="4036177530563778041">നിങ്ങൾ നിർത്തിയ ഇടത്തുനിന്നും എളുപ്പത്തിൽ തുടരുക</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുന്നത് തുടരുക</translation>
+<translation id="4044708993631234325">ബോട്ടം ഷീറ്റ്</translation>
 <translation id="4045764304651014138">ഉപയോഗ ഡാറ്റ</translation>
 <translation id="405399507749852140">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="4056223980640387499">സിപിയ</translation>
@@ -842,6 +848,7 @@
 <translation id="564667659802381754">സ്വകാര്യതാ ഗൈഡ് <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">കഴിഞ്ഞ 7 ദിവസം</translation>
 <translation id="5655963694829536461">നിങ്ങളുടെ ഡൗൺലോഡുകൾ തിരയുക</translation>
+<translation id="5657871969392618475">പ്രൊഫൈൽ ലോക്ക് ഉപയോഗിച്ച് നിങ്ങളുടെ വിവരങ്ങൾ സുരക്ഷിതമാക്കിയിരിക്കുന്നു</translation>
 <translation id="5659593005791499971">ഇമെയില്‍</translation>
 <translation id="5665379678064389456"><ph name="APP_NAME" /> ആപ്പിൽ ഇവന്റ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="5683547024293500885">Chrome-ന് അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കാനാകില്ല</translation>
@@ -904,6 +911,7 @@
 <translation id="5964869237734432770">ചിത്ര വിവരണങ്ങൾ നിർത്തുക</translation>
 <translation id="5966233851250124270">Chrome നിങ്ങളുടെ ചോയ്‌സ് ഓർമ്മിക്കും</translation>
 <translation id="5979084224081478209">പാസ്‌വേഡ് പരിശോധിക്കൂ</translation>
+<translation id="5985186846584605773">നിങ്ങളുടെ കാറിനായി ഒരു പ്രൊഫൈൽ ലോക്ക് സൃഷ്ടിക്കുക</translation>
 <translation id="5995726099713306770">പേജ് വീണ്ടും ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="6000066717592683814">Google ഉപയോഗിക്കുക</translation>
 <translation id="6000203700195075278">വീണ്ടും ഫോളോ ചെയ്യുക</translation>
@@ -1132,6 +1140,7 @@
 <translation id="7088681679121566888">Chrome അപ് റ്റു ഡേറ്റാണ്</translation>
 <translation id="7105047059074518658">ഉപകരണങ്ങളിൽ ഉടനീളം എളുപ്പം ബ്രൗസ് ചെയ്യാൻ സൈൻ ഇൻ ചെയ്യൂ</translation>
 <translation id="7106762743910369165">നിങ്ങളുടെ സ്ഥാപനമാണ് നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത്</translation>
+<translation id="7116420572655804716">നിങ്ങളുടെ വിവരങ്ങൾ സമന്വയിപ്പിക്കാനും കാറിൽ ഡാറ്റ സുരക്ഷിതമായി സൂക്ഷിക്കാനും, സുരക്ഷാ ക്രമീകരണത്തിൽ ഒരു പ്രൊഫൈൽ ലോക്ക് സൃഷ്‌ടിക്കണം. നിങ്ങൾ കാറിൽ പ്രവേശിക്കുമ്പോഴെല്ലാം ഒരു കോഡോ പാസ്‌വേഡോ ഉപയോഗിക്കും.</translation>
 <translation id="7116588989735740310">നിങ്ങൾ മറ്റ് ഉപകരണങ്ങളിൽ നിന്ന് സന്ദർശിച്ച സൈറ്റുകളിലേക്ക് പോകാൻ, ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കൂ</translation>
 <translation id="7130504491556983216">നിങ്ങൾ വെബിൽ ബ്രൗസ് ചെയ്യുമ്പോൾ താൽപ്പര്യങ്ങളുടെ ഒരു ലിസ്റ്റ് ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
@@ -1351,6 +1360,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
 <translation id="8209050860603202033">ചിത്രം തുറക്കുക</translation>
+<translation id="8215740705341534369">സൈഡ് ഷീറ്റ്</translation>
 <translation id="8218622182176210845">നിങ്ങളുടെ അക്കൗണ്ട് മാനേജ് ചെയ്യുക</translation>
 <translation id="8221401890884589479">ആവശ്യമില്ലാത്ത സൈറ്റുകൾ നിങ്ങൾക്ക് ബ്ലോക്ക് ചെയ്യാം. 30 ദിവസത്തിലധികം പഴക്കമുള്ള സൈറ്റുകൾ ലിസ്റ്റിൽ നിന്ന് Chrome സ്വയമേവ ഇല്ലാതാക്കുന്നു. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">ഫീഡ് കാർഡ് മെനു</translation>
@@ -1551,6 +1561,7 @@
 <translation id="932327136139879170">ഹോം</translation>
 <translation id="938850635132480979">പിശക്: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">പാസ്ഫ്രെയ്‍സ് നല്‍കുക</translation>
+<translation id="950679278154734362">നിങ്ങളുടെ വിവരങ്ങൾ സമന്വയിപ്പിക്കാനും കാറിൽ ഡാറ്റ സുരക്ഷിതമായി സൂക്ഷിക്കാനും, ഒരു പ്രൊഫൈൽ ലോക്ക് സൃഷ്‌ടിക്കണം. നിങ്ങൾ കാറിൽ പ്രവേശിക്കുമ്പോഴെല്ലാം ഒരു കോഡോ പാസ്‌വേഡോ ഉപയോഗിക്കും.</translation>
 <translation id="95817756606698420"><ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ഉപയോഗിച്ച് Chrome-ന് ചൈനയിൽ തിരയാനാവും. നിങ്ങൾക്കിത്‌ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> മാറ്റാനാവും.</translation>
 <translation id="962979164594783469">ഈ ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="96681097142096641">ലളിതമാക്കിയ പേജ് കാണണോ?</translation>

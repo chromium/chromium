@@ -4112,7 +4112,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4554591392113183336">La versione dell'estensione esterna è pari o precedente a quella dell'estensione esistente.</translation>
 <translation id="4555769855065597957">Ombra</translation>
 <translation id="4555863373929230635">Per salvare le password nel tuo Account Google, accedi e attiva la sincronizzazione.</translation>
-<translation id="4556194354084985730">Accedi facilmente ai siti e alle app con le password salvate. Se la funzionalità è disattivata, ti verrà chiesto prima di accedere.</translation>
 <translation id="4558426062282641716">Autorizzazione di avvio automatico richiesta</translation>
 <translation id="4559617833001311418">Questo sito ha accesso ai sensori di movimento o della luce.</translation>
 <translation id="4560728518401799797">Altre opzioni per il preferito <ph name="FOLDER_TITLE" /></translation>
@@ -7551,7 +7550,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7637272932128132922">Mentre questa scheda non era attiva, la funzionalità Risparmio memoria ha liberato memoria per altre attività. Puoi modificare questa impostazione in qualsiasi momento in <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">Spazio su disco insufficiente</translation>
 <translation id="7639914187072011620">Impossibile recuperare l'URL di reindirizzamento SAML dal server</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> ti consente di accedere automaticamente ai siti idonei con le password salvate.</translation>
 <translation id="7641513591566880111">Nuovo nome del profilo</translation>
 <translation id="764178579712141045">Utente <ph name="USER_EMAIL" /> aggiunto</translation>
 <translation id="7642778300616172920">Nascondi contenuti sensibili</translation>

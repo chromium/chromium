@@ -211,6 +211,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1442987760062738829">Punch</translation>
 <translation id="1446396933673057385">Accuracy check</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
+<translation id="1452803302401719440">The settings your parent chose are now keeping you safer online</translation>
 <translation id="1453974140256777690">Text that you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.</translation>
 <translation id="1455413310270022028">Eraser</translation>
 <translation id="1459693405370120464">Weather</translation>
@@ -268,6 +269,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1569487616857761740">Enter expiry date</translation>
 <translation id="1569694109004336106">Google Chrome is trying to turn on Windows Hello for filling in passwords.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
+<translation id="1576277203042721907">Shopping insights</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Something went wrong while displaying this web page.</translation>
 <translation id="1584492003828271317">As you browse, whether an ad you see is personalised depends on this setting, site-suggested ads, your cookie settings and if the site that you’re viewing personalises ads</translation>
@@ -1268,6 +1270,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="410148943680000050">Desktop publishing</translation>
 <translation id="4103249731201008433">Device serial number is invalid</translation>
 <translation id="4106133539597032659">Create site button: press Enter to create a new site in Google Sites quickly</translation>
+<translation id="4106887816571530227">Embedded content not allowed</translation>
 <translation id="4110652170750985508">Review your payment</translation>
 <translation id="4111546256784973544">Paintball</translation>
 <translation id="4112140312785995938">Seek backwards</translation>
@@ -1605,6 +1608,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4876305945144899064">No username</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{None}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831"><ph name="TEXT" /> search</translation>
+<translation id="4877521229462766300">Allow embedded content?</translation>
 <translation id="4879491255372875719">Automatic (default)</translation>
 <translation id="4880827082731008257">Search history</translation>
 <translation id="4881695831933465202">Open</translation>
@@ -1802,6 +1806,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5314967030527622926">Booklet maker</translation>
 <translation id="5316812925700871227">Rotate Anti-clockwise</translation>
 <translation id="5317780077021120954">Save</translation>
+<translation id="5323043727018853753">Embedded content allowed</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> of <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Your browser is not managed</translation>
 <translation id="5332219387342487447">Delivery method</translation>
@@ -1852,6 +1857,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5471337644440862957">Comedy movies</translation>
 <translation id="5481076368049295676">This content might try to install dangerous software on your device that steals or deletes your information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Add valid address</translation>
+<translation id="5483838506518938965">You're all set</translation>
 <translation id="5485973315555778056">Cloud machine</translation>
 <translation id="5487426985799386720">Food and drink</translation>
 <translation id="5490432419156082418">Addresses and more</translation>
@@ -2179,6 +2185,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6306713302480826305">This address will be deleted from this and your other signed-in devices</translation>
 <translation id="6312113039770857350">Web page not available</translation>
 <translation id="6316226860534107313">Scooters and mopeds</translation>
+<translation id="6316723751983724988">New: Family Link choices for Chrome apply here</translation>
 <translation id="63172326633386613">Manage accessibility settings</translation>
 <translation id="6319249456820053699">Cameras and camcorders</translation>
 <translation id="6321917430147971392">Check your DNS settings</translation>
@@ -2730,6 +2737,7 @@ Additional details:
 <translation id="7598391785903975535">Less than <ph name="UPPER_ESTIMATE" /></translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> is currently unable to handle this request.</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
+<translation id="7601297359530599375">You usually connect to this site securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7610193165460212391">Value is out of range <ph name="VALUE" />.</translation>
 <translation id="7613889955535752492">Exp: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to view and manage your passwords in Chrome settings</translation>
@@ -2830,6 +2838,7 @@ Additional details:
 <translation id="7822320754433038727">Hunting and shooting</translation>
 <translation id="782886543891417279">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit its login page.</translation>
 <translation id="7840103971441592723">Screen capture has started</translation>
+<translation id="784137052867620416">Shopping insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{None}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7857116075376571629">Later, a site that you visit can ask Chrome for your topics to personalise the ads that you see. Chrome shares up to three topics while protecting your browsing history and identity.</translation>
@@ -2975,6 +2984,7 @@ Additional details:
 <translation id="8217748145574471584">Human resources</translation>
 <translation id="8218327578424803826">Assigned Location:</translation>
 <translation id="8228419419708659934">Two-page view</translation>
+<translation id="8228477714872026922"><ph name="ORIGIN" /> wants to access a device on your network:</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8231564988424805352">Sports games</translation>

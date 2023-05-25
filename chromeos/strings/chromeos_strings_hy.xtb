@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Անջատել մուգ թեման</translation>
 <translation id="1807246157184219062">Բաց</translation>
 <translation id="1827738518074806965">Ցուցասրահ</translation>
+<translation id="1836553715834333258">Համակարգի տարրերի գույն</translation>
 <translation id="1838374766361614909">Մաքրել որոնումը</translation>
+<translation id="1840474674287087346">Աշխատասեղանի գույն</translation>
 <translation id="1851218745569890714">Տեսակոնֆերանս</translation>
 <translation id="1852934301711881861">Տեղադրել ChromeOS Flex-ը</translation>
 <translation id="1856388568474281774">Ներքև սլաք</translation>
@@ -418,6 +420,7 @@
 <translation id="4454245904991689773">Պահել</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
+<translation id="4500966230243561393">Միջերեսի գույն</translation>
 <translation id="4503223151711056411">Ձախ սլաք</translation>
 <translation id="4507392511610824664">ավելացնել պայծառությունը</translation>
 <translation id="4511264077854731334">Պորտալ</translation>
@@ -496,6 +499,7 @@
 <translation id="500920857929044050">Դադարեցնել փորձարկումը</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Ցուցադրում է լուսանկարներ, ժամը, եղանակը և նորություններ, երբ ձեր սարքն անգործուն ռեժիմում է։</translation>
+<translation id="5035083460461104704">Թեմայի գույն</translation>
 <translation id="5038292761217083259">ստեղնաշարի լուսավորության գույներ</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
 <translation id="5049856988445523908">SIM քարտը կողպված է (<ph name="LOCK_TYPE" />)</translation>
@@ -811,6 +815,7 @@
 <translation id="7618774594543487847">Չեզոք</translation>
 <translation id="7620771111601174153">Մանրամասն Օգնության կենտրոնի մասին</translation>
 <translation id="763165478673169849">Վերջին զրոյացման ժամանակը</translation>
+<translation id="7633068090678117093">Ֆոնային պատկեր</translation>
 <translation id="7648838807254605802">HTTPS-ի բարձր հապաղում</translation>
 <translation id="765159867434478292">Տրոհել</translation>
 <translation id="7656388927906093505">Սարքը մկնիկ է։</translation>
@@ -976,6 +981,7 @@
 <translation id="8930521118335213258">Նմանակ</translation>
 <translation id="8930622219860340959">Անլար</translation>
 <translation id="8936793075252196307">Սպասառուի IP հասցե</translation>
+<translation id="8944651180182756621">Գործարկիչի գույն</translation>
 <translation id="894617464444543719">Սարքը հեռախոս է։</translation>
 <translation id="8957423540740801332">աջ</translation>
 <translation id="8968751544471797276">Լիցքավորման արագությունը</translation>
@@ -1009,6 +1015,7 @@
 <translation id="9149391708638971077">Փորձարկել հիշողությունը</translation>
 <translation id="9161276708550942948">բացատ</translation>
 <translation id="9173638680043580060">Մնացել է մեկ րոպեից քիչ</translation>
+<translation id="9174334653006917325">Միջերեսի գույն</translation>
 <translation id="917720651393141712">Ստուգում</translation>
 <translation id="9188992814426075118">Ստեղնաշարը կարող է ավտոմատ կերպով հարմարեցվել պաստառին</translation>
 <translation id="9189000703457422362">Ավտոմատ հայտնաբերված APN-ներից ոչ մեկի միջոցով չհաջողվեց միանալ այս ցանցին։ Լրացուցիչ տեղեկությունների համար կապվեք ձեր բջջային օպերատորի հետ։</translation>

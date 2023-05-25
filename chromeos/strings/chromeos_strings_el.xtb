@@ -4,6 +4,7 @@
 <translation id="1014750484722996375">Γραφεία</translation>
 <translation id="1018219910092211213">Δεν είναι δυνατή η επίλυση του DNS.</translation>
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
+<translation id="1020274983236703756">Διατίθενται πλέον αποκλειστικά στοιχεία <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022433422498218992">Γενικοί έλεγχοι</translation>
 <translation id="1022628058306505708">Κίνηση της Γης</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
@@ -271,6 +272,7 @@
 <translation id="3226405216343213872">Αναζήτηση για σαρωτές</translation>
 <translation id="3226657629376379887">Μενού ενεργειών διάταξης</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
+<translation id="3248223063252096240">Διατίθεται αποκλειστικά σε <ph name="PRODUCT_NAME" /></translation>
 <translation id="3268178239013324452">Σφάλμα - Η θύρα είναι ανοικτή</translation>
 <translation id="3275729367986477355">Εικόνα avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Επεξεργασία αρχείου}other{Επεξεργασία αρχείων}}</translation>
@@ -323,6 +325,7 @@
 <translation id="3632579075709132555">Εναλλαγή οθόνης απορρήτου</translation>
 <translation id="3639846061339007994">κορυφή</translation>
 <translation id="3651050199673793219">Επιλέξτε μια μονάδα θερμοκρασίας</translation>
+<translation id="3663574643422533538">Επιλογή αποκλειστικού έργου τέχνης <ph name="PRODUCT_NAME" /></translation>
 <translation id="3689839747745352263">Δοκιμή <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Φόρτωση...</translation>
 <translation id="3708186454126126312">Συνδέθηκαν στο παρελθόν</translation>
@@ -372,6 +375,7 @@
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Επιλογή λευκώματος <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Οθόνη αφής USB</translation>
+<translation id="4113067922640381334">Έχετε πλέον πρόσβαση σε νέες <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ταπετσαρίες<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
 <translation id="4117637339509843559">Λειτουργία χαμηλού φωτισμού</translation>
 <translation id="4130035430755296270">Κρατήστε τον δείκτη πάνω από το στοιχείο για περισσότερες επιλογές διάταξης</translation>
 <translation id="4131410914670010031">Ασπρόμαυρο</translation>
@@ -934,6 +938,7 @@
 <translation id="8576249514688522074">Μη προετοιμασμένο</translation>
 <translation id="8593058461203131755">παύση μέσων</translation>
 <translation id="8620617069779373398">Κατάσταση περιαγωγής</translation>
+<translation id="8626489604350149811">Περισσότερες ενέργειες για <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ανοιχτό μοβ</translation>
 <translation id="8651481478098336970">σίγαση ήχου</translation>
 <translation id="8655295600908251630">Κανάλι</translation>

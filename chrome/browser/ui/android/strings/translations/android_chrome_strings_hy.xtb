@@ -17,6 +17,7 @@
 <translation id="1100066534610197918">Բացել նոր խմբի նոր ներդիրում</translation>
 <translation id="1103142993930332957">Օգնեք բարելավել Chrome-ը</translation>
 <translation id="1105960400813249514">Էկրանի լուսանկարում</translation>
+<translation id="1108214977745280468">Դիտել էջի վիճակագրությունը</translation>
 <translation id="1108938384783527433">Պատմության համաժամացում</translation>
 <translation id="1110914759170138831">Ընդգծված տեքստը կրճատվել է</translation>
 <translation id="1111673857033749125">Ձեր մյուս սարքերում պահված էջանիշները կտեսնեք այստեղ:</translation>
@@ -66,6 +67,7 @@
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Ուղարկվել է <ph name="DEVICE_NAME" />-ից</translation>
 <translation id="1311657260431405215">Այս QR կոդը URL չէ՝ <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
+<translation id="131655401280401879">Ձեր պահված տեղեկությունները կջնջվեն, եթե ավելի ուշ հեռացնեք պրոֆիլի կողպումը։</translation>
 <translation id="1320912611264252795">Էջանիշի պահման էջը բացված է ամբողջությամբ</translation>
 <translation id="1327257854815634930">Նավիգացիայի պատմության թերթն ամբողջությամբ բացված է</translation>
 <translation id="1331212799747679585">Չհաջողվեց թարմացնել Chrome-ը։ Այլ կարգավորումներ</translation>
@@ -179,6 +181,7 @@
 <translation id="1995884366040846621">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" />։</translation>
 <translation id="200114059308480249">Ներառե՞լ շրջապատող տեքստը Google-ի որոնման հարցումներում</translation>
 <translation id="2009341475524975924">Գովազդի արդյունավետությունը գնահատելու համար կայքերը կարող են փոխանակել որոշակի տվյալներ, օրինակ՝ օրվա ժամը, երբ գովազդը ցուցադրվել է ձեզ։</translation>
+<translation id="201060170519281460">Պրոֆիլի կողպումը մեքենայում ապահով պահում է ձեր տեղեկությունները, այդ թվում՝ գաղտնաբառերը, վճարումների մասին տվյալները և ավելին։</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="2021896219286479412">Լիաէկրան ռեժիմի կարգավորումներ</translation>
 <translation id="2038563949887743358">Միացնել կայքի ամբողջական տարբերակը</translation>
@@ -256,6 +259,7 @@
 <translation id="250020030759455918">Դուք կտեսնեք ձեր <ph name="SITE_NAME" /> հաշվի մուտքի կարգավիճակը, այցելությունների պատմությունը և կայքի տվյալները Chrome-ում</translation>
 <translation id="2510106555128151389">«<ph name="WEBAPK_NAME" />» հավելվածը տեղադրվում է…</translation>
 <translation id="2513403576141822879"><ph name="BEGIN_LINK" />Համաժամացում և Google-ի ծառայություններ<ph name="END_LINK" /> բաժնում դուք կարող եք գտնել գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներ։</translation>
+<translation id="2517113738956581680">Սկզբնական չափով էկրան</translation>
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2523184218357549926">Ձեր այցելած էջերի URL-ներն ուղարկում է Google-ին</translation>
 <translation id="2527209463677295330">Էջից ավելի շատ տեքստ ներառելու դեպքում կարող եք ավելի լավ արդյունքներ ստանալ</translation>
@@ -280,6 +284,7 @@
 Վիճակի անձնական թոքենները բարձրացնում են ցանցում գաղտնիության մակարդակը և անհնար են դարձնում ձեր ինքնության բացահայտումը։</translation>
 <translation id="2581165646603367611">Բոլոր քուքիները, քեշը և այլ տվյալները, որոնք Chrome-ին անհրաժեշտ չեն, կջնջվեն:</translation>
 <translation id="2587052924345400782">Հասանելի է նոր տարբերակ</translation>
+<translation id="2589302627584222634">Ստեղծել պրոֆիլի կողպում</translation>
 <translation id="2593272815202181319">Միալայն</translation>
 <translation id="2603212228005142861">Մտեք հաշիվ՝ ձեր կարգավորումները կառավարելու համար</translation>
 <translation id="260403163289591229">Հետևում եք</translation>
@@ -541,6 +546,7 @@
 <translation id="4035877632587724847">Չթույլատրել</translation>
 <translation id="4036177530563778041">Հեշտությամբ շարունակեք այնտեղից, որտեղ կանգ էիք առել</translation>
 <translation id="4042941173059740150">Շարունակեք օգտագործել <ph name="SITE_ETLD_PLUS_ONE" /> կայքը <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշվով</translation>
+<translation id="4044708993631234325">Ներքևի էկրան</translation>
 <translation id="4045764304651014138">Օգտագործման տվյալներ</translation>
 <translation id="405399507749852140">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="4056223980640387499">Սեպիա</translation>
@@ -842,6 +848,7 @@
 <translation id="564667659802381754">Գաղտնիության ուղեցույց <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="5648166631817621825">Վերջին 7 օրվա</translation>
 <translation id="5655963694829536461">Որոնեք ձեր ներբեռնած տարրերում</translation>
+<translation id="5657871969392618475">Ձեր տեղեկությունները պաշտպանված են պրոֆիլի կողպման միջոցով</translation>
 <translation id="5659593005791499971">Էլփոստ</translation>
 <translation id="5665379678064389456">Ստեղծեք միջոցառում <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="5683547024293500885">Chrome-ը չի կարող ստուգել թարմացումների առկայությունը</translation>
@@ -904,6 +911,7 @@
 <translation id="5964869237734432770">Չստանալ նկարագրություններ</translation>
 <translation id="5966233851250124270">Chrome-ը կհիշի ձեր ընտրությունը</translation>
 <translation id="5979084224081478209">Ստուգել գաղտնաբառերը</translation>
+<translation id="5985186846584605773">Ստեղծեք պրոֆիլի կողպում ձեր մեքենայի համար</translation>
 <translation id="5995726099713306770">Նորից ներբեռնե՞լ էջը</translation>
 <translation id="6000066717592683814">Օգտագործել Google-ը</translation>
 <translation id="6000203700195075278">Նորից բաժանորդագրվել</translation>
@@ -1132,6 +1140,7 @@
 <translation id="7088681679121566888">Chrome-ը թարմացված է</translation>
 <translation id="7105047059074518658">Մտեք հաշիվ՝ ձեր բոլոր սարքերում նույն կայքերից հեշտությամբ օգտվելու համար</translation>
 <translation id="7106762743910369165">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից</translation>
+<translation id="7116420572655804716">Ձեր տեղեկությունները համաժամացնելու և մեքենայում տվյալները ապահով պահելու համար անվտանգության կարգավորումներում պետք է ստեղծեք պրոֆիլի կողպում։ Ամեն անգամ մեքենա մուտք գործելիս անհրաժեշտ կլինի օգտագործել կոդ կամ գաղտնաբառ։</translation>
 <translation id="7116588989735740310">Համաժամացրեք ներդիրները և պատմությունը, որպեսզի վերադառնաք կայքեր, որոնք այցելել եք այլ սարքերում</translation>
 <translation id="7130504491556983216">Երբ այցելեք վեբ էջեր, ձեր հետաքրքրությունները կհայտնվեն այստեղ</translation>
 <translation id="7138678301420049075">Այլ</translation>
@@ -1351,6 +1360,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ձեր սարքերը<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8209050860603202033">Բացել պատկերը</translation>
+<translation id="8215740705341534369">Կողային էկրան</translation>
 <translation id="8218622182176210845">Կառավարեք ձեր հաշիվը</translation>
 <translation id="8221401890884589479">Դուք կարող եք արգելափակել անցանկալի կայքերը։ Chrome-ը նաև ցանկից ավտոմատ ջնջում է այն կայքերը, որոնք ավելացվել են առնվազն 30 օր առաջ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Լրահոսի քարտի ընտրացանկ</translation>
@@ -1551,6 +1561,7 @@
 <translation id="932327136139879170">Գլխավոր էջ</translation>
 <translation id="938850635132480979">Սխալ՝ <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Մուտքագրեք անցաբառը</translation>
+<translation id="950679278154734362">Ձեր տեղեկությունները համաժամացնելու և մեքենայում տվյալները ապահով պահելու համար պետք է ստեղծեք պրոֆիլի կողպում։ Ամեն անգամ մեքենա մուտք գործելիս անհրաժեշտ կլինի օգտագործել կոդ կամ գաղտնաբառ։</translation>
 <translation id="95817756606698420">Չինաստանում որոնում կատարելու համար Chrome-ը կարող է օգտագործել <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> որոնման համակարգը: Սա կարող եք փոխել <ph name="BEGIN_LINK" />կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="962979164594783469">Տեղադրել հավելվածը</translation>
 <translation id="96681097142096641">Դիտե՞լ էջը պարզեցված տեսքով։</translation>

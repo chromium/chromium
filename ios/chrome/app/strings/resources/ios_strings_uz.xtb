@@ -315,6 +315,9 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2975121486251958312">Faqat Inkognito rejimida ochiladi</translation>
 <translation id="2982481275546140226">Axborotlarni tozalash</translation>
 <translation id="298306318844797842">Toʻlov usulini kiriting</translation>
+<translation id="2988274366244053197">Google Pay xizmatidagi toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
+
+Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli ibora ulashilmaydi va Google serverlarida saqlanmaydi. Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini tozalang<ph name="END_LINK" />.</translation>
 <translation id="2989805286512600854">Yangi varaqda ochish</translation>
 <translation id="3020183492814296499">Yorliqlar</translation>
 <translation id="3037605927509011580">Ana xolos!</translation>
@@ -381,6 +384,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3471148582064653480">Parollar, tarix va boshqa maʼlumotlarni sinxronlang</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} ta sayt yoki ilova uchun}other{{COUNT} ta sayt yoki ilova uchun}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> sifatida davom etish</translation>
+<translation id="3476450923187944815">Parollarni boshqa ilovalarda ishlatish.</translation>
 <translation id="3478058380795961209">Oy (muddat)</translation>
 <translation id="3482959374254649722">Tablar sinxronlanmoqda...</translation>
 <translation id="3484946776651937681">Yuklanmalar jildini ochish</translation>
@@ -652,6 +656,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5300589172476337783">Ko‘rsatish</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318298563956633672">Siz bu mahsulotni kuzatyapsiz.</translation>
+<translation id="5325595483440111327">Ochilgan veb-sahifalar tarixini koʻrish.</translation>
 <translation id="5339316356165661760">Sinxronizatsiyani yoqish</translation>
 <translation id="536067926684072644">Bukmarklarni chiqarish</translation>
 <translation id="5360976571138293719">Maxfiylik, xavfsizlik va axborotlar jamlanishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> bilan tanishing</translation>

@@ -4112,7 +4112,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4554591392113183336">La versión de la extensión externa es igual o anterior a la actual.</translation>
 <translation id="4555769855065597957">Sombra</translation>
 <translation id="4555863373929230635">Para guardar contraseñas en tu cuenta de Google, inicia sesión y activa la sincronización.</translation>
-<translation id="4556194354084985730">Inicia sesión fácilmente en sitios y aplicaciones con tus contraseñas guardadas. Si desactivas esta opción, se te pedirá la contraseña para poder iniciar sesión.</translation>
 <translation id="4558426062282641716">Solicitud de permiso de inicio automático</translation>
 <translation id="4559617833001311418">Este sitio web tiene acceso a tus sensores de luz o movimiento.</translation>
 <translation id="4560728518401799797">Más opciones del marcador <ph name="FOLDER_TITLE" /></translation>
@@ -6096,6 +6095,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6343003829431264373">Solo páginas pares</translation>
 <translation id="6344170822609224263">Accede a la lista de conexiones de red</translation>
 <translation id="6344576354370880196">Impresoras guardadas</translation>
+<translation id="6344608411615208519">Tu <ph name="BEGIN_LINK" />navegador lo gestionan<ph name="END_LINK" /> tus padres</translation>
 <translation id="6345418402353744910">El proxy <ph name="PROXY" /> necesita tu nombre de usuario y tu contraseña para que el administrador pueda configurar tu red</translation>
 <translation id="6345878117466430440">Marcar como leído</translation>
 <translation id="6347010704471250799">Mostrar notificación</translation>
@@ -7554,7 +7554,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7637272932128132922">Mientras esta pestaña estaba inactiva, Ahorro de memoria ha liberado memoria para otras tareas. Puedes cambiar esta opción en cualquier momento en <ph name="SETTINGS_LINK" />.</translation>
 <translation id="7637593984496473097">No hay suficiente espacio en disco</translation>
 <translation id="7639914187072011620">No se ha podido obtener del servidor la URL de redirección basada en SAML</translation>
-<translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> inicia sesión automáticamente en los sitios en los que se pueda iniciar sesión con las contraseñas que hayas guardado.</translation>
 <translation id="7641513591566880111">Nombre de perfil nuevo</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> añadido</translation>
 <translation id="7642778300616172920">Ocultar contenido sensible</translation>
@@ -7621,6 +7620,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7684212569183643648">Instalada por tu administrador</translation>
 <translation id="7684559058815332124">Visitar la página de inicio de sesión del portal cautivo</translation>
 <translation id="7684718995427157417">Para crear y probar tus aplicaciones, habilita Android Debug Bridge (ADB). Ten en cuenta que esta acción permitirá la instalación de aplicaciones Android que no han sido verificadas por Google y para inhabilitarlas es necesario restablecer la configuración de fábrica.</translation>
+<translation id="7684913007876670600">Para mostrar una vista simplificada de esta página, abre el panel lateral y selecciona Modo Lectura</translation>
 <translation id="7685049629764448582">Memoria de JavaScript</translation>
 <translation id="7685087414635069102">PIN necesario</translation>
 <translation id="7686086654630106285">Más información sobre anuncios sugeridos por sitios</translation>

@@ -1391,6 +1391,7 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 <translation id="2269319728625047531">Einwilligung zur Synchronisierung beim Anmelden anzeigen</translation>
 <translation id="2270747976331889601">Mit dieser Richtlinie kann eine Sicherheitsfunktion von TLS 1.3 für lokale Vertrauensanker aktiviert werden.</translation>
 <translation id="22754818344448444">Nutzern dürfen eine Vorlage für Desktoplayouts zum Laden auswählen</translation>
+<translation id="2279381650184876122">Unterstützung von Daten-URL in SVGUseElement deaktivieren.</translation>
 <translation id="2281496157391382819"> Kontrolliert die Datenschutzwarnung der verwalteten Gastsitzung unter <ph name="PRODUCT_OS_NAME" />.
 
       Wenn diese Richtlinie auf "False" gesetzt ist, werden Datenschutzwarnungen auf dem Anmeldebildschirm und die Benachrichtigung zum automatischen Start der verwalteten Gastsitzung deaktiviert.
@@ -2072,6 +2073,7 @@ Die Richtlinie <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> kann das Verhalte
       Wenn die Richtlinie nicht konfiguriert oder keine gültige URL angegeben ist, wird sie von <ph name="PRODUCT_NAME" /> nicht als Regelquelle für den Browserwechsel verwendet.
 
       Hinweis: Diese Richtlinie verweist auf eine XML-Datei im selben Format wie die Richtlinie "<ph name="IEEM_SITELIST_POLICY" />" von <ph name="IE_PRODUCT_NAME" />. Sie lädt Regeln aus einer XML-Datei, ohne diese Regeln mit <ph name="IE_PRODUCT_NAME" /> zu teilen. Weitere Informationen zur Richtlinie "<ph name="IEEM_SITELIST_POLICY" />" von <ph name="IE_PRODUCT_NAME" /> (https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode)</translation>
+<translation id="2940284205859074236">Skia-Renderer für PDF-Rendering verwenden</translation>
 <translation id="2940653651012844682">Liste der Einstellungen für Chrome Enterprise Connectors-Dienste für den Enterprise Connector „<ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />“. Dieser wird ausgelöst, wenn in Chrome ein Sicherheitshinweis auftritt. Hierzu gehören negative Analyseergebnisse, verursacht durch Enterprise Connectors, die Wiederverwendung eines Passworts, das Aufrufen unsicherer Seiten und andere sicherheitsrelevante Nutzeraktionen.
 
       Mit dem Feld „<ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" />“ wird festgelegt, für welchen Berichterstellungsanbieter die Einstellungen gelten, und mit „<ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" />“, welche Ereignisse für diesen Anbieter aktiviert sind.
@@ -2362,6 +2364,7 @@ Ist die Richtlinie deaktiviert, wird dem Nutzer die Werbung für App Store-Bewer
 <translation id="3169872426103732947">Standard-URL anzeigen und Nutzern erlauben, zur vollständigen URL zu wechseln</translation>
 <translation id="3171369832001535378">Vorlage für Hostname im Gerätenetzwerk</translation>
 <translation id="3173844121395372156">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />“.</translation>
+<translation id="3177537290334203187">Standardverhalten anwenden, wenn festgelegt wird, ob Websites Anfragen an Netzwerkendpunkte senden können.</translation>
 <translation id="3177802893484440532">OCSP/CRL-Online-Prüfungen für lokale Vertrauensanker als erforderlich festlegen</translation>
 <translation id="3179533009079100620">Profilauswahl anzeigen</translation>
 <translation id="3180671894201217988">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann Drittanbieter-Software keinen ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einschleusen.
@@ -2384,6 +2387,7 @@ Ist die Richtlinie deaktiviert, wird dem Nutzer die Werbung für App Store-Bewer
 
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_NEW_TAB_URL_POLICY_NAME" />" nicht konfiguriert, wird keine "Neuer Tab"-Seite bereitgestellt.</translation>
 <translation id="3195103497550111266">Wenn für diese Richtlinie "<ph name="DEVICE_LTS_TAG_VALUE" />" festgelegt ist, kann das Gerät Aktualisierungen für Langzeitsupport empfangen.</translation>
+<translation id="319608028525745507">Unterstützung von Daten-URL in SVGUseElement aktivieren.</translation>
 <translation id="3196585866522778760">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwende stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 
           Hiermit wird angegeben, nach welchem Zeitraum ohne Nutzereingabe im Akkubetrieb in den Inaktivitätsmodus gewechselt wird.
@@ -3179,6 +3183,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
       Ist die Richtlinie nicht konfiguriert, steht SPDY zur Verfügung.</translation>
 <translation id="3887529334667818189">Onlinerecherchen sind standardmäßig unter chrome://history/journeys sichtbar und Nutzer können die Sichtbarkeit von Onlinerecherchen ändern.</translation>
+<translation id="3889458462150559611">Zulassen, dass Websites unsichere Anfragen an Netzwerkendpunkte senden.</translation>
 <translation id="388999630001435491"><ph name="PRODUCT_NAME" /> nur erlauben, Verbindungen zu Geräten unter privaten IP-Adressen herzustellen</translation>
 <translation id="3891175633496805812">Wilco Diagnostics and Telemetry Controller (DTC) deaktivieren</translation>
 <translation id="3891357445869647828">JavaScript aktivieren</translation>
@@ -3588,6 +3593,7 @@ Hinweis: Wenn interne URLs von „chrome://*“ und „chrome-untrusted://*“ b
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="4275048399551500192">Keine Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten gestartet werden</translation>
+<translation id="4282183301963493864"><ph name="PRODUCT_NAME" /> auf allen Webseiten deaktivieren</translation>
 <translation id="4282243913059705499"><ph name="PRODUCT_NAME" />-Symbol immer in der Symbolleiste anzeigen</translation>
 <translation id="4285674129118156176">Nicht verknüpften Nutzern die Verwendung von ARC gestatten</translation>
 <translation id="428948795004445932">Häufigkeit, mit der Netzwerkdaten analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
@@ -3818,6 +3824,7 @@ Bei <ph name="PRODUCT_OS_NAME" /> bezieht sich diese Richtlinie auf die Remoteat
 Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="449561952193478261">Tastaturbeleuchtungsfarbe „Blau“</translation>
 <translation id="449784980858429908">Websites automatisch die Berechtigung erteilen, eine Verbindung zu allen seriellen Ports herzustellen.</translation>
+<translation id="4498626728750662965">Der PDF-Viewer verwendet den Skia-Renderer.</translation>
 <translation id="4499376951770369935">ChromeOS-Updates werden auf die Version gesetzt, die im Manifest der Kiosk-App definiert ist</translation>
 <translation id="450080746522343150">Alle Downloads blockieren.</translation>
 <translation id="4501388411278568771">Je nach Funktionseinführungsstatus können HTTPS-Upgrades angewendet werden.</translation>
@@ -4212,6 +4219,7 @@ Diese Richtlinie ist vorübergehend verfügbar und wird nach Einführung der Sys
       Wenn die Richtlinie nicht konfiguriert und die Funktion "CastAllowAllIPs" deaktiviert ist, wird <ph name="PRODUCT_NAME" /> nur unter RFC1918-/RFC4193-Adressen mit Cast-Geräten verbunden.</translation>
 <translation id="489803897780524242">Parameter zur Steuerung der Suchbegriffersetzung für den Standardsuchanbieter</translation>
 <translation id="4899708173828500852">Safe Browsing aktivieren</translation>
+<translation id="4904462841601272815"><ph name="PRODUCT_NAME" /> auf allen Webseiten aktivieren</translation>
 <translation id="4906194810004762807">Aktualisierungsrate für Geräterichtlinien</translation>
 <translation id="49093841899738146">Wenn diese Richtlinie aktiviert ist, darf <ph name="PRODUCT_NAME" /> WebRTC-Ereignisprotokolle aus Google-Diensten wie Hangouts Meet speichern und die Protokolle bei Google hochladen. Diese Protokolle enthalten Diagnoseinformationen, die für die Fehlerbehebung bei Audioanrufen oder Videokonferenzen in <ph name="PRODUCT_NAME" /> hilfreich sein können. Dazu zählen die Sende- und Empfangszeit sowie die Größe von RTP-Paketen, Feedback zur Auslastung des Netzwerks und Metadaten zur Länge und Qualität von Audio- und Videoframes. Audio- oder Videoinhalte von Anrufen bzw. Konferenzen gehören nicht dazu. Damit Fehler leichter behoben werden können, verknüpft Google diese Protokolle anhand einer Sitzungs-ID unter Umständen mit anderen Protokollen, die vom Google-Dienst selbst erfasst wurden.
 
@@ -6097,6 +6105,7 @@ Das Zeitlimit bei Inaktivität bis zum Start Bildschirmschoners und das Interval
       – Wenn die Richtlinie deaktiviert ist, sind die Browserfunktionen eingeschränkt.
 
       – Wenn die Richtlinie deaktiviert ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
+<translation id="6607983779935460461">Unterstützung von Daten-URLs für SVGUseElement.</translation>
 <translation id="6609867253856597039">Nutzereinstellungen für deaktivierte Funktionen festlegen</translation>
 <translation id="6614557704487944013">Nutzern erlauben, <ph name="LACROS_NAME" /> zu verwenden</translation>
 <translation id="661610294649586421">WebAuthn-API-Anfragen auf Websites mit fehlerhaften TLS-Zertifikaten nicht zulassen.</translation>
@@ -6689,6 +6698,7 @@ Wenn diese Richtlinie festgelegt ist, wird die Liste der Standardwerte um die ne
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist standardmäßig die linke Taste der Maus als primäre Taste festgelegt, diese kann vom Nutzer jedoch jederzeit getauscht werden.</translation>
+<translation id="7136237405361383549">Standard-Renderer basierend auf der Konfiguration des Feldtests verwenden.</translation>
 <translation id="7137460825181247519">Diese Richtlinie wurde in <ph name="PRODUCT_NAME" /> 83 eingestellt. Bitte verwende stattdessen <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
 
       Wenn die Richtlinie aktiviert ist, bleibt die Safe Browsing-Funktion von Chrome eingeschaltet. Ist die Richtlinie deaktiviert, bleibt die Safe Browsing-Funktion von Chrome ausgeschaltet.
@@ -7261,6 +7271,13 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 <translation id="7703041979684393741">Erfassen von WebRTC-Ereignisprotokollen aus Google-Diensten nicht zulassen</translation>
 <translation id="770339941914297201">Neues Verhalten: Kiosk-Chrome-Apps werden nur anhand der von der Richtlinie stammenden Update-URL aktualisiert</translation>
 <translation id="7703737669292992839">Dialogfelder zur Dateiauswahl verhindern</translation>
+<translation id="7703819160640109959">Legt fest, ob der PDF-Viewer in <ph name="PRODUCT_NAME" /> den Skia-Renderer verwendet.
+
+Wenn diese Richtlinie aktiviert ist, verwendet der PDF-Viewer den Skia-Renderer.
+
+Wenn diese Richtlinie deaktiviert ist, verwendet er den aktuellen AGG-Renderer.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser ausgewählt.</translation>
 <translation id="7708934468069982537">Diese Richtlinie wurde in M58 entfernt, nachdem DHE aus <ph name="PRODUCT_NAME" /> entfernt wurde.
 
       Wenn sie nicht konfiguriert oder auf „false“ festgelegt ist, werden DHE-Cipher Suites in TLS nicht aktiviert. Die Richtlinie kann auf „true“ eingestellt werden, um DHE-Cipher Suites zu aktivieren und die Kompatibilität mit veralteten Servern zu gewährleisten. Dies ist aber nur eine provisorische Maßnahme und der Server sollte neu konfiguriert werden.
@@ -7668,6 +7685,7 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="8091982561085048989">Boolescher Parameter, der angibt, ob zum Einrichten des Druckers IPP Everywhere verwendet werden soll. Dieser Parameter wird unter <ph name="PRODUCT_OS_NAME" /> Version 76 und höher unterstützt.</translation>
 <translation id="8099880303030573137">Inaktivitätsverzögerung im Akkubetrieb</translation>
 <translation id="8101381354936029836">Atomische Richtlinien-Gruppe:</translation>
+<translation id="8102854005031553638">Der PDF-Viewer verwendet den AGG-Renderer.</translation>
 <translation id="8102913158860568230">Standardeinstellung für MediaStream</translation>
 <translation id="8104962233214241919">Client-Zertifikate für diese Websites automatisch auswählen</translation>
 <translation id="8109762054721090517">Vorlage für <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /></translation>
@@ -8436,6 +8454,9 @@ Ist die Richtlinie nicht konfiguriert oder deaktiviert, werden die Daten des Nut
 <translation id="8777369558049831576">Kästchen für "Immer öffnen" auf Bestätigungsaufforderung anzeigen</translation>
 <translation id="8778320022586618010">Melden des Grafikstatus auf Geräten aktivieren</translation>
 <translation id="8780039702448388726">Melden der Versionsinformationen auf Geräten deaktivieren</translation>
+<translation id="8782203407766130175">Diese Richtlinie ermöglicht die Unterstützung von Daten-URLs für SVGUseElement – diese wird ab M119 standardmäßig deaktiviert.
+      Wenn diese Richtlinie aktiviert ist, funktionieren Daten-URLs weiterhin in SVGUseElement.
+      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, funktionieren Daten-URLs in SVGUseElement nicht.</translation>
 <translation id="8786409859071107656">Wenn die Richtlinie aktiviert ist, wird die Energieverwaltungsrichtlinie zur gemeinsamen Stromversorgung per USB aktiviert.
 
       Bestimmte Geräte haben einen speziellen USB-Anschluss, der mit einem Blitz- oder Batteriesymbol gekennzeichnet ist und zum Aufladen von Geräten mithilfe des Systemakkus verwendet werden kann. Diese Richtlinie betrifft das Ladeverhalten dieses Anschlusses, wenn sich das System im Ruhemodus befindet oder heruntergefahren wurde. Sie hat keine Auswirkungen auf die übrigen USB-Anschlüsse und das Ladeverhalten, solange das System aktiv ist und der USB-Anschluss immer Ladestrom bereitstellt.
@@ -8504,6 +8525,9 @@ Ist die Richtlinie nicht konfiguriert oder deaktiviert, werden die Daten des Nut
 <translation id="8858642179038618439">YouTube-Sicherheitsmodus erzwingen</translation>
 <translation id="8860342862142842017">Erzwingung der Zertifikatstransparenz für eine Liste mit subjectPublicKeyInfo-Hashes deaktivieren</translation>
 <translation id="8860894781631833477">Nutzer dürfen die <ph name="PRODUCT_OS_NAME" />-Release-Version konfigurieren</translation>
+<translation id="8862436312516745856">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die <ph name="PRODUCT_NAME" /> auf allen Webseiten zulässig.
+
+Ist sie deaktiviert, ist die <ph name="PRODUCT_NAME" /> auf keiner Webseite verfügbar.</translation>
 <translation id="8864975621965365890">Unterdrückung des Hinweises auf Einstellung des Frames, der beim Rendern einer Website durch <ph name="PRODUCT_FRAME_NAME" /> erscheint</translation>
 <translation id="8866430022832109569">Berichte zum App-Inventar</translation>
 <translation id="886645881209114007">Nutzern erlauben, <ph name="PLUGIN_VM_NAME" /> auf <ph name="PRODUCT_OS_NAME" /> zu verwenden</translation>
