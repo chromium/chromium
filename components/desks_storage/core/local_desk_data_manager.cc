@@ -61,8 +61,9 @@ std::unique_ptr<ash::DeskTemplate> ReadFileToTemplate(
                                                 base::BlockingType::MAY_BLOCK);
 
   std::string value_string;
-  if (!base::ReadFileToString(fully_qualified_path, &value_string))
+  if (!base::ReadFileToString(fully_qualified_path, &value_string)) {
     return nullptr;
+  }
 
   std::string error_message;
   int error_code;
@@ -92,8 +93,9 @@ bool EndsWith(const char* input, const char* suffix) {
 // TODO(crbug.com/1320836): Make template creation for
 // local_desk_data_manager_unittests cleaner.
 bool IsValidTemplateFileName(const char* name) {
-  if (name == nullptr)
+  if (name == nullptr) {
     return false;
+  }
   return EndsWith(name, kFileExtension);
 }
 
@@ -190,8 +192,9 @@ DeskModel::GetAllEntriesResult LocalDeskDataManager::GetAllEntries() {
                                std::move(entries));
   }
 
-  for (const auto& it : policy_entries_)
+  for (const auto& it : policy_entries_) {
     entries.push_back(it.get());
+  }
 
   for (auto& saved_desk : saved_desks_list_) {
     for (auto& [uuid, template_entry] : saved_desk.second) {
@@ -408,6 +411,11 @@ ash::DeskTemplate* LocalDeskDataManager::FindOtherEntryWithName(
                                                     saved_desks_list_.at(type));
 }
 
+// There is no cache guid associated with local desk storage.
+std::string LocalDeskDataManager::GetCacheGuid() {
+  return std::string();
+}
+
 void LocalDeskDataManager::UpdateEntry(
     std::unique_ptr<ash::DeskTemplate> entry) {
   // TODO(b/281857868) implement update entry logic.
@@ -521,8 +529,9 @@ LocalDeskDataManager::DeleteTaskResult LocalDeskDataManager::DeleteEntryTask(
       GetFullyQualifiedPath(local_saved_desk_path, uuid);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  if (base::DeleteFile(fully_qualified_path))
+  if (base::DeleteFile(fully_qualified_path)) {
     return {DeleteEntryStatus::kOk, std::move(roll_back_entry)};
+  }
   return {DeleteEntryStatus::kFailure, std::move(roll_back_entry)};
 }
 

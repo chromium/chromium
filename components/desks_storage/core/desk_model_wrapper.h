@@ -56,6 +56,7 @@ class DeskModelWrapper : public DeskModel {
       const std::u16string& name,
       ash::DeskTemplateType type,
       const base::Uuid& uuid) const override;
+  std::string GetCacheGuid() override;
 
   // Setter method to set `desk_template_model_` to the correct `bridge`.
   void SetDeskSyncBridge(desks_storage::DeskSyncBridge* bridge) {

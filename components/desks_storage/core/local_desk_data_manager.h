@@ -112,6 +112,7 @@ class LocalDeskDataManager : public DeskModel, public AdminTemplateModel {
       const std::u16string& name,
       ash::DeskTemplateType type,
       const base::Uuid& uuid) const override;
+  std::string GetCacheGuid() override;
 
   // AdminTemplateModel:
   void UpdateEntry(std::unique_ptr<ash::DeskTemplate> entry) override;

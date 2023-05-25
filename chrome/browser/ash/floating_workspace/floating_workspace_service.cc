@@ -426,7 +426,7 @@ void FloatingWorkspaceService::OnTemplateCaptured(
   // the current service will handle it. Ignore for testing.
   if (!floating_workspace_uuid_.has_value() && !is_testing_) {
     absl::optional<base::Uuid> floating_workspace_uuid_from_desk_model =
-        desk_sync_service_->GetDeskSyncBridge()->GetFloatingWorkspaceUuid();
+        GetFloatingWorkspaceUuidForCurrentDevice();
     if (floating_workspace_uuid_from_desk_model.has_value()) {
       floating_workspace_uuid_ =
           floating_workspace_uuid_from_desk_model.value();
@@ -444,6 +444,7 @@ void FloatingWorkspaceService::OnTemplateCaptured(
     UploadFloatingWorkspaceTemplateToDeskModel(std::move(desk_template));
   }
 }
+
 void FloatingWorkspaceService::UploadFloatingWorkspaceTemplateToDeskModel(
     std::unique_ptr<DeskTemplate> desk_template) {
   // Upload and save the template.
@@ -459,6 +460,20 @@ void FloatingWorkspaceService::OnTemplateUploaded(
   previously_captured_desk_template_ = std::move(new_entry);
   floating_workspace_metrics_util::
       RecordFloatingWorkspaceV2TemplateUploadStatusHistogram(status);
+}
+
+absl::optional<base::Uuid>
+FloatingWorkspaceService::GetFloatingWorkspaceUuidForCurrentDevice() {
+  std::string cache_guid = desk_sync_service_->GetDeskModel()->GetCacheGuid();
+  std::vector<const DeskTemplate*> entries =
+      desk_sync_service_->GetDeskModel()->GetAllEntries().entries;
+  auto iter = base::ranges::find_if(entries, [cache_guid](const auto& entry) {
+    return entry->client_cache_guid() == cache_guid;
+  });
+  if (iter == entries.end()) {
+    return absl::nullopt;
+  }
+  return (*iter)->uuid();
 }
 
 }  // namespace ash

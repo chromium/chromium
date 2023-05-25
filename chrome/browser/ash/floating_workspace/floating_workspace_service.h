@@ -150,6 +150,11 @@ class FloatingWorkspaceService : public KeyedService,
       desks_storage::DeskModel::AddOrUpdateEntryStatus status,
       std::unique_ptr<DeskTemplate> new_entry);
 
+  // Get the associated floating workspace uuid for the current device. Return
+  // an absl::nullopt if there is no floating workspace uuid that is associated
+  // with the current device.
+  absl::optional<base::Uuid> GetFloatingWorkspaceUuidForCurrentDevice();
+
   const raw_ptr<Profile, ExperimentalAsh> profile_;
 
   raw_ptr<sync_sessions::SessionSyncService, ExperimentalAsh>

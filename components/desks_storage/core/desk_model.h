@@ -189,6 +189,8 @@ class DeskModel {
       ash::DeskTemplateType type,
       const base::Uuid& uuid) const = 0;
 
+  virtual std::string GetCacheGuid() = 0;
+
   // Observer registration methods. The model will remove all observers upon
   // destruction automatically.
   void AddObserver(DeskModelObserver* observer);
