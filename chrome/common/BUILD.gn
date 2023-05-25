@@ -608,8 +608,6 @@ static_library("constants") {
     "//components/bookmarks/common",
     "//components/nacl/common:switches",
     "//components/offline_pages/buildflags",
-    "//components/supervised_user/core/common",
-    "//components/supervised_user/core/common:buildflags",
     "//extensions/buildflags",
     "//media:media_buildflags",
     "//ppapi/buildflags",

@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/supervised_user/core/common/buildflags.h"
 #include "flag_descriptions.h"
 #include "pdf/buildflags.h"
 
