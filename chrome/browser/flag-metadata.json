@@ -4420,11 +4420,6 @@
     "expiry_milestone": 120
   },
   {
-      "name": "history-sync-opt-in",
-      "owners": [ "samarchehade", "chrome-signin-team" ],
-      "expiry_milestone": 120
-  },
-  {
     "name": "hotspot",
     "owners": [ "jiajunz@google.com", "cros-connectivity@google.com" ],
     "expiry_milestone": 120

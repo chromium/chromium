@@ -496,10 +496,6 @@ extern const char kHideContentSuggestionTilesName[] =
 extern const char kHideContentSuggestionTilesDescription[] =
     "Hides content suggestions tiles from the new tab page.";
 
-extern const char kHistorySyncOptInName[] = "History Sync Opt-In";
-extern const char kHistorySyncOptInDescription[] =
-    "Enables history sync opt-in";
-
 const char kHttpsOnlyModeName[] = "HTTPS-Only Mode Setting";
 const char kHttpsOnlyModeDescription[] = "Enables the HTTPS-Only Mode setting";
 

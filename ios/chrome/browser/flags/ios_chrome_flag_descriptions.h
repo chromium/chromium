@@ -424,10 +424,6 @@ extern const char kFullscreenSmoothScrollingDescription[];
 extern const char kHideContentSuggestionTilesName[];
 extern const char kHideContentSuggestionTilesDescription[];
 
-// Title and description for the flag to enable history-sync opt-in.
-extern const char kHistorySyncOptInName[];
-extern const char kHistorySyncOptInDescription[];
-
 // Title and description for the flag to enable HTTPS-Only Mode setting.
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];
