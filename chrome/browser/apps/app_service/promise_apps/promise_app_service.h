@@ -7,19 +7,41 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_icon_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
+namespace gfx {
+class Image;
+}
+namespace image_fetcher {
+class ImageFetcher;
+struct RequestMetadata;
+}  // namespace image_fetcher
+
 namespace apps {
 
 struct PromiseApp;
-using PromiseAppPtr = std::unique_ptr<PromiseApp>;
+struct IconValue;
+
+class PromiseAppIcon;
+class PromiseAppIconCache;
+
 class PackageId;
 class PromiseAppAlmanacConnector;
 class PromiseAppRegistryCache;
 class PromiseAppWrapper;
+
+using PromiseAppPtr = std::unique_ptr<PromiseApp>;
+using PromiseAppIconPtr = std::unique_ptr<PromiseAppIcon>;
+using IconValuePtr = std::unique_ptr<IconValue>;
+
+using IconDownloadedCallback =
+    base::OnceCallback<void(const gfx::Image& image,
+                            const image_fetcher::RequestMetadata& metadata)>;
 
 // This service is responsible for registering and managing promise apps,
 // including retrieving any data required to populate a promise app object.
@@ -35,6 +57,8 @@ class PromiseAppService {
 
   apps::PromiseAppRegistryCache* PromiseAppRegistryCache();
 
+  apps::PromiseAppIconCache* PromiseAppIconCache();
+
   // Adds or updates a promise app in the Promise App Registry Cache with the
   // fields provided in `delta`. For new promise app registrations, we send a
   // request to the Almanac API to retrieve additional promise app info.
@@ -44,11 +68,22 @@ class PromiseAppService {
   // care about Almanac responses.
   void SetSkipAlmanacForTesting(bool skip_almanac);
 
+  // Allows us to set a fake image fetcher for mock responses in unit tests.
+  void SetImageFetcherForTesting(
+      std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher);
+
  private:
   // Update a promise app's fields with the info retrieved from the Almanac API.
   void OnGetPromiseAppInfoCompleted(
       const PackageId& package_id,
       absl::optional<PromiseAppWrapper> promise_app_info);
+
+  // Adds an icon to the icon cache and marks the corresponding promise app
+  // as ready to show after all the icons are downloaded.
+  void OnIconDownloaded(const PackageId& package_id,
+                        PromiseAppIconPtr promise_app_icon,
+                        const gfx::Image& image,
+                        const image_fetcher::RequestMetadata& metadata);
 
   // The cache that contains all the promise apps in the system.
   std::unique_ptr<apps::PromiseAppRegistryCache> promise_app_registry_cache_;
@@ -57,7 +92,20 @@ class PromiseAppService {
   // packages being installed.
   std::unique_ptr<PromiseAppAlmanacConnector> promise_app_almanac_connector_;
 
+  // Cache that contains all promise app icons.
+  std::unique_ptr<apps::PromiseAppIconCache> promise_app_icon_cache_;
+
+  // Fetches images from a given URL.
+  std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
+
+  // Keeps track of how many icon downloads we are waiting on for each promise
+  // app. When all downloads are completed, we can proceed to set (or not set)
+  // the promise app as ready to show to the user.
+  std::map<PackageId, int> pending_download_count_;
+
   bool skip_almanac_for_testing_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<PromiseAppService> weak_ptr_factory_{this};
 };

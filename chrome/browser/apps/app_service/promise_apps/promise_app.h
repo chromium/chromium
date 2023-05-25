@@ -48,6 +48,20 @@ std::ostream& operator<<(std::ostream& out, const PromiseApp& promise_app);
 
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;
 
+class PromiseAppIcon {
+ public:
+  PromiseAppIcon();
+  ~PromiseAppIcon();
+  PromiseAppIcon(const PromiseAppIcon&) = delete;
+  PromiseAppIcon& operator=(const PromiseAppIcon&) = delete;
+
+  gfx::ImageSkia icon;
+  absl::optional<int> width_in_pixels;
+  bool is_masking_allowed;
+};
+
+using PromiseAppIconPtr = std::unique_ptr<PromiseAppIcon>;
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APP_H_

@@ -17,6 +17,9 @@ PromiseApp::PromiseApp(const apps::PackageId& package_id)
     : package_id(package_id) {}
 PromiseApp::~PromiseApp() = default;
 
+PromiseAppIcon::PromiseAppIcon() = default;
+PromiseAppIcon::~PromiseAppIcon() = default;
+
 PromiseAppPtr PromiseApp::Clone() const {
   auto promise_app = std::make_unique<PromiseApp>(package_id);
   if (name.has_value()) {

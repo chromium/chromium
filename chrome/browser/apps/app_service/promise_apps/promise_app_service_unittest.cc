@@ -13,6 +13,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "components/image_fetcher/core/fake_image_decoder.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -37,6 +40,11 @@ class PromiseAppServiceTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             url_loader_factory_.get());
     service_ = std::make_unique<PromiseAppService>(profile_.get());
+    std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher =
+        std::make_unique<image_fetcher::ImageFetcherImpl>(
+            std::make_unique<image_fetcher::FakeImageDecoder>(),
+            profile_->GetURLLoaderFactory());
+    service_->SetImageFetcherForTesting(std::move(image_fetcher));
   }
 
   network::TestURLLoaderFactory* url_loader_factory() {
@@ -46,6 +54,8 @@ class PromiseAppServiceTest : public testing::Test {
   PromiseAppRegistryCache* cache() {
     return service_->PromiseAppRegistryCache();
   }
+
+  PromiseAppIconCache* icon_cache() { return service_->PromiseAppIconCache(); }
 
   PromiseAppService* service() { return service_.get(); }
 
@@ -85,9 +95,93 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_AlmanacResponseUpdatesPromiseApp) {
       cache()->GetPromiseAppForTesting(kTestPackageId);
   EXPECT_TRUE(promise_app_result->name.has_value());
   EXPECT_EQ(promise_app_result->name.value(), "Name");
-  EXPECT_TRUE(promise_app_result->should_show);
 
   // TODO(b/261910028): Add testcases for promise_app_result icons;
 }
 
+// Tests that icons can be successfully downloaded from the URLs provided by an
+// Almanac response.
+TEST_F(PromiseAppServiceTest, OnPromiseApp_IconsDownloaded) {
+  std::string url = "http://image.test/test.png";
+  std::string url_other = "http://image.test/second-test.png";
+
+  proto::PromiseAppResponse response;
+  response.set_package_id(kTestPackageId.ToString());
+  response.set_name("Name");
+  response.add_icons();
+  response.mutable_icons(0)->set_url(url);
+  response.mutable_icons(0)->set_width_in_pixels(512);
+  response.mutable_icons(0)->set_mime_type("image/png");
+  response.mutable_icons(0)->set_is_masking_allowed(true);
+  response.add_icons();
+  response.mutable_icons(1)->set_url(url_other);
+  response.mutable_icons(1)->set_width_in_pixels(1024);
+  response.mutable_icons(1)->set_mime_type("image/png");
+  response.mutable_icons(1)->set_is_masking_allowed(false);
+
+  // Set up response for Almanac endpoint.
+  url_loader_factory()->AddResponse(
+      PromiseAppAlmanacConnector::GetServerUrl().spec(),
+      response.SerializeAsString());
+
+  // Set up responses for image fetcher.
+  url_loader_factory()->AddResponse(url, "data");
+  url_loader_factory()->AddResponse(url_other, "data");
+
+  // Confirm there aren't any icons for the package yet.
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+
+  // Add promise app to cache and trigger Almanac API and image fetcher calls.
+  service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
+
+  // TODO(b/261907233): Replace with wait for PromiseAppRegistryCache observer
+  // update.
+  RunUntilIdle();
+
+  // Verify that there are 2 icons now saved in cache.
+  EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  std::vector<PromiseAppIcon*> icons =
+      icon_cache()->GetIconsForTesting(kTestPackageId);
+  EXPECT_EQ(icons.size(), 2u);
+  EXPECT_TRUE(icons[0]->is_masking_allowed);
+  EXPECT_EQ(icons[0]->width_in_pixels, 512);
+  EXPECT_FALSE(icons[1]->is_masking_allowed);
+  EXPECT_EQ(icons[1]->width_in_pixels, 1024);
+
+  // Verify that the promise app is allowed to be visible now.
+  const PromiseApp* promise_app_result =
+      cache()->GetPromiseAppForTesting(kTestPackageId);
+  EXPECT_TRUE(promise_app_result->should_show);
+}
+
+// Tests that we can deal with broken URLs/ failed icon downloads and avoid
+// updating the icon cache.
+TEST_F(PromiseAppServiceTest, OnPromiseApp_FailedIconDownload) {
+  proto::PromiseAppResponse response;
+  response.set_package_id(kTestPackageId.ToString());
+  response.set_name("Name");
+  response.add_icons();
+  response.mutable_icons(0)->set_url("broken-url");
+  response.mutable_icons(0)->set_width_in_pixels(512);
+  response.mutable_icons(0)->set_mime_type("image/png");
+  response.mutable_icons(0)->set_is_masking_allowed(true);
+
+  // Set up response for Almanac endpoint.
+  url_loader_factory()->AddResponse(
+      PromiseAppAlmanacConnector::GetServerUrl().spec(),
+      response.SerializeAsString());
+
+  // Confirm there aren't any icons for the package yet.
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+
+  // Add promise app to cache and trigger Almanac API call.
+  service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
+
+  // TODO(b/261907233): Replace with wait for PromiseAppRegistryCache observer
+  // update.
+  RunUntilIdle();
+
+  // Icon cache should still be empty.
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+}
 }  // namespace apps
