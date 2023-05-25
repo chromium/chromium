@@ -103,6 +103,9 @@ void WaitForSeconds(int seconds);
 // status.
 void SwitchToTabletMode();
 
+// Leaves the tablet mode.
+void LeaveTabletMode();
+
 // Open the `view` by touch.
 void TouchOnView(const views::View* view,
                  ui::test::EventGenerator* event_generator);

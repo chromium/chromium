@@ -58,7 +58,6 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
@@ -153,11 +152,6 @@ void SetUpFileDeletionVerifier(base::RunLoop* loop) {
             EXPECT_FALSE(base::PathExists(path));
             loop->Quit();
           }));
-}
-
-void LeaveTabletMode() {
-  TabletModeControllerTestApi test_api;
-  test_api.LeaveTabletMode();
 }
 
 // Defines a capture client observer, that sets the input capture to the window

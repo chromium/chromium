@@ -165,6 +165,10 @@ void SwitchToTabletMode() {
   test_api.EnterTabletMode();
 }
 
+void LeaveTabletMode() {
+  TabletModeControllerTestApi().LeaveTabletMode();
+}
+
 void TouchOnView(const views::View* view,
                  ui::test::EventGenerator* event_generator) {
   DCHECK(view);

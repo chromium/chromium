@@ -625,7 +625,7 @@ void CaptureModeSession::SetPreSelectedWindow(
     aura::Window* pre_selected_window) {
   CHECK(capture_window_observer_);
   capture_window_observer_->SetSelectedWindow(pre_selected_window,
-                                              /*allow_window_change=*/false);
+                                              /*bar_anchored_to_window=*/true);
 }
 
 void CaptureModeSession::A11yAlertCaptureSource(bool trigger_now) {
@@ -1532,6 +1532,20 @@ void CaptureModeSession::MaybeDismissUserNudgeForever() {
   user_nudge_controller_.reset();
 }
 
+void CaptureModeSession::RefreshBarWidgetBounds() {
+  DCHECK(capture_mode_bar_widget_);
+  // We need to update the capture bar bounds first and then settings bounds.
+  // The sequence matters here since settings bounds depend on capture bar
+  // bounds.
+  capture_mode_bar_widget_->SetBounds(
+      active_behavior_->GetCaptureBarBounds(current_root_));
+  MaybeUpdateSettingsBounds();
+  if (user_nudge_controller_) {
+    user_nudge_controller_->Reposition();
+  }
+  capture_toast_controller_.MaybeRepositionCaptureToast();
+}
+
 std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
   std::vector<views::Widget*> result;
   DCHECK(capture_mode_bar_widget_);
@@ -1604,19 +1618,6 @@ bool CaptureModeSession::CanShowWidget(views::Widget* widget) const {
            capture_label_widget_.get() == widget &&
            capture_mode_settings_widget_->GetWindowBoundsInScreen().Intersects(
                capture_label_widget_->GetWindowBoundsInScreen()));
-}
-
-void CaptureModeSession::RefreshBarWidgetBounds() {
-  DCHECK(capture_mode_bar_widget_);
-  // We need to update the capture bar bounds first and then settings bounds.
-  // The sequence matters here since settings bounds depend on capture bar
-  // bounds.
-  capture_mode_bar_widget_->SetBounds(
-      active_behavior_->GetCaptureBarBounds(current_root_));
-  MaybeUpdateSettingsBounds();
-  if (user_nudge_controller_)
-    user_nudge_controller_->Reposition();
-  capture_toast_controller_.MaybeRepositionCaptureToast();
 }
 
 void CaptureModeSession::MaybeUpdateSelfieCamInSessionVisibility() {

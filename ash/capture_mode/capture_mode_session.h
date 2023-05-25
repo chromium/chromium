@@ -268,6 +268,11 @@ class ASH_EXPORT CaptureModeSession
   // and will no longer be shown to the user.
   void MaybeDismissUserNudgeForever();
 
+  // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
+  // the `current_root_`, potentially moving the bar to a new display if
+  // `current_root_` is different`.
+  void RefreshBarWidgetBounds();
+
  private:
   friend class CaptureModeSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
@@ -298,11 +303,6 @@ class ASH_EXPORT CaptureModeSession
   // Called by `ShowAllUis` for each widget. Returns true if the given `widget`
   // could be shown, otherwise, returns false.
   bool CanShowWidget(views::Widget* widget) const;
-
-  // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
-  // the `current_root_`, potentially moving the bar to a new display if
-  // `current_root_` is different`.
-  void RefreshBarWidgetBounds();
 
   // Triggers a selfie camera visibility update during capture mode session on
   // capture mode type changed.

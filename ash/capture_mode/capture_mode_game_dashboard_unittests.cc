@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -72,6 +73,20 @@ class GameDashboardCaptureModeTest : public AshTestBase {
     controller->StartForGameDashboard(game_window_.get());
     CHECK(controller->IsActive());
     return controller;
+  }
+
+  // Verifies that the game capture bar is inside the selected game window. And
+  // centered above the fixed distance `kCaptureBarBottomPadding` from the
+  // bottom of the window.
+  void VerifyCaptureBarPosition() {
+    views::Widget* bar_widget = GetCaptureModeBarWidget();
+    CHECK(bar_widget);
+    const gfx::Rect window_bounds = game_window()->GetBoundsInScreen();
+    const gfx::Rect bar_bounds = bar_widget->GetWindowBoundsInScreen();
+    EXPECT_TRUE(window_bounds.Contains(bar_bounds));
+    EXPECT_EQ(bar_bounds.CenterPoint().x(), window_bounds.CenterPoint().x());
+    EXPECT_EQ(bar_bounds.bottom() + capture_mode::kCaptureBarBottomPadding,
+              window_bounds.bottom());
   }
 
  private:
@@ -161,14 +176,40 @@ TEST_F(GameDashboardCaptureModeTest, CaptureBarPosition) {
   views::Widget* bar_widget = GetCaptureModeBarWidget();
   ASSERT_TRUE(bar_widget);
 
-  const gfx::Rect window_bounds = game_window()->GetBoundsInScreen();
-  const gfx::Rect bar_bounds = bar_widget->GetWindowBoundsInScreen();
-  // Checks that the game capture bar is inside the window. And centered above a
-  // constant distance from the bottom of the window.
-  EXPECT_TRUE(window_bounds.Contains(bar_bounds));
-  EXPECT_EQ(bar_bounds.CenterPoint().x(), window_bounds.CenterPoint().x());
-  EXPECT_EQ(bar_bounds.bottom() + capture_mode::kCaptureBarBottomPadding,
-            window_bounds.bottom());
+  VerifyCaptureBarPosition();
+
+  // Switching to the tablet mode, the game capture bar should still be inside
+  // the window. And centered above the constant distance from the bottom of the
+  // window.
+  SwitchToTabletMode();
+  VerifyCaptureBarPosition();
+
+  // Switching back to the clamshell mode, the game capture bar should be
+  // positioned back to the constant distance from the bottom center of the
+  // window.
+  LeaveTabletMode();
+  VerifyCaptureBarPosition();
+}
+
+TEST_F(GameDashboardCaptureModeTest, CaptureBarPositionOnDisplayRotation) {
+  StartGameCaptureModeSession();
+  views::Widget* bar_widget = GetCaptureModeBarWidget();
+  ASSERT_TRUE(bar_widget);
+
+  VerifyCaptureBarPosition();
+
+  auto* display_manager = Shell::Get()->display_manager();
+  const int64_t display_id = WindowTreeHostManager::GetPrimaryDisplayId();
+
+  // Verifies that the capture bar is still at the bottom center position inside
+  // the selected window after display rotation.
+  for (const auto rotation :
+       {display::Display::ROTATE_90, display::Display::ROTATE_180,
+        display::Display::ROTATE_270}) {
+    display_manager->SetDisplayRotation(display_id, rotation,
+                                        display::Display::RotationSource::USER);
+    VerifyCaptureBarPosition();
+  }
 }
 
 // Tests that the game dashboard-initiated capture mode session shows the

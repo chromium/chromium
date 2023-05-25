@@ -22,7 +22,6 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/wm/mru_window_tracker.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -275,10 +274,8 @@ class GameDashboardBehavior : public CaptureModeBehavior,
  protected:
   // CaptureModeBehavior:
   gfx::Rect GetBarAnchorBoundsInScreen(aura::Window* root) const override {
-    const aura::Window* selected_window =
-        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)[0];
-    CHECK(selected_window);
-    return selected_window->GetBoundsInScreen();
+    CHECK(pre_selected_window_);
+    return pre_selected_window_->GetBoundsInScreen();
   }
 
   int GetCaptureBarWidth() const override { return kGameCaptureBarWidth; }
