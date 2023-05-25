@@ -9,15 +9,17 @@ on:
     branches: 'main'
   workflow_dispatch:
     inputs:
-      # TODO(#361): Use.
       auto-commit:
-        description: Whether to auto-commit WPT expectations
+        description: Auto-commit expectations
         default: false
         required: false
         type: boolean
-      # TODO(#361): Use.
+      tests:
+        description: Tests to run (e.g. 'network/combined/')
+        required: true
+        type: string
       verbose:
-        description: Whether to enable verbose logging
+        description: Verbose logging
         default: false
         required: false
         type: boolean
@@ -84,6 +86,7 @@ jobs:
         with:
           node-version: 16
           cache: npm
+      - uses: google/wireit@setup-github-actions-caching/v1
       - name: Install and build npm dependencies
         run: npm ci
       - name: Setup dirs
@@ -112,31 +115,34 @@ jobs:
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
           xvfb-run --auto-servernum
-          npm run wpt -- webdriver/tests/bidi/
+          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: false
           UPDATE_EXPECTATIONS: true
+          VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
       - name: Run WPT tests (mapper, headless)
         if: matrix.head == 'headless' && matrix.kind == 'mapper'
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: npm run wpt -- webdriver/tests/bidi/
+        run: npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           HEADLESS: true
           UPDATE_EXPECTATIONS: true
+          VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
       - name: Run WPT tests (chromedriver, new headless)
         if: matrix.head == 'headless' && matrix.kind == 'chromedriver'
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
-        run: npm run wpt -- webdriver/tests/bidi/
+        run: npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           CHROMEDRIVER: true
           UPDATE_EXPECTATIONS: true
+          VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.json
       - name: Auto commit WPT expectations
         if: (success() || failure()) && github.event.inputs.auto-commit == 'true'

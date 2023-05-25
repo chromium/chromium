@@ -6,6 +6,13 @@ on:
   pull_request:
   push:
     branches: 'main'
+  workflow_dispatch:
+    inputs:
+      verbose:
+        description: Verbose logging
+        default: false
+        required: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -54,6 +61,7 @@ jobs:
         # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Run E2E tests
         if: matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
         timeout-minutes: 20
@@ -61,6 +69,7 @@ jobs:
         # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Upload artifacts
         if: success() || failure()
         uses: actions/upload-artifact@v3
