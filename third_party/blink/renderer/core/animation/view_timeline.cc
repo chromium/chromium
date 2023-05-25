@@ -23,6 +23,8 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 
 namespace blink {
@@ -250,13 +252,31 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   absl::optional<LayoutSize> subject_size = SubjectSize();
   absl::optional<gfx::PointF> subject_position =
       SubjectPosition(state->resolved_source);
-
   DCHECK(subject_position);
-  double target_offset = physical_orientation == kHorizontalScroll
-                             ? subject_position->x()
-                             : subject_position->y();
-
   DCHECK(subject_size);
+
+  // TODO(crbug.com/1448294): Currently this only handles the case where
+  // subject becomes stuck during the "contain" range, i.e. it is not stuck
+  // while partially or fully outside the viewport (during entry/exit, or
+  // before entry).
+
+  // TODO(crbug.com/1448801): Handle nested sticky elements.
+
+  LayoutUnit sticky_max_top;
+  LayoutUnit sticky_max_right;
+  LayoutUnit sticky_max_bottom;
+  LayoutUnit sticky_max_left;
+  GetSubjectMaxStickyOffsets(sticky_max_top, sticky_max_right,
+                             sticky_max_bottom, sticky_max_left,
+                             state->resolved_source);
+
+  double target_offset_min = physical_orientation == kHorizontalScroll
+                                 ? subject_position->x() + sticky_max_right
+                                 : subject_position->y() + sticky_max_bottom;
+  double target_offset_max = physical_orientation == kHorizontalScroll
+                                 ? subject_position->x() + sticky_max_left
+                                 : subject_position->y() + sticky_max_top;
+
   double target_size;
   LayoutUnit viewport_size;
   if (physical_orientation == kHorizontalScroll) {
@@ -297,13 +317,14 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
 
   double viewport_size_double = viewport_size.ToDouble();
 
-  double start_offset = target_offset - viewport_size_double + end_side_inset;
-  double end_offset = target_offset + target_size - start_side_inset;
+  double start_offset =
+      target_offset_min - viewport_size_double + end_side_inset;
+  double end_offset = target_offset_max + target_size - start_side_inset;
 
   state->scroll_offsets =
       absl::make_optional<ScrollOffsets>(start_offset, end_offset);
   state->view_offsets = absl::make_optional<ScrollOffsets>(
-      target_offset, target_offset + target_size);
+      target_offset_min, target_offset_min + target_size);
 }
 
 absl::optional<LayoutSize> ViewTimeline::SubjectSize() const {
@@ -328,7 +349,8 @@ absl::optional<gfx::PointF> ViewTimeline::SubjectPosition(
   if (!subject_layout_box || !source_layout_box) {
     return absl::nullopt;
   }
-  MapCoordinatesFlags flags = kIgnoreScrollOffset | kIgnoreTransforms;
+  MapCoordinatesFlags flags =
+      kIgnoreScrollOffset | kIgnoreStickyOffset | kIgnoreTransforms;
   gfx::PointF subject_pos =
       gfx::PointF(subject_layout_box->LocalToAncestorPoint(
           PhysicalOffset(), source_layout_box, flags));
@@ -342,6 +364,54 @@ absl::optional<gfx::PointF> ViewTimeline::SubjectPosition(
   //   values.
   return gfx::PointF(subject_pos.x() - source_layout_box->ClientLeft().Round(),
                      subject_pos.y() - source_layout_box->ClientTop().Round());
+}
+
+void ViewTimeline::GetSubjectMaxStickyOffsets(LayoutUnit& top,
+                                              LayoutUnit& right,
+                                              LayoutUnit& bottom,
+                                              LayoutUnit& left,
+                                              Node* resolved_source) const {
+  if (!subject()) {
+    return;
+  }
+
+  LayoutBox* subject_layout_box = subject()->GetLayoutBox();
+  LayoutBox* source_layout_box = resolved_source->GetLayoutBox();
+  if (!subject_layout_box || !source_layout_box) {
+    return;
+  }
+
+  const LayoutBoxModelObject* sticky_container =
+      subject_layout_box->FindFirstStickyContainer(source_layout_box);
+  if (!sticky_container) {
+    return;
+  }
+
+  StickyPositionScrollingConstraints* constraints =
+      sticky_container->StickyConstraints();
+  if (!constraints) {
+    return;
+  }
+
+  const PhysicalRect& container =
+      constraints->scroll_container_relative_containing_block_rect;
+  const PhysicalRect& sticky =
+      constraints->scroll_container_relative_sticky_box_rect;
+
+  // The maximum sticky offset from each offset property is the available room
+  // from the opposite edge of the sticky element in its static position.
+  if (constraints->is_anchored_top) {
+    top = container.Bottom() - sticky.Bottom();
+  }
+  if (constraints->is_anchored_right) {
+    right = container.X() - sticky.X();
+  }
+  if (constraints->is_anchored_bottom) {
+    bottom = container.Y() - sticky.Y();
+  }
+  if (constraints->is_anchored_left) {
+    left = container.Right() - sticky.Right();
+  }
 }
 
 // https://www.w3.org/TR/scroll-animations-1/#named-range-getTime

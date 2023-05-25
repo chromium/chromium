@@ -61,25 +61,6 @@ inline bool IsOutOfFlowPositionedWithImplicitHeight(
          !child->StyleRef().LogicalBottom().IsAuto();
 }
 
-// Inclusive of |from|, exclusive of |to|.
-PaintLayer* FindFirstStickyBetween(LayoutObject* from, LayoutObject* to) {
-  LayoutObject* maybe_sticky_ancestor = from;
-  while (maybe_sticky_ancestor && maybe_sticky_ancestor != to) {
-    if (maybe_sticky_ancestor->StyleRef().HasStickyConstrainedPosition()) {
-      return To<LayoutBoxModelObject>(maybe_sticky_ancestor)->Layer();
-    }
-
-    // We use LocationContainer here to find the nearest sticky ancestor which
-    // shifts the given element's position so that the sticky positioning code
-    // is aware ancestor sticky position shifts.
-    maybe_sticky_ancestor =
-        maybe_sticky_ancestor->IsLayoutInline()
-            ? maybe_sticky_ancestor->Container()
-            : To<LayoutBox>(maybe_sticky_ancestor)->LocationContainer();
-  }
-  return nullptr;
-}
-
 void MarkBoxForRelayoutAfterSplit(LayoutBoxModelObject* box) {
   // FIXME: The table code should handle that automatically. If not,
   // we should fix it and remove the table part checks.
@@ -737,9 +718,9 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   // The respective search ranges are [container, containingBlock) and
   // [containingBlock, scrollAncestor).
   constraints->nearest_sticky_layer_shifting_sticky_box =
-      FindFirstStickyBetween(location_container, sticky_container);
+      location_container->FindFirstStickyContainer(sticky_container);
   constraints->nearest_sticky_layer_shifting_containing_block =
-      FindFirstStickyBetween(sticky_container, &scroll_container);
+      sticky_container->FindFirstStickyContainer(&scroll_container);
 
   // We skip the right or top sticky offset if there is not enough space to
   // honor both the left/right or top/bottom offsets.

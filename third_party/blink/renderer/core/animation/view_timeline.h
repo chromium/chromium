@@ -62,11 +62,16 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
                         ScrollOrientation physical_orientation,
                         TimelineState* state) const override;
 
-  absl::optional<LayoutSize> SubjectSize() const;
-  absl::optional<gfx::PointF> SubjectPosition(Node* resolved_source) const;
-
  private:
   double ToFractionalOffset(const TimelineOffset& timeline_offset) const;
+
+  absl::optional<LayoutSize> SubjectSize() const;
+  absl::optional<gfx::PointF> SubjectPosition(Node* resolved_source) const;
+  void GetSubjectMaxStickyOffsets(LayoutUnit& top,
+                                  LayoutUnit& right,
+                                  LayoutUnit& bottom,
+                                  LayoutUnit& left,
+                                  Node* resolved_source) const;
 
   // If either of the following elements are non-null, we need to update
   // |inset_| on a style change.

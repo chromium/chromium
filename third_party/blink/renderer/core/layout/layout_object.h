@@ -1955,6 +1955,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // is closed shadow hidden from |base|.
   Element* OffsetParent(const Element* base = nullptr) const;
 
+  // Inclusive of |this|, exclusive of |below|.
+  const LayoutBoxModelObject* FindFirstStickyContainer(LayoutBox* below) const;
+
   // Mark this object needing to re-run |CollectInlines()|. Ancestors may be
   // marked too if needed.
   void SetNeedsCollectInlines();

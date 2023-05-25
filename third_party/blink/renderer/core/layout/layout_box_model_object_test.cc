@@ -583,7 +583,7 @@ TEST_P(LayoutBoxModelObjectTest,
   // However the inner inline element does have a sticky-box shifting ancestor,
   // as its containing block is the ancestor block element, above its ancestor
   // sticky element.
-  EXPECT_EQ(sticky_outer_inline,
+  EXPECT_EQ(&sticky_outer_inline->GetLayoutObject(),
             inner_inline_constraints->nearest_sticky_layer_shifting_sticky_box);
 }
 
@@ -645,10 +645,10 @@ TEST_P(LayoutBoxModelObjectTest,
   // Both inner children should detect the parent <div> as their
   // containing-block shifting ancestor. They skip past unanchored sticky
   // because it will never have a non-zero offset.
-  EXPECT_EQ(sticky_parent,
+  EXPECT_EQ(&sticky_parent->GetLayoutObject(),
             child_constraints->nearest_sticky_layer_shifting_containing_block);
   EXPECT_EQ(
-      sticky_parent,
+      &sticky_parent->GetLayoutObject(),
       nested_child_constraints->nearest_sticky_layer_shifting_containing_block);
 }
 
@@ -684,7 +684,7 @@ TEST_P(LayoutBoxModelObjectTest,
   // The grandchild sticky should detect the parent as its containing-block
   // shifting ancestor.
   EXPECT_EQ(
-      sticky_parent,
+      &sticky_parent->GetLayoutObject(),
       grandchild_constraints->nearest_sticky_layer_shifting_containing_block);
 }
 
@@ -720,7 +720,7 @@ TEST_P(LayoutBoxModelObjectTest,
 
   // The table cell should detect the outer <div> as its containing-block
   // shifting ancestor.
-  EXPECT_EQ(sticky_outer,
+  EXPECT_EQ(&sticky_outer->GetLayoutObject(),
             th_constraints->nearest_sticky_layer_shifting_containing_block);
 }
 
@@ -1550,7 +1550,7 @@ TEST_P(LayoutBoxModelObjectTest,
   auto* child_constraints = child->StickyConstraints();
   ASSERT_TRUE(child_constraints);
   EXPECT_EQ(
-      container->Layer(),
+      container,
       child_constraints->nearest_sticky_layer_shifting_containing_block.Get());
 
   GetLayoutView().GetScrollableArea()->ScrollToAbsolutePosition(
@@ -1565,7 +1565,7 @@ TEST_P(LayoutBoxModelObjectTest,
   child_constraints = child->StickyConstraints();
   ASSERT_TRUE(child_constraints);
   EXPECT_EQ(
-      body->Layer(),
+      body,
       child_constraints->nearest_sticky_layer_shifting_containing_block.Get());
 
   // This should not crash.

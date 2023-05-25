@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class LayoutBoxModelObject;
 class PaintLayer;
 
 // Encapsulates the constraint information for a position: sticky element and
@@ -127,9 +128,10 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final
   //
   // See the implementation of |ComputeStickyOffset| for documentation on how
   // these ancestors are used to correct the offset calculation.
-  Member<const PaintLayer> nearest_sticky_layer_shifting_sticky_box = nullptr;
-  Member<const PaintLayer> nearest_sticky_layer_shifting_containing_block =
+  Member<const LayoutBoxModelObject> nearest_sticky_layer_shifting_sticky_box =
       nullptr;
+  Member<const LayoutBoxModelObject>
+      nearest_sticky_layer_shifting_containing_block = nullptr;
 
   // These fields cache the result of
   // PaintLayer::ContainingScrollContainerLayer().

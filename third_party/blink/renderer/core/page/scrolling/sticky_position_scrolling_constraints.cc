@@ -131,8 +131,7 @@ PhysicalOffset StickyPositionScrollingConstraints::AncestorStickyBoxOffset()
   if (!nearest_sticky_layer_shifting_sticky_box)
     return PhysicalOffset();
   auto* constraints =
-      nearest_sticky_layer_shifting_sticky_box->GetLayoutObject()
-          .StickyConstraints();
+      nearest_sticky_layer_shifting_sticky_box->StickyConstraints();
   DCHECK(constraints);
   return constraints->total_sticky_box_sticky_offset_;
 }
@@ -142,8 +141,7 @@ StickyPositionScrollingConstraints::AncestorContainingBlockOffset() const {
   if (!nearest_sticky_layer_shifting_containing_block)
     return PhysicalOffset();
   auto* constraints =
-      nearest_sticky_layer_shifting_containing_block->GetLayoutObject()
-          .StickyConstraints();
+      nearest_sticky_layer_shifting_containing_block->StickyConstraints();
   DCHECK(constraints);
   return constraints->total_containing_block_sticky_offset_;
 }
