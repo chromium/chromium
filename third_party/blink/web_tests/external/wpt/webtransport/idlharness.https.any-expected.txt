@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 80 tests; 58 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 81 tests; 58 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS WebTransportDatagramDuplexStream interface: existence and properties of interface object
@@ -56,6 +56,7 @@ FAIL WebTransportSendStream interface object name assert_own_property: self does
 FAIL WebTransportSendStream interface: existence and properties of interface prototype object assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
 FAIL WebTransportSendStream interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
 FAIL WebTransportSendStream interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+FAIL WebTransportSendStream interface: attribute sendOrder assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
 FAIL WebTransportSendStream interface: operation getStats() assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
 FAIL WebTransportReceiveStream interface: existence and properties of interface object assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing
 FAIL WebTransportReceiveStream interface object length assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing

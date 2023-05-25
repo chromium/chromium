@@ -17291,6 +17291,19 @@
        }
       ]
      ],
+     "break-inside-avoid-multicol-001-print.html": [
+      "a97ac9f5cdad2d191588dbdc6a2de80607a00a43",
+      [
+       null,
+       [
+        [
+         "/css/css-break/break-inside-avoid-multicol-001-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "break-nested-float-in-table-001-print.html": [
       "e4e0a578e9a6c6d763fcb9e80d6ff8b91561f3e5",
       [
@@ -146853,7 +146866,7 @@
         ]
        ],
        "two-clip-path-animation-diff-length1.html": [
-        "d6d04858b5a808aad9d366b3eae26bd75dc80127",
+        "f647c1af59095735217eb60e51291a64b79fce70",
         [
          null,
          [
@@ -146866,7 +146879,7 @@
         ]
        ],
        "two-clip-path-animation-diff-length2.html": [
-        "5a8e22832a7e077a1a3b6235f9598fe346c72446",
+        "bc3460111f712d012e68e8b1e0254fa2f7c299af",
         [
          null,
          [
@@ -146879,7 +146892,7 @@
         ]
        ],
        "two-clip-path-animation-diff-length3.html": [
-        "3c8141ad2defe3cd50bf08942819f9b27481ee36",
+        "5a66568132ac77ad70f8c6107139e6041782e917",
         [
          null,
          [
@@ -272740,11 +272753,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "49a4f946d165e4e5eacd8482da804ff3199b11f4",
+     "74cf76110d026a8b3cf66b5f8eca1366269eb27f",
      []
     ],
     "mtime.json": [
-     "40646b37c76fcae19b68822f4e212446b61a3adb",
+     "206d328051f26ae3d16e9da8934a71d566626449",
      []
     ]
    },
@@ -281667,6 +281680,10 @@
       ],
       "border-bottom-color-016-ref.xht": [
        "538f9051c2b3edaa4c1804a4333a3ccd455a8498",
+       []
+      ],
+      "border-bottom-color-016.xht.ini": [
+       "1ffde3321833838ad23de1bc159adadce9e3aa18",
        []
       ],
       "border-bottom-color-017-ref.xht": [
@@ -291658,6 +291675,10 @@
      ],
      "break-inside-avoid-min-block-size-2-ref.html": [
       "70c4049131f7c4f458398c40bb0c1d575a6fa071",
+      []
+     ],
+     "break-inside-avoid-multicol-001-print-ref.html": [
+      "baf114d35c9d86ec0708f070e269d965f47bc972",
       []
      ],
      "break-nested-float-in-table-001-print-ref.html": [
@@ -309547,7 +309568,7 @@
       []
      ],
      "object-view-box-fit-none-video.html.ini": [
-      "2dab034f07a47672161c9c8b920fd386dbdf05ca",
+      "7307386f2502bb9147e43d6c66271250ae63aa3f",
       []
      ],
      "object-view-box-iframe-ref.html": [
@@ -327267,7 +327288,7 @@
       []
      ],
      "preserve3d-and-flattening-003.html.ini": [
-      "b3762732c979988eeee0b1cacbd2932a952a925c",
+      "936c52c967bdd4f63227f055b7298761d13fb364",
       []
      ],
      "preserve3d-and-flattening-z-order-001.html.ini": [
@@ -327295,7 +327316,7 @@
       []
      ],
      "preserve3d-and-flattening-z-order-007.html.ini": [
-      "60e9dc23a7e9bd9c15b32574c941574e204849c8",
+      "4e3912e47e9d98c345f87ea9b14bda76f1ee34e7",
       []
      ],
      "preserve3d-and-flattening-z-order-008.html.ini": [
@@ -330576,7 +330597,7 @@
        []
       ],
       "kind-of-widget-fallback-input-submit-border-image-width-001.html.ini": [
-       "95e5eac43bb15d20e4f1ddf5226048d666a8bdc4",
+       "b512159086b2af696bf519175649a7eebf464ad9",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-inline-end-color-001.html.ini": [
@@ -330705,6 +330726,10 @@
       ],
       "kind-of-widget-fallback-input-text-border-image-outset-001.html.ini": [
        "f166ddbbc4cb488eb4da067e1f30164b11422941",
+       []
+      ],
+      "kind-of-widget-fallback-input-text-border-image-repeat-001.html.ini": [
+       "bdf87a7adebd698554627701cd8c1e594e662a1b",
        []
       ],
       "kind-of-widget-fallback-input-text-border-image-slice-001.html.ini": [
@@ -330973,6 +330998,10 @@
       ],
       "kind-of-widget-fallback-textarea-border-block-start-style-001.html.ini": [
        "3e272ca820ca4e776ba9e84ed695c92dd0cd44fc",
+       []
+      ],
+      "kind-of-widget-fallback-textarea-border-block-start-width-001.html.ini": [
+       "f4f33bd3d98577ded668065a77a9681acf9453e3",
        []
       ],
       "kind-of-widget-fallback-textarea-border-bottom-color-001.html.ini": [
@@ -332839,7 +332868,7 @@
       []
      ],
      "round-mod-rem-computed-expected.txt": [
-      "3b5dcb2bb88ac76f7c13b3addf3288697622c5cb",
+      "fafcc400116bb73dc26bb49277fcb318ebabcb6b",
       []
      ],
      "round-mod-rem-computed.html.ini": [
@@ -337757,7 +337786,7 @@
       []
      ],
      "clip-under-filter-003.html.ini": [
-      "03737e546479cf07969aaa18428c2ade48625426",
+      "769107653a340aac5a45d2ce31b4a5c52fbc238a",
       []
      ],
      "css-backdrop-filters-animation-blur-ref.html": [
@@ -337813,7 +337842,7 @@
       []
      ],
      "css-backdrop-filters-animation-hue-rotate.html.ini": [
-      "ce4f2d71c05abf55f3e507adcd0bab655be146e6",
+      "214567ed171c1fa6b6fdac264c4f3c4f36e40df0",
       []
      ],
      "css-backdrop-filters-animation-invert-ref.html": [
@@ -356522,8 +356551,26 @@
         "2c48d688b6af35ef3c65da7c8cda127b80716571",
         []
        ],
+       "2d.drawImage.svg.html.ini": [
+        "c66b96999799d78e66aa016ffb9ce8fe3445a67e",
+        []
+       ],
        "2d.drawImage.transform.html.ini": [
         "1f76e3507603b3deff7a598af11fe90c7d0ff199",
+        []
+       ],
+       "2d.drawImage.zerosource.image.html.ini": [
+        "3f7b04de87c75b45767acb4ad0485be0927ba887",
+        []
+       ]
+      },
+      "fill-and-stroke-styles": {
+       "2d.pattern.paint.repeat.basic.html.ini": [
+        "59c6d7d3f9c14d3dd9470bb82563a12804617949",
+        []
+       ],
+       "2d.pattern.paint.repeat.outside.html.ini": [
+        "d00299aa5af90312b69abcf49b22d35c6fd34e2b",
         []
        ]
       },
@@ -373416,7 +373463,7 @@
      []
     ],
     "fenced-frame.idl": [
-     "c9ea3c32d874f0977bfa5529c8d5f07754417c19",
+     "440ec2bbaa10604d6cfa982242ce6fdb40b530c6",
      []
     ],
     "fetch.idl": [
@@ -373680,7 +373727,7 @@
      []
     ],
     "permissions-policy.idl": [
-     "a789d41738c157a92ee96d9b56269f5e6f1fd657",
+     "16945e3a9b7cded5610d9d2e2cb53acbb8d6b831",
      []
     ],
     "permissions-request.idl": [
@@ -374080,7 +374127,7 @@
      []
     ],
     "webtransport.idl": [
-     "2bea483e1b91f78569d80c706c20f95bd44978ac",
+     "a9f514e2366e1ea2200989aef84abe612596f369",
      []
     ],
     "webusb.idl": [
@@ -380736,7 +380783,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "d8aae0de1f8a7c897cc064c7501be3575dc2f69d",
+     "7edb415c0fac359f793c8176c31d2b288c0f7844",
      []
     ],
     "modulepreload-expected.txt": [
@@ -380825,6 +380872,10 @@
     ],
     "preload-resource-match.https.html.ini": [
      "daa1a3d4a9250e931de7166e61758f43d3aa23d1",
+     []
+    ],
+    "preload-strict-dynamic.sub.html.ini": [
+     "bc0167a9daa97226b3cb2d210ee2364ae22f4056",
      []
     ],
     "preload-time-to-fetch.https-expected.txt": [
@@ -384183,7 +384234,7 @@
       []
      ],
      "scroll-timeline-inline-orientation.html.ini": [
-      "0f803ae1562b0a5acd37bacd3bb23ddd8d921df1",
+      "bd74dca62b80091371d40a2dc6ac6c443f5645ac",
       []
      ],
      "support": {
@@ -397555,7 +397606,7 @@
       []
      ],
      "simulcast.js": [
-      "4682729233b28687c8e290219d1963294fa70993",
+      "3aa0fc42870a9d5c99ba0bdb261c6e776ad71f95",
       []
      ],
      "vp9-scalability-mode.https.html.ini": [
@@ -397784,11 +397835,11 @@
      []
     ],
     "RTCRtpReceiver-jitterBufferTarget-stats-expected.txt": [
-     "8bb2183878e9483709314244a018a3c366a83f0e",
+     "6d89a005405ba24cc49af1a04bd6dffcc671babe",
      []
     ],
     "RTCRtpReceiver-jitterBufferTarget-stats.html.ini": [
-     "2facfe8e7fdabfecc5c87b58040b92e7528f62fd",
+     "99880d375b99d1a73434a8d384aa968c6def002c",
      []
     ],
     "RTCRtpReceiver-jitterBufferTarget.html.ini": [
@@ -398942,19 +398993,19 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "c26fb745dc87c958e5610be70163237c99774fd5",
+     "48ea6484b4f95cd7a66a88652c7c02fae2d22e57",
      []
     ],
     "idlharness.https.any.serviceworker-expected.txt": [
-     "c26fb745dc87c958e5610be70163237c99774fd5",
+     "48ea6484b4f95cd7a66a88652c7c02fae2d22e57",
      []
     ],
     "idlharness.https.any.sharedworker-expected.txt": [
-     "c26fb745dc87c958e5610be70163237c99774fd5",
+     "48ea6484b4f95cd7a66a88652c7c02fae2d22e57",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "c26fb745dc87c958e5610be70163237c99774fd5",
+     "48ea6484b4f95cd7a66a88652c7c02fae2d22e57",
      []
     ],
     "resources": {
@@ -402694,7 +402745,7 @@
      []
     ],
     "xr_viewport_scale.https.html.ini": [
-     "d57aef7f93d4bee3c732c6bf3f252a793d4d1f22",
+     "8c3656d6dac32e834f405d72d0d3307ecf99a67c",
      []
     ]
    },
@@ -444973,6 +445024,13 @@
         {}
        ]
       ],
+      "style-container-invalidation-inheritance.html": [
+       "b7aef69d3e1b2a32cc64bf754a0c3fb8fe2cd08a",
+       [
+        null,
+        {}
+       ]
+      ],
       "style-not-sharing-float.html": [
        "7c76bb32bf2a5db0352ea6fcdaaae4c6247a06db",
        [
@@ -469005,7 +469063,7 @@
       ]
      ],
      "round-mod-rem-computed.html": [
-      "4c365eb2a1420d40b1f74ef587409a7d261db226",
+      "db01cd0e18c9989bc419206c17e50094eb9b4c64",
       [
        null,
        {}
@@ -603683,7 +603741,7 @@
       ]
      ],
      "animation-timeline-ignored.tentative.html": [
-      "42f3733750a6d5c06beaeae34eafc2447a5e69fa",
+      "4a6624caf437d1f310d5228e14a6e0d773036ced",
       [
        null,
        {}
@@ -603697,7 +603755,7 @@
       ]
      ],
      "animation-timeline-multiple.html": [
-      "4d75b61fa24256217127bb03cb5a0193437884e3",
+      "3196653656d15e6f813badf43e8062fa6963077d",
       [
        null,
        {}
@@ -603773,27 +603831,6 @@
        {}
       ]
      ],
-     "scroll-timeline-attachment-computed-tentative.html": [
-      "3ec18a0eb9a675a64e61f7e5ef8acfc6b490fe64",
-      [
-       null,
-       {}
-      ]
-     ],
-     "scroll-timeline-attachment-parsing-tentative.html": [
-      "3235292d20bd84e2b7052ee0e9c674bc4f97e949",
-      [
-       null,
-       {}
-      ]
-     ],
-     "scroll-timeline-attachment.html": [
-      "892877bce42e4457244560d190724133f2449455",
-      [
-       null,
-       {}
-      ]
-     ],
      "scroll-timeline-axis-computed.html": [
       "c942fb40932433dd4daf7dbb68557488bebb14e8",
       [
@@ -603823,7 +603860,7 @@
       ]
      ],
      "scroll-timeline-dynamic.tentative.html": [
-      "4b84615e91a01cca64a69c396213cc5603f615b1",
+      "d1f143c7c191392b7a52785c371a671a181b5f0c",
       [
        null,
        {}
@@ -603844,7 +603881,7 @@
       ]
      ],
      "scroll-timeline-multi-pass.tentative.html": [
-      "7e0c1339b261bdaa9b59a2a9c76451fd1574fe86",
+      "403316ead0fed5072111d50b0673d57a95c99cf0",
       [
        null,
        {}
@@ -603921,7 +603958,7 @@
       ]
      ],
      "scroll-timeline-shorthand.tentative.html": [
-      "7a6d9cdf4ae0771700984ddedd41070e85f4caa4",
+      "0c8a47ae20d1894a05ed5b615d1cc7d74ebe881f",
       [
        null,
        {}
@@ -603935,14 +603972,14 @@
       ]
      ],
      "timeline-offset-in-keyframe-change-timeline.tentative.html": [
-      "311b2c8929a112940e80371ea3be8e85b6792991",
+      "5a70820b881edf687961606f79153dab96d6ac2d",
       [
        null,
        {}
       ]
      ],
      "timeline-offset-keyframes-hidden-subject.html": [
-      "10934347821b05331cf59bf27b103aecbf979556",
+      "011b8d4319a391837f5e1c80b330793b4201337a",
       [
        null,
        {}
@@ -603991,28 +604028,7 @@
       ]
      ],
      "view-timeline-animation.html": [
-      "9f8ffd176e34e723b465218474be69d0e1ada27b",
-      [
-       null,
-       {}
-      ]
-     ],
-     "view-timeline-attachment-computed-tentative.html": [
-      "dd244e137bb28d8b1d577d6f474ad49ab5c12519",
-      [
-       null,
-       {}
-      ]
-     ],
-     "view-timeline-attachment-parsing-tentative.html": [
-      "25e20135f149d621f0b4cb88bbb69ee6a3f9cc11",
-      [
-       null,
-       {}
-      ]
-     ],
-     "view-timeline-attachment.html": [
-      "694676a811eb6dd52c58df1322aaa7a294e79396",
+      "d1ea2f6c07f56e848ed9d178b85af484c668a59c",
       [
        null,
        {}
@@ -604033,7 +604049,7 @@
       ]
      ],
      "view-timeline-dynamic.html": [
-      "9e042b774b9e992fb707d7a27ad5e96940aa80bc",
+      "81dc8353c20971e338aec81fdb7e76cdf6cdc731",
       [
        null,
        {}
@@ -604068,7 +604084,7 @@
       ]
      ],
      "view-timeline-lookup.html": [
-      "e16f3baa687f6406329f172db856b88d667e3fab",
+      "98f11b85429c02af8033ad4af1515de7997c69bf",
       [
        null,
        {}
@@ -604103,7 +604119,7 @@
       ]
      ],
      "view-timeline-shorthand.tentative.html": [
-      "fd00acc73ab17ed7642d9c332d6e50aff4b63203",
+      "e5bf8822932177d621ba80ef42cc2b24ae8bc8ae",
       [
        null,
        {}
@@ -644246,7 +644262,7 @@
      ]
     ],
     "RTCRtpReceiver-jitterBufferTarget-stats.html": [
-     "504de6da9d62fa7b9e1e1befda03a1cc050a7f53",
+     "98ebea27e43fe990e521cc0f65e8d780d133bc7c",
      [
       null,
       {
