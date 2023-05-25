@@ -285,21 +285,27 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
           recorded_gurl);
 
   if (!permissions::PermissionHatsTriggerHelper::
-          ArePromptTriggerCriteriaSatisfied(prompt_parameters)) {
+          ArePromptTriggerCriteriaSatisfied(
+              prompt_parameters, kHatsSurveyTriggerPermissionsPrompt)) {
     return;
   }
+
+  auto trigger_and_probability = permissions::PermissionHatsTriggerHelper::
+      GetPermissionPromptTriggerNameAndProbabilityForRequestType(
+          kHatsSurveyTriggerPermissionsPrompt,
+          permissions::PermissionUmaUtil::GetRequestTypeString(request_type));
 
   auto* hats_service =
       HatsServiceFactory::GetForProfile(profile,
                                         /*create_if_necessary=*/true);
-  if (!hats_service) {
+  if (!hats_service || !trigger_and_probability.has_value()) {
     return;
   }
 
   auto survey_data = permissions::PermissionHatsTriggerHelper::
       SurveyProductSpecificData::PopulateFrom(prompt_parameters);
 
-  hats_service->LaunchSurvey(kHatsSurveyTriggerPermissionsPrompt,
+  hats_service->LaunchSurvey(trigger_and_probability->first,
                              std::move(hats_shown_callback), base::DoNothing(),
                              survey_data.survey_bits_data,
                              survey_data.survey_string_data);
