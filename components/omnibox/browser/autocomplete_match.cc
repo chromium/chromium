@@ -1427,7 +1427,7 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 
   // Merge scoring signals from duplicate match for ML model scoring and
   // training.
-  if (OmniboxFieldTrial::IsLogUrlScoringSignalsEnabled()) {
+  if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled()) {
     MergeScoringSignals(duplicate_match);
   }
 }
