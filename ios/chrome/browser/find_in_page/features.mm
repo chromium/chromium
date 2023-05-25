@@ -10,7 +10,7 @@
 
 BASE_FEATURE(kNativeFindInPage,
              "NativeFindInPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kNativeFindInPageParameterName[] = "variant";
 
