@@ -733,14 +733,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.idl",
           "//third_party/blink/renderer/modules/shared_storage/window_shared_storage.idl",
           "//third_party/blink/renderer/modules/shared_storage/shared_storage_iterator.idl",
-          "//third_party/blink/renderer/modules/smart_card/navigator_smart_card.idl",
-          "//third_party/blink/renderer/modules/smart_card/smart_card_connection.idl",
-          "//third_party/blink/renderer/modules/smart_card/smart_card_connection_status.idl",
-          "//third_party/blink/renderer/modules/smart_card/smart_card_error.idl",
-          "//third_party/blink/renderer/modules/smart_card/smart_card_reader.idl",
-          "//third_party/blink/renderer/modules/smart_card/smart_card_reader_presence_event.idl",
-          "//third_party/blink/renderer/modules/smart_card/smart_card_reader_presence_observer.idl",
-          "//third_party/blink/renderer/modules/smart_card/smart_card_resource_manager.idl",
           "//third_party/blink/renderer/modules/speech/speech_grammar.idl",
           "//third_party/blink/renderer/modules/speech/speech_grammar_list.idl",
           "//third_party/blink/renderer/modules/speech/speech_recognition.idl",
@@ -1250,6 +1242,27 @@ if (target_os != "android") {
             "//third_party/blink/renderer/modules/serial/serial_port_info.idl",
             "//third_party/blink/renderer/modules/serial/serial_port_request_options.idl",
             "//third_party/blink/renderer/modules/serial/worker_navigator_serial.idl",
+          ],
+          "abspath")
+}
+
+# Smart Card
+# This uses target_os rather than current_os (which is what is_android is set
+# from) for the case of generating the v8 context snapshot for android. When
+# generating the snapshot for android, blink is compiled with
+# current_os="linux" and target_os="android". Using target_os is necessary as
+# we need to compile in the same way as would happen when current_os="android".
+if (target_os != "android") {
+  static_idl_files_in_modules += get_path_info(
+          [
+            "//third_party/blink/renderer/modules/smart_card/navigator_smart_card.idl",
+            "//third_party/blink/renderer/modules/smart_card/smart_card_connection.idl",
+            "//third_party/blink/renderer/modules/smart_card/smart_card_connection_status.idl",
+            "//third_party/blink/renderer/modules/smart_card/smart_card_error.idl",
+            "//third_party/blink/renderer/modules/smart_card/smart_card_reader.idl",
+            "//third_party/blink/renderer/modules/smart_card/smart_card_reader_presence_event.idl",
+            "//third_party/blink/renderer/modules/smart_card/smart_card_reader_presence_observer.idl",
+            "//third_party/blink/renderer/modules/smart_card/smart_card_resource_manager.idl",
           ],
           "abspath")
 }

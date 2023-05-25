@@ -1017,10 +1017,6 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation_debug_mode_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation_histogram_contribution.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_private_aggregation_histogram_contribution.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_status.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_status.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error_options.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_config.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_config.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_spatial_sensor_options.cc",
@@ -1562,18 +1558,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_service_worker_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_service_worker_update_via_cache.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_service_worker_update_via_cache.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_state.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_state.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_disposition.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_disposition.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_response_code.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_response_code.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_code.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_code.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_storage_bucket_durability.cc",
@@ -2473,18 +2457,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_worklet_global_scope.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_worker_global_scope.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_worker_global_scope.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_event.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_event.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_observer.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_observer.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_resource_manager.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_resource_manager.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_source_buffer.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_source_buffer.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_source_buffer_list.cc",
@@ -3037,6 +3009,49 @@ if (target_os != "android") {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_serial_port.h",
+  ]
+}
+
+# Smart Card
+# This uses target_os rather than current_os (which is what is_android is set
+# from) for the case of generating the v8 context snapshot for android. When
+# generating the snapshot for android, blink is compiled with
+# current_os="linux" and target_os="android". Using target_os is necessary as
+# we need to compile in the same way as would happen when current_os="android".
+if (target_os != "android") {
+  generated_dictionary_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_status.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_status.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error_options.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error_options.h",
+  ]
+  generated_enumeration_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_access_mode.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_state.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_state.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_disposition.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_disposition.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_state.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_response_code.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_response_code.h",
+  ]
+  generated_interface_sources_in_modules += [
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_error.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_event.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_event.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_observer.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_reader_presence_observer.h",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_resource_manager.cc",
+    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_smart_card_resource_manager.h",
   ]
 }
 
