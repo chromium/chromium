@@ -428,6 +428,8 @@ source_set("unit_tests") {
     "fake_password_manager_lifecycle_helper.cc",
     "fake_password_manager_lifecycle_helper.h",
     "generated_password_saved_message_delegate_unittest.cc",
+    "mock_password_checkup_launcher_helper.cc",
+    "mock_password_checkup_launcher_helper.h",
     "mock_password_manager_error_message_helper_bridge.cc",
     "mock_password_manager_error_message_helper_bridge.h",
     "mock_password_sync_controller_delegate_bridge.cc",
@@ -473,6 +475,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/android:android",
     "//ui/base:base",
   ]
 }
