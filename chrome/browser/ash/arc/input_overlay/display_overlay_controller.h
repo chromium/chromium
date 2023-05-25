@@ -102,6 +102,7 @@ class DisplayOverlayController : public ui::EventHandler,
   const TouchInjector* touch_injector() const { return touch_injector_; }
 
  private:
+  friend class ActionView;
   friend class ArcInputOverlayManagerTest;
   friend class ButtonOptionsMenu;
   friend class DisplayOverlayControllerTest;
@@ -146,7 +147,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveEducationalView();
   void OnEducationalViewDismissed();
 
-  bool HasButtonOptionsMenu() const;
+  void AddButtonOptionsMenu(Action* action);
   void RemoveButtonOptionsMenu();
 
   void AddEditingList();

@@ -91,11 +91,6 @@ SkPath BackgroundPath(int height) {
 // static
 ButtonOptionsMenu* ButtonOptionsMenu::Show(DisplayOverlayController* controller,
                                            Action* action) {
-  // Ensure there is only one menu at any time.
-  if (controller->HasButtonOptionsMenu()) {
-    controller->RemoveButtonOptionsMenu();
-  }
-
   auto* parent = controller->GetOverlayWidgetContentsView();
   auto* button_options_menu = parent->AddChildView(
       std::make_unique<ButtonOptionsMenu>(controller, action));

@@ -150,6 +150,8 @@ class ActionView : public views::View {
  private:
   friend class ActionViewTest;
 
+  void ShowButtonOptionsMenu();
+
   void AddEditButton();
   void RemoveEditButton();
 

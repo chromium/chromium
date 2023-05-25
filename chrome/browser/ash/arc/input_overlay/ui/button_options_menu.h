@@ -14,8 +14,29 @@
 #include "ui/views/view.h"
 
 namespace arc::input_overlay {
+
 class Action;
 class DisplayOverlayController;
+
+// ButtonOptionsMenu displays action's type, input binding(s) and name and it
+// can modify these information. It shows up upon clicking an action's touch
+// point.
+//
+// View looks like this:
+// +----------------------------------+
+// ||icon|  |"Button options"|  |icon||
+// |----------------------------------|
+// ||"Key assignment"|                |
+// |----------------------------------|
+// |  |feature_tile|  |feature_title| |
+// |  |            |  |             | |
+// |----------------------------------|
+// ||"Selected key"       |key labels||
+// ||"key"                            |
+// |----------------------------------|
+// ||"Button label"                 > |
+// ||"Unassigned"                     |
+// +----------------------------------+
 class ButtonOptionsMenu : public views::View {
  public:
   static ButtonOptionsMenu* Show(
@@ -27,6 +48,8 @@ class ButtonOptionsMenu : public views::View {
   ButtonOptionsMenu(const ButtonOptionsMenu&) = delete;
   ButtonOptionsMenu& operator=(const ButtonOptionsMenu&) = delete;
   ~ButtonOptionsMenu() override;
+
+  Action* action() const { return action_; }
 
  private:
   void Init();

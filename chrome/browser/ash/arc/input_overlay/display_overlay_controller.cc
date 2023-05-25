@@ -161,8 +161,13 @@ void DisplayOverlayController::OnNudgeDismissed() {
   touch_injector_->set_show_nudge(false);
 }
 
-bool DisplayOverlayController::HasButtonOptionsMenu() const {
-  return button_options_menu_ != nullptr;
+void DisplayOverlayController::AddButtonOptionsMenu(Action* action) {
+  if (!IsBeta() ||
+      (button_options_menu_ && button_options_menu_->action() == action)) {
+    return;
+  }
+  RemoveButtonOptionsMenu();
+  button_options_menu_ = ButtonOptionsMenu::Show(this, action);
 }
 
 void DisplayOverlayController::RemoveButtonOptionsMenu() {

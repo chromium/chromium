@@ -207,11 +207,15 @@ void ActionView::ApplyMouseDragged(const ui::MouseEvent& event) {
 }
 
 void ActionView::ApplyMouseReleased(const ui::MouseEvent& event) {
-  reposition_controller_->OnMouseReleased(event);
+  if (!reposition_controller_->OnMouseReleased(event)) {
+    ShowButtonOptionsMenu();
+  }
 }
 
 void ActionView::ApplyGestureEvent(ui::GestureEvent* event) {
-  reposition_controller_->OnGestureEvent(event);
+  if (!reposition_controller_->OnGestureEvent(event)) {
+    ShowButtonOptionsMenu();
+  }
 }
 
 bool ActionView::ApplyKeyPressed(const ui::KeyEvent& event) {
@@ -259,6 +263,11 @@ void ActionView::SetTouchPointCenter(const gfx::Point& touch_point_center) {
   if (touch_point_) {
     touch_point_->OnCenterPositionChanged(*touch_point_center_);
   }
+}
+
+void ActionView::ShowButtonOptionsMenu() {
+  DCHECK(display_overlay_controller_);
+  display_overlay_controller_->AddButtonOptionsMenu(action_);
 }
 
 void ActionView::AddEditButton() {
