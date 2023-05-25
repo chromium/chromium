@@ -299,6 +299,10 @@ base::Value::Dict TargetDeviceConnectionBrokerImpl::GetPrepareForUpdateInfo() {
   return prepare_for_update_info;
 }
 
+std::string TargetDeviceConnectionBrokerImpl::GetSessionIdDisplayCode() {
+  return random_session_id_.GetDisplayCode();
+}
+
 void TargetDeviceConnectionBrokerImpl::FetchPersistedSessionContext() {
   PrefService* prefs = g_browser_process->local_state();
   CHECK(prefs->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));

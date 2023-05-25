@@ -40,6 +40,11 @@ void QuickStartScreenHandler::SetQRCode(base::Value::List blob) {
   CallExternalAPI("setQRCode", std::move(blob));
 }
 
+void QuickStartScreenHandler::SetDiscoverableName(
+    const std::string& discoverable_name) {
+  CallExternalAPI("setDiscoverableName", discoverable_name);
+}
+
 void QuickStartScreenHandler::ShowConnectingToWifi() {
   CallExternalAPI("showConnectingToWifi");
 }

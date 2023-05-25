@@ -108,6 +108,7 @@ class TargetDeviceBootstrapController
   void OnConnectionClosed(
       TargetDeviceConnectionBroker::ConnectionClosedReason reason) override;
 
+  std::string GetDiscoverableName();
   void AttemptWifiCredentialTransfer();
   void AttemptGoogleAccountTransfer();
 

@@ -199,6 +199,9 @@ class TargetDeviceConnectionBroker {
   // reboots.
   virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
 
+  // Gets the 3 digits of the discoverable name. e.g.: Chromebook (123)
+  virtual std::string GetSessionIdDisplayCode() = 0;
+
  protected:
   void MaybeNotifyFeatureStatus();
   void OnConnectionAuthenticated(

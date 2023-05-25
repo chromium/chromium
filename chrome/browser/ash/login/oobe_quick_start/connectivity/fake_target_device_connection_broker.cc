@@ -52,12 +52,13 @@ FakeTargetDeviceConnectionBroker::Factory::CreateInstance(
 }
 
 FakeTargetDeviceConnectionBroker::FakeTargetDeviceConnectionBroker() {
+  random_session_id_ = RandomSessionId();
   fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
   NearbyConnection* nearby_connection = fake_nearby_connection_.get();
   mojo::PendingRemote<mojom::QuickStartDecoder> remote;
   fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
   Connection::SessionContext session_context = {
-      .session_id = RandomSessionId(),
+      .session_id = random_session_id_,
       .shared_secret = kSharedSecret,
       .secondary_shared_secret = kSecondarySharedSecret};
   connection_ = std::make_unique<FakeConnection>(
@@ -105,9 +106,8 @@ void FakeTargetDeviceConnectionBroker::InitiateConnection(
     connection_lifecycle_listener_->OnPinVerificationRequested(
         DerivePin(kAuthenticationToken));
   } else {
-    auto random_session_id = RandomSessionId();
     connection_lifecycle_listener_->OnQRCodeVerificationRequested(
-        GetQrCodeData(random_session_id, kSharedSecret));
+        GetQrCodeData(random_session_id_, kSharedSecret));
   }
 }
 
@@ -123,6 +123,10 @@ void FakeTargetDeviceConnectionBroker::RejectConnection() {
 void FakeTargetDeviceConnectionBroker::CloseConnection(
     ConnectionClosedReason reason) {
   connection_lifecycle_listener_->OnConnectionClosed(reason);
+}
+
+std::string FakeTargetDeviceConnectionBroker::GetSessionIdDisplayCode() {
+  return random_session_id_.GetDisplayCode();
 }
 
 FakeConnection* FakeTargetDeviceConnectionBroker::GetFakeConnection() {

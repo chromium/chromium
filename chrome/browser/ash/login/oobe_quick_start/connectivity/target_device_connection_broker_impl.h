@@ -65,6 +65,7 @@ class TargetDeviceConnectionBrokerImpl
                         ResultCallback on_start_advertising_callback) override;
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
   base::Value::Dict GetPrepareForUpdateInfo() override;
+  std::string GetSessionIdDisplayCode() override;
 
  private:
   // Used to access the |random_session_id_| in tests, and to allow testing

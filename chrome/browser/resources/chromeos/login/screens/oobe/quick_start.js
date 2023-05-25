@@ -80,6 +80,10 @@ class QuickStartScreen extends QuickStartScreenBase {
         type: String,
         value: '',
       },
+      discoverableName_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -90,11 +94,16 @@ class QuickStartScreen extends QuickStartScreenBase {
     this.canvasSize_ = 0;
     this.password_ = '';
     this.ssid_ = '';
+    this.discoverableName_ = '';
   }
 
   get EXTERNAL_API() {
     return [
-      'setFigures', 'setQRCode', 'showConnectingToWifi', 'showConnectedToWifi',
+      'setFigures',
+      'setQRCode',
+      'showConnectingToWifi',
+      'showConnectedToWifi',
+      'setDiscoverableName',
     ];
   }
 
@@ -156,6 +165,10 @@ class QuickStartScreen extends QuickStartScreenBase {
         index++;
       }
     }
+  }
+
+  setDiscoverableName(discoverableName) {
+    this.discoverableName_ = discoverableName;
   }
 
   getCanvasContext_() {

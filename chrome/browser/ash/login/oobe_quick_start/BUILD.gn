@@ -34,6 +34,7 @@ source_set("oobe_quick_start") {
     "//google_apis/common:common",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp:cpp",
+    "//ui/chromeos",
   ]
   sources = [
     "second_device_auth_broker.cc",

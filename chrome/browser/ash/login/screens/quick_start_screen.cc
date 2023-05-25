@@ -52,6 +52,8 @@ void QuickStartScreen::ShowImpl() {
       LoginDisplayHost::default_host()->GetQuickStartBootstrapController();
   bootstrap_controller_->AddObserver(this);
   bootstrap_controller_->StartAdvertising();
+
+  DetermineDiscoverableName();
 }
 
 void QuickStartScreen::HideImpl() {
@@ -107,6 +109,14 @@ void QuickStartScreen::OnStatusChanged(
       quick_start::QS_LOG(INFO)
           << "Hit screen which is not implemented. Continuing";
       return;
+  }
+}
+
+void QuickStartScreen::DetermineDiscoverableName() {
+  CHECK(bootstrap_controller_);
+  discoverable_name_ = bootstrap_controller_->GetDiscoverableName();
+  if (view_) {
+    view_->SetDiscoverableName(discoverable_name_);
   }
 }
 

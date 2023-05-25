@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
@@ -22,6 +23,7 @@
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash::quick_start {
 
@@ -172,6 +174,12 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
   status_.payload = ErrorCode::CONNECTION_CLOSED;
   authenticated_connection_.reset();
   NotifyObservers();
+}
+
+std::string TargetDeviceBootstrapController::GetDiscoverableName() {
+  std::string device_type = base::UTF16ToUTF8(ui::GetChromeOSDeviceName());
+  std::string code = connection_broker_->GetSessionIdDisplayCode();
+  return device_type + " (" + code + ")";
 }
 
 void TargetDeviceBootstrapController::NotifyObservers() {
