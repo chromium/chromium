@@ -282,7 +282,7 @@ RenderWidgetHostView* GetRenderWidgetHostViewFromFrameTreeNode(
   if (!frame_tree_node || !frame_tree_node->current_frame_host())
     return nullptr;
 
-  return frame_tree_node->current_frame_host()->GetView();
+  return frame_tree_node->current_frame_host()->GetMainFrame()->GetView();
 }
 
 gfx::Size GetViewportSize(FrameTreeNode* frame_tree_node,
