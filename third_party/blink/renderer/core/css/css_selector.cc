@@ -1533,6 +1533,24 @@ const CSSSelector* CSSSelector::SelectorListOrParent() const {
   }
 }
 
+bool CSSSelector::IsChildIndexedSelector() const {
+  switch (GetPseudoType()) {
+    case kPseudoFirstChild:
+    case kPseudoFirstOfType:
+    case kPseudoLastChild:
+    case kPseudoLastOfType:
+    case kPseudoNthChild:
+    case kPseudoNthLastChild:
+    case kPseudoNthLastOfType:
+    case kPseudoNthOfType:
+    case kPseudoOnlyChild:
+    case kPseudoOnlyOfType:
+      return true;
+    default:
+      return false;
+  }
+}
+
 CSSSelector::RelationType ConvertRelationToRelative(
     CSSSelector::RelationType relation) {
   switch (relation) {

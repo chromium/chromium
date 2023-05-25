@@ -541,6 +541,10 @@ class CORE_EXPORT CSSSelector {
   // nested rules that would otherwise lack the nesting selector (&).
   bool IsImplicit() const { return is_implicitly_added_; }
 
+  // Returns true for simple selectors whose evaluation depends on DOM tree
+  // position like :first-of-type and :nth-child().
+  bool IsChildIndexedSelector() const;
+
   void Trace(Visitor* visitor) const;
 
   static String FormatPseudoTypeForDebugging(PseudoType);
