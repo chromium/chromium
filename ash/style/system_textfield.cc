@@ -6,6 +6,7 @@
 
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield_controller.h"
+#include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -20,16 +21,10 @@ namespace ash {
 
 namespace {
 
-// The name of font family.
-constexpr char kGoogleSansFont[] = "Google Sans";
 // The heights of textfield containers for different font sizes.
 constexpr int kSmallContainerHeight = 24;
 constexpr int kMediumContainerHeight = 28;
 constexpr int kLargeContainerHeight = 28;
-// The font sizes in pixels.
-constexpr int kSmallFontSize = 12;
-constexpr int kMediumFontSize = 14;
-constexpr int kLargeFontSize = 16;
 // The minimum textfield container width.
 constexpr int kMinWidth = 80;
 // The gap between the focus ring and textfield container.
@@ -58,20 +53,19 @@ int GetContainerHeightFromType(SystemTextfield::Type type) {
 
 // Gets font list for different types.
 gfx::FontList GetFontListFromType(SystemTextfield::Type type) {
-  int font_size;
+  TypographyToken token;
   switch (type) {
     case SystemTextfield::Type::kSmall:
-      font_size = kSmallFontSize;
+      token = TypographyToken::kCrosAnnotation1;
       break;
     case SystemTextfield::Type::kMedium:
-      font_size = kMediumFontSize;
+      token = TypographyToken::kCrosBody1;
       break;
     case SystemTextfield::Type::kLarge:
-      font_size = kLargeFontSize;
+      token = TypographyToken::kCrosBody0;
       break;
   }
-  return gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL, font_size,
-                       gfx::Font::Weight::NORMAL);
+  return TypographyProvider::Get()->ResolveTypographyToken(token);
 }
 
 }  // namespace

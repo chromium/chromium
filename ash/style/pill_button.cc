@@ -321,7 +321,8 @@ void PillButton::SetPillButtonType(Type type) {
 }
 
 void PillButton::SetUseDefaultLabelFont() {
-  label()->SetFontList(views::Label::GetDefaultFontList());
+  label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+      TypographyToken::kLegacyBody2));
 }
 
 void PillButton::Init() {

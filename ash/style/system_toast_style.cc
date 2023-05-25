@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
+#include "ash/style/typography.h"
 #include "ash/system/toast/toast_overlay.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/strings/strcat.h"
@@ -68,8 +69,8 @@ class SystemToastInnerLabel : public views::Label {
     SetSubpixelRenderingEnabled(false);
     SetEnabledColorId(cros_tokens::kTextColorPrimary);
 
-    SetFontList(views::Label::GetDefaultFontList().Derive(
-        2, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
+    SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kLegacyBody1));
   }
 
   SystemToastInnerLabel(const SystemToastInnerLabel&) = delete;
