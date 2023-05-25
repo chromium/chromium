@@ -209,6 +209,8 @@ BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
 // If enabled, uses a JsonPrefStore for account preferences.
 BASE_DECLARE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences);
 
+// Flag to control if a user can enable sync for the #tab-groups-save feature.
+BASE_DECLARE_FEATURE(kTabGroupsSaveSyncIntegration);
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

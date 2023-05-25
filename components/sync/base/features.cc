@@ -169,4 +169,7 @@ BASE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences,
              "SyncEnablePersistentStorageForAccountPreferences",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabGroupsSaveSyncIntegration,
+             "TabGroupsSaveSyncIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace syncer
