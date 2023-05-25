@@ -284,9 +284,8 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
 
   // Standard stream case.
   if (ivf_frames.size() == 1) {
-    return DecoderBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(ivf_frames[0].data),
-        ivf_frames[0].header.frame_size);
+    return DecoderBuffer::CopyFrom(ivf_frames[0].data.get(),
+                                   ivf_frames[0].header.frame_size);
   }
 
   if (ivf_frames.size() > 3) {
@@ -299,7 +298,8 @@ scoped_refptr<DecoderBuffer> EncodedDataHelper::GetNextFrame() {
   std::vector<uint32_t> frame_sizes;
   frame_sizes.reserve(ivf_frames.size());
   for (const IvfFrame& ivf : ivf_frames) {
-    data.append(reinterpret_cast<char*>(ivf.data), ivf.header.frame_size);
+    data.append(reinterpret_cast<const char*>(ivf.data.get()),
+                ivf.header.frame_size);
     frame_sizes.push_back(ivf.header.frame_size);
   }
 
