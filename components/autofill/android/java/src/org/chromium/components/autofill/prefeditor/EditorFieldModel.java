@@ -4,7 +4,6 @@
 
 package org.chromium.components.autofill.prefeditor;
 
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Pair;
@@ -12,8 +11,6 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.StrictModeContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,37 +121,13 @@ public class EditorFieldModel {
     /** Indicates a dropdown. */
     public static final int INPUT_TYPE_HINT_DROPDOWN = 12;
 
-    /** Indicates a list of icons. */
-    public static final int INPUT_TYPE_HINT_ICONS = 13;
-
-    /** Indicates a checkbox. */
-    public static final int INPUT_TYPE_HINT_CHECKBOX = 14;
-    /**
-     * Indicates a label, e.g., for a server credit card.
-     *
-     *  TOP_LABEL
-     *  MID_LABEL     [ICON]
-     *  BOTTOM_LABEL
-     *
-     *  Example:
-     *
-     *  Visa***1234
-     *  First Last    [VISA]
-     *  Exp: 03/2021
-     */
-    public static final int INPUT_TYPE_HINT_LABEL = 15;
-
-    private static final int INPUT_TYPE_HINT_MAX_EXCLUSIVE = 16;
+    private static final int INPUT_TYPE_HINT_MAX_EXCLUSIVE = 13;
 
     /* Indicates that the length counter is disabled. */
     public static final int LENGTH_COUNTER_LIMIT_NONE = 0;
 
     private final int mInputTypeHint;
 
-    @Nullable
-    private List<Integer> mIconResourceIds;
-    @Nullable
-    private List<Integer> mIconDescriptionsForAccessibility;
     @Nullable
     private List<DropdownKeyValue> mDropdownKeyValues;
     @Nullable
@@ -182,87 +155,13 @@ public class EditorFieldModel {
     @Nullable
     private CharSequence mLabel;
     @Nullable
-    private CharSequence mMidLabel;
-    @Nullable
-    private CharSequence mBottomLabel;
-    @Nullable
     private CharSequence mValue;
     @Nullable
     private CharSequence mHint;
     @Nullable
     private Callback<Pair<String, Runnable>> mDropdownCallback;
-    @Nullable
-    private Runnable mActionIconAction;
-    private int mLabelIconResourceId;
-    private int mActionIconResourceId;
-    private int mActionIconDescriptionForAccessibility;
     private boolean mIsFullLine = true;
-    private boolean mPlusIconIsDisplayed;
     private int mLengthCounterLimit = LENGTH_COUNTER_LIMIT_NONE;
-
-    /**
-     * Constructs a label to show in the editor. This can be, for example, description of a server
-     * credit card and its icon. Layout:
-     *
-     *  topLabel
-     *  midLabel      iconId
-     *  bottomLabel
-     *
-     * @param topLabel    Top label.
-     * @param midLabel    Middle label.
-     * @param bottomLabel Bottom label.
-     * @param iconId      Icon.
-     */
-    public static EditorFieldModel createLabel(
-            CharSequence topLabel, CharSequence midLabel, CharSequence bottomLabel, int iconId) {
-        assert topLabel != null;
-        assert midLabel != null;
-        assert bottomLabel != null;
-        EditorFieldModel result = new EditorFieldModel(INPUT_TYPE_HINT_LABEL);
-        result.mLabel = topLabel;
-        result.mMidLabel = midLabel;
-        result.mBottomLabel = bottomLabel;
-        result.mLabelIconResourceId = iconId;
-        return result;
-    }
-
-    /**
-     * Constructs a checkbox to show in the editor. It's checked by default.
-     *
-     * @param checkboxLabel      The label for the checkbox.
-     * @param checkboxPreference The shared preference key for the checkbox status. It must be in
-     *                           ChromePreferenceKeys.
-     */
-    public static EditorFieldModel createCheckbox(
-            CharSequence checkboxLabel, CharSequence checkboxPreference) {
-        assert checkboxLabel != null;
-        assert checkboxPreference != null;
-        EditorFieldModel result = new EditorFieldModel(INPUT_TYPE_HINT_CHECKBOX);
-        result.mLabel = checkboxLabel;
-        result.mValue = checkboxPreference;
-        return result;
-    }
-
-    /**
-     * Constructs a list of icons to show in the editor. This can be, for example, the list of
-     * accepted credit cards.
-     *
-     * @param label   The label for the icons.
-     * @param iconIds The list of drawable resources to display, in this order.
-     * @param descIds The list of string identifiers for descriptions of the icons. This is for
-     *                accessibility.
-     */
-    public static EditorFieldModel createIconList(
-            CharSequence label, List<Integer> iconIds, List<Integer> descIds) {
-        assert label != null;
-        assert iconIds != null;
-        assert descIds != null;
-        EditorFieldModel result = new EditorFieldModel(INPUT_TYPE_HINT_ICONS);
-        result.mLabel = label;
-        result.mIconResourceIds = iconIds;
-        result.mIconDescriptionsForAccessibility = descIds;
-        return result;
-    }
 
     /**
      * Constructs a dropdown field model.
@@ -360,42 +259,9 @@ public class EditorFieldModel {
         return result;
     }
 
-    /**
-     * Adds an icon to a text input field. The icon can be tapped to perform an action, e.g., launch
-     * a credit card scanner.
-     *
-     * @param icon        The drawable resource for the icon.
-     * @param description The string resource for the human readable description of the action.
-     * @param action      The callback to invoke when the icon is tapped.
-     */
-    public void addActionIcon(int icon, int description, Runnable action) {
-        assert isTextField();
-        mActionIconResourceId = icon;
-        mActionIconDescriptionForAccessibility = description;
-        mActionIconAction = action;
-    }
-
     private EditorFieldModel(int inputTypeHint) {
         assert isTextField();
         mInputTypeHint = inputTypeHint;
-    }
-
-    /** @return The action icon resource identifier, for example, R.drawable.ocr_card. */
-    public int getActionIconResourceId() {
-        assert isTextField();
-        return mActionIconResourceId;
-    }
-
-    /** @return The string resource for the human readable description of the action icon. */
-    public int getActionIconDescriptionForAccessibility() {
-        assert isTextField();
-        return mActionIconDescriptionForAccessibility;
-    }
-
-    /** @return The action to invoke when the action icon has been tapped. */
-    public Runnable getActionIconAction() {
-        assert isTextField();
-        return mActionIconAction;
     }
 
     /** @return The value formatter or null if not exist. */
@@ -425,37 +291,6 @@ public class EditorFieldModel {
     /** @return The type of input, for example, INPUT_TYPE_HINT_PHONE. */
     public int getInputTypeHint() {
         return mInputTypeHint;
-    }
-
-    /** @return Whether the checkbox is checked. */
-    public boolean isChecked() {
-        assert mInputTypeHint == INPUT_TYPE_HINT_CHECKBOX;
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return ContextUtils.getAppSharedPreferences().getBoolean(mValue.toString(), true);
-        }
-    }
-
-    /** Sets the checkbox state. */
-    public void setIsChecked(boolean isChecked) {
-        assert mInputTypeHint == INPUT_TYPE_HINT_CHECKBOX;
-        SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
-        editor.putBoolean(mValue.toString(), isChecked);
-        editor.apply();
-    }
-
-    /** @return The list of icons resource identifiers to display. */
-    public List<Integer> getIconResourceIds() {
-        assert mInputTypeHint == INPUT_TYPE_HINT_ICONS;
-        return mIconResourceIds;
-    }
-
-    /**
-     * @return The list of string identifiers of the descriptions of the displayed icons. This is
-     * for the screen reader.
-     */
-    public List<Integer> getIconDescriptionsForAccessibility() {
-        assert mInputTypeHint == INPUT_TYPE_HINT_ICONS;
-        return mIconDescriptionsForAccessibility;
     }
 
     /** @return The dropdown key-value pairs. */
@@ -518,25 +353,6 @@ public class EditorFieldModel {
         assert mDropdownKeyValues.size() == mDropdownKeys.size();
     }
 
-    /**
-     * @return True if the last visible item on the dropdown list, needs a '+' icon on the right.
-     */
-    public boolean isDisplayPlusIcon() {
-        assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
-        return mPlusIconIsDisplayed;
-    }
-
-    /**
-     * Sets whether the last item of this dropdown list needs a '+' icon on the right. By
-     * default, the item doesn't need that.
-     *
-     * @param plusIconIsDisplayed Whether the last item of the this dropdown list needs a '+' icon.
-     */
-    public void setDisplayPlusIcon(boolean plusIconIsDisplayed) {
-        assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
-        mPlusIconIsDisplayed = plusIconIsDisplayed;
-    }
-
     /** @return The human-readable label for this field. */
     public CharSequence getLabel() {
         return mLabel;
@@ -546,24 +362,6 @@ public class EditorFieldModel {
     public CharSequence getHint() {
         assert mInputTypeHint == INPUT_TYPE_HINT_DROPDOWN;
         return mHint;
-    }
-
-    /** @return The human-readable mid-level label for this field. */
-    public CharSequence getMidLabel() {
-        assert mInputTypeHint == INPUT_TYPE_HINT_LABEL;
-        return mMidLabel;
-    }
-
-    /** @return The human-readable lower-level label for this field. */
-    public CharSequence getBottomLabel() {
-        assert mInputTypeHint == INPUT_TYPE_HINT_LABEL;
-        return mBottomLabel;
-    }
-
-    /** @return The icon to show next to the label. */
-    public int getLabelIconResourceId() {
-        assert mInputTypeHint == INPUT_TYPE_HINT_LABEL;
-        return mLabelIconResourceId;
     }
 
     /**

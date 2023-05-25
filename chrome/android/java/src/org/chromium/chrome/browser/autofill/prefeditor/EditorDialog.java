@@ -35,8 +35,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -529,11 +527,7 @@ public class EditorDialog
     private View addFieldViewToEditor(ViewGroup parent, final EditorFieldModel fieldModel) {
         View childView = null;
 
-        if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_ICONS) {
-            childView = new EditorIconsField(mActivity, parent, fieldModel).getLayout();
-        } else if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_LABEL) {
-            childView = new EditorLabelField(mActivity, parent, fieldModel).getLayout();
-        } else if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN) {
+        if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN) {
             Runnable prepareEditorRunnable = new Runnable() {
                 @Override
                 public void run() {
@@ -553,22 +547,6 @@ public class EditorDialog
             mDropdownFields.add(dropdownView.getDropdown());
 
             childView = dropdownView.getLayout();
-        } else if (fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_CHECKBOX) {
-            final CheckBox checkbox = new CheckBox(mLayout.getContext());
-            checkbox.setId(R.id.payments_edit_checkbox);
-            checkbox.setText(fieldModel.getLabel());
-            checkbox.setChecked(fieldModel.isChecked());
-            checkbox.setMinimumHeight(mActivity.getResources().getDimensionPixelSize(
-                    R.dimen.editor_dialog_checkbox_min_height));
-            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    fieldModel.setIsChecked(isChecked);
-                    if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
-                }
-            });
-
-            childView = checkbox;
         } else {
             InputFilter filter = null;
             TextWatcher formatter = null;

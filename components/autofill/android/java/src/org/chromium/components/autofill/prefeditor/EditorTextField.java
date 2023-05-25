@@ -30,7 +30,6 @@ import androidx.core.view.ViewCompat;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.components.autofill.R;
-import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ import java.util.List;
 /** Handles validation and display of one field from the {@link EditorFieldModel}. */
 // TODO(b/173103628): Re-enable this
 //@VisibleForTesting
-public class EditorTextField extends FrameLayout implements EditorFieldView, View.OnClickListener {
+public class EditorTextField extends FrameLayout implements EditorFieldView {
     // TODO(crbug.com/1300201): Replace with EditorDialog field once migrated.
     /** The indicator for input fields that are required. */
     public static final String REQUIRED_FIELD_INDICATOR = "*";
@@ -104,17 +103,6 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
                         mInput.getPaddingTop(), mIconsLayer.getWidth(), mInput.getPaddingBottom());
             }
         });
-
-        if (fieldModel.getActionIconAction() != null) {
-            mActionIcon = (ImageView) mIconsLayer.findViewById(R.id.action_icon);
-            mActionIcon.setImageDrawable(TintedDrawable.constructTintedDrawable(context,
-                    fieldModel.getActionIconResourceId(),
-                    R.color.default_icon_color_accent1_tint_list));
-            mActionIcon.setContentDescription(context.getResources().getString(
-                    fieldModel.getActionIconDescriptionForAccessibility()));
-            mActionIcon.setOnClickListener(this);
-            mActionIcon.setVisibility(VISIBLE);
-        }
 
         if (fieldModel.getValueIconGenerator() != null) {
             mValueIcon = (ImageView) mIconsLayer.findViewById(R.id.value_icon);
@@ -292,11 +280,6 @@ public class EditorTextField extends FrameLayout implements EditorFieldView, Vie
         super.onWindowFocusChanged(hasWindowFocus);
 
         if (hasWindowFocus) updateFieldValueIcon(true);
-    }
-
-    @Override
-    public void onClick(View v) {
-        mEditorFieldModel.getActionIconAction().run();
     }
 
     /** @return The EditorFieldModel that the TextView represents. */

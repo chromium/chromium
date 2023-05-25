@@ -82,17 +82,9 @@ class EditorDropdownField implements EditorFieldView {
         final List<DropdownKeyValue> dropdownKeyValues = mFieldModel.getDropdownKeyValues();
         final List<CharSequence> dropdownValues = getDropdownValues(dropdownKeyValues);
         if (mFieldModel.getHint() != null) {
-            // Pass the hint to be displayed as default. If there is a '+' icon needed, use the
-            // appropriate class to display it.
-            if (mFieldModel.isDisplayPlusIcon()) {
-                mAdapter = new HintedDropDownAdapterWithPlusIcon<CharSequence>(context,
-                        R.layout.multiline_spinner_item, R.id.spinner_item, dropdownValues,
-                        mFieldModel.getHint().toString());
-            } else {
-                mAdapter = new HintedDropDownAdapter<CharSequence>(context,
-                        R.layout.multiline_spinner_item, R.id.spinner_item, dropdownValues,
-                        mFieldModel.getHint().toString());
-            }
+            mAdapter = new HintedDropDownAdapter<CharSequence>(context,
+                    R.layout.multiline_spinner_item, R.id.spinner_item, dropdownValues,
+                    mFieldModel.getHint().toString());
             // Wrap the TextView in the dropdown popup around with a FrameLayout to display the text
             // in multiple lines.
             // Note that the TextView in the dropdown popup is displayed in a DropDownListView for
