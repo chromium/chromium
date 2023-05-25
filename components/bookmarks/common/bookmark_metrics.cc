@@ -46,8 +46,12 @@ void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent,
   RecordBookmarkParentFolderType(parent);
 }
 
-void RecordBookmarkFolderAdded(BookmarkFolderTypeForUMA parent) {
+void RecordBookmarkFolderAdded(BookmarkFolderTypeForUMA parent,
+                               StorageStateForUma storage_state) {
   base::RecordAction(base::UserMetricsAction("Bookmarks.FolderAdded"));
+  base::RecordComputedAction(
+      base::StrCat({"Bookmarks.FolderAdded",
+                    GetStorageStateSuffixForMetrics(storage_state)}));
   RecordBookmarkParentFolderType(parent);
 }
 
@@ -76,8 +80,13 @@ void RecordTimeSinceLastScheduledSave(base::TimeDelta delta) {
                               delta);
 }
 
-void RecordTimeToLoadAtStartup(base::TimeDelta delta) {
+void RecordTimeToLoadAtStartup(base::TimeDelta delta,
+                               StorageStateForUma storage_state) {
   UmaHistogramTimes("Bookmarks.Storage.TimeToLoadAtStartup2", delta);
+  UmaHistogramTimes(
+      base::StrCat({"Bookmarks.Storage.TimeToLoadAtStartup2",
+                    GetStorageStateSuffixForMetrics(storage_state)}),
+      delta);
 }
 
 void RecordFileSizeAtStartup(int64_t total_bytes) {

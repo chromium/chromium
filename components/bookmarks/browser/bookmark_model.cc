@@ -871,7 +871,8 @@ const BookmarkNode* BookmarkModel::AddFolder(
   if (meta_info) {
     new_node->SetMetaInfoMap(*meta_info);
   }
-  metrics::RecordBookmarkFolderAdded(GetFolderType(parent));
+  metrics::RecordBookmarkFolderAdded(GetFolderType(parent),
+                                     client_->GetStorageStateForUma());
   return AddNode(AsMutable(parent), index, std::move(new_node));
 }
 
@@ -1138,7 +1139,8 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
 
   const base::TimeDelta load_duration =
       base::TimeTicks::Now() - details->load_start();
-  metrics::RecordTimeToLoadAtStartup(load_duration);
+  metrics::RecordTimeToLoadAtStartup(load_duration,
+                                     client_->GetStorageStateForUma());
 
   // Notify our direct observers.
   for (BookmarkModelObserver& observer : observers_) {

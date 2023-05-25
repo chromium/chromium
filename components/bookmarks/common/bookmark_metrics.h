@@ -52,7 +52,8 @@ void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent,
                             StorageStateForUma storage_state);
 
 // Records when a bookmark folder is added by the user.
-void RecordBookmarkFolderAdded(BookmarkFolderTypeForUMA parent);
+void RecordBookmarkFolderAdded(BookmarkFolderTypeForUMA parent,
+                               StorageStateForUma storage_state);
 
 // Records when a bookmark is removed.
 void RecordBookmarkRemoved(BookmarkEditSource source);
@@ -72,7 +73,8 @@ void RecordTimeSinceLastScheduledSave(base::TimeDelta delta);
 
 // Records the time it takes to load the bookmark model on startup with a 10
 // second max, the time starts when BookmarkModel.Load is called.
-void RecordTimeToLoadAtStartup(base::TimeDelta delta);
+void RecordTimeToLoadAtStartup(base::TimeDelta delta,
+                               StorageStateForUma storage_state);
 
 // Records size of the bookmark file at startup.
 void RecordFileSizeAtStartup(int64_t total_bytes);

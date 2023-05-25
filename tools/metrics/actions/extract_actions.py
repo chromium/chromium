@@ -216,6 +216,10 @@ def AddBookmarkUsageActions(actions):
   actions.add('Bookmarks.Added.AccountStorage')
   actions.add('Bookmarks.Added.LocalStorage')
   actions.add('Bookmarks.Added.LocalStorageSyncing')
+  actions.add('Bookmarks.FolderAdded')
+  actions.add('Bookmarks.FolderAdded.AccountStorage')
+  actions.add('Bookmarks.FolderAdded.LocalStorage')
+  actions.add('Bookmarks.FolderAdded.LocalStorageSyncing')
 
 
 def AddChromeOSActions(actions):

@@ -557,6 +557,45 @@ TEST_F(BookmarkModelTest, InitialState) {
   EXPECT_TRUE(other_node->id() != mobile_node->id());
 }
 
+// Tests recording Bookmarks.Storage.TimeToLoadAtStartup2 histogram for account
+// storage.
+TEST_F(BookmarkModelTest, LoadModelWithAccountStorage) {
+  auto client = std::make_unique<TestBookmarkClient>();
+  client->SetStorageStateForUma(metrics::StorageStateForUma::kAccount);
+  model_ = TestBookmarkClient::CreateModelWithClient(std::move(client));
+
+  histogram_tester()->ExpectTotalCount("Bookmarks.Storage.TimeToLoadAtStartup2",
+                                       1);
+  histogram_tester()->ExpectTotalCount(
+      "Bookmarks.Storage.TimeToLoadAtStartup2.AccountStorage", 1);
+}
+
+// Tests recording Bookmarks.Storage.TimeToLoadAtStartup2 histogram for local
+// storage not syncing.
+TEST_F(BookmarkModelTest, LoadModelWithLocalStorageNotSyncing) {
+  auto client = std::make_unique<TestBookmarkClient>();
+  client->SetStorageStateForUma(metrics::StorageStateForUma::kLocalOnly);
+  model_ = TestBookmarkClient::CreateModelWithClient(std::move(client));
+
+  histogram_tester()->ExpectTotalCount("Bookmarks.Storage.TimeToLoadAtStartup2",
+                                       1);
+  histogram_tester()->ExpectTotalCount(
+      "Bookmarks.Storage.TimeToLoadAtStartup2.LocalStorage", 1);
+}
+
+// Tests recording Bookmarks.Storage.TimeToLoadAtStartup2 histogram for local
+// storage syncing.
+TEST_F(BookmarkModelTest, LoadModelWithLocalStorageSyncing) {
+  auto client = std::make_unique<TestBookmarkClient>();
+  client->SetStorageStateForUma(metrics::StorageStateForUma::kSyncEnabled);
+  model_ = TestBookmarkClient::CreateModelWithClient(std::move(client));
+
+  histogram_tester()->ExpectTotalCount("Bookmarks.Storage.TimeToLoadAtStartup2",
+                                       1);
+  histogram_tester()->ExpectTotalCount(
+      "Bookmarks.Storage.TimeToLoadAtStartup2.LocalStorageSyncing", 1);
+}
+
 TEST_F(BookmarkModelTest, AddURL) {
   const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
   const std::u16string title(u"foo");
@@ -605,7 +644,7 @@ TEST_F(BookmarkModelTest, AddNewURL) {
                              testing::Ne(model_->mobile_node()->id())));
 }
 
-// Tests recording user action when adding bookmarks in account storage.
+// Tests recording user action when adding a bookmark in account storage.
 TEST_F(BookmarkModelTest, AddNewURLAccountStorage) {
   auto client = std::make_unique<TestBookmarkClient>();
   client->SetStorageStateForUma(metrics::StorageStateForUma::kAccount);
@@ -618,7 +657,7 @@ TEST_F(BookmarkModelTest, AddNewURLAccountStorage) {
                    "Bookmarks.Added.AccountStorage"));
 }
 
-// Tests recording user action when adding bookmarks in local storage not
+// Tests recording user action when adding a bookmark in local storage not
 // syncing.
 TEST_F(BookmarkModelTest, AddNewURLLocalStorageNotSyncing) {
   auto client = std::make_unique<TestBookmarkClient>();
@@ -632,7 +671,7 @@ TEST_F(BookmarkModelTest, AddNewURLLocalStorageNotSyncing) {
       1, user_action_tester()->GetActionCount("Bookmarks.Added.LocalStorage"));
 }
 
-// Tests recording user action when adding bookmarks in local storage syncing.
+// Tests recording user action when adding a bookmark in local storage syncing.
 TEST_F(BookmarkModelTest, AddNewURLLocalStorageSyncing) {
   auto client = std::make_unique<TestBookmarkClient>();
   client->SetStorageStateForUma(metrics::StorageStateForUma::kSyncEnabled);
@@ -643,6 +682,45 @@ TEST_F(BookmarkModelTest, AddNewURLLocalStorageSyncing) {
   EXPECT_EQ(1, user_action_tester()->GetActionCount("Bookmarks.Added"));
   EXPECT_EQ(1, user_action_tester()->GetActionCount(
                    "Bookmarks.Added.LocalStorageSyncing"));
+}
+
+// Tests recording user action when adding a folder in account storage.
+TEST_F(BookmarkModelTest, AddNewFolderAccountStorage) {
+  auto client = std::make_unique<TestBookmarkClient>();
+  client->SetStorageStateForUma(metrics::StorageStateForUma::kAccount);
+  model_ = TestBookmarkClient::CreateModelWithClient(std::move(client));
+
+  model_->AddFolder(model_->mobile_node(), 0, u"title");
+  EXPECT_EQ(1, user_action_tester()->GetActionCount("Bookmarks.FolderAdded"));
+  EXPECT_EQ(1, user_action_tester()->GetActionCount(
+                   "Bookmarks.FolderAdded.AccountStorage"));
+}
+
+// Tests recording user action when adding a folder in local storage not
+// syncing.
+TEST_F(BookmarkModelTest, AddNewFolderLocalStorageNotSyncing) {
+  auto client = std::make_unique<TestBookmarkClient>();
+  client->SetStorageStateForUma(metrics::StorageStateForUma::kLocalOnly);
+  model_ = TestBookmarkClient::CreateModelWithClient(std::move(client));
+
+  model_->AddFolder(model_->mobile_node(), 0, u"title");
+  EXPECT_EQ(1, user_action_tester()->GetActionCount("Bookmarks.FolderAdded"));
+  EXPECT_EQ(1, user_action_tester()->GetActionCount(
+                   "Bookmarks.FolderAdded.LocalStorage"));
+  histogram_tester()->ExpectTotalCount("Bookmarks.Storage.TimeToLoadAtStartup2",
+                                       1);
+}
+
+// Tests recording user action when adding a folder in local storage syncing.
+TEST_F(BookmarkModelTest, AddNewFolderLocalStorageSyncing) {
+  auto client = std::make_unique<TestBookmarkClient>();
+  client->SetStorageStateForUma(metrics::StorageStateForUma::kSyncEnabled);
+  model_ = TestBookmarkClient::CreateModelWithClient(std::move(client));
+
+  model_->AddFolder(model_->mobile_node(), 0, u"title");
+  EXPECT_EQ(1, user_action_tester()->GetActionCount("Bookmarks.FolderAdded"));
+  EXPECT_EQ(1, user_action_tester()->GetActionCount(
+                   "Bookmarks.FolderAdded.LocalStorageSyncing"));
 }
 
 TEST_F(BookmarkModelTest, AddURLWithUnicodeTitle) {
