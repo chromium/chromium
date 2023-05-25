@@ -3950,6 +3950,21 @@
             ]
         }
     ],
+    "CursiveManagedStylusPreinstall": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CursiveManagedStylusPreinstall"
+                    ]
+                }
+            ]
+        }
+    ],
     "CursiveStylusPreinstall": [
         {
             "platforms": [
