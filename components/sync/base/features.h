@@ -211,6 +211,13 @@ BASE_DECLARE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences);
 
 // Flag to control if a user can enable sync for the #tab-groups-save feature.
 BASE_DECLARE_FEATURE(kTabGroupsSaveSyncIntegration);
+
+// If provided, changes the amount of time before we send messages to the sync
+// service.
+inline constexpr base::FeatureParam<base::TimeDelta>
+    kTabGroupsSaveCustomNudgeDelay(&kTabGroupsSaveSyncIntegration,
+                                   "TabGroupsSaveCustomNudgeDelay",
+                                   base::Seconds(11));
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_
