@@ -70,8 +70,7 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->side_panel_coordinator();
+    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   }
 
   base::test::ScopedFeatureList feature_list_;

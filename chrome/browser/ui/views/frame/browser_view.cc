@@ -989,11 +989,6 @@ BrowserView::~BrowserView() {
   SidePanelUI::RemoveSidePanelUIForBrowser(browser_.get());
 }
 
-SidePanelCoordinator* BrowserView::side_panel_coordinator() {
-  return static_cast<SidePanelCoordinator*>(
-      SidePanelUI::GetSidePanelUIForBrowser(browser_.get()));
-}
-
 // static
 BrowserWindow* BrowserWindow::FindBrowserWindowWithWebContents(
     content::WebContents* web_contents) {
@@ -2211,12 +2206,6 @@ void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {
 
 bool BrowserView::IsBorderlessModeEnabled() const {
   return borderless_mode_enabled_ && window_management_permission_granted_;
-}
-
-void BrowserView::ShowSidePanel(
-    absl::optional<SidePanelEntry::Id> entry_id,
-    absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
-  side_panel_coordinator()->Show(entry_id, open_trigger);
 }
 
 void BrowserView::ShowChromeLabs() {
@@ -3853,7 +3842,8 @@ void BrowserView::AddedToWidget() {
       toolbar()->side_panel_container()->ObserveSidePanelView(
           unified_side_panel_);
     } else {
-      unified_side_panel_->AddObserver(side_panel_coordinator());
+      unified_side_panel_->AddObserver(
+          SidePanelUtil::GetSidePanelCoordinatorForBrowser((browser_.get())));
     }
   }
 

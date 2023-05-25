@@ -816,8 +816,7 @@ class PriceTrackingIconViewUnifiedSidePanelInteractiveTest
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,
                        TriggerSidePanelIPH) {
   SidePanelCoordinator* coordinator =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->side_panel_coordinator();
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   DCHECK(coordinator);
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble, false);
@@ -857,8 +856,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,
                        NotTriggerSidePanelIPH) {
   SidePanelCoordinator* coordinator =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->side_panel_coordinator();
+      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   DCHECK(coordinator);
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble, false);

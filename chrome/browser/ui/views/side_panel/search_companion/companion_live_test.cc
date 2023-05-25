@@ -56,8 +56,7 @@ class CompanionLiveTest : public signin::test::LiveTest {
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->side_panel_coordinator();
+    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   }
 
   SignInFunctions sign_in_functions = SignInFunctions(

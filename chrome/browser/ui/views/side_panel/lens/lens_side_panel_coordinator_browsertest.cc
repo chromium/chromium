@@ -183,8 +183,7 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
   }
 
   SidePanelCoordinator* GetSidePanelCoordinator() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->side_panel_coordinator();
+    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   }
 
   LensSidePanelCoordinator* GetLensSidePanelCoordinator() {

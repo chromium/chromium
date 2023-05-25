@@ -23,15 +23,14 @@ void CreateSidePanelManagerForWebContents(Profile* profile,
 // Defined in extension_side_panel_utils.h
 void ToggleExtensionSidePanel(Browser* browser,
                               const ExtensionId& extension_id) {
-  SidePanelCoordinator* coordinator =
-      BrowserView::GetBrowserViewForBrowser(browser)->side_panel_coordinator();
+  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
 
   SidePanelEntry::Key extension_key =
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
-  if (coordinator->IsSidePanelEntryShowing(extension_key)) {
-    coordinator->Close();
+  if (side_panel_ui->IsSidePanelEntryShowing(extension_key)) {
+    side_panel_ui->Close();
   } else {
-    coordinator->Show(extension_key);
+    side_panel_ui->Show(extension_key);
   }
 }
 
@@ -39,8 +38,7 @@ void ToggleExtensionSidePanel(Browser* browser,
 void OpenGlobalExtensionSidePanel(Browser& browser,
                                   content::WebContents* web_contents,
                                   const ExtensionId& extension_id) {
-  SidePanelCoordinator* coordinator =
-      BrowserView::GetBrowserViewForBrowser(&browser)->side_panel_coordinator();
+  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(&browser);
 
   SidePanelEntry::Key extension_key =
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
@@ -49,7 +47,7 @@ void OpenGlobalExtensionSidePanel(Browser& browser,
   // If we're opening the side panel for the active tab, we can just call
   // `Show()` and be done with it.
   if (web_contents && active_web_contents == web_contents) {
-    coordinator->Show(extension_key);
+    side_panel_ui->Show(extension_key);
     return;
   }
 
@@ -71,8 +69,8 @@ void OpenGlobalExtensionSidePanel(Browser& browser,
 
   // If the side panel isn't showing on the active tab, we can show the new
   // entry directly (since it's a global entry).
-  if (!coordinator->IsSidePanelShowing()) {
-    coordinator->Show(extension_key);
+  if (!side_panel_ui->IsSidePanelShowing()) {
+    side_panel_ui->Show(extension_key);
     return;
   }
 
@@ -89,7 +87,7 @@ void OpenGlobalExtensionSidePanel(Browser& browser,
 
   if (!has_active_contextual_entry) {
     // It must be an active global side panel. Call `Show()` to override it.
-    coordinator->Show(extension_key);
+    side_panel_ui->Show(extension_key);
     return;
   }
 
@@ -110,11 +108,9 @@ void OpenContextualExtensionSidePanel(Browser& browser,
                                       const ExtensionId& extension_id) {
   SidePanelEntry::Key extension_key =
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
-  SidePanelCoordinator* coordinator =
-      BrowserView::GetBrowserViewForBrowser(&browser)->side_panel_coordinator();
 
   if (browser.tab_strip_model()->GetActiveWebContents() == &web_contents) {
-    coordinator->Show(extension_key);
+    SidePanelUI::GetSidePanelUIForBrowser(&browser)->Show(extension_key);
     return;
   }
 

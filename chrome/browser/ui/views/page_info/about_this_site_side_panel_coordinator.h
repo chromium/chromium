@@ -14,6 +14,7 @@
 
 class BrowserView;
 class AboutThisSiteSidePanelView;
+class SidePanelUI;
 
 namespace views {
 class View;
@@ -44,6 +45,8 @@ class AboutThisSideSidePanelCoordinator
   friend class content::WebContentsUserData<AboutThisSideSidePanelCoordinator>;
 
   BrowserView* GetBrowserView() const;
+
+  SidePanelUI* GetSidePanelUI();
 
   // Called when SidePanel is opened.
   std::unique_ptr<views::View> CreateAboutThisSiteWebView();

@@ -105,7 +105,7 @@ void SideSearchIconView::UpdateImpl() {
   const bool was_visible = GetVisible();
   const bool should_show =
       tab_contents_helper->CanShowSidePanelForCommittedNavigation() &&
-      !side_search::IsSideSearchToggleOpen(browser_view);
+      !side_search::IsSideSearchToggleOpen(browser_);
   SetVisible(should_show);
 
   if (should_show && !was_visible) {
@@ -130,15 +130,16 @@ void SideSearchIconView::OnExecuting(PageActionIconView::ExecuteSource source) {
   // Reset the slide animation if in progress.
   HidePageActionLabel();
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser_);
 
   // TODO(crbug.com/1339789): BrowserView should never be null here, investigate
   // why GetBrowserViewForBrowser() is returning null in certain circumstances
   // and remove this check.
-  if (!browser_view)
+  if (!side_panel_ui) {
     return;
+  }
 
-  browser_view->side_panel_coordinator()->Show(
+  side_panel_ui->Show(
       SidePanelEntry::Id::kSideSearch,
       SidePanelUtil::SidePanelOpenTrigger::kSideSearchPageAction);
   auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(

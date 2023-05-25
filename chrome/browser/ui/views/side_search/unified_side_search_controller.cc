@@ -126,17 +126,17 @@ void UnifiedSideSearchController::DidFinishNavigation(
   if (ShouldAutomaticallyTriggerAfterNavigation(navigation_handle)) {
     auto* tracker =
         feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
-    auto* browser_view = GetBrowserView();
+    auto* side_panel_ui = GetSidePanelUI();
     auto* tab_contents_helper =
         SideSearchTabContentsHelper::FromWebContents(web_contents());
 
-    if (!browser_view || !tracker || !tab_contents_helper ||
+    if (!side_panel_ui || !tracker || !tab_contents_helper ||
         !tracker->ShouldTriggerHelpUI(
             feature_engagement::kIPHSideSearchAutoTriggeringFeature)) {
       return;
     }
 
-    browser_view->side_panel_coordinator()->Show(
+    side_panel_ui->Show(
         SidePanelEntry::Id::kSideSearch,
         SidePanelUtil::SidePanelOpenTrigger::kIPHSideSearchAutoTrigger);
     tab_contents_helper->SetAutoTriggered(true);
@@ -221,18 +221,18 @@ std::u16string UnifiedSideSearchController::GetSideSearchName() const {
 // this function can only be called via tapping on menu search option.
 void UnifiedSideSearchController::OpenSidePanel() {
   UpdateSidePanel();
-  auto* browser_view = GetBrowserView();
-  if (browser_view) {
-    browser_view->side_panel_coordinator()->Show(
+  auto* side_panel_ui = GetSidePanelUI();
+  if (side_panel_ui) {
+    side_panel_ui->Show(
         SidePanelEntry::Id::kSideSearch,
         SidePanelUtil::SidePanelOpenTrigger::kContextMenuSearchOption);
   }
 }
 
 void UnifiedSideSearchController::CloseSidePanel() {
-  auto* browser_view = GetBrowserView();
-  if (browser_view) {
-    browser_view->side_panel_coordinator()->Close();
+  auto* side_panel_ui = GetSidePanelUI();
+  if (side_panel_ui) {
+    side_panel_ui->Close();
   }
 }
 
@@ -243,6 +243,11 @@ BrowserView* UnifiedSideSearchController::GetBrowserView() const {
 
 Profile* UnifiedSideSearchController::GetProfile() const {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+}
+
+SidePanelUI* UnifiedSideSearchController::GetSidePanelUI() {
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
+  return browser ? SidePanelUI::GetSidePanelUIForBrowser(browser) : nullptr;
 }
 
 void UnifiedSideSearchController::UpdateSidePanel() {
@@ -305,8 +310,11 @@ bool UnifiedSideSearchController::ShouldAutomaticallyTriggerAfterNavigation(
 
   // If the side search side panel is already open we do not need to
   // automatically retrigger the panel.
-  if (side_search::IsSideSearchToggleOpen(browser_view))
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (side_search::IsSideSearchToggleOpen(browser)) {
     return false;
+  }
 
   auto* tab_contents_helper =
       SideSearchTabContentsHelper::FromWebContents(web_contents());

@@ -35,7 +35,8 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
     scoped_feature_list_.InitWithFeatures({features::kReadAnything}, {});
     TestWithBrowserView::SetUp();
 
-    side_panel_coordinator_ = browser_view()->side_panel_coordinator();
+    side_panel_coordinator_ =
+        SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
     side_panel_registry_ =
         SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
     read_anything_coordinator_ =

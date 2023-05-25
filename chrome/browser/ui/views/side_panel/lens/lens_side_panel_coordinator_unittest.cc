@@ -62,7 +62,7 @@ class LensSidePanelCoordinatorTest : public TestWithBrowserView {
   }
 
   SidePanelCoordinator* GetSidePanelCoordinator() {
-    return browser_view()->side_panel_coordinator();
+    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   }
 
   SidePanel* GetUnifiedSidePanel() {

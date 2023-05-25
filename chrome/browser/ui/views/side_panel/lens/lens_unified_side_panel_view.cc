@@ -172,7 +172,7 @@ void LensUnifiedSidePanelView::LoadResultsInNewTab() {
   browser_view_->browser()->OpenURL(params);
   base::RecordAction(
       base::UserMetricsAction("LensUnifiedSidePanel.LoadResultsInNewTab"));
-  browser_view_->side_panel_coordinator()->Close();
+  SidePanelUI::GetSidePanelUIForBrowser(browser_view_->browser())->Close();
 }
 
 void LensUnifiedSidePanelView::DocumentOnLoadCompletedInPrimaryMainFrame() {
