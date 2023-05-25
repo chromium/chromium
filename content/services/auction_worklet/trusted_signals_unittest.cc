@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -442,6 +443,20 @@ TEST_F(TrustedSignalsTest, BiddingSignalsInvalidVersion) {
       "Rejecting load of https://url.test/ due to unrecognized Format-Version "
       "header: shiny",
       error_msg_.value());
+
+  AddResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/"
+           "?hostname=publisher&keys=key1&interestGroupNames=name1"),
+      kJsonMimeType, absl::nullopt, kBaseBiddingJson,
+      base::StringPrintf("%s\nAd-Auction-Bidding-Signals-Format-Version: 100",
+                         kAllowFledgeHeader));
+  EXPECT_FALSE(FetchBiddingSignals({"name1"}, {"key1"}, kHostname,
+                                   /*experiment_group_id=*/absl::nullopt));
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/ due to unrecognized Format-Version "
+      "header: 100",
+      error_msg_.value());
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsResponseNotObject) {
@@ -633,6 +648,45 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKey) {
                "?hostname=publisher&keys=key1&interestGroupNames=name1"),
           kBaseBiddingJson, {"name1"}, {"key1"}, kHostname,
           /*experiment_group_id=*/absl::nullopt);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+}
+
+TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyNewHeaderName) {
+  AddResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/"
+           "?hostname=publisher&keys=key1&interestGroupNames=name1"),
+      kJsonMimeType, absl::nullopt, kBaseBiddingJson,
+      base::StringPrintf("%s\nAd-Auction-Bidding-Signals-Format-Version: 2",
+                         kAllowFledgeHeader));
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignals({"name1"}, {"key1"}, kHostname,
+                          /*experiment_group_id=*/absl::nullopt);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+}
+
+TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyBothOldAndNewHeaderNames) {
+  AddResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/"
+           "?hostname=publisher&keys=key1&interestGroupNames=name1"),
+      kJsonMimeType, absl::nullopt, kBaseBiddingJson,
+      base::StringPrintf("%s\nAd-Auction-Bidding-Signals-Format-Version: 2\n"
+                         "X-Fledge-Bidding-Signals-Format-Version: 2",
+                         kAllowFledgeHeader));
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignals({"name1"}, {"key1"}, kHostname,
+                          /*experiment_group_id=*/absl::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
   const auto* priority_vector = signals->GetPriorityVector("name1");
