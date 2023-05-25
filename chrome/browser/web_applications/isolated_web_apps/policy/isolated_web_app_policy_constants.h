@@ -11,10 +11,6 @@ namespace web_app {
 extern const char kPolicyUpdateManifestUrlKey[];
 extern const char kPolicyWebBundleIdKey[];
 
-extern const char kUpdateManifestAllVersionsKey[];
-extern const char kUpdateManifestVersionKey[];
-extern const char kUpdateManifestSrcKey[];
-
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_POLICY_CONSTANTS_H_
