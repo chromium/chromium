@@ -8,7 +8,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/viz_resource_format_export.h"
 #include "third_party/skia/include/core/SkColorType.h"
-#include "ui/gfx/buffer_types.h"
 
 namespace viz {
 
@@ -32,13 +31,6 @@ ToClosestSkColorType(bool gpu_compositing,
 // Returns the single-plane SharedImageFormat corresponding to `color_type.`
 VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
 SkColorTypeToSinglePlaneSharedImageFormat(SkColorType color_type);
-
-// Checks if there is an equivalent BufferFormat.
-VIZ_RESOURCE_FORMAT_EXPORT bool HasEquivalentBufferFormat(
-    SharedImageFormat format);
-
-VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
-GetSharedImageFormat(gfx::BufferFormat format);
 
 }  // namespace viz
 
