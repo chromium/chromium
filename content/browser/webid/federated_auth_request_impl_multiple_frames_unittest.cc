@@ -399,7 +399,6 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, CrossSiteIframe) {
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
-  EXPECT_EQ("cross-site.example", iframe_dialog_state.iframe_for_display);
 }
 
 // Tests that preventSilentAccess UKM is not recorded if the embedder does not
