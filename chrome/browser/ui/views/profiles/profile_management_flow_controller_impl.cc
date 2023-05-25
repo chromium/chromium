@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
@@ -72,10 +71,6 @@ void ProfileManagementFlowControllerImpl::
                std::move(step_switch_finished_callback),
                std::move(pop_closure));
 }
-
-absl::optional<SkColor> ProfileManagementFlowControllerImpl::GetProfileColor() {
-  return absl::nullopt;
-}
 #endif
 
 std::unique_ptr<ProfileManagementStepController>
@@ -111,7 +106,7 @@ ProfileManagementFlowControllerImpl::CreateSamlStep(
       base::Unretained(signed_in_profile)));
 
   return ProfileManagementStepController::CreateForFinishSamlSignIn(
-      host(), signed_in_profile, std::move(contents), GetProfileColor(),
+      host(), signed_in_profile, std::move(contents),
       std::move(finish_flow_callback));
 }
 

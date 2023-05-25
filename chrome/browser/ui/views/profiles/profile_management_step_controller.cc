@@ -137,12 +137,10 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
       ProfilePickerWebContentsHost* host,
       Profile* profile,
       std::unique_ptr<content::WebContents> contents,
-      absl::optional<SkColor> profile_color,
       FinishFlowCallback finish_flow_callback)
       : ProfileManagementStepController(host),
         profile_(profile),
         contents_(std::move(contents)),
-        profile_color_(profile_color),
         finish_flow_callback_(std::move(finish_flow_callback)) {
     DCHECK(finish_flow_callback_.value());
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
@@ -201,7 +199,6 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   raw_ptr<Profile> profile_;
   std::unique_ptr<content::WebContents> contents_;
-  absl::optional<SkColor> profile_color_;
   FinishFlowCallback finish_flow_callback_;
 
   base::WeakPtrFactory<FinishSamlSignInStepController> weak_ptr_factory_{this};
@@ -264,11 +261,9 @@ ProfileManagementStepController::CreateForFinishSamlSignIn(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
     std::unique_ptr<content::WebContents> contents,
-    absl::optional<SkColor> profile_color,
     FinishFlowCallback finish_flow_callback) {
   return std::make_unique<FinishSamlSignInStepController>(
-      host, profile, std::move(contents), profile_color,
-      std::move(finish_flow_callback));
+      host, profile, std::move(contents), std::move(finish_flow_callback));
 }
 
 #endif

@@ -43,8 +43,6 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<ProfilePickerDiceSignInProvider> CreateDiceSignInProvider()
       override;
-
-  absl::optional<SkColor> GetProfileColor() override;
 #endif
 
   std::unique_ptr<ProfilePickerSignedInFlowController>
@@ -54,7 +52,13 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       FinishFlowCallback finish_flow_callback) override;
 
   const ProfilePicker::EntryPoint entry_point_;
-  absl::optional<SkColor> profile_color_;
+
+  // Color provided when a profile creation is initiated, that may be used to
+  // tint screens of the profile creation flow (currently this only affects the
+  // profile type choice screen, which is the one picking the color). It will
+  // also be passed to the finishing steps of the profile creation, as a default
+  // color choice that the user would be able to override.
+  absl::optional<SkColor> suggested_profile_color_;
 
   // TODO(crbug.com/1359352): To be refactored out.
   // This is used for `ProfilePicker::GetSwitchProfilePath()`. The information

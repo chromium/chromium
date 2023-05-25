@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -50,7 +49,6 @@ class ProfileManagementStepController {
   CreateForFinishSamlSignIn(ProfilePickerWebContentsHost* host,
                             Profile* profile,
                             std::unique_ptr<content::WebContents> contents,
-                            absl::optional<SkColor> profile_color,
                             FinishFlowCallback finish_flow_callback);
 #endif
 

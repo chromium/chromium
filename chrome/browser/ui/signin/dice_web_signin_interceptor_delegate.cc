@@ -62,7 +62,6 @@ class ForcedEnterpriseSigninInterceptionHandle
     browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
         bubble_parameters.intercepted_account,
         profile_creation_required_by_policy_, show_link_data_option_,
-        bubble_parameters.profile_highlight_color,
         base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
                            OnEnterpriseInterceptionDialogClosed,
                        weak_ptr_factory_.GetWeakPtr()));
