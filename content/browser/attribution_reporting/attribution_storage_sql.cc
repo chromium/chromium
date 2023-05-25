@@ -1583,14 +1583,16 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   // database corruption.
   // TODO(apaseltiner): Should we raze the DB if we've detected corruption?
   //
-  // TODO(linnan): Consider verifying that reporting origin stored in `reports`
-  // table is consistent with that in `sources` table.
-  //
   // TODO(apaseltiner): Consider verifying that `context_origin` is valid for
   // the associated source.
   if (failed_send_attempts < 0 || !external_report_id.is_valid() ||
       !context_origin.has_value() || !reporting_origin.has_value() ||
       !report_type.has_value()) {
+    return absl::nullopt;
+  }
+
+  if (source_data && *source_data->source.common_info().reporting_origin() !=
+                         *reporting_origin) {
     return absl::nullopt;
   }
 

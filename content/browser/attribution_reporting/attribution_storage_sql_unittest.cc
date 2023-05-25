@@ -69,6 +69,8 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::SizeIs;
 
+const char kDefaultReportOrigin[] = "https://reporter.test/";
+
 struct AttributionReportRecord {
   int64_t report_id;
   int64_t source_id;
@@ -79,7 +81,7 @@ struct AttributionReportRecord {
   std::string external_report_id;
   absl::optional<uint64_t> debug_key;
   std::string context_origin = "https://destination.test";
-  std::string reporting_origin = "https://reporter.test";
+  std::string reporting_origin = kDefaultReportOrigin;
   int report_type;
   std::string metadata;
 };
@@ -1636,6 +1638,57 @@ TEST_F(AttributionStorageSqlTest,
   }
 }
 
+TEST_F(AttributionStorageSqlTest, InvalidReportingOrigin_FailsDeserializaiton) {
+  const struct {
+    const char* desc;
+    const char* reporting_origin;
+    bool valid;
+  } kTestCases[] = {
+      {
+          .desc = "valid",
+          .reporting_origin = kDefaultReportOrigin,
+          .valid = true,
+      },
+      {
+          .desc = "invalid",
+          .reporting_origin = "https://a.test",
+          .valid = false,
+      },
+  };
+
+  for (auto test_case : kTestCases) {
+    OpenDatabase();
+    storage()->StoreSource(SourceBuilder()
+                               .SetReportingOrigin(*SuitableOrigin::Deserialize(
+                                   kDefaultReportOrigin))
+                               .Build());
+    auto sources = storage()->GetActiveSources();
+    ASSERT_THAT(sources, SizeIs(1));
+    CloseDatabase();
+
+    StoreAttributionReport(AttributionReportRecord{
+        .report_id = 1,
+        .source_id = *sources.front().source_id(),
+        .external_report_id = DefaultExternalReportID().AsLowercaseString(),
+        .reporting_origin = test_case.reporting_origin,
+        .report_type = static_cast<int>(AttributionReport::Type::kEventLevel),
+        .metadata = SerializeReportMetadata(AttributionEventLevelMetadataRecord{
+            .trigger_data = 0,
+            .priority = 0,
+        }),
+    });
+
+    OpenDatabase();
+    EXPECT_THAT(
+        storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
+        SizeIs(test_case.valid))
+        << test_case.desc;
+    storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                         base::NullCallback());
+    CloseDatabase();
+  }
+}
+
 TEST_F(AttributionStorageSqlTest,
        InvalidEventLevelMetadata_FailsDeserialization) {
   const struct {
@@ -1677,7 +1730,10 @@ TEST_F(AttributionStorageSqlTest,
 
   for (auto test_case : kTestCases) {
     OpenDatabase();
-    storage()->StoreSource(SourceBuilder().Build());
+    storage()->StoreSource(SourceBuilder()
+                               .SetReportingOrigin(*SuitableOrigin::Deserialize(
+                                   kDefaultReportOrigin))
+                               .Build());
     auto sources = storage()->GetActiveSources();
     ASSERT_THAT(sources, SizeIs(1));
     CloseDatabase();
@@ -1837,7 +1893,10 @@ TEST_F(AttributionStorageSqlTest,
 
   for (auto test_case : kTestCases) {
     OpenDatabase();
-    storage()->StoreSource(SourceBuilder().Build());
+    storage()->StoreSource(SourceBuilder()
+                               .SetReportingOrigin(*SuitableOrigin::Deserialize(
+                                   kDefaultReportOrigin))
+                               .Build());
     auto sources = storage()->GetActiveSources();
     ASSERT_THAT(sources, SizeIs(1));
     CloseDatabase();
