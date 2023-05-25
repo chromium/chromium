@@ -30,6 +30,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -51,6 +52,7 @@ import java.util.concurrent.TimeoutException;
 /** Integration tests for WebAPK feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DoNotBatch(reason = "Tests activity start behavior")
 public class WebApkIntegrationTest {
     public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
 
@@ -164,7 +166,6 @@ public class WebApkIntegrationTest {
      */
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1246127")
     @Feature({"Webapps"})
     public void testWebApkServiceIntegration() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
