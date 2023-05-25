@@ -89,31 +89,15 @@ void SessionLogHandler::FileSelected(const base::FilePath& path,
                                      int index,
                                      void* params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
-  // TODO(b/226574520): Remove SessionLogHandler::CreateSessionLog and
-  // condition as part of flag clean up.
-  if (ash::features::IsLogControllerForDiagnosticsAppEnabled()) {
-    task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(
-            &DiagnosticsLogController::GenerateSessionLogOnBlockingPool,
-            // base::Unretained safe here because ~DiagnosticsLogController is
-            // called during shutdown of ash::Shell and will out-live
-            // SessionLogHandler.
-            base::Unretained(DiagnosticsLogController::Get()), path),
-        base::BindOnce(&SessionLogHandler::OnSessionLogCreated, weak_ptr_,
-                       path));
-  } else {
-    task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&SessionLogAsyncHelper::CreateSessionLogOnBlockingPool,
-                       // base::Unretained safe because lifetime is managed by
-                       // base::OnTaskRunnerDeleter.
-                       base::Unretained(async_helper_.get()), path,
-                       telemetry_log_.get(), routine_log_.get(),
-                       networking_log_.get()),
-        base::BindOnce(&SessionLogHandler::OnSessionLogCreated, weak_ptr_,
-                       path));
-  }
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &DiagnosticsLogController::GenerateSessionLogOnBlockingPool,
+          // base::Unretained safe here because ~DiagnosticsLogController is
+          // called during shutdown of ash::Shell and will out-live
+          // SessionLogHandler.
+          base::Unretained(DiagnosticsLogController::Get()), path),
+      base::BindOnce(&SessionLogHandler::OnSessionLogCreated, weak_ptr_, path));
   select_file_dialog_.reset();
 }
 

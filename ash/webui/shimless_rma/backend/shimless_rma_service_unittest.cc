@@ -145,10 +145,7 @@ class ShimlessRmaServiceTest : public NoSessionAshTestBase {
   ~ShimlessRmaServiceTest() override {}
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kShimlessRMAOsUpdate,
-         features::kEnableLogControllerForDiagnosticsApp},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kShimlessRMAOsUpdate}, {});
     chromeos::PowerManagerClient::InitializeFake();
     // VersionUpdater depends on UpdateEngineClient.
     UpdateEngineClient::InitializeFake();
