@@ -196,16 +196,6 @@ void CloseAllTabs() {
     SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
         /*immediately=*/true);
   }
-  if (GetInactiveTabCount() && GetForegroundActiveScene()) {
-    Browser* browser =
-        GetForegroundActiveScene()
-            .browserProviderInterface.mainBrowserProvider.inactiveBrowser;
-    DCHECK(browser);
-    browser->GetWebStateList()->CloseAllWebStates(
-        WebStateList::CLOSE_USER_ACTION);
-    SessionRestorationBrowserAgent::FromBrowser(browser)->SaveSession(
-        /*immediately=*/true);
-  }
 }
 
 void SelectTabAtIndexInCurrentMode(NSUInteger index) {

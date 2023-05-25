@@ -99,11 +99,9 @@ void WaitForSnackbarTriggeredByTappingItem(NSString* snackbarLabel,
                     error:&error];
     return error == nil;
   };
-  if (!wait_for_appearance()) {
-    GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                   kSnackbarAppearanceTimeout, wait_for_appearance),
-               @"Snackbar did not appear.");
-  }
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 kSnackbarAppearanceTimeout, wait_for_appearance),
+             @"Snackbar did not appear.");
 
   // Wait for the snackbar to disappear.
   ConditionBlock wait_for_disappearance = ^{
