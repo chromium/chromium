@@ -84,7 +84,7 @@ BASE_FEATURE(kEnablePerVmCoreScheduling,
 // Only applies on Android T+.
 BASE_FEATURE(kEnableReadOnlyPermissions,
              "ArcEnableReadOnlyPermissions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether we should delegate audio focus requests from ARC to Chrome.
 BASE_FEATURE(kEnableUnifiedAudioFocusFeature,
