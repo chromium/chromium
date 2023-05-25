@@ -5569,6 +5569,13 @@ if (is_mac) {
       "../browser/ui/cocoa/touchbar/browser_window_default_touch_bar_unittest.mm",
       "../browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller_unittest.mm",
     ]
+    if (enable_service_discovery) {
+      # TODO(https://crbug.com/1280317): Return this to the explicitly marked
+      # previous location; search for the name of this file to find it.
+      sources += [
+        "../browser/local_discovery/service_discovery_client_mac_unittest.mm",
+      ]
+    }
     configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
       "//base",
@@ -8713,7 +8720,8 @@ test("unit_tests") {
 
     if (is_mac) {
       sources += [
-        "../browser/local_discovery/service_discovery_client_mac_unittest.mm",
+        # TODO(https://crbug.com/1280317): Put
+        # service_discovery_client_mac_unittest.mm back here.
       ]
     } else {
       sources += [
