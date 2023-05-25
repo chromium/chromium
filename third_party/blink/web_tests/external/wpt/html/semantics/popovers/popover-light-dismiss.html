@@ -108,12 +108,12 @@
     assert_true(popover1.matches(':popover-open'));
     await new test_driver.Actions()
       .pointerMove(0, 0, {origin: outside})
-      .pointerDown({button: actions.ButtonType.LEFT})
+      .pointerDown()
       .send();
     await waitForRender();
     assert_true(popover1.matches(':popover-open'),'pointerdown (outside the popover) should not hide the popover');
     await new test_driver.Actions()
-      .pointerUp({button: actions.ButtonType.LEFT})
+      .pointerUp()
       .send();
     await waitForRender();
     assert_false(popover1.matches(':popover-open'),'pointerup (outside the popover) should trigger light dismiss');
