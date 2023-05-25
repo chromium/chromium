@@ -173,11 +173,6 @@ namespace developerPrivate {
     ON_ALL_SITES
   };
 
-  dictionary SafetyCheckStrings {
-    DOMString? panelString;
-    DOMString? detailString;
-  };
-
   dictionary ControlledInfo {
     DOMString text;
   };
@@ -229,7 +224,6 @@ namespace developerPrivate {
 
   dictionary ExtensionInfo {
     DOMString? blacklistText;
-    SafetyCheckStrings? safetyCheckText;
     Command[] commands;
     ControlledInfo? controlledInfo;
     DependentExtension[] dependentExtensions;

@@ -170,11 +170,6 @@ declare global {
         ON_ALL_SITES = 'ON_ALL_SITES',
       }
 
-      export interface  SafetyCheckStrings {
-        panelString?: string;
-        detailString?: string;
-      }
-
       export interface ControlledInfo {
         text: string;
       }
@@ -216,7 +211,6 @@ declare global {
 
       export interface ExtensionInfo {
         blacklistText?: string;
-        safetyCheckText?: SafetyCheckStrings;
         commands: Command[];
         controlledInfo?: ControlledInfo;
         dependentExtensions: DependentExtension[];
