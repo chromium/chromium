@@ -1467,6 +1467,7 @@ if (!is_ios && !is_cronet_build) {
     data = [
       "//third_party/blink/perf_tests/",
       "//third_party/blink/web_tests/SmokeTests/Default.txt",
+      "//third_party/blink/web_tests/SmokeTests/rel-ready.blink_wpt_tests.filter",
       "//third_party/blink/web_tests/VirtualTestSuites",
 
       # List all test expectations here
