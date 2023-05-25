@@ -151,9 +151,6 @@ extern const char kPasspointARCSupportDescription[];
 extern const char kPasspointSettingsName[];
 extern const char kPasspointSettingsDescription[];
 
-extern const char kCmdDecoderAlwaysGetSizeFromSourceTextureName[];
-extern const char kCmdDecoderAlwaysGetSizeFromSourceTextureDescription[];
-
 extern const char kPrivacyIndicatorsName[];
 extern const char kPrivacyIndicatorsDescription[];
 

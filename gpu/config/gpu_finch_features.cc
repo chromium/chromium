@@ -389,13 +389,6 @@ BASE_FEATURE(kPassthroughYuvRgbConversion,
              "PassthroughYuvRgbConversion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, the validating command decoder always obtains the size to use
-// from the source texture when copying textures, rather than first checking if
-// there is a GLImage present and using its size if so.
-BASE_FEATURE(kCmdDecoderAlwaysGetSizeFromSourceTexture,
-             "CmdDecoderAlwaysGetSizeFromSourceTexture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When the application is in background, whether to perform immediate GPU
 // cleanup when executing deferred requests.
 BASE_FEATURE(kGpuCleanupInBackground,

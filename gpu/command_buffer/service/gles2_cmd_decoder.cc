@@ -193,11 +193,6 @@ struct TexSubCoord3D {
   int depth;
 };
 
-bool AlwaysGetSizeFromSourceTexture() {
-  return base::FeatureList::IsEnabled(
-      features::kCmdDecoderAlwaysGetSizeFromSourceTexture);
-}
-
 // Check if all |ref| bits are set in |bits|.
 bool AllBitsSet(GLbitfield bits, GLbitfield ref) {
   DCHECK_NE(0u, ref);
@@ -17861,30 +17856,18 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
 
   int source_width = 0;
   int source_height = 0;
-  gl::GLImage* image =
-      source_texture->GetLevelImage(source_target, source_level);
-  if (image && !AlwaysGetSizeFromSourceTexture()) {
-    gfx::Size size = image->GetSize();
-    source_width = size.width();
-    source_height = size.height();
-    if (source_width <= 0 || source_height <= 0) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName, "invalid image size");
-      return;
-    }
-  } else {
-    if (!source_texture->GetLevelSize(source_target, source_level,
-                                      &source_width, &source_height, nullptr)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName,
-                         "source texture has no data for level");
-      return;
-    }
+  if (!source_texture->GetLevelSize(source_target, source_level, &source_width,
+                                    &source_height, nullptr)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName,
+                       "source texture has no data for level");
+    return;
+  }
 
-    // Check that this type of texture is allowed.
-    if (!texture_manager()->ValidForTextureTarget(
-            source_texture, source_level, source_width, source_height, 1)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName, "Bad dimensions");
-      return;
-    }
+  // Check that this type of texture is allowed.
+  if (!texture_manager()->ValidForTextureTarget(
+          source_texture, source_level, source_width, source_height, 1)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, kFunctionName, "Bad dimensions");
+    return;
   }
 
   if (dest_texture->IsImmutable()) {
@@ -18002,54 +17985,26 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
   GLenum dest_binding_target = dest_texture->target();
   int source_width = 0;
   int source_height = 0;
-  gl::GLImage* image =
-      source_texture->GetLevelImage(source_target, source_level);
-  if (image && !AlwaysGetSizeFromSourceTexture()) {
-    gfx::Size size = image->GetSize();
-    source_width = size.width();
-    source_height = size.height();
-    if (source_width <= 0 || source_height <= 0) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name, "invalid image size");
-      return;
-    }
+  if (!source_texture->GetLevelSize(source_target, source_level, &source_width,
+                                    &source_height, nullptr)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
+                       "source texture has no data for level");
+    return;
+  }
 
-    // Ideally we should not need to check that the sub-texture copy rectangle
-    // is valid in two different ways, here and below. However currently there
-    // is no guarantee that a texture backed by a GLImage will have sensible
-    // level info. If this synchronization were to be enforced then this and
-    // other functions in this file could be cleaned up.
-    // See: https://crbug.com/586476
-    int32_t max_x;
-    int32_t max_y;
-    if (!base::CheckAdd(x, width).AssignIfValid(&max_x) ||
-        !base::CheckAdd(y, height).AssignIfValid(&max_y) || x < 0 || y < 0 ||
-        max_x > source_width || max_y > source_height) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
-                         "source texture bad dimensions");
-      return;
-    }
-  } else {
-    if (!source_texture->GetLevelSize(source_target, source_level,
-                                      &source_width, &source_height, nullptr)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
-                         "source texture has no data for level");
-      return;
-    }
+  // Check that this type of texture is allowed.
+  if (!texture_manager()->ValidForTextureTarget(
+          source_texture, source_level, source_width, source_height, 1)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
+                       "source texture bad dimensions");
+    return;
+  }
 
-    // Check that this type of texture is allowed.
-    if (!texture_manager()->ValidForTextureTarget(
-            source_texture, source_level, source_width, source_height, 1)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
-                         "source texture bad dimensions");
-      return;
-    }
-
-    if (!source_texture->ValidForTexture(source_target, source_level, x, y, 0,
-                                         width, height, 1)) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
-                         "source texture bad dimensions.");
-      return;
-    }
+  if (!source_texture->ValidForTexture(source_target, source_level, x, y, 0,
+                                       width, height, 1)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, function_name,
+                       "source texture bad dimensions.");
+    return;
   }
 
   GLenum source_type = 0;
