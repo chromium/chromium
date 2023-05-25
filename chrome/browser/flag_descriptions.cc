@@ -2469,6 +2469,15 @@ const char kOriginAgentClusterDefaultDescription[] =
     "disabled. Documents whose agent clusters are origin-keyed cannot set "
     "document.domain to relax the same-origin policy.";
 
+const char kOriginKeyedProcessesByDefaultName[] =
+    "Origin-keyed Processes by default";
+const char kOriginKeyedProcessesByDefaultDescription[] =
+    "Enables origin-keyed process isolation for most pages (i.e., those "
+    "assigned to an origin-keyed agent cluster by default). This improves "
+    "security but also increases the number of processes created. Note: "
+    "enabling this feature also enables 'Origin-keyed Agent Clusters by "
+    "default'.";
+
 const char kOsSettingsAppNotificationsPageName[] =
     "CrOS Settings App Notifications Page";
 const char kOsSettingsAppNotificationsPageDescription[] =

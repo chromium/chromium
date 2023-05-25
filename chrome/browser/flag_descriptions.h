@@ -1162,6 +1162,9 @@ extern const char kOrganicRepeatableQueriesDescription[];
 extern const char kOriginAgentClusterDefaultName[];
 extern const char kOriginAgentClusterDefaultDescription[];
 
+extern const char kOriginKeyedProcessesByDefaultName[];
+extern const char kOriginKeyedProcessesByDefaultDescription[];
+
 extern const char kOmitCorsClientCertName[];
 extern const char kOmitCorsClientCertDescription[];
 

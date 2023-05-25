@@ -9337,6 +9337,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOriginAgentClusterDefaultDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kOriginAgentClusterDefaultEnabled)},
 
+    {"origin-keyed-processes-by-default",
+     flag_descriptions::kOriginKeyedProcessesByDefaultName,
+     flag_descriptions::kOriginKeyedProcessesByDefaultDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kOriginKeyedProcessesByDefault)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-code-based-rbd", flag_descriptions::kCodeBasedRBDName,
      flag_descriptions::kCodeBasedRBDDescription, kOsDesktop,
