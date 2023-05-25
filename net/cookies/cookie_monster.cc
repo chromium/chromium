@@ -1547,8 +1547,15 @@ void CookieMonster::SetCanonicalCookie(
         << "SetCookie() key: " << key << " cc: " << cc->DebugString();
 
     if (cc->IsEffectivelySameSiteNone()) {
-      UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes",
-                                 NameValueSizeBytes(*cc));
+      size_t cookie_size = NameValueSizeBytes(*cc);
+      UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes", cookie_size);
+      if (cc->IsPartitioned()) {
+        UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes.Partitioned",
+                                   cookie_size);
+      } else {
+        UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes.Unpartitioned",
+                                   cookie_size);
+      }
     }
 
     bool is_partitioned_cookie = cc->IsPartitioned();
