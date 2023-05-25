@@ -492,7 +492,8 @@ class PrerenderBookmarkBarOnHoverNavigationTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kBookmarkTriggerForPrerender2,
-             {{"prerender_start_delay_on_mouse_hover_ms", "0"},
+             {{"preconnect_start_delay_on_mouse_hover_ms", "0"},
+              {"prerender_start_delay_on_mouse_hover_ms", "0"},
               {"prerender_bookmarkbar_on_mouse_pressed_trigger", "false"},
               {"prerender_bookmarkbar_on_mouse_hover_trigger", "true"}}},
         },
