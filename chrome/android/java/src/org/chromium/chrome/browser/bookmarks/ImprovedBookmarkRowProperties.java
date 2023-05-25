@@ -54,10 +54,13 @@ class ImprovedBookmarkRowProperties {
     static final WritableObjectPropertyKey<Runnable> OPEN_BOOKMARK_CALLBACK =
             new WritableObjectPropertyKey<>();
 
+    static final WritableObjectPropertyKey<ShoppingAccessoryCoordinator>
+            SHOPPING_ACCESSORY_COORDINATOR = new WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {BookmarkManagerProperties.BOOKMARK_LIST_ENTRY,
             BookmarkManagerProperties.BOOKMARK_ID, BookmarkManagerProperties.LOCATION, TITLE,
             DESCRIPTION, START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR, START_ICON_TINT,
             START_ICON_DRAWABLE, START_IMAGE_FOLDER_DRAWABLES, FOLDER_CHILD_COUNT, ACCESSORY_VIEW,
             LIST_MENU_BUTTON_DELEGATE, POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED,
-            EDITABLE, OPEN_BOOKMARK_CALLBACK};
+            EDITABLE, OPEN_BOOKMARK_CALLBACK, SHOPPING_ACCESSORY_COORDINATOR};
 }

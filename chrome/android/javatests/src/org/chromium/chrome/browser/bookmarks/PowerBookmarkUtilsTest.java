@@ -66,6 +66,27 @@ public class PowerBookmarkUtilsTest {
         Assert.assertEquals("us", subscription.userSeenOffer.countryCode);
     }
 
+    @Test
+    @SmallTest
+    public void testCreateCommerceSubscriptionForShoppingSpecifics() {
+        ShoppingSpecifics specifics =
+                ShoppingSpecifics.newBuilder()
+                        .setProductClusterId(123)
+                        .setOfferId(456)
+                        .setCountryCode("us")
+                        .setCurrentPrice(ProductPrice.newBuilder().setAmountMicros(100).build())
+                        .build();
+        CommerceSubscription subscription =
+                PowerBookmarkUtils.createCommerceSubscriptionForShoppingSpecifics(specifics);
+
+        Assert.assertEquals(IdentifierType.PRODUCT_CLUSTER_ID, subscription.idType);
+        Assert.assertEquals(ManagementType.USER_MANAGED, subscription.managementType);
+        Assert.assertEquals("123", subscription.id);
+        Assert.assertEquals("456", subscription.userSeenOffer.offerId);
+        Assert.assertEquals(100L, subscription.userSeenOffer.userSeenPrice);
+        Assert.assertEquals("us", subscription.userSeenOffer.countryCode);
+    }
+
     /**
      * @param clusterId The cluster ID the subscription should be created with.
      * @return A user-managed subscription with the specified ID.

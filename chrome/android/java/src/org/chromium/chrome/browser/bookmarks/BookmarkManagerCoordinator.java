@@ -172,7 +172,8 @@ public class BookmarkManagerCoordinator
                 mSelectableListLayout, mSelectionDelegate, mRecyclerView,
                 dragReorderableRecyclerViewAdapter, largeIconBridge, isDialogUi, isIncognito,
                 mBackPressStateSupplier, mProfile, bookmarkUndoController, modelList,
-                mBookmarkUiPrefs, this::hideKeyboard, bookmarkImageFetcher);
+                mBookmarkUiPrefs, this::hideKeyboard, bookmarkImageFetcher,
+                ShoppingServiceFactory.getForProfile(mProfile), mSnackbarManager);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/*bookmarkDelegate=*/mMediator);

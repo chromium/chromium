@@ -220,7 +220,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
                                              : PriceTrackingState.PRICE_TRACKING_DISABLED);
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mBookmarkModel, mBookmarkId,
                     !mIsPriceTrackingEnabled, mSnackbarManager, getContext().getResources(),
-                    subscriptionCallback);
+                    mProfile, subscriptionCallback);
         });
     }
 

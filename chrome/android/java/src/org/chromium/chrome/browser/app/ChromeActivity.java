@@ -2458,7 +2458,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (id == R.id.disable_price_tracking_menu_id) {
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mBookmarkModelSupplier.get(),
                     mBookmarkModelSupplier.get().getUserBookmarkIdForTab(currentTab),
-                    /*enabled=*/false, mSnackbarManager, getResources(), (success) -> {});
+                    /*enabled=*/false, mSnackbarManager, getResources(),
+                    Profile.getLastUsedRegularProfile(), (success) -> {});
             RecordUserAction.record("MobileMenuDisablePriceTracking");
             return true;
         }

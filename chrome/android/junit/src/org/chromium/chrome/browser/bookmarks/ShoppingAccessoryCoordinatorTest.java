@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+
 import android.app.Activity;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -22,6 +25,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.components.power_bookmarks.ProductPrice;
@@ -45,6 +49,8 @@ public class ShoppingAccessoryCoordinatorTest {
 
     @Mock
     private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
+    @Mock
+    private ShoppingService mShoppingService;
 
     Activity mActivity;
 
@@ -57,6 +63,7 @@ public class ShoppingAccessoryCoordinatorTest {
 
     @Test
     public void testSetupAndSetModel() {
+        doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
         ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder()
                                               .setCurrentPrice(ProductPrice.newBuilder()
                                                                        .setCurrencyCode("USD")
@@ -66,10 +73,9 @@ public class ShoppingAccessoryCoordinatorTest {
                                                                         .setCurrencyCode("USD")
                                                                         .setAmountMicros(100)
                                                                         .build())
-                                              .setIsPriceTracked(true)
                                               .build();
         ShoppingAccessoryCoordinator coordinator =
-                new ShoppingAccessoryCoordinator(mActivity, specifics);
+                new ShoppingAccessoryCoordinator(mActivity, specifics, mShoppingService);
         Assert.assertNotNull(coordinator.getView());
 
         PropertyModel model = coordinator.getModel();
@@ -80,7 +86,31 @@ public class ShoppingAccessoryCoordinatorTest {
     }
 
     @Test
+    public void testSetPriceTrackingEnabled() {
+        doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
+        ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder()
+                                              .setCurrentPrice(ProductPrice.newBuilder()
+                                                                       .setCurrencyCode("USD")
+                                                                       .setAmountMicros(100)
+                                                                       .build())
+                                              .setPreviousPrice(ProductPrice.newBuilder()
+                                                                        .setCurrencyCode("USD")
+                                                                        .setAmountMicros(100)
+                                                                        .build())
+                                              .build();
+        ShoppingAccessoryCoordinator coordinator =
+                new ShoppingAccessoryCoordinator(mActivity, specifics, mShoppingService);
+
+        PropertyModel model = coordinator.getModel();
+        Assert.assertTrue(model.get(ShoppingAccessoryViewProperties.PRICE_TRACKED));
+
+        coordinator.setPriceTrackingEnabled(false);
+        Assert.assertFalse(model.get(ShoppingAccessoryViewProperties.PRICE_TRACKED));
+    }
+
+    @Test
     public void testPriceDrop() {
+        doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
         ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder()
                                               .setCurrentPrice(ProductPrice.newBuilder()
                                                                        .setCurrencyCode("USD")
@@ -90,10 +120,9 @@ public class ShoppingAccessoryCoordinatorTest {
                                                                         .setCurrencyCode("USD")
                                                                         .setAmountMicros(100)
                                                                         .build())
-                                              .setIsPriceTracked(true)
                                               .build();
         ShoppingAccessoryCoordinator coordinator =
-                new ShoppingAccessoryCoordinator(mActivity, specifics);
+                new ShoppingAccessoryCoordinator(mActivity, specifics, mShoppingService);
 
         PriceInfo info = coordinator.getModel().get(ShoppingAccessoryViewProperties.PRICE_INFO);
         Assert.assertEquals(true, info.isPriceDrop());

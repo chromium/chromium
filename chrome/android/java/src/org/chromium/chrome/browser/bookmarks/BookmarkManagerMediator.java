@@ -19,6 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -53,6 +55,8 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.components.commerce.core.CommerceSubscription;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -320,6 +324,8 @@ class BookmarkManagerMediator
     private final BookmarkUiPrefs mBookmarkUiPrefs;
     private final Runnable mHideKeyboardRunnable;
     private final BookmarkImageFetcher mBookmarkImageFetcher;
+    private final ShoppingService mShoppingService;
+    private final SnackbarManager mSnackbarManager;
 
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
@@ -341,7 +347,8 @@ class BookmarkManagerMediator
             ObservableSupplierImpl<Boolean> backPressStateSupplier, Profile profile,
             BookmarkUndoController bookmarkUndoController, ModelList modelList,
             BookmarkUiPrefs bookmarkUiPrefs, Runnable hideKeyboardRunnable,
-            BookmarkImageFetcher bookmarkImageFetcher) {
+            BookmarkImageFetcher bookmarkImageFetcher, ShoppingService shoppingService,
+            SnackbarManager snackbarManager) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -375,6 +382,8 @@ class BookmarkManagerMediator
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
         mHideKeyboardRunnable = hideKeyboardRunnable;
         mBookmarkImageFetcher = bookmarkImageFetcher;
+        mShoppingService = shoppingService;
+        mSnackbarManager = snackbarManager;
 
         // Previously we were waiting for BookmarkModel to be loaded, but it's not necessary.
         PartnerBookmarksReader.addFaviconUpdateObserver(this);
@@ -1050,9 +1059,13 @@ class BookmarkManagerMediator
                 ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK, () -> openBookmarkId(id));
 
         if (meta != null && meta.hasShoppingSpecifics()) {
+            ShoppingAccessoryCoordinator shoppingAccessoryCoordinator =
+                    new ShoppingAccessoryCoordinator(
+                            mContext, meta.getShoppingSpecifics(), mShoppingService);
+            propertyModel.set(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR,
+                    shoppingAccessoryCoordinator);
             propertyModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW,
-                    new ShoppingAccessoryCoordinator(mContext, meta.getShoppingSpecifics())
-                            .getView());
+                    shoppingAccessoryCoordinator.getView());
         } else {
             propertyModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, null);
         }
@@ -1124,8 +1137,9 @@ class BookmarkManagerMediator
     }
 
     @VisibleForTesting
-    ModelList createListMenuModelList(BookmarkId bookmarkId, @Location int location) {
-        BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
+    ModelList createListMenuModelList(BookmarkListEntry entry, @Location int location) {
+        BookmarkItem bookmarkItem = entry.getBookmarkItem();
+        BookmarkId bookmarkId = bookmarkItem.getId();
         // Reading list items can sometimes be movable (for type swapping purposes), but for
         // UI purposes they shouldn't be movable.
         boolean canMove = bookmarkItem != null && BookmarkUtils.isMovable(bookmarkItem);
@@ -1159,14 +1173,25 @@ class BookmarkManagerMediator
             }
         }
 
+        PowerBookmarkMeta meta = entry.getPowerBookmarkMeta();
+        if (meta != null && meta.hasShoppingSpecifics()) {
+            CommerceSubscription sub =
+                    PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
+            boolean isSubscribed = mShoppingService.isSubscribedFromCache(sub);
+            listItems.add(buildMenuListItem(isSubscribed ? R.string.disable_price_tracking_menu_item
+                                                         : R.string.enable_price_tracking_menu_item,
+                    0, 0));
+        }
+
         return listItems;
     }
 
     @VisibleForTesting
     ListMenu createListMenuForBookmark(PropertyModel model) {
-        BookmarkId bookmarkId = model.get(BookmarkManagerProperties.BOOKMARK_ID);
+        BookmarkListEntry entry = model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
+        BookmarkId bookmarkId = entry.getBookmarkItem().getId();
         ModelList listItems =
-                createListMenuModelList(bookmarkId, model.get(BookmarkManagerProperties.LOCATION));
+                createListMenuModelList(entry, model.get(BookmarkManagerProperties.LOCATION));
         ListMenu.Delegate delegate = item -> {
             int textId = item.get(ListMenuItemProperties.TITLE_ID);
             if (textId == R.string.bookmark_item_select) {
@@ -1213,9 +1238,31 @@ class BookmarkManagerMediator
             } else if (textId == R.string.menu_item_move_down) {
                 moveDownOne(bookmarkId);
                 RecordUserAction.record("MobileBookmarkManagerMoveDown");
-            };
+            } else if (textId == R.string.disable_price_tracking_menu_item) {
+                setPriceTrackingEnabled(model, false);
+            } else if (textId == R.string.enable_price_tracking_menu_item) {
+                setPriceTrackingEnabled(model, true);
+            }
         };
         return new BasicListMenu(mContext, listItems, delegate);
+    }
+
+    void setPriceTrackingEnabled(PropertyModel model, boolean enabled) {
+        BookmarkListEntry entry = model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
+        PowerBookmarkMeta meta = entry.getPowerBookmarkMeta();
+        CommerceSubscription sub =
+                PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
+
+        Callback<Boolean> callback = success -> {
+            if (!success) return;
+            ShoppingAccessoryCoordinator shoppingAccessoryCoordinator =
+                    model.get(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR);
+            shoppingAccessoryCoordinator.setPriceTrackingEnabled(enabled);
+        };
+
+        PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mBookmarkModel,
+                entry.getBookmarkItem().getId(), enabled, mSnackbarManager, mContext.getResources(),
+                mProfile, callback);
     }
 
     void openBookmarkId(BookmarkId id) {

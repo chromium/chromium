@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -149,5 +153,19 @@ public class ImprovedBookmarkRowTest {
         // Setting the delegate shouldn't affect visibility.
         Assert.assertEquals(
                 visibility, mImprovedBookmarkRow.findViewById(R.id.more).getVisibility());
+    }
+
+    @Test
+    public void testAccessoryViewHasParent() {
+        doReturn(mViewGroup).when(mView).getParent();
+        doAnswer((invocation) -> {
+            doReturn(null).when(mView).getParent();
+            return null;
+        })
+                .when(mViewGroup)
+                .removeView(mView);
+
+        mModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, mView);
+        verify(mViewGroup).removeView(mView);
     }
 }
