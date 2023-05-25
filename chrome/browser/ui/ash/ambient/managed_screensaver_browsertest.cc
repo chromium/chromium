@@ -15,27 +15,42 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
+#include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
+#include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "url/gurl.h"
 
 namespace ash {
 
+const char kTestEmail[] = "test@example.com";
 const char kRedImageFileName[] = "chromeos/screensaver/red.jpg";
 const char kGreenImageFileName[] = "chromeos/screensaver/green.jpg";
 const char kBlueImageFileName[] = "chromeos/screensaver/blue.jpg";
+
+enum class TestType { LockScreen, LoginScreen };
+struct ManagedScreensaverBrowserTestCase {
+  std::string test_name;
+  TestType test_type;
+};
 
 class ManagedScreensaverBrowserTest : public LoginManagerTest {
  public:
@@ -45,7 +60,6 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
     feature_list_.InitAndEnableFeature(
         ash::features::kAmbientModeManagedScreensaver);
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    login_manager_mixin_.AppendManagedUsers(1);
   }
   ~ManagedScreensaverBrowserTest() override = default;
 
@@ -74,6 +88,21 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
     SetDevicePolicyScreenIdleTimeoutSeconds(0);
   }
 
+  void InitializeForLockScreen() {
+    const auto& users = login_manager_mixin_.users();
+    EXPECT_EQ(users.size(), 1u);
+    user_policy_mixin_.RequestPolicyUpdate();
+
+    LoginUser(test_account_id_);
+    screen_locker_ = std::make_unique<ScreenLockerTester>();
+    screen_locker_->Lock();
+    SetPolicyEnabled(true);
+
+    // Set intervals to zero so that we don't rely on time during testing
+    SetPolicyImageDisplayIntervalSeconds(0);
+    SetPolicyScreenIdleTimeoutSeconds(0);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     LoginManagerTest::SetUpCommandLine(command_line);
     // Allow failing policy fetch so that we don't shutdown the profile on
@@ -96,10 +125,14 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
     https_server_.StartAcceptingConnections();
   }
 
+  void TearDownOnMainThread() override {
+    screen_locker_.reset();
+    LoginManagerTest::TearDownOnMainThread();
+  }
+
   void SetDevicePolicyImages(const std::vector<std::string>& images) {
     if (images.empty()) {
       device_policy_.payload().Clear();
-      BuildDevicePolicyAndNotify();
       return;
     }
 
@@ -110,7 +143,6 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
       mutable_images->add_device_screensaver_login_screen_images(
           https_server_.GetURL("/" + image_path).spec());
     }
-    BuildDevicePolicyAndNotify();
   }
 
   void SetDevicePolicyEnabled(bool enabled) {
@@ -121,7 +153,6 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
     } else {
       device_policy_.payload().Clear();
     }
-    BuildDevicePolicyAndNotify();
   }
 
   void SetDevicePolicyImageDisplayIntervalSeconds(int64_t interval) {
@@ -129,23 +160,78 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
         .mutable_device_screensaver_login_screen_image_display_interval_seconds()
         ->set_device_screensaver_login_screen_image_display_interval_seconds(
             interval);
-
-    BuildDevicePolicyAndNotify();
   }
 
   void SetDevicePolicyScreenIdleTimeoutSeconds(int64_t timeout) {
     device_policy_.payload()
         .mutable_device_screensaver_login_screen_idle_timeout_seconds()
         ->set_device_screensaver_login_screen_idle_timeout_seconds(timeout);
-    BuildDevicePolicyAndNotify();
   }
 
-  void BuildDevicePolicyAndNotify() {
+  void RefreshDevicePolicy() {
     device_policy_.Build();
     FakeSessionManagerClient::Get()->set_device_policy(
         device_policy_.GetBlob());
     FakeSessionManagerClient::Get()->OnPropertyChangeComplete(
         /*success=*/true);
+  }
+
+  void RefreshUserPolicy() {
+    Profile* profile =
+        ash::ProfileHelper::Get()->GetProfileByAccountId(test_account_id_);
+    user_policy_test_helper_.RefreshPolicyAndWait(profile);
+  }
+
+  // TODO(b:280809373): Remove mutable subproto1 once policies are released.
+  void SetPolicyImages(const std::vector<std::string>& images) {
+    user_policy_mixin_.RequestPolicyUpdate()
+        ->policy_payload()
+        ->mutable_subproto1()
+        ->mutable_screensaverlockscreenimages()
+        ->Clear();
+    // Policy update variable should be explicitly declared here, otherwise it
+    // might go out of scope immediately and cause multiple updates if we inline
+    // the call in the loop.
+    std::unique_ptr<ScopedUserPolicyUpdate> policy =
+        user_policy_mixin_.RequestPolicyUpdate();
+
+    auto* mutable_images = policy->policy_payload()
+                               ->mutable_subproto1()
+                               ->mutable_screensaverlockscreenimages();
+    for (const auto& image_path : images) {
+      mutable_images->mutable_value()->mutable_entries()->Add(
+          std::string(https_server_.GetURL("/" + image_path).spec()));
+    }
+  }
+
+  void SetPolicyEnabled(bool enabled) {
+    if (enabled) {
+      user_policy_mixin_.RequestPolicyUpdate()
+          ->policy_payload()
+          ->mutable_subproto1()
+          ->mutable_screensaverlockscreenenabled()
+          ->set_value(enabled);
+    } else {
+      user_policy_mixin_.RequestPolicyUpdate()->policy_payload()->Clear();
+    }
+  }
+
+  void SetPolicyImageDisplayIntervalSeconds(int64_t interval) {
+    std::unique_ptr<ScopedUserPolicyUpdate> policy =
+        user_policy_mixin_.RequestPolicyUpdate();
+    policy->policy_payload()
+        ->mutable_subproto1()
+        ->mutable_screensaverlockscreenimagedisplayintervalseconds()
+        ->set_value(interval);
+  }
+
+  void SetPolicyScreenIdleTimeoutSeconds(int64_t timeout) {
+    std::unique_ptr<ScopedUserPolicyUpdate> policy =
+        user_policy_mixin_.RequestPolicyUpdate();
+    policy->policy_payload()
+        ->mutable_subproto1()
+        ->mutable_screensaverlockscreenidletimeoutseconds()
+        ->set_value(timeout);
   }
 
   views::View* GetContainerView() {
@@ -162,37 +248,107 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   }
 
  protected:
+  const AccountId test_account_id_ =
+      AccountId::FromUserEmailGaiaId(kTestEmail,
+                                     signin::GetTestGaiaIdForEmail(kTestEmail));
+
+  const LoginManagerMixin::TestUserInfo managed_user_{test_account_id_};
+
+  EmbeddedPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
+
+  UserPolicyMixin user_policy_mixin_{&mixin_host_, test_account_id_,
+                                     &policy_server_mixin_};
+
   std::unique_ptr<base::RunLoop> run_loop_;
+  std::unique_ptr<ScreenLockerTester> screen_locker_;
+
   base::test::ScopedFeatureList feature_list_;
   policy::DevicePolicyBuilder device_policy_;
+  policy::UserPolicyTestHelper user_policy_test_helper_{kTestEmail,
+                                                        &policy_server_mixin_};
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   net::test_server::EmbeddedTestServer https_server_;
 
-  LoginManagerMixin login_manager_mixin_{&mixin_host_};
+  LoginManagerMixin login_manager_mixin_{&mixin_host_, {managed_user_}};
 };
 
-IN_PROC_BROWSER_TEST_F(ManagedScreensaverBrowserTest, BasicTest) {
-  InitializeForLoginScreen();
-  SetDevicePolicyImages(
-      {kRedImageFileName, kBlueImageFileName, kGreenImageFileName});
+class ManagedScreensaverBrowserTestForAnyScreen
+    : public ManagedScreensaverBrowserTest,
+      public ::testing::WithParamInterface<ManagedScreensaverBrowserTestCase> {
+ public:
+  void Init() {
+    ManagedScreensaverBrowserTestCase test_case = GetParam();
+    switch (test_case.test_type) {
+      case TestType::LockScreen:
+        ManagedScreensaverBrowserTest::InitializeForLockScreen();
+        // Call refresh policy manually to not have multiple refresh calls
+        // running at the same time.
+        RefreshUserPolicy();
+
+        return;
+      case TestType::LoginScreen:
+        ManagedScreensaverBrowserTest::InitializeForLoginScreen();
+        RefreshDevicePolicy();
+        return;
+    }
+    NOTREACHED();
+  }
+
+  void SetImages(const std::vector<std::string>& images) {
+    ManagedScreensaverBrowserTestCase test_case = GetParam();
+    switch (test_case.test_type) {
+      case TestType::LockScreen:
+        SetPolicyImages(images);
+        // Call refresh policy manually to not have multiple refresh calls
+        // running at the same time.
+        RefreshUserPolicy();
+        return;
+
+      case TestType::LoginScreen:
+        SetDevicePolicyImages(images);
+        RefreshDevicePolicy();
+        return;
+    }
+    NOTREACHED();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ManagedScreensaverBrowserTestForAnyScreenTests,
+    ManagedScreensaverBrowserTestForAnyScreen,
+    ::testing::ValuesIn<ManagedScreensaverBrowserTestCase>({
+        {"LoginScreen", TestType::LoginScreen},
+        {"LockScreen", TestType::LockScreen},
+    }),
+    [](const ::testing::TestParamInfo<
+        ManagedScreensaverBrowserTestForAnyScreen::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen, BasicTest) {
+  Init();
+  SetImages({kRedImageFileName, kBlueImageFileName, kGreenImageFileName});
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   run_loop_ = std::make_unique<base::RunLoop>();
   AutotestAmbientApi test_api;
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*num_completions=*/3, /*timeout=*/base::Seconds(6),
+      /*num_completions=*/3, /*timeout=*/base::Seconds(3),
       /*on_complete=*/run_loop_->QuitClosure(),
       /*on_timeout=*/base::BindOnce([]() { NOTREACHED(); }));
   run_loop_->Run();
   ASSERT_NE(nullptr, GetContainerView());
 }
 
-IN_PROC_BROWSER_TEST_F(ManagedScreensaverBrowserTest,
+IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
                        OneImageDoesNotStartAmbientMode) {
-  InitializeForLoginScreen();
-  SetDevicePolicyImages({kRedImageFileName});
-
+  Init();
+  SetImages({kRedImageFileName});
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   AutotestAmbientApi test_api;
   run_loop_ = std::make_unique<base::RunLoop>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
