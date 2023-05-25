@@ -293,7 +293,7 @@ void DownloadToolbarButtonView::Disable() {
 }
 
 void DownloadToolbarButtonView::UpdateDownloadIcon(bool show_animation) {
-  if (show_animation) {
+  if (show_animation && show_download_started_animation_) {
     has_pending_download_started_animation_ = true;
     // Invalidate the layout to show the animation in Layout().
     PreferredSizeChanged();
@@ -312,7 +312,7 @@ bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() {
 void DownloadToolbarButtonView::ShowDetails() {
   if (!bubble_delegate_) {
     is_primary_partial_view_ = true;
-    if (!auto_close_bubble_timer_) {
+    if (create_auto_close_timer_ && !auto_close_bubble_timer_) {
       CreateAutoCloseTimer();
     }
     CreateBubbleDialogDelegate(GetPrimaryView());
@@ -327,7 +327,8 @@ void DownloadToolbarButtonView::HideDetails() {
 }
 
 bool DownloadToolbarButtonView::IsShowingDetails() {
-  return bubble_delegate_ != nullptr;
+  return bubble_delegate_ != nullptr &&
+         bubble_delegate_->GetWidget()->IsVisible();
 }
 
 void DownloadToolbarButtonView::UpdateIcon() {
@@ -466,7 +467,7 @@ DownloadToolbarButtonView::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
+void DownloadToolbarButtonView::OnBubbleClosing() {
   bubble_delegate_ = nullptr;
   primary_view_ = nullptr;
   security_view_ = nullptr;
@@ -488,9 +489,8 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   bubble_delegate->SetShowTitle(false);
   bubble_delegate->SetShowCloseButton(false);
   bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
-  bubble_delegate->RegisterDeleteDelegateCallback(
-      base::BindOnce(&DownloadToolbarButtonView::OnBubbleDelegateDeleted,
-                     weak_factory_.GetWeakPtr()));
+  bubble_delegate->RegisterWindowClosingCallback(base::BindOnce(
+      &DownloadToolbarButtonView::OnBubbleClosing, weak_factory_.GetWeakPtr()));
   auto* switcher_view =
       bubble_delegate->SetContentsView(std::make_unique<views::View>());
   switcher_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -551,6 +551,7 @@ void DownloadToolbarButtonView::OnPartialViewClosed() {
 }
 
 void DownloadToolbarButtonView::CreateAutoCloseTimer() {
+  CHECK(create_auto_close_timer_);
   auto_close_bubble_timer_ = std::make_unique<base::RetainingOneShotTimer>(
       FROM_HERE, kAutoClosePartialViewDelay,
       base::BindRepeating(&DownloadToolbarButtonView::AutoClosePartialView,
@@ -594,6 +595,7 @@ void DownloadToolbarButtonView::ShowPendingDownloadStartedAnimation() {
   if (!has_pending_download_started_animation_) {
     return;
   }
+  CHECK(show_download_started_animation_);
   has_pending_download_started_animation_ = false;
   if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
@@ -638,6 +640,14 @@ SkColor DownloadToolbarButtonView::GetProgressColor(bool is_disabled,
   }
   return icon_color_.value_or(
       GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive));
+}
+
+void DownloadToolbarButtonView::DisableAutoCloseTimerForTesting() {
+  create_auto_close_timer_ = false;
+}
+
+void DownloadToolbarButtonView::DisableDownloadStartedAnimationForTesting() {
+  show_download_started_animation_ = false;
 }
 
 BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)

@@ -39,7 +39,7 @@ class DownloadBubbleNavigationHandler {
 
 // Download icon shown in the trusted area of the toolbar. Its lifetime is tied
 // to that of its parent ToolbarView. The icon is made visible when downloads
-// are in progress or when a download was initiated in the past 24 hours.
+// are in progress or when a download was initiated in the past 1 hour.
 // When there are multiple downloads, a circular badge in the corner of the icon
 // displays the number of ongoing downloads.
 class DownloadToolbarButtonView : public ToolbarButton,
@@ -94,6 +94,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
   SkColor GetIconColor() const;
   void SetIconColor(SkColor color);
 
+  void DisableAutoCloseTimerForTesting();
+  void DisableDownloadStartedAnimationForTesting();
+
  private:
   // Max download count to show in the badge. Any higher number of downloads
   // results in a placeholder ("9+").
@@ -114,7 +117,7 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   void ButtonPressed();
   void CreateBubbleDialogDelegate(std::unique_ptr<View> bubble_contents_view);
-  void OnBubbleDelegateDeleted();
+  void OnBubbleClosing();
 
   // Callback invoked when the partial view is closed.
   void OnPartialViewClosed();
@@ -150,10 +153,15 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // laid out properly, so this provides a way to remember to show the animation
   // if needed, when calling Layout().
   bool has_pending_download_started_animation_ = false;
+  // Overrides whether we are allowed to show the download started animation,
+  // may be false in tests.
+  bool show_download_started_animation_ = true;
 
   // Tracks the task to automatically close the partial view after some amount
   // of time open, to minimize disruption to the user.
   std::unique_ptr<base::RetainingOneShotTimer> auto_close_bubble_timer_;
+  // Whether we are allowed to create the above timer, may be false in tests.
+  bool create_auto_close_timer_ = true;
 
   // RenderTexts used for the number in the badge. Stores the text for "n" at
   // index n - 1, and stores the text for the placeholder ("9+") at index 0.
