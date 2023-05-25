@@ -935,11 +935,6 @@ void ResourceFetcher::UpdateMemoryCacheStats(
     RecordResourceHistogram("Preload.", factory.GetType(), policy);
   } else {
     RecordResourceHistogram("", factory.GetType(), policy);
-
-    // Log metrics to evaluate effectiveness of the memory cache if it was
-    // partitioned by the top-frame site.
-    if (same_top_frame_site_resource_cached)
-      RecordResourceHistogram("PerTopFrameSite.", factory.GetType(), policy);
   }
 
   // Aims to count Resource only referenced from MemoryCache (i.e. what would be
