@@ -65,6 +65,7 @@
 namespace {
 
 using ::base::test::TestFuture;
+using ::content::JsReplace;
 using ::testing::Return;
 
 constexpr char kNonAppHost[] = "nonapp.com";
@@ -81,6 +82,11 @@ constexpr char OpenAndClaimDeviceScript[] = R"((async () => {
       return e.message;
     }
   })();)";
+
+// Matches an EvalJs error message.
+MATCHER_P(FailedWithSubstr, substr, "") {
+  return arg.error.find(substr) != std::string::npos;
+}
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
 const AccountId kManagedUserAccountId =
@@ -250,10 +256,12 @@ class ChromeWebUsbTest : public InProcessBrowserTest {
   GURL origin_;
 };
 
-scoped_refptr<device::FakeUsbDeviceInfo> CreateSmartCardDevice() {
+scoped_refptr<device::FakeUsbDeviceInfo> CreateUsbDevice(
+    uint8_t class_code,
+    uint16_t product_id = 0x8765) {
   auto alternate_setting = device::mojom::UsbAlternateInterfaceInfo::New();
   alternate_setting->alternate_setting = 0;
-  alternate_setting->class_code = device::mojom::kUsbSmartCardClass;
+  alternate_setting->class_code = class_code;
 
   auto interface = device::mojom::UsbInterfaceInfo::New();
   interface->interface_number = 0;
@@ -267,7 +275,7 @@ scoped_refptr<device::FakeUsbDeviceInfo> CreateSmartCardDevice() {
   configs.push_back(std::move(config));
 
   return base::MakeRefCounted<device::FakeUsbDeviceInfo>(
-      0x4321, 0x8765, "ACME", "Frobinator", "ABCDEF", std::move(configs));
+      0x4321, product_id, "ACME", "Frobinator", "ABCDEF", std::move(configs));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebUsbTest, RequestAndGetDevices) {
@@ -550,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebUsbAppTest, AllowProtectedInterfaces) {
       LoadExtension(dir.UnpackedPath());
 
   // Configure the test device.
-  auto fake_device_info = CreateSmartCardDevice();
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
   auto device_info = device_manager().AddDevice(fake_device_info);
   GetChooserContext()->GrantDevicePermission(extension->origin(), *device_info);
 
@@ -585,8 +593,11 @@ class IsolatedWebAppUsbBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
-  auto* non_app_frame = ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL("/banners/isolated/simple.html"));
+  // Verifies that non-IWA main frames and cross-origin iframes in an IWA can
+  // access normal USB devices, but not devices from a protected class. IWA
+  // frames can access both.
+  GURL frame_url = https_server()->GetURL("/banners/isolated/simple.html");
+  auto* non_app_main_frame = ui_test_utils::NavigateToURL(browser(), frame_url);
 
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server =
       CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
@@ -594,32 +605,55 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUsbBrowserTest, ClaimInterface) {
       isolated_web_app_dev_server->GetOrigin());
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-  auto fake_device_info = CreateSmartCardDevice();
-  auto device_info = device_manager().AddDevice(std::move(fake_device_info));
+  web_app::CreateIframe(app_frame, "child", frame_url,
+                        /*permissions_policy=*/"usb *");
+  auto* delegated_non_app_iframe = ChildFrameAt(app_frame, 0);
+
+  const uint16_t kSmartCardProductId = 0x8765;
+  auto fake_smart_card_device_info =
+      CreateUsbDevice(device::mojom::kUsbSmartCardClass, kSmartCardProductId);
+  auto smart_card_device_info =
+      device_manager().AddDevice(std::move(fake_smart_card_device_info));
   chooser_context()->GrantDevicePermission(
-      non_app_frame->GetLastCommittedOrigin(), *device_info);
+      non_app_main_frame->GetLastCommittedOrigin(), *smart_card_device_info);
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
-                                           *device_info);
+                                           *smart_card_device_info);
 
-  EXPECT_EQ("SecurityError", EvalJs(non_app_frame, R"((async () => {
-    const devices = await navigator.usb.getDevices();
-    const device = devices[0];
-    await device.open();
-    await device.selectConfiguration(1);
-    try {
-      await device.claimInterface(0);
-    } catch (e) {
-      return e.name;
-    }
-  })();)"));
+  const uint16_t kPrinterProductId = 0x5678;
+  auto fake_printer_device_info = CreateUsbDevice(0x7, kPrinterProductId);
+  auto printer_device_info =
+      device_manager().AddDevice(std::move(fake_printer_device_info));
+  chooser_context()->GrantDevicePermission(
+      non_app_main_frame->GetLastCommittedOrigin(), *printer_device_info);
+  chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
+                                           *printer_device_info);
 
-  EXPECT_TRUE(ExecJs(app_frame, R"((async () => {
+  constexpr char kClaimInterface[] = R"((async () => {
     const devices = await navigator.usb.getDevices();
-    const device = devices[0];
+    const device = devices.filter((device) => device.productId === $1)[0];
     await device.open();
     await device.selectConfiguration(1);
     await device.claimInterface(0);
-  })();)"));
+    return "Success";
+  })())";
+
+  EXPECT_EQ("Success",
+            EvalJs(app_frame, JsReplace(kClaimInterface, kPrinterProductId)));
+  EXPECT_EQ("Success",
+            EvalJs(app_frame, JsReplace(kClaimInterface, kSmartCardProductId)));
+
+  EXPECT_EQ("Success", EvalJs(non_app_main_frame,
+                              JsReplace(kClaimInterface, kPrinterProductId)));
+  EXPECT_THAT(
+      EvalJs(non_app_main_frame,
+             JsReplace(kClaimInterface, kSmartCardProductId)),
+      FailedWithSubstr("requested interface implements a protected class"));
+
+  EXPECT_EQ("Success", EvalJs(delegated_non_app_iframe,
+                              JsReplace(kClaimInterface, kPrinterProductId)));
+  // TODO(b/280497768): This should fail with a "protected class" error.
+  EXPECT_EQ("Success", EvalJs(delegated_non_app_iframe,
+                              JsReplace(kClaimInterface, kSmartCardProductId)));
 }
 
 class IsolatedWebAppPermissionsPolicyBrowserTest
@@ -651,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                         permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateSmartCardDevice();
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -686,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                         permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateSmartCardDevice();
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -724,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", non_app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateSmartCardDevice();
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -763,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
                         permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateSmartCardDevice();
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -793,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", non_app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateSmartCardDevice();
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -823,7 +857,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateSmartCardDevice();
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -864,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateSmartCardDevice();
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
@@ -902,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
   web_app::CreateIframe(app_frame, "child", app_url, permissions_policy);
   auto* iframe = ChildFrameAt(app_frame, 0);
 
-  auto fake_device_info = CreateSmartCardDevice();
+  auto fake_device_info = CreateUsbDevice(device::mojom::kUsbSmartCardClass);
   auto device_info = device_manager().AddDevice(std::move(fake_device_info));
   chooser_context()->GrantDevicePermission(app_frame->GetLastCommittedOrigin(),
                                            *device_info);
