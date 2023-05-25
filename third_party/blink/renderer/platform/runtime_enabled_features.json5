@@ -3113,8 +3113,7 @@
       //
       // https://github.com/w3c/csswg-drafts/issues/7759
       // https://crbug.com/1446702
-      name: "ScrollTimelineAttachment",
-      status: "test"
+      name: "ScrollTimelineAttachment"
     },
     {
       // Separate flag for crbug.com/1426506 (getCurrentTime API change) which

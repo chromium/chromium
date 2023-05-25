@@ -7,14 +7,12 @@
   main {
     overflow: hidden;
     height: 0px;
-    scroll-timeline-attachment: defer;
-    scroll-timeline-name: --timeline1, --timeline2, --timeline3;
+    timeline-scope: --timeline1, --timeline2, --timeline3;
   }
   .scroller {
     overflow: hidden;
     width: 100px;
     height: 100px;
-    scroll-timeline-attachment: ancestor;
   }
   .scroller > div {
     height: 200px;

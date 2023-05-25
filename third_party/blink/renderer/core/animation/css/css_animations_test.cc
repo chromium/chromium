@@ -1045,8 +1045,8 @@ TEST_P(CSSAnimationsCompositorSyncTest, SetCurrentTime) {
 TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
   SetBodyInnerHTML(R"HTML(
     <style>
-      .defer {
-        scroll-timeline: --t1 defer;
+      .scope {
+        timeline-scope: --t1;
       }
       #scroller {
         overflow: auto;
@@ -1057,12 +1057,12 @@ TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
         width: 50px;
         height: 200px;
       }
-      .ancestor-timeline {
-        scroll-timeline: --t1 ancestor;
+      .timeline {
+        scroll-timeline: --t1;
       }
     </style>
-    <div class=defer>
-      <div id=scroller class=ancestor-timeline>
+    <div class=scope>
+      <div id=scroller class=timeline>
         <div></div>
       </div>
     </div>
@@ -1077,7 +1077,7 @@ TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
   const CSSAnimations& css_animations = element_animations->CssAnimations();
   EXPECT_TRUE(css_animations.HasTimelines());
 
-  scroller->classList().Remove("ancestor-timeline");
+  scroller->classList().Remove("timeline");
   UpdateAllLifecyclePhasesForTest();
 
   // No timeline data should linger on #scroller's CSSAnimations.

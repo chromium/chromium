@@ -398,7 +398,6 @@ scrollStartTargetY
 scrollStartX
 scrollStartY
 scrollTimeline
-scrollTimelineAttachment
 scrollTimelineAxis
 scrollTimelineName
 scrollbarColor
@@ -479,7 +478,6 @@ userSelect
 vectorEffect
 verticalAlign
 viewTimeline
-viewTimelineAttachment
 viewTimelineAxis
 viewTimelineInset
 viewTimelineName

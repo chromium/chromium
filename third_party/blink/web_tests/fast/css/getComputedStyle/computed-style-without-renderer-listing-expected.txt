@@ -318,7 +318,6 @@ scroll-start-target-x: none
 scroll-start-target-y: none
 scroll-start-x: auto
 scroll-start-y: auto
-scroll-timeline-attachment: local
 scroll-timeline-axis: block
 scroll-timeline-name: none
 scrollbar-color: auto
@@ -380,7 +379,6 @@ unicode-bidi: normal
 user-select: auto
 vector-effect: none
 vertical-align: baseline
-view-timeline-attachment: local
 view-timeline-axis: block
 view-timeline-inset: 0px
 view-timeline-name: none

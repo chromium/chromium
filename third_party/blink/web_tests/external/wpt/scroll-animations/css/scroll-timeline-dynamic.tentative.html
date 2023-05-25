@@ -7,12 +7,7 @@
 <script src="support/testcommon.js"></script>
 <style>
   main {
-    scroll-timeline-attachment: defer;
-    scroll-timeline-name:  --timeline;
-  }
-
-  .scroller {
-    scroll-timeline-attachment: ancestor;
+    timeline-scope: --timeline;
   }
 
   main > div {
@@ -147,7 +142,7 @@
     // Note: #scroller1 is at 20%, and #scroller2 is at 40%.
     scroller1.style.scrollTimelineName = '--timeline1';
     scroller2.style.scrollTimelineName = '--timeline2';
-    main.style.scrollTimelineName = "--timeline1, --timeline2";
+    main.style.timelineScope = "--timeline1, --timeline2";
 
     await assert_width(element, '100px');
 

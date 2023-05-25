@@ -350,7 +350,6 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-start-target-y
     scroll-start-x
     scroll-start-y
-    scroll-timeline-attachment
     scroll-timeline-axis
     scroll-timeline-name
     scrollbar-color
@@ -417,7 +416,6 @@ All changes to this list should go through Blink's feature review process: http:
     user-select
     vector-effect
     vertical-align
-    view-timeline-attachment
     view-timeline-axis
     view-timeline-inset
     view-timeline-name
@@ -791,7 +789,6 @@ All changes to this list should go through Blink's feature review process: http:
         scroll-start-target-block
         scroll-start-target-inline
     scroll-timeline
-        scroll-timeline-attachment
         scroll-timeline-axis
         scroll-timeline-name
     text-decoration
@@ -811,7 +808,6 @@ All changes to this list should go through Blink's feature review process: http:
         transition-property
         transition-timing-function
     view-timeline
-        view-timeline-attachment
         view-timeline-axis
         view-timeline-name
     white-space
