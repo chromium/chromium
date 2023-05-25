@@ -11,12 +11,19 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/chrome_switches.h"
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #include "base/hash/hash.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/win/registry.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/channel.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#include "base/win/registry.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/files/file_util.h"
 #endif
 
 namespace {
@@ -26,16 +33,18 @@ constexpr char kEarlySingletonEnabledGroup[] = "Enabled3";
 constexpr char kEarlySingletonDisabledMergeGroup[] = "Disabled_Merge3";
 constexpr char kEarlySingletonDefaultGroup[] = "Default3";
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 constexpr char kEarlySingletonDisabledGroup[] = "Disabled3";
 #endif  // BUILDFLAG(IS_WIN)
 
 const char* g_early_singleton_feature_group_ = nullptr;
 ChromeProcessSingleton* g_chrome_process_singleton_ = nullptr;
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 std::string GetMachineGUID() {
+  std::string machine_guid;
+#if BUILDFLAG(IS_WIN)
   base::win::RegKey key;
   std::wstring value;
   if (key.Open(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Cryptography",
@@ -44,9 +53,16 @@ std::string GetMachineGUID() {
     return std::string();
   }
 
-  std::string machine_guid;
   if (!base::WideToUTF8(value.c_str(), value.length(), &machine_guid))
     return std::string();
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_LINUX)
+  if (!base::ReadFileToString(base::FilePath("/etc/machine-id"),
+                              &machine_guid)) {
+    return std::string();
+  }
+#endif
   return machine_guid;
 }
 
@@ -155,7 +171,7 @@ void ChromeProcessSingleton::SetupEarlySingletonFeature(
     return;
   }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   g_early_singleton_feature_group_ = EnrollMachineInEarlySingletonFeature();
 #else
   g_early_singleton_feature_group_ = kEarlySingletonDefaultGroup;
