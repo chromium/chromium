@@ -110,6 +110,10 @@ class SVGScriptElement final : public SVGElement,
     return false;
   }
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   bool have_fired_load_ = false;
 
   ParkableString script_text_internal_slot_;

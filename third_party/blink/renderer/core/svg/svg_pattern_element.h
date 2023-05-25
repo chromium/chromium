@@ -71,7 +71,6 @@ class SVGPatternElement final : public SVGElement,
       const {
     return pattern_content_units_.Get();
   }
-
   void InvalidatePattern(LayoutInvalidationReasonForTracing);
   void InvalidateDependentPatterns();
 
@@ -99,6 +98,12 @@ class SVGPatternElement final : public SVGElement,
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
 
   bool SelfHasRelativeLengths() const override;
+
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void CollectExtraStyleForPresentationAttribute(
+      MutableCSSPropertyValueSet* style) override;
 
   Member<SVGAnimatedLength> x_;
   Member<SVGAnimatedLength> y_;

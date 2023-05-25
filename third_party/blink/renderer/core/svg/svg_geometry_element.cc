@@ -61,9 +61,7 @@ SVGGeometryElement::SVGGeometryElement(const QualifiedName& tag_name,
                                        Document& document,
                                        ConstructionType construction_type)
     : SVGGraphicsElement(tag_name, document, construction_type),
-      path_length_(MakeGarbageCollected<SVGAnimatedPathLength>(this)) {
-  AddToPropertyMap(path_length_);
-}
+      path_length_(MakeGarbageCollected<SVGAnimatedPathLength>(this)) {}
 
 void SVGGeometryElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
@@ -253,6 +251,24 @@ void SVGGeometryElement::GeometryAttributeChanged() {
 LayoutObject* SVGGeometryElement::CreateLayoutObject(const ComputedStyle&) {
   // By default, any subclass is expected to do path-based drawing.
   return MakeGarbageCollected<LayoutSVGPath>(this);
+}
+
+SVGAnimatedPropertyBase* SVGGeometryElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kPathLengthAttr) {
+    return path_length_.Get();
+  } else {
+    return SVGGraphicsElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGGeometryElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{path_length_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGGraphicsElement::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

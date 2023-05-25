@@ -69,6 +69,10 @@ class SVGFETurbulenceElement final
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   Member<SVGAnimatedNumberOptionalNumber> base_frequency_;
   Member<SVGAnimatedNumber> seed_;
   Member<SVGAnimatedEnumeration<SVGStitchOptions>> stitch_tiles_;

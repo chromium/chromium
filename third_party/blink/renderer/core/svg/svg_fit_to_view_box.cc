@@ -59,8 +59,6 @@ SVGFitToViewBox::SVGFitToViewBox(SVGElement* element)
               element,
               svg_names::kPreserveAspectRatioAttr)) {
   DCHECK(element);
-  element->AddToPropertyMap(view_box_);
-  element->AddToPropertyMap(preserve_aspect_ratio_);
 }
 
 void SVGFitToViewBox::Trace(Visitor* visitor) const {
@@ -85,6 +83,28 @@ bool SVGFitToViewBox::IsKnownAttribute(const QualifiedName& attr_name) {
 bool SVGFitToViewBox::HasValidViewBox() const {
   const SVGRect* value = view_box_->CurrentValue();
   return value->IsValid() && value->Width() >= 0 && value->Height() >= 0;
+}
+
+SVGAnimatedPropertyBase* SVGFitToViewBox::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kViewBoxAttr) {
+    return view_box_.Get();
+  } else if (attribute_name == svg_names::kPreserveAspectRatioAttr) {
+    return preserve_aspect_ratio_.Get();
+  } else {
+    return nullptr;
+  }
+}
+
+void SVGFitToViewBox::SynchronizeSVGAttribute(const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    for (auto* property : (SVGAnimatedPropertyBase*[]){
+             view_box_.Get(), preserve_aspect_ratio_.Get()}) {
+      if (property->NeedsSynchronizeAttribute()) {
+        property->SynchronizeAttribute();
+      }
+    }
+  }
 }
 
 }  // namespace blink

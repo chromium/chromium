@@ -74,12 +74,18 @@ class SVGGradientElement : public SVGElement, public SVGURIReference {
 
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
- private:
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void CollectExtraStyleForPresentationAttribute(
+      MutableCSSPropertyValueSet* style) override;
+
+ private:
   InsertionNotificationRequest InsertedInto(ContainerNode&) final;
   void RemovedFrom(ContainerNode&) final;
   void ChildrenChanged(const ChildrenChange&) final;

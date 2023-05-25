@@ -39,9 +39,6 @@ SVGTests::SVGTests(SVGElement* context_element)
           SVGStaticStringList::Create<','>(context_element,
                                            svg_names::kSystemLanguageAttr)) {
   DCHECK(context_element);
-
-  context_element->AddToPropertyMap(required_extensions_);
-  context_element->AddToPropertyMap(system_language_);
 }
 
 void SVGTests::Trace(Visitor* visitor) const {
@@ -57,6 +54,29 @@ SVGStringListTearOff* SVGTests::systemLanguage() {
   return system_language_->TearOff();
 }
 
+SVGAnimatedPropertyBase* SVGTests::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kRequiredExtensionsAttr) {
+    return required_extensions_.Get();
+  } else if (attribute_name == svg_names::kSystemLanguageAttr) {
+    return system_language_.Get();
+  } else {
+    return nullptr;
+  }
+}
+
+void SVGTests::SynchronizeSVGAttribute(const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{required_extensions_.Get(),
+                                     system_language_.Get()};
+    SVGElement::SynchronizeAllSVGAttributes(attrs);
+  }
+  // Specific (name != AnyQName()) syncs of required_extensions_ and
+  // system_language_ will be handled by the normal path in
+  // SVGElement::SynchronizeAttribute(), which will be dealt with
+  // by the caller.
+}
+
 static bool IsLangTagPrefix(const String& lang_tag, const String& language) {
   if (!lang_tag.StartsWithIgnoringASCIICase(language))
     return false;
@@ -65,7 +85,7 @@ static bool IsLangTagPrefix(const String& lang_tag, const String& language) {
 }
 
 static bool MatchLanguageList(const String& lang_tag,
-                                 const Vector<String>& languages) {
+                              const Vector<String>& languages) {
   for (const auto& value : languages) {
     if (IsLangTagPrefix(lang_tag, value))
       return true;

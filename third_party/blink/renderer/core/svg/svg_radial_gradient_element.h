@@ -54,6 +54,10 @@ class SVGRadialGradientElement final : public SVGGradientElement {
 
   bool SelfHasRelativeLengths() const override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   Member<SVGAnimatedLength> cx_;
   Member<SVGAnimatedLength> cy_;
   Member<SVGAnimatedLength> r_;

@@ -47,11 +47,7 @@ SVGCircleElement::SVGCircleElement(Document& document)
           svg_names::kRAttr,
           SVGLengthMode::kOther,
           SVGLength::Initial::kUnitlessZero,
-          CSSPropertyID::kR)) {
-  AddToPropertyMap(cx_);
-  AddToPropertyMap(cy_);
-  AddToPropertyMap(r_);
-}
+          CSSPropertyID::kR)) {}
 
 void SVGCircleElement::Trace(Visitor* visitor) const {
   visitor->Trace(cx_);
@@ -116,6 +112,41 @@ bool SVGCircleElement::SelfHasRelativeLengths() const {
 
 LayoutObject* SVGCircleElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGEllipse>(this);
+}
+
+SVGAnimatedPropertyBase* SVGCircleElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kCxAttr) {
+    return cx_.Get();
+  } else if (attribute_name == svg_names::kCyAttr) {
+    return cy_.Get();
+  } else if (attribute_name == svg_names::kRAttr) {
+    return r_.Get();
+  } else {
+    return SVGGeometryElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGCircleElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{cx_.Get(), cy_.Get(), r_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGGeometryElement::SynchronizeSVGAttribute(name);
+}
+
+void SVGCircleElement::CollectExtraStyleForPresentationAttribute(
+    MutableCSSPropertyValueSet* style) {
+  for (auto* property :
+       (SVGAnimatedPropertyBase*[]){cx_.Get(), cy_.Get(), r_.Get()}) {
+    if (property->HasPresentationAttributeMapping() &&
+        property->IsAnimating()) {
+      CollectStyleForPresentationAttribute(property->AttributeName(),
+                                           g_empty_atom, style);
+    }
+  }
+  SVGGeometryElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
 }  // namespace blink

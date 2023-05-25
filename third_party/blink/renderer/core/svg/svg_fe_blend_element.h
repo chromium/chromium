@@ -66,6 +66,10 @@ class SVGFEBlendElement final : public SVGFilterPrimitiveStandardAttributes {
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
   bool TaintsOrigin() const override { return false; }
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   Member<SVGAnimatedString> in1_;
   Member<SVGAnimatedString> in2_;
   Member<SVGAnimatedEnumeration<Mode>> mode_;

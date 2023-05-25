@@ -47,6 +47,10 @@ class SVGTextPositioningElement : public SVGTextContentElement {
   void SvgAttributeChanged(const SvgAttributeChangedParams&) final;
   bool IsTextPositioning() const final { return true; }
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   Member<SVGAnimatedLengthList> x_;
   Member<SVGAnimatedLengthList> y_;
   Member<SVGAnimatedLengthList> dx_;

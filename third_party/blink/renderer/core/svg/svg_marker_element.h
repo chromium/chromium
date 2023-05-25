@@ -85,6 +85,10 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
 
   bool SelfHasRelativeLengths() const override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   Member<SVGAnimatedLength> ref_x_;
   Member<SVGAnimatedLength> ref_y_;
   Member<SVGAnimatedLength> marker_width_;

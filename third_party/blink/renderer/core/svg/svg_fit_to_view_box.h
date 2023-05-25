@@ -33,6 +33,7 @@ class SizeF;
 namespace blink {
 
 class AffineTransform;
+class SVGAnimatedPropertyBase;
 class QualifiedName;
 class SVGAnimatedPreserveAspectRatio;
 class SVGAnimatedRect;
@@ -59,6 +60,10 @@ class SVGFitToViewBox : public GarbageCollectedMixin {
 
  protected:
   explicit SVGFitToViewBox(SVGElement*);
+
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const;
 
  private:
   Member<SVGAnimatedRect> view_box_;

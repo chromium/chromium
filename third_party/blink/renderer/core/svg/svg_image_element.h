@@ -100,6 +100,12 @@ class CORE_EXPORT SVGImageElement final
   void DidMoveToNewDocument(Document& old_document) override;
   SVGImageLoader& GetImageLoader() const override { return *image_loader_; }
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void CollectExtraStyleForPresentationAttribute(
+      MutableCSSPropertyValueSet* style) override;
+
   bool is_default_overridden_intrinsic_size_;
 
   Member<SVGAnimatedLength> x_;

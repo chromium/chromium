@@ -32,12 +32,15 @@ class SVGSymbolElement final : public SVGElement, public SVGFitToViewBox {
  public:
   explicit SVGSymbolElement(Document&);
 
-  void Trace(Visitor*) const override;
-
  private:
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void Trace(Visitor*) const override;
 };
 
 }  // namespace blink

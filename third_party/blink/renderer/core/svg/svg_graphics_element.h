@@ -78,6 +78,12 @@ class CORE_EXPORT SVGGraphicsElement : public SVGElement, public SVGTests {
       MutableCSSPropertyValueSet*) override;
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+  void CollectExtraStyleForPresentationAttribute(
+      MutableCSSPropertyValueSet* style) override;
+
   Member<SVGAnimatedTransformList> transform_;
 
  private:

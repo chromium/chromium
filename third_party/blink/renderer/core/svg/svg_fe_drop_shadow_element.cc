@@ -41,12 +41,7 @@ SVGFEDropShadowElement::SVGFEDropShadowElement(Document& document)
           this,
           svg_names::kStdDeviationAttr,
           2)),
-      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)) {
-  AddToPropertyMap(dx_);
-  AddToPropertyMap(dy_);
-  AddToPropertyMap(std_deviation_);
-  AddToPropertyMap(in1_);
-}
+      in1_(MakeGarbageCollected<SVGAnimatedString>(this, svg_names::kInAttr)) {}
 
 SVGAnimatedNumber* SVGFEDropShadowElement::stdDeviationX() {
   return std_deviation_->FirstNumber();
@@ -132,6 +127,32 @@ bool SVGFEDropShadowElement::TaintsOrigin() const {
   // (see above), so we should have a ComputedStyle here.
   DCHECK(style);
   return style->FloodColor().IsCurrentColor();
+}
+
+SVGAnimatedPropertyBase* SVGFEDropShadowElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kDxAttr) {
+    return dx_.Get();
+  } else if (attribute_name == svg_names::kDyAttr) {
+    return dy_.Get();
+  } else if (attribute_name == svg_names::kStdDeviationAttr) {
+    return std_deviation_.Get();
+  } else if (attribute_name == svg_names::kInAttr) {
+    return in1_.Get();
+  } else {
+    return SVGFilterPrimitiveStandardAttributes::PropertyFromAttribute(
+        attribute_name);
+  }
+}
+
+void SVGFEDropShadowElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{dx_.Get(), dy_.Get(), std_deviation_.Get(),
+                                     in1_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

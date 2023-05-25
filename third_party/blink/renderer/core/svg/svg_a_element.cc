@@ -54,9 +54,7 @@ SVGAElement::SVGAElement(Document& document)
       SVGURIReference(this),
       svg_target_(
           MakeGarbageCollected<SVGAnimatedString>(this,
-                                                  svg_names::kTargetAttr)) {
-  AddToPropertyMap(svg_target_);
-}
+                                                  svg_names::kTargetAttr)) {}
 
 void SVGAElement::Trace(Visitor* visitor) const {
   visitor->Trace(svg_target_);
@@ -211,6 +209,30 @@ bool SVGAElement::CanStartSelection() const {
 
 bool SVGAElement::WillRespondToMouseClickEvents() {
   return IsLink() || SVGGraphicsElement::WillRespondToMouseClickEvents();
+}
+
+SVGAnimatedPropertyBase* SVGAElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kTargetAttr) {
+    return svg_target_.Get();
+  } else {
+    SVGAnimatedPropertyBase* ret =
+        SVGURIReference::PropertyFromAttribute(attribute_name);
+    if (ret) {
+      return ret;
+    } else {
+      return SVGGraphicsElement::PropertyFromAttribute(attribute_name);
+    }
+  }
+}
+
+void SVGAElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{svg_target_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGURIReference::SynchronizeSVGAttribute(name);
+  SVGGraphicsElement::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

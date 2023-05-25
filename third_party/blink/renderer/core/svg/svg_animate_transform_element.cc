@@ -71,8 +71,9 @@ static SVGTransformType ParseTypeAttribute(const String& value) {
   if (value.IsNull())
     return SVGTransformType::kTranslate;
   SVGTransformType transform_type = ParseTransformType(value);
-  // Since ParseTransformType() is also used when parsing transform lists, it accepts the value
-  // "matrix". That value is however not recognized by the 'type' attribute, so treat it as invalid.
+  // Since ParseTransformType() is also used when parsing transform lists, it
+  // accepts the value "matrix". That value is however not recognized by the
+  // 'type' attribute, so treat it as invalid.
   if (transform_type == SVGTransformType::kMatrix)
     transform_type = SVGTransformType::kUnknown;
   return transform_type;

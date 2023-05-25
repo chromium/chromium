@@ -31,7 +31,10 @@ namespace blink {
 template <>
 const SVGEnumerationMap& GetEnumerationMap<ChannelSelectorType>() {
   static const SVGEnumerationMap::Entry enum_items[] = {
-      {CHANNEL_R, "R"}, {CHANNEL_G, "G"}, {CHANNEL_B, "B"}, {CHANNEL_A, "A"},
+      {CHANNEL_R, "R"},
+      {CHANNEL_G, "G"},
+      {CHANNEL_B, "B"},
+      {CHANNEL_A, "A"},
   };
   static const SVGEnumerationMap entries(enum_items);
   return entries;
@@ -54,13 +57,7 @@ SVGFEDisplacementMapElement::SVGFEDisplacementMapElement(Document& document)
           MakeGarbageCollected<SVGAnimatedEnumeration<ChannelSelectorType>>(
               this,
               svg_names::kYChannelSelectorAttr,
-              CHANNEL_A)) {
-  AddToPropertyMap(scale_);
-  AddToPropertyMap(in1_);
-  AddToPropertyMap(in2_);
-  AddToPropertyMap(x_channel_selector_);
-  AddToPropertyMap(y_channel_selector_);
-}
+              CHANNEL_A)) {}
 
 void SVGFEDisplacementMapElement::Trace(Visitor* visitor) const {
   visitor->Trace(scale_);
@@ -128,6 +125,35 @@ FilterEffect* SVGFEDisplacementMapElement::Build(
   input_effects.push_back(input1);
   input_effects.push_back(input2);
   return effect;
+}
+
+SVGAnimatedPropertyBase* SVGFEDisplacementMapElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kScaleAttr) {
+    return scale_.Get();
+  } else if (attribute_name == svg_names::kInAttr) {
+    return in1_.Get();
+  } else if (attribute_name == svg_names::kIn2Attr) {
+    return in2_.Get();
+  } else if (attribute_name == svg_names::kXChannelSelectorAttr) {
+    return x_channel_selector_.Get();
+  } else if (attribute_name == svg_names::kYChannelSelectorAttr) {
+    return y_channel_selector_.Get();
+  } else {
+    return SVGFilterPrimitiveStandardAttributes::PropertyFromAttribute(
+        attribute_name);
+  }
+}
+
+void SVGFEDisplacementMapElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{scale_.Get(), in1_.Get(), in2_.Get(),
+                                     x_channel_selector_.Get(),
+                                     y_channel_selector_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGFilterPrimitiveStandardAttributes::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

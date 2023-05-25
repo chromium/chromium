@@ -50,15 +50,9 @@ SVGTextPositioningElement::SVGTextPositioningElement(
           this,
           svg_names::kDyAttr,
           MakeGarbageCollected<SVGLengthList>(SVGLengthMode::kHeight))),
-      rotate_(
-          MakeGarbageCollected<SVGAnimatedNumberList>(this,
-                                                      svg_names::kRotateAttr)) {
-  AddToPropertyMap(x_);
-  AddToPropertyMap(y_);
-  AddToPropertyMap(dx_);
-  AddToPropertyMap(dy_);
-  AddToPropertyMap(rotate_);
-}
+      rotate_(MakeGarbageCollected<SVGAnimatedNumberList>(
+          this,
+          svg_names::kRotateAttr)) {}
 
 void SVGTextPositioningElement::Trace(Visitor* visitor) const {
   visitor->Trace(x_);
@@ -95,6 +89,33 @@ void SVGTextPositioningElement::SvgAttributeChanged(
   }
 
   SVGTextContentElement::SvgAttributeChanged(params);
+}
+
+SVGAnimatedPropertyBase* SVGTextPositioningElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kXAttr) {
+    return x_.Get();
+  } else if (attribute_name == svg_names::kYAttr) {
+    return y_.Get();
+  } else if (attribute_name == svg_names::kDxAttr) {
+    return dx_.Get();
+  } else if (attribute_name == svg_names::kDyAttr) {
+    return dy_.Get();
+  } else if (attribute_name == svg_names::kRotateAttr) {
+    return rotate_.Get();
+  } else {
+    return SVGTextContentElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGTextPositioningElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{x_.Get(), y_.Get(), dx_.Get(), dy_.Get(),
+                                     rotate_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGTextContentElement::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

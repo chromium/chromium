@@ -74,14 +74,7 @@ SVGMarkerElement::SVGMarkerElement(Document& document)
           MakeGarbageCollected<SVGAnimatedEnumeration<SVGMarkerUnitsType>>(
               this,
               svg_names::kMarkerUnitsAttr,
-              kSVGMarkerUnitsStrokeWidth)) {
-  AddToPropertyMap(ref_x_);
-  AddToPropertyMap(ref_y_);
-  AddToPropertyMap(marker_width_);
-  AddToPropertyMap(marker_height_);
-  AddToPropertyMap(orient_angle_);
-  AddToPropertyMap(marker_units_);
-}
+              kSVGMarkerUnitsStrokeWidth)) {}
 
 SVGAnimatedEnumeration<SVGMarkerOrientType>* SVGMarkerElement::orientType() {
   return orient_angle_->OrientType();
@@ -171,6 +164,43 @@ bool SVGMarkerElement::SelfHasRelativeLengths() const {
 
 bool SVGMarkerElement::LayoutObjectIsNeeded(const DisplayStyle&) const {
   return IsValid() && HasSVGParent();
+}
+
+SVGAnimatedPropertyBase* SVGMarkerElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kRefXAttr) {
+    return ref_x_.Get();
+  } else if (attribute_name == svg_names::kRefYAttr) {
+    return ref_y_.Get();
+  } else if (attribute_name == svg_names::kMarkerWidthAttr) {
+    return marker_width_.Get();
+  } else if (attribute_name == svg_names::kMarkerHeightAttr) {
+    return marker_height_.Get();
+  } else if (attribute_name == orient_angle_->AttributeName()) {
+    return orient_angle_.Get();
+  } else if (attribute_name == svg_names::kMarkerUnitsAttr) {
+    return marker_units_.Get();
+  } else {
+    SVGAnimatedPropertyBase* ret =
+        SVGFitToViewBox::PropertyFromAttribute(attribute_name);
+    if (ret) {
+      return ret;
+    } else {
+      return SVGElement::PropertyFromAttribute(attribute_name);
+    }
+  }
+}
+
+void SVGMarkerElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{ref_x_.Get(),        ref_y_.Get(),
+                                     marker_width_.Get(), marker_height_.Get(),
+                                     orient_angle_.Get(), marker_units_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGFitToViewBox::SynchronizeSVGAttribute(name);
+  SVGElement::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

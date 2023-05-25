@@ -65,14 +65,7 @@ SVGRectElement::SVGRectElement(Document& document)
           svg_names::kRyAttr,
           SVGLengthMode::kHeight,
           SVGLength::Initial::kUnitlessZero,
-          CSSPropertyID::kRy)) {
-  AddToPropertyMap(x_);
-  AddToPropertyMap(y_);
-  AddToPropertyMap(width_);
-  AddToPropertyMap(height_);
-  AddToPropertyMap(rx_);
-  AddToPropertyMap(ry_);
-}
+          CSSPropertyID::kRy)) {}
 
 void SVGRectElement::Trace(Visitor* visitor) const {
   visitor->Trace(x_);
@@ -175,6 +168,48 @@ bool SVGRectElement::SelfHasRelativeLengths() const {
 
 LayoutObject* SVGRectElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGRect>(this);
+}
+
+SVGAnimatedPropertyBase* SVGRectElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kXAttr) {
+    return x_.Get();
+  } else if (attribute_name == svg_names::kYAttr) {
+    return y_.Get();
+  } else if (attribute_name == svg_names::kWidthAttr) {
+    return width_.Get();
+  } else if (attribute_name == svg_names::kHeightAttr) {
+    return height_.Get();
+  } else if (attribute_name == svg_names::kRxAttr) {
+    return rx_.Get();
+  } else if (attribute_name == svg_names::kRyAttr) {
+    return ry_.Get();
+  } else {
+    return SVGGeometryElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGRectElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{x_.Get(),      y_.Get(),  width_.Get(),
+                                     height_.Get(), rx_.Get(), ry_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGGeometryElement::SynchronizeSVGAttribute(name);
+}
+
+void SVGRectElement::CollectExtraStyleForPresentationAttribute(
+    MutableCSSPropertyValueSet* style) {
+  for (auto* property :
+       (SVGAnimatedPropertyBase*[]){x_.Get(), y_.Get(), width_.Get(),
+                                    height_.Get(), rx_.Get(), ry_.Get()}) {
+    if (property->HasPresentationAttributeMapping() &&
+        property->IsAnimating()) {
+      CollectStyleForPresentationAttribute(property->AttributeName(),
+                                           g_empty_atom, style);
+    }
+  }
+  SVGGeometryElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
 }  // namespace blink

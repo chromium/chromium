@@ -32,9 +32,7 @@ SVGClipPathElement::SVGClipPathElement(Document& document)
                        SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>(
           this,
           svg_names::kClipPathUnitsAttr,
-          SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {
-  AddToPropertyMap(clip_path_units_);
-}
+          SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {}
 
 void SVGClipPathElement::Trace(Visitor* visitor) const {
   visitor->Trace(clip_path_units_);
@@ -69,6 +67,24 @@ void SVGClipPathElement::ChildrenChanged(const ChildrenChange& change) {
 
 LayoutObject* SVGClipPathElement::CreateLayoutObject(const ComputedStyle&) {
   return MakeGarbageCollected<LayoutSVGResourceClipper>(this);
+}
+
+SVGAnimatedPropertyBase* SVGClipPathElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (attribute_name == svg_names::kClipPathUnitsAttr) {
+    return clip_path_units_.Get();
+  } else {
+    return SVGGraphicsElement::PropertyFromAttribute(attribute_name);
+  }
+}
+
+void SVGClipPathElement::SynchronizeSVGAttribute(
+    const QualifiedName& name) const {
+  if (name == AnyQName()) {
+    SVGAnimatedPropertyBase* attrs[]{clip_path_units_.Get()};
+    SynchronizeAllSVGAttributes(attrs);
+  }
+  SVGGraphicsElement::SynchronizeSVGAttribute(name);
 }
 
 }  // namespace blink

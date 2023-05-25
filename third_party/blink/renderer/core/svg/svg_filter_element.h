@@ -75,6 +75,10 @@ class CORE_EXPORT SVGFilterElement final : public SVGElement,
 
   bool SelfHasRelativeLengths() const override;
 
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
+  void SynchronizeSVGAttribute(const QualifiedName& name) const override;
+
   Member<SVGAnimatedLength> x_;
   Member<SVGAnimatedLength> y_;
   Member<SVGAnimatedLength> width_;
