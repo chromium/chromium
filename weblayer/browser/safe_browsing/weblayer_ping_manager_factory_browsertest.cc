@@ -56,7 +56,9 @@ void WeblayerPingManagerFactoryTest::RunShouldFetchAccessTokenForReportTest(
       expect_should_fetch);
 }
 
-IN_PROC_BROWSER_TEST_F(WeblayerPingManagerFactoryTest, ReportThreatDetails) {
+// TODO(crbug.com/1448686)
+IN_PROC_BROWSER_TEST_F(WeblayerPingManagerFactoryTest,
+                       DISABLED_ReportThreatDetails) {
   auto* ping_manager = WebLayerPingManagerFactory::GetForBrowserContext(
       GetProfile()->GetBrowserContext());
 
