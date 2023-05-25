@@ -1828,6 +1828,7 @@ Unknown properties are collapsed to zero. -->
   <int value="0" label="Slide Show"/>
   <int value="1" label="Feel The Breeze"/>
   <int value="2" label="Float On By"/>
+  <int value="3" label="Video"/>
 </enum>
 
 <enum name="AmbientModePhotoSource">
