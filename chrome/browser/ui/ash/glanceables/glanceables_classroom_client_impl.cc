@@ -11,13 +11,18 @@
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
+#include "google_apis/classroom/classroom_api_course_work_response_types.h"
 #include "google_apis/classroom/classroom_api_courses_response_types.h"
+#include "google_apis/classroom/classroom_api_list_course_work_request.h"
 #include "google_apis/classroom/classroom_api_list_courses_request.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -26,7 +31,10 @@ using ::google_apis::ApiErrorCode;
 using ::google_apis::RequestSender;
 using ::google_apis::classroom::Course;
 using ::google_apis::classroom::Courses;
+using ::google_apis::classroom::CourseWork;
+using ::google_apis::classroom::CourseWorkItem;
 using ::google_apis::classroom::ListCoursesRequest;
+using ::google_apis::classroom::ListCourseWorkRequest;
 
 // Special filter value for `ListCoursesRequest` to request courses with access
 // limited to the requesting user.
@@ -60,6 +68,22 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
           policy_exception_justification: "WIP, guarded by `GlanceablesV2` flag"
         }
     )");
+
+absl::optional<base::Time> ConvertCourseWorkItemDue(
+    const absl::optional<CourseWorkItem::DueDateTime>& raw_due) {
+  if (!raw_due.has_value()) {
+    return absl::nullopt;
+  }
+
+  const auto exploded_due = base::Time::Exploded{.year = raw_due->year,
+                                                 .month = raw_due->month,
+                                                 .day_of_month = raw_due->day};
+  base::Time due;
+  if (!base::Time::FromUTCExploded(exploded_due, &due)) {
+    return absl::nullopt;
+  }
+  return due + raw_due->time_of_day;
+}
 
 }  // namespace
 
@@ -104,6 +128,25 @@ void GlanceablesClassroomClientImpl::FetchTeacherCourses(
                    std::move(callback));
 }
 
+void GlanceablesClassroomClientImpl::FetchCourseWork(
+    const std::string& course_id,
+    FetchCourseWorkCallback callback) {
+  CHECK(!course_id.empty());
+  CHECK(callback);
+
+  const auto [iter, inserted] = course_work_.emplace(
+      course_id,
+      std::make_unique<ui::ListModel<GlanceablesClassroomCourseWorkItem>>());
+
+  if (!inserted) {
+    // Invoke callback immediately with previously cached course work items.
+    std::move(callback).Run(iter->second.get());
+    return;
+  }
+
+  FetchCourseWorkPage(course_id, /*page_token=*/"", std::move(callback));
+}
+
 void GlanceablesClassroomClientImpl::FetchCoursesPage(
     const std::string& student_id,
     const std::string& teacher_id,
@@ -120,13 +163,12 @@ void GlanceablesClassroomClientImpl::FetchCoursesPage(
           request_sender, student_id, teacher_id, page_token,
           base::BindOnce(&GlanceablesClassroomClientImpl::OnCoursesPageFetched,
                          weak_factory_.GetWeakPtr(), student_id, teacher_id,
-                         page_token, courses_container, std::move(callback))));
+                         courses_container, std::move(callback))));
 }
 
 void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
     const std::string& student_id,
     const std::string& teacher_id,
-    const std::string& page_token,
     ui::ListModel<GlanceablesClassroomCourse>* courses_container,
     FetchCoursesCallback callback,
     base::expected<std::unique_ptr<Courses>, ApiErrorCode> result) {
@@ -135,6 +177,8 @@ void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
   CHECK(callback);
 
   if (!result.has_value()) {
+    // TODO(b/282013130): handle failures of a single page fetch request more
+    // gracefully (retry and/or reflect errors on UI).
     courses_container->DeleteAll();
     std::move(callback).Run(courses_container);
     return;
@@ -144,6 +188,7 @@ void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
     if (item->state() == Course::State::kActive) {
       courses_container->Add(std::make_unique<GlanceablesClassroomCourse>(
           item->id(), item->name()));
+      FetchCourseWork(item->id(), base::DoNothing());
     }
   }
 
@@ -155,12 +200,64 @@ void GlanceablesClassroomClientImpl::OnCoursesPageFetched(
   }
 }
 
+void GlanceablesClassroomClientImpl::FetchCourseWorkPage(
+    const std::string& course_id,
+    const std::string& page_token,
+    FetchCourseWorkCallback callback) {
+  CHECK(!course_id.empty());
+  CHECK(callback);
+
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(
+      std::make_unique<ListCourseWorkRequest>(
+          request_sender, course_id, page_token,
+          base::BindOnce(
+              &GlanceablesClassroomClientImpl::OnCourseWorkPageFetched,
+              weak_factory_.GetWeakPtr(), course_id, std::move(callback))));
+}
+
+void GlanceablesClassroomClientImpl::OnCourseWorkPageFetched(
+    const std::string& course_id,
+    FetchCourseWorkCallback callback,
+    base::expected<std::unique_ptr<CourseWork>, ApiErrorCode> result) {
+  CHECK(!course_id.empty());
+  CHECK(callback);
+
+  const auto iter = course_work_.find(course_id);
+
+  if (!result.has_value()) {
+    // TODO(b/282013130): handle failures of a single page fetch request more
+    // gracefully (retry and/or reflect errors on UI).
+    iter->second->DeleteAll();
+    std::move(callback).Run(iter->second.get());
+    return;
+  }
+
+  for (const auto& item : result.value()->items()) {
+    if (item->state() == CourseWorkItem::State::kPublished) {
+      iter->second->Add(std::make_unique<GlanceablesClassroomCourseWorkItem>(
+          item->id(), item->title(), item->alternate_link(),
+          ConvertCourseWorkItemDue(item->due_date_time())));
+    }
+  }
+
+  if (result.value()->next_page_token().empty()) {
+    std::move(callback).Run(iter->second.get());
+  } else {
+    FetchCourseWorkPage(course_id, result.value()->next_page_token(),
+                        std::move(callback));
+  }
+}
+
 RequestSender* GlanceablesClassroomClientImpl::GetRequestSender() {
   if (!request_sender_) {
     CHECK(create_request_sender_callback_);
     request_sender_ =
         std::move(create_request_sender_callback_)
-            .Run({GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope},
+            .Run({GaiaConstants::kClassroomReadOnlyCoursesOAuth2Scope,
+                  GaiaConstants::kClassroomReadOnlyCourseWorkSelfOAuth2Scope,
+                  GaiaConstants::
+                      kClassroomReadOnlyCourseWorkStudentsOAuth2Scope},
                  kTrafficAnnotationTag);
     CHECK(request_sender_);
   }

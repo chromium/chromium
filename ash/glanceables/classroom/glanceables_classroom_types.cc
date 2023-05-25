@@ -6,10 +6,27 @@
 
 #include <string>
 
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
+
 namespace ash {
+
+// ----------------------------------------------------------------------------
+// GlanceablesClassroomCourse:
 
 GlanceablesClassroomCourse::GlanceablesClassroomCourse(const std::string& id,
                                                        const std::string& name)
     : id(id), name(name) {}
+
+// ----------------------------------------------------------------------------
+// GlanceablesClassroomCourseWorkItem:
+
+GlanceablesClassroomCourseWorkItem::GlanceablesClassroomCourseWorkItem(
+    const std::string& id,
+    const std::string& title,
+    const GURL& link,
+    const absl::optional<base::Time>& due)
+    : id(id), title(title), link(link), due(due) {}
 
 }  // namespace ash
