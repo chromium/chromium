@@ -285,7 +285,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::DeriveDefaultIconColor(ui::kColorTextfieldForegroundDisabled);
   mixer[kColorFindBarForeground] = {ui::kColorTextfieldForeground};
   mixer[kColorFindBarMatchCount] = {ui::kColorSecondaryForeground};
-  mixer[kColorFindBarSeparator] = {ui::kColorSeparator};
   mixer[kColorFlyingIndicatorBackground] = {kColorToolbar};
   mixer[kColorFlyingIndicatorForeground] = {kColorToolbarButtonIcon};
   mixer[kColorFocusHighlightDefault] = {SkColorSetRGB(0x10, 0x10, 0x10)};

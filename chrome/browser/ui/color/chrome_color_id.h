@@ -104,7 +104,6 @@
   E_CPONLY(kColorFindBarButtonIconDisabled) \
   E_CPONLY(kColorFindBarForeground) \
   E_CPONLY(kColorFindBarMatchCount) \
-  E_CPONLY(kColorFindBarSeparator) \
   /* Flying Indicator colors. */ \
   E_CPONLY(kColorFlyingIndicatorBackground) \
   E_CPONLY(kColorFlyingIndicatorForeground) \

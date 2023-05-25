@@ -97,6 +97,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorFeaturePromoBubbleDefaultButtonForeground] = {
       kColorFeaturePromoBubbleBackground};
   mixer[kColorFeaturePromoBubbleForeground] = {ui::kColorSysOnPrimary};
+  mixer[kColorFindBarBackground] = {ui::kColorSysSurface};
   mixer[kColorFlyingIndicatorBackground] = {kColorToolbar};
   mixer[kColorFlyingIndicatorForeground] = {kColorToolbarButtonIcon};
   mixer[kColorFrameCaptionActive] = {ui::kColorSysOnHeaderPrimary};
