@@ -463,6 +463,10 @@ class PersonalDataManager : public KeyedService,
   static void DedupeCreditCardToSuggest(
       std::list<CreditCard*>* cards_to_suggest);
 
+  // Check if `credit_card` has a duplicate card present in either Local or
+  // Server card lists.
+  bool IsCardPresentAsBothLocalAndServerCards(const CreditCard& credit_card);
+
   // Cancels any pending queries to the server web database.
   void CancelPendingServerQueries();
 

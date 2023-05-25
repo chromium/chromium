@@ -429,10 +429,9 @@ const CreditCard* AutofillSuggestionGenerator::GetServerCardForLocalCard(
 
   std::vector<CreditCard*> server_cards =
       personal_data_->GetServerCreditCards();
-  auto it = base::ranges::find_if(
-      server_cards.begin(), server_cards.end(),
-      [&](const CreditCard* server_card) {
-        return local_card->IsLocalDuplicateOfServerCard(*server_card);
+  auto it =
+      base::ranges::find_if(server_cards, [&](const CreditCard* server_card) {
+        return local_card->IsLocalOrServerDuplicateOf(*server_card);
       });
 
   if (it != server_cards.end())

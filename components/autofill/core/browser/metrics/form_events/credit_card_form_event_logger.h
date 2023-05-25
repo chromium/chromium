@@ -125,7 +125,6 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   using FormEventLoggerBase::Log;
 
  private:
-  bool IsLocalDuplicateOfServerCard(const CreditCard& credit_card);
   FormEvent GetCardNumberStatusFormEvent(const CreditCard& credit_card);
   void RecordCardUnmaskFlowEvent(UnmaskAuthFlowType flow,
                                  UnmaskAuthFlowEvent event);
@@ -146,6 +145,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   std::vector<Suggestion> suggestions_;
   bool has_eligible_offer_ = false;
   bool card_selected_has_offer_ = false;
+  // If true, the selected server card was filled and it had an equivalent local
+  // version on file.
+  bool server_card_with_local_duplicate_filled_ = false;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context_;
 
   // Set when a list of suggestion is shown.

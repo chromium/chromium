@@ -208,6 +208,17 @@ void AutofillMetricsBaseTest::RecreateCreditCards(
     bool include_full_server_credit_card,
     bool masked_card_is_enrolled_for_virtual_card) {
   personal_data().ClearCreditCards();
+  CreateCreditCards(include_local_credit_card,
+                    include_masked_server_credit_card,
+                    include_full_server_credit_card,
+                    masked_card_is_enrolled_for_virtual_card);
+}
+
+void AutofillMetricsBaseTest::CreateCreditCards(
+    bool include_local_credit_card,
+    bool include_masked_server_credit_card,
+    bool include_full_server_credit_card,
+    bool masked_card_is_enrolled_for_virtual_card) {
   if (include_local_credit_card) {
     CreditCard local_credit_card = test::GetCreditCard();
     local_credit_card.set_guid("10000000-0000-0000-0000-000000000001");
@@ -236,26 +247,11 @@ void AutofillMetricsBaseTest::RecreateCreditCards(
   personal_data().Refresh();
 }
 
-std::string AutofillMetricsBaseTest::CreateLocalMasterCard(
-    bool clear_existing_cards) {
-  if (clear_existing_cards) {
-    personal_data().ClearCreditCards();
-  }
-  std::string guid("10000000-0000-0000-0000-000000000003");
-  CreditCard local_credit_card = test::GetCreditCard();
-  local_credit_card.SetNumber(u"5454545454545454" /* Mastercard */);
-  local_credit_card.set_guid(guid);
-  personal_data().AddCreditCard(local_credit_card);
-  return guid;
-}
-
-std::vector<std::string>
-AutofillMetricsBaseTest::CreateLocalAndDuplicateServerCreditCard() {
-  personal_data().ClearCreditCards();
-
+void AutofillMetricsBaseTest::CreateLocalAndDuplicateServerCreditCard() {
   // Local credit card creation.
   CreditCard local_credit_card = test::GetCreditCard();
-  std::string local_card_guid("10000000-0000-0000-0000-000000000001");
+  local_credit_card.SetNumber(u"5454545454545454" /* Mastercard */);
+  std::string local_card_guid(kTestDuplicateLocalCardId);
   local_credit_card.set_guid(local_card_guid);
   personal_data().AddCreditCard(local_credit_card);
 
@@ -263,15 +259,14 @@ AutofillMetricsBaseTest::CreateLocalAndDuplicateServerCreditCard() {
   CreditCard masked_server_credit_card = test::GetCreditCard();
   masked_server_credit_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
   masked_server_credit_card.set_server_id("server_id_2");
-  std::string server_card_guid("10000000-0000-0000-0000-000000000002");
+  std::string server_card_guid(kTestDuplicateMaskedCardId);
   masked_server_credit_card.set_guid(server_card_guid);
   masked_server_credit_card.set_instrument_id(1);
-  masked_server_credit_card.SetNetworkForMaskedCard(kVisaCard);
-  masked_server_credit_card.SetNumber(u"1111");
+  masked_server_credit_card.SetNetworkForMaskedCard(kMasterCard);
+  masked_server_credit_card.SetNumber(u"5454");
   personal_data().AddServerCreditCard(masked_server_credit_card);
 
   personal_data().Refresh();
-  return {local_card_guid, server_card_guid};
 }
 
 void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(

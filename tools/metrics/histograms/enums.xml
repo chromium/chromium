@@ -7429,6 +7429,9 @@ others/histograms.xml -->
   <int value="71"
       label="A card was submitted after a suggestion without metadata was
              filled (once)"/>
+  <int value="72" label="Server card of a deduped local card selected (once)"/>
+  <int value="73" label="Server card of a deduped local card filled (once)"/>
+  <int value="74" label="Server card of a deduped local card submitted (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">

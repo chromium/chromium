@@ -681,6 +681,34 @@ class BrowserAutofillManagerTest : public testing::Test {
     personal_data().AddCreditCard(local_card);
   }
 
+  void CreateUniqueTestServerAndLocalCreditCards() {
+    personal_data().ClearCreditCards();
+
+    CreditCard masked_server_card;
+    test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
+                            "4234567890123456",  // Visa
+                            "04", "2999", "1");
+    masked_server_card.set_guid("00000000-0000-0000-0000-000000000007");
+    masked_server_card.set_record_type(CreditCard::MASKED_SERVER_CARD);
+    personal_data().AddServerCreditCard(masked_server_card);
+
+    CreditCard full_server_card;
+    test::SetCreditCardInfo(&full_server_card, "Buddy Holly",
+                            "5187654321098765",  // Mastercard
+                            "10", "2998", "1");
+    full_server_card.set_guid("00000000-0000-0000-0000-000000000008");
+    full_server_card.set_record_type(CreditCard::FULL_SERVER_CARD);
+    personal_data().AddServerCreditCard(full_server_card);
+
+    CreditCard local_card;
+    test::SetCreditCardInfo(&local_card, "Elvis Presley",
+                            "4234567890121237",  // Visa
+                            "04", "2999", "1");
+    local_card.set_guid("00000000-0000-0000-0000-000000000009");
+    local_card.set_record_type(CreditCard::LOCAL_CARD);
+    personal_data().AddCreditCard(local_card);
+  }
+
   void TearDown() override {
     // Drop unowned references before destroying BrowserAutofillManager
     // which owns them.
@@ -8701,11 +8729,34 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 // Test that is_all_server_suggestions is false if there is at least one
-// local_card on file.
+// unique local_card on file with local_card deduped.
 TEST_F(BrowserAutofillManagerTest,
-       GetCreditCardSuggestions_IsAllServerSuggestionsFalse) {
-  // Create server and local credit cards.
-  CreateTestServerAndLocalCreditCards();
+       GetCreditCardSuggestions_IsAllServerSuggestionsFalse_LocalCardDeduped) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillSuggestServerCardInsteadOfLocalCard);
+  // Create unique server and local credit cards.
+  CreateUniqueTestServerAndLocalCreditCards();
+
+  // Set up our form data.
+  FormData form = CreateTestCreditCardFormData(true, false);
+  FormsSeen({form});
+
+  GetAutofillSuggestions(form, form.fields[1]);
+
+  // Test that we sent the right values to the external delegate.
+  ASSERT_FALSE(external_delegate_->is_all_server_suggestions());
+}
+
+// Test that is_all_server_suggestions is false if there is at least one
+// unique local_card on file with server_card deduped.
+TEST_F(BrowserAutofillManagerTest,
+       GetCreditCardSuggestions_IsAllServerSuggestionsFalse_ServerCardDeduped) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillSuggestServerCardInsteadOfLocalCard);
+  // Create unique server and local credit cards.
+  CreateUniqueTestServerAndLocalCreditCards();
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(true, false);

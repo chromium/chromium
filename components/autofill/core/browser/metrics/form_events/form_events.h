@@ -9,7 +9,8 @@ namespace autofill::autofill_metrics {
 
 // Form Events for autofill.
 // These events are triggered separately for address and credit card forms.
-// Event IDs must not change as they are recorded in metrics.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum FormEvent {
   // User interacted with a field of this kind of form. Logged only once per
   // page load.
@@ -181,9 +182,12 @@ enum FormEvent {
   // and the suggested card had no metadata. Logged once per page load.
   FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SUBMITTED_ONCE = 71,
 
-  // Next form event should use 62 if possible. One note is that if the newly
-  // added events are a group of related events, maybe it is easier to continue
-  // using 72 to make sure they are in the same UKM metric.
+  // Metric logged when a server card with a matching deduplicated local
+  // suggestion was filled.
+  FORM_EVENT_SERVER_CARD_SUGGESTION_SELECTED_FOR_AN_EXISTING_LOCAL_CARD_ONCE =
+      72,
+  FORM_EVENT_SERVER_CARD_FILLED_FOR_AN_EXISTING_LOCAL_CARD_ONCE = 73,
+  FORM_EVENT_SERVER_CARD_SUBMITTED_FOR_AN_EXISTING_LOCAL_CARD_ONCE = 74,
 
   NUM_FORM_EVENTS,
 };
