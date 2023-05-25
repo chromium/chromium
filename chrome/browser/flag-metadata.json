@@ -4058,11 +4058,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "files-trash",
-    "owners": [ "benreich", "joelhockey", "noel", "simmonsjosh@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "files-trash-drive",
     "owners": [ "benreich", "joelhockey", "simmonsjosh@google.com" ],
     "expiry_milestone": 119
