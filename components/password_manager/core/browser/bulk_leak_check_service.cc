@@ -35,23 +35,18 @@ class BulkLeakCheckService::MetricsReporter {
 };
 
 BulkLeakCheckService::MetricsReporter::~MetricsReporter() {
-  if (!credential_count_)
+  if (!credential_count_ || error_or_canceled_) {
     return;
-
-  if (error_or_canceled_) {
-    base::UmaHistogramCounts1000(
-        "PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled",
-        credential_count_);
-  } else {
-    base::UmaHistogramMediumTimes("PasswordManager.BulkCheck.Time",
-                                  timer_since_start_.Elapsed());
-    base::UmaHistogramTimes("PasswordManager.BulkCheck.TimePerCredential",
-                            timer_since_start_.Elapsed() / credential_count_);
-    base::UmaHistogramCounts1000("PasswordManager.BulkCheck.CheckedCredentials",
-                                 credential_count_);
-    base::UmaHistogramCounts100("PasswordManager.BulkCheck.LeaksFound",
-                                leaked_credential_count_);
   }
+
+  base::UmaHistogramMediumTimes("PasswordManager.BulkCheck.Time",
+                                timer_since_start_.Elapsed());
+  base::UmaHistogramTimes("PasswordManager.BulkCheck.TimePerCredential",
+                          timer_since_start_.Elapsed() / credential_count_);
+  base::UmaHistogramCounts1000("PasswordManager.BulkCheck.CheckedCredentials",
+                               credential_count_);
+  base::UmaHistogramCounts100("PasswordManager.BulkCheck.LeaksFound",
+                              leaked_credential_count_);
 }
 
 void BulkLeakCheckService::MetricsReporter::OnStartCheck(
