@@ -152,6 +152,10 @@ class AppBrowserController
   // Returns whether the url is within the scope of the tab strip home tab.
   virtual bool IsUrlInHomeTabScope(const GURL& url) const;
 
+  // Returns whether the app icon should be displayed on the tab instead of the
+  // favicon.
+  virtual bool ShouldShowAppIconOnTab(int index) const;
+
   // Determines whether the specified url is 'inside' the app |this| controls.
   virtual bool IsUrlInAppScope(const GURL& url) const = 0;
 
