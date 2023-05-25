@@ -4015,7 +4015,7 @@
   {
     "name": "feed-invisible-foreground-refresh-ios",
     "owners": ["//ios/chrome/browser/discover_feed/OWNERS", "edchin@google.com"],
-    "expiry_milestone": 115
+    "expiry_milestone": 118
   },
   {
     "name": "feed-loading-placeholder",
