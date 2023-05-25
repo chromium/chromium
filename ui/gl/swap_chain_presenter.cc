@@ -423,6 +423,62 @@ void DumpWithoutCrashingForSuperResolutionVideoProcessorBlt(
       sets_output_hdr_metadata, use_vp_super_resolution);
 }
 
+// Try disabling the topmost desktop plane for a decode swap chain in the case
+// of full screen. Otherwise, swap chain size is used to set destination size
+// and target rectangle for the decode swap chain. In DWM, the desktop plane
+// can be turned off if the letterboxing info is set up properly for YUV
+// swapchains, meaning that when the size of the window and the size of the
+// monitor are the same and there is no other UI component overtop of the
+// video. Otherwise, set the letterboxing info with swap chain size in order
+// to restore the topmost desktop plane, which happens in scenarios like
+// switching to underlay.
+// Returns true on successful settings.
+bool TryDisableDesktopPlane(IDXGIDecodeSwapChain* decode_swap_chain,
+                            const gfx::Size& dest_size,
+                            const gfx::Rect& target_rect) {
+  // Get the original dest size in case of restoring.
+  uint32_t original_dest_width, original_dest_height;
+  HRESULT hr = decode_swap_chain->GetDestSize(&original_dest_width,
+                                              &original_dest_height);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "GetDestSize failed with error 0x" << std::hex << hr;
+    return false;
+  }
+
+  // Set the destination surface size if necessary.
+  if (dest_size.width() != (int)original_dest_width ||
+      dest_size.height() != (int)original_dest_height) {
+    hr = decode_swap_chain->SetDestSize(dest_size.width(), dest_size.height());
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "SetDestSize failed with error 0x" << std::hex << hr;
+      return false;
+    }
+  }
+
+  // Get the original target rect in case of restoring.
+  RECT original_target_rect;
+  hr = decode_swap_chain->GetTargetRect(&original_target_rect);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "GetTargetRect failed with error 0x" << std::hex << hr;
+    decode_swap_chain->SetDestSize(original_dest_width, original_dest_height);
+    return false;
+  }
+
+  // Set the target region to the specified rectangle if necessary.
+  RECT target_region = target_rect.ToRECT();
+  if (target_region != original_target_rect) {
+    hr = decode_swap_chain->SetTargetRect(&target_region);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "SetTargetRect failed with error 0x" << std::hex << hr;
+      decode_swap_chain->SetDestSize(original_dest_width, original_dest_height);
+      decode_swap_chain->SetTargetRect(&original_target_rect);
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
@@ -657,6 +713,24 @@ gfx::Size SwapChainPresenter::GetMonitorSize() const {
 
     return monitor_size;
   }
+}
+
+void SwapChainPresenter::SetTargetToFullScreen(
+    gfx::Transform* visual_transform,
+    gfx::Rect* visual_clip_rect) const {
+  // Reset the horizontal/vertical shift according to the visual clip and
+  // original transform, since DWM will do the positioning in case of overlay.
+  visual_transform->set_rc(
+      0, 3,
+      visual_clip_rect->x() -
+          visual_transform->rc(0, 3) * visual_transform->rc(0, 0));
+  visual_transform->set_rc(
+      1, 3,
+      visual_clip_rect->y() -
+          visual_transform->rc(1, 3) * visual_transform->rc(1, 1));
+
+  // Expand the clip rect for swap chain to the whole screen.
+  *visual_clip_rect = gfx::Rect(GetMonitorSize());
 }
 
 void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
@@ -1089,7 +1163,9 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
     const gfx::Rect& content_rect,
     const gfx::Size& swap_chain_size,
     DXGI_FORMAT swap_chain_format,
-    const gfx::Transform& transform_to_root) {
+    const gfx::Transform& transform_to_root,
+    const absl::optional<gfx::Size> dest_size,
+    const absl::optional<gfx::Rect> target_rect) {
   if (ShouldUseVideoProcessorScaling())
     return false;
 
@@ -1144,7 +1220,8 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
     if (is_decoder_texture && !is_shared_texture && !is_unitary_texture_array &&
         compatible_transform) {
       if (PresentToDecodeSwapChain(texture, array_slice, color_space,
-                                   content_rect, swap_chain_size)) {
+                                   content_rect, swap_chain_size, dest_size,
+                                   target_rect)) {
         return true;
       }
       ReleaseSwapChainResources();
@@ -1161,7 +1238,9 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     unsigned array_slice,
     const gfx::ColorSpace& color_space,
     const gfx::Rect& content_rect,
-    const gfx::Size& swap_chain_size) {
+    const gfx::Size& swap_chain_size,
+    const absl::optional<gfx::Size> dest_size,
+    const absl::optional<gfx::Rect> target_rect) {
   DCHECK(!swap_chain_size.IsEmpty());
 
   TRACE_EVENT2("gpu", "SwapChainPresenter::PresentToDecodeSwapChain",
@@ -1172,6 +1251,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
   texture.As(&decode_resource);
   DCHECK(decode_resource);
 
+  HRESULT hr = S_OK;
   if (!decode_swap_chain_ || decode_resource_ != decode_resource) {
     TRACE_EVENT0(
         "gpu",
@@ -1201,10 +1281,9 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     // does not qualify as fullscreen by DWM's logic then the flag will have
     // no effects.
     desc.Flags = DXGI_SWAP_CHAIN_FLAG_FULLSCREEN_VIDEO;
-    HRESULT hr =
-        media_factory->CreateDecodeSwapChainForCompositionSurfaceHandle(
-            d3d11_device_.Get(), swap_chain_handle_.Get(), &desc,
-            decode_resource_.Get(), nullptr, &decode_swap_chain_);
+    hr = media_factory->CreateDecodeSwapChainForCompositionSurfaceHandle(
+        d3d11_device_.Get(), swap_chain_handle_.Get(), &desc,
+        decode_resource_.Get(), nullptr, &decode_swap_chain_);
     if (FAILED(hr)) {
       DLOG(ERROR) << "CreateDecodeSwapChainForCompositionSurfaceHandle failed "
                      "with error 0x"
@@ -1231,12 +1310,29 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
   }
 
   RECT source_rect = content_rect.ToRECT();
-  decode_swap_chain_->SetSourceRect(&source_rect);
+  hr = decode_swap_chain_->SetSourceRect(&source_rect);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "SetSourceRect failed with error 0x" << std::hex << hr;
+    return false;
+  }
 
-  decode_swap_chain_->SetDestSize(swap_chain_size.width(),
-                                  swap_chain_size.height());
-  RECT target_rect = gfx::Rect(swap_chain_size).ToRECT();
-  decode_swap_chain_->SetTargetRect(&target_rect);
+  gfx::Size swap_chain_dest_size =
+      dest_size.has_value() ? dest_size.value() : swap_chain_size;
+  hr = decode_swap_chain_->SetDestSize(swap_chain_dest_size.width(),
+                                       swap_chain_dest_size.height());
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "SetDestSize failed with error 0x" << std::hex << hr;
+    return false;
+  }
+
+  RECT swap_chain_target_rect = target_rect.has_value()
+                                    ? (target_rect.value()).ToRECT()
+                                    : gfx::Rect(swap_chain_size).ToRECT();
+  hr = decode_swap_chain_->SetTargetRect(&swap_chain_target_rect);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "SetTargetRect failed with error 0x" << std::hex << hr;
+    return false;
+  }
 
   // TODO(sunnyps): Move this to gfx::ColorSpaceWin helper where we can access
   // internal color space state and do a better job.
@@ -1254,11 +1350,15 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
   if (color_space.FullRangeEncodedValues()) {
     color_space_flags |= DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAG_xvYCC;
   }
-  decode_swap_chain_->SetColorSpace(
+  hr = decode_swap_chain_->SetColorSpace(
       static_cast<DXGI_MULTIPLANE_OVERLAY_YCbCr_FLAGS>(color_space_flags));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "SetColorSpace failed with error 0x" << std::hex << hr;
+    return false;
+  }
 
   UINT present_flags = DXGI_PRESENT_USE_DURATION;
-  HRESULT hr = decode_swap_chain_->PresentBuffer(array_slice, 1, present_flags);
+  hr = decode_swap_chain_->PresentBuffer(array_slice, 1, present_flags);
   // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only indicates
   // that the window is occluded and we can stop rendering.
   if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
@@ -1270,61 +1370,6 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
   content_size_ = swap_chain_size;
   swap_chain_format_ = DXGI_FORMAT_NV12;
   RecordPresentationStatistics();
-  return true;
-}
-
-bool SwapChainPresenter::TryDisableDesktopPlane(const gfx::Size& dest_size,
-                                                const gfx::Rect& target_rect) {
-  // Note that QI IDXGIDecodeSwapChain from an RGB swap chain will always fail.
-  Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
-  HRESULT hr = swap_chain_->QueryInterface(IID_PPV_ARGS(&decode_swap_chain));
-  if (FAILED(hr)) {
-    DLOG(ERROR)
-        << "QueryInterface for IDXGIDecodeSwapChain failed with error 0x"
-        << std::hex << hr;
-    return false;
-  }
-
-  // Get the original dest size in case of restoring.
-  uint32_t original_dest_width, original_dest_height;
-  hr = decode_swap_chain->GetDestSize(&original_dest_width,
-                                      &original_dest_height);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "GetDestSize failed with error 0x" << std::hex << hr;
-    return false;
-  }
-
-  // Set the destination surface size if necessary.
-  if (dest_size.width() != (int)original_dest_width ||
-      dest_size.height() != (int)original_dest_height) {
-    hr = decode_swap_chain->SetDestSize(dest_size.width(), dest_size.height());
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "SetDestSize failed with error 0x" << std::hex << hr;
-      return false;
-    }
-  }
-
-  // Get the original target rect in case of restoring.
-  RECT original_target_rect;
-  hr = decode_swap_chain->GetTargetRect(&original_target_rect);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "GetTargetRect failed with error 0x" << std::hex << hr;
-    decode_swap_chain->SetDestSize(original_dest_width, original_dest_height);
-    return false;
-  }
-
-  // Set the target region to the specified rectangle if necessary.
-  RECT target_region = target_rect.ToRECT();
-  if (target_region != original_target_rect) {
-    hr = decode_swap_chain->SetTargetRect(&target_region);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "SetTargetRect failed with error 0x" << std::hex << hr;
-      decode_swap_chain->SetDestSize(original_dest_width, original_dest_height);
-      decode_swap_chain->SetTargetRect(&original_target_rect);
-      return false;
-    }
-  }
-
   return true;
 }
 
@@ -1351,6 +1396,9 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   // content is shown again.
   ReleaseDCOMPSurfaceResourcesIfNeeded();
 
+  // Optional |dest_size| and |target_rect| are only calculated for full screen
+  // letterboxing in |AdjustTargetForFullScreenLetterboxing|, which is guarded
+  // by flag of DirectCompositionLetterboxVideoOptimization for now.
   absl::optional<gfx::Size> dest_size;
   absl::optional<gfx::Rect> target_rect;
   gfx::Size swap_chain_size = CalculateSwapChainSize(
@@ -1407,8 +1455,15 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
 
   if (TryPresentToDecodeSwapChain(input_texture, input_level, input_color_space,
                                   params.content_rect, swap_chain_size,
-                                  swap_chain_format, params.transform)) {
+                                  swap_chain_format, params.transform,
+                                  dest_size, target_rect)) {
     last_overlay_image_ = std::move(params.overlay_image);
+    // Only NV12 format is supported in zero copy presentation path.
+    if (dest_size.has_value() && target_rect.has_value() &&
+        params.z_order > 0) {
+      SetTargetToFullScreen(visual_transform, visual_clip_rect);
+    }
+
     return true;
   }
 
@@ -1510,20 +1565,33 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
 
   // DWM can turn off the desktop plane if this is a YUV swap chain and the
   // overlay candidate covers the whole screen with letterboxing.
-  // TODO(chunbo): IDXGIDecodeSwapChain path with D3D11VideoDecoder+ZeroCopy
-  // will be supported as well.
   bool is_letterboxing_overlay_ready = false;
-  if (base::FeatureList::IsEnabled(
-          features::kDirectCompositionLetterboxVideoOptimization) &&
-      IsYUVSwapChainFormat(swap_chain_format_)) {
+  if (IsYUVSwapChainFormat(swap_chain_format_) && dest_size.has_value() &&
+      target_rect.has_value()) {
     // Try to QI IDXGIDecodeSwapChain and set the DXGI properties properly, in
     // order to turn off the desktop plane in case of overlay.
-    if (dest_size.has_value() && target_rect.has_value()) {
-      bool succeeded = TryDisableDesktopPlane(*dest_size, *target_rect);
+    bool succeeded = false;
+    Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain;
 
-      if (succeeded && params.z_order > 0) {
-        is_letterboxing_overlay_ready = true;
-      }
+    // Note that QI IDXGIDecodeSwapChain from an RGB swap chain will always
+    // fail.
+    hr = swap_chain_->QueryInterface(IID_PPV_ARGS(&decode_swap_chain));
+    if (SUCCEEDED(hr)) {
+      succeeded = TryDisableDesktopPlane(decode_swap_chain.Get(), *dest_size,
+                                         *target_rect);
+    } else {
+      DLOG(ERROR)
+          << "QueryInterface for IDXGIDecodeSwapChain failed with error 0x"
+          << std::hex << hr;
+    }
+
+    // There should be no other UI content overtop of the video, so that the
+    // letterboxing and positioning can be carried out by DWM. In case of
+    // underlay, both |dest_size| and |target_rect| are initialized according to
+    // swap_chain_size, thus no extra target transform and clip adjustment is
+    // needed as follow-ups.
+    if (succeeded && params.z_order > 0) {
+      is_letterboxing_overlay_ready = true;
     }
   }
 
@@ -1535,24 +1603,10 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     return false;
   }
 
-  // Update the visual_clip_rect and visual_transform accordingly after
-  // succeeded presentation with letterboxing for overaly scenario. This will
-  // make sure the video full screen letterboxing take the whole monitor area,
-  // and DWM will take care of the letterboxing info setup automatically.
+  // Update |visual_transform| and |visual_clip_rect| for the full screen
+  // letterboxing overlay presentation.
   if (is_letterboxing_overlay_ready) {
-    // Reset the horizontal/vertical shift according to the visual clip and
-    // original transform, since DWM will do the positioning.
-    visual_transform->set_rc(
-        0, 3,
-        visual_clip_rect->x() -
-            visual_transform->rc(0, 3) * visual_transform->rc(0, 0));
-    visual_transform->set_rc(
-        1, 3,
-        visual_clip_rect->y() -
-            visual_transform->rc(1, 3) * visual_transform->rc(1, 1));
-
-    // Expand the clip rect for swap chain to the whole screen.
-    *visual_clip_rect = gfx::Rect(GetMonitorSize());
+    SetTargetToFullScreen(visual_transform, visual_clip_rect);
   }
 
   last_overlay_image_ = std::move(params.overlay_image);
@@ -2099,10 +2153,10 @@ bool SwapChainPresenter::ReallocateSwapChain(
 
   DXGI_ADAPTER_DESC adapter_desc;
   HRESULT hr = dxgi_adapter->GetDesc(&adapter_desc);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to get adapter desc with error 0x" << std::hex << hr;
-  } else {
+  if (SUCCEEDED(hr)) {
     gpu_vendor_id_ = adapter_desc.VendorId;
+  } else {
+    DLOG(ERROR) << "Failed to get adapter desc with error 0x" << std::hex << hr;
   }
 
   return true;
@@ -2153,7 +2207,7 @@ void SwapChainPresenter::SetSwapChainPresentDuration() {
 Microsoft::WRL::ComPtr<IDXGISwapChainMedia>
 SwapChainPresenter::GetSwapChainMedia() const {
   Microsoft::WRL::ComPtr<IDXGISwapChainMedia> swap_chain_media;
-  HRESULT hr = 0;
+  HRESULT hr = S_OK;
   if (decode_swap_chain_) {
     hr = decode_swap_chain_.As(&swap_chain_media);
   } else {
