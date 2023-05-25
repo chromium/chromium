@@ -14,6 +14,7 @@
 #include "chromeos/crosapi/mojom/desk.mojom-forward.h"
 #include "chromeos/crosapi/mojom/desk.mojom.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,6 +30,21 @@ class MockDesksClient : public DesksClient {
               (const));
 };
 
+class TestDeskEventObserver : public crosapi::mojom::DeskEventObserver {
+ public:
+  void OnDeskSwitched(const base::GUID& new_desk_id,
+                      const base::GUID& previous_desk_id) override {}
+  void OnDeskAdded(const base::GUID& new_desk_id) override {}
+  void OnDeskRemoved(const base::GUID& removed_desk_id) override {}
+
+  mojo::PendingRemote<crosapi::mojom::DeskEventObserver> GetRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+ private:
+  mojo::Receiver<crosapi::mojom::DeskEventObserver> receiver_{this};
+};
+
 class DeskAshTest : public testing::Test {
  public:
   DeskAshTest() = default;
@@ -40,6 +56,7 @@ class DeskAshTest : public testing::Test {
   }
 
   MockDesksClient& mock_desks_client() { return mock_desks_client_; }
+  TestDeskEventObserver& desk_event_observer() { return desk_event_observer_; }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -47,6 +64,7 @@ class DeskAshTest : public testing::Test {
 
  private:
   testing::NiceMock<MockDesksClient> mock_desks_client_;
+  TestDeskEventObserver desk_event_observer_;
   std::unique_ptr<DeskAsh> desk_ash_;
 };
 
@@ -64,6 +82,10 @@ TEST_F(DeskAshTest, GetDeskByIDWithInvalidIDTest) {
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(crosapi::mojom::DeskCrosApiError::kInvalidIdError,
             result->get_error());
+}
+
+TEST_F(DeskAshTest, AddDeskEventObserversTest) {
+  desk_ash_remote_->AddDeskEventObserver(desk_event_observer().GetRemote());
 }
 
 }  // namespace crosapi

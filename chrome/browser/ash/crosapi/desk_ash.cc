@@ -295,6 +295,12 @@ void DeskAsh::GetDeskByID(const base::Uuid& uuid,
       crosapi::mojom::GetDeskByIDResult::NewDesk(ToDeskModel(result.value())));
 }
 
+void DeskAsh::AddDeskEventObserver(
+    mojo::PendingRemote<crosapi::mojom::DeskEventObserver> observer) {
+  mojo::Remote<mojom::DeskEventObserver> remote(std::move(observer));
+  remote_desk_event_observers_.Add(std::move(remote));
+}
+
 // Performs a depth-first search for a window with given App Restore Window
 // Id.
 aura::Window* DeskAsh::GetWindowByAppRestoreWindowId(

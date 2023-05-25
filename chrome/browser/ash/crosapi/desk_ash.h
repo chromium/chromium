@@ -13,7 +13,9 @@
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chromeos/crosapi/mojom/desk.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash {
 class Desk;
@@ -56,6 +58,8 @@ class DeskAsh : public mojom::Desk {
   void SwitchDesk(const base::Uuid& uuid, SwitchDeskCallback callback) override;
   void GetDeskByID(const base::Uuid& uuid,
                    GetDeskByIDCallback callback) override;
+  void AddDeskEventObserver(
+      mojo::PendingRemote<crosapi::mojom::DeskEventObserver> observer) override;
 
  private:
   // Returns the window pointer by app restore window Id.
@@ -63,6 +67,9 @@ class DeskAsh : public mojom::Desk {
                                               int32_t app_restore_window_id);
 
   mojo::ReceiverSet<mojom::Desk> receivers_;
+
+  // Cache remote clients that are currently consuming desk events.
+  mojo::RemoteSet<mojom::DeskEventObserver> remote_desk_event_observers_;
 
   base::WeakPtrFactory<DeskAsh> weak_ptr_factory_{this};
 };
