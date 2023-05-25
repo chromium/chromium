@@ -61,7 +61,8 @@
 // Tests that the user can open the list of recent Android tabs by tapping the
 // "open" button on the confirmation alert modal. Afterwards, the modal would
 // not be shown again after the user restarts.
-- (void)testOpen {
+// TODO(crbug.com/1448864): Re-enable test when issue is fixed.
+- (void)DISABLED_testOpen {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
