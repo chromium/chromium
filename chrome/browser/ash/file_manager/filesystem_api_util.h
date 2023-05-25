@@ -25,9 +25,6 @@ class FilePath;
 namespace file_manager {
 namespace util {
 
-// Obtains whether |type| is non-native file system or not.
-bool IsNonNativeFileSystemType(storage::FileSystemType type);
-
 // Checks whether the given |path| points to a non-local filesystem that
 // requires special handling.
 bool IsUnderNonNativeLocalPath(Profile* profile, const base::FilePath& path);

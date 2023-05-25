@@ -96,7 +96,7 @@ void CopyToClipboardShareAction::LaunchAction(
       auto file_url = apps::GetFileSystemURL(profile_, file->url);
       // TODO(crbug.com/1274983) : Add support for copying from MTP and
       // FileSystemProviders.
-      if (!file_manager::util::IsNonNativeFileSystemType(file_url.type())) {
+      if (file_url.TypeImpliesPathIsReal()) {
         file_infos.emplace_back(
             ui::FileInfo(file_url.path(), base::FilePath()));
       }
@@ -129,8 +129,7 @@ bool CopyToClipboardShareAction::ShouldShowAction(
   if (!intent->files.empty()) {
     for (const auto& file : intent->files) {
       auto file_url = apps::GetFileSystemURL(profile_, file->url);
-      contains_uncopyable_file =
-          file_manager::util::IsNonNativeFileSystemType(file_url.type());
+      contains_uncopyable_file = !file_url.TypeImpliesPathIsReal();
       if (contains_uncopyable_file) {
         break;
       }

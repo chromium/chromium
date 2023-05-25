@@ -269,7 +269,7 @@ void ExtractIOTask::ZipInfoCallback(unzip::mojom::InfoPtr info) {
   if (--sizingCount_ == 0) {
     // After getting the size of all the ZIPs, check if we have
     // enough available disk space, and if so, extract them.
-    if (util::IsNonNativeFileSystemType(parent_folder_.type())) {
+    if (!parent_folder_.TypeImpliesPathIsReal()) {
       // Destination is a virtual filesystem, so skip the size check.
       ExtractAllSources();
     } else {

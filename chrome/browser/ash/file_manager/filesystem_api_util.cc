@@ -179,11 +179,6 @@ void PrepareFileOnIOThread(
 
 }  // namespace
 
-bool IsNonNativeFileSystemType(storage::FileSystemType type) {
-  // TODO(nigeltao): inline at the call sites and then delete this function.
-  return !storage::FileSystemURL::TypeImpliesPathIsReal(type);
-}
-
 bool IsUnderNonNativeLocalPath(Profile* profile, const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
