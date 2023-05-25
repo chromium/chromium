@@ -119,7 +119,9 @@ enum class PrerenderFinalStatus {
   kMemoryPressureOnTrigger = 67,
   kMemoryPressureAfterTriggered = 68,
 
-  kMaxValue = kMemoryPressureAfterTriggered,
+  kPrerenderingDisabledByDevTools = 69,
+
+  kMaxValue = kPrerenderingDisabledByDevTools,
 };
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.
