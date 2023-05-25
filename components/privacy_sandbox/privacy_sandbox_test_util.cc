@@ -78,6 +78,7 @@ void ApplyTestState(
     MockPrivacySandboxSettingsDelegate* mock_delegate,
     PrivacySandboxServiceTestInterface* privacy_sandbox_service,
     browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service,
+    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     content_settings::MockProvider* user_content_setting_provider,
     content_settings::MockProvider* managed_content_setting_provider) {
   switch (key) {
@@ -282,6 +283,12 @@ void ApplyTestState(
       SCOPED_TRACE("State Setup: Appropriate Topics Consent");
       mock_delegate->SetUpHasAppropriateTopicsConsentResponse(
           GetItemValue<bool>(value));
+      return;
+    }
+    case (StateKey::kAttestationsMap): {
+      SCOPED_TRACE("State Setup: Attestations Map");
+      privacy_sandbox_settings->SetPrivacySandboxAttestationsMapForTesting(
+          GetItemValue<privacy_sandbox::PrivacySandboxAttestationsMap>(value));
       return;
     }
     default:
@@ -768,7 +775,7 @@ void RunTestCase(
     ApplyTestState(key, value, task_environment, testing_pref_service,
                    host_content_settings_map, mock_delegate,
                    privacy_sandbox_service, mock_browsing_topics_service_,
-                   user_content_setting_provider,
+                   privacy_sandbox_settings, user_content_setting_provider,
                    managed_content_setting_provider);
   }
 

@@ -119,6 +119,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
 
   static bool IsAllowed(Status status);
 
+  static void JoinHistogram(const char* name, Status status);
+
   // Get the Topics that are disabled by Finch.
   const std::vector<browsing_topics::Topic>& GetFinchDisabledTopics();
 
