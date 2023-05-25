@@ -1775,7 +1775,12 @@ void HTMLElement::HidePopoverInternal(
     CHECK_EQ(event->newState(), "closed");
     event->SetTarget(this);
     auto result = DispatchEvent(*event);
-    CHECK_EQ(result, DispatchEventResult::kNotCanceled);
+    if (result != DispatchEventResult::kNotCanceled) {
+      // The event can be cancelled before dispatch, if the target or execution
+      // context no longer exists, etc. See crbug.com/1445329.
+      CHECK_EQ(result, DispatchEventResult::kCanceledBeforeDispatch);
+      return;
+    }
 
     // The 'beforetoggle' event handler could have changed this popover, e.g. by
     // changing its type, removing it from the document, or calling
