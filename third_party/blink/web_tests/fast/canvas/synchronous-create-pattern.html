@@ -15,10 +15,10 @@ function runTest() {
     context.fillRect(0, 0, 100, 100);
 
     image = document.getElementById('image');
-    image.setAttribute('src', 'resources/green-flash-at-50ms.svg');
+    image.setAttribute('src', 'resources/green-flash-at-100ms.svg');
     image.onload = function() {
         pattern = context.createPattern(image, 'repeat');
-        setTimeout(function() { drawPatternAndFinish(); }, 55);
+        setTimeout(function() { drawPatternAndFinish(); }, 105);
     }
 }
 
