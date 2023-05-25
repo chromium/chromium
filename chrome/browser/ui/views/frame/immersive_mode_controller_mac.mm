@@ -4,6 +4,7 @@
 
 #include <AppKit/AppKit.h>
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
 
 #include <vector>
@@ -130,8 +131,9 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   // Used as a convenience to access
   // NativeWidgetMacNSWindowHost::GetNSWindowMojo().
-  raw_ptr<remote_cocoa::mojom::NativeWidgetNSWindow> ns_window_mojo_ =
-      nullptr;  // weak
+  // Dangling in ImmersiveModeControllerMacBrowserTest.ToggleFullscreen.
+  raw_ptr<remote_cocoa::mojom::NativeWidgetNSWindow, DanglingUntriaged>
+      ns_window_mojo_ = nullptr;  // weak
 
   // Used to hold the widget id for the tab hosting widget. This will be passed
   // to the remote_cocoa immersive mode controller where the tab strip will be
