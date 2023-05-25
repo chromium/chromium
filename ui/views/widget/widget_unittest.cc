@@ -3489,6 +3489,49 @@ TEST_F(DesktopWidgetTest,
   EXPECT_EQ(bubble_counter.CallCount(), 0);
 }
 
+// Widget delegate that holds paint as active lock during its lifetime.
+class PaintAsActiveTestDesktopWidgetDelegate
+    : public TestDesktopWidgetDelegate {
+ public:
+  PaintAsActiveTestDesktopWidgetDelegate() = default;
+  ~PaintAsActiveTestDesktopWidgetDelegate() override = default;
+
+  void LockWidgetPaintAsActive() {
+    paint_as_active_lock_ = GetWidget()->LockPaintAsActive();
+  }
+
+ private:
+  std::unique_ptr<Widget::PaintAsActiveLock> paint_as_active_lock_;
+};
+
+// Tests that there is no crash when paint as active lock is removed for child
+// widget while its parent widget is being closed.
+TEST_F(DesktopWidgetTest, LockPaintAsActiveAndCloseParent) {
+  // Make sure that DesktopNativeWidgetAura is used for widgets.
+  test_views_delegate()->set_use_desktop_native_widgets(true);
+
+  std::unique_ptr<Widget> parent = CreateTestWidget();
+  parent->Show();
+
+  auto* delegate = new PaintAsActiveTestDesktopWidgetDelegate();
+  // Ensure that the delegate is destroyed in Widget::OnNativeWidgetDestroyed().
+  delegate->SetOwnedByWidget(true);
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.parent = parent->GetNativeView();
+  delegate->InitWidget(std::move(params));
+  delegate->LockWidgetPaintAsActive();
+  base::WeakPtr<Widget> child = delegate->GetWidget()->GetWeakPtr();
+  child->ShowInactive();
+
+  // Child widget and its delegate are destroyed when the parent widget is being
+  // closed. PaintAsActiveTestDesktopWidgetDelegate::paint_as_active_lock_ is
+  // also deleted which should not cause a crash.
+  parent->CloseNow();
+
+  // Ensure that child widget has been destroyed.
+  ASSERT_FALSE(child);
+}
+
 // Widget used to destroy itself when OnNativeWidgetDestroyed is called.
 class TestNativeWidgetDestroyedWidget : public Widget {
  public:
