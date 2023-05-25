@@ -27,13 +27,13 @@
 #include <algorithm>
 #include <new>
 
+#include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/shim/malloc_zone_functions_mac.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
-#include "base/process/memory.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
