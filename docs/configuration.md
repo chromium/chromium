@@ -142,7 +142,7 @@ someone who can't read or write code want to change this?"
 | :-                                           | :-          | :-             | :--:     | :--:                                | :-                                |
 | Directly surfaced to the user                | ❌          | ❌            | ❌       | ✅                                  | ✅                                |
 | Localized into the user's language           | ❌          | ❌            | ❌       | ❌                                  | ✅                                |
-| Configurable via enterprise policy           | ✅          | ❌            | ✅       | ✅                                  | ❌ but their backing prefs may be |
+| Configurable via enterprise policy           | ✅          | ❌            | ❌ except on ChromeOS | ✅                                  | ❌ but their backing prefs may be |
 | Reported when in use                         | ❌          | via UMA/crash |  ❌      | via UMA<br> `Launch.FlagsAtStartup` | ❌                                |
 | Included in chrome://version                 | ❌          | ✅            | ✅       | ❌                                  | ❌                                |
 | Automatically persistent<br> across restarts | ✅ usually  | ❌            | ❌       | ✅                                  | ✅ via backing prefs              |
