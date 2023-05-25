@@ -20,85 +20,87 @@ using CacheEntry = ZeroSuggestCacheService::CacheEntry;
 ZeroSuggestCacheService::ZeroSuggestCacheService(PrefService* prefs,
                                                  size_t cache_size)
     : prefs_(prefs), cache_(cache_size) {
+  DCHECK(prefs);
   DCHECK_GT(cache_size, 0u);
 
-  if (prefs_) {
-    if (!base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
-      return;
-    }
+  if (!base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
+    return;
+  }
 
-    // Load cached ZPS response for NTP from prior session via prefs.
-    ntp_entry_.response_json =
-        omnibox::GetUserPreferenceForZeroSuggestCachedResponse(prefs_,
-                                                               /*page_url=*/"");
+  // Load cached ZPS response for NTP from prior session via prefs, if any.
+  StoreZeroSuggestResponse(
+      /*page_url=*/"", prefs->GetString(omnibox::kZeroSuggestCachedResults));
 
-    // Load cached ZPS responses for SRP/Web from prior session via prefs.
-    const auto& prefs_dict =
-        prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
-    for (auto it = prefs_dict.begin(); it != prefs_dict.end(); ++it) {
-      const auto& page_url = it->first;
-      // Use GetIfString() instead of GetString() in order to account for an
-      // edge case where the stored JSON data is not a string Value
-      // (crbug/1432797).
-      const auto* response_json = (it->second).GetIfString();
-      if (response_json) {
-        StoreZeroSuggestResponse(page_url, *response_json);
-      }
+  // Load cached ZPS responses for SRP/Web from prior session via prefs, if any.
+  const auto& prefs_dict =
+      prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
+  for (auto it = prefs_dict.begin(); it != prefs_dict.end(); ++it) {
+    const auto& page_url = it->first;
+    const auto* response_json_ptr = (it->second).GetIfString();
+    if (response_json_ptr) {
+      StoreZeroSuggestResponse(page_url, *response_json_ptr);
     }
   }
 }
 
 ZeroSuggestCacheService::~ZeroSuggestCacheService() {
-  if (prefs_) {
-    if (!base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
-      return;
-    }
-
-    // Dump cached ZPS response for NTP to prefs.
-    omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
-        prefs_, /*page_url=*/"", /*response=*/ntp_entry_.response_json);
-
-    // Dump cached ZPS responses for SRP/Web to prefs.
-    base::Value::Dict prefs_dict;
-    for (const auto& item : cache_) {
-      const auto& page_url = item.first;
-      const auto& response_json = item.second.response_json;
-      prefs_dict.Set(page_url, response_json);
-    }
-    prefs_->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                    std::move(prefs_dict));
+  if (!base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
+    return;
   }
+
+  // Dump cached ZPS response for NTP to prefs.
+  omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
+      prefs_, /*page_url=*/"", /*response=*/ntp_entry_.response_json);
+
+  // Dump cached ZPS responses for SRP/Web to prefs.
+  base::Value::Dict prefs_dict;
+  for (const auto& item : cache_) {
+    const auto& page_url = item.first;
+    const auto& response_json = item.second.response_json;
+    prefs_dict.Set(page_url, response_json);
+  }
+  prefs_->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                  std::move(prefs_dict));
 }
 
 CacheEntry ZeroSuggestCacheService::ReadZeroSuggestResponse(
     const std::string& page_url) const {
-  // Read cached ZPS response for NTP.
-  if (page_url.empty()) {
-    return ntp_entry_;
+  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
+    // Read cached ZPS response for NTP.
+    if (page_url.empty()) {
+      return ntp_entry_;
+    }
+
+    // Read cached ZPS response for SRP/Web.
+    const auto it = cache_.Get(page_url);
+    return it != cache_.end() ? it->second : CacheEntry();
   }
 
-  // Read cached ZPS response for SRP/Web.
-  const auto it = cache_.Get(page_url);
-  return it != cache_.end() ? it->second : CacheEntry();
+  return CacheEntry(
+      omnibox::GetUserPreferenceForZeroSuggestCachedResponse(prefs_, page_url));
 }
 
 void ZeroSuggestCacheService::StoreZeroSuggestResponse(
     const std::string& page_url,
     const std::string& response_json) {
   auto entry = CacheEntry(response_json);
+  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
+    if (page_url.empty()) {
+      // Write ZPS response for NTP to cache.
+      ntp_entry_ = entry;
+    } else {
+      // Write ZPS response for SRP/Web to cache.
+      cache_.Put(page_url, entry);
+    }
 
-  if (page_url.empty()) {
-    // Write ZPS response for NTP to cache.
-    ntp_entry_ = entry;
+    base::UmaHistogramCounts1M(
+        "Omnibox.ZeroSuggestProvider.CacheMemoryUsage",
+        base::trace_event::EstimateMemoryUsage(cache_) +
+            base::trace_event::EstimateMemoryUsage(ntp_entry_));
   } else {
-    // Write ZPS response for SRP/Web to cache.
-    cache_.Put(page_url, entry);
+    omnibox::SetUserPreferenceForZeroSuggestCachedResponse(prefs_, page_url,
+                                                           response_json);
   }
-
-  base::UmaHistogramCounts1M(
-      "Omnibox.ZeroSuggestProvider.CacheMemoryUsage",
-      base::trace_event::EstimateMemoryUsage(cache_) +
-          base::trace_event::EstimateMemoryUsage(ntp_entry_));
 
   for (auto& observer : observers_) {
     observer.OnZeroSuggestResponseUpdated(page_url, entry);
@@ -106,23 +108,19 @@ void ZeroSuggestCacheService::StoreZeroSuggestResponse(
 }
 
 void ZeroSuggestCacheService::ClearCache() {
-  // Clear current contents of in-memory cache.
-  ntp_entry_.response_json.clear();
-  cache_.Clear();
+  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
+    // Clear current contents of in-memory cache.
+    ntp_entry_.response_json.clear();
+    cache_.Clear();
+  }
 
   // Clear user prefs used for cross-session persistence.
-  if (prefs_) {
-    if (!base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
-      return;
-    }
-
-    prefs_->SetString(omnibox::kZeroSuggestCachedResults, "");
-    prefs_->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                    base::Value::Dict());
-  }
+  prefs_->SetString(omnibox::kZeroSuggestCachedResults, "");
+  prefs_->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                  base::Value::Dict());
 }
 
-bool ZeroSuggestCacheService::IsCacheEmpty() const {
+bool ZeroSuggestCacheService::IsInMemoryCacheEmptyForTesting() const {
   return ntp_entry_.response_json.empty() && cache_.empty();
 }
 

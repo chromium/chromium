@@ -26,7 +26,6 @@
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -633,7 +632,6 @@ class PageContentAnnotationsWebContentsObserverRelatedSearchesFromZPSCacheTest
         /*enabled_features=*/
         {{features::kPageContentAnnotations,
           {{"extract_related_searches", "true"}}},
-         {omnibox::kZeroSuggestInMemoryCaching, {}},
          {features::kExtractRelatedSearchesFromPrefetchedZPSResponse, {}}},
         /*disabled_features=*/{});
   }

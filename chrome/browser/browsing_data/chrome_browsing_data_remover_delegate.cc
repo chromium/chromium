@@ -106,7 +106,6 @@
 #include "components/nacl/browser/pnacl_host.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
@@ -1160,18 +1159,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           nullable_filter.is_null() || nullable_filter.Run(search_url);
     }
 
-    if (should_clear_zero_suggest_and_session_token) {
-      if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
-        auto* zero_suggest_cache_service =
-            ZeroSuggestCacheServiceFactory::GetForProfile(profile_);
-        if (zero_suggest_cache_service) {
-          zero_suggest_cache_service->ClearCache();
-        }
-      } else {
-        prefs->SetString(omnibox::kZeroSuggestCachedResults, std::string());
-        prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                       base::Value::Dict());
-      }
+    // `zero_suggest_cache_service` is null if `profile_` is off the record.
+    auto* zero_suggest_cache_service =
+        ZeroSuggestCacheServiceFactory::GetForProfile(profile_);
+    if (should_clear_zero_suggest_and_session_token &&
+        zero_suggest_cache_service) {
+      zero_suggest_cache_service->ClearCache();
     }
 
     // |search_prefetch_service| is null if |profile_| is off the record.
