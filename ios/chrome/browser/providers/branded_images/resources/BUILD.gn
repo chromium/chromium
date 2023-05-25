@@ -10,6 +10,9 @@ imageset("chromium_stay_safe") {
     "chromium_stay_safe.imageset/chromium_stay_safe.png",
     "chromium_stay_safe.imageset/chromium_stay_safe@2x.png",
     "chromium_stay_safe.imageset/chromium_stay_safe@3x.png",
+    "chromium_stay_safe.imageset/chromium_stay_safe_dark.png",
+    "chromium_stay_safe.imageset/chromium_stay_safe_dark@2x.png",
+    "chromium_stay_safe.imageset/chromium_stay_safe_dark@3x.png",
   ]
 }
 
