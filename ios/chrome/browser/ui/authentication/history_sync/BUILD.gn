@@ -1,0 +1,37 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("history_sync") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "history_sync_coordinator.h",
+    "history_sync_coordinator.mm",
+    "history_sync_mediator.h",
+    "history_sync_mediator.mm",
+  ]
+  deps = [
+    ":ui",
+    "//base",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin:constants",
+  ]
+  public_deps =
+      [ "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator" ]
+}
+
+source_set("ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "history_sync_consumer.h",
+    "history_sync_view_controller.h",
+    "history_sync_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
+  ]
+}
